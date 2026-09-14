@@ -41,6 +41,7 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/dll/runtime_symbol_info.hpp>
 #include <google/protobuf/stubs/common.h>
 #include <iostream>
 #include <csignal>
@@ -83,6 +84,13 @@ int main(int argc, char** argv)
     auto configFile = fs::absolute(_TRINITY_BNET_CONFIG);
     std::string configService;
     auto vm = GetConsoleArguments(argc, argv, configFile, configService);
+    // Locate the installed configuration when launched from another directory.
+    if (vm["config"].defaulted() && !fs::exists(configFile))
+    {
+        fs::path installedConfig = boost::dll::program_location().parent_path() / _TRINITY_BNET_CONFIG;
+        if (fs::exists(installedConfig))
+            configFile = installedConfig;
+    }
     // exit if help or version is enabled
     if (vm.count("help") || vm.count("version"))
         return 0;

@@ -131,6 +131,13 @@ extern int main(int argc, char **argv)
     std::string configService;
 
     auto vm = GetConsoleArguments(argc, argv, configFile, configService);
+    // Locate the installed configuration when launched from another directory.
+    if (vm["config"].defaulted() && !fs::exists(configFile))
+    {
+        fs::path installedConfig = boost::dll::program_location().parent_path() / _TRINITY_CORE_CONFIG;
+        if (fs::exists(installedConfig))
+            configFile = installedConfig;
+    }
     // exit if help is enabled
     if (vm.count("help") || vm.count("version"))
         return 0;

@@ -10,6 +10,8 @@
 
 cmake_minimum_required(VERSION 3.18)
 
+include(cmake/WindowsDefaults.cmake)
+
 # add this options before PROJECT keyword
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
@@ -76,3 +78,5 @@ add_subdirectory(dep)
 
 # add core sources
 add_subdirectory(src)
+
+include(cmake/WindowsRuntime.cmake)

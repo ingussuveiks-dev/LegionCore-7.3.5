@@ -17,6 +17,8 @@
 
 #include "SslContext.h"
 #include "Log.h"
+#include "Config.h"
+#include <boost/filesystem/path.hpp>
 
 bool Battlenet::SslContext::Initialize()
 {
@@ -30,8 +32,9 @@ bool Battlenet::SslContext::Initialize()
     } } while (0)
 
     LOAD_CHECK(instance().set_options(boost::asio::ssl::context::no_sslv3, err));
-    LOAD_CHECK(instance().use_certificate_chain_file("bnetserver.cert.pem", err));
-    LOAD_CHECK(instance().use_private_key_file("bnetserver.key.pem", boost::asio::ssl::context::pem, err));
+    boost::filesystem::path configDirectory = boost::filesystem::path(sConfigMgr->GetFilename()).parent_path();
+    LOAD_CHECK(instance().use_certificate_chain_file((configDirectory / "bnetserver.cert.pem").string(), err));
+    LOAD_CHECK(instance().use_private_key_file((configDirectory / "bnetserver.key.pem").string(), boost::asio::ssl::context::pem, err));
 
 #undef LOAD_CHECK
 
