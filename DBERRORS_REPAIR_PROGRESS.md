@@ -891,3 +891,23 @@ Quest ID pārvietoti uz `ConditionValue1`, `ConditionValue2` notīrīts, un nega
 - Timewalking laikā ar tēlu, kurš nav nodevis questu 40168, iegūt loot item 129747 no paredzētā avota; priekšmetam jābūt pieejamam, bet ārpus timewalking eventa tas nedrīkst krist.
 - Tāpat pārbaudīt item 129928 / quest 40173 un item 143776 / quest 45563 kombinācijas.
 - Pēc katra attiecīgā questa nodošanas atkārtot loot avotu: quest priekšmets vairs nedrīkst krist. Pārbaudīt arī tēlu, kurš questu tikai pieņēmis, bet vēl nav nodevis — negatīvais rewarded nosacījums vēl drīkst atļaut dropu.
+
+## Pakete 42 — Fjorlin Frostbrow otrās gossip izvēles questa ID
+
+Fails: `sql/updates/world/2026_09_18_37_fix_fjorlin_gossip_quest.sql`.
+
+Fjorlin Frostbrow (29732) izvēlnes 9891 otrā opcija “I am ready to join the battle against the wyrms...” bija apzīmēta ar komentāru “Show gossip option 1 if player has quest 12869”, taču faktiskajā condition rindā quest ID bija 0. Tajā pašā izvēlnē opcija 0 jau pareizi izmanto 12869, un datubāzē tas ir quests “Pushed Too Far”.
+
+Trūkstošais `ConditionValue1` atjaunots uz 12869; pārējie nosacījuma lauki un gossip izvēle nav mainīti. Pilna sākotnējā rinda saglabāta `_backup_20260918_fjorlin_gossip_quest`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir sākotnējā quest-0 rinda, un aktīvais nosacījums tagad izmanto questu 12869.
+- Pēdējais “Quest condition specifies non-existing quest (0)” ziņojums pazuda; `DBErrors.log` skaits samazinājās no 450 līdz 449.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns Fjorlin gossip validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Bez aktīva “Pushed Too Far” (12869) sarunāties ar Fjorlin Frostbrow; nevienai no abām ar šo questu saistītajām izvēlēm nav jāparādās.
+- Pieņemt 12869 un runāt ar Fjorlin: jāparādās gan testa izvēlei, gan iespējai pievienoties cīņai pret wyrm/eagle transporta izvēlei.
+- Izmantot otro izvēli un pārbaudīt, ka tā sagatavo paredzēto ērgli/lidojuma cīņu; pēc questa pabeigšanas izvēlei atkal jāpazūd.
