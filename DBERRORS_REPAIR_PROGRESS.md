@@ -2474,3 +2474,20 @@ Brainwashed Noble (596) divas par “bolt” nosauktas kaujas rindas faktiski li
 
 - Deadmines sastopot Brainwashed Noble (596), tam uz aggro un pēc tam 0–40 jardu distancē ik pēc 3,4–4,7 sekundēm jāmet Arcane Blast (20883) uz pretinieku, nevis jāuzliek sev Arcane Charge aura.
 - Zem 15% mana NPC jāsāk tuvoties, virs 30% jāatgriežas ranged fāzē; zem 15% dzīvības jāpasaka teksts un jābēg. Pēc spawn tam vairs nav paredzēta pre-Legion Mage Armor aura.
+
+## Pakete 128 — novecojušās Scrapped Fel Reaver transformācijas arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_114_archive_obsolete_scrapped_fel_reaver_transform.sql`.
+
+Scrapped Fel Reaver (20243) respawn laikā mēģināja sev uzlikt TBC transformāciju 39311, kas radību pārvērta atsevišķā helper template 22509. Šis spell 7.3.5 klientā vairs neeksistē, savukārt pats 20243 template jau ir “Scrapped Fel Reaver” ar savu Legion modeļa ID 21072. Arī uzturētajā reference skriptā transformācijas rinda vairs netiek lietota. Tāpēc tikai novecojusī aura rinda pēc saglabāšanas `_backup_20260918_scrapped_fel_reaver_transform` izņemta; quest aktivizācija, četri ambusher viļņi, death/evade cleanup un creature modeļi nav mainīti.
+
+### Pārbaudes rezultāts
+
+- Aktīvā 39311 rinda vairs neeksistē, backup tabulā ir viena sākotnējā rinda; template 20243 joprojām ir korektais Scrapped Fel Reaver ar display 21072.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošās transformācijas kļūda pazuda un `DBErrors.log` skaits samazinājās no 226 uz 225. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Netherstorm quest “It’s a Fel Reaver, But with Heart” laikā pie Scrapped Fel Reaver (20243) pārbaudīt, ka tas jau spawn brīdī izskatās kā salūzis fel reaver bez 39311 auras.
+- Lietot Fel Zapper spell 35282: NPC jākļūst aktīvam, jāsāk summonēt Zaxxis Ambusher (20287) pēc 2, 17, 32 un 60 sekundēm un pēc nāves jāatstāj Heart of the Fel Reaver. Evade vai nāve nedrīkst atstāt summonētus ambusherus.
