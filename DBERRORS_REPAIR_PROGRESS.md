@@ -2209,3 +2209,21 @@ Lady Sylvanas Windrunner (44365) notikuma timed-action saraksts beigās nosūta 
 
 - Silverpine Forest zonā 130, apgabalā 5369 pie koordinātēm ap `(1364, 1029, 56)`, izspēlēt Lady Sylvanas (44365) un Agatha (44608) saistīto notikumu līdz Sylvanas nosūta `DATA_SET 2,2`.
 - Agatha pēc 1–2 sekundēm jāpārvietojas uz pirmo punktu, vēl pēc vienas sekundes uz otro punktu, pēc 2,5 sekundēm jālieto spell 83173, pēc tam jānoņem aura 29266 abiem Fallen Human (44592/44593) un jāiziet no kaujas; sekvence nedrīkst apstāties pirms pirmās kustības.
+
+## Pakete 113 — timed-action grūtību flagu migrācija
+
+Fails: `sql/updates/world/2026_09_18_102_migrate_timed_action_difficulties.sql`.
+
+Repozitorija vēsturiskā SmartAI migrācija `sql/old/world/0020_creature_updates.sql` vecos difficulty bitus pārvietoja uz `Difficulties` kolonnu, taču apzināti atlasīja tikai `source_type=0`. Tādēļ sešas saistītās `source_type=9` timed-action rindas palika vecajā formātā: viena Fiery Vortex rinda ar flagiem 30, četras Majordomo Staghelm dialoga rindas ar flagiem 31 un viena Air flow rinda ar flagu 16. Izmantota tieši repozitorijā dotā karte: biti 2+4+8+16 kļuva par grūtībām `1,2,3,4,5,6`, bet bits 16 viens pats — par grūtību `6`; Staghelm rindās saglabāts neatkarīgais `NOT_REPEATABLE` bits 1. Visas sešas sākotnējās rindas saglabātas `_backup_20260918_timed_action_difficulties`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sešas sākotnējās rindas; 53693/9/0 un 5410100/9/0–3 tagad lieto `Difficulties='1,2,3,4,5,6'`, bet 60005200/9/1 lieto `Difficulties='6'`; nevienā nav palikuši deprecated biti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas sešas deprecated event flag kļūdas pazuda un `DBErrors.log` kļūdu skaits samazinājās no 287 uz 281. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Firelands sastapšanās vietā pārbaudīt Fiery Vortex (53693) un Fiery Tornado (53698): Vortex pēc izsaukšanas lieto 99793, piesaista Tornado auru 99817 un pēc aptuveni 27 sekundēm to noņem visās datubāzē norādītajās grūtībās.
+- Majordomo Staghelm (54101/52571) notikumā pienākt 50 jardu robežās: viņa trīs dialoga grupām jāatskaņojas vienreiz ar 0, 11 un 6 sekunžu secīgām pauzēm, tad pēc 10 sekundēm jānoņem flags 832.
+- Grūtībā 6 pārbaudīt Air flow (600052) sekvenci pie Master Snowdrift satura: abām action 205 rindām jāielādējas, bet citās grūtībās tikai kopīgajai id 0 rindai; vizuālajai/kustības sekvencei nedrīkst būt dublikātu.
