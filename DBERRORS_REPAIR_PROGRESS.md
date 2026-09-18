@@ -930,3 +930,22 @@ SmartAI nosacījums entry 600, event 10 bija pareizi definēts kā `CONDITION_QU
 - Bez aktīva “Kill Your Hundred” (34429) izraisīt ar entry 600/event 10 saistīto SmartAI notikumu; tā darbībai 165265 nav jāizpildās.
 - Pieņemt 34429 un atkārtot notikumu: nosacījumam jāizpildās un paredzētajam invoker cast 165265 jānostrādā tieši vienreiz.
 - Pēc questa nodošanas/izņemšanas atkārtot, lai “has quest” pārbaude vairs nebūtu patiesa.
+
+## Pakete 44 — Rogue artifact phase liekā nosacījuma arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_39_archive_rogue_phase_duplicate.sql`.
+
+Phase definition 5287/1 (phase 5709) vienā ElseGroup saturēja divus citādi identiskus `CONDITION_QUEST_NONE=14` ierakstus questam 40847. Derīgajai rindai visi neizmantotie lauki ir 0; otrai importa rindai bija lieks `ConditionValue3=1`, kuru quest nosacījums nelasa un par kuru loaderis ziņoja.
+
+Pilna nederīgā dublikāta rinda saglabāta `_backup_20260918_rogue_phase_duplicate` un izņemta. Funkcionāli identiskais type-14 nosacījums ar `value3=0` paliek aktīvs, tādēļ Rogue artifact fāzes loģika netiek noņemta vai apklusināta.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir nederīgais dublikāts, bet aktīvajos datos palikusi viena derīgā `value3=0` rinda.
+- Viens no diviem “Quest condition has useless data in value3 (1)” ziņojumiem pazuda; atlikušais pieder citam SmartAI objective ierakstam. `DBErrors.log` skaits samazinājās no 449 līdz 448.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns phase 5287/1 validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Rogue, kuram quests 40847 vēl nav pieņemts, ieiet attiecīgajā Dalaran/zone 5287 artifact ķēdes vietā un pārbaudīt phase 5709 objektus.
+- Pieņemt 40847 un pārbaudīt, ka šī “quest none” fāze tiek noņemta/pārslēgta; pēc questa pabeigšanas un reloga nevajadzētu rasties dubultiem NPC vai pazudušai videi.
