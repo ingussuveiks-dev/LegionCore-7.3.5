@@ -2524,3 +2524,19 @@ Lothraxion (111343) data-set eventa piesaistītajā cast rindā spell kolonna bi
 ### Spēlē vēlāk pārbaudāmais
 
 - Legion scenārijā ar Lothraxion (111343) pārbaudīt spawn darbību Imperial Arrival (221898). Kad skripts saņem data-set `(1,1)`, Lothraxion jāsāk uzbrukt Balnazzar (111247) un jālieto uz viņu Reckoning (173313), nevis jāpaliek ar izlaistu cast darbību.
+
+## Pakete 131 — Khadgara “The Battle for Shattrath” avota tipa korekcija
+
+Fails: `sql/updates/world/2026_09_18_117_fix_khadgar_battle_for_shattrath_source.sql`.
+
+Quest 33731 pieņemšanas rinda bija kļūdaini definēta kā gameobject skripts (`source_type = 1`) ar entry 75805. Entry 75805 patiesībā ir Archmage Khadgar creature template; rinda izmanto arī šī NPC `creature_text` grupu 0. Otrs tā paša NPC “The Battle for Shattrath” quest variants 34099 jau bija korekti piesaistīts creature avotam. Sākotnējā rinda saglabāta `_backup_20260918_khadgar_shattrath_source`, pēc tam avots nomainīts uz creature un dots brīvs rindas ID 1, lai nesadurtos ar quest 34099 rindu.
+
+### Pārbaudes rezultāts
+
+- Khadgaram 75805 tagad ir divas atsevišķas quest-accept rindas: ID 0 questam 34099 un ID 1 questam 33731; abas izsauc viņa teksta grupu 0.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā gameobject 75805 kļūda pazuda, `DBErrors.log` skaits samazinājās no 223 uz 222, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Draenor kampaņā pie Archmage Khadgar (75805) pieņemt Alliance quest 33731 un atsevišķi Horde variantu 34099 “The Battle for Shattrath”. Abos gadījumos Khadgaram vienreiz jāpasaka viņa grupas 0 teksts “When you are ready, we will follow you into Shattrath.”
