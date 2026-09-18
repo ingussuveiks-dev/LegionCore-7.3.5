@@ -79,3 +79,23 @@ Labojums ir atgriezenisks ar `UPDATE quest_template SET AllowableRaces=0 WHERE I
 - Visiem 21 uzdevumiem MariaDB tagad glabā `18446744073709551615` (`UINT64_MAX`).
 - Visi 21 rasu maskas kļūdu ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 719 līdz 698.
 - `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts ar exit code 0.
+
+## Pakete 04 — uzdevumu izsniedzamo priekšmetu skaits
+
+Fails: `sql/updates/world/2026_09_18_03_fix_quest_provided_item_counts.sql`.
+
+33 uzdevumiem ir derīgs `StartItem`, bet nebija `quest_template_addon` ieraksta, tāpēc `ProvidedItemCount` kļuva par `0`. Kodols šiem priekšmetiem jau pārbaudīja eksistenci un starta laikā piespiedu kārtā lietoja skaitu `1`. SQL izveido trūkstošo addon rindu tikai precīzi zināmajiem uzdevumiem, tikai ja `StartItem <> 0`, un saglabā skaitu `1`.
+
+Tas nemaina faktisko līdzšinējo uzvedību; tas padara datubāzi atbilstošu kodola runtime fallback. Nekas netiek dzēsts. Atgriešanai var dzēst tikai šīs 33 addon rindas, kuru pārējie lauki joprojām ir noklusējumi; pilnā pirmsdarbu kopija satur sākotnējo stāvokli.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`.
+- Visiem 33 uzdevumiem tagad ir addon rinda ar `ProvidedItemCount=1`.
+- Visi 33 `SourceItemIdCount` ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 698 līdz 665.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts ar exit code 0.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieņemt dažus skartos uzdevumus (īpaši 7061, 45755 un 48027) un apstiprināt, ka tiek izsniegts tieši viens sākuma priekšmets.
+- Atmest un atkārtoti pieņemt uzdevumu, pārliecinoties, ka netiek dublēti vairāki priekšmeti.
