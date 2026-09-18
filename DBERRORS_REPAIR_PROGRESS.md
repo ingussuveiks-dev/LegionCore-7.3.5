@@ -2039,3 +2039,20 @@ Foreman Thazz'ril (80140) quest 34818 “They Call Him Lantresor of the Blade”
 
 - Horde garrison/Nagrand ķēdē pieņemt no Foreman Thazz'ril quest 34818 “They Call Him Lantresor of the Blade”; viņam nekavējoties jāpasaka teksta grupas 0 replika (par būvniecības plāniem), neveidojot dubultu dialogu.
 - Vēlāk pieņemt quest 34899 “A Choice to Make” un pārbaudīt, ka saglabājusies atsevišķā grupas 1 replika par staļļu vai tanku darbnīcas izvēli.
+
+## Pakete 103 — Asha Ravensong čempiones atbilde
+
+Fails: `sql/updates/world/2026_09_18_92_fix_asha_ravensong_champion_reply.sql`.
+
+Asha Ravensong (108326) quest 42697 “Champion: Asha Ravensong” nodošanas rinda bija atstāta ar nederīgu `NONE` (0) darbību, lai gan tās komentārs, blakus esošie čempionu skripti un NPC teksta dati paredz atbildes repliku. Ashai ir tieši viena `creature_text` grupa — grupa 3 ar pateicību spēlētājam un BroadcastText 115838 —, tādēļ rindai atjaunota `TALK` (1) darbība ar grupu 3. Sākotnējā rinda saglabāta `_backup_20260918_asha_ravensong_champion_reply`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai quest 42697 rindai apstiprināts `action_type=1` un `action_param1=3`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 108326 nederīgās darbības kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 311 uz 310. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Demon Hunter Class Hall kampaņā pabeigt un nodot Ashai Ravensong quest 42697 “Champion: Asha Ravensong”.
+- Quest nodošanas brīdī Ashai vienreiz jāpasaka pateicības replika “Thank you, $n. I will not let you down.”; čempionei jākļūst pieejamai paredzētajā follower sistēmā, un replika nedrīkst atkārtoties bez atkārtotas quest nodošanas.
