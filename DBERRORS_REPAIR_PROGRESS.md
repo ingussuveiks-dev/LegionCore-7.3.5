@@ -1716,3 +1716,20 @@ Saite izlabota uz `link=6`. Tā kā Legion datubāzē pašas linked darbības ko
 
 - Dire Maul North atrast Gordok Brute (11441), sākt cīņu un samazināt tā veselību zem 30%; vienu reizi jānostrādā spell 15716 “Enrage” un jāparādās vienam no enrage emotiem.
 - Ļaut radījumam iziet no cīņas un sākt cīņu atkārtoti; zem 30% ķēdei atkal jānostrādā tikai vienu reizi, bez atkārtotas emote vai SmartAI iestrēgšanas.
+
+## Pakete 85 — Stomper Kreeg Drunken Rage SmartAI saite
+
+Fails: `sql/updates/world/2026_09_18_75_fix_stomper_kreeg_drunken_rage_link.sql`.
+
+Stomper Kreeg (14322) 15% veselības spell 22835 “Drunken Rage” darbībai bija pašsaite `id=8, link=8`. Tai uzreiz seko paredzētā linked darbība `id=9`, tādēļ saite izlabota uz `link=9`. Abas sākotnējās rindas saglabātas `_backup_20260918_stomper_kreeg_rage_link`; pārējais Kreeg SmartAI nav mainīts.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backupā ir abas sākotnējās rindas, bet aktīvā Drunken Rage ķēde ir `8 -> 9`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 334 līdz 333; Stomper Kreeg pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Dire Maul North cīnīties ar Stomper Kreeg (14322) un samazināt veselību zem 15%; spell 22835 “Drunken Rage” jānostrādā vienu reizi, SmartAI nedrīkst iestrēgt vai atkārtot ķēdi bezgalīgi.
+- Pārbaudīt arī 30% HP spell 8269 “Frenzy” un Kreeg parastās spējas Booze Spit, War Stomp un Whirlwind, lai pārliecinātos, ka mazā saites korekcija nav skārusi citas darbības.
