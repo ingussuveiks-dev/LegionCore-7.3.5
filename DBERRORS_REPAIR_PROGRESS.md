@@ -142,3 +142,24 @@ SQL precīzi šiem diviem ceļiem pārveido legacy `15` uz semantiski identisko 
 ### Spēlē vēlāk pārbaudāmais
 
 - Mapē 1205 pie koordinātēm aptuveni `(51, 3600, 281)` abi Darkshard Crystalback patrulē pa saviem taisnstūrveida ceļiem un neiestrēgst.
+
+## Pakete 07 — bezdzimuma klienta modeļi
+
+Fails: `src/server/game/Globals/ObjectMgr.cpp`.
+
+Septiņi ziņojumi par `gender=4294967295` nebija no `creature_model_info` SQL kolonnas. Vērtība ir klienta `CreatureDisplayInfo` konstante `GENDER_UNKNOWN=-1`, un skartie display ID galvenokārt pieder trigger, area-tripwire, efektu un summoning-circle modeļiem. Iepriekš kodols tos klasificēja kā kļūdu un piespiedu kārtā padarīja par vīriešu dzimuma modeļiem.
+
+Labojums `GENDER_UNKNOWN` normalizē uz servera paredzēto bezdzimuma vērtību `GENDER_NONE`. Citas patiesi nederīgas vērtības joprojām rada kļūdu un saņem iepriekšējo drošo fallback. SQL dati netiek mainīti vai dzēsti.
+
+Skartie display ID: 20688, 20690, 20698, 21263, 39360, 39464 un 39949.
+
+### Pārbaudes rezultāts
+
+- Windows x64 Release kompilācija un instalēšana `compiles` pabeigta ar exit code 0.
+- Visi 7 `wrong gender` ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 587 līdz 580.
+- `worldserver` ar jauno bināro failu sasniedza `ready` 12 sekundēs un tika korekti izslēgts ar exit code 0.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Area Force Guard Post/Trip Wire NPC 21993, 21996, 22001 un radniecīgie joprojām aktivizē paredzēto aizsardzības uzvedību.
+- Lightning Bomb 56177 un garrison summoning-circle efekti 85477/87392 joprojām ir pareizi neredzami vai attēloti un nerāda nepareizu alternatīvo nosaukumu/modeli.

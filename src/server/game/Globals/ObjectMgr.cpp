@@ -1641,7 +1641,12 @@ void ObjectMgr::LoadCreatureModelInfo()
         modelInfo.hostileId            = fields[4].GetUInt32();
 
         // Checks
-        if (modelInfo.gender > GENDER_NONE || modelInfo.gender == GENDER_UNKNOWN)
+        // Client data uses GENDER_UNKNOWN for genderless trigger and effect
+        // models. Preserve that meaning as the server-side GENDER_NONE value
+        // instead of treating those models as male.
+        if (modelInfo.gender == GENDER_UNKNOWN)
+            modelInfo.gender = GENDER_NONE;
+        else if (modelInfo.gender > GENDER_NONE)
         {
             TC_LOG_ERROR("sql.sql", "Table `creature_model_info` has wrong gender (%u) for display id (%u).", uint32(modelInfo.gender), displayId);
             modelInfo.gender = GENDER_MALE;
