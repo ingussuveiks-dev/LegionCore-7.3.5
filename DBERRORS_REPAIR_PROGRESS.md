@@ -2022,3 +2022,20 @@ Magistrate Burnside (47790) un Warden Stillwater (48080) timed-action sarakstu n
 
 - Hillsbrad Foothills/The Sludge Fields kvestu ķēdē izspēlēt Magistrate Burnside sastapšanos; pēc dialoga un aura 89161/89159 noņemšanas viņam jāpārvietojas uz kaujas punktu, jānoņem neuzbrūkamības flags un pēc aptuveni trim sekundēm jāuzbrūk tuvākajam grupas spēlētājam.
 - Izspēlēt quest 28237 “A Blight Upon the Land” Warden Stillwater daļu kopā ar Master Apothecary Lydon un Johnny Awesome. Pēc dialoga, Sludge Guard izsaukšanas un frakcijas maiņas Stillwater jāsāk kauja ar klātesošo spēlētāju; NPC nedrīkst izvēlēties spēlētāju ārpus aptuveni 100 jardu notikuma zonas.
+
+## Pakete 102 — Foreman Thazz'ril quest sveiciens
+
+Fails: `sql/updates/world/2026_09_18_91_fix_foreman_thazzril_quest_greeting.sql`.
+
+Foreman Thazz'ril (80140) quest 34818 “They Call Him Lantresor of the Blade” pieņemšanas rindai komentārs un tekstu dati paredzēja dialogu, bet `action_type` bija atstāts kā nederīgs `NONE` (0). NPC ir derīga `creature_text` grupa 0, un blakus quest 34899 rinda tādā pašā veidā lieto `TALK` grupu 1. Pirmajai rindai atjaunota `TALK` (1) darbība ar grupu 0. Sākotnējā rinda saglabāta `_backup_20260918_foreman_thazzril_quest_greeting`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai quest 34818 rindai apstiprināts `action_type=1`, `action_param1=0`, un abi Thazz'ril quest dialogi tagad atsaucas uz eksistējošām teksta grupām 0 un 1.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 80140 nederīgās darbības kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 312 uz 311. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Horde garrison/Nagrand ķēdē pieņemt no Foreman Thazz'ril quest 34818 “They Call Him Lantresor of the Blade”; viņam nekavējoties jāpasaka teksta grupas 0 replika (par būvniecības plāniem), neveidojot dubultu dialogu.
+- Vēlāk pieņemt quest 34899 “A Choice to Make” un pārbaudīt, ka saglabājusies atsevišķā grupas 1 replika par staļļu vai tanku darbnīcas izvēli.
