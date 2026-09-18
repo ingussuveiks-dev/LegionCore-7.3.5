@@ -1678,3 +1678,22 @@ Tātad atzaru spēlē nav iespējams izsaukt un tā saturs šajā klienta versij
 - Ar aktīvu quest 13074 pie Keeper Remulos izvēlēties “Please send me into the Emerald Dream…”; jānostrādā spell 57413 un spēlētājs jānosūta paredzētajā quest fāzē.
 - Pabeigt quest 13075 nosacījumu un izmantot atgriešanās opciju pie Remulos; jānostrādā spell 57670, dialogam jāaizveras un jānotiek atgriešanai pie Arch Druid Lilliandra.
 - Pārliecināties, ka Remulos izvēlnē nav tukšas trešās opcijas un ka viņa pārējie quest 7066, 8446–8447, 8734–8736 un 40962 paliek pieejami paredzētajos stāvokļos.
+
+## Pakete 83 — SmartAI WHILE_CHARMED flag validācija
+
+Fails: `src/server/game/AI/SmartScripts/SmartScriptMgr.h`.
+
+Kodā `SMART_EVENT_FLAG_WHILE_CHARMED` ir korekti deklarēts kā `0x200`, tomēr iepriekšējā SmartAI enum migrācijā tas netika pievienots `SMART_EVENT_FLAGS_ALL`. Tādēļ loaderis divas derīgas rindas ar flag 512 noraidīja kā nezināmas: Fel Reaver (18733) respawn `Set Active` darbību un Wooly Mammoth Bull (25743) nāves `Animal Blood` spell 46221 darbību.
+
+Atļauto flagu maskā tagad iekļauts jau eksistējošais `SMART_EVENT_FLAG_WHILE_CHARMED`. DB rindas un to flagi netika mainīti vai dzēsti.
+
+### Pārbaudes rezultāts
+
+- `Release` konfigurācijas pilna kompilācija un instalēšana pabeigta sekmīgi; `worldserver.exe` atjaunināts.
+- Pilns `worldserver` starts pabeigts 35 sekundēs (šajā startā sistēma bija noslogotāka). `DBErrors.log` kļūdu skaits samazinājās no 337 līdz 335; abas `invalid event flags (512)` kļūdas pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Hellfire Peninsula atrast vai respawnēt Fel Reaver (18733); tam jābūt aktīvam arī bez tuvumā esoša spēlētāja, jābūt warning aura 34623 un dubultā uzbrukuma spell 19818.
+- Borean Tundra nogalināt Wooly Mammoth Bull (25743) parasti un situācijā, kur tas ir transporta/charm mijiedarbībā; nāves brīdī uz spēlētāju jānostrādā triggered spell 46221 “Animal Blood”.
