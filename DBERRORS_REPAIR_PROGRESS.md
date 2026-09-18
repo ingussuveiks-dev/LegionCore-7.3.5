@@ -1277,3 +1277,22 @@ Visas trīs sākotnējās rindas saglabātas `_backup_20260918_single_option_gos
 
 - Ar aktīvu quest 39387 runāt ar Lasan Skyhorn: “Yes!” izvēlei jābūt redzamai un jāvirza questa dialogs; bez questa tai jābūt paslēptai.
 - Atkārtot atbilstošo dialogu ar Kira Iresoul vai Lulubelle Fizzlebang questā 41796 un ar Empyrean NPC questā 42166. Vienīgajai quest izvēlei jāparādās tikai aktīva questa laikā un jāturpina paredzētā ķēde.
+
+## Pakete 62 — Lunar Festival elder dialogu game-event ID
+
+Fails: `sql/updates/world/2026_09_18_55_fix_lunar_festival_gossip_event.sql`.
+
+Gossip menu 21072 septiņi jautājumi par Lunar Festival elderu atrašanās vietām izmanto `CONDITION_ACTIVE_EVENT`. Nosacījumos bija arī vērtība 327 — tas ir klienta `Holiday.db2` Lunar Festival ID, nevis servera `game_event.eventEntry`, ko šis condition tips sagaida. Katram no septiņiem option jau eksistē atsevišķs, pareizs condition ar event entry 7 (“Lunar Festival”), tādēļ nederīgās 327 rindas bija dublikāti un pēc backup tiek izņemtas no aktīvās tabulas.
+
+Visas septiņas nepareizās rindas saglabātas `_backup_20260918_lunar_festival_gossip_event` pirms izņemšanas. Pareizie event 7 nosacījumi un visi gossip option paliek neskarti; backup ļauj pilnībā atjaunot arhivētos dublikātus.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja koriģēto failu `legion_world`; septiņas nederīgās 327 rindas ir backupā un aktīvajā tabulā katrai izvēlei palicis viens pareizais event 7 nosacījums.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 383 līdz 376; visi septiņi “non existing event id (327)” brīdinājumi pazuda, un updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Kamēr Lunar Festival game event 7 ir aktīvs, atvērt gossip menu 21072 un pārbaudīt, ka redzami visi septiņi jautājumi par elderiem un katrs atver savu pareizo norāžu dialogu.
+- Kad event 7 nav aktīvs, jautājumiem par elderiem jābūt paslēptiem; pārējām menu izvēlēm (“I'm ready” un transports uz Exodar) jāpaliek neatkarīgām no festivāla nosacījuma.
