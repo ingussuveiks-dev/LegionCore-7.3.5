@@ -2589,3 +2589,19 @@ Portal to Shal'Aran (260270) un Portal to the Hellfire Peninsula (267443) ir gam
 
 - Pie Portal to Shal'Aran (260270) spawn/respawn nostāties 8 jardu robežās un pārbaudīt, ka portāls kļūst personīgi redzams paredzētajam spēlētājam un spell 202605 teleportē uz Shal'Aran.
 - Pie Portal to the Hellfire Peninsula (267443) atkārtot to pašu 10 jardu robežās un pārbaudīt portāla spell 234521. Portāli nedrīkst personalizēt redzamību spēlētājiem ārpus norādītā rādiusa.
+
+## Pakete 135 — nepabeigtā SmartAI avota 0 arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_121_archive_empty_smartai_source.sql`.
+
+`smart_scripts` bija divas creature rindas ar `entryorguid = 0`, kas nevar identificēt nevienu creature template vai konkrētu spawn. ID 0 bija pilnīgi tukšs placeholders; ID 2 bija nesaistīta darbība “pie 0–30% veselības bēgt”, taču tai nebija NPC avota un nebija linka. Tās nav iespējams korekti izpildīt vai piesaistīt saturam. Abas rindas vispirms pilnā apjomā saglabātas `_backup_20260919_empty_smartai_source` un pēc tam izņemtas no aktīvās tabulas; neviena derīga NPC rinda nav skarta.
+
+### Pārbaudes rezultāts
+
+- Aktīvu creature SmartAI rindu ar avotu 0 vairs nav, backup tabulā ir abas sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neesošā creature entry 0 kļūdas pazuda, `DBErrors.log` skaits samazinājās no 218 uz 216, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Spēles tests nav vajadzīgs: rindām nebija creature avota, spawn GUID, teksta vai cita satura, pēc kura tās varētu izraisīt. Atjaunošanai un turpmākai identificēšanai to pilnie dati saglabāti backup tabulā.
