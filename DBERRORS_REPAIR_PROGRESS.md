@@ -2387,3 +2387,20 @@ Sešu spellu `SPELL_IMPLICIT_TARGET` nosacījumos bija sajauktas efekta bitmaska
 - Lietot Blessed Herb Bundle (62092) uz Maddened Blackwood (33043) un Corrupted Blackwood (33044): abiem jāpieņem spell hit un jāturpina jau salabotā attīrīšanas ķēde; citu creature nedrīkst izvēlēties par derīgu mērķi.
 - Quest “Call in the Artillery” laikā lietot spell 85478 uz visiem četriem ēku triggeriem 45862–45865: katrai ēkai jāpiešķir savs credit, un viens triggeris nedrīkst bloķēt pārējos kā AND prasība.
 - Draenor saturā pie NPC 90435 palaist spell 181293 un pārbaudīt, ka tā trīs efekti izvēlas attiecīgi Runic Pool (90440), Swelling Pool (90439) un Undulating Pool (90441), nevis pārklāj pirmo divu efektu filtrus.
+
+## Pakete 123 — event script gameobject GUID migrācija
+
+Fails: `sql/updates/world/2026_09_18_109_fix_event_script_gameobject_guids.sql`.
+
+Abu `SCRIPT_COMMAND_RESPAWN_GAMEOBJECT` rindu GUID bija palikuši no vecākas spawn numerācijas un pašreizējā datubāzē norādīja uz nesaistītiem objektiem. Event 11424 izsauc 7.3.5 klienta spell “Summon Murloc Cage” (31949), bet vecais GUID 6781 tagad ir Bogblossom trap; tas aizstāts ar īstās Murloc Cage GUID 2354 tajās pašās Daggerfen eventa koordinātēs. Event 13666 izsauc “Bladespire Clan Banner” (36532), bet vecais GUID 28288 tagad ir Fangtooth Herring School Northrendā; tas aizstāts ar Bladespire Clan Banner GUID 12685 uz Northmaul Tower. Respawn komanda un 180/600 sekunžu ilgumi nav mainīti. Abas sākotnējās rindas saglabātas `_backup_20260918_event_script_gameobject_guids`.
+
+### Pārbaudes rezultāts
+
+- DB savienojums apstiprināja, ka event 11424 tagad norāda uz type-5 Murloc Cage (182164, GUID 2354), bet event 13666 — uz type-5 Bladespire Clan Banner (184713, GUID 12685); abi tipi ir derīgi respawn komandai.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neatbalstīta gameobject tipa kļūdas pazuda. `DBErrors.log` skaits samazinājās no 238 uz 236, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Zangarmarsh Daggerfen Village pie aptuvenām koordinātēm `(1178, 8129, 20)` palaist Summon Murloc Cage (31949): jāparādās īstajam būrim, pēc 5 sekundēm jāparādās Baby Murloc (18152), un būra eventam jāpaliek aktīvam 180 sekundes. Bogblossom objekti citur zonā nedrīkst mainīties.
+- Blade’s Edge Mountains uz Northmaul Tower pie aptuvenām koordinātēm `(1707, 6316, 34)` lietot Bladespire Clan Banner (36532): jāparādās bannerim uz 600 sekundēm, pēc 8 sekundēm jāsākas pirmajam Bloodmaul vilnim un turpmākajiem viļņiem jāparādās pēc eventa 50/130/180 sekunžu grafika. Northrend zvejas vietas nedrīkst mainīties.
