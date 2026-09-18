@@ -2572,3 +2572,20 @@ Murloc Cage (252158) ir `SmartGameObjectAI` objekts, kura rinda pēc komentāra 
 ### Spēlē vēlāk pārbaudāmais
 
 - Atvērt Murloc Cage (252158) un pārbaudīt, ka pie pārejas uz GO state 2 tuvākais murloks (88101) 10 jardu attālumā saņem data `(0,1)` un izpilda paredzēto atbrīvošanas reakciju. Būris nedrīkst aktivizēt skriptu pirms stāvokļa maiņas.
+
+## Pakete 134 — personīgo portālu respawn eventu korekcija
+
+Fails: `sql/updates/world/2026_09_19_120_fix_personal_portal_respawn_events.sql`.
+
+Portal to Shal'Aran (260270) un Portal to the Hellfire Peninsula (267443) ir gameobject tipa 22 portāli. To SmartGameObjectAI rindām personal visibility inicializācijai bija creature-only `RESET` events 25. Core šim nolūkam piedāvā `RESPAWN` 11, kas tiek izsaukts arī gameobject spawn/respawn laikā. Abas sākotnējās rindas saglabātas `_backup_20260919_personal_portal_respawn_events`, pēc tam mainīts tikai event tips; action 207 un tuvāko spēlētāju rādiusi 8/10 nav mainīti.
+
+### Pārbaudes rezultāts
+
+- Abi portāli tagad personal visibility darbību izpilda ar gameobject atļauto `RESPAWN` eventu 11; backup tabulā ir abas sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neatļautā `RESET` eventa kļūdas pazuda, `DBErrors.log` skaits samazinājās no 220 uz 218, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Portal to Shal'Aran (260270) spawn/respawn nostāties 8 jardu robežās un pārbaudīt, ka portāls kļūst personīgi redzams paredzētajam spēlētājam un spell 202605 teleportē uz Shal'Aran.
+- Pie Portal to the Hellfire Peninsula (267443) atkārtot to pašu 10 jardu robežās un pārbaudīt portāla spell 234521. Portāli nedrīkst personalizēt redzamību spēlētājiem ārpus norādītā rādiusa.
