@@ -989,3 +989,22 @@ Tikai šīs trīs rindas pārslēgtas uz `CONDITION_AREAID=23`; pārējie Coordi
 - New Tinkertown apakšzonā pie Coordinator 123984 un 123991 pārbaudīt, ka tie izpilda paredzētos “Direct Runners” roku vizuālos efektus 246864/245979 un servera logā nav SmartAI condition kļūdu.
 - Stormwind un Duskwood Coordinator 123984, kā arī Stormwind Coordinator 123991, jāsaglabā attiecīgais alternatīvais vizuālais efekts; labojums nedrīkst mainīt to zonas nosacījumus.
 - The Cape of Stranglethorn pie Coordinator 124246 jānostrādā “Direct Runners Dance” 246780, bet Ironforge variantam jāsaglabājas 246862.
+
+## Pakete 47 — Sack of Roasted Grain loot kolonnas labojums
+
+Fails: `sql/updates/world/2026_09_18_42_fix_roasted_grain_loot.sql`.
+
+`gameobject_loot_template` entry 40870 (to izmanto gameobject 210002 “Stolen Barley Sack”) ID 138623 bija ievietots `Currency` kolonnā. 7.3.5.26972 `ItemSparse` dati apstiprina, ka 138623 ir parasts priekšmets “Sack of Roasted Grain”, nevis valūta. Tādēļ loaderis rindu noraidīja ne tikai grupas dēļ, bet tā arī nevarēja piešķirt paredzēto priekšmetu.
+
+Ierakstam atjaunots `Item=138623, Currency=0`; 100% iespēja, loot mode, grupa un daudzums nav mainīti. Pilna sākotnējā rinda saglabāta `_backup_20260918_roasted_grain_loot`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena sākotnējā rinda, bet aktīvajā loot rindā ir `Item=138623`, `Currency=0` un saglabāts `GroupId=1`.
+- Ziņojums par grouped currency 138623 pazuda; `DBErrors.log` skaits samazinājās no 442 līdz 441.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns entry 40870 loot vai trūkstoša item ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atrast un atvērt gameobject 210002 “Stolen Barley Sack”; atbilstošajā loot variantā jāsaņem viens “Sack of Roasted Grain” (138623), nevis nederīgas valūtas ieraksts.
+- Pārbaudīt, ka otrs entry 40870 grupā neesošais loot “Sack of Grain” (77033) joprojām ir pieejams paredzētajā situācijā un abas alternatīvas netiek izsniegtas kā valūta.
