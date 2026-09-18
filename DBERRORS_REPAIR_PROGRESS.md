@@ -578,3 +578,32 @@ Izmantotās atsauces:
 - Izpildīt “Priority Delivery” (41367): izmantot teleportu uz Frozen Throne. Teleportam jānostrādā un objective 104071 jāieskaitās automātiski; pēc tam jāturpina atlikušais quest ceļš līdz Steam Pools.
 - Izpildīt “Due Reward” (41395): pie Twinkles kapa jāvar nolikt rotaļlietu, jāieskaitās objective 104099 un quest jāvar nodot Wilson.
 - Pārbaudīt, ka neviena no četrām tehniskajām kill-credit būtnēm nav redzami/spontāni izvietota pasaulē; tās drīkst eksistēt tikai kā progresa ID.
+
+## Pakete 28 — Argus ievada galvaspilsētu portālu kill-credit atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_25_restore_argus_portal_kill_credits.sql`.
+
+Četri aktīvie “The Hand of Fate” varianti — Alliance 47221/48506 un Horde 47835/48507 — satur izvēles mērķi izmantot Dalaran portālu uz savas frakcijas galvaspilsētu. Šie objectives pareizi atsaucās uz kill-credit 123564 vai 124365, taču abi tehniskie creature ieraksti importa laikā bija izlaisti no abām template tabulām. Wowhead spell 245992 un 247057 datos pirmais efekts tieši piešķir attiecīgi Stormwind vai Orgrimmar portāla kill credit; Tauri Legion reference apstiprina abus ID, nosaukumus, 1. līmeni, Creature faction un display 42661.
+
+Atjaunotas tikai divas servera kredīta veidnes ar 7.3.5 build 26124 metadatiem. Četri questa objectives un to izvēles statuss nav mainīts, un nekas nav dzēsts. Nosacītie inserti nepārraksta jau eksistējošas rindas.
+
+Izmantotās atsauces:
+
+- <https://www.wowhead.com/spell=245992/portal-stormwind>
+- <https://www.wowhead.com/spell=247057/portal-orgrimmar>
+- <https://legion-shoot.tauri.hu/?npc=123564>
+- <https://legion-shoot.tauri.hu/?npc=124365>
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām.
+- Abi ID ielasās no `creature_template` un `creature_template_wdb` ar pareizajiem nosaukumiem, `Displayid1=42661`, Legion expansion un build 26124.
+- Visi četri atkārtotie 123564/124365 objective ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 490 līdz 486.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jaunus abu veidņu validācijas ziņojumus tas neradīja.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Alliance tēlu pieņemt “The Hand of Fate” 47221 un atkārtot tā rezerves variantu 48506: izmantot Dalaran portālu uz Stormwind. Izvēles mērķim 123564 jāieskaitās pirms/pēc teleportācijas, pēc tam jāvar satikt escort Stormwind Harbor.
+- Ar Horde tēlu tāpat pārbaudīt 47835 un 48507, izmantojot Dalaran portālu uz Orgrimmar. Izvēles mērķim 124365 jāieskaitās, pēc tam jāvar turpināt uz Bladefist Bay.
+- Abām frakcijām pārbaudīt arī ceļu, kur izvēles portāla mērķis tiek izlaists un uz ostu dodas citādi; questa obligātā daļa nedrīkst būt bloķēta.
+- Tehniskās kill-credit būtnes nedrīkst parādīties pasaulē kā redzami NPC.
