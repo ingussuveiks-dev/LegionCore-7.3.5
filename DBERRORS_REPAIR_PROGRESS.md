@@ -2244,3 +2244,20 @@ Thunderlord Beast-Tender (80423) Blackrock Foundry kaujā spell 162606 jeb Besti
 
 - Blackrock Foundry Workshop daļā iesaistīt kaujā Thunderlord Beast-Tender (80423), kam blakus atrodas Ornery Ironhoof (80534) un Stubborn Ironhoof (80526).
 - Aptuveni 10 sekundes pēc kaujas sākuma Beast-Tender jālieto Bestial Wrath (162606) uz vienu vai abiem tuvumā esošajiem Ironhoof 20 jardu robežās, palielinot zvēra nodarīto bojājumu; spell nedrīkst tikt lietots uz paša Beast-Tender vai tāla, nesaistīta trash NPC.
+
+## Pakete 115 — Thane Irglov Bull Rush darbība
+
+Fails: `sql/updates/world/2026_09_18_104_fix_thane_irglov_bullrush_action.sql`.
+
+Thane Irglov the Merciless (91892) kaujas rindai bija neatbalstīts `action_type=255`, tāpēc kodols visu Bull Rush darbību izlaida. Ne lokālajā kodolā, ne pārbaudītajās vēsturiskajās datubāzēs šāds darbības tips nav definēts. Rindas pārējie dati precīzi atbilst standarta `SMART_ACTION_CAST`: `action_param1=187406` ir Bull Rush spell, `target_type=2` ir pašreizējais upuris, un komentārā jau bija norādīts “cast - bullrush”. Darbības tips atjaunots uz `11`, nemainot spell, mērķi vai 2/7–19 sekunžu taimerus. Sākotnējā rinda saglabāta `_backup_20260918_thane_irglov_bullrush_action`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir viena sākotnējā rinda; aktīvajai 91892/1 rindai apstiprināts `action_type=11`, `action_param1=187406`, `target_type=2` un nemainīti taimeri.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neatbalstītā darbības tipa kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 280 uz 279. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Stormheim kartē 1220, zonā 7541/apgabalā 7608 pie koordinātēm aptuveni `(2376, 2674, 301)` iesaistīt kaujā Thane Irglov the Merciless (91892).
+- Aptuveni divas sekundes pēc kaujas sākuma un pēc tam ar 7–19 sekunžu intervālu viņam jālieto Bull Rush (187406) uz savu pašreizējo upuri; paralēli jāturpina darboties Sweeping Blade (186365) un Horn of Hrydshal (187429).
