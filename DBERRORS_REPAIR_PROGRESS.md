@@ -2669,3 +2669,19 @@ Entry 268517 nav creature: tas ir GOOBER tipa gameobject “Fel Spreader” ar `
 ### Spēlē vēlāk pārbaudāmais
 
 - Ar aktīvu quest 45358 izmantot piecus Fel Spreader (268517) Broken Shore zonā. Katram objektam caur standarta GOOBER `KillCreditGO` tieši vienreiz jāpalielina gameobject objective 268517; progress nedrīkst dubultoties. Bez aktīva questa objektam credit nav jāpiešķir.
+
+## Pakete 140 — bāreņa linked SmartAI fragmenta arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_126_archive_orphan_linked_smartai_fragment.sql`.
+
+Entry 395280 saturēja tikai vienu `LINK` rindu ar ID 10, kas tālāk linkoja uz neesošu ID 11 un sev pievienoja unit flags 768. Nav ne creature template 395280, ne spawn, ne sākuma eventa rindas, kas varētu izsaukt ID 10. Tieši tāds pats izolētais fragments jau atrodams gan 2020., gan 2024. gada reference dumpā, tāpēc nav datu, pēc kuriem droši noteikt tā īsto īpašnieku. Pilnā rinda saglabāta `_backup_20260919_orphan_linked_smartai_fragment` un arhivēta.
+
+### Pārbaudes rezultāts
+
+- Aktīva bāreņa 395280 rinda vairs nav, backup tabulā ir tās sākotnējā kopija; pārējās līdzīgas `add unit flag 768` ķēdes nav mainītas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā creature template kļūda pazuda, `DBErrors.log` skaits samazinājās no 211 uz 210, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Spēles tests nav iespējams un nav vajadzīgs: fragmentam nav avota NPC, sākuma eventa, teksta vai komentāra. Ja nākotnē tiek atrasta pilnā ķēde ar parent eventu un template, rindu var atjaunot no backup kopā ar trūkstošo saturu.
