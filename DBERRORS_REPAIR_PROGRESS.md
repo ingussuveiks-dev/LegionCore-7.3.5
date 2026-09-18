@@ -792,3 +792,23 @@ Rindas pārveidotas uz `(1, 10, 4)`: pārbaudāmais implicit target slots 0 tiek
 - Draenor saturā atrast notikumu, kas lieto “Tied Up” (181555) uz Dave's Industrial Light and Magic Bunny (35845): casts drīkst izvēlēties mērķi 10 jardu robežās, bet nedrīkst izvēlēties tālāku mērķi.
 - Highmountain saturā ar abiem Stout Highlands Runehorn (107852) un Highlands Runehorn (108538) variantiem pārbaudīt “Leading Musken” (214176): katram attiecīgajam ElseGroup jāizvēlas pareizais creature tips tikai 10 jardu robežās.
 - Īpaši pārbaudīt robežu ap 10 jardiem un vairākus derīgus/tālus NPC vienlaikus, lai implicit-target atlasītājs neizvēlētos tālo vienību un neizlaistu tuvāko.
+
+## Pakete 37 — Ysera Nightmare taxi auras efekta indekss
+
+Fails: `sql/updates/world/2026_09_18_32_fix_ysera_taxi_aura_condition.sql`.
+
+Val'sharah phase definition 7558/28 ir saistīta ar “Summon Taxi Ysera to Nightmare” (183851), bet tās negatīvais aura nosacījums mēģināja atrast efekta indeksu 3. Build 26972 `SpellEffect` dati rāda četrus spell efektus, taču vienīgais unit-owned aura efekts ir nulles bāzes indekss 2 (`SPELL_EFFECT_APPLY_AURA`, aura type 4). Indekss 3 ir atsevišķs trigger efekts, tāpēc `HasAuraEffect(183851, 3)` nevar raksturot šīs auras klātbūtni un loaderis to pamatoti noraidīja.
+
+Nosacījumam mainīts tikai efekta indekss no 3 uz 2; spell ID, negatīvā pārbaude un phase definition nav mainīta. Tas ļauj parastajām Val'sharah fāzēm būt aktīvām, kamēr taxi aura nav uz spēlētāja, un izslēgties lidojuma/notikuma laikā. Pilna sākotnējā rinda saglabāta `_backup_20260918_ysera_taxi_aura_condition`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena sākotnējā rinda, un aktīvais nosacījums tagad pārbauda efekta indeksu 2.
+- “Aura condition has non existing effect index (3)” ziņojums pazuda; `DBErrors.log` skaits samazinājās no 460 līdz 459.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns šīs phase definition vai auras validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Val'sharah questa posmā, kas izsauc Ysera Nightmare taxi spell 183851, sākt lidojumu/notikumu un pārbaudīt, ka spēlētājs saņem tā aura efektu, bet parastās phase definition 7558/28 fāzes lidojuma laikā nav redzamas.
+- Pabeigt un arī pārtraukt taxi braucienu; pēc auras noņemšanas parastajai Val'sharah videi un NPC jāatgriežas bez reloga.
+- Atkārtot pēc servera restarta un ar spēlētāju, kam aura nekad nav bijusi, lai negatīvais nosacījums neradītu tukšu vai nepareizi nofāzētu zonu.
