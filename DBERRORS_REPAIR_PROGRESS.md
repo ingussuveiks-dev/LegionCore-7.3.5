@@ -1448,3 +1448,22 @@ Visas trīs sākotnējās rindas saglabātas `_backup_20260918_creature_entry_go
 
 - Ar aktīvu quest 39949 vai 40539 runāt ar Inkrot (97756): option “I'm here for your head, Inkrot!” jāparādās, jāpalaiž menu 18883 SmartAI un jāsāk paredzētā cīņa. Bez abiem questiem tai jābūt paslēptai.
 - Ar aktīvu quest 40531 runāt ar Harold Winston (100671): dārgakmeņu atgūšanas option jāparādās, jāpalaiž menu 19103 SmartAI un jāsāk paredzētā cīņa; bez questa izvēlei jābūt paslēptai.
+
+## Pakete 71 — Grom'kar Grimshot orphan gossip condition
+
+Fails: `sql/updates/world/2026_09_18_64_archive_grimshot_orphan_gossip_condition.sql`.
+
+SourceGroup 88879 nav gossip menu — tas ir WoD Grom'kar Grimshot creature entry. Šim NPC ir `npcflag=0`, `gossip_menu_id=0`, nav gossip SmartAI, un DB neeksistē ne menu, ne option ar ID 88879. Vienīgā condition rinda turklāt pārbaudīja nesaistītu vecā satura quest 11221. Tā nevarēja būt runtime sasniedzama, tāpēc pēc backup izņemta no aktīvās conditions tabulas; Grom'kar NPC, quests 11221 un visi to pārējie dati paliek neskarti.
+
+Sākotnējā rinda saglabāta `_backup_20260918_grimshot_orphan_gossip`, no kurienes to var atjaunot, ja tiek restaurēta trūkstoša implementācija ar pierādāmu menu ID.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; orphan condition ir backupā, bet NPC 88879 un quest 11221 dati nav mainīti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 360 līdz 358: pazuda pēdējā missing gossip-option kļūda un tās grouped-condition brīdinājums; `addToGossipMenuItems` kļūdu vairs nav.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Draenor zonā ar Grom'kar Grimshot (88879) pārbaudīt parasto combat uzvedību un loot; NPC nedrīkst atvērt tukšu gossip logu.
+- Quest 11221 pārbaudīt tā faktiskajā zonā/ķēdē; tā pieņemšana un pabeigšana nedrīkst būt atkarīga no WoD Grom'kar Grimshot.
