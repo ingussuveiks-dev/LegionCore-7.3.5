@@ -323,3 +323,22 @@ Precīzās četras saites pirms izņemšanas saglabātas `_backup_20260918_empty
 ### Spēlē vēlāk pārbaudāmais
 
 - Pārlidot Dragonblight, Wintergrasp un Icecrown rūdas maršrutus un pārliecināties, ka blakus esošie aktīvie cobalt/mineral/ore pool mezgli turpina parādīties un respawn rotācija neiestrēgst.
+
+## Pakete 16 — viena dalībnieka Howling Fjord rūdas pool
+
+Fails: `sql/updates/world/2026_09_18_14_fix_single_member_ore_pools.sql`.
+
+Howling Fjord ore child pool 10150 un 10153 katrā ir tikai viens Rich Cobalt Deposit (GUID 44625 un 44628), taču dalībniekam bija atstāta parastās normal/rich alternatīvas `10%` iespēja. Viena dalībnieka pool tādējādi nesasniedza prasītos 100% un kodols abus pool pilnībā noraidīja.
+
+Vienīgā dalībnieka chance iestatīta uz 100%. Tas neliek abiem mezgliem vienmēr būt pasaulē: mother pool 9901 joprojām izvēlas tikai 30 no saviem 100 spawn-point child pool. Izmaiņa tikai nodrošina, ka tad, kad mother pool izvēlas 10150 vai 10153, tā vienīgais reālais dalībnieks var parādīties.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`.
+- Abos pool ir tieši viens dalībnieks un katra chance summa ir 100%.
+- Abi `Pool Id ... explicit chance sum is not 100` ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 510 līdz 508.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Howling Fjord izrakt vairākas mother pool 9901 rūdas rotācijas un pārbaudīt Rich Cobalt Deposit vietas ap `(-144.006, -4989.57, 309.673)` un `(85.848, -4961.88, 316.024)`; mezgliem jāparādās tikai rotācijas ietvaros un pēc savākšanas korekti jārespawno.
