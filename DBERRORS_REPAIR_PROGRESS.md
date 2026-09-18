@@ -1543,3 +1543,22 @@ Condition tagad ir `QUEST_TAKEN` questam 39590. SmartAI event 0 turpina piešķi
 
 - Pieņemt quest 39590 “Ahead of the Game” un pieiet credit triggerim 96255 Valley of the Sword: jāsaņem trešais champion credit un vienreiz jāpalaižas conversation 215006.
 - Bez aktīva quest 39590 pieiet tam pašam triggerim: credit un saruna nedrīkst ietekmēt spēlētāju. Quest 39595 “Blood and Gold” item 128511 vākšanai jāpaliek neatkarīgai.
+
+## Pakete 76 — phase definition condition SourceId
+
+Fails: `sql/updates/world/2026_09_18_68_fix_phase_condition_source_ids.sql`.
+
+Trīs derīgām `PHASE_DEFINITION` condition rindām bija `SourceId=1`, lai gan šis papildu identifikators paredzēts tikai SmartEvent avotam un phase avotam obligāti jābūt `0`. Divas rindas attiecas uz Frostfire Ridge zone 6720 phase entry 4 (scene 594 vai reward quest 34402), viena — uz zone 7814 phase entry 3 (kamēr nav quest 38689). Zone, entry, condition tips un to vērtības netika mainītas.
+
+Visas trīs sākotnējās rindas saglabātas `_backup_20260918_phase_condition_source_ids`, pēc tam tikai `SourceId` nomainīts no 1 uz 0.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; abas phase definitions atrastas un visas trīs condition rindas tagad tiek ielādētas ar `SourceId=0`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 347 līdz 344; visas trīs “Condition type 23 has not allowed value of SourceId” kļūdas pazuda.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Frostfire Ridge zone 6720 pabeigt scene 594 un atsevišķā mēģinājumā nodot quest 34402; abos alternatīvajos gadījumos jāaktivizējas phase 3331.
+- Zone 7814 pārbaudīt phase 5495/5494 pirms un pēc quest 38689 pieņemšanas/pabeigšanas; phase entry 3 jābūt aktīvam tikai paredzētajā “quest nav” stāvoklī.
