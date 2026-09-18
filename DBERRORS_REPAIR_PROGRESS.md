@@ -2107,3 +2107,20 @@ T’paartos (128562) un divu Exodar Citizen veidņu (128656, 128657) secīgo ār
 
 - Lightforged Draenei/T’paartos notikuma vietā vērot T’paartos (128562) ārpus kaujas vismaz 20 sekundes: emote 11, 23, 15 un 17 jāizpildās secīgi ik pēc aptuveni četrām sekundēm un ciklam jāsākas no jauna pēc 16 sekundēm.
 - Tajā pašā notikuma ainā vērot Exodar Citizen 128656 un 128657 vismaz 40 sekundes: katram jāizpilda savs četru emote komplekts ar astoņu sekunžu nobīdi un 32 sekunžu atkārtojumu, bez emote spama uzreiz pēc spawn.
+
+## Pakete 107 — Legion Portal izsaukšanas taimeris
+
+Fails: `sql/updates/world/2026_09_18_96_fix_legion_portal_summon_timer.sql`.
+
+Legion Portal (111357) timed-action saraksts secīgi izsauc trīs Greater Imp (111424), Felhound (111422), Felguard Invader (111242) un Abyssal Shard (111576). Visām sešām darbībām ir precīzs 10 sekunžu solis, bet trešā Greater Imp rinda bija bojāta kā `10000..1000` ms. Tai atjaunots ar pārējo sarakstu saskanīgs `10000..10000` ms intervāls. Sākotnējā rinda saglabāta `_backup_20260918_legion_portal_summon_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 111357 timed-action id 2 rindai apstiprināts `10000..10000` ms intervāls un Greater Imp 111424 izsaukšana ar despawn tipu 8.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 111357 nederīgā taimera kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 305 uz 304. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar attiecīgā Legion notikuma palīdzību vai GM testa vidē izsaukt Legion Portal (111357) un ļaut tam nodzīvot vismaz 70 sekundes.
+- Portālam ik pēc aptuveni 10 sekundēm secīgi jāizsauc trīs Greater Imp, tad Felhound, Felguard Invader un Abyssal Shard; trešais imp nedrīkst tikt izlaists, un visi summon jāparādās pie portāla.
