@@ -2005,3 +2005,20 @@ Valarjar Mystic (95834) Healing Light (198931) rinda lieto `target_type=28` ar 4
 
 - Halls of Valor Normal vai Heroic grūtībā iesaistīt kaujā Valarjar Mystic (95834) kopā ar vairākiem citiem Valarjar; ļaut kādam sabiedrotajam saņemt bojājumus un neinterruptēt pirmo Healing Light (198931).
 - Mystic jāuzsāk pārtraucama Healing Light buršana, un dziedināšanai jānonāk pie draudzīga NPC, nevis spēlētāja. Ar izretinātu grupu papildus jāpārbauda, ka 40 jardu robeža tiek ievērota. Ja spell klienta/DBC implicitā mērķēšana nepārvērš tālāko threat-list atskaites mērķi par draudzīgu heal mērķi, šī konkrētā DB rinda būs atsevišķi jāpārveido uz sabiedrotā atlasi; pašreiz ir atjaunota tieši tās sākotnēji deklarētā SmartAI semantika.
+
+## Pakete 101 — Hillsbrad boss cīņu mērķa radiusi
+
+Fails: `sql/updates/world/2026_09_18_90_fix_hillsbrad_boss_attack_targets.sql`.
+
+Magistrate Burnside (47790) un Warden Stillwater (48080) timed-action sarakstu noslēguma `ATTACK_START` rindas bija paredzētas tuvākajam spēlētājam, bet abām obligātais `CLOSEST_PLAYER` radius bija 0, tādēļ paredzētās kvestu boss cīņas sākšana tika izlaista. Sarakstus izsauc pašu NPC `DATA_SET` notikumi, tāpēc tajos nav uzticama spēlētāja `ACTION_INVOKER`; saglabāts `CLOSEST_PLAYER` un noteikta 100 jardu lokālā encounter robeža. Sākotnējās rindas saglabātas `_backup_20260918_hillsbrad_boss_attack_targets`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir abas sākotnējās rindas; 4779000/6 un 4808000/22 aktīvajās rindās apstiprināts `CLOSEST_PLAYER` radius 100 jardi.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas `maxDist 0` kļūdas pazuda un `DBErrors.log` kļūdu skaits samazinājās no 314 uz 312. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Hillsbrad Foothills/The Sludge Fields kvestu ķēdē izspēlēt Magistrate Burnside sastapšanos; pēc dialoga un aura 89161/89159 noņemšanas viņam jāpārvietojas uz kaujas punktu, jānoņem neuzbrūkamības flags un pēc aptuveni trim sekundēm jāuzbrūk tuvākajam grupas spēlētājam.
+- Izspēlēt quest 28237 “A Blight Upon the Land” Warden Stillwater daļu kopā ar Master Apothecary Lydon un Johnny Awesome. Pēc dialoga, Sludge Guard izsaukšanas un frakcijas maiņas Stillwater jāsāk kauja ar klātesošo spēlētāju; NPC nedrīkst izvēlēties spēlētāju ārpus aptuveni 100 jardu notikuma zonas.
