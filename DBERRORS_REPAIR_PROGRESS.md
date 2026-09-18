@@ -1103,3 +1103,22 @@ Atjaunota viena 100% `QuestRequired=1` loot rinda item 49642 ar vienu eksemplār
 
 - Pieņemt quest 14487 “Still Beating Heart”, Ruins of Eldarath nogalināt Enslaved Son of Arkkoroc (36868) un pārbaudīt, ka loot satur tieši vienu “Heart of Arkkoroc” (49642) un kvesta objektīvs tiek ieskaitīts.
 - Bez aktīva quest 14487 nogalināt to pašu NPC un pārbaudīt, ka quest-only sirds nav redzama. Quest 14472 “In The Face!” nogalināšanas kredītam un pārējiem Azshara ķēdes posmiem jāturpina darboties.
+
+## Pakete 53 — Outland un Northrend raktuvju gem reference atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_47_restore_mining_gem_references.sql`.
+
+Fel Iron, Rich Adamantite, Khorium, Cobalt, Rich Cobalt, Saronite, Rich Saronite un Titanium loot rindas atsaucās uz neesošām reference grupām 12901, 12902, 12904, 12905 un 12906. Šī nebija novecojusi funkcija: tās ir klasiskās mining papildu gemu grupas, un identiskas references joprojām ir uzturētajā 3.3.5 datubāzē. Visi 24 unikālie gemu item ID eksistē 7.3.5.26972 klienta datos.
+
+Atjaunotas piecas sešu gemu equal-chance grupas: Outland uncommon, Outland rare, Rich Outland uncommon ar daudzumu 1–2, Northrend uncommon un Northrend rare. Esošo depozītu ārējās 1%/5% iespējas nav mainītas, tādēļ reference tikai atkal nodrošina paredzēto gemu tad, kad depozīta rinda veiksmīgi izkrīt. Visas 13 avota `gameobject_loot_template` rindas saglabātas `_backup_20260918_mining_gem_reference_sources`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL piemērots `legion_world`; pilns `worldserver` starts pabeigts 12 sekundēs bez starta apstāšanās.
+- `DBErrors.log` kļūdu skaits samazinājās no 431 līdz 418. Visi 13 atkārtotie brīdinājumi par reference 12901, 12902, 12904, 12905 un 12906 vairs neparādās.
+- Serveris pēc pārbaudes korekti apturēts ar konsoles komandu `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Vairākkārt izrakt Fel Iron Deposit, Rich Adamantite Deposit un Khorium Vein: pamatmateriāliem jāsaglabājas, bet reizēm papildus jāizkrīt vienam no atbilstošajiem Outland uncommon/rare gemiem; Rich Adamantite common reference drīkst dot 1–2 gemus.
+- Vairākkārt izrakt Cobalt, Rich Cobalt, Saronite, Rich Saronite un Titanium depozītus: pamatmateriāliem jāsaglabājas, bet 5% reference gadījumā jāparādās vienam Northrend uncommon vai rare gemam. Viena reference izsaukuma ietvaros nedrīkst izkrist visi seši grupas gemi.
