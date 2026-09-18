@@ -1140,3 +1140,21 @@ Esošā avota rinda pirms labojuma saglabāta `_backup_20260918_blackfathom_refe
 ### Spēlē vēlāk pārbaudāmais
 
 - Blackfathom Deeps atkārtoti nogalināt Blackfathom Tide Priestess (4802) un pārbaudīt parasto loot. Retajos 5% reference gadījumos jāizkrīt vienam, nevis visiem, grupas zema līmeņa world-drop priekšmetiem; esošajam quest un pamata loot jāsaglabājas.
+
+## Pakete 55 — Cache of Eregos reward reference atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_49_restore_eregos_cache_reference.sql`.
+
+Heroic Oculus beigās Cache of Eregos (gameobject 191349, loot entry 24462) ar 100% iespēju atsaucās uz neesošu reward grupu 35041 un prasīja no tās divus priekšmetus. No uzturētās bāzes atjaunoti visi astoņi paredzētie dungeon reward priekšmeti. Katrs item ID un nosaukums pārbaudīts 7.3.5.26972 `ItemSparse` datos.
+
+Esošā reference avota rinda saglabāta `_backup_20260918_eregos_cache_reference_source`; nekas nav dzēsts. Atjaunotā equal-chance grupa saglabā esošo `MinCount=1`, `MaxCount=2` ārējā rindā, tāpēc lāde var izvēlēties līdz diviem dažādiem reward variantiem, bet turpina atsevišķi dot esošo recipe un Stone Keeper's Shard loot.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; datubāzē ir astoņas reward grupas rindas un viena saglabāta avota backup rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 417 līdz 416, un reference 35041 kļūda vairs neparādās.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pabeigt The Oculus heroic režīmā un atvērt Cache of Eregos (191349). Lādē jābūt 1–2 dažādiem priekšmetiem no astoņu atjaunoto reward saraksta; papildus jāsaglabā Design: Bracing Earthsiege Diamond un trīs Stone Keeper's Shard rindas paredzētā darbība.
