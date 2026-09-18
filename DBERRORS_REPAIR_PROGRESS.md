@@ -2915,3 +2915,20 @@ No atlikušajiem 186 LFG DBC ierakstiem 113 bija atzīmēti ar `LFG_FLAG_USER_TE
 
 - Palaist vairākus ar questu atveramus solo scenārijus, piemēram, artifact/class-hall scenāriju “The Dark Riders”, un pārbaudīt, ka quest/spell ieeja joprojām nogādā pareizajā instancē.
 - Solo scenārija laikā pārbaudīt Dungeon Finder acs izvēlni: manuālajai “Teleport to/Leave Dungeon” iespējai jābūt nepieejamai, kā to nosaka `LFG_FLAG_USER_TELEPORT_NOT_ALLOWED`; scenārijs jāpamet ar tā paredzēto noslēguma vai quest mehānismu.
+
+## Pakete 155 — Pandaria scenāriju build 26972 aliasu ieejas
+
+Fails: `sql/updates/world/2026_09_19_140_restore_mop_scenario_alias_entrances.sql`.
+
+Build 26972 LFG DBC satur 26 jaunākus Pandaria scenāriju aliasus (790–817 ar dažiem ID izlaidumiem), kuriem nebija `lfg_entrances` rindu. Katram aliasam tajā pašā DBC ir vecāks ieraksts ar identisku karti, ScenarioID un grūtības pakāpi. Visi attiecīgo variantu sākumpunkti jau bija datubāzē; arī gadījumos ar vairākiem faction vai normal/heroic variantiem to koordinātes savstarpēji sakrīt. Jaunās rindas iegūst precīzas koordinātes no atbilstošā esošā ieraksta, nevis no minējuma.
+
+### Pārbaudes rezultāts
+
+- `lfg_entrances` pievienotas visas 26 trūkstošās aliasu rindas; skripts ir idempotents un neaizstāj jau eksistējošus ierakstus.
+- Pilns labotās Release būves starts pabeigts 12 sekundēs; visu 26 aliasu teleportu kļūdas pazuda un `DBErrors.log` skaits samazinājās no 73 uz 47. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Dungeon Finder/Scenario sarakstā palaist vismaz vienu normal un vienu heroic Pandaria scenāriju, piemēram, “A Brewing Storm” un “Battle on the High Seas”. Pēc grupas apstiprināšanas visiem spēlētājiem jānonāk scenārija sākumpunktā, nevis `(0, 0, 0)`.
+- Pārbaudīt pa vienam Alliance/Horde variantam, piemēram, “Assault on Zan'vess” un “Dagger in the Dark”; jāielādē pareizais ScenarioID un jāstartē pirmais posms.
