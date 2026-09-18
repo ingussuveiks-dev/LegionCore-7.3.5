@@ -726,3 +726,29 @@ Build 26972 `Map` klienta datos karte 673 ir “Transport: Orgrim's Hammer (Icec
 - Icecrown Citadel 10/25 režīmā iziet gunship daļu uz Orgrim's Hammer un sākt Deathbringer Saurfang cīņu; boss jāielādē uz transporta bez spawn/AI problēmām.
 - Nogalinot Saurfang, raid grupai joprojām jāsaņem permanent instance bind un encounter progress; pēc reloga/restarta nogalinātajam bosam nav jāatdzimst saglabātajā lockout.
 - Atkārtot vismaz vienā heroic režīmā (`spawnMask=8`), jo tieši transporta ieraksts izmanto šo masku.
+
+## Pakete 34 — Draenor garnizona sūtījumu validācija
+
+Fails: `src/server/game/Globals/ObjectMgr.cpp`.
+
+Septiņi `GAMEOBJECT_TYPE_GARRISON_SHIPMENT` objekti atsaucas uz klienta `CharShipmentContainer` ierakstiem 30, 36, 57, 59, 60, 62 un 63. Build 26972 datos visi septiņi ir `GarrTypeID=2` — Draenor garnizona sūtījumi — ar konkrētiem Shipyard, Lumber Mill, Alchemy, Enchanting, Engineering, Jewelcrafting vai Leatherworking sūtījumu aprakstiem. Tie nav nezināmi vai Legion versijai neatbilstoši dati.
+
+Kodols jau pilnvērtīgi apstrādā abus atbalstītos tipus: `GARRISON_TYPE_GARRISON=2` un `GARRISON_TYPE_CLASS_ORDER=3`. Piemēram, sūtījumu izveidē Draenor tipam tiek meklēts atbilstošais plot/building un izmantota ēkas ietilpība, bet Class Hall tipam — klases halles sūtījumu limits. Tikai pasaules objektu ielādes validācija kļūdaini atļāva vienīgi Class Hall tipu un tādēļ septiņus derīgus WoD objektus atmeta ar kļūdu.
+
+Validācija tagad atļauj abus kodola apkalpotos tipus un turpina noraidīt jebkuru citu `GarrTypeID`, kļūdas tekstā norādot arī neatbalstīto vērtību. Neviens gameobject, shipment vai DB2 ieraksts nav mainīts vai dzēsts.
+
+### Pārbaudes rezultāts
+
+- Build 26972 `CharShipmentContainer` datos visiem septiņiem objektu izmantotajiem container ID apstiprināts `GarrTypeID=2` un atbilstošs Draenor sūtījuma saturs.
+- Datubāzē apstiprināts, ka četri Alliance profesionu objekti atrodas kartē 1116, Lumber Mill objekts — Horde garnizona kartē 1159, zivju muca — Shipyard kartē 1330, bet Engineering pasūtījums — Orgrimmar kartē 1.
+- Release kompilācija pabeidzās sekmīgi (`exit code 0`), un jaunais `worldserver.exe` tika uzinstalēts `compiles` mapē.
+- Visi septiņi `GARRISON_SHIPMENT ... GarrTypeID != GARRISON_TYPE_CLASS_ORDER` false-positive ziņojumi pazuda; neviens jauns `unsupported GarrTypeID` ziņojums neradās. `DBErrors.log` skaits samazinājās no 471 līdz 464.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts. `Server.log` nav jaunu `FATAL`, assertion, trūkstošu failu vai neveiksmīgas ielādes ziņojumu.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Alliance Draenor garnizonā pie atbilstoši uzbūvētām Alchemy, Enchanting, Jewelcrafting un Leatherworking ēkām atvērt darba pasūtījumu objektus, iesniegt materiālus, sagaidīt pabeigšanu un saņemt paredzētos profesiju reaģentus.
+- Horde Draenor garnizonā pie Lumber Mill iesniegt timber darba pasūtījumu; tam jāparādās Garrison Report, jāpabeidzas un jāizdod Garrison Resources.
+- Garnizona Shipyard pārbaudīt Barrel of Draenor Fish sūtījumu: mijiedarbībai jāatver sūtījuma logs, rindai jāizpildās un gatavajai piegādei jābūt savācamai.
+- Orgrimmar pārbaudīt “Order for engineering workshop” objektu ar tēlu, kam pieejams attiecīgais WoD Engineering pasūtījums; objektam jāatver pareizais sūtījuma interfeiss un jāizmanto Gearspring Parts container.
+- Kā regresijas testu Class Order Hall izveidot un savākt vismaz vienu Legion sūtījumu; `GarrTypeID=3` darbība nedrīkst mainīties.

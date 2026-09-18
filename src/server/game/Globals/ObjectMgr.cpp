@@ -2730,9 +2730,10 @@ void ObjectMgr::LoadGameobjects()
                 continue;
             }
 
-            if (shipmentConteinerEntry->GarrTypeID != GARRISON_TYPE_CLASS_ORDER)
+            if (shipmentConteinerEntry->GarrTypeID != GARRISON_TYPE_GARRISON &&
+                shipmentConteinerEntry->GarrTypeID != GARRISON_TYPE_CLASS_ORDER)
             {
-                TC_LOG_ERROR("sql.sql", "Gameobject (GUID: " UI64FMTD " Entry %u GoType: %u) GAMEOBJECT_TYPE_GARRISON_SHIPMENT has GarrTypeID != GARRISON_TYPE_CLASS_ORDER", guid, entry, gInfo->type);
+                TC_LOG_ERROR("sql.sql", "Gameobject (GUID: " UI64FMTD " Entry %u GoType: %u) GAMEOBJECT_TYPE_GARRISON_SHIPMENT has unsupported GarrTypeID %u", guid, entry, gInfo->type, shipmentConteinerEntry->GarrTypeID);
                 continue;
             }
         }
