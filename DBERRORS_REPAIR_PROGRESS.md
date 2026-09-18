@@ -1065,3 +1065,22 @@ Abām rindām iestatīts `GroupId=0`, saglabājot 70% iespēju, loot mode un dau
 
 - Pēc Madness of Deathwing uzvaras atvērt “Elementium Fragment” (210220) vairākos resetos: 71998 un 77952 katram jābūt neatkarīgai iespējai, tādēļ iespējams saņemt abus, vienu vai nevienu no tiem.
 - Pārbaudīt 10 un 25 spēlētāju/LFR atbalstītos režīmus (`LootMode=15`), ka 71998 skaits paliek 1–3 un 77952 skaits paliek 1; pārējās ieroču, mount un quest loot grupas nedrīkst mainīties.
+
+## Pakete 51 — Legion pasaules bonusu equal-chance reference grupa
+
+Fails: `sql/updates/world/2026_09_18_45_fix_world_bonus_reference_chances.sql`.
+
+`reference_loot_template` entry 228138 satur 12 Legion pasaules bonusu konteinerus, tostarp “Scavenged Cloth”, “Found Sack of Gems”, “Sprocket Container”, “Argunite Cluster” un “Light's Fortune”. Katra rinda bija norādīta ar `Chance=100` vienā `GroupId=1`, tādēļ vispārīgā grupu validācija pamatoti saskaitīja 1200%.
+
+Šo reference izmanto tikai `world_loot_template` entry 6 rinda ar item 128554. Koda `ProcessWorld` grupas apstrāde visus grupas dalībniekus vispirms filtrē un tad izvēlas vienu ar vienādu varbūtību; tā neizmanto atsevišķo rindu `Chance` svarus. Tādēļ 12 rindām `Chance` nomainīts no maldinoša `100` uz korektu equal-chance vērtību `0`, saglabājot entry, item ID, `GroupId=1`, loot mode un daudzumus. Runtime izvēles mehānika nemainās. Pilnas sākotnējās rindas saglabātas `_backup_20260918_world_bonus_reference_chances`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir visas 12 sākotnējās rindas, bet aktīvajām rindām tagad ir `Chance=0`, `GroupId=1` un saglabāti item ID, loot mode un daudzumi.
+- Reference 228138 1200% ziņojums pazuda; `DBErrors.log` skaits samazinājās no 433 līdz 432. Neviens no 12 bonusu item ID jaunā kļūdā neparādījās.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts. `Server.log` ir iepriekš zināmās script-hook un ArenaSeason problēmas, bet nav jauna reference 228138 vai Legion bonusu loot ziņojuma.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar katru atbalstīto Legion plecu enchant variantu nogalināt parastus Broken Isles/Argus pretiniekus un ilgākā paraugā pārbaudīt, ka attiecīgais bonusu konteiners joprojām var parādīties: 140220, 140221, 140222, 140224, 140225, 140226, 140227, 142259, 144330, 144345, 153202 vai 153248.
+- Vienā reference izsaukumā drīkst tikt izvēlēts ne vairāk kā viens no 12 konteineriem; nedrīkst parādīties visu konteineru komplekts vai pazust Legion pasaules parastais loot.
