@@ -1936,3 +1936,20 @@ Summoning Portal (105038) spell 208041 periodiskajai rindai repeat intervāls bi
 ### Spēlē vēlāk pārbaudāmais
 
 - Vietā/notikumā ar Summoning Portal (105038) novērot to ilgāk par divām minūtēm; spell 208041 jāizpildās sākumā un pēc tam atkārtoti ik pēc aptuveni 120 sekundēm, neradot strauju spell spam.
+
+## Pakete 97 — Malevolent Hatchling izsaucēja mērķis
+
+Fails: `sql/updates/world/2026_09_18_87_fix_malevolent_hatchling_target.sql`.
+
+Quest 10861 “Veil Lithic: Preemptive Strike” Cursed Egg izsauktais Malevolent Hatchling (22337) bija konfigurēts uz `CLOSEST_PLAYER` ar nederīgu nulles radiusu, lai gan rindas komentārs un pārējie `Just Summoned - Attack Invoker` skripti norāda uz event izraisītāju. Mērķis nomainīts uz `ACTION_INVOKER` (7), kam distance nav vajadzīga. Sākotnējā rinda saglabāta `_backup_20260918_malevolent_hatchling_target`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir sākotnējā rinda un aktīvajā rindā apstiprināts `target_type=7` bez distances parametra.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 321 uz 320, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Blade's Edge Mountains pieņemt quest 10861 “Veil Lithic: Preemptive Strike” un aktivizēt Cursed Egg (185211), kas izsauc Malevolent Hatchling (22337).
+- Hatchling uzreiz jāuzbrūk spēlētājam, kurš aktivizēja olu; tam jāturpina lietot Charge (36140) 8–25 yd attālumā un Terrifying Screech (38021).
