@@ -2540,3 +2540,19 @@ Quest 33731 pieņemšanas rinda bija kļūdaini definēta kā gameobject skripts
 ### Spēlē vēlāk pārbaudāmais
 
 - Draenor kampaņā pie Archmage Khadgar (75805) pieņemt Alliance quest 33731 un atsevišķi Horde variantu 34099 “The Battle for Shattrath”. Abos gadījumos Khadgaram vienreiz jāpasaka viņa grupas 0 teksts “When you are ready, we will follow you into Shattrath.”
+
+## Pakete 132 — Herald Xarbizuld “Text Over” eventa korekcija
+
+Fails: `sql/updates/world/2026_09_18_118_fix_herald_xarbizuld_text_over_event.sql`.
+
+Herald Xarbizuld (100836) rindas komentārs un parametri aprakstīja `TEXT_OVER`: pēc NPC teksta grupas 0 beigām jānosūta data `(6,6)` Oculeth (100397). Taču `event_type` bija 42 — `TRANSPORT_ADD_CREATURE`, ko creature SmartAI izmantot nedrīkst un kura parametri šai rindai neatbilst. Tā paša scenārija daudzās korektās teksta ķēdes izmanto `TEXT_OVER` 52. Sākotnējā rinda saglabāta `_backup_20260918_herald_xarbizuld_text_over`, pēc tam event tips izlabots uz 52; darbība, mērķis un teksta parametri nav mainīti.
+
+### Pārbaudes rezultāts
+
+- Rinda tagad gaida Herald Xarbizuld teksta grupas 0 beigas un tad nosūta data 6 Oculeth; backup tabulā ir viena sākotnējā rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; eventa neatļautās lietošanas kļūda pazuda, `DBErrors.log` skaits samazinājās no 222 uz 221, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Suramar scenārijā izraisīt Oculeth (100397) data `(1,1)`, kas liek Herald Xarbizuld (100836) pateikt teksta grupu 0. Tikai pēc teksta beigām Heraldam jānosūta data `(6,6)` atpakaļ Oculeth, un Oculeth jāturpina ķēde ar savu teksta grupu 10.
