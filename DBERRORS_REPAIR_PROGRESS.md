@@ -2227,3 +2227,20 @@ Repozitorija vēsturiskā SmartAI migrācija `sql/old/world/0020_creature_update
 - Firelands sastapšanās vietā pārbaudīt Fiery Vortex (53693) un Fiery Tornado (53698): Vortex pēc izsaukšanas lieto 99793, piesaista Tornado auru 99817 un pēc aptuveni 27 sekundēm to noņem visās datubāzē norādītajās grūtībās.
 - Majordomo Staghelm (54101/52571) notikumā pienākt 50 jardu robežās: viņa trīs dialoga grupām jāatskaņojas vienreiz ar 0, 11 un 6 sekunžu secīgām pauzēm, tad pēc 10 sekundēm jānoņem flags 832.
 - Grūtībā 6 pārbaudīt Air flow (600052) sekvenci pie Master Snowdrift satura: abām action 205 rindām jāielādējas, bet citās grūtībās tikai kopīgajai id 0 rindai; vizuālajai/kustības sekvencei nedrīkst būt dublikātu.
+
+## Pakete 114 — Thunderlord Beast-Tender Bestial Wrath mērķis
+
+Fails: `sql/updates/world/2026_09_18_103_fix_beast_tender_wrath_target.sql`.
+
+Thunderlord Beast-Tender (80423) Blackrock Foundry kaujā spell 162606 jeb Bestial Wrath bija `CREATURE_DISTANCE` mērķis ar parametriem `(20, 0)`. Šā mērķa formāts ir `(CreatureEntry, maxDist)`, tāpēc kodols mēģināja atrast neeksistējošu creature entry 20 un visu darbību izlaida. Pašā encounter datu vietā 12,8 un 15,3 jardu attālumā atrodas Ornery Ironhoof (80534) un Stubborn Ironhoof (80526), kas atbilst Beast-Tender spējai stiprināt tuvumā esošu zvēru. Parametri pārvietoti uz `(0, 20)`: jebkurš radījums 20 jardos, pašu caster kodols no saraksta izslēdz. Sākotnējā rinda saglabāta `_backup_20260918_beast_tender_wrath_target`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 80423/1 rindai apstiprināts `target_type=11`, `target_param1=0`, `target_param2=20`, bet spell un 10/36 sekunžu taimeri nav mainīti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 80423 neeksistējošā creature mērķa kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 281 uz 280. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Blackrock Foundry Workshop daļā iesaistīt kaujā Thunderlord Beast-Tender (80423), kam blakus atrodas Ornery Ironhoof (80534) un Stubborn Ironhoof (80526).
+- Aptuveni 10 sekundes pēc kaujas sākuma Beast-Tender jālieto Bestial Wrath (162606) uz vienu vai abiem tuvumā esošajiem Ironhoof 20 jardu robežās, palielinot zvēra nodarīto bojājumu; spell nedrīkst tikt lietots uz paša Beast-Tender vai tāla, nesaistīta trash NPC.
