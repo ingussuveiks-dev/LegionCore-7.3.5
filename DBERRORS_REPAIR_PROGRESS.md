@@ -1467,3 +1467,22 @@ Sākotnējā rinda saglabāta `_backup_20260918_grimshot_orphan_gossip`, no kuri
 
 - Draenor zonā ar Grom'kar Grimshot (88879) pārbaudīt parasto combat uzvedību un loot; NPC nedrīkst atvērt tukšu gossip logu.
 - Quest 11221 pārbaudīt tā faktiskajā zonā/ķēdē; tā pieņemšana un pabeigšana nedrīkst būt atkarīga no WoD Grom'kar Grimshot.
+
+## Pakete 72 — PhaseMgr map un equipped-item condition atbalsts
+
+Faili: `src/server/game/Maps/PhaseMgr.cpp` un `src/server/game/Entities/Player/Player.cpp`.
+
+Phase definition datos ir divas derīgas `CONDITION_MAPID` pārbaudes Shadowmoon Valley map 1158 fāzēm un trīs `CONDITION_ITEM_EQUIPPED` pārbaudes quest 42429 phase 7435 ar item 128862. Vispārējais ConditionMgr abus tipus prot novērtēt, taču PhaseMgr atļauto tipu saraksts tos noraidīja, tāpēc serveris šīs fāžu prasības ignorēja.
+
+PhaseMgr tagad pieņem abus condition tipus. Map nosacījums tiek pārrēķināts jau esošajā zonas/mapes ieiešanas pilnajā phase pārrēķinā; item nosacījumam `_ApplyItemMods` pēc equip vai unequip nosūta mērķētu `CONDITION_ITEM_EQUIPPED` izmaiņas paziņojumu. DB rindas netiek mainītas vai dzēstas.
+
+### Pārbaudes rezultāts
+
+- Pilns Release rebuild un install pabeigts sekmīgi; tika pārkompilēti `Player.cpp` un `PhaseMgr.cpp`, un jaunais `worldserver.exe` uzstādīts `compiles` mapē.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 358 līdz 353; visas piecas “PHASE_DEFINITION does not support condition type 3/22” kļūdas pazuda.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Shadowmoon Valley zonā 7078 uz mapes 1158 iziet quest 34646 pāreju: quest complete/reward stāvokļiem jāpārslēdz phase 3666 un 3464, un šīs fāzes nedrīkst aktivizēties citā mapē.
+- Ar aktīvu, pabeigtu un nodotu quest 42429 katrā no trim stāvokļiem uzvilkt item 128862: phase 7435 jāaktivizējas uzreiz bez relog. Novelkt item — phase jānoņemas uzreiz; citi equipment un phase stāvokļi nedrīkst mainīties.

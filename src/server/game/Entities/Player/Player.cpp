@@ -10435,6 +10435,13 @@ void Player::_ApplyItemMods(Item* item, uint8 slot, bool apply)
     ApplyItemEquipSpell(item, apply);
     ApplyEnchantment(item, apply);
 
+    if (IsInWorld())
+    {
+        PhaseUpdateData phaseUpdateData;
+        phaseUpdateData.AddConditionType(CONDITION_ITEM_EQUIPPED);
+        GetPhaseMgr().NotifyConditionChanged(phaseUpdateData);
+    }
+
     TC_LOG_DEBUG("entities.player.items", "_ApplyItemMods complete.");
 }
 

@@ -482,6 +482,7 @@ bool PhaseMgr::IsConditionTypeSupported(ConditionTypes const conditionType)
     switch (conditionType)
     {
         case CONDITION_AURA:
+        case CONDITION_ITEM_EQUIPPED:
         case CONDITION_QUESTREWARDED:
         case CONDITION_QUESTTAKEN:
         case CONDITION_QUEST_COMPLETE:
@@ -491,6 +492,7 @@ bool PhaseMgr::IsConditionTypeSupported(ConditionTypes const conditionType)
         case CONDITION_RACE:
         case CONDITION_INSTANCE_INFO:
         case CONDITION_LEVEL:
+        case CONDITION_MAPID:
         case CONDITION_AREA_EXPLORED:
         case CONDITION_SCENE_SEEN:
         case CONDITION_SCENE_TRIGER_EVENT:
