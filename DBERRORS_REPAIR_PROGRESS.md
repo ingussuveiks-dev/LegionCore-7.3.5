@@ -1391,3 +1391,22 @@ Sākotnējā dublikāta rinda saglabāta `_backup_20260918_ooka_duplicate_condit
 
 - Ar aktīvu quest 37536 runāt ar Ooka Dooker (90086): option 1 par fighting food jābūt redzamai un jāvirza quests, bet vendor option 2 joprojām jāatver preču logs.
 - Bez quest 37536 food dialogam jābūt paslēptam, bet vendor izvēlei jāpaliek pieejamai; tukša vai dubulta option 0 nedrīkst parādīties.
+
+## Pakete 68 — orphan gossip menu 737 condition arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_61_archive_orphan_gossip_737_condition.sql`.
+
+Condition tabulā bija quest 26703 nosacījums gossip menu 737 option 0, taču šajā world DB menu 737 neeksistē ne `gossip_menu`, ne `gossip_menu_option`, un nevienam creature tas nav piešķirts kā `gossip_menu_id`. Tātad rinda ir no izņemtas/vecākas menu implementācijas un tai nav iespējama runtime patērētāja. Ar backup arhivēta tikai nepieejamā condition rinda; quest 26703 un tā pārējie dati netiek mainīti.
+
+Sākotnējā rinda saglabāta `_backup_20260918_orphan_gossip_737_condition`, no kurienes to var pilnībā atjaunot, ja menu kādreiz tiek restaurēts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; orphan condition ir backupā, bet quest 26703 un visi citi tā dati paliek neskarti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 370 līdz 368: pazuda menu 737 missing-option kļūda un tās grouped-condition brīdinājums; updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quest 26703 iziet pa tā pašreizējo spēles ceļu un pārliecināties, ka tā pieņemšana, mērķi un nodošana darbojas bez menu 737; spēlē nedrīkst parādīties tukšs dialogs.
+- Ja nākotnē tiek atjaunots gossip menu 737, vispirms atjaunot arī backup condition un pārbaudīt tā option ID pret jaunā menu saturu.
