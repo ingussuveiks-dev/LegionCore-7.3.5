@@ -2424,3 +2424,20 @@ Sešas old-world SmartAI rindas atsaucās uz pirms Legion izņemtiem spell ID, l
 - Barrens cīņās ar Greater Plainstrider (3244) un Fleeting Plainstrider (3246) zem 60% dzīvības tiem jālieto Dust Cloud (7272) uz pretinieku.
 - Burning Blade Acolyte (3380) zem 40% dzīvības jākanalizē Drain Life (17173) uz pretinieku; Curse of Agony un Demon Skin uzvedībai jāpaliek nemainītai.
 - Orgrimmar Grunt SmartAI variantam (329601) iesaistoties cīņā jāuzliek sev Battle Shout (9128), un pārējām gossip/action-list darbībām jāpaliek funkcionālām.
+
+## Pakete 125 — Barrens Boar un Orc Sea Dog kaujas burvestības
+
+Fails: `sql/updates/world/2026_09_18_111_fix_barrens_boar_and_orc_sea_dog_spells.sql`.
+
+Barrens Boar bija saglabājies no klienta izņemtais hunter-pet Gore (35290); tas aizstāts ar world DB daudzām radībām jau lietoto un 7.3.5 datos esošo NPC Gore (32019). Orc Sea Dog vecais Sinister Strike (33408) aizstāts ar NPC Sinister Strike (60195), kura normalizētā ieroča bojājuma versija šajā DB jau tiek lietota Cataclysm perioda humanoīdiem, tostarp tuvējā Silverpine satura Bloodfang Scout. Abu rindu taimeri un mērķis nav mainīts. Sākotnējās rindas saglabātas `_backup_20260918_boar_sea_dog_spells`.
+
+### Pārbaudes rezultāts
+
+- Aktīvajās rindās Barrens Boar lieto 32019, Orc Sea Dog lieto 60195; backup tabulā ir abas sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neesošo spell kļūdas pazuda un `DBErrors.log` skaits samazinājās no 230 uz 228. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Barrens uzsākt cīņu ar Barrens Boar (34647): tam pēc 1–2 sekundēm un pēc tam ik pēc 25–30 sekundēm jālieto Gore (32019), bet Bite (131103) jāturpina lietot ik pēc 7,8–9,2 sekundēm.
+- Silverpine Forest pārbaudīt Orc Sea Dog (45196) gan parastā cīņā, gan quest ķēdē pēc spell 84514 trāpījuma: Sinister Strike (60195) jālieto uz pretinieku ik pēc 4–4,5 sekundēm, spawn aura (84511), timed action list un 45 sekunžu despawn jāpaliek funkcionāliem.
