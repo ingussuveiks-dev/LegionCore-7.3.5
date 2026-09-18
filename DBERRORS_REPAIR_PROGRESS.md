@@ -2734,3 +2734,19 @@ Engraved Shield (242673 un 251557–251561), Drogbar Idol (247106) un Shipwrecke
 
 - Questos 38878 un 39063 aktivizēt katru no sešiem Engraved Shield. Katram attiecīgajam GO objective jāpieaug vienu reizi, un spēlētājam jāsaņem atsevišķais creature credit 109346; nedrīkst būt dubults paša vairoga credit.
 - Quest 41145 aktivizēt sešus Drogbar Idol (247106), bet quest 41692 — piecus Shipwrecked Supplies (248401). Katram lietojumam standarta GO objective jāpieaug tieši vienu reizi.
+
+## Pakete 144 — Runeseer Faljar reward quest ID korekcija
+
+Fails: `sql/updates/world/2026_09_19_130_fix_runeseer_faljar_reward_quest.sql`.
+
+Runeseer Faljar (117199) reward eventā bija norādīts neesošs quest 45222. Pareizais quests ir 45522 “To Silence the Bonespeakers”, un tā vienīgais objective ir tieši NPC 117199; avota datos bija transponēti divi cipari. To apstiprina arī questa apraksts, kurā spēlētājam Haustvald jāuzvar Runeseer Faljar. Sākotnējā rinda saglabāta `_backup_20260919_runeseer_faljar_reward_quest`, pēc tam mainīts tikai quest ID un precizēts komentārs; teksta grupa 9 un player target saglabāti.
+
+### Pārbaudes rezultāts
+
+- Faljar ID 8 rinda tagad reaģē uz eksistējoša quest 45522 pabeigšanu un saka teksta grupu 9; backup tabulā ir sākotnējā 45222 rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā quest kļūda pazuda, `DBErrors.log` skaits samazinājās no 200 uz 199, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Stormheim questā 45522 “To Silence the Bonespeakers” uzvarēt Runeseer Faljar (117199), nodot questu un pārbaudīt, ka reward brīdī viņš spēlētājam atskaņo teksta grupu 9 tieši vienreiz. Citu 452xx questu pabeigšana šo dialogu nedrīkst izraisīt.
