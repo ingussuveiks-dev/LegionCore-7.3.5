@@ -1008,3 +1008,22 @@ Ierakstam atjaunots `Item=138623, Currency=0`; 100% iespēja, loot mode, grupa u
 
 - Atrast un atvērt gameobject 210002 “Stolen Barley Sack”; atbilstošajā loot variantā jāsaņem viens “Sack of Roasted Grain” (138623), nevis nederīgas valūtas ieraksts.
 - Pārbaudīt, ka otrs entry 40870 grupā neesošais loot “Sack of Grain” (77033) joprojām ir pieejams paredzētajā situācijā un abas alternatīvas netiek izsniegtas kā valūta.
+
+## Pakete 48 — novecojušās Highmaul Honor Points atlīdzības arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_43_archive_obsolete_highmaul_honor.sql`.
+
+`item_loot_template` entry 119000 “Highmaul Lockbox” saturēja 4% iespēju piešķirt 23 vienības currency 392. ID 392 ir vecā Honor Points valūta, kura tika izņemta, mainot Legion PvP atlīdzību sistēmu, un 7.3.5.26972 klienta `CurrencyTypes` datos tās vairs nav. Tādēļ serveris šo rindu nevar ielādēt vai korekti piešķirt; aizstāšana ar citu Legion valūtu mainītu oriģinālo atlīdzību bez pamatojuma.
+
+Pilna novecojusī valūtas rinda saglabāta `_backup_20260918_obsolete_highmaul_honor` un izņemta no aktīvās loot tabulas. Visas Highmaul Lockbox priekšmetu atlīdzības ir saglabātas.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena pilna currency-392 rinda, aktīvajā tabulā tās vairs nav, un entry 119000 palikušas 54 priekšmetu loot rindas.
+- Ziņojums “currency entry 392 not exists” pazuda; `DBErrors.log` skaits samazinājās no 441 līdz 440.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns Highmaul Lockbox vai trūkstošas valūtas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atvērt vairākus “Highmaul Lockbox” (119000) un pārbaudīt, ka kastes atveras, izsniedz atlikušās Draenor/PvP priekšmetu atlīdzības un neizraisa klienta vai servera kļūdu par currency 392.
+- Pārbaudīt Highmaul Coliseum zaudētāja pasta atlīdzību, ja šis saturs serverī ir pieejams: kastei jābūt saņemamai un atveramai; Legion versijā nav sagaidāmi vecie Honor Points.
