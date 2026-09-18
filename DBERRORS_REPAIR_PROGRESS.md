@@ -2278,3 +2278,20 @@ Fails: `src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp`.
 
 - Izspēlēt Broken Shore ievada quest 42740 līdz ainas beigām. `enterBrockenShores` ainas triggerim spēlētājs vienreiz jāpievieno LFG scenārijam 908 un jāpārved uz nākamo posmu.
 - Pārbaudīt, ka nenotiek dubulta LFG pievienošana, atkārtots queue paziņojums vai iestrēgšana pēc ainas; neesošā spell 227058 izslēgšanai nav jāmaina pārējā scenārija gaita.
+
+## Pakete 117 — Dark Shaman Koranthal Shadow Storm piesaiste
+
+Fails: `sql/updates/world/2026_09_18_105_bind_koranthal_shadow_storm.sql`.
+
+Dark Shaman Koranthal (61412) AI lieto Shadow Storm (119971), kura palīgspell 119973 ir dummy efekts. Kodola `spell_dark_shaman_koranthal_shadow_storm` loaderis šo efektu pārvērš par spell datos norādītā efekta lietošanu uz trāpīto mērķi, bet `spell_script_names` piesaiste bija iztrūkusi. Tā pati `(119973, spell_dark_shaman_koranthal_shadow_storm)` piesaiste ir atrodama ArgusCore 7.3.5 labojumā `2024_05_16_00_world.sql`, tāpēc tā nav minēta pēc nosaukuma vien. Pirms ievietošanas visas iespējamās esošās rindas tika atlasītas `_backup_20260918_koranthal_shadow_storm_script`; tabula ir tukša, kas apstiprina, ka iepriekš nebija ko pārrakstīt.
+
+### Pārbaudes rezultāts
+
+- Datubāzē apstiprināta viena precīza spell 119973 piesaiste loaderim; citas šī spell vai loadera rindas netika aizstātas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; Koranthal loadera trūkstošās DB piesaistes kļūda pazuda un `DBErrors.log` skaits samazinājās no 278 uz 277. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ragefire Chasm kartē 389 iesaistīt kaujā Dark Shaman Koranthal (61412; aptuvenā atrašanās vieta `(-117, 71, -21)`).
+- Ap 20,5 sekundēm pēc kaujas sākuma bossam jāizsauc Shadow Storm (119971), jāparāda raid brīdinājums un spell 119973 dummy efektam korekti jālieto tā datos norādītais papildu efekts uz trāpītajiem mērķiem; atkārtojumam jānotiek aptuveni ik pēc 47,2 sekundēm.
