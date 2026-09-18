@@ -2932,3 +2932,20 @@ Build 26972 LFG DBC satur 26 jaunākus Pandaria scenāriju aliasus (790–817 ar
 
 - Dungeon Finder/Scenario sarakstā palaist vismaz vienu normal un vienu heroic Pandaria scenāriju, piemēram, “A Brewing Storm” un “Battle on the High Seas”. Pēc grupas apstiprināšanas visiem spēlētājiem jānonāk scenārija sākumpunktā, nevis `(0, 0, 0)`.
 - Pārbaudīt pa vienam Alliance/Horde variantam, piemēram, “Assault on Zan'vess” un “Dagger in the Dark”; jāielādē pareizais ScenarioID un jāstartē pirmais posms.
+
+## Pakete 156 — WoD dungeon un LFR variantu ieejas
+
+Fails: `sql/updates/world/2026_09_19_141_restore_wod_lfg_variant_entrances.sql`.
+
+Bloodmaul Slag Mines DBC ierakstam 1005 (difficulty 23) un Hellbreach ierakstam 1366 (LFR build 26972 aliases) nebija atsevišķu ieejas rindu. Abiem ir tā pati karte un tas pats sākuma saturs kā jau strādājošajiem ierakstiem 787 un 982. Pievienotie ieraksti pārmanto precīzi šo avota rindu koordinātes; neviena esošā rinda netiek pārrakstīta.
+
+### Pārbaudes rezultāts
+
+- DungeonId 1005 tagad izmanto Bloodmaul sākumu `(1829.37, -245.757, 255.727)`, bet 1366 izmanto Hellbreach sākumu `(3976.81, -760.645, 35.5159)`.
+- Pilns labotās Release būves starts pabeigts 12 sekundēs; abas kļūdas pazuda un `DBErrors.log` skaits samazinājās no 47 uz 45. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar atbilstoša līmeņa grupu ieiet Bloodmaul Slag Mines mythic variantā un pārbaudīt, ka spēlētāji parādās pie parastās instances ieejas un var sākt pirmo encounter.
+- Ar Raid Finder palaist Hellbreach aliasu 1366 un pārbaudīt, ka grupa nonāk Hellfire Citadel pirmajā spārnā pie `(3976.81, -760.645, 35.5159)`.
