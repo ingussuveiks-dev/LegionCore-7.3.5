@@ -1619,3 +1619,23 @@ Lādes 93 derīgās tiešās loot rindas visām grūtības pakāpēm, tostarp it
 
 - Terrace of Endless Spring nogalināt Tsulong un atvērt Cache of Tsulong (GO 212922) katrā pieejamajā raid grūtības pakāpē; lādei jāatveras un jādod attiecīgās grūtības tiešais loot.
 - Īpaši pārbaudīt, ka joprojām var izkrist item 86279 “Pattern: Liferuned Leather Gloves” un ka heroic/raid-finder loot mode rindas nav ietekmētas.
+
+## Pakete 80 — Kadrak Secret Signal Powder item ID
+
+Fails: `sql/updates/world/2026_09_18_71_fix_kadrak_signal_powder_item.sql`.
+
+Kadrak (creature 33837) gossip opcija “Give me new Secret Signal Powder” izpildīja `SMART_ACTION_ADD_ITEM` ar neesošu septiņu ciparu item ID 1212331. Quest 13808 “Mission Improbable” `StartItem` ir 45710 — tieši Secret Signal Powder, kuru šai nomaiņas opcijai jāizsniedz.
+
+Sākotnējā SmartAI rinda saglabāta `_backup_20260918_kadrak_signal_powder_item`; mainīts tikai izsniedzamā item ID uz 45710 un precizēts komentārs. Saistītā gossip aizvēršanas darbība netika mainīta.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; aktīvajā SmartAI rindā ir `action_param1=45710`, backupā saglabāts sākotnējais `1212331` ieraksts.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 340 līdz 339; neesošā item kļūda creature 33837 vairs netiek reģistrēta.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Horde tēlu, kuram aktīvs quest 13808 “Mission Improbable” un nav Secret Signal Powder, pie Kadrak Splintertree Post izvēlēties nomaiņas dialogu; jāsaņem viens item 45710 un dialogam jāaizveras.
+- Izmantot Secret Signal Powder pie Smoldering Brazier Satyrnaar; jāsummonē Krokk un quest ķēdei “Making Stumps”/“Wet Work” jābūt turpināmai.
+- Atkārtot dialogu, kamēr unikālais priekšmets jau ir somā; nedrīkst rasties dublikāts vai servera kļūda.
