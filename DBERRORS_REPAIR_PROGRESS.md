@@ -38,3 +38,29 @@ Nekas netiek dzēsts. Visi vaicājumi ir idempotenti un maina tikai iepriekš p�
 - NPC 522111 pārvietojas normālā iešanas ātrumā.
 - NPC GUID 800000, 800001 un 800002 stāv uz vietas, nevis mēģina nejauši kustēties ar nulles rādiusu.
 - GUID 264517, 267575, 271814, 272174, 272175 un 272176 vairs nemēģina izmantot neesošu waypoint ceļu. Ja tiem pēc dizaina tomēr jāpārvietojas, jāatrod pareizie ceļi un jāpiešķir `path_id`; šī pakete saglabā kodola līdzšinējo drošo fallback uzvedību.
+
+## Pakete 02 — pēc-Legion scaling bāreņu ieraksti
+
+Fails: `sql/updates/world/2026_09_18_01_remove_post_legion_scaling_orphans.sql`.
+
+Septiņiem `creature_template_scaling` ierakstiem nav atbilstošas NPC veidnes. To `VerifiedBuild` ir 27404 vai 27602, bet šis serveris un klients izmanto pēdējo Legion 7.3.5 būvējumu 26972. Ieraksti ienāca ar 2024-11-15 Ashamane scaling datu importu un šajā versijā nav izmantojami.
+
+Pirms izņemšanas SQL nokopē precīzos ierakstus datubāzes tabulā `_backup_20260918_creature_template_scaling_orphans`. Dzēšana ir ierobežota ar precīzu ID sarakstu, neesošu `creature_template` un `VerifiedBuild > 26972`; tā nevar skart vēlāk pievienotu korektu Legion veidni. Pilnā pirmsdarbu datubāzes kopija arī paliek pieejama.
+
+Skartie ID: 135201, 135202, 137762, 139093, 140210, 141119 un 141707.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`.
+- Aktīvajā tabulā palika 0 no 7 ierakstiem; backup tabulā ir visi 7 ar sākotnējiem `VerifiedBuild`.
+- Visi 7 konkrētie kļūdu ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 726 līdz 719.
+- `worldserver` sasniedza `ready` 14 sekundēs un tika korekti izslēgts ar exit code 0.
+
+### Atjaunošana
+
+Ja šie dati nākotnē kļūst vajadzīgi kopā ar atbilstošām veidnēm, tos var atjaunot ar:
+
+```sql
+INSERT IGNORE INTO creature_template_scaling
+SELECT * FROM _backup_20260918_creature_template_scaling_orphans;
+```
