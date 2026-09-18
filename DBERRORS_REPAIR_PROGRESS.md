@@ -1220,3 +1220,22 @@ Fails: `src/server/game/Spells/SpellInfo.cpp`.
 
 - Izgatavot visus četrus terminālos “Reborn” ieročus un pārbaudīt, ka pareizais ierocis tiek izveidots, netiek mēģināts iemācīt neesošu nākamo recepti un iepriekšējie upgrade ķēdes posmi joprojām iemāca nākamo recepti.
 - Izmantot Alchemist's Cauldron (156586): jāizveido paredzētais reagentu konteiners 111403, jānostrādā kopīgajam dienas cooldown, un spēlētājam nav jāmācās nejauša recepte.
+
+## Pakete 59 — spell 213704 implicit-target condition mask
+
+Fails: `sql/updates/world/2026_09_18_52_fix_spell_213704_condition_mask.sql`.
+
+Spell 213704 klienta datos ir tikai viens efekts ar indeksu 0. Tā `CONDITION_SOURCE_TYPE_SPELL_IMPLICIT_TARGET` rinda nosacījumu piesaistīja neeksistējošai effect mask 0, tāpēc serveris rindu ignorēja. `SourceGroup` izlabots uz masku 1 (0. efekta bits), saglabājot esošo mērķa prasību — cast drīkst atlasīt tikai creature 107633.
+
+Sākotnējā condition rinda pirms izmaiņas saglabāta `_backup_20260918_spell_213704_condition`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; condition rindai tagad ir `SourceGroup=1`, bet backup tabulā ir viena sākotnējā rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 398 līdz 397, un spell 213704 nepareizās maskas kļūda vairs neparādās.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atrast saturu, kas izmanto spell 213704, un izpildīt to pie creature 107633: spell 0. efektam jāizvēlas paredzētais mērķis.
+- Atkārtot cast situācijā ar citu creature entry un pārbaudīt, ka nosacījums to nepieņem un nerada servera kļūdu.
