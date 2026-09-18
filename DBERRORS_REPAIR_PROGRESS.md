@@ -949,3 +949,23 @@ Pilna nederīgā dublikāta rinda saglabāta `_backup_20260918_rogue_phase_dupli
 
 - Ar Rogue, kuram quests 40847 vēl nav pieņemts, ieiet attiecīgajā Dalaran/zone 5287 artifact ķēdes vietā un pārbaudīt phase 5709 objektus.
 - Pieņemt 40847 un pārbaudīt, ka šī “quest none” fāze tiek noņemta/pārslēgta; pēc questa pabeigšanas un reloga nevajadzētu rasties dubultiem NPC vai pazudušai videi.
+
+## Pakete 45 — aktīvo questu nosacījumu lieko objective lauku tīrīšana
+
+Fails: `sql/updates/world/2026_09_18_40_normalize_active_quest_conditions.sql`.
+
+Divi `CONDITION_QUESTTAKEN=9` ieraksti saturēja pareizu quest ID, bet arī laukus, kurus šis condition tips nelasa. Margaux (109223) gossip 19908/0 questam 42833 `value2` atkārtoja tā pirmā objective ObjectID 109241; šai pašai izvēlei jau ir atsevišķs type-41 objective nosacījums. “Darkness Falls” (33837) SmartAI kill-credit 231013 aktīvā questa rindā bija ielikts cita mērķa ObjectID 82283 un boolean `value3=1`; turpat ir atsevišķs nosacījums, ka quests vēl nav completed.
+
+Abām type-9 rindām atstāts tikai to izmantotais quest ID un notīrīti `value2/value3`. Objective pārbaudes, quest-completed pārbaude, gossip izvēle un SmartAI darbības nav mainītas. Pilnas sākotnējās rindas saglabātas `_backup_20260918_active_quest_conditions`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir abas sākotnējās rindas, un abiem aktīvajiem type-9 nosacījumiem `value2=0`, `value3=0`.
+- Visi atlikušie “Quest condition has useless data” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 448 līdz 445.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauni abu questu nosacījumu validācijas ziņojumi neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Suramar ar questu 42833 pārbaudīt Margaux izvēli “There is still hope...”: tai jābūt pieejamai paredzētajā aktīvā questa/objective stāvoklī un jāatver menu 19905; bez questa vai pēc vajadzīgā progresa tā nedrīkst apiet atsevišķo objective nosacījumu.
+- “Darkness Falls” (33837) laikā sasniegt kill-credit 231013: kamēr quests aktīvs un nepabeigts, jāpiešķiras credit 76450 un jāizpildās invoker cast 163805.
+- Atkārtot pēc 33837 pabeigšanas un ar tēlu bez questa; SmartAI nedrīkst atkārtoti piešķirt credit vai sākt ainu. Objective “Enter the Waning Crescent” (ObjectID 82283) progresam jāturpinās no paša questa datiem, nevis no type-9 liekajiem laukiem.
