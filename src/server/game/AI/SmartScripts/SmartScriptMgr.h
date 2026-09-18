@@ -1287,6 +1287,7 @@ enum SMARTAI_TARGETS
     SMART_TARGET_THREAT_LIST                    = 24,   // All units on creature's threat list
     SMART_TARGET_CLOSEST_ENEMY                  = 25,   // maxDist
     SMART_TARGET_CLOSEST_FRIENDLY               = 26,   // maxDist
+    SMART_TARGET_FARTHEST                       = 28,   // maxDist, playerOnly, isInLos
     SMART_TARGET_HOSTILE_RANDOM_PLAYER          = 125,   // Just any random target on our threat list player
     SMART_TARGET_HOSTILE_RANDOM_NOT_TOP_PLAYER  = 126,   // Any random target except top threat player
     SMART_TARGET_HOSTILE_RANDOM_AURA            = 127,   // Any random target except top threat player
@@ -1379,6 +1380,13 @@ struct SmartTarget
         {
             uint32 maxDist;
         } closestFriendly;
+
+        struct
+        {
+            uint32 maxDist;
+            uint32 playerOnly;
+            uint32 isInLos;
+        } farthest;
 
         struct
         {

@@ -399,6 +399,7 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
         case SMART_TARGET_CLOSEST_CREATURE:
         case SMART_TARGET_CLOSEST_ENEMY:
         case SMART_TARGET_CLOSEST_FRIENDLY:
+        case SMART_TARGET_FARTHEST:
         case SMART_TARGET_STORED:
         case SMART_TARGET_RANDOM_POSITION:
         case SMART_EVENT_QUEST_REWARDED:

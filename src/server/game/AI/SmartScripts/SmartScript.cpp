@@ -2987,6 +2987,21 @@ ObjectList* SmartScript::GetTargets(SmartScriptHolder const& e, Unit* invoker /*
                 if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_RANDOM, e.target.spell.topornot, static_cast<float>(e.target.spell.dist), true, e.target.spell.entry))
                     l->push_back(u);
             break;
+        case SMART_TARGET_FARTHEST:
+            if (me)
+            {
+                auto selector = [this, &e](Unit* target)
+                {
+                    return target
+                        && (!e.target.farthest.maxDist || me->IsWithinDistInMap(target, static_cast<float>(e.target.farthest.maxDist)))
+                        && (!e.target.farthest.playerOnly || target->GetTypeId() == TYPEID_PLAYER)
+                        && (!e.target.farthest.isInLos || me->IsWithinLOSInMap(target));
+                };
+
+                if (Unit* u = me->AI()->SelectTarget(SELECT_TARGET_FARTHEST, 0, selector))
+                    l->push_back(u);
+            }
+            break;
         case SMART_TARGET_NONE:
         case SMART_TARGET_ACTION_INVOKER:
             if (trigger)

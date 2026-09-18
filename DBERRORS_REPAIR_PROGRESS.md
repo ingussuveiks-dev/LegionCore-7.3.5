@@ -1988,3 +1988,20 @@ Trīs Halls of Valor NPC (95834, 95842 un 97087) periodiskajām `RANDOM_EMOTE` r
 
 - Halls of Valor vietās atrast NPC 95834, 95842 un 97087 un novērot tos ārpus kaujas vismaz 20–30 sekundes.
 - NPC periodiski jāizpilda viena no emote 15, 22, 274 vai 71; 97087 nedrīkst spamot emotes biežāk par aptuveni reizi piecās sekundēs, un uzvedība nedrīkst traucēt to kaujas spell rindām.
+
+## Pakete 100 — SmartAI FARTHEST mērķa atbalsts
+
+Faili: `src/server/game/AI/SmartScripts/SmartScriptMgr.h`, `src/server/game/AI/SmartScripts/SmartScriptMgr.cpp` un `src/server/game/AI/SmartScripts/SmartScript.cpp`.
+
+Valarjar Mystic (95834) Healing Light (198931) rinda lieto `target_type=28` ar 40 jardu robežu. Šī nav patvaļīga DB vērtība: TrinityCore SmartAI definīcijā un LegionCore priekšteča galvenē 28 ir `SMART_TARGET_FARTHEST` (`maxDist`, `playerOnly`, `isInLos`). Šajā zarā definīcija un izpilde bija izkritusi, lai gan zemākā `SELECT_TARGET_FARTHEST` atlase joprojām bija kodolā. Atjaunots trūkstošais enum, parametru izkārtojums, validācijas atļauja un tālākā derīgā threat-list mērķa atlase ar distances, player-only un line-of-sight filtriem. DB rinda nav mainīta, tādēļ datu backup šai koda paketei nav nepieciešams.
+
+### Pārbaudes rezultāts
+
+- Pilna Release kompilācija un instalēšana pabeigta sekmīgi; pēc gala atlases filtra izmaiņas veikta atkārtota kompilācija.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 95834 `target_type(28)` kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 315 uz 314. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Halls of Valor Normal vai Heroic grūtībā iesaistīt kaujā Valarjar Mystic (95834) kopā ar vairākiem citiem Valarjar; ļaut kādam sabiedrotajam saņemt bojājumus un neinterruptēt pirmo Healing Light (198931).
+- Mystic jāuzsāk pārtraucama Healing Light buršana, un dziedināšanai jānonāk pie draudzīga NPC, nevis spēlētāja. Ar izretinātu grupu papildus jāpārbauda, ka 40 jardu robeža tiek ievērota. Ja spell klienta/DBC implicitā mērķēšana nepārvērš tālāko threat-list atskaites mērķi par draudzīgu heal mērķi, šī konkrētā DB rinda būs atsevišķi jāpārveido uz sabiedrotā atlasi; pašreiz ir atjaunota tieši tās sākotnēji deklarētā SmartAI semantika.
