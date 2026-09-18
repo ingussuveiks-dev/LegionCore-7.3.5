@@ -2404,3 +2404,23 @@ Abu `SCRIPT_COMMAND_RESPAWN_GAMEOBJECT` rindu GUID bija palikuši no vecākas sp
 
 - Zangarmarsh Daggerfen Village pie aptuvenām koordinātēm `(1178, 8129, 20)` palaist Summon Murloc Cage (31949): jāparādās īstajam būrim, pēc 5 sekundēm jāparādās Baby Murloc (18152), un būra eventam jāpaliek aktīvam 180 sekundes. Bogblossom objekti citur zonā nedrīkst mainīties.
 - Blade’s Edge Mountains uz Northmaul Tower pie aptuvenām koordinātēm `(1707, 6316, 34)` lietot Bladespire Clan Banner (36532): jāparādās bannerim uz 600 sekundēm, pēc 8 sekundēm jāsākas pirmajam Bloodmaul vilnim un turpmākajiem viļņiem jāparādās pēc eventa 50/130/180 sekunžu grafika. Northrend zvejas vietas nedrīkst mainīties.
+
+## Pakete 124 — veco SmartAI burvestību ID migrācija
+
+Fails: `sql/updates/world/2026_09_18_110_fix_legacy_smartai_spell_ids.sql`.
+
+Sešas old-world SmartAI rindas atsaucās uz pirms Legion izņemtiem spell ID, lai gan 7.3.5 datos un pašā world DB jau ir tiem atbilstošas NPC burvestības. Scarlet Friar Power Word: Fortitude `21562` aizstāts ar `13864`, Muad Healing Wave `331` ar `11986`, abu plainstrideru Dust Cloud `50285` ar `7272`, Burning Blade Acolyte Drain Life `689` ar `17173`, bet Orgrimmar Grunt Battle Shout `6673` ar `9128`. Eventi, mērķi, HP robežas un atkārtošanas laiki nav mainīti. Visas sešas sākotnējās rindas saglabātas `_backup_20260918_legacy_smartai_spell_ids`.
+
+### Pārbaudes rezultāts
+
+- Aktīvajās SmartAI rindās ir visi seši jaunie 7.3.5 derīgie spell ID, bet backup tabulā ir tieši sešas sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas sešas attiecīgās “spell does not exist” kļūdas pazuda. `DBErrors.log` skaits samazinājās no 236 uz 230, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Scarlet Monastery sastopot Scarlet Friar (1538), combat sākumā tam jāuzliek sev Power Word: Fortitude (13864); pēc tam jāpaliek funkcionālam tā heal spellam.
+- Tirisfal Glades cīņā ar Muad (1910) pie mazāk nekā 30% dzīvības tam jālieto Healing Wave (11986) uz sevi.
+- Barrens cīņās ar Greater Plainstrider (3244) un Fleeting Plainstrider (3246) zem 60% dzīvības tiem jālieto Dust Cloud (7272) uz pretinieku.
+- Burning Blade Acolyte (3380) zem 40% dzīvības jākanalizē Drain Life (17173) uz pretinieku; Curse of Agony un Demon Skin uzvedībai jāpaliek nemainītai.
+- Orgrimmar Grunt SmartAI variantam (329601) iesaistoties cīņā jāuzliek sev Battle Shout (9128), un pārējām gossip/action-list darbībām jāpaliek funkcionālām.
