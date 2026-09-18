@@ -1524,3 +1524,22 @@ Derīgā trīs posmu loģika paliek neskarta: phase 4000 izmanto quest 45406 obj
 
 - Zone 7541 iziet quest 45406: pēc objective 116868 jāaktivizējas phase 4000, pirms objective 118566 pabeigšanas jābūt phase 4001, bet pēc tā pabeigšanas — phase 4002.
 - Nodot quest 45406 un atkārtoti ieiet zonā; jāpaliek pēdējam paredzētajam phase stāvoklim un nedrīkst parādīties iepriekšējie invasion posmi.
+
+## Pakete 75 — Missing Vrykul Champion sarunas quest nosacījums
+
+Fails: `sql/updates/world/2026_09_18_67_fix_missing_vrykul_champion_condition.sql`.
+
+Creature credit 96255 (`Credit - Vrykul Champion Missing`) ir quest 39590 “Ahead of the Game” objective, bet linked SmartAI sarunas condition kļūdaini atsaucās uz quest 39595 “Blood and Gold”, kuram ir tikai item 128511 mērķis. Arī condition tips neatbilda rindas komentāram: `OBJECTIVE_DONE` ar negatīvu rezultātu pēc SmartAI credit piešķiršanas sarunu nobloķētu, lai gan komentārs prasa aktīvu questu.
+
+Condition tagad ir `QUEST_TAKEN` questam 39590. SmartAI event 0 turpina piešķirt credit 96255, un linked event 1 palaiž conversation 215006 tikai spēlētājam ar aktīvu pareizo questu. Sākotnējā rinda saglabāta `_backup_20260918_missing_vrykul_champion_condition`.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; aktīvā condition rinda ir `type=9`, `quest=39590`, un backupā ir viena oriģinālā rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 348 līdz 347; pēdējā neesoša quest objective kļūda pazuda, un `objective_done` validācijas kļūdu vairs nav.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieņemt quest 39590 “Ahead of the Game” un pieiet credit triggerim 96255 Valley of the Sword: jāsaņem trešais champion credit un vienreiz jāpalaižas conversation 215006.
+- Bez aktīva quest 39590 pieiet tam pašam triggerim: credit un saruna nedrīkst ietekmēt spēlētāju. Quest 39595 “Blood and Gold” item 128511 vākšanai jāpaliek neatkarīgai.
