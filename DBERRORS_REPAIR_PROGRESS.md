@@ -2313,3 +2313,21 @@ Kodols reģistrēja gan `battlepay_service_level90`, gan `battlepay_service_leve
 
 - Atvērt BattlePay veikala “Services” grupu un pārbaudīt, ka tajā joprojām redzams vienīgais produkts “Level 90 Character Boost”, nevis neesošs level-100 produkts.
 - Ar testa kontu un pietiekamu tokenu atlikumu nopirkt produktu ID 109 tēlam zem 90. līmeņa: tam jāsasniedz 90. līmenis, jāsaņem paredzētā nauda un ekipējums (vai pilnas somas gadījumā ekipējuma vēstule). Pirkums tēlam 90. līmenī vai augstāk jāatsaka.
+
+## Pakete 119 — spell script rank piesaistes
+
+Fails: `sql/updates/world/2026_09_18_106_fix_spell_script_rank_bindings.sql`.
+
+`spell_script_names` negatīvs spell ID nozīmē “piesaistīt visiem rankiem” un ir derīgs tikai rank ķēdes pirmajam spell. Trīs ieraksti neatbilda 7.3.5 klienta datiem: Mother’s Embrace (219045) ir nerankots un tam jau bija pareiza pozitīva rinda līdzās liekai negatīvai kopijai; Ardent Defender (31850) ir nerankots, tāpēc tā `-31850` mainīts uz `31850`; Teleport: Moonglade (18960) ir rankots, tāpēc pozitīvā piesaiste mainīta uz `-18960`, aptverot visu ķēdi. Visas četras sākotnējās rindas saglabātas `_backup_20260918_spell_script_rank_bindings`.
+
+### Pārbaudes rezultāts
+
+- Aktīvajā tabulā palika pa vienai nepārprotamai piesaistei: `219045` Mother’s Embrace, `31850` Ardent Defender un `-18960` Teleport: Moonglade; backup tabulā ir visas četras sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas trīs rank validācijas kļūdas pazuda un `DBErrors.log` skaits samazinājās no 276 uz 273. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Suramar saturā uzlikt Mother’s Embrace (219045) dzīvam mērķim un ļaut aurai beigties vai to noņemt nevis ar pretinieka dispel: dzīvam caster un mērķim jāaktivizējas 219068. Pretinieka dispel gadījumā papildu efektam nav jānotiek.
+- Protection Paladin tēlam lietot Ardent Defender (31850): parastiem trāpījumiem jāsamazina bojājums par spell norādīto procentu, bet pirmajam nāvējošajam trāpījumam jāaktivizē dzīvības glābšanas heal; atkārtota glābšana 120 sekunžu cooldown laikā nedrīkst notikt.
+- Ar druīdu pārbaudīt visus pieejamos Teleport: Moonglade (18960) rankus: pirmajai lietošanai jāsaglabā iepriekšējā vieta un jāpārved uz Moonglade `(7964, -2491, 488)`, bet atkārtotai lietošanai Moonglade 100 jardu robežās jāatgriež saglabātajā recall vietā.
