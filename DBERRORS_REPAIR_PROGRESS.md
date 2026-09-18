@@ -99,3 +99,27 @@ Tas nemaina faktisko līdzšinējo uzvedību; tas padara datubāzi atbilstošu k
 
 - Pieņemt dažus skartos uzdevumus (īpaši 7061, 45755 un 48027) un apstiprināt, ka tiek izsniegts tieši viens sākuma priekšmets.
 - Atmest un atkārtoti pieņemt uzdevumu, pārliecinoties, ka netiek dublēti vairāki priekšmeti.
+
+## Pakete 05 — exploration/event uzdevumu karodziņi
+
+Fails: `sql/updates/world/2026_09_18_04_fix_quest_exploration_flags.sql`.
+
+64 unikāliem uzdevumiem ir reāla saite uz vismaz vienu no mehānismiem, kam obligāti vajadzīgs `QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT (0x002)`:
+
+- 22 ziņojumi no `SPELL_EFFECT_QUEST_COMPLETE`;
+- 35 ziņojumi no `SCRIPT_COMMAND_QUEST_EXPLORED`;
+- 12 SmartAI darbības (vairākas lieto vienu un to pašu quest ID), kuras bez karodziņa vispār netika ielādētas.
+
+SQL saglabā visus citus esošos `SpecialFlags`, pievieno tikai bitu `0x002` un trūkstošas addon rindas izveido tikai eksistējošiem `quest_template` ID. Kodols pirmajām divām grupām jau uzlika šo pašu bitu atmiņā; SmartAI grupai labojums papildus atjauno iepriekš izlaisto quest-credit darbību.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`.
+- Visiem 64 unikālajiem uzdevumiem datubāzē ir saglabāts bits `0x002`, nezaudējot iepriekšējos bitus.
+- Visi 69 saistītie ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 665 līdz 596.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts ar exit code 0.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izpildīt pa vienam uzdevumam no spell grupas (piemēram, 45546), start-script grupas (14395) un SmartAI grupas (30515 vai 46213).
+- Apstiprināt, ka uzdevums nepabeidzas uzreiz bez paredzētā notikuma un pēc notikuma saņem completion credit.

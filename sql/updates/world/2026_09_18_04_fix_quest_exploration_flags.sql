@@ -1,0 +1,18 @@
+-- Quest-complete spells, SCRIPT_COMMAND_QUEST_EXPLORED and SmartAI action 15
+-- require QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT (0x002). Preserve all
+-- existing flags and create an addon row only where one is currently absent.
+INSERT INTO `quest_template_addon` (`ID`, `SpecialFlags`)
+SELECT `ID`, 0x002
+FROM `quest_template`
+WHERE `ID` IN
+(
+    14266, 14272, 14276, 14279, 14283, 14395, 24904, 24967, 26232,
+    29100, 29219, 30515, 37530, 37729, 38035, 38612, 38613, 38614,
+    38615, 38624, 38687, 38913, 39579, 39592, 39733, 39735, 39837,
+    39864, 39988, 40112, 40216, 40312, 40388, 40568, 41763, 42370,
+    42371, 42517, 44106, 44137, 45546, 45636, 46033, 46213, 46835,
+    46941, 47829, 47954, 47956, 47957, 47958, 48030, 48031, 48032,
+    48033, 48064, 48602, 48603, 48937, 60003, 60004, 60005, 60006,
+    60008
+)
+ON DUPLICATE KEY UPDATE `SpecialFlags` = `SpecialFlags` | VALUES(`SpecialFlags`);
