@@ -752,3 +752,23 @@ Validācija tagad atļauj abus kodola apkalpotos tipus un turpina noraidīt jebk
 - Garnizona Shipyard pārbaudīt Barrel of Draenor Fish sūtījumu: mijiedarbībai jāatver sūtījuma logs, rindai jāizpildās un gatavajai piegādei jābūt savācamai.
 - Orgrimmar pārbaudīt “Order for engineering workshop” objektu ar tēlu, kam pieejams attiecīgais WoD Engineering pasūtījums; objektam jāatver pareizais sūtījuma interfeiss un jāizmanto Gearspring Parts container.
 - Kā regresijas testu Class Order Hall izveidot un savākt vismaz vienu Legion sūtījumu; `GarrTypeID=3` darbība nedrīkst mainīties.
+
+## Pakete 35 — Professor Pallin nulles priekšmetu nosacījuma arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_30_archive_zero_item_condition.sql`.
+
+Inscription trenera Professor Pallin (92195) gossip izvēlnei 18598/1 “Here are the cards you wanted.” datubāzē bija divi vienādi item 129092 nosacījumi: derīgā rinda pieprasa 10 priekšmetus, bet importa dublikāts pieprasa neiespējamu skaitu 0 un tādēļ ConditionMgr to vienmēr izlaida. Arī vecākajā 2020. gada LegionCore world dump abi ieraksti ir blakus, kas apstiprina, ka nulles rinda nav alternatīva funkcija.
+
+Pilna nederīgā rinda pirms izņemšanas saglabāta `_backup_20260918_zero_item_condition`. Derīgais 10 priekšmetu nosacījums, questa 39933 nosacījums un pati gossip izvēlne nav mainīti.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir tieši viena pilna nulles skaita rinda, bet aktīvajos datos palicis tieši viens item 129092 nosacījums ar `ConditionValue2=10`.
+- “Item condition has 0 set for item count” ziņojums pazuda; `DBErrors.log` skaits samazinājās no 464 līdz 463.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; `Server.log` nav jaunu fatālu, assertion vai trūkstošu resursu ziņojumu.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar tēlu, kam aktīvs izvēlnei vajadzīgais quests 39933, bet ir mazāk nekā 10 item 129092, Professor Pallin izvēlei “Here are the cards you wanted.” nav jāparādās.
+- Ar to pašu tēlu savākt tieši 10 item 129092; izvēlei jāparādās, jānostrādā un jāpatērē/jāapstrādā priekšmeti tā, kā paredz attiecīgais Inscription questa skripts.
+- Atkārtot ar vairāk nekā 10 priekšmetiem un pēc questa pabeigšanas, pārbaudot, ka skaita robeža darbojas, bet izvēle ārpus vajadzīgā questa nav pieejama.
