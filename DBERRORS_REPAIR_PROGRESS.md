@@ -2491,3 +2491,20 @@ Scrapped Fel Reaver (20243) respawn laikā mēģināja sev uzlikt TBC transform�
 
 - Netherstorm quest “It’s a Fel Reaver, But with Heart” laikā pie Scrapped Fel Reaver (20243) pārbaudīt, ka tas jau spawn brīdī izskatās kā salūzis fel reaver bez 39311 auras.
 - Lietot Fel Zapper spell 35282: NPC jākļūst aktīvam, jāsāk summonēt Zaxxis Ambusher (20287) pēc 2, 17, 32 un 60 sekundēm un pēc nāves jāatstāj Heart of the Fel Reaver. Evade vai nāve nedrīkst atstāt summonētus ambusherus.
+
+## Pakete 129 — Gul’dan nepabeigtās spell darbības arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_115_archive_incomplete_guldan_spell_action.sql`.
+
+Gul’dan (93926) uz data-set eventu `(2,2)` bija trīs paralēlas rindas: sākt waypoint 93926, lietot derīgo spell 184538 un vēl viena importēta `CAST` darbība ar spell ID 0. Pēdējai nav ne spell, ne link, ne cita izpildāma satura, un tās izņemšana neietekmē abas īstās eventa darbības. Nepabeigtā placeholder rinda saglabāta `_backup_20260918_guldan_incomplete_spell_action` un tikai tad izņemta.
+
+### Pārbaudes rezultāts
+
+- Data-set `(2,2)` joprojām vienlaikus sāk waypoint un lieto spell 184538; aktīvas spell-0 rindas nav, backup tabulā ir tās sākotnējā kopija.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; Gul’dan spell-0 kļūda pazuda un `DBErrors.log` skaits samazinājās no 225 uz 224. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Tanaan intro instancē pie Gul’dan (93926) izraisīt data-set 1: jāatskaņojas abām teksta rindām ar 19 sekunžu intervālu.
+- Izraisīt data-set 2: Gul’dan jālieto spell 184538, jāsāk vienpunkta waypoint uz `(4066.97, -2299.66, 84.30)`, waypoint beigās jālieto 187028, jāieslēdz lidošana un jāpagriežas uz orientāciju 4.79027. Data-set 3 viņu korekti despawnē.
