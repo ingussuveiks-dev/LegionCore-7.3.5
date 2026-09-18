@@ -281,7 +281,6 @@ public:
         HandleReloadQuestStartScriptsCommand(handler, "a");
         HandleReloadSpellScriptsCommand(handler, "a");
         handler->SendGlobalGMSysMessage("DB tables `*_scripts` reloaded.");
-        HandleReloadDbScriptStringCommand(handler, "a");
         HandleReloadWpScriptsCommand(handler, "a");
         HandleReloadWpCommand(handler, "a");
         return true;
@@ -1128,14 +1127,6 @@ public:
         if (*args != 'a')
             handler->SendGlobalGMSysMessage("DB table `spell_scripts` reloaded.");
 
-        return true;
-    }
-
-    static bool HandleReloadDbScriptStringCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        TC_LOG_INFO("misc", "Re-Loading Script strings from `db_script_string`...");
-        sScriptDataStore->LoadDbScriptStrings();
-        handler->SendGlobalGMSysMessage("DB table `db_script_string` reloaded.");
         return true;
     }
 

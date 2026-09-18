@@ -335,10 +335,8 @@ class TC_GAME_API ScriptDataStoreMgr
     SpellScriptsContainer _spellScriptsStore;
 
     void LoadScripts(ScriptsType type);
-    void CheckScripts(ScriptsType type, std::set<int32>& ids);
 public:
     static ScriptDataStoreMgr* instance();
-    void LoadDbScriptStrings();
     void LoadGameObjectScripts();
     void LoadQuestEndScripts();
     void LoadQuestStartScripts();

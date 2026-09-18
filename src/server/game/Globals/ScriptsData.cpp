@@ -107,52 +107,6 @@ ScriptDataStoreMgr* ScriptDataStoreMgr::instance()
     return &instance;
 }
 
-void ScriptDataStoreMgr::CheckScripts(ScriptsType type, std::set<int32>& ids)
-{
-    ScriptMapMap* scripts = GetScriptsMapByType(type);
-    if (!scripts)
-        return;
-
-    for (ScriptMapMap::const_iterator itrMM = scripts->begin(); itrMM != scripts->end(); ++itrMM)
-    {
-        for (ScriptMap::const_iterator itrM = itrMM->second.begin(); itrM != itrMM->second.end(); ++itrM)
-        {
-            switch (itrM->second.command)
-            {
-            case SCRIPT_COMMAND_TALK:
-            {
-                if (!sObjectMgr->GetTrinityStringLocale(itrM->second.Talk.TextID))
-                    TC_LOG_ERROR("sql.sql", "Table `%s` references invalid text id %u from `db_script_string`, script id: %u.", GetScriptsTableNameByType(type).c_str(), itrM->second.Talk.TextID, itrMM->first);
-
-                if (ids.find(itrM->second.Talk.TextID) != ids.end())
-                    ids.erase(itrM->second.Talk.TextID);
-            }
-            default:
-                break;
-            }
-        }
-    }
-}
-
-void ScriptDataStoreMgr::LoadDbScriptStrings()
-{
-    TC_LOG_INFO("server.loading", "Loading Scripts text locales...");
-
-    LoadTrinityStrings("db_script_string", MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID);
-
-    std::set<int32> ids;
-
-    for (int32 i = MIN_DB_SCRIPT_STRING_ID; i < MAX_DB_SCRIPT_STRING_ID; ++i)
-        if (sObjectMgr->GetTrinityStringLocale(i))
-            ids.insert(i);
-
-    for (int type = SCRIPTS_FIRST; type < SCRIPTS_LAST; ++type)
-        CheckScripts(ScriptsType(type), ids);
-
-    for (std::set<int32>::const_iterator itr = ids.begin(); itr != ids.end(); ++itr)
-        TC_LOG_ERROR("sql.sql", "Table `db_script_string` has unused string id  %u", *itr);
-}
-
 void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
 {
     uint32 oldMSTime = getMSTime();
@@ -213,16 +167,10 @@ void ScriptDataStoreMgr::LoadScripts(ScriptsType type)
                     tableName.c_str(), tmp.Talk.ChatType, tmp.id);
                 continue;
             }
-            if (!tmp.Talk.TextID)
+            if (!sBroadcastTextStore.LookupEntry(uint32(tmp.Talk.TextID)))
             {
                 TC_LOG_ERROR("sql.sql", "Table `%s` has invalid talk text id (dataint = %i) in SCRIPT_COMMAND_TALK for script id %u",
                     tableName.c_str(), tmp.Talk.TextID, tmp.id);
-                continue;
-            }
-            if (tmp.Talk.TextID < MIN_DB_SCRIPT_STRING_ID || tmp.Talk.TextID >= MAX_DB_SCRIPT_STRING_ID)
-            {
-                TC_LOG_ERROR("sql.sql", "Table `%s` has out of range text id (dataint = %i expected %u-%u) in SCRIPT_COMMAND_TALK for script id %u",
-                    tableName.c_str(), tmp.Talk.TextID, MIN_DB_SCRIPT_STRING_ID, MAX_DB_SCRIPT_STRING_ID, tmp.id);
                 continue;
             }
 

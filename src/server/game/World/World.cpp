@@ -2126,7 +2126,6 @@ void World::SetInitialWorldSettings()
     sScriptDataStore->LoadGameObjectScripts();                         // must be after load Creature/Gameobject(Template/Data)
     sScriptDataStore->LoadEventScripts();                              // must be after load Creature/Gameobject(Template/Data)
     sScriptDataStore->LoadWaypointScripts();
-    sScriptDataStore->LoadDbScriptStrings();                            // must be after Load*Scripts calls
     sScriptDataStore->LoadSpellScriptNames();
 
     TC_LOG_INFO("server.loading", "Initializing Scripts...");

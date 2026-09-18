@@ -1581,3 +1581,22 @@ Visas septiņas rindas saglabātas `_backup_20260918_toss_crystals_spell_scripts
 
 - Ar aktīvu quest 37853 “Tossing Crystals” izmantot paredzēto kristālu pie Senegos baseina: spell 179915 jānoņem/iedarbina paredzētās auras un quest credit 90315 jāsaņem pa pašreizējo spell/SmartAI ceļu.
 - Atkārtot darbību pēc credit saņemšanas un bez aktīva questa; nedrīkst parādīties lieki credit NPC vai vairākkārtējs progress.
+
+## Pakete 78 — event script runas BroadcastText validācija
+
+Fails: `src/server/game/Globals/ScriptsData.cpp` (un novecojušā `db_script_string` ielādētāja deklarācijas/izsaukumu noņemšana).
+
+Event script 13021 izsauc spell 28700 “Disperse Neutralizing Agent” un liek mērķa būtnei parādīt BroadcastText 17912. Izpildes ceļš `WorldObject::Talk(uint32)` jau interpretē `dataint` kā BroadcastText ID, un Legion hotfix datubāzē ID 17912 ir pareizais teksts par neutralizējošā līdzekļa sajaukšanos ezera ūdenī. Tomēr vecā ielādes validācija vēl pieprasīja vēsturiskā `db_script_string` rezervēto diapazonu, tāpēc derīgais ieraksts tika noraidīts.
+
+Validācija tagad, tāpat kā aktuālajā TrinityCore realizācijā, pārbauda `sBroadcastTextStore`. Tukšās un ar runtime semantiku vairs nesaderīgās `db_script_string` ielādes funkcijas starta un `reload all scripts` izsaukumi noņemti; pats event script un tā dati nav mainīti vai dzēsti.
+
+### Pārbaudes rezultāts
+
+- `Release` konfigurācijas pilna kompilācija un instalēšana pabeigta sekmīgi; `worldserver.exe` atjaunināts.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 343 līdz 341: pazuda gan 13021 ārpus diapazona kļūda, gan novecojušā `db_script_string` ielādētāja kļūda; jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116, tātad šī pakete nepievienoja jaunu servera kļūdu. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Irradiated Power Crystal (GO 181433) Silverline Lake izmantot spell 28700 “Disperse Neutralizing Agent”; mērķa būtnei apkārtnē jāparāda BroadcastText 17912 par ūdens attīrīšanos.
+- Pārbaudīt, ka ziņojumu redz tuvumā esošie spēlētāji paredzētajā `TEXT_EMOTE` formā un ka spell ārpus atļautā 15 jardu attāluma joprojām nav izmantojams.
