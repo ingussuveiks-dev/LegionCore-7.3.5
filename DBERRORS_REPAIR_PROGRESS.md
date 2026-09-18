@@ -2331,3 +2331,20 @@ Fails: `sql/updates/world/2026_09_18_106_fix_spell_script_rank_bindings.sql`.
 - Suramar saturā uzlikt Mother’s Embrace (219045) dzīvam mērķim un ļaut aurai beigties vai to noņemt nevis ar pretinieka dispel: dzīvam caster un mērķim jāaktivizējas 219068. Pretinieka dispel gadījumā papildu efektam nav jānotiek.
 - Protection Paladin tēlam lietot Ardent Defender (31850): parastiem trāpījumiem jāsamazina bojājums par spell norādīto procentu, bet pirmajam nāvējošajam trāpījumam jāaktivizē dzīvības glābšanas heal; atkārtota glābšana 120 sekunžu cooldown laikā nedrīkst notikt.
 - Ar druīdu pārbaudīt visus pieejamos Teleport: Moonglade (18960) rankus: pirmajai lietošanai jāsaglabā iepriekšējā vieta un jāpārved uz Moonglade `(7964, -2491, 488)`, bet atkārtotai lietošanai Moonglade 100 jardu robežās jāatgriež saglabātajā recall vietā.
+
+## Pakete 120 — Twilight Correspondence loot nosacījums
+
+Fails: `sql/updates/world/2026_09_18_107_fix_twilight_correspondence_loot_condition.sql`.
+
+Twilight Correspondence (35277) quest “Unusual Activity” (11886) nosacījums bija piesaistīts `WORLD_LOOT_TEMPLATE` grupai 1, kas nav eksistējusi ne 2020., ne 2024. gada LegionCore 7.3.5 datubāzē. Žurnāla teksts kļūdaini nosauc `spell_loot_template`, taču kodā šis pats paziņojums tiek izmantots world-loot avotam. Pats items nav pazudis: tas ar 100% iespēju atrodas trīs konkrētās loot tabulās — Twilight Firesworn (25863), Twilight Flameguard (25866) un Twilight Speaker Viktor (25924). Quest prasība pārvietota no neesošās globālās grupas uz šīm trim īstajām creature-loot rindām. Sākotnējais nosacījums saglabāts `_backup_20260918_twilight_correspondence_condition`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir viena sākotnējā world-loot rinda; aktīvajā tabulā ir trīs `CREATURE_LOOT_TEMPLATE` nosacījumi ar item 35277 un quest 11886, pa vienam katram faktiskajam loot entry.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošās loot grupas kļūda pazuda un `DBErrors.log` skaits samazinājās no 273 uz 272. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Midsummer notikuma laikā bez aktīva quest 11886 nogalināt Twilight Firesworn (25863), Twilight Flameguard (25866) un Twilight Speaker Viktor (25924) Ashenvale: Twilight Correspondence (35277) nedrīkst būt pieejams lootā.
+- Pieņemt “Unusual Activity” (11886) un atkārtot testu ar visiem trim NPC; itemam 35277 jāparādās to lootā un jāļauj turpināt quest. Pēc quest pabeigšanas vai atmešanas items vairs nedrīkst krist.
