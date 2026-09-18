@@ -2295,3 +2295,21 @@ Dark Shaman Koranthal (61412) AI lieto Shadow Storm (119971), kura palīgspell 1
 
 - Ragefire Chasm kartē 389 iesaistīt kaujā Dark Shaman Koranthal (61412; aptuvenā atrašanās vieta `(-117, 71, -21)`).
 - Ap 20,5 sekundēm pēc kaujas sākuma bossam jāizsauc Shadow Storm (119971), jāparāda raid brīdinājums un spell 119973 dummy efektam korekti jālieto tā datos norādītais papildu efekts uz trāpītajiem mērķiem; atkārtojumam jānotiek aptuveni ik pēc 47,2 sekundēm.
+
+## Pakete 118 — neaktīvs BattlePay level-100 produkta skripts
+
+Fails: `src/server/scripts/BattlePay/battlepay_services.cpp`.
+
+Kodols reģistrēja gan `battlepay_service_level90`, gan `battlepay_service_level100`, bet šīs datubāzes apzināti sakoptajā BattlePay katalogā ir tikai viens produkts: ID 109 “Level 90 Character Boost” ar `battlepay_service_level90`. To tieši nosaka arī repozitorija `sql/old/world/0003_battlepay_cleanup.sql`; level-100 produkta, veikala ieraksta vai attēlojuma datu nav. Tāpēc level-100 skriptu nedrīkstēja piesaistīt esošajam level-90 produktam. Generic `BattlePay_Level<100>` implementācija nav dzēsta un paliek pieejama nākotnes DB produktam; atslēgta tikai šobrīd neizmantotā reģistrācija.
+
+### Pārbaudes rezultāts
+
+- Pirms izmaiņas datubāzē apstiprināts tieši viens BattlePay produkts un veikala ieraksts, abi ID 109, ar nemainītu `battlepay_service_level90` piesaisti.
+- Release `worldserver` pilnībā pārbūvēts un uzinstalēts bez kompilācijas kļūdām.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; nepiesaistītā `battlepay_service_level100` kļūda pazuda un `DBErrors.log` skaits samazinājās no 277 uz 276. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atvērt BattlePay veikala “Services” grupu un pārbaudīt, ka tajā joprojām redzams vienīgais produkts “Level 90 Character Boost”, nevis neesošs level-100 produkts.
+- Ar testa kontu un pietiekamu tokenu atlikumu nopirkt produktu ID 109 tēlam zem 90. līmeņa: tam jāsasniedz 90. līmenis, jāsaņem paredzētā nauda un ekipējums (vai pilnas somas gadījumā ekipējuma vēstule). Pirkums tēlam 90. līmenī vai augstāk jāatsaka.

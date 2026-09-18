@@ -142,7 +142,8 @@ public:
 void AddSC_BattlePay_Services()
 {
     new BattlePay_Level<90>("battlepay_service_level90");
-    new BattlePay_Level<100>("battlepay_service_level100");
+    // The 7.3.5 world database exposes only the level-90 boost product.
+    // Keep the generic implementation available for a future DB product.
     new playerScriptTokensAvailable();
     //new BattlePay_AccountService<ServiceFlags::PremadePve>("battlepay_service_premade");
 }
