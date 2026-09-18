@@ -1658,3 +1658,23 @@ Sākotnējā timed action list rinda saglabāta `_backup_20260918_bonegrim_jewel
 
 - Quest 40863 laikā iegūt Catriona's Jewel (item 133895), pie Bonegrim izvēlēties “Here is your gem. Give me the core.”; rubīnam jāpazūd un somā jāparādās vienam Fel-Infused Core (133881).
 - Bez Catriona's Jewel maiņas opcija nedrīkst būt pieejama; ar jewel somā tai jābūt redzamai un pēc veiksmīgas maiņas atkārtoti jāpaslēpjas.
+
+## Pakete 82 — novecojis Keeper Remulos gossip atzars
+
+Fails: `sql/updates/world/2026_09_18_73_archive_obsolete_remulos_gossip.sql`.
+
+Keeper Remulos SmartAI saturēja saistītu darbību pāri menu 10215 neesošai opcijai 2: NPC izrunātu svētku tekstu un dotu item 90001. Legion 7.3.5 DB menu 10215 ir tikai derīgās opcijas 0 un 1 questiem 13074/13075; 7.3.5.26972 klienta `ItemSparse` nav item 90001, un tas nav neviena Remulos questa starta, reward, drop vai objective priekšmets. 2024 bāzes dumpā šis SmartAI pāris jau ir bez atbilstošas gossip opcijas, kamēr 2020 dumpā tā nav.
+
+Tātad atzaru spēlē nav iespējams izsaukt un tā saturs šajā klienta versijā nav atjaunojams. Abas precīzās rindas (event 4 un linked event 5) saglabātas `_backup_20260918_obsolete_remulos_gossip`, pēc tam izņemtas no aktīvās SmartAI tabulas. Derīgie Remulos Emerald Dream teleporti un quest accept darbība netika mainīti.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; backupā ir abas novecojušās rindas, bet aktīvajā SmartAI paliek eventi 0–3 derīgajām menu opcijām un questam 13074.
+- Pilns `worldserver` starts pabeigts 13 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 338 līdz 337; neesošā item 90001 kļūda pazuda.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 13074 pie Keeper Remulos izvēlēties “Please send me into the Emerald Dream…”; jānostrādā spell 57413 un spēlētājs jānosūta paredzētajā quest fāzē.
+- Pabeigt quest 13075 nosacījumu un izmantot atgriešanās opciju pie Remulos; jānostrādā spell 57670, dialogam jāaizveras un jānotiek atgriešanai pie Arch Druid Lilliandra.
+- Pārliecināties, ka Remulos izvēlnē nav tukšas trešās opcijas un ka viņa pārējie quest 7066, 8446–8447, 8734–8736 un 40962 paliek pieejami paredzētajos stāvokļos.
