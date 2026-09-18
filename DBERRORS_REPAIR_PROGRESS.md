@@ -660,3 +660,27 @@ Labotie efekti ir Solar Empowerment (164545), Lunar Empowerment (164547), Gather
 - Arcane Mage ar Rhonin's Assaulting Armwraps: pēc Arcane Missiles proc nākamajam Arcane Blast jābūt bez mana izmaksām, un aura jānoņem tieši pēc šī cast.
 - Arms Warrior: pēc Colossus Smash atsevišķi pārbaudīt Precise Strikes un Shattered Defenses. Nākamajam Mortal Strike vai Execute jāsaņem attiecīgais rage/damage/critical bonuss, un AoE vai neveiksmīgs mērķa rezultāts nedrīkst patērēt auru vairāk nekā vienreiz.
 - Guardian Druid: Galactic Guardian automātiskajam Moonfire jāpiešķir 213708; nākamajam manuālajam Moonfire jāsaņem rage un direct-damage bonuss, pēc tam aurai jāpazūd.
+
+## Pakete 31 — Necrosis sekundārās auras proc definīcija
+
+Fails: `sql/updates/world/2026_09_18_28_fix_necrosis_proc.sql`.
+
+Unholy Death Knight talants Necrosis (207346) pēc Death Coil bojājuma piešķir sekundāro vienas lietošanas auru 216974, kurai jāpastiprina nākamais Scourge Strike vai tā talanta aizvietotājs Clawing Shadows. Atšķirībā no primārās auras 216974 build 26972 datos nav savas `SpellAuraOptions` rindas, tādēļ tās nepilnais `spell_proc` ieraksts nevarēja saņemt noklusēto proc tipu vai iespējamību un nekad nenostrādāja.
+
+Ierakstam definēts Death Knight spell family 15, klienta efekta class mask (`0 / 134217728 / 128 / 0`), melee-damage spell proc tips 16, `CAST` fāze un 100% iespējamība. Tas saglabā jau esošo vienu charge/modcharge un nodrošina, ka lādiņu patērē tikai Scourge Strike/Clawing Shadows ģimenes burvestība, nevis jebkura melee spēja. Pilna sākotnējā rinda pirms labojuma saglabāta `_backup_20260918_necrosis_proc`.
+
+Datu salīdzināšanai izmantotas build 26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellClassOptions`, `SpellCategories` un `SpellMisc` tabulas no Wago DB2 eksportiem. Tajās Scourge Strike (55090) un Clawing Shadows (207311) ir Death Knight ģimenes melee spelli ar kopīgu class-mask bitu, bet 216974 efekts ir tieši 40% spell modifier šai maskai.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena pilna sākotnējā rinda.
+- Dzīvajā 216974 ierakstā ir paredzētā DK family/mask, `typeMask=16`, `spellPhaseMask=1`, `chance=100`, kā arī saglabāti `charges=1` un `modcharges=1`.
+- Abi atlikušie `spell_proc` ziņojumi pazuda un šajā kategorijā vairs nav nevienas kļūdas; kopējais `DBErrors.log` skaits samazinājās no 476 līdz 474.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauna Necrosis vai cita `spell_proc` validācijas kļūda neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Unholy Death Knight izvēlēties Necrosis, uzbrukt mērķim ar Death Coil un pārliecināties, ka bojājums piešķir 216974 auru.
+- Kamēr 216974 ir aktīva, lietot citas melee spējas: tās nedrīkst patērēt Necrosis. Nākamajam Scourge Strike jāsaņem 40% bonuss un pēc viena cast aurai jāpazūd.
+- Atkārtot ar izvēlētu Clawing Shadows: tai jāsaņem tas pats bonuss un jāpatērē tieši viens lādiņš arī no distances.
+- Pārbaudīt neveiksmīgu/atceltu cast un vairākus mērķus: aura nedrīkst pazust pirms derīga Scourge Strike/Clawing Shadows cast un nedrīkst tikt patērēta vairākas reizes viena cast laikā.
