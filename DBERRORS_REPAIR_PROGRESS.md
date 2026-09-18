@@ -2441,3 +2441,19 @@ Barrens Boar bija saglabājies no klienta izņemtais hunter-pet Gore (35290); ta
 
 - Barrens uzsākt cīņu ar Barrens Boar (34647): tam pēc 1–2 sekundēm un pēc tam ik pēc 25–30 sekundēm jālieto Gore (32019), bet Bite (131103) jāturpina lietot ik pēc 7,8–9,2 sekundēm.
 - Silverpine Forest pārbaudīt Orc Sea Dog (45196) gan parastā cīņā, gan quest ķēdē pēc spell 84514 trāpījuma: Sinister Strike (60195) jālieto uz pretinieku ik pēc 4–4,5 sekundēm, spawn aura (84511), timed action list un 45 sekunžu despawn jāpaliek funkcionāliem.
+
+## Pakete 126 — Warsong Wing Commander missing-buff pārbaudes rādiuss
+
+Fails: `sql/updates/world/2026_09_18_112_fix_warsong_wing_commander_buff_radius.sql`.
+
+Warsong Wing Commander (40942) `SMART_EVENT_FRIENDLY_MISSING_BUFF` pārbaudīja Ride Vehicle auru (46598) ar nulles rādiusu, ko SmartAI korekti noraidīja. Tā kā darbības mērķis ir pats NPC un citi šīs DB self-buff eventi izmanto viena jarda pārbaudi, rādiuss mainīts no 0 uz 1; spell, 30 sekunžu intervāls, darbības flags, piesaistītais despawn un visi mērķi saglabāti. Sākotnējā rinda saglabāta `_backup_20260918_warsong_wing_commander_buff_radius`.
+
+### Pārbaudes rezultāts
+
+- DB rindai tagad ir `event_type=16`, aura 46598 un derīgs viena jarda rādiuss; backup tabulā ir sākotnējā nulles rādiusa rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; “Parameter can not be NULL” kļūda pazuda un `DBErrors.log` skaits samazinājās no 228 uz 227. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Stonetalon Mountains quest “The Only Way Down is in a Body Bag” teritorijā pārbaudīt Warsong Wing Commander (40942): kad tam trūkst Ride Vehicle auras 46598, jāiedarbojas parachute spell 79404 un piesaistītajam despawn jānotiek pēc 45 sekundēm. NPC ar jau esošu auru nedrīkst nevajadzīgi atkārtot darbību biežāk par 30 sekundēm.
