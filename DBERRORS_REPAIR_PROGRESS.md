@@ -1198,3 +1198,25 @@ Secrets of the Stone (131759) ir bez-cooldown universālais variants, kura spēl
 - Ar Pandaria Jewelcrafting tēlu, kurš vēl nezina visas receptes, vienu reizi izmantot katru no sešiem krāsu research spelliem. Jāizveido Facets of Research un jāiemācās viena vēl nezināma attiecīgās krāsas superior gem cut recepte; ja konkrētās krāsas receptes jau zināmas, jāpārbauda spēles paredzētā pāreja uz citas krāsas recepti.
 - Izmantot Secrets of the Stone (131759) ar 3 Spirit of Harmony. Tam jāiemāca viena vēl nezināma recepte no kopējā 68 recepšu saraksta un nav jāuzliek sešu krāsu research dienas cooldown.
 - Kad visas 68 receptes ir zināmas, research nedrīkst atkārtoti iemācīt jau zināmu spellu vai radīt servera kļūdu.
+
+## Pakete 58 — terminālo profession recepšu false-positive discovery klasifikācija
+
+Fails: `src/server/game/Spells/SpellInfo.cpp`.
+
+`IsExplicitDiscovery()` līdz šim jebkuru tradeskill ar “create item + script effect” uzskatīja par recipe discovery. Tas pareizi atpazīst research spellus, bet kļūdaini klasificēja piecus spellus, kuriem `skill_discovery_template` saturs nav paredzēts:
+
+- Wicked Edge of the Planes, Reborn (138880), Bloodmoon, Reborn (138881), Blazefury, Reborn (138892) un Lionheart Executioner, Reborn (138893) ir savu Blacksmithing upgrade ķēžu gala receptes; atšķirībā no iepriekšējiem ķēdes posmiem to aprakstos nav nākamās apgūstamās receptes.
+- Alchemist's Cauldron (156586) izveido reagentu konteineru un tā script effect nav recipe discovery.
+
+Šie pieci zināmie izņēmumi tagad atgriež `false` pirms formas pārbaudes. Tas nemaina item izveidi vai citu script-effect apstrādi: iepriekš discovery lookup tāpat neatrada nevienu rindu un turpināja izpildi; tagad tas vienkārši neveic nepiemērojamo lookup un neizvada maldinošu DB kļūdu.
+
+### Pārbaudes rezultāts
+
+- Pilns Release rebuild un install pabeigts sekmīgi; tika pārkompilēts `SpellInfo.cpp` un jaunais `worldserver.exe` uzstādīts `compiles` mapē.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 403 līdz 398; neviens no pieciem nepiemērojamajiem explicit-discovery brīdinājumiem vairs neparādās.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izgatavot visus četrus terminālos “Reborn” ieročus un pārbaudīt, ka pareizais ierocis tiek izveidots, netiek mēģināts iemācīt neesošu nākamo recepti un iepriekšējie upgrade ķēdes posmi joprojām iemāca nākamo recepti.
+- Izmantot Alchemist's Cauldron (156586): jāizveido paredzētais reagentu konteiners 111403, jānostrādā kopīgajam dienas cooldown, un spēlētājam nav jāmācās nejauša recepte.

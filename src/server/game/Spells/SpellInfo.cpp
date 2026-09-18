@@ -1533,6 +1533,21 @@ bool SpellInfo::HasChannelInterruptFlag(SpellAuraInterruptFlags2 flag) const
 
 bool SpellInfo::IsExplicitDiscovery() const
 {
+    // These tradeskills use a script effect for non-discovery work. The four
+    // reborn weapons are the terminal recipes in their upgrade chains, and
+    // Alchemist's Cauldron only creates its reagent container.
+    switch (Id)
+    {
+        case 138880: // Wicked Edge of the Planes, Reborn
+        case 138881: // Bloodmoon, Reborn
+        case 138892: // Blazefury, Reborn
+        case 138893: // Lionheart Executioner, Reborn
+        case 156586: // Alchemist's Cauldron
+            return false;
+        default:
+            break;
+    }
+
     return (Effects[0]->Effect == SPELL_EFFECT_CREATE_RANDOM_ITEM
             || Effects[0]->Effect == SPELL_EFFECT_CREATE_ITEM
             || Effects[0]->Effect == SPELL_EFFECT_CREATE_ITEM_2)
