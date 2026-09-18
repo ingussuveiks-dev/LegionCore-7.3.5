@@ -1790,3 +1790,22 @@ Abas sākotnējās rindas saglabātas `_backup_20260918_areatrigger_6854_aura_ac
 
 - Ar aktīvu quest 39272 ieiet area trigger 6854; jānostrādā quest spell 99424 un spēlētājam jānoņemas aura 99435.
 - Pārbaudīt visus četrus quest mērķus 99433–99436 un atkārtotu ieiešanu triggerī; progress nedrīkst dubultoties neparedzēti, un aura 99435 nedrīkst palikt uz spēlētāja.
+
+## Pakete 89 — Kalecgos dublētā SetData darbība
+
+Fails: `sql/updates/world/2026_09_18_79_archive_duplicate_kalecgos_dataset_action.sql`.
+
+Kalecgos (38017) SmartAI saturēja divas vienādas `SetData(0,2)` darbības ar `id=1`, kas abas palaida timed action list 3801701; vienīgā atšķirība bija `link`. Funkcionālā sākotnējā rinda ar `link=0` jau ir aktīva, bet vēlāk pievienotā kopija ar `link=1` sasaistīja pati sevi un loaderī tika noraidīta. 2020 dumpa rindu secība arī parāda, ka pašsaistes kopija pievienota vēlāk par pilno funkcionālo Kalecgos bloku.
+
+Precīzā nederīgā kopija saglabāta `_backup_20260918_duplicate_kalecgos_dataset_action` un arhivēta no aktīvās tabulas. Aktīvā `id=1, link=0` darbība, action list 3801700/3801701 un waypoint ķēdes nav mainītas.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; precīzā dublētā rinda ir backupā, bet aktīvajā tabulā paliek viena funkcionāla `id=1, link=0` darbība uz action list 3801701.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 330 līdz 329; Kalecgos pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quel'Delar notikuma laikā nosūtīt Kalecgos (38017) `SetData(0,1)` un `SetData(0,2)`; abām attiecīgi jāpalaiž timed action list 3801700 un 3801701 tikai vienu reizi.
+- Pārbaudīt Kalecgos waypoint 1 pauzi un pagriešanos pret Krasus (27990), pēc tam waypoint 2 apstāšanos un pagriešanos mājas virzienā.
