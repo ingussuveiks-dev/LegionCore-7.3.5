@@ -2849,3 +2849,19 @@ Nightborne Boat (105264) SmartAI atsaucās uz diviem neesošiem ceļiem: 9100402
 
 - Suramar/City of Suramar saturā izraisīt Nightborne Boat (105264) starta eventu: laivai jāizbrauc ceļš 9100402 no `(967.552, 3814.90)` līdz `(1007.58, 3778.13)` un 5. punktā spēlētājam jāizpilda spell 213507.
 - Pēc pasažiera iekāpšanas jāstartē ceļam 9100403; laivai jāizbrauc visi 13 punkti līdz `(970.645, 3478.13)` un galapunktā jāizpilda spell 208703. Pēc izkāpšanas tai pēc trim sekundēm korekti jādespawnojas.
+
+## Pakete 151 — nepabeigtās Dreadscar Acolyte kustības arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_137_archive_incomplete_dreadscar_acolyte_path.sql`.
+
+Dreadscar Gateway (117703) ik pēc 50–62 sekundēm summonē Black Harvest Acolyte (117627) uz 25 sekundēm. Summonētā acolyte `JUST_SUMMONED` rinda mēģināja palaist ceļu 117627, taču pats ceļš nav atrodams ne 2020. un 2024. gada LegionCore datubāzēs, ne pārbaudītajos OpenLCore, ArgusCore un citos Legion forkos. Bez oriģinālajām sniff koordinātēm droši izdomāt maršrutu nevar. Tikai nepabeigtā kustības rinda saglabāta `_backup_20260919_incomplete_dreadscar_acolyte_path` un arhivēta; gateway summon rinda un acolyte Fel Channelling spell 195898 palika aktīvi.
+
+### Pārbaudes rezultāts
+
+- Dreadscar Gateway joprojām summonē 117627 uz 25 sekundēm, un Black Harvest Acolyte joprojām lieto Fel Channelling; backup tabulā ir sākotnējā `WAYPOINT_START` rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; trūkstošā ceļa 117627 kļūda pazuda, `DBErrors.log` skaits samazinājās no 189 uz 188, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Broken Shore Legionfall nometnē pie Dreadscar Gateway (117703), aptuveni koordinātēs `(-1588.25, 3190.14, 131.21)`, nogaidīt vismaz 65 sekundes. Gateway jāsummonē Black Harvest Acolyte (117627), tam jālieto Fel Channelling un pēc 25 sekundēm jāpazūd. Tas pagaidām paliks pie gateway, jo oriģinālā kustības ceļa koordinātes avotos nav saglabājušās.
