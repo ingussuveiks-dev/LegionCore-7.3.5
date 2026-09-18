@@ -18,6 +18,14 @@ void AddSC_fireworks_spectacular();
 void AddSC_custom_events();
 void AddSC_scene_scripts();
 
+// Battleground implementations live in the game module because their map
+// classes are part of the core, but their database-bound scripts still need
+// to be registered with ScriptMgr during script startup.
+void AddSC_battleground_kotmogu();
+void AddSC_battleground_seething_shore();
+void AddSC_battleground_shado_pan();
+void AddSC_battleground_warsong();
+
 void AddSC_chat_log();
 
 void AddSC_petbattle_abilities();
@@ -45,6 +53,11 @@ void AddWorldScripts()
     AddSC_fireworks_spectacular();
     AddSC_custom_events();
     AddSC_scene_scripts();
+
+    AddSC_battleground_kotmogu();
+    AddSC_battleground_seething_shore();
+    AddSC_battleground_shado_pan();
+    AddSC_battleground_warsong();
 
     AddSC_chat_log();
 

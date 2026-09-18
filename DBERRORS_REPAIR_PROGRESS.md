@@ -2348,3 +2348,22 @@ Twilight Correspondence (35277) quest “Unusual Activity” (11886) nosacījums
 
 - Midsummer notikuma laikā bez aktīva quest 11886 nogalināt Twilight Firesworn (25863), Twilight Flameguard (25866) un Twilight Speaker Viktor (25924) Ashenvale: Twilight Correspondence (35277) nedrīkst būt pieejams lootā.
 - Pieņemt “Unusual Activity” (11886) un atkārtot testu ar visiem trim NPC; itemam 35277 jāparādās to lootā un jāļauj turpināt quest. Pēc quest pabeigšanas vai atmešanas items vairs nedrīkst krist.
+
+## Pakete 121 — battleground skriptu reģistrācija
+
+Fails: `src/server/scripts/World/world_script_loader.cpp`.
+
+Datubāze korekti atsaucās uz desmit Seething Shore, Temple of Kotmogu, Shado-Pan Showdown un Warsong Gulch skriptiem. Visas desmit implementācijas un to četras `AddSC_battleground_*` reģistrācijas funkcijas jau bija kodola `game` modulī, bet starta skriptu ielādētājs nevienu no šīm funkcijām neizsauca. Tāpēc neko no datubāzes neizņēmu: `AddWorldScripts()` tagad izsauc visas četras esošās reģistrācijas funkcijas, padarot pieejamas trīs Seething Shore spell/aura implementācijas, trīs Seething Shore NPC skriptus, Kotmogu orb piespēli, Shado-Pan bosu un abus Warsong spell skriptus.
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` pilnībā pārbūvēts un uzinstalēts bez kompilācijas kļūdām.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas desmit “referenced by the database, but does not exist in the core” kļūdas pazuda un `DBErrors.log` skaits samazinājās no 272 uz 262. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Seething Shore: sākt battleground, pārbaudīt kapteiņu un vizuālo NPC darbību, buff kastes, Azerite mezglu aktivizēšanu un abu raķetes izpletņa auru korektu darbību pēc izlēkšanas no kuģa.
+- Temple of Kotmogu “Pass the Orb” brawl režīmā paņemt orbu un lietot orb piespēles spēju uz derīgu komandas biedru; orbam jāpāriet mērķim, bet nederīgam, pārāk tālam vai orbu jau nesošam mērķim cast jāatsaka.
+- Shado-Pan Showdown brawl režīmā pārbaudīt, ka abu komandu bosi iesaistās kaujā, lieto Brutal Slash, Firestorm/Thunderstorm un zem 50% dzīvības lieto heal.
+- Warsong Gulch pārbaudīt Gripping Chain trāpījumu un Discombobulator auras uzlikšanu: pēdējai mērķis jānomontē un jānoņem mounted aura.
