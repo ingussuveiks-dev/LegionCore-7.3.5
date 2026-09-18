@@ -1315,3 +1315,22 @@ Sākotnējā objective rinda saglabāta `_backup_20260918_borrowed_time_objectiv
 
 - Ar Warlock pieņemt quest 41784 “Borrowed Time”, iegūt Shimmering Elixir of Suspension un runāt ar Shinfel Blightsworn (entry 104820) Dreadscar Rift.
 - Kamēr objective nav izpildīts, jāparādās eliksīra nodošanas izvēlei. To nospiežot, objective jākļūst izpildītam un dialoga izvēlei jāpazūd; Ernest Carlisle (104824) vairs nedrīkst būt saistīts ar šo objective.
+
+## Pakete 64 — Chilled to the Core Cedric objective condition
+
+Fails: `sql/updates/world/2026_09_18_57_fix_chilled_to_core_gossip_objective.sql`.
+
+Quest 45846 “Chilled to the Core” menu 7593 pieder Archmage Cedric entry 18165, kurš šajā 7.3.5 world DB ir reāli spawnots pie Dalaran Crater. Questa creature objective arī ir 18165. Menu nosacījums savukārt bija pārnests no cita patch varianta un pārbaudīja Cedric entry 125016, kuram šajā world DB nav ne `creature_template`, ne spawna. Condition `ConditionValue2` izlabots uz esošo questa objective 18165; menu teksts, quests un objective dati nav mainīti.
+
+Sākotnējā condition rinda saglabāta `_backup_20260918_chilled_to_core_condition`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; menu condition tagad pārbauda objective 18165, un sākotnējā 125016 rinda ir backup tabulā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 375 līdz 374; quest 45846/objective 125016 kļūda vairs neparādās, un updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Mage pieņemt quest 45846 “Chilled to the Core” un pie Dalaran Crater runāt ar Archmage Cedric (entry 18165).
+- Kamēr Cedric objective nav izpildīts, jāparādās dialogam par Antonidas disc fragmentu; pēc izvēles objective jākreditējas un šai izvēlei jāpazūd, ļaujot turpināt Ok'rok Icetouch posmu.
