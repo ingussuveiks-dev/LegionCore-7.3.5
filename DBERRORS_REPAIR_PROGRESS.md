@@ -1809,3 +1809,22 @@ Precīzā nederīgā kopija saglabāta `_backup_20260918_duplicate_kalecgos_data
 
 - Quel'Delar notikuma laikā nosūtīt Kalecgos (38017) `SetData(0,1)` un `SetData(0,2)`; abām attiecīgi jāpalaiž timed action list 3801700 un 3801701 tikai vienu reizi.
 - Pārbaudīt Kalecgos waypoint 1 pauzi un pagriešanos pret Krasus (27990), pēc tam waypoint 2 apstāšanos un pagriešanos mājas virzienā.
+
+## Pakete 90 — Alexstrasza dublētās SetData darbības
+
+Fails: `sql/updates/world/2026_09_18_80_archive_duplicate_alexstrasza_dataset_actions.sql`.
+
+Alexstrasza the Life-Binder (26917) SmartAI saturēja pa divām kopijām abiem pagriešanās notikumiem `SetData(0,1)` un `SetData(0,2)`. Sākotnējās rindas ar `link=0` jau ir aktīvas un attiecīgi pagriež NPC uz norādītu pozīciju vai pret sevi/mājas orientāciju. Vēlāk 2020 dumpā pievienotajām identiskajām kopijām bija `link=1`; otrā kopija tādēļ sasaistīja pati sevi un loaderī tika noraidīta, bet abas kopā nevajadzīgi dublēja vienu un to pašu uzvedību.
+
+Abas precīzās vēlākās kopijas saglabātas `_backup_20260918_duplicate_alexstrasza_dataset_actions` un arhivētas. Divas sākotnējās funkcionālās `link=0` rindas nav mainītas.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; abas vēlākās kopijas ir backupā, bet aktīvajā tabulā paliek tieši divas sākotnējās `link=0` darbības — viena katrai datu vērtībai.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 329 līdz 328; Alexstrasza pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quel'Delar notikuma laikā nosūtīt Alexstrasza (26917) `SetData(0,1)`; viņai vienu reizi jāpagriežas uz skriptā norādīto orientāciju.
+- Nosūtīt `SetData(0,2)` un pārbaudīt atgriešanos paredzētajā pašas/mājas orientācijā; neviena pagriešanās nedrīkst dublēties vai izraisīt SmartAI ciklu.
