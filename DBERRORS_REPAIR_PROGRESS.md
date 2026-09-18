@@ -2717,3 +2717,20 @@ Rinda ar pozitīvu `entryorguid = 14677644` ik pēc 400 ms mēģināja izpildīt
 ### Spēlē vēlāk pārbaudāmais
 
 - Tiešs tests nav iespējams, jo rindai nav identificējama NPC vai spawn. Ja Alliance Bar vidē vizuāli atrodas nekustīgs dejotājs, jāpieraksta tā entry un GUID; tad backup rindu var pielāgot tieši šim spawn, nevis minēt īpašnieku pēc komentāra.
+
+## Pakete 143 — lieko gameobject creature-credit darbību arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_129_archive_redundant_gameobject_killcredits.sql`.
+
+Engraved Shield (242673 un 251557–251561), Drogbar Idol (247106) un Shipwrecked Supplies (248401) ir GOOBER gameobject objekti, un visi to attiecīgie quest mērķi ir `QUEST_OBJECTIVE_GAMEOBJECT`. Core `GameObject::Use` tos jau kreditē ar `KillCreditGO`. Astoņas SmartAI darbības papildus mēģināja izsaukt creature-only action 33 ar paša GO entry, tādēļ validācija tās tik un tā izlaida. Visas 14 iesaistītās rindas pirms izmaiņām saglabātas `_backup_20260919_redundant_gameobject_killcredits`; astoņi liekie GO-as-creature credit ieraksti arhivēti. Sešiem vairogiem saglabāts atsevišķais, derīgais creature credit 109346 un no tā noņemts links uz arhivēto dublikātu.
+
+### Pārbaudes rezultāts
+
+- Sešiem Engraved Shield objektiem ir viena aktīva gossip rinda, kas dod tikai credit 109346; Drogbar Idol un Shipwrecked Supplies izmanto standarta GOOBER credit. Backup tabulā ir visas 14 sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas astoņas neesoša creature entry kļūdas pazuda, `DBErrors.log` skaits samazinājās no 208 uz 200. Atlikušas 13 SmartAI un 187 LFG kļūdas; `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Questos 38878 un 39063 aktivizēt katru no sešiem Engraved Shield. Katram attiecīgajam GO objective jāpieaug vienu reizi, un spēlētājam jāsaņem atsevišķais creature credit 109346; nedrīkst būt dubults paša vairoga credit.
+- Quest 41145 aktivizēt sešus Drogbar Idol (247106), bet quest 41692 — piecus Shipwrecked Supplies (248401). Katram lietojumam standarta GO objective jāpieaug tieši vienu reizi.
