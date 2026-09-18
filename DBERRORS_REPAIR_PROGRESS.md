@@ -2782,3 +2782,20 @@ Lothraxion (109105) vienīgā rinda bija komentēta “QR - SC” (Quest Reward 
 ### Spēlē vēlāk pārbaudāmais
 
 - Paladin Order Hall pabeigt “Warriors of Light” 43697, pieņemt un nodot Lothraxion quest 43701 “Champion: Lothraxion”. Tieši reward brīdī spēlētājam vienreiz jāatskaņojas conversation 3641 un Lothraxion jākļūst par champion. Vienkārša pieiešana NPC vai citu questu nodošana conversation nedrīkst izraisīt.
+
+## Pakete 147 — Foxflower un Starlight Rose gathering eventu korekcija
+
+Fails: `sql/updates/world/2026_09_19_133_fix_herb_gathering_events.sql`.
+
+Foxflower (241641) un Starlight Rose (244778) ir type 50 gathering nodes, bet to rindas izmantoja creature-only `ON_SPELLCLICK` eventu 73. Gathering spell apstrāde core kodā izsauc gameobject AI `GossipHello`, ko SmartGameObjectAI apstrādā kā eventu 64. Tādēļ abām rindām triggeris nomainīts uz `GOSSIP_HELLO` 64. Starlight Rose jau bija SmartGameObjectAI; Foxflower AIName bija tukšs, tādēļ tam piešķirts `SmartGameObjectAI`, citādi summon rinda spēlē neizpildītos. Abas skripta rindas saglabātas `_backup_20260919_herb_gathering_events`, bet Foxflower template — `_backup_20260919_foxflower_ai`.
+
+### Pārbaudes rezultāts
+
+- Abu gathering node rindas ielādējas ar eventu 64; Foxflower summonē Frenzied Fox 98235 uz 10 sekundēm, Starlight Rose dod derīgo creature credit 98202 spēlētājam. Abiem ir SmartGameObjectAI.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neatļautā eventa kļūdas pazuda, `DBErrors.log` skaits samazinājās no 197 uz 195, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Vācot Foxflower (241641), pārbaudīt, ka gathering/loot turpina strādāt un paredzētajā gadījumā tiek summonēts Frenzied Fox (98235) uz 10 sekundēm. Tā paša gather laikā nedrīkst būt vairāki summon no viena klikšķa.
+- Ar aktīvu herbalism quest 40035 vākt Starlight Rose (244778): katram gather jāpiešķir viens “Starlight Rose Attempt Credit” 98202 līdz 15 nepieciešamajiem, nezaudējot standarta herb loot.
