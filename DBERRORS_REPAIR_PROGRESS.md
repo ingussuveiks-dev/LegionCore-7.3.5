@@ -2832,3 +2832,20 @@ Grappling Hook and Rope (230950) un Telemancy Beacon (253392) ir GOOBER objekti 
 
 - Quest 34976 un 34840 laikā izmantot Grappling Hook and Rope (230950). Atbilstošajam questam jāieskaita viens GO objective un jāteleportē spēlētājs uz pareizo no divām vietām; nedrīkst aktivizēties abu questu teleporti vienlaikus.
 - Suramar quest 42487 laikā izmantot Telemancy Beacon (253392). Jāieskaita viens GO objective, jāatskaņojas conversation 2301 un koordinātēs `(433.519, 4007.51, 2.859)` uz 30 sekundēm jāparādās Portal to Shal'Aran (260270).
+
+## Pakete 150 — Nightborne Boat SmartAI waypointu atjaunošana
+
+Fails: `sql/updates/world/2026_09_19_136_restore_nightborne_boat_waypoints.sql`.
+
+Nightborne Boat (105264) SmartAI atsaucās uz diviem neesošiem ceļiem: 9100402 un 9100403. Abu ceļu koordinātes pilnā apjomā un identiskas atrastas gan 2020., gan 2024. gada LegionCore 7.3.5 reference datubāzēs. Tās atjaunotas SmartAI `waypoints` tabulā: pirmajam ceļam pieci punkti, otrajam 13 punkti. Skripta eventu un spell darbību rindas nav mainītas.
+
+### Pārbaudes rezultāts
+
+- `waypoints` satur 9100402 punktus 1–5 un 9100403 punktus 1–13; ceļu galapunkti precīzi sakrīt ar SmartAI `WAYPOINT_REACHED` eventiem 5 un 13.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas trūkstošo ceļu kļūdas pazuda, `DBErrors.log` skaits samazinājās no 191 uz 189, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Suramar/City of Suramar saturā izraisīt Nightborne Boat (105264) starta eventu: laivai jāizbrauc ceļš 9100402 no `(967.552, 3814.90)` līdz `(1007.58, 3778.13)` un 5. punktā spēlētājam jāizpilda spell 213507.
+- Pēc pasažiera iekāpšanas jāstartē ceļam 9100403; laivai jāizbrauc visi 13 punkti līdz `(970.645, 3478.13)` un galapunktā jāizpilda spell 208703. Pēc izkāpšanas tai pēc trim sekundēm korekti jādespawnojas.
