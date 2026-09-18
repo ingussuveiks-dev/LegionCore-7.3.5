@@ -1733,3 +1733,22 @@ Stomper Kreeg (14322) 15% veselības spell 22835 “Drunken Rage” darbībai bi
 
 - Dire Maul North cīnīties ar Stomper Kreeg (14322) un samazināt veselību zem 15%; spell 22835 “Drunken Rage” jānostrādā vienu reizi, SmartAI nedrīkst iestrēgt vai atkārtot ķēdi bezgalīgi.
 - Pārbaudīt arī 30% HP spell 8269 “Frenzy” un Kreeg parastās spējas Booze Spit, War Stomp un Whirlwind, lai pārliecinātos, ka mazā saites korekcija nav skārusi citas darbības.
+
+## Pakete 86 — Nomi Pickled Stormray apmaiņas SmartAI saite
+
+Fails: `sql/updates/world/2026_09_18_76_fix_nomi_pickled_stormray_link.sql`.
+
+Nomi (101846) gossip menu 19241 opcijai 33 pēc spell 305089 bija paredzēts atņemt 5 Stormray (124110) un pēc tam 3 Flaked Sea Salt (133588), taču pirmā linked darbība norādīja pati uz sevi (`id=18, link=18`). Tā paša piedāvājuma otrā kopija opcijā 41 satur pilnu pareizo ķēdi `45 -> 46 -> 10`, kas droši apstiprina pirmajai kopijai paredzēto `18 -> 19 -> 10`.
+
+Saite izlabota uz `link=19`; sākotnējās darbības 18 un 19 saglabātas `_backup_20260918_nomi_pickled_stormray_link`. Recepšu spelli, priekšmetu daudzumi un pārējās Nomi apmaiņas nav mainītas.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backupā ir abas sākotnējās rindas, un pirmā aktīvā ķēde `18 -> 19 -> 10` tagad precīzi atbilst otrajai `45 -> 46 -> 10`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 333 līdz 332; Nomi pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Nomi (101846) atvērt menu 19241 un ar vismaz 5 Stormray (124110) un 3 Flaked Sea Salt (133588) izvēlēties “Learn recipes for pickled storm rays.”; jānostrādā spell 305089, jāatņem tieši abi norādītie materiālu daudzumi un jāparādās noslēguma tekstam.
+- Atkārtot piedāvājumu no otrās menu lapas/opcijas 41 un salīdzināt rezultātu: abām Pickled Stormray apmaiņas ķēdēm jāuzvedas vienādi, bet citām Nomi recepšu izvēlēm jāpaliek neskartām.
