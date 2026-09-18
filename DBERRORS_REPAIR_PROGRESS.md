@@ -1296,3 +1296,22 @@ Visas septiņas nepareizās rindas saglabātas `_backup_20260918_lunar_festival_
 
 - Kamēr Lunar Festival game event 7 ir aktīvs, atvērt gossip menu 21072 un pārbaudīt, ka redzami visi septiņi jautājumi par elderiem un katrs atver savu pareizo norāžu dialogu.
 - Kad event 7 nav aktīvs, jautājumiem par elderiem jābūt paslēptiem; pārējām menu izvēlēm (“I'm ready” un transports uz Exodar) jāpaliek neatkarīgām no festivāla nosacījuma.
+
+## Pakete 63 — Borrowed Time pareizais quest objective NPC
+
+Fails: `sql/updates/world/2026_09_18_56_fix_borrowed_time_objective.sql`.
+
+Quest 41784 “Borrowed Time” uzdevums ir iedot Shimmering Elixir of Suspension Shinfel Blightsworn. Šim nolūkam DB jau ir Shinfel entry 104820 gossip menu 19438 ar izvēli “Give Shinfel a slowing elixir” un condition, kas pārbauda objective 104820. Taču `quest_objectives` kļūdaini saturēja ObjectID 104824 — tas šajā buildā ir Ernest Carlisle, nevis Shinfel. Objective ObjectID izlabots uz Shinfel 104820, nemainot objective ID, skaitu vai flagus.
+
+Sākotnējā objective rinda saglabāta `_backup_20260918_borrowed_time_objective`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; quest 41784 objective tagad norāda uz 104820, un sākotnējā 104824 rinda ir backup tabulā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 376 līdz 375; quest 41784/objective 104820 kļūda vairs neparādās, un updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Warlock pieņemt quest 41784 “Borrowed Time”, iegūt Shimmering Elixir of Suspension un runāt ar Shinfel Blightsworn (entry 104820) Dreadscar Rift.
+- Kamēr objective nav izpildīts, jāparādās eliksīra nodošanas izvēlei. To nospiežot, objective jākļūst izpildītam un dialoga izvēlei jāpazūd; Ernest Carlisle (104824) vairs nedrīkst būt saistīts ar šo objective.
