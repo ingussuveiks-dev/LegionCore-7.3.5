@@ -1486,3 +1486,22 @@ PhaseMgr tagad pieņem abus condition tipus. Map nosacījums tiek pārrēķināt
 
 - Shadowmoon Valley zonā 7078 uz mapes 1158 iziet quest 34646 pāreju: quest complete/reward stāvokļiem jāpārslēdz phase 3666 un 3464, un šīs fāzes nedrīkst aktivizēties citā mapē.
 - Ar aktīvu, pabeigtu un nodotu quest 42429 katrā no trim stāvokļiem uzvilkt item 128862: phase 7435 jāaktivizējas uzreiz bez relog. Novelkt item — phase jānoņemas uzreiz; citi equipment un phase stāvokļi nedrīkst mainīties.
+
+## Pakete 73 — quest 42537 objective condition lauku secība
+
+Fails: `sql/updates/world/2026_09_18_65_fix_defending_broken_isles_objective_conditions.sql`.
+
+Trīs `CONDITION_QUEST_OBJECTIVE_DONE` rindas kļūdaini glabāja objective ObjectID `108260` vai `108261` laukā `ConditionValue1`, ko kodols interpretē kā QuestID. Abi ir īsti quest 42537 mērķi (`quest_objectives` ID 284571 un 284572). Rindām tagad `ConditionValue1=42537`, bet attiecīgais ObjectID pārcelts uz `ConditionValue2`; pozitīvo un negatīvo nosacījumu nozīme nav mainīta.
+
+Visas trīs sākotnējās rindas saglabātas `_backup_20260918_defending_broken_isles_objectives`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; DB pārbaudē visām trim rindām ir pareizais quest/objective pāris.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 353 līdz 350; visas `108260/108261` kā neesoša questa kļūdas pazuda, un jaunu updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 42537 secīgi izpildīt mērķus 108260 un 108261: ar scene 1 saistītajām pārejām jāaktivizējas tikai pie paredzētās pirmā/otrā mērķa izpildes kombinācijas.
+- Atkārtot pārbaudi pirms abu mērķu izpildes un pēc questa pabeigšanas; scene nedrīkst sākties priekšlaicīgi vai iestrēgt pēc otrā mērķa.
