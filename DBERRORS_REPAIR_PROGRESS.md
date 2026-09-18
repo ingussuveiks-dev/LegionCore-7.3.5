@@ -1828,3 +1828,22 @@ Abas precīzās vēlākās kopijas saglabātas `_backup_20260918_duplicate_alexs
 
 - Quel'Delar notikuma laikā nosūtīt Alexstrasza (26917) `SetData(0,1)`; viņai vienu reizi jāpagriežas uz skriptā norādīto orientāciju.
 - Nosūtīt `SetData(0,2)` un pārbaudīt atgriešanos paredzētajā pašas/mājas orientācijā; neviena pagriešanās nedrīkst dublēties vai izraisīt SmartAI ciklu.
+
+## Pakete 91 — Ancient Drakkari ierašanās ķēde
+
+Fails: `sql/updates/world/2026_09_18_81_fix_ancient_drakkari_arrival_chain.sql`.
+
+Ancient Drakkari Warmonger (26811) un Ancient Drakkari Soothsayer (26812) pēc spell 47778 nejauši palaiž vienu no sešām timed action list 2681100–2681105, kas aizved radījumu uz point 1–6. Katram no sešiem `POINT_REACHED` eventiem ir `link=7`, tātad kopīgajai `id=7` rindai jābūt linked darbībai: izveidot GO 188525 “Drakkari Spirit Particles” un turpināt uz `id=8`, kas despawn'o radījumu.
+
+`id=7` abiem NPC kļūdaini bija saglabāta kā vēl viens point-6 events ar pašsaiti. Tā izlabota uz `event_type=61 (LINK)` un `link=8`; spell, particles GO un despawn darbības nav mainītas. Sākotnējās `id=7` un `id=8` rindas abiem NPC saglabātas `_backup_20260918_ancient_drakkari_arrival_chain`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backupā ir četras sākotnējās rindas. Abiem NPC aktīvā kopīgā ķēde tagad ir `id 7 (LINK, spawn GO) -> id 8 (LINK, despawn)`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 328 līdz 326; abas Ancient Drakkari pašsaites kļūdas pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Uz Ancient Drakkari Warmonger (26811) un Soothsayer (26812) izmantot spell 47778; katram jāizvēlas viens no sešiem kustības galapunktiem, galā jānostrādā spell 47798, jāparādās Drakkari Spirit Particles (188525) un NPC jādespawn'o.
+- Testu atkārtot vairākas reizes, lai nosegtu dažādus point 1–6; īpaši point 6 nedrīkst izveidot particles divreiz vai izraisīt bezgalīgu linked ķēdi.
