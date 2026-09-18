@@ -3426,7 +3426,8 @@ void AddSC_brokenIslands()
     new npc_q40518();
     new spell_bi_enter_stage1();
     new sceneTrigger_enterBrockenShores();
-    new spell_q42740();
+    // Spell 227058 does not exist in the 7.3.5 client data and its former
+    // second LFG queue is already handled by the end-of-scene trigger.
     new sceneTrigger_part1();
     new npc_bi_dread_commander();
     new npc_bi_felcommander_azgalor();

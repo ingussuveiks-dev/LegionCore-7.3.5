@@ -2261,3 +2261,20 @@ Thane Irglov the Merciless (91892) kaujas rindai bija neatbalstīts `action_type
 
 - Stormheim kartē 1220, zonā 7541/apgabalā 7608 pie koordinātēm aptuveni `(2376, 2674, 301)` iesaistīt kaujā Thane Irglov the Merciless (91892).
 - Aptuveni divas sekundes pēc kaujas sākuma un pēc tam ar 7–19 sekunžu intervālu viņam jālieto Bull Rush (187406) uz savu pašreizējo upuri; paralēli jāturpina darboties Sweeping Blade (186365) un Horn of Hrydshal (187429).
+
+## Pakete 116 — novecojis Broken Shore quest spell loader
+
+Fails: `src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp`.
+
+`spell_q42740` loader bija reģistrēts, lai spell 227058 pēc quest 42740 spēlētāju ieliktu Broken Shore LFG 908. Taču pats avota komentārs norāda, ka spell šajā 7.3.5 klienta versijā neeksistē, bet `sql/old/world/0010_broken_shore_scenario.sql` tā DB piesaisti apzināti dzēš: otrā LFG pievienošana nav vajadzīga, jo to jau izdara ainas beigu `enterBrockenShores` triggeris. Klase nav dzēsta un paliek avotā kā vēsturiska atsauce; atslēgta tikai tās reģistrācija, lai kodols vairs negaidītu apzināti neesošo DB piesaisti.
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` pilnībā pārbūvēts un uzinstalēts; kompilācija pabeigta sekmīgi (palika viena iepriekšēja, ar šo labojumu nesaistīta C4805 warning 2161. rindā).
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `spell_q42740` trūkstošās DB piesaistes kļūda pazuda un `DBErrors.log` skaits samazinājās no 279 uz 278. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izspēlēt Broken Shore ievada quest 42740 līdz ainas beigām. `enterBrockenShores` ainas triggerim spēlētājs vienreiz jāpievieno LFG scenārijam 908 un jāpārved uz nākamo posmu.
+- Pārbaudīt, ka nenotiek dubulta LFG pievienošana, atkārtots queue paziņojums vai iestrēgšana pēc ainas; neesošā spell 227058 izslēgšanai nav jāmaina pārējā scenārija gaita.
