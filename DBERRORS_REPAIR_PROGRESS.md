@@ -2090,3 +2090,20 @@ Seirdr (115751) pirmajai kaujas spell 186327 rindai sākuma laiks bija derīgs, 
 
 - Stormheim zonā 7334, apgabalā 8297, atrast kādu no Seirdr (115751) spawn un uzsākt kauju.
 - Aptuveni vienu sekundi pēc kaujas sākuma Seirdr jālieto spell 186327 uz nejaušu naidīgu mērķi un pēc tam tas jāatkārto ar mainīgu 2–6 sekunžu intervālu; atsevišķajam spell 186338 jāturpina darboties ik pēc 20 sekundēm.
+
+## Pakete 106 — T’paartos un Exodar emote ciklu taimeri
+
+Fails: `sql/updates/world/2026_09_18_95_fix_exodar_emote_cycle_timers.sql`.
+
+T’paartos (128562) un divu Exodar Citizen veidņu (128656, 128657) secīgo ārpus-kaujas emote ciklu pirmajās rindās pilna cikla ilgums bija ievietots sākuma maksimuma kolonnā, bet atkārtojuma maksimums bija 0. To apstiprina tās pašas grupas nākamās rindas: T’paartos emotes sākas ar 0/4/8/12 sekunžu nobīdi un atkārtojas ik pēc 16 sekundēm, bet abu iedzīvotāju emotes — ar 0/8/16/24 sekunžu nobīdi un 32 sekunžu ciklu. Pirmajām rindām atjaunots precīzs nulles sākums un attiecīgi `16000..16000` vai `32000..32000` ms atkārtojums. Visas trīs sākotnējās rindas saglabātas `_backup_20260918_exodar_emote_cycle_timers`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir visas trīs sākotnējās rindas; 128562/0 ir `0..0` ms sākums un 16 sekunžu atkārtojums, bet 128656/0 un 128657/0 — `0..0` ms sākums un 32 sekunžu atkārtojums.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas trīs nederīgo taimeru kļūdas pazuda un `DBErrors.log` kļūdu skaits samazinājās no 308 uz 305. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Lightforged Draenei/T’paartos notikuma vietā vērot T’paartos (128562) ārpus kaujas vismaz 20 sekundes: emote 11, 23, 15 un 17 jāizpildās secīgi ik pēc aptuveni četrām sekundēm un ciklam jāsākas no jauna pēc 16 sekundēm.
+- Tajā pašā notikuma ainā vērot Exodar Citizen 128656 un 128657 vismaz 40 sekundes: katram jāizpilda savs četru emote komplekts ar astoņu sekunžu nobīdi un 32 sekunžu atkārtojumu, bez emote spama uzreiz pēc spawn.
