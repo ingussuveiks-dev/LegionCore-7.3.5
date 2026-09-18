@@ -2882,3 +2882,19 @@ Shadowy Figure (119419) Deadmines pet-battle scenārija sestajā posmā izmanto 
 
 - Pirmo reizi izpildīt “The Deadmines Strike Back” pet-battle scenāriju mapē 1688. Pēc Klutz cīņām uz Juggernaut augšējā klāja jāpieiet Shadowy Figure (119419) 25 jardu attālumā: jāatskaņojas visām desmit replikām pareizā secībā, NPC pēc ainas jāpazūd un scenārijam jāpāriet uz “The Soup's Gone Bad!”/Cookie's Leftovers posmu.
 - Zināmais vizuālais ierobežojums: līdz autentiska ceļa koordinātu atrašanai Shadowy Figure dialoga laikā paliks sākuma vietā `(-80.0642, -818.024, 39.846)`, nevis pieies pie katla un nolēks no kuģa. Ja iegūstams 7.2.5/7.3.5 sniff ar ceļu 119419, backup rinda jāatjauno kopā ar šo ceļu.
+
+## Pakete 153 — novecojušās LFG ieejas 852 arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_139_archive_obsolete_lfg_entrance_852.sql`.
+
+`lfg_entrances` saturēja pielāgotu Molten Core ierakstu dungeonId 852, bet Legion 7.3.5 build 26972 DBC ierakstu servera `LoadLFGDungeons` katalogs neiekļauj. Tādēļ koordinātes nekad nevarēja izmantot un ielādētājs tās pamatoti noraidīja kā nezināmu dungeon. Sākotnējā rinda saglabāta `_backup_20260919_obsolete_lfg_entrance_852` un izņemta tikai no aktīvās tabulas.
+
+### Pārbaudes rezultāts
+
+- Aktīvajā `lfg_entrances` vairs nav dungeonId 852, bet backup tabulā ir precīzi viena sākotnējā rinda ar visām koordinātēm.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; kļūda `contains coordinates for wrong dungeon 852` pazuda, `DBErrors.log` skaits samazinājās no 187 uz 186, SmartAI kļūdu joprojām ir 0 un `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atvērt Dungeon Finder un Raid Finder sarakstus un pārliecināties, ka nevienā izvēlnē nav tukša vai bojāta Molten Core rinda ar ID 852. Parastajai Molten Core ieejai pasaulē un korektajiem eventa/raid variantiem jāpaliek pieejamiem; šis labojums nemaina to teleportus.
