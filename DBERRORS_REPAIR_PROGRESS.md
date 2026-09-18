@@ -1239,3 +1239,22 @@ Sākotnējā condition rinda pirms izmaiņas saglabāta `_backup_20260918_spell_
 
 - Atrast saturu, kas izmanto spell 213704, un izpildīt to pie creature 107633: spell 0. efektam jāizvēlas paredzētais mērķis.
 - Atkārtot cast situācijā ar citu creature entry un pārbaudīt, ka nosacījums to nepieņem un nerada servera kļūdu.
+
+## Pakete 60 — injured matriarch gossip nosacījumu option ID
+
+Fails: `sql/updates/world/2026_09_18_53_fix_injured_matriarch_gossip_conditions.sql`.
+
+Četriem Broken Isles pet-battle matriarhiem — Snowfeather (116131), Bloodgazer (116139), Direbeak (116140) un Sharptalon (116141) — katra creature entry ir arī tās `gossip_menu_id`. Katrā menu eksistē viena “bandage the wounded matriarch” darbība ar option ID 0, bet attiecīgā questa nosacījums kļūdaini norādīja uz neesošu option ID 1. Visām četrām condition rindām `SourceEntry` izlabots no 1 uz 0; questu ID un pārējā gossip darbība nav mainīta.
+
+Visas četras sākotnējās rindas saglabātas `_backup_20260918_injured_matriarch_conditions`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; visām četrām condition rindām tagad ir `SourceEntry=0`, bet backup tabulā ir četras sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 397 līdz 389: pazuda četras missing gossip-option kļūdas un četri to pašu nederīgo avotu grouped-condition brīdinājumi.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīviem questiem 44969, 45020, 44988 un 45019 apmeklēt attiecīgi ievainoto Snowfeather, Bloodgazer, Direbeak un Sharptalon matriarhu. Katram jāparādās vienīgajai pārsiešanas gossip izvēlei, un tās nospiešanai jāvirza pareizais quests.
+- Bez attiecīgā questa pārsiešanas izvēle nedrīkst būt redzama; citu falcosaur dialogu un pet-battle darbībai jāpaliek nemainītai.
