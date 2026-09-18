@@ -969,3 +969,23 @@ Abām type-9 rindām atstāts tikai to izmantotais quest ID un notīrīti `value
 - Suramar ar questu 42833 pārbaudīt Margaux izvēli “There is still hope...”: tai jābūt pieejamai paredzētajā aktīvā questa/objective stāvoklī un jāatver menu 19905; bez questa vai pēc vajadzīgā progresa tā nedrīkst apiet atsevišķo objective nosacījumu.
 - “Darkness Falls” (33837) laikā sasniegt kill-credit 231013: kamēr quests aktīvs un nepabeigts, jāpiešķiras credit 76450 un jāizpildās invoker cast 163805.
 - Atkārtot pēc 33837 pabeigšanas un ar tēlu bez questa; SmartAI nedrīkst atkārtoti piešķirt credit vai sākt ainu. Objective “Enter the Waning Crescent” (ObjectID 82283) progresam jāturpinās no paša questa datiem, nevis no type-9 liekajiem laukiem.
+
+## Pakete 46 — Coordinator SmartAI apakšzonu nosacījumi
+
+Fails: `sql/updates/world/2026_09_18_41_fix_coordinator_area_conditions.sql`.
+
+Trīs Coordinator SmartAI nosacījumi entry 123984, 123991 un 124246 pārbaudīja apgabalu ID 6457 vai 5287 ar `CONDITION_ZONEID=4`. 7.3.5.26972 `AreaTable` dati apstiprina, ka 6457 ir “New Tinkertown” apakšzona zem Dun Morogh (1), bet 5287 ir “The Cape of Stranglethorn” apakšzona zem Stranglethorn Vale (5339). Tādēļ loaderis pareizi noraidīja šos ID kā zonas.
+
+Tikai šīs trīs rindas pārslēgtas uz `CONDITION_AREAID=23`; pārējie Coordinator nosacījumi, kuros tiešām lietoti augšējā līmeņa zone ID 1, 10, 1519 un 1537, nav mainīti. Pilnas sākotnējās rindas saglabātas `_backup_20260918_coordinator_area_conditions`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir trīs sākotnējās type-4 rindas, un aktīvajās rindas izmanto type 23 ar tiem pašiem area ID.
+- Visi trīs “Zone ... does not exist (is a subzone)” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 445 līdz 442.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauni Coordinator condition vai trūkstošu datu ziņojumi neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- New Tinkertown apakšzonā pie Coordinator 123984 un 123991 pārbaudīt, ka tie izpilda paredzētos “Direct Runners” roku vizuālos efektus 246864/245979 un servera logā nav SmartAI condition kļūdu.
+- Stormwind un Duskwood Coordinator 123984, kā arī Stormwind Coordinator 123991, jāsaglabā attiecīgais alternatīvais vizuālais efekts; labojums nedrīkst mainīt to zonas nosacījumus.
+- The Cape of Stranglethorn pie Coordinator 124246 jānostrādā “Direct Runners Dance” 246780, bet Ironforge variantam jāsaglabājas 246862.
