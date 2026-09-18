@@ -2556,3 +2556,19 @@ Herald Xarbizuld (100836) rindas komentārs un parametri aprakstīja `TEXT_OVER`
 ### Spēlē vēlāk pārbaudāmais
 
 - Suramar scenārijā izraisīt Oculeth (100397) data `(1,1)`, kas liek Herald Xarbizuld (100836) pateikt teksta grupu 0. Tikai pēc teksta beigām Heraldam jānosūta data `(6,6)` atpakaļ Oculeth, un Oculeth jāturpina ķēde ar savu teksta grupu 10.
+
+## Pakete 133 — Murloc Cage stāvokļa eventa korekcija
+
+Fails: `sql/updates/world/2026_09_18_119_fix_murloc_cage_state_event.sql`.
+
+Murloc Cage (252158) ir `SmartGameObjectAI` objekts, kura rinda pēc komentāra un `event_param1 = 2` reaģē uz būra stāvokli. Tai kļūdaini bija norādīts creature-only `ACTION_DONE` events 72. Core definīcija gameobject stāvokļa maiņai ir `GO_STATE_CHANGED` 70, kas tieši saņem GO state vērtību. Sākotnējā rinda saglabāta `_backup_20260918_murloc_cage_state_event`, pēc tam mainīts tikai event tips; abas linked `SET_DATA (0,1)` darbības tuvākajam murlokam 88101 saglabātas.
+
+### Pārbaudes rezultāts
+
+- Murloc Cage sākuma rinda tagad reaģē uz GO state 2 ar atļautu gameobject eventu 70; backup tabulā ir viena sākotnējā rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neatļautā eventa kļūda pazuda, `DBErrors.log` skaits samazinājās no 221 uz 220, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atvērt Murloc Cage (252158) un pārbaudīt, ka pie pārejas uz GO state 2 tuvākais murloks (88101) 10 jardu attālumā saņem data `(0,1)` un izpilda paredzēto atbrīvošanas reakciju. Būris nedrīkst aktivizēt skriptu pirms stāvokļa maiņas.
