@@ -1084,3 +1084,22 @@ Fails: `sql/updates/world/2026_09_18_45_fix_world_bonus_reference_chances.sql`.
 
 - Ar katru atbalstīto Legion plecu enchant variantu nogalināt parastus Broken Isles/Argus pretiniekus un ilgākā paraugā pārbaudīt, ka attiecīgais bonusu konteiners joprojām var parādīties: 140220, 140221, 140222, 140224, 140225, 140226, 140227, 142259, 144330, 144345, 153202 vai 153248.
 - Vienā reference izsaukumā drīkst tikt izvēlēts ne vairāk kā viens no 12 konteineriem; nedrīkst parādīties visu konteineru komplekts vai pazust Legion pasaules parastais loot.
+
+## Pakete 52 — Enslaved Son of Arkkoroc kvesta loot atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_46_restore_arkkoroc_quest_loot.sql`.
+
+Creature 36868 “Enslaved Son of Arkkoroc” korekti norāda `lootid=36868`, taču šāds `creature_loot_template` entry bija pilnīgi tukšs. Atsauces noņemšana tikai apklusinātu kļūdu un atstātu saturu salauztu: bāzes quest 14487 “Still Beating Heart” objektīvs prasa vienu item 49642 “Heart of Arkkoroc”, un publiskie spēles dati šo item dokumentē kā Enslaved Son of Arkkoroc dropu. Item 49642 eksistē arī 7.3.5.26972 `ItemSparse` datos.
+
+Atjaunota viena 100% `QuestRequired=1` loot rinda item 49642 ar vienu eksemplāru. Tā ir redzama un izkrīt tikai spēlētājam ar atbilstošu aktīvu kvestu. Esošā creature template rinda pirms labojuma saglabāta `_backup_20260918_arkkoroc_loot_source`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena pilna sākotnējā creature template rinda, un aktīvajā loot tabulā ir tieši viena paredzētā quest-only item 49642 rinda.
+- Neesošā creature loot ID 36868 ziņojums pazuda; `DBErrors.log` skaits samazinājās no 432 līdz 431. Jauna item 49642 vai Arkkoroc loot kļūda neradās.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; `Server.log` 36868/49642 kontekstā satur tikai SQL updatera informatīvo ierakstu.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieņemt quest 14487 “Still Beating Heart”, Ruins of Eldarath nogalināt Enslaved Son of Arkkoroc (36868) un pārbaudīt, ka loot satur tieši vienu “Heart of Arkkoroc” (49642) un kvesta objektīvs tiek ieskaitīts.
+- Bez aktīva quest 14487 nogalināt to pašu NPC un pārbaudīt, ka quest-only sirds nav redzama. Quest 14472 “In The Face!” nogalināšanas kredītam un pārējiem Azshara ķēdes posmiem jāturpina darboties.
