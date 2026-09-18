@@ -1177,3 +1177,24 @@ Visas sešas sākotnējās condition rindas saglabātas `_backup_20260918_legion
 
 - Ar Inscription tēlu, kuram attiecīgie profession questi vēl nav pabeigti, atsevišķi millot Aethril, Dreamleaf, Foxflower, Fjarnskaggl, Starlight Rose un Felwort. Katram herbam jāspēj dot tikai savu quest atradumu un jāaktivizē pareizais quests: 39942, 40062, 40064, 40065, 39951 vai 39952.
 - Pēc katra attiecīgā questa pabeigšanas atkārtot milling un pārbaudīt, ka quest-only atradums vairs netiek piedāvāts; parastajam pigmentu loot jāturpina darboties.
+
+## Pakete 57 — Pandaria Jewelcrafting research recepšu atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_51_restore_pandaria_jewelcrafting_discoveries.sql`.
+
+Seši krāsu research spelli — River's Heart (131593), Primordial Ruby (131686), Wild Jade (131688), Vermilion Onyx (131690), Imperial Amethyst (131691) un Sun's Radiance (131695) — klienta datos ir explicit discovery darbības, bet `skill_discovery_template` nebija nevienas to receptes. No uzturētās 5.4.8 world DB atjaunots pilnais 68 superior Pandaria gem cut recepšu sadalījums pa krāsām.
+
+Secrets of the Stone (131759) ir bez-cooldown universālais variants, kura spēles apraksts un profession dokumentācija paredz nejaušu recepti no visām krāsām. Tam izveidota visu sešu atjaunoto kopu apvienotā discovery grupa. SQL tikai pievieno trūkstošos ierakstus ar `INSERT IGNORE`; esošie discovery dati netiek pārrakstīti vai dzēsti.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`. Krāsu grupās ir attiecīgi 4, 5, 18, 22, 14 un 5 receptes, bet Secrets of the Stone grupā — visas 68 unikālās receptes.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 410 līdz 403; visu septiņu Jewelcrafting spellu discovery brīdinājumi pazuda.
+- Palika pieci atsevišķi terminālu Blacksmithing/Alchemy spellu false-positive kandidāti; tie apzināti nav maskēti ar neīstām discovery rindām un tiks analizēti atsevišķi.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Pandaria Jewelcrafting tēlu, kurš vēl nezina visas receptes, vienu reizi izmantot katru no sešiem krāsu research spelliem. Jāizveido Facets of Research un jāiemācās viena vēl nezināma attiecīgās krāsas superior gem cut recepte; ja konkrētās krāsas receptes jau zināmas, jāpārbauda spēles paredzētā pāreja uz citas krāsas recepti.
+- Izmantot Secrets of the Stone (131759) ar 3 Spirit of Harmony. Tam jāiemāca viena vēl nezināma recepte no kopējā 68 recepšu saraksta un nav jāuzliek sešu krāsu research dienas cooldown.
+- Kad visas 68 receptes ir zināmas, research nedrīkst atkārtoti iemācīt jau zināmu spellu vai radīt servera kļūdu.
