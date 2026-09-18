@@ -2653,3 +2653,19 @@ Gameobject entry 230253 klienta datos ir “Glowing Obsidian Shard”, kura Smar
 ### Spēlē vēlāk pārbaudāmais
 
 - Frostfire Ridge savākt Burning Pearl un pārbaudīt, vai kopā ar tā quest flag paredzēti tiek atzīmēts arī hidden quest 34521 “Treasure: Glowing Obsidian Shard”. Ja šīs kopīgās retail uzvedības nav, jālabo Burning Pearl dārguma skripts, nevis jāatjauno pasaulē neesošais 230253 objekts.
+
+## Pakete 139 — liekā Fel Spreader creature credit arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_125_archive_redundant_fel_spreader_credit.sql`.
+
+Entry 268517 nav creature: tas ir GOOBER tipa gameobject “Fel Spreader” ar `Data1 = 45358`, vienpadsmit pasaules spawniem un gameobject tipa quest objective, kurā jāaktivizē pieci izplatītāji. Core `GameObject::Use` GOOBER objektiem jau izsauc `KillCreditGO(info->entry, guid)`. Atlikusī creature-source `GOSSIP_HELLO` rinda mēģināja piešķirt creature kill credit 268517, lai gan tāda creature template nav; avota tipa nomaiņa tikai dublētu core korekto GO credit ar nepareizu credit tipu. Rinda saglabāta `_backup_20260919_redundant_fel_spreader_credit` un arhivēta.
+
+### Pārbaudes rezultāts
+
+- Nederīgās creature rindas vairs nav, backup tabulā ir sākotnējā rinda; Fel Spreader GO template, quest saite un visi spawni palika nemainīti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā creature template kļūda pazuda, `DBErrors.log` skaits samazinājās no 212 uz 211, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 45358 izmantot piecus Fel Spreader (268517) Broken Shore zonā. Katram objektam caur standarta GOOBER `KillCreditGO` tieši vienreiz jāpalielina gameobject objective 268517; progress nedrīkst dubultoties. Bez aktīva questa objektam credit nav jāpiešķir.
