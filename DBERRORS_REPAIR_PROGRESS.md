@@ -772,3 +772,23 @@ Pilna nederīgā rinda pirms izņemšanas saglabāta `_backup_20260918_zero_item
 - Ar tēlu, kam aktīvs izvēlnei vajadzīgais quests 39933, bet ir mazāk nekā 10 item 129092, Professor Pallin izvēlei “Here are the cards you wanted.” nav jāparādās.
 - Ar to pašu tēlu savākt tieši 10 item 129092; izvēlei jāparādās, jānostrādā un jāpatērē/jāapstrādā priekšmeti tā, kā paredz attiecīgais Inscription questa skripts.
 - Atkārtot ar vairāk nekā 10 priekšmetiem un pēc questa pabeigšanas, pārbaudot, ka skaita robeža darbojas, bet izvēle ārpus vajadzīgā questa nav pieejama.
+
+## Pakete 36 — spell implicit-target distances nosacījumu parametri
+
+Fails: `sql/updates/world/2026_09_18_31_fix_spell_distance_conditions.sql`.
+
+Trim spell implicit-target conditions rindām bija palicis vecā divu parametru distances formāta izkārtojums `(10, 4, 0)`: 10 jardu attālums un salīdzinājums “mazāks vai vienāds”. Šajā kodola ConditionMgr `CONDITION_DISTANCE_TO` formāts ir `(otrs condition target, distance, comparison)`, tādēļ skaitlis 10 tika kļūdaini interpretēts kā neeksistējoša target slota numurs un nosacījumi netika ielādēti.
+
+Rindas pārveidotas uz `(1, 10, 4)`: pārbaudāmais implicit target slots 0 tiek salīdzināts ar otru pieejamo spell target slotu 1, attālums ir 10 jardi un `COMP_TYPE_LOW_EQ=4`. Tas atbilst komentāram “Only in 10 Yards” un citu strādājošu SourceType 13 distances nosacījumu izkārtojumam. Labojums attiecas uz “Tied Up” (181555) mērķi 35845 un abiem “Leading Musken” (214176) alternatīvajiem mērķiem 107852/108538. Visas trīs pilnās sākotnējās rindas saglabātas `_backup_20260918_spell_distance_conditions`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir visas trīs sākotnējās rindas, un visas trīs aktīvās rindas tagad ir `(1, 10, 4)`.
+- Visi trīs “DistanceTo condition has invalid ConditionValue1 ... (10)” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 463 līdz 460.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauni distance-condition vai servera ielādes ziņojumi neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Draenor saturā atrast notikumu, kas lieto “Tied Up” (181555) uz Dave's Industrial Light and Magic Bunny (35845): casts drīkst izvēlēties mērķi 10 jardu robežās, bet nedrīkst izvēlēties tālāku mērķi.
+- Highmountain saturā ar abiem Stout Highlands Runehorn (107852) un Highlands Runehorn (108538) variantiem pārbaudīt “Leading Musken” (214176): katram attiecīgajam ElseGroup jāizvēlas pareizais creature tips tikai 10 jardu robežās.
+- Īpaši pārbaudīt robežu ap 10 jardiem un vairākus derīgus/tālus NPC vienlaikus, lai implicit-target atlasītājs neizvēlētos tālo vienību un neizlaistu tuvāko.
