@@ -2158,3 +2158,20 @@ First Arcanist Thalyssra (115557) gossip izvēle 20576 iedarbina Vanthir meklē�
 
 - Suramar zonā 7637, apgabalā 8487, pie First Arcanist Thalyssra (115557) izvēlēties gossip “I’m ready, Talisra.” un noskatīties visu Vanthir vīziju.
 - Pēc sākuma teksta dialogam jāturpinās ar aptuveni astoņu sekunžu pauzēm līdz grupai 8; īpaši jāpārbauda, ka pēc grupas 5 seko grupas 6 replika par Vanthir izsīkumu, tad “Found him!”, un beigās tiek piešķirti visu Echo of Vanthir vienību kredīti un noņemta aura 229713.
+
+## Pakete 110 — Kirin Tor Tavern Crawl ambientie taimeri
+
+Fails: `sql/updates/world/2026_09_18_99_fix_tavern_crawl_action_timers.sql`.
+
+Četru konkrētu Tavern Enthusiast (119047/119046; GUID 373305, 373335, 373350 un 373373) “Kirin Tor Tavern Crawl” ambientajos timed-action sarakstos bija 13 rindas ar apgrieztām min/max paužu robežām. Sarakstos ir arī derīgi nejauši intervāli, tāpēc neviens ilgums nav aizstāts vai vienādots: katrā nederīgajā pārī saglabāti abi autora skaitļi un tikai samainīta to secība. Visas 13 sākotnējās rindas saglabātas `_backup_20260918_tavern_crawl_action_timers`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir 13 sākotnējās rindas; visos četros sarakstos pēc labojuma `event_param1 <= event_param2`, un arī iepriekš derīgās rindas palika nemainītas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas 13 Tavern Crawl taimeru kļūdas pazuda un `DBErrors.log` kļūdu skaits samazinājās no 302 uz 289. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Aktīva Kirin Tor Tavern Crawl notikuma laikā novērot Tavern Enthusiast ar GUID 373305, 373335, 373350 un 373373 attiecīgi Kalimdorā, Northrendā, Outlandā un Pandaria tavernu vietās.
+- Katram NPC pēc iesaistīšanās kaujā jāizpilda viss tā ambientais emote/spell saraksts: animācijām, spell 236747/105590 un noslēguma spell 35517 jānotiek ar mainīgām, bet vienmēr derīgām pauzēm; saraksts nedrīkst apstāties pie pirmās rindas.
