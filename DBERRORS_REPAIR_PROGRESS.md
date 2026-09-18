@@ -2056,3 +2056,20 @@ Asha Ravensong (108326) quest 42697 “Champion: Asha Ravensong” nodošanas ri
 
 - Demon Hunter Class Hall kampaņā pabeigt un nodot Ashai Ravensong quest 42697 “Champion: Asha Ravensong”.
 - Quest nodošanas brīdī Ashai vienreiz jāpasaka pateicības replika “Thank you, $n. I will not let you down.”; čempionei jākļūst pieejamai paredzētajā follower sistēmā, un replika nedrīkst atkārtoties bez atkārtotas quest nodošanas.
+
+## Pakete 104 — Warden Stillwater transformācija
+
+Fails: `sql/updates/world/2026_09_18_93_fix_warden_stillwater_morph.sql`.
+
+Warden Stillwater (48080) pie zema veselības līmeņa paredzētajai transformācijai vienlaikus bija aizpildīts gan `CreatureId=48103`, gan `ModelId=30993`, lai gan SmartAI `MORPH_TO_ENTRY_OR_MODEL` pieņem tikai vienu no tiem un tādēļ visu darbību izlaida. Creature veidne 48103 ir eksistējošā Warden Stillwater transformētā forma un pati jau izmanto tieši display 30993. Saglabāta datu vadītā veidnes atsauce 48103, bet liekais modeļa parametrs iestatīts uz 0. Sākotnējā rinda saglabāta `_backup_20260918_warden_stillwater_morph`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 48080/3 rindai apstiprināts `action_param1=48103`, `action_param2=0`, un 48103 WDB veidnes display ir 30993.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 48080 dubultā morph parametra kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 310 uz 309. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Hillsbrad Foothills quest 28237 “A Blight Upon the Land” sastapšanās laikā cīnīties ar Warden Stillwater (48080) un samazināt viņa veselību zem 50%.
+- Vienreiz jāatskaņojas grupas 6 tekstam par “other form”, Stillwater vizuāli jāpārvēršas par veidnes 48103 formu ar display 30993, pēc tam jāizpilda piesaistītais knockback 67605; NPC nedrīkst pazust vai zaudēt notiekošās cīņas stāvokli.
