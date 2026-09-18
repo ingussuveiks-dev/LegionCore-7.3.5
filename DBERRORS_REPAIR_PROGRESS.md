@@ -2750,3 +2750,19 @@ Runeseer Faljar (117199) reward eventā bija norādīts neesošs quest 45222. Pa
 ### Spēlē vēlāk pārbaudāmais
 
 - Stormheim questā 45522 “To Silence the Bonespeakers” uzvarēt Runeseer Faljar (117199), nodot questu un pārbaudīt, ka reward brīdī viņš spēlētājam atskaņo teksta grupu 9 tieši vienreiz. Citu 452xx questu pabeigšana šo dialogu nedrīkst izraisīt.
+
+## Pakete 145 — Jenny dublētā proximity credit arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_131_archive_duplicate_jenny_proximity_credit.sql`.
+
+Jenny (25969) ID 4 rinda mēģināja creature avotam izmantot `EVENTOBJECT_ONTRIGGER` 89, lai 30 jardos no Fezzix Geartwist (25849) lietotu quest credit spell 46358. Šāds events creature skriptam nav atļauts. Precīzā un stingrākā uzvedība jau ir realizēta C++ `npc_fezzix_geartwist::MoveInLineOfSight`: 10 jardos tas pārbauda, vai Jenny vēl ir Crates Carried aura 46340, liek īpašniekam lietot 46358, pabeidz quest 11881 un despawno Jenny. Tāpēc nepareizais SmartAI dublikāts saglabāts `_backup_20260919_duplicate_jenny_proximity_credit` un arhivēts; Jenny pārējās cargo/aura rindas nav skartas.
+
+### Pārbaudes rezultāts
+
+- Jenny SmartAI joprojām uz summon uzliek cargo auru un passive state, pie damage nomet kasti un bez cargo despawnojas; proximity pabeigšanu nodrošina Fezzix C++ skripts. Backup tabulā ir viena arhivētā dublikāta rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neatļautā eventa kļūda pazuda, `DBErrors.log` skaits samazinājās no 199 uz 198, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Borean Tundra questā 11881 “Load'er Up!” izsaukt Jenny (25969), saglabāt vismaz vienu Crates Carried auras stack un aizvest viņu 10 jardu attālumā no Fezzix Geartwist (25849). Īpašniekam jāsaņem spell/credit 46358, questam jāpabeidzas un Jenny jāpazūd. 30 jardu attālumā bez reālas pieiešanas credit vairs nedrīkst tikt dots.
