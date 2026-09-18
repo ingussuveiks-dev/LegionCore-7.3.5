@@ -2175,3 +2175,20 @@ Fails: `sql/updates/world/2026_09_18_99_fix_tavern_crawl_action_timers.sql`.
 
 - Aktīva Kirin Tor Tavern Crawl notikuma laikā novērot Tavern Enthusiast ar GUID 373305, 373335, 373350 un 373373 attiecīgi Kalimdorā, Northrendā, Outlandā un Pandaria tavernu vietās.
 - Katram NPC pēc iesaistīšanās kaujā jāizpilda viss tā ambientais emote/spell saraksts: animācijām, spell 236747/105590 un noslēguma spell 35517 jānotiek ar mainīgām, bet vienmēr derīgām pauzēm; saraksts nedrīkst apstāties pie pirmās rindas.
+
+## Pakete 111 — Archivist Mechaton uzbrukuma taimeris
+
+Fails: `sql/updates/world/2026_09_18_100_fix_archivist_mechaton_attack_timer.sql`.
+
+Archivist Mechaton (29775) drošības sekvences visas darbības izmanto precīzas, vienādas min/max pauzes. Pēc teksta grupas 6 viņam pēc divām sekundēm jānoņem `UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE` (768) un vēl pēc 1,5 sekundēm jāuzbrūk notikumu izraisījušajam spēlētājam. Flags rindas maksimums bija `200` ms, tātad tam bija pazudusi viena nulle un nederīgā `2000..200` intervāla dēļ pāreja uz kauju tika izlaista. Atjaunota precīza `2000..2000` ms pauze. Sākotnējā rinda saglabāta `_backup_20260918_archivist_mechaton_attack_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 2977500/10 rindai apstiprināts `2000..2000` ms intervāls, flags maska 768 un paša Archivist Mechaton mērķis.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 2977500 nederīgā taimera kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 289 uz 288. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Inventor’s Disk/Archivist notikumā vai GM testa vidē izsaukt Archivist Mechaton (29775) un ļaut tam izpildīt visu aptuveni 49 sekunžu drošības dialogu un scan spell 55224.
+- Divas sekundes pēc pēdējās grupas 6 replikas NPC jākļūst atlasāmam un uzbrūkamam, bet vēl aptuveni pēc 1,5 sekundēm tam jāsāk uzbrukums spēlētājam, kurš izraisīja notikumu; pāreja nedrīkst iestrēgt neuzbrūkamā stāvoklī.
