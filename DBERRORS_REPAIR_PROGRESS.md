@@ -705,3 +705,24 @@ Creature 124445 ir Eonar encounter kuģis The Paraxis. Tā C++ AI atrodas `Antor
 - Dalaran Eventide un debesīs virs tā nedrīkst būt divi pārklājošies, statiski The Paraxis (124445) raid NPC.
 - Antorus Eonar encounter sākt vismaz normal un heroic grūtībā: encounter izsauktajam The Paraxis jāparādās, jāuzsāk paredzētie portālu/kuģa notikumi un jāsaņem encounter-frame stāvoklis.
 - Pabeigt Eonar cīņu un pārbaudīt, ka Paraxis nāve joprojām piešķir encounter 2075/raid progresu un pēc wipe tas tiek dinamiski izsaukts no jauna.
+
+## Pakete 33 — instance-bind validācija instanču transportiem
+
+Faili: `src/server/game/DataStores/DB2Structure.h` un `src/server/game/Globals/ObjectMgr.cpp`.
+
+Deathbringer Saurfang (37813) ir korekti novietots gan Icecrown Citadel raid kartē 631, gan uz Orgrim's Hammer transporta kartes 673. Tā `CREATURE_FLAG_EXTRA_INSTANCE_BIND` ir nepieciešama, lai bosa nāve piesaistītu raid saglabājumu, taču loaderis agrāk par derīgu uzskatīja tikai pašu dungeon/raid/scenario karti un neņēma vērā, ka pie transporta piesaistītas būtnes datubāzē glabājas transporta paša kartē.
+
+Build 26972 `Map` klienta datos karte 673 ir “Transport: Orgrim's Hammer (Icecrown Citadel Raid)” ar `MapType=3`. Kopā ir 63 šī tipa transporta kartes. `MapEntry` pievienota šaura `IsTransportMap()` pārbaude, un creature validācija tagad pieņem instance karti vai transporta karti. Parasta atvērtās pasaules karte joprojām saņem kļūdu, ja uz tās mēģina izmantot instance-bind flag. Saurfang spawn un template netika mainīts vai dzēsts.
+
+### Pārbaudes rezultāts
+
+- Pilna Release kompilācija ar Visual Studio 2022/MSBuild pabeidzās sekmīgi (`exit code 0`); jaunais `worldserver.exe` tika uzinstalēts `compiles` mapē.
+- Ar jauno bināro failu Saurfang GUID 146816955 transporta false-positive pazuda, un neviena `INSTANCE_BIND` kļūda vairs nepalika.
+- `DBErrors.log` skaits samazinājās no 472 līdz 471; datubāzes rindas šī koda labojuma laikā netika mainītas.
+- Pārbūvētais `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts. Starta virsrakstā bija jaunā dirty-tree revīzija `55e2a0c+`, kas apliecina, ka tests izmantoja tikko kompilēto kodu.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Icecrown Citadel 10/25 režīmā iziet gunship daļu uz Orgrim's Hammer un sākt Deathbringer Saurfang cīņu; boss jāielādē uz transporta bez spawn/AI problēmām.
+- Nogalinot Saurfang, raid grupai joprojām jāsaņem permanent instance bind un encounter progress; pēc reloga/restarta nogalinātajam bosam nav jāatdzimst saglabātajā lockout.
+- Atkārtot vismaz vienā heroic režīmā (`spawnMask=8`), jo tieši transporta ieraksts izmanto šo masku.

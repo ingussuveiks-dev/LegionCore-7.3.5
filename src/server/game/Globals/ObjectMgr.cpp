@@ -2156,7 +2156,9 @@ void ObjectMgr::LoadCreatures()
 
         if (cInfo->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
         {
-            if (!mapEntry || !mapEntry->IsDungeon())
+            // Creatures attached to an instanced transport are stored on the
+            // transport's own non-instance map (for example the ICC gunships).
+            if (!mapEntry || (!mapEntry->IsDungeon() && !mapEntry->IsTransportMap()))
                 TC_LOG_ERROR("sql.sql", "Table `creature` have creature (GUID: " UI64FMTD " Entry: %u) with `creature_template`.`flags_extra` including CREATURE_FLAG_EXTRA_INSTANCE_BIND but creature are not in instance.", guid, data.id);
         }
 
