@@ -2865,3 +2865,20 @@ Dreadscar Gateway (117703) ik pēc 50–62 sekundēm summonē Black Harvest Acol
 ### Spēlē vēlāk pārbaudāmais
 
 - Broken Shore Legionfall nometnē pie Dreadscar Gateway (117703), aptuveni koordinātēs `(-1588.25, 3190.14, 131.21)`, nogaidīt vismaz 65 sekundes. Gateway jāsummonē Black Harvest Acolyte (117627), tam jālieto Fel Channelling un pēc 25 sekundēm jāpazūd. Tas pagaidām paliks pie gateway, jo oriģinālā kustības ceļa koordinātes avotos nav saglabājušās.
+
+## Pakete 152 — nepabeigtās Deadmines Shadowy Figure kustības arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_138_archive_incomplete_deadmines_shadowy_path.sql`.
+
+Shadowy Figure (119419) Deadmines pet-battle scenārija sestajā posmā izmanto timed action-list 11941900. Tā desmit teksta rindas pilnībā sakrīt ar retail ainu: orc sieviete paņem paraugu no katla, brīdina spēlētāju un izpilda “Power leap!” aiziešanu. Vienīgā kustības rinda atsaucās uz neesošu ceļu 119419. Ceļa koordinātes nav ne abos LegionCore reference dumpos, ne OpenLCore/ArgusCore un pārbaudītajos Legion forkos. Retail video apstiprina, ka kustība bija paredzēta, bet no attēla drošas servera koordinātes atgūt nevar. Tāpēc tikai nepabeigtā kustības rinda saglabāta `_backup_20260919_incomplete_deadmines_shadowy_path` un arhivēta; visas desmit replikas un beigu despawn palika aktīvi.
+
+### Pārbaudes rezultāts
+
+- Action-list 11941900 joprojām satur dialoga grupas 0–9 un beigu despawn; backup tabulā ir sākotnējā `WAYPOINT_START` rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; pēdējā SmartAI kļūda pazuda, `DBErrors.log` skaits samazinājās no 188 uz 187. SmartAI kļūdu tagad ir 0; palikušas tikai LFG ielādes kļūdas. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pirmo reizi izpildīt “The Deadmines Strike Back” pet-battle scenāriju mapē 1688. Pēc Klutz cīņām uz Juggernaut augšējā klāja jāpieiet Shadowy Figure (119419) 25 jardu attālumā: jāatskaņojas visām desmit replikām pareizā secībā, NPC pēc ainas jāpazūd un scenārijam jāpāriet uz “The Soup's Gone Bad!”/Cookie's Leftovers posmu.
+- Zināmais vizuālais ierobežojums: līdz autentiska ceļa koordinātu atrašanai Shadowy Figure dialoga laikā paliks sākuma vietā `(-80.0642, -818.024, 39.846)`, nevis pieies pie katla un nolēks no kuģa. Ja iegūstams 7.2.5/7.3.5 sniff ar ceļu 119419, backup rinda jāatjauno kopā ar šo ceļu.
