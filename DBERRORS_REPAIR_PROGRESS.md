@@ -1158,3 +1158,22 @@ Esošā reference avota rinda saglabāta `_backup_20260918_eregos_cache_referenc
 ### Spēlē vēlāk pārbaudāmais
 
 - Pabeigt The Oculus heroic režīmā un atvērt Cache of Eregos (191349). Lādē jābūt 1–2 dažādiem priekšmetiem no astoņu atjaunoto reward saraksta; papildus jāsaglabā Design: Bracing Earthsiege Diamond un trīs Stone Keeper's Shard rindas paredzētā darbība.
+
+## Pakete 56 — Legion milling quest nosacījumu piesaiste herb loot tabulām
+
+Fails: `sql/updates/world/2026_09_18_50_fix_legion_milling_conditions.sql`.
+
+Sešiem quest-only Inscription atradumiem conditions tabulā `SourceGroup` kļūdaini bija 0, tādēļ serveris tos ignorēja kā neesošu `milling_loot_template` grupu. Katrs atraduma item jau eksistēja tieši vienas Legion herb milling tabulas saturā, tāpēc atjaunotas nepārprotamas saites: Aethril 124101→136909, Dreamleaf 124102→136912, Foxflower 124103→136915, Fjarnskaggl 124104→136916, Starlight Rose 124105→136917 un Felwort 124106→136918.
+
+Visas sešas sākotnējās condition rindas saglabātas `_backup_20260918_legion_milling_conditions`; nekas nav dzēsts. Quest ID, nosacījuma tips un esošās milling drop iespējas nav mainītas.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; visas sešas rindas tagad norāda uz atbilstošajām 124101–124106 milling grupām, un backup tabulā ir sešas sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 416 līdz 410; visi seši `milling_loot_template` SourceGroup 0 brīdinājumi pazuda.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Inscription tēlu, kuram attiecīgie profession questi vēl nav pabeigti, atsevišķi millot Aethril, Dreamleaf, Foxflower, Fjarnskaggl, Starlight Rose un Felwort. Katram herbam jāspēj dot tikai savu quest atradumu un jāaktivizē pareizais quests: 39942, 40062, 40064, 40065, 39951 vai 39952.
+- Pēc katra attiecīgā questa pabeigšanas atkārtot milling un pārbaudīt, ka quest-only atradums vairs netiek piedāvāts; parastajam pigmentu loot jāturpina darboties.
