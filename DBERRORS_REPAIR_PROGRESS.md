@@ -64,3 +64,18 @@ Ja šie dati nākotnē kļūst vajadzīgi kopā ar atbilstošām veidnēm, tos v
 INSERT IGNORE INTO creature_template_scaling
 SELECT * FROM _backup_20260918_creature_template_scaling_orphans;
 ```
+
+## Pakete 03 — custom uzdevumu rasu maska
+
+Fails: `sql/updates/world/2026_09_18_02_fix_custom_quest_race_mask.sql`.
+
+Custom uzdevumiem 60010–60030 `AllowableRaces` bija `0`. Šī kodola `QuestData` neierobežotu rasu masku glabā kā `UINT64_MAX` un katrā startā šos 21 ierakstus jau pārveidoja uz šo vērtību tikai atmiņā. SQL saglabā to pašu efektīvo vērtību datubāzē. Tas nemaina spēlētājiem pieejamās rases un nav tikai žurnāla filtra maiņa.
+
+Labojums ir atgriezenisks ar `UPDATE quest_template SET AllowableRaces=0 WHERE ID BETWEEN 60010 AND 60030`, un pilnā pirmsdarbu DB kopija satur sākotnējos ierakstus.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`.
+- Visiem 21 uzdevumiem MariaDB tagad glabā `18446744073709551615` (`UINT64_MAX`).
+- Visi 21 rasu maskas kļūdu ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 719 līdz 698.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts ar exit code 0.
