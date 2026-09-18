@@ -607,3 +607,32 @@ Izmantotās atsauces:
 - Ar Horde tēlu tāpat pārbaudīt 47835 un 48507, izmantojot Dalaran portālu uz Orgrimmar. Izvēles mērķim 124365 jāieskaitās, pēc tam jāvar turpināt uz Bladefist Bay.
 - Abām frakcijām pārbaudīt arī ceļu, kur izvēles portāla mērķis tiek izlaists un uz ostu dodas citādi; questa obligātā daļa nedrīkst būt bloķēta.
 - Tehniskās kill-credit būtnes nedrīkst parādīties pasaulē kā redzami NPC.
+
+## Pakete 29 — Deaths of Chromie scenārija sliekšņu kredītu atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_26_restore_chromie_scenario_kill_credits.sql`.
+
+Chromie scenārija questi “Preserve the True Future” (47904) un “The Deaths of Chromie” (47906) pareizi prasa apturēt attiecīgi četrus un astoņus uzbrukumus, bet to gala creature objectives atsaucās uz importa laikā izlaistiem servera kredītiem 124644 un 124646. Tauri Legion reference tieši sasaista 124644 “Save 4 Chromies Credit” ar 47904 un 124646 “Save 8 Chromies Credit” ar 47906; abiem norādīts 1. līmenis un display 47169. Wowhead Legion datos abi tāpat ir klasificēti kā tehniski, pasaulē neizvietoti credit NPC.
+
+Abās creature template tabulās pievienotas tikai abas trūkstošās sliekšņu veidnes ar Legion/build 26124 metadatiem. Questa skaitītāji, scenārija skripti un objectives nav mainīti vai dzēsti, un nosacītie inserti nepārraksta esošus datus.
+
+Izmantotās atsauces:
+
+- <https://legion-shoot.tauri.hu/?npc=124644>
+- <https://legion-shoot.tauri.hu/?npc=124646>
+- <https://www.wowhead.com/npc=124644/save-4-chromies-credit>
+- <https://www.wowhead.com/npc=124646/save-8-chromies-credit>
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām.
+- Abi ieraksti ielasās no abu template tabulu apvienojuma ar pareizajiem nosaukumiem, `Displayid1=47169`, Legion expansion, build 26124, 1. līmeni un faction 35.
+- Abi 124644/124646 objective ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 486 līdz 484.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jaunas šo veidņu validācijas kļūdas neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieņemt “Preserve the True Future” (47904), ieiet “The Deaths of Chromie” scenārijā un apturēt četrus dragonshrine uzbrukumus. Pēc ceturtā glābšanas notikuma objective 124644 jāieskaitās un quest jāvar nodot Chromie.
+- Pieņemt “The Deaths of Chromie” (47906) un apturēt visus astoņus uzbrukumus. Pēc astotā notikuma jāieskaitās 124646 un quest jāvar pabeigt.
+- Pārbaudīt robežvērtības: 4/8 kredīts nedrīkst tikt dots par agru, atkārtots notikums nedrīkst skaitīties divreiz, un pēc scenārija restarta skaitītājam jāatbilst questa progresam.
+- 124644 un 124646 nedrīkst būt redzami vai spawn-oti NPC; tie ir tikai scenārija progresa ID.
