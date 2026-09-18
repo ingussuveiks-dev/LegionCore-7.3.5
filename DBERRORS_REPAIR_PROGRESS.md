@@ -1970,3 +1970,21 @@ Kormrok Grasping Hand (93838) un Dragging Hand (93839) nāves rindas lietoja `CL
 
 - Hellfire Citadel Kormrok cīņā izraisīt Grasping Hands un Dragging Hands mehānikas; iznīcinot 93838/93839, nāves aura 181321 jāattiecas uz pie rokas esošo satverto spēlētāju, nevis tālu esošu reida biedru.
 - Atbrīvotajam spēlētājam jākļūst kustīgam, un citu roku satvertie spēlētāji nedrīkst tikt ietekmēti no vairāk nekā 5 jardu attāluma.
+
+## Pakete 99 — Halls of Valor apkārtējās emote taimeri
+
+Fails: `sql/updates/world/2026_09_18_89_fix_halls_of_valor_emote_timers.sql`.
+
+Trīs Halls of Valor NPC (95834, 95842 un 97087) periodiskajām `RANDOM_EMOTE` rindām sākuma intervāla maksimums bija `0`, lai gan minimumi bija attiecīgi 1000, 3000 un 500 ms. SmartAI šos notikumus tādēļ pilnībā izlaida. Maksimumi pielīdzināti jau definētajiem minimumiem. Pirmais pārbaudes starts atklāja arī iepriekš aiz pirmās validācijas kļūdas paslēpto 97087 atkārtojuma intervālu `5000..4300`; arī tam saglabāts definētais piecu sekunžu minimums kā determinēts `5000..5000` ms intervāls. Visas trīs sākotnējās rindas saglabātas `_backup_20260918_halls_of_valor_emote_timers`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir visas trīs sākotnējās rindas; aktīvajās rindās apstiprināti derīgi sākuma intervāli `1000..1000`, `3000..3000`, `500..500` ms un 97087 atkārtojums `5000..5000` ms.
+- Pēc papildlabojuma veikts otrs pilns `worldserver` starts, kas pabeigts 12 sekundēs; visu trīs taimeru kļūdas pazuda un `DBErrors.log` kļūdu skaits samazinājās no 318 uz 315. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Atsevišķā 95834 spell rindā vēl paliek nesaistīta neatbalstīta `target_type=28` kļūda; tā nav apklusināta un tiks labota savā paketē.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Halls of Valor vietās atrast NPC 95834, 95842 un 97087 un novērot tos ārpus kaujas vismaz 20–30 sekundes.
+- NPC periodiski jāizpilda viena no emote 15, 22, 274 vai 71; 97087 nedrīkst spamot emotes biežāk par aptuveni reizi piecās sekundēs, un uzvedība nedrīkst traucēt to kaujas spell rindām.
