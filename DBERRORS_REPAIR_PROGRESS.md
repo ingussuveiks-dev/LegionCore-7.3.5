@@ -2141,3 +2141,20 @@ Trade Prince Gallywix (395820) “Final Confrontation” cīņas četras sākuma
 
 - Goblinu sākuma ķēdē Lost Isles izspēlēt quest 25251 “Final Confrontation” un sākt Trade Prince Gallywix cīņu.
 - Pirmajās desmit sekundēs jāparādās visām četrām spējām to sadalītajos laika logos; You’re Fired (74004) jānotiek aptuveni 8–10 sekundes pēc kaujas sākuma, jāatskaņo piesaistītā grupas 6 replika un vēlāk jāturpina atkārtoties ik pēc 17–20 sekundēm.
+
+## Pakete 109 — Thalyssra Vanthir vīzijas dialoga taimeris
+
+Fails: `sql/updates/world/2026_09_18_98_fix_thalyssra_echo_dialogue_timer.sql`.
+
+First Arcanist Thalyssra (115557) gossip izvēle 20576 iedarbina Vanthir meklēšanas vīzijas timed-action sarakstu 11555700. Pēc pirmās trīs sekunžu pauzes teksta grupām 1–8 ir precīzas astoņu sekunžu pauzes, bet grupas 6 rindā maksimums bija bojāts uz 5000 ms, radot nederīgu `8000..5000` intervālu un pārtraucot saraksta ielādi. Atjaunots ar pārējo dialogu saskanīgs `8000..8000` ms intervāls. Sākotnējā rinda saglabāta `_backup_20260918_thalyssra_echo_dialogue_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 11555700/8 rindai apstiprināts `8000..8000` ms intervāls, `TALK` grupa 6 un pašas Thalyssra mērķis.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 11555700 nederīgā taimera kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 303 uz 302. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Suramar zonā 7637, apgabalā 8487, pie First Arcanist Thalyssra (115557) izvēlēties gossip “I’m ready, Talisra.” un noskatīties visu Vanthir vīziju.
+- Pēc sākuma teksta dialogam jāturpinās ar aptuveni astoņu sekunžu pauzēm līdz grupai 8; īpaši jāpārbauda, ka pēc grupas 5 seko grupas 6 replika par Vanthir izsīkumu, tad “Found him!”, un beigās tiek piešķirti visu Echo of Vanthir vienību kredīti un noņemta aura 229713.
