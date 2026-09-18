@@ -2508,3 +2508,19 @@ Gul’dan (93926) uz data-set eventu `(2,2)` bija trīs paralēlas rindas: sākt
 
 - Tanaan intro instancē pie Gul’dan (93926) izraisīt data-set 1: jāatskaņojas abām teksta rindām ar 19 sekunžu intervālu.
 - Izraisīt data-set 2: Gul’dan jālieto spell 184538, jāsāk vienpunkta waypoint uz `(4066.97, -2299.66, 84.30)`, waypoint beigās jālieto 187028, jāieslēdz lidošana un jāpagriežas uz orientāciju 4.79027. Data-set 3 viņu korekti despawnē.
+
+## Pakete 130 — Lothraxion Reckoning spell un mērķa kolonnu korekcija
+
+Fails: `sql/updates/world/2026_09_18_116_fix_lothraxion_reckoning_target.sql`.
+
+Lothraxion (111343) data-set eventa piesaistītajā cast rindā spell kolonna bija 0, bet spell ID 173313 kļūdaini bija ievietots `target_param1`, kur kodols to interpretēja kā neesošu creature entry. 7.3.5 klienta dati apstiprina, ka 173313 ir “Reckoning” ar hostile unit mērķi. Iepriekšējā linka rinda tajā pašā eventā jau liek Lothraxion uzbrukt tuvākajam Balnazzar (111247), tāpēc cast rindai atjaunots spell 173313 un tas pats creature mērķis 111247. Sākotnējā rinda saglabāta `_backup_20260918_lothraxion_reckoning_target`.
+
+### Pārbaudes rezultāts
+
+- Data-set `(1,1)` tagad vispirms izvēlas Balnazzar (111247) uzbrukumam un linked rindā uz to lieto Reckoning (173313); abi ID eksistē attiecīgajās 7.3.5 tabulās.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; Lothraxion spell-0 kļūda pazuda un neparādījās jauna neesoša target kļūda. `DBErrors.log` skaits samazinājās no 224 uz 223, `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Legion scenārijā ar Lothraxion (111343) pārbaudīt spawn darbību Imperial Arrival (221898). Kad skripts saņem data-set `(1,1)`, Lothraxion jāsāk uzbrukt Balnazzar (111247) un jālieto uz viņu Reckoning (173313), nevis jāpaliek ar izlaistu cast darbību.
