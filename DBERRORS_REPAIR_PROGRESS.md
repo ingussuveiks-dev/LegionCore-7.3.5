@@ -2367,3 +2367,23 @@ Datubāze korekti atsaucās uz desmit Seething Shore, Temple of Kotmogu, Shado-P
 - Temple of Kotmogu “Pass the Orb” brawl režīmā paņemt orbu un lietot orb piespēles spēju uz derīgu komandas biedru; orbam jāpāriet mērķim, bet nederīgam, pārāk tālam vai orbu jau nesošam mērķim cast jāatsaka.
 - Shado-Pan Showdown brawl režīmā pārbaudīt, ka abu komandu bosi iesaistās kaujā, lieto Brutal Slash, Firestorm/Thunderstorm un zem 50% dzīvības lieto heal.
 - Warsong Gulch pārbaudīt Gripping Chain trāpījumu un Discombobulator auras uzlikšanu: pēdējai mērķis jānomontē un jānoņem mounted aura.
+
+## Pakete 122 — spell implicit-target maskas un alternatīvie mērķi
+
+Fails: `sql/updates/world/2026_09_18_108_fix_spell_implicit_target_conditions.sql`.
+
+Sešu spellu `SPELL_IMPLICIT_TARGET` nosacījumos bija sajauktas efekta bitmaskas ar efekta numuriem. Spell 181293 trešā mērķa nosacījumam maska `3` (efekti 0+1) izlabota uz `4` (efekts 2). Spell 43178, 62092 un 85478 creature filtri no pārklājošās maskas `7` pārcelti uz efektu 0 (`SourceGroup=1`), un katrs atļautais NPC ievietots savā `ElseGroup`, lai tie būtu OR alternatīvas, nevis neizpildāma prasība vienam mērķim vienlaikus būt vairākiem dažādiem creature entry. Spell 45323 un 47374 pareizās maskas-1 rindas jau eksistēja; to vecās maskas-7 kopijas pēc arhivēšanas izņemtas kā nederīgi dublikāti. Visas 22 sākotnējās rindas saglabātas `_backup_20260918_spell_implicit_target_conditions`.
+
+### Pārbaudes rezultāts
+
+- Aktīvajās rindās spell 181293 tagad ir atsevišķas maskas `1`, `2`, `4`; pārējiem pieciem spell ir tikai creature mērķim derīgā maska `1`, bet alternatīvie mērķi sadalīti secīgos `ElseGroup`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; pazuda visas 12 pārklājošo masku un 12 tām sekojošās “Not handled grouped condition” kļūdas. `DBErrors.log` skaits samazinājās no 262 uz 238, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Lietot Plant Forsaken Banner (43178) uz Ulf the Bloodletter (24016), Oric the Baleful (24161) un Gunnar Thorvardsson (24162): visiem trim derīgajiem mērķiem jāpiešķir attiecīgais credit; uz citiem NPC lietošana jāatsaka.
+- Lietot spell 45323 uz Fengir the Disgraced (24874), Windan of the Kvaldir (24875), Rodin the Reckless (24876) un Isuldof Iceheart (24877), kā arī spell 47374 uz The Focus on the Beach Kill Credit Bunny (26773): katrai derīgajai alternatīvai jāiedarbina tās quest credit/skripts, bet citi mērķi jāatfiltrē.
+- Lietot Blessed Herb Bundle (62092) uz Maddened Blackwood (33043) un Corrupted Blackwood (33044): abiem jāpieņem spell hit un jāturpina jau salabotā attīrīšanas ķēde; citu creature nedrīkst izvēlēties par derīgu mērķi.
+- Quest “Call in the Artillery” laikā lietot spell 85478 uz visiem četriem ēku triggeriem 45862–45865: katrai ēkai jāpiešķir savs credit, un viens triggeris nedrīkst bloķēt pārējos kā AND prasība.
+- Draenor saturā pie NPC 90435 palaist spell 181293 un pārbaudīt, ka tā trīs efekti izvēlas attiecīgi Runic Pool (90440), Swelling Pool (90439) un Undulating Pool (90441), nevis pārklāj pirmo divu efektu filtrus.
