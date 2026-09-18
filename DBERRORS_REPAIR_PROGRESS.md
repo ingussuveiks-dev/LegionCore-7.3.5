@@ -1258,3 +1258,22 @@ Visas četras sākotnējās rindas saglabātas `_backup_20260918_injured_matriar
 
 - Ar aktīviem questiem 44969, 45020, 44988 un 45019 apmeklēt attiecīgi ievainoto Snowfeather, Bloodgazer, Direbeak un Sharptalon matriarhu. Katram jāparādās vienīgajai pārsiešanas gossip izvēlei, un tās nospiešanai jāvirza pareizais quests.
 - Bez attiecīgā questa pārsiešanas izvēle nedrīkst būt redzama; citu falcosaur dialogu un pet-battle darbībai jāpaliek nemainītai.
+
+## Pakete 61 — trīs viena-option quest dialogu nosacījumi
+
+Fails: `sql/updates/world/2026_09_18_54_fix_single_option_gossip_conditions.sql`.
+
+Gossip menu 18944 (Lasan Skyhorn, quest 39387), 19555 (Kira Iresoul/Lulubelle Fizzlebang, quest 41796) un 19576 (Empyrean NPC, quest 42166) katrā DB ir tieši viena quest dialoga izvēle ar option ID 0. To nosacījumi kļūdaini norādīja uz neesošu option ID 1, tāpēc serveris tos ignorēja. Trīs condition rindām `SourceEntry` izlabots uz 0; dialogu teksts, quest ID un darbība nav mainīti.
+
+Visas trīs sākotnējās rindas saglabātas `_backup_20260918_single_option_gossip_conditions`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; visām trim condition rindām tagad ir `SourceEntry=0`, bet backup tabulā ir trīs sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 389 līdz 383: pazuda trīs missing gossip-option kļūdas un trīs saistītie grouped-condition brīdinājumi.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 39387 runāt ar Lasan Skyhorn: “Yes!” izvēlei jābūt redzamai un jāvirza questa dialogs; bez questa tai jābūt paslēptai.
+- Atkārtot atbilstošo dialogu ar Kira Iresoul vai Lulubelle Fizzlebang questā 41796 un ar Empyrean NPC questā 42166. Vienīgajai quest izvēlei jāparādās tikai aktīva questa laikā un jāturpina paredzētā ķēde.
