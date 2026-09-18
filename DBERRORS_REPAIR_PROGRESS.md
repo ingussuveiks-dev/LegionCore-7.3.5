@@ -1867,3 +1867,24 @@ Quest 24974 “Ever So Lonely” Captured Vile Fin Puddlejumper (38923) `SetData
 
 - Tirisfal Glades pieņemt quest 24974 “Ever So Lonely”, ar Murloc Leash sagūstīt Vile Fin Puddlejumper un aizvest Captured Vile Fin Puddlejumper (38923) pie Sedrick Calston (38925).
 - Atgriešanas brīdī jāieskaitās mērķim “Vile Fin returned” (38887), murloc jāmaina fāze un jāpazūd; credit jāpiešķir tieši vienu reizi un murloc nedrīkst palikt sekojam spēlētājam.
+
+## Pakete 93 — Corrupted Blackwood attīrīšanas plūsma
+
+Fails: `sql/updates/world/2026_09_18_83_fix_corrupted_blackwood_cleanse_chain.sql`.
+
+Corrupted Blackwood (33044) quest 13545 “Cleansing the Afflicted” `SpellHit` rindām bija pašsaite un trīs atkārtoti eventi ar vienu `id`. Turklāt kļūdainās rindas tūlīt pēc Blessed Herb Bundle (62092) izmantošanas padarīja furbolg draudzīgu, piešķīra Spirit of Corruption (33000) kill credit un despawn'oja furbolg, apejot paredzēto cīņu.
+
+Esošais spirita izsaukums saglabāts kā patstāvīgs `SpellHit` events. Spirit of Corruption nāves SmartAI jau nosūta `SetData(0,1)` tuvākajam 33044, tādēļ bijušās priekšlaicīgās darbības pārveidotas par funkcionālu nāves pabeigšanas ķēdi: `SetData -> faction 35 -> thank-you teksts -> despawn pēc 5,5 s`. Manuāls priekšlaicīgs credit vairs netiek dots; objective 33000 credit rodas no paša spirita nogalināšanas. Pievienota hostile faction 2319 atjaunošana respawn brīdī. Visas 5 sākotnējās SmartAI rindas saglabātas `_backup_20260918_corrupted_blackwood_cleanse_chain`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir visas 5 sākotnējās SmartAI rindas.
+- Datubāzē apstiprināts patstāvīgs `SpellHit` spirita izsaukums un atsevišķa `SetData(0,1) -> faction 35 -> text -> despawn` pabeigšanas ķēde; respawn rinda atjauno faction 2319.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 325 uz 324, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Darkshore pieņemt quest 13545 “Cleansing the Afflicted” un uz Corrupted Blackwood (33044) izmantot Blessed Herb Bundle (item 44889 / spell 62092).
+- Jāparādās vienam Spirit of Corruption (33000); furbolg pirms spirita nāves nedrīkst kļūt draudzīgs, dot credit vai pazust.
+- Pēc spirita nogalināšanas jāieskaitās vienam “Blackwood Furbolg Cleansed”, furbolg jākļūst draudzīgam, jāpasaka pateicība un pēc aptuveni 5,5 sekundēm jāpazūd. Pēc respawn tam atkal jābūt hostile.
