@@ -547,3 +547,34 @@ Pirms izņemšanas pilnā veidā arhivētas questa template, addon, enUS locale,
 
 - Izveidot orku Hunter un iziet Valley of Trials sākuma questus: Karranisha nedrīkst piedāvāt izņemto “Steady Shot” (25139), un pēc “Etched Parchment” (3087) nedrīkst parādīties salauzts turpinājums.
 - Hunter pamata spēju iegūšanai jāseko Legion 7.3.5 klašu sistēmai; neeksistējošajam spell 56641 vai piecu Steady Shot treniņu objective quest logā nav jāparādās.
+
+## Pakete 27 — Postmaster ķēdes servera kill-credit veidņu atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_24_restore_postmaster_kill_credits.sql`.
+
+Četri aktīvās Legion Postmaster ķēdes creature objectives atsaucās uz servera kill-credit ID, kuri importa laikā bija izlaisti gan no `creature_template_wdb`, gan `creature_template`: teleportam uz Frozen Throne (104071), Twinkles piemiņas godināšanai (104099), Solid Stone maisa saņemšanai (104177) un nodošanai (104180). Tie nav pasaulē izvietojami NPC — tos kā progresa marķierus piešķir questa spell vai skripts. Wowhead, piemēram, spell 202645 trešajā efektā tieši norāda teleportēšanās kill credit, bet Tauri Legion reference katram ID apstiprina īsto nosaukumu, 1. līmeni, neitrālo Creature faction un clientā eksistējošo display 42661.
+
+Abās creature template tabulās tikai pievienotas četras trūkstošās rindas; esošie questi, objectives, spelli un skripti nav mainīti vai dzēsti. `INSERT ... WHERE NOT EXISTS` nosacījumi pasargā no jau eksistējošu datu pārrakstīšanas. Servera veidnēm izmantoti 7.3.5 build 26124 metadati un Legion expansion 6.
+
+Izmantotās atsauces:
+
+- <https://www.wowhead.com/npc=104071/kill-credit-teleport-to-the-frozen-throne>
+- <https://www.wowhead.com/spell=202645/teleport-to-the-frozen-throne>
+- <https://legion-shoot.tauri.hu/?npc=104071>
+- <https://legion-shoot.tauri.hu/?npc=104099>
+- <https://legion-shoot.tauri.hu/?npc=104177>
+- <https://legion-shoot.tauri.hu/?npc=104180>
+
+### Pārbaudes rezultāts
+
+- SQL updateris pēc obligāto `WorldEffects` un `PassiveSpells` tukšo vērtību precizēšanas failu atkārtoti piemēroja bez SQL kļūdām un reģistrēja jauno checksum.
+- Visas četras rindas ielasās no abu template tabulu apvienojuma ar pareizajiem nosaukumiem, `Displayid1=42661`, `RequiredExpansion=6`, `VerifiedBuild=26124`, 1. līmeni un faction 35.
+- Visi četri neeksistējošo creature 104071/104099/104177/104180 ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 494 līdz 490.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts. Šis labojums neradīja jaunus šo veidņu validācijas ziņojumus.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izpildīt “A Huge Package” (41397): saņemt 1,362 Solid Stone maisu un nogādāt to Ethereal Portal. Abiem mērķiem secīgi jāieskaitās (104177 un 104180), un quest jāvar nodot Postmaster.
+- Izpildīt “Priority Delivery” (41367): izmantot teleportu uz Frozen Throne. Teleportam jānostrādā un objective 104071 jāieskaitās automātiski; pēc tam jāturpina atlikušais quest ceļš līdz Steam Pools.
+- Izpildīt “Due Reward” (41395): pie Twinkles kapa jāvar nolikt rotaļlietu, jāieskaitās objective 104099 un quest jāvar nodot Wilson.
+- Pārbaudīt, ka neviena no četrām tehniskajām kill-credit būtnēm nav redzami/spontāni izvietota pasaulē; tās drīkst eksistēt tikai kā progresa ID.
