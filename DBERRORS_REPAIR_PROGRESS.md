@@ -1122,3 +1122,21 @@ Atjaunotas piecas sešu gemu equal-chance grupas: Outland uncommon, Outland rare
 
 - Vairākkārt izrakt Fel Iron Deposit, Rich Adamantite Deposit un Khorium Vein: pamatmateriāliem jāsaglabājas, bet reizēm papildus jāizkrīt vienam no atbilstošajiem Outland uncommon/rare gemiem; Rich Adamantite common reference drīkst dot 1–2 gemus.
 - Vairākkārt izrakt Cobalt, Rich Cobalt, Saronite, Rich Saronite un Titanium depozītus: pamatmateriāliem jāsaglabājas, bet 5% reference gadījumā jāparādās vienam Northrend uncommon vai rare gemam. Viena reference izsaukuma ietvaros nedrīkst izkrist visi seši grupas gemi.
+
+## Pakete 54 — Blackfathom zema līmeņa world-loot reference atjaunošana
+
+Fails: `sql/updates/world/2026_09_18_48_restore_blackfathom_world_loot_reference.sql`.
+
+Blackfathom Tide Priestess (entry 4802) loot tabulā bija 5% atsauce uz neesošu grupu 24070. Tā ir viena no deviņām šī NPC zema līmeņa world-loot grupām; pārējās astoņas grupas datubāzē bija saglabātas. No uzturētās 3.3.5 bāzes atjaunots grupas pilnais saturs — 37 vienādas iespējas auduma, ādas, bruņu, ieroču, vairogu un Tigerseye varianti. Visi 37 item ID atsevišķi pārbaudīti 7.3.5.26972 `ItemSparse` datos.
+
+Esošā avota rinda pirms labojuma saglabāta `_backup_20260918_blackfathom_reference_source`; nekas nav dzēsts. Reference saglabā sākotnējo 5% ārējo iespēju, un `GroupId=1` izvēlas ne vairāk kā vienu no 37 variantiem.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; datubāzē ir 37 grupas rindas un viena saglabāta avota backup rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 418 līdz 417, un reference 24070 kļūda vairs neparādās.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Blackfathom Deeps atkārtoti nogalināt Blackfathom Tide Priestess (4802) un pārbaudīt parasto loot. Retajos 5% reference gadījumos jāizkrīt vienam, nevis visiem, grupas zema līmeņa world-drop priekšmetiem; esošajam quest un pamata loot jāsaglabājas.
