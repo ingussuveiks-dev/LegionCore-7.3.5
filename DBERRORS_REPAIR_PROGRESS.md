@@ -1752,3 +1752,22 @@ Saite izlabota uz `link=19`; sākotnējās darbības 18 un 19 saglabātas `_back
 
 - Pie Nomi (101846) atvērt menu 19241 un ar vismaz 5 Stormray (124110) un 3 Flaked Sea Salt (133588) izvēlēties “Learn recipes for pickled storm rays.”; jānostrādā spell 305089, jāatņem tieši abi norādītie materiālu daudzumi un jāparādās noslēguma tekstam.
 - Atkārtot piedāvājumu no otrās menu lapas/opcijas 41 un salīdzināt rezultātu: abām Pickled Stormray apmaiņas ķēdēm jāuzvedas vienādi, bet citām Nomi recepšu izvēlēm jāpaliek neskartām.
+
+## Pakete 87 — Deathguard Simmer DataTrigger ķēde
+
+Fails: `sql/updates/world/2026_09_18_77_fix_deathguard_simmer_data_chain.sql`.
+
+Deathguard Simmer (1519) īpašā `source_type=13` notikuma trīs secīgās SetData darbības uz DataTriggerDSDeathwing (600034) bija veidotas kā vērtību secība 3, 2, 4. Pirmā rinda korekti veda uz `id=1`, pēdējā beidza ķēdi, bet vidējā linked rinda norādīja pati uz sevi (`id=1, link=1`). Saite izlabota uz vienīgo loģisko turpinājumu `id=2`, izveidojot ķēdi `0 -> 1 -> 2`.
+
+Visas trīs sākotnējās rindas saglabātas `_backup_20260918_deathguard_simmer_data_chain`; darbību tipi, vērtības un mērķis nav mainīti.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backupā ir visas trīs sākotnējās rindas, un aktīvā ķēde DB ir `0 -> 1 -> 2` ar nemainītām vērtībām 3, 2 un 4 uz mērķi 600034.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 332 līdz 331; Deathguard Simmer pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izsaukt saturu, kurā Deathguard Simmer (1519) `source_type=13` notikums sazinās ar DataTriggerDSDeathwing (600034), un pārbaudīt, ka mērķis saņem SetData vērtības 3, 2 un 4 pareizā secībā bez SmartAI cikla.
+- Pārbaudīt ar šo datu trigeri saistīto Deathwing scenārija/fāzes pāreju līdz galam; servera logā nedrīkst parādīties jaunas SmartAI runtime kļūdas.
