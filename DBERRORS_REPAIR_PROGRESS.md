@@ -831,3 +831,23 @@ Pilna nederīgā source-41 rinda saglabāta `_backup_20260918_invalid_phase_sour
 
 - Ar Alliance tēlu Stormwind pārbaudīt Legion sākuma ķēdes fāzes pirms, aktīva un pēc “The Battle for Broken Shore” (42740): phase 7714/7552 objektiem jāmainās atbilstoši questa statusam.
 - Pārbaudīt gan ceļu, kur 42740 vēl nav pieņemts, gan completed/rewarded stāvokli un sekojošo “In the Blink of an Eye” (44663), lai Stormwind Legion objekti neparādītos dubulti un nepazustu par agru.
+
+## Pakete 39 — “Enfilade” questa pieņemšanas priekšnosacījumi
+
+Fails: `sql/updates/world/2026_09_18_34_fix_enfilade_prerequisites.sql`.
+
+Frostfire Ridge questa “Enfilade” (32994) pieņemšanas nosacījumiem bija saglabāti pareizie prerequisite quest ID — “Karg Unchained” (33785) un “Where's My Wolf?!” (33826) — un komentārs “true if player reward quest”, bet abām rindām condition tips bija nulle. Tips 0 nav izpildāms nosacījums, tādēļ loaderis abas rindas izlaida un Enfilade varēja kļūt pieejams bez paredzētā ķēdes progresa.
+
+Abām rindām atjaunots `CONDITION_QUESTREWARDED=8`. To apstiprina blakus esošais tās pašas zonas quests “The Master Siegesmith” (33828), kas izmanto tieši abus tos pašus quest ID, ElseGroup un derīgo tipu 8. Pilnas sākotnējās rindas saglabātas `_backup_20260918_enfilade_prerequisites`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir abas sākotnējās rindas, un abas aktīvās rindas tagad izmanto condition tipu 8.
+- Abi “Invalid ConditionType 0 at SourceEntry 32994” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 458 līdz 456.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns 32994 prerequisite validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Horde tēlu Frostfire Ridge mēģināt pieņemt “Enfilade” (32994), pirms pabeigti abi prerequisite questi; questam nav jābūt pieņemamam.
+- Atsevišķi pabeigt tikai “Karg Unchained” un tikai “Where's My Wolf?!” (izmantojot testa tēlus/quest statusu); ar vienu rewarded priekšnosacījumu Enfilade joprojām nav jāatver.
+- Kad abi 33785 un 33826 ir rewarded, “Enfilade” jāparādās un jābūt pieņemamam. Pārbaudīt arī blakus “The Master Siegesmith” (33828), kura esošā prerequisite uzvedība nedrīkst mainīties.
