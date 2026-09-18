@@ -911,3 +911,22 @@ Trūkstošais `ConditionValue1` atjaunots uz 12869; pārējie nosacījuma lauki 
 - Bez aktīva “Pushed Too Far” (12869) sarunāties ar Fjorlin Frostbrow; nevienai no abām ar šo questu saistītajām izvēlēm nav jāparādās.
 - Pieņemt 12869 un runāt ar Fjorlin: jāparādās gan testa izvēlei, gan iespējai pievienoties cīņai pret wyrm/eagle transporta izvēlei.
 - Izmantot otro izvēli un pārbaudīt, ka tā sagatavo paredzēto ērgli/lidojuma cīņu; pēc questa pabeigšanas izvēlei atkal jāpazūd.
+
+## Pakete 43 — “Kill Your Hundred” SmartAI questa nosacījums
+
+Fails: `sql/updates/world/2026_09_18_38_fix_smart_quest_condition.sql`.
+
+SmartAI nosacījums entry 600, event 10 bija pareizi definēts kā `CONDITION_QUESTTAKEN=9` questam “Kill Your Hundred” (34429), taču `ConditionValue2` bija palicis vecs boolean 1. Šis condition tips lasa tikai `ConditionValue1` kā quest ID; liekais lauks nemaina semantiku un loaderis par to ziņoja kā par nederīgiem datiem.
+
+`ConditionValue2` notīrīts uz 0, saglabājot quest ID, source/event atslēgas un pozitīvo “has quest” pārbaudi. Pilna sākotnējā rinda saglabāta `_backup_20260918_smart_quest_condition`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir sākotnējā rinda, un aktīvajā rindā saglabāts quest 34429 ar `ConditionValue2=0`.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts. Šo konkrēto SmartAI SourceId loaderis arī pirms labojuma neizvadīja atsevišķā kļūdu rindā, tādēļ `DBErrors.log` kopskaits palika 449; jauni ziņojumi neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Bez aktīva “Kill Your Hundred” (34429) izraisīt ar entry 600/event 10 saistīto SmartAI notikumu; tā darbībai 165265 nav jāizpildās.
+- Pieņemt 34429 un atkārtot notikumu: nosacījumam jāizpildās un paredzētajam invoker cast 165265 jānostrādā tieši vienreiz.
+- Pēc questa nodošanas/izņemšanas atkārtot, lai “has quest” pārbaude vairs nebūtu patiesa.
