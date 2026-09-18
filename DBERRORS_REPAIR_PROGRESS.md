@@ -1771,3 +1771,22 @@ Visas trīs sākotnējās rindas saglabātas `_backup_20260918_deathguard_simmer
 
 - Izsaukt saturu, kurā Deathguard Simmer (1519) `source_type=13` notikums sazinās ar DataTriggerDSDeathwing (600034), un pārbaudīt, ka mērķis saņem SetData vērtības 3, 2 un 4 pareizā secībā bez SmartAI cikla.
 - Pārbaudīt ar šo datu trigeri saistīto Deathwing scenārija/fāzes pāreju līdz galam; servera logā nedrīkst parādīties jaunas SmartAI runtime kļūdas.
+
+## Pakete 88 — area trigger 6854 auras darbība
+
+Fails: `sql/updates/world/2026_09_18_78_fix_areatrigger_6854_aura_action.sql`.
+
+SmartTrigger 6854 satur divas neatkarīgas `ON_TRIGGER` darbības uz spēlētāju: quest spell 99424 un auras 99435 noņemšanu. Pirmā darbība neuzsāk linked ķēdi (`id=0, link=0`), bet otrajai kļūdaini bija pašsaite `id=1, link=1`, tādēļ loaderis to noraidīja. Otrā darbība izlabota uz patstāvīgu `link=0`, nemainot spellus, mērķi vai notikuma parametrus.
+
+Abas sākotnējās rindas saglabātas `_backup_20260918_areatrigger_6854_aura_action`. Šis trigeris ir saistīts ar quest 39272 un tā mērķiem 99433–99436.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backupā ir abas sākotnējās rindas, bet abas aktīvās `ON_TRIGGER` darbības tagad ir patstāvīgas ar `link=0`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 331 līdz 330; trigger 6854 pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 39272 ieiet area trigger 6854; jānostrādā quest spell 99424 un spēlētājam jānoņemas aura 99435.
+- Pārbaudīt visus četrus quest mērķus 99433–99436 un atkārtotu ieiešanu triggerī; progress nedrīkst dubultoties neparedzēti, un aura 99435 nedrīkst palikt uz spēlētāja.
