@@ -1562,3 +1562,22 @@ Visas trīs sākotnējās rindas saglabātas `_backup_20260918_phase_condition_s
 
 - Frostfire Ridge zone 6720 pabeigt scene 594 un atsevišķā mēģinājumā nodot quest 34402; abos alternatīvajos gadījumos jāaktivizējas phase 3331.
 - Zone 7814 pārbaudīt phase 5495/5494 pirms un pēc quest 38689 pieņemšanas/pabeigšanas; phase entry 3 jābūt aktīvam tikai paredzētajā “quest nav” stāvoklī.
+
+## Pakete 77 — novecojušais Toss Crystals spell DB-script
+
+Fails: `sql/updates/world/2026_09_18_69_archive_obsolete_toss_crystals_dbscript.sql`.
+
+`spell_scripts` saturēja septiņas identiskas rindas spell 179915 “Toss Crystals” effect 0, kas mēģināja izpildīt creature 90315 summon komandu. Legion 7.3.5.26972 SpellEffect datos effect 0 ir `REMOVE_AURA`, bet effect 1 ir `APPLY_AURA` ar periodic trigger; spellam nav `SCRIPT_EFFECT` vai `DUMMY` effect, kas varētu izsaukt DB-script. Tāpēc kodols visas septiņas rindas ignorēja kā no vecāka patcha palikušu, neizsaucamu implementāciju.
+
+Visas septiņas rindas saglabātas `_backup_20260918_toss_crystals_spell_scripts`, pēc tam izņemtas no aktīvās tabulas. Quest 37853 objective 90315, creature credit un creature 89975 SmartAI hit-credit paliek neskarti.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; backupā ir septiņas rindas un aktīvajā `spell_scripts` spellam 179915 vairs nav neizsaucamu rindu.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 344 līdz 343; effect-type kļūda spellam 179915 pazuda un jauna kļūda neradās.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 37853 “Tossing Crystals” izmantot paredzēto kristālu pie Senegos baseina: spell 179915 jānoņem/iedarbina paredzētās auras un quest credit 90315 jāsaņem pa pašreizējo spell/SmartAI ceļu.
+- Atkārtot darbību pēc credit saņemšanas un bez aktīva questa; nedrīkst parādīties lieki credit NPC vai vairākkārtējs progress.
