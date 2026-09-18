@@ -1429,3 +1429,22 @@ Sākotnējā dublikāta rinda saglabāta `_backup_20260918_randall_duplicate_con
 
 - Ar aktīvu quest 45413 un vēl nesaņemtu credit 116890 runāt ar Randall Goldsprocket (113812): jāparādās vienīgajai izvēlei “And what did he take with him?”.
 - Izvēlei jāpalaiž Randall SmartAI action list un jāpiešķir paredzētais credit; pēc credit saņemšanas dialogam jāpazūd. Neaktīva questa laikā dialogam nav jābūt redzamam.
+
+## Pakete 70 — Inkrot un Harold Winston gossip SourceGroup
+
+Fails: `sql/updates/world/2026_09_18_63_fix_creature_entry_gossip_groups.sql`.
+
+Trīs gossip conditions rindās `SourceGroup` kļūdaini saturēja creature entry, nevis menu ID. Inkrot entry 97756 izmanto menu 18883 ar option 0 “I'm here for your head, Inkrot!”, bet Harold Winston entry 100671 izmanto menu 19103 ar option 0 “I'm here to reclaim the jewels you stole.”. Divi Inkrot questu 39949/40539 nosacījumi pārcelti uz SourceGroup 18883, bet Harold quest 40531 nosacījums — uz 19103. Option ID, quest ID, ElseGroup un SmartAI nav mainīti.
+
+Visas trīs sākotnējās rindas saglabātas `_backup_20260918_creature_entry_gossip_groups`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; divi Inkrot nosacījumi tagad piesaistīti menu 18883 un Harold nosacījums — menu 19103, bet trīs sākotnējās rindas ir backupā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 366 līdz 360: pazuda trīs missing-option kļūdas un trīs saistītie grouped-condition brīdinājumi; updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 39949 vai 40539 runāt ar Inkrot (97756): option “I'm here for your head, Inkrot!” jāparādās, jāpalaiž menu 18883 SmartAI un jāsāk paredzētā cīņa. Bez abiem questiem tai jābūt paslēptai.
+- Ar aktīvu quest 40531 runāt ar Harold Winston (100671): dārgakmeņu atgūšanas option jāparādās, jāpalaiž menu 19103 SmartAI un jāsāk paredzētā cīņa; bez questa izvēlei jābūt paslēptai.
