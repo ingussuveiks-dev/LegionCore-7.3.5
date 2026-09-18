@@ -636,3 +636,27 @@ Izmantotās atsauces:
 - Pieņemt “The Deaths of Chromie” (47906) un apturēt visus astoņus uzbrukumus. Pēc astotā notikuma jāieskaitās 124646 un quest jāvar pabeigt.
 - Pārbaudīt robežvērtības: 4/8 kredīts nedrīkst tikt dots par agru, atkārtots notikums nedrīkst skaitīties divreiz, un pēc scenārija restarta skaitītājam jāatbilst questa progresam.
 - 124644 un 124646 nedrīkst būt redzami vai spawn-oti NPC; tie ir tikai scenārija progresa ID.
+
+## Pakete 30 — “nākamās burvestības” proc izpildes fāze
+
+Fails: `sql/updates/world/2026_09_18_27_fix_next_spell_proc_phase.sql`.
+
+Astoņām aktīvām, ar lādiņiem ierobežotām aurām `spell_proc` rindā bija norādīts lādiņu skaits, bet nebija obligātās burvestības izpildes fāzes. 7.3.5 `SpellAuraOptions` jau dod katras auras pareizo proc tipu un iespējamību, tādēļ SQL nepārraksta klienta datus un pievieno tikai trūkstošo `spellPhaseMask=1` (`CAST`). Tas patērē auru vienreiz uz atbilstošu burvestības izpildi, nevis atkārtoti uz katru trāpīto mērķi. Pirms izmaiņas visu astoņu rindu pilnas kopijas saglabātas `_backup_20260918_next_spell_proc_phase`.
+
+Labotie efekti ir Solar Empowerment (164545), Lunar Empowerment (164547), Gathering Storms (198300), Taste for Blood (206333), Rhonin's Assaulting Armwraps (208081), Precise Strikes (209493), Shattered Defenses (209706) un Galactic Guardian (213708). Nosaukumi, efekta apraksti, proc tipi un iespējamības pārbaudīti pret lokāli lejupielādētajām build 26972 `Spell` un `SpellAuraOptions` tabulām; izpildes fāzes nozīme pārbaudīta šī koda `SpellMgr::CanSpellTriggerProcOnEvent` implementācijā.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir tieši astoņas sākotnējās rindas.
+- Visām astoņām dzīvajām rindām ir `spellPhaseMask=1`, bet to pārējās pielāgotās vērtības nav mainītas.
+- Astoņi “spellPhaseMask value defined” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 484 līdz 476. Palika tikai divi atsevišķi ziņojumi par nepilnīgo Necrosis (216974) rindu, kas tiks labota nākamajā paketē.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jaunas šo astoņu proc ierakstu validācijas kļūdas neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Balance Druid: iegūt Solar Empowerment un Lunar Empowerment; katram efektam jāpastiprina un jāpatērējas tikai pie nākamā attiecīgi Solar Wrath vai Lunar Strike. Pretēja burvestība nedrīkst patērēt lādiņu.
+- Enhancement Shaman: ar Crash Lightning trāpīt vairākiem mērķiem, tad lietot Stormstrike. Gathering Storms bonuss jāpiemēro vienam Stormstrike cast un jānoņem tikai vienreiz, neatkarīgi no trāpījumu skaita.
+- Fury Warrior: pēc Furious Slash Taste for Blood jāietekmē nākamais Bloodthirst; cita spēja nedrīkst patērēt efektu.
+- Arcane Mage ar Rhonin's Assaulting Armwraps: pēc Arcane Missiles proc nākamajam Arcane Blast jābūt bez mana izmaksām, un aura jānoņem tieši pēc šī cast.
+- Arms Warrior: pēc Colossus Smash atsevišķi pārbaudīt Precise Strikes un Shattered Defenses. Nākamajam Mortal Strike vai Execute jāsaņem attiecīgais rage/damage/critical bonuss, un AoE vai neveiksmīgs mērķa rezultāts nedrīkst patērēt auru vairāk nekā vienreiz.
+- Guardian Druid: Galactic Guardian automātiskajam Moonfire jāpiešķir 213708; nākamajam manuālajam Moonfire jāsaņem rage un direct-damage bonuss, pēc tam aurai jāpazūd.
