@@ -2637,3 +2637,19 @@ Creature avota 68286 periodiskā rinda deva quest credit 68723 “Tak-Tak’s Ki
 ### Spēlē vēlāk pārbaudāmais
 
 - Quest 32351 “Echoes of Thunder” gaitā pārbaudīt lidojumu ar Tak-Tak un ierašanos Shrine of Two Moons. Quest mērķis ir atrast Baine Bloodhoof, tādēļ šī neesošā helper noņemšana nedrīkst automātiski pabeigt mērķi pie nejauša Northrend NPC. Ja lidojumam trūkst atsevišķa credit soļa, jāatjauno viss Pandaria helper saturs no atbilstoša 7.3.5 avota, izmantojot backup rindu kā norādi.
+
+## Pakete 138 — neizmantotā Glowing Obsidian Shard skripta arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_124_archive_unused_obsidian_shard_script.sql`.
+
+Gameobject entry 230253 klienta datos ir “Glowing Obsidian Shard”, kura SmartAI pie GO state 2 tieši pabeidza hidden treasure quest 34521. Pašreizējā bāzē nav ne šī GO template, ne spawn. Arī retail laikmeta spēlētāju novērojumi pie [Wowhead objekta 230253](https://www.wowhead.com/object=230253/glowing-obsidian-shard) norāda, ka objekts faktiski nebija atrodams un tā completion flag tika iegūts ar citu Frostfire Ridge dārgumu. Skaitliski sakrītošais creature GUID 230253 ir Jeweled Macaw (61747), nevis drošs aizstājējs. Rinda saglabāta `_backup_20260919_unused_obsidian_shard_script` un pēc tam arhivēta.
+
+### Pārbaudes rezultāts
+
+- Aktīvas neesošā GO 230253 rindas vairs nav, backup tabulā ir sākotnējā rinda; Jeweled Macaw spawn nav mainīts.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā gameobject kļūda pazuda, `DBErrors.log` skaits samazinājās no 213 uz 212, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Frostfire Ridge savākt Burning Pearl un pārbaudīt, vai kopā ar tā quest flag paredzēti tiek atzīmēts arī hidden quest 34521 “Treasure: Glowing Obsidian Shard”. Ja šīs kopīgās retail uzvedības nav, jālabo Burning Pearl dārguma skripts, nevis jāatjauno pasaulē neesošais 230253 objekts.
