@@ -1600,3 +1600,22 @@ Validācija tagad, tāpat kā aktuālajā TrinityCore realizācijā, pārbauda `
 
 - Pie Irradiated Power Crystal (GO 181433) Silverline Lake izmantot spell 28700 “Disperse Neutralizing Agent”; mērķa būtnei apkārtnē jāparāda BroadcastText 17912 par ūdens attīrīšanos.
 - Pārbaudīt, ka ziņojumu redz tuvumā esošie spēlētāji paredzētajā `TEXT_EMOTE` formā un ka spell ārpus atļautā 15 jardu attāluma joprojām nav izmantojams.
+
+## Pakete 79 — Cache of Tsulong nederīgā loot atsauce
+
+Fails: `sql/updates/world/2026_09_18_70_archive_orphan_tsulong_loot_reference.sql`.
+
+`Cache of Tsulong` (GO 212922, loot entry 43568) saturēja 1% atsauci uz neesošu `reference_loot_template` entry 86279. Tā nav pārvietošanas atjauninājuma radīta kļūda: nederīgā `-86279` rinda jau ir LegionCore 2024 bāzes dumpā, savukārt ne 2024, ne 2020 dumpā atsauces saturs nav atrodams. Arī pārbaudītajos Legion/Pandaria forkos atjaunojams references saturs netika atrasts.
+
+Lādes 93 derīgās tiešās loot rindas visām grūtības pakāpēm, tostarp item 86279, netika mainītas. Vienīgā neatrisināmā un izpildes laikā neko dot nespējīgā references rinda saglabāta `_backup_20260918_orphan_tsulong_loot_reference`, pēc tam izņemta no aktīvās tabulas.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; backup tabulā ir viena precīza sākotnējā rinda, aktīvajā loot tabulā references 86279 vairs nav.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 341 līdz 340; trūkstošās `reference_loot_template` entry 86279 kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Terrace of Endless Spring nogalināt Tsulong un atvērt Cache of Tsulong (GO 212922) katrā pieejamajā raid grūtības pakāpē; lādei jāatveras un jādod attiecīgās grūtības tiešais loot.
+- Īpaši pārbaudīt, ka joprojām var izkrist item 86279 “Pattern: Liferuned Leather Gloves” un ka heroic/raid-finder loot mode rindas nav ietekmētas.
