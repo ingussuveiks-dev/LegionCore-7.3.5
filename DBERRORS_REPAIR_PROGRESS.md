@@ -1888,3 +1888,19 @@ Esošais spirita izsaukums saglabāts kā patstāvīgs `SpellHit` events. Spirit
 - Darkshore pieņemt quest 13545 “Cleansing the Afflicted” un uz Corrupted Blackwood (33044) izmantot Blessed Herb Bundle (item 44889 / spell 62092).
 - Jāparādās vienam Spirit of Corruption (33000); furbolg pirms spirita nāves nedrīkst kļūt draudzīgs, dot credit vai pazust.
 - Pēc spirita nogalināšanas jāieskaitās vienam “Blackwood Furbolg Cleansed”, furbolg jākļūst draudzīgam, jāpasaka pateicība un pēc aptuveni 5,5 sekundēm jāpazūd. Pēc respawn tam atkal jābūt hostile.
+
+## Pakete 94 — Grasping Earth SetData despawn
+
+Fails: `sql/updates/world/2026_09_18_84_fix_grasping_earth_data_cooldown.sql`.
+
+Grasping Earth (77893) `SetData(1,1)` despawn handlerim repeat intervāls bija apgriezts (`min=1`, `max=0`), tādēļ SmartAI visu rindu izlaida. Maksimālā vērtība izlīdzināta uz 1 ms, saglabājot sākotnējo tūlītējo reakciju un despawn darbību. Sākotnējā rinda saglabāta `_backup_20260918_grasping_earth_data_cooldown`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir sākotnējā rinda un aktīvajam handlerim apstiprināts repeat intervāls `1..1` ms.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 324 uz 323, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Notikumā, kurā parādās Grasping Earth (77893), izpildīt mehāniku, kas tam nosūta `SetData(1,1)`; objekta NPC jādespawn'o bez aizķeršanās un pārējām spell/timed-action rindām jāturpina darboties.
