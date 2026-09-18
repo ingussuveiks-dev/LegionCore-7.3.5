@@ -1353,3 +1353,22 @@ Sākotnējā objective rinda saglabāta `_backup_20260918_when_all_aligned_objec
 
 - Pieņemt quest 35704 “When All Is Aligned”, uzkāpt uz Ka'alu (entry 77857) un ar vehicle spēju nogalināt 80 Adherent pretiniekus.
 - Pabeidzot vehicle secību vai izkāpjot paredzētajā brīdī, jāsaņem Ka'alu 77857 objective kredīts, jāaktivizē pareizā phase 3474 pāreja un questam jākļūst nododamam.
+
+## Pakete 66 — quest 42053 Yvelyn phase pārejas objective
+
+Fails: `sql/updates/world/2026_09_18_59_fix_yvelyn_phase_objective.sql`.
+
+Drūda class-hall zonas 8180 phase 7543 ir paredzēta quest 42053 laikā, kamēr Yvelyn objective 107166 nav pabeigts; blakus phase 7544 ir tās pēctecis pēc objective pabeigšanas. Pēcteces condition kļūdaini pārbaudīja Glimmer of Aessina entry 112549, kas atrodas citā mapē/zonā un quest 42053 objective sarakstā neeksistē. `ConditionValue2` izlabots uz to pašu Yvelyn objective 107166, saglabājot pretējo `NegativeCondition` un pārējos phase nosacījumus.
+
+Sākotnējā condition rinda saglabāta `_backup_20260918_yvelyn_phase_condition`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; phase 7544 condition tagad pārbauda objective 107166, un sākotnējā 112549 rinda ir backup tabulā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 373 līdz 372; quest 42053/objective 112549 kļūda vairs neparādās, un updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Druid pieņemt quest 42053 un zonā 8180 pārbaudīt phase 7543: pirms sarunas/darbības ar Yvelyn (107166) jābūt redzamai questa sākuma fāzei un gossip izvēlei “Can you help me?”.
+- Pabeidzot Yvelyn objective, pasaulei jāpārslēdzas uz phase 7544 bez relog; pēc questa pabeigšanas vai nodošanas fāzei jāsaglabājas atbilstoši esošajiem complete/reward nosacījumiem.
