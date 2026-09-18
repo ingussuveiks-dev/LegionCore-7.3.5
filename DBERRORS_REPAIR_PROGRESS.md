@@ -2124,3 +2124,20 @@ Legion Portal (111357) timed-action saraksts secīgi izsauc trīs Greater Imp (1
 
 - Ar attiecīgā Legion notikuma palīdzību vai GM testa vidē izsaukt Legion Portal (111357) un ļaut tam nodzīvot vismaz 70 sekundes.
 - Portālam ik pēc aptuveni 10 sekundēm secīgi jāizsauc trīs Greater Imp, tad Felhound, Felguard Invader un Abyssal Shard; trešais imp nedrīkst tikt izlaists, un visi summon jāparādās pie portāla.
+
+## Pakete 108 — Gallywix “You’re Fired” sākuma taimeris
+
+Fails: `sql/updates/world/2026_09_18_97_fix_gallywix_youre_fired_timer.sql`.
+
+Trade Prince Gallywix (395820) “Final Confrontation” cīņas četras sākuma spējas datubāzē ir apzināti sadalītas secīgos logos: Revenue Stream 1–3 s, Unload Toxic Assets 4–5,8 s, Downsizing 6–7 s un You’re Fired no 8 sekundēm. Pēdējās rindas maksimums bija `1000` ms, acīmredzami pazaudējot vienu nulli un radot nederīgu `8000..1000` intervālu. Atjaunots paredzētais `8000..10000` ms sākuma logs, nemainot tās 17–20 sekunžu atkārtojumu. Sākotnējā rinda saglabāta `_backup_20260918_gallywix_youre_fired_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 395820/4 rindai apstiprināts `8000..10000` ms sākums, `17000..20000` ms atkārtojums, spell 74004 un nejaušs naidīgs mērķis.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 395820 nederīgā taimera kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 304 uz 303. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Goblinu sākuma ķēdē Lost Isles izspēlēt quest 25251 “Final Confrontation” un sākt Trade Prince Gallywix cīņu.
+- Pirmajās desmit sekundēs jāparādās visām četrām spējām to sadalītajos laika logos; You’re Fired (74004) jānotiek aptuveni 8–10 sekundes pēc kaujas sākuma, jāatskaņo piesaistītā grupas 6 replika un vēlāk jāturpina atkārtoties ik pēc 17–20 sekundēm.
