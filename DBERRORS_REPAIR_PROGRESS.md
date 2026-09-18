@@ -1505,3 +1505,22 @@ Visas trīs sākotnējās rindas saglabātas `_backup_20260918_defending_broken_
 
 - Ar aktīvu quest 42537 secīgi izpildīt mērķus 108260 un 108261: ar scene 1 saistītajām pārejām jāaktivizējas tikai pie paredzētās pirmā/otrā mērķa izpildes kombinācijas.
 - Atkārtot pārbaudi pirms abu mērķu izpildes un pēc questa pabeigšanas; scene nedrīkst sākties priekšlaicīgi vai iestrēgt pēc otrā mērķa.
+
+## Pakete 74 — nederīgie quest 45406 invasion phase sentinel nosacījumi
+
+Fails: `sql/updates/world/2026_09_18_66_archive_invalid_invasion_phase_objectives.sql`.
+
+Zone 7541 phase 142 un 143 katrai bija viena `CONDITION_QUEST_OBJECTIVE_DONE` rinda ar `QuestID=-45406` un `ObjectID=-1`. Šis condition tips pieņem unsigned QuestID un īstu objective ObjectID; jau sākotnējā 2020 DB dumpā esošo negatīvo sentinel formu kodols nekad nav atbalstījis, tādēļ abas rindas tika noraidītas startā un runtime nebija sasniedzamas.
+
+Derīgā trīs posmu loģika paliek neskarta: phase 4000 izmanto quest 45406 objective 116868, phase 4001 pārbauda vēl neizpildītu 118566, bet phase 4002 — izpildītu 118566 vai nodotu quest. Abas nederīgās rindas saglabātas `_backup_20260918_invalid_invasion_phase_objectives` un tikai tad izņemtas no aktīvās tabulas.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; backupā ir tieši divas rindas, bet piecas derīgās phase 142–144 condition rindas paliek aktīvas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 350 līdz 348; abas unsigned `4294921890` objective kļūdas pazuda, jaunu kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Zone 7541 iziet quest 45406: pēc objective 116868 jāaktivizējas phase 4000, pirms objective 118566 pabeigšanas jābūt phase 4001, bet pēc tā pabeigšanas — phase 4002.
+- Nodot quest 45406 un atkārtoti ieiet zonā; jāpaliek pēdējam paredzētajam phase stāvoklim un nedrīkst parādīties iepriekšējie invasion posmi.
