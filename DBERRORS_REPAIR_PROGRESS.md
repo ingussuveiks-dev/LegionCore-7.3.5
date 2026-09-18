@@ -1953,3 +1953,20 @@ Quest 10861 “Veil Lithic: Preemptive Strike” Cursed Egg izsauktais Malevolen
 
 - Blade's Edge Mountains pieņemt quest 10861 “Veil Lithic: Preemptive Strike” un aktivizēt Cursed Egg (185211), kas izsauc Malevolent Hatchling (22337).
 - Hatchling uzreiz jāuzbrūk spēlētājam, kurš aktivizēja olu; tam jāturpina lietot Charge (36140) 8–25 yd attālumā un Terrifying Screech (38021).
+
+## Pakete 98 — Kormrok hand nāves mērķa radius
+
+Fails: `sql/updates/world/2026_09_18_88_fix_kormrok_hand_death_target.sql`.
+
+Kormrok Grasping Hand (93838) un Dragging Hand (93839) nāves rindas lietoja `CLOSEST_PLAYER`, bet obligātais max distance bija 0, tādēļ abas darbības tika izlaistas. Tā kā roka parādās pie satvertā spēlētāja un šīs pašas mehānikas tuvuma pārbaude ir 5 jardi, abām spell 181321 rindām uzstādīts 5 yd radius. Abas sākotnējās rindas saglabātas `_backup_20260918_kormrok_hand_death_target`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir abas sākotnējās rindas un abām aktīvajām rindām apstiprināts `CLOSEST_PLAYER` radius 5 yd.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 320 uz 318, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Hellfire Citadel Kormrok cīņā izraisīt Grasping Hands un Dragging Hands mehānikas; iznīcinot 93838/93839, nāves aura 181321 jāattiecas uz pie rokas esošo satverto spēlētāju, nevis tālu esošu reida biedru.
+- Atbrīvotajam spēlētājam jākļūst kustīgam, un citu roku satvertie spēlētāji nedrīkst tikt ietekmēti no vairāk nekā 5 jardu attāluma.
