@@ -2815,3 +2815,20 @@ Pie Archmage Kalec (105081) quest 41626 pieņemšanas ķēde deva divus derīgus
 ### Spēlē vēlāk pārbaudāmais
 
 - Pie Archmage Kalec pieņemt priest variantu 41626 un mage variantu 42006 “A New Threat”. Pārbaudīt, ka optional “Take the Dalaran portal”/travel soļi korekti atjaunojas un Azure Dragonshrine var izmantot trīs clue objektus, tostarp Strange Portal (248375), līdz “Clues Found” ir 3/3. Quest pieņemšana nedrīkst priekšlaicīgi ieskaitīt pašu clue kā creature kill.
+
+## Pakete 149 — timed-list gameobject kill-credit dublikātu arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_135_archive_timed_gameobject_killcredits.sql`.
+
+Grappling Hook and Rope (230950) un Telemancy Beacon (253392) ir GOOBER objekti ar gameobject tipa quest mērķiem. To standarta `GameObject::Use` jau izsauc `KillCreditGO`, bet trīs timed-list rindas papildus mēģināja to pašu GO entry kreditēt ar creature-only action 33. Šīs darbības validētājs izlaida. Tikai trīs dublikāti saglabāti `_backup_20260919_timed_gameobject_killcredits` un arhivēti; abi Grappling Hook teleporti, Beacon conversation 2301 un Portal to Shal'Aran 260270 summon palika aktīvi.
+
+### Pārbaudes rezultāts
+
+- Action listi 23095000/23095001 joprojām teleportē uz savām Draenor koordinātām; 25339200 joprojām sāk conversation un summonē portālu. GO objective credit nodrošina pašu objektu lietojums. Backup tabulā ir trīs izņemtās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visas trīs neesošo creature entry kļūdas pazuda, `DBErrors.log` skaits samazinājās no 194 uz 191, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quest 34976 un 34840 laikā izmantot Grappling Hook and Rope (230950). Atbilstošajam questam jāieskaita viens GO objective un jāteleportē spēlētājs uz pareizo no divām vietām; nedrīkst aktivizēties abu questu teleporti vienlaikus.
+- Suramar quest 42487 laikā izmantot Telemancy Beacon (253392). Jāieskaita viens GO objective, jāatskaņojas conversation 2301 un koordinātēs `(433.519, 4007.51, 2.859)` uz 30 sekundēm jāparādās Portal to Shal'Aran (260270).
