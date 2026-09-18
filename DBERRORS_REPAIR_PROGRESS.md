@@ -1046,3 +1046,22 @@ Pieciem Siege of Orgrimmar bossu loot ID (71161, 71504, 71515, 71529 un 71865) u
 
 - Siege of Orgrimmar attiecīgajos grūtības režīmos nogalināt Kil'ruk the Wind-Reaver (loot 71161), Siegecrafter Blackfuse (71504), General Nazgrim (71515), Current Bloodthirsty (71529) un Garrosh Hellscream (71865); katrā režīmā jāizmanto tikai tā `LootMode` reference, bez dubultiem citu grūtību dropiem.
 - Atvērt “Vault of Forbidden Treasures” loot 221739 katrā atbalstītajā grūtībā un pārbaudīt, ka tiek izvēlēta tikai attiecīgā 100% reference tabula.
+
+## Pakete 50 — Elementium Fragment neatkarīgās loot iespējas
+
+Fails: `sql/updates/world/2026_09_18_44_fix_elementium_fragment_loot.sql`.
+
+Dragon Soul gameobject 210220 “Elementium Fragment” loot ID 210220 satur “Essence of Destruction” (71998, daudzums 1–3) un “Elementium Gem Cluster” (77952, daudzums 1), katru ar 70% iespēju. Abi priekšmeti ir dokumentēti kā šīs Deathwing lādes saturs, un tie var krist neatkarīgi. Kļūdains kopīgs `GroupId=2` tos padarīja savstarpēji izslēdzošus un grupas summu pacēla līdz 140%.
+
+Abām rindām iestatīts `GroupId=0`, saglabājot 70% iespēju, loot mode un daudzumus. Tā abas tiek mestas neatkarīgi un vienā lādē drīkst parādīties arī kopā. Pilnas sākotnējās rindas saglabātas `_backup_20260918_elementium_fragment_loot`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir abas sākotnējās rindas, bet aktīvajām 71998 un 77952 rindām tagad ir `GroupId=0` ar saglabātu 70% iespēju un daudzumiem.
+- Elementium Fragment 140% grupas ziņojums pazuda; `DBErrors.log` skaits samazinājās no 434 līdz 433.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns 210220 loot vai abu priekšmetu validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pēc Madness of Deathwing uzvaras atvērt “Elementium Fragment” (210220) vairākos resetos: 71998 un 77952 katram jābūt neatkarīgai iespējai, tādēļ iespējams saņemt abus, vienu vai nevienu no tiem.
+- Pārbaudīt 10 un 25 spēlētāju/LFR atbalstītos režīmus (`LootMode=15`), ka 71998 skaits paliek 1–3 un 77952 skaits paliek 1; pārējās ieroču, mount un quest loot grupas nedrīkst mainīties.
