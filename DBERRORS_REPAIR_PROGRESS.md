@@ -1410,3 +1410,22 @@ Sākotnējā rinda saglabāta `_backup_20260918_orphan_gossip_737_condition`, no
 
 - Quest 26703 iziet pa tā pašreizējo spēles ceļu un pārliecināties, ka tā pieņemšana, mērķi un nodošana darbojas bez menu 737; spēlē nedrīkst parādīties tukšs dialogs.
 - Ja nākotnē tiek atjaunots gossip menu 737, vispirms atjaunot arī backup condition un pārbaudīt tā option ID pret jaunā menu saturu.
+
+## Pakete 69 — Randall Goldsprocket neesošā option dublikāts
+
+Fails: `sql/updates/world/2026_09_18_62_archive_duplicate_randall_gossip_condition.sql`.
+
+Randall Goldsprocket menu 20426 satur vienu dialogu option 0 “And what did he take with him?”. Tam jau ir abi vajadzīgie nosacījumi: aktīvs quest 45413 un nepabeigts “Stolen Item Identified” credit 116890. Neesošajai option 1 bija vēl viens `quest taken` nosacījums, kas tikai dublēja option 0 pirmo pārbaudi un nevarēja tikt izmantots. Šī viena nederīgā rinda pēc backup izņemta; option 0, abi tā nosacījumi un Randall SmartAI paliek neskarti.
+
+Sākotnējā dublikāta rinda saglabāta `_backup_20260918_randall_duplicate_condition`, no kurienes to var atjaunot.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; neesošās option 1 dublikāts ir backupā, bet option 0 un abi tā nosacījumi paliek aktīvi.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 368 līdz 366: pazuda menu 20426 missing-option kļūda un tās grouped-condition brīdinājums; updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 45413 un vēl nesaņemtu credit 116890 runāt ar Randall Goldsprocket (113812): jāparādās vienīgajai izvēlei “And what did he take with him?”.
+- Izvēlei jāpalaiž Randall SmartAI action list un jāpiešķir paredzētais credit; pēc credit saņemšanas dialogam jāpazūd. Neaktīva questa laikā dialogam nav jābūt redzamam.
