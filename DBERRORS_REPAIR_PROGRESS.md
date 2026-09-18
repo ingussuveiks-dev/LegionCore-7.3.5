@@ -851,3 +851,23 @@ Abām rindām atjaunots `CONDITION_QUESTREWARDED=8`. To apstiprina blakus esoša
 - Ar Horde tēlu Frostfire Ridge mēģināt pieņemt “Enfilade” (32994), pirms pabeigti abi prerequisite questi; questam nav jābūt pieņemamam.
 - Atsevišķi pabeigt tikai “Karg Unchained” un tikai “Where's My Wolf?!” (izmantojot testa tēlus/quest statusu); ar vienu rewarded priekšnosacījumu Enfilade joprojām nav jāatver.
 - Kad abi 33785 un 33826 ir rewarded, “Enfilade” jāparādās un jābūt pieņemamam. Pārbaudīt arī blakus “The Master Siegesmith” (33828), kura esošā prerequisite uzvedība nedrīkst mainīties.
+
+## Pakete 40 — Teron sakāves SmartAI auru dublikātu arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_35_archive_teron_aura_duplicates.sql`.
+
+Tehniskā kill-credit creature 231022 SmartAI otrajam notikumam bija trīs nederīgi condition tipa 0 ieraksti, kuri komentārā prasīja, lai spēlētājam nebūtu “Scene: Teron Defeated” auru 182164, 182166 un 182167. Katrā gadījumā tajā pašā SourceGroup, SourceEntry un ElseGroup jau eksistē precīzs derīgs `CONDITION_AURA=1` ieraksts ar to pašu spell ID un negatīvo zīmi.
+
+Trīs tipa-0 dublikāti saglabāti `_backup_20260918_teron_aura_duplicates` un izņemti no aktīvās tabulas. Trīs funkcionālie aura nosacījumi paliek nemainīti, tāpat kā SmartAI darbības, kas piešķir kill credit 91738 un liek invokerim castot 182164.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir trīs nederīgie dublikāti, bet aktīvajos datos palikuši tieši trīs derīgie type-1 aura nosacījumi.
+- Visi trīs “Invalid ConditionType 0 at SourceEntry 231022” ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 456 līdz 453.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns 231022 SmartAI condition ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Draenor Teron'gor/Teron sakāves ainā aktivizēt kill-credit 231022 bez nevienas no trim auras: credit 91738 jāpiešķiras un invokerim jāsākas 182164 ainai.
+- Kamēr spēlētājam jau ir 182164, 182166 vai 182167, atkārtota aktivizācija nedrīkst vēlreiz sākt Teron Defeated ainu vai dubultot credit.
+- Atsevišķi pārbaudīt Alliance/Yrel un Horde/Liadrin scenārija variantus, jo 182166 un 182167 aizsargā katras frakcijas summons no dublēšanās.
