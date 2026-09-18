@@ -1920,3 +1920,19 @@ Roakk the Zealot (79490) `Set Home Position` rindā event tipa vērtība `4` (`A
 ### Spēlē vēlāk pārbaudāmais
 
 - Draenor notikumā iesaistīt cīņā Roakk the Zealot (79490); aggro brīdī tam jāsaglabā pašreizējā vieta kā home position, jāizpilda kaujas spell/dialoga rindas un evade gadījumā tas nedrīkst mēģināt atgriezties uz nederīgu sākotnējo punktu.
+
+## Pakete 96 — Summoning Portal periodiskais taimeris
+
+Fails: `sql/updates/world/2026_09_18_86_fix_summoning_portal_timer.sql`.
+
+Summoning Portal (105038) spell 208041 periodiskajai rindai repeat intervāls bija `120000..12000` ms. Maksimālajai robežai trūka viena nulle; tā izlīdzināta uz determinētu `120000..120000` ms jeb divām minūtēm. Sākotnējā rinda saglabāta `_backup_20260918_summoning_portal_timer`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir sākotnējā rinda un aktīvajā rindā apstiprināts repeat intervāls `120000..120000` ms.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 322 uz 321, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Vietā/notikumā ar Summoning Portal (105038) novērot to ilgāk par divām minūtēm; spell 208041 jāizpildās sākumā un pēc tam atkārtoti ik pēc aptuveni 120 sekundēm, neradot strauju spell spam.
