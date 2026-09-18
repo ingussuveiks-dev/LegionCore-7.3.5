@@ -2898,3 +2898,20 @@ Fails: `sql/updates/world/2026_09_19_139_archive_obsolete_lfg_entrance_852.sql`.
 ### Spēlē vēlāk pārbaudāmais
 
 - Atvērt Dungeon Finder un Raid Finder sarakstus un pārliecināties, ka nevienā izvēlnē nav tukša vai bojāta Molten Core rinda ar ID 852. Parastajai Molten Core ieejai pasaulē un korektajiem eventa/raid variantiem jāpaliek pieejamiem; šis labojums nemaina to teleportus.
+
+## Pakete 154 — LFG teleportu validācija quest un solo scenārijiem
+
+Fails: `src/server/game/DungeonFinding/LFGMgr.cpp`.
+
+No atlikušajiem 186 LFG DBC ierakstiem 113 bija atzīmēti ar `LFG_FLAG_USER_TELEPORT_NOT_ALLOWED`. Tie ir quest vadīti vai solo scenāriji, kuriem spēlētāja LFG teleportēšanās darbība pēc DBC definīcijas nav atļauta; ieeju tajos nodrošina quest, spell vai scenārija skripts. `LoadLFGDungeons` tomēr visiem ne-random ierakstiem bez izņēmuma prasīja `lfg_entrances` koordinātes un kļūdaini ziņoja par to trūkumu. Validācija tagad koordinātes prasa tikai ierakstiem, kuriem lietotāja LFG teleports ir atļauts. DB rindas un faktiskie teleporti nav dzēsti vai aizvietoti.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve ar laboto kodu pabeigta bez kompilācijas kļūdām.
+- Pilns labotās būves starts pabeigts 12 sekundēs; visas 113 kļūdaini validētās no-user-teleport rindas pazuda un `DBErrors.log` skaits samazinājās no 186 uz 73. Atlikušie 73 ir tikai ieraksti, kuriem teleports ir atļauts un kuriem tiešām jāatrod koordinātes vai jāprecizē to LFG tips. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Palaist vairākus ar questu atveramus solo scenārijus, piemēram, artifact/class-hall scenāriju “The Dark Riders”, un pārbaudīt, ka quest/spell ieeja joprojām nogādā pareizajā instancē.
+- Solo scenārija laikā pārbaudīt Dungeon Finder acs izvēlni: manuālajai “Teleport to/Leave Dungeon” iespējai jābūt nepieejamai, kā to nosaka `LFG_FLAG_USER_TELEPORT_NOT_ALLOWED`; scenārijs jāpamet ar tā paredzēto noslēguma vai quest mehānismu.
