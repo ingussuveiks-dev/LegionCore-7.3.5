@@ -1334,3 +1334,22 @@ Sākotnējā condition rinda saglabāta `_backup_20260918_chilled_to_core_condit
 
 - Ar Mage pieņemt quest 45846 “Chilled to the Core” un pie Dalaran Crater runāt ar Archmage Cedric (entry 18165).
 - Kamēr Cedric objective nav izpildīts, jāparādās dialogam par Antonidas disc fragmentu; pēc izvēles objective jākreditējas un šai izvēlei jāpazūd, ļaujot turpināt Ok'rok Icetouch posmu.
+
+## Pakete 65 — When All Is Aligned Ka'alu objective
+
+Fails: `sql/updates/world/2026_09_18_58_fix_when_all_aligned_kaalu_objective.sql`.
+
+Quest 35704 “When All Is Aligned” paredz lidot uz Ka'alu un papildus 80 Adherent pretiniekiem saņemt Ka'alu noslēguma kredītu. World DB reāli spawnots Ka'alu ir entry 77857 phase 3474, un tā SmartAI pēc vehicle dialoga izsauc `SMART_ACTION_CALL_KILLEDMONSTER` ar credit 77857. `quest_objectives` savukārt kļūdaini gaidīja entry 82651, kuram šajā DB nav ne spawna, ne AI. Objective ObjectID izlabots uz skripta faktiski piešķirto 77857; ar to sakrīt arī esošā phase condition.
+
+Sākotnējā objective rinda saglabāta `_backup_20260918_when_all_aligned_objective`; nekas nav dzēsts.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; quest 35704 objective tagad gaida SmartAI piešķirto credit 77857, un sākotnējā 82651 rinda ir backup tabulā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 374 līdz 373; quest 35704/objective 77857 kļūda vairs neparādās, un updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieņemt quest 35704 “When All Is Aligned”, uzkāpt uz Ka'alu (entry 77857) un ar vehicle spēju nogalināt 80 Adherent pretiniekus.
+- Pabeidzot vehicle secību vai izkāpjot paredzētajā brīdī, jāsaņem Ka'alu 77857 objective kredīts, jāaktivizē pareizā phase 3474 pāreja un questam jākļūst nododamam.
