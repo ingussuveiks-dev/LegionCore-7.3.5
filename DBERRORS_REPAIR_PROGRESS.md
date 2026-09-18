@@ -1372,3 +1372,22 @@ Sākotnējā condition rinda saglabāta `_backup_20260918_yvelyn_phase_condition
 
 - Ar Druid pieņemt quest 42053 un zonā 8180 pārbaudīt phase 7543: pirms sarunas/darbības ar Yvelyn (107166) jābūt redzamai questa sākuma fāzei un gossip izvēlei “Can you help me?”.
 - Pabeidzot Yvelyn objective, pasaulei jāpārslēdzas uz phase 7544 bez relog; pēc questa pabeigšanas vai nodošanas fāzei jāsaglabājas atbilstoši esošajiem complete/reward nosacījumiem.
+
+## Pakete 67 — Ooka Dooker neesošā gossip option dublikāts
+
+Fails: `sql/updates/world/2026_09_18_60_archive_duplicate_ooka_gossip_condition.sql`.
+
+Ooka Dooker menu 17264 satur quest food dialogu option 1 un vendor dialogu option 2. Quest 37536 nosacījums pareizi eksistē option 1, taču DB bija arī identiska condition rinda neesošam option 0. Tā nevarēja ietekmēt nevienu dialogu un tikai dublēja reālās izvēles nosacījumu, tāpēc nederīgā option 0 rinda pēc backup izņemta no aktīvās tabulas. Abi faktiskie gossip option un option 1 pareizais quest nosacījums paliek neskarti.
+
+Sākotnējā dublikāta rinda saglabāta `_backup_20260918_ooka_duplicate_condition`, no kurienes to var pilnībā atjaunot.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; neesošās option 0 dublikāts ir backupā, bet option 1 nosacījums un abi reālie menu option paliek aktīvi.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 372 līdz 370: pazuda missing gossip-option kļūda un tās grouped-condition brīdinājums; updatera kļūdu nebija.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar aktīvu quest 37536 runāt ar Ooka Dooker (90086): option 1 par fighting food jābūt redzamai un jāvirza quests, bet vendor option 2 joprojām jāatver preču logs.
+- Bez quest 37536 food dialogam jābūt paslēptam, bet vendor izvēlei jāpaliek pieejamai; tukša vai dubulta option 0 nedrīkst parādīties.
