@@ -2766,3 +2766,19 @@ Jenny (25969) ID 4 rinda mēģināja creature avotam izmantot `EVENTOBJECT_ONTRI
 ### Spēlē vēlāk pārbaudāmais
 
 - Borean Tundra questā 11881 “Load'er Up!” izsaukt Jenny (25969), saglabāt vismaz vienu Crates Carried auras stack un aizvest viņu 10 jardu attālumā no Fezzix Geartwist (25849). Īpašniekam jāsaņem spell/credit 46358, questam jāpabeidzas un Jenny jāpazūd. 30 jardu attālumā bez reālas pieiešanas credit vairs nedrīkst tikt dots.
+
+## Pakete 146 — Lothraxion champion reward eventa atjaunošana
+
+Fails: `sql/updates/world/2026_09_19_132_fix_lothraxion_champion_reward_event.sql`.
+
+Lothraxion (109105) vienīgā rinda bija komentēta “QR - SC” (Quest Reward → Summon Conversation), bet reference dumpā tai bija nederīgs `DISTANCE_CREATURE` 75 ar pilnīgi tukšiem distance parametriem, savukārt pašreizējā bāzē — creature neatļautais `EVENTOBJECT_ONTRIGGER` 89. Lothraxion pats ir quest 43701 “Champion: Lothraxion” starteris un ender; questa completion dialogs apraksta viņa pievienošanos Silver Hand. Tādēļ triggeris atjaunots kā `QUEST_REWARDED` 20 questam 43701. Saglabāts conversation 3641 un player target, noņemts dangling links uz neesošu ID 1. Sākotnējā rinda ir `_backup_20260919_lothraxion_champion_reward_event`.
+
+### Pārbaudes rezultāts
+
+- Lothraxion rinda tagad pie quest 43701 reward izsauc conversation 3641 spēlētājam un nelinko uz neesošu rindu; backup tabulā ir sākotnējais ieraksts.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neatļautā eventa kļūda pazuda un jauna distance/quest validācijas kļūda neradās. `DBErrors.log` skaits samazinājās no 198 uz 197, `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Paladin Order Hall pabeigt “Warriors of Light” 43697, pieņemt un nodot Lothraxion quest 43701 “Champion: Lothraxion”. Tieši reward brīdī spēlētājam vienreiz jāatskaņojas conversation 3641 un Lothraxion jākļūst par champion. Vienkārša pieiešana NPC vai citu questu nodošana conversation nedrīkst izraisīt.
