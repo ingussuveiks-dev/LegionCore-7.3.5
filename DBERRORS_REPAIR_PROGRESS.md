@@ -1697,3 +1697,22 @@ Atļauto flagu maskā tagad iekļauts jau eksistējošais `SMART_EVENT_FLAG_WHIL
 
 - Hellfire Peninsula atrast vai respawnēt Fel Reaver (18733); tam jābūt aktīvam arī bez tuvumā esoša spēlētāja, jābūt warning aura 34623 un dubultā uzbrukuma spell 19818.
 - Borean Tundra nogalināt Wooly Mammoth Bull (25743) parasti un situācijā, kur tas ir transporta/charm mijiedarbībā; nāves brīdī uz spēlētāju jānostrādā triggered spell 46221 “Animal Blood”.
+
+## Pakete 84 — Gordok Brute Enrage SmartAI ķēde
+
+Fails: `sql/updates/world/2026_09_18_74_fix_gordok_brute_enrage_link.sql`.
+
+Gordok Brute (11441) 30% veselības Enrage darbība norādīja pati uz sevi (`id=5, link=5`), tāpēc SmartAI loaderis to noraidīja. AzerothCore etalona dati apstiprina paredzēto ķēdi `id 5 -> id 6`: vispirms spell 15716 “Enrage”, pēc tam linked enrage emote. Sākotnējās SmartAI rindas saglabātas `_backup_20260918_gordok_brute_enrage_link`.
+
+Saite izlabota uz `link=6`. Tā kā Legion datubāzē pašas linked darbības komentārs bija saglabāts, bet tai paredzētais `creature_text` trūka, atjaunota atsevišķa teksta grupa 1 ar abiem kanoniskajiem enrage emotiem un linked darbība pārslēgta uz šo grupu.
+
+### Pārbaudes rezultāts
+
+- SQL updateris sekmīgi piemēroja migrāciju; backup tabulā ir abas sākotnējās SmartAI rindas, aktīvā ķēde ir `5 -> 6`, un teksta grupā 1 ir abi atjaunotie emoti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 335 līdz 334; Gordok Brute pašsaites kļūda pazuda un jauna kļūda neradās.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Dire Maul North atrast Gordok Brute (11441), sākt cīņu un samazināt tā veselību zem 30%; vienu reizi jānostrādā spell 15716 “Enrage” un jāparādās vienam no enrage emotiem.
+- Ļaut radījumam iziet no cīņas un sākt cīņu atkārtoti; zem 30% ķēdei atkal jānostrādā tikai vienu reizi, bez atkārtotas emote vai SmartAI iestrēgšanas.
