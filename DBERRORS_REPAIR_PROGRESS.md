@@ -1027,3 +1027,22 @@ Pilna novecojusī valūtas rinda saglabāta `_backup_20260918_obsolete_highmaul_
 
 - Atvērt vairākus “Highmaul Lockbox” (119000) un pārbaudīt, ka kastes atveras, izsniedz atlikušās Draenor/PvP priekšmetu atlīdzības un neizraisa klienta vai servera kļūdu par currency 392.
 - Pārbaudīt Highmaul Coliseum zaudētāja pasta atlīdzību, ja šis saturs serverī ir pieejams: kastei jābūt saņemamai un atveramai; Legion versijā nav sagaidāmi vecie Honor Points.
+
+## Pakete 49 — loot grupu iespējas validācija pa grūtības režīmiem
+
+Fails: `src/server/game/Loot/LootMgr.cpp`.
+
+Pieciem Siege of Orgrimmar bossu loot ID (71161, 71504, 71515, 71529 un 71865) un gameobject loot 221739 grupā bija pa trim 100% reference rindām. Tās nav vienlaikus aktīvas: rindas lieto atsevišķus `LootMode` bitus 1, 2 un 4 dažādiem raid grūtības režīmiem. Runtime jau filtrē loot pēc viena aktīvā `_DifficultyMask` bita, bet starta validācija saskaitīja visu režīmu iespējas kopā un nepareizi ziņoja 300%.
+
+`LootGroup::Verify` tagad, tāpat kā runtime, aprēķina grupas summu katram no 16 difficulty bitiem atsevišķi un ziņo lielāko reāli vienlaikus aktīvo summu. `LootMode=0` joprojām tiek uzskatīts par aktīvu visos režīmos. Tā pati pārbaude attiecas uz explicit un zero/equal-chance rindu konfliktu. Datu rindas un to drop iespējas nav mainītas; īstās 140% un 1200% grupas validācija turpina atrast.
+
+### Pārbaudes rezultāts
+
+- Release `INSTALL` kompilācija pabeidzās bez kļūdām un uzstādīja jauno `worldserver.exe`.
+- Seši nepatiesie 300% ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 440 līdz 434. Īstās gameobject 210220 140% un reference 228138 1200% kļūdas joprojām tiek ziņotas, kā paredzēts.
+- `worldserver` ar jauno bināru sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauna loot validācijas vai starta regresija neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Siege of Orgrimmar attiecīgajos grūtības režīmos nogalināt Kil'ruk the Wind-Reaver (loot 71161), Siegecrafter Blackfuse (71504), General Nazgrim (71515), Current Bloodthirsty (71529) un Garrosh Hellscream (71865); katrā režīmā jāizmanto tikai tā `LootMode` reference, bez dubultiem citu grūtību dropiem.
+- Atvērt “Vault of Forbidden Treasures” loot 221739 katrā atbalstītajā grūtībā un pārbaudīt, ka tiek izvēlēta tikai attiecīgā 100% reference tabula.

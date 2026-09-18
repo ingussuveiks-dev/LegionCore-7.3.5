@@ -2475,15 +2475,40 @@ float LootTemplate::LootGroup::TotalChance() const
 
 void LootTemplate::LootGroup::Verify(LootStore const& lootstore, uint32 id, uint8 group_id) const
 {
-    float chance = RawTotalChance();
-    if (chance > 101.0f)                                    // TODO: replace with 100% when DBs will be ready
+    // Loot mode is a bit mask and a generated loot container uses exactly one
+    // difficulty bit. Do not add mutually exclusive difficulty rows together
+    // when validating a group (runtime processing filters them the same way).
+    float maxChance = 0.0f;
+    bool hasOverfilledEqualChanceGroup = false;
+
+    for (uint8 difficulty = 0; difficulty < 16; ++difficulty)
     {
-        TC_LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has total chance > 100%% (%f)", lootstore.GetName(), id, group_id, chance);
+        uint16 difficultyMask = uint16(1u << difficulty);
+        float chance = 0.0f;
+
+        for (LootStoreItemList::const_iterator itr = ExplicitlyChanced.begin(); itr != ExplicitlyChanced.end(); ++itr)
+            if (!itr->needs_quest && (!itr->lootmode || (itr->lootmode & difficultyMask)))
+                chance += itr->chance;
+
+        maxChance = std::max(maxChance, chance);
+
+        if (chance >= 100.0f)
+            for (LootStoreItemList::const_iterator itr = EqualChanced.begin(); itr != EqualChanced.end(); ++itr)
+                if (!itr->lootmode || (itr->lootmode & difficultyMask))
+                {
+                    hasOverfilledEqualChanceGroup = true;
+                    break;
+                }
     }
 
-    if (chance >= 100.0f && !EqualChanced.empty())
+    if (maxChance > 101.0f)                                 // TODO: replace with 100% when DBs will be ready
     {
-        TC_LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has items with chance=0%% but group total chance >= 100%% (%f)", lootstore.GetName(), id, group_id, chance);
+        TC_LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has total chance > 100%% (%f)", lootstore.GetName(), id, group_id, maxChance);
+    }
+
+    if (hasOverfilledEqualChanceGroup)
+    {
+        TC_LOG_ERROR("sql.sql", "Table '%s' entry %u group %d has items with chance=0%% but group total chance >= 100%% (%f)", lootstore.GetName(), id, group_id, maxChance);
     }
 }
 
