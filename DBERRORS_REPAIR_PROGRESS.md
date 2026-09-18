@@ -1639,3 +1639,22 @@ Sākotnējā SmartAI rinda saglabāta `_backup_20260918_kadrak_signal_powder_ite
 - Ar Horde tēlu, kuram aktīvs quest 13808 “Mission Improbable” un nav Secret Signal Powder, pie Kadrak Splintertree Post izvēlēties nomaiņas dialogu; jāsaņem viens item 45710 un dialogam jāaizveras.
 - Izmantot Secret Signal Powder pie Smoldering Brazier Satyrnaar; jāsummonē Krokk un quest ķēdei “Making Stumps”/“Wet Work” jābūt turpināmai.
 - Atkārtot dialogu, kamēr unikālais priekšmets jau ir somā; nedrīkst rasties dublikāts vai servera kļūda.
+
+## Pakete 81 — Bonegrim Catriona's Jewel item ID
+
+Fails: `sql/updates/world/2026_09_18_72_fix_bonegrim_jewel_item.sql`.
+
+Bonegrim (creature 97863) quest 40863 maiņas dialogā pareizi pievienoja Fel-Infused Core 133881, bet mēģināja noņemt neesošu item 133885. Gossip condition, quest objective un Legion 7.3.5.26972 klienta `ItemSparse` dati apstiprina, ka vajadzīgais priekšmets ir 133895 “Catriona's Jewel” — liels rubīns, kuru NPC prasa apmaiņā pret core.
+
+Sākotnējā timed action list rinda saglabāta `_backup_20260918_bonegrim_jewel_item`; mainīts tikai noņemamā item ID no 133885 uz 133895 un pievienots paskaidrojošs komentārs.
+
+### Pārbaudes rezultāts
+
+- SQL updater sekmīgi piemēroja failu `legion_world`; Bonegrim action 2 tagad noņem item 133895, un sākotnējā rinda ar 133885 ir backupā.
+- Pilns `worldserver` starts pabeigts 12 sekundēs. `DBErrors.log` kļūdu skaits samazinājās no 339 līdz 338; neesošā item kļūda timed action list 9786301 pazuda.
+- `Server.log` kļūdu skaits palika 116. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quest 40863 laikā iegūt Catriona's Jewel (item 133895), pie Bonegrim izvēlēties “Here is your gem. Give me the core.”; rubīnam jāpazūd un somā jāparādās vienam Fel-Infused Core (133881).
+- Bez Catriona's Jewel maiņas opcija nedrīkst būt pieejama; ar jewel somā tai jābūt redzamai un pēc veiksmīgas maiņas atkārtoti jāpaslēpjas.
