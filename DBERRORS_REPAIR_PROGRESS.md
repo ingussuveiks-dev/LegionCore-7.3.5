@@ -2457,3 +2457,20 @@ Warsong Wing Commander (40942) `SMART_EVENT_FRIENDLY_MISSING_BUFF` pārbaudīja 
 ### Spēlē vēlāk pārbaudāmais
 
 - Stonetalon Mountains quest “The Only Way Down is in a Body Bag” teritorijā pārbaudīt Warsong Wing Commander (40942): kad tam trūkst Ride Vehicle auras 46598, jāiedarbojas parachute spell 79404 un piesaistītajam despawn jānotiek pēc 45 sekundēm. NPC ar jau esošu auru nedrīkst nevajadzīgi atkārtot darbību biežāk par 30 sekundēm.
+
+## Pakete 127 — Brainwashed Noble Legion burvestību korekcija
+
+Fails: `sql/updates/world/2026_09_18_113_fix_brainwashed_noble_spells.sql`.
+
+Brainwashed Noble (596) divas par “bolt” nosauktas kaujas rindas faktiski lietoja Arcane Charge (36032), kas 7.3.5 datos ir pašam caster paredzēta aura, nevis uzbrukuma lādiņš. Tās aizstātas ar reference creature skriptā lietoto un Legion klientā derīgo Arcane Blast (20883). Atsevišķais Mage Armor (6117) ir player spell, kas līdz Legion tika izņemts; trīs vēl eksistējošie tāda paša nosaukuma spell ir citu encounteru/NPC specifiskas auras un nav drošs aizvietojums. Tāpēc tikai šī novecojusī spawn-buff rinda pēc arhivēšanas izņemta. Abas labotās un viena izņemtā sākotnējā rinda saglabāta `_backup_20260918_brainwashed_noble_spells`.
+
+### Pārbaudes rezultāts
+
+- Aktīvajā skriptā abi uzbrukumi tagad lieto 20883 uz pretinieku; Mage Armor rinda vairs nav aktīva, bet backup tabulā ir visas trīs sākotnējās rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā 6117 kļūda pazuda un `DBErrors.log` skaits samazinājās no 227 uz 226. Papildus tika izlabota semantiski nepareizā, bet žurnālā neuzrādītā 36032 lietošana. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Deadmines sastopot Brainwashed Noble (596), tam uz aggro un pēc tam 0–40 jardu distancē ik pēc 3,4–4,7 sekundēm jāmet Arcane Blast (20883) uz pretinieku, nevis jāuzliek sev Arcane Charge aura.
+- Zem 15% mana NPC jāsāk tuvoties, virs 30% jāatgriežas ranged fāzē; zem 15% dzīvības jāpasaka teksts un jābēg. Pēc spawn tam vairs nav paredzēta pre-Legion Mage Armor aura.
