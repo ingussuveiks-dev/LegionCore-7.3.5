@@ -2192,3 +2192,20 @@ Archivist Mechaton (29775) drošības sekvences visas darbības izmanto precīza
 
 - Inventor’s Disk/Archivist notikumā vai GM testa vidē izsaukt Archivist Mechaton (29775) un ļaut tam izpildīt visu aptuveni 49 sekunžu drošības dialogu un scan spell 55224.
 - Divas sekundes pēc pēdējās grupas 6 replikas NPC jākļūst atlasāmam un uzbrūkamam, bet vēl aptuveni pēc 1,5 sekundēm tam jāsāk uzbrukums spēlētājam, kurš izraisīja notikumu; pāreja nedrīkst iestrēgt neuzbrūkamā stāvoklī.
+
+## Pakete 112 — Agatha kustības sekvences taimeris
+
+Fails: `sql/updates/world/2026_09_18_101_fix_agatha_movement_timer.sql`.
+
+Lady Sylvanas Windrunner (44365) notikuma timed-action saraksts beigās nosūta `DATA_SET 2,2` tuvumā esošajai Agatha (44608), kas iedarbina viņas divu punktu kustību, spell 83173 un abu Fallen Human auru noņemšanu. Pirmās kustības rindai bija divas jēgpilnas, bet apgrieztas robežas `2000..1000` ms. Abi autora ilgumi saglabāti un sakārtoti kā derīga nejauša `1000..2000` ms aizture. Sākotnējā rinda saglabāta `_backup_20260918_agatha_movement_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 4460800/0 rindai apstiprināts `1000..2000` ms intervāls un nemainīts pirmais galamērķis `(1364.32, 1028.81, 67.111)`.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 4460800 nederīgā taimera kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 288 uz 287. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Silverpine Forest zonā 130, apgabalā 5369 pie koordinātēm ap `(1364, 1029, 56)`, izspēlēt Lady Sylvanas (44365) un Agatha (44608) saistīto notikumu līdz Sylvanas nosūta `DATA_SET 2,2`.
+- Agatha pēc 1–2 sekundēm jāpārvietojas uz pirmo punktu, vēl pēc vienas sekundes uz otro punktu, pēc 2,5 sekundēm jālieto spell 83173, pēc tam jānoņem aura 29266 abiem Fallen Human (44592/44593) un jāiziet no kaujas; sekvence nedrīkst apstāties pirms pirmās kustības.
