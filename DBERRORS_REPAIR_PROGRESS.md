@@ -2685,3 +2685,19 @@ Entry 395280 saturēja tikai vienu `LINK` rindu ar ID 10, kas tālāk linkoja uz
 ### Spēlē vēlāk pārbaudāmais
 
 - Spēles tests nav iespējams un nav vajadzīgs: fragmentam nav avota NPC, sākuma eventa, teksta vai komentāra. Ja nākotnē tiek atrasta pilnā ķēde ar parent eventu un template, rindu var atjaunot no backup kopā ar trūkstošo saturu.
+
+## Pakete 141 — Katarine kļūdainā source-type dublikāta arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_127_archive_katarine_source_type_duplicate.sql`.
+
+Skaitlis 9956200 ir Katarine (99562) timed action-list ID, nevis creature template. Derīgajā ķēdē data-set `(1,1)` izsauc source type 9 sarakstu: divi teksti, credit 99607 un paslēpšana. Papildu `source_type = 0`, ID 4 rinda mēģināja traktēt pašu action-list ID kā creature un pēc 45 sekundēm ieslēgt redzamību. Šo funkciju jau veic Katarine pašas korektā ID 1 OOC rinda ar 45/90 sekunžu laiku. Tikai nepareizā creature-source rinda saglabāta `_backup_20260919_katarine_source_type_duplicate` un arhivēta; visas source type 9 rindas palika aktīvas.
+
+### Pārbaudes rezultāts
+
+- Katarine 99562 abas sākuma rindas un action-list 9956200 ID 0–3 ir aktīvi; vairs nav mēģinājuma ielādēt 9956200 kā creature template. Backup tabulā ir viena izņemtā dublikāta rinda.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā creature template kļūda pazuda, `DBErrors.log` skaits samazinājās no 210 uz 209, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Katarine (99562) pārbaudīt, ka viņa pēc 45 sekundēm kļūst redzama un atkārto redzamības eventu ik pēc 90 sekundēm. Nosūtot data `(1,1)`, jāatskaņojas abām teksta rindām ar 6 sekunžu intervālu, tuvumā esošajam spēlētājam jāsaņem credit 99607 un pēc vēl 3 sekundēm Katarine jākļūst neredzamai.
