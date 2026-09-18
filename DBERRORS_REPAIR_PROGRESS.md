@@ -871,3 +871,23 @@ Trīs tipa-0 dublikāti saglabāti `_backup_20260918_teron_aura_duplicates` un i
 - Draenor Teron'gor/Teron sakāves ainā aktivizēt kill-credit 231022 bez nevienas no trim auras: credit 91738 jāpiešķiras un invokerim jāsākas 182164 ainai.
 - Kamēr spēlētājam jau ir 182164, 182166 vai 182167, atkārtota aktivizācija nedrīkst vēlreiz sākt Teron Defeated ainu vai dubultot credit.
 - Atsevišķi pārbaudīt Alliance/Yrel un Horde/Liadrin scenārija variantus, jo 182166 un 182167 aizsargā katras frakcijas summons no dublēšanās.
+
+## Pakete 41 — loot-item questa nosacījumu parametru nobīde
+
+Fails: `sql/updates/world/2026_09_18_36_fix_loot_quest_conditions.sql`.
+
+Trīs `CONDITION_SOURCE_TYPE_LOOT_ITEM` ieraksti item 129747, 129928 un 143776 dropiem bija paredzēti kā “spēlētājs vēl nav nodevis questu” nosacījumi. To quest ID 40168, 40173 un 45563 kļūdaini atradās `ConditionValue2`, kamēr `CONDITION_QUESTREWARDED=8` quest ID lasa no `ConditionValue1`. Rezultātā kodols mēģināja pārbaudīt neeksistējošu questu 0 un loot ierobežojumu vispār neielādēja.
+
+Quest ID pārvietoti uz `ConditionValue1`, `ConditionValue2` notīrīts, un negatīvais nosacījums saglabāts. Katrai rindai blakus paliek tās esošais timewalking nosacījums, tāpēc priekšmets var krist tikai atbilstošajā eventā un tikai līdz attiecīgā questa nodošanai. Pilnas sākotnējās rindas saglabātas `_backup_20260918_loot_quest_conditions`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir visas trīs sākotnējās rindas, un aktīvajos datos katram ierakstam quest ID tagad ir `ConditionValue1`, bet `ConditionValue2=0`.
+- Trīs no četriem “Quest condition specifies non-existing quest (0)” ziņojumiem pazuda; atlikušais ir nesaistīts gossip ieraksts. `DBErrors.log` skaits samazinājās no 453 līdz 450.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns šo loot nosacījumu validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Timewalking laikā ar tēlu, kurš nav nodevis questu 40168, iegūt loot item 129747 no paredzētā avota; priekšmetam jābūt pieejamam, bet ārpus timewalking eventa tas nedrīkst krist.
+- Tāpat pārbaudīt item 129928 / quest 40173 un item 143776 / quest 45563 kombinācijas.
+- Pēc katra attiecīgā questa nodošanas atkārtot loot avotu: quest priekšmets vairs nedrīkst krist. Pārbaudīt arī tēlu, kurš questu tikai pieņēmis, bet vēl nav nodevis — negatīvais rewarded nosacījums vēl drīkst atļaut dropu.
