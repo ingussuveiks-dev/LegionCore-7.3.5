@@ -2701,3 +2701,19 @@ Skaitlis 9956200 ir Katarine (99562) timed action-list ID, nevis creature templa
 ### Spēlē vēlāk pārbaudāmais
 
 - Pie Katarine (99562) pārbaudīt, ka viņa pēc 45 sekundēm kļūst redzama un atkārto redzamības eventu ik pēc 90 sekundēm. Nosūtot data `(1,1)`, jāatskaņojas abām teksta rindām ar 6 sekunžu intervālu, tuvumā esošajam spēlētājam jāsaņem credit 99607 un pēc vēl 3 sekundēm Katarine jākļūst neredzamai.
+
+## Pakete 142 — bez īpašnieka palikušās Alliance Bar dejotājas rindas arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_128_archive_ownerless_alliance_bar_dancer.sql`.
+
+Rinda ar pozitīvu `entryorguid = 14677644` ik pēc 400 ms mēģināja izpildīt emote 400 un bija komentēta “Dancer Alliance Bar”. Šāds liels skaitlis drīzāk atgādina spawn GUID ar pazaudētu mīnuszīmi, taču ne pašreizējā bāzē, ne abos reference dumpos creature GUID 14677644 neeksistē; neeksistē arī tāds creature template. Abos reference dumpos ir tikai tā pati kļūdainā rinda, bez identificējama dejotāja. Tādēļ droši pāradresēt to uz citu NPC nevar. Rinda saglabāta `_backup_20260919_ownerless_alliance_bar_dancer` un arhivēta.
+
+### Pārbaudes rezultāts
+
+- Aktīvas 14677644 rindas vairs nav, backup tabulā ir sākotnējā kopija; citi dejotāju/emote skripti nav mainīti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā creature template kļūda pazuda, `DBErrors.log` skaits samazinājās no 209 uz 208, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Tiešs tests nav iespējams, jo rindai nav identificējama NPC vai spawn. Ja Alliance Bar vidē vizuāli atrodas nekustīgs dejotājs, jāpieraksta tā entry un GUID; tad backup rindu var pielāgot tieši šim spawn, nevis minēt īpašnieku pēc komentāra.
