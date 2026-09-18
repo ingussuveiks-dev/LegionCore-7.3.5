@@ -684,3 +684,24 @@ Datu salīdzināšanai izmantotas build 26972 `Spell`, `SpellEffect`, `SpellAura
 - Kamēr 216974 ir aktīva, lietot citas melee spējas: tās nedrīkst patērēt Necrosis. Nākamajam Scourge Strike jāsaņem 40% bonuss un pēc viena cast aurai jāpazūd.
 - Atkārtot ar izvēlētu Clawing Shadows: tai jāsaņem tas pats bonuss un jāpatērē tieši viens lādiņš arī no distances.
 - Pārbaudīt neveiksmīgu/atceltu cast un vairākus mērķus: aura nedrīkst pazust pirms derīga Scourge Strike/Clawing Shadows cast un nedrīkst tikt patērēta vairākas reizes viena cast laikā.
+
+## Pakete 32 — svešo The Paraxis Dalaran spawn arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_29_archive_stray_dalaran_paraxis.sql`.
+
+Creature 124445 ir Eonar encounter kuģis The Paraxis. Tā C++ AI atrodas `AntorusTheBurningThrone/boss_eonar.cpp`, paļaujas uz Antorus `InstanceScript`, un Eonar cīņā šo būtni dinamiski izsauc encounter īpašnieks. Importā papildus bija divi pilnīgi identiski statiski spawni ar GUID 146853540 un 146853552 virs Dalaran Eventide uz atvērtās pasaules kartes 1220. Abiem bija vienādas koordinātas, nebija phase, event, addon, waypoint, formation vai condition saites, un šī bija vienīgā 124445 statiskā spawn vieta.
+
+Šie nav derīgi Eonar encounter spawni: Antorus ir raid karte 1712, savukārt Dalaran ir continent/world karte un tajā raid instance-bind semantika nevar darboties. Abas pilnās importa rindas saglabātas `_backup_20260918_stray_dalaran_paraxis` un tikai pēc tam izņemtas no aktīvās `creature` tabulas. `creature_template`, raid AI un dinamiskā summon uzvedība nav mainīta.
+
+### Pārbaudes rezultāts
+
+- Sākotnējā migrācijas versija koordinātas salīdzināja kā precīzus `FLOAT` un droši neveica nevienu izmaiņu. Nosacījums tika labots uz unikālo GUID/entry/map kombināciju; updateris izmainīto checksum atkārtoti piemēroja bez SQL kļūdām.
+- Backup tabulā ir tieši abas pilnās rindas ar sākotnējiem GUID un koordinātām; aktīvajā `creature` tabulā abu vairs nav.
+- Abi The Paraxis instance-bind ziņojumi pazuda; `DBErrors.log` skaits samazinājās no 474 līdz 472. Palicis viens atšķirīgs Deathbringer Saurfang transporta validācijas ziņojums.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; Paraxis rindu izņemšana neradīja jaunas trūkstošu saistību kļūdas.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Dalaran Eventide un debesīs virs tā nedrīkst būt divi pārklājošies, statiski The Paraxis (124445) raid NPC.
+- Antorus Eonar encounter sākt vismaz normal un heroic grūtībā: encounter izsauktajam The Paraxis jāparādās, jāuzsāk paredzētie portālu/kuģa notikumi un jāsaņem encounter-frame stāvoklis.
+- Pabeigt Eonar cīņu un pārbaudīt, ka Paraxis nāve joprojām piešķir encounter 2075/raid progresu un pēc wipe tas tiek dinamiski izsaukts no jauna.
