@@ -1847,3 +1847,23 @@ Ancient Drakkari Warmonger (26811) un Ancient Drakkari Soothsayer (26812) pēc s
 
 - Uz Ancient Drakkari Warmonger (26811) un Soothsayer (26812) izmantot spell 47778; katram jāizvēlas viens no sešiem kustības galapunktiem, galā jānostrādā spell 47798, jāparādās Drakkari Spirit Particles (188525) un NPC jādespawn'o.
 - Testu atkārtot vairākas reizes, lai nosegtu dažādus point 1–6; īpaši point 6 nedrīkst izveidot particles divreiz vai izraisīt bezgalīgu linked ķēdi.
+
+## Pakete 92 — Captured Vile Fin atgriešanas ķēde
+
+Fails: `sql/updates/world/2026_09_18_82_fix_captured_vile_fin_return_chain.sql`.
+
+Quest 24974 “Ever So Lonely” Captured Vile Fin Puddlejumper (38923) `SetData(1,1)` plūsmai jāizpilda trīs darbības: piešķirt owner spēlētājam Murloc Return KC (38887), pārslēgt sagūstīto murloc uz phase mask 2 un despawn'ot to. Datu komentāri šo secību saglabāja, bet otrā darbība kļūdaini bija atkārtots `SetData` events ar `id=1, link=1`, savukārt despawn rinda izmantoja to pašu `id=1`.
+
+Ķēde normalizēta uz `id 0 -> id 1 -> id 2`: phase darbība tagad ir īsts `LINK` events ar `link=2`, bet despawn darbībai piešķirts `id=2`. Sākotnējās trīs plūsmas rindas saglabātas `_backup_20260918_captured_vile_fin_return_chain`; kill credit, phase mask un despawn darbības nav dzēstas.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir visas 3 sākotnējās plūsmas rindas.
+- Datubāzē apstiprināta aktīvā `id 0 -> id 1 -> id 2` ķēde: kill credit, phase mask 2, despawn.
+- Pilns `worldserver` starts pabeigts 13 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 326 uz 325, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Tirisfal Glades pieņemt quest 24974 “Ever So Lonely”, ar Murloc Leash sagūstīt Vile Fin Puddlejumper un aizvest Captured Vile Fin Puddlejumper (38923) pie Sedrick Calston (38925).
+- Atgriešanas brīdī jāieskaitās mērķim “Vile Fin returned” (38887), murloc jāmaina fāze un jāpazūd; credit jāpiešķir tieši vienu reizi un murloc nedrīkst palikt sekojam spēlētājam.
