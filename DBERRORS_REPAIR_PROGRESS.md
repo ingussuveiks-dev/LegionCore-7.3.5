@@ -2949,3 +2949,20 @@ Bloodmaul Slag Mines DBC ierakstam 1005 (difficulty 23) un Hellbreach ierakstam 
 
 - Ar atbilstoša līmeņa grupu ieiet Bloodmaul Slag Mines mythic variantā un pārbaudīt, ka spēlētāji parādās pie parastās instances ieejas un var sākt pirmo encounter.
 - Ar Raid Finder palaist Hellbreach aliasu 1366 un pārbaudīt, ka grupa nonāk Hellfire Citadel pirmajā spārnā pie `(3976.81, -760.645, 35.5159)`.
+
+## Pakete 157 — pilno WoD un Legion reidu ieejas
+
+Fails: `sql/updates/world/2026_09_19_142_restore_regular_raid_entrances.sql`.
+
+Septiņiem pilno reidu ierakstiem — Highmaul, Hellfire Citadel, Emerald Nightmare, Nighthold, Trial of Valor, Tomb of Sargeras un Antorus — trūka normal, heroic un mythic `lfg_entrances` rindu. Katrā no šīm kartēm datubāzē jau ir vairāki LFR spārnu punkti. Pilnā reida visām trim grūtībām atjaunots tieši pirmā LFR spārna sākumpunkts, kas ir drošā instances sākuma vieta; vēlākie spārni nav mainīti.
+
+### Pārbaudes rezultāts
+
+- Pievienota 21 rinda (7 reidi × 3 grūtības), katrai izmantojot tās pašas kartes pirmā spārna pozīciju; skripts neaizstāj jau eksistējošus ierakstus.
+- Pilns labotās Release būves starts pabeigts 12 sekundēs; visas 21 reidu kļūdas pazuda un `DBErrors.log` skaits samazinājās no 45 uz 24. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Katram no septiņiem reidiem ar GM vai testa grupu pārbaudīt normal, heroic un mythic ieeju. Spēlētājam jāparādās reida sākumā, kas sakrīt ar pirmā LFR spārna sākumu, un instances grūtībai jāsaglabājas izvēlētajā režīmā.
+- Īpaši pārbaudīt, ka esošie vēlākie LFR spārni joprojām teleportē uz saviem atsevišķajiem checkpointiem, nevis uz jaunajām pilnā reida rindām.
