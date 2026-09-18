@@ -2621,3 +2621,19 @@ Divas GUID-specifiskas rindas `-25354080` un `-25354082` bija palikušas no 2020
 ### Spēlē vēlāk pārbaudāmais
 
 - Spēles tests nav vajadzīgs, jo Haunted Nest 240112 un abi tā spawni pašreizējā spēles datu komplektā vairs nepastāv. Ja nākotnē šis saturs tiek atjaunots, no backup jāatjauno kopā creature template, spawni un abas GUID rindas, nevis tikai skripti.
+
+## Pakete 137 — neesošā Tak-Tak’s Kite credit helper arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_123_archive_missing_kite_credit_helper.sql`.
+
+Creature avota 68286 periodiskā rinda deva quest credit 68723 “Tak-Tak’s Kite” tuvumā esošam spēlētājam un bija saistīta ar Pandaria quest 32351 “Echoes of Thunder”. Pašreizējā bāzē creature template 68286 vairs nav. Skaitliski sakrītošais pozitīvais spawn GUID 68286 ir pavisam cits NPC — Converted Hero (32255) Northrend — tādēļ avota zīmes maiņa būtu kļūdains “labojums”. Rinda pilnā apjomā saglabāta `_backup_20260919_missing_kite_credit_helper` un pēc tam izņemta no aktīvās tabulas.
+
+### Pārbaudes rezultāts
+
+- Aktīvas template 68286 SmartAI rindas vairs nav, backup tabulā ir sākotnējā rinda; Converted Hero spawn 68286 nav mainīts.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā template kļūda pazuda, `DBErrors.log` skaits samazinājās no 214 uz 213, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quest 32351 “Echoes of Thunder” gaitā pārbaudīt lidojumu ar Tak-Tak un ierašanos Shrine of Two Moons. Quest mērķis ir atrast Baine Bloodhoof, tādēļ šī neesošā helper noņemšana nedrīkst automātiski pabeigt mērķi pie nejauša Northrend NPC. Ja lidojumam trūkst atsevišķa credit soļa, jāatjauno viss Pandaria helper saturs no atbilstoša 7.3.5 avota, izmantojot backup rindu kā norādi.
