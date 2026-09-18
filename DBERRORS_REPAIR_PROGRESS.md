@@ -2073,3 +2073,20 @@ Warden Stillwater (48080) pie zema veselības līmeņa paredzētajai transformā
 
 - Hillsbrad Foothills quest 28237 “A Blight Upon the Land” sastapšanās laikā cīnīties ar Warden Stillwater (48080) un samazināt viņa veselību zem 50%.
 - Vienreiz jāatskaņojas grupas 6 tekstam par “other form”, Stillwater vizuāli jāpārvēršas par veidnes 48103 formu ar display 30993, pēc tam jāizpilda piesaistītais knockback 67605; NPC nedrīkst pazust vai zaudēt notiekošās cīņas stāvokli.
+
+## Pakete 105 — Seirdr kaujas spell taimeris
+
+Fails: `sql/updates/world/2026_09_18_94_fix_seirdr_combat_timer.sql`.
+
+Seirdr (115751) pirmajai kaujas spell 186327 rindai sākuma laiks bija derīgs, bet atkārtojuma intervāla abi autora norādītie gali bija apgriezti (`6000..2000` ms), tādēļ SmartAI rindu pilnībā izlaida. Abi laiki saglabāti un sakārtoti kā derīgs nejaušs `2000..6000` ms intervāls. Sākotnējā rinda saglabāta `_backup_20260918_seirdr_combat_timer`.
+
+### Pārbaudes rezultāts
+
+- Backup tabulā ir sākotnējā rinda; aktīvajai 115751/0 rindai apstiprināts sākuma intervāls `1000..1000` ms un atkārtojuma intervāls `2000..6000` ms.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; 115751 apgriezto robežu kļūda pazuda un `DBErrors.log` kļūdu skaits samazinājās no 309 uz 308. `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Stormheim zonā 7334, apgabalā 8297, atrast kādu no Seirdr (115751) spawn un uzsākt kauju.
+- Aptuveni vienu sekundi pēc kaujas sākuma Seirdr jālieto spell 186327 uz nejaušu naidīgu mērķi un pēc tam tas jāatkārto ar mainīgu 2–6 sekunžu intervālu; atsevišķajam spell 186338 jāturpina darboties ik pēc 20 sekundēm.
