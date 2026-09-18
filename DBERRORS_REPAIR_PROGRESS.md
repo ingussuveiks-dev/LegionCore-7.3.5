@@ -2799,3 +2799,19 @@ Foxflower (241641) un Starlight Rose (244778) ir type 50 gathering nodes, bet to
 
 - Vācot Foxflower (241641), pārbaudīt, ka gathering/loot turpina strādāt un paredzētajā gadījumā tiek summonēts Frenzied Fox (98235) uz 10 sekundēm. Tā paša gather laikā nedrīkst būt vairāki summon no viena klikšķa.
 - Ar aktīvu herbalism quest 40035 vākt Starlight Rose (244778): katram gather jāpiešķir viens “Starlight Rose Attempt Credit” 98202 līdz 15 nepieciešamajiem, nezaudējot standarta herb loot.
+
+## Pakete 148 — nederīgā Strange Portal creature credit arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_134_archive_invalid_strange_portal_creature_credit.sql`.
+
+Pie Archmage Kalec (105081) quest 41626 pieņemšanas ķēde deva divus derīgus creature credit 104551 un 104570, bet trešā linked rinda mēģināja ar creature-only action 33 kreditēt 248375. Entry 248375 ir GOOBER gameobject “Strange Portal”, nevis creature. Abos “A New Threat” variantos 41626/42006 šis GO objective ir hidden/optional ar `Amount = 0`, tātad pēc definīcijas jau pabeigts; reālo apskati jebkurā gadījumā apstrādā paša GO lietojums. Visas trīs sākotnējās ķēdes rindas saglabātas `_backup_20260919_strange_portal_accept_chain`, nederīgā trešā rinda arhivēta un otrajai noņemts links uz to.
+
+### Pārbaudes rezultāts
+
+- Quest 41626 pieņemšana joprojām secīgi dod 104551 un 104570 credit, bet vairs nemēģina Strange Portal traktēt kā creature. Backup tabulā ir visas trīs sākotnējās ķēdes rindas.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; neesošā creature entry kļūda pazuda, `DBErrors.log` skaits samazinājās no 195 uz 194, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Archmage Kalec pieņemt priest variantu 41626 un mage variantu 42006 “A New Threat”. Pārbaudīt, ka optional “Take the Dalaran portal”/travel soļi korekti atjaunojas un Azure Dragonshrine var izmantot trīs clue objektus, tostarp Strange Portal (248375), līdz “Clues Found” ir 3/3. Quest pieņemšana nedrīkst priekšlaicīgi ieskaitīt pašu clue kā creature kill.
