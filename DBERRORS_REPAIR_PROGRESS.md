@@ -1904,3 +1904,19 @@ Grasping Earth (77893) `SetData(1,1)` despawn handlerim repeat intervāls bija a
 ### Spēlē vēlāk pārbaudāmais
 
 - Notikumā, kurā parādās Grasping Earth (77893), izpildīt mehāniku, kas tam nosūta `SetData(1,1)`; objekta NPC jādespawn'o bez aizķeršanās un pārējām spell/timed-action rindām jāturpina darboties.
+
+## Pakete 95 — Roakk the Zealot home-position events
+
+Fails: `sql/updates/world/2026_09_18_85_fix_roakk_home_event.sql`.
+
+Roakk the Zealot (79490) `Set Home Position` rindā event tipa vērtība `4` (`AGGRO`) bija nobīdīta uz `event_param1`, atstājot `event_type=0` (`UPDATE_IC`) ar nederīgu taimeri `4..0`. Event tips pārvietots pareizajā kolonnā un parametri atiestatīti uz nulli. Sākotnējā rinda saglabāta `_backup_20260918_roakk_home_event`.
+
+### Pārbaudes rezultāts
+
+- SQL updateris izpildījās sekmīgi; backup tabulā ir sākotnējā rinda un aktīvajā rindā apstiprināts `event_type=4` ar nulles parametriem.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; `DBErrors.log` kļūdu skaits samazinājās no 323 uz 322, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Draenor notikumā iesaistīt cīņā Roakk the Zealot (79490); aggro brīdī tam jāsaglabā pašreizējā vieta kā home position, jāizpilda kaujas spell/dialoga rindas un evade gadījumā tas nedrīkst mēģināt atgriezties uz nederīgu sākotnējo punktu.
