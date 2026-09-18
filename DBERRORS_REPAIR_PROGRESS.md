@@ -2605,3 +2605,19 @@ Fails: `sql/updates/world/2026_09_19_121_archive_empty_smartai_source.sql`.
 ### Spēlē vēlāk pārbaudāmais
 
 - Spēles tests nav vajadzīgs: rindām nebija creature avota, spawn GUID, teksta vai cita satura, pēc kura tās varētu izraisīt. Atjaunošanai un turpmākai identificēšanai to pilnie dati saglabāti backup tabulā.
+
+## Pakete 136 — izņemto Haunted Nest spawn skriptu arhivēšana
+
+Fails: `sql/updates/world/2026_09_19_122_archive_removed_haunted_nest_spawns.sql`.
+
+Divas GUID-specifiskas rindas `-25354080` un `-25354082` bija palikušas no 2020. gada datubāzes. Reference dumpā abi GUID piederēja Haunted Nest helper creature 240112 Val'sharah apgabalā; pašreizējā bāzē nav ne šo spawn, ne template 240112. Tādēļ to periodiskais spell 180695 uz tuvāko 90554 vairs nevarēja tikt izpildīts. Abas pilnās rindas saglabātas `_backup_20260919_removed_haunted_nest_spawns` un tikai tad izņemtas no aktīvās tabulas.
+
+### Pārbaudes rezultāts
+
+- Aktīvu rindu abiem neesošajiem spawn GUID vairs nav, backup tabulā ir abas sākotnējās rindas; citi 90554 skripti nav mainīti.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; abas neesošo GUID kļūdas pazuda, `DBErrors.log` skaits samazinājās no 216 uz 214, bet `Server.log` palika 116 iepriekš zināmās kļūdas.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Spēles tests nav vajadzīgs, jo Haunted Nest 240112 un abi tā spawni pašreizējā spēles datu komplektā vairs nepastāv. Ja nākotnē šis saturs tiek atjaunots, no backup jāatjauno kopā creature template, spawni un abas GUID rindas, nevis tikai skripti.
