@@ -812,3 +812,22 @@ Nosacījumam mainīts tikai efekta indekss no 3 uz 2; spell ID, negatīvā pārb
 - Val'sharah questa posmā, kas izsauc Ysera Nightmare taxi spell 183851, sākt lidojumu/notikumu un pārbaudīt, ka spēlētājs saņem tā aura efektu, bet parastās phase definition 7558/28 fāzes lidojuma laikā nav redzamas.
 - Pabeigt un arī pārtraukt taxi braucienu; pēc auras noņemšanas parastajai Val'sharah videi un NPC jāatgriežas bez reloga.
 - Atkārtot pēc servera restarta un ar spēlētāju, kam aura nekad nav bijusi, lai negatīvais nosacījums neradītu tukšu vai nepareizi nofāzētu zonu.
+
+## Pakete 38 — nederīgā Stormwind phase avota dublikāta arhivēšana
+
+Fails: `sql/updates/world/2026_09_18_33_archive_invalid_phase_source.sql`.
+
+Stormwind phase definition 1519/8 “Stormwind. Legion quests” bija divas pilnīgi vienādas negatīvas quest 42740 pārbaudes. Derīgā rinda izmanto `CONDITION_SOURCE_TYPE_PHASE_DEFINITION=23`; otra rinda kļūdaini izmantoja neeksistējošu source type 41. Skaitlis 41 šajā kodolā ir quest objective condition tips, nevis condition avota tips, un tādēļ dublikāts nekad netika ielādēts.
+
+Pilna nederīgā source-41 rinda saglabāta `_backup_20260918_invalid_phase_source` un izņemta no aktīvās tabulas. Identiskais funkcionālais source-23 nosacījums ar to pašu grupu, entry, ElseGroup, questu un negatīvo zīmi ir atstāts nemainīts, tāpat kā pati phase definition.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja bez kļūdām; backup tabulā ir viena nederīgā source-41 rinda, bet aktīvajos datos palikusi viena identiskā source-23 rinda.
+- “Invalid ConditionSourceType 41” ziņojums pazuda; `DBErrors.log` skaits samazinājās no 459 līdz 458.
+- `worldserver` sasniedza `ready` 12 sekundēs un tika korekti izslēgts; jauns 1519/8 phase definition validācijas ziņojums neradās.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Alliance tēlu Stormwind pārbaudīt Legion sākuma ķēdes fāzes pirms, aktīva un pēc “The Battle for Broken Shore” (42740): phase 7714/7552 objektiem jāmainās atbilstoši questa statusam.
+- Pārbaudīt gan ceļu, kur 42740 vēl nav pieņemts, gan completed/rewarded stāvokli un sekojošo “In the Blink of an Eye” (44663), lai Stormwind Legion objekti neparādītos dubulti un nepazustu par agru.
