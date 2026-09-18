@@ -1049,9 +1049,16 @@ void QuestDataStoreMgr::LoadQuests()
             else if (usedMailTemplates.find(qinfo->RewardMailTemplateId) != usedMailTemplates.end())
             {
                 std::map<uint32, uint32>::const_iterator used_mt_itr = usedMailTemplates.find(qinfo->RewardMailTemplateId);
-                TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u already used for quest %u, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId, used_mt_itr->second);
-                qinfo->RewardMailTemplateId = 0;
-                qinfo->RewardMailDelay = 0;
+                // Both Lost Mail item variants are valid entry points into the
+                // Postmaster chain and intentionally send the same invitation.
+                bool isSharedPostmasterInvite = qinfo->RewardMailTemplateId == 426
+                    && qinfo->GetQuestId() == 41411 && used_mt_itr->second == 41368;
+                if (!isSharedPostmasterInvite)
+                {
+                    TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardMailTemplateId` = %u but mail template  %u already used for quest %u, quest will not have a mail reward.", qinfo->GetQuestId(), qinfo->RewardMailTemplateId, qinfo->RewardMailTemplateId, used_mt_itr->second);
+                    qinfo->RewardMailTemplateId = 0;
+                    qinfo->RewardMailDelay = 0;
+                }
             }
             else
                 usedMailTemplates[qinfo->RewardMailTemplateId] = qinfo->GetQuestId();
