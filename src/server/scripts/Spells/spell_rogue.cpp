@@ -32,18 +32,25 @@ enum RogueSpells
 {
     ROGUE_ALACRITY                               = 193539,
     ROGUE_ALACRITY_BUFF                          = 193538,
+    ROGUE_CANNONBALL_BARRAGE                     = 185767,
+    ROGUE_CANNONBALL_BARRAGE_DAMAGE              = 185779,
+    ROGUE_CANNONBALL_BARRAGE_SLOW                = 185778,
+    ROGUE_CURSE_OF_RESTLESSNESS                  = 248107,
     ROGUE_DEADLY_POISON                          = 2818,
     ROGUE_EVASION                                = 5277,
     ROGUE_FAN_OF_KNIVES_COMBO_POINT              = 212743,
     ROGUE_GARROTE                                = 703,
     ROGUE_GARROTE_RANK_2                         = 231719,
     ROGUE_GARROTE_SILENCE                        = 1330,
+    ROGUE_GRAPPLING_HOOK_TRIGGER                 = 227180,
     ROGUE_INTERNAL_BLEEDING                      = 154904,
     ROGUE_INTERNAL_BLEEDING_DAMAGE               = 154953,
     ROGUE_KINGSBANE                              = 192759,
     ROGUE_MARKED_FOR_DEATH                       = 137619,
+    ROGUE_LOADED_DICE                            = 240837,
     ROGUE_RUPTURE                                = 1943,
     ROGUE_SHADOW_SWIFTNESS                       = 192422,
+    ROGUE_SLICE_AND_DICE                         = 5171,
     ROGUE_SINISTER_CIRCULATION                   = 238138,
     ROGUE_SUBTERFUGE                             = 108208,
     ROGUE_SUBTERFUGE_AURA                        = 115192,
@@ -58,6 +65,62 @@ enum RogueSpells
     Broadside          = 193356,
     TrueBearing        = 193359,
     BuriedTreasure     = 199600
+};
+
+// Cannonball Barrage - 185767
+class spell_rog_cannonball_barrage : public SpellScriptLoader
+{
+public:
+    spell_rog_cannonball_barrage() : SpellScriptLoader("spell_rog_cannonball_barrage") { }
+
+    class spell_rog_cannonball_barrage_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_rog_cannonball_barrage_SpellScript);
+
+        void HandleHit(SpellEffIndex /*effIndex*/)
+        {
+            Unit* caster = GetCaster();
+            Unit* target = GetHitUnit();
+            if (caster && target)
+                caster->CastSpell(target, ROGUE_CANNONBALL_BARRAGE_SLOW, true);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_rog_cannonball_barrage_SpellScript::HandleHit,
+                EFFECT_2, SPELL_EFFECT_DUMMY);
+        }
+    };
+
+    class spell_rog_cannonball_barrage_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_rog_cannonball_barrage_AuraScript);
+
+        void HandlePeriodic(AuraEffect const* /*aurEff*/)
+        {
+            Unit* caster = GetCaster();
+            DynamicObject* barrage = caster ? caster->GetDynObject(ROGUE_CANNONBALL_BARRAGE) : nullptr;
+            if (caster && barrage)
+                caster->CastSpell(barrage->GetPositionX(), barrage->GetPositionY(), barrage->GetPositionZ(),
+                    ROGUE_CANNONBALL_BARRAGE_DAMAGE, true);
+        }
+
+        void Register() override
+        {
+            OnEffectPeriodic += AuraEffectPeriodicFn(spell_rog_cannonball_barrage_AuraScript::HandlePeriodic,
+                EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_rog_cannonball_barrage_SpellScript();
+    }
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_rog_cannonball_barrage_AuraScript();
+    }
 };
 
 // Garrote - 703
@@ -233,8 +296,12 @@ class spell_rog_blade_flurry : public SpellScriptLoader
 
                     damage = (damage * percent) / 100.f;
 
-                    if (Unit* target = _player->SelectNearbyTarget(eventInfo.GetActionTarget()))
-                        _player->CastCustomSpell(target, 22482, &damage, NULL, NULL, false);
+                    std::list<Unit*> targets;
+                    _player->GetAttackableUnitListInRange(targets, 5.0f);
+                    targets.remove(eventInfo.GetActionTarget());
+
+                    for (Unit* target : targets)
+                        _player->CastCustomSpell(target, 22482, &damage, nullptr, nullptr, false);
                 }
             }
 
@@ -607,8 +674,11 @@ class spell_rog_killing_spree : public SpellScriptLoader
             void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes mode)
             {
                 if (Unit* caster = GetCaster())
+                {
+                    caster->RemoveAurasDueToSpell(61851);
                     if (caster->HasAura(63252))
                         caster->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
+                }
             }
 
             void Register() override
@@ -672,41 +742,23 @@ class spell_rog_roll_the_bones : public SpellScriptLoader
                     for (auto const spellId : buffList)
                         caster->RemoveAurasDueToSpell(spellId);
 
-                    uint8 count = caster->HasAura(240837) ? 2 : 1;
-
-                    if (roll_chance_f(3.f))
-                        count = 6;
-                    else if (roll_chance_f(11.f))
-                        count = 3;
-                    else if (roll_chance_f(33.f))
-                        count = 2;
-
-                    SpellCastTargets _targets;
-                    _targets.SetCaster(caster);
-                    _targets.SetUnitTarget(caster);
-                    SpellPowerCost _cost = GetAura()->m_powerCost;
+                    // Since 7.2.5 the fixed distribution is 79% one buff, 20% two buffs,
+                    // and 1% five buffs. Loaded Dice rerolls one-buff results.
+                    uint8 count;
+                    if (caster->HasAura(ROGUE_LOADED_DICE))
+                    {
+                        count = urand(1, 21) == 1 ? 5 : 2;
+                        caster->RemoveAurasDueToSpell(ROGUE_LOADED_DICE);
+                    }
+                    else
+                    {
+                        uint32 roll = urand(1, 100);
+                        count = roll == 1 ? 5 : (roll <= 21 ? 2 : 1);
+                    }
 
                     Trinity::Containers::RandomResizeList(buffList, count);
                     for (auto const spellId : buffList)
-                    {
-                        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
-                        {
-                            caster->AddDelayedEvent(100, [caster, _targets, spellInfo, _cost]() -> void
-                            {
-                                if (!caster)
-                                    return;
-
-                                CustomSpellValues values;
-                                TriggerCastData triggerData;
-                                triggerData.triggerFlags = TRIGGERED_FULL_MASK;
-                                triggerData.originalCaster = caster->GetGUID();
-                                triggerData.SubType = SPELL_CAST_TYPE_MISSILE;
-                                triggerData.powerCost = _cost;
-
-                                caster->CastSpell(_targets, spellInfo, &values, triggerData);
-                            });
-                        }
-                    }
+                        caster->CastSpell(caster, spellId, true);
                 }
             }
 
@@ -751,6 +803,83 @@ class spell_rog_roll_the_bones_aura : public SpellScriptLoader
         }
 };
 
+// Slice and Dice - 5171; Loaded Dice - 240837
+class spell_rog_slice_and_dice : public SpellScript
+{
+    PrepareSpellScript(spell_rog_slice_and_dice);
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        AuraEffect const* loadedDice = caster ? caster->GetAuraEffect(ROGUE_LOADED_DICE, EFFECT_0) : nullptr;
+        Aura* sliceAndDice = GetHitAura();
+        if (!caster || !loadedDice || !sliceAndDice)
+            return;
+
+        float multiplier = 1.0f + loadedDice->GetAmount() / 100.0f;
+        for (SpellEffIndex effectIndex : { EFFECT_0, EFFECT_2 })
+            if (AuraEffect* effect = sliceAndDice->GetEffect(effectIndex))
+                effect->ChangeAmount(effect->GetAmount() * multiplier);
+
+        caster->RemoveAurasDueToSpell(ROGUE_LOADED_DICE);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_rog_slice_and_dice::HandleAfterHit);
+    }
+};
+
+// Restless Blades - 79096; True Bearing - 193359
+class spell_rog_restless_blades : public AuraScript
+{
+    PrepareAuraScript(spell_rog_restless_blades);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetComboPoints() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Player* player = GetTarget()->ToPlayer();
+        Spell* spell = eventInfo.GetSpell();
+        if (!player || !spell)
+            return;
+
+        int32 comboPoints = spell->GetComboPoints();
+        int32 reduction = int32(aurEff->GetAmount() * comboPoints * 100.0f);
+        static uint32 const cooldownSpells[] =
+        {
+            1856,   // Vanish
+            2983,   // Sprint
+            13750,  // Adrenaline Rush
+            51690,  // Killing Spree
+            137619, // Marked for Death
+            152150, // Death from Above
+            185767, // Cannonball Barrage
+            195457, // Grappling Hook
+            199804  // Between the Eyes
+        };
+
+        for (uint32 spellId : cooldownSpells)
+            player->ModifySpellCooldown(spellId, -reduction);
+
+        if (GetId() == 79096)
+            if (AuraEffect const* curse = player->GetAuraEffect(ROGUE_CURSE_OF_RESTLESSNESS, EFFECT_0))
+                player->ModifySpellCooldown(202665, -int32(curse->GetAmount() * comboPoints * 10.0f));
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_restless_blades::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_restless_blades::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // Grappling Hook - 195457
 class spell_rog_grappling_hook : public SpellScriptLoader
 {
@@ -768,6 +897,8 @@ class spell_rog_grappling_hook : public SpellScriptLoader
                     return SPELL_FAILED_NOPATH;
 
                 WorldLocation* dest = const_cast<WorldLocation*>(GetExplTargetDest());
+                if (!dest)
+                    return SPELL_FAILED_NOPATH;
 
                 if (caster->HasAuraType(SPELL_AURA_MOD_ROOT) || caster->HasAuraType(SPELL_AURA_MOD_ROOTED))
                     return SPELL_FAILED_ROOTED;
@@ -821,20 +952,30 @@ class spell_rog_grappling_hook : public SpellScriptLoader
                 }
 
                 float limit = 60.0f;
-                PathGenerator* m_path = new PathGenerator(caster);
-                bool result = m_path->CalculatePath(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(), false);
-                if (m_path->GetPathType() & PATHFIND_SHORT)
+                PathGenerator path(caster);
+                bool result = path.CalculatePath(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(), false);
+                if (path.GetPathType() & PATHFIND_SHORT)
                     return SPELL_FAILED_OUT_OF_RANGE;
-                else if (!result || m_path->GetPathType() & PATHFIND_NOPATH)
+                else if (!result || path.GetPathType() & PATHFIND_NOPATH)
                     return SPELL_FAILED_NOPATH;
-                else if (m_path->GetTotalLength() > limit)
+                else if (path.GetTotalLength() > limit)
                     return SPELL_FAILED_OUT_OF_RANGE;
                 return SPELL_CAST_OK;
+            }
+
+            void HandleOnCast()
+            {
+                Unit* caster = GetCaster();
+                WorldLocation const* dest = GetExplTargetDest();
+                if (caster && dest)
+                    caster->CastSpell(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(),
+                        ROGUE_GRAPPLING_HOOK_TRIGGER, true);
             }
 
             void Register() override
             {
                 OnCheckCast += SpellCheckCastFn(spell_rog_grappling_hook_SpellScript::CheckElevation);
+                OnCast += SpellCastFn(spell_rog_grappling_hook_SpellScript::HandleOnCast);
             }
         };
 
@@ -1723,6 +1864,7 @@ class spell_rog_shadowy_duel_main : public SpellScript
 
 void AddSC_rogue_spell_scripts()
 {
+    new spell_rog_cannonball_barrage();
     new spell_rog_garrote();
     new spell_rog_cheat_death();
     new spell_rog_blade_flurry();
@@ -1735,6 +1877,8 @@ void AddSC_rogue_spell_scripts()
     new spell_rog_blade_flurry_aoe();
     new spell_rog_roll_the_bones();
     new spell_rog_roll_the_bones_aura();
+    RegisterSpellScript(spell_rog_slice_and_dice);
+    RegisterAuraScript(spell_rog_restless_blades);
     new spell_rog_grappling_hook();
     new spell_rog_exsanguinate();
     new spell_rog_shuriken_storm();
