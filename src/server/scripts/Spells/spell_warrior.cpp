@@ -76,6 +76,16 @@ enum WarriorFurySpells
 {
     SPELL_WARRIOR_WAR_MACHINE_BUFF = 215562
 };
+
+enum WarriorProtectionSpells
+{
+    SPELL_WARRIOR_SHATTER_THE_BONES     = 188639,
+    SPELL_WARRIOR_REFLECTIVE_PLATING    = 188672,
+    SPELL_WARRIOR_HEAVY_REPERCUSSIONS   = 203177,
+    SPELL_WARRIOR_SHIELD_SLAM_MARKER    = 224324,
+    SPELL_WARRIOR_SHIELD_SLAM           = 23922,
+    SPELL_WARRIOR_SHIELD_BLOCK_AURA     = 132404
+};
 }
 
 // Avatar - 107574
@@ -280,6 +290,147 @@ class spell_warr_war_machine : public AuraScript
     {
         OnEffectProc += AuraEffectProcFn(spell_warr_war_machine::HandleProc,
             EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Devastator - 236279. The client proc casts 236282 for damage and Rage, but
+// its separate 30% Shield Slam reset is a dummy effect requiring server logic.
+class spell_warr_devastator : public AuraScript
+{
+    PrepareAuraScript(spell_warr_devastator);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_SHIELD_SLAM, SPELL_WARRIOR_SHIELD_SLAM_MARKER });
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        Player* player = GetTarget()->ToPlayer();
+        if (!player || !player->HasSpellCooldown(SPELL_WARRIOR_SHIELD_SLAM))
+            return;
+
+        if (roll_chance_i(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(player)))
+            player->CastSpell(player, SPELL_WARRIOR_SHIELD_SLAM_MARKER, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_warr_devastator::HandleProc,
+            EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Heavy Repercussions - 203177, bound to Shield Slam 23922. Effect 0 stores
+// the extension in hundredths of a second; effect 1 is the native damage mod.
+class spell_warr_heavy_repercussions : public SpellScript
+{
+    PrepareSpellScript(spell_warr_heavy_repercussions);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_SHIELD_BLOCK_AURA, SPELL_WARRIOR_HEAVY_REPERCUSSIONS });
+    }
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        AuraEffect const* talent = caster->GetAuraEffect(SPELL_WARRIOR_HEAVY_REPERCUSSIONS, EFFECT_0);
+        Aura* shieldBlock = caster->GetAura(SPELL_WARRIOR_SHIELD_BLOCK_AURA);
+        if (!talent || !shieldBlock)
+            return;
+
+        int32 extension = int32(talent->GetAmount() * float(IN_MILLISECONDS) / 100.0f);
+        shieldBlock->SetDuration(shieldBlock->GetDuration() + extension);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_heavy_repercussions::HandleHit,
+            EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Shatter the Bones - 188639. Its native Shield Slam critical-strike modifier
+// is only active while Shield Block (132404) is active.
+class spell_warr_shatter_the_bones : public AuraScript
+{
+    PrepareAuraScript(spell_warr_shatter_the_bones);
+
+    void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& canBeRecalculated)
+    {
+        canBeRecalculated = true;
+        if (!GetTarget()->HasAuraEffect(SPELL_WARRIOR_SHIELD_BLOCK_AURA, EFFECT_0))
+            amount = 0.0f;
+    }
+
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_warr_shatter_the_bones::CalculateAmount,
+            EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER);
+    }
+};
+
+// Shield Block - 132404. Recalculate Shatter the Bones as Shield Block starts
+// and ends so its native Shield Slam modifier is never active outside the buff.
+class spell_warr_shield_block_artifact : public AuraScript
+{
+    PrepareAuraScript(spell_warr_shield_block_artifact);
+
+    void RecalculateShatterTheBones(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (AuraEffect* trait = GetTarget()->GetAuraEffect(SPELL_WARRIOR_SHATTER_THE_BONES, EFFECT_0))
+            trait->RecalculateAmount();
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_warr_shield_block_artifact::RecalculateShatterTheBones,
+            EFFECT_0, SPELL_AURA_MOD_BLOCK_PERCENT, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_warr_shield_block_artifact::RecalculateShatterTheBones,
+            EFFECT_0, SPELL_AURA_MOD_BLOCK_PERCENT, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Reflective Plating - 188672. Reflection itself is resolved before this proc;
+// suppressing Spell Reflection's charge proc keeps the aura for its full duration.
+class spell_warr_reflective_plating : public AuraScript
+{
+    PrepareAuraScript(spell_warr_reflective_plating);
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        return !GetTarget()->HasAura(SPELL_WARRIOR_REFLECTIVE_PLATING);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_reflective_plating::CheckProc);
+    }
+};
+
+// Scales of Earth - 189059. The client proc data supplies the 25% chance and
+// trigger spell; the server proc mask only distinguishes blocks, so verify that
+// the recorded blocked amount came from a critical (double-value) block.
+class spell_warr_scales_of_earth : public AuraScript
+{
+    PrepareAuraScript(spell_warr_scales_of_earth);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo || !damageInfo->GetBlock())
+            return false;
+
+        uint64 damageBeforeBlock = uint64(damageInfo->GetDamage()) + damageInfo->GetAbsorb()
+            + damageInfo->GetResist() + damageInfo->GetBlock();
+        uint64 normalBlock = CalculatePct(damageBeforeBlock, GetTarget()->GetBlockPercent());
+        return damageInfo->GetBlock() > normalBlock;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_scales_of_earth::CheckProc);
     }
 };
 
@@ -1755,6 +1906,12 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_storm_bolt);
     RegisterAuraScript(spell_warr_revenge_trigger);
     RegisterAuraScript(spell_warr_war_machine);
+    RegisterAuraScript(spell_warr_devastator);
+    RegisterSpellScript(spell_warr_heavy_repercussions);
+    RegisterAuraScript(spell_warr_shatter_the_bones);
+    RegisterAuraScript(spell_warr_shield_block_artifact);
+    RegisterAuraScript(spell_warr_reflective_plating);
+    RegisterAuraScript(spell_warr_scales_of_earth);
     RegisterAuraScript(spell_warr_executioners_precision);
     RegisterAuraScript(spell_warr_focused_rage_arms);
     RegisterAuraScript(spell_warr_overpower_passive);

@@ -3554,3 +3554,36 @@ Izmantotie avoti:
 
 - Ar Focus in Chaos salīdzināt dual-wield auto-attack miss biežumu Enrage laikā un ārpus tā; bāzes miss jāsaglabā, bet Enrage laikā jāizzūd tikai 17% dual-wield sodam.
 - Ar Trauma un Corrupted Blood izdarīt vairākus sitienus pirms iepriekšējā DoT beigām un apstiprināt, ka jaunais 20% ieguldījums un atlikums tiek saglabāts vienreiz. Rage of the Valarjar jāpārbauda ilgā cīņā: proc iespēja ir 10%, un 15 sekunžu iekšējais cooldowns nepieļauj pārāk biežu atkārtošanos.
+
+## Pakete 181 — Warrior Protection: pilnais talents, specializācijas un artifact audits
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_169_restore_warrior_protection_talents.sql`.
+
+Pabeigts Protection `Talent`, `SpecializationSpells` un Scale of the Earth-Warder visu gala 7.3.5.26972 spēju audits pret klienta DB2, aktīvo world DB, core un publisko Legion fork'u realizācijām. Atrasti divi klusi talantu robi. `Devastator` 236279 klienta proc pareizi izsauc 236282 auto-attack damage un 5 Rage, taču atsevišķais 30% dummy efekts nekad neatiestatīja Shield Slam. Jaunais handlers saglabā noklusēto damage/Rage darbību un tikai veiksmīgā izlozē izmanto jau esošo 224324 cooldown-reset ķēdi. `Heavy Repercussions` 203177 native spellmod jau palielināja Shield Slam bojājumus par 30%, bet dummy efekts nepagarināja aktīvo Shield Block; Shield Slam tagad pagarina 132404 tieši par gala tooltipā norādīto 1,0 sekundi.
+
+Artifact auditā izlabotas trīs nosacījumu kļūdas. `Shatter the Bones` 188639 Shield Slam critical bonuss iepriekš bija aktīvs nepārtraukti; tagad native spellmod tiek pārrēķināts, ieslēdzoties un beidzoties Shield Block, un saglabā aktuālā artifact ranka `AuraPointsOverride`. `Reflective Plating` 188672 tagad nepieļauj Spell Reflection vienīgās proc charges patēriņu, tādēļ refleksija paliek aktīva visu piecu sekunžu ilgumu un var atstarot neierobežotu spellu skaitu. `Scales of Earth` 189059 saglabā klienta 25% proc iespēju un 189064/203559 buff/damage ķēdi, bet papildus pārbauda faktiski bloķēto daudzumu, lai proc drīkstētu notikt tikai pēc critical block, nevis jebkura parasta bloka.
+
+Pārējie Protection talanti, specializācijas spelli un artifact traiti izmanto gala klienta efektus vai jau esošo DB/core loģiku. Īpaši pārbaudīti Warbringer un Safeguard Intercept ceļi, Best Served Cold Revenge aprēķins, Never Surrender/Indomitable/Dragon Skin/Dragon Scales Ignore Pain aprēķins, Might of the Vrykul Demoralizing Shout triggeri, Neltharion's Fury periodiskais cone damage un critical-block auras, kā arī Neltharion's Thunder Thunder Clap class mask. Tiem dublējoši skripti netika pievienoti.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Talent/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPower/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām un bez jauniem brīdinājumiem; updateris piemēroja migrāciju 169, un MariaDB pārbaudītas visas sešas jaunās scriptu piesaistes.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6688 C++ skriptus un validēja 3393 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Devastator auto-attackiem pārbaudīt 236282 damage/5 Rage katrā procā un aptuveni 30% Shield Slam reset; ar Heavy Repercussions pārbaudīt tieši +1,0 sekundi aktīvam Shield Block pēc katra Shield Slam.
+- Salīdzināt Shield Slam critical iespēju ar Shatter the Bones pirms, laikā un pēc Shield Block. Ar Reflective Plating viena Spell Reflection ilgumā atstarot vairākus spellus. Scales of Earth pārbaudīt atsevišķi uz parastiem un critical block: 25% izloze drīkst sākties tikai critical block gadījumā.
