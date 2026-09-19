@@ -63,7 +63,13 @@ enum WarriorArmsSpells
     SPELL_WARRIOR_MORTAL_WOUNDS                = 115804,
     SPELL_WARRIOR_OVERPOWER_PASSIVE            = 119938,
     SPELL_WARRIOR_TRAUMA_BLEED                 = 215537,
-    SPELL_WARRIOR_OVERPOWER_ACTIVATED          = 60503
+    SPELL_WARRIOR_OVERPOWER_ACTIVATED          = 60503,
+    SPELL_WARRIOR_HEROIC_LEAP_JUMP             = 94954,
+    SPELL_WARRIOR_ARMS_SPECIALIZATION          = 137048,
+    SPELL_WARRIOR_RAVAGER_ARMS                 = 152277,
+    SPELL_WARRIOR_RAVAGER_PROTECTION           = 228920,
+    SPELL_WARRIOR_RAVAGER_PARRY                = 227744,
+    SPELL_WARRIOR_RAVAGER_SUMMON               = 227876
 };
 }
 
@@ -344,8 +350,10 @@ class spell_warr_overpower_passive : public AuraScript
                 return false;
         }
 
-        SpellInfo const* activation = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_OVERPOWER_ACTIVATED);
-        return activation && roll_chance_i(activation->Effects[EFFECT_0]->CalcValue(GetTarget()));
+        // The active world DB supplies the final 5% roll through
+        // spell_proc_event for passive 119938. This script only narrows the
+        // otherwise empty family mask to the four intended Arms attacks.
+        return true;
     }
 
     void Register() override
@@ -638,6 +646,11 @@ class spell_warr_heroic_leap : public SpellScriptLoader
         {
             PrepareSpellScript(spell_warr_heroic_leap_SpellScript);
 
+            bool Validate(SpellInfo const* /*spellInfo*/) override
+            {
+                return ValidateSpellInfo({ SPELL_WARRIOR_HEROIC_LEAP_JUMP });
+            }
+
             SpellCastResult CheckElevation()
             {
                 Unit* caster = GetCaster();
@@ -728,9 +741,17 @@ class spell_warr_heroic_leap : public SpellScriptLoader
                 return SPELL_FAILED_SUCCESS;
             }
 
+            void HandleDummy(SpellEffIndex /*effIndex*/)
+            {
+                if (WorldLocation const* dest = GetExplTargetDest())
+                    GetCaster()->CastSpell(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(),
+                        SPELL_WARRIOR_HEROIC_LEAP_JUMP, true);
+            }
+
             void Register() override
             {
                 OnCheckCast += SpellCheckCastFn(spell_warr_heroic_leap_SpellScript::CheckElevation);
+                OnEffectHit += SpellEffectFn(spell_warr_heroic_leap_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
 
@@ -1135,6 +1156,34 @@ class spell_warr_charge_check_cast : public SpellScriptLoader
         {
             return new spell_warr_charge_check_cast_SpellScript();
         }
+};
+
+// Ravager cast - 152277 (Arms) / 228920 (Protection). Both client spells
+// contain a destination dummy and require the actual 227876 summon spell.
+class spell_warr_ravager_cast : public SpellScript
+{
+    PrepareSpellScript(spell_warr_ravager_cast);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_RAVAGER_SUMMON, SPELL_WARRIOR_RAVAGER_PARRY });
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (WorldLocation const* dest = GetExplTargetDest())
+            GetCaster()->CastSpell(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ(),
+                SPELL_WARRIOR_RAVAGER_SUMMON, true);
+
+        if (GetSpellInfo()->Id == SPELL_WARRIOR_RAVAGER_ARMS &&
+            GetCaster()->HasAura(SPELL_WARRIOR_ARMS_SPECIALIZATION))
+            GetCaster()->CastSpell(GetCaster(), SPELL_WARRIOR_RAVAGER_PARRY, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_warr_ravager_cast::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
 };
 
 // Ravager - 227876
@@ -1685,6 +1734,7 @@ void AddSC_warrior_spell_scripts()
     RegisterAuraScript(spell_war_t21_prot_4p);
     new spell_warr_intercept();
     new spell_warr_charge_check_cast();
+    RegisterSpellScript(spell_warr_ravager_cast);
     new spell_warr_ravager();
     new spell_warr_ravager_visual();
     new spell_warr_revenge();

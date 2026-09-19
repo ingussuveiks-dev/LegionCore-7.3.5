@@ -3403,7 +3403,7 @@ Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_
 
 Gala 7.3.5.26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellLearnSpell` un `SpellDuration` dati atklāja vairākas klusas Arms kļūdas. `Mortal Strike` dummy efekts neuzlika tooltipā tieši norādīto `Mortal Wounds` 115804. `Tactician` satur 0,75% proc iespēju par katru iztērēto Rage punktu, taču veiksmīgā procā nebija pilnīgi realizēta Colossus Smash un Mortal Strike cooldown atiestatīšana. Trūka arī servera filtru un darbību `Executioner's Precision`, Arms `Focused Rage`, `Precise Strikes`, `In for the Kill` un `Trauma`.
 
-Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un jaunajiem 20% bojājumiem pieskaita vēl neiztikšķējušos iepriekšējā bleed bojājumus, tad pārdala summu pa trim sešu sekunžu tickiem. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938, un tieši tas ar 5% iespēju aktivē 60503 pēc atbilstošajiem Arms melee sitieniem.
+Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un jaunajiem 20% bojājumiem pieskaita vēl neiztikšķējušos iepriekšējā bleed bojājumus, tad pārdala summu pa trim sešu sekunžu tickiem. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938. C++ ierobežo procu līdz četriem atbilstošajiem Arms melee spelliem, savukārt aktīvās world DB `spell_proc_event` ieraksts nodrošina vienīgo 5% izlozi un aktivē 60503.
 
 `Colossus Smash` 167105 netika dublēts C++: aktīvajā world DB jau ir pareiza saite uz debuffu 208086, bet Mastery 76838 klientā nativi modificē gan Colossus Smash bojājumu, gan šī debuffa efektu. Tāpat bez lieka skripta atstāti DB2 nativi realizētie Rend, Sweeping Strikes, Mortal Combo, Titanic Might un Deadly Calm.
 
@@ -3428,3 +3428,31 @@ Izmantotie avoti:
 
 - Pārbaudīt Mortal Strike 25% healing reduction, Tactician abu cooldownu reset un Overpower 5% aktivāciju no Slam, Whirlwind, Colossus Smash un Mortal Strike.
 - Pārbaudīt Focused Rage trīs stacku patēriņu tikai ar Mortal Strike, Executioner's Precision divus stackus un to patēriņu, Precise Strikes/In for the Kill reakciju tikai uz Colossus Smash, kā arī Trauma uzkrāšanos un atjaunošanu no visām trim tooltipā minētajām spējām.
+
+## Pakete 177 — Warrior: Heroic Leap un Ravager gala darbības atjaunošana
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_165_restore_warrior_leap_ravager.sql`.
+
+Gala 7.3.5.26972 `SpellEffect` datos `Heroic Leap` 6544 pirmais efekts ir destination dummy, kas palaiž atsevišķo lēciena spellu 94954. Esošais C++ skripts veica tikai ceļa un augstuma pārbaudes, bet tā faktiskā lēciena izsaukums bija atstāts izkomentēts. Atjaunots destination handlers, kas pēc veiksmīgas pārbaudes palaiž klienta paredzēto 94954; tā tālākā damage un `Bounding Stride` ķēde paliek esošajās DB saitēs un netiek dublēta.
+
+Arms `Ravager` 152277 un Protection variants 228920 tāpat satur destination dummy, kam jāizsauc summon spell 227876. Abiem pievienots kopīgs gala būvei atbilstošs cast handlers. Arms variantam ar Arms specializācijas auru 137048 tiek pievienots tooltipā norādītais parry buffs 227744; pats summon un tā periodiskie 156287 triecieni turpina izmantot jau esošo 227876 skriptu. Protection variantam parry saite jau bija world DB, tādēļ C++ to nedublē.
+
+Papildu validācijā izlabota paketes 176 Overpower proca dubultā izloze: C++ tagad tikai ierobežo spellu sarakstu, bet vienīgo 5% izlozi veic jau aktīvais `spell_proc_event` ieraksts.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; SQL updateris piemēroja migrāciju 165, un MariaDB pārbaudītas Heroic Leap, abu Ravager cast variantu un esošā Ravager summon skripta saites.
+- Pilns starts pabeigts 12 sekundēs, ielādēja 6681 C++ skriptu un validēja 3386 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izmantot Heroic Leap dažādos derīgos augstumos: tēlam jāizpilda lēciens uz izvēlēto vietu, piezemējoties jānostrādā damage, bet ar Bounding Stride — arī tā esošais kustības bonuss.
+- Ar Arms un Protection specializācijām izmantot Ravager: tam jāparādās izvēlētajā vietā un periodiski jāsit mērķi; abiem variantiem jādod paredzētais parry buffs, nedublējot efektu.
