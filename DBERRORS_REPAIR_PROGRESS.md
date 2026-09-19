@@ -2984,3 +2984,20 @@ Atlikušajā sarakstā bija divi ieraksti, kas nav dungeon vai scenario teleport
 
 - Atvērt Rated Battleground izvēlni un pārliecināties, ka 10v10 rinda joprojām tiek apstrādāta ar PvP sistēmu, nevis parādās kā dungeon.
 - Ieiet Ashran un pārbaudīt, ka PvP zonas iekļūšana, frakcijas sākumpunkts un iziešana darbojas neatkarīgi no LFG dungeon teleportēšanās pogas.
+
+## Pakete 159 — Mage Tower scenāriju ieejas
+
+Fails: `sql/updates/world/2026_09_19_143_restore_mage_tower_scenario_entrances.sql`.
+
+War Councilor Victoria (117871) SmartAI action-list satur katra Mage Tower encounter starta spellu. Septiņiem atlikušajiem LFG scenārijiem šo spellu pāriem datubāzes `spell_target_position` tabulā jau bija identiskas mērķa koordinātes attiecīgajā scenārija kartē. `lfg_entrances` pievienotas tieši šīs esošās koordinātes The Archmage's Reckoning, The Imp Mother's Den, Kruul's Intentions, Feltotem's Fall, The God-Queen's Fury, Thwarting the Twins un The End of the Risen Threat ierakstiem. Esošie SmartAI un spell dati nav mainīti.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; visas septiņas rindas pārlasītas no MariaDB ar paredzētajām koordinātēm.
+- Pilns `worldserver` starts pabeigts 12 sekundēs; visu septiņu Mage Tower ieeju kļūdas pazuda un `DBErrors.log` skaits samazinājās no 22 uz 15.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar atbilstošajām septiņām specializācijām pie War Councilor Victoria sākt katru Mage Tower izaicinājumu un pārbaudīt, ka spēlētājs nonāk pareizajā encounter sākumpunktā.
+- Pēc neveiksmes vai pabeigšanas pārbaudīt atgriešanos Broken Shore un atkārtotu ieiešanu; dažādu specializāciju scenāriji nedrīkst sajaukt kartes vai sākumpunktus.
