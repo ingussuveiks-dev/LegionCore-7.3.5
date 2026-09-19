@@ -28,6 +28,7 @@
 #include "GridNotifiers.h"
 #include "AreaTriggerAI.h"
 #include "AreaTrigger.h"
+#include "Timer.h"
 
 enum PaladinSpells
 {
@@ -57,9 +58,60 @@ enum PaladinSpells
     TheLightSavesDebuff                          = 211426,
     DevotionAura                                 = 210320,
     AuraOfSacrifice                              = 210372,
+    Judgment                                     = 20271,
+    JudgmentOfLight                              = 183778,
 
     HealingStormMaxTarget                        = 6,
     UpdateTimer                                  = 2000,
+};
+
+// Judgment of Light - 183778. The client proc flags cover harmful abilities;
+// only Judgment itself may apply the 196941 debuff described by the talent.
+class spell_pal_judgment_of_light : public AuraScript
+{
+    PrepareAuraScript(spell_pal_judgment_of_light);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == Judgment;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_pal_judgment_of_light::CheckProc);
+    }
+};
+
+// Judgment of Light - 196941. Its forty client-defined charges may trigger at
+// most once per interval stored in effect 1 of the owning 183778 talent aura.
+class spell_pal_judgment_of_light_debuff : public AuraScript
+{
+    PrepareAuraScript(spell_pal_judgment_of_light_debuff);
+
+    uint32 _lastProcTime = 0;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        if (!eventInfo.GetActor())
+            return false;
+
+        uint32 interval = IN_MILLISECONDS;
+        if (Unit* caster = GetCaster())
+            if (AuraEffect const* talent = caster->GetAuraEffect(JudgmentOfLight, EFFECT_1))
+                interval = uint32(talent->GetAmount() * float(IN_MILLISECONDS));
+
+        uint32 now = getMSTime();
+        if (_lastProcTime && getMSTimeDiff(_lastProcTime, now) < interval)
+            return false;
+
+        _lastProcTime = now;
+        return true;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_pal_judgment_of_light_debuff::CheckProc);
+    }
 };
 
 // 6940 - Hand of Sacrifice
@@ -1732,7 +1784,7 @@ class spell_pal_judgment : public SpellScriptLoader
 
                 if (AuraEffect* aurEff = caster->GetAuraEffect(231657, EFFECT_0)) // Judgment (lvl 2 for Protection)
                 {
-                    int32 second = aurEff->GetAmount() * IN_MILLISECONDS;
+                    int32 second = int32(aurEff->GetAmount() * float(IN_MILLISECONDS));
                     if (GetSpell()->IsCritForTarget(target))
                         second *= 2;
                     if (Player* _player = caster->ToPlayer())
@@ -2417,6 +2469,16 @@ class spell_pal_the_light_saves : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
+                    Unit* target = GetHitUnit();
+                    if (!target)
+                        return;
+
+                    ObjectGuid casterGuid = caster->GetGUID();
+                    if (!target->HasAura(BeaconOfLight, casterGuid)
+                        && !target->HasAura(BeaconOfFaith, casterGuid)
+                        && !target->HasAura(BeaconOfVirtue, casterGuid))
+                        return;
+
                     if (AuraEffect const* aurEff = caster->GetAuraEffect(TheLightSavesBuff, EFFECT_0)) // The Light Saves
                     {
                         SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), aurEff->GetAmount()));
@@ -2653,7 +2715,7 @@ class spell_pal_greater_blessing_of_wisdom : public SpellScriptLoader
 
         void HandleTick(AuraEffect const* aurEff, float& amount, Unit* /*target*/)
         {
-            amount /= GetSpellInfo()->Effects[EFFECT_2]->BasePoints * IN_MILLISECONDS / float(aurEff->GetPeriod());
+            amount /= GetSpellInfo()->Effects[EFFECT_2]->BasePoints * float(IN_MILLISECONDS) / float(aurEff->GetPeriod());
         }
 
         void Register() override
@@ -2754,9 +2816,9 @@ class spell_pal_hammer_of_reckoning : public SpellScript
                 if (aur->GetStackAmount() == GetSpellInfo()->Effects[EFFECT_1]->BasePoints)
                 {
                     if (caster->HasSpell(231895))
-                        caster->CastSpellDuration(caster, 231895, true, GetSpellInfo()->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
+                        caster->CastSpellDuration(caster, 231895, true, int32(GetSpellInfo()->Effects[EFFECT_3]->BasePoints * float(IN_MILLISECONDS)));
                     else
-                        caster->CastSpellDuration(caster, 31884, true, GetSpellInfo()->Effects[EFFECT_2]->BasePoints * IN_MILLISECONDS);
+                        caster->CastSpellDuration(caster, 31884, true, int32(GetSpellInfo()->Effects[EFFECT_2]->BasePoints * float(IN_MILLISECONDS)));
                 }
             }
             caster->RemoveAurasDueToSpell(247677);
@@ -2918,6 +2980,8 @@ class spell_pal_wake_of_ashes_proc : public AuraScript
 
 void AddSC_paladin_spell_scripts()
 {
+    RegisterAuraScript(spell_pal_judgment_of_light);
+    RegisterAuraScript(spell_pal_judgment_of_light_debuff);
     RegisterAuraScript(spell_pal_hand_of_sacrifice);
     new spell_pal_shield_of_the_righteous();
     new spell_pal_hand_of_protection();

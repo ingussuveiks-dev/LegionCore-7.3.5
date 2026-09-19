@@ -3587,3 +3587,37 @@ Izmantotie avoti:
 
 - Ar Devastator auto-attackiem pārbaudīt 236282 damage/5 Rage katrā procā un aptuveni 30% Shield Slam reset; ar Heavy Repercussions pārbaudīt tieši +1,0 sekundi aktīvam Shield Block pēc katra Shield Slam.
 - Salīdzināt Shield Slam critical iespēju ar Shatter the Bones pirms, laikā un pēc Shield Block. Ar Reflective Plating viena Spell Reflection ilgumā atstarot vairākus spellus. Scales of Earth pārbaudīt atsevišķi uz parastiem un critical block: 25% izloze drīkst sākties tikai critical block gadījumā.
+
+## Pakete 182 — Paladin common/Holy: Judgment of Light un The Light Saves
+
+Faili: `src/server/scripts/Spells/spell_paladin.cpp` un `sql/updates/world/2026_09_19_170_restore_paladin_common_holy_spells.sql`.
+
+Pabeigts Paladin kopējo spēju, Holy `Talent`, `SpecializationSpells` un The Silver Hand artifact spēju audits pret gala 7.3.5.26972 klienta DB2, aktīvo world DB, core un publisko Legion fork'u realizācijām. Atrasti divi klusi darbības robi. `Judgment of Light` 183778 proc karogi bija pārāk plaši un ļāva 196941 debuffu uzlikt ar citām kaitējošām spējām; tagad talents pieņem tikai pašu Judgment 20271. Debuffa 40 klienta charges un esošā 183811 heal ķēde saglabāta, bet pievienots talentā glabātais vienas sekundes globālais proc intervāls, lai vairāki uzbrucēji charges nevarētu patērēt ātrāk par gala spējas aprakstu.
+
+`The Light Saves` 200421 esošais handlers palielināja nākamā Flash of Light vai Holy Light dziedinājumu neatkarīgi no mērķa un pēc tam patērēja buffu. Tagad bonuss un patēriņš notiek tikai tad, ja trāpītais mērķis ir tā paša Paladin Beacon of Light, Beacon of Faith vai Beacon of Virtue mērķis.
+
+Pārējie Holy talanti un Silver Hand traiti izmanto gala klienta efektus vai jau esošo DB/core loģiku. Atsevišķi pārbaudīti Light's Hammer, Holy Prism, Crusader's Might, Fervent Martyr, Aura Mastery ar visām trim aurām, Beacon pārsūtījumi, Power of the Silver Hand, Protection of Tyr, Tyr's Deliverance, Second Sunrise un Sacred Dawn; tiem dublējoši skripti netika pievienoti.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Talent/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPower/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_paladin.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_paladin.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām un bez brīdinājumiem; četri iepriekš eksistējošie C5055 brīdinājumi tajā pašā Paladin failā izlaboti ar skaidriem skaitlisko tipu pārveidojumiem.
+- Updateris piemēroja migrāciju 170 un reģistrēja to kā `RELEASED`; MariaDB apstiprināja abas jaunās scriptu piesaistes.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6690 C++ skriptus un validēja 3395 spell skriptus. `DBErrors.log` ir tukšs, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Judgment of Light pārbaudīt, ka debuffu uzliek tikai Judgment, tas satur 40 charges un visa grupa kopā nevar izraisīt vairāk par vienu 183811 heal sekundē.
+- Samazināt Beacon mērķi zem 50% veselības, izraisīt The Light Saves un salīdzināt Flash/Holy Light uz citu mērķi un Beacon mērķi: cits mērķis nedrīkst saņemt vai patērēt bonusu, Beacon mērķim tas jāsaņem un jāpatērē vienreiz.
