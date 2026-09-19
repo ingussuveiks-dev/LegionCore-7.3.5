@@ -3018,3 +3018,20 @@ Abu scenāriju ieejas var noteikt no jau strādājošiem spell cast avotiem ārp
 
 - Pie Spiritwalker Ebonhorn sākt War of the Ancients scenāriju un pārbaudīt, ka spēlētājs parādās pie `(4026.05, -5444.71, 115.8)` un scenārija pirmais posms aktivizējas.
 - Ar aktīvu quest 46812 izmantot Northrend event objektu un pārbaudīt ieiešanu Ruby Sanctum scenārijā pie `(3271.46, 533.47, 87.66)`, kā arī korektu scenārija pabeigšanu un atgriešanos.
+
+## Pakete 161 — Mardum scenārija ieeja
+
+Fails: `sql/updates/world/2026_09_19_145_restore_mardum_scenario_entrance.sql`.
+
+Spell 232169 ir vienīgais `spell_target_position` ieraksts, kas ved uz Mardum scenārija karti 1523. Tā mērķis atrodas Illidari sākuma grupā blakus pirmajam `DH CH Quest` event objektam 525; tuvākie NPC ir Illidari Enforcer un Ashtongue Warrior. LFG ieejai pievienota šī jau eksistējošā teleporta precīzā pozīcija un orientācija.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; Mardum rinda pārlasīta no MariaDB ar spell 232169 precīzo mērķi.
+- Pilns `worldserver` starts pabeigts 11 sekundēs; Mardum ieejas kļūda pazuda un `DBErrors.log` skaits samazinājās no 13 uz 12.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Demon Hunter sākt Mardum class-hall scenāriju un pārbaudīt parādīšanos Illidari sākuma grupā pie `(1470.44, 1411.41, 243.73)`.
+- Pārliecināties, ka pirmais `DH CH Quest` event objekts un sākuma scenārija posms aktivizējas un ka spēlētājs neparādās zem platformas vai citā fāzē.
