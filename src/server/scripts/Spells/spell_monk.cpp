@@ -1217,6 +1217,27 @@ class spell_monk_transcendence_transfer : public SpellScriptLoader
                                 areaObj->Relocate(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), caster->GetOrientation()); // Relocate AT Spirit Tether
                         }
                     }
+
+                    // Healing Winds: Transcendence: Transfer heals 10% of maximum
+                    // health over six seconds. 195381 ticks every two seconds in
+                    // the 7.3.5 spell data, so distribute the total across 3 ticks.
+                    if (AuraEffect const* healingWinds = caster->GetAuraEffect(195380, EFFECT_0))
+                    {
+                        if (SpellInfo const* healingWindsHeal = sSpellMgr->GetSpellInfo(195381))
+                        {
+                            uint32 period = healingWindsHeal->Effects[EFFECT_0]->ApplyAuraPeriod;
+                            int32 duration = healingWindsHeal->GetDuration();
+                            if (period && duration > 0)
+                            {
+                                uint32 tickCount = uint32(duration) / period;
+                                if (tickCount)
+                                {
+                                    float periodicHeal = caster->CountPctFromMaxHealth(healingWinds->GetAmount()) / float(tickCount);
+                                    caster->CastCustomSpell(caster, 195381, &periodicHeal, nullptr, nullptr, true, nullptr, healingWinds);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1655,7 +1676,7 @@ class spell_monk_purified_healing : public SpellScriptLoader
         }
 };
 
-// Hurricane Strike - 152175
+// Whirling Dragon Punch - 152175
 class spell_monk_hurricane_strike : public SpellScriptLoader
 {
     public:
@@ -1665,30 +1686,21 @@ class spell_monk_hurricane_strike : public SpellScriptLoader
         {
             PrepareAuraScript(spell_monk_hurricane_strike_AuraScript);
 
-            uint32 update = 0;
-
-            void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes mode)
+            void HandlePeriodic(AuraEffect const* aurEff)
             {
+                // The 7.3.5 client aura has a 250 ms period but the ability is
+                // defined as three damage pulses. Do not let the one-second
+                // aura produce a fourth pulse at its expiration boundary.
+                if (aurEff->GetTickNumber() > 3)
+                    return;
+
                 if (Unit* caster = GetCaster())
                     caster->CastSpell(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), 158221, true);
             }
 
-            void OnUpdate(uint32 diff, AuraEffect* aurEff)
-            {
-                update += diff;
-
-                if (update >= 140)
-                {
-                    if (Unit* caster = GetCaster())
-                        caster->CastSpell(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), 158221, true);
-                    update = 0;
-                }
-            }
-
             void Register() override
             {
-                OnEffectApply += AuraEffectApplyFn(spell_monk_hurricane_strike_AuraScript::HandleApply, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectUpdate += AuraEffectUpdateFn(spell_monk_hurricane_strike_AuraScript::OnUpdate, EFFECT_FIRST_FOUND, SPELL_AURA_ANY);
+                OnEffectPeriodic += AuraEffectPeriodicFn(spell_monk_hurricane_strike_AuraScript::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
 
@@ -1712,6 +1724,12 @@ class spell_monk_whirling_dragon_punch_activater : public SpellScriptLoader
             {
                 if (Player* _plr = GetCaster()->ToPlayer())
                 {
+                    // Crosswinds summons a wind spirit every 500 ms while Fists
+                    // of Fury is active. The summon/AI chain is already carried
+                    // by 195651 -> 195653 -> NPC 99625.
+                    if (GetSpellInfo()->Id == 113656 && _plr->HasAura(195650))
+                        _plr->CastSpell(_plr, 195651, true);
+
                     uint32 cooldown1 = _plr->GetSpellCooldownDelay(113656);
                     uint32 cooldown2 = _plr->GetChargesCooldown(107428);
                     if (cooldown1 && cooldown2)
@@ -2960,25 +2978,21 @@ class spell_monk_chi_orbit : public SpellScriptLoader
                     if (!caster->HasAura(196744))
                     {
                         caster->CastSpell(caster, 196744, true, NULL, aurEff);
-						caster->RemoveAurasDueToSpell(196744);
                         return;
                     }
                     if (!caster->HasAura(196745))
                     {
                         caster->CastSpell(caster, 196745, true, NULL, aurEff);
-						caster->RemoveAurasDueToSpell(196745);
                         return;
                     }
                     if (!caster->HasAura(196746))
                     {
                         caster->CastSpell(caster, 196746, true, NULL, aurEff);
-						caster->RemoveAurasDueToSpell(196746);
                         return;
                     }
                     if (!caster->HasAura(196747))
                     {
                         caster->CastSpell(caster, 196747, true, NULL, aurEff);
-						caster->RemoveAurasDueToSpell(196747);
                         return;
                     }
                 }
@@ -2994,6 +3008,39 @@ class spell_monk_chi_orbit : public SpellScriptLoader
         {
             return new spell_monk_chi_orbit_AuraScript();
         }
+};
+
+// Afterlife - 116092
+class spell_monk_afterlife : public AuraScript
+{
+    PrepareAuraScript(spell_monk_afterlife);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetTarget();
+        Unit* defeated = eventInfo.GetActionTarget();
+        if (!caster || !defeated)
+            return;
+
+        // The native PROC_FLAG_KILL path already restricts this aura to the
+        // killing blow against a target that grants experience or honor.
+        // The existing world data then handles sphere ownership, lifetime and
+        // pickup: 117032 -> 125355 (heal), 163271 -> 163272 (one Chi).
+        caster->CastSpell(defeated->GetPositionX(), defeated->GetPositionY(), defeated->GetPositionZ(), 117032, true);
+
+        DamageInfo const* damageInfo = eventInfo.GetDamageInfo();
+        SpellInfo const* killingSpell = damageInfo ? damageInfo->GetSpellInfo() : nullptr;
+        if (killingSpell && killingSpell->Id == 100784 &&
+            roll_chance_i(GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster)))
+            caster->CastSpell(defeated->GetPositionX(), defeated->GetPositionY(), defeated->GetPositionZ(), 163271, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_monk_afterlife::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
 };
 
 // 121253 - Keg Smash
@@ -3132,6 +3179,13 @@ class spell_monk_sotw : public SpellScript
     {
         if (Player* plr = GetCaster()->ToPlayer())
         {
+            // The linked parent spell grants Thunderfist's initial stack. The
+            // main-hand damage spell grants one additional stack per enemy hit.
+            // Restrict this to one of the two Windlord damage spells so dual
+            // wield does not award two stacks for the same target.
+            if (GetSpellInfo()->Id == 222029 && plr->HasAura(238131))
+                plr->CastSpell(plr, 242387, true);
+
             if (plr->GetSelectedUnit() != GetHitUnit())
             {
                 uint8 count = GetSpell()->GetTargetCount();
@@ -3580,6 +3634,7 @@ void AddSC_monk_spell_scripts()
     new spell_monk_renewing_mist();
     RegisterSpellScript(spell_monk_vivify);
     new spell_monk_chi_orbit();
+    RegisterAuraScript(spell_monk_afterlife);
     new spell_monk_soothing_mist();
     RegisterAuraScript(spell_monk_soothing_mist_passive);
     RegisterAuraScript(spell_monk_lifecycles);

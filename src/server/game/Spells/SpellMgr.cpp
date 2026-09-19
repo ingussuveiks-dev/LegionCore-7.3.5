@@ -6498,7 +6498,7 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->Effects[EFFECT_1]->ApplyAuraPeriod = 10000;
     });
 
-    ApplySpellFix({152175, // Whirling Dragon Punch
+    ApplySpellFix({
         200050 // Apocalyptic Fire
     }, [](SpellInfo* spellInfo)
     {
