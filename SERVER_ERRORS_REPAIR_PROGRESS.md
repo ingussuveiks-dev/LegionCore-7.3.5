@@ -65,3 +65,20 @@ Embrace of the Eclipse naidīgais variants ir heal absorb, bet draudzīgais vari
 ### Spēlē vēlāk pārbaudāmais
 
 - Sisters of the Moon cīņā pārbaudīt abus Embrace of the Eclipse variantus: heal absorb un damage absorb uzkrāj pareizo daudzumu un tikai pēc dabiskas auras beigšanās izsauc attiecīgi Umbra vai Lunar Detonation.
+
+## Pakete 171 — ieroča modeļa kopēšanas aura hooki
+
+Faili: `src/server/scripts/Spells/spell_generic.cpp` un `src/server/scripts/Kalimdor/LostCityOfTheTolvir/boss_high_prophet_barim.cpp`.
+
+Kopīgais clone-weapon skripts ir piesaistīts sešiem spelliem, bet spell 41054 un 69893 effect 0 šajā klienta būvē vairs nav `SPELL_AURA_PERIODIC_DUMMY`. Arī Lost City of the Tol'vir lokālais melee-weapon variants izmanto spell 69893. Abos skriptos apply/remove dzīves cikls attiecas uz effect 0 neatkarīgi no aura tipa, tādēļ hooki mainīti uz `SPELL_AURA_ANY`; ieroča saglabāšanas un atjaunošanas loģika nav mainīta.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika četri iepriekš eksistējoši, ar šo labojumu nesaistīti C5055 brīdinājumi `spell_generic.cpp`.
+- Pilns starts pabeigts 11 sekundēs; visas desmit abu ieroča kopēšanas skriptu validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 64 uz 54.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Lost City of the Tol'vir Repentance fāzē pārbaudīt, ka spoguļattēls saņem spēlētāja galvenā ieroča modeli un pēc auras beigām atgūst sākotnējo modeli.
+- Atsevišķi pārbaudīt generic galvenā, off-hand un ranged ieroča kopēšanas spellus, īpaši 41054 un 69893, ieskaitot auras atkārtotu uzlikšanu.
