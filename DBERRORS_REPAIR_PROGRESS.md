@@ -3401,7 +3401,7 @@ Izmantotie avoti: Blizzard 7.3.5 patch notes, Wago gala būves `Spell`, `SpellEf
 
 Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_164_restore_warrior_arms_procs.sql`.
 
-Gala 7.3.5.26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellLearnSpell` un `SpellDuration` dati atklāja vairākas klusas Arms kļūdas. `Mortal Strike` dummy efekts neuzlika tooltipā tieši norādīto `Mortal Wounds` 115804. `Tactician` satur 0,75% proc iespēju par katru iztērēto Rage punktu, taču veiksmīgā procā nebija pilnīgi realizēta Colossus Smash un Mortal Strike cooldown atiestatīšana. Trūka arī servera filtru un darbību `Executioner's Precision`, Arms `Focused Rage`, `Precise Strikes`, `In for the Kill` un `Trauma`.
+Gala 7.3.5.26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellLearnSpell` un `SpellDuration` dati atklāja vairākas klusas Arms kļūdas. `Mortal Strike` dummy efekts neuzlika tooltipā tieši norādīto `Mortal Wounds` 115804. Trūka arī servera filtru un darbību `Executioner's Precision`, Arms `Focused Rage`, `Precise Strikes`, `In for the Kill` un `Trauma`. Sākotnēji pievienotais `Tactician` C++ handlers nākamajā artifact audita paketē tika noņemts: padziļināta core pārbaude apstiprināja, ka `Unit.cpp` jau pareizi aprēķina 0,75% iespēju par katru iztērēto Rage, ieskaita `Exploit the Weakness` un caur 199854 DB saitēm atiestata abus cooldownus.
 
 Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un jaunajiem 20% bojājumiem pieskaita vēl neiztikšķējušos iepriekšējā bleed bojājumus, tad pārdala summu pa trim sešu sekunžu tickiem. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938. C++ ierobežo procu līdz četriem atbilstošajiem Arms melee spelliem, savukārt aktīvās world DB `spell_proc_event` ieraksts nodrošina vienīgo 5% izlozi un aktivē 60503.
 
@@ -3456,3 +3456,33 @@ Izmantotie avoti:
 
 - Izmantot Heroic Leap dažādos derīgos augstumos: tēlam jāizpilda lēciens uz izvēlēto vietu, piezemējoties jānostrādā damage, bet ar Bounding Stride — arī tā esošais kustības bonuss.
 - Ar Arms un Protection specializācijām izmantot Ravager: tam jāparādās izvēlētajā vietā un periodiski jāsit mērķi; abiem variantiem jādod paredzētais parry buffs, nedublējot efektu.
+
+## Pakete 178 — Warrior Arms: artifact traitu pilnais audits un labojumi
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_166_restore_warrior_arms_artifact_traits.sql`.
+
+No gala 7.3.5.26972 `Artifact`, `ArtifactPower` un `ArtifactPowerRank` datiem izveidots pilns Strom'kar, the Warbreaker traitu saraksts un katrs traits salīdzināts ar spellu efektiem, core pirmkodu un aktīvajām world DB saitēm. Atrastas divas reālas klusas kļūdas. `Corrupted Blood of Zakajz` aktivācijas aura 209567 saņēma damage procus, bet tai nebija darbības, kas izveido 209569 Shadow DoT. Pievienots handlers, kas katram uzbrukumam pieskaita 20% nodarītā damage vēl neiztikšķējušajam atlikumam un pārdala kopsummu pa jaunu sešu sekunžu/trim ticku DoT. Gala `Shattered Defenses` buffs 248625 bija zaudējis vienas charges proc rindu, kas vecajam 209706 variantam bija saglabāta; atjaunota identiska vienreizējā patēriņa konfigurācija, un klienta class mask nodrošina patēriņu tikai ar Mortal Strike vai Execute.
+
+Padziļinātā pārbaude novērsa arī dublēšanu. Core `Unit.cpp` jau satur pareizo Rage-cost izlozi `Soul of the Slaughter` un `Tactician`, turklāt Tactician aprēķinā ieskaita `Exploit the Weakness`. Tādēļ liekās C++/DB piesaistes tika noņemtas, lai iespēja netiktu izlozēta divreiz. Pārējie Strom'kar traiti ir nativi realizēti ar aura/class maskām vai jau esošām world DB ķēdēm: One Against Many core pieskaita traita vērtību Cleave buffam, Tactical Advance darbojas no Heroic Leap piezemēšanās 52174, Touch of Zakajz izmanto damage procenta triggeri, Will of the First King ir filtrēts uz Whirlwind critical, Void Cleave skaita trīs Cleave mērķus, bet Warbreaker piemēro Colossus Smash efektu.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPower/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; SQL updateris piemēroja migrāciju 166 un pēc avotu korekcijas to korekti pārpielietoja ar jauno hash.
+- MariaDB pārbaudīta vienīgā vajadzīgā 209567 C++ piesaiste, lieko 184783/238111 piesaistu neesamība un identiskas 209706/248625 vienas charges proc rindas.
+- Pilns starts pabeigts 12 sekundēs, ielādēja 6681 C++ skriptu un validēja 3386 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Aktivizēt Battle Cry ar Corrupted Blood of Zakajz un izdarīt vairākus dažāda stipruma sitienus: katram jāpievieno 20% Shadow damage ritošajam trīs ticku DoT, bet paša DoT ticki nedrīkst to atkārtoti ierosināt.
+- Ar Shattered Defenses izmantot Colossus Smash, pēc tam Mortal Strike vai Execute: 50% damage bonusam jādarbojas tieši vienam atbilstošam sitienam. Soul of the Slaughter un Tactician jāpārbauda ar dažādām Rage izmaksām, pārliecinoties, ka iespēja mērogojas vienreiz un Tactician reaģē uz Exploit the Weakness.

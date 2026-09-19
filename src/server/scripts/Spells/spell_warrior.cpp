@@ -58,12 +58,12 @@ enum WarriorArmsSpells
     SPELL_WARRIOR_MORTAL_STRIKE                = 12294,
     SPELL_WARRIOR_EXECUTE                      = 163201,
     SPELL_WARRIOR_COLOSSUS_SMASH               = 167105,
-    SPELL_WARRIOR_TACTICIAN_TRIGGER            = 199854,
     SPELL_WARRIOR_PRECISE_STRIKES_BUFF         = 248195,
     SPELL_WARRIOR_MORTAL_WOUNDS                = 115804,
     SPELL_WARRIOR_OVERPOWER_PASSIVE            = 119938,
     SPELL_WARRIOR_TRAUMA_BLEED                 = 215537,
     SPELL_WARRIOR_OVERPOWER_ACTIVATED          = 60503,
+    SPELL_WARRIOR_CORRUPTED_BLOOD_DOT          = 209569,
     SPELL_WARRIOR_HEROIC_LEAP_JUMP             = 94954,
     SPELL_WARRIOR_ARMS_SPECIALIZATION          = 137048,
     SPELL_WARRIOR_RAVAGER_ARMS                 = 152277,
@@ -254,41 +254,6 @@ class spell_warr_revenge_trigger : public AuraScript
     }
 };
 
-// Tactician - 184783. The proc aura stores 0.75% per Rage as 75 basis points.
-class spell_warr_tactician : public AuraScript
-{
-    PrepareAuraScript(spell_warr_tactician);
-
-    bool Validate(SpellInfo const* /*spellInfo*/) override
-    {
-        return ValidateSpellInfo({ SPELL_WARRIOR_COLOSSUS_SMASH, SPELL_WARRIOR_MORTAL_STRIKE,
-            SPELL_WARRIOR_TACTICIAN_TRIGGER });
-    }
-
-    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-    {
-        PreventDefaultAction();
-
-        Spell* procSpell = eventInfo.GetSpell();
-        Player* player = GetTarget()->ToPlayer();
-        if (!procSpell || !player)
-            return;
-
-        int32 rageSpent = procSpell->GetPowerCost(POWER_RAGE);
-        if (rageSpent <= 0 || !roll_chance_f(float(rageSpent) * aurEff->GetAmount() / 1000.0f))
-            return;
-
-        player->RemoveSpellCooldown(SPELL_WARRIOR_COLOSSUS_SMASH, true);
-        player->RemoveSpellCooldown(SPELL_WARRIOR_MORTAL_STRIKE, true);
-        player->CastSpell(player, SPELL_WARRIOR_TACTICIAN_TRIGGER, true);
-    }
-
-    void Register() override
-    {
-        OnEffectProc += AuraEffectProcFn(spell_warr_tactician::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
-    }
-};
-
 // Executioner's Precision - 238147. Only Execute may apply the Mortal Strike debuff.
 class spell_warr_executioners_precision : public AuraScript
 {
@@ -467,6 +432,61 @@ class spell_warr_trauma : public AuraScript
     {
         DoCheckProc += AuraCheckProcFn(spell_warr_trauma::CheckProc);
         OnEffectProc += AuraEffectProcFn(spell_warr_trauma::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Corrupted Blood of Zakajz - 209567. Each damaging attack adds 20% of its
+// damage to the remaining six-second Shadow bleed and redistributes it over
+// the full three ticks.
+class spell_warr_corrupted_blood_of_zakajz : public AuraScript
+{
+    PrepareAuraScript(spell_warr_corrupted_blood_of_zakajz);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_CORRUPTED_BLOOD_DOT });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        if (!eventInfo.GetDamageInfo() || !eventInfo.GetActionTarget() ||
+            eventInfo.GetDamageInfo()->GetDamage() <= 0)
+            return false;
+
+        Spell* procSpell = eventInfo.GetSpell();
+        return !procSpell || procSpell->GetSpellInfo()->Id != SPELL_WARRIOR_CORRUPTED_BLOOD_DOT;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        SpellInfo const* dot = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_CORRUPTED_BLOOD_DOT);
+        if (!caster || !target || !dot)
+            return;
+
+        uint32 totalTicks = dot->GetMaxTicks();
+        if (!totalTicks)
+            return;
+
+        float totalDamage = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (Aura* current = target->GetAura(SPELL_WARRIOR_CORRUPTED_BLOOD_DOT, caster->GetGUID()))
+            if (AuraEffect* currentEffect = current->GetEffect(EFFECT_0))
+                totalDamage += currentEffect->GetAmount() *
+                    (currentEffect->GetTotalTicks() - currentEffect->GetTickNumber());
+
+        float damagePerTick = totalDamage / totalTicks;
+        caster->CastCustomSpell(target, SPELL_WARRIOR_CORRUPTED_BLOOD_DOT, &damagePerTick,
+            nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_corrupted_blood_of_zakajz::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warr_corrupted_blood_of_zakajz::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1715,13 +1735,13 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_shockwave);
     RegisterSpellScript(spell_warr_storm_bolt);
     RegisterAuraScript(spell_warr_revenge_trigger);
-    RegisterAuraScript(spell_warr_tactician);
     RegisterAuraScript(spell_warr_executioners_precision);
     RegisterAuraScript(spell_warr_focused_rage_arms);
     RegisterAuraScript(spell_warr_overpower_passive);
     RegisterAuraScript(spell_warr_precise_strikes);
     RegisterAuraScript(spell_warr_in_for_the_kill);
     RegisterAuraScript(spell_warr_trauma);
+    RegisterAuraScript(spell_warr_corrupted_blood_of_zakajz);
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
     RegisterSpellScript(spell_warr_charge);
