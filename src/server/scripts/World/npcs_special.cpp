@@ -7091,19 +7091,24 @@ struct npc_chi_ji : public ScriptedAI
 {
     npc_chi_ji(Creature* creature) : ScriptedAI(creature) {}
 
-    int32 delay = 1500;
+    uint32 delay = 1500;
 
     void UpdateAI(uint32 diff) override
     {
-        delay -= diff;
-        if (delay <= 0)
+        if (delay > diff)
         {
-            if (me->HasUnitState(UNIT_STATE_CASTING) || me->isMoving())
-                return;
-
-            me->CastSpell(me, 198764, false);
-            delay += 1500;
+            delay -= diff;
+            return;
         }
+
+        delay = 1500;
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        // 198764 is only an empty client-side dummy. Legion Chi-Ji heals a
+        // nearby injured ally with the actual Crane Heal spell (198756).
+        if (Unit* target = DoSelectLowestHpFriendly(40.0f, 1))
+            me->CastSpell(target, 198756, false);
     }
 };
 

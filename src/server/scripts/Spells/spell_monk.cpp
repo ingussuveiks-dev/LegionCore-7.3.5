@@ -1866,7 +1866,8 @@ class spell_monk_sheiluns_gift  : public SpellScriptLoader
                 {
                     std::list<AreaTrigger*> list;
                     caster->GetAreaObjectList(list, 214501);
-                    SetHitHeal(GetHitHeal() * list.size());
+                    uint32 cloudCount = std::min<uint32>(uint32(list.size()), 12);
+                    SetHitHeal(GetHitHeal() * cloudCount);
                     if(!list.empty())
                     {
                         for (std::list<AreaTrigger*>::iterator itr = list.begin(); itr != list.end(); ++itr)
@@ -1877,8 +1878,10 @@ class spell_monk_sheiluns_gift  : public SpellScriptLoader
 
                         if (caster->HasAura(238130)) // Whispers of Shaohao
                         {
-                            float bp0 = list.size();
-                            caster->CastCustomSpell(caster, 242400, &bp0, NULL, NULL, true);
+                            // Every consumed cloud performs its own 200% SP
+                            // smart heal; cloud count is not a flat basepoint.
+                            for (uint32 i = 0; i < cloudCount; ++i)
+                                caster->CastSpell(caster, 242400, true);
                         }
                     }
                 }
@@ -1894,6 +1897,56 @@ class spell_monk_sheiluns_gift  : public SpellScriptLoader
         {
             return new spell_monk_sheiluns_gift_SpellScript();
         }
+};
+
+// Sheilun, Staff of the Mists - 214483
+class spell_monk_sheiluns_clouds : public AuraScript
+{
+    PrepareAuraScript(spell_monk_sheiluns_clouds);
+
+    void HandlePeriodic(AuraEffect const* aurEff)
+    {
+        Unit* caster = GetTarget();
+        if (!caster || !caster->isInCombat())
+            return;
+
+        std::list<AreaTrigger*> clouds;
+        caster->GetAreaObjectList(clouds, 214501);
+        if (clouds.size() < 12)
+            caster->CastSpell(caster, 214501, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_monk_sheiluns_clouds::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// Whispers of Shaohao - 242400
+class spell_monk_whispers_of_shaohao : public SpellScript
+{
+    PrepareSpellScript(spell_monk_whispers_of_shaohao);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            return !unit || unit->IsFullHealth();
+        });
+
+        targets.sort([](WorldObject* left, WorldObject* right)
+        {
+            return left->ToUnit()->GetHealthPct() < right->ToUnit()->GetHealthPct();
+        });
+        if (targets.size() > 1)
+            targets.resize(1);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_whispers_of_shaohao::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+    }
 };
 
 // Ironskin Brew - 115308
@@ -2328,6 +2381,144 @@ class spell_monk_essence_font : public SpellScriptLoader
     }
 };
 
+// Essence Font heal - 191840
+class spell_monk_essence_font_heal : public SpellScript
+{
+    PrepareSpellScript(spell_monk_essence_font_heal);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+        {
+            targets.clear();
+            return;
+        }
+
+        targets.remove_if([caster](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            if (!unit)
+                return true;
+
+            // A unit can receive one bolt per second. The eight-second HoT
+            // has more than five seconds left until the next eligible second.
+            if (Aura* aura = unit->GetAura(191840, caster->GetGUID()))
+                return aura->GetDuration() > 5 * IN_MILLISECONDS;
+
+            return false;
+        });
+
+        targets.sort([](WorldObject* left, WorldObject* right)
+        {
+            return left->ToUnit()->GetHealthPct() < right->ToUnit()->GetHealthPct();
+        });
+        if (targets.size() > 6)
+            targets.resize(6);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_essence_font_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_essence_font_heal::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+    }
+};
+
+// Celestial Breath heal - 199656
+class spell_monk_celestial_breath : public SpellScript
+{
+    PrepareSpellScript(spell_monk_celestial_breath);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.sort([](WorldObject* left, WorldObject* right)
+        {
+            return left->ToUnit()->GetHealthPct() < right->ToUnit()->GetHealthPct();
+        });
+        if (targets.size() > 6)
+            targets.resize(6);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_celestial_breath::FilterTargets, EFFECT_0, TARGET_UNIT_ALLY_CONE_CASTER);
+    }
+};
+
+// Celestial Breath artifact trait - 199640
+class spell_monk_celestial_breath_driver : public AuraScript
+{
+    PrepareAuraScript(spell_monk_celestial_breath_driver);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        Unit* monk = GetTarget();
+        if (!spell || !monk || spell->GetSpellInfo()->Id != 116680) // Thunder Focus Tea
+            return false;
+
+        // Rising Thunder can reset Thunder Focus Tea much more frequently,
+        // so the artifact trait gains its documented 30-second cooldown.
+        return !monk->HasAura(210804) || !monk->HasSpellCooldown(199640);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        if (Unit* monk = GetTarget())
+            if (monk->HasAura(210804)) // Rising Thunder
+                monk->AddSpellCooldown(199640, 0, getPreciseTime() + 30.0);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_monk_celestial_breath_driver::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_monk_celestial_breath_driver::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Spirit Tether artifact trait - 199384
+class spell_monk_spirit_tether : public AuraScript
+{
+    PrepareAuraScript(spell_monk_spirit_tether);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == 101643; // Transcendence
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_monk_spirit_tether::CheckProc);
+    }
+};
+
+// Revival - 115310 / Blessings of Yu'lon - 199665
+class spell_monk_revival : public SpellScript
+{
+    PrepareSpellScript(spell_monk_revival);
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        AuraEffect const* blessings = caster ? caster->GetAuraEffect(199665, EFFECT_0) : nullptr;
+        if (!caster || !target || !blessings)
+            return;
+
+        // 199668 ticks once per second for six seconds. Together its ticks
+        // restore the artifact trait's percentage of the actual Revival heal.
+        float periodicHeal = CalculatePct(GetHitHeal(), blessings->GetAmount()) / 6.0f;
+        if (periodicHeal > 0)
+            caster->CastCustomSpell(target, 199668, &periodicHeal, nullptr, nullptr, true, nullptr, blessings);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_monk_revival::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
 // Rising Sun Kick - 185099
 class spell_monk_rising_sun_kick : public SpellScriptLoader
 {
@@ -2422,9 +2613,6 @@ class spell_monk_renewing_mist_main : public SpellScriptLoader
                             {
                                 if (Group* group = plr->GetGroup())
                                 {
-                                    std::vector<Player*> tempList;
-                                    bool findTarget = false;
-
                                     for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
                                     {
                                         if (Player* player = itr->getSource())
@@ -2442,20 +2630,17 @@ class spell_monk_renewing_mist_main : public SpellScriptLoader
                                                 continue;
 
                                             if (player->HasAura(119611, caster->GetGUID()))
-                                            {
-                                                tempList.push_back(player);
                                                 continue;
-                                            }
 
                                             caster->CastSpell(player, 119611, true);
-                                            findTarget = true;
+                                            if (caster->HasAura(117907)) // Mastery: Gust of Mists
+                                            {
+                                                if (player->HasAura(191840, caster->GetGUID())) // Essence Font HoT
+                                                    caster->CastSpell(player, 191894, true);
+                                                caster->CastSpell(player, 191894, true);
+                                            }
                                             break;
                                         }
-                                    }
-
-                                    if (!findTarget && !tempList.empty())
-                                    {
-                                        caster->CastSpell(tempList.front(), 119611, true);
                                     }
                                 }
                             }
@@ -2512,6 +2697,14 @@ class spell_monk_renewing_mist : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
+                    float upliftingChance = 0.0f;
+                    if (SpellInfo const* renewingMist = sSpellMgr->GetSpellInfo(115151))
+                        upliftingChance = renewingMist->Effects[EFFECT_1]->CalcValue(caster);
+                    if (AuraEffect const* tier19 = caster->GetAuraEffect(211418, EFFECT_0))
+                        upliftingChance += tier19->GetAmount();
+                    if (roll_chance_f(upliftingChance))
+                        caster->CastSpell(caster, 197206, true, nullptr, aurEff);
+
                     if (Player* plr = caster->ToPlayer())
                     {
                         if (Unit* target = GetUnitOwner())
@@ -2564,6 +2757,48 @@ class spell_monk_renewing_mist : public SpellScriptLoader
         {
             return new spell_monk_renewing_mist_AuraScript();
         }
+};
+
+// Vivify - 116670
+class spell_monk_vivify : public SpellScript
+{
+    PrepareSpellScript(spell_monk_vivify);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* caster = GetCaster();
+        Unit* primary = GetExplTargetUnit();
+        if (!caster || !primary)
+        {
+            targets.clear();
+            return;
+        }
+
+        targets.remove_if([primary](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            return !unit || (unit != primary && unit->IsFullHealth());
+        });
+
+        targets.remove(primary);
+        targets.sort([primary](WorldObject* left, WorldObject* right)
+        {
+            return primary->GetDistance(left) < primary->GetDistance(right);
+        });
+
+        uint32 secondaryTargets = 2;
+        if (caster->HasAura(197206) && caster->HasAura(217153)) // Lunar Glide
+            ++secondaryTargets;
+        if (targets.size() > secondaryTargets)
+            targets.resize(secondaryTargets);
+
+        targets.push_front(primary);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_vivify::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+    }
 };
 
 // Soothing Mist - 115175, 209525, 198533
@@ -2640,6 +2875,71 @@ public:
     AuraScript* GetAuraScript() const override
     {
         return new spell_monk_soothing_mist_AuraScript();
+    }
+};
+
+// Soothing Mist passive - 193884
+class spell_monk_soothing_mist_passive : public AuraScript
+{
+    PrepareAuraScript(spell_monk_soothing_mist_passive);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        if (caster && target)
+            caster->CastSpell(target, 115175, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_monk_soothing_mist_passive::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Lifecycles - 197915
+class spell_monk_lifecycles : public AuraScript
+{
+    PrepareAuraScript(spell_monk_lifecycles);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell || spell->GetTriggeredAuraEff())
+            return false;
+
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case 116670: // Vivify
+            case 124682: // Enveloping Mist
+            case 227345: // Enveloping Mist (Ancient Mistweaver Arts)
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetTarget();
+        Spell* spell = eventInfo.GetSpell();
+        if (!caster || !spell)
+            return;
+
+        if (spell->GetSpellInfo()->Id == 116670)
+            caster->CastSpell(caster, 197919, true, nullptr, aurEff);
+        else
+            caster->CastSpell(caster, 197916, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_monk_lifecycles::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_monk_lifecycles::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -2881,40 +3181,47 @@ class spell_monk_gust_of_mists : public AuraScript
         GustOfMistsHeal = 191894
     };
 
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell || spell->GetTriggeredAuraEff())
+            return false;
+
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case 115151: // Renewing Mist
+            case 116670: // Vivify
+            case 116694: // Effuse
+            case 124682: // Enveloping Mist
+            case 227344: // Effuse (Ancient Mistweaver Arts)
+            case 227345: // Enveloping Mist (Ancient Mistweaver Arts)
+                return eventInfo.GetActionTarget() != nullptr;
+            default:
+                return false;
+        }
+    }
+
     void OnProc(AuraEffect const* /*auraEffect*/, ProcEventInfo& eventInfo)
     {
-        if (DamageInfo* dmgInfo = eventInfo.GetDamageInfo())
-        {
-            if (Unit* caster = dmgInfo->GetAttacker())
-            {
-                if (caster->HasSpellCooldown(GustOfMists))
-                    return;
+        PreventDefaultAction();
 
-                if (Spell* spell = eventInfo.GetSpell())
-                {
-                    if (spell->GetTriggeredAuraEff())
-                    {
-                        PreventDefaultAction();
-                        return;
-                    }
-                }
+        Unit* caster = eventInfo.GetActor();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!caster || !target || caster->HasSpellCooldown(GustOfMists))
+            return;
 
-                if (Unit* target = dmgInfo->GetVictim())
-                {
-                    if (target->HasAura(191840, caster->GetGUID()))
-                        caster->CastSpell(target, GustOfMistsHeal, true);
+        // Essence Font's HoT causes the next eligible targeted heal to
+        // trigger Gust of Mists twice on that target.
+        if (target->HasAura(191840, caster->GetGUID()))
+            caster->CastSpell(target, GustOfMistsHeal, true);
 
-                    caster->CastSpell(target, GustOfMistsHeal, true);
-
-                    if (G3D::fuzzyGt(0.1, 0.0))
-                        caster->AddSpellCooldown(GustOfMists, 0, getPreciseTime() + 0.1);
-                }
-            }
-        }
+        caster->CastSpell(target, GustOfMistsHeal, true);
+        caster->AddSpellCooldown(GustOfMists, 0, getPreciseTime() + 0.1);
     }
 
     void Register() override
     {
+        DoCheckProc += AuraCheckProcFn(spell_monk_gust_of_mists::CheckProc);
         OnEffectProc += AuraEffectProcFn(spell_monk_gust_of_mists::OnProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
@@ -3261,6 +3568,8 @@ void AddSC_monk_spell_scripts()
     new spell_monk_expel_harm();
     new spell_monk_zen_pulse();
     new spell_monk_sheiluns_gift();
+    RegisterAuraScript(spell_monk_sheiluns_clouds);
+    RegisterSpellScript(spell_monk_whispers_of_shaohao);
     RegisterSpellScript(spell_monk_ironskin_brew_aura);
     RegisterAuraScript(spell_monk_ib);
     new spell_monk_gift_of_the_ox();
@@ -3269,8 +3578,11 @@ void AddSC_monk_spell_scripts()
     new spell_monk_dark_side_of_the_moon();
     new spell_monk_rising_sun_kick();
     new spell_monk_renewing_mist();
+    RegisterSpellScript(spell_monk_vivify);
     new spell_monk_chi_orbit();
     new spell_monk_soothing_mist();
+    RegisterAuraScript(spell_monk_soothing_mist_passive);
+    RegisterAuraScript(spell_monk_lifecycles);
     new spell_monk_effuse();
     new areatrigger_at_windwalking();
     new areatrigger_at_ring_of_peace();
@@ -3278,6 +3590,11 @@ void AddSC_monk_spell_scripts()
     RegisterSpellScript(spell_monk_special_delivery);
     new spell_monk_renewing_mist_main();
     new spell_monk_essence_font();
+    RegisterSpellScript(spell_monk_essence_font_heal);
+    RegisterSpellScript(spell_monk_celestial_breath);
+    RegisterAuraScript(spell_monk_celestial_breath_driver);
+    RegisterAuraScript(spell_monk_spirit_tether);
+    RegisterSpellScript(spell_monk_revival);
     new spell_monk_gift_of_the_ox_heal();
     RegisterSpellScript(spell_monk_sotw);
     new spell_monk_summon_jade_serpent_statue();

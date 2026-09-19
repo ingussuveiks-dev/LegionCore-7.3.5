@@ -10034,7 +10034,12 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     if (!isInCombat())
                         return false;
 
-                    CastSpell(this, 214501, true);
+                    // Sheilun can hold at most 12 clouds. Effusive Mists
+                    // uses the same pool as the passive ten-second spawns.
+                    std::list<AreaTrigger*> clouds;
+                    GetAreaObjectList(clouds, 214501);
+                    if (clouds.size() < 12)
+                        CastSpell(this, 214501, true);
                     break;
                 }
                 case 137639: // Storm, Earth, and Fire
