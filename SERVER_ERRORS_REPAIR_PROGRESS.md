@@ -212,3 +212,19 @@ Hurricane spellam 86492 šajā klienta būvē effect 0 vairs nav skriptā pieņe
 ### Spēlē vēlāk pārbaudāmais
 
 - Conclave of Wind cīņā pārbaudīt, ka Hurricane sākumā mērķis ieiet pareizajā vehicle seat un auras beigās vai noņemšanā visi pasažieri tiek korekti izlaisti.
+
+## Pakete 180 — Pursuing the Black Harvest Fel Energy aura
+
+Fails: `src/server/scripts/Scenario/PursuingTheBlackHarvest/pursuing_the_black_harvest.cpp`.
+
+Fel Energy spellam 140116 šajā klienta būvē effect 0 vairs nav skriptā pieņemtais `DUMMY`. Papildu Fel Energy auras uzlikšana un paredzamā vehicle ride stāvokļa atcelšana ir visas auras dzīves cikla darbības, tādēļ abi hooki tagad vienreiz piesaistās pirmajam faktiskajam auras efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abas `spell_fel_enery` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 31 uz 29.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pursuing the Black Harvest scenārijā pārbaudīt Fel Energy (140116) sākumu, papildu `SPELL_FEL_ENERGY_DUMMY_2` uzlikšanu un korektu vehicle ride stāvokļa atcelšanu auras beigās.
