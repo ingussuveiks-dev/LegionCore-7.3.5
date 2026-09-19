@@ -77,6 +77,10 @@ void AddSC_instance_greenstone_village();
 void AddSC_lions_landing();
 void AddSC_instance_lions_landing();
 
+//< Finding the Secret Ingredient / Noodle Time
+void AddSC_noodle_time();
+void AddSC_instance_noodle_time();
+
 //< The Secrets of Ragefire
 void AddSC_the_secrets_of_ragefire();
 void AddSC_instance_the_secrets_of_ragefire();
@@ -240,6 +244,10 @@ void AddScenarioScripts()
     //< Lion's Landing
     AddSC_lions_landing();
     AddSC_instance_lions_landing();
+
+    //< Finding the Secret Ingredient / Noodle Time
+    AddSC_noodle_time();
+    AddSC_instance_noodle_time();
 
     //< The Secrets of Ragefire
     AddSC_the_secrets_of_ragefire();

@@ -3129,6 +3129,32 @@ Papildu uzvedības avoti:
 - Ar Alliance trīs spēlētāju grupu iziet LFG 590 un 802 no Golden Gryphon līdz nejaušajam komandierim un apstiprināt scenārija 184 UI, visu 16 kritēriju secību un LFG gala atlīdzību.
 - Wipe/reconnect pārbaudē pārliecināties, ka aktīvā pagalma grupa vai aizsardzības vilnis paliek pieejams un posmu nevar ieskaitīt atkārtoti.
 
+## Pakete 169 — Finding the Secret Ingredient un Noodle Time scenāriji
+
+Faili: `src/server/scripts/Scenario/NoodleTime/instance_noodle_time.cpp`, `src/server/scripts/Scenario/NoodleTime/noodle_time.cpp`, `src/server/scripts/Scenario/NoodleTime/noodle_time.h`, `src/server/scripts/Scenario/scenario_script_loader.cpp`, `src/server/game/DataStores/DB2Structure.cpp` un `sql/updates/world/2026_09_19_157_implement_noodle_time_scenarios.sql`.
+
+No publiskā Legends of Azeroth Pandaria 5.4.8 world DB laidiena kartē 1157 atjaunots Sungshin Ironpaw un 14 oriģinālie statiskie objekti: četri krēsli, divi galdi, plīts, grils, krāsns, sols un četras durvis. Lokālie 7.3.5 DB2 dati nosaka LFG 745/scenāriju 269 un LFG 749/scenāriju 278, to grūtības, posmus un precīzos klienta kritērijus. Abām versijām pievienoti `scenario_data`, LFG ieejas un `instance_noodle_time`; no `LFGDungeonsEntry::IsValid()` izņemta šo divu rindu pagaidu bloķēšana.
+
+C++ realizē Sungshin pamācības sākšanu, Noodle Stand transportlīdzekli un darbību joslu, četras sēdvietas, klientu rindu, normālos, nepacietīgos un izsalkušos klientus, trīs ēdienu gatavošanu, klienta/sēdvietas/ēdiena izvēli, divas porcijas izsalkušajiem, punktu skaitīšanu, piecu aizgājušu klientu neveiksmi ar atkārtotu startu, piecu klientu pamācības pabeigšanu un piecu minūšu ikdienas scenāriju ar 30 000 punktu bonusa kritēriju.
+
+Uzvedības un datu avoti:
+
+- https://github.com/Legends-of-Azeroth/Legends-of-Azeroth-Pandaria-5.4.8/releases
+- https://github.com/ProjectSkyfire/SkyFire_548/releases
+- https://www.wowhead.com/guide/noodle-time-and-noodle-time-bonus-scenario-guide-2371
+- https://www.wowdb.com/quests/33027-the-secret-ingredient-is
+
+### Pārbaudes rezultāts
+
+- Pēc CMake pārģenerēšanas Release `worldserver` būve pabeigta bez kļūdām un jaunie Noodle Time faili ir iekļauti projektā.
+- SQL updateris piemēroja migrāciju; MariaDB pārbaudīts 1 creature un 14 gameobject spawni kartē 1157, abi `scenario_data` un LFG ieejas ieraksti, instances piesaiste, pieci spell skripti, NPC skripti un Noodle Stand piecu spellu darbību josla.
+- Pilns servera starts pabeigts veiksmīgi; `DBErrors.log` ir 0 baiti, un svaigajā `Server.log` nav nevienas `ERROR` vai `FATAL` rindas. Serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Iziet Finding the Secret Ingredient (LFG 745), ar Sungshin sākt pamācību un pārbaudīt, ka piecu klientu apkalpošana secīgi pabeidz abus scenārija posmus.
+- Iziet Noodle Time (LFG 749), pārbaudīt klientu 40/30 sekunžu un nepacietīgo klientu 20/15 sekunžu taimerus, izsalkušo klientu divas porcijas, piecu aizgājušu klientu restartu, piecu minūšu noslēgumu un 30 000 punktu bonusu.
+
 ## Pakete 164 — Death Knight artifact scenāriju ieejas
 
 Fails: `sql/updates/world/2026_09_19_147_restore_death_knight_scenario_entrances.sql`.
@@ -3179,3 +3205,5 @@ Atlikušie seši DBC ieraksti — Finding the Secret Ingredient (745), Noodle Ti
 
 - Pārliecināties, ka visi seši nepabeigtie scenāriji nav izvēlami LFG saskarnē un serveris noraida mēģinājumu tiem pievienoties ar modificētu klienta paketi.
 - Ja kādam no tiem nākotnē tiek importēti pilni spawni, `scenario_data` un skripts, noņemt tikai attiecīgo `IsValid()` izņēmumu un pievienot avotos pamatotu ieejas pozīciju.
+
+> 2026-09-19: LFG 745 un 749 pagaidu bloķēšana ir aizstāta ar paketi 169. Karte 1157, abi scenāriji un to mehānika ir atjaunota no publiskajiem world DB, klienta DB2 un uzvedības avotiem; abi LFG ieraksti atkal ir iespējoti.
