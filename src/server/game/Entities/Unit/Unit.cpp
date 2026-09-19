@@ -10763,9 +10763,9 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, DamageInfo* dmgInfoProc, AuraEff
         }
         case 194909: // Frozen Pulse
         {
-            uint8 minUsed = GetMaxPower(POWER_RUNES) - auraSpellInfo->Effects[EFFECT_1]->BasePoints * 2;
-            uint8 power = GetPower(POWER_RUNES);
-            if ((power - minUsed) > 0)
+            // The tooltip requires fewer than EFFECT_1 full runes. Rune power is
+            // already stored as the number of currently full runes.
+            if (GetPower(POWER_RUNES) >= auraSpellInfo->Effects[EFFECT_1]->BasePoints)
                 return false;
             break;
         }

@@ -25,6 +25,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "AreaTrigger.h"
+#include "AreaTriggerAI.h"
 #include "Containers.h"
 
 enum DeathKnightSpells
@@ -169,6 +170,12 @@ enum DeathKnightSpells
     SPELL_DK_ICEBOUND_FORTITUDE                 = 48792,
     SPELL_DK_CRIMSON_SCOURGE                    = 81136,
     SPELL_DK_CRIMSON_SCOURGE_BUFF               = 81141,
+    SPELL_DK_MURDEROUS_EFFICIENCY               = 207061,
+    SPELL_DK_MURDEROUS_EFFICIENCY_ENERGIZE      = 207062,
+    SPELL_DK_FROSTSCYTHE                        = 207230,
+    SPELL_DK_INEXORABLE_ASSAULT                 = 253593,
+    SPELL_DK_INEXORABLE_ASSAULT_TIMER           = 253594,
+    SPELL_DK_INEXORABLE_ASSAULT_PROC            = 253595,
 };
 
 // Desecrated ground - 118009
@@ -1383,6 +1390,211 @@ class spell_dk_frost_strike : public SpellScript
     void Register() override
     {
         OnEffectHitTarget += SpellEffectFn(spell_dk_frost_strike::HandleOnHit, EFFECT_1, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+    }
+};
+
+// Obliterate - 49020; Frostscythe - 207230
+// Killing Machine is a one-use guaranteed critical strike. Murderous
+// Efficiency may restore one rune only when that effect was actually consumed.
+class spell_dk_killing_machine_consumer : public SpellScript
+{
+    PrepareSpellScript(spell_dk_killing_machine_consumer);
+
+    bool _hadKillingMachine = false;
+    bool _handled = false;
+
+    void HandleBeforeCast()
+    {
+        if (Unit* caster = GetCaster())
+            _hadKillingMachine = caster->HasAura(SPELL_DK_KILLING_MACHINE);
+    }
+
+    void HandleAfterHit()
+    {
+        if (!_hadKillingMachine || _handled)
+            return;
+
+        _handled = true;
+
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(SPELL_DK_KILLING_MACHINE))
+            return;
+
+        caster->RemoveAurasDueToSpell(SPELL_DK_KILLING_MACHINE);
+
+        if (AuraEffect const* murderousEfficiency = caster->GetAuraEffect(SPELL_DK_MURDEROUS_EFFICIENCY, EFFECT_0))
+            if (roll_chance_f(murderousEfficiency->GetAmount()))
+                caster->CastSpell(caster, SPELL_DK_MURDEROUS_EFFICIENCY_ENERGIZE, true);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_dk_killing_machine_consumer::HandleBeforeCast);
+        AfterHit += SpellHitFn(spell_dk_killing_machine_consumer::HandleAfterHit);
+    }
+};
+
+// Icecap - 207126
+// DBC's proc flags select critical melee hits, but do not restrict the source
+// spell to Frost Strike, Frostscythe, and Obliterate as the 7.3.5 talent does.
+class spell_dk_icecap : public AuraScript
+{
+    PrepareAuraScript(spell_dk_icecap);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        if (!spellInfo || !(eventInfo.GetHitMask() & PROC_HIT_CRITICAL))
+            return false;
+
+        switch (spellInfo->Id)
+        {
+            case 49020:  // Obliterate driver
+            case 66198:  // Obliterate off-hand
+            case 222024: // Obliterate main-hand
+            case 49143:  // Frost Strike driver
+            case 66196:  // Frost Strike off-hand
+            case 222026: // Frost Strike main-hand
+            case SPELL_DK_FROSTSCYTHE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_icecap::CheckProc);
+    }
+};
+
+// Avalanche - 207142
+class spell_dk_avalanche : public AuraScript
+{
+    PrepareAuraScript(spell_dk_avalanche);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetCaster();
+        return caster && caster->HasAura(SPELL_DK_PILLAR_OF_FROST)
+            && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_avalanche::CheckProc);
+    }
+};
+
+// Abomination's Might - 207161
+class spell_dk_abominations_might : public AuraScript
+{
+    PrepareAuraScript(spell_dk_abominations_might);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        if (!spellInfo || !(eventInfo.GetHitMask() & PROC_HIT_CRITICAL))
+            return false;
+
+        return spellInfo->Id == 49020 || spellInfo->Id == 66198 || spellInfo->Id == 222024;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_abominations_might::CheckProc);
+    }
+};
+
+// Inexorable Assault - 253593
+// The passive creates an eight-yard area trigger. While the Death Knight is
+// in combat and that trigger contains no attackable enemy, its one-second
+// timer aura is active. Entering the trigger pauses the timer immediately.
+struct at_dk_inexorable_assault : AreaTriggerAI
+{
+    explicit at_dk_inexorable_assault(AreaTrigger* areaTrigger) : AreaTriggerAI(areaTrigger) { }
+
+    uint32 _checkTimer = 0;
+
+    bool HasNearbyEnemy() const
+    {
+        Unit* caster = at->GetCaster();
+        GuidList* affectedUnits = at->GetAffectedPlayers();
+        if (!caster || !affectedUnits)
+            return false;
+
+        for (ObjectGuid const& guid : *affectedUnits)
+            if (Unit* unit = ObjectAccessor::GetUnit(*at, guid))
+                if (unit->IsAlive() && caster->IsValidAttackTarget(unit))
+                    return true;
+
+        return false;
+    }
+
+    void UpdateTimerAura()
+    {
+        Unit* caster = at->GetCaster();
+        if (!caster)
+            return;
+
+        if (!caster->isInCombat() || HasNearbyEnemy())
+            caster->RemoveAurasDueToSpell(SPELL_DK_INEXORABLE_ASSAULT_TIMER);
+        else if (!caster->HasAura(SPELL_DK_INEXORABLE_ASSAULT_TIMER))
+            caster->CastSpell(caster, SPELL_DK_INEXORABLE_ASSAULT_TIMER, true);
+    }
+
+    void OnCreate() override
+    {
+        UpdateTimerAura();
+    }
+
+    void OnUnitEnter(Unit* /*unit*/) override
+    {
+        UpdateTimerAura();
+    }
+
+    void OnUnitExit(Unit* /*unit*/) override
+    {
+        UpdateTimerAura();
+    }
+
+    void OnUpdate(uint32 diff) override
+    {
+        if (_checkTimer > diff)
+        {
+            _checkTimer -= diff;
+            return;
+        }
+
+        _checkTimer = 200;
+        UpdateTimerAura();
+    }
+
+    void OnRemove() override
+    {
+        if (Unit* caster = at->GetCaster())
+            caster->RemoveAurasDueToSpell(SPELL_DK_INEXORABLE_ASSAULT_TIMER);
+    }
+};
+
+// Inexorable Assault timer - 253594
+// DBC defines the timer as a one-second periodic dummy and 253595 as a
+// ten-stack, one-charge auto-attack proc which triggers damage spell 253597.
+class spell_dk_inexorable_assault_timer : public AuraScript
+{
+    PrepareAuraScript(spell_dk_inexorable_assault_timer);
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        Unit* target = GetTarget();
+        if (target && target->isInCombat() && target->HasAura(SPELL_DK_INEXORABLE_ASSAULT))
+            target->CastSpell(target, SPELL_DK_INEXORABLE_ASSAULT_PROC, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_dk_inexorable_assault_timer::HandlePeriodic,
+            EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -2695,6 +2907,12 @@ void AddSC_deathknight_spell_scripts()
     new spell_dk_bonestorm();
     new spell_dk_blood_mirror();
     RegisterSpellScript(spell_dk_frost_strike);
+    RegisterSpellScript(spell_dk_killing_machine_consumer);
+    RegisterAuraScript(spell_dk_icecap);
+    RegisterAuraScript(spell_dk_avalanche);
+    RegisterAuraScript(spell_dk_abominations_might);
+    RegisterAreaTriggerAI(at_dk_inexorable_assault);
+    RegisterAuraScript(spell_dk_inexorable_assault_timer);
     new spell_dk_glacial_advance();
     new spell_dk_glacial_advance_damage();
     RegisterSpellScript(spell_dk_scourge_strike);

@@ -3271,19 +3271,20 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
 
     m_addptype = power;
     m_addpower = damage;
-    m_caster->EnergizeBySpell(unitTarget, m_spellInfo->Id, damage, power);
 
     if (m_addptype == POWER_RUNES)
     {
         if(Player* _player = m_caster->ToPlayer())
         {
             int32 runesRestor = damage;
+            int32 restored = 0;
             // First regene rune with full CD
             for (int i = 0; i < _player->GetMaxPower(POWER_RUNES) ; i++)
             {
                 if (_player->GetRuneCooldown(i) == _player->GetRuneBaseCooldown() && runesRestor)
                 {
                     runesRestor--;
+                    restored++;
                     _player->SetRuneCooldown(i, 0);
                     _player->AddRunePower(i);
                 }
@@ -3293,12 +3294,19 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
                 if (_player->GetRuneCooldown(i) && runesRestor)
                 {
                     runesRestor--;
+                    restored++;
                     _player->SetRuneCooldown(i, 0);
                     _player->AddRunePower(i);
                 }
             }
+
+            // AddRunePower updates the rune resource and sends the rune mask.
+            // EnergizeBySpell must not run as well, or the resource is counted twice.
+            m_caster->SendEnergizeSpellLog(unitTarget, m_spellInfo->Id, restored, damage - restored, power);
         }
     }
+    else
+        m_caster->EnergizeBySpell(unitTarget, m_spellInfo->Id, damage, power);
 
     // Mad Alchemist's Potion
     if (m_spellInfo->Id == 45051)

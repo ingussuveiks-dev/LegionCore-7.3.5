@@ -8630,22 +8630,19 @@ void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster, Spel
     TC_LOG_INFO("spells", "PeriodicTick: %s energize of %s for %f dmg inflicted by %u",
         GetCasterGUID().ToString().c_str(), target->GetGUID().ToString().c_str(), amount, GetId());
 
-    int32 gain = target->ModifyPower(powerType, amount, true);
-
-    if (caster)
-        target->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, GetSpellInfo());
-
+    int32 gain = 0;
     if (powerType == POWER_RUNES)
     {
         if(Player* _player = target->ToPlayer())
         {
-            float runesRestor = amount;
+            int32 runesRestor = amount;
             // First regene rune with full CD
             for (int i = 0; i < _player->GetMaxPower(POWER_RUNES) ; i++)
             {
                 if (_player->GetRuneCooldown(i) == _player->GetRuneBaseCooldown() && runesRestor)
                 {
                     runesRestor--;
+                    gain++;
                     _player->SetRuneCooldown(i, 0);
                     _player->AddRunePower(i);
                 }
@@ -8655,12 +8652,20 @@ void AuraEffect::HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster, Spel
                 if (_player->GetRuneCooldown(i) && runesRestor)
                 {
                     runesRestor--;
+                    gain++;
                     _player->SetRuneCooldown(i, 0);
                     _player->AddRunePower(i);
                 }
             }
         }
     }
+    else
+        gain = target->ModifyPower(powerType, amount, true);
+
+    // AddRunePower already updates POWER_RUNES; applying ModifyPower first
+    // would grant every periodically restored rune twice.
+    if (caster)
+        target->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, GetSpellInfo());
 }
 
 void AuraEffect::HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster, SpellEffIndex effIndex) const
