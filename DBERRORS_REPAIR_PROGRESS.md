@@ -3001,3 +3001,20 @@ War Councilor Victoria (117871) SmartAI action-list satur katra Mage Tower encou
 
 - Ar atbilstošajām septiņām specializācijām pie War Councilor Victoria sākt katru Mage Tower izaicinājumu un pārbaudīt, ka spēlētājs nonāk pareizajā encounter sākumpunktā.
 - Pēc neveiksmes vai pabeigšanas pārbaudīt atgriešanos Broken Shore un atkārtotu ieiešanu; dažādu specializāciju scenāriji nedrīkst sajaukt kartes vai sākumpunktus.
+
+## Pakete 160 — skriptēto War of the Ancients un Ruby Sanctum scenāriju ieejas
+
+Fails: `sql/updates/world/2026_09_19_144_restore_scripted_scenario_entrances.sql`.
+
+Abu scenāriju ieejas var noteikt no jau strādājošiem spell cast avotiem ārpus galamērķa kartes. Spiritwalker Ebonhorn (98825) Highmountain gossip SmartAI casto spellu 193751 ar mērķi War of the Ancients kartē 1515. Event objekts 354 (`quest=46812`) Northrend kartē 571 casto spellu 239557 ar mērķi Ruby Sanctum scenārija kartē 1736. `lfg_entrances` pievienotas tieši šo spellu datubāzē glabātās mērķa koordinātes; paši spelli un skripti nav mainīti.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; abas rindas pārlasītas no MariaDB ar spellu mērķiem identiskām koordinātēm.
+- Pilns `worldserver` starts pabeigts 11 sekundēs; abas ieeju kļūdas pazuda un `DBErrors.log` skaits samazinājās no 15 uz 13.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pie Spiritwalker Ebonhorn sākt War of the Ancients scenāriju un pārbaudīt, ka spēlētājs parādās pie `(4026.05, -5444.71, 115.8)` un scenārija pirmais posms aktivizējas.
+- Ar aktīvu quest 46812 izmantot Northrend event objektu un pārbaudīt ieiešanu Ruby Sanctum scenārijā pie `(3271.46, 533.47, 87.66)`, kā arī korektu scenārija pabeigšanu un atgriešanos.
