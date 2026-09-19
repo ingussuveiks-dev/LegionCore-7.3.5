@@ -98,7 +98,10 @@ enum MageSpells
     SPELL_MAGE_METEOR_BURN                       = 155158,
     SPELL_MAGE_COMET_STORM                       = 153595,
     SPELL_MAGE_COMET_STORM_DAMAGE                = 153596,
-    SPELL_MAGE_COMET_STORM_VISUAL                = 242210,
+    SPELL_MAGE_COMET_STORM_VISUAL                = 228601,
+    SPELL_MAGE_EBONBOLT_DAMAGE                   = 228599,
+    SPELL_MAGE_T21_FROST_4P                      = 251860,
+    SPELL_MAGE_T21_FROST_4P_BUFF                 = 253257,
     SPELL_MAGE_POLYMORPH_CRITTERMORPH            = 120091,
     SPELL_MAGE_HEATING_UP                        = 48107,
     SPELL_MAGE_HOT_STREAK                        = 48108,
@@ -335,6 +338,352 @@ class spell_mage_arcane_barrage : public SpellScript
     }
 };
 
+// Cold Snap - 235219
+class spell_mage_cold_snap : public SpellScript
+{
+    PrepareSpellScript(spell_mage_cold_snap);
+
+    void HandleScript(SpellEffIndex /*effIndex*/)
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player)
+            return;
+
+        for (uint32 spellId : { SPELL_MAGE_FROST_NOVA, SPELL_MAGE_CONE_OF_COLD, SPELL_MAGE_ICE_BARRIER, SPELL_MAGE_ICE_BLOCK })
+            player->RemoveSpellCooldown(spellId, true);
+
+        if (SpellInfo const* frostNova = sSpellMgr->GetSpellInfo(SPELL_MAGE_FROST_NOVA))
+            if (frostNova->Categories.ChargeCategory)
+                player->RestoreSpellCategoryCharges(frostNova->Categories.ChargeCategory);
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_mage_cold_snap::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+// Chilled - 205708. Bone Chilling gains a stack on every successful chill.
+class spell_mage_chilled : public AuraScript
+{
+    PrepareAuraScript(spell_mage_chilled);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+                caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_mage_chilled::HandleApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+    }
+};
+
+// Cone of Cold - 120
+class spell_mage_cone_of_cold : public SpellScript
+{
+    PrepareSpellScript(spell_mage_cone_of_cold);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        caster->CastSpell(target, SPELL_MAGE_CONE_OF_COLD_SLOW, true);
+        if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+            caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_cone_of_cold::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Frostbolt damage - 228597
+class spell_mage_frostbolt : public SpellScript
+{
+    PrepareSpellScript(spell_mage_frostbolt);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        caster->CastSpell(target, SPELL_MAGE_CHILLED, true);
+
+        // Frostbolts that land while this mage's Water Elemental is
+        // channeling Water Jet each grant one Fingers of Frost charge.
+        if (Unit* pet = caster->GetGuardianPet())
+        {
+            if (target->HasAura(SPELL_MAGE_WATER_JET, pet->GetGUID()))
+            {
+                if (caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST_AURA))
+                    caster->CastSpell(caster, SPELL_MAGE_FINGERS_OF_FROST_VISUAL_UI, true);
+                caster->CastSpell(caster, SPELL_MAGE_FINGERS_OF_FROST_AURA, true);
+            }
+        }
+
+        if (Aura* unstableMagic = caster->GetAura(SPELL_MAGE_UNSTABLE_MAGIC))
+        {
+            AuraEffect const* chance = unstableMagic->GetEffect(EFFECT_1);
+            AuraEffect const* damagePct = unstableMagic->GetEffect(EFFECT_3);
+            if (chance && damagePct && roll_chance_i(chance->GetAmount()))
+            {
+                float damage = CalculatePct(GetHitDamage(), damagePct->GetAmount());
+                caster->CastCustomSpell(target, SPELL_MAGE_UNSTABLE_MAGIC_DAMAGE_FROST, &damage, NULL, NULL, true);
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_frostbolt::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Ring of Frost driver - 136511. The client spell only provides the periodic
+// aura and visual; each 100 ms tick must cast the real freeze at the summoned
+// ring's position.
+class spell_mage_ring_of_frost : public AuraScript
+{
+    PrepareAuraScript(spell_mage_ring_of_frost);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MAGE_RING_OF_FROST, SPELL_MAGE_RING_OF_FROST_FREEZE });
+    }
+
+    void OnTick(AuraEffect const* /*aurEff*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        if (GuidList* summons = caster->GetSummonList(44199))
+        {
+            GuidList summonList(*summons);
+            for (ObjectGuid const& summonGuid : summonList)
+            {
+                Creature* ring = ObjectAccessor::GetCreature(*caster, summonGuid);
+                if (!ring || !ring->IsInWorld())
+                    continue;
+
+                caster->CastSpell(ring->GetPosition(), SPELL_MAGE_RING_OF_FROST_FREEZE, true);
+                break;
+            }
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_mage_ring_of_frost::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+};
+
+// Ring of Frost freeze - 82691. Only units standing on the visible annulus
+// may be frozen. The existing -82691 -> 91264 spell link supplies the intended
+// 2.5 second post-freeze immunity and prevents immediate reapplication.
+class spell_mage_ring_of_frost_freeze : public SpellScript
+{
+    PrepareSpellScript(spell_mage_ring_of_frost_freeze);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        WorldLocation const* center = GetExplTargetDest();
+        if (!center)
+        {
+            targets.clear();
+            return;
+        }
+
+        targets.remove_if([center](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            if (!unit || unit->HasAura(SPELL_MAGE_RING_OF_FROST_FREEZE) || unit->HasAura(SPELL_MAGE_RING_OF_FROST_IMMUNE))
+                return true;
+
+            float distance = unit->GetExactDist(center);
+            return distance < 5.0f || distance > 6.5f;
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_mage_ring_of_frost_freeze::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+    }
+};
+
+// Freeze (Water Elemental) - 33395. Every successfully rooted target grants
+// the elemental's owner one Fingers of Frost charge.
+class spell_mage_pet_freeze : public AuraScript
+{
+    PrepareAuraScript(spell_mage_pet_freeze);
+
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* elemental = GetCaster();
+        if (!elemental)
+            return;
+
+        Player* owner = elemental->GetOwner() ? elemental->GetOwner()->ToPlayer() : nullptr;
+        if (!owner)
+            return;
+
+        if (owner->HasAura(SPELL_MAGE_FINGERS_OF_FROST_AURA))
+            owner->CastSpell(owner, SPELL_MAGE_FINGERS_OF_FROST_VISUAL_UI, true);
+        owner->CastSpell(owner, SPELL_MAGE_FINGERS_OF_FROST_AURA, true);
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_mage_pet_freeze::OnApply, EFFECT_0, SPELL_AURA_MOD_ROOTED, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Frozen Orb - 84714. Its first successful damage event always grants one FoF charge.
+class spell_mage_frozen_orb_cast : public SpellScript
+{
+    PrepareSpellScript(spell_mage_frozen_orb_cast);
+
+    void HandleAfterCast()
+    {
+        if (Unit* caster = GetCaster())
+            caster->GetAnyDataContainer().Set("FrozenOrbInitialFingers", 1);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_mage_frozen_orb_cast::HandleAfterCast);
+    }
+};
+
+// Frozen Orb damage - 84721
+class spell_mage_frozen_orb_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_frozen_orb_damage);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        caster->CastSpell(target, SPELL_MAGE_CHILLED, true);
+
+        Trinity::AnyDataContainer& data = caster->GetAnyDataContainer();
+        if (data.Exist("FrozenOrbInitialFingers"))
+        {
+            data.Remove("FrozenOrbInitialFingers");
+            if (caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST_AURA))
+                caster->CastSpell(caster, SPELL_MAGE_FINGERS_OF_FROST_VISUAL_UI, true);
+            caster->CastSpell(caster, SPELL_MAGE_FINGERS_OF_FROST_AURA, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_frozen_orb_damage::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Blizzard damage - 190357
+class spell_mage_blizzard_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_blizzard_damage);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* caster = GetCaster())
+            if (Unit* target = GetHitUnit())
+                caster->CastSpell(target, SPELL_MAGE_CHILLED, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_blizzard_damage::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Ebonbolt damage - 228599
+class spell_mage_ebonbolt_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_ebonbolt_damage);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        caster->CastSpell(caster, SPELL_MAGE_BRAIN_FREEZE_AURA, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_ebonbolt_damage::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Brain Freeze - 190446. T21 Frost 4P grants Arctic Blast whenever Brain
+// Freeze is refreshed or consumed/expires, not when it is first applied.
+class spell_mage_brain_freeze_aura : public AuraScript
+{
+    PrepareAuraScript(spell_mage_brain_freeze_aura);
+
+    void TriggerArcticBlast(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* target = GetTarget())
+            if (target->HasAura(SPELL_MAGE_T21_FROST_4P))
+                target->CastSpell(target, SPELL_MAGE_T21_FROST_4P_BUFF, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_brain_freeze_aura::TriggerArcticBlast, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAPPLY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_brain_freeze_aura::TriggerArcticBlast, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Comet Storm - 153595. Launch seven independently placed 228601 comets;
+// the existing DB trigger on 228601 supplies the real 153596 damage spell.
+class spell_mage_comet_storm : public SpellScript
+{
+    PrepareSpellScript(spell_mage_comet_storm);
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        WorldLocation const* destination = GetHitDest();
+        if (!caster || !destination)
+            return;
+
+        float x = destination->GetPositionX();
+        float y = destination->GetPositionY();
+        float z = destination->GetPositionZ();
+        for (uint8 i = 0; i < 7; ++i)
+        {
+            caster->AddDelayedEvent(150 * (i + 1), [caster, x, y, z]() -> void
+            {
+                caster->CastSpell(x + frand(-3.0f, 3.0f), y + frand(-3.0f, 3.0f), z, SPELL_MAGE_COMET_STORM_VISUAL, true);
+            });
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHit += SpellEffectFn(spell_mage_comet_storm::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
 // Flurry - 44614
 class spell_mage_flurry : public SpellScriptLoader
 {
@@ -344,6 +693,19 @@ public:
     class spell_mage_flurry_SpellScript : public SpellScript
     {
         PrepareSpellScript(spell_mage_flurry_SpellScript);
+
+        bool brainFreeze = false;
+        float brainFreezePct = 0.0f;
+
+        void HandleBeforeCast()
+        {
+            if (Unit* caster = GetCaster())
+            {
+                brainFreeze = caster->HasAura(SPELL_MAGE_BRAIN_FREEZE_AURA);
+                if (AuraEffect const* brainFreezeDamage = caster->GetAuraEffect(SPELL_MAGE_BRAIN_FREEZE_AURA, EFFECT_1))
+                    brainFreezePct = brainFreezeDamage->GetAmount();
+            }
+        }
 
         void HandleLaunchTarget(SpellEffIndex /*effIndex*/)
         {
@@ -357,64 +719,73 @@ public:
                         std::vector<uint32> ExcludeAuraList;
                         damage = caster->SpellDamageBonusDone(target, spellInfo, uint32(damage), SPELL_DIRECT_DAMAGE, ExcludeAuraList, EFFECT_1);
 
-                        if (Aura* aura = caster->GetAura(231584))
-                        {
-                            if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
-                            {
-                                if (caster->HasAura(190446))
-                                {
-                                    eff->SetAmount(1.f);
-                                }
-                                else
-                                {
-                                    eff->SetAmount(0.f);
-                                }
-                            }
-                        }
+                        if (brainFreeze)
+                            AddPct(damage, brainFreezePct);
 
                         float dmgMod = 0.f;
-                        float finalDamage = damage;
 
                         if (AuraEffect const* aurEff = caster->GetAuraEffect(251859, EFFECT_0)) // Item - Mage T21 Frost 2P Bonus
                             dmgMod = aurEff->GetAmount();
 
-                        if (dmgMod)
-                            finalDamage += CalculatePct(damage, dmgMod);
-                        
-                        caster->CastCustomSpell(target, 228596, &finalDamage, NULL, NULL, true);
+                        float firstDamage = damage;
+                        caster->CastCustomSpell(target, SPELL_MAGE_FLURRY_VISUAL, &firstDamage, NULL, NULL, true);
+                        if (brainFreeze && caster->HasAura(SPELL_MAGE_BRAIN_FREEZE_IMPROVED))
+                            caster->CastSpell(target, SPELL_MAGE_FLURRY_CHILL_PROC, true);
 
-                        if (dmgMod)
-                            finalDamage += CalculatePct(damage, dmgMod);
+                        if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+                            caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
 
                         ObjectGuid targetGUID = target->GetGUID();
-                        caster->AddDelayedEvent(300, [caster, targetGUID, finalDamage]() -> void
+                        float secondDamage = damage + CalculatePct(damage, dmgMod);
+                        caster->AddDelayedEvent(300, [caster, targetGUID, secondDamage, brainFreeze = brainFreeze]() -> void
                         {
                             Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID);
                             if (!target)
                                 return;
 
-                            caster->CastCustomSpell(target, 228596, &finalDamage, NULL, NULL, true);
+                            caster->CastCustomSpell(target, SPELL_MAGE_FLURRY_VISUAL, &secondDamage, NULL, NULL, true);
+                            if (brainFreeze && caster->HasAura(SPELL_MAGE_BRAIN_FREEZE_IMPROVED))
+                                caster->CastSpell(target, SPELL_MAGE_FLURRY_CHILL_PROC, true);
+
+                            if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+                                caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
                         });
 
-                        if (dmgMod)
-                            finalDamage += CalculatePct(damage, dmgMod);
-
-                        caster->AddDelayedEvent(600, [caster, targetGUID, finalDamage]() -> void
+                        float thirdDamage = damage + CalculatePct(damage, dmgMod * 2.0f);
+                        caster->AddDelayedEvent(600, [caster, targetGUID, thirdDamage, brainFreeze = brainFreeze]() -> void
                         {
                             Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID);
                             if (!target)
                                 return;
 
-                            caster->CastCustomSpell(target, 228596, &finalDamage, NULL, NULL, true);
+                            caster->CastCustomSpell(target, SPELL_MAGE_FLURRY_VISUAL, &thirdDamage, NULL, NULL, true);
+                            if (brainFreeze && caster->HasAura(SPELL_MAGE_BRAIN_FREEZE_IMPROVED))
+                                caster->CastSpell(target, SPELL_MAGE_FLURRY_CHILL_PROC, true);
+
+                            if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+                                caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
                         });
+
+                        if (brainFreeze)
+                            caster->RemoveAurasDueToSpell(SPELL_MAGE_BRAIN_FREEZE_AURA);
                     }
                 }
             }
         }
 
+        void PreventDefaultMissile(SpellEffIndex effIndex)
+        {
+            // The three damage missiles are created above with their individual
+            // Brain Freeze and T21 multipliers.  Suppress the DBC missile here,
+            // otherwise Flurry fires a fourth bolt.
+            PreventHitDefaultEffect(effIndex);
+        }
+
         void Register() override
         {
+            BeforeCast += SpellCastFn(spell_mage_flurry_SpellScript::HandleBeforeCast);
             OnEffectLaunchTarget += SpellEffectFn(spell_mage_flurry_SpellScript::HandleLaunchTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+            OnEffectHitTarget += SpellEffectFn(spell_mage_flurry_SpellScript::PreventDefaultMissile, EFFECT_1, SPELL_EFFECT_TRIGGER_MISSILE);
         }
     };
 
@@ -854,6 +1225,7 @@ class spell_mage_icicle : public AuraScript
                                         caster->CastSpell(target, icicles[i][1], true);
                                         caster->CastCustomSpell(target, SPELL_MAGE_ICICLE_DAMAGE, &tickamount, NULL, NULL, true);
                                         caster->RemoveAurasDueToSpell(spellId);
+                                        itr->CallSpecialFunction(1);
                                         return;
                                     }
                                 }
@@ -1452,9 +1824,18 @@ class spell_mage_ice_lance_main : public SpellScript
         }
     }
 
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (caster && target)
+            caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true);
+    }
+
     void Register() override
     {
         OnCast += SpellCastFn(spell_mage_ice_lance_main::HandleOnCast);
+        OnEffectHitTarget += SpellEffectFn(spell_mage_ice_lance_main::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
         OnFinishCast += SpellCastFn(spell_mage_ice_lance_main::HandleFinishCast);
     }
 };
@@ -1474,20 +1855,30 @@ class spell_mage_ice_lance : public SpellScript
                 Trinity::AnyDataContainer& cont = caster->GetAnyDataContainer();
                 bool isFrozen = (cont.Exist("isFrozenTarget") || target->HasAuraState(AURA_STATE_FROZEN, GetSpellInfo(), caster) || target->HasAura(228358, caster->GetGUID()));
                 float dmgMod = isFrozen ? 3.f : 1.f;
+                ObjectGuid const& jumpTargetGUID = cont.GetValue<ObjectGuid>("SplittingIceTarget", ObjectGuid::Empty);
+                bool isPrimaryTarget = target->GetGUID() != jumpTargetGUID;
 
                 if (isFrozen)
                 {
                     if (AuraEffect const* aurEff = caster->GetAuraEffect(238056, EFFECT_0)) // Obsidian Lance
                         AddPct(dmgMod, aurEff->GetAmount());
 
-                    if (caster->HasSpell(155149)) // Thermal Void
+                    if (isPrimaryTarget && caster->HasAura(SPELL_MAGE_THERMAL_VOID))
                     {
                         if (Aura* aura = caster->GetAura(12472))
-                            aura->SetDuration(aura->GetDuration() + 1000);
+                        {
+                            int32 extension = 0;
+                            if (SpellInfo const* thermalVoid = sSpellMgr->GetSpellInfo(SPELL_MAGE_THERMAL_VOID))
+                                extension = thermalVoid->Effects[EFFECT_0]->CalcValue(caster) * IN_MILLISECONDS;
+                            aura->SetDuration(aura->GetDuration() + extension);
+                        }
                     }
+
+                    if (target->HasAura(SPELL_MAGE_FROST_BOMB_AURA, caster->GetGUID()))
+                        caster->CastSpell(target, SPELL_MAGE_FROST_BOMB_TRIGGERED, true);
                 }
 
-                if (ObjectGuid const& jumpTargetGUID = cont.GetValue<ObjectGuid>("SplittingIceTarget", ObjectGuid::Empty))
+                if (jumpTargetGUID)
                 {
                     if (target->GetGUID() == jumpTargetGUID)
                     {
@@ -1517,6 +1908,20 @@ class spell_mage_glacial_spike : public SpellScriptLoader
         {
             PrepareSpellScript(spell_mage_glacial_spike_SpellScript)
 
+            SpellCastResult CheckCast()
+            {
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return SPELL_FAILED_DONT_REPORT;
+
+                uint8 count = 0;
+                for (uint32 spellId : { 148012, 148013, 148014, 148015, 148016 })
+                    if (caster->HasAura(spellId))
+                        ++count;
+
+                return count == 5 ? SPELL_CAST_OK : SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+            }
+
             void HandleOnCast()
             {
                 if (Unit* caster = GetCaster())
@@ -1535,13 +1940,52 @@ class spell_mage_glacial_spike : public SpellScriptLoader
                         if (Aura* icicle = caster->GetAura(visual))
                             icicle->Remove();
 
+                    if (Aura* mastery = caster->GetAura(SPELL_MAGE_MASTERY_ICICLES))
+                        for (auto script : mastery->m_loadedScripts)
+                            script->CallSpecialFunction(2);
+
+                    if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE))
+                    {
+                        if (Spell* spell = GetSpell())
+                        {
+                            for (auto targetInfo : *spell->GetUniqueTargetInfo())
+                            {
+                                if (targetInfo->HasMask(TARGET_INFO_IS_JUMP_TARGET))
+                                {
+                                    caster->GetAnyDataContainer().Set("GlacialSpikeJumpTarget", targetInfo->targetGUID);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     caster->CastCustomSpell(caster, 214325, &damage, NULL, NULL, true);
+                }
+            }
+
+            void HandleDummy(SpellEffIndex /*effIndex*/)
+            {
+                Unit* caster = GetCaster();
+                Unit* target = GetHitUnit();
+                if (caster && target)
+                    caster->CastSpell(target, 228600, true);
+            }
+
+            void HandleAfterCast()
+            {
+                if (Unit* caster = GetCaster())
+                {
+                    caster->RemoveAurasDueToSpell(214325);
+                    caster->GetAnyDataContainer().Remove("GlacialSpikeJumpTarget");
                 }
             }
 
             void Register() override
             {
+                OnCheckCast += SpellCheckCastFn(spell_mage_glacial_spike_SpellScript::CheckCast);
                 OnCast += SpellCastFn(spell_mage_glacial_spike_SpellScript::HandleOnCast);
+                OnEffectHitTarget += SpellEffectFn(spell_mage_glacial_spike_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+                AfterCast += SpellCastFn(spell_mage_glacial_spike_SpellScript::HandleAfterCast);
             }
         };
 
@@ -1570,8 +2014,13 @@ class spell_mage_glacial_spike_damage : public SpellScriptLoader
                     {
                         if (aura->GetEffect(EFFECT_0))
                             damage += aura->GetEffect(EFFECT_0)->GetAmount();
-                        aura->Remove();
                     }
+
+                    ObjectGuid const& jumpTargetGUID = caster->GetAnyDataContainer().GetValue<ObjectGuid>("GlacialSpikeJumpTarget", ObjectGuid::Empty);
+                    if (jumpTargetGUID && GetHitUnit() && GetHitUnit()->GetGUID() == jumpTargetGUID)
+                        if (SpellInfo const* splittingIce = sSpellMgr->GetSpellInfo(SPELL_MAGE_SPLITTING_ICE))
+                            damage = CalculatePct(damage, splittingIce->Effects[EFFECT_1]->CalcValue(caster));
+
                     SetHitDamage(damage);
                 }
             }
@@ -1803,6 +2252,78 @@ class spell_mage_belovirs_final_stand : public SpellScriptLoader
         }
 };
 
+// Ray of Frost channel - 205021
+class spell_mage_ray_of_frost_channel : public AuraScript
+{
+    PrepareAuraScript(spell_mage_ray_of_frost_channel);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            if (!caster->HasAura(SPELL_MAGE_RAY_OF_FROST_BUFF))
+                caster->CastSpell(caster, SPELL_MAGE_RAY_OF_FROST_BUFF, true);
+
+            if (caster->HasAura(SPELL_MAGE_BONE_CHILLING))
+                caster->CastSpell(caster, SPELL_MAGE_BONE_CHILLING_BUFF, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_mage_ray_of_frost_channel::HandleApply, EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Ray of Frost recast window - 208166
+class spell_mage_ray_of_frost_buff : public AuraScript
+{
+    PrepareAuraScript(spell_mage_ray_of_frost_buff);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Player* player = GetTarget() ? GetTarget()->ToPlayer() : nullptr)
+            player->RemoveSpellCooldown(SPELL_MAGE_RAY_OF_FROST, true);
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetTarget() ? GetTarget()->ToPlayer() : nullptr;
+        if (!player)
+            return;
+
+        if (SpellInfo const* rayOfFrost = sSpellMgr->GetSpellInfo(SPELL_MAGE_RAY_OF_FROST))
+            player->AddSpellCooldown(SPELL_MAGE_RAY_OF_FROST, 0, getPreciseTime() + rayOfFrost->GetRecoveryTime() / 1000.0);
+
+        if (player->GetCurrentSpell(CURRENT_CHANNELED_SPELL) && player->GetCurrentSpell(CURRENT_CHANNELED_SPELL)->GetSpellInfo()->Id == SPELL_MAGE_RAY_OF_FROST)
+            player->InterruptSpell(CURRENT_CHANNELED_SPELL, true, true);
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_mage_ray_of_frost_buff::HandleApply, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove += AuraEffectRemoveFn(spell_mage_ray_of_frost_buff::HandleRemove, EFFECT_0, SPELL_AURA_ADD_PCT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Ice Block - 45438: Glacial Insulation applies Ice Barrier when Ice Block ends.
+class spell_mage_ice_block : public AuraScript
+{
+    PrepareAuraScript(spell_mage_ice_block);
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* target = GetTarget())
+            if (target->HasAura(SPELL_MAGE_GLACIAL_INSULATION))
+                target->CastSpell(target, SPELL_MAGE_ICE_BARRIER, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_ice_block::HandleRemove, EFFECT_1, SPELL_AURA_SCHOOL_IMMUNITY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 // 208141 - Ray of Frost
 class spell_mage_ray_of_frost : public SpellScriptLoader
 {
@@ -1890,8 +2411,11 @@ class spell_mage_mastery_icicles: public AuraScript
         {
             if (!Num)
                 return getIcicles.front();
-            
-            getIcicles.erase(getIcicles.begin());
+
+            if (Num == 1)
+                getIcicles.erase(getIcicles.begin());
+            else if (Num == 2)
+                getIcicles.clear();
         }
         return 0;
     }
@@ -1907,7 +2431,7 @@ class spell_mage_mastery_icicles: public AuraScript
                     float addPctDamage = 0.f;
                     uint8 procAmount = 1;
 
-                    if (caster->HasAura(214664) && roll_chance_i(10)) // Ice Nine
+                    if (caster->HasAura(214664) && roll_chance_i(15)) // Ice Nine
                         procAmount++;
 
                     if (AuraEffect const* aurEffPct = caster->GetAuraEffect(195615, EFFECT_0)) // Black Ice
@@ -1915,12 +2439,13 @@ class spell_mage_mastery_icicles: public AuraScript
 
                     for (uint8 i = 0; i < procAmount; i++)
                     {
+                        float icicleDamage = dmg;
                         if (addPctDamage && roll_chance_i(20))
-                            AddPct(dmg, addPctDamage);
+                            AddPct(icicleDamage, addPctDamage);
 
                         if (getIcicles.empty())
                         {
-                            Cast(caster, icicles[0][0], dmg);
+                            Cast(caster, icicles[0][0], icicleDamage);
                         }
                         else if (getIcicles.size() == 5)
                         {
@@ -1943,7 +2468,8 @@ class spell_mage_mastery_icicles: public AuraScript
                                     }
                                     caster->RemoveAurasDueToSpell(spellId);
                                 }
-                                Cast(caster, spellId, dmg);
+                                getIcicles.erase(getIcicles.begin());
+                                Cast(caster, spellId, icicleDamage);
                             }
                         }
                         else
@@ -1954,7 +2480,7 @@ class spell_mage_mastery_icicles: public AuraScript
                             {
                                 if (icicles[i][0] == spellId)
                                 {
-                                    Cast(caster, icicles[i][2], dmg);
+                                    Cast(caster, icicles[i][2], icicleDamage);
                                     break;
                                 }
                             }
@@ -2305,6 +2831,22 @@ public:
 
 void AddSC_mage_spell_scripts()
 {
+    RegisterSpellScript(spell_mage_cold_snap);
+    RegisterAuraScript(spell_mage_chilled);
+    RegisterSpellScript(spell_mage_cone_of_cold);
+    RegisterSpellScript(spell_mage_frostbolt);
+    RegisterAuraScript(spell_mage_ring_of_frost);
+    RegisterSpellScript(spell_mage_ring_of_frost_freeze);
+    RegisterAuraScript(spell_mage_pet_freeze);
+    RegisterSpellScript(spell_mage_frozen_orb_cast);
+    RegisterSpellScript(spell_mage_frozen_orb_damage);
+    RegisterSpellScript(spell_mage_blizzard_damage);
+    RegisterSpellScript(spell_mage_ebonbolt_damage);
+    RegisterAuraScript(spell_mage_brain_freeze_aura);
+    RegisterSpellScript(spell_mage_comet_storm);
+    RegisterAuraScript(spell_mage_ray_of_frost_channel);
+    RegisterAuraScript(spell_mage_ray_of_frost_buff);
+    RegisterAuraScript(spell_mage_ice_block);
     new spell_mage_mirror_image_summon();
     new spell_mage_cauterize();
     new spell_mage_conjure_refreshment();
