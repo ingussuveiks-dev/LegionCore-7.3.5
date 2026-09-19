@@ -3311,3 +3311,40 @@ Izmantotie avoti:
 - Pārbaudīt visu astoņu pretinieku spēju mērķus un vizuālos efektus, scenārija pabeigšanu pēc gala sarunas, 15 minūšu bonusu, kā arī wipe/reconnect atkopšanos katrā laika ceļā.
 
 > 2026-09-19: LFG 1534 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu astoņu draudu scenāriju, spawniem, portāliem un cīņām; The Deaths of Chromie atkal ir iespējots.
+
+## Pakete 173 — The Nightborne scenārija atjaunošana
+
+Faili: `src/server/scripts/Scenario/NightborneUnlock/nightborne_unlock.cpp`, `src/server/scripts/Scenario/NightborneUnlock/nightborne_unlock.h`, `src/server/scripts/Scenario/scenario_script_loader.cpp`, `src/server/game/DataStores/DB2Structure.cpp` un `sql/updates/world/2026_09_19_161_implement_nightborne_unlock.sql`.
+
+Gala 7.3.5 klienta DB2 ieraksti nosaka LFG 1634 “The Nightborne”, karti 1812 `SuramarNightborneUnlock`, scenāriju 1423 un vienu posmu. `ScenarioStep` 3526 ved uz `CriteriaTree` 60877/60878 “Speak with Arluin”; tā vienīgais kritērijs 37379 ir `SCRIPT_EVENT_2` ar asset 60314. Tie paši dati saglabājas pārbaudītajos 7.3.5 laidienos 25716, 25807, 26124, 26365 un 26972, tādēļ netika izdomāti klientā neesoši Sunwell kaujas posmi.
+
+Publiskajos LegionCore world DB laidienos un pieejamajos C++ forkos kartei 1812 nebija creature, gameobject, eventobject, instances vai scenārija implementācijas. Karte ir Suramar kartes 1220 kosmētiskais bērns un izmanto tās pašas koordinātes. Aktīvās 7.3.5 world DB dati saglabā Arluin 107253 ar modeli 69991 un divām oriģinālām Suramar pozīcijām; scenārija kopijai izmantota viņa precīzā pozīcija 1196.21, 3485.52, 1.74045. Dialogam izmantots oriģinālais `BroadcastText` 111478, nevis jauns izdomāts teksts.
+
+C++ realizē instances drošo Arluin aktieri, sarunas izvēli un tieši DB2 prasītā asset 60314 ieskaitīšanu. Migrācija pievieno instances, scenārija, Horde komandas un LFG ieejas sasaisti, Arluin spawn un autentisko tekstu. Tikai pēc pilnas implementācijas LFG 1634 pagaidu bloķēšana ir noņemta.
+
+Izmantotie avoti:
+
+- https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/releases
+- https://www.wowhead.com/guide/patch-7-3-5-content-hub-5751
+- https://www.wowhead.com/storyline/allies-of-the-horde-nightborne-531
+- https://warcraft.wiki.gg/wiki/Thalyssra%27s_Estate
+- https://warcraft.wiki.gg/wiki/Arluin
+- https://wago.tools/db2/LFGDungeons/csv?build=7.3.5.26972
+- https://wago.tools/db2/ScenarioStep/csv?build=7.3.5.26972
+- https://wago.tools/db2/CriteriaTree/csv?build=7.3.5.26972
+- https://wago.tools/db2/Criteria/csv?build=7.3.5.26972
+- https://wago.tools/db2/Map/csv?build=7.3.5.26972
+- https://wago.tools/db2/BroadcastText/csv?build=7.3.5.26972
+
+### Pārbaudes rezultāts
+
+- Pēc CMake pārģenerēšanas Release `worldserver` būve pabeigta bez kļūdām, un jaunais Nightborne C++ fails ir iekļauts projektā.
+- SQL updateris piemēroja migrāciju 161; MariaDB pārbaudīts `instance_nightborne_unlock`, scenārija 1423/LFG 1634 ieraksts, Horde komanda 67, ieejas punkts, Arluin spawn, C++ piesaiste un `BroadcastText` 111478.
+- Pilns starts pabeigts 12 sekundēs un ielādēja 6663 C++ skriptus. `DBErrors.log` ir 0 rindas, svaigajā `Server.log` nav nevienas `ERROR` vai `FATAL` rindas, un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Horde 110. līmeņa tēlu sākt LFG 1634, pārbaudīt ierašanos map 1812 pie Arluin, viņa modeli/novietojumu un sarunas izvēli.
+- Pēc sarunas pārbaudīt oriģinālo lokalizēto Arluin tekstu/skaņu, `Speak with Arluin` posma ieskaitīšanu, LFG pabeigšanu un reconnect uzvedību pirms un pēc sarunas.
+
+> 2026-09-19: LFG 1634 pagaidu bloķēšana no paketes 166 ir aizstāta ar gala 7.3.5 DB2 aprakstīto vienpakāpes Arluin scenāriju; The Nightborne atkal ir iespējots.

@@ -93,6 +93,9 @@ void AddSC_instance_coldridge_cataclysm();
 void AddSC_deaths_of_chromie();
 void AddSC_instance_deaths_of_chromie();
 
+//< The Nightborne
+void AddSC_nightborne_unlock();
+
 //< The Secrets of Ragefire
 void AddSC_the_secrets_of_ragefire();
 void AddSC_instance_the_secrets_of_ragefire();
@@ -272,6 +275,9 @@ void AddScenarioScripts()
     //< The Deaths of Chromie
     AddSC_deaths_of_chromie();
     AddSC_instance_deaths_of_chromie();
+
+    //< The Nightborne
+    AddSC_nightborne_unlock();
 
     //< The Secrets of Ragefire
     AddSC_the_secrets_of_ragefire();
