@@ -228,3 +228,19 @@ Fel Energy spellam 140116 šajā klienta būvē effect 0 vairs nav skriptā pie�
 ### Spēlē vēlāk pārbaudāmais
 
 - Pursuing the Black Harvest scenārijā pārbaudīt Fel Energy (140116) sākumu, papildu `SPELL_FEL_ENERGY_DUMMY_2` uzlikšanu un korektu vehicle ride stāvokļa atcelšanu auras beigās.
+
+## Pakete 181 — Warlock Immolate noņemšanas hooks
+
+Fails: `src/server/scripts/Spells/spell_warlock.cpp`.
+
+Immolate spellam 157736 effect 0 faktiskā aura ir `PERIODIC_DAMAGE`, ko jau pareizi izmantoja apply hooks. Remove hooks kļūdaini gaidīja `MOD_DAMAGE_PERCENT_TAKEN`; tagad abas viena un tā paša efekta dzīves cikla darbības izmanto faktisko effect 0 tipu.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika viens iepriekš eksistējošs, ar šo labojumu nesaistīts C5055 brīdinājums tajā pašā failā.
+- Pilns starts pabeigts 11 sekundēs; `spell_warl_immolate` validācijas kļūda pazuda un `Server.log` skaits samazinājās no 29 uz 28.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Warlock spēlē uzlikt, atkārtoti uzlikt un noņemt Immolate, pārbaudot, ka saistītā aura 205690 tiek noņemta visos trīs dzīves cikla gadījumos.

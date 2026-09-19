@@ -990,7 +990,7 @@ class spell_warl_immolate : public SpellScriptLoader
             void Register() override
             {
                 OnEffectApply += AuraEffectApplyFn(spell_warl_immolate_AuraScript::OnApplyOrRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-                OnEffectRemove += AuraEffectRemoveFn(spell_warl_immolate_AuraScript::OnApplyOrRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                OnEffectRemove += AuraEffectRemoveFn(spell_warl_immolate_AuraScript::OnApplyOrRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 
