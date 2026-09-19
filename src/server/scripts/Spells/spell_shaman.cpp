@@ -23,10 +23,16 @@
 
 #include "ScriptMgr.h"
 #include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
+#include "ObjectVisitors.hpp"
 #include "Unit.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "ScriptedCreature.h"
+#include "Containers.h"
+
+#include <set>
 
 // Spirit Link - 98020 : triggered by 98017
 // Spirit Link Totem
@@ -403,6 +409,21 @@ class spell_sha_cloudburst_totem : public SpellScriptLoader
         {
             PrepareAuraScript(spell_sha_cloudburst_totem_AuraScript);
 
+            void OnProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+            {
+                PreventDefaultAction();
+
+                HealInfo* healInfo = eventInfo.GetHealInfo();
+                if (!healInfo || !healInfo->GetHeal())
+                    return;
+
+                // 157503 EFFECT_1 releases 25% of all healing accumulated
+                // while the totem is active. Store the full effective-heal
+                // total here; OnRemove applies that DBC percentage once.
+                if (AuraEffect* storage = GetEffect(aurEff->GetEffIndex()))
+                    storage->ChangeAmount(storage->GetAmount() + healInfo->GetHeal());
+            }
+
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetUnitOwner())
@@ -417,6 +438,7 @@ class spell_sha_cloudburst_totem : public SpellScriptLoader
 
             void Register() override
             {
+                OnEffectProc += AuraEffectProcFn(spell_sha_cloudburst_totem_AuraScript::OnProc, EFFECT_0, SPELL_AURA_DUMMY);
                 OnEffectRemove += AuraEffectRemoveFn(spell_sha_cloudburst_totem_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
             }
         };
@@ -425,6 +447,151 @@ class spell_sha_cloudburst_totem : public SpellScriptLoader
         {
             return new spell_sha_cloudburst_totem_AuraScript();
         }
+};
+
+// Cloudburst - 157503. The stored heal is divided evenly between every
+// injured ally selected by the spell, rather than duplicated for each one.
+class spell_sha_cloudburst_heal : public SpellScript
+{
+    PrepareSpellScript(spell_sha_cloudburst_heal);
+
+    uint32 targetCount = 0;
+
+    void CountTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            return !unit || unit->IsFullHealth();
+        });
+
+        targetCount = uint32(targets.size());
+    }
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        if (targetCount)
+            SetHitHeal(GetHitHeal() / targetCount);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_cloudburst_heal::CountTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnEffectHitTarget += SpellEffectFn(spell_sha_cloudburst_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
+// Ancestral Guidance - 108281
+class spell_sha_ancestral_guidance : public AuraScript
+{
+    PrepareAuraScript(spell_sha_ancestral_guidance);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        if (procSpell && procSpell->GetSpellInfo()->Id == 114911)
+            return false;
+
+        if (HealInfo* healInfo = eventInfo.GetHealInfo())
+            return healInfo->GetHeal() > 0;
+
+        return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        uint32 amount = eventInfo.GetHealInfo() ? eventInfo.GetHealInfo()->GetHeal() : eventInfo.GetDamageInfo()->GetDamage();
+        float heal = CalculatePct(amount, aurEff->GetAmount());
+        if (heal > 0.0f)
+            eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114911, &heal, nullptr, nullptr, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_ancestral_guidance::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_sha_ancestral_guidance::HandleProc, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// Ancestral Guidance heal - 114911
+class spell_sha_ancestral_guidance_heal : public SpellScript
+{
+    PrepareSpellScript(spell_sha_ancestral_guidance_heal);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([](WorldObject* object)
+        {
+            Unit* unit = object ? object->ToUnit() : nullptr;
+            return !unit || unit->IsFullHealth();
+        });
+
+        Trinity::Containers::RandomResizeList(targets, 3);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_ancestral_guidance_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+    }
+};
+
+// Restoration Ascendance - 114052
+class spell_sha_ascendance_restoration : public AuraScript
+{
+    PrepareAuraScript(spell_sha_ascendance_restoration);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        HealInfo* healInfo = eventInfo.GetHealInfo();
+        if (!healInfo || !healInfo->GetHeal())
+            return false;
+
+        if (Spell* procSpell = eventInfo.GetSpell())
+            return procSpell->GetSpellInfo()->Id != 114083;
+
+        return true;
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        float heal = float(eventInfo.GetHealInfo()->GetHeal());
+        eventInfo.GetActor()->CastCustomSpell(eventInfo.GetActor(), 114083, &heal, nullptr, nullptr, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_ascendance_restoration::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_sha_ascendance_restoration::HandleProc, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// Restorative Mists - 114083
+class spell_sha_restorative_mists : public SpellScript
+{
+    PrepareSpellScript(spell_sha_restorative_mists);
+
+    uint32 targetCount = 0;
+
+    void CountTargets(std::list<WorldObject*>& targets)
+    {
+        targetCount = uint32(targets.size());
+    }
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        if (targetCount)
+            SetHitHeal(GetHitHeal() / targetCount);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_sha_restorative_mists::CountTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
+        OnEffectHitTarget += SpellEffectFn(spell_sha_restorative_mists::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
 };
 
 // Earth Shock - 8042
@@ -921,7 +1088,7 @@ class spell_sha_undulation : public SpellScriptLoader
         {
             PrepareSpellScript(spell_sha_undulation_SpellScript);
 
-            void HandleAfterCast()
+            void HandleBeforeCast()
             {
                 if(Unit* caster = GetCaster())
                     if(Aura* aura = caster->GetAura(200071)) // Undulation
@@ -938,7 +1105,7 @@ class spell_sha_undulation : public SpellScriptLoader
 
             void Register() override
             {
-                AfterCast += SpellCastFn(spell_sha_undulation_SpellScript::HandleAfterCast);
+                BeforeCast += SpellCastFn(spell_sha_undulation_SpellScript::HandleBeforeCast);
             }
         };
 
@@ -946,6 +1113,47 @@ class spell_sha_undulation : public SpellScriptLoader
         {
             return new spell_sha_undulation_SpellScript();
         }
+};
+
+// Tidal Waves - 51564. Riptide and Chain Heal grant one stack; Crashing
+// Waves (197464) grants Riptide one additional stack.
+class spell_sha_tidal_waves : public AuraScript
+{
+    PrepareAuraScript(spell_sha_tidal_waves);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* target = GetTarget();
+        target->CastSpell(target, 53390, true);
+
+        if (Spell* procSpell = eventInfo.GetSpell())
+            if (procSpell->GetSpellInfo()->Id == 61295 && target->HasAura(197464))
+                target->CastSpell(target, 53390, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_sha_tidal_waves::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Wellspring - 197995
+class spell_sha_wellspring : public SpellScript
+{
+    PrepareSpellScript(spell_sha_wellspring);
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+            GetCaster()->CastSpell(target, 197997, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_wellspring::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
 };
 
 // Ancestral Protection - 207498
@@ -1092,6 +1300,165 @@ class spell_sha_earthen_shield : public SpellScriptLoader
         {
             return new spell_sha_earthen_shield_AuraScript();
         }
+};
+
+class npc_sha_restoration_zone_totem : public ScriptedAI
+{
+public:
+    npc_sha_restoration_zone_totem(Creature* creature, uint32 areaSpell, uint32 auraSpell, float radius)
+        : ScriptedAI(creature), _areaSpell(areaSpell), _auraSpell(auraSpell), _radius(radius) { }
+
+    void Reset() override
+    {
+        _scanTimer = 0;
+        me->CastSpell(me, _areaSpell, true);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_scanTimer > diff)
+        {
+            _scanTimer -= diff;
+            return;
+        }
+
+        _scanTimer = 1000;
+
+        Unit* owner = me->GetAnyOwner();
+        if (!owner)
+            return;
+
+        std::list<Unit*> targets;
+        Trinity::AnyGroupedUnitInObjectRangeCheck check(me, owner, _radius, true);
+        Trinity::UnitListSearcher<Trinity::AnyGroupedUnitInObjectRangeCheck> searcher(me, targets, check);
+        Trinity::VisitNearbyObject(me, _radius, searcher);
+
+        for (Unit* target : targets)
+        {
+            if (target->isTotem())
+                continue;
+
+            me->CastSpell(target, _auraSpell, true);
+            if (Aura* aura = target->GetAura(_auraSpell, me->GetGUID()))
+            {
+                aura->SetMaxDuration(1500);
+                aura->SetDuration(1500);
+            }
+        }
+    }
+
+private:
+    uint32 _areaSpell;
+    uint32 _auraSpell;
+    float _radius;
+    uint32 _scanTimer = 0;
+};
+
+// Earthen Shield Totem - 100943
+struct npc_sha_earthen_shield_totem : public npc_sha_restoration_zone_totem
+{
+    npc_sha_earthen_shield_totem(Creature* creature)
+        : npc_sha_restoration_zone_totem(creature, 198839, 201633, 10.0f) { }
+};
+
+// Ancestral Protection Totem - 104818
+struct npc_sha_ancestral_protection_totem : public npc_sha_restoration_zone_totem
+{
+    npc_sha_ancestral_protection_totem(Creature* creature)
+        : npc_sha_restoration_zone_totem(creature, 207495, 207498, 20.0f) { }
+};
+
+// Queen's Decree (207360), triggered by Healing Stream Totem's heal (52042).
+class spell_sha_queens_decree : public SpellScript
+{
+    PrepareSpellScript(spell_sha_queens_decree);
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* totem = GetCaster();
+        Unit* target = GetHitUnit();
+        Unit* owner = totem ? totem->GetAnyOwner() : nullptr;
+        if (owner && target && owner->HasAura(207360))
+            owner->CastSpell(target, 208899, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_queens_decree::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
+// Cumulative Upkeep (207362), triggered by Healing Tide's heal (114942).
+class spell_sha_cumulative_upkeep : public SpellScript
+{
+    PrepareSpellScript(spell_sha_cumulative_upkeep);
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* totem = GetCaster();
+        Unit* target = GetHitUnit();
+        Unit* owner = totem ? totem->GetAnyOwner() : nullptr;
+        if (!owner || !target || !owner->HasAura(207362))
+            return;
+
+        if (Aura* aura = target->GetAura(208205, owner->GetGUID()))
+        {
+            float heal = GetHitHeal();
+            AddPct(heal, aura->GetEffect(EFFECT_0)->GetAmount() * aura->GetStackAmount());
+            SetHitHeal(heal);
+        }
+
+        owner->CastSpell(target, 208205, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_cumulative_upkeep::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
+// Tidal Pools' summoned Tidal Totem - 105422. Its six-second summon performs
+// the seven heals encoded by 207358's tooltip: one immediately and six ticks.
+struct npc_sha_tidal_totem : public ScriptedAI
+{
+    npc_sha_tidal_totem(Creature* creature) : ScriptedAI(creature) { }
+
+    void Reset() override
+    {
+        _remainingTicks = 6;
+        _healTimer = 1000;
+        CastHeal();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_remainingTicks)
+            return;
+
+        if (_healTimer > diff)
+        {
+            _healTimer -= diff;
+            return;
+        }
+
+        _healTimer = 1000;
+        --_remainingTicks;
+        CastHeal();
+    }
+
+private:
+    void CastHeal()
+    {
+        Unit* owner = me->GetAnyOwner();
+        if (!owner)
+            return;
+
+        float heal = owner->GetSpellPowerDamage(SPELL_SCHOOL_MASK_NATURE) * 0.25f;
+        me->CastCustomSpell(me, 209069, &heal, nullptr, nullptr, true);
+    }
+
+    uint32 _healTimer = 1000;
+    uint8 _remainingTicks = 0;
 };
 
 // Recall Cloudburst Totem - 201764
@@ -1728,10 +2095,33 @@ class spell_monk_gift_of_queen : public SpellScriptLoader
         {
             PrepareSpellScript(spell_monk_gift_of_queen_SpellScript);
 
+            std::set<ObjectGuid> selectedTargets;
+
+            void SelectTargets(std::list<WorldObject*>& targets)
+            {
+                targets.remove_if([](WorldObject* object)
+                {
+                    Unit* unit = object ? object->ToUnit() : nullptr;
+                    return !unit || unit->IsFullHealth();
+                });
+
+                Trinity::Containers::RandomResizeList(targets, 6);
+                for (WorldObject* target : targets)
+                    selectedTargets.insert(target->GetGUID());
+            }
+
+            void CopyTargets(std::list<WorldObject*>& targets)
+            {
+                targets.remove_if([this](WorldObject* object)
+                {
+                    return !object || selectedTargets.find(object->GetGUID()) == selectedTargets.end();
+                });
+            }
+
             void HandleDummy()
             {
                 if (auto caster = GetCaster())
-                    if (caster->HasAura(238143))
+                    if (GetSpellInfo()->Id == 207778 && caster->HasAura(238143))
                         if (WorldLocation const* pos = GetExplTargetDest())
                         {
                             Position posit = pos->GetPosition();
@@ -1742,6 +2132,8 @@ class spell_monk_gift_of_queen : public SpellScriptLoader
             void Register() override
             {
                 OnCast += SpellCastFn(spell_monk_gift_of_queen_SpellScript::HandleDummy);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_gift_of_queen_SpellScript::SelectTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_monk_gift_of_queen_SpellScript::CopyTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
             }
         };
 
@@ -1914,6 +2306,11 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_astral_recall();
     new spell_sha_elemental_familiars();
     new spell_sha_cloudburst_totem();
+    RegisterSpellScript(spell_sha_cloudburst_heal);
+    RegisterAuraScript(spell_sha_ancestral_guidance);
+    RegisterSpellScript(spell_sha_ancestral_guidance_heal);
+    RegisterAuraScript(spell_sha_ascendance_restoration);
+    RegisterSpellScript(spell_sha_restorative_mists);
     new spell_sha_earth_shock();
     new spell_sha_flame_shock();
     new spell_sha_frost_shock();
@@ -1928,7 +2325,14 @@ void AddSC_shaman_spell_scripts()
 	new spell_sha_lightning_rod();
     RegisterAuraScript(spell_sha_lava_surge);
     new spell_sha_undulation();
+    RegisterAuraScript(spell_sha_tidal_waves);
+    RegisterSpellScript(spell_sha_wellspring);
     new spell_sha_earthen_shield();
+    RegisterCreatureAI(npc_sha_earthen_shield_totem);
+    RegisterCreatureAI(npc_sha_ancestral_protection_totem);
+    RegisterSpellScript(spell_sha_queens_decree);
+    RegisterSpellScript(spell_sha_cumulative_upkeep);
+    RegisterCreatureAI(npc_sha_tidal_totem);
     new spell_sha_recall_cloudburst_totem();
     new spell_sha_earth_shield();
     new spell_sha_sundering();
