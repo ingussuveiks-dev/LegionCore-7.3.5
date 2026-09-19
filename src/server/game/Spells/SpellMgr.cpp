@@ -7774,8 +7774,7 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->Misc.Duration.Duration = 10000;
     });
     
-    // hack
-    ApplySpellFix({227674, 197214}, [](SpellInfo* spellInfo)
+    ApplySpellFix({227674}, [](SpellInfo* spellInfo)
     {
         spellInfo->Effects[EFFECT_1]->Effect = SPELL_EFFECT_NONE;
         spellInfo->Effects[EFFECT_1]->ApplyAuraName = SPELL_AURA_NONE;

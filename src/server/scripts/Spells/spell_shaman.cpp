@@ -26,6 +26,7 @@
 #include "Unit.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
+#include "ScriptedCreature.h"
 
 // Spirit Link - 98020 : triggered by 98017
 // Spirit Link Totem
@@ -752,6 +753,139 @@ public:
 	}
 };
 
+// Flametongue Attack - 10444
+// Legion scales the 20% AP payload by the off-hand weapon's actual speed
+// relative to the 2.6 second reference speed.
+class spell_sha_flametongue_attack : public SpellScript
+{
+    PrepareSpellScript(spell_sha_flametongue_attack);
+
+    void ScaleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* caster = GetCaster())
+            SetHitDamage(int32(GetHitDamage() * caster->GetAttackTime(OFF_ATTACK) / 2600.0f));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_flametongue_attack::ScaleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Ascendance - 114051
+// Entering Enhancement Ascendance resets the shared Stormstrike/Windstrike cooldown.
+class spell_sha_ascendance_enhancement : public SpellScript
+{
+    PrepareSpellScript(spell_sha_ascendance_enhancement);
+
+    void HandleCast()
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+        {
+            player->RemoveSpellCooldown(17364, true);
+            player->RemoveSpellCooldown(115356, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnCast += SpellCastFn(spell_sha_ascendance_enhancement::HandleCast);
+    }
+};
+
+// Frostbrand - 196834 / Hailstorm - 210853
+// Frostbrand already applies its slow through effect 1. Hailstorm adds the
+// separate 210854 weapon strike to that same successful weapon proc.
+class spell_sha_hailstorm : public AuraScript
+{
+    PrepareAuraScript(spell_sha_hailstorm);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        if (caster && target && caster->HasAura(210853))
+            caster->CastSpell(target, 210854, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_sha_hailstorm::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Fury of Air - 197211
+// SpellPower.db2 build 26972 stores a 3 Maelstrom upkeep cost.
+class spell_sha_fury_of_air : public AuraScript
+{
+    PrepareAuraScript(spell_sha_fury_of_air);
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        if (Unit* caster = GetCaster())
+        {
+            if (caster->GetPower(POWER_MAELSTROM) >= 3)
+                caster->ModifyPower(POWER_MAELSTROM, -3);
+            else
+                caster->RemoveAurasDueToSpell(197211);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_sha_fury_of_air::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+};
+
+// Windfury - 33757
+// Doom Winds guarantees Windfury only for auto attacks. It also permits the
+// off-hand auto attack, while ordinary off-hand attacks remain ineligible.
+class spell_sha_windfury : public AuraScript
+{
+    PrepareAuraScript(spell_sha_windfury);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!caster || !target || !target->IsAlive() || !damageInfo || !damageInfo->GetDamage())
+            return false;
+
+        bool autoAttack = eventInfo.GetSpell() == nullptr;
+        bool offHand = (eventInfo.GetTypeMask() & PROC_FLAG_DONE_OFFHAND_ATTACK) != 0;
+        bool doomWinds = caster->HasAura(204945);
+
+        if (offHand && (!doomWinds || !autoAttack))
+            return false;
+
+        if (doomWinds && autoAttack)
+            return true;
+
+        float chance = 20.0f;
+        if (AuraEffect const* mastery = caster->GetAuraEffect(77223, EFFECT_3))
+            chance += mastery->GetAmount();
+
+        return roll_chance_f(chance);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        if (Unit* target = eventInfo.GetActionTarget())
+            if (Unit* caster = GetTarget())
+                for (uint8 i = 0; i < 2; ++i)
+                    caster->CastSpell(target, 25504, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_windfury::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_sha_windfury::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // Lava Surge - 77756
 // Flame Shock's periodic damage supplies the 10% proc chance through the
 // client proc data. Restore one Lava Burst charge and apply the instant-cast
@@ -1039,32 +1173,27 @@ class spell_sha_sundering : public SpellScriptLoader
         {
             PrepareSpellScript(spell_sha_sundering_SpellScript);
 
+            bool Validate(SpellInfo const* /*spellInfo*/) override
+            {
+                return ValidateSpellInfo({ 197619 });
+            }
+
             void HandleDummy()
             {
                 Unit* caster = GetCaster();
                 Unit* target = GetHitUnit();
                 if (caster && target)
                 {
-                    float angle = caster->GetOrientation() - target->GetOrientation(); // Back from caster
-                    Position pos = caster->GetFirstCollisionPosition(15.0f, 0.0f); // Dist need research
-                    if (target->IsInBetweenShift(caster, &pos, 2.5f, 2.5f, 1.5f)) // Is right
-                    {
-                        pos = target->GetFirstCollisionPosition(10.0f, angle + 1.5f);
-                        TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift 2.5f");
-                    }
-                    else if (target->IsInBetweenShift(caster, &pos, 2.5f, -2.5f, -1.5f)) // Is left
-                    {
-                        pos = target->GetFirstCollisionPosition(10.0f, angle - 1.5f);
-                        TC_LOG_DEBUG("spells", "spell_sha_sundering IsInBetweenShift -2.5f");
-                    }
-                    else
-                    {
-                        pos = target->GetFirstCollisionPosition(10.0f, angle);
-                        TC_LOG_DEBUG("spells", "spell_sha_sundering not IsInBetweenShift");
-                    }
+                    // The 7.3.5 spell knocks each enemy perpendicular to the
+                    // line of effect. Keep enemies on their existing side of
+                    // the line so a pack is split instead of moved together.
+                    float relativeAngle = Position::NormalizeOrientation(caster->GetRelativeAngle(target));
+                    if (relativeAngle > float(M_PI))
+                        relativeAngle -= 2.0f * float(M_PI);
 
-                    TC_LOG_DEBUG("spells", "spell_sha_sundering x %f y %f z %f", pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ());
-
+                    float halfPi = 0.5f * float(M_PI);
+                    float sideAngle = caster->GetOrientation() + (relativeAngle >= 0.0f ? halfPi : -halfPi);
+                    Position pos = target->GetFirstCollisionPosition(10.0f, sideAngle - target->GetOrientation());
                     target->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 197619, true);
                 }
             }
@@ -1079,6 +1208,22 @@ class spell_sha_sundering : public SpellScriptLoader
         {
             return new spell_sha_sundering_SpellScript();
         }
+};
+
+// Hot Hand - 201900
+class spell_sha_hot_hand : public AuraScript
+{
+    PrepareAuraScript(spell_sha_hot_hand);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetActor() && eventInfo.GetActor()->HasAura(194084);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_hot_hand::CheckProc);
+    }
 };
 
 // Forked Lightning (Honor Talent) - 204350
@@ -1322,13 +1467,10 @@ class spell_sha_stormflurry : public SpellScriptLoader
                         if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                             bp0 = eff->GetAmount();
 
-                        for (uint8 i = 0; i < 2; i++)
-                        {
-                            if (!roll_chance_f(bp0))
-                                break;
-
-                            castCount++;
-                        }
+                        // Every repeat can itself repeat. Keep a generous safety cap for
+                        // the theoretically unbounded geometric chain.
+                        while (castCount < 100 && roll_chance_f(bp0))
+                            ++castCount;
 
                         if (!castCount)
                             return;
@@ -1367,6 +1509,100 @@ class spell_sha_stormflurry : public SpellScriptLoader
         {
             return new spell_sha_stormflurry_SpellScript();
         }
+};
+
+// Stormstrike/Windstrike weapon payloads repeated by Stormflurry.
+// Effect 1 of artifact aura 198367 stores the 40% repeat damage modifier.
+class spell_sha_stormflurry_damage : public SpellScript
+{
+    PrepareSpellScript(spell_sha_stormflurry_damage);
+
+    void ScaleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (AuraEffect const* trigger = GetTriggeredAuraEff())
+            if (trigger->GetId() == 198367)
+                SetHitDamage(CalculatePct(GetHitDamage(), trigger->GetAmount()));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_stormflurry_damage::ScaleDamage, EFFECT_0, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+    }
+};
+
+// Stormlash - 195222 / damage - 213307
+// A Stormlash buff owns a fixed pool based on the granting shaman's AP. Each
+// eligible attack releases the fraction accumulated since the previous proc.
+class spell_sha_stormlash_buff : public AuraScript
+{
+    PrepareAuraScript(spell_sha_stormlash_buff);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        _lastProcTime = getMSTime();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* shaman = GetCaster();
+        Unit* actor = eventInfo.GetActor();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!shaman || !actor || !target || !target->IsAlive())
+            return;
+
+        uint32 now = getMSTime();
+        uint32 elapsed = getMSTimeDiff(_lastProcTime, now);
+        if (elapsed <= 100)
+            return;
+
+        _lastProcTime = now;
+        uint32 duration = std::max(1, GetAura()->GetMaxDuration());
+        elapsed = std::min(elapsed, duration);
+
+        SpellInfo const* damageSpell = sSpellMgr->GetSpellInfo(213307);
+        if (!damageSpell)
+            return;
+
+        float damage = shaman->GetTotalAttackPowerValue(BASE_ATTACK)
+            * damageSpell->Effects[EFFECT_0]->BonusCoefficientFromAP
+            * elapsed / duration;
+
+        if (AuraEffect const* empowered = shaman->GetAuraEffect(210731, EFFECT_1))
+            AddPct(damage, empowered->GetAmount());
+
+        if (damage > 0.0f)
+            actor->CastCustomSpell(target, 213307, &damage, nullptr, nullptr, true, nullptr, aurEff, shaman->GetGUID());
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_sha_stormlash_buff::HandleApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        OnEffectProc += AuraEffectProcFn(spell_sha_stormlash_buff::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+    }
+
+private:
+    uint32 _lastProcTime = 0;
+};
+
+// The custom base point passed by spell_sha_stormlash_buff already contains
+// the complete time-weighted pool share, so do not add the holder's AP again.
+class spell_sha_stormlash_damage : public SpellScript
+{
+    PrepareSpellScript(spell_sha_stormlash_damage);
+
+    void OverrideDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (AuraEffect const* trigger = GetTriggeredAuraEff())
+            if (trigger->GetId() == 195222)
+                SetHitDamage(int32(GetSpellValue()->EffectBasePoints[EFFECT_0]));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_sha_stormlash_damage::OverrideDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
 };
 
 // Alpha Wolf - 198486
@@ -1549,9 +1785,34 @@ class spell_sha_feral_lunge : public SpellScript
         return SPELL_CAST_OK;
     }
 
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+            GetCaster()->CastSpell(target, 215802, true);
+    }
+
     void Register() override
     {
         OnCheckCast += SpellCheckCastFn(spell_sha_feral_lunge::CheckElevation);
+        OnEffectHitTarget += SpellEffectFn(spell_sha_feral_lunge::HandleDamage, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Feral Spirit - creature 29264
+// Rank 2 (231723) grants the owner 5 Maelstrom through 190185 for every
+// successful wolf melee swing, but not for Alpha Wolf spell damage.
+struct npc_sha_feral_spirit : public ScriptedAI
+{
+    explicit npc_sha_feral_spirit(Creature* creature) : ScriptedAI(creature) { }
+
+    void DamageDealt(Unit* /*victim*/, uint32& damage, DamageEffectType damageType) override
+    {
+        if (!damage || damageType != DIRECT_DAMAGE)
+            return;
+
+        if (Unit* owner = me->GetOwner())
+            if (owner->HasAura(231723))
+                me->CastSpell(owner, 190185, true);
     }
 };
 
@@ -1657,6 +1918,11 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_flame_shock();
     new spell_sha_frost_shock();
     new spell_sha_lightning_bolt();
+	RegisterSpellScript(spell_sha_flametongue_attack);
+	RegisterSpellScript(spell_sha_ascendance_enhancement);
+	RegisterAuraScript(spell_sha_hailstorm);
+	RegisterAuraScript(spell_sha_fury_of_air);
+	RegisterAuraScript(spell_sha_windfury);
 	//new spell_sha_static_overload();
 	new spell_sha_elemental_overload();
 	new spell_sha_lightning_rod();
@@ -1666,11 +1932,15 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_recall_cloudburst_totem();
     new spell_sha_earth_shield();
     new spell_sha_sundering();
+    RegisterAuraScript(spell_sha_hot_hand);
     new spell_sha_spirit_link_pvp();
     new spell_sha_purge();
     new spell_sha_grounding_totem();
     new spell_sha_shamanism();
     new spell_sha_stormflurry();
+    RegisterSpellScript(spell_sha_stormflurry_damage);
+    RegisterAuraScript(spell_sha_stormlash_buff);
+    RegisterSpellScript(spell_sha_stormlash_damage);
     new spell_sha_alpha_wolf();
     new spell_sha_crash_lightning();
     new spell_sha_sense_of_urgency();
@@ -1679,6 +1949,7 @@ void AddSC_shaman_spell_scripts()
     RegisterAuraScript(spell_sha_ancestral_protection);
     RegisterAuraScript(spell_sha_earthen_rage);
     RegisterSpellScript(spell_sha_feral_lunge);
+    RegisterCreatureAI(npc_sha_feral_spirit);
     RegisterAuraScript(spell_sha_hex);
     //RegisterAuraScript(spell_sha_lightning_rod);
     RegisterSpellScript(spell_sha_elem_blast);
