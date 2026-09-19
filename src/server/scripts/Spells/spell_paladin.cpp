@@ -61,6 +61,25 @@ enum PaladinSpells
     Judgment                                     = 20271,
     JudgmentOfLight                              = 183778,
 
+    AvengingWrath                                = 31884,
+    AvengersShield                              = 31935,
+    ShieldOfTheRighteous                        = 53600,
+    ShieldOfTheRighteousArmor                   = 132403,
+    FinalStand                                  = 204077,
+    FinalStandTaunt                             = 204079,
+    RighteousProtector                         = 204074,
+    LightOfTheProtector                        = 184092,
+    HandOfTheProtector                         = 213652,
+    GrandCrusader                              = 85043,
+    GrandCrusaderProc                          = 85416,
+    CrusadersJudgment                          = 204023,
+    HammerOfTheRighteousAoe                    = 88263,
+    ConsecratedHammer                         = 203785,
+    ConsecrationProtectionAura                 = 188370,
+    ScatterTheShadows                         = 209223,
+    DefenderOfTruth                           = 238097,
+    DefenderOfTruthShield                     = 240059,
+
     HealingStormMaxTarget                        = 6,
     UpdateTimer                                  = 2000,
 };
@@ -156,23 +175,34 @@ class spell_pal_shield_of_the_righteous : public SpellScriptLoader
         {
             PrepareSpellScript(spell_pal_shield_of_the_righteous_SpellScript);
 
-            void HandleOnHit()
+            void HandleAfterCast()
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (Aura* spellShield = caster->GetAura(132403))
+                    if (Aura* spellShield = caster->GetAura(ShieldOfTheRighteousArmor))
                     {
-                        spellShield->SetDuration(spellShield->GetDuration() + spellShield->GetMaxDuration());
+                        int32 const baseDuration = spellShield->GetMaxDuration();
+                        spellShield->SetDuration(std::min(spellShield->GetDuration() + baseDuration, baseDuration * 3));
                         spellShield->RecalculateAmountOfEffects(true);
                     }
                     else
-                        caster->CastSpell(caster, 132403, true);
+                        caster->CastSpell(caster, ShieldOfTheRighteousArmor, true);
+
+                    if (AuraEffect const* righteousProtector = caster->GetAuraEffect(RighteousProtector, EFFECT_0))
+                    {
+                        int32 cooldownReduction = -int32(righteousProtector->GetAmount() * float(IN_MILLISECONDS));
+                        if (Player* player = caster->ToPlayer())
+                        {
+                            player->ModSpellChargeCooldown(player->HasSpell(HandOfTheProtector) ? HandOfTheProtector : LightOfTheProtector, cooldownReduction);
+                            player->ModifySpellCooldown(AvengingWrath, cooldownReduction);
+                        }
+                    }
                 }
             }
 
             void Register() override
             {
-                OnHit += SpellHitFn(spell_pal_shield_of_the_righteous_SpellScript::HandleOnHit);
+                AfterCast += SpellCastFn(spell_pal_shield_of_the_righteous_SpellScript::HandleAfterCast);
             }
         };
 
@@ -459,7 +489,12 @@ class spell_pal_divine_shield : public SpellScriptLoader
             {
                 if (Player* _player = GetCaster()->ToPlayer())
                     if (Unit* target = GetHitUnit())
+                    {
                         _player->CastSpell(target, PALADIN_SPELL_FORBEARANCE, true);
+
+                        if (_player->HasAura(FinalStand))
+                            _player->CastSpell(_player, FinalStandTaunt, true);
+                    }
             }
 
             //void HandleHeal(SpellEffIndex /*effIndex*/)
@@ -768,25 +803,47 @@ class spell_pal_ardent_defender : public SpellScriptLoader
             void Absorb(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)
             {
                 Unit* victim = GetTarget();
-                int32 remainingHealth = victim->GetHealth() - dmgInfo.GetDamage();
-                // If damage kills us
-                if (remainingHealth <= 0 && !victim->ToPlayer()->HasSpellCooldown(PALADIN_SPELL_ARDENT_DEFENDER_HEAL))
-                {
-                    // Cast healing spell, completely avoid damage
-                    absorbAmount = dmgInfo.GetDamage();
+                float damage = dmgInfo.GetDamage();
+                float health = victim->GetHealth();
 
-                    float healAmount = int32(victim->CountPctFromMaxHealth(healPct));
-                    victim->CastCustomSpell(victim, PALADIN_SPELL_ARDENT_DEFENDER_HEAL, &healAmount, NULL, NULL, true, NULL, aurEff);
-                    victim->ToPlayer()->AddSpellCooldown(PALADIN_SPELL_ARDENT_DEFENDER_HEAL, 0, getPreciseTime() + 120.0);
+                // The 7.3.5 death prevention only works against a hit no larger
+                // than 200% of maximum health and leaves the paladin at exactly
+                // the percentage stored in effect 1.
+                if (damage >= health && damage <= victim->GetMaxHealth() * 2.0f)
+                {
+                    float targetHealth = victim->CountPctFromMaxHealth(healPct);
+                    if (health <= targetHealth)
+                    {
+                        absorbAmount = damage;
+                        float healAmount = targetHealth - health;
+                        if (healAmount > 0.0f)
+                            victim->CastCustomSpell(victim, PALADIN_SPELL_ARDENT_DEFENDER_HEAL, &healAmount, NULL, NULL, true, NULL, aurEff);
+                    }
+                    else
+                        absorbAmount = damage - (health - targetHealth);
+
+                    aurEff->GetBase()->Remove();
                 }
                 else
-                    absorbAmount = CalculatePct(dmgInfo.GetDamage(), absorbPct);
+                    absorbAmount = CalculatePct(damage, absorbPct);
+            }
+
+            void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                Unit* target = GetTarget();
+                if (target->IsAlive())
+                    if (AuraEffect const* defenderOfTruth = target->GetAuraEffect(DefenderOfTruth, EFFECT_0))
+                    {
+                        float shieldAmount = target->CountPctFromMaxHealth(defenderOfTruth->GetAmount());
+                        target->CastCustomSpell(target, DefenderOfTruthShield, &shieldAmount, nullptr, nullptr, true);
+                    }
             }
 
             void Register() override
             {
                  DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pal_ardent_defender_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
                  OnEffectAbsorb += AuraEffectAbsorbFn(spell_pal_ardent_defender_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                 AfterEffectRemove += AuraEffectRemoveFn(spell_pal_ardent_defender_AuraScript::HandleRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
             }
         };
 
@@ -915,6 +972,99 @@ class spell_pal_holy_shield : public SpellScriptLoader
         {
             return new spell_pal_holy_shield_AuraScript();
         }
+};
+
+// Bastion of Light - 204035
+class spell_pal_bastion_of_light : public SpellScript
+{
+    PrepareSpellScript(spell_pal_bastion_of_light);
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+            if (SpellInfo const* shieldOfTheRighteous = sSpellMgr->GetSpellInfo(ShieldOfTheRighteous))
+                player->RestoreSpellCategoryCharges(shieldOfTheRighteous->Categories.ChargeCategory);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_pal_bastion_of_light::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+static void ApplyGrandCrusaderReset(Unit* caster, bool castProcAura)
+{
+    if (Player* player = caster->ToPlayer())
+    {
+        if (castProcAura)
+            player->CastSpell(player, GrandCrusaderProc, true);
+
+        player->RemoveSpellCooldown(AvengersShield, true);
+        if (player->HasAura(CrusadersJudgment))
+            player->ModSpellCharge(Judgment, 1);
+    }
+}
+
+// Grand Crusader - 85043. The client proc handles avoided attacks; its dummy
+// effect still needs to reset Avenger's Shield and restore Judgment's charge.
+class spell_pal_grand_crusader : public AuraScript
+{
+    PrepareAuraScript(spell_pal_grand_crusader);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        ApplyGrandCrusaderReset(GetTarget(), false);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_pal_grand_crusader::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Grand Crusader's second trigger source is a successful use of Hammer of the
+// Righteous or Blessed Hammer. First Avenger adds its client-defined 10% chance.
+class spell_pal_grand_crusader_hammer : public SpellScript
+{
+    PrepareSpellScript(spell_pal_grand_crusader_hammer);
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        Aura* grandCrusader = caster->GetAura(GrandCrusader);
+        if (!grandCrusader)
+            return;
+
+        SpellInfo::SpellAuraOptions const* auraOptions = grandCrusader->GetSpellInfo()->GetAuraOptions();
+        float chance = auraOptions ? auraOptions->ProcChance : 15.0f;
+        if (AuraEffect const* firstAvenger = caster->GetAuraEffect(203776, EFFECT_1))
+            chance += firstAvenger->GetAmount();
+
+        if (roll_chance_f(chance))
+            ApplyGrandCrusaderReset(caster, true);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_pal_grand_crusader_hammer::HandleAfterCast);
+    }
+};
+
+// Hammer of the Righteous - 53595
+class spell_pal_hammer_of_the_righteous : public SpellScript
+{
+    PrepareSpellScript(spell_pal_hammer_of_the_righteous);
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        if (GetCaster()->HasAura(ConsecrationProtectionAura) || GetCaster()->HasAura(ConsecratedHammer))
+            GetCaster()->CastSpell(GetHitUnit(), HammerOfTheRighteousAoe, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_pal_hammer_of_the_righteous::HandleHit, EFFECT_0, SPELL_EFFECT_WEAPON_PERCENT_DAMAGE);
+    }
 };
 
 // Divine Intervention - 213313
@@ -1257,7 +1407,13 @@ class spell_pal_light_of_the_protector : public SpellScriptLoader
 
                 int32 bp = target->GetMaxHealth() - target->GetHealth();
                 if (bp > 0)
-                    SetEffectValue(CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster)));
+                {
+                    int32 heal = CalculatePct(bp, GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster));
+                    if (AuraEffect const* scatterTheShadows = caster->GetAuraEffect(ScatterTheShadows, EFFECT_0))
+                        AddPct(heal, scatterTheShadows->GetAmount());
+
+                    SetEffectValue(heal);
+                }
             }
 
             void Register() override
@@ -1609,40 +1765,50 @@ class spell_pal_seraphim : public SpellScriptLoader
     public:
         spell_pal_seraphim() : SpellScriptLoader("spell_pal_seraphim") { }
 
-        class spell_pal_seraphim_AuraScript : public AuraScript
+        class spell_pal_seraphim_SpellScript : public SpellScript
         {
-            PrepareAuraScript(spell_pal_seraphim_AuraScript);
+            PrepareSpellScript(spell_pal_seraphim_SpellScript);
 
-            void CalculateMaxDuration(int32& duration)
+            SpellCastResult CheckCast()
             {
-                duration = 2000; // Default
-                if (Player* _player = GetCaster()->ToPlayer())
+                Player* player = GetCaster()->ToPlayer();
+                SpellInfo const* shieldOfTheRighteous = sSpellMgr->GetSpellInfo(ShieldOfTheRighteous);
+                if (!player || !shieldOfTheRighteous || !player->GetChargesForSpell(shieldOfTheRighteous))
+                    return SPELL_FAILED_NO_POWER;
+
+                return SPELL_CAST_OK;
+            }
+
+            void HandleDummy(SpellEffIndex effIndex)
+            {
+                Player* player = GetCaster()->ToPlayer();
+                SpellInfo const* shieldOfTheRighteous = sSpellMgr->GetSpellInfo(ShieldOfTheRighteous);
+                if (!player || !shieldOfTheRighteous)
+                    return;
+
+                uint8 charges = std::min<uint8>(player->GetChargesForSpell(shieldOfTheRighteous), uint8(GetSpellInfo()->Effects[effIndex]->BasePoints));
+                if (!charges)
+                    return;
+
+                player->ModSpellCharge(ShieldOfTheRighteous, -int32(charges));
+                if (Aura* seraphim = player->GetAura(GetSpellInfo()->Id))
                 {
-                    int32 charges = 0;
-                    if(SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(53600)) // Shield of the Righteous
-                        charges = _player->GetChargesForSpell(spellInfo);
-                    if (charges >= 2)
-                    {
-                        duration += 8000 * 2;
-                        _player->ModSpellCharge(53600, -2);
-                    }
-                    else if (charges == 1)
-                    {
-                        duration += 8000;
-                        _player->ModSpellCharge(53600, -1);
-                    }
+                    int32 duration = GetSpellInfo()->GetDuration() * charges;
+                    seraphim->SetMaxDuration(duration);
+                    seraphim->SetDuration(duration);
                 }
             }
 
             void Register() override
             {
-                DoCalcMaxDuration += AuraCalcMaxDurationFn(spell_pal_seraphim_AuraScript::CalculateMaxDuration);
+                OnCheckCast += SpellCheckCastFn(spell_pal_seraphim_SpellScript::CheckCast);
+                OnEffectHitTarget += SpellEffectFn(spell_pal_seraphim_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
             }
         };
 
-        AuraScript* GetAuraScript() const override
+        SpellScript* GetSpellScript() const override
         {
-            return new spell_pal_seraphim_AuraScript();
+            return new spell_pal_seraphim_SpellScript();
         }
 };
 
@@ -2512,15 +2678,15 @@ class spell_pal_forbearance : public SpellScriptLoader
             void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
-                    if (AuraEffect* aurEff = caster->GetAuraEffect(209376, EFFECT_0)) // Forbearant Faithful
-                        aurEff->ChangeAmount(-(aurEff->GetSpellInfo()->Effects[EFFECT_1]->BasePoints));
+                    if (AuraEffect* faithful = caster->GetAuraEffect(209376, EFFECT_0)) // Forbearant Faithful
+                        faithful->ChangeAmount(faithful->GetAmount() - faithful->GetSpellInfo()->Effects[EFFECT_1]->BasePoints);
             }
 
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
-                    if (AuraEffect* aurEff = caster->GetAuraEffect(209376, EFFECT_0)) // Forbearant Faithful
-                        aurEff->ChangeAmount(0);
+                    if (AuraEffect* faithful = caster->GetAuraEffect(209376, EFFECT_0)) // Forbearant Faithful
+                        faithful->ChangeAmount(std::min(0.0f, faithful->GetAmount() + faithful->GetSpellInfo()->Effects[EFFECT_1]->BasePoints));
             }
 
             void Register() override
@@ -2995,6 +3161,10 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_lay_on_hands();
     new spell_pal_holy_shock();
     new spell_pal_holy_shield();
+    RegisterSpellScript(spell_pal_bastion_of_light);
+    RegisterAuraScript(spell_pal_grand_crusader);
+    RegisterSpellScript(spell_pal_grand_crusader_hammer);
+    RegisterSpellScript(spell_pal_hammer_of_the_righteous);
     new spell_pal_divine_intervention();
     new spell_pal_greater_blessing_of_kings();
     new spell_pal_shield_of_vengeance();

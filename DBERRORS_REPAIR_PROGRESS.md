@@ -3621,3 +3621,43 @@ Izmantotie avoti:
 
 - Ar Judgment of Light pārbaudīt, ka debuffu uzliek tikai Judgment, tas satur 40 charges un visa grupa kopā nevar izraisīt vairāk par vienu 183811 heal sekundē.
 - Samazināt Beacon mērķi zem 50% veselības, izraisīt The Light Saves un salīdzināt Flash/Holy Light uz citu mērķi un Beacon mērķi: cits mērķis nedrīkst saņemt vai patērēt bonusu, Beacon mērķim tas jāsaņem un jāpatērē vienreiz.
+
+## Pakete 183 — Paladin Protection: pilnais talents, specializācijas un Truthguard audits
+
+Faili: `src/server/scripts/Spells/spell_paladin.cpp` un `sql/updates/world/2026_09_19_171_restore_paladin_protection_spells.sql`.
+
+Pabeigts Protection `Talent`, `SpecializationSpells` un Truthguard artifact gala 7.3.5.26972 spēju audits pret klienta DB2, aktīvo world DB, core un publisko Legion fork'u realizācijām. Labojumi atjauno trūkstošās servera darbības, neatslēdzot spellus un neapklusinot kļūdas.
+
+`Shield of the Righteous` 53600 tagad vienmēr apstrādā 132403 bruņu buffu pēc veiksmīga cast, ļauj pārklāt ilgumu, bet ievēro gala trīs bāzes ilgumu maksimumu. `Righteous Protector` 204074 katrā castā samazina Avenging Wrath un Light/Hand of the Protector cooldownu par klienta norādītajām trim sekundēm. `Bastion of Light` 204035 atjauno visas Shield of the Righteous charges, bet `Seraphim` 152262 atsakās castoties bez charges, patērē ne vairāk kā divas un ilgst tieši 8 sekundes par katru patērēto charge.
+
+Atjaunots viss `Grand Crusader` 85043 ceļš: klienta dodge/parry proc tagad atiestata Avenger's Shield, Hammer of the Righteous un Blessed Hammer paši veic 15% izlozi, bet `First Avenger` pievieno klienta 10 procentpunktus. `Crusader's Judgment` procā atjauno vienu Judgment charge. Hammer of the Righteous 53595 rada 88263 apkārtnes triecienu tikai savā Consecration, bet ar `Consecrated Hammer` 203785 — vienmēr.
+
+`Final Stand` 204077 Divine Shield sākumā izsauc gala 204079 area taunt. `Ardent Defender` saglabā parasto 20% samazinājumu, bet nāvējošā trieciena aizsardzība tagad nostrādā tikai līdz 200% maksimālās veselības, atstāj precīzi 12% veselības un vairs neuzliek kļūdainu slēptu 120 sekunžu cooldownu. `Defender of Truth` 238097 Ardent Defender beigās veido 240059 vairogu ar traitā glabātajiem 12% no maksimālās veselības; gala absorb spella viena punkta placeholderis netiek kļūdaini lietots kā gatava vairoga summa.
+
+`Scatter the Shadows` 209223 tagad palielina Light/Hand of the Protector dziedinājumu par aktuālā artifact ranka procentu. `Forbearant Faithful` 209376 pareizi summē vairākus vienlaikus aktīvus Forbearance mērķus pa 50% un, vienam beidzoties, noņem tikai tā ieguldījumu. Pārējiem Protection talantiem un Truthguard traitiem apstiprināta gala klienta spellmod/proc vai aktīvās world DB area-trigger/trigger darbība; dublējoši skripti tiem netika pievienoti.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Talent/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPower/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://warcraft.wiki.gg/wiki/Ardent_Defender
+- https://warcraft.wiki.gg/wiki/Seraphim_(paladin_talent)
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_paladin.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_paladin.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām un bez brīdinājumiem. Updateris piemēroja migrāciju 171, reģistrēja to kā `RELEASED`, un MariaDB apstiprināja visas piecas jaunās scriptu piesaistes.
+- Pēc Defender of Truth custom absorb summas precizējuma veikta atkārtota pilna būve un starts. Starts pabeigts 11 sekundēs, ielādēja 6694 C++ skriptus un validēja 3402 spell skriptus. `DBErrors.log` ir 0 baiti, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Shield of the Righteous pārbaudīt 132403 pagarinājumu līdz ne vairāk kā trim bāzes ilgumiem; Righteous Protector jāsamazina abi paredzētie cooldowni par trim sekundēm. Bastion jāatjauno visas charges, Seraphim ar vienu/divām charges jāilgst 8/16 sekundes.
+- Grand Crusader pārbaudīt atsevišķi ar dodge/parry, Hammer un Blessed Hammer, arī ar First Avenger un Crusader's Judgment. Hammer of the Righteous apkārtnes trieciens jāsaņem tikai Consecration, izņemot Consecrated Hammer talantu.
+- Ar Final Stand jāpārbauda Divine Shield area taunt. Ar Ardent Defender pārbaudīt parastu samazinājumu, nāvējošu triecienu zem un virs 200% maksimālās veselības, 12% atlikumu un Defender of Truth 12% maksimālās veselības vairogu. Vairākiem Forbearance mērķiem katram jāpalielina recovery par 50%, un katra beigas drīkst noņemt tikai savu stacku.
