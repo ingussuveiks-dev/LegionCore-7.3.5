@@ -2966,3 +2966,21 @@ Septiņiem pilno reidu ierakstiem — Highmaul, Hellfire Citadel, Emerald Nightm
 
 - Katram no septiņiem reidiem ar GM vai testa grupu pārbaudīt normal, heroic un mythic ieeju. Spēlētājam jāparādās reida sākumā, kas sakrīt ar pirmā LFR spārna sākumu, un instances grūtībai jāsaglabājas izvēlētajā režīmā.
 - Īpaši pārbaudīt, ka esošie vēlākie LFR spārni joprojām teleportē uz saviem atsevišķajiem checkpointiem, nevis uz jaunajām pilnā reida rindām.
+
+## Pakete 158 — PvP ierakstu izslēgšana no LFG ieeju validācijas
+
+Fails: `src/server/game/DungeonFinding/LFGMgr.cpp`.
+
+Atlikušajā sarakstā bija divi ieraksti, kas nav dungeon vai scenario teleporti. `10v10 Rated Battleground` (358) DBC ierakstam ir `TypeID=NONE`, ko enum definē kā tikai iekšējai lietošanai paredzētu vērtību, savukārt `Ashran` (1127) ir `LFG_QUEUE_WORLD_PVP`. Pirmais tagad netiek ievietots LFG dungeon katalogā; `WORLD_PVP` un `BRAWL` apakštipiem vairs netiek prasīta `lfg_entrances` rinda. Dungeon, raid un scenario validācija paliek nemainīgi stingra.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve ar laboto kodu pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abu PvP ierakstu kļūdas pazuda un `DBErrors.log` skaits samazinājās no 24 uz 22.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, tātad labojums neradīja jaunus servera starta defektus.
+- Serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Atvērt Rated Battleground izvēlni un pārliecināties, ka 10v10 rinda joprojām tiek apstrādāta ar PvP sistēmu, nevis parādās kā dungeon.
+- Ieiet Ashran un pārbaudīt, ka PvP zonas iekļūšana, frakcijas sākumpunkts un iziešana darbojas neatkarīgi no LFG dungeon teleportēšanās pogas.
