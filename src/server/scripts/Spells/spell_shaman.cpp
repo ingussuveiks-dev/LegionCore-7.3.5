@@ -626,7 +626,9 @@ public:
 	}
 };*/
 
-// 188196 - Lightning bolt, 188443 - Chain Lightning, 114074 - Lava Beam
+// Mastery: Elemental Overload - 168534
+// 188196 - Lightning Bolt, 188443 - Chain Lightning, 114074 - Lava Beam,
+// 51505 - Lava Burst, 117014 - Elemental Blast, 210714 - Icefury
 class spell_sha_elemental_overload : public SpellScriptLoader
 {
 public:
@@ -636,93 +638,53 @@ public:
 	{
 		PrepareSpellScript(spell_sha_elemental_overload_SpellScript)
 
-			void HandleDamage()
+		void HandleCast()
 		{
-			if (Unit * caster = GetCaster())
+			Unit* caster = GetCaster();
+			Unit* target = GetExplTargetUnit();
+			SpellInfo const* spellInfo = GetSpellInfo();
+			if (!caster || !target || !spellInfo)
+				return;
+
+			AuraEffect const* mastery = caster->GetAuraEffect(168534, EFFECT_0);
+			if (!mastery)
+				return;
+
+			uint32 overloadSpell = 0;
+			switch (spellInfo->Id)
 			{
-				if (Unit * hitTarget = GetHitUnit())
-				{
-					if (Player * plr = caster->ToPlayer())
-					{
-						if (Unit * selectedUnit = plr->GetSelectedUnit())
-						{
-							if (const SpellInfo * spellInfo = GetSpellInfo())
-							{
-								if (selectedUnit != hitTarget || spellInfo->Id == 188196)
-								{
-									if (Aura * aur = caster->GetAura(205495)) //Stormkeeper
-									{
-										switch (spellInfo->Id)
-										{
-										case 188196:
-										{
-											if (aur->GetCharges() >= 2)
-											{
-												std::list<Unit*> targets;
-												hitTarget->GetAttackableUnitListInRange(targets, 10);
-												for (auto target : targets)
-													if (target != hitTarget)
-														caster->CastSpellDelay(target, 45284, true, 500);
-											}
-											break;
-										}
-										case 188443:
-										{
-											if (aur->GetCharges() >= 2)
-												caster->CastSpellDelay(hitTarget, 45297, true, 500);
-											else
-											{
-												float additionalOverloadChance = (caster->GetFloatValue(PLAYER_FIELD_MASTERY) * 2.0f) / 3.0f;
-												if (roll_chance_f(additionalOverloadChance))
-													caster->CastSpellDelay(hitTarget, 45297, true, 500);
-											}
-											break;
-
-										}
-
-										case 114074:
-										{
-											if (aur->GetCharges() >= 2)
-												caster->CastSpellDelay(hitTarget, 114738, true, 500);
-											else
-											{
-												float additionalOverloadChance = (caster->GetFloatValue(PLAYER_FIELD_MASTERY) * 2.0f) / 3.0f;
-												if (roll_chance_f(additionalOverloadChance))
-													caster->CastSpellDelay(hitTarget, 114738, true, 500);
-											}
-											break;
-										}
-										}
-
-									}
-									else
-									{
-										float additionalOverloadChance = (caster->GetFloatValue(PLAYER_FIELD_MASTERY) * 2.0f) / 3.0f;
-
-										if (roll_chance_f(additionalOverloadChance))
-										{
-											switch (spellInfo->Id)
-											{
-											case 188443:
-												caster->CastSpellDelay(hitTarget, 45297, true, 500);
-												break;
-											case 114074:
-												caster->CastSpellDelay(hitTarget, 114738, true, 500);
-												break;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				case 188196: overloadSpell = 45284;  break; // Lightning Bolt Overload
+				case 188443: overloadSpell = 45297;  break; // Chain Lightning Overload
+				case 114074: overloadSpell = 114738; break; // Lava Beam Overload
+				case 51505:  overloadSpell = 77451;  break; // Lava Burst Overload
+				case 117014: overloadSpell = 120588; break; // Elemental Blast Overload
+				case 210714: overloadSpell = 219271; break; // Icefury Overload
+				default: return;
 			}
+
+			// Static Overload supplies the guaranteed first Stormkeeper overload.
+			// Do not also roll the normal mastery proc for that same cast.
+			if (caster->HasAura(191634) &&
+				(spellInfo->Id == 188196 || spellInfo->Id == 188443 || spellInfo->Id == 114074))
+				return;
+
+			float chance = mastery->GetAmount();
+			if (spellInfo->Id == 188196 || spellInfo->Id == 188443 || spellInfo->Id == 114074)
+				if (AuraEffect const* stormTotem = caster->GetAuraEffect(210652, EFFECT_0))
+					chance += stormTotem->GetAmount();
+
+			// Chain Lightning and its Ascendance replacement use one third of the
+			// normal overload chance. The resulting overload spell performs its own chain.
+			if (spellInfo->Id == 188443 || spellInfo->Id == 114074)
+				chance /= 3.0f;
+
+			if (roll_chance_f(chance))
+				caster->CastSpellDelay(target, overloadSpell, true, 500);
 		}
 
 		void Register() override
 		{
-			AfterHit += SpellHitFn(spell_sha_elemental_overload_SpellScript::HandleDamage);
+			OnCast += SpellCastFn(spell_sha_elemental_overload_SpellScript::HandleCast);
 		}
 	};
 
@@ -744,35 +706,38 @@ public:
 
 		void HandleDamage()
 		{
-			if (Unit* caster = GetCaster())
-			{
-				if (caster->HasAura(210689))
-				{
-					if (Unit* exTarget = GetExplTargetUnit())
-					{
-						if (Unit* hitTarget = GetHitUnit())
-						{
-							if (exTarget->GetGUID() == hitTarget->GetGUID())
-							{
-								if (uint32 dmg = GetHitDamage())
-								{
-									std::list<Unit*> targets;
-									std::vector<uint32> aura = { 197209 };
+			Unit* caster = GetCaster();
+			Unit* hitTarget = GetHitUnit();
+			SpellInfo const* spellInfo = GetSpellInfo();
+			uint32 damage = GetHitDamage();
+			if (!caster || !hitTarget || !spellInfo || !damage)
+				return;
 
-									caster->TargetsWhoHasMyAuras(targets, aura);
+			AuraEffect const* rodDamage = caster->GetAuraEffect(210689, EFFECT_1);
+			if (!rodDamage)
+				return;
 
-									for (auto target : targets)
-										if (AuraEffect* aurEff = target->GetAuraEffect(197209, EFFECT_0))
-										{
-											float calculatedDmg = CalculatePct(dmg, aurEff->GetAmount() * 2);
-											caster->CastCustomSpell(target, 197568, &calculatedDmg, nullptr, nullptr, true);
-										}
-								}
-							}
-						}
-					}
-				}
-			}
+			bool isOriginalCast = spellInfo->Id == 188196 || spellInfo->Id == 188443 || spellInfo->Id == 114074;
+			bool isPrimaryTarget = spellInfo->Id == 188196;
+			if (Unit* explicitTarget = GetExplTargetUnit())
+				isPrimaryTarget = explicitTarget->GetGUID() == hitTarget->GetGUID();
+
+			// Lightning Bolt, Chain Lightning, and Lava Beam only create a rod on
+			// the primary target. Overload payloads can deal rod damage but cannot
+			// create another rod themselves.
+			if (isOriginalCast && isPrimaryTarget)
+				if (AuraEffect const* rodChance = caster->GetAuraEffect(210689, EFFECT_0))
+					if (roll_chance_f(rodChance->GetAmount()))
+						caster->CastSpell(hitTarget, 197209, true);
+
+			std::list<Unit*> targets;
+			std::vector<uint32> aura = { 197209 };
+			caster->TargetsWhoHasMyAuras(targets, aura);
+
+			float sharedDamage = CalculatePct(damage, rodDamage->GetAmount());
+			for (Unit* target : targets)
+				if (target && target->IsAlive())
+					caster->CastCustomSpell(target, 197568, &sharedDamage, nullptr, nullptr, true);
 		}
 
 		void Register() override
@@ -785,6 +750,31 @@ public:
 	{
 		return new spell_sha_lightning_rod_SpellScript();
 	}
+};
+
+// Lava Surge - 77756
+// Flame Shock's periodic damage supplies the 10% proc chance through the
+// client proc data. Restore one Lava Burst charge and apply the instant-cast
+// buff after the same short delay used by the original data chain.
+class spell_sha_lava_surge : public AuraScript
+{
+    PrepareAuraScript(spell_sha_lava_surge);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        if (Player* player = GetTarget()->ToPlayer())
+        {
+            player->RemoveSpellCooldown(51505, true);
+            player->CastSpellDelay(player, 77762, true, 250);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_sha_lava_surge::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
 };
 
 // Healing Surge - 8004, Healing Wave - 77472, talent 200071 - Undulation
@@ -1642,21 +1632,8 @@ class spell_sha_elem_blast : public SpellScript
     {
         if (Unit* caster = GetCaster())
         {
-            std::vector<uint32> auraList;
-            for (auto itr : {118522, 173183, 173184})
-            {
-                if (!caster->HasAura(itr))
-                    auraList.push_back(itr);
-            }
-
-            if (!auraList.empty())
-            {
-                if (auraList.size() > 1)
-                    Trinity::Containers::RandomResizeList(auraList, 1);
-
-                uint32 spellId = *auraList.begin();
-                caster->AddAura(spellId, caster, nullptr);
-            }
+            uint32 const buffs[] = { 118522, 173183, 173184 };
+            caster->CastSpell(caster, buffs[urand(0, 2)], true);
         }
     }
 
@@ -1683,6 +1660,7 @@ void AddSC_shaman_spell_scripts()
 	//new spell_sha_static_overload();
 	new spell_sha_elemental_overload();
 	new spell_sha_lightning_rod();
+    RegisterAuraScript(spell_sha_lava_surge);
     new spell_sha_undulation();
     new spell_sha_earthen_shield();
     new spell_sha_recall_cloudburst_totem();
