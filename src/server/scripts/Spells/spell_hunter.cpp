@@ -27,6 +27,7 @@
 #include "GridNotifiers.h"
 #include "AreaTriggerAI.h"
 #include "AreaTrigger.h"
+#include "ScriptedCreature.h"
 
 enum HunterSpells
 {
@@ -40,10 +41,13 @@ enum HunterSpells
     HUNTER_BLACK_ARROW                           = 194599,
     HUNTER_CHIMAERA_SHOT_FROST                   = 171454,
     HUNTER_CHIMAERA_SHOT_NATURE                  = 171457,
+    HUNTER_COBRA_SPIT                            = 206685,
     HUNTER_COBRA_SHOT                            = 193455,
     HUNTER_DISENGAGE                             = 781,
     HUNTER_EXHILARATION                          = 109304,
     HUNTER_FLANKING_STRIKE                       = 202800,
+    HUNTER_FLUFFY_GO                             = 203669,
+    HUNTER_FLUFFY_GO_PET_HASTE                   = 218955,
     HUNTER_FROZEN_WAKE                           = 201142,
     HUNTER_FURY_OF_THE_EAGLE                     = 203415,
     HUNTER_FURY_OF_THE_EAGLE_DAMAGE              = 203413,
@@ -82,6 +86,39 @@ enum HunterSpells
     DIRE_BEAST_DREAD_WASTES                      = 126216,
     DIRE_BEAST_DUNGEONS                          = 132764,
     DIRE_FRENZY                                  = 217200
+};
+
+// Spitting Cobra - 104493. The summon carries Cobra Spit in creature_template,
+// but non-Pet guardians do not autocast creature template spells in AnyPetAI.
+struct npc_hun_spitting_cobra : public ScriptedAI
+{
+    explicit npc_hun_spitting_cobra(Creature* creature) : ScriptedAI(creature) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Unit* target = me->GetTargetUnit();
+        if (!target && summoner)
+            target = summoner->getVictim();
+
+        if (target)
+            AttackStartCaster(target, 24.0f);
+    }
+
+    void UpdateAI(uint32 /*diff*/) override
+    {
+        if (!UpdateVictim())
+        {
+            if (Unit* owner = me->GetAnyOwner())
+                if (Unit* target = owner->getVictim())
+                    AttackStartCaster(target, 24.0f);
+
+            if (!me->getVictim())
+                return;
+        }
+
+        if (!me->HasUnitState(UNIT_STATE_CASTING))
+            DoCastVictim(HUNTER_COBRA_SPIT);
+    }
 };
 
 // Dire Beast - 120679
@@ -1078,6 +1115,40 @@ class spell_hun_fury_of_the_eagle : public AuraScript
     {
         AfterEffectApply += AuraEffectApplyFn(spell_hun_fury_of_the_eagle::HandleApply,
             EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Fluffy, Go - 203669
+// Pet::InitStatsForLevel applies the haste aura to newly created pets. Keep an
+// already active pet synchronized when the artifact trait is learned, ranked
+// up, or removed.
+class spell_hun_fluffy_go : public AuraScript
+{
+    PrepareAuraScript(spell_hun_fluffy_go);
+
+    void ApplyToPet(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    {
+        Player* player = GetTarget()->ToPlayer();
+        Pet* pet = player ? player->GetPet() : nullptr;
+        if (!pet)
+            return;
+
+        pet->RemoveAurasDueToSpell(HUNTER_FLUFFY_GO_PET_HASTE);
+        float amount = aurEff->GetAmount();
+        pet->CastCustomSpell(pet, HUNTER_FLUFFY_GO_PET_HASTE, &amount, nullptr, nullptr, true);
+    }
+
+    void RemoveFromPet(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Player* player = GetTarget()->ToPlayer())
+            if (Pet* pet = player->GetPet())
+                pet->RemoveAurasDueToSpell(HUNTER_FLUFFY_GO_PET_HASTE);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_hun_fluffy_go::ApplyToPet, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_hun_fluffy_go::RemoveFromPet, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_CHANGE_AMOUNT_MASK);
     }
 };
 
@@ -3089,6 +3160,7 @@ public:
 
 void AddSC_hunter_spell_scripts()
 {
+    RegisterCreatureAI(npc_hun_spitting_cobra);
     new spell_hun_dire_beast();
     new spell_hun_a_murder_of_crows();
     new spell_hun_beast_cleave();
@@ -3111,6 +3183,7 @@ void AddSC_hunter_spell_scripts()
     RegisterAuraScript(spell_hun_echoes_of_ohnara);
     RegisterAuraScript(spell_hun_talon_strike);
     RegisterAuraScript(spell_hun_fury_of_the_eagle);
+    RegisterAuraScript(spell_hun_fluffy_go);
     RegisterSpellScript(spell_hun_fury_of_the_eagle_damage);
     RegisterAuraScript(spell_hun_freezing_trap_expert);
     RegisterAuraScript(spell_hun_tar_trap_aura);
