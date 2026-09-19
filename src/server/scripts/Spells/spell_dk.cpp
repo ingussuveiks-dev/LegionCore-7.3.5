@@ -25,6 +25,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "AreaTrigger.h"
+#include "Containers.h"
 
 enum DeathKnightSpells
 {
@@ -41,6 +42,7 @@ enum DeathKnightSpells
     SPELL_DK_CHAINS_OF_ICE                      = 45524,
     SPELL_DK_CORPSE_EXPLOSION_TRIGGERED         = 43999,
     SPELL_DK_DEATH_AND_DECAY_DAMAGE             = 52212,
+    SPELL_DK_DEATH_AND_DECAY                    = 43265,
     SPELL_DK_DEATH_AND_DECAY_SLOW               = 143375,
     SPELL_DK_DEATH_COIL_BARRIER                 = 115635,
     SPELL_DK_DEATH_COIL_DAMAGE                  = 47632,
@@ -163,6 +165,10 @@ enum DeathKnightSpells
     SPELL_DK_RECENTLY_USED_DEATH_STRIKE         = 180612,
     SPELL_DK_FROST                              = 137006,
     SPELL_DK_DEATH_STRIKE_OFFHAND               = 66188,
+    SPELL_DK_HEART_OF_ICE                       = 246426,
+    SPELL_DK_ICEBOUND_FORTITUDE                 = 48792,
+    SPELL_DK_CRIMSON_SCOURGE                    = 81136,
+    SPELL_DK_CRIMSON_SCOURGE_BUFF               = 81141,
 };
 
 // Desecrated ground - 118009
@@ -450,13 +456,19 @@ class spell_dk_anti_magic_shell_self : public SpellScriptLoader
                     uint32 RPCap = target->CountPctFromMaxHealth(1);
                     if (RPCap > 0)
                     {
-                        float bp = (container + absorbAmount) / RPCap;
-                        container = (container + absorbAmount) - (bp * RPCap);
-                        bp *= 10;
+                        // Keep sub-percent absorption between hits. Runic Power
+                        // is awarded for every complete 1% of maximum health.
+                        uint64 absorbed = uint64(container) + uint32(absorbAmount);
+                        uint32 absorbedPct = uint32(absorbed / RPCap);
+                        container = uint32(absorbed % RPCap);
+
+                        // Runic-power amounts use tenths internally: 2 RP for
+                        // each full 1% of maximum health absorbed is 20 here.
+                        float bp = absorbedPct * 20.0f;
                         if (target->HasAura(207188)) // Volatile Shielding
                             bp *= 2;
 
-                        if (bp >= 10)
+                        if (bp > 0.0f)
                             target->CastCustomSpell(target, 49088, &bp, NULL, NULL, true, NULL, aurEff);
                     }
                 }
@@ -752,11 +764,14 @@ class spell_dk_death_strike : public SpellScriptLoader
 
                 caster->CastCustomSpell(SPELL_DK_DEATH_STRIKE_HEAL, SPELLVALUE_BASE_POINT0, heal, caster, true);
 
-                if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_DK_BLOOD_SHIELD_MASTERY, EFFECT_0))
-                    caster->CastCustomSpell(SPELL_DK_BLOOD_SHIELD_ABSORB, SPELLVALUE_BASE_POINT0, CalculatePct(heal, aurEff->GetAmount()), caster);
-
                 if (caster->HasAura(SPELL_DK_FROST))
                     caster->CastSpell(GetHitUnit(), SPELL_DK_DEATH_STRIKE_OFFHAND, true);
+
+                // Heart of Ice extends an already active Icebound Fortitude by
+                // 2 seconds (DBC stores the value in tenths of a second).
+                if (AuraEffect const* heartOfIce = caster->GetAuraEffect(SPELL_DK_HEART_OF_ICE, EFFECT_0))
+                    if (Aura* iceboundFortitude = caster->GetAura(SPELL_DK_ICEBOUND_FORTITUDE))
+                        iceboundFortitude->SetDuration(iceboundFortitude->GetDuration() + heartOfIce->GetAmount() * 100);
             }
 
             void TriggerRecentlyUsedDeathStrike()
@@ -1091,8 +1106,15 @@ class spell_dk_will_of_the_necropolis : public SpellScriptLoader
                 if(!caster)
                     return;
 
-                if (caster->GetHealthPct() < GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster))
-                    absorbAmount = CalculatePct(dmgInfo.GetDamage(), GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster));
+                float thresholdHealth = caster->CountPctFromMaxHealth(
+                    GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster));
+                float damageAboveThreshold = std::max(float(caster->GetHealth()) - thresholdHealth, 0.0f);
+                float damageBelowThreshold = std::max(float(dmgInfo.GetDamage()) - damageAboveThreshold, 0.0f);
+
+                // If a hit crosses the 35% boundary, only the part below it is
+                // reduced. While already below it, the full hit is reduced.
+                absorbAmount = CalculatePct(damageBelowThreshold,
+                    GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster));
             }
 
             void Register() override
@@ -1781,6 +1803,41 @@ class spell_dk_consumption : public SpellScriptLoader
         }
 };
 
+// Vampiric Aura - 238698. Consumption grants Leech to the Death Knight and
+// four nearby allies, rather than every friendly unit in the raid target list.
+class spell_dk_vampiric_aura : public SpellScript
+{
+    PrepareSpellScript(spell_dk_vampiric_aura);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+        {
+            targets.clear();
+            return;
+        }
+
+        targets.remove_if([caster](WorldObject* object)
+        {
+            Unit* target = object->ToUnit();
+            return !target || !target->IsFriendlyTo(caster);
+        });
+
+        targets.remove(caster);
+        if (targets.size() > 4)
+            Trinity::Containers::RandomResizeList(targets, 4);
+
+        targets.push_back(caster);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_dk_vampiric_aura::FilterTargets,
+            EFFECT_0, TARGET_UNIT_FRIEND_OR_RAID);
+    }
+};
+
 // Apocalypse (Artifact) - 220143
 class spell_dk_apocalypse : public SpellScriptLoader
 {
@@ -2289,6 +2346,50 @@ class spell_dk_blood_boil : public SpellScriptLoader
         }
 };
 
+// Crimson Scourge - 81136. The 7.3.5 passive may proc from auto-attacks only
+// when the struck target has this Death Knight's Blood Plague. Besides making
+// the next Death and Decay free, it restores its charge/cooldown immediately.
+class spell_dk_crimson_scourge : public AuraScript
+{
+    PrepareAuraScript(spell_dk_crimson_scourge);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo(
+        {
+            SPELL_DK_BLOOD_PLAGUE,
+            SPELL_DK_CRIMSON_SCOURGE_BUFF,
+            SPELL_DK_DEATH_AND_DECAY
+        });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* actor = eventInfo.GetActor();
+        Unit* target = eventInfo.GetProcTarget();
+        return actor && target && target->HasAura(SPELL_DK_BLOOD_PLAGUE, actor->GetGUID());
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        if (Unit* actor = eventInfo.GetActor())
+        {
+            if (Player* player = actor->ToPlayer())
+                player->RemoveSpellCooldown(SPELL_DK_DEATH_AND_DECAY, true);
+
+            actor->CastSpell(actor, SPELL_DK_CRIMSON_SCOURGE_BUFF, true);
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_crimson_scourge::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dk_crimson_scourge::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // 43265 - Death and Decay
 /// 6.x
 class spell_dk_death_and_decay : public SpellScriptLoader
@@ -2605,6 +2706,7 @@ void AddSC_deathknight_spell_scripts()
     new spell_dk_festering_wound();
     RegisterAuraScript(spell_dk_festering_wound_dummy);
     new spell_dk_consumption();
+    RegisterSpellScript(spell_dk_vampiric_aura);
     new spell_dk_apocalypse();
     new spell_dk_hook();
     new spell_dk_marrowrend();
@@ -2628,5 +2730,6 @@ void AddSC_deathknight_spell_scripts()
     RegisterSpellScript(spell_dk_claw_owner);
     new spell_dk_death_strike();
     new spell_dk_blood_boil();
+    RegisterAuraScript(spell_dk_crimson_scourge);
     new spell_dk_death_and_decay();
 }

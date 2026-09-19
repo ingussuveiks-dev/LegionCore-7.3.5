@@ -15347,14 +15347,20 @@ void Unit::VisualForPower(Powers power, int32 curentVal, int32 modVal, int32 max
                 }
                 if (HasSpell(205723)) // Red Thirst
                 {
-                    if (m_everyPower[power] > 100)
+                    if (SpellInfo const* redThirst = sSpellMgr->GetSpellInfo(205723))
                     {
-                        int32 countMod = int32(m_everyPower[power] / 100);
-                        int32 modColdown = countMod * -1000;
-                        if (SpellInfo const* _spellInfo = sSpellMgr->GetSpellInfo(205723))
-                            modColdown *= _spellInfo->Effects[EFFECT_0]->CalcValue(this);
-                        player->ModifySpellCooldown(55233, modColdown);
-                        m_everyPower[power] -= (100 * countMod);
+                        // DBC effect 1 stores the Runic Power interval (6 RP),
+                        // while internal power units are tenths. Preserve the
+                        // remainder so partial intervals carry to the next spend.
+                        int32 runicPowerInterval = redThirst->Effects[EFFECT_1]->CalcValue(this) * 10;
+                        if (runicPowerInterval > 0 && m_everyPower[power] >= runicPowerInterval)
+                        {
+                            int32 countMod = int32(m_everyPower[power] / runicPowerInterval);
+                            int32 cooldownReduction = countMod * -1000
+                                * redThirst->Effects[EFFECT_0]->CalcValue(this);
+                            player->ModifySpellCooldown(55233, cooldownReduction);
+                            m_everyPower[power] -= runicPowerInterval * countMod;
+                        }
                     }
                 }
             }
