@@ -89,6 +89,10 @@ void AddSC_instance_bonetown();
 void AddSC_coldridge_cataclysm();
 void AddSC_instance_coldridge_cataclysm();
 
+//< The Deaths of Chromie
+void AddSC_deaths_of_chromie();
+void AddSC_instance_deaths_of_chromie();
+
 //< The Secrets of Ragefire
 void AddSC_the_secrets_of_ragefire();
 void AddSC_instance_the_secrets_of_ragefire();
@@ -264,6 +268,10 @@ void AddScenarioScripts()
     //< The Coldridge Cataclysm
     AddSC_coldridge_cataclysm();
     AddSC_instance_coldridge_cataclysm();
+
+    //< The Deaths of Chromie
+    AddSC_deaths_of_chromie();
+    AddSC_instance_deaths_of_chromie();
 
     //< The Secrets of Ragefire
     AddSC_the_secrets_of_ragefire();

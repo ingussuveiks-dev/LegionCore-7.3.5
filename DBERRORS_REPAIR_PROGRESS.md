@@ -3273,3 +3273,41 @@ Izmantotie avoti:
 - Pārbaudīt, ka Joren aizvietotās extra-action izvēles precīzi virza posmus 4, 7, 13, 16 un 18, kā arī wipe/reconnect atkopšanos boar, abu viļņu un boss posmos.
 
 > 2026-09-19: LFG 1481 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu 21 posma scenāriju un nepieciešamajiem datubāzes datiem; The Coldridge Cataclysm atkal ir iespējots.
+
+## Pakete 172 — The Deaths of Chromie atjaunošana
+
+Faili: `src/server/scripts/Scenario/DeathsOfChromie/instance_deaths_of_chromie.cpp`, `src/server/scripts/Scenario/DeathsOfChromie/deaths_of_chromie.cpp`, `src/server/scripts/Scenario/DeathsOfChromie/deaths_of_chromie.h`, `src/server/scripts/Scenario/scenario_script_loader.cpp`, `src/server/game/DataStores/DB2Structure.cpp` un `sql/updates/world/2026_09_19_160_implement_deaths_of_chromie.sql`.
+
+No 7.3.5 klienta DB2 atjaunots LFG 1534, scenārijs 1351, tā trīs galvenie posmi un 15 minūšu bonuss. Blizzard un Wowhead uzvedības avoti nosaka astoņus laika uzbrukumus: četrus Dragonblight svētnīcu draudus un četrus atsevišķus laika ceļus Andorhalā, Hyjalā, Stratholmā un Well of Eternity. Kartes 1756 `WorldMapArea` un `DungeonMap` robežas izmantotas, lai klienta procentuālās koordinātes pārvērstu precīzos pasaules punktos; visu punktu Z augstums pārbaudīts lokālajos 7.3.5 map failos.
+
+Publiskajos Legion world DB laidienos un pieejamajos koda forkos kartei 1756 nebija ne spawnu, ne C++ scenārija. Tomēr aktīvā world DB saglabātās `creature_template_wdb` rindas satur visu nepieciešamo Chromie un astoņu pretinieku oriģinālos entry, nosaukumus, modeļus un health koeficientus. Migrācija no šiem autoritatīvajiem datiem rekonstruē 13 aktīvos template, 13 creature spawnus un četrus klientā saglabātos laika portālus.
+
+C++ realizē talantu izvēli, astoņu unikālu draudu uzskaiti, pārvietošanos starp visiem laika ceļiem, atgriešanos Wyrmrest Temple, gala sarunu ar Chromie un 15 minūšu bonusa kritēriju. Katram pretiniekam izmantotas tā Wowhead lapās saglabātās un 7.3.5 `Spell` DB2 eksistējošās spējas. LFG 1534 pagaidu bloķēšana ir noņemta.
+
+Izmantotie avoti:
+
+- https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/releases
+- https://news.blizzard.com/en-us/article/20812905/the-deaths-of-chromie-time-to-act
+- https://www.wowhead.com/guide/the-deaths-of-chromie-scenario-guide-5193
+- https://www.wowhead.com/zone=9051/the-deaths-of-chromie
+- https://warcraft.wiki.gg/wiki/Deaths_of_Chromie
+- https://wago.tools/db2/LFGDungeons/csv?build=7.3.5.26972
+- https://wago.tools/db2/ScenarioStep/csv?build=7.3.5.26972
+- https://wago.tools/db2/CriteriaTree/csv?build=7.3.5.26972
+- https://wago.tools/db2/Criteria/csv?build=7.3.5.26972
+- https://wago.tools/db2/WorldMapArea/csv?build=7.3.5.26972
+- https://wago.tools/db2/DungeonMap/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+
+### Pārbaudes rezultāts
+
+- Pēc CMake pārģenerēšanas Release `worldserver` būve pabeigta bez kļūdām un abi jaunie Deaths of Chromie C++ faili ir iekļauti projektā.
+- SQL updateris piemēroja migrāciju; MariaDB pārbaudīts instances/scenārija/LFG ieraksts, visi 13 creature template un spawni, četri portālu spawni un visu aktieru C++ piesaistes.
+- Pilns starts pabeigts 15 sekundēs un ielādēja 6661 C++ skriptu. `DBErrors.log` ir 0 rindas, svaigajā `Server.log` nav nevienas `ERROR` vai `FATAL` rindas, un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar 110. līmeņa tēlu sākt LFG 1534, pie galvenās Chromie izvēlēties talantus un iznīcināt visus astoņus draudus, pārbaudot katru no četriem portāliem un automātisko atgriešanos Wyrmrest Temple.
+- Pārbaudīt visu astoņu pretinieku spēju mērķus un vizuālos efektus, scenārija pabeigšanu pēc gala sarunas, 15 minūšu bonusu, kā arī wipe/reconnect atkopšanos katrā laika ceļā.
+
+> 2026-09-19: LFG 1534 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu astoņu draudu scenāriju, spawniem, portāliem un cīņām; The Deaths of Chromie atkal ir iespējots.
