@@ -3069,3 +3069,20 @@ Abi Lion's Landing DBC varianti (590 un 802) norāda uz karti 1103, kurā world 
 
 - Pārliecināties, ka abi Lion's Landing varianti neparādās kā izmantojamas rindas un nevar tikt izvēlēti ar klienta vai paketes manipulāciju.
 - Ja nākotnē tiek importēts pilns kartes 1103 saturs un scenārija skripts, noņemt abus `IsValid()` izņēmumus un pievienot īsto ieejas pozīciju.
+
+## Pakete 164 — Death Knight artifact scenāriju ieejas
+
+Fails: `sql/updates/world/2026_09_19_147_restore_death_knight_scenario_entrances.sql`.
+
+Ārējie `DK CH Artifact Quest` event objekti 184 un 190 jau izmanto SmartAI teleportus uz Rescue Koltira karti 1617 un The Fourth Horseman karti 1611. `lfg_entrances` pievienotas tieši šo teleportu mērķa koordinātes un orientācijas, nemainot event objektu vai scenāriju darbību.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; abas rindas pārlasītas no MariaDB ar event objektu SmartAI mērķiem identiskām koordinātēm.
+- Pilns `worldserver` starts pabeigts 11 sekundēs; abas Death Knight scenāriju kļūdas pazuda un `DBErrors.log` skaits samazinājās no 9 uz 7.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Death Knight aktivizēt Rescue Koltira artifact uzdevuma event objektu un pārbaudīt parādīšanos pie `(1675.92, 727.864, 77.6129)`.
+- Atsevišķi sākt The Fourth Horseman artifact scenāriju un pārbaudīt parādīšanos pie `(2407.95, -5160.34, 82.1714)`, kā arī abu scenāriju pirmā posma aktivizēšanos.
