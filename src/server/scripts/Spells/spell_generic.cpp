@@ -567,6 +567,23 @@ class spell_gen_remove_flight_auras : public SpellScriptLoader
         }
 };
 
+// Escape Artist - 20589
+class spell_gen_escape_artist : public SpellScript
+{
+    PrepareSpellScript(spell_gen_escape_artist);
+
+    void HandleScriptEffect(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+            target->RemoveAurasWithMechanic((1u << MECHANIC_ROOT) | (1u << MECHANIC_SNARE), AURA_REMOVE_BY_DEFAULT);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_gen_escape_artist::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
 enum EluneCandle
 {
     NPC_OMEN = 15467,
@@ -8432,6 +8449,7 @@ void AddSC_generic_spell_scripts()
     new spell_gen_parachute();
     new spell_gen_pet_summoned();
     new spell_gen_remove_flight_auras();
+    RegisterSpellScript(spell_gen_escape_artist);
     new spell_gen_trick();
     new spell_gen_trick_or_treat();
     new spell_creature_permanent_feign_death();
