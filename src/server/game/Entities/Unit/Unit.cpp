@@ -13400,6 +13400,12 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
                     {
                         switch (spellProto->Id)
                         {
+                            case 23881: // Bloodthirst - Fresh Meat
+                                if (AuraEffect const* threshold = GetAuraEffect(215568, EFFECT_1))
+                                    if (victim->GetHealthPct() > threshold->GetAmount())
+                                        if (AuraEffect const* bonus = GetAuraEffect(215568, EFFECT_0))
+                                            crit_chance += bonus->GetAmount();
+                                break;
                             case 118000: // Dragon Roar is always a critical hit
                                 critChance = 100.0f;
                                 return true;
@@ -23210,7 +23216,8 @@ float Unit::MeleeSpellMissChance(const Unit* victim, WeaponAttackType attType, u
     else
         missChance -= victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_MELEE_HIT_CHANCE);
 
-    if (!spellId && haveOffhandWeapon() && !IsInFeralForm())
+    bool ignoreDualWieldPenalty = HasAura(200871) && HasAura(184362); // Focus in Chaos while Enraged
+    if (!spellId && haveOffhandWeapon() && !IsInFeralForm() && !ignoreDualWieldPenalty)
         missChance += 17.0f;
 
     missChance -= GetTotalAuraModifier(SPELL_AURA_IGNORE_DUAL_WIELD_HIT_PENALTY);

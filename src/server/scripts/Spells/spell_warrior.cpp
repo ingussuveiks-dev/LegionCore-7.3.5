@@ -71,6 +71,11 @@ enum WarriorArmsSpells
     SPELL_WARRIOR_RAVAGER_PARRY                = 227744,
     SPELL_WARRIOR_RAVAGER_SUMMON               = 227876
 };
+
+enum WarriorFurySpells
+{
+    SPELL_WARRIOR_WAR_MACHINE_BUFF = 215562
+};
 }
 
 // Avatar - 107574
@@ -251,6 +256,30 @@ class spell_warr_revenge_trigger : public AuraScript
     void Register() override
     {
         OnEffectProc += AuraEffectProcFn(spell_warr_revenge_trigger::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// War Machine - 215556. The client proc points at an inert target marker
+// (215557); the actual self buff described by the talent is 215562.
+class spell_warr_war_machine : public AuraScript
+{
+    PrepareAuraScript(spell_warr_war_machine);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_WAR_MACHINE_BUFF });
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        GetTarget()->CastSpell(GetTarget(), SPELL_WARRIOR_WAR_MACHINE_BUFF, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_warr_war_machine::HandleProc,
+            EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
     }
 };
 
@@ -1735,6 +1764,7 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_shockwave);
     RegisterSpellScript(spell_warr_storm_bolt);
     RegisterAuraScript(spell_warr_revenge_trigger);
+    RegisterAuraScript(spell_warr_war_machine);
     RegisterAuraScript(spell_warr_executioners_precision);
     RegisterAuraScript(spell_warr_focused_rage_arms);
     RegisterAuraScript(spell_warr_overpower_passive);

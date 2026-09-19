@@ -3486,3 +3486,37 @@ Izmantotie avoti:
 
 - Aktivizēt Battle Cry ar Corrupted Blood of Zakajz un izdarīt vairākus dažāda stipruma sitienus: katram jāpievieno 20% Shadow damage ritošajam trīs ticku DoT, bet paša DoT ticki nedrīkst to atkārtoti ierosināt.
 - Ar Shattered Defenses izmantot Colossus Smash, pēc tam Mortal Strike vai Execute: 50% damage bonusam jādarbojas tieši vienam atbilstošam sitienam. Soul of the Slaughter un Tactician jāpārbauda ar dažādām Rage izmaksām, pārliecinoties, ka iespēja mērogojas vienreiz un Tactician reaģē uz Exploit the Weakness.
+
+## Pakete 179 — Warrior Fury: War Machine, Fresh Meat un Focus in Chaos
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp`, `src/server/game/Entities/Unit/Unit.cpp` un `sql/updates/world/2026_09_19_167_restore_warrior_fury_talents.sql`.
+
+Pirms Fury audita pabeigts atlikušais Arms `Talent` un `SpecializationSpells` saraksts. Fervor of Battle, Sweeping Strikes, Anger Management un Opportunity Strikes ir esoša speciāla core/C++ realizācija; pārējo pārbaudīto Arms talantu darbību nodrošina gala DB2 aura/class maskas un world DB saites, tādēļ tiem jauni dublējoši skripti netika pievienoti.
+
+Fury gala 7.3.5.26972 talantu un Warswords of the Valarjar datu salīdzinājumā atrastas trīs klusas kļūdas. `War Machine` 215556 kill proc klientā norāda uz 215557 — tukšu target dummy markeru — un serverī nebija pārejas uz tooltipā aprakstīto pašbuffu 215562. Pievienots proc handlers, kas saglabā DB kill nosacījumu, aptur tukšo noklusēto darbību un uzliek īsto 30% haste/movement buffu.
+
+`Fresh Meat` 215568 glabā 60% Bloodthirst critical bonusu effect 0 un 80% mērķa veselības slieksni effect 1, taču neviens esošais ceļš šos dummy efektus neizmantoja. Warrior melee crit aprēķins tagad pieskaita gala DB2 vērtības tikai Bloodthirst 23881 un tikai virs klienta sliekšņa. `Focus in Chaos` 200871 tāpat bija tikai dummy trait: auto-attack miss aprēķins tagad Enrage 184362 laikā izlaiž 17% dual-wield sodu, bet ārpus Enrage saglabā standarta sodu.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Talent/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://github.com/TrinityCore/TrinityCore/blob/master/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; SQL updateris piemēroja migrāciju 167, un MariaDB pārbaudīta War Machine 215556 piesaiste.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6682 C++ skriptus un validēja 3387 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar War Machine nogalināt derīgu mērķi: pašam Warrior uz 15 sekundēm jāsaņem 215562 ar 30% haste un movement speed; uz nogalinātā mērķa nedrīkst palikt tukšs efekts.
+- Ar Fresh Meat izmantot Bloodthirst pret mērķi virs un zem 80% veselības, pārbaudot papildu 60% critical iespēju tikai virs sliekšņa.
+- Ar Focus in Chaos salīdzināt abu ieroču auto-attack miss Enrage laikā un ārpus tā: Enrage laikā dual-wield sodam jābūt noņemtam, neietekmējot parasto bāzes miss.
