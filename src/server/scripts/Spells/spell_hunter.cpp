@@ -44,6 +44,9 @@ enum HunterSpells
     HUNTER_DISENGAGE                             = 781,
     HUNTER_EXHILARATION                          = 109304,
     HUNTER_FLANKING_STRIKE                       = 202800,
+    HUNTER_FROZEN_WAKE                           = 201142,
+    HUNTER_FURY_OF_THE_EAGLE                     = 203415,
+    HUNTER_FURY_OF_THE_EAGLE_DAMAGE              = 203413,
     HUNTER_HARPOON                               = 190925,
     HUNTER_HUNTERS_MARK                          = 185365,
     HUNTER_HUNTERS_MARK_READY                    = 185743,
@@ -58,10 +61,13 @@ enum HunterSpells
     HUNTER_POSTHASTE_SPEED                       = 118922,
     HUNTER_RAPTOR_STRIKE                         = 186270,
     HUNTER_MONGOOSE_BITE                         = 190928,
+    HUNTER_MONGOOSE_FURY                         = 190931,
     HUNTER_TALON_STRIKE_DAMAGE                   = 203525,
     HUNTER_TALON_SLASH                           = 242735,
     HUNTER_TERMS_OF_ENGAGEMENT                   = 203754,
     HUNTER_THROWING_AXES_DAMAGE                  = 200167,
+    HUNTER_EXPERT_TRAPPER                        = 199543,
+    HUNTER_SUPER_STICKY_TAR                      = 201158,
     HUNTER_TRUESHOT                              = 193526,
     DIRE_BEAST_JADE_FOREST                       = 121118,
     DIRE_BEAST_KALIMDOR                          = 122802,
@@ -1050,6 +1056,116 @@ class spell_hun_talon_strike : public AuraScript
     {
         DoCheckProc += AuraCheckProcFn(spell_hun_talon_strike::CheckProc);
         OnEffectProc += AuraEffectProcFn(spell_hun_talon_strike::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Fury of the Eagle - 203415. Snapshot Mongoose Fury at the beginning of the
+// channel; the damage spell (203413) is otherwise not covered by its class mask.
+class spell_hun_fury_of_the_eagle : public AuraScript
+{
+    PrepareAuraScript(spell_hun_fury_of_the_eagle);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        uint8 stacks = 0;
+        if (Aura const* mongooseFury = GetTarget()->GetAura(HUNTER_MONGOOSE_FURY))
+            stacks = mongooseFury->GetStackAmount();
+
+        GetAura()->SetCustomData(stacks);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_hun_fury_of_the_eagle::HandleApply,
+            EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Fury of the Eagle damage - 203413
+class spell_hun_fury_of_the_eagle_damage : public SpellScript
+{
+    PrepareSpellScript(spell_hun_fury_of_the_eagle_damage);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_FURY_OF_THE_EAGLE, HUNTER_MONGOOSE_FURY });
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Aura* channel = caster ? caster->GetAura(HUNTER_FURY_OF_THE_EAGLE) : nullptr;
+        SpellInfo const* mongooseFury = sSpellMgr->GetSpellInfo(HUNTER_MONGOOSE_FURY);
+        if (!channel || !mongooseFury)
+            return;
+
+        int32 stacks = channel->GetCustomData();
+        int32 percentPerStack = mongooseFury->Effects[EFFECT_0]->CalcValue(caster);
+        SetHitDamage(GetHitDamage() + CalculatePct(GetHitDamage(), stacks * percentPerStack));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_hun_fury_of_the_eagle_damage::HandleDamage,
+            EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Freezing Trap - 3355; Expert Trapper's Frozen Wake - 201142
+class spell_hun_freezing_trap_expert : public AuraScript
+{
+    PrepareAuraScript(spell_hun_freezing_trap_expert);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_EXPERT_TRAPPER, HUNTER_FROZEN_WAKE });
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (caster && target && caster->HasAura(HUNTER_EXPERT_TRAPPER))
+            caster->CastSpell(target, HUNTER_FROZEN_WAKE, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_hun_freezing_trap_expert::HandleRemove,
+            EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Tar Trap slow - 135299; Expert Trapper's Super Sticky Tar - 201158
+class spell_hun_tar_trap_aura : public AuraScript
+{
+    PrepareAuraScript(spell_hun_tar_trap_aura);
+
+    uint32 updateTimer = 0;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_EXPERT_TRAPPER, HUNTER_SUPER_STICKY_TAR });
+    }
+
+    void HandleUpdate(uint32 diff, AuraEffect* /*aurEff*/)
+    {
+        updateTimer += diff;
+        if (updateTimer < IN_MILLISECONDS)
+            return;
+
+        updateTimer %= IN_MILLISECONDS;
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (caster && target && caster->HasAura(HUNTER_EXPERT_TRAPPER)
+            && !target->HasAura(HUNTER_SUPER_STICKY_TAR) && roll_chance_i(20))
+            caster->CastSpell(target, HUNTER_SUPER_STICKY_TAR, true);
+    }
+
+    void Register() override
+    {
+        OnEffectUpdate += AuraEffectUpdateFn(spell_hun_tar_trap_aura::HandleUpdate,
+            EFFECT_0, SPELL_AURA_MOD_DECREASE_SPEED);
     }
 };
 
@@ -2994,6 +3110,10 @@ void AddSC_hunter_spell_scripts()
     RegisterAuraScript(spell_hun_eagles_bite_trait);
     RegisterAuraScript(spell_hun_echoes_of_ohnara);
     RegisterAuraScript(spell_hun_talon_strike);
+    RegisterAuraScript(spell_hun_fury_of_the_eagle);
+    RegisterSpellScript(spell_hun_fury_of_the_eagle_damage);
+    RegisterAuraScript(spell_hun_freezing_trap_expert);
+    RegisterAuraScript(spell_hun_tar_trap_aura);
     new spell_hun_explosive_shot_detonate();
     new spell_hun_explosive_shot();
     RegisterSpellScript(spell_hun_chimaera_shot);
