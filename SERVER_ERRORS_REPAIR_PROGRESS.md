@@ -164,3 +164,19 @@ Roiling Storm spelli 196290 un 196296 izmanto vienu effect 0 periodisko apstrād
 ### Spēlē vēlāk pārbaudāmais
 
 - Eye of Azshara pārbaudīt gan 196290, gan 196296 Roiling Storm darbību: NPC izsaukšanu, kustību pa apli un periodisko efektu katrā tickā.
+
+## Pakete 177 — Mercenary Contract auras noņemšana
+
+Fails: `src/server/scripts/Spells/spell_generic.cpp`.
+
+Mercenary Contract spelli 193472 un 193475 effect 0 ir `DUMMY` aura. Apply hooks jau bija piesaistīts šim faktiskajam tipam, bet remove hooks kļūdaini gaidīja `TRANSFORM`; tagad abi auras dzīves cikla hooki izmanto vienu un to pašu effect 0 tipu.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika četri iepriekš eksistējoši, ar šo labojumu nesaistīti C5055 brīdinājumi tajā pašā failā.
+- Pilns starts pabeigts 11 sekundēs; abas `spell_mercenary_contract` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 37 uz 35.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Battleground vidē ar ieslēgtu cross-faction režīmu pārbaudīt abu frakciju Mercenary Contract morph uzlikšanu un to, ka atbilstošais rases morphs tiek pilnīgi noņemts reizē ar līguma auru.
