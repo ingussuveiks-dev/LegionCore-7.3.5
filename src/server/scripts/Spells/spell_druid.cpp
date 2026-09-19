@@ -28,6 +28,11 @@
 #include "BattlefieldMgr.h"
 #include "Group.h"
 #include "AreaTrigger.h"
+#include "ObjectVisitors.hpp"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "Cell.h"
+#include "CellImpl.h"
 
 enum DruidSpells
 {
@@ -1817,25 +1822,51 @@ class spell_dru_nature_balance : public SpellScript
 {
     PrepareSpellScript(spell_dru_nature_balance);
 
+    static void ExtendPeriodicAura(Unit* target, Unit* caster, uint32 spellId, int32 tickCount)
+    {
+        if (Aura* aura = target->GetAura(spellId, caster->GetGUID()))
+        {
+            AuraEffect const* periodicEffect = aura->GetEffect(EFFECT_1);
+            if (!periodicEffect)
+                return;
+
+            // Nature's Balance follows the normal 130% pandemic cap. Without this
+            // cap repeated casts could grow Moonfire or Sunfire indefinitely.
+            int32 const maximumDuration = CalculatePct(aura->GetMaxDuration(), 130);
+            int32 const extendedDuration = aura->GetDuration() + periodicEffect->GetPeriod() * tickCount;
+            aura->SetDuration(std::min(extendedDuration, maximumDuration));
+        }
+    }
+
     void HandleOnHit(SpellEffIndex /*effIndex*/)
     {
         if (Unit* caster = GetCaster())
         {
-            if (Unit* target = GetHitUnit())
-            {
-                if (Aura* aur = caster->GetAura(202430))
-                {
-                    if (GetId() == 194153)
-                        if (Aura* aura = target->GetAura(164812, caster->GetGUID()))
-                            if (AuraEffect* eff = aura->GetEffect(EFFECT_1))
-                                aura->SetDuration(aura->GetDuration() + eff->GetPeriod() * aur->GetSpellInfo()->Effects[EFFECT_0]->BasePoints);
+            Aura const* natureBalance = caster->GetAura(202430);
+            if (!natureBalance)
+                return;
 
-                    if (GetId() == 190984)
-                        if (Aura* aura = target->GetAura(164815, caster->GetGUID()))
-                            if (AuraEffect* eff = aura->GetEffect(EFFECT_1))
-                                aura->SetDuration(aura->GetDuration() + eff->GetPeriod() * aur->GetSpellInfo()->Effects[EFFECT_1]->BasePoints);
-                }
+            if (GetId() == 194153)
+            {
+                if (Unit* target = GetHitUnit())
+                    ExtendPeriodicAura(target, caster, 164812, natureBalance->GetSpellInfo()->Effects[EFFECT_0]->BasePoints);
+                return;
             }
+
+            if (GetId() != 190984)
+                return;
+
+            // Solar Wrath extends every Sunfire applied by this druid, not only
+            // the Sunfire on Solar Wrath's current target.
+            UnitList targets;
+            float const range = caster->GetVisibilityRange();
+            Trinity::AnyUnitHavingBuffInObjectRangeCheck check(caster, caster, range, 164815, false);
+            Trinity::UnitListSearcher<Trinity::AnyUnitHavingBuffInObjectRangeCheck> searcher(caster, targets, check);
+            Trinity::VisitNearbyObject(caster, range, searcher);
+
+            int32 const tickCount = natureBalance->GetSpellInfo()->Effects[EFFECT_1]->BasePoints;
+            for (Unit* target : targets)
+                ExtendPeriodicAura(target, caster, 164815, tickCount);
         }
     }
 
