@@ -3035,3 +3035,20 @@ Spell 232169 ir vienīgais `spell_target_position` ieraksts, kas ved uz Mardum s
 
 - Ar Demon Hunter sākt Mardum class-hall scenāriju un pārbaudīt parādīšanos Illidari sākuma grupā pie `(1470.44, 1411.41, 243.73)`.
 - Pārliecināties, ka pirmais `DH CH Quest` event objekts un sākuma scenārija posms aktivizējas un ka spēlētājs neparādās zem platformas vai citā fāzē.
+
+## Pakete 162 — Telogrus Rift scenārija ieeja
+
+Fails: `sql/updates/world/2026_09_19_146_restore_telogrus_rift_entrance.sql`.
+
+Spell-click NPC 130877 “Rift to Telogrus” atrodas ārpus scenārija Outland kartē 530 un casto spellu 250798. Tā `spell_target_position` ved uz karti 1622 pie `(1385.32, 2859.3, 58.1648)`. Pārējie trīs kartes teleport-spelli ir saistīti ar iekšējiem “Void Rift” NPC 127018, 127520 un 127521, tādēļ LFG ieejai izmantots tikai ārējā “Rift to Telogrus” precīzais mērķis.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; Telogrus rinda pārlasīta no MariaDB ar ārējā portāla spell 250798 precīzo mērķi.
+- Pilns `worldserver` starts pabeigts 11 sekundēs; Telogrus Rift ieejas kļūda pazuda un `DBErrors.log` skaits samazinājās no 12 uz 11.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Alliance varoni izmantot “Rift to Telogrus” (130877) un pārbaudīt parādīšanos scenārija sākumā pie `(1385.32, 2859.3, 58.1648)`.
+- Iziet Telogrus Rift scenāriju un pārbaudīt, ka iekšējie Void Rift portāli joprojām ved uz savām atsevišķajām platformām un nav aizstāti ar LFG sākumpunktu.
