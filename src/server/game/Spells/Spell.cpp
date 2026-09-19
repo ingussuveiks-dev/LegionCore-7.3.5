@@ -5951,7 +5951,10 @@ void Spell::TakePower()
                             if (!summonList->empty())
                             {
                                 float countMod = float(m_spellInfo->Power.PowerCost) / 10.f;
-                                plr->CastCustomSpell(plr, 211947, &countMod, nullptr, nullptr, true);
+                                for (ObjectGuid const& summonGuid : *summonList)
+                                    if (Unit* arbiter = ObjectAccessor::GetUnit(*plr, summonGuid))
+                                        if (arbiter->IsAlive())
+                                            arbiter->CastCustomSpell(arbiter, 211947, &countMod, nullptr, nullptr, true);
                             }
                         }
                         if (Aura* auraInfo = plr->GetAura(51462)) // Runic Corruption
