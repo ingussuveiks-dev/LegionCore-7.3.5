@@ -1932,14 +1932,12 @@ class spell_tos_spiritual_barrier_dissonance : public AuraScript
 
     void Register() override
     {
-        OnEffectApply += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnApply, EFFECT_0, SPELL_AURA_PHASE, AURA_EFFECT_HANDLE_REAL);
-        OnEffectApply += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        OnEffectApply += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnApply, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnRemove, EFFECT_0, SPELL_AURA_PHASE, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
-        OnEffectUpdate += AuraEffectUpdateFn(spell_tos_spiritual_barrier_dissonance::OnUpdate, EFFECT_0, SPELL_AURA_PHASE);
-        OnEffectUpdate += AuraEffectUpdateFn(spell_tos_spiritual_barrier_dissonance::OnUpdate, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        // The visual variants keep their controlling aura at effect 1 while
+        // the realm variants use effect 0. Bind once to the first aura effect
+        // present instead of registering every variant on every spell.
+        OnEffectApply += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnApply, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectRemove += AuraEffectRemoveFn(spell_tos_spiritual_barrier_dissonance::OnRemove, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectUpdate += AuraEffectUpdateFn(spell_tos_spiritual_barrier_dissonance::OnUpdate, EFFECT_FIRST_FOUND, SPELL_AURA_ANY);
     }
 };
 

@@ -17,3 +17,19 @@ Kopīgais `spell_dru_incarnation` skripts ir piesaistīts četriem specializāci
 ### Spēlē vēlāk pārbaudāmais
 
 - Ar Restoration, Feral, Guardian un Balance specializāciju aktivizēt attiecīgo Incarnation spēju un pārbaudīt pareizo formu/modeli gan uzlikšanas, gan auras noņemšanas brīdī.
+
+## Pakete 168 — Desolate Host Spiritual Barrier hooki
+
+Fails: `src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp`.
+
+`spell_tos_spiritual_barrier_dissonance` apkalpo četrus spellus ar divām atšķirīgām DBC uzbūvēm: vizuālajiem variantiem kontrolējošā aura ir effect 1, bet realm variantiem — effect 0. Iepriekš katram spellam tika reģistrēti visi phase, dummy un periodic-dummy varianti. Apply, remove un update loģika tagad katram spellam vienreiz piesaistīta pirmajam faktiskajam aura efektam ar `EFFECT_FIRST_FOUND` un `SPELL_AURA_ANY`.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; visas 16 `spell_tos_spiritual_barrier_dissonance` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 92 uz 76.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Desolate Host cīņā abās realm pusēs pārbaudīt Spiritual Barrier uzlikšanu un noņemšanu, spēlētāja selectability, custom-field atjaunošanu un heroic/mythic Dissonance periodisko castu.
