@@ -82,3 +82,19 @@ Kopīgais clone-weapon skripts ir piesaistīts sešiem spelliem, bet spell 41054
 
 - Lost City of the Tol'vir Repentance fāzē pārbaudīt, ka spoguļattēls saņem spēlētāja galvenā ieroča modeli un pēc auras beigām atgūst sākotnējo modeli.
 - Atsevišķi pārbaudīt generic galvenā, off-hand un ranged ieroča kopēšanas spellus, īpaši 41054 un 69893, ieskaitot auras atkārtotu uzlikšanu.
+
+## Pakete 172 — Brewfest ram ātruma aura hooki
+
+Fails: `src/server/scripts/Spells/spell_generic.cpp`.
+
+Brewfest Trot, Canter un Gallop spelli saglabā veco trīs efektu izkārtojumu, bet Normal un Exhausted šajā klienta būvē vairs neatbilst fiksētajiem aura tipiem. Apply un remove ir visas auras dzīves cikla notikumi, tādēļ tie piesaistīti pirmajam faktiskajam aura efektam. Periodiskais handlers paliek effect 1, bet pieņem tā faktisko aura tipu; tas jau pēc spell ID nekavējoties ignorē Exhausted variantu.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika četri iepriekš eksistējoši, ar šo labojumu nesaistīti C5055 brīdinājumi tajā pašā failā.
+- Pilns starts pabeigts 12 sekundēs; visas četras `spell_brewfest_speed` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 54 uz 50.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Brewfest ram braucienā pārbaudīt Normal → Trot → Canter → Gallop pārejas, fatigue pieaugumu/samazinājumu, Exhausted uzlikšanu pie 100 stackiem un 15 stacku noņemšanu pēc Exhausted beigām.
