@@ -404,8 +404,8 @@ class spell_warr_in_for_the_kill : public AuraScript
     }
 };
 
-// Trauma - 215538. Add the remaining bleed damage to 20% of the new hit and
-// redistribute the result over a fresh six-second, three-tick bleed.
+// Trauma - 215538. Supply the per-tick share of the new 20% contribution;
+// SPELL_ATTR10_STACK_DAMAGE_OR_HEAL rolls the unexpired damage forward.
 class spell_warr_trauma : public AuraScript
 {
     PrepareAuraScript(spell_warr_trauma);
@@ -446,13 +446,8 @@ class spell_warr_trauma : public AuraScript
         if (!totalTicks)
             return;
 
-        float totalDamage = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
-        if (Aura* current = target->GetAura(SPELL_WARRIOR_TRAUMA_BLEED, caster->GetGUID()))
-            if (AuraEffect* currentEffect = current->GetEffect(EFFECT_0))
-                totalDamage += currentEffect->GetAmount() *
-                    (currentEffect->GetTotalTicks() - currentEffect->GetTickNumber());
-
-        float damagePerTick = totalDamage / totalTicks;
+        float damagePerTick = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(),
+            aurEff->GetAmount()) / totalTicks;
         caster->CastCustomSpell(target, SPELL_WARRIOR_TRAUMA_BLEED, &damagePerTick,
             nullptr, nullptr, true, nullptr, aurEff);
     }
@@ -464,9 +459,9 @@ class spell_warr_trauma : public AuraScript
     }
 };
 
-// Corrupted Blood of Zakajz - 209567. Each damaging attack adds 20% of its
-// damage to the remaining six-second Shadow bleed and redistributes it over
-// the full three ticks.
+// Corrupted Blood of Zakajz - 209567. Supply the per-tick share of each new
+// 20% contribution; SPELL_ATTR10_STACK_DAMAGE_OR_HEAL rolls the unexpired
+// Shadow damage forward.
 class spell_warr_corrupted_blood_of_zakajz : public AuraScript
 {
     PrepareAuraScript(spell_warr_corrupted_blood_of_zakajz);
@@ -500,13 +495,8 @@ class spell_warr_corrupted_blood_of_zakajz : public AuraScript
         if (!totalTicks)
             return;
 
-        float totalDamage = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
-        if (Aura* current = target->GetAura(SPELL_WARRIOR_CORRUPTED_BLOOD_DOT, caster->GetGUID()))
-            if (AuraEffect* currentEffect = current->GetEffect(EFFECT_0))
-                totalDamage += currentEffect->GetAmount() *
-                    (currentEffect->GetTotalTicks() - currentEffect->GetTickNumber());
-
-        float damagePerTick = totalDamage / totalTicks;
+        float damagePerTick = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(),
+            aurEff->GetAmount()) / totalTicks;
         caster->CastCustomSpell(target, SPELL_WARRIOR_CORRUPTED_BLOOD_DOT, &damagePerTick,
             nullptr, nullptr, true, nullptr, aurEff);
     }

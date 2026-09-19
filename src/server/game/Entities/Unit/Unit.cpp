@@ -23216,11 +23216,12 @@ float Unit::MeleeSpellMissChance(const Unit* victim, WeaponAttackType attType, u
     else
         missChance -= victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_MELEE_HIT_CHANCE);
 
-    bool ignoreDualWieldPenalty = HasAura(200871) && HasAura(184362); // Focus in Chaos while Enraged
-    if (!spellId && haveOffhandWeapon() && !IsInFeralForm() && !ignoreDualWieldPenalty)
+    // This aura type is a boolean rule, not a numerical hit modifier. Focus in
+    // Chaos applies aura 200876 while Enraged, which must suppress the complete
+    // dual-wield penalty while retaining the normal base miss chance.
+    if (!spellId && haveOffhandWeapon() && !IsInFeralForm() &&
+        !HasAuraType(SPELL_AURA_IGNORE_DUAL_WIELD_HIT_PENALTY))
         missChance += 17.0f;
-
-    missChance -= GetTotalAuraModifier(SPELL_AURA_IGNORE_DUAL_WIELD_HIT_PENALTY);
 
     if (IsCreature() && ToCreature()->GetCreatureTemplate()->TypeFlags[0] & CREATURE_TYPEFLAGS_BOSS)
         missChance = 0.0f;

@@ -3403,7 +3403,7 @@ Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_
 
 Gala 7.3.5.26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellLearnSpell` un `SpellDuration` dati atklāja vairākas klusas Arms kļūdas. `Mortal Strike` dummy efekts neuzlika tooltipā tieši norādīto `Mortal Wounds` 115804. Trūka arī servera filtru un darbību `Executioner's Precision`, Arms `Focused Rage`, `Precise Strikes`, `In for the Kill` un `Trauma`. Sākotnēji pievienotais `Tactician` C++ handlers nākamajā artifact audita paketē tika noņemts: padziļināta core pārbaude apstiprināja, ka `Unit.cpp` jau pareizi aprēķina 0,75% iespēju par katru iztērēto Rage, ieskaita `Exploit the Weakness` un caur 199854 DB saitēm atiestata abus cooldownus.
 
-Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un jaunajiem 20% bojājumiem pieskaita vēl neiztikšķējušos iepriekšējā bleed bojājumus, tad pārdala summu pa trim sešu sekunžu tickiem. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938. C++ ierobežo procu līdz četriem atbilstošajiem Arms melee spelliem, savukārt aktīvās world DB `spell_proc_event` ieraksts nodrošina vienīgo 5% izlozi un aktivē 60503.
+Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un nodod jaunā sitiena 20% daļu trīs sešu sekunžu tickiem; spellam gala DB2 datos esošais `SPELL_ATTR10_STACK_DAMAGE_OR_HEAL` liek core automātiski saglabāt un pārdalīt vēl neiztikšķējušos iepriekšējā bleed bojājumus. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938. C++ ierobežo procu līdz četriem atbilstošajiem Arms melee spelliem, savukārt aktīvās world DB `spell_proc_event` ieraksts nodrošina vienīgo 5% izlozi un aktivē 60503.
 
 `Colossus Smash` 167105 netika dublēts C++: aktīvajā world DB jau ir pareiza saite uz debuffu 208086, bet Mastery 76838 klientā nativi modificē gan Colossus Smash bojājumu, gan šī debuffa efektu. Tāpat bez lieka skripta atstāti DB2 nativi realizētie Rend, Sweeping Strikes, Mortal Combo, Titanic Might un Deadly Calm.
 
@@ -3461,7 +3461,7 @@ Izmantotie avoti:
 
 Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_166_restore_warrior_arms_artifact_traits.sql`.
 
-No gala 7.3.5.26972 `Artifact`, `ArtifactPower` un `ArtifactPowerRank` datiem izveidots pilns Strom'kar, the Warbreaker traitu saraksts un katrs traits salīdzināts ar spellu efektiem, core pirmkodu un aktīvajām world DB saitēm. Atrastas divas reālas klusas kļūdas. `Corrupted Blood of Zakajz` aktivācijas aura 209567 saņēma damage procus, bet tai nebija darbības, kas izveido 209569 Shadow DoT. Pievienots handlers, kas katram uzbrukumam pieskaita 20% nodarītā damage vēl neiztikšķējušajam atlikumam un pārdala kopsummu pa jaunu sešu sekunžu/trim ticku DoT. Gala `Shattered Defenses` buffs 248625 bija zaudējis vienas charges proc rindu, kas vecajam 209706 variantam bija saglabāta; atjaunota identiska vienreizējā patēriņa konfigurācija, un klienta class mask nodrošina patēriņu tikai ar Mortal Strike vai Execute.
+No gala 7.3.5.26972 `Artifact`, `ArtifactPower` un `ArtifactPowerRank` datiem izveidots pilns Strom'kar, the Warbreaker traitu saraksts un katrs traits salīdzināts ar spellu efektiem, core pirmkodu un aktīvajām world DB saitēm. Atrastas divas reālas klusas kļūdas. `Corrupted Blood of Zakajz` aktivācijas aura 209567 saņēma damage procus, bet tai nebija darbības, kas izveido 209569 Shadow DoT. Pievienots handlers, kas katra uzbrukuma 20% bojājumu sadala jaunā sešu sekunžu/trim ticku DoT; 209569 gala DB2 `SPELL_ATTR10_STACK_DAMAGE_OR_HEAL` atribūts liek core automātiski saglabāt un pārdalīt vēl neiztikšķējušos bojājumus. Gala `Shattered Defenses` buffs 248625 bija zaudējis vienas charges proc rindu, kas vecajam 209706 variantam bija saglabāta; atjaunota identiska vienreizējā patēriņa konfigurācija, un klienta class mask nodrošina patēriņu tikai ar Mortal Strike vai Execute.
 
 Padziļinātā pārbaude novērsa arī dublēšanu. Core `Unit.cpp` jau satur pareizo Rage-cost izlozi `Soul of the Slaughter` un `Tactician`, turklāt Tactician aprēķinā ieskaita `Exploit the Weakness`. Tādēļ liekās C++/DB piesaistes tika noņemtas, lai iespēja netiktu izlozēta divreiz. Pārējie Strom'kar traiti ir nativi realizēti ar aura/class maskām vai jau esošām world DB ķēdēm: One Against Many core pieskaita traita vērtību Cleave buffam, Tactical Advance darbojas no Heroic Leap piezemēšanās 52174, Touch of Zakajz izmanto damage procenta triggeri, Will of the First King ir filtrēts uz Whirlwind critical, Void Cleave skaita trīs Cleave mērķus, bet Warbreaker piemēro Colossus Smash efektu.
 
@@ -3495,7 +3495,7 @@ Pirms Fury audita pabeigts atlikušais Arms `Talent` un `SpecializationSpells` s
 
 Fury gala 7.3.5.26972 talantu un Warswords of the Valarjar datu salīdzinājumā atrastas trīs klusas kļūdas. `War Machine` 215556 kill proc klientā norāda uz 215557 — tukšu target dummy markeru — un serverī nebija pārejas uz tooltipā aprakstīto pašbuffu 215562. Pievienots proc handlers, kas saglabā DB kill nosacījumu, aptur tukšo noklusēto darbību un uzliek īsto 30% haste/movement buffu.
 
-`Fresh Meat` 215568 glabā 60% Bloodthirst critical bonusu effect 0 un 80% mērķa veselības slieksni effect 1, taču neviens esošais ceļš šos dummy efektus neizmantoja. Warrior melee crit aprēķins tagad pieskaita gala DB2 vērtības tikai Bloodthirst 23881 un tikai virs klienta sliekšņa. `Focus in Chaos` 200871 tāpat bija tikai dummy trait: auto-attack miss aprēķins tagad Enrage 184362 laikā izlaiž 17% dual-wield sodu, bet ārpus Enrage saglabā standarta sodu.
+`Fresh Meat` 215568 glabā 60% Bloodthirst critical bonusu effect 0 un 80% mērķa veselības slieksni effect 1, taču neviens esošais ceļš šos dummy efektus neizmantoja. Warrior melee crit aprēķins tagad pieskaita gala DB2 vērtības tikai Bloodthirst 23881 un tikai virs klienta sliekšņa. `Focus in Chaos` 200871 world DB jau pareizi sasaista Enrage ar 200876, taču core aura tipu `SPELL_AURA_IGNORE_DUAL_WIELD_HIT_PENALTY` kļūdaini izmantoja kā skaitlisku hit modifikatoru. Aprēķins tagad šo semantiski boolean auru izmanto, lai pilnībā izlaistu tikai 17% dual-wield sodu, saglabājot parasto bāzes miss.
 
 Izmantotie avoti:
 
@@ -3520,3 +3520,37 @@ Izmantotie avoti:
 - Ar War Machine nogalināt derīgu mērķi: pašam Warrior uz 15 sekundēm jāsaņem 215562 ar 30% haste un movement speed; uz nogalinātā mērķa nedrīkst palikt tukšs efekts.
 - Ar Fresh Meat izmantot Bloodthirst pret mērķi virs un zem 80% veselības, pārbaudot papildu 60% critical iespēju tikai virs sliekšņa.
 - Ar Focus in Chaos salīdzināt abu ieroču auto-attack miss Enrage laikā un ārpus tā: Enrage laikā dual-wield sodam jābūt noņemtam, neietekmējot parasto bāzes miss.
+
+## Pakete 180 — Warrior Fury: pilnais talents/artifact audits un korekcijas
+
+Faili: `src/server/game/Entities/Unit/Unit.cpp`, `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_168_correct_warrior_fury_proc_data.sql`.
+
+Pabeigts Fury `Talent`, `SpecializationSpells` un Warswords of the Valarjar artifact pilnais audits pret gala 7.3.5.26972 klienta datiem, aktīvo world DB un core. Talantu pusē War Machine un Fresh Meat labojumi paliek paketē 179; Endless Rage, Wrecking Ball, Furious Charge, Warpaint, Massacre, Frothing Berserker, Carnage, Bloodbath, Frenzy, Inner Rage, Reckless Abandon un Dragon Roar izmanto pareizos gala aura/spellmod/proc efektus vai jau esošās DB/core darbības. Īpaši pārbaudīts, ka Bloodbath 113344, tāpat kā Trauma 215537 un Corrupted Blood 209569, satur `SPELL_ATTR10_STACK_DAMAGE_OR_HEAL`: core pats pārnes neiztikšķējušo periodisko bojājumu. Tādēļ no abu jaunāko handleru aprēķina izņemta otrreizēja atlikuma pieskaitīšana, kas citādi ritošo DoT palielinātu divreiz.
+
+Artifact pusē pārbaudīti visi 19 gala traiti un to izsauktie spelli. Battle Scars, Unrivaled Strength un Pulse of Battle world DB `spell_trigger` option 0 jau pareizi pārnes aktuālā artifact ranka daudzumu; Sense Death, Juggernaut, Odyn's Champion un Rage of the Valarjar izmanto atbilstošos klienta proc efektus; Odyn's Fury divus damage spellus izsauc gala DB2, bet Death and Glory world DB nejauši izvēlas Odyn/Helya variantu. Atrasts viens datu konflikts: `Rage of the Valarjar` 200845 aktīvā `spell_proc_event.CustomChance=15` pārrakstīja gala klienta `SpellAuraOptions.ProcChance=10`. Custom override noņemts, saglabājot esošās Rampage/Execute class maskas un klienta 15 sekunžu proc kategorijas cooldownu.
+
+Padziļināti izlabots arī Focus in Chaos ceļš: Enrage world DB jau uzliek 200876 ar `SPELL_AURA_IGNORE_DUAL_WIELD_HIT_PENALTY`, tāpēc `MeleeSpellMissChance` tagad šo auras tipu apstrādā kā boolean noteikumu un pilnībā izlaiž dual-wield 17% sodu. Iepriekšējais skaitliskais auras summas atvilkums bija semantiski nepareizs. Trauma un Corrupted Blood handleri tagad nodod tikai jaunā 20% ieguldījuma daļu uz vienu ticku; ritošo atlikumu vienreiz pievieno kopīgais core mehānisms.
+
+Izmantotie avoti:
+
+- https://wago.tools/db2/Talent/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972
+- https://wago.tools/db2/Artifact/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPower/csv?build=7.3.5.26972
+- https://wago.tools/db2/ArtifactPowerRank/csv?build=7.3.5.26972
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://github.com/TrinityCore/TrinityCore/blob/master/src/server/game/Entities/Unit/Unit.cpp
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; updateris piemēroja migrāciju 168, un MariaDB apstiprināts, ka 200845 vairs nav 15% custom override.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6682 C++ skriptus un validēja 3387 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Focus in Chaos salīdzināt dual-wield auto-attack miss biežumu Enrage laikā un ārpus tā; bāzes miss jāsaglabā, bet Enrage laikā jāizzūd tikai 17% dual-wield sodam.
+- Ar Trauma un Corrupted Blood izdarīt vairākus sitienus pirms iepriekšējā DoT beigām un apstiprināt, ka jaunais 20% ieguldījums un atlikums tiek saglabāts vienreiz. Rage of the Valarjar jāpārbauda ilgā cīņā: proc iespēja ir 10%, un 15 sekunžu iekšējais cooldowns nepieļauj pārāk biežu atkārtošanos.
