@@ -12755,6 +12755,17 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
     // Custom scripted damage
     switch (spellProto->ClassOptions.SpellClassSet)
     {
+        case SPELLFAMILY_DRUID:
+        {
+            // Bloodletter's Frailty: while Ashamane's Frenzy is active on the
+            // target, the Feral artifact increases this druid's ability damage.
+            // The DB2 aura is an Effect 4 spell modifier used as the 30% data
+            // carrier; the target-specific condition requires server handling.
+            if (AuraEffect const* bloodlettersFrailty = GetAuraEffect(238120, EFFECT_0))
+                if (victim->HasAura(210722, GetGUID()))
+                    AddPct(DoneTotalMod, bloodlettersFrailty->GetAmount());
+            break;
+        }
         case SPELLFAMILY_MAGE:
         {
             // Torment the weak
@@ -14137,6 +14148,13 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
             if (AuraEffect* aurEff = GetAuraEffect(115636, EFFECT_0))
                 if (aurEff->GetOldBaseAmount())
                     AddPct(DoneTotalMod, aurEff->GetAmount());
+
+        // Bloodletter's Frailty also affects physical Feral abilities handled
+        // through the melee damage path (for example Shred).
+        if (spellProto->ClassOptions.SpellClassSet == SPELLFAMILY_DRUID)
+            if (AuraEffect const* bloodlettersFrailty = GetAuraEffect(238120, EFFECT_0))
+                if (victim->HasAura(210722, GetGUID()))
+                    AddPct(DoneTotalMod, bloodlettersFrailty->GetAmount());
     }
 
     DoneTotalMod *= GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_DONE_VERSUS, creatureTypeMask);
