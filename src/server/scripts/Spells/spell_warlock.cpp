@@ -1295,10 +1295,35 @@ class spell_warl_demonwrath : public SpellScriptLoader
 
             SpellCastResult CheckCast()
             {
-                if(Unit* caster = GetCaster())
-                    if (caster->ToPlayer())
-                        if (Pet* pet = caster->ToPlayer()->GetPet())
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return SPELL_FAILED_DONT_REPORT;
+
+                if (Player* player = caster->ToPlayer())
+                    if (Pet* pet = player->GetPet())
+                        if (pet->IsAlive())
                             return SPELL_CAST_OK;
+
+                // Demonwrath can be channelled through any active demon, not
+                // only the permanent pet. This includes temporary demons.
+                uint32 const demonEntries[] =
+                {
+                    89,     // Infernal
+                    11859,  // Doomguard
+                    55659,  // Wild Imp (Hand of Gul'dan)
+                    95072,  // Fel Lord
+                    98035,  // Dreadstalker
+                    99737,  // Wild Imp (Improved Dreadstalkers)
+                    101968, // Observer
+                    103673  // Darkglare
+                };
+
+                for (uint32 entry : demonEntries)
+                    if (GuidList* summonList = caster->GetSummonList(entry))
+                        for (ObjectGuid const& guid : *summonList)
+                            if (Creature* summon = ObjectAccessor::GetCreature(*caster, guid))
+                                if (summon->IsAlive())
+                                    return SPELL_CAST_OK;
 
                 return SPELL_FAILED_NO_PET;
             }
@@ -1323,6 +1348,100 @@ class spell_warl_demonwrath : public SpellScriptLoader
         {
             return new spell_warl_demonwrath_SpellScript();
         }
+};
+
+// Doom - 603
+class spell_warl_doom : public AuraScript
+{
+    PrepareAuraScript(spell_warl_doom);
+
+    void HandleTick(AuraEffect const* /*aurEff*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (!caster || !target)
+            return;
+
+        // Every Doom cycle generates one Soul Shard.
+        caster->CastSpell(caster, 193318, true);
+
+        // Impending Doom summons a Wild Imp at the afflicted target on every
+        // Doom tick. Its period reduction is supplied by the 7.3.5 DBC data.
+        if (caster->HasAura(196270))
+            caster->CastSpell(target->GetPosition(), 196271, true);
+    }
+
+    void ModifyTickDamage(AuraEffect const* /*aurEff*/, float& damage, Unit* /*target*/)
+    {
+        if (Unit* caster = GetCaster())
+            if (AuraEffect const* doomDoubled = caster->GetAuraEffect(218572, EFFECT_0))
+                if (roll_chance_f(doomDoubled->GetAmount()))
+                    damage *= 2.0f;
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_doom::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+        DoEffectChangeTickDamage += AuraEffectChangeTickDamageFn(spell_warl_doom::ModifyTickDamage, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+    }
+};
+
+// Implosion - 196277
+class spell_warl_implosion : public SpellScript
+{
+    PrepareSpellScript(spell_warl_implosion);
+
+    bool HasLivingImp(Unit* caster) const
+    {
+        uint32 const impEntries[] = { 55659, 99737 };
+        for (uint32 entry : impEntries)
+            if (GuidList* summonList = caster->GetSummonList(entry))
+                for (ObjectGuid const& guid : *summonList)
+                    if (Creature* imp = ObjectAccessor::GetCreature(*caster, guid))
+                        if (imp->IsAlive())
+                            return true;
+
+        return false;
+    }
+
+    SpellCastResult CheckCast()
+    {
+        if (Unit* caster = GetCaster())
+            if (HasLivingImp(caster))
+                return SPELL_CAST_OK;
+
+        return SPELL_FAILED_NO_PET;
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        uint32 const impEntries[] = { 55659, 99737 };
+        for (uint32 entry : impEntries)
+        {
+            GuidList* summonList = caster->GetSummonList(entry);
+            if (!summonList)
+                continue;
+
+            GuidList imps = *summonList;
+            for (ObjectGuid const& guid : imps)
+                if (Creature* imp = ObjectAccessor::GetCreature(*caster, guid))
+                    if (imp->IsAlive())
+                        // spell_trigger_delay makes the warlock cast 196278
+                        // around the imp when its jump reaches the target.
+                        imp->CastSpell(target, 205205, true, nullptr, nullptr, caster->GetGUID());
+        }
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_warl_implosion::CheckCast);
+        OnEffectHitTarget += SpellEffectFn(spell_warl_implosion::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
 };
 
 // Call Dreadstalkers - 104316
@@ -1942,7 +2061,7 @@ class spell_warl_call_felhunter : public SpellScriptLoader
         }
 };
 
-// DStolen Power - 211529
+// Stolen Power - 211529
 class spell_warl_stolen_power : public SpellScriptLoader
 {
     public:
@@ -1952,7 +2071,7 @@ class spell_warl_stolen_power : public SpellScriptLoader
         {
             PrepareAuraScript(spell_warl_stolen_power_AuraScript);
 
-            void OnTick(AuraEffect const* /*aurEff*/)
+            void OnStackChange(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 if (GetStackAmount() < 100)
                     return;
@@ -1965,7 +2084,7 @@ class spell_warl_stolen_power : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_stolen_power_AuraScript::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+                AfterEffectApply += AuraEffectApplyFn(spell_warl_stolen_power_AuraScript::OnStackChange, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 
@@ -2221,6 +2340,12 @@ class spell_warl_imp_firebolt_basic : public SpellScript
         Unit* owner = caster->GetAnyOwner();
         if (!owner)
             return;
+
+        // The artifact trait aura belongs to the warlock. The hidden pet proc
+        // aura (211592) is absent from some world databases, so collect the
+        // Firebolt stack directly while retaining support when it is present.
+        if (owner->HasAura(211530) && !caster->HasAura(211592))
+            owner->CastSpell(owner, 211529, true);
 
         AuraEffect* aurEff = target->GetAuraEffect(242922, EFFECT_0, owner->GetGUID()); // Jaws of Shadow
         if (!aurEff)
@@ -2478,6 +2603,8 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_thalkiels_consumption();
     new spell_warl_soul_harvest();
     new spell_warl_demonwrath();
+    RegisterAuraScript(spell_warl_doom);
+    RegisterSpellScript(spell_warl_implosion);
     RegisterSpellScript(spell_warl_call_dreadstalker);
     RegisterSpellScript(spell_warl_hand_of_guldan);
     new spell_warl_hand_of_guldan_damage();

@@ -449,6 +449,14 @@ void TempSummon::UnSummon(uint32 msTime)
         return;
     }
 
+    // Warlock artifact trait The Expendables. A living Wild Imp reaching the
+    // end of its summon duration (or being consumed by Implosion) buffs the
+    // remaining demons. Dead imps trigger it immediately from their AI.
+    if (IsAlive() && (GetEntry() == 55659 || GetEntry() == 99737))
+        if (Unit* owner = GetAnyOwner())
+            if (owner->HasAura(211219))
+                owner->CastSpell(owner, 211218, true);
+
     onUnload = true;
 
     //ASSERT(!isPet());

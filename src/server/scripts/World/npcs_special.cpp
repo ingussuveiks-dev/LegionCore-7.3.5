@@ -4592,6 +4592,15 @@ class npc_wild_imp : public CreatureScript
                         AttackStart(me->GetOwner()->getVictim());
             }
 
+            void JustDied(Unit* /*killer*/) override
+            {
+                // The Expendables: a Wild Imp's death inspires the warlock's
+                // remaining demons. Natural expiry is handled by TempSummon.
+                if (Unit* owner = me->GetAnyOwner())
+                    if (owner->HasAura(211219))
+                        owner->CastSpell(owner, 211218, true);
+            }
+
             void UpdateAI(uint32 diff) override
             {
 				if (sWorld->getBoolConfig(CONFIG_PLAYER_CONTROL_GUARDIAN_PETS))
