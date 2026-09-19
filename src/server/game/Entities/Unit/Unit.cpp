@@ -9313,7 +9313,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     {
                         if (Player* plr = ToPlayer())
                         {
-                            if (uint8 cost = procSpell->Power.PowerCost)
+                            if (int32 cost = spell ? spell->GetPowerCost(POWER_HOLY_POWER) : GetPowerCost(POWER_HOLY_POWER))
                                 plr->ModifySpellCooldown(853, -(triggerAmount * 100 * cost));
                         }
                     }
@@ -9326,7 +9326,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
 
                     if (procSpell->Power.PowerType == POWER_HOLY_POWER)
                     {
-                        if (uint8 cost = procSpell->Power.PowerCost)
+                        if (int32 cost = spell ? spell->GetPowerCost(POWER_HOLY_POWER) : GetPowerCost(POWER_HOLY_POWER))
                             if (Aura* aura = GetAura(231895)) // Sanctified Wrath
                                 aura->ModStackAmount(cost);
                     }
