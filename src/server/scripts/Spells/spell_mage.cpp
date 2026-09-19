@@ -124,6 +124,16 @@ enum MageSpells
     SPELL_MAGE_ARCANE_MISSILES_CHARGES           = 79683,
     SPELL_MAGE_ARCANE_ORB_DAMAGE                 = 153640,
     SPELL_MAGE_ARCANE_AMPLIFICATION              = 236628,
+    SPELL_MAGE_ARCANE_REBOUND                    = 188006,
+    SPELL_MAGE_ARCANE_REBOUND_DAMAGE             = 210817,
+    SPELL_MAGE_RULE_OF_THREES                    = 215463,
+    SPELL_MAGE_RULE_OF_THREES_BUFF               = 187292,
+    SPELL_MAGE_EROSION_TIMER                     = 210154,
+    SPELL_MAGE_EROSION_AURASTATE                 = 210134,
+    SPELL_MAGE_ARCANE_FAMILIAR_ATTACK            = 225119,
+    SPELL_MAGE_MARK_OF_ALUNETH                   = 224968,
+    SPELL_MAGE_MARK_OF_ALUNETH_EXPLOSION         = 211076,
+    SPELL_MAGE_AEGWYNNS_ASCENDANCE_TRACKER       = 210847,
 
     //7.3.2.25549 END
     SPELL_MAGE_RING_OF_FROST_FREEZE              = 82691,
@@ -291,19 +301,25 @@ class spell_mage_arcane_barrage : public SpellScript
 
     void HandleEffectHit(SpellEffIndex /*effIndex*/)
     {
-        if (Player* _player = GetCaster()->ToPlayer())
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        Unit* primaryTarget = GetExplTargetUnit();
+        if (!caster || !target || !primaryTarget)
+            return;
+
+        bool isPrimaryTarget = target->GetGUID() == primaryTarget->GetGUID();
+        if (!isPrimaryTarget)
         {
-            if (Unit* target = GetHitUnit())
-            {
-                if (_player->GetSelectedUnit() != target)
-                {
-                    int32 perc = GetSpellInfo()->Effects[EFFECT_1]->BasePoints;
-                    SetHitDamage(CalculatePct(GetHitDamage(), perc));
-                }
-                if (AuraEffect const* aurEff = _player->GetAuraEffect(205028, EFFECT_0))
-                    SetHitDamage(GetHitDamage() + CalculatePct(GetHitDamage(), aurEff->GetAmount() * GetSpell()->GetTargetCount()));
-            }
+            int32 secondaryDamagePct = GetSpellInfo()->Effects[EFFECT_1]->BasePoints;
+            SetHitDamage(CalculatePct(GetHitDamage(), secondaryDamagePct));
         }
+
+        uint32 targetCount = GetSpell()->GetTargetCount();
+        if (AuraEffect const* resonance = caster->GetAuraEffect(205028, EFFECT_0))
+            SetHitDamage(GetHitDamage() + CalculatePct(GetHitDamage(), resonance->GetAmount() * targetCount));
+
+        if (isPrimaryTarget && targetCount > 2 && caster->HasAura(SPELL_MAGE_ARCANE_REBOUND))
+            caster->CastSpell(primaryTarget, SPELL_MAGE_ARCANE_REBOUND_DAMAGE, true);
     }
 
     void TakePower(Powers /*power*/, int32 &/*amount*/)
@@ -775,18 +791,19 @@ class spell_mage_arcane_blast : public SpellScriptLoader
         {
             PrepareSpellScript(spell_mage_arcane_blast_SpellScript);
 
-            void HandleAfterHit()
+            void HandleAfterHit(SpellEffIndex /*effIndex*/)
             {
                 Unit* caster = GetCaster();
                 if (!caster)
                     return;
 
-                caster->CastSpell(caster, GetSpellInfo()->Effects[1]->TriggerSpell, true);
+                if (Aura* presenceOfMind = caster->GetAura(SPELL_MAGE_PRESENCE_OF_MIND))
+                    presenceOfMind->ModCharges(-1);
             }
 
             void Register() override
             {
-                AfterHit += SpellHitFn(spell_mage_arcane_blast_SpellScript::HandleAfterHit);
+                OnEffectHitTarget += SpellEffectFn(spell_mage_arcane_blast_SpellScript::HandleAfterHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
             }
         };
 
@@ -1085,7 +1102,28 @@ class spell_mage_incanters_flow : public AuraScript
     }
 };
 
-// Erosion - 210154
+// Erosion - 205039
+class spell_mage_erosion_driver : public AuraScript
+{
+    PrepareAuraScript(spell_mage_erosion_driver);
+
+    void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!caster || !target)
+            return;
+
+        caster->AddAura(SPELL_MAGE_EROSION_TIMER, target);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_mage_erosion_driver::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Erosion decay timer - 210154
 class spell_mage_erosion : public SpellScriptLoader
 {
     public:
@@ -1113,7 +1151,7 @@ class spell_mage_erosion : public SpellScriptLoader
                     }
                     else if (wait)
                     {
-                        if (Aura* aura = target->GetAura(210134, caster->GetGUID()))
+                        if (Aura* aura = target->GetAura(SPELL_MAGE_EROSION_AURASTATE, caster->GetGUID()))
                             aura->ModStackAmount(-1);
                     }
                 }
@@ -1121,6 +1159,8 @@ class spell_mage_erosion : public SpellScriptLoader
 
             void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
+                GetAura()->SetMaxDuration(3000);
+                GetAura()->SetDuration(3000);
                 wait = false;
             }
 
@@ -1683,6 +1723,9 @@ class spell_mage_aegwynns_ascendance : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
+                if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+                    return;
+
                 if (Unit* caster = GetCaster())
                 {
                     int32 perc = 25;
@@ -1768,61 +1811,37 @@ class spell_mage_arcane_familiar : public AuraScript
 {
     PrepareAuraScript(spell_mage_arcane_familiar);
 
-    enum MyEnum
-    {
-        Timer = 1000
-    };
-
-    uint8 castCount = 0;
-    uint32 castDelay = 0;
+    uint32 attackTimer = 3000;
     ObjectGuid targetGUID;
 
     void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
     {
-        if (Unit* target = eventInfo.GetProcTarget())
-        {
-            if (target->GetGUID() == GetCaster()->GetGUID())
-                return;
+        Unit* caster = GetCaster();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!caster || !target || target == caster || !caster->IsValidAttackTarget(target))
+            return;
 
-            if (Aura* aura = GetAura())
-            {
-                targetGUID = target->GetGUID();
-                aura->SetAuraAttribute(AURA_ATTR_IS_NOT_ACTIVE);
-                castCount = 2;
-            }
-        }
+        targetGUID = target->GetGUID();
     }
 
     void OnUpdate(uint32 diff)
     {
-        if (!castCount)
+        if (attackTimer > diff)
+        {
+            attackTimer -= diff;
+            return;
+        }
+
+        Unit* caster = GetUnitOwner();
+        if (!caster)
             return;
 
-        castDelay += diff;
+        float hasteMultiplier = caster->GetFloatValue(UNIT_FIELD_MOD_CASTING_SPEED);
+        attackTimer = uint32(3000.0f * (hasteMultiplier > 0.0f ? hasteMultiplier : 1.0f));
 
-        if (castDelay >= Timer)
-        {
-            if (Unit* caster = GetUnitOwner())
-            {
-                if (Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID))
-                    caster->CastSpell(target, 225119, TriggerCastFlags(TRIGGERED_FULL_MASK &~ TRIGGERED_IGNORE_LOS));
-            }
-
-            castCount--;
-
-            if (!castCount)
-            {
-                castDelay = 0;
-                targetGUID = ObjectGuid::Empty;
-
-                if (Aura* aura = GetAura())
-                    aura->SetAuraAttribute(AURA_ATTR_IS_NOT_ACTIVE, false);
-
-                return;
-            }
-
-            castDelay -= Timer;
-        }
+        if (Unit* target = ObjectAccessor::GetUnit(*caster, targetGUID))
+            if (target->IsAlive() && caster->IsValidAttackTarget(target))
+                caster->CastSpell(target, SPELL_MAGE_ARCANE_FAMILIAR_ATTACK, TriggerCastFlags(TRIGGERED_FULL_MASK &~ TRIGGERED_IGNORE_LOS));
     }
 
     void Register() override
@@ -1933,71 +1952,179 @@ class spell_mage_mastery_icicles: public AuraScript
     }
 };
 
-// Arcane Missiles - 79683
-class spell_mage_arcane_missiles : public SpellScriptLoader
+// Arcane Missiles - 5143
+class spell_mage_arcane_missiles : public SpellScript
 {
-    public:
-        spell_mage_arcane_missiles() : SpellScriptLoader("spell_mage_arcane_missiles") { }
+    PrepareSpellScript(spell_mage_arcane_missiles);
 
-        class spell_mage_arcane_missiles_AuraScript : public AuraScript
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        caster->RemoveAurasDueToSpell(SPELL_MAGE_RULE_OF_THREES_BUFF);
+        if (AuraEffect const* ruleOfThrees = caster->GetAuraEffect(SPELL_MAGE_RULE_OF_THREES, EFFECT_0))
+            if (roll_chance_f(float(ruleOfThrees->GetAmount()) / 10.0f))
+                caster->CastSpell(caster, SPELL_MAGE_RULE_OF_THREES_BUFF, true);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_mage_arcane_missiles::HandleBeforeCast);
+    }
+};
+
+// Evocation - 12051
+class spell_mage_evocation : public AuraScript
+{
+    PrepareAuraScript(spell_mage_evocation);
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        if (Unit* target = GetTarget())
+            target->RemoveAurasDueToSpell(SPELL_MAGE_AEGWYNNS_ASCENDANCE_TRACKER);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_evocation::OnRemove, EFFECT_0, SPELL_AURA_OBS_MOD_POWER, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+class spell_mage_arcane_missiles_AuraScript : public AuraScript
+{
+    PrepareAuraScript(spell_mage_arcane_missiles_AuraScript);
+
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_POWER, true);
+
+        if (Aura* charges = caster->GetAura(SPELL_MAGE_ARCANE_MISSILES_CHARGES))
         {
-            PrepareAuraScript(spell_mage_arcane_missiles_AuraScript);
-
-            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            switch (charges->GetStackAmount())
             {
-                auto caster = GetCaster();
-                if (!caster)
-                    return;
-
-                if (Aura* aur = caster->GetAura(GetSpellInfo()->Id))
-                {
-                    switch (aur->GetStackAmount())
-                    {
-                        case 1:
-                            caster->RemoveAurasDueToSpell(79808);
-                            caster->RemoveAurasDueToSpell(170572);
-                            caster->CastSpell(caster, 170571, true);
-                            break;
-                        case 2:
-                            caster->RemoveAurasDueToSpell(79808);
-                            caster->RemoveAurasDueToSpell(170571);
-                            caster->RemoveAurasDueToSpell(170572);
-                            caster->CastSpell(caster, 79808, true);
-                            break;
-                        case 3:
-                            caster->RemoveAurasDueToSpell(79808);
-                            caster->CastSpell(caster, 170572, true);
-                            break;
-                    }
-                }
+                case 1:
+                    caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_ONE);
+                    break;
+                case 2:
+                    caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_TWO);
+                    caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_VISUAL_ONE, true);
+                    break;
+                case 3:
+                    caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_THREE);
+                    caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_VISUAL_TWO, true);
+                    break;
             }
-
-            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            {
-                auto caster = GetCaster();
-                if (!caster)
-                    return;
-
-                Aura* aur = caster->GetAura(GetSpellInfo()->Id);
-                if (!aur)
-                {
-                    caster->RemoveAurasDueToSpell(79808);
-                    caster->RemoveAurasDueToSpell(170571);
-                    caster->RemoveAurasDueToSpell(170572);
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectRemove += AuraEffectApplyFn(spell_mage_arcane_missiles_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectApply += AuraEffectApplyFn(spell_mage_arcane_missiles_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_mage_arcane_missiles_AuraScript();
+            charges->ModStackAmount(-1);
         }
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            caster->RemoveAurasDueToSpell(SPELL_MAGE_RULE_OF_THREES_BUFF);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_arcane_missiles_AuraScript::OnApply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_arcane_missiles_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Arcane Missiles damage - 7268
+class spell_mage_arcane_missiles_damage : public SpellScript
+{
+    PrepareSpellScript(spell_mage_arcane_missiles_damage);
+
+    void FilterSelf(WorldObject*& target)
+    {
+        if (target == GetCaster())
+            target = nullptr;
+    }
+
+    void Register() override
+    {
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_mage_arcane_missiles_damage::FilterSelf, EFFECT_0, TARGET_UNIT_CHANNEL_TARGET);
+    }
+};
+
+// Arcane Missiles charges - 79683
+class spell_mage_arcane_missiles_charges : public AuraScript
+{
+    PrepareAuraScript(spell_mage_arcane_missiles_charges);
+
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        if (Aura* charges = caster->GetAura(SPELL_MAGE_ARCANE_MISSILES_CHARGES))
+        {
+            switch (charges->GetStackAmount())
+            {
+                case 1:
+                    caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_VISUAL_ONE, true);
+                    break;
+                case 2:
+                    caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_ONE);
+                    caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_VISUAL_TWO, true);
+                    break;
+                case 3:
+                    caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_TWO);
+                    caster->CastSpell(caster, SPELL_MAGE_ARCANE_MISSILES_VISUAL_THREE, true);
+                    break;
+            }
+        }
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || caster->HasAura(SPELL_MAGE_ARCANE_MISSILES_CHARGES))
+            return;
+
+        caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_ONE);
+        caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_TWO);
+        caster->RemoveAurasDueToSpell(SPELL_MAGE_ARCANE_MISSILES_VISUAL_THREE);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_mage_arcane_missiles_charges::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_arcane_missiles_charges::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Mark of Aluneth - 224968
+class spell_mage_mark_of_aluneth : public AuraScript
+{
+    PrepareAuraScript(spell_mage_mark_of_aluneth);
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (caster && target)
+            caster->CastSpell(target, SPELL_MAGE_MARK_OF_ALUNETH_EXPLOSION, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_mage_mark_of_aluneth::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
 };
 
 // 238126
@@ -2165,6 +2292,7 @@ void AddSC_mage_spell_scripts()
     new spell_mage_glyph_of_conjure_familiar();
     new spell_mage_supernova();
     RegisterAuraScript(spell_mage_incanters_flow);
+    RegisterAuraScript(spell_mage_erosion_driver);
     new spell_mage_erosion();
     new spell_mage_displacement();
     new spell_mage_combustion();
@@ -2178,10 +2306,14 @@ void AddSC_mage_spell_scripts()
     new spell_mage_temporal_shield();
     new spell_mage_touch_of_the_magi();
     new spell_mage_aegwynns_ascendance();
+    RegisterAuraScript(spell_mage_evocation);
     new spell_mage_belovirs_final_stand();
     new spell_mage_ray_of_frost();
     new spell_mage_flurry();
-    new spell_mage_arcane_missiles();
+    RegisterSpellAndAuraScriptPair(spell_mage_arcane_missiles, spell_mage_arcane_missiles_AuraScript);
+    RegisterSpellScript(spell_mage_arcane_missiles_damage);
+    RegisterAuraScript(spell_mage_arcane_missiles_charges);
+    RegisterAuraScript(spell_mage_mark_of_aluneth);
     RegisterSpellScript(spell_mage_arcane_barrage);
     RegisterSpellScript(spell_mage_ice_lance);
     RegisterSpellScript(spell_mage_ice_lance_main);
