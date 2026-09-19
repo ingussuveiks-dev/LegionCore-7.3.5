@@ -28,6 +28,7 @@
 #include "Cell.h"
 #include "CellImpl.h"
 #include "Garrison.h"
+#include "GameTime.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Group.h"
@@ -3297,6 +3298,77 @@ class spell_gen_darkflight : public SpellScriptLoader
         {
             return new spell_gen_darkflight_SpellScript();
         }
+};
+
+enum TouchOfEluneSpells
+{
+    SPELL_TOUCH_OF_ELUNE_DAY   = 154796,
+    SPELL_TOUCH_OF_ELUNE_NIGHT = 154797
+};
+
+// Touch of Elune - 154748
+// The client data only describes the passive and the two mutually exclusive stat auras.
+// The server has to select the appropriate aura from the realm's local day/night time.
+class spell_gen_touch_of_elune : public AuraScript
+{
+    PrepareAuraScript(spell_gen_touch_of_elune);
+
+    uint32 _updateTimer = 0;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_TOUCH_OF_ELUNE_DAY, SPELL_TOUCH_OF_ELUNE_NIGHT });
+    }
+
+    void UpdateStatAura()
+    {
+        Unit* target = GetTarget();
+        if (!target)
+            return;
+
+        tm const* dateTime = GameTime::GetDateAndTime();
+        bool isDay = dateTime && dateTime->tm_hour >= 6 && dateTime->tm_hour < 18;
+        uint32 desiredAura = isDay ? SPELL_TOUCH_OF_ELUNE_DAY : SPELL_TOUCH_OF_ELUNE_NIGHT;
+        uint32 obsoleteAura = isDay ? SPELL_TOUCH_OF_ELUNE_NIGHT : SPELL_TOUCH_OF_ELUNE_DAY;
+
+        target->RemoveAurasDueToSpell(obsoleteAura);
+        if (!target->HasAura(desiredAura))
+            target->CastSpell(target, desiredAura, true);
+    }
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        _updateTimer = MINUTE * IN_MILLISECONDS;
+        UpdateStatAura();
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* target = GetTarget())
+        {
+            target->RemoveAurasDueToSpell(SPELL_TOUCH_OF_ELUNE_DAY);
+            target->RemoveAurasDueToSpell(SPELL_TOUCH_OF_ELUNE_NIGHT);
+        }
+    }
+
+    void OnUpdate(uint32 diff)
+    {
+        if (_updateTimer > diff)
+        {
+            _updateTimer -= diff;
+            return;
+        }
+
+        _updateTimer = MINUTE * IN_MILLISECONDS;
+        UpdateStatAura();
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_gen_touch_of_elune::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_gen_touch_of_elune::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnAuraUpdate += AuraUpdateFn(spell_gen_touch_of_elune::OnUpdate);
+    }
 };
 
 #define GOBELING_GUMBO_BURP 42755
@@ -8412,6 +8484,7 @@ void AddSC_generic_spell_scripts()
     new spell_gen_running_wild();
     new spell_gen_two_forms();
     new spell_gen_darkflight();
+    RegisterAuraScript(spell_gen_touch_of_elune);
     new spell_gen_gobelin_gumbo();
     new spell_brewfest_speed();
     new spell_gen_tricky_treat();
