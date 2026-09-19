@@ -395,7 +395,7 @@ public:
         
         void Register() override
         {
-            OnEffectRemove += AuraEffectRemoveFn(spell_brittle_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_TRANSFORM, AURA_EFFECT_HANDLE_REAL);
+            OnEffectRemove += AuraEffectRemoveFn(spell_brittle_AuraScript::OnRemove, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

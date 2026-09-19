@@ -1076,7 +1076,7 @@ public:
 
         void Register()
         {
-            OnEffectApply += AuraEffectApplyFn(spell_sandstorm_AuraScript::OnApply, EFFECT_0, SPELL_EFFECT_APPLY_AURA, AURA_EFFECT_HANDLE_REAL);
+            OnEffectApply += AuraEffectApplyFn(spell_sandstorm_AuraScript::OnApply, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

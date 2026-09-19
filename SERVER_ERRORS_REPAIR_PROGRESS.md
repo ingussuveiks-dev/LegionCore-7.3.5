@@ -260,3 +260,19 @@ Quest 26800 Darnel summon auras noņemšanas darbība vairs neatbilst vecajam ef
 ### Spēlē vēlāk pārbaudāmais
 
 - Quest 26800 laikā izsaukt Darnel, pēc tam pabeigt vai atcelt summon auru un pārbaudīt, ka visi ar caster saistītie Darnel summon korekti despawno.
+
+## Pakete 183 — Effect-independent aura dzīves cikla hooki
+
+Faili: `boss_jandice_barov.cpp`, `boss_council_of_elders.cpp`, `thunder_forge.cpp`, `boss_ashgolm.cpp` un `boss_helya.cpp`.
+
+Gravity Flux, Sandstorm, Small Sha Fixate, Brittle un Brackwater handleri izmanto tikai visas auras sākuma vai beigu notikumu un neizmanto `AuraEffect` datus. To novecojušās konkrēto tipu/indeksu piesaistes aizstātas ar vienreizēju piesaisti pirmajam faktiskajam aura efektam. Sandstorm gadījumā izlabota arī aura hookā kļūdaini izmantotā spell effect konstante.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika septiņi iepriekš eksistējoši, ar šo paketi nesaistīti C4305 brīdinājumi divos failos.
+- Pilns starts pabeigts 11 sekundēs; visas piecas mērķa validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 27 uz 22.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārbaudīt Gravity Flux papildu spellu 114038, Sandstorm visual/Living Sand aktivizēšanu, Small Sha fixate mērķa izvēli, Ash'golm Brittle dialogu un Brackwater beigu castu 201397.

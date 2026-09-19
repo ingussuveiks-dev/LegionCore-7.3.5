@@ -3396,7 +3396,7 @@ public:
 
         void Register() override
         {
-            OnEffectApply += AuraEffectApplyFn(spell_small_sha_fixate_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            OnEffectApply += AuraEffectApplyFn(spell_small_sha_fixate_AuraScript::OnApply, EFFECT_FIRST_FOUND, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 
