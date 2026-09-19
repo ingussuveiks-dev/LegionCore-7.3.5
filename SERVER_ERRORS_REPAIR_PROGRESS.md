@@ -180,3 +180,19 @@ Mercenary Contract spelli 193472 un 193475 effect 0 ir `DUMMY` aura. Apply hooks
 ### Spēlē vēlāk pārbaudāmais
 
 - Battleground vidē ar ieslēgtu cross-faction režīmu pārbaudīt abu frakciju Mercenary Contract morph uzlikšanu un to, ka atbilstošais rases morphs tiek pilnīgi noņemts reizē ar līguma auru.
+
+## Pakete 178 — Death Knight Pillar of Frost dzīves cikls
+
+Fails: `src/server/scripts/Spells/spell_dk.cpp`.
+
+Pillar of Frost spellam 51271 šajā klienta būvē vairs nav skriptā pieņemtā effect 2 `DUMMY` aura. Incapacitate imunitātes ieslēgšana un izslēgšana neizmanto konkrēta aura efekta datus, tādēļ abi dzīves cikla hooki tagad vienreiz piesaistās pirmajam faktiskajam auras efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 12 sekundēs; abas `spell_dk_pillar_of_frost` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 35 uz 33.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Death Knight spēlē aktivizēt Pillar of Frost, pārbaudīt incapacitate imunitāti auras laikā un tās pilnīgu noņemšanu pēc auras beigām vai manuālas atcelšanas.
