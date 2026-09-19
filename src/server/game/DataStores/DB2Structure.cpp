@@ -133,9 +133,11 @@ bool LFGDungeonsEntry::IsValid() const
     {
         case 540: // Temple of Kotmogu
         case 541: // Test Scenario PS
+        case 590: // Lion's Landing (scenario data is not implemented)
         case 645: // Greenstone Village
         case 697: // Scenario: Prototype
         case 699:
+        case 802: // Lion's Landing (scenario data is not implemented)
             return false;
         default:
             break;

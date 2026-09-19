@@ -288,7 +288,7 @@ void LFGMgr::LoadLFGDungeons(bool reload /* = false */)
         LFGDungeonData& dungeon = itr.second;
         // Quest-driven and solo scenarios explicitly disallow the user's LFG
         // teleport action, so they do not require an LFG entrance position.
-        if (dungeon.type != LFG_TYPE_RANDOM && dungeon.dbc->Substruct != LFG_QUEUE_WORLD_PVP &&
+        if (dungeon.dbc->IsValid() && dungeon.type != LFG_TYPE_RANDOM && dungeon.dbc->Substruct != LFG_QUEUE_WORLD_PVP &&
             dungeon.dbc->Substruct != LFG_QUEUE_BRAWL && !(dungeon.dbc->Flags & LFG_FLAG_USER_TELEPORT_NOT_ALLOWED) &&
             dungeon.x == 0.0f && dungeon.y == 0.0f && dungeon.z == 0.0f)
         {

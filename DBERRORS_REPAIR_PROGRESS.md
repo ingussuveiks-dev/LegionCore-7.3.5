@@ -3052,3 +3052,20 @@ Spell-click NPC 130877 “Rift to Telogrus” atrodas ārpus scenārija Outland 
 
 - Ar Alliance varoni izmantot “Rift to Telogrus” (130877) un pārbaudīt parādīšanos scenārija sākumā pie `(1385.32, 2859.3, 58.1648)`.
 - Iziet Telogrus Rift scenāriju un pārbaudīt, ka iekšējie Void Rift portāli joprojām ved uz savām atsevišķajām platformām un nav aizstāti ar LFG sākumpunktu.
+
+## Pakete 163 — nepabeigto Lion's Landing variantu atspējošana
+
+Faili: `src/server/game/DataStores/DB2Structure.cpp` un `src/server/game/DungeonFinding/LFGMgr.cpp`.
+
+Abi Lion's Landing DBC varianti (590 un 802) norāda uz karti 1103, kurā world datubāzē nav neviena creature vai gameobject spawn. Vienīgais repozitorijā esošais Lion's Landing instances fails ir tukša čaula citai kartei (1144), un tā reģistrācija ir aizkomentēta. Šos nepabeigtos ierakstus tagad `IsValid()` atzīmē kā neatbalstītus, bet LFG ieeju pārbaude neprasa koordinātes ierakstiem, kurus pati rindu sistēma jau neļauj izmantot.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve ar laboto kodu pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abas Lion's Landing kļūdas pazuda un `DBErrors.log` skaits samazinājās no 11 uz 9.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārliecināties, ka abi Lion's Landing varianti neparādās kā izmantojamas rindas un nevar tikt izvēlēti ar klienta vai paketes manipulāciju.
+- Ja nākotnē tiek importēts pilns kartes 1103 saturs un scenārija skripts, noņemt abus `IsValid()` izņēmumus un pievienot īsto ieejas pozīciju.
