@@ -3101,6 +3101,34 @@ Avoti:
 - Datubāzē pārbaudīti 253 creature spawni, 6 gameobject spawni un LFG ieejas 590/802.
 - Svaigie `DBErrors.log` un `Server.log` pēc atkārtotā starta ir tukši (0 baiti).
 
+## Pakete 168 — Lion's Landing septiņu posmu scenārijs
+
+Faili: `src/server/scripts/Scenario/LionsLanding/instance_lions_landing.cpp`, `src/server/scripts/Scenario/LionsLanding/lions_landing.cpp`, `src/server/scripts/Scenario/LionsLanding/lions_landing.h` un `sql/updates/world/2026_09_19_156_implement_lions_landing_scenario.sql`.
+
+Tukšais, kļūdaini kartei 1144 piesaistītais instances karkass aizstāts ar kartes 1103 scenāriju un atkal reģistrēts. No lokālajiem 7.3.5 `LFGDungeons.db2`, `Scenario.db2`, `ScenarioStep.db2`, `CriteriaTree.db2` un `Criteria.db2` iegūts scenārijs 184 un visi klienta oriģinālie kritēriji. C++ tagad virza visus septiņus posmus: Daggin un Taylor sastapšanu, trīs pagalma pretinieku grupas, Twinbraid un uzbrukuma komandieri, Amber/Mishka/Sully ziņojumus, trīs aizsardzības ieroču novietojumus, trīs Horde viļņus un nejaušu noslēguma komandieri.
+
+Migrācija piesaista `instance_lions_landing`, atjauno gossip/spell-click interakcijas un trīs oriģinālos novietošanas spellus 135654–135656. No Legends of Azeroth 5.4.8 creature template datiem atjaunotas arī Horde uzbrucēju frakcijas un attackable karogi; tie iepriekš Legion DB daļai NPC bija neitrāli vai `not selectable`.
+
+Papildu uzvedības avoti:
+
+- https://www.wowhead.com/mop-classic/guide/scenarios/lions-landing-strategy-rewards
+- https://warcraft.wiki.gg/wiki/Lion%27s_Landing_(scenario)
+- https://warcraft.wiki.gg/wiki/Dark_Cleric_Laresa
+- https://warcraft.wiki.gg/wiki/Thaumaturge_Saresse
+- https://warcraft.wiki.gg/wiki/Wolf-Rider_Gaja
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; pagaidu DB2 diagnostikas kods no `LFGMgr.cpp` ir pilnībā noņemts.
+- SQL updateris piemēroja paketi; MariaDB pārbaudīta instances piesaiste, seši gossip skripti, trīs spell-click skripti un visas atjaunotās Horde frakcijas/karogi.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6648 C++ skriptus un 3437 spell-click definīcijas.
+- `DBErrors.log` ir 0 baiti, un jaunajā `Server.log` startā nav nevienas `ERROR` vai `FATAL` rindas; serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Alliance trīs spēlētāju grupu iziet LFG 590 un 802 no Golden Gryphon līdz nejaušajam komandierim un apstiprināt scenārija 184 UI, visu 16 kritēriju secību un LFG gala atlīdzību.
+- Wipe/reconnect pārbaudē pārliecināties, ka aktīvā pagalma grupa vai aizsardzības vilnis paliek pieejams un posmu nevar ieskaitīt atkārtoti.
+
 ## Pakete 164 — Death Knight artifact scenāriju ieejas
 
 Fails: `sql/updates/world/2026_09_19_147_restore_death_knight_scenario_entrances.sql`.
