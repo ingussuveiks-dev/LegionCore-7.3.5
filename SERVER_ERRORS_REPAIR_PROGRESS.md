@@ -276,3 +276,19 @@ Gravity Flux, Sandstorm, Small Sha Fixate, Brittle un Brackwater handleri izmant
 ### Spēlē vēlāk pārbaudāmais
 
 - Pārbaudīt Gravity Flux papildu spellu 114038, Sandstorm visual/Living Sand aktivizēšanu, Small Sha fixate mērķa izvēli, Ash'golm Brittle dialogu un Brackwater beigu castu 201397.
+
+## Pakete 184 — DBC precīzie periodisko auru tipi
+
+Faili: `boss_paragons_of_the_klaxxi.cpp`, `boss_norushen.cpp`, `boss_garrosh_hellscream.cpp` un `boss_imperator_margok.cpp`.
+
+Vienreizēja ielādētā DBC diagnostika apstiprināja faktiskos effect 0 tipus: Fiery Edge ir `PERIODIC_DUMMY`, Blind Hatred un Volatile Anomalies ir `PERIODIC_TRIGGER_SPELL`, bet Growing Power ir `PERIODIC_ENERGIZE`. Hooki piesaistīti šiem konkrētajiem tipiem; diagnostikas kods pirms gala būves pilnībā noņemts.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika viens iepriekš eksistējošs, ar šo paketi nesaistīts C4305 brīdinājums.
+- Pilns starts pabeigts 12 sekundēs; visas četras mērķa validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 22 uz 18.
+- Žurnālā nav pagaidu `SPELL_DIAG` ierakstu, `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārbaudīt Fiery Edge periodisko damage castu, Blind Hatred staru, Garrosh Growing Power enerģijas slieksni un Imperator Margok Volatile Anomalies izsaukšanu abās paredzētajās fāzēs.
