@@ -33,3 +33,19 @@ Fails: `src/server/scripts/Legion/TombOfSargeras/boss_TheDesolateHost.cpp`.
 ### Spēlē vēlāk pārbaudāmais
 
 - Desolate Host cīņā abās realm pusēs pārbaudīt Spiritual Barrier uzlikšanu un noņemšanu, spēlētāja selectability, custom-field atjaunošanu un heroic/mythic Dissonance periodisko castu.
+
+## Pakete 169 — General Nazgrim stance noņemšanas hooks
+
+Fails: `src/server/scripts/Pandaria/SiegeofOrgrimmar/boss_general_nazgrim.cpp`.
+
+Trīs General Nazgrim stance spelli izmanto atšķirīgus effect 0 aura tipus, bet tiem ir viena un tā pati noņemšanas darbība — pāriet uz nākamo stance, ja aura nav noņemta nāves dēļ. Trīs savstarpēji izslēdzošie hooki aizstāti ar vienu effect 0 `SPELL_AURA_ANY` hooku.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; visas sešas `spell_generic_stance` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 76 uz 70.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- General Nazgrim cīņā sagaidīt Battle, Berserker un Defensive stance nomaiņas un pārbaudīt, ka katras auras beigās AI tieši vienreiz izvēlas nākamo stance; nāves brīdī pāreja nedrīkst notikt.
