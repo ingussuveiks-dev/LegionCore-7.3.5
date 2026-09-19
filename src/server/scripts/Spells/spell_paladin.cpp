@@ -61,7 +61,6 @@ enum PaladinSpells
     Judgment                                     = 20271,
     JudgmentOfLight                              = 183778,
 
-    AvengingWrath                                = 31884,
     AvengersShield                              = 31935,
     ShieldOfTheRighteous                        = 53600,
     ShieldOfTheRighteousArmor                   = 132403,
@@ -192,10 +191,7 @@ class spell_pal_shield_of_the_righteous : public SpellScriptLoader
                     {
                         int32 cooldownReduction = -int32(righteousProtector->GetAmount() * float(IN_MILLISECONDS));
                         if (Player* player = caster->ToPlayer())
-                        {
                             player->ModSpellChargeCooldown(player->HasSpell(HandOfTheProtector) ? HandOfTheProtector : LightOfTheProtector, cooldownReduction);
-                            player->ModifySpellCooldown(AvengingWrath, cooldownReduction);
-                        }
                     }
                 }
             }
