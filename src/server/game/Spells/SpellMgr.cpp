@@ -7555,11 +7555,11 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->GetMisc()->MiscData.Attributes[0] |= SPELL_ATTR0_CANT_CANCEL;
     });
 
-    // Sphere of Insanity
-    ApplySpellFix({194200}, [](SpellInfo* spellInfo)
+    // Sphere of Insanity pulses around the summoned sphere. Its AuraScript
+    // supplies the accumulated damage and filters victims to the priest's DoT.
+    ApplySpellFix({194225}, [](SpellInfo* spellInfo)
     {
-        spellInfo->Effects[EFFECT_0]->TriggerSpell = 0;
-        spellInfo->Effects[EFFECT_0]->BasePoints = 0;
+        spellInfo->Effects[EFFECT_0]->TargetB = TARGET_UNIT_SRC_AREA_ENEMY;
     });
     
     ApplySpellFix({167614}, [](SpellInfo* spellInfo)

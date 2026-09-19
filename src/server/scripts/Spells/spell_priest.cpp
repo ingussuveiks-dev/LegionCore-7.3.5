@@ -25,6 +25,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Group.h"
+#include "ScriptedCreature.h"
 
 // Called by Heal - 2050, Flash Heal - 2061, Greater Heal - 2060 and Prayer of Healing - 596
 // Spirit Shell - 109964
@@ -432,6 +433,16 @@ class spell_pri_voidform : public AuraScript
         {
             CallSpecialFunction(1);
 
+            // Lingering Insanity only persists between Voidforms. Sphere of
+            // Insanity exists for exactly one Voidform and stores a share of
+            // the priest's damage for its periodic pulse.
+            caster->RemoveAurasDueToSpell(197937);
+            if (caster->HasAura(194179))
+            {
+                caster->RemoveAllMinionsByFilter(98680);
+                caster->CastSpell(caster, 194182, true);
+            }
+
             if (caster->HasAura(T21Shadow4PAura))
             {
                 float bp = 0.5f;
@@ -466,7 +477,9 @@ class spell_pri_voidform : public AuraScript
         if (Unit* caster = GetCaster())
         {
             if (AuraEffect const* aurEff0 = caster->GetAuraEffect(194378, EFFECT_0)) // Mass Hysteria
-                amount = aurEff0->GetAmount() * curStack;
+                // Preserve Legacy of the Void's flat +5% modifier already
+                // applied to this effect, then add Mass Hysteria per stack.
+                amount += aurEff0->GetAmount() * curStack;
         }
     }
 
@@ -512,6 +525,251 @@ class spell_pri_divine_hymn : public SpellScriptLoader
         {
             return new spell_pri_divine_hymn_SpellScript();
         }
+};
+
+// Mind Bomb - 205369. It detonates after two seconds or when its target dies;
+// dispelling the bomb must not trigger the stun.
+class spell_pri_mind_bomb : public AuraScript
+{
+    PrepareAuraScript(spell_pri_mind_bomb);
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
+        if (removeMode != AURA_REMOVE_BY_EXPIRE && removeMode != AURA_REMOVE_BY_DEATH)
+            return;
+
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (caster && target)
+            caster->CastSpell(target->GetPosition(), 226943, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_pri_mind_bomb::HandleRemove,
+            EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Void Eruption - 228260. Patch 7.3.2 changed this to one damage event for
+// every nearby enemy carrying either of this priest's two Shadow DoTs.
+class spell_pri_void_eruption : public SpellScript
+{
+    PrepareSpellScript(spell_pri_void_eruption);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ 589, 34914, 194249, 228360, 228361 });
+    }
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+        {
+            targets.clear();
+            return;
+        }
+
+        ObjectGuid casterGuid = caster->GetGUID();
+        targets.remove_if([casterGuid](WorldObject* object)
+        {
+            Unit* target = object->ToUnit();
+            return !target || (!target->HasAura(589, casterGuid) && !target->HasAura(34914, casterGuid));
+        });
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+            GetCaster()->CastSpell(target, urand(0, 1) ? 228360 : 228361, true);
+    }
+
+    void EnterVoidform()
+    {
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(caster, 194249, true);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_void_eruption::FilterTargets,
+            EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnEffectHitTarget += SpellEffectFn(spell_pri_void_eruption::HandleDamage, EFFECT_0, SPELL_EFFECT_DUMMY);
+        AfterCast += SpellCastFn(spell_pri_void_eruption::EnterVoidform);
+    }
+};
+
+// Void Bolt duration extension - 234746, triggered by Void Bolt (205448).
+class spell_pri_void_bolt : public SpellScript
+{
+    PrepareSpellScript(spell_pri_void_bolt);
+
+    void ExtendDots(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        AuraEffect const* extension = caster ? caster->GetAuraEffect(231688, EFFECT_0) : nullptr;
+        if (!caster || !target || !extension)
+            return;
+
+        int32 duration = extension->GetAmount();
+        if (Aura* pain = target->GetAura(589, caster->GetGUID()))
+            pain->SetDuration(pain->GetDuration() + duration);
+        if (Aura* touch = target->GetAura(34914, caster->GetGUID()))
+            touch->SetDuration(touch->GetDuration() + duration);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_pri_void_bolt::ExtendDots,
+            EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+// Sphere of Insanity - 194200 / 194225. Unit::ProcDamageAndSpell stores 5%
+// of qualifying damage in this aura's amount; each tick releases and clears it.
+class spell_pri_sphere_of_insanity : public AuraScript
+{
+    PrepareAuraScript(spell_pri_sphere_of_insanity);
+
+    void HandleTick(AuraEffect const* aurEff)
+    {
+        PreventDefaultAction();
+
+        Unit* sphere = GetTarget();
+        int32 damage = aurEff->GetAmount();
+        if (!sphere || damage <= 0)
+            return;
+
+        float basePoint = float(damage);
+        sphere->CastCustomSpell(sphere, 194225, &basePoint, nullptr, nullptr, true);
+        if (AuraEffect* accumulator = GetAura()->GetEffect(EFFECT_0))
+            accumulator->SetAmount(0);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_pri_sphere_of_insanity::HandleTick,
+            EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    }
+};
+
+class spell_pri_sphere_of_insanity_damage : public SpellScript
+{
+    PrepareSpellScript(spell_pri_sphere_of_insanity_damage);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* sphere = GetCaster();
+        Unit* owner = sphere ? sphere->GetOwner() : nullptr;
+        if (!owner)
+        {
+            targets.clear();
+            return;
+        }
+
+        ObjectGuid ownerGuid = owner->GetGUID();
+        targets.remove_if([ownerGuid](WorldObject* object)
+        {
+            Unit* target = object->ToUnit();
+            return !target || !target->HasAura(589, ownerGuid);
+        });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_sphere_of_insanity_damage::FilterTargets,
+            EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+    }
+};
+
+// Call to the Void summons entry 98167. The tendril channels its own Mind
+// Flay at the priest's current Mind Flay target using the priest's spell power.
+struct npc_pri_void_tendril : public Scripted_NoMovementAI
+{
+    npc_pri_void_tendril(Creature* creature) : Scripted_NoMovementAI(creature) { }
+
+    ObjectGuid targetGuid;
+    uint32 castTimer = 250;
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        auto channelTargets = summoner->GetChannelObjects();
+        if (channelTargets.size() != 1)
+        {
+            me->DisappearAndDie();
+            return;
+        }
+
+        targetGuid = *channelTargets.begin();
+        if (Unit* target = ObjectAccessor::GetUnit(*me, targetGuid))
+            AttackStart(target);
+        else
+            me->DisappearAndDie();
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (castTimer > diff)
+        {
+            castTimer -= diff;
+            return;
+        }
+
+        castTimer = 250;
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        Unit* owner = me->GetOwner();
+        Unit* target = ObjectAccessor::GetUnit(*me, targetGuid);
+        if (!owner || !target || !target->IsAlive())
+            return;
+
+        float spellPower = float(owner->GetSpellPowerDamage(SPELL_SCHOOL_MASK_SHADOW));
+        me->CastCustomSpell(target, 193473, &spellPower, nullptr, nullptr, false);
+    }
+};
+
+// Shadowy Insight - 162452. The default proc applies 124430 (instant Mind
+// Blast); the talent also resets Mind Blast's active cooldown.
+class spell_pri_shadowy_insight : public AuraScript
+{
+    PrepareAuraScript(spell_pri_shadowy_insight);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        if (Player* priest = GetTarget()->ToPlayer())
+            priest->RemoveSpellCooldown(8092, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_pri_shadowy_insight::HandleProc,
+            EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Void Tendril Mind Flay - 193473. Lash of Insanity (238137) grants the
+// priest 3 Insanity for each tendril damage tick through spell 240843.
+class spell_pri_void_tendril_mind_flay : public AuraScript
+{
+    PrepareAuraScript(spell_pri_void_tendril_mind_flay);
+
+    void HandleTick(AuraEffect const* /*aurEff*/)
+    {
+        Unit* tendril = GetCaster();
+        Unit* owner = tendril ? tendril->GetOwner() : nullptr;
+        if (owner && owner->HasAura(238137))
+            owner->CastSpell(owner, 240843, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_pri_void_tendril_mind_flay::HandleTick,
+            EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
+    }
 };
 
 // Holy Word: Chastise - 88625
@@ -803,16 +1061,20 @@ class spell_pri_shadow_word_death : public SpellScriptLoader
         {
             PrepareSpellScript(spell_pri_shadow_word_death_SpellScript);
 
-            float bp = 0.f;
-            Unit* target = NULL;
+            bool Validate(SpellInfo const* /*spellInfo*/) override
+            {
+                return ValidateSpellInfo({ 190714 });
+            }
 
-            void HandleCast()
+            void HandleHit()
             {
                 if (Unit* caster = GetCaster())
-                    if (Unit* target = GetExplTargetUnit())
+                    if (Unit* target = GetHitUnit())
                     {
                         float bp0 = 1500.f;
-                        if (target->IsAlive())
+                        // Reaper of Souls replaces SW:D with 199911 and always
+                        // grants the full 30 Insanity instead of the normal 15.
+                        if (target->IsAlive() && GetSpellInfo()->Id != 199911 && !caster->HasAura(199853))
                             caster->CastCustomSpell(caster, 190714, &bp0, NULL, NULL, true);
                         else
                             caster->CastSpell(caster, 190714, true);
@@ -821,7 +1083,10 @@ class spell_pri_shadow_word_death : public SpellScriptLoader
 
             void Register() override
             {
-                OnFinishCast += SpellCastFn(spell_pri_shadow_word_death_SpellScript::HandleCast);
+                // Generate Insanity only after a successful hit. AfterHit also
+                // lets the normal version detect whether its damage killed the
+                // victim before choosing 15 or 30 Insanity.
+                AfterHit += SpellHitFn(spell_pri_shadow_word_death_SpellScript::HandleHit);
             }
         };
 
@@ -1327,7 +1592,31 @@ class spell_pri_mana_leech : public AuraScript
         PreventDefaultAction();
 
         if (Unit* owner = GetTarget()->GetAnyOwner())
-            GetTarget()->CastSpell(owner, GetId() == 123050 ? 123051 : 34650, true);
+        {
+            // In Shadow specialization Mindbender generates 8 Insanity per
+            // successful melee attack. Its generic 123051 spell is a mana
+            // percentage effect and is only correct for healing specs.
+            if (GetId() == 123050)
+            {
+                if (Player* priest = owner->ToPlayer())
+                {
+                    if (priest->GetSpecializationId() == SPEC_PRIEST_SHADOW)
+                    {
+                        float insanity = 800.0f;
+                        if (SpellInfo const* mindbender = sSpellMgr->GetSpellInfo(200174))
+                            insanity = float(mindbender->GetEffect(EFFECT_2)->CalcValue(priest) * 100);
+
+                        GetTarget()->CastCustomSpell(priest, 208232, &insanity, nullptr, nullptr, true);
+                        return;
+                    }
+                }
+
+                GetTarget()->CastSpell(owner, 123051, true);
+                return;
+            }
+
+            GetTarget()->CastSpell(owner, 34650, true);
+        }
     }
 
     void Register() override
@@ -2027,27 +2316,33 @@ class spell_pri_shadowform : public AuraScript
 
     void OnUpdate(uint32 diff)
     {
-        if (!update)
+        if (update > int32(diff))
+        {
+            update -= diff;
+            return;
+        }
+
+        update = 1000;
+        Unit* caster = GetCaster();
+        if (!caster)
             return;
 
-        update -= diff;
-
-        if (update <= 0)
+        int32 insanity = caster->GetPower(POWER_INSANITY);
+        auto updateVisual = [caster](uint32 spellId, bool enabled)
         {
-            if (Unit* caster = GetCaster())
+            if (enabled)
             {
-                // check power
-                int32 insanity = caster->GetPower(POWER_INSANITY);
-                if (insanity >= 2500)
-                    caster->CastSpell(caster, 185909, true); // visual insanity 2
-                if (insanity >= 5000)
-                    caster->CastSpell(caster, 185910, true); // visual insanity 3
-                if (insanity >= 7500)
-                    caster->CastSpell(caster, 185911, true); // visual insanity 4
-
-                caster->CastSpell(caster, 185908, true); // visual insanity 1
+                if (!caster->HasAura(spellId))
+                    caster->CastSpell(caster, spellId, true);
             }
-        }
+            else
+                caster->RemoveAurasDueToSpell(spellId);
+        };
+
+        updateVisual(185908, true);
+        updateVisual(185909, insanity >= 2500);
+        updateVisual(185910, insanity >= 5000);
+        updateVisual(185911, insanity >= 7500);
     }
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -2464,6 +2759,7 @@ class spell_pri_mass_dispel : public SpellScript
 
 void AddSC_priest_spell_scripts()
 {
+    RegisterCreatureAI(npc_pri_void_tendril);
     new spell_pri_spirit_shell();
     new spell_pri_halo_heal();
     new spell_pri_void_shift();
@@ -2478,6 +2774,13 @@ void AddSC_priest_spell_scripts()
     RegisterAuraScript(spell_pri_cosmic_ripple_cooldown);
     new spell_pri_lights_wrath();
     new spell_pri_shadow_word_death();
+    RegisterAuraScript(spell_pri_mind_bomb);
+    RegisterSpellScript(spell_pri_void_eruption);
+    RegisterSpellScript(spell_pri_void_bolt);
+    RegisterAuraScript(spell_pri_sphere_of_insanity);
+    RegisterSpellScript(spell_pri_sphere_of_insanity_damage);
+    RegisterAuraScript(spell_pri_shadowy_insight);
+    RegisterAuraScript(spell_pri_void_tendril_mind_flay);
     RegisterSpellScript(spell_pri_plea);
     RegisterSpellScript(spell_pri_shadow_mend);
     RegisterAuraScript(spell_pri_shadow_mend_aura);

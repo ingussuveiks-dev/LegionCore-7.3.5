@@ -15405,7 +15405,10 @@ void Unit::VisualForPower(Powers power, int32 curentVal, int32 modVal, int32 max
                     CastCustomSpell(this, 195290, &speed, nullptr, nullptr, true);
             }
 
-            if (modVal < 0 && (curentVal < 10000 || (curentVal < 6500 && HasAura(193225))))
+            // Void Eruption normally requires 100 Insanity; Legacy of the Void
+            // lowers that threshold to 65. Remove its availability aura only
+            // after crossing the threshold that applies to this priest.
+            if (modVal < 0 && curentVal < (HasAura(193225) ? 6500 : 10000))
                 RemoveAurasDueToSpell(218413);
 
             if (!curentVal)
