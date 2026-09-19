@@ -38,7 +38,199 @@ enum WarriorChargeSpells
     SPELL_WARRIOR_CHARGE_SLOW_EFFECT          = 236027,
     SPELL_WARRIOR_GLYPH_BLAZING_TRAIL         = 123779
 };
+
+enum WarriorCommonSpells
+{
+    SPELL_WARRIOR_IMPENDING_VICTORY_HEAL = 202166,
+    SPELL_WARRIOR_VICTORIOUS_STATE       = 32216,
+    SPELL_WARRIOR_VICTORY_RUSH_HEAL      = 118779,
+    SPELL_WARRIOR_COMMANDING_SHOUT_AURA  = 97463,
+    SPELL_WARRIOR_SHOCKWAVE_STUN         = 132168,
+    SPELL_WARRIOR_STORM_BOLT_STUN        = 132169,
+    SPELL_WARRIOR_REVENGE                 = 6572
+};
 }
+
+// Avatar - 107574
+class spell_warr_avatar : public SpellScript
+{
+    PrepareSpellScript(spell_warr_avatar);
+
+    void HandleScript(SpellEffIndex /*effIndex*/)
+    {
+        GetCaster()->RemoveMovementImpairingEffects();
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_avatar::HandleScript, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+    }
+};
+
+// Impending Victory - 202168
+class spell_warr_impending_victory : public SpellScript
+{
+    PrepareSpellScript(spell_warr_impending_victory);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_IMPENDING_VICTORY_HEAL });
+    }
+
+    void HandleAfterCast()
+    {
+        GetCaster()->CastSpell(GetCaster(), SPELL_WARRIOR_IMPENDING_VICTORY_HEAL, true);
+        GetCaster()->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS_STATE);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_warr_impending_victory::HandleAfterCast);
+    }
+};
+
+// Victory Rush - 34428
+class spell_warr_victory_rush : public SpellScript
+{
+    PrepareSpellScript(spell_warr_victory_rush);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_VICTORY_RUSH_HEAL });
+    }
+
+    void HandleAfterCast()
+    {
+        GetCaster()->CastSpell(GetCaster(), SPELL_WARRIOR_VICTORY_RUSH_HEAL, true);
+        GetCaster()->RemoveAurasDueToSpell(SPELL_WARRIOR_VICTORIOUS_STATE);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_warr_victory_rush::HandleAfterCast);
+    }
+};
+
+// Commanding Shout - 97462
+class spell_warr_commanding_shout : public SpellScript
+{
+    PrepareSpellScript(spell_warr_commanding_shout);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_COMMANDING_SHOUT_AURA });
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        Unit* target = GetHitUnit();
+        if (!target)
+            return;
+
+        int32 health = CalculatePct(target->GetMaxHealth(), GetEffectValue());
+        GetCaster()->CastCustomSpell(SPELL_WARRIOR_COMMANDING_SHOUT_AURA, SPELLVALUE_BASE_POINT0, health, target, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_commanding_shout::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Intimidating Shout - 5246. The primary target gets the cower effects;
+// remove it from all three secondary area-fear effect target lists.
+class spell_warr_intimidating_shout : public SpellScript
+{
+    PrepareSpellScript(spell_warr_intimidating_shout);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove(GetExplTargetWorldObject());
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_intimidating_shout::FilterTargets, EFFECT_2, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_intimidating_shout::FilterTargets, EFFECT_3, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_intimidating_shout::FilterTargets, EFFECT_5, TARGET_UNIT_SRC_AREA_ENEMY);
+    }
+};
+
+// Shockwave - 46968
+class spell_warr_shockwave : public SpellScript
+{
+    PrepareSpellScript(spell_warr_shockwave);
+
+    uint32 TargetCount = 0;
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_SHOCKWAVE_STUN });
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+        {
+            GetCaster()->CastSpell(target, SPELL_WARRIOR_SHOCKWAVE_STUN, true);
+            ++TargetCount;
+        }
+    }
+
+    void HandleAfterCast()
+    {
+        if (TargetCount < uint32(GetSpellInfo()->Effects[EFFECT_0]->BasePoints))
+            return;
+
+        if (Player* player = GetCaster()->ToPlayer())
+            player->ModifySpellCooldown(GetSpellInfo()->Id,
+                -int32(GetSpellInfo()->Effects[EFFECT_3]->BasePoints) * int32(IN_MILLISECONDS));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_shockwave::HandleDamage, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
+        AfterCast += SpellCastFn(spell_warr_shockwave::HandleAfterCast);
+    }
+};
+
+// Storm Bolt - 107570
+class spell_warr_storm_bolt : public SpellScript
+{
+    PrepareSpellScript(spell_warr_storm_bolt);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_STORM_BOLT_STUN });
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        GetCaster()->CastSpell(GetHitUnit(), SPELL_WARRIOR_STORM_BOLT_STUN, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_storm_bolt::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Revenge Trigger - 5301
+class spell_warr_revenge_trigger : public AuraScript
+{
+    PrepareAuraScript(spell_warr_revenge_trigger);
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        if (Player* player = GetTarget()->ToPlayer())
+            player->RemoveSpellCooldown(SPELL_WARRIOR_REVENGE, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_warr_revenge_trigger::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
 
 //Arms Execute - 163201
 class spell_warr_execute : public SpellScriptLoader
@@ -1225,6 +1417,14 @@ class spell_warr_shield_visual : public SpellScriptLoader
 
 void AddSC_warrior_spell_scripts()
 {
+    RegisterSpellScript(spell_warr_avatar);
+    RegisterSpellScript(spell_warr_impending_victory);
+    RegisterSpellScript(spell_warr_victory_rush);
+    RegisterSpellScript(spell_warr_commanding_shout);
+    RegisterSpellScript(spell_warr_intimidating_shout);
+    RegisterSpellScript(spell_warr_shockwave);
+    RegisterSpellScript(spell_warr_storm_bolt);
+    RegisterAuraScript(spell_warr_revenge_trigger);
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
     RegisterSpellScript(spell_warr_charge);

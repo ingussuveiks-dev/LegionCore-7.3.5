@@ -3376,3 +3376,23 @@ Izmantotie avoti:
 
 - Bez glypha izmantot Charge un naidīgu Intercept: jāpārvietojas ar 218104, mērķim vispirms jāsaņem īsais root un pēc tam 50% slow, nedrīkst parādīties uguns taka.
 - Ar `Glyph of the Blazing Trail` atkārtot abas spējas: jāizmanto 198337 un kustības ceļā jāparādās uguns takai; Rage ģenerēšanai un Warbringer stunam jāsaglabājas.
+
+## Pakete 175 — Warrior audits: kopējo spēju dummy/script efektu atjaunošana
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_163_restore_warrior_common_spells.sql`.
+
+Salīdzinot Warrior pamata/talantu spellus ar gala 7.3.5.26972 `Spell`, `SpellEffect`, `Talent` un `SpecializationSpells` datiem, atrasti astoņi trūkstoši servera handleri. Tie visi bija klienta `DUMMY` vai `SCRIPT_EFFECT` punkti, tādēļ spellu ielādes validācija bija tīra, bet gala darbība nenotika vai bija nepilnīga.
+
+Atjaunots: Avatar root/snare noņemšana; Impending Victory un Victory Rush procentuālā dziedināšana un Victorious patēriņš; Commanding Shout katra saņēmēja 15% maksimālās veselības pieaugums; Intimidating Shout primārā mērķa izņemšana no trim area-fear sarakstiem; Shockwave stun un 20 sekunžu cooldown samazinājums, trāpot vismaz trim mērķiem; Storm Bolt stun; Revenge proc cooldown reset līdztekus DB2 nativi dotajam bezmaksas Revenge buffam.
+
+Izmantotie avoti: Blizzard 7.3.5 patch notes, Wago gala būves `Spell`, `SpellEffect`, `Talent` un `SpecializationSpells` CSV, kā arī AshamaneCore un ArgusCore pirmkods uzvedības salīdzināšanai. Ja references savā starpā atšķīrās, par noteicošiem izmantoti gala klienta DB2 effect indeksi un tooltipi.
+
+### Pārbaudes rezultāts
+
+- Release būve pabeigta bez kļūdām; migrācija 163 piemērota, un MariaDB pārbaudītas visas astoņas jaunās piesaistes.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6673 C++ skriptus un validēja 3377 spell skriptus. `DBErrors.log` ir 0 rindas un `Server.log` nav `ERROR`/`FATAL`; serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārbaudīt Avatar kustības efektu noņemšanu, abas Victory dziedināšanas, Commanding Shout veselības pieaugumu grupai un Intimidating Shout atšķirīgo primārā/sekundāro mērķu uzvedību.
+- Pārbaudīt Shockwave ar 1–2 un 3+ mērķiem, Storm Bolt stun un Protection Revenge bezmaksas proca tūlītēju cooldown reset.
