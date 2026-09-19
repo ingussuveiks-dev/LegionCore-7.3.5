@@ -148,3 +148,19 @@ Infusion spelli 235213 un 235240 izmanto vienu un to pašu effect 0 periodisko d
 ### Spēlē vēlāk pārbaudāmais
 
 - Maiden of Vigilance cīņā pārbaudīt gan Fel Infusion (235240), gan Light Infusion (235213) pirmo periodisko ticku un turpmāko pretējās infusion auras mijiedarbību.
+
+## Pakete 176 — Eye of Azshara Roiling Storm periodiskais hooks
+
+Fails: `src/server/scripts/Legion/EyeOfAzshara/boss_serpentrix.cpp`.
+
+Roiling Storm spelli 196290 un 196296 izmanto vienu effect 0 periodisko apstrādi, bet vienam faktiskā aura ir `PERIODIC_TRIGGER_SPELL`, otram — `PERIODIC_DUMMY`. Divu alternatīvu reģistrāciju vietā skripts tagad vienreiz piesaistās faktiskajam periodiskajam aura efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abas `spell_eye_of_azshara_roiling_storm` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 39 uz 37.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Eye of Azshara pārbaudīt gan 196290, gan 196296 Roiling Storm darbību: NPC izsaukšanu, kustību pa apli un periodisko efektu katrā tickā.
