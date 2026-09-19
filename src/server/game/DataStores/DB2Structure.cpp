@@ -136,7 +136,6 @@ bool LFGDungeonsEntry::IsValid() const
         case 645: // Greenstone Village
         case 697: // Scenario: Prototype
         case 699:
-        case 770: // Bonetown Scenario (scenario data is not implemented)
         case 1481: // The Coldridge Cataclysm (scenario data is not implemented)
         case 1534: // The Deaths of Chromie (scenario data is not implemented)
         case 1634: // The Nightborne (scenario data is not implemented)

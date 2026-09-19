@@ -3207,3 +3207,34 @@ Atlikušie seši DBC ieraksti — Finding the Secret Ingredient (745), Noodle Ti
 - Ja kādam no tiem nākotnē tiek importēti pilni spawni, `scenario_data` un skripts, noņemt tikai attiecīgo `IsValid()` izņēmumu un pievienot avotos pamatotu ieejas pozīciju.
 
 > 2026-09-19: LFG 745 un 749 pagaidu bloķēšana ir aizstāta ar paketi 169. Karte 1157, abi scenāriji un to mehānika ir atjaunota no publiskajiem world DB, klienta DB2 un uzvedības avotiem; abi LFG ieraksti atkal ir iespējoti.
+
+## Pakete 170 — Bonetown scenārija atjaunošana
+
+Faili: `src/server/scripts/Scenario/Bonetown/instance_bonetown.cpp`, `src/server/scripts/Scenario/Bonetown/bonetown.cpp`, `src/server/scripts/Scenario/Bonetown/bonetown.h`, `src/server/scripts/Scenario/scenario_script_loader.cpp`, `src/server/game/DataStores/DB2Structure.cpp` un `sql/updates/world/2026_09_19_158_implement_bonetown_scenario.sql`.
+
+No 7.3.5 klienta DB2 un hotfix datiem atjaunoti scenārija 323 trīs posmi, visi klienta kritēriji, Narthok Shadowsight, Morneth, Kelrath, Kilrogg Deadeye, Thrall un Durotan, kā arī 14 saglabātie oriģinālie dialogi ar BroadcastText un pieejamajiem Thrall skaņas ID. Publiskā Draenor-Core 6.2.3 datubāze apstiprina šo NPC template eksistenci oriģinālajā WoD laidienā, bet tajā, tāpat kā Legion world DB, nebija kartes 1200 spawnu vai skripta.
+
+Spawni rekonstruēti uz kartes 1200 identiskās Grom'gar ģeometrijas: ārējais dvēseļu rituāls atrodas pie kartes 1116 Karg Bloodfury/blood-pool laukuma, Thrall aizsardzība pie saglabātā Grom'gar Thrall punkta, bet Kilrogg — iekšējā kamerā pie The Iron Wolf punkta. Pievienotas arī abu laukumu sešas statiskās ugunis un braziers. C++ realizē trīs Soul Shaman cīņas, Morneth klientā dokumentēto Soul Storm, pārējos saglabātos Bonetown soul spellus, trīs Thrall aizsardzības viļņus (kopā ar 10+ Frenzied Spirit bonusa mērķiem), pāreju uz Kilrogg un visus trīs posmu kritērijus. LFG 770 pagaidu bloķēšana ir noņemta.
+
+Izmantotie avoti:
+
+- https://github.com/EyalMK/Draenor-Core
+- https://warcraft.wiki.gg/wiki/Bonetown_Scenario
+- https://warcraft.wiki.gg/wiki/Magnaron
+- https://www.wowhead.com/npc=76316/kelrath
+- https://www.wowhead.com/spell=155036/soul-bomb
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SoundKitName/csv?build=7.3.5.26972
+
+### Pārbaudes rezultāts
+
+- Pēc CMake pārģenerēšanas Release `worldserver` būve pabeigta bez kļūdām un visi trīs jaunie Bonetown C++ faili ir iekļauti projektā.
+- SQL updateris piemēroja migrāciju un reģistrēja to kā `RELEASED`; MariaDB pārbaudīts `instance_bonetown`, scenārija/LFG ieraksts, 6 statiskie creature spawni, 6 gameobject spawni, 14 dialogi un visu 10 naidīgo template C++ piesaiste.
+- Pilns starts pabeigts 12 sekundēs un ielādēja 6654 C++ skriptus. `DBErrors.log` ir 0 kļūdu, svaigajā `Server.log` nav nevienas `ERROR` vai `FATAL` rindas, un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Horde trīs spēlētāju grupu iziet LFG 770 no ārējā rituāla līdz Kilrogg, pārbaudot visu trīs Soul Shaman atsevišķos kill kritērijus, Thrall aizsardzības sākšanos tikai pēc spēlētāja ierašanās un abu 5/10 Frenzied Spirit bonusa kritēriju skaitīšanu.
+- Pārbaudīt oriģinālos Durotan/Thrall/Kilrogg tekstus un skaņas, visu soul spellu vizuālos/target efektus, gala LFG atlīdzību, kā arī wipe/reconnect atkopšanos katrā no trim posmiem.
+
+> 2026-09-19: LFG 770 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu scenārija, spawnu, dialogu un cīņu implementāciju; Bonetown atkal ir iespējots.

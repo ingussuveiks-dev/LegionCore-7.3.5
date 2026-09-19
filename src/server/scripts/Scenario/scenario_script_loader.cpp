@@ -81,6 +81,10 @@ void AddSC_instance_lions_landing();
 void AddSC_noodle_time();
 void AddSC_instance_noodle_time();
 
+//< Bonetown
+void AddSC_bonetown();
+void AddSC_instance_bonetown();
+
 //< The Secrets of Ragefire
 void AddSC_the_secrets_of_ragefire();
 void AddSC_instance_the_secrets_of_ragefire();
@@ -248,6 +252,10 @@ void AddScenarioScripts()
     //< Finding the Secret Ingredient / Noodle Time
     AddSC_noodle_time();
     AddSC_instance_noodle_time();
+
+    //< Bonetown
+    AddSC_bonetown();
+    AddSC_instance_bonetown();
 
     //< The Secrets of Ragefire
     AddSC_the_secrets_of_ragefire();
