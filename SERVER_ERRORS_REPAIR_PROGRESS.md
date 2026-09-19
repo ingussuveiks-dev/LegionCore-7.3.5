@@ -98,3 +98,20 @@ Brewfest Trot, Canter un Gallop spelli saglabā veco trīs efektu izkārtojumu, 
 ### Spēlē vēlāk pārbaudāmais
 
 - Brewfest ram braucienā pārbaudīt Normal → Trot → Canter → Gallop pārejas, fatigue pieaugumu/samazinājumu, Exhausted uzlikšanu pie 100 stackiem un 15 stacku noņemšanu pēc Exhausted beigām.
+
+## Pakete 173 — Skovald jaukto aura tipu nodalīšana
+
+Faili: `src/server/scripts/Legion/HallsofValor/boss_god_king_skovald.cpp` un `sql/updates/world/2026_09_19_149_split_skovald_infernal_flames_absorb.sql`.
+
+`spell_skovald_aegis_remove` ir piesaistīts diviem spelliem ar atšķirīgu effect 1: Aegis Override (193783) izmanto DUMMY, bet Infernal Flames Aura (193983) izmanto SCHOOL_ABSORB. Kopīgais auras beigu hooks tagad pieņem abu faktisko tipu un turpina castot 193991. Amount un absorb loģika izdalīta jaunā `spell_skovald_infernal_flames_absorb`, kuru SQL piesaista tikai spellam 193983. Atsevišķais Aegis of Aggramar absorb spells 193743 un tā skripts nav mainīts.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; spellam 193983 datubāzē ir gan kopīgais remove, gan jaunais absorb skripts.
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; visas četras Skovald validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 50 uz 46.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- God-King Skovald cīņā pārbaudīt Aegis of Aggramar frontālo absorb (spell 193743), Infernal Flames (193983) virziena/distances absorb noteikumus un to, ka gan 193983, gan Aegis Override (193783) beigās casto spellu 193991.

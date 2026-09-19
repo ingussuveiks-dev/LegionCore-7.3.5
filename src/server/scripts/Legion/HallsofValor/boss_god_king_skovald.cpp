@@ -870,12 +870,34 @@ class spell_skovald_aegis_remove : public SpellScriptLoader
                 GetTarget()->CastSpell(GetTarget(), 193991, true);
             }
 
+            void Register() override
+            {
+                OnEffectRemove += AuraEffectRemoveFn(spell_skovald_aegis_remove_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+            }
+        };
+
+        AuraScript* GetAuraScript() const override
+        {
+            return new spell_skovald_aegis_remove_AuraScript();
+        }
+};
+
+//193983
+class spell_skovald_infernal_flames_absorb : public SpellScriptLoader
+{
+    public:
+        spell_skovald_infernal_flames_absorb() : SpellScriptLoader("spell_skovald_infernal_flames_absorb") { }
+
+        class spell_skovald_infernal_flames_absorb_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_skovald_infernal_flames_absorb_AuraScript);
+
             void CalculateAmount(AuraEffect const* /*aurEff*/, float& amount, bool& /*canBeRecalculated*/)
             {
                 amount = -1;
             }
 
-            void OnAbsorb(AuraEffect* aurEff, DamageInfo& dmgInfo, float& absorbAmount)
+            void OnAbsorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, float& absorbAmount)
             {
                 if (!GetCaster())
                     return;
@@ -889,16 +911,14 @@ class spell_skovald_aegis_remove : public SpellScriptLoader
 
             void Register() override
             {
-                OnEffectRemove += AuraEffectRemoveFn(spell_skovald_aegis_remove_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-                OnEffectRemove += AuraEffectRemoveFn(spell_skovald_aegis_remove_AuraScript::OnRemove, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
-                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_skovald_aegis_remove_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
-                OnEffectAbsorb += AuraEffectAbsorbFn(spell_skovald_aegis_remove_AuraScript::OnAbsorb, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_skovald_infernal_flames_absorb_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
+                OnEffectAbsorb += AuraEffectAbsorbFn(spell_skovald_infernal_flames_absorb_AuraScript::OnAbsorb, EFFECT_1, SPELL_AURA_SCHOOL_ABSORB);
             }
         };
 
         AuraScript* GetAuraScript() const override
         {
-            return new spell_skovald_aegis_remove_AuraScript();
+            return new spell_skovald_infernal_flames_absorb_AuraScript();
         }
 };
 
@@ -1003,6 +1023,7 @@ void AddSC_boss_god_king_skovald()
     new spell_skovald_ragnarok();
     new spell_skovald_drop_aegis();
     new spell_skovald_aegis_remove();
+    new spell_skovald_infernal_flames_absorb();
     new spell_skovald_aegis_absorb();
     new spell_skovald_aegis_check_cast();
     RegisterAreaTriggerAI(at_skovald_aegis_of_aggramar_absorb);
