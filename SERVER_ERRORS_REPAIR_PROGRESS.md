@@ -308,3 +308,20 @@ Ielādētā DBC diagnostika apstiprināja, ka Quick-Dry Resin `ENABLE_ALT_POWER`
 ### Spēlē vēlāk pārbaudāmais
 
 - Pārbaudīt Quick-Dry Resin alternate power palielināšanu/samazināšanu, Ekowraith Astral Influence range korekcijas un Bound by Fel pāra sasaisti, attāluma pārbaudi un stack limitu.
+
+## Pakete 186 — Argus Titanforging periodisko skriptu sadalīšana
+
+Faili: `boss_argus.cpp` un `sql/updates/world/2026_09_19_150_split_argus_titanforging_periodic.sql`.
+
+Spells 257213 izmanto effect 1 periodisko pārbaudi/buff aprēķinu, bet 257214 izmanto effect 0 enerģijas samazināšanu. Kopīgais skripts sadalīts divos, lai katram spellam reģistrētu tikai tā faktisko periodisko efektu un paredzēto darbību. SQL updateris 257214 piesaista jaunajam reduced-energy skriptam.
+
+### Pārbaudes rezultāts
+
+- SQL updateris piemērots un reģistrēts kā `RELEASED`; datubāzē abi spelli piesaistīti savam skriptam.
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika viens iepriekš eksistējošs, ar šo paketi nesaistīts C4305 brīdinājums.
+- Pilns starts pabeigts 12 sekundēs; abas Argus validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 14 uz 12.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Argus cīņā pārbaudīt Titanforging enerģijas sliekšņus un buff procentus spellam 257213, kā arī vienas enerģijas vienības samazināšanu katrā 257214 tickā.
