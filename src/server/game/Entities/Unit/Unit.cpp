@@ -12608,13 +12608,24 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellInfo const* spellProto, uin
 
     // Chaos Bolt - 116858
     // damage is increased by your critical strike chance
-    if (IsPlayer() && spellProto && (spellProto->Id == 116858 || spellProto->Id == 215279))
+    if (spellProto && (spellProto->Id == 116858 || spellProto->Id == 215279))
     {
-        float crit_chance = GetFloatValue(PLAYER_FIELD_SPELL_CRIT_PERCENTAGE/* + GetFirstSchoolInMask(spellProto->GetSchoolMask())*/);
-        int32 modif = victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
-        if(modif < -100)
-            crit_chance -= 50.0f;
-        AddPct(DoneTotalMod, crit_chance);
+        // Dimensional Rift's Chaos Tear casts 215279, but the spell must scale
+        // with the summoning warlock's critical strike chance just like the
+        // player's Chaos Bolt.
+        Player* chaosBoltCaster = ToPlayer();
+        if (!chaosBoltCaster && spellProto->Id == 215279)
+            if (Unit* owner = GetAnyOwner())
+                chaosBoltCaster = owner->ToPlayer();
+
+        if (chaosBoltCaster)
+        {
+            float crit_chance = chaosBoltCaster->GetFloatValue(PLAYER_FIELD_SPELL_CRIT_PERCENTAGE/* + GetFirstSchoolInMask(spellProto->GetSchoolMask())*/);
+            int32 modif = victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE);
+            if(modif < -100)
+                crit_chance -= 50.0f;
+            AddPct(DoneTotalMod, crit_chance);
+        }
     }
 
     // Lava Burst - 51505

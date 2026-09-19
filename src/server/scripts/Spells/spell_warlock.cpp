@@ -25,6 +25,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "CreatureAI.h"
+#include "ScriptedCreature.h"
 #include "ObjectVisitors.hpp"
 #include "AreaTrigger.h"
 
@@ -390,16 +391,23 @@ class spell_warl_searing_bolts : public AuraScript
 {
     PrepareAuraScript(spell_warl_searing_bolts);
 
-    void OnTick(AuraEffect const* /*aurEff*/)
+    void OnTick(AuraEffect const* aurEff)
     {
         if (Unit* sum = GetUnitOwner())
         {
             if (Unit* warlock = sum->GetOwner())
             {
                 if (Unit* target = sum->GetTargetUnit())
-                    sum->CastSpell(target, 243050, true, nullptr, nullptr, warlock->GetGUID());
+                    if (target->IsAlive() && warlock->IsValidAttackTarget(target))
+                        sum->CastSpell(target, 243050, true, nullptr, nullptr, warlock->GetGUID());
             }
         }
+
+        // Flame Rift fires exactly twenty bolts. The summon itself lives longer
+        // for its visual, so stop the periodic aura instead of tying it to the
+        // creature's lifetime.
+        if (aurEff->GetTickNumber() >= 20)
+            GetAura()->Remove();
     }
 
     void Register() override
@@ -578,6 +586,96 @@ class spell_warl_phantom_singularity : public AuraScript
     void Register() override
     {
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_phantom_singularity::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
+};
+
+// Dimensional Rift guardians - Unstable Tear (94584), Shadowy Tear (99887),
+// Chaos Tear (108493), and Flame Rift (121643). These creatures are guardians,
+// not controllable pets, so creature_template spells are not autocast for them.
+struct npc_warl_dimensional_rift : public Scripted_NoMovementAI
+{
+    explicit npc_warl_dimensional_rift(Creature* creature) : Scripted_NoMovementAI(creature) { }
+
+    ObjectGuid _targetGuid;
+    uint32 _castTimer = 0;
+    uint8 _castsRemaining = 0;
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        Unit* target = me->GetTargetUnit();
+        if (!target && summoner)
+            target = summoner->getVictim();
+        if (!target && summoner && summoner->ToPlayer())
+            target = summoner->ToPlayer()->GetSelectedUnit();
+
+        if (!target || !target->IsAlive() || !summoner || !summoner->IsValidAttackTarget(target))
+            return;
+
+        _targetGuid = target->GetGUID();
+        me->SetTarget(_targetGuid);
+
+        switch (me->GetEntry())
+        {
+            case 94584:  // Unstable Tear: Chaos Barrage every 250 ms for 5.5 sec.
+                _castTimer = 250;
+                _castsRemaining = 22;
+                break;
+            case 99887:  // Shadowy Tear: Shadow Bolt every 2 sec for 14 sec.
+                _castTimer = 2000;
+                _castsRemaining = 7;
+                break;
+            case 108493: // Chaos Tear: one Chaos Bolt after its three-second charge.
+                _castTimer = 3000;
+                _castsRemaining = 1;
+                break;
+            case 121643: // Flame Rift: Searing Bolts handles its twenty projectiles.
+                me->CastSpell(me, 243046, true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!_castsRemaining)
+            return;
+
+        if (_castTimer > diff)
+        {
+            _castTimer -= diff;
+            return;
+        }
+
+        Unit* owner = me->GetAnyOwner();
+        Unit* target = ObjectAccessor::GetUnit(*me, _targetGuid);
+        if (!owner || !target || !target->IsAlive() || !owner->IsValidAttackTarget(target))
+        {
+            _castsRemaining = 0;
+            return;
+        }
+
+        uint32 spellId = 0;
+        switch (me->GetEntry())
+        {
+            case 94584:
+                spellId = 187394;
+                _castTimer = 250;
+                break;
+            case 99887:
+                spellId = 196657;
+                _castTimer = 2000;
+                break;
+            case 108493:
+                spellId = 215279;
+                break;
+            default:
+                _castsRemaining = 0;
+                return;
+        }
+
+        me->CastSpell(target, spellId, true, nullptr, nullptr, owner->GetGUID());
+        --_castsRemaining;
     }
 };
 
@@ -1052,17 +1150,60 @@ class spell_warl_immolate : public SpellScriptLoader
         {
             PrepareAuraScript(spell_warl_immolate_AuraScript);
 
-            void OnApplyOrRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+            void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
+                {
                     if (Unit* target = GetUnitOwner())
                         target->RemoveAurasDueToSpell(205690, caster->GetGUID());
+
+                    // Reapplying Immolate resets any accumulated Roaring Blaze
+                    // increase before the newly snapshotted periodic damage is used.
+                    const_cast<AuraEffect*>(aurEff)->RecalculateAmount(caster);
+
+                    if (Player* player = caster->ToPlayer())
+                        if (player->HasSpell(196447))
+                            caster->CastSpell(caster, 228312, true);
+                }
+            }
+
+            void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                Unit* caster = GetCaster();
+                Unit* target = GetUnitOwner();
+                if (!caster || !target)
+                    return;
+
+                target->RemoveAurasDueToSpell(205690, caster->GetGUID());
+
+                // 228312 is the client-side Channel Demonfire activator. Keep it
+                // while this warlock still has Immolate on another target.
+                if (caster->GetCountMyAura(157736) <= 1)
+                    caster->RemoveAurasDueToSpell(228312);
+            }
+
+            void OnTick(AuraEffect const* /*aurEff*/)
+            {
+                // Every Immolate tick generates one Soul Shard fragment. The
+                // separate 193541 proc below supplies the extra fragment on half
+                // of critical ticks.
+                if (Unit* caster = GetCaster())
+                {
+                    caster->CastSpell(caster, 193540, true);
+
+                    // Keep the talent activator present for Immolates applied by
+                    // Cataclysm and other secondary spell sources as well.
+                    if (Player* player = caster->ToPlayer())
+                        if (player->HasSpell(196447))
+                            caster->CastSpell(caster, 228312, true);
+                }
             }
 
             void Register() override
             {
-                OnEffectApply += AuraEffectApplyFn(spell_warl_immolate_AuraScript::OnApplyOrRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-                OnEffectRemove += AuraEffectRemoveFn(spell_warl_immolate_AuraScript::OnApplyOrRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                OnEffectApply += AuraEffectApplyFn(spell_warl_immolate_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+                OnEffectRemove += AuraEffectRemoveFn(spell_warl_immolate_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+                OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_immolate_AuraScript::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
             }
         };
 
@@ -1348,6 +1489,188 @@ class spell_warl_demonwrath : public SpellScriptLoader
         {
             return new spell_warl_demonwrath_SpellScript();
         }
+};
+
+// Immolate hidden proc aura - 193541. Only a critical Immolate periodic hit may
+// award its 50% bonus Soul Shard fragment.
+class spell_warl_immolate_proc : public AuraScript
+{
+    PrepareAuraScript(spell_warl_immolate_proc);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        return damageInfo && damageInfo->GetSpellInfo()
+            && damageInfo->GetSpellInfo()->Id == 157736
+            && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL)
+            && roll_chance_i(50);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        if (Unit* caster = GetTarget())
+            caster->CastSpell(caster, 193540, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warl_immolate_proc::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warl_immolate_proc::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Conflagrate - 17962. Roaring Blaze permanently increases the damage of the
+// currently active Immolate; refreshing Immolate resets it to its base value.
+class spell_warl_conflagrate : public SpellScript
+{
+    PrepareSpellScript(spell_warl_conflagrate);
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target || !caster->HasAura(205184))
+            return;
+
+        Aura* immolate = target->GetAura(157736, caster->GetGUID());
+        AuraEffect* periodic = immolate ? immolate->GetEffect(EFFECT_0) : nullptr;
+        SpellInfo const* roaringBlaze = sSpellMgr->GetSpellInfo(205690);
+        if (!periodic || !roaringBlaze)
+            return;
+
+        int32 increasePct = roaringBlaze->Effects[EFFECT_0]->CalcValue(caster);
+        periodic->SetAmount(periodic->GetAmount() + CalculatePct(periodic->GetAmount(), increasePct));
+        immolate->SetNeedClientUpdateForTargets();
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warl_conflagrate::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Conflagration of Chaos - 219195/196546. Its proc is restricted to the two
+// spells named by the artifact trait, and the stored critical chance is added
+// to the guaranteed critical strike's damage.
+class spell_warl_conflagration_proc : public AuraScript
+{
+    PrepareAuraScript(spell_warl_conflagration_proc);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && (spell->GetSpellInfo()->Id == 17962 || spell->GetSpellInfo()->Id == 17877);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warl_conflagration_proc::CheckProc);
+    }
+};
+
+class spell_warl_conflagration_of_chaos : public SpellScript
+{
+    PrepareSpellScript(spell_warl_conflagration_of_chaos);
+
+    bool _empowered = false;
+
+    void HandleBeforeCast()
+    {
+        _empowered = GetCaster() && GetCaster()->HasAura(196546);
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        if (!_empowered)
+            return;
+
+        if (Player* player = GetCaster()->ToPlayer())
+        {
+            int32 damage = GetHitDamage();
+            AddPct(damage, player->GetFloatValue(PLAYER_FIELD_SPELL_CRIT_PERCENTAGE));
+            SetHitDamage(damage);
+        }
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_warl_conflagration_of_chaos::HandleBeforeCast);
+        OnEffectHitTarget += SpellEffectFn(spell_warl_conflagration_of_chaos::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Eradication's DBC proc aura has no spell-family filter. Chaos Bolt applies
+// the debuff explicitly below, so suppress broad default procs here.
+class spell_warl_eradication : public AuraScript
+{
+    PrepareAuraScript(spell_warl_eradication);
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        return false;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warl_eradication::CheckProc);
+    }
+};
+
+// Chaos Bolt - 116858: Eradication and the Soulsnatcher artifact trait.
+class spell_warl_chaos_bolt : public SpellScript
+{
+    PrepareSpellScript(spell_warl_chaos_bolt);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        if (caster->HasAura(196412))
+            caster->CastSpell(target, 196414, true);
+
+        if (AuraEffect const* soulsnatcher = caster->GetAuraEffect(196236, EFFECT_0))
+            if (roll_chance_i(soulsnatcher->GetAmount()))
+                caster->CastSpell(caster, 196234, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warl_chaos_bolt::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Channel Demonfire - 196447. Every one of its fifteen ticks chooses a random
+// attackable target carrying this warlock's Immolate within forty yards.
+class spell_warl_channel_demonfire : public AuraScript
+{
+    PrepareAuraScript(spell_warl_channel_demonfire);
+
+    void OnTick(AuraEffect const* /*aurEff*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        std::list<Unit*> targets;
+        caster->GetAttackableUnitListInRange(targets, 40.0f);
+        ObjectGuid casterGuid = caster->GetGUID();
+        targets.remove_if([casterGuid](Unit* target)
+        {
+            return !target || !target->IsAlive() || !target->HasAura(157736, casterGuid);
+        });
+
+        if (!targets.empty())
+            caster->CastSpell(Trinity::Containers::SelectRandomContainerElement(targets), 196448, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_channel_demonfire::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
 };
 
 // Doom - 603
@@ -2568,11 +2891,27 @@ class spell_warl_incinerate : public SpellScript
         }
     }
 
+    void HandleAfterCast()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        AuraEffect const* dimensionRipper = player ? player->GetAuraEffect(219415, EFFECT_0) : nullptr;
+        if (!player || !dimensionRipper || !roll_chance_i(dimensionRipper->GetAmount()))
+            return;
+
+        SpellInfo const* dimensionalRift = sSpellMgr->GetSpellInfo(196586);
+        SpellCategoryEntry const* category = dimensionalRift
+            ? sSpellCategoryStore.LookupEntry(dimensionalRift->Categories.ChargeCategory) : nullptr;
+        if (dimensionalRift && category
+            && player->GetChargesForSpell(dimensionalRift) < player->GetMaxSpellCategoryCharges(category))
+            player->ModSpellCharge(196586, 1);
+    }
+
     void Register() override
     {
         OnEffectLaunchTarget += SpellEffectFn(spell_warl_incinerate::HandleOnHit, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
         OnEffectHitTarget += SpellEffectFn(spell_warl_incinerate::HandleHit, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warl_incinerate::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        AfterCast += SpellCastFn(spell_warl_incinerate::HandleAfterCast);
     }
 };
 
@@ -2636,4 +2975,12 @@ void AddSC_warlock_spell_scripts()
     RegisterSpellScript(spell_warl_create_healthstone);
     RegisterSpellScript(spell_warl_incinerate);
     RegisterAuraScript(spell_warl_searing_bolts);
+    RegisterAuraScript(spell_warl_immolate_proc);
+    RegisterSpellScript(spell_warl_conflagrate);
+    RegisterAuraScript(spell_warl_conflagration_proc);
+    RegisterSpellScript(spell_warl_conflagration_of_chaos);
+    RegisterAuraScript(spell_warl_eradication);
+    RegisterSpellScript(spell_warl_chaos_bolt);
+    RegisterAuraScript(spell_warl_channel_demonfire);
+    RegisterCreatureAI(npc_warl_dimensional_rift);
 }
