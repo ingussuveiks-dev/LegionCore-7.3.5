@@ -1168,13 +1168,16 @@ public:
 
         void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
+            if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+                return;
+
             Unit* caster = GetCaster();
             Unit* target = GetTarget();
             if (!caster || !target)
                 return;
 
-            float bp0 = GetStackAmount();
-            caster->CastCustomSpell(target, 202446, &bp0, NULL, NULL, true);
+            float stacks = GetStackAmount();
+            caster->CastCustomSpell(target, 202446, NULL, &stacks, NULL, true);
         }
 
         void Register() override
@@ -1202,7 +1205,7 @@ class spell_dh_anguish_damage : public SpellScriptLoader
             void HandleOnHit()
             {
                 if (Unit* target = GetHitUnit())
-                    SetHitDamage(GetHitDamage() * GetSpellValue()->EffectBasePoints[EFFECT_0]);
+                    SetHitDamage(GetHitDamage() * GetSpellValue()->EffectBasePoints[EFFECT_1]);
             }
 
             void Register() override
@@ -1215,6 +1218,72 @@ class spell_dh_anguish_damage : public SpellScriptLoader
         {
             return new spell_dh_anguish_damage_SpellScript();
         }
+};
+
+// Consume Soul - 178963, 203794, 228532
+// The Fury trigger is only active while Demonic Appetite is selected.
+class spell_dh_consume_soul : public SpellScriptLoader
+{
+public:
+    spell_dh_consume_soul() : SpellScriptLoader("spell_dh_consume_soul") { }
+
+    class spell_dh_consume_soul_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_consume_soul_SpellScript);
+
+        void PreventPower(SpellEffIndex effIndex)
+        {
+            if (Unit* caster = GetCaster())
+                if (!caster->HasAura(206478))
+                    PreventHitEffect(effIndex);
+        }
+
+        void Register() override
+        {
+            OnEffectHit += SpellEffectFn(spell_dh_consume_soul_SpellScript::PreventPower, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectHitTarget += SpellEffectFn(spell_dh_consume_soul_SpellScript::PreventPower, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectLaunch += SpellEffectFn(spell_dh_consume_soul_SpellScript::PreventPower, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectLaunchTarget += SpellEffectFn(spell_dh_consume_soul_SpellScript::PreventPower, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_consume_soul_SpellScript();
+    }
+};
+
+// Consume Soul (demon) - 202644
+// This variant keeps its demon-damage buff on effect 1 and gates only effect 2 Fury.
+class spell_dh_consume_soul_demon : public SpellScriptLoader
+{
+public:
+    spell_dh_consume_soul_demon() : SpellScriptLoader("spell_dh_consume_soul_demon") { }
+
+    class spell_dh_consume_soul_demon_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_consume_soul_demon_SpellScript);
+
+        void PreventPower(SpellEffIndex effIndex)
+        {
+            if (Unit* caster = GetCaster())
+                if (!caster->HasAura(206478))
+                    PreventHitEffect(effIndex);
+        }
+
+        void Register() override
+        {
+            OnEffectHit += SpellEffectFn(spell_dh_consume_soul_demon_SpellScript::PreventPower, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectHitTarget += SpellEffectFn(spell_dh_consume_soul_demon_SpellScript::PreventPower, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectLaunch += SpellEffectFn(spell_dh_consume_soul_demon_SpellScript::PreventPower, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL);
+            OnEffectLaunchTarget += SpellEffectFn(spell_dh_consume_soul_demon_SpellScript::PreventPower, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_consume_soul_demon_SpellScript();
+    }
 };
 
 // Rage of the Illidari - 201467
@@ -1457,18 +1526,24 @@ public:
             return SPELL_FAILED_SUCCESS;
         }
 
-        void HandleTriggerSpell(SpellEffIndex /*effIndex*/)
+        void HandleTriggerSpell(SpellEffIndex effIndex)
         {
             if (Unit* caster = GetCaster())
             {
                 if (Aura* aur = caster->GetAura(162264))
                 {
-                    uint32 dur = caster->HasAura(235893) ? 15000 : 30000;
-                    if (aur->GetDuration() < 38000)
-                        aur->SetDuration(aur->GetDuration() + dur);
+                    PreventHitDefaultEffect(effIndex);
+
+                    if (SpellInfo const* metamorphosis = sSpellMgr->GetSpellInfo(162264))
+                    {
+                        int32 newDuration = aur->GetDuration() + caster->CalcSpellDuration(metamorphosis);
+                        aur->SetMaxDuration(std::max(aur->GetMaxDuration(), newDuration));
+                        aur->SetDuration(newDuration);
+                        // A full Metamorphosis cast allows the next Eye Beam to
+                        // grant Demonic's extension again.
+                        aur->SetCustomData(0);
+                    }
                 }
-                else
-                    caster->CastSpell(caster, 162264, true);
             }
         }
 
@@ -1642,7 +1717,7 @@ class spell_dh_eye_beam : public AuraScript
 {
     PrepareAuraScript(spell_dh_eye_beam);
 
-    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (Unit* caster = GetCaster())
         {
@@ -1650,19 +1725,33 @@ class spell_dh_eye_beam : public AuraScript
             {
                 if (Aura* aur = caster->GetAura(162264))
                 {
-                    uint32 dur = aur->GetDuration();
-                    if (dur < 38000)
-                        aur->SetDuration(dur + 8000);
+                    // Only the first Eye Beam in the current Metamorphosis
+                    // window grants the full Demonic extension.
+                    if (aur->GetCustomData() == 0)
+                    {
+                        int32 newDuration = aur->GetDuration() + 8000;
+                        aur->SetMaxDuration(std::max(aur->GetMaxDuration(), newDuration));
+                        aur->SetDuration(newDuration);
+                        aur->SetCustomData(1);
+                    }
                 }
                 else
-                    caster->CastSpellDuration(caster, 162264, true, 8000);
+                {
+                    // Demonic starts with Eye Beam so the channel benefits
+                    // from demon form and leaves eight seconds afterward.
+                    uint32 duration = 8000 + std::max(0, GetAura()->GetMaxDuration());
+                    caster->CastSpellDuration(caster, 162264, true, duration);
+
+                    if (Aura* aur = caster->GetAura(162264))
+                        aur->SetCustomData(1);
+                }
             }
         }
     }
 
     void Register() override
     {
-        OnEffectRemove += AuraEffectRemoveFn(spell_dh_eye_beam::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectApply += AuraEffectApplyFn(spell_dh_eye_beam::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -1742,6 +1831,8 @@ void AddSC_demonhunter_spell_scripts()
     new spell_dh_mana_rift();
     new spell_dh_anguish();
     new spell_dh_anguish_damage();
+    new spell_dh_consume_soul();
+    new spell_dh_consume_soul_demon();
     new spell_dh_empower_wards();
     new areatrigger_rage_of_the_illidari();
     RegisterSpellScript(spell_dh_shatter_soul);
