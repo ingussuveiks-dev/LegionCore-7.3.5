@@ -3053,7 +3053,7 @@ Spell-click NPC 130877 “Rift to Telogrus” atrodas ārpus scenārija Outland 
 - Ar Alliance varoni izmantot “Rift to Telogrus” (130877) un pārbaudīt parādīšanos scenārija sākumā pie `(1385.32, 2859.3, 58.1648)`.
 - Iziet Telogrus Rift scenāriju un pārbaudīt, ka iekšējie Void Rift portāli joprojām ved uz savām atsevišķajām platformām un nav aizstāti ar LFG sākumpunktu.
 
-## Pakete 163 — nepabeigto Lion's Landing variantu atspējošana
+## Pakete 163 — nepabeigto Lion's Landing variantu atspējošana (aizstāta)
 
 Faili: `src/server/game/DataStores/DB2Structure.cpp` un `src/server/game/DungeonFinding/LFGMgr.cpp`.
 
@@ -3069,6 +3069,37 @@ Abi Lion's Landing DBC varianti (590 un 802) norāda uz karti 1103, kurā world 
 
 - Pārliecināties, ka abi Lion's Landing varianti neparādās kā izmantojamas rindas un nevar tikt izvēlēti ar klienta vai paketes manipulāciju.
 - Ja nākotnē tiek importēts pilns kartes 1103 saturs un scenārija skripts, noņemt abus `IsValid()` izņēmumus un pievienot īsto ieejas pozīciju.
+
+> 2026-09-19: šī pagaidu pieeja ir aizstāta ar paketi 167 zemāk. Abi LFG ieraksti ir atkal iespējoti pēc publiskās 5.4.8 pasaules datubāzes statiskā satura un īstu ieejas koordinātu atjaunošanas. Scenārija posmu C++ loģika tiek atjaunota atsevišķi, nevis kļūdas tiek slēptas.
+
+## Pakete 167 — Lion's Landing statiskā satura atjaunošana
+
+Faili: `sql/updates/world/2026_09_19_154_restore_lions_landing_static_content.sql`, `sql/updates/world/2026_09_19_155_fix_lions_landing_spawn_mask.sql` un `src/server/game/DataStores/DB2Structure.cpp`.
+
+Atrasts publisks GPL-2.0 datu avots — Legends of Azeroth Pandaria 5.4.8 world DB laidiens `world_548_20240722.sql`. No tā kartes 1103 datu kopas Legion 7.3.5 shēmai pārnesti 253 creature spawni un 6 gameobject spawni. Dati ietver Bloodhilt uzbrucējus, Lion's Footmen, SI:7 komandu, Admiral Taylor, High Marshal Twinbraid, aizsardzības novietošanas mērķus un statisko apkārtni.
+
+5.4.8 avota `spawnMask=4096` nav derīgs Legion 7.3.5 klienta MapDifficulty datos šai kartei; serveris to pārbaudē noraidīja. Otrā migrācija kartes 1103 statiskajam saturam uzstāda neitrālo masku `0`, lai spawni būtu pieejami abām LFG scenārija versijām bez neatbalstīta difficulty bita.
+
+Abiem Lion's Landing LFG variantiem (590 un 802) pievienota ieeja pie scenārija sākuma Golden Gryphon/flight-master laukuma `(-1180.10, -1193.30, 37.20)`. Tā kā karte vairs nav tukša un LFG teleportam ir reālas koordinātas, no `LFGDungeonsEntry::IsValid()` noņemta šo divu ierakstu pagaidu bloķēšana.
+
+Avoti:
+
+- https://github.com/Legends-of-Azeroth/Legends-of-Azeroth-Pandaria-5.4.8/releases
+- https://warcraft.wiki.gg/wiki/Lion%27s_Landing_(scenario)
+- https://warcraft.blizzplanet.com/blog/comments/patch-5-1-operation-shieldwall-scenario-lions-landing
+
+### Vēl veicamais
+
+- Pārnest/izveidot septiņu scenārija posmu instances loģiku, jo publiski atrodamajos LegionCore un uwow C++ avotos Lion's Landing faili ir tikai tukši karkasi.
+- Spēlē pārbaudīt abus LFG variantus, sākuma pozīciju, pretinieku/frakciju sadalījumu un scenārija progresu pēc C++ paketes pabeigšanas.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pirmais starts apstiprināja, ka 5.4.8 maska `4096` kartei 1103 nav atbalstīta; pievienota korekcijas migrācija, nevis kļūda ignorēta.
+- Atkārtots pilns starts pabeigts 11 sekundēs un ielādēja visus kartes 1103 ierakstus bez kļūdām.
+- Datubāzē pārbaudīti 253 creature spawni, 6 gameobject spawni un LFG ieejas 590/802.
+- Svaigie `DBErrors.log` un `Server.log` pēc atkārtotā starta ir tukši (0 baiti).
 
 ## Pakete 164 — Death Knight artifact scenāriju ieejas
 
