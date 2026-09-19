@@ -358,3 +358,20 @@ Nythendra Rot DOT 203096 un Volatile Rot 204463 beigu darbības sadalītas atsev
 ### Spēlē vēlāk pārbaudāmais
 
 - Nythendra cīņā pārbaudīt vienu Infested Ground izveidi pēc Rot DOT un tieši četrus visual castus pēc Volatile Rot; Elerethe Mythic cīņā pārbaudīt Web of Pain absorb/atstaroto damage un Pain Lash spēlētājiem starp sasaistīto pāri.
+
+## Pakete 189 — Neizmantojamo legacy spell loaderu noņemšana
+
+Faili: `spell_generic.cpp` un `sql/updates/world/2026_09_19_153_remove_unusable_legacy_spell_scripts.sql`.
+
+Seši vecie riding-skill pakāpju mount skripti atsaucās uz šajā Legion DBC neesošiem mount variantiem, bet Seaforium achievement skripts — uz neesošu credit spellu 60937. Šie skripti jau līdz šim neizturēja `Validate()` un netika izpildīti. Novecojušās DB piesaistes un tieši šo septiņu loaderu reģistrācija noņemta kopā, saglabājot pamatspellu DBC noklusējuma darbību un neatstājot nepiesaistītus loaderus.
+
+### Pārbaudes rezultāts
+
+- SQL updateris piemērots un reģistrēts kā `RELEASED`; datubāzē nav palikusi neviena no septiņām novecojušajām piesaistēm.
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika četri iepriekš eksistējoši, ar šo paketi nesaistīti C5055 brīdinājumi.
+- Pilns starts pabeigts 11 sekundēs; visas septiņas `Validate()` kļūdas pazuda un `Server.log` skaits samazinājās no 8 uz 1.
+- Pēc loaderu reģistrācijas noņemšanas `DBErrors.log` atkal ir tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Izsaukt Magic Broom, Headless Horseman's Mount, Big Love Rocket, Invincible, Celestial Steed un X-53 Touring Rocket ar Legion mount sistēmu; battleground vidē pārbaudīt Seaforium noklusējuma gameobject damage darbību bez novecojušā achievement-credit papildinājuma.
