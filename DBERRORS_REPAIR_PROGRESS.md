@@ -3103,3 +3103,20 @@ Tak-Tak (101880) ir spawnots ārpus scenārija kartēs 870 un 1514. Tā gossip d
 
 - Ar Monk pie Tak-Tak sākt Panic At The Brewery un pārbaudīt parādīšanos pie `(-691.579, 1261.76, 162.791)` un pirmā scenārija posma aktivizēšanos.
 - Iziet scenāriju līdz event objektam 522 un pārliecināties, ka tā iekšējais spell 233233 joprojām pārceļ uz nākamo laukumu pie `(-632.018, 1198.09, 139.156)`.
+
+## Pakete 166 — tukšo scenāriju rindu atspējošana
+
+Fails: `src/server/game/DataStores/DB2Structure.cpp`.
+
+Atlikušie seši DBC ieraksti — Finding the Secret Ingredient (745), Noodle Time (749), Bonetown Scenario (770), The Coldridge Cataclysm (1481), The Deaths of Chromie (1534) un The Nightborne (1634) — norāda uz kartēm 1157, 1200, 1723, 1756 un 1812. Visās piecās kartēs world datubāzē ir nulle creature, gameobject, eventobject un `scenario_data` ierakstu. Kartēm 1200, 1723, 1756 un 1812 nav arī `instance_template`; kartei 1157 ir tikai tukšs templates bez skripta. Repozitorija C++ skriptos nav šo karšu scenāriju implementāciju. Ieraksti tagad ir atzīmēti kā neatbalstīti ar `IsValid()`, tādēļ tos nevar izmantot LFG rindā un tiem netiek prasītas maldinošas ieejas koordinātes.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve ar laboto kodu pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; visas sešas neatbalstīto scenāriju kļūdas pazuda un `DBErrors.log` skaits samazinājās no 6 uz 0. Žurnāla fails pēc starta ir tukšs.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārliecināties, ka visi seši nepabeigtie scenāriji nav izvēlami LFG saskarnē un serveris noraida mēģinājumu tiem pievienoties ar modificētu klienta paketi.
+- Ja kādam no tiem nākotnē tiek importēti pilni spawni, `scenario_data` un skripts, noņemt tikai attiecīgo `IsValid()` izņēmumu un pievienot avotos pamatotu ieejas pozīciju.
