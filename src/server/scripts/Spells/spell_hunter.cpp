@@ -30,15 +30,28 @@
 
 enum HunterSpells
 {
+    HUNTER_AIMED_SHOT                            = 19434,
+    HUNTER_AIMED_SHOT_TARGET_MARKER              = 236641,
+    HUNTER_ARCANE_SHOT                           = 185358,
+    HUNTER_ASPECT_OF_THE_CHEETAH                 = 186257,
+    HUNTER_ASPECT_OF_THE_TURTLE                  = 186265,
     HUNTER_BESTIAL_WRATH                         = 19574,
+    HUNTER_BLACK_ARROW                           = 194599,
     HUNTER_CHIMAERA_SHOT_FROST                   = 171454,
     HUNTER_CHIMAERA_SHOT_NATURE                  = 171457,
     HUNTER_COBRA_SHOT                            = 193455,
     HUNTER_DISENGAGE                             = 781,
     HUNTER_HARPOON                               = 190925,
+    HUNTER_HUNTERS_MARK                          = 185365,
+    HUNTER_HUNTERS_MARK_READY                    = 185743,
     HUNTER_KILL_COMMAND                          = 34026,
+    HUNTER_LEGACY_WIND_ARROW                     = 191043,
+    HUNTER_MARKED_SHOT                           = 185901,
+    HUNTER_MARKING_TARGETS                       = 223138,
+    HUNTER_MULTI_SHOT                            = 2643,
     HUNTER_POSTHASTE                             = 109215,
     HUNTER_POSTHASTE_SPEED                       = 118922,
+    HUNTER_TRUESHOT                              = 193526,
     DIRE_BEAST_JADE_FOREST                       = 121118,
     DIRE_BEAST_KALIMDOR                          = 122802,
     DIRE_BEAST_EASTERN_KINGDOMS                  = 122804,
@@ -1682,6 +1695,261 @@ class spell_hun_broken_bond : public SpellScriptLoader
         }
 };
 
+// Lock and Load - 194595
+class spell_hun_lock_and_load : public AuraScript
+{
+    PrepareAuraScript(spell_hun_lock_and_load);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == 75; // Auto Shot
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_lock_and_load::CheckProc);
+    }
+};
+
+// Bombardment - 35110. Its DB2 proc mask is broader than the talent text:
+// only a critical Multi-Shot may grant the cost-reduction aura (82921).
+class spell_hun_bombardment : public AuraScript
+{
+    PrepareAuraScript(spell_hun_bombardment);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_MULTI_SHOT
+            && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) != 0;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_bombardment::CheckProc);
+    }
+};
+
+// Marking Targets - 223138. The spell links apply Hunter's Mark; this guard
+// prevents unrelated ranged abilities from consuming its single proc charge.
+class spell_hun_marking_targets : public AuraScript
+{
+    PrepareAuraScript(spell_hun_marking_targets);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell)
+            return false;
+
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case HUNTER_MULTI_SHOT:
+            case HUNTER_ARCANE_SHOT:
+            case 214579: // Sidewinders
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_marking_targets::CheckProc);
+    }
+};
+
+// True Aim - 199527
+class spell_hun_true_aim : public AuraScript
+{
+    PrepareAuraScript(spell_hun_true_aim);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell)
+            return false;
+
+        uint32 spellId = spell->GetSpellInfo()->Id;
+        return spellId == HUNTER_AIMED_SHOT || spellId == HUNTER_ARCANE_SHOT;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_true_aim::CheckProc);
+    }
+};
+
+// Call of the Hunter - 191048
+class spell_hun_call_of_the_hunter : public AuraScript
+{
+    PrepareAuraScript(spell_hun_call_of_the_hunter);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_MARKED_SHOT;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_call_of_the_hunter::CheckProc);
+    }
+};
+
+// Critical Focus - 191328. Sidewinders receives its extra Focus from the
+// trait's native modifier effect; only Arcane Shot criticals use this proc.
+class spell_hun_critical_focus : public AuraScript
+{
+    PrepareAuraScript(spell_hun_critical_focus);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_ARCANE_SHOT
+            && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) != 0;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_critical_focus::CheckProc);
+    }
+};
+
+// Rapid Killing - 191339
+class spell_hun_rapid_killing : public AuraScript
+{
+    PrepareAuraScript(spell_hun_rapid_killing);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_TRUESHOT;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_rapid_killing::CheckProc);
+    }
+};
+
+// Healing Shell - 190503
+class spell_hun_healing_shell : public AuraScript
+{
+    PrepareAuraScript(spell_hun_healing_shell);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_ASPECT_OF_THE_TURTLE;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_healing_shell::CheckProc);
+    }
+};
+
+// Feet of Wind - 238088
+class spell_hun_feet_of_wind : public AuraScript
+{
+    PrepareAuraScript(spell_hun_feet_of_wind);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_ASPECT_OF_THE_CHEETAH;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_feet_of_wind::CheckProc);
+    }
+};
+
+// Bullseye - 204089
+class spell_hun_bullseye : public AuraScript
+{
+    PrepareAuraScript(spell_hun_bullseye);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* target = eventInfo.GetActionTarget();
+        AuraEffect const* effect = GetEffect(EFFECT_0);
+        return target && effect && target->HealthBelowPct(effect->GetAmount());
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_bullseye::CheckProc);
+    }
+};
+
+// Legacy of the Windrunners - 190852. The native trigger spell (190854) is
+// only a hidden bookkeeping aura; each successful proc actually launches six
+// copies of the dedicated Aimed Shot variant (191043). That variant carries
+// the original 7.3.5 weapon scaling and Aimed Shot spell-family modifiers.
+class spell_hun_legacy_of_the_windrunners : public AuraScript
+{
+    PrepareAuraScript(spell_hun_legacy_of_the_windrunners);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_AIMED_SHOT, HUNTER_LEGACY_WIND_ARROW });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_AIMED_SHOT
+            && eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetCaster();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!caster || !target || !caster->IsValidAttackTarget(target))
+            return;
+
+        for (int32 arrow = 0; arrow < aurEff->GetAmount(); ++arrow)
+            caster->CastSpell(target, HUNTER_LEGACY_WIND_ARROW, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_legacy_of_the_windrunners::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_hun_legacy_of_the_windrunners::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Black Arrow - 194599. Its cooldown resets when the affected hunter earns a kill.
+class player_hun_black_arrow : public PlayerScript
+{
+public:
+    player_hun_black_arrow() : PlayerScript("player_hun_black_arrow") { }
+
+    void OnCreatureKill(Player* killer, Creature* /*killed*/) override
+    {
+        ResetCooldown(killer);
+    }
+
+    void OnPVPKill(Player* killer, Player* /*killed*/) override
+    {
+        ResetCooldown(killer);
+    }
+
+private:
+    static void ResetCooldown(Player* player)
+    {
+        if (player && player->HasSpell(HUNTER_BLACK_ARROW))
+            player->RemoveSpellCooldown(HUNTER_BLACK_ARROW, true);
+    }
+};
+
 // Windburst (Artifact) - 204147
 class spell_hun_windburst : public SpellScriptLoader
 {
@@ -1762,10 +2030,9 @@ class spell_hun_aimed_shot : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                 {
                     int32 damage = GetHitDamage();
-                    if (!target->HasAura(236641, caster->GetGUID()))
-                    {
+                    if (!target->HasAura(HUNTER_AIMED_SHOT_TARGET_MARKER, caster->GetGUID()))
                         damage += CalculatePct(damage, GetSpellInfo()->Effects[EFFECT_2]->BasePoints);
-                    }
+
                     if (AuraEffect* auraEff = caster->GetAuraEffect(199522, EFFECT_0))
                     {
                         float bp = CalculatePct(damage, auraEff->GetAmount());
@@ -1775,16 +2042,8 @@ class spell_hun_aimed_shot : public SpellScriptLoader
                 }
             }
 
-            void HandleOnCast()
-            {
-                if (Unit* caster = GetCaster())
-                    if (!caster->isInCombat())
-                        caster->ClearSpellTargets(GetSpellInfo()->Id);
-            }
-
             void Register() override
             {
-                OnCast += SpellCastFn(spell_hun_aimed_shot_SpellScript::HandleOnCast);
                 OnHit += SpellHitFn(spell_hun_aimed_shot_SpellScript::HandleOnHit);
             }
         };
@@ -2138,7 +2397,7 @@ class spell_hun_mark_of_helbrine : public SpellScriptLoader
         }
 };
 
-// Marked Shot - 212621
+// Marked Shot - 185901 (212621 is its per-target damage child spell)
 class spell_hun_marked_shot : public SpellScriptLoader
 {
     public:
@@ -2363,6 +2622,53 @@ struct areatrigger_hun_windburst : public AreaTriggerAI
     }
 };
 
+// Sentinel - 206817 (AreaTrigger spell 206817, custom entry 14691)
+struct areatrigger_hun_sentinel : public AreaTriggerAI
+{
+    areatrigger_hun_sentinel(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) { }
+
+    uint32 tickTimer = 0;
+    uint32 tickInterval = 6000;
+
+    void OnCreate() override
+    {
+        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(206817))
+            if (spellInfo->Effects[EFFECT_1]->BasePoints > 0)
+                tickInterval = uint32(spellInfo->Effects[EFFECT_1]->BasePoints) * uint32(IN_MILLISECONDS);
+    }
+
+    void OnUpdate(uint32 diff) override
+    {
+        if (tickTimer > diff)
+        {
+            tickTimer -= diff;
+            return;
+        }
+
+        tickTimer = tickInterval;
+
+        Unit* caster = at->GetCaster();
+        if (!caster)
+            return;
+
+        std::list<Unit*> targets;
+        at->GetAttackableUnitListInRange(targets, at->GetRadius(), true);
+
+        bool markedTarget = false;
+        for (Unit* target : targets)
+        {
+            if (!at->IsInArea(target) || !caster->IsValidAttackTarget(target))
+                continue;
+
+            caster->CastSpell(target, HUNTER_HUNTERS_MARK, true);
+            markedTarget = true;
+        }
+
+        if (markedTarget)
+            caster->CastSpell(caster, HUNTER_HUNTERS_MARK_READY, true);
+    }
+};
+
 // 19574 - Bestial Wrath
 class spell_hun_bestial_wrath : public SpellScriptLoader
 {
@@ -2416,6 +2722,18 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_dragonscale_armor();
     new spell_hun_hatis_bond();
     new spell_hun_broken_bond();
+    RegisterAuraScript(spell_hun_lock_and_load);
+    RegisterAuraScript(spell_hun_bombardment);
+    RegisterAuraScript(spell_hun_marking_targets);
+    RegisterAuraScript(spell_hun_true_aim);
+    RegisterAuraScript(spell_hun_call_of_the_hunter);
+    RegisterAuraScript(spell_hun_critical_focus);
+    RegisterAuraScript(spell_hun_rapid_killing);
+    RegisterAuraScript(spell_hun_healing_shell);
+    RegisterAuraScript(spell_hun_feet_of_wind);
+    RegisterAuraScript(spell_hun_bullseye);
+    RegisterAuraScript(spell_hun_legacy_of_the_windrunners);
+    new player_hun_black_arrow();
     new spell_hun_windburst();
     new spell_hun_aimed_shot();
     new spell_hun_trick_shot();
@@ -2440,5 +2758,6 @@ void AddSC_hunter_spell_scripts()
     RegisterAuraScript(spell_hun_eagles_bite);
     RegisterSpellScript(spell_hun_explosive_trap);
     RegisterAreaTriggerAI(areatrigger_hun_windburst);
+    RegisterAreaTriggerAI(areatrigger_hun_sentinel);
 	new spell_hun_bestial_wrath();
 }
