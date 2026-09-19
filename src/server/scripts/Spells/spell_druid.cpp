@@ -1405,10 +1405,15 @@ class spell_dru_rend_and_tear : public SpellScriptLoader
                 if (!caster || caster->GetShapeshiftForm() != FORM_BEAR)
                     return;
 
-                if(Unit* target = dmgInfo.GetAttacker())
+                if (Unit* target = dmgInfo.GetAttacker())
                 {
-                    if (Aura* aura = target->GetAura(192090))
-                        absorbAmount = CalculatePct(dmgInfo.GetDamage(), 2 * GetStackAmount());
+                    // Rend and Tear scales with this druid's Thrash stacks on
+                    // the attacker, not with the (single-stack) talent aura.
+                    if (Aura* thrash = target->GetAura(192090, caster->GetGUID()))
+                    {
+                        float reductionPerStack = GetSpellInfo()->Effects[EFFECT_1]->CalcValue(caster);
+                        absorbAmount = CalculatePct(dmgInfo.GetDamage(), reductionPerStack * thrash->GetStackAmount());
+                    }
                 }
             }
 
