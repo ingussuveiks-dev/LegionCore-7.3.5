@@ -325,3 +325,19 @@ Spells 257213 izmanto effect 1 periodisko pārbaudi/buff aprēķinu, bet 257214 
 ### Spēlē vēlāk pārbaudāmais
 
 - Argus cīņā pārbaudīt Titanforging enerģijas sliekšņus un buff procentus spellam 257213, kā arī vienas enerģijas vienības samazināšanu katrā 257214 tickā.
+
+## Pakete 187 — Echo of Sylvanas Seeping Shadows piesaiste
+
+Fails: `sql/updates/world/2026_09_19_151_fix_echo_seeping_shadows_script.sql`.
+
+`spell_echo_of_sylvanas_seeping_shadows` bija kļūdaini piesaistīts Death Grip AOE spellam 101397, kuram nav periodiskas auras. Encounter kods Seeping Shadows mehānikai casto periodisko dummy spellu 103175; SQL updateris pārvieto tikai šo skripta piesaisti uz pareizo spellu.
+
+### Pārbaudes rezultāts
+
+- SQL updateris piemērots un reģistrēts kā `RELEASED`; datubāzē skripts tagad piesaistīts spellam 103175.
+- Ar iepriekš pārbaudīto Release būvi pilns starts pabeigts 11 sekundēs; abas dublētās Seeping Shadows validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 12 uz 10.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Echo of Sylvanas cīņā pārbaudīt, ka Seeping Shadows 103175 periodiski atjauno 103182 stacku skaitu līdz 20% no bosa trūkstošās veselības, netraucējot Death Grip AOE 101397.
