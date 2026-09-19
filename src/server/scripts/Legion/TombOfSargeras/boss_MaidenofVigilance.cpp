@@ -727,8 +727,7 @@ class spell_tos_infusions : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic += AuraEffectPeriodicFn(spell_tos_infusions::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-        OnEffectPeriodic += AuraEffectPeriodicFn(spell_tos_infusions::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_tos_infusions::OnTick, EFFECT_0, SPELL_AURA_ANY);
     }
 };
 

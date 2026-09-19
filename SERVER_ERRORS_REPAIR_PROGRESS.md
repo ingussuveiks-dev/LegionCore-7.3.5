@@ -132,3 +132,19 @@ Storm, Earth, and Fire pamata auras noņemšanas darbībai nav nepieciešams kon
 
 - Aktivizēt un atcelt Storm, Earth, and Fire, pārbaudot abu klonu vizuālos efektus, summon slotus un korektu atgriešanos mājās pēc auras noņemšanas.
 - Izmantot Hurricane Strike un pārbaudīt sākotnējo un turpmāko 158221 castu aptuveni ik pēc 140 ms visā auras laikā.
+
+## Pakete 175 — Maiden of Vigilance infusion periodiskais hooks
+
+Fails: `src/server/scripts/Legion/TombOfSargeras/boss_MaidenofVigilance.cpp`.
+
+Infusion spelli 235213 un 235240 izmanto vienu un to pašu effect 0 periodisko darbību, bet to faktiskie aura tipi ir savstarpēji atšķirīgi. Divu alternatīvu reģistrāciju vietā skripts tagad vienreiz piesaistās faktiskajam periodiskajam aura efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abas `spell_tos_infusions` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 41 uz 39.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Maiden of Vigilance cīņā pārbaudīt gan Fel Infusion (235240), gan Light Infusion (235213) pirmo periodisko ticku un turpmāko pretējās infusion auras mijiedarbību.
