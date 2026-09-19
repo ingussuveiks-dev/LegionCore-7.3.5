@@ -5929,12 +5929,6 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->Misc.Duration.Duration = 604800 * IN_MILLISECONDS;
     });
 
-    // Shadow Techniques
-    ApplySpellFix({196911}, [](SpellInfo* spellInfo)
-    {
-        spellInfo->Effects[EFFECT_1]->BasePoints = 8;
-    });
-
     // Spider Sting (PvP Talent)
     ApplySpellFix({202933}, [](SpellInfo* spellInfo)
     {

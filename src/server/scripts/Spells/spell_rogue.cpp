@@ -37,7 +37,13 @@ enum RogueSpells
     ROGUE_CANNONBALL_BARRAGE_SLOW                = 185778,
     ROGUE_CURSE_OF_RESTLESSNESS                  = 248107,
     ROGUE_DEADLY_POISON                          = 2818,
+    ROGUE_DEEPENING_SHADOWS                     = 185314,
+    ROGUE_ENVELOPING_SHADOWS                    = 238104,
     ROGUE_EVASION                                = 5277,
+    ROGUE_EVISCERATE                             = 196819,
+    ROGUE_FINALITY_EVISCERATE                    = 197496,
+    ROGUE_FINALITY_NIGHTBLADE                    = 197498,
+    ROGUE_FINALITY_TRAIT                         = 197406,
     ROGUE_FAN_OF_KNIVES_COMBO_POINT              = 212743,
     ROGUE_GARROTE                                = 703,
     ROGUE_GARROTE_RANK_2                         = 231719,
@@ -49,7 +55,18 @@ enum RogueSpells
     ROGUE_MARKED_FOR_DEATH                       = 137619,
     ROGUE_LOADED_DICE                            = 240837,
     ROGUE_RUPTURE                                = 1943,
+    ROGUE_SHADOW_BLADES                          = 121471,
+    ROGUE_SHADOW_DANCE                          = 185313,
+    ROGUE_SHADOW_DANCE_AURA                     = 185422,
+    ROGUE_SHADOW_NOVA                           = 209781,
+    ROGUE_SHADOW_NOVA_DAMAGE                    = 197800,
+    ROGUE_SHADOW_TECHNIQUES                     = 196912,
+    ROGUE_SHADOW_TECHNIQUES_ENERGIZE            = 196911,
+    ROGUE_SHADOWS_WHISPER                       = 242707,
     ROGUE_SHADOW_SWIFTNESS                       = 192422,
+    ROGUE_SHURIKEN_COMBO                        = 245639,
+    ROGUE_SHURIKEN_COMBO_BUFF                   = 245640,
+    ROGUE_SHURIKEN_STORM                        = 197835,
     ROGUE_SLICE_AND_DICE                         = 5171,
     ROGUE_SINISTER_CIRCULATION                   = 238138,
     ROGUE_SUBTERFUGE                             = 108208,
@@ -59,6 +76,8 @@ enum RogueSpells
     ROGUE_THUGGEE                                = 196861,
     ROGUE_VENOM_RUSH                             = 152152,
     ROGUE_VENOMOUS_WOUNDS                        = 79134,
+    ROGUE_WEAPONMASTER                           = 193537,
+    ROGUE_WEAPONMASTER_DAMAGE                   = 193536,
     SkullAndCrossbones = 199603,
     GrandMelee         = 193358,
     RuthlessPrecision  = 193357,
@@ -1049,6 +1068,182 @@ class spell_rog_exsanguinate : public SpellScriptLoader
         }
 };
 
+// Deepening Shadows - 185314
+class spell_rog_deepening_shadows : public AuraScript
+{
+    PrepareAuraScript(spell_rog_deepening_shadows);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetComboPoints() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Player* player = GetTarget()->ToPlayer();
+        Spell* spell = eventInfo.GetSpell();
+        if (!player || !spell)
+            return;
+
+        int32 reductionPerPoint = aurEff->GetAmount();
+        if (AuraEffect const* envelopingShadows = player->GetAuraEffect(ROGUE_ENVELOPING_SHADOWS, EFFECT_0))
+            reductionPerPoint += envelopingShadows->GetAmount();
+
+        player->ModSpellChargeCooldown(ROGUE_SHADOW_DANCE,
+            reductionPerPoint * 100 * spell->GetComboPoints());
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_deepening_shadows::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_deepening_shadows::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Shadow Techniques - 196912
+class spell_rog_shadow_techniques : public AuraScript
+{
+    PrepareAuraScript(spell_rog_shadow_techniques);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!damageInfo || eventInfo.GetSpell())
+            return false;
+
+        WeaponAttackType attackType = damageInfo->GetAttackType();
+        return (attackType == BASE_ATTACK || attackType == OFF_ATTACK) &&
+            (damageInfo->GetDamage() || damageInfo->GetAbsorb());
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        // Legion uses a bad-luck-protected sequence: the fourth landed swing has
+        // a 50% chance, while the fifth swing is guaranteed to trigger it.
+        ++_landedAttacks;
+        if (_landedAttacks < 4 || (_landedAttacks == 4 && !roll_chance_i(50)))
+            return;
+
+        _landedAttacks = 0;
+        Unit* rogue = GetTarget();
+
+        float comboPoints = 1.0f;
+        if (AuraEffect const* fortunesBite = rogue->GetAuraEffect(197369, EFFECT_0))
+            if (roll_chance_f(fortunesBite->GetAmount()))
+                comboPoints += 1.0f;
+
+        float energy = 0.0f;
+        if (AuraEffect const* shadowsWhisper = rogue->GetAuraEffect(ROGUE_SHADOWS_WHISPER, EFFECT_0))
+            energy = shadowsWhisper->GetAmount();
+
+        rogue->CastCustomSpell(rogue, ROGUE_SHADOW_TECHNIQUES_ENERGIZE,
+            &comboPoints, &energy, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_shadow_techniques::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_shadow_techniques::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+
+private:
+    uint8 _landedAttacks = 0;
+};
+
+// Shadow Nova - 209781
+class spell_rog_shadow_nova : public AuraScript
+{
+    PrepareAuraScript(spell_rog_shadow_nova);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell)
+            return false;
+
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case 1833: // Cheap Shot
+            case 185438: // Shadowstrike
+                return true;
+            case ROGUE_SHURIKEN_STORM:
+                return GetTarget()->HasAura(ROGUE_SHADOW_DANCE) ||
+                    GetTarget()->HasAura(ROGUE_SHADOW_DANCE_AURA);
+            default:
+                return false;
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_shadow_nova::CheckProc);
+    }
+};
+
+// Weaponmaster - 193537
+class spell_rog_weaponmaster : public AuraScript
+{
+    PrepareAuraScript(spell_rog_weaponmaster);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        return damageInfo && damageInfo->GetSpellInfo() && eventInfo.GetActionTarget() &&
+            !GetTarget()->HasSpellCooldown(ROGUE_WEAPONMASTER);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        SpellInfo const* sourceSpell = damageInfo ? damageInfo->GetSpellInfo() : nullptr;
+        Unit* rogue = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        if (!damageInfo || !sourceSpell || !rogue || !target)
+            return;
+
+        // The generic copy handler is correct for direct single-target attacks.
+        // Periodic damage must be copied as a snapshot instead of recasting and
+        // replacing Nightblade. Shuriken Storm must repeat the complete AoE cast.
+        if (damageInfo->GetDamageType() != DOT && sourceSpell->Id != ROGUE_SHURIKEN_STORM)
+            return;
+
+        PreventDefaultAction();
+
+        if (damageInfo->GetDamageType() == DOT)
+        {
+            SpellInfo const* copySpell = sSpellMgr->GetSpellInfo(ROGUE_WEAPONMASTER_DAMAGE);
+            if (!copySpell)
+                return;
+
+            SpellNonMeleeDamage copyDamage(rogue, target, ROGUE_WEAPONMASTER_DAMAGE,
+                copySpell->GetSpellXSpellVisualId(rogue, target), copySpell->GetSchoolMask());
+            copyDamage.damage = damageInfo->GetDamage();
+            copyDamage.damageBeforeHit = copyDamage.damage;
+            rogue->DealDamageMods(target, copyDamage.damage, &copyDamage.absorb, copySpell);
+            rogue->SendSpellNonMeleeDamageLog(&copyDamage);
+            rogue->DealSpellDamage(&copyDamage, false);
+        }
+        else
+            rogue->CastSpell(rogue, ROGUE_SHURIKEN_STORM, true, nullptr, aurEff);
+
+        rogue->AddSpellCooldown(ROGUE_WEAPONMASTER, 0, getPreciseTime() + 0.5);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_weaponmaster::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_weaponmaster::HandleProc,
+            EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL_COPY);
+    }
+};
+
 // Shuriken Storm - 197835
 class spell_rog_shuriken_storm : public SpellScriptLoader
 {
@@ -1060,11 +1255,14 @@ class spell_rog_shuriken_storm : public SpellScriptLoader
             PrepareSpellScript(spell_rog_shuriken_storm_SpellScript);
 
             bool bonusActive = false;
+            uint8 hitCount = 0;
 
             void HandleOnHit(SpellEffIndex /*effIndex*/)
             {
                 if (Unit* caster = GetCaster())
                 {
+                    ++hitCount;
+
                     if (bonusActive)
                     {
                         int32 damage = GetHitDamage();
@@ -1079,13 +1277,17 @@ class spell_rog_shuriken_storm : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (caster->HasAura(245639)) // Shuriken Combo
+                    // Shadow Blades grants one additional combo point per cast,
+                    // not one for every target hit.
+                    if (hitCount && caster->HasAura(ROGUE_SHADOW_BLADES))
+                        caster->CastSpell(caster, ROGUE_FAN_OF_KNIVES_COMBO_POINT, true);
+
+                    if (caster->HasAura(ROGUE_SHURIKEN_COMBO))
                     {
-                        uint8 count = GetSpell()->GetTargetCount();
-                        if (count > 1)
+                        if (hitCount > 1)
                         {
-                            for (int i = 0; i < count - 1; i++)
-                                caster->CastSpell(caster, 245640, true);
+                            for (uint8 i = 1; i < hitCount; ++i)
+                                caster->CastSpell(caster, ROGUE_SHURIKEN_COMBO_BUFF, true);
                         }
                     }
                 }
@@ -1094,8 +1296,9 @@ class spell_rog_shuriken_storm : public SpellScriptLoader
             SpellCastResult CheckCast()
             {
                 if (Unit* caster = GetCaster())
-                    if (caster->HasAura(197610) && (caster->GetShapeshiftForm() == FORM_STEALTH || caster->HasAura(185313)))
-                        bonusActive = true;
+                    bonusActive = caster->GetShapeshiftForm() == FORM_STEALTH || caster->HasAura(1784) ||
+                        caster->HasAura(11327) || caster->HasAura(ROGUE_SUBTERFUGE_AURA) ||
+                        caster->HasAura(ROGUE_SHADOW_DANCE) || caster->HasAura(ROGUE_SHADOW_DANCE_AURA);
 
                 return SPELL_CAST_OK;
             }
@@ -1402,11 +1605,94 @@ class areatrigger_at_cut_to_the_chase : public AreaTriggerScript
     }
 };
 
+static void ToggleFinalityBuff(Unit* rogue, uint32 buffSpell, bool hadBuff, int32 comboPoints)
+{
+    if (!rogue || comboPoints <= 0)
+        return;
+
+    if (hadBuff)
+    {
+        rogue->RemoveAurasDueToSpell(buffSpell);
+        return;
+    }
+
+    rogue->CastSpell(rogue, buffSpell, true);
+    SpellInfo const* buffInfo = sSpellMgr->GetSpellInfo(buffSpell);
+    if (!buffInfo)
+        return;
+
+    if (AuraEffect* buff = rogue->GetAuraEffect(buffSpell, EFFECT_0))
+        buff->ChangeAmount(buffInfo->Effects[EFFECT_0]->CalcValue(rogue) / 5.0f * comboPoints);
+}
+
+// Eviscerate - 196819
+class spell_rog_eviscerate : public SpellScript
+{
+    PrepareSpellScript(spell_rog_eviscerate);
+
+    void HandleBeforeCast()
+    {
+        if (Unit* rogue = GetCaster())
+            _hadFinality = rogue->HasAura(ROGUE_FINALITY_EVISCERATE);
+    }
+
+    void HandleAfterHit()
+    {
+        Unit* rogue = GetCaster();
+        if (!rogue)
+            return;
+
+        // Shuriken Combo empowers exactly one Eviscerate.
+        rogue->RemoveAurasDueToSpell(ROGUE_SHURIKEN_COMBO_BUFF);
+
+        int32 comboPoints = GetSpell()->GetComboPoints();
+        if (comboPoints > 0 && rogue->HasAura(ROGUE_FINALITY_TRAIT))
+            ToggleFinalityBuff(rogue, ROGUE_FINALITY_EVISCERATE, _hadFinality, comboPoints);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_rog_eviscerate::HandleBeforeCast);
+        AfterHit += SpellHitFn(spell_rog_eviscerate::HandleAfterHit);
+    }
+
+private:
+    bool _hadFinality = false;
+};
+
 // Nightblade - 195452
 class spell_rog_nightblade : public SpellScriptLoader
 {
     public:
         spell_rog_nightblade() : SpellScriptLoader("spell_rog_nightblade") { }
+
+        class spell_rog_nightblade_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_rog_nightblade_SpellScript);
+
+            void HandleBeforeCast()
+            {
+                if (Unit* rogue = GetCaster())
+                    _hadFinality = rogue->HasAura(ROGUE_FINALITY_NIGHTBLADE);
+            }
+
+            void HandleAfterHit()
+            {
+                Unit* rogue = GetCaster();
+                int32 comboPoints = GetSpell()->GetComboPoints();
+                if (rogue && comboPoints > 0 && rogue->HasAura(ROGUE_FINALITY_TRAIT))
+                    ToggleFinalityBuff(rogue, ROGUE_FINALITY_NIGHTBLADE, _hadFinality, comboPoints);
+            }
+
+            void Register() override
+            {
+                BeforeCast += SpellCastFn(spell_rog_nightblade_SpellScript::HandleBeforeCast);
+                AfterHit += SpellHitFn(spell_rog_nightblade_SpellScript::HandleAfterHit);
+            }
+
+        private:
+            bool _hadFinality = false;
+        };
 
         class spell_rog_nightblade_AuraScript : public AuraScript
         {
@@ -1428,6 +1714,11 @@ class spell_rog_nightblade : public SpellScriptLoader
         AuraScript* GetAuraScript() const override
         {
             return new spell_rog_nightblade_AuraScript();
+        }
+
+        SpellScript* GetSpellScript() const override
+        {
+            return new spell_rog_nightblade_SpellScript();
         }
 };
 
@@ -1881,6 +2172,10 @@ void AddSC_rogue_spell_scripts()
     RegisterAuraScript(spell_rog_restless_blades);
     new spell_rog_grappling_hook();
     new spell_rog_exsanguinate();
+    RegisterAuraScript(spell_rog_deepening_shadows);
+    RegisterAuraScript(spell_rog_shadow_techniques);
+    RegisterAuraScript(spell_rog_shadow_nova);
+    RegisterAuraScript(spell_rog_weaponmaster);
     new spell_rog_shuriken_storm();
     new spell_rog_venomous_wounds();
     new spell_rog_turn_the_tables();
@@ -1889,6 +2184,7 @@ void AddSC_rogue_spell_scripts()
     new spell_rog_envenom();
     new spell_rog_cold_blood();
     new areatrigger_at_cut_to_the_chase();
+    RegisterSpellScript(spell_rog_eviscerate);
     new spell_rog_nightblade();
     RegisterSpellScript(spell_rog_cut_to_the_chase);
     RegisterAuraScript(spell_rog_alacrity);
