@@ -2199,6 +2199,9 @@ void World::SetInitialWorldSettings()
     // Delete all custom channels which haven't been used for PreserveCustomChannelDuration days.
     Channel::CleanOldChannelsInDB();
 
+    // Arena season startup reads global world states, so create their initial values first.
+    sWorldStateMgr.CreateWorldStatesIfNeed();
+
     TC_LOG_INFO("server.loading", "Starting Arena Season...");
     sGameEventMgr->StartArenaSeason();
 

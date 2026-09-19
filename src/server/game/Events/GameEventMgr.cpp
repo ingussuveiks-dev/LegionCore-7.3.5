@@ -1094,12 +1094,12 @@ uint32 GameEventMgr::StartSystem()                           // return the next 
 
 void GameEventMgr::StartArenaSeason()
 {
-    uint8 season = sWorldStateMgr.GetWorldStateValue(WS_ARENA_SEASON_ID);
+    uint32 season = sWorldStateMgr.GetWorldStateValue(WS_ARENA_SEASON_ID);
     QueryResult result = WorldDatabase.PQuery("SELECT eventEntry FROM game_event_arena_seasons WHERE season = '%i'", season);
 
     if (!result)
     {
-        TC_LOG_ERROR("gameevent", "ArenaSeason (%u) must be an existant Arena Season", season);
+        TC_LOG_INFO("gameevent", "Arena Season %u has no legacy game event configured", season);
         return;
     }
 

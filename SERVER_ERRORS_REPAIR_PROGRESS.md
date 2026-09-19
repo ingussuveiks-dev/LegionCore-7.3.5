@@ -375,3 +375,20 @@ Seši vecie riding-skill pakāpju mount skripti atsaucās uz šajā Legion DBC n
 ### Spēlē vēlāk pārbaudāmais
 
 - Izsaukt Magic Broom, Headless Horseman's Mount, Big Love Rocket, Invincible, Celestial Steed un X-53 Touring Rocket ar Legion mount sistēmu; battleground vidē pārbaudīt Seaforium noklusējuma gameobject damage darbību bez novecojušā achievement-credit papildinājuma.
+
+## Pakete 190 — Arena Season world state starta secība
+
+Faili: `src/server/game/World/World.cpp` un `src/server/game/Events/GameEventMgr.cpp`.
+
+Arena season starts iepriekš notika pirms sākotnējo globālo world state izveides, tādēļ trūkstošā `uint32` vērtība tika saīsināta uz 255. Sākotnējie world state tagad tiek izveidoti pirms arena starta, un sezonas ID vairs netiek saīsināts uz `uint8`. Ja konfigurētajai Legion sezonai nav izvēles legacy `game_event_arena_seasons` sasaistes, serveris korekti turpina startu ar informatīvu ierakstu, jo šī tabula satur tikai vecos 3.–8. sezonas vendor eventus.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; ArenaSeason kļūda pazuda un `Server.log` skaits samazinājās no 1 uz 0.
+- Konfigurētā sezona tiek nolasīta kā 14, nevis nederīgā 255, un legacy eventa neesamība tiek reģistrēta INFO līmenī.
+- `DBErrors.log` ir tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pieslēgt klientu un pārbaudīt arena season/rated PvP world state vērtības; ja vēlāk tiek pievienots konkrēts Legion sezonas vendor game events, piesaistīt to `game_event_arena_seasons` konfigurētajam sezonas ID.
