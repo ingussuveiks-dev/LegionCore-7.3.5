@@ -3086,3 +3086,20 @@ Fails: `sql/updates/world/2026_09_19_147_restore_death_knight_scenario_entrances
 
 - Ar Death Knight aktivizēt Rescue Koltira artifact uzdevuma event objektu un pārbaudīt parādīšanos pie `(1675.92, 727.864, 77.6129)`.
 - Atsevišķi sākt The Fourth Horseman artifact scenāriju un pārbaudīt parādīšanos pie `(2407.95, -5160.34, 82.1714)`, kā arī abu scenāriju pirmā posma aktivizēšanos.
+
+## Pakete 165 — Panic At The Brewery scenārija ieeja
+
+Fails: `sql/updates/world/2026_09_19_148_restore_panic_at_the_brewery_entrance.sql`.
+
+Tak-Tak (101880) ir spawnots ārpus scenārija kartēs 870 un 1514. Tā gossip darbība casto spellu 234218, kuru `spell_linked_spell` sasaista ar teleporta spellu 232926; šā spella saglabātais mērķis ir kartes 1693 sākuma laukums pie `(-691.579, 1261.76, 162.791)`. Otrs mērķis kartē 1693, spell 233233, tiek castots jau pašā scenārijā no event objekta 522 un tādēļ ir iekšēja pāreja, nevis ieeja.
+
+### Pārbaudes rezultāts
+
+- SQL updateris failu piemēroja un reģistrēja kā `RELEASED`; rinda pārlasīta no MariaDB ar spell 232926 precīzo mērķi.
+- Pilns `worldserver` starts pabeigts 11 sekundēs; Panic At The Brewery kļūda pazuda un `DBErrors.log` skaits samazinājās no 7 uz 6.
+- `Server.log` palika 116 iepriekš zināmās kļūdas, un serveris pēc pārbaudes korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Monk pie Tak-Tak sākt Panic At The Brewery un pārbaudīt parādīšanos pie `(-691.579, 1261.76, 162.791)` un pirmā scenārija posma aktivizēšanos.
+- Iziet scenāriju līdz event objektam 522 un pārliecināties, ka tā iekšējais spell 233233 joprojām pārceļ uz nākamo laukumu pie `(-632.018, 1198.09, 139.156)`.
