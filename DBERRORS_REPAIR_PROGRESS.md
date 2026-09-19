@@ -3238,3 +3238,38 @@ Izmantotie avoti:
 - Pārbaudīt oriģinālos Durotan/Thrall/Kilrogg tekstus un skaņas, visu soul spellu vizuālos/target efektus, gala LFG atlīdzību, kā arī wipe/reconnect atkopšanos katrā no trim posmiem.
 
 > 2026-09-19: LFG 770 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu scenārija, spawnu, dialogu un cīņu implementāciju; Bonetown atkal ir iespējots.
+
+## Pakete 171 — The Coldridge Cataclysm atjaunošana
+
+Faili: `src/server/scripts/Scenario/ColdridgeCataclysm/instance_coldridge_cataclysm.cpp`, `src/server/scripts/Scenario/ColdridgeCataclysm/coldridge_cataclysm.cpp`, `src/server/scripts/Scenario/ColdridgeCataclysm/coldridge_cataclysm.h`, `src/server/scripts/Scenario/scenario_script_loader.cpp`, `src/server/game/DataStores/DB2Structure.cpp` un `sql/updates/world/2026_09_19_159_implement_coldridge_cataclysm.sql`.
+
+7.3.5 klienta DB2 joprojām satur izņemto 7.2 PTR scenāriju 1292 pilnā apjomā: 21 secīgu posmu, 20 kritērijus un to precīzos kill/script-event/cast-spell asset ID. Wowhead arhīvs saglabājis no gala klienta world DB izņemtos aktierus Joren Ironstock 119296 (modelis 30505) un Monster of a Troll 119358 (dire troll modelis 7803). Migrācija rekonstruē abus template no saderīgajiem Joren 37081 un Grik'nir 808 avotiem, saglabājot klienta prasītos entry ID, vārdus, modeli un boss titulu.
+
+Karte 1723 ir Coldridge Valley instances kopija, tāpēc visi stāsta punkti balstīti kartes 0 oriģinālajos Anvilmar, boar lauka un Frostmane Hovel reljefa/spawnu datos. Pievienoti Joren, Grelin, Jona, Soren, trīs nozagtie alus keg objekti, nogurdināmais/pieradināmais Crag Boar, divi 12 Troll/Wendigo viļņi un gala dire troll boss. C++ secīgi realizē visus posmus no dejas ar Joren līdz atpūtai, ieskaitot Grelin četras hotfix datos saglabātās oriģinālās replikas, keg atrašanu/atgūšanu, stāsta pārspīlēšanas darbības, Hovel tuvuma aktivizāciju un cīņas.
+
+Trīs klienta kritērijos prasītie PTR extra-action spelli 237060–237062 gala 7.3.5 `Spell` DB2 vairs neeksistē. Lai scenāriju neatslēgtu un kritērijus neapklusinātu, to pašu darbību veic Joren dialoga izvēles, kas atjaunina klientā saglabātos `CRITERIA_TYPE_CAST_SPELL` kritērijus ar oriģinālajiem asset ID.
+
+Izmantotie avoti:
+
+- https://warcraft.wiki.gg/wiki/The_Coldridge_Cataclysm
+- https://warcraft.wiki.gg/wiki/Monster_of_a_Troll
+- https://www.wowhead.com/npc=119296
+- https://www.wowhead.com/npc=119358
+- https://www.wowhead.com/guide/story-dwarf-starting-area-lore
+- https://wago.tools/db2/LFGDungeons/csv?build=7.3.5.26972
+- https://wago.tools/db2/ScenarioStep/csv?build=7.3.5.26972
+- https://wago.tools/db2/CriteriaTree/csv?build=7.3.5.26972
+- https://wago.tools/db2/Criteria/csv?build=7.3.5.26972
+
+### Pārbaudes rezultāts
+
+- Pēc CMake pārģenerēšanas Release `worldserver` būve pabeigta bez kļūdām un abi jaunie Coldridge C++ faili ir iekļauti projektā.
+- SQL updateris piemēroja migrāciju un reģistrēja to kā `RELEASED`; MariaDB pārbaudīts instances/scenārija/LFG ieraksts, 4 sākuma aktieri, 3 keg objekti, 4 oriģinālie dialogi un abi rekonstruētie template. Joren ir entry 119296/modelis 30505, bet Monster of a Troll — entry 119358/modelis 7803.
+- Pilns starts pabeigts 12 sekundēs un ielādēja 6657 C++ skriptus. `DBErrors.log` ir 0 kļūdu, svaigajā `Server.log` nav nevienas `ERROR` vai `FATAL` rindas, un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Ar Alliance 110. līmeņa tēlu iziet visus LFG 1481 21 posmus: Joren deju, Grelin paniku, ekipējumu, trīs alus atzarus, boar nogurdināšanu/pieradināšanu, Hovel ieeju, abus 12 pretinieku viļņus, Monster of a Troll un gala atpūtu.
+- Pārbaudīt, ka Joren aizvietotās extra-action izvēles precīzi virza posmus 4, 7, 13, 16 un 18, kā arī wipe/reconnect atkopšanos boar, abu viļņu un boss posmos.
+
+> 2026-09-19: LFG 1481 pagaidu bloķēšana no paketes 166 ir aizstāta ar pilnu 21 posma scenāriju un nepieciešamajiem datubāzes datiem; The Coldridge Cataclysm atkal ir iespējots.

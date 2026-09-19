@@ -85,6 +85,10 @@ void AddSC_instance_noodle_time();
 void AddSC_bonetown();
 void AddSC_instance_bonetown();
 
+//< The Coldridge Cataclysm
+void AddSC_coldridge_cataclysm();
+void AddSC_instance_coldridge_cataclysm();
+
 //< The Secrets of Ragefire
 void AddSC_the_secrets_of_ragefire();
 void AddSC_instance_the_secrets_of_ragefire();
@@ -256,6 +260,10 @@ void AddScenarioScripts()
     //< Bonetown
     AddSC_bonetown();
     AddSC_instance_bonetown();
+
+    //< The Coldridge Cataclysm
+    AddSC_coldridge_cataclysm();
+    AddSC_instance_coldridge_cataclysm();
 
     //< The Secrets of Ragefire
     AddSC_the_secrets_of_ragefire();
