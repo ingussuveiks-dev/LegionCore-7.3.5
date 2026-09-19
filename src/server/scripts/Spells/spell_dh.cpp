@@ -489,13 +489,27 @@ class spell_dh_soul_cleave : public SpellScriptLoader
                         {
                             if(AreaTrigger* areaObj = (*itr))
                             {
-                                if (caster->GetDistance(areaObj) <= GetSpellInfo()->Effects[EFFECT_0]->BasePoints)
-                                    areaObj->CastAction();
+                                if (caster->GetDistance(areaObj) > GetSpellInfo()->Effects[EFFECT_0]->BasePoints)
+                                    continue;
+
+                                areaObj->CastAction();
+
+                                // Erupting Souls is one impact per fragment actually
+                                // consumed, not per fragment owned anywhere on the map.
                                 if (eruptingSouls)
                                     if (Unit* target = GetExplTargetUnit())
                                         caster->CastSpell(target, 243160, true);
                             }
                         }
+                    }
+
+                    // Feast of Souls is applied once by Soul Cleave.  Its
+                    // periodic heal is 1.17 AP per tick and does not scale
+                    // with either target count, current health or Pain spent.
+                    if (AuraEffect const* feast = caster->GetAuraEffect(207697, EFFECT_0))
+                    {
+                        float heal = caster->GetTotalAttackPowerValue(BASE_ATTACK) * feast->GetAmount() / 100.0f;
+                        caster->CastCustomSpell(caster, 207693, &heal, nullptr, nullptr, true);
                     }
                 }
             }
@@ -506,9 +520,9 @@ class spell_dh_soul_cleave : public SpellScriptLoader
                 {
                     if (Player* plr = caster->ToPlayer())
                     {
-                        int32 percAdd = GetSpell()->GetPowerCost(POWER_PAIN) * 100 / 500;
-                        int32 _heal = int32(14.52f * plr->GetTotalAttackPowerValue(BASE_ATTACK)); 
-                        SetEffectValue(CalculatePct(_heal, percAdd));
+                        int32 painCost = std::max(250, std::min(500, GetSpell()->GetPowerCost(POWER_PAIN)));
+                        float painMultiplier = float(painCost) / 250.0f;
+                        SetEffectValue(int32(7.26f * plr->GetTotalAttackPowerValue(BASE_ATTACK) * painMultiplier));
                     }
                 }
             }
@@ -540,16 +554,10 @@ class spell_dh_soul_cleave_damage : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (Player* plr = caster->ToPlayer())
+                    if (caster->ToPlayer())
                     {
-                        int32 percAdd = GetSpell()->GetPowerCost(POWER_PAIN) * 100 / 500;
-                        if (AuraEffect const* aurEff = caster->GetAuraEffect(207697, EFFECT_0))
-                        {
-                            float heal = caster->GetTotalAttackPowerValue(BASE_ATTACK) * caster->GetHealthPct() * aurEff->GetAmount() / 2400.0f;
-                            caster->CastCustomSpell(caster, 207693, &heal, nullptr, nullptr, true);
-                        }
-
-                        SetHitDamage(GetHitDamage() + CalculatePct(GetHitDamage(), percAdd));
+                        int32 painCost = std::max(250, std::min(500, GetSpell()->GetPowerCost(POWER_PAIN)));
+                        SetHitDamage(int32(GetHitDamage() * (float(painCost) / 250.0f)));
                     }
                 }
             }
@@ -564,6 +572,76 @@ class spell_dh_soul_cleave_damage : public SpellScriptLoader
         {
             return new spell_dh_soul_cleave_damage_SpellScript();
         }
+};
+
+// Demon Spikes - 203720
+class spell_dh_demon_spikes : public SpellScriptLoader
+{
+public:
+    spell_dh_demon_spikes() : SpellScriptLoader("spell_dh_demon_spikes") { }
+
+    class spell_dh_demon_spikes_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_demon_spikes_SpellScript);
+
+        void HandleOnCast()
+        {
+            Unit* caster = GetCaster();
+            SpellInfo const* demonSpikes = sSpellMgr->GetSpellInfo(203819);
+            if (!caster || !demonSpikes)
+                return;
+
+            int32 baseDuration = caster->CalcSpellDuration(demonSpikes);
+            if (Aura* aura = caster->GetAura(203819))
+            {
+                int32 duration = std::min(aura->GetDuration() + baseDuration, baseDuration * 3);
+                aura->SetMaxDuration(std::max(aura->GetMaxDuration(), duration));
+                aura->SetDuration(duration);
+            }
+            else
+                caster->CastSpell(caster, 203819, true);
+
+            // Defensive Spikes grants its unmodified 10% parry aura for the
+            // first three seconds of every Demon Spikes activation.
+            if (caster->HasAura(212829))
+                caster->CastSpell(caster, 212871, true);
+        }
+
+        void Register() override
+        {
+            OnCast += SpellCastFn(spell_dh_demon_spikes_SpellScript::HandleOnCast);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_demon_spikes_SpellScript();
+    }
+};
+
+// Razor Spikes - 209400
+class spell_dh_razor_spikes : public AuraScript
+{
+    PrepareAuraScript(spell_dh_razor_spikes);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetCaster();
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!caster || !caster->HasAura(203819) || !damageInfo || !damageInfo->GetDamage() ||
+            damageInfo->GetAttacker() != caster || !damageInfo->GetVictim())
+            return false;
+
+        // Spell-modifier auras cannot use an OnEffectProc hook in this core,
+        // so perform the proc action during the supported condition hook.
+        caster->CastSpell(damageInfo->GetVictim(), 210003, true);
+        return false;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dh_razor_spikes::CheckProc);
+    }
 };
 
 // Shatter Soul - 209980 (Vengeance), 228533 (Havoc) -> (lesser fragments)
@@ -628,51 +706,30 @@ class spell_dh_spirit_bomb_damage : public SpellScriptLoader
     public:
     spell_dh_spirit_bomb_damage() : SpellScriptLoader("spell_dh_spirit_bomb_damage") {}
 
-    class spell_dh_spirit_bomb_damage_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_dh_spirit_bomb_damage_SpellScript);
-
-        uint32 mod;
-
-        void HandleOnCast()
+        class spell_dh_spirit_bomb_damage_SpellScript : public SpellScript
         {
-            mod = 0;
+            PrepareSpellScript(spell_dh_spirit_bomb_damage_SpellScript);
 
-            if (Unit* caster = GetCaster())
+            void HandleBeforeHit()
             {
-                std::list<AreaTrigger*> list;
-                std::vector<uint32> spellIdList = {SoulFragment1, SoulFragment2, SoulFragment3};
-                caster->GetAreaObjectList(list, spellIdList);
-
-                if (!list.empty())
-                {
-                    if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(247454))
-                    {
-                        float dist = spellInfo->Effects[EFFECT_0]->BasePoints;
-
-                        for (auto itr : list)
-                        {
-                            if (caster->GetDistance(itr) <= dist)
-                            {
-                                itr->CastAction();
-                                mod++;
-                            }
-                        }
-                    }
-                }
+                if (Unit* caster = GetCaster())
+                    if (Unit* target = GetHitUnit())
+                        // Frailty is applied before the damage so Spirit Bomb
+                        // benefits from the debuff it creates, as in 7.3.5.
+                        caster->AddAura(247456, target);
             }
-        }
 
-        void HandleOnHit()
-        {
-            SetHitDamage(GetHitDamage() * mod);
-        }
+            void HandleOnHit()
+            {
+                uint32 fragmentCount = std::max(1, int32(GetSpellValue()->EffectBasePoints[EFFECT_2]));
+                SetHitDamage(GetHitDamage() * fragmentCount);
+            }
 
-        void Register() override
-        {
-            OnHit += SpellHitFn(spell_dh_spirit_bomb_damage_SpellScript::HandleOnHit);
-            OnCast += SpellCastFn(spell_dh_spirit_bomb_damage_SpellScript::HandleOnCast);
-        }
+            void Register() override
+            {
+                BeforeHit += SpellHitFn(spell_dh_spirit_bomb_damage_SpellScript::HandleBeforeHit);
+                OnHit += SpellHitFn(spell_dh_spirit_bomb_damage_SpellScript::HandleOnHit);
+            }
     };
 
     SpellScript* GetSpellScript() const override
@@ -717,7 +774,36 @@ class spell_dh_spirit_bomb : public SpellScriptLoader
             void HandleOnCast()
             {
                 if (Unit* caster = GetCaster())
-                    caster->CastSpell(caster, 247455, true);
+                {
+                    std::list<AreaTrigger*> list;
+                    std::vector<uint32> spellIdList = {SoulFragment1, SoulFragment2, SoulFragment3};
+                    caster->GetAreaObjectList(list, spellIdList);
+
+                    uint32 fragmentCount = 0;
+                    float range = GetSpellInfo()->Effects[EFFECT_0]->BasePoints;
+                    for (AreaTrigger* fragment : list)
+                    {
+                        if (caster->GetDistance(fragment) > range)
+                            continue;
+
+                        fragment->CastAction();
+                        ++fragmentCount;
+                    }
+
+                    if (!fragmentCount)
+                        return;
+
+                    // The fragments are consumed immediately, while the
+                    // explosion occurs one second later.
+                    caster->AddDelayedEvent(1000, [caster, fragmentCount]()
+                    {
+                        if (!caster->IsInWorld())
+                            return;
+
+                        float multiplier = float(fragmentCount);
+                        caster->CastCustomSpell(caster, 247455, nullptr, nullptr, &multiplier, true);
+                    });
+                }
             }
 
             void Register() override
@@ -1253,6 +1339,47 @@ public:
     }
 };
 
+// Consume Soul (Vengeance) - 203794, 210042
+// Fragment-consumption mechanics which are not encoded by the heal spells.
+class spell_dh_consume_soul_vengeance : public SpellScriptLoader
+{
+public:
+    spell_dh_consume_soul_vengeance() : SpellScriptLoader("spell_dh_consume_soul_vengeance") { }
+
+    class spell_dh_consume_soul_vengeance_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_dh_consume_soul_vengeance_SpellScript);
+
+        void HandleOnCast()
+        {
+            Unit* caster = GetCaster();
+            if (!caster)
+                return;
+
+            // Painbringer stacks once for every fragment consumed.
+            if (caster->HasAura(207387))
+                caster->CastSpell(caster, 212988, true);
+
+            // Fragments consumed after Soul Barrier is applied add another
+            // 2.5 AP to its remaining absorb pool.
+            if (Aura* barrier = caster->GetAura(227225))
+                if (AuraEffect* absorb = barrier->GetEffect(EFFECT_0))
+                    absorb->SetAmount(absorb->GetAmount() +
+                        2.5f * caster->GetTotalAttackPowerValue(BASE_ATTACK));
+        }
+
+        void Register() override
+        {
+            OnCast += SpellCastFn(spell_dh_consume_soul_vengeance_SpellScript::HandleOnCast);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_dh_consume_soul_vengeance_SpellScript();
+    }
+};
+
 // Consume Soul (demon) - 202644
 // This variant keeps its demon-damage buff on effect 1 and gates only effect 2 Fury.
 class spell_dh_consume_soul_demon : public SpellScriptLoader
@@ -1683,6 +1810,59 @@ class spell_dh_ss : public AuraScript
     }
 };
 
+// 203783 - Shear fragment generation
+class spell_dh_shear_fragment : public AuraScript
+{
+    PrepareAuraScript(spell_dh_shear_fragment);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        return spellInfo && (spellInfo->Id == 203782 || spellInfo->Id == 235964);
+    }
+
+    void OnProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetCaster();
+        SpellInfo const* spellInfo = eventInfo.GetSpellInfo();
+        if (!caster || !spellInfo)
+            return;
+
+        // Sever, the Metamorphosis replacement for Shear, always shatters a
+        // Lesser Soul Fragment.
+        if (spellInfo->Id == 235964)
+        {
+            caster->CastSpell(caster, 209980, true);
+            GetAura()->SetCustomData(0);
+            return;
+        }
+
+        static float const shatterChance[8] = {4.0f, 12.0f, 25.0f, 40.0f, 60.0f, 80.0f, 90.0f, 100.0f};
+        uint32 failedAttempts = std::min<uint32>(GetAura()->GetCustomData(), 7);
+        float chance = shatterChance[failedAttempts] * 1.10f;
+
+        if (caster->GetHealthPct() < 50.0f)
+            if (AuraEffect const* shatterSouls = caster->GetAuraEffect(212827, EFFECT_0))
+                chance += shatterSouls->GetAmount();
+
+        if (roll_chance_f(chance))
+        {
+            caster->CastSpell(caster, 209980, true);
+            GetAura()->SetCustomData(0);
+        }
+        else
+            GetAura()->SetCustomData(std::min<uint32>(failedAttempts + 1, 7));
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dh_shear_fragment::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dh_shear_fragment::OnProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
 // 238118 - FLaming Soul
 class spell_dh_flaming_soul : public AuraScript
 {
@@ -1696,11 +1876,15 @@ class spell_dh_flaming_soul : public AuraScript
             {
                 if (Aura* aura = target->GetAura(caster->HasAura(207739) ? 207771 : 207744, caster->GetGUID()))
                 {
-                    int32 duration = aura->GetDuration();
-                    aura->SetDuration(aurEff->GetAmount() + duration);
+                    int32 duration = aura->GetDuration() + aurEff->GetAmount();
+                    aura->SetMaxDuration(std::max(aura->GetMaxDuration(), duration));
+                    aura->SetDuration(duration);
 
                     if (Aura* aur = target->GetAura(212818, caster->GetGUID()))
-                        aur->SetDuration(aurEff->GetAmount() + duration);
+                    {
+                        aur->SetMaxDuration(std::max(aur->GetMaxDuration(), duration));
+                        aur->SetDuration(duration);
+                    }
                 }
             }
         }
@@ -1755,6 +1939,31 @@ class spell_dh_eye_beam : public AuraScript
     }
 };
 
+// 213010 - Charred Warblades
+class spell_dh_charred_warblades : public AuraScript
+{
+    PrepareAuraScript(spell_dh_charred_warblades);
+
+    void OnProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        Unit* caster = GetCaster();
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!caster || !damageInfo || !damageInfo->GetDamage())
+            return;
+
+        if (!(damageInfo->GetSchoolMask() & SPELL_SCHOOL_MASK_FIRE))
+            return;
+
+        float heal = CalculatePct(float(damageInfo->GetDamage()), aurEff->GetAmount());
+        caster->CastCustomSpell(caster, 213011, &heal, nullptr, nullptr, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_dh_charred_warblades::OnProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // 213017 - Fueled by Pain
 class spell_dh_fueled_by_pain : public AuraScript
 {
@@ -1764,14 +1973,15 @@ class spell_dh_fueled_by_pain : public AuraScript
     {
         if (Unit* caster = eventInfo.GetActor())
         {
-            uint32 basedur = aurEff->GetAmount() * IN_MILLISECONDS;
+            uint32 basedur = uint32(aurEff->GetAmount()) * uint32(IN_MILLISECONDS);
             if (AuraEffect* eff = caster->GetAuraEffect(238046, EFFECT_0)) // Lingering Ordeal
                 basedur += eff->GetAmount();
 
             if (Aura* aura = caster->GetAura(187827))
             {
                 int32 _duration = int32(aura->GetDuration() + basedur);
-                aura->SetDuration(_duration, true);
+                aura->SetMaxDuration(std::max(aura->GetMaxDuration(), _duration));
+                aura->SetDuration(_duration);
             }
             else
                 caster->CastSpellDuration(caster, 187827, true, basedur);
@@ -1817,6 +2027,7 @@ void AddSC_demonhunter_spell_scripts()
     RegisterSpellScript(spell_dh_blade_dance);
     new spell_dh_desperate_instincts();
     new spell_dh_soul_cleave();
+    new spell_dh_demon_spikes();
     new spell_dh_spirit_bomb();
     new spell_dh_nether_bond_dummy();
     new spell_dh_nether_bond();
@@ -1832,6 +2043,7 @@ void AddSC_demonhunter_spell_scripts()
     new spell_dh_anguish();
     new spell_dh_anguish_damage();
     new spell_dh_consume_soul();
+    new spell_dh_consume_soul_vengeance();
     new spell_dh_consume_soul_demon();
     new spell_dh_empower_wards();
     new areatrigger_rage_of_the_illidari();
@@ -1845,7 +2057,10 @@ void AddSC_demonhunter_spell_scripts()
     new spell_dh_metamorphosis_main();
     new spell_dh_infernal_strike_main();
     RegisterAuraScript(spell_dh_ss);
+    RegisterAuraScript(spell_dh_razor_spikes);
+    RegisterAuraScript(spell_dh_shear_fragment);
     RegisterAuraScript(spell_dh_flaming_soul);
+    RegisterAuraScript(spell_dh_charred_warblades);
     RegisterAuraScript(spell_dh_eye_beam);
     RegisterAuraScript(spell_dh_fueled_by_pain);
     RegisterAuraScript(spell_dh_demonic_trample);
