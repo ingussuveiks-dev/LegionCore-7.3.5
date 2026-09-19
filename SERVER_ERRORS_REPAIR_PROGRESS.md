@@ -115,3 +115,20 @@ Faili: `src/server/scripts/Legion/HallsofValor/boss_god_king_skovald.cpp` un `sq
 ### Spēlē vēlāk pārbaudāmais
 
 - God-King Skovald cīņā pārbaudīt Aegis of Aggramar frontālo absorb (spell 193743), Infernal Flames (193983) virziena/distances absorb noteikumus un to, ka gan 193983, gan Aegis Override (193783) beigās casto spellu 193991.
+
+## Pakete 174 — Monk aura dzīves cikla hooki
+
+Fails: `src/server/scripts/Spells/spell_monk.cpp`.
+
+Storm, Earth, and Fire pamata auras noņemšanas darbībai nav nepieciešams konkrētais effect 0 aura tips, tādēļ tā piesaistīta faktiskajam tipam. Trīs clone-visual spelli un Hurricane Strike šajā klienta būvē vairs neizmanto skriptā fiksētos aura tipus/indeksus; to darbības attiecas uz visas auras dzīves ciklu un tagad vienreiz piesaistās pirmajam faktiskajam aura efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika divi iepriekš eksistējoši, ar šo labojumu nesaistīti C5055 brīdinājumi tajā pašā failā.
+- Pilns starts pabeigts 11 sekundēs; visas piecas šīs Monk grupas validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 46 uz 41.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Aktivizēt un atcelt Storm, Earth, and Fire, pārbaudot abu klonu vizuālos efektus, summon slotus un korektu atgriešanos mājās pēc auras noņemšanas.
+- Izmantot Hurricane Strike un pārbaudīt sākotnējo un turpmāko 158221 castu aptuveni ik pēc 140 ms visā auras laikā.
