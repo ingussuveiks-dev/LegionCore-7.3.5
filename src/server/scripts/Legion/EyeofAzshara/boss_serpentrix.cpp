@@ -488,8 +488,7 @@ class spell_eye_of_azshara_roiling_storm : public AuraScript
 
     void Register() override
     {
-        OnEffectPeriodic += AuraEffectPeriodicFn(spell_eye_of_azshara_roiling_storm::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
-        OnEffectPeriodic += AuraEffectPeriodicFn(spell_eye_of_azshara_roiling_storm::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_eye_of_azshara_roiling_storm::OnTick, EFFECT_0, SPELL_AURA_ANY);
     }
 };
 
