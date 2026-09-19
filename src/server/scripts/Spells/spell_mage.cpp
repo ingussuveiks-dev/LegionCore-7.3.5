@@ -1329,6 +1329,32 @@ class spell_mage_living_bomb_damage : public SpellScript
     }
 };
 
+// Cinderstorm - 198928
+class spell_mage_cinderstorm : public SpellScript
+{
+    PrepareSpellScript(spell_mage_cinderstorm);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MAGE_IGNITE_DOT });
+    }
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target || !target->HasAura(SPELL_MAGE_IGNITE_DOT, caster->GetGUID()))
+            return;
+
+        SetHitDamage(GetHitDamage() + CalculatePct(GetHitDamage(), GetSpellInfo()->Effects[EFFECT_0]->CalcValue(caster)));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_cinderstorm::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 // Shimmer - 212653
 class spell_mage_shimmer : public SpellScriptLoader
 {
@@ -2298,6 +2324,7 @@ void AddSC_mage_spell_scripts()
     new spell_mage_combustion();
     RegisterAuraScript(spell_mage_living_bomb);
     RegisterSpellScript(spell_mage_living_bomb_damage);
+    RegisterSpellScript(spell_mage_cinderstorm);
     new spell_mage_shimmer();
     new spell_mage_glacial_spike();
     new spell_mage_glacial_spike_damage();

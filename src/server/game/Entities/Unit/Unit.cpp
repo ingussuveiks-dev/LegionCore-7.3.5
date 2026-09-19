@@ -8429,7 +8429,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     if (procEx & PROC_EX_CRITICAL_HIT)
                     {
                         bool RemoveHeatingUp = HasAura(48107) ? true: false;
-                        CastSpell(this, RemoveHeatingUp ? 48108: 48107, true);
+                        uint32 hotStreakState = RemoveHeatingUp ? 48108 : 48107;
+
+                        // Controlled Burn - when the first critical strike would grant
+                        // Heating Up, it can promote that proc directly to Hot Streak.
+                        if (!RemoveHeatingUp)
+                            if (AuraEffect const* controlledBurn = GetAuraEffect(205033, EFFECT_0))
+                                if (roll_chance_i(controlledBurn->GetAmount()))
+                                    hotStreakState = 48108;
+
+                        CastSpell(this, hotStreakState, true);
 
                         if (RemoveHeatingUp)
                             RemoveAura(48107);
@@ -13342,6 +13351,29 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
 					}
 					case SPELLFAMILY_MAGE:
 					{
+						switch (spellProto->Id)
+						{
+							case 133:   // Fireball
+							case 11366: // Pyroblast
+							{
+								// Firestarter - Fireball and Pyroblast always critically strike
+								// targets above the health threshold stored in the talent aura.
+								if (AuraEffect const* firestarter = GetAuraEffect(205026, EFFECT_0))
+									if (victim->GetHealthPct() > firestarter->GetAmount())
+									{
+										critChance = 100.0f;
+										return true;
+									}
+								break;
+							}
+							case 194466: // Phoenix's Flames (primary hit)
+							case 224637: // Phoenix's Flames (splash hit)
+								critChance = 100.0f;
+								return true;
+							default:
+								break;
+						}
+
 						if (victim)
 							if (HasAura(213541) && int32(victim->GetHealthPct()) >= 80) // Mage Initiation PvP Talent
 								crit_chance += 30;
