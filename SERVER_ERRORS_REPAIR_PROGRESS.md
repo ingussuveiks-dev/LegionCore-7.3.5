@@ -49,3 +49,19 @@ Trīs General Nazgrim stance spelli izmanto atšķirīgus effect 0 aura tipus, b
 ### Spēlē vēlāk pārbaudāmais
 
 - General Nazgrim cīņā sagaidīt Battle, Berserker un Defensive stance nomaiņas un pārbaudīt, ka katras auras beigās AI tieši vienreiz izvēlas nākamo stance; nāves brīdī pāreja nedrīkst notikt.
+
+## Pakete 170 — Sisters of the Moon Eclipse absorb hooki
+
+Fails: `src/server/scripts/Legion/TombOfSargeras/boss_SistersoftheMoon.cpp`.
+
+Embrace of the Eclipse naidīgais variants ir heal absorb, bet draudzīgais variants ir damage absorb. Abiem ir viena effect 0 uzkrātā apjoma un detonācijas loģika. Katram spellam reģistrētie abi savstarpēji izslēdzošie aura tipi aizstāti ar vienu `SPELL_AURA_ANY` hooku amount aprēķinam, absorb notikumam un noņemšanai.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; visas sešas `spell_sistersmoon_embrace_eclipse` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 70 uz 64.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Sisters of the Moon cīņā pārbaudīt abus Embrace of the Eclipse variantus: heal absorb un damage absorb uzkrāj pareizo daudzumu un tikai pēc dabiskas auras beigšanās izsauc attiecīgi Umbra vai Lunar Detonation.

@@ -1233,12 +1233,11 @@ class spell_sistersmoon_embrace_eclipse : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_sistersmoon_embrace_eclipse::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB);
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_sistersmoon_embrace_eclipse::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectRemove += AuraEffectRemoveFn(spell_sistersmoon_embrace_eclipse::OnRemove, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB, AURA_EFFECT_HANDLE_REAL);
-        OnEffectRemove += AuraEffectRemoveFn(spell_sistersmoon_embrace_eclipse::OnRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
-        OnEffectAbsorb += AuraEffectAbsorbFn(spell_sistersmoon_embrace_eclipse::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_HEAL_ABSORB);
-        OnEffectAbsorb += AuraEffectAbsorbFn(spell_sistersmoon_embrace_eclipse::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        // The hostile version is a heal absorb and the friendly version is a
+        // damage absorb. Both use the same effect-0 bookkeeping and detonation.
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_sistersmoon_embrace_eclipse::CalculateAmount, EFFECT_0, SPELL_AURA_ANY);
+        OnEffectRemove += AuraEffectRemoveFn(spell_sistersmoon_embrace_eclipse::OnRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectAbsorb += AuraEffectAbsorbFn(spell_sistersmoon_embrace_eclipse::Absorb, EFFECT_0, SPELL_AURA_ANY);
     }
 };
 
