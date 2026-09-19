@@ -82,6 +82,29 @@
 #include "WorldPacket.h"
 #include <G3D/Quat.h>
 
+namespace
+{
+constexpr uint32 DRUID_RESTORATION_HOT_FAMILY_FLAG = 0x00400000;
+
+uint32 CountDruidRestorationHots(Unit const* target, ObjectGuid const& casterGuid, uint32 maxCount)
+{
+    uint32 count = 0;
+    for (AuraEffect const* effect : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
+    {
+        SpellInfo const* spellInfo = effect->GetSpellInfo();
+        if (effect->GetCasterGUID() != casterGuid ||
+            spellInfo->ClassOptions.SpellClassSet != SPELLFAMILY_DRUID ||
+            !(spellInfo->ClassOptions.SpellClassMask[3] & DRUID_RESTORATION_HOT_FAMILY_FLAG))
+            continue;
+
+        if (++count >= maxCount)
+            break;
+    }
+
+    return count;
+}
+}
+
 pEffect SpellEffects[TOTAL_SPELL_EFFECTS] =
 {
     &Spell::EffectNULL,                                     //  0
@@ -2655,14 +2678,7 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
                     modMaxCount = eff->GetAmount();
                 if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                     modDif = eff->GetAmount();
-                Unit::AuraEffectList const& mPeriodic = unitTarget->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
-                for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
-                {
-                    if ((*i)->GetCasterGUID() == m_caster->GetGUID())
-                        modCount++;
-                    if (modCount >= modMaxCount)
-                        break;
-                }
+                modCount = CountDruidRestorationHots(unitTarget, m_caster->GetGUID(), modMaxCount);
                 if (modCount && modDif)
                     addhealth += CalculatePct(addhealth, modDif * modCount);
                 break;
@@ -2709,6 +2725,25 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
             }
             default:
                 break;
+        }
+
+        // Efflorescence is cast by the summoned blossom while the Druid is
+        // retained as the original caster. Apply Harmony from that owner.
+        if (m_spellInfo->Id == 81269 && m_caster != caster && caster->getClass() == CLASS_DRUID)
+        {
+            if (Aura* aura = caster->GetAura(77495))
+            {
+                float masteryPerHot = 0.0f;
+                uint32 maxCount = 9;
+                if (AuraEffect* effect = aura->GetEffect(EFFECT_0))
+                    masteryPerHot = effect->GetAmount();
+                if (AuraEffect* effect = aura->GetEffect(EFFECT_1))
+                    maxCount = effect->GetAmount();
+
+                uint32 hotCount = CountDruidRestorationHots(unitTarget, caster->GetGUID(), maxCount);
+                if (hotCount && masteryPerHot)
+                    addhealth += CalculatePct(addhealth, masteryPerHot * hotCount);
+            }
         }
 
         m_damage -= addhealth;

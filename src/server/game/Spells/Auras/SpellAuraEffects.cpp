@@ -46,6 +46,29 @@
 #include "WorldPacket.h"
 
 class Aura;
+
+namespace
+{
+constexpr uint32 DRUID_RESTORATION_HOT_FAMILY_FLAG = 0x00400000;
+
+uint32 CountDruidRestorationHots(Unit const* target, ObjectGuid const& casterGuid, uint32 maxCount)
+{
+    uint32 count = 0;
+    for (AuraEffect const* effect : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
+    {
+        SpellInfo const* spellInfo = effect->GetSpellInfo();
+        if (effect->GetCasterGUID() != casterGuid ||
+            spellInfo->ClassOptions.SpellClassSet != SPELLFAMILY_DRUID ||
+            !(spellInfo->ClassOptions.SpellClassMask[3] & DRUID_RESTORATION_HOT_FAMILY_FLAG))
+            continue;
+
+        if (++count >= maxCount)
+            break;
+    }
+
+    return count;
+}
+}
 //
 // EFFECT HANDLER NOTES
 //
@@ -7170,13 +7193,7 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster, SpellEf
                         uint32 modMaxCount = 9;
                         if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                             modDif = eff->GetAmount();
-                        Unit::AuraEffectList const& mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
-                        for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
-                            if ((*i)->GetCasterGUID() == caster->GetGUID())
-                                modCount++;
-
-                        if (modCount >= modMaxCount)
-                            modCount = modMaxCount;
+                        modCount = CountDruidRestorationHots(target, caster->GetGUID(), modMaxCount);
 
                         if (modCount && modDif)
                             AddPct(heal, modDif * modCount);
@@ -8362,13 +8379,7 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster, SpellEf
                 uint32 modMaxCount = 9;
                 if (AuraEffect* eff = aura->GetEffect(EFFECT_0))
                     modDif = eff->GetAmount();
-                Unit::AuraEffectList const& mPeriodic = target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
-                for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
-                    if ((*i)->GetCasterGUID() == caster->GetGUID())
-                        modCount++;
-
-                if (modCount >= modMaxCount)
-                    modCount = modMaxCount;
+                modCount = CountDruidRestorationHots(target, caster->GetGUID(), modMaxCount);
                 if (modCount && modDif)
                     damage += CalculatePct(damage, modDif * modCount);
             }

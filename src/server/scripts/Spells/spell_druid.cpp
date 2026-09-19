@@ -412,7 +412,7 @@ class spell_dru_lifebloom : public SpellScriptLoader
                     if (Unit* caster = GetCaster())
                     {
                         if (Aura* aur = target->GetAura(GetSpellInfo()->Id, caster->GetGUID()))
-                            if (aur->GetDuration() < 4000)
+                            if (aur->GetDuration() <= int32(aur->CalcMaxDuration(caster) * 0.3f))
                                 caster->CastSpell(target, 33778, true);
                     }
                 }
