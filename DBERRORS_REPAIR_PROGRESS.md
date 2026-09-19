@@ -3396,3 +3396,35 @@ Izmantotie avoti: Blizzard 7.3.5 patch notes, Wago gala būves `Spell`, `SpellEf
 
 - Pārbaudīt Avatar kustības efektu noņemšanu, abas Victory dziedināšanas, Commanding Shout veselības pieaugumu grupai un Intimidating Shout atšķirīgo primārā/sekundāro mērķu uzvedību.
 - Pārbaudīt Shockwave ar 1–2 un 3+ mērķiem, Storm Bolt stun un Protection Revenge bezmaksas proca tūlītēju cooldown reset.
+
+## Pakete 176 — Warrior Arms: pamata proc ķēžu atjaunošana
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_164_restore_warrior_arms_procs.sql`.
+
+Gala 7.3.5.26972 `Spell`, `SpellEffect`, `SpellAuraOptions`, `SpellLearnSpell` un `SpellDuration` dati atklāja vairākas klusas Arms kļūdas. `Mortal Strike` dummy efekts neuzlika tooltipā tieši norādīto `Mortal Wounds` 115804. `Tactician` satur 0,75% proc iespēju par katru iztērēto Rage punktu, taču veiksmīgā procā nebija pilnīgi realizēta Colossus Smash un Mortal Strike cooldown atiestatīšana. Trūka arī servera filtru un darbību `Executioner's Precision`, Arms `Focused Rage`, `Precise Strikes`, `In for the Kill` un `Trauma`.
+
+Atjaunota pilna šo spēju darbība. Trauma tagad darbojas no Slam, Whirlwind un Execute, kā nosaka gala tooltip, un jaunajiem 20% bojājumiem pieskaita vēl neiztikšķējušos iepriekšējā bleed bojājumus, tad pārdala summu pa trim sešu sekunžu tickiem. Overpower gadījumā netika izmantots publiskajos forkos kļūdaini piesaistītais aktivācijas buffs 60503: klienta `SpellLearnSpell` pierāda, ka talants 7384 iemāca pasīvo 119938, un tieši tas ar 5% iespēju aktivē 60503 pēc atbilstošajiem Arms melee sitieniem.
+
+`Colossus Smash` 167105 netika dublēts C++: aktīvajā world DB jau ir pareiza saite uz debuffu 208086, bet Mastery 76838 klientā nativi modificē gan Colossus Smash bojājumu, gan šī debuffa efektu. Tāpat bez lieka skripta atstāti DB2 nativi realizētie Rend, Sweeping Strikes, Mortal Combo, Titanic Might un Deadly Calm.
+
+Izmantotie avoti:
+
+- https://worldofwarcraft.blizzard.com/en-us/news/21365423
+- https://worldofwarcraft.blizzard.com/en-gb/news/19956928
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellAuraOptions/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellLearnSpell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellDuration/csv?build=7.3.5.26972
+- https://github.com/AshamaneProject/AshamaneCore/blob/legion/src/server/scripts/Spells/spell_warrior.cpp
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām; migrācija 164 piemērota un MariaDB pārbaudītas visas septiņas jaunās proc/filter piesaistes.
+- Pilns starts pabeigts 11 sekundēs, ielādēja 6680 C++ skriptus un validēja 3384 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārbaudīt Mortal Strike 25% healing reduction, Tactician abu cooldownu reset un Overpower 5% aktivāciju no Slam, Whirlwind, Colossus Smash un Mortal Strike.
+- Pārbaudīt Focused Rage trīs stacku patēriņu tikai ar Mortal Strike, Executioner's Precision divus stackus un to patēriņu, Precise Strikes/In for the Kill reakciju tikai uz Colossus Smash, kā arī Trauma uzkrāšanos un atjaunošanu no visām trim tooltipā minētajām spējām.

@@ -49,6 +49,22 @@ enum WarriorCommonSpells
     SPELL_WARRIOR_STORM_BOLT_STUN        = 132169,
     SPELL_WARRIOR_REVENGE                 = 6572
 };
+
+enum WarriorArmsSpells
+{
+    SPELL_WARRIOR_ARMS_SLAM                    = 1464,
+    SPELL_WARRIOR_ARMS_WHIRLWIND               = 1680,
+    SPELL_WARRIOR_OVERPOWER                    = 7384,
+    SPELL_WARRIOR_MORTAL_STRIKE                = 12294,
+    SPELL_WARRIOR_EXECUTE                      = 163201,
+    SPELL_WARRIOR_COLOSSUS_SMASH               = 167105,
+    SPELL_WARRIOR_TACTICIAN_TRIGGER            = 199854,
+    SPELL_WARRIOR_PRECISE_STRIKES_BUFF         = 248195,
+    SPELL_WARRIOR_MORTAL_WOUNDS                = 115804,
+    SPELL_WARRIOR_OVERPOWER_PASSIVE            = 119938,
+    SPELL_WARRIOR_TRAUMA_BLEED                 = 215537,
+    SPELL_WARRIOR_OVERPOWER_ACTIVATED          = 60503
+};
 }
 
 // Avatar - 107574
@@ -229,6 +245,220 @@ class spell_warr_revenge_trigger : public AuraScript
     void Register() override
     {
         OnEffectProc += AuraEffectProcFn(spell_warr_revenge_trigger::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Tactician - 184783. The proc aura stores 0.75% per Rage as 75 basis points.
+class spell_warr_tactician : public AuraScript
+{
+    PrepareAuraScript(spell_warr_tactician);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_COLOSSUS_SMASH, SPELL_WARRIOR_MORTAL_STRIKE,
+            SPELL_WARRIOR_TACTICIAN_TRIGGER });
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Spell* procSpell = eventInfo.GetSpell();
+        Player* player = GetTarget()->ToPlayer();
+        if (!procSpell || !player)
+            return;
+
+        int32 rageSpent = procSpell->GetPowerCost(POWER_RAGE);
+        if (rageSpent <= 0 || !roll_chance_f(float(rageSpent) * aurEff->GetAmount() / 1000.0f))
+            return;
+
+        player->RemoveSpellCooldown(SPELL_WARRIOR_COLOSSUS_SMASH, true);
+        player->RemoveSpellCooldown(SPELL_WARRIOR_MORTAL_STRIKE, true);
+        player->CastSpell(player, SPELL_WARRIOR_TACTICIAN_TRIGGER, true);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_warr_tactician::HandleProc, EFFECT_1, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Executioner's Precision - 238147. Only Execute may apply the Mortal Strike debuff.
+class spell_warr_executioners_precision : public AuraScript
+{
+    PrepareAuraScript(spell_warr_executioners_precision);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        return procSpell && procSpell->GetSpellInfo()->Id == SPELL_WARRIOR_EXECUTE;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_executioners_precision::CheckProc);
+    }
+};
+
+// Focused Rage - 207982. Its one charge/three stacks may only be consumed by Mortal Strike.
+class spell_warr_focused_rage_arms : public AuraScript
+{
+    PrepareAuraScript(spell_warr_focused_rage_arms);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        return procSpell && procSpell->GetSpellInfo()->Id == SPELL_WARRIOR_MORTAL_STRIKE;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_focused_rage_arms::CheckProc);
+    }
+};
+
+// Overpower passive - 119938, learned by talent spell 7384.
+class spell_warr_overpower_passive : public AuraScript
+{
+    PrepareAuraScript(spell_warr_overpower_passive);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_OVERPOWER_ACTIVATED });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        if (!procSpell)
+            return false;
+
+        switch (procSpell->GetSpellInfo()->Id)
+        {
+            case SPELL_WARRIOR_ARMS_WHIRLWIND:
+            case SPELL_WARRIOR_COLOSSUS_SMASH:
+            case SPELL_WARRIOR_MORTAL_STRIKE:
+            case SPELL_WARRIOR_ARMS_SLAM:
+                break;
+            default:
+                return false;
+        }
+
+        SpellInfo const* activation = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_OVERPOWER_ACTIVATED);
+        return activation && roll_chance_i(activation->Effects[EFFECT_0]->CalcValue(GetTarget()));
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_overpower_passive::CheckProc);
+    }
+};
+
+// Precise Strikes - 248579
+class spell_warr_precise_strikes : public AuraScript
+{
+    PrepareAuraScript(spell_warr_precise_strikes);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_PRECISE_STRIKES_BUFF });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        return procSpell && procSpell->GetSpellInfo()->Id == SPELL_WARRIOR_COLOSSUS_SMASH;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        float criticalChance = aurEff->GetAmount();
+        GetTarget()->CastCustomSpell(GetTarget(), SPELL_WARRIOR_PRECISE_STRIKES_BUFF,
+            &criticalChance, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_precise_strikes::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warr_precise_strikes::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// In for the Kill - 248621. Its native trigger applies haste; restrict it to Colossus Smash.
+class spell_warr_in_for_the_kill : public AuraScript
+{
+    PrepareAuraScript(spell_warr_in_for_the_kill);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        return procSpell && procSpell->GetSpellInfo()->Id == SPELL_WARRIOR_COLOSSUS_SMASH;
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_in_for_the_kill::CheckProc);
+    }
+};
+
+// Trauma - 215538. Add the remaining bleed damage to 20% of the new hit and
+// redistribute the result over a fresh six-second, three-tick bleed.
+class spell_warr_trauma : public AuraScript
+{
+    PrepareAuraScript(spell_warr_trauma);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_TRAUMA_BLEED });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        if (!procSpell || !eventInfo.GetDamageInfo() || !eventInfo.GetActionTarget())
+            return false;
+
+        switch (procSpell->GetSpellInfo()->Id)
+        {
+            case SPELL_WARRIOR_ARMS_SLAM:
+            case SPELL_WARRIOR_ARMS_WHIRLWIND:
+            case SPELL_WARRIOR_EXECUTE:
+                return eventInfo.GetDamageInfo()->GetDamage() > 0;
+            default:
+                return false;
+        }
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        SpellInfo const* trauma = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_TRAUMA_BLEED);
+        if (!caster || !target || !trauma)
+            return;
+
+        uint32 totalTicks = trauma->GetMaxTicks();
+        if (!totalTicks)
+            return;
+
+        float totalDamage = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (Aura* current = target->GetAura(SPELL_WARRIOR_TRAUMA_BLEED, caster->GetGUID()))
+            if (AuraEffect* currentEffect = current->GetEffect(EFFECT_0))
+                totalDamage += currentEffect->GetAmount() *
+                    (currentEffect->GetTotalTicks() - currentEffect->GetTickNumber());
+
+        float damagePerTick = totalDamage / totalTicks;
+        caster->CastCustomSpell(target, SPELL_WARRIOR_TRAUMA_BLEED, &damagePerTick,
+            nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_trauma::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warr_trauma::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1186,6 +1416,16 @@ class spell_warr_mortal_strike : public SpellScriptLoader
     {
         PrepareSpellScript(spell_warr_mortal_strike_SpellScript);
 
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            return ValidateSpellInfo({ SPELL_WARRIOR_MORTAL_WOUNDS });
+        }
+
+        void HandleMortalWounds(SpellEffIndex /*effIndex*/)
+        {
+            GetCaster()->CastSpell(GetHitUnit(), SPELL_WARRIOR_MORTAL_WOUNDS, true);
+        }
+
         void HandleJump(int32& AddJumpTarget)
         {
             if (AuraEffect const* eff = GetTriggeredAuraEff())
@@ -1194,6 +1434,7 @@ class spell_warr_mortal_strike : public SpellScriptLoader
 
         void Register() override
         {
+            OnEffectHitTarget += SpellEffectFn(spell_warr_mortal_strike_SpellScript::HandleMortalWounds, EFFECT_0, SPELL_EFFECT_DUMMY);
             OnObjectJumpTarget += SpellObjectJumpTargetFn(spell_warr_mortal_strike_SpellScript::HandleJump, EFFECT_0, TARGET_UNIT_TARGET_ENEMY);
             OnObjectJumpTarget += SpellObjectJumpTargetFn(spell_warr_mortal_strike_SpellScript::HandleJump, EFFECT_1, TARGET_UNIT_TARGET_ENEMY);
             OnObjectJumpTarget += SpellObjectJumpTargetFn(spell_warr_mortal_strike_SpellScript::HandleJump, EFFECT_2, TARGET_UNIT_TARGET_ENEMY);
@@ -1425,6 +1666,13 @@ void AddSC_warrior_spell_scripts()
     RegisterSpellScript(spell_warr_shockwave);
     RegisterSpellScript(spell_warr_storm_bolt);
     RegisterAuraScript(spell_warr_revenge_trigger);
+    RegisterAuraScript(spell_warr_tactician);
+    RegisterAuraScript(spell_warr_executioners_precision);
+    RegisterAuraScript(spell_warr_focused_rage_arms);
+    RegisterAuraScript(spell_warr_overpower_passive);
+    RegisterAuraScript(spell_warr_precise_strikes);
+    RegisterAuraScript(spell_warr_in_for_the_kill);
+    RegisterAuraScript(spell_warr_trauma);
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
     RegisterSpellScript(spell_warr_charge);
