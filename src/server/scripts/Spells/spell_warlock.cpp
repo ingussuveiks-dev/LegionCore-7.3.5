@@ -298,12 +298,13 @@ class spell_warl_unstable_affliction : public SpellScriptLoader
                 if (!caster || !target)
                     return;
 
+                AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
+
                 if (AuraEffect* eff = caster->GetAuraEffect(208821, EFFECT_0))
                     eff->SetAmount(1);
 
                 if (Aura* aura = caster->GetAura(231791))
                 {
-                    AuraRemoveMode removeMode = GetTargetApplication()->GetRemoveMode();
                     if (removeMode == AURA_REMOVE_BY_DEATH)
                     {
                         for (auto itr : aura->m_loadedScripts)
@@ -314,11 +315,18 @@ class spell_warl_unstable_affliction : public SpellScriptLoader
                     }
                 }
 
-                AuraEffect* aurEff = caster->GetAuraEffect(199257, EFFECT_0); // Fatal Echoes
-                if (!aurEff || !roll_chance_i(aurEff->GetAmount()))
+                // Fatal Echoes only tries to restore an Unstable Affliction when it
+                // naturally expires. Deadwind Harvester doubles artifact traits.
+                AuraEffect* fatalEchoes = caster->GetAuraEffect(199257, EFFECT_0);
+                if (removeMode != AURA_REMOVE_BY_EXPIRE || !fatalEchoes)
                     return;
 
-                caster->CastSpell(target, GetSpellInfo()->Id, true);
+                float chance = fatalEchoes->GetAmount();
+                if (caster->HasAura(216708))
+                    chance *= 2.0f;
+
+                if (roll_chance_f(chance))
+                    caster->CastSpell(target, GetSpellInfo()->Id, true);
             }
 
             void Register() override
@@ -507,6 +515,70 @@ class spell_warl_seed_of_corruption_dota : public SpellScriptLoader
         {
             return new spell_warl_seed_of_corruption_dota_AuraScript();
         }
+};
+
+// Seed of Corruption - 27243 / Sow the Seeds - 196226
+class spell_warl_sow_the_seeds : public SpellScript
+{
+    PrepareSpellScript(spell_warl_sow_the_seeds);
+
+    void HandleBeforeCast()
+    {
+        _maxAdditionalTargets = 0;
+
+        if (Aura* sowTheSeeds = GetCaster()->GetAura(196226))
+            _maxAdditionalTargets = uint8(std::max(0.0f, sowTheSeeds->GetEffect(EFFECT_0)->GetAmount()));
+    }
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        std::list<WorldObject*> selectedTargets;
+        for (WorldObject* target : targets)
+        {
+            if (target == GetExplTargetUnit())
+            {
+                selectedTargets.push_back(target);
+                continue;
+            }
+
+            if (_maxAdditionalTargets)
+            {
+                selectedTargets.push_back(target);
+                --_maxAdditionalTargets;
+            }
+        }
+
+        targets = selectedTargets;
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_warl_sow_the_seeds::HandleBeforeCast);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warl_sow_the_seeds::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warl_sow_the_seeds::FilterTargets, EFFECT_2, TARGET_UNIT_DEST_AREA_ENEMY);
+    }
+
+private:
+    uint8 _maxAdditionalTargets = 0;
+};
+
+// Phantom Singularity - 205179
+class spell_warl_phantom_singularity : public AuraScript
+{
+    PrepareAuraScript(spell_warl_phantom_singularity);
+
+    void HandlePeriodic(AuraEffect const* /*aurEff*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        if (caster && target)
+            caster->CastSpell(target->GetPosition(), 205246, true);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_warl_phantom_singularity::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+    }
 };
 
 // 113942 - Demonic Gateway Debuf
@@ -2387,6 +2459,8 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_demonic_circle_teleport();
     new spell_warl_unstable_affliction();
     new spell_warl_seed_of_corruption_dota();
+    RegisterSpellScript(spell_warl_sow_the_seeds);
+    RegisterAuraScript(spell_warl_phantom_singularity);
     new spell_warl_demonic_gateway();
     new spell_warl_demonic_gateway_cast();
     new spell_warl_demonic_gateway_duration();
