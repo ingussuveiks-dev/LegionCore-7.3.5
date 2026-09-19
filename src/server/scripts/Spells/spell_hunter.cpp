@@ -30,6 +30,15 @@
 
 enum HunterSpells
 {
+    HUNTER_BESTIAL_WRATH                         = 19574,
+    HUNTER_CHIMAERA_SHOT_FROST                   = 171454,
+    HUNTER_CHIMAERA_SHOT_NATURE                  = 171457,
+    HUNTER_COBRA_SHOT                            = 193455,
+    HUNTER_DISENGAGE                             = 781,
+    HUNTER_HARPOON                               = 190925,
+    HUNTER_KILL_COMMAND                          = 34026,
+    HUNTER_POSTHASTE                             = 109215,
+    HUNTER_POSTHASTE_SPEED                       = 118922,
     DIRE_BEAST_JADE_FOREST                       = 121118,
     DIRE_BEAST_KALIMDOR                          = 122802,
     DIRE_BEAST_EASTERN_KINGDOMS                  = 122804,
@@ -283,28 +292,18 @@ class spell_hun_kill_command : public SpellScriptLoader
                 return true;
             }
 
-            void FilterTargets(WorldObject*& target)
-            {
-                if (Unit* caster = GetCaster())
-                    if (Unit* pet = caster->GetGuardianPet())
-                        if (pet->getVictim())
-                            target = pet->getVictim();
-            }
-
             SpellCastResult CheckCastMeet()
             {
                 Unit* caster = GetCaster();
                 if (!caster || caster->GetTypeId() != TYPEID_PLAYER)
                     return SPELL_FAILED_NO_PET;
 
-                Player* player = caster->ToPlayer();
                 Unit* pet = caster->GetGuardianPet();
-                Unit* target = player->GetSelectedUnit();
+                Unit* target = GetExplTargetUnit();
 
                 if (!pet || pet->isDead())
                     return SPELL_FAILED_NO_PET;
 
-                // pet has a target and target is within 5 yards
                 if (!target || !pet->IsWithinDist(target, GetSpellInfo()->Effects[EFFECT_2]->BasePoints, true))
                 {
                     SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_TARGET_TOO_FAR);
@@ -312,29 +311,12 @@ class spell_hun_kill_command : public SpellScriptLoader
                 }
                 
                 if (pet->HasUnitState(UNIT_STATE_CONTROLLED))
-                {
                     return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-                }
+
+                if (!pet->IsWithinLOSInMap(target))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
                 
                 return SPELL_CAST_OK;
-            }
-            
-            SpellCastResult CheckIfPetInLOS()
-            {
-                Unit* caster = GetCaster();
-                if (Player* player = GetCaster()->ToPlayer())
-                {
-                    if (Unit* pet = GetCaster()->GetGuardianPet())
-                    {
-                        float x, y, z;
-                        pet->GetPosition(x, y, z);
-                        
-                        if(Unit* target = player->GetSelectedUnit())
-                           if (target->IsWithinLOS(x, y, z))
-                               return SPELL_CAST_OK;
-                    }
-                }
-                return SPELL_FAILED_LINE_OF_SIGHT;
             }
             
             void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -348,6 +330,9 @@ class spell_hun_kill_command : public SpellScriptLoader
                             float damage = caster->GetTotalAttackPowerValue(WeaponAttackType(RANGED_ATTACK)) * 3.6f;
                             pet->CastCustomSpell(target, 83381, &damage, nullptr, nullptr, false);
 
+                            if (Creature* petCreature = pet->ToCreature())
+                                petCreature->AI()->AttackStart(target);
+
                             if (!pet->IsWithinMeleeRange(target))
                                 pet->CastSpell(target, 118171, false);
 
@@ -355,6 +340,9 @@ class spell_hun_kill_command : public SpellScriptLoader
                                 if (Unit* hati = caster->GetHati())
                                 {
                                     hati->CastCustomSpell(target, 83381, &damage, nullptr, nullptr, false);
+
+                                    if (Creature* hatiCreature = hati->ToCreature())
+                                        hatiCreature->AI()->AttackStart(target);
 
                                     if (!hati->IsWithinMeleeRange(target))
                                         hati->CastSpell(target, 118171, false);
@@ -385,9 +373,7 @@ class spell_hun_kill_command : public SpellScriptLoader
 
             void Register() override
             {
-                OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_hun_kill_command_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_TARGET_ENEMY);
                 OnCheckCast += SpellCheckCastFn(spell_hun_kill_command_SpellScript::CheckCastMeet);
-                OnCheckCast += SpellCheckCastFn(spell_hun_kill_command_SpellScript::CheckIfPetInLOS);
                 OnEffectHitTarget += SpellEffectFn(spell_hun_kill_command_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             }
         };
@@ -853,6 +839,34 @@ class spell_hun_explosive_shot : public SpellScriptLoader
         {
             return new spell_hun_explosive_shot_SpellScript();
         }
+};
+
+// Chimaera Shot - 53209
+class spell_hun_chimaera_shot : public SpellScript
+{
+    PrepareSpellScript(spell_hun_chimaera_shot);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_CHIMAERA_SHOT_FROST, HUNTER_CHIMAERA_SHOT_NATURE });
+    }
+
+    void HandleOnHit()
+    {
+        Unit* target = GetHitUnit();
+        if (!target)
+            return;
+
+        // The primary head deals Nature damage and the chained head deals Frost damage.
+        // Both child spells carry their own 10 Focus energize from the 7.3.5 DB2 data.
+        uint32 headSpell = target == GetExplTargetUnit() ? HUNTER_CHIMAERA_SHOT_NATURE : HUNTER_CHIMAERA_SHOT_FROST;
+        GetCaster()->CastSpell(target, headSpell, true);
+    }
+
+    void Register() override
+    {
+        OnHit += SpellHitFn(spell_hun_chimaera_shot::HandleOnHit);
+    }
 };
 
 // Cobra Shot - 193455
@@ -1900,6 +1914,91 @@ class spell_hun_trailblazer : public AuraScript
     }
 };
 
+// Posthaste - 109215 (triggered by Disengage - 781 and Harpoon - 190925)
+class spell_hun_posthaste : public SpellScript
+{
+    PrepareSpellScript(spell_hun_posthaste);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ HUNTER_POSTHASTE, HUNTER_POSTHASTE_SPEED });
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!caster->HasAura(HUNTER_POSTHASTE))
+            return;
+
+        caster->RemoveMovementImpairingEffects();
+        caster->CastSpell(caster, HUNTER_POSTHASTE_SPEED, true);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_hun_posthaste::HandleAfterCast);
+    }
+};
+
+// Farstrider - 199523
+class spell_hun_farstrider : public AuraScript
+{
+    PrepareAuraScript(spell_hun_farstrider);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) != 0;
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player)
+            return;
+
+        if (player->HasSpell(HUNTER_DISENGAGE))
+            player->RemoveSpellCooldown(HUNTER_DISENGAGE, true);
+
+        if (player->HasSpell(HUNTER_HARPOON))
+            player->RemoveSpellCooldown(HUNTER_HARPOON, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_farstrider::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_hun_farstrider::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Killer Cobra - 199532
+class spell_hun_killer_cobra : public AuraScript
+{
+    PrepareAuraScript(spell_hun_killer_cobra);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetSpellInfo()->Id == HUNTER_COBRA_SHOT;
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (player && player->HasAura(HUNTER_BESTIAL_WRATH))
+            player->RemoveSpellCooldown(HUNTER_KILL_COMMAND, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_hun_killer_cobra::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_hun_killer_cobra::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
 // Eagle's Bite - 204081
 class spell_hun_eagles_bite : public AuraScript
 {
@@ -2309,6 +2408,7 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_flanking_strike();
     new spell_hun_explosive_shot_detonate();
     new spell_hun_explosive_shot();
+    RegisterSpellScript(spell_hun_chimaera_shot);
     new spell_hun_cobra_shot();
     new spell_hun_blink_strikes();
     new spell_hun_piercing_shot();
@@ -2333,6 +2433,9 @@ void AddSC_hunter_spell_scripts()
     new areatrigger_at_explosive_trap();
     RegisterAuraScript(spell_hun_misdirection);
     RegisterAuraScript(spell_hun_trailblazer);
+    RegisterSpellScript(spell_hun_posthaste);
+    RegisterAuraScript(spell_hun_farstrider);
+    RegisterAuraScript(spell_hun_killer_cobra);
     RegisterSpellScript(spell_hun_beast_cleave_tgr);
     RegisterAuraScript(spell_hun_eagles_bite);
     RegisterSpellScript(spell_hun_explosive_trap);

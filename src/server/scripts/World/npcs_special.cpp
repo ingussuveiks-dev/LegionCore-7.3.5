@@ -4545,6 +4545,11 @@ class npc_dire_beast : public CreatureScript
                         {
                             if (Unit* _target = ObjectAccessor::GetUnit(*me, itr.first))
                             {
+                                // Stomp (199530): every newly summoned Dire Beast deals its
+                                // 7.3.5 DB2 area-damage spell as it charges into combat.
+                                if (owner->HasAura(199530))
+                                    me->CastSpell(me, 201754, true);
+
                                 AttackStart(_target);
                                 break;
                             }
