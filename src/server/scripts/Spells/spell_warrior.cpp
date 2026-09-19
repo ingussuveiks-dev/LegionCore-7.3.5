@@ -27,6 +27,19 @@
 #include "SpellAuraEffects.h"
 #include "PathGenerator.h"
 
+namespace
+{
+enum WarriorChargeSpells
+{
+    SPELL_WARRIOR_CHARGE_EFFECT               = 218104,
+    SPELL_WARRIOR_CHARGE_EFFECT_BLAZING_TRAIL = 198337,
+    SPELL_WARRIOR_CHARGE_PAUSE_RAGE_DECAY     = 109128,
+    SPELL_WARRIOR_CHARGE_ROOT_EFFECT          = 105771,
+    SPELL_WARRIOR_CHARGE_SLOW_EFFECT          = 236027,
+    SPELL_WARRIOR_GLYPH_BLAZING_TRAIL         = 123779
+};
+}
+
 //Arms Execute - 163201
 class spell_warr_execute : public SpellScriptLoader
 {
@@ -305,6 +318,61 @@ class spell_warr_heroic_leap : public SpellScriptLoader
         }
 };
 
+// Charge - 100. The client spell's first effect is a dummy; it must launch
+// the actual movement spell selected by Glyph of the Blazing Trail.
+class spell_warr_charge : public SpellScript
+{
+    PrepareSpellScript(spell_warr_charge);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_CHARGE_EFFECT, SPELL_WARRIOR_CHARGE_EFFECT_BLAZING_TRAIL });
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        uint32 chargeSpell = GetCaster()->HasAura(SPELL_WARRIOR_GLYPH_BLAZING_TRAIL)
+            ? SPELL_WARRIOR_CHARGE_EFFECT_BLAZING_TRAIL
+            : SPELL_WARRIOR_CHARGE_EFFECT;
+        GetCaster()->CastSpell(GetHitUnit(), chargeSpell, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_warr_charge::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Charge movement - 198337/218104. Apply the root followed by the slow from
+// Charge's 7.3.5 tooltip and pause out-of-combat Rage decay during movement.
+class spell_warr_charge_effect : public SpellScript
+{
+    PrepareSpellScript(spell_warr_charge_effect);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_CHARGE_PAUSE_RAGE_DECAY,
+            SPELL_WARRIOR_CHARGE_ROOT_EFFECT, SPELL_WARRIOR_CHARGE_SLOW_EFFECT });
+    }
+
+    void HandleCharge(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        caster->CastCustomSpell(SPELL_WARRIOR_CHARGE_PAUSE_RAGE_DECAY, SPELLVALUE_BASE_POINT0, 0, caster, true);
+        caster->CastSpell(target, SPELL_WARRIOR_CHARGE_ROOT_EFFECT, true);
+        caster->CastSpell(target, SPELL_WARRIOR_CHARGE_SLOW_EFFECT, true);
+    }
+
+    void Register() override
+    {
+        OnEffectLaunchTarget += SpellEffectFn(spell_warr_charge_effect::HandleCharge, EFFECT_0, SPELL_EFFECT_CHARGE);
+    }
+};
+
 // Intervene - 3411
 class spell_war_intervene : public SpellScriptLoader
 {
@@ -558,8 +626,10 @@ class spell_warr_intercept : public SpellScriptLoader
                 }
                 else
                 {
-                    caster->CastSpell(target, 198337, true); // charge
-                    caster->CastSpell(target, 105771, true); // root
+                    uint32 chargeSpell = caster->HasAura(SPELL_WARRIOR_GLYPH_BLAZING_TRAIL)
+                        ? SPELL_WARRIOR_CHARGE_EFFECT_BLAZING_TRAIL
+                        : SPELL_WARRIOR_CHARGE_EFFECT;
+                    caster->CastSpell(target, chargeSpell, true);
 
                     if (caster->HasAura(103828)) // Warbringer
                         caster->CastSpell(target, 7922, true);
@@ -1157,6 +1227,8 @@ void AddSC_warrior_spell_scripts()
 {
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
+    RegisterSpellScript(spell_warr_charge);
+    RegisterSpellScript(spell_warr_charge_effect);
     new spell_war_intervene();
     new spell_warr_charge_drop_fire();
     new spell_warr_execute();

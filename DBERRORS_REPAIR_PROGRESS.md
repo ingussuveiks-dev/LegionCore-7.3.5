@@ -3348,3 +3348,31 @@ Izmantotie avoti:
 - Pēc sarunas pārbaudīt oriģinālo lokalizēto Arluin tekstu/skaņu, `Speak with Arluin` posma ieskaitīšanu, LFG pabeigšanu un reconnect uzvedību pirms un pēc sarunas.
 
 > 2026-09-19: LFG 1634 pagaidu bloķēšana no paketes 166 ir aizstāta ar gala 7.3.5 DB2 aprakstīto vienpakāpes Arluin scenāriju; The Nightborne atkal ir iespējots.
+
+## Pakete 174 — Warrior audits: Charge pilnās darbības atjaunošana
+
+Faili: `src/server/scripts/Spells/spell_warrior.cpp` un `sql/updates/world/2026_09_19_162_fix_warrior_charge.sql`.
+
+Uzsākot klašu spellu auditu ar Warrior, gala 7.3.5.26972 `SpellEffect` dati atklāja klusu funkcionālu kļūdu, ko starta validācija nevarēja atrast. `Charge` 100 pirmais efekts ir `SPELL_EFFECT_DUMMY`, bet serverī bija tikai ceļa pārbaudes handlers; tas nekad nepalaida kustības spellu. Atjaunots handlers, kas izvēlas parasto Charge 218104 vai `Glyph of the Blazing Trail` variantu 198337 un izpilda kustību.
+
+Abi kustības spelli tagad izmanto kopīgu 7.3.5 handleri, kas aptur Rage decay un piemēro klienta tooltipā aprakstīto secību: root 105771, pēc tam 50% slow 236027. Izlabots arī `Intercept`: tas agrāk vienmēr izsauca Blazing Trail variantu 198337 neatkarīgi no glypha; tagad tas izvēlas 218104 vai 198337 pēc aktīvās auras un izmanto to pašu pilno Charge ķēdi.
+
+Izmantotie avoti:
+
+- https://worldofwarcraft.blizzard.com/en-us/news/21365423
+- https://worldofwarcraft.blizzard.com/en-us/news/20863656/hotfixes-june-20
+- https://wago.tools/db2/Spell/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellEffect/csv?build=7.3.5.26972
+- https://wago.tools/db2/SpellPower/csv?build=7.3.5.26972
+- https://github.com/Trion-Control-Panel/ArgusCore/blob/main/src/server/scripts/Spells/spell_warrior.cpp
+
+### Pārbaudes rezultāts
+
+- Release `worldserver` būve pabeigta bez kļūdām.
+- SQL updateris piemēroja migrāciju 162; MariaDB pārbaudītas jaunās piesaistes spellam 100 un kustības spelliem 198337/218104.
+- Pilns starts pabeigts 12 sekundēs, ielādēja 6665 C++ skriptus un validēja 3369 spell skriptus. `DBErrors.log` ir 0 rindas, `Server.log` nav `ERROR`/`FATAL`, serveris korekti apturēts.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Bez glypha izmantot Charge un naidīgu Intercept: jāpārvietojas ar 218104, mērķim vispirms jāsaņem īsais root un pēc tam 50% slow, nedrīkst parādīties uguns taka.
+- Ar `Glyph of the Blazing Trail` atkārtot abas spējas: jāizmanto 198337 un kustības ceļā jāparādās uguns takai; Rage ģenerēšanai un Warbringer stunam jāsaglabājas.
