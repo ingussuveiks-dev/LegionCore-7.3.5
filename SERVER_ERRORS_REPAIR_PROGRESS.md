@@ -244,3 +244,19 @@ Immolate spellam 157736 effect 0 faktiskā aura ir `PERIODIC_DAMAGE`, ko jau par
 ### Spēlē vēlāk pārbaudāmais
 
 - Warlock spēlē uzlikt, atkārtoti uzlikt un noņemt Immolate, pārbaudot, ka saistītā aura 205690 tiek noņemta visos trīs dzīves cikla gadījumos.
+
+## Pakete 182 — Tirisfal Darnel summon auras beigas
+
+Fails: `src/server/scripts/EasternKingdoms/zone_tirisfal_glades.cpp`.
+
+Quest 26800 Darnel summon auras noņemšanas darbība vairs neatbilst vecajam effect 1 `DUMMY` izkārtojumam. Tā izmanto tikai visas auras beigu notikumu, lai despawnotu saistītos Darnel summon, tādēļ hooks tagad vienreiz piesaistās pirmajam faktiskajam auras efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; `spell_summon_darnel_q26800` validācijas kļūda pazuda un `Server.log` skaits samazinājās no 28 uz 27.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Quest 26800 laikā izsaukt Darnel, pēc tam pabeigt vai atcelt summon auru un pārbaudīt, ka visi ar caster saistītie Darnel summon korekti despawno.
