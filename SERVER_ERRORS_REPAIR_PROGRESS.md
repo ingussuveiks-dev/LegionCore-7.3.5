@@ -292,3 +292,19 @@ Vienreizēja ielādētā DBC diagnostika apstiprināja faktiskos effect 0 tipus:
 ### Spēlē vēlāk pārbaudāmais
 
 - Pārbaudīt Fiery Edge periodisko damage castu, Blind Hatred staru, Garrosh Growing Power enerģijas slieksni un Imperator Margok Volatile Anomalies izsaukšanu abās paredzētajās fāzēs.
+
+## Pakete 185 — DBC precīzie aura effect indeksi
+
+Faili: `boss_wing_leader_neronok.cpp`, `spell_druid.cpp` un `antorus.cpp`.
+
+Ielādētā DBC diagnostika apstiprināja, ka Quick-Dry Resin `ENABLE_ALT_POWER` ir effect 1, Ekowraith otrā Astral Influence korekcija pieder effect 6 (nevis atkārtoti effect 5), bet Bound by Fel periodiskais `DUMMY` ir effect 0. Attiecīgie hooki pārvietoti uz šiem faktiskajiem indeksiem, saglabājot konkrētos aura tipus.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām; palika divi iepriekš eksistējoši, ar šo paketi nesaistīti C5055 brīdinājumi `spell_druid.cpp`.
+- Pilns starts pabeigts 11 sekundēs; visas četras mērķa validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 18 uz 14.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Pārbaudīt Quick-Dry Resin alternate power palielināšanu/samazināšanu, Ekowraith Astral Influence range korekcijas un Bound by Fel pāra sasaisti, attāluma pārbaudi un stack limitu.

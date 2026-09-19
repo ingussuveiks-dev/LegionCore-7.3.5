@@ -293,7 +293,7 @@ class spell_quick_dry_resin : public AuraScript
 
     void Register() override
     {
-        OnEffectProc += AuraEffectProcFn(spell_quick_dry_resin::OnProc, EFFECT_0, SPELL_AURA_ENABLE_ALT_POWER);
+        OnEffectProc += AuraEffectProcFn(spell_quick_dry_resin::OnProc, EFFECT_1, SPELL_AURA_ENABLE_ALT_POWER);
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_quick_dry_resin::PeriodicTick, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
     }
 };
