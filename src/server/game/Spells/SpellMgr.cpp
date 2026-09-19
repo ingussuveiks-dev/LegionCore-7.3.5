@@ -7221,10 +7221,10 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->GetMisc()->MiscData.Attributes[5] |= SPELL_ATTR5_START_PERIODIC_AT_APPLY;
     });
 
-    // Castigation
-    ApplySpellFix({193134}, [](SpellInfo* spellInfo)
+    // Tyranny of Pain: the artifact heal cannot critically strike.
+    ApplySpellFix({242094}, [](SpellInfo* spellInfo)
     {
-        spellInfo->Effects[EFFECT_0]->BasePoints = -66;
+        spellInfo->GetMisc()->MiscData.Attributes[2] |= SPELL_ATTR2_CANT_CRIT;
     });
 
     // War Banner (Honor Talent)

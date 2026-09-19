@@ -655,7 +655,13 @@ class spell_pri_shadow_mend: public SpellScript
                 }
 
                 if (target->isInCombat())
+                {
+                    if (AuraEffect const* tamingTheShadows = caster->GetAuraEffect(197779, EFFECT_0))
+                        if (roll_chance_i(tamingTheShadows->GetAmount()))
+                            return;
+
                     caster->CastCustomSpell(target, 187464, &bp1, nullptr, nullptr, true); // send penalty proc dmg
+                }
             }
         }
     }
@@ -803,6 +809,9 @@ class spell_pri_power_word_shield : public SpellScriptLoader
                             if (!caster->HasAura(214205))
                                 caster->CastSpell(target, 194384, true);
 
+                        if (caster->HasAura(64129)) // Body and Soul
+                            caster->CastSpell(target, 65081, true);
+
                         if (AuraEffect const* aurEff = caster->GetAuraEffect(211563, EFFECT_0)) // Item - Priest T19 Discipline 4P Bonus
                             if (Aura* aur = target->GetAura(194384, caster->GetGUID()))
                                 if (caster->HasAura(47536))
@@ -906,8 +915,15 @@ class spell_pri_power_word_shield : public SpellScriptLoader
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
+                Unit* caster = GetCaster();
                 if (Unit* target = GetUnitOwner())
                     target->RemoveAurasDueToSpell(StrengthOfSoul, GetCasterGUID());
+
+                // Shield Discipline - mana is restored only when the shield is
+                // consumed by incoming damage, not when it expires or is dispelled.
+                if (caster && caster->HasAura(197045) &&
+                    GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_ENEMY_SPELL)
+                    caster->CastSpell(caster, 47755, true);
             }
 
             void Register() override
@@ -936,6 +952,42 @@ class spell_pri_pw_radiance : public SpellScript
 {
     PrepareSpellScript(spell_pri_pw_radiance);
 
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* caster = GetCaster();
+        Unit* explicitTarget = GetExplTargetUnit();
+        if (!caster)
+            return;
+
+        // Effect 2 stores four additional allies. The explicit target makes
+        // five healed targets in total.
+        uint32 maxTargets = GetSpellInfo()->Effects[EFFECT_2]->CalcValue(caster) + 1;
+        if (targets.size() <= maxTargets)
+            return;
+
+        uint32 atonementSpell = caster->HasAura(214205) ? 214206 : 194384;
+        targets.sort([caster, explicitTarget, atonementSpell](WorldObject* left, WorldObject* right)
+        {
+            if (left == explicitTarget)
+                return true;
+            if (right == explicitTarget)
+                return false;
+
+            Unit* leftUnit = left ? left->ToUnit() : nullptr;
+            Unit* rightUnit = right ? right->ToUnit() : nullptr;
+            if (!leftUnit || !rightUnit)
+                return leftUnit != nullptr;
+
+            bool leftNeedsAtonement = !leftUnit->HasAura(atonementSpell, caster->GetGUID());
+            bool rightNeedsAtonement = !rightUnit->HasAura(atonementSpell, caster->GetGUID());
+            if (leftNeedsAtonement != rightNeedsAtonement)
+                return leftNeedsAtonement;
+
+            return leftUnit->GetHealthPct() < rightUnit->GetHealthPct();
+        });
+        targets.resize(maxTargets);
+    }
+
     void HandleOnHit()
     {
         if (Unit* caster = GetCaster())
@@ -958,7 +1010,140 @@ class spell_pri_pw_radiance : public SpellScript
 
     void Register() override
     {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_pw_radiance::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
         OnHit += SpellHitFn(spell_pri_pw_radiance::HandleOnHit);
+    }
+};
+
+// Shadow Covenant - 204065
+class spell_pri_shadow_covenant : public SpellScript
+{
+    PrepareSpellScript(spell_pri_shadow_covenant);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* explicitTarget = GetExplTargetUnit();
+        uint32 maxTargets = GetSpellInfo()->Effects[EFFECT_2]->CalcValue(GetCaster());
+        if (!maxTargets || targets.size() <= maxTargets)
+            return;
+
+        targets.sort([explicitTarget](WorldObject* left, WorldObject* right)
+        {
+            if (left == explicitTarget)
+                return true;
+            if (right == explicitTarget)
+                return false;
+
+            Unit* leftUnit = left ? left->ToUnit() : nullptr;
+            Unit* rightUnit = right ? right->ToUnit() : nullptr;
+            if (!leftUnit || !rightUnit)
+                return leftUnit != nullptr;
+
+            return leftUnit->GetHealthPct() < rightUnit->GetHealthPct();
+        });
+        targets.resize(maxTargets);
+    }
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target)
+            return;
+
+        int32 absorbPct = 0;
+        if (AuraEffect const* effect = caster->GetAuraEffect(219518, EFFECT_0))
+            absorbPct = effect->GetAmount();
+        else if (SpellInfo const* passive = sSpellMgr->GetSpellInfo(219518))
+            absorbPct = passive->Effects[EFFECT_0]->CalcValue(caster);
+
+        if (absorbPct > 0)
+        {
+            float absorb = CalculatePct(GetHitHeal(), absorbPct);
+            caster->CastCustomSpell(target, 219521, &absorb, nullptr, nullptr, true);
+        }
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pri_shadow_covenant::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+        OnEffectHitTarget += SpellEffectFn(spell_pri_shadow_covenant::HandleHeal, EFFECT_1, SPELL_EFFECT_HEAL);
+    }
+};
+
+// Power Word: Solace - 129250
+class spell_pri_power_word_solace : public SpellScript
+{
+    PrepareSpellScript(spell_pri_power_word_solace);
+
+    void RestoreMana(SpellEffIndex /*effIndex*/)
+    {
+        float amount = GetEffectValue() / 100.0f;
+        GetCaster()->CastCustomSpell(GetCaster(), 129253, &amount, nullptr, nullptr, true);
+    }
+
+    void Register() override
+    {
+        OnEffectLaunch += SpellEffectFn(spell_pri_power_word_solace::RestoreMana, EFFECT_1, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Shadowfiend/Mindbender Mana Leech - 28305/123050
+class spell_pri_mana_leech : public AuraScript
+{
+    PrepareAuraScript(spell_pri_mana_leech);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo() && GetTarget()->GetAnyOwner();
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+
+        if (Unit* owner = GetTarget()->GetAnyOwner())
+            GetTarget()->CastSpell(owner, GetId() == 123050 ? 123051 : 34650, true);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_pri_mana_leech::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_pri_mana_leech::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Pain Suppression - 33206
+class spell_pri_pain_suppression : public AuraScript
+{
+    PrepareAuraScript(spell_pri_pain_suppression);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo() && GetCaster() && GetCaster()->HasAura(238099);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        if (!caster || !target || !damageInfo)
+            return;
+
+        if (AuraEffect const* tyrannyOfPain = caster->GetAuraEffect(238099, EFFECT_0))
+        {
+            float heal = CalculatePct(damageInfo->GetDamage(), tyrannyOfPain->GetAmount());
+            caster->CastCustomSpell(target, 242094, &heal, nullptr, nullptr, true);
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_pri_pain_suppression::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_pri_pain_suppression::HandleProc, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -980,6 +1165,8 @@ class spell_pri_leap_of_faith : public SpellScriptLoader
                     {
                         if(_player->HasAura(196611)) // Delivered from Evil(Honor Talent)
                             target->RemoveAurasWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT));
+                        if (_player->HasAura(64129) && !_player->HasAura(137033)) // Body and Soul; Shadow only gains the Shield trigger
+                            _player->CastSpell(target, 65081, true);
                         target->CastSpell(_player, 92832, true);
                     }
                 }
@@ -1324,15 +1511,22 @@ class spell_pri_penance : public SpellScriptLoader
             {
                 if (Unit* caster = GetCaster())
                 {
-                    if (!caster->HasAura(225683)) // Promises of N'ero
-                        return;
+                    if (AuraEffect const* powerOfTheDarkSide = caster->GetAuraEffect(198069, EFFECT_0))
+                    {
+                        int32 damage = GetHitDamage();
+                        AddPct(damage, powerOfTheDarkSide->GetAmount());
+                        SetHitDamage(damage);
+                    }
 
-                    uint32 heal_ = GetHitDamage();
-                    if (Unit::AuraList* _auraList = caster->GetMyAura(81782))
-                        for (Unit::AuraList::iterator itr = _auraList->begin(); itr != _auraList->end(); ++itr)
-                            if (Aura* _aura = (*itr))
-                                if (Unit* unitTarget = _aura->GetUnitOwner())
-                                    caster->HealBySpell(unitTarget, GetSpellInfo(), heal_);
+                    if (caster->HasAura(225683)) // Promises of N'ero
+                    {
+                        uint32 heal_ = GetHitDamage();
+                        if (Unit::AuraList* _auraList = caster->GetMyAura(81782))
+                            for (Unit::AuraList::iterator itr = _auraList->begin(); itr != _auraList->end(); ++itr)
+                                if (Aura* _aura = (*itr))
+                                    if (Unit* unitTarget = _aura->GetUnitOwner())
+                                        caster->HealBySpell(unitTarget, GetSpellInfo(), heal_);
+                    }
                 }
             }
 
@@ -1346,6 +1540,44 @@ class spell_pri_penance : public SpellScriptLoader
         {
             return new spell_pri_penance_SpellScript();
         }
+};
+
+// Penance - 47750
+class spell_pri_penance_heal : public SpellScript
+{
+    PrepareSpellScript(spell_pri_penance_heal);
+
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        if (AuraEffect const* powerOfTheDarkSide = GetCaster()->GetAuraEffect(198069, EFFECT_0))
+        {
+            int32 heal = GetHitHeal();
+            AddPct(heal, powerOfTheDarkSide->GetAmount());
+            SetHitHeal(heal);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_pri_penance_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+    }
+};
+
+// Penance channel - 47757/47758
+class spell_pri_penance_channel : public AuraScript
+{
+    PrepareAuraScript(spell_pri_penance_channel);
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* caster = GetCaster())
+            caster->RemoveAurasDueToSpell(198069);
+    }
+
+    void Register() override
+    {
+        OnEffectRemove += AuraEffectRemoveFn(spell_pri_penance_channel::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
 };
 
 // Vampiric Touch - 34914
@@ -1423,7 +1655,46 @@ class spell_pri_penance_cast : public SpellScriptLoader
                         if (_player->IsFriendlyTo(unitTarget))
                             _player->CastSpell(unitTarget, 47757, true);
                         else
+                        {
+                            // Purge the Wicked spreads once per Penance cast to
+                            // a nearby combat target with the lowest remaining DoT.
+                            if (unitTarget->HasAura(204213, _player->GetGUID()))
+                            {
+                                std::list<Unit*> targets;
+                                unitTarget->GetAttackableUnitListInRange(targets, 15.0f);
+
+                                Unit* spreadTarget = nullptr;
+                                int32 lowestDuration = INT32_MAX;
+                                for (Unit* target : targets)
+                                {
+                                    if (!target || target == unitTarget || !target->IsAlive() || !target->isInCombat())
+                                        continue;
+
+                                    bool hasBreakableCrowdControl =
+                                        target->HasCrowdControlAuraType(SPELL_AURA_MOD_CONFUSE) ||
+                                        target->HasCrowdControlAuraType(SPELL_AURA_MOD_FEAR) ||
+                                        target->HasCrowdControlAuraType(SPELL_AURA_MOD_FEAR_2) ||
+                                        target->HasCrowdControlAuraType(SPELL_AURA_MOD_STUN) ||
+                                        target->HasCrowdControlAuraType(SPELL_AURA_MOD_ROOT) ||
+                                        target->HasCrowdControlAuraType(SPELL_AURA_TRANSFORM);
+                                    if (hasBreakableCrowdControl)
+                                        continue;
+
+                                    Aura* purge = target->GetAura(204213, _player->GetGUID());
+                                    int32 duration = purge ? purge->GetDuration() : 0;
+                                    if (!spreadTarget || duration < lowestDuration)
+                                    {
+                                        spreadTarget = target;
+                                        lowestDuration = duration;
+                                    }
+                                }
+
+                                if (spreadTarget)
+                                    _player->CastSpell(spreadTarget, 204213, true);
+                            }
+
                             _player->CastSpell(unitTarget, 47758, true);
+                        }
                     }
                 }
             }
@@ -1608,6 +1879,10 @@ class spell_pri_atonement_heal : public SpellScript
         auto target = GetHitUnit();
         if (!caster || !target)
             return;
+
+        if (AuraEffect const* barrierForTheDevoted = caster->GetAuraEffect(197815, EFFECT_0))
+            if (target->HasAura(81782, caster->GetGUID()))
+                SetHitHeal(GetHitHeal() + CalculatePct(GetHitHeal(), barrierForTheDevoted->GetAmount()));
 
         if (GetSpell()->IsCritForTarget(target))
         {
@@ -1881,6 +2156,10 @@ void AddSC_priest_spell_scripts()
     new spell_pri_clarity_of_will();
     new spell_pri_power_word_shield();
     RegisterSpellScript(spell_pri_pw_radiance);
+    RegisterSpellScript(spell_pri_shadow_covenant);
+    RegisterSpellScript(spell_pri_power_word_solace);
+    RegisterAuraScript(spell_pri_mana_leech);
+    RegisterAuraScript(spell_pri_pain_suppression);
     new spell_pri_leap_of_faith();
     new spell_pri_desperate_prayer();
     new spell_pri_lingering_insanity();
@@ -1891,6 +2170,8 @@ void AddSC_priest_spell_scripts()
     new spell_pri_premonition_pvp();
     new spell_pri_mental_fortitude();
     new spell_pri_penance();
+    RegisterSpellScript(spell_pri_penance_heal);
+    RegisterAuraScript(spell_pri_penance_channel);
     new spell_pri_vampiric_touch();
     new spell_pri_penance_cast();
     RegisterSpellScript(spell_pri_smite);
