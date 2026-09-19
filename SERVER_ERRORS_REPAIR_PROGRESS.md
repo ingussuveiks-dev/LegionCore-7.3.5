@@ -196,3 +196,19 @@ Pillar of Frost spellam 51271 šajā klienta būvē vairs nav skriptā pieņemt�
 ### Spēlē vēlāk pārbaudāmais
 
 - Death Knight spēlē aktivizēt Pillar of Frost, pārbaudīt incapacitate imunitāti auras laikā un tās pilnīgu noņemšanu pēc auras beigām vai manuālas atcelšanas.
+
+## Pakete 179 — Conclave of Wind Hurricane transporta aura
+
+Fails: `src/server/scripts/Kalimdor/ThroneOfTheFourWinds/boss_conclave_of_wind.cpp`.
+
+Hurricane spellam 86492 šajā klienta būvē effect 0 vairs nav skriptā pieņemtais `MOD_STUN`. Pasažiera ievietošana transportā un visu pasažieru noņemšana izmanto tikai visas auras sākumu un beigas, tādēļ abi hooki tagad vienreiz piesaistās pirmajam faktiskajam auras efektam.
+
+### Pārbaudes rezultāts
+
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 11 sekundēs; abas `spell_hurricane` validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 33 uz 31.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Conclave of Wind cīņā pārbaudīt, ka Hurricane sākumā mērķis ieiet pareizajā vehicle seat un auras beigās vai noņemšanā visi pasažieri tiek korekti izlaisti.
