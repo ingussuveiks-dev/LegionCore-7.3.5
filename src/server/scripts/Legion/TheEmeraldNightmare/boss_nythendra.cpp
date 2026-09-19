@@ -466,29 +466,42 @@ class spell_nythendra_rot : public SpellScript
     }
 };
 
-//204463, 203096
+//204463
 class spell_nythendra_volatile_rot : public AuraScript
 {
     PrepareAuraScript(spell_nythendra_volatile_rot);
 
-    void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         if (!GetCaster() || !GetTarget() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
             return;
 
-        if (aurEff->GetId() == SPELL_VOLATILE_ROT)
-        {
-            for (uint8 i = 0; i < 4; ++i)
-                GetTarget()->CastSpell(GetTarget(), SPELL_INFESTED_GROUND_VIS, true);
-        }
-        else if (aurEff->GetId() == SPELL_ROT_DOT)
-            GetCaster()->CastSpell(GetTarget(), SPELL_INFESTED_GROUND_AT, true);
+        for (uint8 i = 0; i < 4; ++i)
+            GetTarget()->CastSpell(GetTarget(), SPELL_INFESTED_GROUND_VIS, true);
     }
 
     void Register() override
     {
-        OnEffectRemove += AuraEffectRemoveFn(spell_nythendra_volatile_rot::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
         OnEffectRemove += AuraEffectRemoveFn(spell_nythendra_volatile_rot::OnRemove, EFFECT_2, SPELL_AURA_MOD_SCALE, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+//203096
+class spell_nythendra_rot_dot : public AuraScript
+{
+    PrepareAuraScript(spell_nythendra_rot_dot);
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (!GetCaster() || !GetTarget() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        GetCaster()->CastSpell(GetTarget(), SPELL_INFESTED_GROUND_AT, true);
+    }
+
+    void Register() override
+    {
+        OnEffectRemove += AuraEffectRemoveFn(spell_nythendra_rot_dot::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -660,6 +673,7 @@ void AddSC_boss_nythendra()
     RegisterCreatureAI(npc_nythendra_gelatinized_decay);
     RegisterCreatureAI(npc_nythendra_corrupted_vermin);
     RegisterAuraScript(spell_nythendra_volatile_rot);
+    RegisterAuraScript(spell_nythendra_rot_dot);
     RegisterSpellScript(spell_nythendra_volatile_rot_dmg);
     RegisterSpellScript(spell_nythendra_infested_ground_rot);
     RegisterAuraScript(spell_nythendra_heart_of_the_swarm);

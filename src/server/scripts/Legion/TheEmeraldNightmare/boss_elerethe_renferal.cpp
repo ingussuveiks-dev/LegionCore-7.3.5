@@ -1131,7 +1131,19 @@ class spell_elerethe_web_of_pain : public AuraScript
             GetTarget()->CastCustomSpell(GetCaster(), 233485, &dmg, nullptr, nullptr, true);
     }
 
-    void OnTick(AuraEffect const* aurEff)
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_elerethe_web_of_pain::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+        OnEffectAbsorb += AuraEffectAbsorbFn(spell_elerethe_web_of_pain::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+    }
+};
+
+//215300
+class spell_elerethe_web_of_pain_periodic : public AuraScript
+{
+    PrepareAuraScript(spell_elerethe_web_of_pain_periodic);
+
+    void OnTick(AuraEffect const* /*aurEff*/)
     {
         if (!GetCaster() || !GetTarget() || GetCaster()->GetMap()->GetDifficultyID() != DIFFICULTY_MYTHIC_RAID)
             return;
@@ -1148,9 +1160,7 @@ class spell_elerethe_web_of_pain : public AuraScript
 
     void Register() override
     {
-        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_elerethe_web_of_pain::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectAbsorb += AuraEffectAbsorbFn(spell_elerethe_web_of_pain::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-        OnEffectPeriodic += AuraEffectPeriodicFn(spell_elerethe_web_of_pain::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_elerethe_web_of_pain_periodic::OnTick, EFFECT_1, SPELL_AURA_PERIODIC_DUMMY);
     }
 };
 
@@ -1263,6 +1273,7 @@ void AddSC_boss_elerethe_renferal()
     RegisterAuraScript(spell_elerethe_energy_tracker_transform);
     RegisterSpellScript(spell_elerethe_web_of_pain_filter);
     RegisterAuraScript(spell_elerethe_web_of_pain);
+    RegisterAuraScript(spell_elerethe_web_of_pain_periodic);
     RegisterSpellScript(spell_elerethe_vile_ambush);
     RegisterSpellScript(spell_elerethe_feeding_time_filter);
     RegisterAuraScript(spell_elerethe_necrotic_venom);

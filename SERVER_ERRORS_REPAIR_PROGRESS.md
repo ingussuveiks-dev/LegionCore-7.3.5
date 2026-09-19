@@ -341,3 +341,20 @@ Fails: `sql/updates/world/2026_09_19_151_fix_echo_seeping_shadows_script.sql`.
 ### Spēlē vēlāk pārbaudāmais
 
 - Echo of Sylvanas cīņā pārbaudīt, ka Seeping Shadows 103175 periodiski atjauno 103182 stacku skaitu līdz 20% no bosa trūkstošās veselības, netraucējot Death Grip AOE 101397.
+
+## Pakete 188 — Emerald Nightmare jaukto aura izkārtojumu sadalīšana
+
+Faili: `boss_nythendra.cpp`, `boss_elerethe_renferal.cpp` un `sql/updates/world/2026_09_19_152_split_emerald_nightmare_aura_scripts.sql`.
+
+Nythendra Rot DOT 203096 un Volatile Rot 204463 beigu darbības sadalītas atsevišķos skriptos atbilstoši effect 0 `PERIODIC_TRIGGER_SPELL` un effect 2 `MOD_SCALE`; tas arī novērš Volatile Rot beigu darbības dubultu izpildi. Elerethe Web of Pain absorb daļa paliek kopīga 215300/215307, bet Mythic periodiskā Pain Lash pārbaude izdalīta atsevišķā skriptā tikai periodiskajam spellam 215300.
+
+### Pārbaudes rezultāts
+
+- SQL updateris piemērots un reģistrēts kā `RELEASED`; visas četras spellu piesaistes datubāzē atbilst sadalītajiem skriptiem.
+- `worldserver` Release būve pabeigta bez kompilācijas kļūdām.
+- Pilns starts pabeigts 12 sekundēs; abas Emerald Nightmare validācijas kļūdas pazuda un `Server.log` skaits samazinājās no 10 uz 8.
+- `DBErrors.log` palika tukšs (0 kļūdu), un serveris korekti apturēts ar `server shutdown 1`.
+
+### Spēlē vēlāk pārbaudāmais
+
+- Nythendra cīņā pārbaudīt vienu Infested Ground izveidi pēc Rot DOT un tieši četrus visual castus pēc Volatile Rot; Elerethe Mythic cīņā pārbaudīt Web of Pain absorb/atstaroto damage un Pain Lash spēlētājiem starp sasaistīto pāri.
