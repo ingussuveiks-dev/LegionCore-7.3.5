@@ -1,5 +1,6 @@
 void AddSC_boss_exarch_maladaar();           //Auchindoun Auchenai Crypts
 void AddSC_boss_shirrak_the_dead_watcher();
+void AddSC_instance_auchenai_crypts();
 void AddSC_boss_nexusprince_shaffar();       //Auchindoun Mana Tombs
 void AddSC_boss_pandemonius();
 void AddSC_boss_darkweaver_syth();           //Auchindoun Sekketh Halls
@@ -91,6 +92,7 @@ void AddOutlandScripts()
 {
     AddSC_boss_exarch_maladaar();           //Auchindoun Auchenai Crypts
     AddSC_boss_shirrak_the_dead_watcher();
+    AddSC_instance_auchenai_crypts();
     AddSC_boss_nexusprince_shaffar();       //Auchindoun Mana Tombs
     AddSC_boss_pandemonius();
     AddSC_boss_darkweaver_syth();           //Auchindoun Sekketh Halls

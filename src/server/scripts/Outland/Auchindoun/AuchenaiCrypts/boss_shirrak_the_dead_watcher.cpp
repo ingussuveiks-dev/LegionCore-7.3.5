@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "auchenai_crypts.h"
 
 #define SPELL_INHIBITMAGIC          32264
 #define SPELL_ATTRACTMAGIC          32265
@@ -51,9 +52,9 @@ public:
         return new boss_shirrak_the_dead_watcherAI (creature);
     }
 
-    struct boss_shirrak_the_dead_watcherAI : public ScriptedAI
+    struct boss_shirrak_the_dead_watcherAI : public BossAI
     {
-        boss_shirrak_the_dead_watcherAI(Creature* creature) : ScriptedAI(creature)
+        boss_shirrak_the_dead_watcherAI(Creature* creature) : BossAI(creature, DATA_SHIRRAK_THE_DEAD_WATCHER)
         {
         }
 
@@ -66,6 +67,7 @@ public:
 
         void Reset()
         {
+            _Reset();
             Inhibitmagic_Timer = 0;
             Attractmagic_Timer = 28000;
             Carnivorousbite_Timer = 10000;
@@ -74,7 +76,14 @@ public:
         }
 
         void EnterCombat(Unit* /*who*/)
-        { }
+        {
+            _EnterCombat();
+        }
+
+        void JustDied(Unit* /*killer*/) override
+        {
+            _JustDied();
+        }
 
         void JustSummoned(Creature* summoned)
         {

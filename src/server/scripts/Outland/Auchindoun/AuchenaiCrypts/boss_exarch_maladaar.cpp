@@ -31,6 +31,7 @@ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "auchenai_crypts.h"
 
 #define SPELL_MOONFIRE          37328
 #define SPELL_FIREBALL          37329
@@ -175,9 +176,9 @@ public:
         return new boss_exarch_maladaarAI (creature);
     }
 
-    struct boss_exarch_maladaarAI : public ScriptedAI
+    struct boss_exarch_maladaarAI : public BossAI
     {
-        boss_exarch_maladaarAI(Creature* creature) : ScriptedAI(creature)
+        boss_exarch_maladaarAI(Creature* creature) : BossAI(creature, DATA_EXARCH_MALADAAR)
         {
             HasTaunted = false;
         }
@@ -195,6 +196,7 @@ public:
 
         void Reset() override
         {
+            _Reset();
             soulmodel = 0;
             soulholder.Clear();
             soulclass = 0;
@@ -219,6 +221,7 @@ public:
 
         void EnterCombat(Unit* /*who*/) override
         {
+            _EnterCombat();
             Talk(SAY_AGGRO);
         }
 
@@ -249,6 +252,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
+            _JustDied();
             Talk(SAY_DEATH);
             //When Exarch Maladar is defeated D'ore appear.
             me->SummonCreature(19412, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 600000);
