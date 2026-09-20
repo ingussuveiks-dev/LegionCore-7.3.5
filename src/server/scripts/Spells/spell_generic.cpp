@@ -8488,6 +8488,54 @@ class spell_legion_hearty_feast : public AuraScript
     }
 };
 
+// Umbral Shift - 253826. Its mastery effect is enabled only by the third
+// Umbra-Weaver's Portent item (253825); the two-piece proc grants shadow DR.
+class spell_gen_umbral_shift : public AuraScript
+{
+    PrepareAuraScript(spell_gen_umbral_shift);
+
+    void CalculateMastery(AuraEffect const* /*aurEff*/, float& amount,
+        bool& canBeRecalculated)
+    {
+        canBeRecalculated = true;
+        if (Unit* target = GetTarget())
+            if (!target->HasAura(253825))
+                amount = 0.0f;
+    }
+
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_umbral_shift::CalculateMastery,
+            EFFECT_1, SPELL_AURA_MOD_RATING);
+    }
+};
+
+// Umbral Shift three-piece enabler - 253825
+class spell_gen_umbra_weavers_portent : public AuraScript
+{
+    PrepareAuraScript(spell_gen_umbra_weavers_portent);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (AuraEffect* mastery = GetTarget()->GetAuraEffect(253826, EFFECT_1))
+            mastery->RecalculateAmount(GetTarget());
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (AuraEffect* mastery = GetTarget()->GetAuraEffect(253826, EFFECT_1))
+            mastery->ChangeAmount(0.0f, false);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_gen_umbra_weavers_portent::HandleApply,
+            EFFECT_0, SPELL_AURA_219, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_gen_umbra_weavers_portent::HandleRemove,
+            EFFECT_0, SPELL_AURA_219, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 void AddSC_generic_spell_scripts()
 {
 //    new spell_gen_protect();
@@ -8676,4 +8724,6 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_hearthstone_board);
     RegisterAuraScript(spell_legion_food_table);
     RegisterAuraScript(spell_legion_hearty_feast);
+    RegisterAuraScript(spell_gen_umbral_shift);
+    RegisterAuraScript(spell_gen_umbra_weavers_portent);
 }
