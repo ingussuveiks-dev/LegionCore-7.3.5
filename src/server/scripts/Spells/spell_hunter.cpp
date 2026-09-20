@@ -37,6 +37,7 @@ enum HunterSpells
     HUNTER_ASPECT_OF_THE_CHEETAH                 = 186257,
     HUNTER_ASPECT_OF_THE_EAGLE                   = 186289,
     HUNTER_ASPECT_OF_THE_TURTLE                  = 186265,
+    HUNTER_ASPECT_OF_THE_WILD                    = 193530,
     HUNTER_BESTIAL_WRATH                         = 19574,
     HUNTER_BLACK_ARROW                           = 194599,
     HUNTER_CHIMAERA_SHOT_FROST                   = 171454,
@@ -59,6 +60,7 @@ enum HunterSpells
     HUNTER_LEGACY_WIND_ARROW                     = 191043,
     HUNTER_LACERATE                              = 185855,
     HUNTER_MARKED_SHOT                           = 185901,
+    HUNTER_MARKED_SHOT_DAMAGE                    = 212621,
     HUNTER_MARKING_TARGETS                       = 223138,
     HUNTER_MULTI_SHOT                            = 2643,
     HUNTER_POSTHASTE                             = 109215,
@@ -2867,6 +2869,7 @@ class spell_hun_marked_shot : public SpellScriptLoader
             PrepareSpellScript(spell_hun_marked_shot_SpellScript);
 
             bool canRemove = true;
+            std::vector<ObjectGuid> markedTargets;
 
             void HandleOnCast()
             {
@@ -2884,21 +2887,42 @@ class spell_hun_marked_shot : public SpellScriptLoader
 
             void HandleOnHit()
             {
-                if (!canRemove)
-                    return;
-
                 Unit* caster = GetCaster();
                 if (!caster)
                     return;
 
                 if (Unit* target = GetHitUnit())
-                    target->RemoveAurasDueToSpell(185365, caster->GetGUID()); // Hunter's Mark
+                {
+                    markedTargets.push_back(target->GetGUID());
+                    if (canRemove)
+                        target->RemoveAurasDueToSpell(185365, caster->GetGUID()); // Hunter's Mark
+                }
+            }
+
+            void HandleAfterCast()
+            {
+                Unit* caster = GetCaster();
+                Aura* bonus = caster ? caster->GetAura(251753) : nullptr;
+                if (!caster || !bonus || markedTargets.empty())
+                    return;
+
+                AuraEffect const* chance = bonus->GetEffect(EFFECT_0);
+                AuraEffect const* maxTargets = bonus->GetEffect(EFFECT_1);
+                if (!chance || !maxTargets || !roll_chance_i(chance->GetAmount()))
+                    return;
+
+                Trinity::Containers::RandomResizeList(markedTargets,
+                    std::min<size_t>(markedTargets.size(), std::max<int32>(maxTargets->GetAmount(), 0)));
+                for (ObjectGuid const& guid : markedTargets)
+                    if (Unit* target = ObjectAccessor::GetUnit(*caster, guid))
+                        caster->CastSpell(target, HUNTER_MARKED_SHOT_DAMAGE, true);
             }
 
             void Register() override
             {
                 OnCast += SpellCastFn(spell_hun_marked_shot_SpellScript::HandleOnCast);
                 OnHit += SpellHitFn(spell_hun_marked_shot_SpellScript::HandleOnHit);
+                AfterCast += SpellCastFn(spell_hun_marked_shot_SpellScript::HandleAfterCast);
             }
         };
 
@@ -3081,6 +3105,26 @@ struct areatrigger_hun_windburst : public AreaTriggerAI
     }
 };
 
+// Item - Hunter T21 Beast Mastery 4P Bonus - 251756
+class spell_hun_t21_beast_mastery_4p : public AuraScript
+{
+    PrepareAuraScript(spell_hun_t21_beast_mastery_4p);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        if (Player* player = GetTarget()->ToPlayer())
+            player->ModifySpellCooldown(HUNTER_ASPECT_OF_THE_WILD,
+                -int32(urand(0, std::max<int32>(aurEff->GetAmount(), 0))));
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_hun_t21_beast_mastery_4p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // Sentinel - 206817 (AreaTrigger spell 206817, custom entry 14691)
 struct areatrigger_hun_sentinel : public AreaTriggerAI
 {
@@ -3217,6 +3261,7 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_kill_command_damage();
     new spell_hun_mark_of_helbrine();
     new spell_hun_marked_shot();
+    RegisterAuraScript(spell_hun_t21_beast_mastery_4p);
     new spell_hun_titans_thunder();
     new spell_hun_t19_bm();
     new spell_hun_bw();
