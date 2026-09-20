@@ -28,6 +28,7 @@ EndScriptData */
 #include "ScriptedCreature.h"
 #include "LFGMgr.h"
 #include "Group.h"
+#include "mana_tombs.h"
 
 enum ePrince
 {
@@ -61,9 +62,9 @@ public:
         return new boss_nexusprince_shaffarAI (creature);
     }
 
-    struct boss_nexusprince_shaffarAI : public ScriptedAI
+    struct boss_nexusprince_shaffarAI : public BossAI
     {
-        boss_nexusprince_shaffarAI(Creature* creature) : ScriptedAI(creature), summons(me) 
+        boss_nexusprince_shaffarAI(Creature* creature) : BossAI(creature, DATA_NEXUSPRINCE_SHAFFAR), summons(me)
         { 
             HasTaunted = false; 
             instance = me->GetInstanceScript();
@@ -83,6 +84,7 @@ public:
 
         void Reset()
         {
+            _Reset();
             Blink_Timer = 1500;
             Beacon_Timer = 10000;
             FireBall_Timer = 8000;
@@ -103,7 +105,7 @@ public:
         void EnterEvadeMode()
         {
             summons.DespawnAll();
-            ScriptedAI::EnterEvadeMode();
+            BossAI::EnterEvadeMode();
         }
 
         void MoveInLineOfSight(Unit* who)
@@ -117,6 +119,7 @@ public:
 
         void EnterCombat(Unit* /*who*/)
         {
+            _EnterCombat();
             Talk(SAY_AGGRO);
 
             DoZoneInCombat();
@@ -148,6 +151,7 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
+            _JustDied();
             Talk(SAY_DEAD);
             summons.DespawnAll();
             if (instance)

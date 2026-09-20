@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "mana_tombs.h"
 
 enum Texts
 {
@@ -49,9 +50,9 @@ public:
         return new boss_pandemoniusAI (creature);
     }
 
-    struct boss_pandemoniusAI : public ScriptedAI
+    struct boss_pandemoniusAI : public BossAI
     {
-        boss_pandemoniusAI(Creature* creature) : ScriptedAI(creature)
+        boss_pandemoniusAI(Creature* creature) : BossAI(creature, DATA_PANDEMONIUS)
         {
         }
 
@@ -61,6 +62,7 @@ public:
 
         void Reset()
         {
+            _Reset();
             VoidBlast_Timer = 8000+rand()%15000;
             DarkShell_Timer = 20000;
             VoidBlast_Counter = 0;
@@ -68,6 +70,7 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
+            _JustDied();
             Talk(SAY_DEATH);
         }
 
@@ -78,6 +81,7 @@ public:
 
         void EnterCombat(Unit* /*who*/)
         {
+            _EnterCombat();
             Talk(SAY_AGGRO);
         }
 
@@ -90,7 +94,7 @@ public:
             {
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 {
-                    DoCast(target, SPELL_VOID_BLAST);
+                    DoCast(target, DUNGEON_MODE(SPELL_VOID_BLAST, H_SPELL_VOID_BLAST));
                     VoidBlast_Timer = 500;
                     ++VoidBlast_Counter;
                 }
@@ -111,7 +115,7 @@ public:
 
                     Talk(EMOTE_DARK_SHELL);
 
-                    DoCast(me, SPELL_DARK_SHELL);
+                    DoCast(me, DUNGEON_MODE(SPELL_DARK_SHELL, H_SPELL_DARK_SHELL));
                     DarkShell_Timer = 20000;
                 } else DarkShell_Timer -= diff;
             }
