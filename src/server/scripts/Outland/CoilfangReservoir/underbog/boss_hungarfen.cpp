@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "the_underbog.h"
 
 #define SPELL_FOUL_SPORES   31673
 #define SPELL_ACID_GEYSER   38739
@@ -39,9 +40,9 @@ public:
         return new boss_hungarfenAI (creature);
     }
 
-    struct boss_hungarfenAI : public ScriptedAI
+    struct boss_hungarfenAI : public BossAI
     {
-        boss_hungarfenAI(Creature* creature) : ScriptedAI(creature)
+        boss_hungarfenAI(Creature* creature) : BossAI(creature, DATA_HUNGARFEN)
         {
         }
 
@@ -51,6 +52,7 @@ public:
 
         void Reset()
         {
+            _Reset();
             Root = false;
             Mushroom_Timer = 5000;                              // 1 mushroom after 5s, then one per 10s. This should be different in heroic mode
             AcidGeyser_Timer = 10000;
@@ -58,6 +60,12 @@ public:
 
         void EnterCombat(Unit* /*who*/)
         {
+            _EnterCombat();
+        }
+
+        void JustDied(Unit* /*killer*/) override
+        {
+            _JustDied();
         }
 
         void UpdateAI(uint32 diff)

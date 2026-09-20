@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "the_underbog.h"
 
 #define SPELL_LEVITATE             31704
 #define SPELL_SUSPENSION           31719
@@ -46,9 +47,9 @@ public:
         return new boss_the_black_stalkerAI (creature);
     }
 
-    struct boss_the_black_stalkerAI : public ScriptedAI
+    struct boss_the_black_stalkerAI : public BossAI
     {
-        boss_the_black_stalkerAI(Creature* creature) : ScriptedAI(creature)
+        boss_the_black_stalkerAI(Creature* creature) : BossAI(creature, DATA_BLACK_STALKER)
         {
         }
 
@@ -64,6 +65,7 @@ public:
 
         void Reset()
         {
+            _Reset();
             Levitate_Timer = 12000;
             ChainLightning_Timer = 6000;
             StaticCharge_Timer = 10000;
@@ -74,7 +76,10 @@ public:
             Striders.clear();
         }
 
-        void EnterCombat(Unit* /*who*/) {}
+        void EnterCombat(Unit* /*who*/)
+        {
+            _EnterCombat();
+        }
 
         void JustSummoned(Creature* summon)
         {
@@ -91,6 +96,7 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
+            _JustDied();
             for (GuidList::const_iterator i = Striders.begin(); i != Striders.end(); ++i)
                 if (Creature* strider = Unit::GetCreature(*me, *i))
                     strider->DisappearAndDie();
