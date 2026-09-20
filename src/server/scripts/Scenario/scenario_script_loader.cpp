@@ -61,6 +61,10 @@ void AddSC_instance_crypt_of_forgotten_kings();
 void AddSC_fall_of_theramore_horde_scenario();
 void AddSC_instance_fall_of_theramore_horde();
 
+//< Fall of Theramore - Alliance
+void AddSC_fall_of_theramore_alliance_scenario();
+void AddSC_instance_fall_of_theramore_alliance();
+
 //< Dagger in the Dark
 void AddSC_dagger_in_the_dark();
 void AddSC_instance_dagger_in_the_dark();
@@ -247,6 +251,10 @@ void AddScenarioScripts()
     //< Fall of Theramore - Horde
     AddSC_fall_of_theramore_horde_scenario();
     AddSC_instance_fall_of_theramore_horde();
+
+    //< Fall of Theramore - Alliance
+    AddSC_fall_of_theramore_alliance_scenario();
+    AddSC_instance_fall_of_theramore_alliance();
 
     //< Dagger in the Dark
     AddSC_dagger_in_the_dark();
