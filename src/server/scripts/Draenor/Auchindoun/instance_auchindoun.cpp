@@ -92,31 +92,13 @@ public:
                         m_SoulTransportStartGuid = gameObject->GetGUID();
                         break;
                     case GameobjectSoulTransport1:
-                        if (instance != nullptr)
-                        {
-                            if (Creature* l_Teronogor = instance->GetCreature(GetGuidData(DataBossTeronogor)))
-                            {
-                                m_SoulTransport01Guid = gameObject->GetGUID();
-                            }
-                        }
+                        m_SoulTransport01Guid = gameObject->GetGUID();
                         break;
                     case GameobjectSoulTransport2:
-                        if (instance != nullptr)
-                        {
-                            if (Creature* l_Teronogor = instance->GetCreature(GetGuidData(DataBossTeronogor)))
-                            {
-                                m_SoulTransport02Guid = gameObject->GetGUID();
-                            }
-                        }
+                        m_SoulTransport02Guid = gameObject->GetGUID();
                         break;
                     case GameobjectSoulTransport3:
-                        if (instance != nullptr)
-                        {
-                            if (Creature* l_Teronogor = instance->GetCreature(GetGuidData(DataBossTeronogor)))
-                            {
-                                m_SoulTransport03Guid = gameObject->GetGUID();
-                            }
-                        }
+                        m_SoulTransport03Guid = gameObject->GetGUID();
                         break;
                     default:
                         break;
@@ -144,6 +126,13 @@ public:
                         break;
                     case CreatureAuchenaiDefenderUnique:
                         m_UniqueGuardGuid = creature->GetGUID();
+                        break;
+                    case CreatureAucheniDefender:
+                        // Retail data uses the ordinary defender template for the
+                        // intro speaker instead of the obsolete unique entry.
+                        if (creature->GetDistance2d(g_PositionTuulaniMovements[2].GetPositionX(),
+                                g_PositionTuulaniMovements[2].GetPositionY()) < 8.0f)
+                            m_UniqueGuardGuid = creature->GetGUID();
                         break;
                     case BossKaathar:
                         m_KaatharGuid = creature->GetGUID();

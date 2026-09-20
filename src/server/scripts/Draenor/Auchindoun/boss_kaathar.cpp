@@ -323,8 +323,8 @@ public:
                                     }
                                 }
 
-                                /// Twelve prisoners (cosmetic)
-                                for (int8 l_I = 0; l_I < 11; l_I++)
+                                /// Ten prisoners (cosmetic)
+                                for (int8 l_I = 0; l_I < 10; l_I++)
                                 {
                                     if (Creature* l_Prisoners = l_Tuulani->SummonCreature(CreatureAucheniDefender, g_PositionCorpsesNearNyomi[l_I], TEMPSUMMON_DEAD_DESPAWN))
                                     {
@@ -381,8 +381,8 @@ public:
                                 // Magus who control footmans                                  		
                                 l_Tuulani->SummonCreature(CreatureSargereiMagus, g_PositionMagusp_WhoControlFootmans, TEMPSUMMON_DEAD_DESPAWN);
 
-                                // Twelve prisoners (cosmetic)		
-                                for (int8 l_I = 0; l_I < 11; l_I++)
+                                // Ten prisoners (cosmetic)
+                                for (int8 l_I = 0; l_I < 10; l_I++)
                                 {
                                     if (Creature* l_Prisoner = l_Tuulani->SummonCreature(CreatureAucheniDefender, g_PositionCorpsesNearNyomi[l_I], TEMPSUMMON_DEAD_DESPAWN))
                                     {
@@ -1139,7 +1139,7 @@ void AddSC_boss_kaathar()
     //new auchindoun_kaathar_mob_spawn_fissures();                        ///< 543536
     //new auchindoun_kaathar_mob_hallowed_ground();                       ///< 537324
     new auchindoun_kaathar_mob_holy_shield();                           ///< 76071
-    //new auchindoun_kaathar_mob_nyami();                                 ///< 77810
+    new auchindoun_kaathar_mob_nyami();                                 ///< 77810
     //new auchindoun_kaathar_mob_teleport_players();                      ///< 3242352
     new auchindoun_kaathar_spell_consecrated_light();                   ///< 153006
     new auchindoun_kaathar_spell_fate();                                ///< 157465

@@ -130,7 +130,7 @@ Position const g_PositionThreeHostileArbitrerMagusSoulPriest[3] =
     { 1688.90f, 3070.54f, 35.139f, 1.441278f }
 };
 
-Position const g_PositionCorpsesNearNyomi[12] =
+Position const g_PositionCorpsesNearNyomi[10] =
 {
     { 1673.98f, 2971.02f, 35.151f, 4.399558f },
     { 1671.73f, 2971.23f, 35.200f, 4.517365f },
@@ -169,7 +169,7 @@ Position const g_PositionGuardsAndWardens[2] =
 Position const g_PositionDefenderBehindMiddleWallOfNyami[4] =
 {
     { 1696.44f, 2957.14f, 35.613f, 3.265362f },
-    { 2952.62f, 2952.80f, 35.613f, 3.120063f },
+    { 1692.62f, 2952.80f, 35.613f, 3.120063f },
     { 1695.18f, 2947.33f, 35.613f, 3.040738f },
     { 1692.70f, 2953.55f, 35.613f, 3.140484f }
 };
@@ -290,7 +290,7 @@ enum eAuchindounDatas
 
 enum eAuchindounBosses
 {
-    BossKaathar   = 86217,
+    BossKaathar   = 75839,
     BossNyami     = 76177,
     BossAzaakel   = 75927,
     BossTeronogor = 77734
@@ -519,9 +519,9 @@ enum eAuchindounObjects
     GameobjectPuddle             = 237542,
     GameobjectAuchindounWindow   = 233009,
     GameobjectSoulTransportStart = 231736,
-    GameobjectSoulTransport1     = 345366,
-    GameobjectSoulTransport2     = 345367,
-    GameobjectSoulTransport3     = 345368,
+    GameobjectSoulTransport1     = 231739,
+    GameobjectSoulTransport2     = 231740,
+    GameobjectSoulTransport3     = 231741,
     GameobjectHolyBarrierEntra   = 231679,
 	GameObjectAuchindounCrystal	 = 23524
 };

@@ -1421,7 +1421,7 @@ public:
     }
 };
 
-/// Soul Transport Object 02 - 345366
+/// Soul Transport Object 02 - 231739
 class auchindoun_teronogor_gameobject_soul_transporter_02 : public GameObjectScript
 {
 public:
@@ -1486,7 +1486,7 @@ public:
     */
 };
 
-/// Soul Transport Object 03 - 345367
+/// Soul Transport Object 03 - 231740
 class auchindoun_teronogor_gameobject_soul_transporter_03 : public GameObjectScript
 {
 public:
@@ -1546,7 +1546,7 @@ public:
     */
 };
 
-/// Soul Transport Object 04 - 345368
+/// Soul Transport Object 04 - 231741
 class auchindoun_teronogor_gameobject_soul_transporter_04 : public GameObjectScript
 {
 public:
@@ -1620,7 +1620,7 @@ void AddSC_boss_teronogor()
     new auchindoun_teronogor_spell_seed_of_malevolence();           ///< 156921
     new auchindoun_teronogor_spell_demonic_leap_jump();             ///< 157039
     new auchindoun_teronogor_gameobject_soul_transporter_01();      ///< 231736
-    //new auchindoun_teronogor_gameobject_soul_transporter_02();      ///< 345366
-    //new auchindoun_teronogor_gameobject_soul_transporter_03();      ///< 345367
-    //new auchindoun_teronogor_gameobject_soul_transporter_04();      ///< 345368
+    new auchindoun_teronogor_gameobject_soul_transporter_02();      ///< 231739
+    new auchindoun_teronogor_gameobject_soul_transporter_03();      ///< 231740
+    new auchindoun_teronogor_gameobject_soul_transporter_04();      ///< 231741
 }
