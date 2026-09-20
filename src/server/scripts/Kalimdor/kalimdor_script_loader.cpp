@@ -38,6 +38,8 @@ void AddSC_boss_warmaster_blackhorn();
 void AddSC_spine_of_deathwing();
 void AddSC_madness_of_deathwing();
 
+void AddSC_instance_dire_maul();              // Dire Maul
+
 void AddSC_instance_end_time(); // End Time
 void AddSC_end_time();
 void AddSC_boss_echo_of_tyrande();
@@ -211,6 +213,8 @@ void AddKalimdorScripts()
     AddSC_boss_warmaster_blackhorn();
     AddSC_spine_of_deathwing();
     AddSC_madness_of_deathwing();
+
+    AddSC_instance_dire_maul();              // Dire Maul
 
     AddSC_instance_end_time(); // End Time
     AddSC_end_time();
