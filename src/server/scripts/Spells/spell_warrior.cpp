@@ -74,7 +74,8 @@ enum WarriorArmsSpells
 
 enum WarriorFurySpells
 {
-    SPELL_WARRIOR_WAR_MACHINE_BUFF = 215562
+    SPELL_WARRIOR_WAR_MACHINE_BUFF = 215562,
+    SPELL_WARRIOR_T21_FURY_BLEED   = 253384
 };
 
 enum WarriorProtectionSpells
@@ -84,7 +85,8 @@ enum WarriorProtectionSpells
     SPELL_WARRIOR_HEAVY_REPERCUSSIONS   = 203177,
     SPELL_WARRIOR_SHIELD_SLAM_MARKER    = 224324,
     SPELL_WARRIOR_SHIELD_SLAM           = 23922,
-    SPELL_WARRIOR_SHIELD_BLOCK_AURA     = 132404
+    SPELL_WARRIOR_SHIELD_BLOCK_AURA     = 132404,
+    SPELL_WARRIOR_T21_STAND_YOUR_GROUND = 254339
 };
 }
 
@@ -607,6 +609,44 @@ class spell_warr_trauma : public AuraScript
     {
         DoCheckProc += AuraCheckProcFn(spell_warr_trauma::CheckProc);
         OnEffectProc += AuraEffectProcFn(spell_warr_trauma::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Item - Warrior T21 Fury 2P Bonus - 251880
+class spell_warr_t21_fury_2p : public AuraScript
+{
+    PrepareAuraScript(spell_warr_t21_fury_2p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_T21_FURY_BLEED });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0 &&
+            eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        SpellInfo const* bleed = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_T21_FURY_BLEED);
+        uint32 totalTicks = bleed ? bleed->GetMaxTicks() : 0;
+        if (!totalTicks)
+            return;
+
+        float damagePerTick = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(),
+            aurEff->GetAmount()) / totalTicks;
+        GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(), SPELL_WARRIOR_T21_FURY_BLEED,
+            &damagePerTick, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warr_t21_fury_2p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warr_t21_fury_2p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -1348,6 +1388,29 @@ class spell_warr_charge_check_cast : public SpellScriptLoader
         }
 };
 
+// Item - Warrior T21 Protection 2P Bonus - 251883
+class spell_warr_t21_prot_2p : public AuraScript
+{
+    PrepareAuraScript(spell_warr_t21_prot_2p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARRIOR_T21_STAND_YOUR_GROUND });
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        GetTarget()->CastSpell(GetTarget(), SPELL_WARRIOR_T21_STAND_YOUR_GROUND,
+            true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_warr_t21_prot_2p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 // Ravager cast - 152277 (Arms) / 228920 (Protection). Both client spells
 // contain a destination dummy and require the actual 227876 summon spell.
 class spell_warr_ravager_cast : public SpellScript
@@ -1918,6 +1981,7 @@ void AddSC_warrior_spell_scripts()
     RegisterAuraScript(spell_warr_precise_strikes);
     RegisterAuraScript(spell_warr_in_for_the_kill);
     RegisterAuraScript(spell_warr_trauma);
+    RegisterAuraScript(spell_warr_t21_fury_2p);
     RegisterAuraScript(spell_warr_corrupted_blood_of_zakajz);
     new spell_warr_shield_block();
     new spell_warr_heroic_leap();
@@ -1929,6 +1993,7 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_fervor_of_battle();
     RegisterAuraScript(spell_warr_ignore_pain);
     RegisterAuraScript(spell_war_t21_prot_4p);
+    RegisterAuraScript(spell_warr_t21_prot_2p);
     new spell_warr_intercept();
     new spell_warr_charge_check_cast();
     RegisterSpellScript(spell_warr_ravager_cast);
