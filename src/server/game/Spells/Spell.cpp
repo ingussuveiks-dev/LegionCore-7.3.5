@@ -6594,6 +6594,11 @@ SpellCastResult Spell::CheckCast(bool strict)
     
     if (Player* plr = m_caster->ToPlayer())
     {
+        // Battle Pet Challenge (Celestial Tournament) disallows both Revive
+        // Battle Pets and Battle Pet Bandages while preserving in-battle heals.
+        if (plr->HasAura(143999) && m_spellInfo->HasEffect(SPELL_EFFECT_HEAL_BATTLEPET_PCT))
+            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+
         // TODO: Disable items with clone effects on BG - bugged
         if (m_castFlags[1] & CAST_FLAG_EX_USE_TOY_SPELL)
         {

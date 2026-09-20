@@ -35,6 +35,11 @@ public:
             if (sBattlePetDataStore->GetPetBattleTrainerTeam(me->GetEntry()).empty())
                 return;
 
+            // Celestial Tournament opponents are scenario objectives, not
+            // ordinary quest-objective trainers.
+            if (me->GetMapId() == 1161)
+                isTrainer = true;
+
             for (auto const& v : sQuestDataStore->GetQuestObjectivesByType(QUEST_OBJECTIVE_PET_TRAINER_DEFEAT))
                 if (v.ObjectID == me->GetEntry())
                 {
@@ -52,7 +57,7 @@ public:
 
             if (isTrainer)
             {
-                bool check = false;
+                bool check = me->GetMapId() == 1161;
                 for (auto questID : questIDs)
                     if (player->GetQuestStatus(questID) == QUEST_STATUS_INCOMPLETE)
                     {

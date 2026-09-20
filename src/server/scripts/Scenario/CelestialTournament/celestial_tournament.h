@@ -19,21 +19,44 @@
 #ifndef DEF_CELESTIAL_TOURNAMENT
 #define DEF_CELESTIAL_TOURNAMENT
 
-enum Spells
+enum CelestialTournamentSpells
 {
+    SPELL_BATTLE_PET_CHALLENGE = 143999
 };
 
-enum Data
+enum CelestialTournamentData
 {
-    DATA_NONE,
+    DATA_CHAMPIONS_DEFEATED,
+    DATA_CELESTIALS_DEFEATED,
+    DATA_TOURNAMENT_COMPLETE,
 };
 
-enum eCreatures
+enum CelestialTournamentCreatures
 {
+    NPC_WRATHION                 = 71924,
+    NPC_LOREWALKER_CHO           = 71926,
+    NPC_CHEN_STORMSTOUT          = 71927,
+    NPC_SULLY_MCLEARY            = 71929,
+    NPC_SHADEMASTER_KIRYN        = 71930,
+    NPC_TARAN_ZHU                = 71931,
+    NPC_WISE_MARI                = 71932,
+    NPC_BLINGTRON_4000           = 71933,
+    NPC_DR_ION_GOLDBLOOM         = 71934,
+    NPC_XU_FU                    = 72009,
+    NPC_CHI_CHI                  = 72285,
+    NPC_ZAO                      = 72290,
+    NPC_YULA                     = 72291,
+    NPC_TOURNAMENT_KILL_CREDIT   = 73159,
 };
 
-enum eGameObects
+enum CelestialTournamentScenario
 {
+    SCENARIO_CELESTIAL_TOURNAMENT = 257,
+    CRITERIA_TREE_CHAMPIONS        = 33303,
+    CRITERIA_TREE_XU_FU            = 33332,
+    CRITERIA_TREE_YULA             = 33333,
+    CRITERIA_TREE_ZAO              = 33334,
+    CRITERIA_TREE_CHI_CHI          = 33335,
 };
 
 #endif
