@@ -34,6 +34,44 @@
 
 #include <set>
 
+namespace
+{
+enum ShamanTier21Spells
+{
+    SPELL_SHAMAN_EARTH_SHOCK              = 8042,
+    SPELL_SHAMAN_FROST_SHOCK              = 196840,
+    SPELL_SHAMAN_T21_ELEMENTAL_4P         = 251758,
+    SPELL_SHAMAN_T21_RESTORATION_2P       = 251764,
+    SPELL_SHAMAN_T21_EARTH_SHOCK_OVERLOAD = 252143,
+    SPELL_SHAMAN_T21_RAINFALL             = 252154,
+    SPELL_SHAMAN_T21_FROST_SHOCK_OVERLOAD = 256561
+};
+
+constexpr float HealingRainRadius = 10.0f;
+
+void GetTier21HealingRainTargets(Unit* caster, std::list<Player*>& targets)
+{
+    if (!caster || !caster->m_SummonSlot[17])
+        return;
+
+    Creature* rain = caster->GetMap()->GetCreature(caster->m_SummonSlot[17]);
+    if (!rain)
+        return;
+
+    rain->GetPlayerListInGrid(targets, HealingRainRadius);
+    targets.remove_if([caster](Player* player)
+    {
+        return !player || !player->IsAlive() || !caster->IsFriendlyTo(player) ||
+            player->IsFullHealth();
+    });
+
+    targets.sort([](Player const* left, Player const* right)
+    {
+        return left->GetHealthPct() < right->GetHealthPct();
+    });
+}
+}
+
 // Spirit Link - 98020 : triggered by 98017
 // Spirit Link Totem
 class spell_sha_spirit_link : public SpellScriptLoader
@@ -114,6 +152,19 @@ class spell_sha_healing_rain : public SpellScriptLoader
                                 tempsummon->DespawnOrUnsummon(500);
                         }
                         caster->m_SummonSlot[17] = summon->GetGUID();
+
+                        if (AuraEffect const* bonus = caster->GetAuraEffect(
+                            SPELL_SHAMAN_T21_RESTORATION_2P, EFFECT_0))
+                        {
+                            std::list<Player*> targets;
+                            GetTier21HealingRainTargets(caster, targets);
+                            targets.resize(std::min<size_t>(targets.size(),
+                                std::max<int32>(bonus->GetAmount(), 0)));
+
+                            for (Player* target : targets)
+                                caster->CastSpell(target, SPELL_SHAMAN_T21_RAINFALL,
+                                    true, nullptr, bonus);
+                        }
                     }
                 }
             }
@@ -2296,6 +2347,81 @@ class spell_sha_elem_blast : public SpellScript
     }
 };
 
+// Item - Shaman T21 Elemental 4P Bonus - 251758
+class spell_sha_t21_elemental_4p : public AuraScript
+{
+    PrepareAuraScript(spell_sha_t21_elemental_4p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_SHAMAN_T21_EARTH_SHOCK_OVERLOAD,
+            SPELL_SHAMAN_T21_FROST_SHOCK_OVERLOAD });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* procSpell = eventInfo.GetSpell();
+        if (!procSpell || !eventInfo.GetActionTarget())
+            return false;
+
+        uint32 spellId = procSpell->GetSpellInfo()->Id;
+        return spellId == SPELL_SHAMAN_EARTH_SHOCK || spellId == SPELL_SHAMAN_FROST_SHOCK;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        if (!roll_chance_i(aurEff->GetAmount()))
+            return;
+
+        uint32 overload = eventInfo.GetSpell()->GetSpellInfo()->Id == SPELL_SHAMAN_EARTH_SHOCK ?
+            SPELL_SHAMAN_T21_EARTH_SHOCK_OVERLOAD : SPELL_SHAMAN_T21_FROST_SHOCK_OVERLOAD;
+        GetTarget()->CastSpell(eventInfo.GetActionTarget(), overload, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_t21_elemental_4p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_sha_t21_elemental_4p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Item - Shaman T21 Restoration 4P Bonus - 251765
+class spell_sha_t21_restoration_4p : public AuraScript
+{
+    PrepareAuraScript(spell_sha_t21_restoration_4p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_SHAMAN_T21_RAINFALL });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetHealInfo() && eventInfo.GetHealInfo()->GetHeal() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        std::list<Player*> targets;
+        GetTier21HealingRainTargets(GetTarget(), targets);
+        if (targets.empty())
+            return;
+
+        float heal = CalculatePct(eventInfo.GetHealInfo()->GetHeal(), aurEff->GetAmount());
+        GetTarget()->CastCustomSpell(targets.front(), SPELL_SHAMAN_T21_RAINFALL,
+            &heal, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_sha_t21_restoration_4p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_sha_t21_restoration_4p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 void AddSC_shaman_spell_scripts()
 {
     new spell_sha_spirit_link();
@@ -2357,4 +2483,6 @@ void AddSC_shaman_spell_scripts()
     RegisterAuraScript(spell_sha_hex);
     //RegisterAuraScript(spell_sha_lightning_rod);
     RegisterSpellScript(spell_sha_elem_blast);
+    RegisterAuraScript(spell_sha_t21_elemental_4p);
+    RegisterAuraScript(spell_sha_t21_restoration_4p);
 }
