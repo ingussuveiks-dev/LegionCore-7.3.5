@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "the_botanica.h"
 
 enum eSays
 {
@@ -52,9 +53,9 @@ class boss_high_botanist_freywinn : public CreatureScript
     public:
         boss_high_botanist_freywinn() : CreatureScript("boss_high_botanist_freywinn") {}
 
-        struct boss_high_botanist_freywinnAI : public ScriptedAI
+        struct boss_high_botanist_freywinnAI : public BossAI
         {
-            boss_high_botanist_freywinnAI(Creature* creature) : ScriptedAI(creature) {}
+            boss_high_botanist_freywinnAI(Creature* creature) : BossAI(creature, DATA_HIGH_BOTANIST_FREYWINN) {}
 
             GuidList Adds_List;
 
@@ -66,6 +67,7 @@ class boss_high_botanist_freywinn : public CreatureScript
 
             void Reset() override
             {
+                _Reset();
                 Adds_List.clear();
 
                 SummonSeedling_Timer = 6000;
@@ -77,6 +79,7 @@ class boss_high_botanist_freywinn : public CreatureScript
 
             void EnterCombat(Unit* /*who*/) override
             {
+                _EnterCombat();
                 Talk(SAY_AGGRO);
             }
 
@@ -104,6 +107,7 @@ class boss_high_botanist_freywinn : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
+                _JustDied();
                 Talk(SAY_DEATH);
             }
 

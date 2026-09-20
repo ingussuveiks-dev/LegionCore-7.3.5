@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "the_botanica.h"
 
 enum eSays
 {
@@ -127,9 +128,9 @@ class boss_warp_splinter : public CreatureScript
 {
     public:
         boss_warp_splinter() : CreatureScript("boss_warp_splinter") {}
-        struct boss_warp_splinterAI : public ScriptedAI
+        struct boss_warp_splinterAI : public BossAI
         {
-            boss_warp_splinterAI(Creature* creature) : ScriptedAI(creature)
+            boss_warp_splinterAI(Creature* creature) : BossAI(creature, DATA_WARP_SPLINTER)
             {
                 Treant_Spawn_Pos_X = creature->GetPositionX();
                 Treant_Spawn_Pos_Y = creature->GetPositionY();
@@ -144,6 +145,7 @@ class boss_warp_splinter : public CreatureScript
 
             void Reset() override
             {
+                _Reset();
                 War_Stomp_Timer = urand(25000, 40000);
                 Summon_Treants_Timer = 45000;
                 Arcane_Volley_Timer = urand(8000, 20000);
@@ -153,6 +155,7 @@ class boss_warp_splinter : public CreatureScript
 
             void EnterCombat(Unit* /*who*/) override
             {
+                _EnterCombat();
                 Talk(SAY_AGGRO);
             }
 
@@ -163,6 +166,7 @@ class boss_warp_splinter : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
+                _JustDied();
                 Talk(SAY_DEATH);
             }
 

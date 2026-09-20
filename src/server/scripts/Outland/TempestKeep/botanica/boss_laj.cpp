@@ -25,6 +25,7 @@ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "the_botanica.h"
 
 enum eSpells
 {
@@ -55,9 +56,9 @@ class boss_laj : public CreatureScript
     public:
         boss_laj() : CreatureScript("boss_laj") {}
 
-        struct boss_lajAI : public ScriptedAI
+        struct boss_lajAI : public BossAI
         {
-            boss_lajAI(Creature* creature) : ScriptedAI(creature) {}
+            boss_lajAI(Creature* creature) : BossAI(creature, DATA_LAJ) {}
 
             bool CanSummon;
             uint32 Teleport_Timer;
@@ -67,6 +68,7 @@ class boss_laj : public CreatureScript
 
             void Reset() override
             {
+                _Reset();
                 me->SetDisplayId(MODEL_DEFAULT);
                 me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_SHADOW, true);
                 me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_ARCANE, false);
@@ -152,7 +154,15 @@ class boss_laj : public CreatureScript
                 CanSummon = false;
             }
 
-            void EnterCombat(Unit* /*who*/) override {}
+            void EnterCombat(Unit* /*who*/) override
+            {
+                _EnterCombat();
+            }
+
+            void JustDied(Unit* /*killer*/) override
+            {
+                _JustDied();
+            }
 
             void JustSummoned(Creature* summon)
             {
