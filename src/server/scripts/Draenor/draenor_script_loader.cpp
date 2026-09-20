@@ -13,6 +13,12 @@ void AddSC_boss_teronogor();
 void AddSC_boss_nyami();
 void AddSC_boss_kaathar();
 
+void AddSC_instance_grimrail_depot();
+void AddSC_grimrail_depot();
+void AddSC_boss_rocketspark_and_borka();
+void AddSC_boss_nitrogg_thundertower();
+void AddSC_boss_skylord_tovra();
+
 void AddSC_instance_blackrock_foundry(); // Raid: Blackrock Foundry
 
 void AddSC_instance_bloodmaul_slag_mines(); // Bloodmaul Slag Mines
@@ -83,6 +89,12 @@ void AddDraenorScripts()
     AddSC_boss_teronogor();
     AddSC_boss_nyami();
     AddSC_boss_kaathar();
+
+    AddSC_instance_grimrail_depot();
+    AddSC_grimrail_depot();
+    AddSC_boss_rocketspark_and_borka();
+    AddSC_boss_nitrogg_thundertower();
+    AddSC_boss_skylord_tovra();
 
     AddSC_instance_blackrock_foundry(); // Raid: Blackrock Foundry
 
