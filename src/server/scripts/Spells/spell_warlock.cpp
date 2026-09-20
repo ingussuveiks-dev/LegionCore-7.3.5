@@ -35,6 +35,14 @@
 #include "CellImpl.h"
 #include "Packets/SpellPackets.h"
 
+namespace
+{
+enum WarlockTier21Spells
+{
+    SPELL_WARLOCK_T21_FLAMES_OF_ARGUS = 253097
+};
+}
+
 // Burning Rush - 111400
 class spell_warl_burning_rush : public SpellScriptLoader
 {
@@ -2915,6 +2923,44 @@ class spell_warl_incinerate : public SpellScript
     }
 };
 
+// Item - Warlock T21 Destruction 4P Bonus - 251855
+class spell_warl_t21_destruction_4p : public AuraScript
+{
+    PrepareAuraScript(spell_warl_t21_destruction_4p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARLOCK_T21_FLAMES_OF_ARGUS });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        return eventInfo.GetDamageInfo() && eventInfo.GetDamageInfo()->GetDamage() > 0 &&
+            eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        SpellInfo const* flames = sSpellMgr->GetSpellInfo(SPELL_WARLOCK_T21_FLAMES_OF_ARGUS);
+        uint32 totalTicks = flames ? flames->GetMaxTicks() : 0;
+        if (!totalTicks)
+            return;
+
+        float damagePerTick = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(),
+            aurEff->GetAmount()) / totalTicks;
+        GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(), SPELL_WARLOCK_T21_FLAMES_OF_ARGUS,
+            &damagePerTick, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warl_t21_destruction_4p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warl_t21_destruction_4p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 void AddSC_warlock_spell_scripts()
 {
     new spell_warl_burning_rush();
@@ -2982,5 +3028,6 @@ void AddSC_warlock_spell_scripts()
     RegisterAuraScript(spell_warl_eradication);
     RegisterSpellScript(spell_warl_chaos_bolt);
     RegisterAuraScript(spell_warl_channel_demonfire);
+    RegisterAuraScript(spell_warl_t21_destruction_4p);
     RegisterCreatureAI(npc_warl_dimensional_rift);
 }
