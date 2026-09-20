@@ -1,300 +1,904 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* This file is part of the Legends of Azeroth Pandaria Project. See THANKS file for Copyright information
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the
+* Free Software Foundation; either version 2 of the License, or (at your
+* option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "troves_of_the_thunder_king.h"
 #include "ScriptedCreature.h"
+#include "ScriptMgr.h"
+#include "ScriptedGossip.h"
+#include "ScriptedEscortAI.h"
+#include "CreatureAI.h"
+#include "MoveSplineInit.h"
+#include "SpellScript.h"
+#include "Vehicle.h"
+#include "LFGMgr.h"
+#include "AreaTriggerAI.h"
+#include <type_traits>
 
-class npc_taoshi : public CreatureScript
+namespace
+{
+    void RemoveChanneledCast(Creature* creature, ObjectGuid const& targetGuid)
+    {
+        creature->SetReactState(REACT_AGGRESSIVE);
+        creature->InterruptNonMeleeSpells(true);
+        if (Unit* target = ObjectAccessor::GetUnit(*creature, targetGuid))
+            creature->AI()->AttackStart(target);
+    }
+}
+
+template <class AI>
+class creature_script : public CreatureScript
 {
 public:
-    npc_taoshi() : CreatureScript("npc_taoshi") { }
+    explicit creature_script(char const* name) : CreatureScript(name) { }
+    CreatureAI* GetAI(Creature* creature) const override { return new AI(creature); }
+};
 
-    bool OnGossipHello(Player* player, Creature* creature) override
+template <class S>
+class spell_script : public SpellScriptLoader
+{
+public:
+    explicit spell_script(char const* name) : SpellScriptLoader(name) { }
+    SpellScript* GetSpellScript() const override { return new S(); }
+};
+
+template <class A>
+class aura_script : public SpellScriptLoader
+{
+public:
+    explicit aura_script(char const* name) : SpellScriptLoader(name) { }
+    AuraScript* GetAuraScript() const override { return new A(); }
+};
+
+class IAreaTriggerAura
+{
+public:
+    virtual ~IAreaTriggerAura() = default;
+    void Initialize(AreaTrigger* areaTrigger) { _areaTrigger = areaTrigger; }
+    bool CanTrigger(WorldObject* object) { return CheckTriggering(object); }
+    void Apply(WorldObject* object) { OnTriggeringApply(object); }
+    void Remove(WorldObject* object) { OnTriggeringRemove(object); }
+
+protected:
+    Unit* GetCaster() const { return _areaTrigger ? _areaTrigger->GetCaster() : nullptr; }
+    virtual bool CheckTriggering(WorldObject* triggering) = 0;
+    virtual void OnTriggeringApply(WorldObject* triggering) = 0;
+    virtual void OnTriggeringRemove(WorldObject* triggering) = 0;
+
+private:
+    AreaTrigger* _areaTrigger = nullptr;
+};
+
+template <class Handler>
+class atrigger_script : public AreaTriggerScript
+{
+public:
+    explicit atrigger_script(char const* name) : AreaTriggerScript(name) { }
+
+    struct AI : AreaTriggerAI
     {
-        if (InstanceScript* instance = creature->GetInstanceScript())
+        explicit AI(AreaTrigger* areaTrigger) : AreaTriggerAI(areaTrigger)
         {
-            if (instance->GetData(DATA_EVENT_STARTED) == NOT_STARTED)
-                player->ADD_GOSSIP_ITEM_DB(15571, 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-            else
-                player->ADD_GOSSIP_ITEM_DB(15572, 1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-                
-            player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            handler.Initialize(areaTrigger);
+        }
+
+        void OnUnitEnter(Unit* unit) override
+        {
+            if (handler.CanTrigger(unit))
+                handler.Apply(unit);
+        }
+
+        void OnUnitExit(Unit* unit) override
+        {
+            if (handler.CanTrigger(unit))
+                handler.Remove(unit);
+        }
+
+        Handler handler;
+    };
+
+    AreaTriggerAI* GetAI(AreaTrigger* areaTrigger) const override
+    {
+        return new AI(areaTrigger);
+    }
+};
+
+enum TrovesTargetPriority
+{
+    PRIORITY_VICTIM,
+    PRIORITY_CHANNELED,
+    PRIORITY_SELF,
+};
+
+struct customCreatureAI : public ScriptedAI
+{
+    explicit customCreatureAI(Creature* creature) : ScriptedAI(creature) { }
+
+    void ExecuteTargetEvent(uint32 spellId, uint32 repeat, uint32 eventId, uint32 currentEventId,
+        TrovesTargetPriority priority = PRIORITY_VICTIM)
+    {
+        if (currentEventId != eventId)
+            return;
+
+        Unit* target = priority == PRIORITY_SELF ? me : me->getVictim();
+        if (target)
+            DoCast(target, spellId);
+
+        if (repeat)
+            events.ScheduleEvent(eventId, repeat);
+    }
+
+protected:
+    EventMap events;
+};
+
+enum Spells
+{
+    SPELL_LIGHTNING_ATTRACTOR          = 137114,
+    SPELL_LIGHTNING_SURGE              = 139804,
+    SPELL_STONE_SMASH                  = 139777,
+    SPELL_LIMITED_TIME                 = 140000, // 5m
+    SPELL_COMPLETE_SCENARIO_SCREEN_EFF = 140005,
+    SPELL_SENTRY_BEAM                  = 139810,
+    SPELL_SENTRY                       = 139808, // Areatrigger
+    SPELL_SUMM_SENTRY_BEAM_BUNNY       = 139807,
+    SPELL_RUNE_TRAP                    = 139798,
+    SPELL_SPOTTED                      = 138954,
+    SPELL_SPEED                        = 132959,
+    SPELL_RING_OF_FROST                = 15063,
+    SPELL_ARCANE_BOLT                  = 13748,
+    SPELL_ARCANE_EXPLOSION             = 51820,
+    SPELL_THROVES_OF_THE_THUNDER_KING  = 137275,
+    SPELL_BATTLE_SHOUT                 = 32064,
+    SPELL_MORTAL_STRIKE                = 13737,
+    SPELL_IMPALING_PULL                = 82742,
+    SPELL_MIGHTY_STOMP                 = 136855,
+    SPELL_MIGHTY_CRASH                 = 136844,
+    SPELL_ETERNAL_SLUMBER              = 140011,
+    SPELL_CRUSH_ARMOR                  = 127157,
+    SPELL_LEAPING_RUSH                 = 131942,
+    SPELL_SINISTER_STRIKE              = 129040,
+    SPELL_SUNDER_ARMOR                 = 76622,
+    SPELL_DEVASTATE                    = 78660,
+};
+
+enum Events
+{
+    EVENT_RING_OF_FROST,
+    EVENT_ARCANE_BOLT,
+    EVENT_ARCANE_EXPLOSION,
+    EVENT_BATTLE_SHOUT,
+    EVENT_MORTAL_STRIKE,
+    EVENT_MIGHTY_STOMP,
+    EVENT_MIGHTY_CRASH,
+    EVENT_ETERNAL_SLUMBER,
+    EVENT_CRUSH_ARMOR,
+    EVENT_LEAPING_RUSH,
+    EVENT_SINISTER_STRIKE,
+    EVENT_SUNDER_ARMOR,
+    EVENT_DEVASTATE,
+};
+
+// Lightning Pillar Master 70409
+struct npc_lightning_pillar_master : public ScriptedAI
+{
+    npc_lightning_pillar_master(Creature* creature) : ScriptedAI(creature) { }
+
+    float x, y;
+    TaskScheduler scheduler;
+
+    void InitializeAI() override
+    {
+        scheduler
+            .Schedule(Milliseconds(urand(500,5000)), [this](TaskContext context)
+        {
+            DoCast(me, SPELL_LIGHTNING_SURGE);
+            context.Repeat(Milliseconds(urand(6000, 10000)));
+        });
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// Stone Sentinel 70324
+struct npc_stone_sentinel : public ScriptedAI
+{
+    npc_stone_sentinel(Creature* creature) : ScriptedAI(creature) { }
+
+    TaskScheduler scheduler;
+
+    void InitializeAI() override
+    {
+        scheduler
+            .Schedule(Milliseconds(1500), [this](TaskContext context)
+        {
+            if (Player* itr = me->FindNearestPlayer(20.0f))
+            {
+                if (me->HasInArc(M_PI / 3, itr))
+                {
+                    DoCast(me, SPELL_STONE_SMASH);
+                    context.Repeat(Milliseconds(8000));
+                    return;
+                }
+            }
+
+            context.Repeat(Milliseconds(1000));
+        });
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// Lightning Pillar Master 70413
+struct npc_thunder_king_treasure_sentry_totem : public ScriptedAI
+{
+    npc_thunder_king_treasure_sentry_totem(Creature* creature) : ScriptedAI(creature) { }
+
+    TaskScheduler scheduler;
+    ObjectGuid targetGUID;
+
+    void InitializeAI() override
+    {
+        scheduler
+            .Schedule(Milliseconds(1500), [this](TaskContext context)
+        {
+            DoCast(me, SPELL_SENTRY, true);
+        });
+    }
+
+    void SetGUID(ObjectGuid const& guid, int32 /*type*/) override
+    {
+        targetGUID = guid;
+    }
+
+    ObjectGuid GetGUID(int32 /*type*/) override
+    {
+        return targetGUID;
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        DoCast(summon, SPELL_SENTRY_BEAM);
+        summon->ClearUnitState(UNIT_STATE_CASTING);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// Statis Rune 70406
+struct npc_thunder_king_treasure_stasis_rune : public ScriptedAI
+{
+    npc_thunder_king_treasure_stasis_rune(Creature* creature) : ScriptedAI(creature) { }
+
+    TaskScheduler scheduler;
+    bool hasTriggered;
+
+    void InitializeAI() override
+    {
+        me->SetDisplayId(me->GetCreatureTemplate()->Modelid[0]);
+
+        hasTriggered = false;
+
+        scheduler
+            .Schedule(Seconds(1), [this](TaskContext context)
+        {
+            if (me->FindNearestPlayer(1.5f) && !hasTriggered)
+                DoCast(me, SPELL_RUNE_TRAP, true);
+
+            context.Repeat(Seconds(1));
+        });
+    }
+
+    void DoAction(int32 actionId) override
+    {
+        hasTriggered = true;
+
+        scheduler
+            .Schedule(Seconds(6), [this](TaskContext context)
+        {
+            hasTriggered = false;
+        });
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// Speed Rune 70405
+struct npc_thunder_king_treasure_speed_rune : public ScriptedAI
+{
+    npc_thunder_king_treasure_speed_rune(Creature* creature) : ScriptedAI(creature) { }
+
+    TaskScheduler scheduler;
+
+    void InitializeAI() override
+    {
+        me->SetDisplayId(me->GetCreatureTemplate()->Modelid[0]);
+
+        scheduler
+            .Schedule(Seconds(1), [this](TaskContext context)
+        {
+            if (Player* target = me->FindNearestPlayer(1.0f))
+                if (!target->HasAura(SPELL_SPEED))
+                    target->CastSpell(target, SPELL_SPEED, true);
+
+            context.Repeat(Seconds(1));
+        });
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// Zandalari Arcweaver 70401
+struct npc_thunder_king_treasure_zandalari_arcweaver : public customCreatureAI
+{
+    npc_thunder_king_treasure_zandalari_arcweaver(Creature* creature) : customCreatureAI(creature) { }
+
+    void Reset() override
+    {
+        events.Reset();
+    }
+
+    void EnterCombat(Unit* /*who*/) override
+    {
+        events.ScheduleEvent(EVENT_ARCANE_BOLT, urand(3.5 * IN_MILLISECONDS, 5 * IN_MILLISECONDS));
+        events.ScheduleEvent(EVENT_ARCANE_EXPLOSION, urand(8 * IN_MILLISECONDS, 12 * IN_MILLISECONDS));
+        events.ScheduleEvent(EVENT_RING_OF_FROST, 1 * IN_MILLISECONDS);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = events.ExecuteEvent())
+        {
+            ExecuteTargetEvent(SPELL_ARCANE_BOLT, urand(3.5 * IN_MILLISECONDS, 5 * IN_MILLISECONDS), EVENT_ARCANE_BOLT, eventId);
+            ExecuteTargetEvent(SPELL_RING_OF_FROST, 10 * IN_MILLISECONDS, EVENT_RING_OF_FROST, eventId, PRIORITY_SELF);
+            ExecuteTargetEvent(SPELL_ARCANE_EXPLOSION, urand(8 * IN_MILLISECONDS, 12 * IN_MILLISECONDS), EVENT_ARCANE_EXPLOSION, eventId, PRIORITY_SELF);
+            break;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+// Sentry Beam Bunny 70412
+struct npc_thunder_king_treasure_sentry_beam_bunny : public ScriptedAI
+{
+    npc_thunder_king_treasure_sentry_beam_bunny(Creature* creature) : ScriptedAI(creature) { }
+
+    TaskScheduler scheduler;
+    ObjectGuid targetGUID;
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (summoner->ToCreature())
+            targetGUID = summoner->ToCreature()->AI()->GetGUID();
+
+        scheduler
+            .Schedule(Milliseconds(500), [this](TaskContext context)
+        {
+            if (Unit* target = ObjectAccessor::GetUnit(*me, targetGUID))
+            {
+                me->GetMotionMaster()->MoveFollow(target, 0.0f, me->GetAngle(target));
+
+                if (me->GetExactDist2d(target) < 1.5f && !target->HasAura(SPELL_SPOTTED))
+                {
+                    me->AddAura(SPELL_SPOTTED, target);
+
+                    // Call Help Here!
+                    std::list<Creature*> guardianList;
+                    GetCreatureListWithEntryInGrid(guardianList, me, NPC_ZANDALARI_ARCWEAVER, 70.0f);
+                    GetCreatureListWithEntryInGrid(guardianList, me, NPC_STONE_WATCHER, 70.0f);
+                    GetCreatureListWithEntryInGrid(guardianList, me, NPC_ZANDALARI_VENOMBLADE, 70.0f);
+
+                    for (auto&& itr : guardianList)
+                        RemoveChanneledCast(itr, target->GetGUID());
+                }
+            }
+            context.Repeat(Milliseconds(500));
+        });
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        scheduler.Update(diff);
+    }
+};
+
+// God-Hulk Gulkan 70400, 70326
+struct npc_god_hulk_gulkan : public customCreatureAI
+{
+    npc_god_hulk_gulkan(Creature* creature) : customCreatureAI(creature) { }
+
+    void Reset() override
+    {
+        events.Reset();
+    }
+
+    void EnterCombat(Unit* /*who*/) override
+    {
+        events.ScheduleEvent(EVENT_MIGHTY_STOMP, urand(10 * IN_MILLISECONDS, 12 * IN_MILLISECONDS));
+        events.ScheduleEvent(EVENT_MIGHTY_CRASH, 7.5 * IN_MILLISECONDS);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = events.ExecuteEvent())
+        {
+            ExecuteTargetEvent(SPELL_MIGHTY_CRASH, urand(9 * IN_MILLISECONDS, 15.5 * IN_MILLISECONDS), EVENT_MIGHTY_CRASH, eventId, PRIORITY_CHANNELED);
+            ExecuteTargetEvent(SPELL_MIGHTY_STOMP, 12 * IN_MILLISECONDS, EVENT_MIGHTY_STOMP, eventId, PRIORITY_SELF);
+            break;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+// Zandalari Venomblade 70328
+struct npc_zandalari_venomblade : public customCreatureAI
+{
+    npc_zandalari_venomblade(Creature* creature) : customCreatureAI(creature) { }
+
+    void Reset() override
+    {
+        events.Reset();
+    }
+
+    void EnterCombat(Unit* who) override
+    {
+        DoCast(who, SPELL_IMPALING_PULL, true);
+        events.ScheduleEvent(EVENT_BATTLE_SHOUT, urand(10 * IN_MILLISECONDS, 12 * IN_MILLISECONDS));
+        events.ScheduleEvent(EVENT_MORTAL_STRIKE, 7.5 * IN_MILLISECONDS);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = events.ExecuteEvent())
+        {
+            ExecuteTargetEvent(SPELL_MORTAL_STRIKE, urand(5.5 * IN_MILLISECONDS, 10 * IN_MILLISECONDS), EVENT_MIGHTY_CRASH, eventId);
+            ExecuteTargetEvent(SPELL_BATTLE_SHOUT, 12 * IN_MILLISECONDS, EVENT_BATTLE_SHOUT, eventId, PRIORITY_SELF);
+            break;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+// Shan'ze Bloodseeker 69431
+struct npc_shanze_bloodseeker : public customCreatureAI
+{
+    explicit npc_shanze_bloodseeker(Creature* creature) : customCreatureAI(creature) { }
+
+    void Reset() override
+    {
+        events.Reset();
+    }
+
+    void EnterCombat(Unit* /*who*/) override
+    {
+        events.ScheduleEvent(EVENT_SINISTER_STRIKE, 4500);
+        events.ScheduleEvent(EVENT_DEVASTATE, urand(8500, 12000));
+        events.ScheduleEvent(EVENT_SUNDER_ARMOR, 6000);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = events.ExecuteEvent())
+        {
+            ExecuteTargetEvent(SPELL_SINISTER_STRIKE, urand(8500, 12000), EVENT_SINISTER_STRIKE, eventId);
+            ExecuteTargetEvent(SPELL_SUNDER_ARMOR, 12000, EVENT_SUNDER_ARMOR, eventId);
+            ExecuteTargetEvent(SPELL_DEVASTATE, 10000, EVENT_DEVASTATE, eventId);
+            break;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+// Taoshi  70320
+class npc_thunder_king_treasure_taoshi : public CreatureScript
+{
+    public:
+        npc_thunder_king_treasure_taoshi() : CreatureScript("npc_thunder_king_treasure_taoshi") { }
+
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+        {
+            player->PlayerTalkClass->ClearMenus();
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 1 && player->GetInstanceScript())
+            {
+                player->GetInstanceScript()->SetData(DATA_SPEAK_WITH_TAOSHI, DONE);
+                creature->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+
+                // Timer
+                player->CastSpell(player, SPELL_THROVES_OF_THE_THUNDER_KING, true);
+                creature->CastSpell(player, SPELL_LIMITED_TIME, true);
+            }
+
+            player->CLOSE_GOSSIP_MENU();
 
             return true;
         }
-        return false;
-    }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
-    {
-        InstanceScript* instance = creature->GetInstanceScript();
-        if (!action || !instance)
-            return false;
-
-        if (action == GOSSIP_ACTION_INFO_DEF + 1)
+        bool OnGossipHello(Player* player, Creature* creature) override
         {
-            instance->SetData(DATA_EVENT_STARTED, DONE);
-            player->CastSpell(player, SPELL_TIMED_RUN_STARTED_SPELL); // REQ item 94222 - Key to the Palace of Lei Shen
-            player->AddAura(SPELL_LIMITED_TIME, player);
-            player->AddAura(SPELL_TROVES_OF_THE_THUNDER_KING, player);
-            creature->AI()->DoAction(ACTION_1);
+            if (creature->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+                player->PrepareQuestMenu(creature->GetGUID());
+
+            player->ADD_GOSSIP_ITEM_DB(player->GetDefaultGossipMenuForSource(creature), 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+            player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            return true;
         }
+};
 
-        if (action == GOSSIP_ACTION_INFO_DEF + 2)
-            player->TeleportTo(1064, 6889.38f, 5517.79f, 2.08655f, 2.407245f); //< via 140010 but core dont support this :(
+// Taoshi 70316
+class npc_thunder_king_treasure_taoshi_queue : public CreatureScript
+{
+    public:
+        npc_thunder_king_treasure_taoshi_queue() : CreatureScript("npc_thunder_king_treasure_taoshi_queue") { }
 
-        creature->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        player->CLOSE_GOSSIP_MENU();
-
-        return true;
-    }
-
-    struct npc_taoshiAI : ScriptedAI
-    {
-        npc_taoshiAI(Creature* creature) : ScriptedAI(creature)
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
         {
-            instance = creature->GetInstanceScript();
-        }
+            player->PlayerTalkClass->ClearMenus();
 
-        void Reset() override
-        {
-            events.Reset();
-        }
-
-        void DoAction(int32 const action) override
-        {
-            switch (action)
+            if (action == GOSSIP_ACTION_INFO_DEF + 1)
             {
-                case ACTION_1:
-                    events.RescheduleEvent(EVENT_1, 1 * IN_MILLISECONDS);
-                    break;
-                default:
-                    break;
+                lfg::LfgDungeonSet scenario = { 620 };
+                sLFGMgr->JoinLfg(player, lfg::PLAYER_ROLE_DAMAGE, scenario);
+                player->DestroyItemCount(94222, 1, true);
+            }
+
+            player->CLOSE_GOSSIP_MENU();
+
+            return true;
+        }
+
+        bool OnGossipHello(Player* player, Creature* creature) override
+        {
+            if (creature->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+                player->PrepareQuestMenu(creature->GetGUID());
+
+            if (player->HasItemCount(94222) && !player->GetGroup() && !sLFGMgr->GetQueueId(player->GetGUID()))
+                player->ADD_GOSSIP_ITEM_DB(player->GetDefaultGossipMenuForSource(creature), 0, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+            player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            return true;
+        }
+};
+
+// Stone Watcher 70327
+struct npc_thunder_king_treasure_stone_watcher : public customCreatureAI
+{
+    npc_thunder_king_treasure_stone_watcher(Creature* creature) : customCreatureAI(creature) { }
+
+    void Reset() override
+    {
+        me->SetReactState(REACT_PASSIVE);
+        DoCast(me, SPELL_ETERNAL_SLUMBER, true);
+        events.Reset();
+    }
+
+    void EnterCombat(Unit* who) override
+    {
+        me->SetReactState(REACT_AGGRESSIVE);
+        me->RemoveAurasDueToSpell(SPELL_ETERNAL_SLUMBER);
+        DoCast(who, SPELL_LEAPING_RUSH, true);
+        events.ScheduleEvent(EVENT_CRUSH_ARMOR, urand(2.5 * IN_MILLISECONDS, 8 * IN_MILLISECONDS));
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (!UpdateVictim())
+            return;
+
+        events.Update(diff);
+
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+
+        while (uint32 eventId = events.ExecuteEvent())
+        {
+            ExecuteTargetEvent(SPELL_CRUSH_ARMOR, urand(5.5 * IN_MILLISECONDS, 10 * IN_MILLISECONDS), EVENT_CRUSH_ARMOR, eventId);
+            break;
+        }
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+// Tenwu of the Red Smoke 70321
+class npc_thunder_king_treasure_tenwu_of_the_red_smoke : public CreatureScript
+{
+    public:
+        npc_thunder_king_treasure_tenwu_of_the_red_smoke() : CreatureScript("npc_thunder_king_treasure_tenwu_of_the_red_smoke") { }
+
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+        {
+            player->PlayerTalkClass->ClearMenus();
+
+            if (action == GOSSIP_ACTION_INFO_DEF + 1)
+                player->CastSpell(player, SPELL_TENWU_EXIT_TRIGGERED_CREDIT, true);
+
+            player->CLOSE_GOSSIP_MENU();
+
+            return true;
+        }
+
+        bool OnGossipHello(Player* player, Creature* creature) override
+        {
+            player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I'm ready to leave. Let's get out of here.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1); // no matching gossip option exists in the sniff
+            player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            return true;
+        }
+};
+
+// Lever 218885, 218886
+class go_thunder_king_treasure_lever : public GameObjectScript
+{
+    public:
+        go_thunder_king_treasure_lever() : GameObjectScript("go_thunder_king_treasure_lever") { }
+
+        void OnGameObjectStateChanged(GameObject* go, uint32 state) override
+        {
+            if (state == GO_STATE_ACTIVE && go->GetInstanceScript())
+            {
+                switch (go->GetEntry())
+                {
+                    case GO_LEVER_1:
+                        go->GetInstanceScript()->SetData(DATA_OPEN_FIRST_DOOR_PACK, DONE);
+                        break;
+                    case GO_LEVER_2:
+                        go->GetInstanceScript()->SetData(DATA_OPEN_SECOND_DOOR_PACK, DONE);
+                        break;
+                }
+
+                go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_INTERACT_COND);
             }
         }
+};
 
-        void UpdateAI(uint32 diff) override
+// Mogu Treasure Chest 218757, 218772
+class go_thunder_king_treasure_mogu_chest : public GameObjectScript
+{
+    public:
+        go_thunder_king_treasure_mogu_chest() : GameObjectScript("go_thunder_king_treasure_mogu_chest")
         {
-            events.Update(diff);
+            chestGUIDs.clear();
+        }
 
-            if (uint32 eventId = events.ExecuteEvent())
+        void OnLootStateChanged(GameObject* go, uint32 state, Unit* unit) override
+        {
+            if (state == GO_ACTIVATED && unit)
             {
-                switch (eventId)
+                if (std::find(chestGUIDs.begin(), chestGUIDs.end(), go->GetGUID()) != chestGUIDs.end())
+                    return;
+
+                chestGUIDs.push_back(go->GetGUID());
+
+                if (unit->GetInstanceScript())
                 {
-                    case EVENT_1:
-                        events.RescheduleEvent(EVENT_2, 5 * MINUTE * IN_MILLISECONDS);
-                        break;
-                    case EVENT_2:
-                    {
-                        events.RescheduleEvent(EVENT_3, 2 * IN_MILLISECONDS);
-                        Map::PlayerList const& players = me->GetMap()->GetPlayers();
-                        if (Player* player = players.begin()->getSource())
-                        {
-                            player->CastSpell(player, SPELL_SCENARIO_COMPLETION_CREDIT);
-                            player->CastSpell(player, SPELL_SCENARIO_COMPLETION_BLACKOUT_AURA);
-                        }
-                        Talk(1);
-                        break;
-                    }
-                    case EVENT_3:
-                    {
-                        events.RescheduleEvent(EVENT_4, 5 * IN_MILLISECONDS);
-                        Map::PlayerList const& players = me->GetMap()->GetPlayers();
-                        if (Player* player = players.begin()->getSource())
-                            player->NearTeleportTo(-459.669f, 1078.73f, 133.647f, 1.515818f);
-                        break;
-                    }
-                    case EVENT_4:
-                        Talk(0);
-                        break;
-                    default:
-                        break;
+                    unit->GetInstanceScript()->SetData(CHEST_DATA, go->GetEntry() == GO_MOGU_GOLDEN_TREASURE_CHEST ? 10 : 5);
+
+                    if (go->GetEntry() == GO_MOGU_GOLDEN_TREASURE_CHEST)
+                        unit->GetInstanceScript()->SetData(GOLDEN_CHEST_DATA, 1);
                 }
             }
         }
 
-    private:
-        InstanceScript* instance;
-        EventMap events;
-    };
+        private:
+            std::list<ObjectGuid> chestGUIDs;
+};
 
-    CreatureAI* GetAI(Creature* creature) const override
+// Rune Trap 139798
+class spell_thunder_king_treasure_rune_trap : public AuraScript
+{
+    PrepareAuraScript(spell_thunder_king_treasure_rune_trap);
+
+    void HandleOnApply(AuraEffect const* /*aureff*/, AuraEffectHandleModes /*mode*/)
     {
-        return new npc_taoshiAI(creature);
+        if (GetCaster() && GetCaster()->ToCreature())
+            GetCaster()->ToCreature()->AI()->DoAction(1);
+    }
+
+    void Register() override
+    {
+        OnEffectApply += AuraEffectApplyFn(spell_thunder_king_treasure_rune_trap::HandleOnApply, EFFECT_0, SPELL_AURA_MOD_STUN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
-class npc_lighting_pilar_master_bunny : public CreatureScript
+// Limited Time 140000
+class spell_thunder_king_treasure_limited_time : public AuraScript
 {
-public:
-    npc_lighting_pilar_master_bunny() : CreatureScript("npc_lighting_pilar_master_bunny") { }
+    PrepareAuraScript(spell_thunder_king_treasure_limited_time);
 
-    struct npc_lighting_pilar_master_bunnyAI : ScriptedAI
+    void HandleOnRemove(AuraEffect const* aureff, AuraEffectHandleModes /*mode*/)
     {
-        npc_lighting_pilar_master_bunnyAI(Creature* creature) : ScriptedAI(creature) { }
+        if (aureff->GetBase()->GetDuration() > 0 && GetOwner() && GetOwner()->ToUnit() && GetOwner()->ToUnit()->GetInstanceScript())
+            GetOwner()->ToUnit()->GetInstanceScript()->SetData(TIME_DATA, aureff->GetBase()->GetDuration());
 
-        void Reset() override
+        if (Unit* owner = GetOwner()->ToUnit())
         {
-            events.Reset();
+            owner->RemoveAurasDueToSpell(SPELL_THROVES_OF_THE_THUNDER_KING);
+            owner->CastSpell(owner, SPELL_COMPLETE_SCENARIO_SCREEN_EFF, true);
         }
+    }
 
-        void DoAction(int32 const action) override
-        {
-            switch (action)
-            {
-                case ACTION_1:
-                    events.RescheduleEvent(EVENT_1, 2 * IN_MILLISECONDS);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            events.Update(diff);
-
-            if (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    case EVENT_1:
-                        events.RescheduleEvent(EVENT_1, 15 * IN_MILLISECONDS);
-                        me->AddAura(SPELL_LIGHTING_SURGE_2, me);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-    private:
-        EventMap events;
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
+    void HandleOnApply(AuraEffect const* aureff, AuraEffectHandleModes /*mode*/)
     {
-        return new npc_lighting_pilar_master_bunnyAI(creature);
+        if (GetOwner() && GetOwner()->ToUnit() && GetOwner()->ToUnit()->GetInstanceScript() && GetOwner()->ToUnit()->GetInstanceScript()->GetData(TIME_DATA) > 0)
+            SetDuration(GetOwner()->ToUnit()->GetInstanceScript()->GetData(TIME_DATA));
+    }
+
+    void Register() override
+    {
+        OnEffectRemove += AuraEffectRemoveFn(spell_thunder_king_treasure_limited_time::HandleOnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectApply += AuraEffectApplyFn(spell_thunder_king_treasure_limited_time::HandleOnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
-class npc_stone_sentiel : public CreatureScript
+// Scenario Completion Blackout Area 140005
+class spell_thunder_king_treasure_scenario_completion_blackout : public AuraScript
 {
-public:
-    npc_stone_sentiel() : CreatureScript("npc_stone_sentiel") { }
+    PrepareAuraScript(spell_thunder_king_treasure_scenario_completion_blackout);
 
-    struct npc_stone_sentielAI : ScriptedAI
+    void HandleOnRemove(AuraEffect const* /*aureff*/, AuraEffectHandleModes /*mode*/)
     {
-        npc_stone_sentielAI(Creature* creature) : ScriptedAI(creature) { }
-
-        void Reset() override
+        if (Player* owner = GetOwner()->ToPlayer())
         {
-            events.Reset();
-            cast = false;
-            me->AddAura(SPELL_DESATUREATE, me);
+            if (owner->GetInstanceScript())
+                owner->GetInstanceScript()->SetData(DATA_REACH_THE_EXIT, DONE);
+
+            owner->NearTeleportTo(treasureRoomPos.GetPositionX(), treasureRoomPos.GetPositionY(), treasureRoomPos.GetPositionZ(), treasureRoomPos.GetOrientation());
         }
+    }
 
-        void MoveInLineOfSight(Unit* who) override
-        {
-            if (me->GetDistance(who) < 16.0f && !cast && who->GetTypeId() == TYPEID_PLAYER)
-                events.RescheduleEvent(EVENT_1, 3 * IN_MILLISECONDS);
-        }
-
-        void UpdateAI(uint32 diff) override
-        {
-            events.Update(diff);
-
-            if (uint32 eventId = events.ExecuteEvent())
-            {
-                switch (eventId)
-                {
-                    case EVENT_1:
-                        events.RescheduleEvent(EVENT_2, 3 * IN_MILLISECONDS);
-                        me->AddAura(SPELL_STATUE_FROZEN_SLAM_PREP, me);
-                        break;
-                    case EVENT_2:
-                        events.RescheduleEvent(EVENT_3, 3 * IN_MILLISECONDS);
-                        DoCast(SPELL_STONE_SMASH);
-                        break;
-                    case EVENT_3:
-                        cast = false;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-    private:
-        EventMap events;
-        bool cast;
-    };
-
-    CreatureAI* GetAI(Creature* creature) const override
+    void Register() override
     {
-        return new npc_stone_sentielAI(creature);
+        OnEffectRemove += AuraEffectRemoveFn(spell_thunder_king_treasure_scenario_completion_blackout::HandleOnRemove, EFFECT_0, SPELL_AURA_SCREEN_EFFECT, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
-class spell_lighting_surge_2 : public SpellScriptLoader
+// Lightning Surge 139804
+class spell_thunder_king_treasure_lightning_surge : public SpellScript
 {
-public:
-    spell_lighting_surge_2() : SpellScriptLoader("spell_lighting_surge_2") { }
+    PrepareSpellScript(spell_thunder_king_treasure_lightning_surge);
 
-    class spell_lighting_surge_2_SpellScript : public SpellScript
+    void SelectTargets(std::list<WorldObject*>&targets)
     {
-        PrepareSpellScript(spell_lighting_surge_2_SpellScript);
+        targets.remove_if([=](WorldObject* target) { return target->GetEntry() != NPC_LIGHTNING_PILLAR_TARGET_BUNNY; });
+    }
 
-        void FilterTargets(std::list<WorldObject*>& unitList)
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_thunder_king_treasure_lightning_surge::SelectTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_thunder_king_treasure_lightning_surge::SelectTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
+    }
+};
+
+// Lightning Surge Eff 140469
+class spell_thunder_king_treasure_lightning_surge_eff : public SpellScript
+{
+    PrepareSpellScript(spell_thunder_king_treasure_lightning_surge_eff);
+
+    void SelectTargets(std::list<WorldObject*>&targets)
+    {
+        targets.remove_if([=](WorldObject* target) { return target->GetEntry() != NPC_LIGHTNING_PILLAR_TARGET_BUNNY; });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_thunder_king_treasure_lightning_surge_eff::SelectTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+    }
+};
+
+// 851. Summoned by 139808 - Sentry
+class sat_thunder_king_treasure_sentry : public IAreaTriggerAura
+{
+    bool CheckTriggering(WorldObject* pTriggering) override
+    {
+        return pTriggering && (pTriggering->ToPlayer() || pTriggering->GetEntry() == NPC_SENTRY_BEAM_BUNNY);
+    }
+
+    void OnTriggeringApply(WorldObject* pTriggering) override
+    {
+        if (Player* target = pTriggering->ToPlayer())
         {
-            unitList.remove_if(CreatureTargetFilter());
-        }
-
-        void Register() override
-        {
-            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_lighting_surge_2_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
-            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_lighting_surge_2_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ENTRY);
-        }
-
-    private:
-        class CreatureTargetFilter
-        {
-        public:
-            CreatureTargetFilter() { }
-
-            bool operator()(WorldObject* target)
+            if (Creature* caster = GetCaster()->ToCreature())
             {
-                return target->ToCreature()->GetEntry() != NPC_LIGHTING_PILAR_TARGET_BUNNY;
+                caster->AI()->SetGUID(target->GetGUID());
+                caster->CastSpell(caster, SPELL_SUMM_SENTRY_BEAM_BUNNY, true);
             }
-        };
-    };
+        }
+    }
 
-    SpellScript* GetSpellScript() const override
+    void OnTriggeringRemove(WorldObject* pTriggering) override
     {
-        return new spell_lighting_surge_2_SpellScript();
+        if (Creature* target = pTriggering->ToCreature())
+            target->DespawnOrUnsummon();
     }
 };
 
 void AddSC_troves_of_the_thunder_king()
 {
-    new npc_taoshi();
-    new npc_lighting_pilar_master_bunny();
-    new npc_stone_sentiel();
+    new creature_script<npc_lightning_pillar_master>("npc_lightning_pillar_master");
+    new creature_script<npc_stone_sentinel>("npc_stone_sentinel");
+    new creature_script<npc_thunder_king_treasure_sentry_totem>("npc_thunder_king_treasure_sentry_totem");
+    new creature_script<npc_thunder_king_treasure_stasis_rune>("npc_thunder_king_treasure_stasis_rune");
+    new creature_script<npc_thunder_king_treasure_speed_rune>("npc_thunder_king_treasure_speed_rune");
+    new creature_script<npc_thunder_king_treasure_zandalari_arcweaver>("npc_thunder_king_treasure_zandalari_arcweaver");
+    new creature_script<npc_thunder_king_treasure_sentry_beam_bunny>("npc_thunder_king_treasure_sentry_beam_bunny");
+    new creature_script<npc_god_hulk_gulkan>("npc_god_hulk_gulkan");
+    new creature_script<npc_zandalari_venomblade>("npc_zandalari_venomblade");
+    new creature_script<npc_shanze_bloodseeker>("npc_shanze_bloodseeker");
+    new creature_script<npc_thunder_king_treasure_stone_watcher>("npc_thunder_king_treasure_stone_watcher");
+    new npc_thunder_king_treasure_taoshi();
+    new npc_thunder_king_treasure_tenwu_of_the_red_smoke();
+    new npc_thunder_king_treasure_taoshi_queue();
+    new go_thunder_king_treasure_lever();
+    new go_thunder_king_treasure_mogu_chest();
 
-    new spell_lighting_surge_2();
+    new aura_script<spell_thunder_king_treasure_rune_trap>("spell_thunder_king_treasure_rune_trap");
+    new aura_script<spell_thunder_king_treasure_limited_time>("spell_thunder_king_treasure_limited_time");
+    new aura_script<spell_thunder_king_treasure_scenario_completion_blackout>("spell_thunder_king_treasure_scenario_completion_blackout");
+    new spell_script<spell_thunder_king_treasure_lightning_surge>("spell_thunder_king_treasure_lightning_surge");
+    new spell_script<spell_thunder_king_treasure_lightning_surge_eff>("spell_thunder_king_treasure_lightning_surge_eff");
+    new atrigger_script<sat_thunder_king_treasure_sentry>("sat_thunder_king_treasure_sentry");
 }

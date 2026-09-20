@@ -1,101 +1,276 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* This file is part of the Pandaria 5.4.8 Project. See THANKS file for Copyright information
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the
+* Free Software Foundation; either version 2 of the License, or (at your
+* option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
-#include "MiscPackets.h"
+#include "ScriptMgr.h"
+#include "InstanceScript.h"
 #include "troves_of_the_thunder_king.h"
+#include "ScenarioMgr.h"
+#include "Scenario.h"
+#include "AchievementMgr.h"
 
 class instance_troves_of_the_thunder_king : public InstanceMapScript
 {
-public:
-    instance_troves_of_the_thunder_king() : InstanceMapScript("instance_troves_of_the_thunder_king", 1135) { }
+    public:
+        instance_troves_of_the_thunder_king() : InstanceMapScript("instance_troves_of_the_thunder_king", 1135) { }
 
-    InstanceScript* GetInstanceScript(InstanceMap* map) const override
-    {
-        return new instance_troves_of_the_thunder_king_InstanceMapScript(map);
-    }
-
-    struct instance_troves_of_the_thunder_king_InstanceMapScript : public InstanceScript
-    {
-        instance_troves_of_the_thunder_king_InstanceMapScript(InstanceMap* map) : InstanceScript(map)
-        { }
-
-        void Initialize() override
+        struct instance_troves_of_the_thunder_king_InstanceScript : public InstanceScript
         {
-            start = NOT_STARTED;
-            pilarMasterGUIDs.clear();
-        }
+            uint32 step1;
+            uint32 step2;
+            uint32 chestCounter;
+            ObjectGuid playerGUID;
+            ObjectGuid doorGUID;
+            uint32 timeData;
+            uint32 goldenChestCount;
+            std::list<ObjectGuid> firstDoorPackGUIDs;
+            std::list<ObjectGuid> secondDoorPackGUIDs;
+            std::list<ObjectGuid> burialThroveGUIDs;
+            bool hasGoldenChestAchieved;
 
-        void OnPlayerEnter(Player* player) override
-        {
-            std::vector<uint16> WorldMapAreaIds;
-            WorldMapAreaIds.emplace_back(770);
-            WorldMapAreaIds.emplace_back(748);
-            WorldMapAreaIds.emplace_back(907);
-            WorldMapAreaIds.emplace_back(910);
-            player->GetSession()->SendSetPhaseShift(std::vector<WorldPackets::Misc::PhaseShiftDataPhase>(), std::vector<uint16>(), WorldMapAreaIds, std::vector<uint16>(), 8);
-        }
+            instance_troves_of_the_thunder_king_InstanceScript(InstanceMap* map) : InstanceScript(map) { }
 
-        void OnCreatureCreate(Creature* creature) override
-        {
-            switch (creature->GetEntry())
+            Scenario* GetScenario() const
             {
-                case NPC_LIGHTING_PILAR_TARGET_BUNNY:
-                    creature->SetReactState(REACT_PASSIVE);
-                    break;
-                case NPC_LIGHTING_PILAR_MASTER_BUNNY:
-                    pilarMasterGUIDs.push_back(creature->GetGUID());
-                    break;
-                default:
-                    break;
+                return sScenarioMgr->GetScenario(instance->GetInstanceId());
             }
-        }
 
-        void SetData(uint32 type, uint32 data) override
-        {
-            switch (type)
+            void SetScenarioStep(uint8 step)
             {
-                case DATA_EVENT_STARTED:
-                    start = data;
-                    if (data == DONE)
-                        for (GuidVector::const_iterator itr = pilarMasterGUIDs.begin(); itr != pilarMasterGUIDs.end(); ++itr)
-                            if (Creature* cre = instance->GetCreature(*itr))
-                                cre->AI()->DoAction(ACTION_1);
-                    break;
-                default:
-                    break;
+                if (Scenario* scenario = GetScenario())
+                    scenario->SetCurrentStep(step);
             }
-        }
 
-        uint32 GetData(uint32 type) const override
-        {
-            switch (type)
+            void SendScenarioCriteria(uint32 treeId, uint64 counter = 1)
             {
-                case DATA_EVENT_STARTED:
-                    return start;
-                default:
-                    return 0;
-            }
-        }
+                Scenario* scenario = GetScenario();
+                CriteriaTree const* tree = sAchievementMgr->GetCriteriaTree(treeId);
+                if (!scenario || !tree || !tree->Entry)
+                    return;
 
-    private:
-        uint32 start;
-        GuidVector pilarMasterGUIDs;
-    };
+                CriteriaProgress progress;
+                progress.Counter = counter;
+                progress.date = time(nullptr);
+                progress.criteriaTree = tree->Entry;
+                scenario->SendCriteriaUpdate(&progress);
+            }
+
+            void Initialize() override
+            {
+                step1            = 0;
+                step2            = 0;
+                chestCounter     = 0;
+                playerGUID = ObjectGuid::Empty;
+                doorGUID = ObjectGuid::Empty;
+                timeData         = 0;
+                goldenChestCount = 0;
+                hasGoldenChestAchieved = false;
+                firstDoorPackGUIDs.clear();
+                secondDoorPackGUIDs.clear();
+                burialThroveGUIDs.clear();
+            }
+
+            void OnPlayerEnter(Player* player) override
+            {
+                if (!playerGUID)
+                    playerGUID = player->GetGUID();
+
+                SetScenarioStep(GetData(DATA_SPEAK_WITH_TAOSHI) == DONE ? DATA_REACH_THE_EXIT : DATA_SPEAK_WITH_TAOSHI);
+
+                // Apply time on logout
+                if (GetData(DATA_SPEAK_WITH_TAOSHI) == DONE)
+                    player->CastSpell(player, 140000, true);
+            }
+
+            void OnCreatureCreate(Creature* creature) override
+            {
+                if (creature->GetEntry() == NPC_CLOUD_TILE_TRAP_BUNNY)
+                {
+                    creature->SetVisible(false);
+                    creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+                }
+            }
+
+            void OnGameObjectCreate(GameObject* go) override
+            {
+                switch (go->GetEntry())
+                {
+                    case GO_ANCIENT_GATE:
+                    case GO_ANCIENT_GATE_2:
+                        firstDoorPackGUIDs.push_back(go->GetGUID());
+                        break;
+                    case GO_ANCIENT_GATE_3:
+                    case GO_ANCIENT_GATE_4:
+                        secondDoorPackGUIDs.push_back(go->GetGUID());
+                        break;
+                    case GO_ANCIENT_GATE_6:
+                        doorGUID = go->GetGUID();
+                        break;
+                    case GO_LEI_SHEN_BURIAL_THROVE:
+                        burialThroveGUIDs.push_back(go->GetGUID());
+                        break;
+                }
+            }
+
+            bool SetBossState(uint32 type, EncounterState state) override
+            {
+                if (!InstanceScript::SetBossState(type, state))
+                    return false;
+
+                return true;
+            }
+
+            void SetData(uint32 type, uint32 data) override
+            {
+                switch (type)
+                {
+                    case DATA_SPEAK_WITH_TAOSHI:
+                        step1 = data;
+                        if (data != DONE)
+                            break;
+
+                        HandleGameObject(GetGuidData(GO_ANCIENT_GATE_6), true, NULL);
+                        SendScenarioCriteria(31993);
+                        SetScenarioStep(DATA_REACH_THE_EXIT);
+
+                        break;
+                    case DATA_REACH_THE_EXIT:
+                        step2 = data;
+                        if (data != DONE)
+                            break;
+
+                        SendScenarioCriteria(32158);
+                        if (Scenario* scenario = GetScenario())
+                            scenario->Reward(false, scenario->GetCurrentStep());
+                        break;
+                    case DATA_OPEN_FIRST_DOOR_PACK:
+                        for (auto&& itr : firstDoorPackGUIDs)
+                            HandleGameObject(itr, true, NULL);
+                        break;
+                    case DATA_OPEN_SECOND_DOOR_PACK:
+                        for (auto&& itr : secondDoorPackGUIDs)
+                            HandleGameObject(itr, true, NULL);
+                        break;
+                    case CHEST_DATA:
+                        chestCounter += data;
+
+                        if (Unit* target = ObjectAccessor::FindPlayer(GetGuidData(PLAYER_DATA)))
+                            target->ModifyPower(POWER_ALTERNATE, data);
+                        break;
+                    case TIME_DATA:
+                        timeData = data;
+                        SaveToDB();
+                        break;
+                    case GOLDEN_CHEST_DATA:
+                        if (++goldenChestCount > 9 && !hasGoldenChestAchieved)
+                        {
+                            hasGoldenChestAchieved = true;
+
+                            if (Player* scenarioOwner = ObjectAccessor::FindPlayer(GetGuidData(PLAYER_DATA)))
+                            {
+                                for (uint8 i = 0; i < 10; i++)
+                                    scenarioOwner->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LOOTED_GOLDEN_CHEST_ACHIEV);
+                            }
+                        }
+                        break;
+                }
+
+                if (data == DONE || data == SPECIAL)
+                    SaveToDB();
+            }
+
+            uint32 GetData(uint32 type) const override
+            {
+                switch (type)
+                {
+                    case DATA_SPEAK_WITH_TAOSHI:
+                        return step1;
+                    case DATA_REACH_THE_EXIT:
+                        return step2;
+                    case CHEST_DATA:
+                        return chestCounter;
+                    case TIME_DATA:
+                        return timeData;
+                }
+
+                return 0;
+            }
+
+            ObjectGuid GetGuidData(uint32 type) const override
+            {
+                switch (type)
+                {
+                    case PLAYER_DATA:
+                        return playerGUID;
+                    case GO_ANCIENT_GATE_6:
+                        return doorGUID;
+                }
+
+                return ObjectGuid::Empty;
+            }
+
+            std::string GetSaveData() override
+            {
+                OUT_SAVE_INST_DATA;
+
+                std::ostringstream saveStream;
+                saveStream << "T K C " << step1 << ' ' << step2 << ' ' << timeData;
+
+                OUT_SAVE_INST_DATA_COMPLETE;
+                return saveStream.str();
+            }
+
+            void Load(char const* in) override
+            {
+                if (!in)
+                {
+                    OUT_LOAD_INST_DATA_FAIL;
+                    return;
+                }
+
+                OUT_LOAD_INST_DATA(in);
+
+                char dataHead1, dataHead2, dataHead3;
+
+                std::istringstream loadStream(in);
+                loadStream >> dataHead1 >> dataHead2 >> dataHead3;
+
+                if (dataHead1 == 'T' && dataHead2 == 'K' && dataHead3 == 'C')
+                {
+                    uint32 tmpState;
+                    loadStream >> tmpState;
+                    step1 = tmpState;
+                    SetData(DATA_SPEAK_WITH_TAOSHI, step1);
+                    loadStream >> tmpState;
+                    step2 = tmpState;
+                    SetData(DATA_REACH_THE_EXIT, step2);
+                    loadStream >> tmpState;
+                    timeData = tmpState;
+                    SetData(TIME_DATA, timeData);
+                }
+                else OUT_LOAD_INST_DATA_FAIL;
+
+                OUT_LOAD_INST_DATA_COMPLETE;
+            }
+        };
+
+        InstanceScript* GetInstanceScript(InstanceMap* map) const override
+        {
+            return new instance_troves_of_the_thunder_king_InstanceScript(map);
+        }
 };
 
 void AddSC_instance_troves_of_the_thunder_king()
