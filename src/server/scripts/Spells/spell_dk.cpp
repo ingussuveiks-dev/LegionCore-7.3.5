@@ -183,6 +183,8 @@ enum DeathKnightSpells
     SPELL_DK_INEXORABLE_ASSAULT                 = 253593,
     SPELL_DK_INEXORABLE_ASSAULT_TIMER           = 253594,
     SPELL_DK_INEXORABLE_ASSAULT_PROC            = 253595,
+    SPELL_DK_T21_COILS_OF_DEVASTATION           = 253367,
+    SPELL_DK_T21_RUNE_MASTER                    = 253381,
 };
 
 // Desecrated ground - 118009
@@ -1745,6 +1747,103 @@ class spell_dk_death_coil : public SpellScript
     }
 };
 
+// Item - Death Knight T21 Unholy 2P Bonus - 251871
+class spell_dk_t21_unholy_2p : public AuraScript
+{
+    PrepareAuraScript(spell_dk_t21_unholy_2p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DK_T21_COILS_OF_DEVASTATION });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        return damageInfo && damageInfo->GetDamage() > 0 && damageInfo->GetSpellInfo() &&
+            damageInfo->GetSpellInfo()->Id == SPELL_DK_DEATH_COIL_DAMAGE &&
+            eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        SpellInfo const* dot = sSpellMgr->GetSpellInfo(SPELL_DK_T21_COILS_OF_DEVASTATION);
+        uint32 totalTicks = dot ? dot->GetMaxTicks() : 0;
+        if (!totalTicks)
+            return;
+
+        float damagePerTick = CalculatePct(eventInfo.GetDamageInfo()->GetDamage(),
+            aurEff->GetAmount()) / totalTicks;
+        GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(),
+            SPELL_DK_T21_COILS_OF_DEVASTATION, &damagePerTick, nullptr, nullptr,
+            true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_t21_unholy_2p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dk_t21_unholy_2p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Item - Death Knight T21 Unholy 4P Bonus - 251872
+class spell_dk_t21_unholy_4p : public AuraScript
+{
+    PrepareAuraScript(spell_dk_t21_unholy_4p);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        return damageInfo && damageInfo->GetDamage() > 0 && damageInfo->GetSpellInfo() &&
+            damageInfo->GetSpellInfo()->Id == SPELL_DK_DEATH_COIL_DAMAGE &&
+            eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        GetTarget()->CastSpell(eventInfo.GetActionTarget(), SPELL_DK_DEATH_COIL_DAMAGE,
+            true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dk_t21_unholy_4p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dk_t21_unholy_4p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Dancing Rune Weapon - 49028; Item - Death Knight T21 Blood 4P Bonus - 251877
+class spell_dk_t21_blood_4p : public AuraScript
+{
+    PrepareAuraScript(spell_dk_t21_blood_4p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_DK_T21_RUNE_MASTER });
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        Unit* target = GetTarget();
+        if (target->HasAura(251877))
+            target->CastSpell(target, SPELL_DK_T21_RUNE_MASTER, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_dk_t21_blood_4p::HandleRemove,
+            EFFECT_2, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 // Epidemic - 207317
 class spell_dk_epidemic : public SpellScript
 {
@@ -3214,6 +3313,9 @@ void AddSC_deathknight_spell_scripts()
     new spell_dk_glacial_advance();
     new spell_dk_glacial_advance_damage();
     RegisterSpellScript(spell_dk_death_coil);
+    RegisterAuraScript(spell_dk_t21_unholy_2p);
+    RegisterAuraScript(spell_dk_t21_unholy_4p);
+    RegisterAuraScript(spell_dk_t21_blood_4p);
     RegisterSpellScript(spell_dk_epidemic);
     RegisterSpellScript(spell_dk_epidemic_aoe);
     RegisterAuraScript(spell_dk_virulent_plague);
