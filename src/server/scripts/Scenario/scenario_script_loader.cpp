@@ -9,17 +9,15 @@ void AddSC_boss_little_liuyang();
 void AddSC_boss_chagan_firehoof();
 void AddSC_arena_of_annihilation();
 
-//< Fall of Shan'bu
-void AddSC_fall_of_shan_bu();
-void AddSC_instance_fall_of_shan_bu();
+//< Isle of Thunder campaign scenarios
+void AddSC_scenario_isle_of_thunder();
+void AddSC_instance_isle_of_thunder();
+void AddSC_isle_of_thunder_ambient();
+void AddSC_thunder_forge();
 
 //< Pursuing the Black Harvest
 void AddSC_pursing_the_black_harvest();
 void AddSC_instance_pursuing_the_black_harvest();
-
-//< Thunder Forge
-void AddSC_thunder_forge();
-void AddSC_instance_thunder_forge();
 
 //< Troves of the Thunder King
 void AddSC_troves_of_the_thunder_king();
@@ -200,17 +198,15 @@ void AddScenarioScripts()
     AddSC_boss_chagan_firehoof();
     AddSC_arena_of_annihilation();
 
-    //< Fall of Shan'bu
-    AddSC_fall_of_shan_bu();
-    AddSC_instance_fall_of_shan_bu();
+    //< Isle of Thunder campaign scenarios, including Fall of Shan'bu and Thunder Forge
+    AddSC_scenario_isle_of_thunder();
+    AddSC_instance_isle_of_thunder();
+    AddSC_isle_of_thunder_ambient();
+    AddSC_thunder_forge();
 
         //< Pursuing the Black Harvest
     AddSC_pursing_the_black_harvest();
     AddSC_instance_pursuing_the_black_harvest();
-
-    //< Thunder Forge
-    AddSC_thunder_forge();
-    AddSC_instance_thunder_forge();
 
     //< Troves of the Thunder King
     AddSC_troves_of_the_thunder_king();

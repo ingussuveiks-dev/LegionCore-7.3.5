@@ -3447,36 +3447,22 @@ public:
 
 void AddSC_thunder_forge()
 {
-    new npc_wrathion();
-
-    new go_mogu_crucible();
-
-    new npc_shado_pan_defender();
-    new npc_shado_pan_warrior();
-
-    new npc_thunder_forge();
-    new npc_thunder_forge_second();
+    // The combined Isle of Thunder script owns the main actors and objects.
     //new npc_thunder_forge_third();
     //new npc_invisible_stalker();
     new npc_lighting_pilar_beam_stalker();
     new npc_lighting_pilar_spark_stalker();
 
-    new npc_forgemaster_vulkon();
+    // The combined Isle of Thunder implementation owns this database script name.
     new npc_shanze_shadowcaster();
     new npc_shanze_battlemaster();
-    new npc_shanze_warrior();
     new npc_shanze_electro_coutioner();
-    new npc_shanze_pyromancer();
 
-    new npc_celestial_blacksmith();
-    new npc_celestial_defender();
     new npc_lighting_spear_float_stalker();
     //new go_thunder_forge_avnils();
     //new npc_avnil_stalker();
     new npc_phase3_room_center_stalker();
     new npc_sha_beast();
-    new npc_sha_fiend();
-    new npc_sha_amalgamation();
     new npc_constellation();
 
     new spell_phase_shift_update();
@@ -3486,7 +3472,6 @@ void AddSC_thunder_forge()
     new spell_spec_test();
     new spell_throw_lance_trigger();
     new spell_activate_closes_anvil();
-    new spell_thunder_surge();
     new spell_small_sha_fixate();
     new spell_electric_discharge();
 }
