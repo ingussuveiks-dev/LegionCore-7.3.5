@@ -37,7 +37,10 @@ enum MonkVariables
     WindwalkingAuraDuration     = 10000,
     Permanent                   = -1,
     RingOfPeaceLongKnockBack    = 237371,
-    RingOfPeaceShortKnockBack   = 142895
+    RingOfPeaceShortKnockBack   = 142895,
+    MonkBlackoutKickProc        = 116768,
+    MonkBreathOfFire            = 115181,
+    MonkT21Windwalker4P         = 251823
 };
 
 enum StormEarthAndFireSpells
@@ -3528,6 +3531,57 @@ class spell_monk_breath_of_fire : public SpellScript
     }
 };
 
+// Item - Monk T21 Brewmaster 4P Bonus - 251830
+class spell_monk_t21_brewmaster_4p : public AuraScript
+{
+    PrepareAuraScript(spell_monk_t21_brewmaster_4p);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        if (Player* player = GetTarget()->ToPlayer())
+            player->ModifySpellCooldown(MonkBreathOfFire, -aurEff->GetAmount() * 100);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_monk_t21_brewmaster_4p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Blackout Kick - 100784; Item - Monk T21 Windwalker 4P Bonus - 251823
+class spell_monk_t21_windwalker_4p : public SpellScript
+{
+    PrepareSpellScript(spell_monk_t21_windwalker_4p);
+
+    bool _consumedBlackoutKickProc = false;
+
+    void HandleBeforeCast()
+    {
+        if (Unit* caster = GetCaster())
+            _consumedBlackoutKickProc = caster->HasAura(MonkBlackoutKickProc);
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!_consumedBlackoutKickProc || !caster)
+            return;
+
+        AuraEffect const* chance = caster->GetAuraEffect(MonkT21Windwalker4P, EFFECT_0);
+        AuraEffect const* bonus = caster->GetAuraEffect(MonkT21Windwalker4P, EFFECT_1);
+        if (chance && bonus && roll_chance_i(chance->GetAmount()))
+            caster->ModifyPower(POWER_CHI, bonus->GetAmount());
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_monk_t21_windwalker_4p::HandleBeforeCast);
+        AfterCast += SpellCastFn(spell_monk_t21_windwalker_4p::HandleAfterCast);
+    }
+};
+
 // 242255 - Item - Monk T20 Brewmaster 2P Bonus
 class spell_monk_t20_brew_2p : public AuraScript
 {
@@ -3661,6 +3715,8 @@ void AddSC_monk_spell_scripts()
     RegisterAuraScript(spell_monk_petrichor_lagniappe);
     RegisterAuraScript(spell_monk_tigereye_brew);
     RegisterSpellScript(spell_monk_breath_of_fire);
+    RegisterAuraScript(spell_monk_t21_brewmaster_4p);
+    RegisterSpellScript(spell_monk_t21_windwalker_4p);
     RegisterAuraScript(spell_monk_t20_brew_2p);
 	new spell_monk_fixate();
 }
