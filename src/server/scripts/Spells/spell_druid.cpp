@@ -36,7 +36,12 @@
 
 enum DruidSpells
 {
-    GERMINATION  = 155777
+    GERMINATION                       = 155777,
+    DRUID_BARKSKIN                    = 22812,
+    DRUID_GORE                        = 93622,
+    DRUID_RIP                         = 1079,
+    DRUID_T21_GUARDIAN_2P            = 251791,
+    DRUID_T21_GUARDIAN_HEALING_BUFF  = 253575
 };
 
 // Binary predicate for sorting Units based on value of duration of an Aura
@@ -336,6 +341,105 @@ class spell_dru_rip : public AuraScript
     {
         OnEffectApply += AuraEffectApplyFn(spell_dru_rip::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
         OnEffectRemove += AuraEffectRemoveFn(spell_dru_rip::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Item - Druid T21 Feral 2P Bonus - 251789
+class spell_dru_t21_feral_2p : public AuraScript
+{
+    PrepareAuraScript(spell_dru_t21_feral_2p);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        return damageInfo && damageInfo->GetDamage() > 0 &&
+            damageInfo->GetDamageType() == DOT && damageInfo->GetSpellInfo() &&
+            damageInfo->GetSpellInfo()->Id == DRUID_RIP && eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        DamageInfo* damageInfo = eventInfo.GetDamageInfo();
+        Unit* druid = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        SpellInfo const* rip = damageInfo ? damageInfo->GetSpellInfo() : nullptr;
+        if (!damageInfo || !druid || !target || !rip)
+            return;
+
+        SpellNonMeleeDamage repeatedDamage(druid, target, DRUID_RIP,
+            rip->GetSpellXSpellVisualId(druid, target), rip->GetSchoolMask());
+        repeatedDamage.damage = damageInfo->GetDamage();
+        repeatedDamage.damageBeforeHit = repeatedDamage.damage;
+        druid->DealDamageMods(target, repeatedDamage.damage, &repeatedDamage.absorb, rip);
+        druid->SendSpellNonMeleeDamageLog(&repeatedDamage);
+        druid->DealSpellDamage(&repeatedDamage, false);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_dru_t21_feral_2p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_dru_t21_feral_2p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Mangle - 33917; Item - Druid T21 Guardian 2P Bonus - 251791
+class spell_dru_t21_guardian_2p : public SpellScript
+{
+    PrepareSpellScript(spell_dru_t21_guardian_2p);
+
+    bool _consumedGore = false;
+
+    void HandleBeforeCast()
+    {
+        if (Unit* caster = GetCaster())
+            _consumedGore = caster->HasAura(DRUID_GORE);
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!_consumedGore || !caster)
+            return;
+
+        if (AuraEffect const* bonus = caster->GetAuraEffect(DRUID_T21_GUARDIAN_2P, EFFECT_0))
+            if (Player* player = caster->ToPlayer())
+                player->ModifySpellCooldown(DRUID_BARKSKIN, -bonus->GetAmount());
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_dru_t21_guardian_2p::HandleBeforeCast);
+        AfterCast += SpellCastFn(spell_dru_t21_guardian_2p::HandleAfterCast);
+    }
+};
+
+// Barkskin - 22812; Item - Druid T21 Guardian 4P Bonus - 251792
+class spell_dru_t21_guardian_4p : public AuraScript
+{
+    PrepareAuraScript(spell_dru_t21_guardian_4p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ DRUID_T21_GUARDIAN_HEALING_BUFF });
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        Unit* target = GetTarget();
+        if (target->HasAura(251792))
+            target->CastSpell(target, DRUID_T21_GUARDIAN_HEALING_BUFF, true);
+    }
+
+    void Register() override
+    {
+        AfterEffectRemove += AuraEffectRemoveFn(spell_dru_t21_guardian_4p::HandleRemove,
+            EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
@@ -2306,6 +2410,9 @@ void AddSC_druid_spell_scripts()
     RegisterAuraScript(spell_dru_travel_form_speed_increase);
     RegisterAuraScript(spell_dru_travel_form_speed_increase_dummy);
     RegisterAuraScript(spell_dru_rip);
+    RegisterAuraScript(spell_dru_t21_feral_2p);
+    RegisterSpellScript(spell_dru_t21_guardian_2p);
+    RegisterAuraScript(spell_dru_t21_guardian_4p);
     RegisterSpellScript(spell_dru_regrowth);
     RegisterAuraScript(spell_dru_ysera_gift);
     RegisterAuraScript(spell_dru_t21_4p_rest);
