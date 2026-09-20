@@ -22354,6 +22354,9 @@ void Unit::Kill(Unit* victim, bool durabilityLoss, SpellInfo const* spellProto)
             victim->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_KILLED_BY_PLAYER, 1, ToPlayer()->GetTeam());
     }
 
+    if (Player* killedPlayer = victim->ToPlayer())
+        sScriptMgr->OnPlayerDeath(killedPlayer);
+
     // Hook for OnPVPKill Event
     if (Player* killerPlr = ToPlayer())
     {

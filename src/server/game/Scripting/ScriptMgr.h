@@ -648,6 +648,9 @@ class TC_GAME_API PlayerScript : public ScriptObject
         // Called when a player is killed by a creature
         virtual void OnPlayerKilledByCreature(Creature* /*killer*/, Player* /*killed*/) { }
 
+        // Called whenever a player dies, regardless of the killer.
+        virtual void OnDeath(Player* /*player*/) { }
+
         // Called when a player's level changes (right before the level is applied)
         virtual void OnLevelChanged(Player* /*player*/, uint8 /*oldLevel*/) { }
 
@@ -1017,6 +1020,7 @@ class TC_GAME_API ScriptMgr
         void OnQuestComplete(Player* player, const Quest* quest);
         void OnCreatureKill(Player* killer, Creature* killed);
         void OnPlayerKilledByCreature(Creature* killer, Player* killed);
+        void OnPlayerDeath(Player* player);
         void OnPlayerLevelChanged(Player* player, uint8 oldLevel);
         void OnPlayerFreeTalentPointsChanged(Player* player, uint32 newPoints);
         void OnPlayerTalentsReset(Player* player, bool noCost);

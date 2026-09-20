@@ -7704,6 +7704,39 @@ class spell_arcane_pulse : public SpellScript
     }
 };
 
+// Light's Judgment damage (Lightforged Draenei racial) - 256893
+class spell_light_judgement : public SpellScript
+{
+    PrepareSpellScript(spell_light_judgement);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        SetHitDamage(int32(6.25f * GetCaster()->GetUInt32Value(UNIT_FIELD_ATTACK_POWER)));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_light_judgement::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Light's Reckoning (Lightforged Draenei racial) - 255652
+class playerscript_light_reckoning : public PlayerScript
+{
+public:
+    playerscript_light_reckoning() : PlayerScript("playerscript_light_reckoning") { }
+
+    void OnDeath(Player* player) override
+    {
+        if (!player->HasAura(255652))
+            return;
+
+        if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(255652))
+            if (SpellEffectInfo const* effectInfo = spellInfo->Effects[EFFECT_0])
+                player->CastSpell(player, effectInfo->TriggerSpell, true);
+    }
+};
+
 // 256948
 class spell_spatial_rift_main : public SpellScript
 {
@@ -8608,6 +8641,8 @@ void AddSC_generic_spell_scripts()
     RegisterAuraScript(spell_gen_misc);
     RegisterSpellScript(spell_gen_terror_from_below_dmg);
     RegisterSpellScript(spell_arcane_pulse);
+    RegisterSpellScript(spell_light_judgement);
+    new playerscript_light_reckoning();
     RegisterSpellScript(spell_spatial_rift_main);
     RegisterSpellScript(spell_gen_relearn_mining_quests);
     RegisterSpellScript(spell_gen_relearn_jewelcrafting_quests);
