@@ -26,6 +26,9 @@ enum Spells
     SoulFragment1 = 204255,
     SoulFragment2 = 203795,
     SoulFragment3 = 204062,
+    DemonHunterMetamorphosis = 187827,
+    DemonHunterT21Havoc4P = 251769,
+    DemonHunterT21BetrayersFury = 252165
 };
 //- 131347
 class spell_dh_glide : public SpellScriptLoader
@@ -1933,9 +1936,39 @@ class spell_dh_eye_beam : public AuraScript
         }
     }
 
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
+        Unit* caster = GetTarget();
+        if (caster && caster->HasAura(DemonHunterT21Havoc4P))
+            caster->CastSpell(caster, DemonHunterT21BetrayersFury, true);
+    }
+
     void Register() override
     {
         AfterEffectApply += AuraEffectApplyFn(spell_dh_eye_beam::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_dh_eye_beam::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Item - Demon Hunter T21 Vengeance 4P Bonus - 251774
+class spell_dh_t21_vengeance_4p : public AuraScript
+{
+    PrepareAuraScript(spell_dh_t21_vengeance_4p);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        if (Player* player = GetTarget()->ToPlayer())
+            player->ModifySpellCooldown(DemonHunterMetamorphosis, -aurEff->GetAmount());
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_dh_t21_vengeance_4p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -2062,6 +2095,7 @@ void AddSC_demonhunter_spell_scripts()
     RegisterAuraScript(spell_dh_flaming_soul);
     RegisterAuraScript(spell_dh_charred_warblades);
     RegisterAuraScript(spell_dh_eye_beam);
+    RegisterAuraScript(spell_dh_t21_vengeance_4p);
     RegisterAuraScript(spell_dh_fueled_by_pain);
     RegisterAuraScript(spell_dh_demonic_trample);
 }
