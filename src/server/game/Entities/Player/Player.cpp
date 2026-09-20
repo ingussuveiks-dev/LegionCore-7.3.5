@@ -30669,6 +30669,11 @@ float Player::GetReputationPriceDiscount(Creature const* creature) const
     if (!vendor_faction || !vendor_faction->Faction)
         return 1.0f;
 
+    // Best Deals Anywhere (Goblin racial) grants the maximum reputation discount
+    // at vendors that are associated with a faction.
+    if (HasAura(69044))
+        return 0.8f;
+
     ReputationRank rank = GetReputationRank(vendor_faction->Faction);
     if (rank <= REP_NEUTRAL)
         return 1.0f;
