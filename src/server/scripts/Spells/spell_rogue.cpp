@@ -68,6 +68,7 @@ enum RogueSpells
     ROGUE_SHURIKEN_COMBO_BUFF                   = 245640,
     ROGUE_SHURIKEN_STORM                        = 197835,
     ROGUE_SLICE_AND_DICE                         = 5171,
+    ROGUE_SYMBOLS_OF_DEATH                       = 212283,
     ROGUE_SINISTER_CIRCULATION                   = 238138,
     ROGUE_SUBTERFUGE                             = 108208,
     ROGUE_SUBTERFUGE_AURA                        = 115192,
@@ -78,6 +79,8 @@ enum RogueSpells
     ROGUE_VENOMOUS_WOUNDS                        = 79134,
     ROGUE_WEAPONMASTER                           = 193537,
     ROGUE_WEAPONMASTER_DAMAGE                   = 193536,
+    ROGUE_T21_OUTLAW_2P                          = 251778,
+    ROGUE_T21_SHARPENED_SABERS                   = 252285,
     SkullAndCrossbones = 199603,
     GrandMelee         = 193358,
     RuthlessPrecision  = 193357,
@@ -554,6 +557,8 @@ class spell_rog_saber_slash : public SpellScriptLoader
                         if (caster->HasAura(202754))
                         {
                             caster->CastSpellDelay(target, 197834, true, 400);
+                            if (caster->HasAura(ROGUE_T21_OUTLAW_2P))
+                                caster->CastSpell(caster, ROGUE_T21_SHARPENED_SABERS, true);
                             caster->RemoveAurasDueToSpell(202754);
                             return;
                         }
@@ -568,7 +573,11 @@ class spell_rog_saber_slash : public SpellScriptLoader
                                 chance += auraEff->GetBaseAmount();
 
                             if (roll_chance_f(chance))
+                            {
                                 caster->CastSpellDelay(target, 197834, true, 400);
+                                if (caster->HasAura(ROGUE_T21_OUTLAW_2P))
+                                    caster->CastSpell(caster, ROGUE_T21_SHARPENED_SABERS, true);
+                            }
                         }
                     }
                 }
@@ -1778,6 +1787,75 @@ class spell_rog_cut_to_the_chase : public SpellScript
     void Register() override
     {
         OnEffectHitTarget += SpellEffectFn(spell_rog_cut_to_the_chase::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        AfterHit += SpellHitFn(spell_rog_cut_to_the_chase::ConsumeSharpenedSabers);
+    }
+
+    void ConsumeSharpenedSabers()
+    {
+        if (Unit* caster = GetCaster())
+            caster->RemoveAurasDueToSpell(ROGUE_T21_SHARPENED_SABERS);
+    }
+};
+
+// Item - Rogue T21 Subtlety 2P Bonus - 251785
+class spell_rog_t21_subtlety_2p : public AuraScript
+{
+    PrepareAuraScript(spell_rog_t21_subtlety_2p);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetComboPoints() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Player* player = GetTarget()->ToPlayer();
+        Spell* spell = eventInfo.GetSpell();
+        if (!player || !spell)
+            return;
+
+        int32 reduction = aurEff->GetAmount() * spell->GetComboPoints() * 100;
+        player->ModifySpellCooldown(ROGUE_SYMBOLS_OF_DEATH, -reduction);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_t21_subtlety_2p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_t21_subtlety_2p::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Shadow Gestures - 257945, granted by the Rogue T21 Subtlety 4P bonus.
+class spell_rog_t21_shadow_gestures : public AuraScript
+{
+    PrepareAuraScript(spell_rog_t21_shadow_gestures);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Spell* spell = eventInfo.GetSpell();
+        return spell && spell->GetComboPoints() > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Spell* spell = eventInfo.GetSpell();
+        if (!spell)
+            return;
+
+        int32 refund = CalculatePct(spell->GetComboPoints(), aurEff->GetAmount());
+        GetTarget()->ModifyPower(POWER_COMBO_POINTS, refund);
+        GetAura()->Remove();
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_rog_t21_shadow_gestures::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_rog_t21_shadow_gestures::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
     }
 };
 
@@ -2187,6 +2265,8 @@ void AddSC_rogue_spell_scripts()
     RegisterSpellScript(spell_rog_eviscerate);
     new spell_rog_nightblade();
     RegisterSpellScript(spell_rog_cut_to_the_chase);
+    RegisterAuraScript(spell_rog_t21_subtlety_2p);
+    RegisterAuraScript(spell_rog_t21_shadow_gestures);
     RegisterAuraScript(spell_rog_alacrity);
     RegisterSpellScript(spell_rog_internal_bleeding);
     RegisterAuraScript(spell_rog_marked_for_death);
