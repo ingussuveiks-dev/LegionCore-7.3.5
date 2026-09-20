@@ -173,6 +173,12 @@ void AddSC_boss_lord_godfrey();
 void AddSC_shadowfang_keep();
 void AddSC_instance_shadowfang_keep();
 
+void AddSC_instance_the_stockade();          // The Stockade
+void AddSC_boss_randolph_moloch();
+void AddSC_boss_lord_overheat();
+void AddSC_boss_hogger();
+void AddSC_the_stockade();
+
 void AddSC_boss_magistrate_barthilas();      // Stratholme
 void AddSC_boss_maleki_the_pallid();
 void AddSC_boss_nerubenkan();
@@ -414,6 +420,12 @@ void AddEasternKingdomsScripts()
     AddSC_boss_lord_godfrey();
     AddSC_shadowfang_keep();
     AddSC_instance_shadowfang_keep();
+
+    AddSC_instance_the_stockade();          // The Stockade
+    AddSC_boss_randolph_moloch();
+    AddSC_boss_lord_overheat();
+    AddSC_boss_hogger();
+    AddSC_the_stockade();
 
     AddSC_boss_magistrate_barthilas();      // Stratholme
     AddSC_boss_maleki_the_pallid();
