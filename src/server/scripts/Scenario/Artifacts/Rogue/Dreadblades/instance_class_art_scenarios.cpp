@@ -144,6 +144,18 @@ struct instance_ruins_of_falanaar_feral : public InstanceScript
     }
 };
 
+// Monk order hall introduction - map 1014, scenario 943
+struct instance_monk_intro : public InstanceScript
+{
+    instance_monk_intro(InstanceMap* map) : InstanceScript(map) { }
+};
+
+// Sheilun artifact acquisition - map 1541, scenario 1007
+struct instance_sheylun : public InstanceScript
+{
+    instance_sheylun(InstanceMap* map) : InstanceScript(map) { }
+};
+
 //116849
 struct npc_stormstout_brewer_q45404 : public ScriptedAI
 {
@@ -173,11 +185,13 @@ struct npc_stormstout_brewer_q45404 : public ScriptedAI
 
 void AddSC_instance_class_art_scenarios()
 {
-    RegisterInstanceScript(instance_dreadblades, 1583);
-    //RegisterInstanceScript(instance_violethold_mage, 1545);
+    RegisterInstanceScript(instance_dreadblades, 1545);
+    RegisterInstanceScript(instance_violethold_mage, 1494);
     RegisterInstanceScript(instance_priest_mage_nexus_art, 1583);
     RegisterInstanceScript(instance_nightborne_sunwell, 1840);
     RegisterInstanceScript(instance_faronaar_mage, 1616);
     RegisterInstanceScript(instance_ruins_of_falanaar_feral, 1612);
+    RegisterInstanceScript(instance_monk_intro, 1014);
+    RegisterInstanceScript(instance_sheylun, 1541);
     RegisterCreatureAI(npc_stormstout_brewer_q45404);
 }
