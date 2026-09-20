@@ -92,6 +92,10 @@ void RestMgr::AddRestBonus(RestTypes restType, float restBonus)
     if (_player->getLevel() >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
         restBonus = 0;
 
+    // Inner Peace (Pandaren racial) doubles earned rested experience.
+    if (restType == REST_TYPE_XP && _player->HasAura(107074))
+        restBonus *= 2.0f;
+
     float totalRestBonus = GetRestBonus(restType) + restBonus;
     SetRestBonus(restType, totalRestBonus);
 }
