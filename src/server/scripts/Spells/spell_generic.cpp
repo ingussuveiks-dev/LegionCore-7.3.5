@@ -7684,6 +7684,26 @@ struct areatrigger_gen_shadow_wave : public AreaTriggerAI
     }
 };
 
+// Arcane Pulse (Nightborne racial) - 260364
+class spell_arcane_pulse : public SpellScript
+{
+    PrepareSpellScript(spell_arcane_pulse);
+
+    void HandleDamage(SpellEffIndex /*effIndex*/)
+    {
+        float damage = GetCaster()->GetTotalAttackPowerValue(BASE_ATTACK) * 2.0f;
+        if (damage == 0.0f)
+            damage = float(GetCaster()->GetSpellPowerDamage(SPELL_SCHOOL_MASK_ALL)) * 0.75f;
+
+        SetHitDamage(int32(damage));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_arcane_pulse::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
 // 256948
 class spell_spatial_rift_main : public SpellScript
 {
@@ -8587,6 +8607,7 @@ void AddSC_generic_spell_scripts()
     RegisterAuraScript(spell_gen_guiding_hand);
     RegisterAuraScript(spell_gen_misc);
     RegisterSpellScript(spell_gen_terror_from_below_dmg);
+    RegisterSpellScript(spell_arcane_pulse);
     RegisterSpellScript(spell_spatial_rift_main);
     RegisterSpellScript(spell_gen_relearn_mining_quests);
     RegisterSpellScript(spell_gen_relearn_jewelcrafting_quests);
