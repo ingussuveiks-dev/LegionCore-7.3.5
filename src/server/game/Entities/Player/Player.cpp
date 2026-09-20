@@ -32548,6 +32548,32 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
     UpdateAchievementCriteria(CRITERIA_TYPE_LOOT_TYPE, loot->loot_type, item->count);
     UpdateAchievementCriteria(CRITERIA_TYPE_LOOT_EPIC_ITEM, item->item.ItemID, item->count);
 
+    // Waste Not, Want Not (Highmountain Tauren racial): meat and fish can
+    // produce an additional copy, with the 6 second internal cooldown from
+    // SpellAuraOptions. Older fish are consumable food, while newer raw fish
+    // and meat use the trade-goods meat subclass.
+    ItemTemplate const* lootProto = sObjectMgr->GetItemTemplate(item->item.ItemID);
+    bool const isFishingLoot = loot->loot_type == LOOT_FISHING || loot->loot_type == LOOT_FISHINGHOLE;
+    bool const isCreatureLoot = loot->loot_type == LOOT_CORPSE;
+    bool const isRawMeatOrFish = lootProto && lootProto->GetClass() == ITEM_CLASS_TRADE_GOODS && lootProto->GetSubClass() == ITEM_SUBCLASS_MEAT;
+    bool const isOldFish = lootProto && isFishingLoot && lootProto->GetClass() == ITEM_CLASS_CONSUMABLE && lootProto->GetSubClass() == ITEM_SUBCLASS_FOOD_DRINK;
+
+    if (!qitem && HasAura(255656) && !HasSpellCooldown(255656) && (isFishingLoot || isCreatureLoot) &&
+        (isRawMeatOrFish || isOldFish) && roll_chance_i(10))
+    {
+        ItemPosCountVec bonusDest;
+        if (CanStoreNewItem(NULL_BAG, NULL_SLOT, bonusDest, item->item.ItemID, item->count) == EQUIP_ERR_OK)
+        {
+            if (Item* bonusItem = StoreNewItem(bonusDest, item->item.ItemID, true, item->item.RandomPropertiesID,
+                GuidSet(), item->item.ItemBonus.BonusListIDs, item->item.ItemBonus.Context))
+            {
+                SendNewItem(bonusItem, item->count, true, false, true);
+                UpdateAchievementCriteria(CRITERIA_TYPE_LOOT_ITEM, item->item.ItemID, item->count);
+                AddSpellCooldown(255656, 0, getPreciseTime() + 6.0);
+            }
+        }
+    }
+
     //AddTrackingQuestIfNeeded(loot->LootSourceGuid);
 	sScriptMgr->OnLootItem(this, newitem, item->count);
 }
