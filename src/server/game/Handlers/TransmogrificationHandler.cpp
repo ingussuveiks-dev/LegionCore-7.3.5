@@ -93,6 +93,9 @@ void WorldSession::HandleTransmogrifyItems(WorldPackets::Transmogrification::Tra
 
     if (!IsHolidayActive(HOLIDAY_TRIAL_OF_STYLE))
     {
+        if (player->HasAura(255667))
+            cost /= 2;
+
         if (cost)
         {
             if (!player->HasEnoughMoney(cost))

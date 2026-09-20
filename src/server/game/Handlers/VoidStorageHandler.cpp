@@ -51,7 +51,14 @@ void WorldSession::HandleVoidStorageUnlock(WorldPackets::VoidStorage::UnlockVoid
     if (player->IsVoidStorageUnlocked())
         return;
 
-    player->ModifyMoney(-int64(VOID_STORAGE_UNLOCK));
+    int64 unlockCost = VOID_STORAGE_UNLOCK;
+    if (player->HasAura(255667))
+        unlockCost /= 2;
+
+    if (!player->HasEnoughMoney(unlockCost))
+        return;
+
+    player->ModifyMoney(-unlockCost);
     player->UnlockVoidStorage();
 }
 
@@ -135,8 +142,12 @@ void WorldSession::HandleVoidStorageTransfer(WorldPackets::VoidStorage::VoidStor
         return;
     }
 
-    int64 cost = uint64(packet.Deposits.size() * VOID_STORAGE_STORE_ITEM);
-    if (!player->HasEnoughMoney(cost))
+    int64 costPerItem = VOID_STORAGE_STORE_ITEM;
+    if (player->HasAura(255667))
+        costPerItem /= 2;
+
+    int64 totalCost = int64(packet.Deposits.size()) * costPerItem;
+    if (!player->HasEnoughMoney(totalCost))
     {
         SendVoidStorageTransferResult(VOID_TRANSFER_ERROR_NOT_ENOUGH_MONEY);
         return;
@@ -173,7 +184,7 @@ void WorldSession::HandleVoidStorageTransfer(WorldPackets::VoidStorage::VoidStor
         ++depositCount;
     }
 
-    player->ModifyMoney(-(depositCount * cost));
+    player->ModifyMoney(-(depositCount * costPerItem));
 
     for (size_t i = 0; i < packet.Withdrawals.size(); ++i)
     {
