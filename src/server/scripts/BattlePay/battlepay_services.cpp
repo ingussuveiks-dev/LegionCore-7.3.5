@@ -104,6 +104,12 @@ public:
             return false;
         }
 
+        if (session->HasAuthFlag(AT_AUTH_FLAG_90_LVL_UP))
+        {
+            reason = "This account has already used its character boost.";
+            return false;
+        }
+
         return true;
     }
 };
@@ -141,9 +147,7 @@ public:
 
 void AddSC_BattlePay_Services()
 {
-    new BattlePay_Level<90>("battlepay_service_level90");
-    // The 7.3.5 world database exposes only the level-90 boost product.
-    // Keep the generic implementation available for a future DB product.
+    new BattlePay_Level<100>("battlepay_service_level100");
     new playerScriptTokensAvailable();
     //new BattlePay_AccountService<ServiceFlags::PremadePve>("battlepay_service_premade");
 }

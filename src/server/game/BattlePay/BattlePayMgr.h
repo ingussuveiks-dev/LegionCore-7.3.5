@@ -416,6 +416,8 @@ namespace Battlepay
         uint32 ClientToken;
         uint32 ServerToken;
         uint32 ProductID;
+        uint16 SpecializationID;
+        uint16 ChoiceID;
         uint8 Status;
         bool Lock;
     };

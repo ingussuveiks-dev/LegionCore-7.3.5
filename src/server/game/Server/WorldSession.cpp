@@ -286,6 +286,7 @@ bool WorldSession::Update(uint32 diff, Map* map)
     /// Update Timeout timer.
     UpdateTimeOutTime(diff);
     m_Functions.Update(diff);
+    _battlePayMgr->Update(diff);
 
     ///- Before we process anything:
     /// If necessary, kick the player from the character select screen

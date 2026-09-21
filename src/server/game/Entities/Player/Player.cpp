@@ -13124,6 +13124,8 @@ bool Player::ChangeTokenCount(uint8 tokenType, int64 change, uint8 buyType, uint
     stmt->setInt64(3, change);
     trans->Append(stmt);
 
+    LoginDatabase.CommitTransaction(trans);
+
     return true;
 }
 

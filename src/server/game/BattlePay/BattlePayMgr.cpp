@@ -163,14 +163,12 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
         break;
     case CharacterBoost:
     {
-        if (_session->HasAuthFlag(AT_AUTH_FLAG_90_LVL_UP)) //@send error?
+        if (_session->HasAuthFlag(AT_AUTH_FLAG_90_LVL_UP))
             break;
 
-        //SendBattlePayDistribution(purchase->ProductID, DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE, 1);
-
-        //if (player)
-        //    sCharacterService->Boost(player);
-        break;
+        purchase->Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+        SendBattlePayDistribution(purchase->ProductID, purchase->Status, purchase->DistributionId);
+        return; // Delivery continues after the client chooses a specialization.
     }
 
     //case Category:
@@ -687,6 +685,21 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
 
 void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCharGuid, uint64 distributionId, uint32 productId, uint16 specId, uint16 choiceId)
 {
+    auto purchase = GetPurchase();
+    auto product = sBattlePayDataStore->GetProduct(productId);
+    Player* player = _session->GetPlayer();
+    ChrSpecializationEntry const* specialization = sChrSpecializationStore.LookupEntry(specId);
+
+    if (!purchase || !product || product->WebsiteType != CharacterBoost ||
+        purchase->ProductID != productId || purchase->DistributionId != distributionId ||
+        purchase->TargetCharacter != targetCharGuid || !player || player->GetGUID() != targetCharGuid ||
+        !specialization || specialization->ClassID != player->getClass())
+    {
+        TC_LOG_ERROR("battlepay", "Rejected invalid character boost assignment for account %u, product %u, specialization %u",
+            _session->GetAccountId(), productId, specId);
+        return;
+    }
+
     WorldPackets::BattlePay::UpgradeStarted upgrade;
     upgrade.CharacterGUID = targetCharGuid;
     _session->SendPacket(upgrade.Write());
@@ -695,9 +708,10 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
     assignResponse.DistributionID = distributionId;
     assignResponse.unkint1 = 0;
     assignResponse.unkint2 = 0;
-    _session->SendPacket(upgrade.Write());
+    _session->SendPacket(assignResponse.Write());
 
-    auto purchase = GetPurchase();
+    purchase->SpecializationID = specId;
+    purchase->ChoiceID = choiceId;
     purchase->Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_ADD_TO_PROCESS;
 
     SendBattlePayDistribution(productId, purchase->Status, distributionId, targetCharGuid);
@@ -723,9 +737,18 @@ void BattlepayManager::Update(uint32 diff)
                 break;
 
             WorldPackets::BattlePay::BattlePayCharacterUpgradeQueued responseQueued;
-            responseQueued.EquipmentItems = sDB2Manager.GetItemLoadOutItemsByClassID(player->getClass(), 3)[0];
+            responseQueued.EquipmentItems = sCharacterService->GetBoostItems(player, data.SpecializationID, 100);
             responseQueued.Character = data.TargetCharacter;
             _session->SendPacket(responseQueued.Write());
+
+            if (!sCharacterService->Boost(player, data.SpecializationID, 100))
+            {
+                TC_LOG_ERROR("battlepay", "Character boost delivery failed for account %u and character %s",
+                    _session->GetAccountId(), data.TargetCharacter.ToString().c_str());
+                data.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+                SendBattlePayDistribution(data.ProductID, data.Status, data.DistributionId);
+                break;
+            }
 
             data.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_PROCESS_COMPLETE;
             SendBattlePayDistribution(data.ProductID, data.Status, data.DistributionId, data.TargetCharacter);
