@@ -102,7 +102,6 @@ enum MageSpells
     SPELL_MAGE_EBONBOLT_DAMAGE                   = 228599,
     SPELL_MAGE_T21_FROST_4P                      = 251860,
     SPELL_MAGE_T21_FROST_4P_BUFF                 = 253257,
-    SPELL_MAGE_POLYMORPH_CRITTERMORPH            = 120091,
     SPELL_MAGE_HEATING_UP                        = 48107,
     SPELL_MAGE_HOT_STREAK                        = 48108,
     SPELL_MAGE_ENHANCED_PYROTECHNICS_AURA        = 157644,
