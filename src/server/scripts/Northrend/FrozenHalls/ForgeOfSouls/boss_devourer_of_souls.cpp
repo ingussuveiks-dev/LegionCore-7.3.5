@@ -51,15 +51,13 @@ enum Yells
 enum Spells
 {
     SPELL_PHANTOM_BLAST                           = 68982,
-    H_SPELL_PHANTOM_BLAST                         = 70322,
     SPELL_MIRRORED_SOUL                           = 69051,
     SPELL_WELL_OF_SOULS                           = 68820,
     SPELL_UNLEASHED_SOULS                         = 68939,
     SPELL_WAILING_SOULS_STARTING                  = 68912,  // Initial spell cast at begining of wailing souls phase
     SPELL_WAILING_SOULS_BEAM                      = 68875,  // the beam visual
     SPELL_WAILING_SOULS                           = 68873,  // the actual spell
-    H_SPELL_WAILING_SOULS                         = 70324,
-//    68871, 68873, 68875, 68876, 68899, 68912, 70324,
+//    68871, 68873, 68875, 68876, 68899, 68912,
 // 68899 trigger 68871
 };
 
@@ -231,7 +229,7 @@ class boss_devourer_of_souls : public CreatureScript
 
             void SpellHitTarget(Unit* /*target*/, const SpellInfo* spell) override
             {
-                if (spell->Id == H_SPELL_PHANTOM_BLAST)
+                if (spell->Id == SPELL_PHANTOM_BLAST)
                     threeFaced = false;
             }
 
@@ -259,10 +257,7 @@ class boss_devourer_of_souls : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_PHANTOM_BLAST:
-                            if (IsHeroic())
-                                DoCastVictim(H_SPELL_PHANTOM_BLAST);
-                            else
-                                DoCastVictim(SPELL_PHANTOM_BLAST);
+                            DoCastVictim(SPELL_PHANTOM_BLAST);
                             events.ScheduleEvent(EVENT_PHANTOM_BLAST, 5000);
                             break;
                         case EVENT_MIRRORED_SOUL:
