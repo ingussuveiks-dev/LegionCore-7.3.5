@@ -42,7 +42,8 @@ enum Spells
     SPELL_MASS_RESURRECTION      = 113134,
     SPELL_DOMINATE_MIND          = 130857,
 
-    SPELL_ACHIEV_CREDIT          = 132022,
+    // Criteria.db2 asset for type 28 (be spell target), not a SpellName entry.
+    CRITERIA_WHITEMANE_ASSET     = 132022,
     
     //Durand
     SPELL_FLASH_OF_STEEL         = 115629,
@@ -175,7 +176,7 @@ public:
         {
             _JustDied();
             Talk(SAY_WH_DEATH);
-            instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEV_CREDIT, 0, 0, me);
+            instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_WHITEMANE_ASSET, 0, 0, me);
 
             if (GetDifficultyID() != DIFFICULTY_MYTHIC_KEYSTONE)
                 if (auto durand = instance->instance->GetCreature(instance->GetGuidData(DATA_DURAND)))
