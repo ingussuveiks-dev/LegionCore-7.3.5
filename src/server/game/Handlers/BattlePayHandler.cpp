@@ -72,6 +72,21 @@ void WorldSession::HandleGetPurchaseListQuery(WorldPackets::BattlePay::GetPurcha
 
 void WorldSession::HandleUpdateVasPurchaseStates(WorldPackets::BattlePay::UpdateVasPurchaseStates& /*packet*/)
 {
+    if (!GetBattlePayMgr()->IsAvailable())
+        return;
+
+    std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions =
+        GetBattlePayMgr()->BuildPendingBoostDistributions();
+    WorldPackets::BattlePay::DistributionListResponse response;
+    response.DistributionObject = distributions;
+    SendPacket(response.Write());
+
+    for (WorldPackets::BattlePay::BattlePayDistributionObject const& distribution : distributions)
+    {
+        WorldPackets::BattlePay::DistributionUpdate update;
+        update.DistributionObject = distribution;
+        SendPacket(update.Write());
+    }
 }
 
 void WorldSession::HandleBattlePayDistributionAssign(WorldPackets::BattlePay::DistributionAssignToTarget& packet)
@@ -89,6 +104,19 @@ void WorldSession::HandleGetProductList(WorldPackets::BattlePay::GetProductList&
 
     GetBattlePayMgr()->SendProductList();
     GetBattlePayMgr()->SendPointsBalance();
+
+    std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions =
+        GetBattlePayMgr()->BuildPendingBoostDistributions();
+    WorldPackets::BattlePay::DistributionListResponse response;
+    response.DistributionObject = distributions;
+    SendPacket(response.Write());
+
+    for (WorldPackets::BattlePay::BattlePayDistributionObject const& distribution : distributions)
+    {
+        WorldPackets::BattlePay::DistributionUpdate update;
+        update.DistributionObject = distribution;
+        SendPacket(update.Write());
+    }
 }
 
 auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 productID, WorldSession* session) -> void
@@ -165,7 +193,11 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
 
     if (!product->Items.empty())
     {
-        if (product->Items.size() > GetBagsFreeSlots(player))
+        uint32 requiredSlots = 0;
+        for (Battlepay::ProductItem const& item : product->Items)
+            requiredSlots += item.Quantity;
+
+        if (requiredSlots > GetBagsFreeSlots(player))
         {
             std::ostringstream data;
             data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, session->GetSessionDbLocaleIndex());
@@ -291,7 +323,11 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
 
     if (!product->Items.empty())
     {
-        if (product->Items.size() > GetBagsFreeSlots(player))
+        uint32 requiredSlots = 0;
+        for (Battlepay::ProductItem const& item : product->Items)
+            requiredSlots += item.Quantity;
+
+        if (requiredSlots > GetBagsFreeSlots(player))
         {
             std::ostringstream data;
             data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, GetSessionDbLocaleIndex());
@@ -327,8 +363,20 @@ void WorldSession::HandleBattlePayQueryClassTrialResult(WorldPackets::BattlePay:
 {
 }
 
-void WorldSession::HandleBattlePayTrialBoostCharacter(WorldPackets::BattlePay::BattlePayTrialBoostCharacter& /*packet*/)
+void WorldSession::HandleBattlePayTrialBoostCharacter(WorldPackets::BattlePay::BattlePayTrialBoostCharacter& packet)
 {
+    // Some 7.3.5 UI paths submit the final character/spec selection through
+    // the class-trial opcode even for a paid boost.
+    if (!HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP) || !GetBattlePayMgr()->IsAvailable())
+        return;
+
+    std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions =
+        GetBattlePayMgr()->BuildPendingBoostDistributions();
+    if (distributions.empty())
+        return;
+
+    GetBattlePayMgr()->AssignDistributionToCharacter(packet.Character,
+        distributions.front().DistributionID, 109, uint16(packet.SpecializationID), 0);
 }
 
 void WorldSession::HandleBattlePayPurchaseDetailsResponse(WorldPackets::BattlePay::BattlePayPurchaseDetailsResponse& packet)
@@ -354,9 +402,6 @@ void WorldSession::SendDisplayPromo(int32 promotionID /*= 0*/)
         return;
 
     //SendPacket(WorldPackets::BattlePay::BattlepayUnk(2).Write());
-
-    WorldPackets::BattlePay::DistributionListResponse packet;
-    SendPacket(packet.Write());
 
     /*
     auto player = GetPlayer();

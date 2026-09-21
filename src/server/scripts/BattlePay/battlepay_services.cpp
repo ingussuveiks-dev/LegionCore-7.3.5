@@ -98,15 +98,9 @@ public:
             return false;
         }
 
-        if (t_Level <= player->getLevel())
+        if (session->HasAuthFlag(t_Level >= 100 ? AT_AUTH_FLAG_100_LVL_UP : AT_AUTH_FLAG_90_LVL_UP))
         {
-            reason = sObjectMgr->GetTrinityString(Battlepay::String::TooHighLevel, session->GetSessionDbLocaleIndex());
-            return false;
-        }
-
-        if (session->HasAuthFlag(AT_AUTH_FLAG_90_LVL_UP))
-        {
-            reason = "This account has already used its character boost.";
+            reason = "This account already has a pending character boost. Log out and use it on the character-selection screen.";
             return false;
         }
 

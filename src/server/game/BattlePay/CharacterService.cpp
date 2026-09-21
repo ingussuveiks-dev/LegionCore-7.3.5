@@ -6,6 +6,7 @@
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "World.h"
+#include "WorldSession.h"
 
 namespace
 {
@@ -60,21 +61,28 @@ void CharacterService::Customize(Player* player)
 
 std::vector<uint32> CharacterService::GetBoostItems(Player const* player, uint16 specializationId, uint8 targetLevel) const
 {
-    std::vector<uint32> result;
     if (!player)
-        return result;
+        return { };
+
+    std::vector<uint32> result = GetBoostItems(player->getClass(), specializationId, targetLevel);
+    if (player->HasItemCount(ItemHearthstone, 1, true))
+        result.erase(std::remove(result.begin(), result.end(), ItemHearthstone), result.end());
+
+    return result;
+}
+
+std::vector<uint32> CharacterService::GetBoostItems(uint8 classId, uint16 specializationId, uint8 targetLevel) const
+{
+    std::vector<uint32> result;
 
     // Purpose 3 contains the old level-90 loadout; purpose 6 is the Legion
     // level-100 boost loadout. ItemSpec data removes weapons/trinkets intended
     // for another specialization while keeping shared armor and utility items.
     uint8 loadoutPurpose = targetLevel < 100 ? 3 : 6;
-    for (uint32 itemId : sDB2Manager.GetLowestIdItemLoadOutItemsBy(player->getClass(), loadoutPurpose))
+    for (uint32 itemId : sDB2Manager.GetLowestIdItemLoadOutItemsBy(classId, loadoutPurpose))
     {
         ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
         if (!itemTemplate || !itemTemplate->IsUsableBySpecialization(specializationId, targetLevel, false))
-            continue;
-
-        if (itemId == ItemHearthstone && player->HasItemCount(ItemHearthstone, 1, true))
             continue;
 
         result.push_back(itemId);
@@ -174,10 +182,78 @@ bool CharacterService::Boost(Player* player, uint16 specializationId, uint8 targ
         CharacterDatabase.CommitTransaction(transaction);
     }
 
-    player->GetSession()->AddAuthFlag(AT_AUTH_FLAG_90_LVL_UP);
     player->SaveToDB();
     TC_LOG_INFO("battlepay", "Boosted character %s (%s) to level %u with specialization %u and %zu loadout items",
         player->GetName(), player->GetGUID().ToString().c_str(), targetLevel, specializationId, boostItems.size());
+    return true;
+}
+
+bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCharGuid, uint16 specializationId,
+    uint8 targetLevel, std::vector<uint32>& boostItems)
+{
+    if (!session || targetCharGuid.IsEmpty())
+        return false;
+
+    CharacterInfo const* charInfo = sWorld->GetCharacterInfo(targetCharGuid);
+    ChrSpecializationEntry const* specialization = sChrSpecializationStore.LookupEntry(specializationId);
+    uint8 maxLevel = uint8(sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
+    if (!charInfo || charInfo->AccountId != session->GetAccountId() || charInfo->Level >= targetLevel ||
+        !targetLevel || targetLevel > maxLevel || !specialization || specialization->ClassID != charInfo->Class)
+        return false;
+
+    boostItems = GetBoostItems(charInfo->Class, specializationId, targetLevel);
+    boostItems.erase(std::remove(boostItems.begin(), boostItems.end(), ItemHearthstone), boostItems.end());
+    if (boostItems.empty())
+    {
+        TC_LOG_ERROR("battlepay", "Character boost has no loadout for class %u, specialization %u and level %u",
+            charInfo->Class, specializationId, targetLevel);
+        return false;
+    }
+
+    ObjectGuid::LowType guid = targetCharGuid.GetCounter();
+    CharacterDatabaseTransaction transaction = CharacterDatabase.BeginTransaction();
+    transaction->PAppend("UPDATE characters SET level = %u, xp = 0, specialization = %u, "
+        "lootspecialization = %u, money = money + 5000000, health = 4294967295, mana = 4294967295, "
+        "at_login = at_login | %u WHERE guid = " UI64FMTD,
+        targetLevel, specializationId, specializationId, uint16(AT_LOGIN_RESET_SPELLS | AT_LOGIN_RESET_TALENTS), guid);
+
+    for (uint32 spellId : { 34092u, 54198u })
+    {
+        CharacterDatabasePreparedStatement* statement = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_SPELL);
+        statement->setUInt64(0, guid);
+        statement->setUInt32(1, spellId);
+        statement->setUInt8(2, 1);
+        statement->setUInt8(3, 0);
+        transaction->Append(statement);
+    }
+
+    // Offline characters cannot safely be re-equipped through Player APIs.
+    // Deliver the specialization-filtered starter set by system mail instead
+    // of destroying or orphaning the character's existing equipment.
+    for (std::size_t begin = 0; begin < boostItems.size(); begin += MAX_MAIL_ITEMS)
+    {
+        MailDraft draft("Level 100 Character Boost",
+            "Your specialization-specific Legion starter equipment is attached. Your previous equipment was left unchanged.");
+        std::size_t end = std::min(begin + std::size_t(MAX_MAIL_ITEMS), boostItems.size());
+        for (std::size_t index = begin; index < end; ++index)
+        {
+            if (Item* item = Item::CreateItem(boostItems[index], 1, nullptr))
+            {
+                item->SaveToDB(transaction);
+                draft.AddItem(item);
+            }
+        }
+
+        draft.SendMailTo(transaction, MailReceiver(guid),
+            MailSender(MAIL_NORMAL, ObjectGuid::LowType(0), MAIL_STATIONERY_GM),
+            MailCheckMask(MAIL_CHECK_MASK_COPIED | MAIL_CHECK_MASK_RETURNED));
+    }
+
+    CharacterDatabase.CommitTransaction(transaction);
+    sWorld->UpdateCharacterInfoLevel(targetCharGuid, targetLevel);
+
+    TC_LOG_INFO("battlepay", "Boosted offline character %s (%s) to level %u with specialization %u; mailed %zu items",
+        charInfo->Name.c_str(), targetCharGuid.ToString().c_str(), targetLevel, specializationId, boostItems.size());
     return true;
 }
 

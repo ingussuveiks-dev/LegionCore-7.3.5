@@ -87,6 +87,7 @@ enum AuthFlags
     AT_AUTH_FLAG_NONE                       = 0x0,
     AT_AUTH_FLAG_90_LVL_UP                  = 0x1,
     AT_AUTH_FLAG_RESTORE_DELETED_CHARACTER  = 0x2,
+    AT_AUTH_FLAG_100_LVL_UP                 = 0x4,
 };
 
 namespace WorldPackets

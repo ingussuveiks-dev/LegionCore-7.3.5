@@ -122,6 +122,27 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
         charEnum.RaceUnlockData.push_back(raceUnlock);
     }
 
+    // The Legion client builds the character-select boost token from the
+    // distribution cache, so populate it before showing the character list.
+    if (!isDeleted && GetBattlePayMgr()->IsAvailable())
+    {
+        std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions =
+            GetBattlePayMgr()->BuildPendingBoostDistributions();
+        if (!distributions.empty())
+        {
+            WorldPackets::BattlePay::DistributionListResponse response;
+            response.DistributionObject = distributions;
+            SendPacket(response.Write());
+
+            for (WorldPackets::BattlePay::BattlePayDistributionObject const& distribution : distributions)
+            {
+                WorldPackets::BattlePay::DistributionUpdate update;
+                update.DistributionObject = distribution;
+                SendPacket(update.Write());
+            }
+        }
+    }
+
     SendPacket(charEnum.Write());
 
     sScriptMgr->OnSessionLogin(this);
