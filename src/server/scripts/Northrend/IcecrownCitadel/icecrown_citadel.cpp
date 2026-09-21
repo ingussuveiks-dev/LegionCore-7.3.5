@@ -117,7 +117,6 @@ enum Spells
 
     // Alchemist Adrianna
     SPELL_HARVEST_BLIGHT_SPECIMEN   = 72155,
-    SPELL_HARVEST_BLIGHT_SPECIMEN25 = 72162,
 
     // Crok Scourgebane
     SPELL_ICEBOUND_ARMOR            = 70714,
@@ -713,7 +712,7 @@ class npc_alchemist_adrianna : public CreatureScript
 
         bool OnGossipHello(Player* player, Creature* creature) override
         {
-            if (!creature->FindCurrentSpellBySpellId(SPELL_HARVEST_BLIGHT_SPECIMEN) && !creature->FindCurrentSpellBySpellId(SPELL_HARVEST_BLIGHT_SPECIMEN25))
+            if (!creature->FindCurrentSpellBySpellId(SPELL_HARVEST_BLIGHT_SPECIMEN))
                 if (player->HasAura(SPELL_ORANGE_BLIGHT_RESIDUE) && player->HasAura(SPELL_GREEN_BLIGHT_RESIDUE))
                     creature->CastSpell(creature, SPELL_HARVEST_BLIGHT_SPECIMEN, false);
             return false;
