@@ -77,7 +77,6 @@ enum Spells
     SPELL_FELFIRE_FISSION                       = 45779, // Felfire Fiends explode when they die or get close to target.
 
     /* Kil'Jaeden's spells and cosmetics */
-    SPELL_TRANS                                 = 23188, // Surprisingly, this seems to be the right spell.. (Where is it used?)
     SPELL_REBIRTH                               = 44200, // Emerge from the Sunwell
     SPELL_SOUL_FLAY                             = 45442, // 9k Shadow damage over 3 seconds. Spammed throughout all the fight.
     SPELL_SOUL_FLAY_SLOW                        = 47106,
@@ -100,8 +99,7 @@ enum Spells
     /* Armageddon spells wrong visual */
     SPELL_ARMAGEDDON_TRIGGER                    = 45909, // Meteor spell trigger missile should cast Creature on himself
     SPELL_ARMAGEDDON_VISUAL                     = 45911, // Does the hellfire visual to indicate where the meteor missle lands
-    SPELL_ARMAGEDDON_VISUAL2                    = 45914, // Does the light visual to indicate where the meteor missle lands
-    SPELL_ARMAGEDDON_VISUAL3                    = 24207, // This shouldn't correct but same as seen on the movie
+    SPELL_ARMAGEDDON_IMPACT_VISUAL              = 24207, // Hellfire cast visual used for the impact warning
     SPELL_ARMAGEDDON_SUMMON_TRIGGER             = 45921, // Summons the triggers that cast the spells on himself need random target select
     SPELL_ARMAGEDDON_DAMAGE                     = 45915, // This does the area damage
 
@@ -1127,7 +1125,7 @@ public:
                         ++spell;
                         break;
                     case 1:
-                        DoCast(me, SPELL_ARMAGEDDON_VISUAL2, true);
+                        DoCast(me, SPELL_ARMAGEDDON_IMPACT_VISUAL, true);
                         uiTimer = 9000;
                         ++spell;
                         break;
