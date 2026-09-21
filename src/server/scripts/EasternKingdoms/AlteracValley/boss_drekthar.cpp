@@ -26,7 +26,6 @@ enum Spells
     SPELL_FRENZY                                  = 8269,
     SPELL_SWEEPING_STRIKES                        = 18765, // not sure
     SPELL_CLEAVE                                  = 20677, // not sure
-    SPELL_WINDFURY                                = 35886, // not sure
     SPELL_STORMPIKE                               = 51876  // not sure
 };
 
