@@ -36,7 +36,7 @@ enum Spells
     SPELL_CHANNEL           = 45537,
     SPELL_EGG_DESTROY       = 19873,
 
-    SPELL_CLEAVE            = 22540,
+    SPELL_CLEAVE            = 15284,
     SPELL_WARSTOMP          = 24375,
     SPELL_FIREBALLVOLLEY    = 22425,
     SPELL_CONFLAGRATION     = 23023
