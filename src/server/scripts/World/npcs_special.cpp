@@ -2963,11 +2963,13 @@ class mob_mojo : public CreatureScript
         {
             mob_mojoAI(Creature* creature) : ScriptedAI(creature) {Reset();}
             uint32 hearts;
+            uint32 heartVisualTimer;
             ObjectGuid victimGUID;
             void Reset() override
             {
                 victimGUID.Clear();
-                hearts = 15000;
+                hearts = 0;
+                heartVisualTimer = 0;
                 if (Unit* own = me->GetOwner())
                     me->GetMotionMaster()->MoveFollow(own, 0, 0);
             }
@@ -2976,13 +2978,23 @@ class mob_mojo : public CreatureScript
 
             void UpdateAI(uint32 diff) override
             {
-                if (me->HasAura(20372))
+                if (hearts)
                 {
                     if (hearts <= diff)
                     {
-                        me->RemoveAurasDueToSpell(20372);
-                        hearts = 15000;
-                    } hearts -= diff;
+                        hearts = 0;
+                        heartVisualTimer = 0;
+                        return;
+                    }
+
+                    hearts -= diff;
+                    if (heartVisualTimer <= diff)
+                    {
+                        me->SendPlaySpellVisualKit(6552, 0);
+                        heartVisualTimer = 5 * IN_MILLISECONDS;
+                    }
+                    else
+                        heartVisualTimer -= diff;
                 }
             }
 
@@ -3031,9 +3043,10 @@ class mob_mojo : public CreatureScript
                             victim->RemoveAura(43906);//remove polymorph frog thing
                     me->AddAura(43906, player);//add polymorph frog thing
                     victimGUID = player->GetGUID();
-                    DoCast(me, 20372, true);//tag.hearts
+                    me->SendPlaySpellVisualKit(6552, 0);
                     me->GetMotionMaster()->MoveFollow(player, 0, 0);
                     hearts = 15000;
+                    heartVisualTimer = 5 * IN_MILLISECONDS;
                 }
             }
         };
