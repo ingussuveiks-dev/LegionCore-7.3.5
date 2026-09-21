@@ -44,7 +44,6 @@ enum eSpells
     SPELL_EXTRACT_SHA_2         = 111806,
     SPELL_EXTRACT_SHA_3         = 111807,
     SPELL_EXTRACT_SHA_4         = 111768,
-    SPELL_UNKNOWN               = 105581,
     //JIANG SPELLS
     SPELL_JUGGLER_JIANG         = 114745, //OnSpawn: Jiang
     //THE SONGBIRD QUEEN SPELLS
