@@ -832,9 +832,6 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
     // enable basic auras. ToDo: find the way to do it not by hack.
     switch(getClass())
     {
-        case CLASS_WARRIOR:
-            AddAura(2457, this);   //Battle Stance
-            break;
         case CLASS_MONK:
             AddAura(103985, this);  //Stance of the Fierce Tiger
             break;
