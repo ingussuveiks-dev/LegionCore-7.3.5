@@ -39,7 +39,13 @@ namespace
 {
 enum WarlockTier21Spells
 {
-    SPELL_WARLOCK_T21_FLAMES_OF_ARGUS = 253097
+    SPELL_WARLOCK_AGONY                  = 980,
+    SPELL_WARLOCK_UNSTABLE_AFFLICTION_1 = 233490,
+    SPELL_WARLOCK_UNSTABLE_AFFLICTION_2 = 233496,
+    SPELL_WARLOCK_UNSTABLE_AFFLICTION_3 = 233497,
+    SPELL_WARLOCK_UNSTABLE_AFFLICTION_4 = 233498,
+    SPELL_WARLOCK_UNSTABLE_AFFLICTION_5 = 233499,
+    SPELL_WARLOCK_T21_FLAMES_OF_ARGUS   = 253097
 };
 }
 
@@ -2961,6 +2967,46 @@ class spell_warl_t21_destruction_4p : public AuraScript
     }
 };
 
+// Item - Warlock T21 Affliction 2P Bonus - 251847
+class spell_warl_t21_affliction_2p : public AuraScript
+{
+    PrepareAuraScript(spell_warl_t21_affliction_2p);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_WARLOCK_AGONY,
+            SPELL_WARLOCK_UNSTABLE_AFFLICTION_1, SPELL_WARLOCK_UNSTABLE_AFFLICTION_2,
+            SPELL_WARLOCK_UNSTABLE_AFFLICTION_3, SPELL_WARLOCK_UNSTABLE_AFFLICTION_4,
+            SPELL_WARLOCK_UNSTABLE_AFFLICTION_5 });
+    }
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* procSpell = eventInfo.GetSpellInfo();
+        return procSpell && procSpell->Id == SPELL_WARLOCK_AGONY && eventInfo.GetActionTarget();
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+
+        Unit* target = eventInfo.GetActionTarget();
+        ObjectGuid casterGuid = GetTarget()->GetGUID();
+        for (uint32 spellId : { SPELL_WARLOCK_UNSTABLE_AFFLICTION_1,
+            SPELL_WARLOCK_UNSTABLE_AFFLICTION_2, SPELL_WARLOCK_UNSTABLE_AFFLICTION_3,
+            SPELL_WARLOCK_UNSTABLE_AFFLICTION_4, SPELL_WARLOCK_UNSTABLE_AFFLICTION_5 })
+            if (Aura* unstableAffliction = target->GetAura(spellId, casterGuid))
+                unstableAffliction->SetDuration(unstableAffliction->GetDuration() + aurEff->GetAmount());
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_warl_t21_affliction_2p::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_warl_t21_affliction_2p::HandleProc,
+            EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
 void AddSC_warlock_spell_scripts()
 {
     new spell_warl_burning_rush();
@@ -3028,6 +3074,7 @@ void AddSC_warlock_spell_scripts()
     RegisterAuraScript(spell_warl_eradication);
     RegisterSpellScript(spell_warl_chaos_bolt);
     RegisterAuraScript(spell_warl_channel_demonfire);
+    RegisterAuraScript(spell_warl_t21_affliction_2p);
     RegisterAuraScript(spell_warl_t21_destruction_4p);
     RegisterCreatureAI(npc_warl_dimensional_rift);
 }
