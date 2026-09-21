@@ -48,10 +48,9 @@ enum SeconTrial
 
 enum eSpells
 {
-    SPELL_FLASH_OF_LIGHT              = 19939,
-    SPELL_SEAL_OF_JUSTICE             = 20164,
-    SPELL_JUDGEMENT_OF_LIGHT          = 20271,
-    SPELL_SEAL_OF_COMMAND             = 20375,
+    SPELL_FLASH_OF_LIGHT              = 19750,
+    SPELL_JUDGMENT                    = 20271,
+    SPELL_SEAL_OF_COMMAND             = 29385,
 };
 
 enum eNpc
@@ -115,13 +114,11 @@ public:
         ObjectGuid summonerGuid;
 
         bool spellFlashLight;
-        bool spellJustice;
-        bool spellJudLight;
+        bool spellJudgment;
         bool spellCommand;
 
         uint32 timerFlashLight;
-        uint32 timerJustice;
-        uint32 timerJudLight;
+        uint32 timerJudgment;
         uint32 timerCommand;
 
         void Reset() override
@@ -134,8 +131,7 @@ public:
           me->setFaction(FACTION_FRIENDLY);
 
           spellFlashLight = false;
-          spellJustice    = false;
-          spellJudLight   = false;
+          spellJudgment   = false;
           spellCommand    = false;
 
           switch (me->GetEntry())
@@ -145,19 +141,19 @@ public:
                   timerFlashLight = 3225;
               break;
               case CHAMPION_LIGHTREND:
-                  spellJustice    = true;
-                  timerJustice    = 500;
+                  spellJudgment   = true;
+                  timerJudgment   = 500;
               break;
               case CHAMPION_SWIFTBLADE:
-                  spellJudLight   = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
-                  timerJudLight   = 500;
+                  spellJudgment   = true;
+                  timerJudgment   = 500;
               break;
               case CHAMPION_SUNSTRIKER:
                   spellFlashLight = true;
-                  spellJudLight   = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
-                  spellCommand    = false;  // Misses Dummy // http://www.wowhead.com/?spell=20375
+                  spellJudgment   = true;
+                  spellCommand    = true;
                   timerFlashLight = 3225;
-                  timerJudLight   = 500;
+                  timerJudgment   = 500;
                   timerCommand    = 1500;
               break;
           }
@@ -200,26 +196,15 @@ public:
                     timerFlashLight -= diff;
             }
 
-            if (spellJustice)
+            if (spellJudgment)
             {
-                if (timerJustice <= diff)
+                if (timerJudgment <= diff)
                 {
-                    DoCast(me, SPELL_SEAL_OF_JUSTICE, false);
-                    timerJustice = urand(10000, 20000);
+                    DoCastVictim(SPELL_JUDGMENT);
+                    timerJudgment = urand(10000, 20000);
                 }
                 else
-                    timerJustice -= diff;
-            }
-
-            if (spellJudLight)
-            {
-                if (timerJudLight <= diff)
-                {
-                    DoCast(me, SPELL_JUDGEMENT_OF_LIGHT, false);
-                    timerJudLight = urand(10000, 20000);
-                }
-                else
-                    timerJudLight -= diff;
+                    timerJudgment -= diff;
             }
 
             if (spellCommand)
