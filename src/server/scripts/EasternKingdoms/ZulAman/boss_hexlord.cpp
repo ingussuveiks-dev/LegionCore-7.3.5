@@ -53,7 +53,7 @@ enum Spells
     SPELL_PR_SW_DEATH               = 41375,
     SPELL_PR_PSYCHIC_SCREAM         = 43432,
     SPELL_PR_MIND_CONTROL           = 43550,
-    SPELL_PR_PAIN_SUPP              = 44416,
+    SPELL_PR_PAIN_SUPP              = 33206,
 
     // Rogue
     SPELL_RO_BLIND                  = 43433,
