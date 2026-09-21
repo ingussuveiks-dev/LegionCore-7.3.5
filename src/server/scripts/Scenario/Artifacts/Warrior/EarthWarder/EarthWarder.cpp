@@ -404,7 +404,7 @@ public:
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_DEFENSIVE);
             me->setFaction(14);
-            me->GetMotionMaster()->MoveJump(4714.82f, 349.11f, -37.77f, 5, 5);
+            me->GetMotionMaster()->MoveJump(4714.82f, 349.11f, -37.77f, me->GetOrientation(), 5.0f, 5.0f);
             if (Creature* targ = me->FindNearestCreature(96468, 70.0f, true))
             {
                 AttackStart(targ);
@@ -448,7 +448,7 @@ public:
                         stop_combat = true;
                         if (Creature* targ = me->FindNearestCreature(96468, 100.0f, true))
                             targ->AttackStop();
-                        me->GetMotionMaster()->MoveJump(4686.67f, 354.12f, -27.10f, 5, 5);
+                        me->GetMotionMaster()->MoveJump(4686.67f, 354.12f, -27.10f, me->GetOrientation(), 5.0f, 5.0f);
                         LaunchEventWave(wave);
                         wave++;
                         events.RescheduleEvent(EVENT_5, 1000);
@@ -527,7 +527,7 @@ public:
                 {
                     summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                     if (Creature* targ = summon->FindNearestCreature(64367, 30.0f, true))
-                        summon->GetMotionMaster()->MoveJump(targ->GetPositionX(), targ->GetPositionY(), targ->GetPositionZ(), 5, 5);
+                        summon->GetMotionMaster()->MoveJump(targ->GetPositionX(), targ->GetPositionY(), targ->GetPositionZ(), summon->GetOrientation(), 5.0f, 5.0f);
                     summon->CastSpell(summon, 191032);
                 }
             }

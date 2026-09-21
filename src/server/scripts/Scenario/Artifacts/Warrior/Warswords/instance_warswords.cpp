@@ -52,7 +52,7 @@ public:
 
                 player->CastSpell(player, 205534);
                 player->CastSpell(player, 189695);
-                player->GetMotionMaster()->MoveJump(3386.46f, 1406.94f, 68.94f, 3, 3);
+                player->GetMotionMaster()->MoveJump(3386.46f, 1406.94f, 68.94f, player->GetOrientation(), 3.0f, 3.0f);
                 outrotimer = 5000;
                 jump = false;
             });

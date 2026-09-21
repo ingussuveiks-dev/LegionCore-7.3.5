@@ -459,7 +459,7 @@ public:
                     if (!me->FindNearestCreature(108216, 40.0f, true) && !me->FindNearestCreature(108217, 40.0f, true))
                     {
                         checkdies = false;
-                        me->GetMotionMaster()->MoveJump(-8614.58f, 403.17f, 102.92f, 5, 5);
+                        me->GetMotionMaster()->MoveJump(-8614.58f, 403.17f, 102.92f, me->GetOrientation(), 5.0f, 5.0f);
                         me->RemoveAura(214873);
                         if (Player* pl = me->FindNearestPlayer(50.0f))
                         {
@@ -707,7 +707,7 @@ public:
                         {
                             if (Creature* add = me->SummonCreature(108324, -8315.46f, 293.38f, 159.24f))
                             {
-                                add->GetMotionMaster()->MoveJump(me->GetPositionX() + irand(-5, 5), me->GetPositionY() + irand(-5, 5), me->GetPositionZ(), 5, 5);
+                                add->GetMotionMaster()->MoveJump(me->GetPositionX() + irand(-5, 5), me->GetPositionY() + irand(-5, 5), me->GetPositionZ(), add->GetOrientation(), 5.0f, 5.0f);
                                 add->CastSpell(add, 158342);
                             }
                             if (convid != 2448)

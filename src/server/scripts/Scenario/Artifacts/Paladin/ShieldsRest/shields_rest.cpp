@@ -760,7 +760,7 @@ public:
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50581); //Step 5
                 introSecond = true;
                 ZoneTalk(0);
-                me->GetMotionMaster()->MoveJump(4878.13f, 522.01f, -49.09f, 20.0f, 10.0f);
+                me->GetMotionMaster()->MoveJump(4878.13f, 522.01f, -49.09f, me->GetOrientation(), 20.0f, 10.0f);
                 me->SetHomePosition(4878.13f, 522.01f, -49.09f, 4.51f);
             }
         }
@@ -864,7 +864,7 @@ public:
                         me->GetMotionMaster()->MovePoint(2, 4878.36f, 523.51f, -49.09f);
                         break;
                     case EVENT_4:
-                        me->GetMotionMaster()->MoveJump(4880.58f, 532.99f, -43.42f, 20.0f, 10.0f, 111);
+                        me->GetMotionMaster()->MoveJump(4880.58f, 532.99f, -43.42f, me->GetOrientation(), 20.0f, 10.0f, 111);
                         me->SetHomePosition(4880.58f, 532.99f, -43.42f, 1.57f);
                         break;
                     case EVENT_5:

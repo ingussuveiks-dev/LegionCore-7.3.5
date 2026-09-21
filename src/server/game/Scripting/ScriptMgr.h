@@ -743,6 +743,9 @@ class TC_GAME_API PlayerScript : public ScriptObject
 
         //After receiving item as a quest reward
         virtual void OnQuestRewardItem(Player* player, Item* item, uint32 count) { }
+
+        // Called after a valid response to a PlayerChoice has been received.
+        virtual void OnPlayerChoiceResponse(Player* /*player*/, uint32 /*choiceId*/, uint32 /*responseId*/) { }
 };
 
 class TC_GAME_API SessionScript : public ScriptObject
@@ -1055,6 +1058,7 @@ class TC_GAME_API ScriptMgr
         void OnLootItem(Player* player, Item* item, uint32 count);
         void OnCreateItem(Player* player, Item* item, uint32 count);
         void OnQuestRewardItem(Player* player, Item* item, uint32 count);
+        void OnPlayerChoiceResponse(Player* player, uint32 choiceId, uint32 responseId);
         
         /* SessionScript */
         void OnSessionLogin(WorldSession* session);

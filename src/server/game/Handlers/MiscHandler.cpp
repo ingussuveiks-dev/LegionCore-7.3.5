@@ -677,6 +677,11 @@ void WorldSession::HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& pack
     if (auto reward = playerChoiceResponse->Reward)
         if (reward.has_value() && reward->SpellID)
             _player->CastSpell(_player, reward->SpellID, true);
+
+    // Choice reward spells set the hidden "<specialization> Chosen" quest.
+    // Notify scripts afterwards so class-hall scripts can advance the visible
+    // selection objective and start the corresponding acquisition quest.
+    sScriptMgr->OnPlayerChoiceResponse(_player, packet.ChoiceID, packet.ResponseID);
 }
 
 void WorldSession::HandleQueryWorldCountwodnTimer(WorldPackets::Instance::QueryWorldCountwodnTimer& packet)

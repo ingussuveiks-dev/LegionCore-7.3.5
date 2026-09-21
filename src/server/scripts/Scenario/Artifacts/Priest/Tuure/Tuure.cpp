@@ -200,7 +200,7 @@ public:
                         break;
                     case 2:
                         Talk(4);
-                        me->GetMotionMaster()->MoveJump(58.20f, 1214.60f, -74.35f, 10, 10);
+                        me->GetMotionMaster()->MoveJump(58.20f, 1214.60f, -74.35f, me->GetOrientation(), 10.0f, 10.0f);
                         if (Creature* targ = me->FindNearestCreature(106201, 60.0f, true))
                             AttackStart(targ);
                         firstfighting = true;
@@ -469,7 +469,7 @@ public:
 
                         me->SetReactState(REACT_PASSIVE);
                         me->CastSpell(tppos[point].GetPositionX(), tppos[point].GetPositionY(), tppos[point].GetPositionZ(), 211190);
-                        me->GetMotionMaster()->MoveJump(tppos[point].GetPositionX(), tppos[point].GetPositionY(), tppos[point++].GetPositionZ(), 15, 15);
+                        me->GetMotionMaster()->MoveJump(tppos[point].GetPositionX(), tppos[point].GetPositionY(), tppos[point++].GetPositionZ(), me->GetOrientation(), 15.0f, 15.0f);
                         events.RescheduleEvent(EVENT_2, 25000, 0, PHASE_COMBAT); // rephase 211186 + 211190  
                         events.SetPhase(PHASE_REPHASE);
                         events.RescheduleEvent(EVENT_3, 2000, 0, PHASE_REPHASE);
@@ -671,7 +671,7 @@ public:
                 boja->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
                 boja->AI()->Talk(0);
                 if (Creature* boros = boja->FindNearestCreature(106134, 70.0f, true))
-                    boja->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, -PET_FOLLOW_ANGLE, MOTION_SLOT_IDLE);
+                    boja->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, static_cast<float>(-PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
 
                 if (Creature* capitan = boja->FindNearestCreature(106107, 70.0f, true))
                 {

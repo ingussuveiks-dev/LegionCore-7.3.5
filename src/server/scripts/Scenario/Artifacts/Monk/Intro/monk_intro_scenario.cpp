@@ -268,7 +268,7 @@ public:
             {
                 DoCast(193248);
                 Talk(3);
-                me->GetMotionMaster()->MoveJump(3814.16f, 2009.03f, 935.15f, 5, 5);
+                me->GetMotionMaster()->MoveJump(3814.16f, 2009.03f, 935.15f, me->GetOrientation(), 5.0f, 5.0f);
                 me->AddDelayedEvent(3000, [this]() -> void
                 {
                     Talk(4);

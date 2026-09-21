@@ -1,6 +1,5 @@
 /*
     Demon Hunter Specialization: Vengeance
-    To-Do: Last Boss (i havent sniffs)
 */
 
 #include "ScriptMgr.h"
@@ -519,12 +518,12 @@ public:
                 {
                     introDone = true;
                     who->CastSpell(who, 208459); // convers
-                    me->GetMotionMaster()->MoveJump(-2748.06f, -328.11f, 38.42f, 10, 15);
+                    me->GetMotionMaster()->MoveJump(-2748.06f, -328.11f, 38.42f, me->GetOrientation(), 10.0f, 15.0f);
                 }
             }
             if (me->GetDistance2d(-2748.06f, -328.11f) <= 5.0f && !introDone2)
             {
-                if ((me->GetDistance(who) < 53.0f) && !introDone)
+                if ((me->GetDistance(who) < 53.0f) && !introDone2)
                 {
                     introDone2 = true;
                     who->CastSpell(who, 208460); // convers
