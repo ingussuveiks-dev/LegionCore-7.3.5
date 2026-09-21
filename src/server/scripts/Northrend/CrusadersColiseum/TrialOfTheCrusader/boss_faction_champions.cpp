@@ -66,7 +66,7 @@ enum Spells
     AURA_SATED                      = 57724,
 
     // paladin healer
-    SPELL_HAND_OF_FREEDOM           = 68757,
+    SPELL_HAND_OF_FREEDOM           = 66115,
     SPELL_DIVINE_SHIELD             = 66010,
     SPELL_CLEANSE                   = 66116,
     SPELL_FLASH_OF_LIGHT            = 66113,
@@ -144,7 +144,7 @@ enum Spells
     SPELL_BLADESTORM                = 65947,
     SPELL_INTIMIDATING_SHOUT        = 65930,
     SPELL_MORTAL_STRIKE             = 65926,
-    SPELL_CHARGE                    = 68764,
+    SPELL_CHARGE                    = 65927,
     SPELL_DISARM                    = 65935,
     SPELL_OVERPOWER                 = 65924,
     SPELL_SUNDER_ARMOR              = 65936,
