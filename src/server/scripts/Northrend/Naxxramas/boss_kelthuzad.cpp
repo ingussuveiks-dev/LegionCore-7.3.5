@@ -99,35 +99,35 @@ enum Spells
 
     //spells for chained
     //warlock
-    SPELL_CURSE_OF_AGONY                                   = 47864,
-    SPELL_SHADOW_BOLT                                      = 47809,
+    SPELL_CURSE_OF_AGONY                                   = 980,
+    SPELL_SHADOW_BOLT                                      = 686,
     //shaman
-    SPELL_EARTH_SHOCK                                      = 49231,
-    SPELL_HEALING_WAVE                                     = 49273,
+    SPELL_EARTH_SHOCK                                      = 8042,
+    SPELL_HEALING_WAVE                                     = 77472,
     //mage
-    SPELL_FROST_FIREBOLT                                   = 47610,
-    SPELL_ARCANE_MISSILES                                  = 42846,
+    SPELL_FROSTBOLT                                        = 116,
+    SPELL_ARCANE_MISSILES                                  = 5143,
     //rogue
-    SPELL_HEMORRHAGE                                       = 48660,
-    SPELL_MUTILATE                                         = 48666,
+    SPELL_HEMORRHAGE                                       = 16511,
+    SPELL_MUTILATE                                         = 1329,
     //paladin
-    SPELL_HOLY_SHOCK                                       = 48825,
-    SPELL_HAMMER_OF_JUSTICE                                = 10308,
+    SPELL_HOLY_SHOCK                                       = 20473,
+    SPELL_HAMMER_OF_JUSTICE                                = 853,
     //priest
-    SPELL_VAMPIRIC_TOUCH                                   = 48160,
-    SPELL_RENEW                                            = 48068,
+    SPELL_VAMPIRIC_TOUCH                                   = 34914,
+    SPELL_RENEW                                            = 139,
     //hunter
-    SPELL_MULTI_SHOT                                       = 49048,
-    SPELL_VOLLEY                                           = 58434,
+    SPELL_MULTI_SHOT                                       = 2643,
+    SPELL_ARCANE_SHOT                                      = 185358,
     //warrior
     SPELL_BLADESTORM                                       = 46924,
-    SPELL_CLEAVE                                           = 47520,
+    SPELL_CLEAVE                                           = 845,
     //druid
-    SPELL_MOONFIRE                                         = 48463,
-    SPELL_LIFEBLOOM                                        = 48451,
+    SPELL_MOONFIRE                                         = 8921,
+    SPELL_LIFEBLOOM                                        = 33763,
     //death knight
-    SPELL_PLAGUE_STRIKE                                    = 49921,
-    SPELL_HOWLING_BLAST                                    = 51411,
+    SPELL_DEATH_COIL                                       = 47541,
+    SPELL_HOWLING_BLAST                                    = 49184,
     // Abomination spells
     SPELL_FRENZY                                           = 28468,
     SPELL_MORTAL_WOUND                                     = 28467,
@@ -572,10 +572,10 @@ public:
                                                     player->CastSpell(me, SPELL_LIFEBLOOM, false);
                                                 break;
                                             case CLASS_HUNTER:
-                                                player->CastSpell(pTarget, RAND(SPELL_MULTI_SHOT, SPELL_VOLLEY), false);
+                                                player->CastSpell(pTarget, RAND(SPELL_MULTI_SHOT, SPELL_ARCANE_SHOT), false);
                                                 break;
                                             case CLASS_MAGE:
-                                                player->CastSpell(pTarget, RAND(SPELL_FROST_FIREBOLT, SPELL_ARCANE_MISSILES), false);
+                                                player->CastSpell(pTarget, RAND(SPELL_FROSTBOLT, SPELL_ARCANE_MISSILES), false);
                                                 break;
                                             case CLASS_WARLOCK:
                                                 player->CastSpell(pTarget, RAND(SPELL_CURSE_OF_AGONY, SPELL_SHADOW_BOLT), true);
@@ -606,7 +606,7 @@ public:
                                                 break;
                                             case CLASS_DEATH_KNIGHT:
                                                 if (urand(0,1))
-                                                    player->CastSpell(pTarget, SPELL_PLAGUE_STRIKE, true);
+                                                    player->CastSpell(pTarget, SPELL_DEATH_COIL, true);
                                                 else
                                                     player->CastSpell(pTarget, SPELL_HOWLING_BLAST, true);
                                                 break;
