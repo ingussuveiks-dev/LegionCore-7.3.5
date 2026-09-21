@@ -7193,27 +7193,6 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster, SpellEf
             }
             break;
         }
-        case SPELLFAMILY_HUNTER:
-        {
-            switch (GetSpellInfo()->Id)
-            {
-                // Camouflage
-                case 80326:
-                {
-                    if (!caster || (caster->isMoving() && !caster->HasAura(119449) && !caster->isPet()) || caster->HasAura(80325))
-                        return;
-
-                    if (caster->HasAura(119449) || (caster->GetOwner() && caster->GetOwner()->HasAura(119449)))
-                        caster->CastSpell(caster, 119450, true);
-                    else
-                        caster->CastSpell(caster, 80325, true);
-                    break;
-                }
-                default:
-                    break;
-            }
-            break;
-        }
         case SPELLFAMILY_MONK:
         {
             if (trigger_spell_id == 120086)
