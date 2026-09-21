@@ -16,35 +16,17 @@ enum Texts
 enum Spells
 {
     // Al'Akir
-    SPELL_WIND_BURST_N_10           = 87770, // PHASE ONE
-    SPELL_WIND_BURST_H_10           = 93261,
-    SPELL_WIND_BURST_N_25           = 93262,
-    SPELL_WIND_BURST_H_25           = 93263,
-    SPELL_LIGHTNING_STRIKE_N_10     = 88214,
-    SPELL_LIGHTNING_STRIKE_H_10     = 93255,
-    SPELL_LIGHTNING_STRIKE_N_25     = 93256,
-    SPELL_LIGHTNING_STRIKE_H_25     = 93257,
+    SPELL_WIND_BURST                = 87770, // PHASE ONE
+    SPELL_LIGHTNING_STRIKE          = 88214,
     SPELL_ICE_STORM_SUMMON          = 88239,
 
-    SPELL_ACID_RAIN_N_10            = 88301, // PHASE TWO
-    SPELL_ACID_RAIN_H_10            = 93279,
-    SPELL_ACID_RAIN_N_25            = 93280,
-    SPELL_ACID_RAIN_H_25            = 93281,
+    SPELL_ACID_RAIN                 = 88301, // PHASE TWO
 
     SPELL_RENTLESS_STORM            = 88866, // PHASE THREE
     SPELL_EYE_OFTHE_STORM           = 82724,        
-    SPELL_LIGHTING_ROD_N_10         = 89667,
-    SPELL_LIGHTING_ROD_H_10         = 93293,
-    SPELL_LIGHTING_ROD_N_25         = 93294,
-    SPELL_LIGHTING_ROD_H_25         = 93295,
-    SPELL_WIND_BURST2_N_10          = 88858, 
-    SPELL_WIND_BURST2_H_10          = 93286,
-    SPELL_WIND_BURST2_N_25          = 93287,
-    SPELL_WIND_BURST2_H_25          = 93288,
-    SPELL_LIGHTNING_N_10            = 89641,
-    SPELL_LIGHTNING_H_10            = 93290,
-    SPELL_LIGHTNING_N_25            = 93291,
-    SPELL_LIGHTNING_H_25            = 93292,
+    SPELL_LIGHTING_ROD              = 89667,
+    SPELL_WIND_BURST2               = 88858, 
+    SPELL_LIGHTNING                 = 89641,
 
     SPELL_ELECTROCUE                = 88427, // PHASE ONE & TWO
     SPELL_STATIC_SHOCK              = 87873,
@@ -54,26 +36,12 @@ enum Spells
     SPELL_BERSERK                   = 95211, // BERSERK I HOPE ITS THE RIGHT BERSERK
 
     // Icestorm npc
-    SPELL_ICE_STORM_N_10            = 91020,
-    SPELL_ICE_STORM_H_10            = 93258,
-    SPELL_ICE_STORM_N_25            = 93259,
-    SPELL_ICE_STORM_H_25            = 93260,
     SPELL_ICE_STORM_AURA_SPAWN      = 87472,
     SPELL_ICE_STORM_AURA2           = 87469,
 
     // Squall line
     SPELL_SQUALL_LINE_AURA          = 87621,
     SPELL_SQUALL_LINE_DISMOUNT      = 95757,
-    SPELL_SQUALL_LINE_DAMAGE_N_10   = 87856,
-    SPELL_SQUALL_LINE_DAMAGE_H_10   = 93283,
-    SPELL_SQUALL_LINE_DAMAGE_N_25   = 93284,
-    SPELL_SQUALL_LINE_DAMAGE_H_25   = 87855,
-
-    // Clouds
-    SPELL_LIGHTING_CLOUD_N_10       = 89588,
-    SPELL_LIGHTING_CLOUD_H_10       = 93297,
-    SPELL_LIGHTING_CLOUD_N_25       = 93298,
-    SPELL_LIGHTING_CLOUD_H_25       = 93299,
 
     // Stormling
     SPELL_FEEDBACK                  = 87904,
@@ -335,13 +303,13 @@ public:
                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
                     {
                         DoCast(pTarget, SPELL_BLAST_OF_AIR);
-                        DoCast(pTarget, RAID_MODE(SPELL_WIND_BURST_N_10, SPELL_WIND_BURST_H_10, SPELL_WIND_BURST_N_25, SPELL_WIND_BURST_H_25));
+                        DoCast(pTarget, SPELL_WIND_BURST);
                     }
                     events.ScheduleEvent(EVENT_WIND_BURST, 25000, 0, PHASE_ONE);
                     break;
 
                 case EVENT_LIGHTNING_STRIKE:
-                    DoCastVictim(RAID_MODE(SPELL_LIGHTNING_STRIKE_N_10, SPELL_LIGHTNING_STRIKE_H_10, SPELL_LIGHTNING_STRIKE_N_25, SPELL_LIGHTNING_STRIKE_H_25));
+                    DoCastVictim(SPELL_LIGHTNING_STRIKE);
                     events.ScheduleEvent(EVENT_LIGHTNING_STRIKE, 20000, 0, PHASE_ONE);
                     break;
 
@@ -370,7 +338,7 @@ public:
                     break;
 
                 case EVENT_ACID_RAIN:
-                    DoCastAOE(RAID_MODE(SPELL_ACID_RAIN_N_10, SPELL_ACID_RAIN_H_10, SPELL_ACID_RAIN_N_25, SPELL_ACID_RAIN_H_25));
+                    DoCastAOE(SPELL_ACID_RAIN);
                     events.ScheduleEvent(EVENT_ACID_RAIN, 15000, 0, PHASE_TWO);
                     break;
 
@@ -378,7 +346,7 @@ public:
                     Talk(SAY_WIND_BURST);
                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
                     {
-                        DoCast(pTarget, RAID_MODE(SPELL_WIND_BURST2_N_10, SPELL_WIND_BURST2_H_10, SPELL_WIND_BURST2_N_25, SPELL_WIND_BURST2_H_25));
+                        DoCast(pTarget, SPELL_WIND_BURST2);
                     }
                     events.ScheduleEvent(EVENT_WIND_BURST2, 5000, 0, PHASE_THREE);
                     break;
@@ -386,7 +354,7 @@ public:
                 case EVENT_LIGHTING_ROD:
                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
                     {
-                        DoCast(pTarget, RAID_MODE(SPELL_LIGHTING_ROD_N_10, SPELL_LIGHTING_ROD_H_10, SPELL_LIGHTING_ROD_N_25, SPELL_LIGHTING_ROD_H_25));
+                        DoCast(pTarget, SPELL_LIGHTING_ROD);
                     }
                     events.ScheduleEvent(EVENT_LIGHTING_ROD, 15000, 0, PHASE_THREE);
                     break;
@@ -394,7 +362,7 @@ public:
                 case EVENT_LIGHTING:
                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM))
                     {
-                        DoCast(pTarget, RAID_MODE(SPELL_LIGHTNING_N_10, SPELL_LIGHTNING_H_10, SPELL_LIGHTNING_N_25, SPELL_LIGHTNING_H_25));
+                        DoCast(pTarget, SPELL_LIGHTNING);
                     }
                     events.ScheduleEvent(EVENT_LIGHTING, 20000, 0, PHASE_THREE);
                     break;
