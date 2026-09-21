@@ -68,7 +68,7 @@ enum BossSpells
 {
     //Gormok
     SPELL_IMPALE            = 66331,
-    SPELL_STAGGERING_STOMP  = 67648,
+    SPELL_STAGGERING_STOMP  = 66330,
     SPELL_RISING_ANGER      = 66636,
     //Snobold
     SPELL_SNOBOLLED         = 66406,
@@ -89,7 +89,6 @@ enum BossSpells
     SPELL_MOLTEN_SPEW       = 66821,
     SPELL_BURNING_BITE      = 66879,
     SPELL_BURNING_SPRAY     = 66902,
-    SPELL_SWEEP_1           = 67646,
     SPELL_EMERGE_0          = 66947,
     SPELL_SUBMERGE_0        = 66948,
     SPELL_ENRAGE            = 68335,
