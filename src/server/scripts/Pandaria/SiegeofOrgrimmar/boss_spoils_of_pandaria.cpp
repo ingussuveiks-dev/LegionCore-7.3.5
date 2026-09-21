@@ -58,8 +58,6 @@ enum eSpells
     SPELL_RUSH                        = 144904,
     SPELL_KW_ENRAGE                   = 145692,
     SPELL_MANTID_SWARM                = 145806,
-    SPELL_MANTID_SWARM2               = 145807,
-    SPELL_MANTID_SWARM3               = 145808,
     SPELL_THROW_EXPLOSIVES            = 145702,
     SPELL_GUSTING_BOMB                = 145712,
     SPELL_GUSTING_BOMB_AOE_DMG        = 145718,
@@ -228,13 +226,6 @@ uint32 smallmantisentry[3] =
     NPC_KORTHIK_WARCALLER,
 };
 //
-
-uint32 mantidswarm[3] =
-{
-    SPELL_MANTID_SWARM,
-    SPELL_MANTID_SWARM2,
-    SPELL_MANTID_SWARM3,
-};
 
 //Pandaren Relic box
 uint32 pandarenrelicentry[3] = 
@@ -1215,7 +1206,7 @@ public:
                     break;
                 case EVENT_MANTID_SWARM:
                     for (uint8 n = 0; n < 3; n++)
-                        DoCast(me, mantidswarm[n]);
+                        DoCast(me, SPELL_MANTID_SWARM, true);
                     events.RescheduleEvent(EVENT_MANTID_SWARM, 35000);
                     break;
                 case EVENT_THROW_EXPLOSIVES:
