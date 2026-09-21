@@ -100,7 +100,8 @@ enum Spells
     SPELL_UNSTABLE_CORRUPTION           = 108813,
     SPELL_SHRAPNEL_TRIGGER_AURA         = 106818,
     SPELL_BERSERK                       = 64238,
-    SPELL_DEATHWING_CREDIT              = 111533,
+    // Criteria.db2 asset for type 28 (be spell target), not a SpellName entry.
+    CRITERIA_DEATHWING_ASSET            = 111533,
 
     // Limb Tentacle
     SPELL_LIMB_EMERGE_VISUAL            = 107991,
@@ -2098,7 +2099,7 @@ class npc_madness_of_deathwing_deathwing : public CreatureScript
                     if (me->GetHealth() <= damage)
                     {
                         isDead = true;
-                        DoCastAOE(SPELL_DEATHWING_CREDIT);
+                        instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_DEATHWING_ASSET, 0, 0, me);
                         Map::PlayerList const& players = instance->instance->GetPlayers();
                         if (!players.isEmpty())
                             if (players.begin()->getSource()->GetGroup())
