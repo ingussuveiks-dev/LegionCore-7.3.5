@@ -24,7 +24,7 @@ enum Spells
     SPELL_SHADOWBOLT                                       = 17228,
     SPELL_CURSEOFTONGUES                                   = 15470,
     SPELL_CURSEOFWEAKNESS                                  = 17227,
-    SPELL_DEMONARMOR                                       = 11735,
+    SPELL_DEMONARMOR                                       = 13787,
     SPELL_ENVELOPINGWEB                                    = 15471
 };
 
