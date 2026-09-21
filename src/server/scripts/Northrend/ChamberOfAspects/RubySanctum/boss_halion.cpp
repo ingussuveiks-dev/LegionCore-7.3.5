@@ -72,7 +72,6 @@ enum Spells
     SPELL_FIERY_COMBUSTION_SUMMON       = 74610,
 
     // Combustion & Consumption
-    SPELL_SCALE_AURA                    = 70507, // Aura created in spell_dbc.
     SPELL_COMBUSTION_DAMAGE_AURA        = 74629,
     SPELL_CONSUMPTION_DAMAGE_AURA       = 74803,
 
@@ -114,8 +113,7 @@ enum Spells
     SPELL_TWILIGHT_MENDING              = 75509,
     SPELL_TWILIGHT_REALM                = 74807,
     SPELL_DUSK_SHROUD                   = 75476,
-    SPELL_TWILIGHT_PRECISION            = 78243,
-    SPELL_COPY_DAMAGE                   = 74810  // Aura not found in DBCs.
+    SPELL_TWILIGHT_PRECISION            = 78243
 };
 
 enum Events
@@ -293,6 +291,16 @@ struct generic_halionAI : public BossAI
     }
 
 protected:
+    void MirrorDamage(uint32 counterpartData, uint32 damage)
+    {
+        Creature* counterpart = ObjectAccessor::GetCreature(*me, instance->GetGuidData(counterpartData));
+        if (!counterpart || !counterpart->IsAlive())
+            return;
+
+        uint64 remainingHealth = damage < me->GetHealth() ? me->GetHealth() - damage : 1;
+        counterpart->SetHealth(remainingHealth > counterpart->GetMaxHealth() ? counterpart->GetMaxHealth() : remainingHealth);
+    }
+
     bool _canEvade;
 };
 
@@ -363,6 +371,11 @@ class boss_halion : public CreatureScript
 
             void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
             {
+                if (damage >= me->GetHealth() && !events.IsInPhase(PHASE_THREE))
+                    damage = me->GetHealth() - 1;
+
+                MirrorDamage(DATA_TWILIGHT_HALION, damage);
+
                 if (me->HealthBelowPctDamaged(75, damage) && events.IsInPhase(PHASE_ONE))
                 {
                     events.SetPhase(PHASE_TWO);
@@ -467,9 +480,6 @@ class boss_twilight_halion : public CreatureScript
                 if (!halion)
                     return;
 
-                // Using AddAura because no spell cast packet in sniffs.
-                halion->AddAura(SPELL_COPY_DAMAGE, me); // We use explicit targeting here to avoid conditions + SPELL_ATTR6_CANT_TARGET_SELF.
-                me->AddAura(SPELL_COPY_DAMAGE, halion);
                 me->AddAura(SPELL_DUSK_SHROUD, me);
 
                 me->SetHealth(halion->GetHealth());
@@ -522,6 +532,11 @@ class boss_twilight_halion : public CreatureScript
 
             void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
             {
+                if (damage >= me->GetHealth() && !events.IsInPhase(PHASE_THREE))
+                    damage = me->GetHealth() - 1;
+
+                MirrorDamage(DATA_HALION, damage);
+
                 if (me->HealthBelowPctDamaged(50, damage) && events.IsInPhase(PHASE_TWO))
                 {
                     events.SetPhase(PHASE_THREE);
@@ -1158,7 +1173,7 @@ class npc_combustion_consumption : public CreatureScript
                 if (type != DATA_STACKS_DISPELLED || !_damageSpell || !_explosionSpell || !summoner)
                     return;
 
-                me->CastCustomSpell(SPELL_SCALE_AURA, SPELLVALUE_AURA_STACK, stackAmount, me);
+                me->SetObjectScale(me->GetCreatureTemplate()->scale * (1.0f + 0.1f * stackAmount));
                 DoCast(me, _damageSpell);
 
                 int32 damage = 1200 + (stackAmount * 1290); // Needs more researches.
