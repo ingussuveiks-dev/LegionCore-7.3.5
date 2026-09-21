@@ -1104,8 +1104,6 @@ enum EyeOfAcherus
     SPELL_EYE_OF_ACHERUS_VISUAL             = 51892,
     SPELL_EYE_OF_ACHERUS_FLIGHT_BOOST       = 51923,
     SPELL_EYE_OF_ACHERUS_FLIGHT             = 51890,
-    SPELL_ROOT_SELF                         = 51860,
-
     EVENT_ANNOUNCE_LAUNCH_TO_DESTINATION    = 1,
     EVENT_UNROOT                            = 2,
     EVENT_LAUNCH_TOWARDS_DESTINATION        = 3,
@@ -1138,7 +1136,7 @@ struct npc_eye_of_acherus : public ScriptedAI
 
     void InitializeAI() override
     {
-        DoCastSelf(SPELL_ROOT_SELF);
+        me->AddUnitState(UNIT_STATE_ROOT);
         DoCastSelf(SPELL_EYE_OF_ACHERUS_VISUAL);
         _events.ScheduleEvent(EVENT_ANNOUNCE_LAUNCH_TO_DESTINATION, 7s);
     }
@@ -1166,9 +1164,6 @@ struct npc_eye_of_acherus : public ScriptedAI
                     _events.ScheduleEvent(EVENT_UNROOT, 1s + 200ms);
                     break;
                 case EVENT_UNROOT:
-                    me->RemoveAurasDueToSpell(SPELL_ROOT_SELF);
-
-                    // TODO: hack
                     me->ClearUnitState(UNIT_STATE_ROOT);
 
                     DoCastSelf(SPELL_EYE_OF_ACHERUS_FLIGHT_BOOST);
@@ -1186,9 +1181,6 @@ struct npc_eye_of_acherus : public ScriptedAI
                     break;
                 }
                 case EVENT_GRANT_CONTROL:
-                    me->RemoveAurasDueToSpell(SPELL_ROOT_SELF);
-
-                    // TODO: hack
                     me->SetSheath(SHEATH_STATE_MELEE);
                     me->ClearUnitState(UNIT_STATE_ROOT);
 
@@ -1211,9 +1203,6 @@ struct npc_eye_of_acherus : public ScriptedAI
         switch (pointId)
         {
             case POINT_NEW_AVALON:
-                DoCastSelf(SPELL_ROOT_SELF);
-
-                // TODO: hack
                 me->AddUnitState(UNIT_STATE_ROOT);
 
                 _events.ScheduleEvent(EVENT_GRANT_CONTROL, 2s + 500ms);
