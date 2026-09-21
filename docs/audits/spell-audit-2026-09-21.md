@@ -1,146 +1,149 @@
 # Full spell audit — 2026-09-21
 
-## Scope
+## Scope and reference version
 
-This audit compares the LegionCore spell data used by the server against the
-local 7.3.5 client DB2 files and the SQL hotfix overlay. It covers:
+This audit targets the local Legion 7.3.5 client data, build 26972. It compares
+the spell data actually loaded by the core with source and world-database
+references. The audit covers:
 
-- `Spell.db2` and `SpellEffect.db2` structural integrity;
-- the effective spell catalogue after applying `legion_hotfixes.spell`;
-- `legion_hotfixes.spell_effect` ownership, bounds and duplicate slots;
-- spell IDs referenced by spell-related columns in `legion_world`;
+- `Spell.db2`, `SpellEffect.db2`, `SpellAuraOptions.db2`, `ItemEffect.db2`,
+  `ItemSet.db2` and `ItemSetSpell.db2`;
+- the SQL hotfix overlays for spells, effects and item effects;
+- spell-related fields in `legion_world`;
 - spell constants and direct spell API calls in the C++ source tree;
-- database script-name bindings and a clean worldserver startup validation.
+- all Antorus Tier 21 item sets and their 2-piece/4-piece mechanics;
+- a clean Release build and full worldserver startup validation.
 
-Static source findings are candidates for review, not proof that a code path is
-reachable. Old-expansion, disabled and commented custom content is still present
-in the source tree and is intentionally reported rather than silently ignored.
+The client data is the primary numeric source of truth. External checks used
+the official [7.3.5 patch notes](https://worldofwarcraft.blizzard.com/en-us/news/21365423),
+[Wowhead's Tier 21 reference](https://www.wowhead.com/guide/tier-21-armor-sets-antorus-the-burning-throne-transmog-5326),
+the [LegionCore 7.3.5 upstream repository](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5),
+and mechanic-specific historical reports where client data alone did not
+describe server-side behaviour.
 
-## Result
+## Final result
 
-Not every spell reference in the repository exists in the effective 7.3.5
-DB2/hotfix catalogue. The active spell loader and script registry are healthy,
-but the repository contains a substantial legacy-data backlog.
+The active repository-level spell references now agree with the effective
+7.3.5 DB2/hotfix catalogue. The remaining numeric mismatches are either inert
+records inherited from Blizzard's 26972 client files, an SQL item table that
+this core does not load, or a disabled custom event whose private spells were
+never part of the retail client.
 
-| Area | Result |
+| Area | Final result |
 | --- | ---: |
 | Raw `Spell.db2` records | 179,382 |
-| Raw `SpellEffect.db2` records | 707,841 |
 | Effective DB2 + hotfix spell IDs | 179,641 |
-| Invalid raw effect indexes/types/aura types | 0 / 0 / 0 |
-| Raw duplicate effect slots | 0 |
-| Raw effects whose owner spell is absent | 9 |
-| Raw trigger references whose target spell is absent after hotfix union | 2,283 rows / 1,157 IDs |
-| Hotfix spell rows | 260 |
-| Hotfix-only spell IDs | 259 |
-| Hotfix effect owner/trigger/bounds errors | 0 / 0 / 0 |
-| Hotfix duplicate effect slots after repair | 0 |
-| DB spell script names with no source occurrence | 0 of 2,769 |
-| Likely source spell declarations checked | 14,492 declarations / 13,912 IDs |
-| Referenced source IDs absent from the effective catalogue | 187 declarations / 182 IDs |
-| Missing direct spell-call literals | 31 IDs |
-| Combined high-confidence source review set | 210 IDs |
-| World DB spell references checked | 216,677 rows / 54,732 IDs |
-| World DB references absent from the effective catalogue | 1,299 rows / 882 IDs |
+| Raw `SpellEffect.db2` records | 707,841 |
+| Invalid effect indexes / effect types / aura types | 0 / 0 / 0 |
+| Duplicate raw effect slots | 0 |
+| Duplicate effective hotfix effect slots | 0 |
+| Missing `ItemSetSpell` spell IDs | 0 |
+| Missing `SpellAuraOptions` owner spell IDs | 0 |
+| Initial world DB mismatches | 1,299 rows / 882 IDs |
+| Remaining active world DB mismatches | 0 |
+| Remaining active C++ spell mismatches | 0 |
+| Tier 21 bonus rows without a spell/effect | 0 |
+| Tier 21 trigger spells without an effect | 0 |
 
-The world DB result excludes negative nested group identifiers in `spell_group`
-and `spell_enchant_proc_data.entry`, which is an enchantment identifier rather
-than a spell identifier.
+## DB2 and hotfix integrity
 
-## Safe repair made
+The effective catalogue is the union of the 179,382 client spell records and
+260 hotfix spell rows (259 hotfix-only IDs). The effective spell-effect overlay
+contains 312 SQL rows and has no duplicate `(SpellID, DifficultyID,
+EffectIndex)` slots after the deterministic repair for custom spell 305010.
 
-`legion_hotfixes.spell_effect` contained two rows for spell 305010, difficulty
-0, effect index 0. Loader order already made the newer row (`ID=410010`, base
-points 1) win. Update
-`2026_09_21_001_deduplicate_spell_305010_effect.sql` removes only the obsolete
-row (`ID=16`, base points 0), preserving effective runtime behaviour while
-making the data deterministic.
+The 26972 client files themselves contain several dangling references:
 
-Post-update verification:
-
-- 312 hotfix effect rows;
-- one row for spell 305010: `ID=410010`, effect index 0, base points 1;
-- zero duplicate `(SpellID, DifficultyID, EffectIndex)` groups.
-
-Commit: `66519c4 Deduplicate custom spell 305010 effect`.
-
-## Remaining findings
-
-### Client DB2 inheritance
-
-Nine `SpellEffect.db2` rows have no owning `Spell.db2` or hotfix spell record:
-
-- spell 182749, effect row 264503;
-- spell 183093, effect row 265051;
-- spell 183531, effect row 265838;
-- spell 184054, effect row 266671;
-- spell 227478, effect row 359762;
-- spell 237658, effect rows 360019 and 360021;
-- spell 74063, effect rows 469868 and 469869.
-
-These are inert client-data remnants. The server cannot safely invent missing
-spell definitions for them. The same rule applies to the 1,157 absent trigger
-targets: a missing numeric target does not identify the intended replacement.
-
-### C++ source backlog
-
-The 210-ID high-confidence review set is concentrated in legacy or dormant
-content. The largest groups are:
-
-- `World/custom_events.cpp`: 38 IDs, mostly disabled custom Temple event code;
-- `Northrend/Naxxramas/boss_kelthuzad.cpp`: 19 IDs;
-- `Kalimdor/ThroneOfTheFourWinds/boss_alakir.cpp`: 18 IDs;
-- `Scenario/ProvingGrounds/proving_grounds.h`: 9 IDs.
-
-Some core call sites also retain removed pre-Legion IDs, for example Battle
-Stance 2457. Removing or remapping these without validating the surrounding
-mechanic would change gameplay and is not a safe mechanical repair.
-
-### World database backlog
-
-Absent spell references by table/field group:
-
-| Table | Rows | Unique IDs |
+| Client structure | Rows | Unique missing IDs |
 | --- | ---: | ---: |
-| `spell_loot_template` | 889 | 576 |
-| `item_template` | 312 | 248 |
-| `areatrigger_template` | 37 | 35 |
-| `areatrigger_polygon` | 28 | 6 |
-| `quest_template` | 9 | 6 |
-| `creature_action` | 6 | 4 |
-| `spell_trigger` | 5 | 5 |
-| `areatrigger_data` | 4 | 4 |
-| `spell_aura_dummy` | 4 | 2 |
-| `spell_proc_check` | 2 | 2 |
-| `areatrigger_actions` | 1 | 1 |
-| `creature_template_spell` | 1 | 1 |
-| `quest_template_addon` | 1 | 1 |
+| `SpellEffect` owner spell | 9 | 7 |
+| `SpellEffect.EffectTriggerSpell` | 2,283 | 1,157 |
+| `ItemEffect.SpellID` | 775 | 495 |
 
-Most rows belong to imported legacy loot and item data. Bulk deletion would
-hide the mismatch but could remove intended content; bulk substitution would be
-worse because DB2 absence provides no canonical destination ID.
+The SQL hotfix overlay does not replace these records. They include obsolete,
+test and retired client assets and are inert because `SpellMgr` creates a
+`SpellInfo` only for an effective `Spell.db2`/hotfix spell. A numeric dangling
+reference does not identify a canonical replacement, so inventing server-side
+spell definitions would make the data less faithful to build 26972.
 
-## Runtime validation
+## World database repairs
 
-A clean Release worldserver startup after applying the repair reported:
+The initial scan checked 216,677 references representing 54,732 spell IDs.
+Every mismatch in a runtime-loaded world table was reviewed and either repaired
+against build 26972 or removed when the owning content was obsolete. The work
+was committed and pushed in small, independently reviewable changes.
 
-- 3,597 spell script names loaded;
-- 7,406 C++ scripts loaded;
-- 3,747 script bindings validated;
-- world initialization completed and the server reached ready state;
+The repaired areas include:
+
+- stale creature actions and creature spell slots;
+- 576 orphan spell-loot definitions;
+- area-trigger templates, data and polygons, including aura-created triggers;
+- Demonic Gateway's reuse-cooldown condition;
+- retired aura-dummy, proc-check and trigger branches;
+- obsolete quest reward/source spells and their dead content;
+- stale spell-script bindings and obsolete quest/instance helpers.
+
+After the repairs, every initially reported field group is at zero except the
+legacy SQL `item_template` fields: 312 references / 248 IDs. This is not runtime
+item data. `ObjectMgr::LoadItemTemplates()` builds items from `ItemSparse.db2`
+and appends effects from `ItemEffect.db2`; it never selects spell fields from
+`item_template`. Of the 312 legacy fields, 255 have no corresponding DB2 item
+effect and 57 mirror the client file's own obsolete/test dangling effects.
+
+## Source audit
+
+The high-confidence scan initially produced 210 IDs requiring review. After the
+mechanic-by-mechanic repairs, an exact rescan of current declarations leaves 58
+static candidates:
+
+- 43 private 305xxx IDs in the disabled Temple section of
+  `World/custom_events.cpp`; all related registrations are commented out;
+- 14 values that are timers, quest/creature IDs, achievement keys, deliberately
+  custom non-DBC OutdoorPvP dispatch values, or a deprecated commented cast;
+- spell 99771, which is supplied by the hotfix spell table.
+
+None of these is an active missing retail spell. The disabled Temple code was
+not assigned invented retail IDs and was not enabled.
+
+## Antorus Tier 21 verification
+
+The maximum retail class tier for Legion is present as item-set IDs 1319–1330:
+12 class sets, six items per set. `ItemSetSpell.db2` contains 72 bonus rows,
+covering all 36 specializations with both a 2-piece and a 4-piece threshold.
+
+All 72 bonus spell records have effects. Their 27 directly triggered spell
+records also exist and have effects. Native modifier/proc-trigger bonuses were
+checked against their DB2 effect and proc data; dummy mechanics were checked
+for a concrete C++ consumer and, where necessary, a validated
+`spell_script_names` binding.
+
+The audit restored the missing Paladin Protection and Priest Shadow bindings,
+the class-specific T21 bindings for the other scripted bonuses, and one missing
+implementation: Warlock Affliction 2P (251847). Its DB2 proc supplies the
+retail 8% chance, while the new handler extends each active caster-owned
+Unstable Affliction on the Agony target by the DB2 amount of 2,000 ms. This
+matches the 7.3.5 tooltip and the documented retail tick behaviour in the
+[resolved Legion report](https://tracker.legionbugs.com/view.php?id=12200).
+
+The result establishes that every T21 set grants both bonuses and that each
+bonus has a native effect path or a registered server implementation. Full
+combat-output parity still requires gameplay tests with equipped characters;
+static data and startup validation cannot replace encounter-level simulation.
+
+## Build and runtime validation
+
+The final Release `worldserver` build completed successfully at revision
+`b42242f`. On a clean startup, the database updater applied updates 267–280 in
+order, including the conflict-safe area-trigger migration.
+
+Runtime results:
+
+- 3,593 spell script names loaded;
+- 7,401 C++ scripts loaded;
+- 3,741 script bindings validated;
+- world initialization completed in 14 seconds and reached `ready`;
 - `DBErrors.log` remained empty;
-- the server was shut down cleanly.
+- the server shut down cleanly.
 
-## Recommended repair order
-
-1. Review missing IDs in active core code and active Legion scripts, mechanic by
-   mechanic, using the intended 7.3.5 spell chain as the source of truth.
-2. Validate active area-trigger, quest, creature and spell helper rows in the
-   world database and repair each content unit separately.
-3. Audit legacy expansion scripts only when that expansion's content is being
-   brought into the supported runtime path.
-4. Remove disabled custom-event remnants only as an explicit content-retirement
-   decision, not as part of numeric spell cleanup.
-
-No mass replacement or deletion is recommended. Each remaining repair needs an
-authoritative intended spell or an explicit decision that the content is dead.
+The spell-audit changes span `66519c4` through `b42242f`; each gameplay or data
+repair was committed and pushed separately.
