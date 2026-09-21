@@ -15,7 +15,6 @@ enum ScriptTexts
 enum Spells
 {
     SPELL_SHADOW_BOLT           = 96516,
-    SPELL_SHADOW_BOLT_H         = 96956,
     SPELL_WAVE_OF_AGONY_AOE     = 98269, // select target
     SPELL_WAVE_OF_AGONY_END     = 96461, // summon stalker
     SPELL_WAVE_OF_AGONY_START   = 96457, // summon wave stalker
@@ -38,7 +37,7 @@ enum Spells
 
     // achievement
     SPELL_CLEAR_ACHIEVEMENT     = 98840,
-    SPELL_CAT_FED               = 98258,
+    CRITERIA_ASSET_CAT_FED      = 98258,
     SPELL_BLOOD_FRENZY          = 98239,
     SPELL_CREATE_RAT_COVER      = 98177,
     SPELL_CREATE_RAT            = 98178,
@@ -198,8 +197,7 @@ class boss_kilnara : public CreatureScript
                 if (spellInfo->HasEffect(SPELL_EFFECT_INTERRUPT_CAST))
                 {
                     if (Spell const* spell = me->GetCurrentSpell(CURRENT_GENERIC_SPELL))
-                        if (spell->m_spellInfo->Id == SPELL_SHADOW_BOLT ||
-                            spell->m_spellInfo->Id == SPELL_SHADOW_BOLT_H)
+                        if (spell->m_spellInfo->Id == SPELL_SHADOW_BOLT)
                             me->InterruptSpell(CURRENT_GENERIC_SPELL);
 
                     me->RemoveAurasDueToSpell(SPELL_TEARS_OF_BLOOD_AURA);
@@ -491,7 +489,7 @@ class spell_kilnara_rat_lure : public SpellScriptLoader
                 GetHitUnit()->CastSpell(GetHitUnit(), SPELL_BLOOD_FRENZY, true);
                 GetHitUnit()->CastSpell(GetCaster(), SPELL_POUNCE_RAT, true);
                 if (InstanceScript* instance = GetHitUnit()->GetInstanceScript())
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_CAT_FED);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_CAT_FED);
             }
 
             void Register()
