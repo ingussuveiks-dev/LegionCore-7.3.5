@@ -26,9 +26,7 @@ enum eSpells
     SPELL_TEMPEST_STORM_SUMMON       = 83414,
     SPELL_TEMPEST_STORM_TRANSFORM    = 83170,
     SPELL_LIGHTNING_CHARGE           = 91872,
-    SPELL_LIGHTNING_CHARGE_AURA      = 93959,
-    
-    SPELL_ACHIEV_CREDIT              = 93957
+    SPELL_LIGHTNING_CHARGE_AURA      = 93959
 };
 
 enum eCreatures
@@ -107,10 +105,7 @@ struct boss_siamat : public ScriptedAI
     void Reset() override
     {
         if (instance)
-        {
             instance->SetData(DATA_SIAMAT, NOT_STARTED);
-            instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_ACHIEV_CREDIT);
-        }
 
         events.Reset();
         summons.DespawnAll();
@@ -129,10 +124,7 @@ struct boss_siamat : public ScriptedAI
         events.ScheduleEvent(EVENT_STORM_BOLT_DW, 500, 0, PHASE_DEFLECTING_WINDS);
 
         if (instance)
-        {
             instance->SetData(DATA_SIAMAT, IN_PROGRESS);
-            instance->DoCastSpellOnPlayers(SPELL_ACHIEV_CREDIT);
-        }
     }
 
     void DoAction(int32 const action) override
