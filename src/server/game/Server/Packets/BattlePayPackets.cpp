@@ -234,7 +234,10 @@ WorldPacket const* WorldPackets::BattlePay::ProductListResponse::Write()
         _worldPacket << productGroupData.Flags;
 
         _worldPacket.WriteBits(productGroupData.Name.length(), 8);
-        _worldPacket.WriteBits(productGroupData.IsAvailableDescription.length() + 1, 24);
+        // This is a length-prefixed string, not a C string. Advertising one
+        // extra byte without writing it shifts every following shop entry and
+        // makes the client interpret packet data as enormous array lengths.
+        _worldPacket.WriteBits(productGroupData.IsAvailableDescription.length(), 24);
         _worldPacket.WriteString(productGroupData.Name);
         if (!productGroupData.IsAvailableDescription.empty())
             _worldPacket.WriteString(productGroupData.IsAvailableDescription);
