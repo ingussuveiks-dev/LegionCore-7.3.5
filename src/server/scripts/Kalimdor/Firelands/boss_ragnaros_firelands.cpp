@@ -1004,7 +1004,7 @@ class boss_ragnaros_firelands : public CreatureScript
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT, 0, 0, me); 
 
                 // Achievement
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_RAGNAROS_COMPLETE, 0, 0, me); 
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_RAGNAROS_COMPLETE, 0, 0, me);
                     
                 // Guild Achievement
                 Map::PlayerList const &plrList = instance->instance->GetPlayers();
@@ -1044,7 +1044,7 @@ class boss_ragnaros_firelands : public CreatureScript
                     }
                 }
 
-                me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, CRITERIA_RAGNAROS_COMPLETE, me, me); 
+                me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, CRITERIA_RAGNAROS_COMPLETE, me, me);
                 instance->SetBossState(DATA_RAGNAROS, DONE);
 
                 if (GetDifficultyID() == DIFFICULTY_10_N)
