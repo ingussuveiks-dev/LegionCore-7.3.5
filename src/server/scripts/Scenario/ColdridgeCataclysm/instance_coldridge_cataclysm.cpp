@@ -143,14 +143,14 @@ public:
                             break;
                         case 4:
                         case 13:
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, SPELL_EMBELLISH_TALE, 1);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, CRITERIA_ASSET_EMBELLISH_TALE, 1);
                             break;
                         case 7:
                         case 16:
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, SPELL_EXAGGERATE_TALE, 1);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, CRITERIA_ASSET_EXAGGERATE_TALE, 1);
                             break;
                         case 18:
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, SPELL_BETTER_TALE, 1);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_CAST_SPELL, CRITERIA_ASSET_BETTER_TALE, 1);
                             break;
                         default:
                             break;
