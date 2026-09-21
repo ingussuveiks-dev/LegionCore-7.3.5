@@ -25,7 +25,7 @@ enum Spells
     SPELL_RENTLESS_STORM            = 88866, // PHASE THREE
     SPELL_EYE_OFTHE_STORM           = 82724,        
     SPELL_LIGHTING_ROD              = 89667,
-    SPELL_WIND_BURST2               = 88858, 
+    SPELL_WIND_BURST2               = 88858,
     SPELL_LIGHTNING                 = 89641,
 
     SPELL_ELECTROCUE                = 88427, // PHASE ONE & TWO
