@@ -66,7 +66,7 @@ enum Spells
     SPELL_DARK_MARTYRDOM_T          = 70897,
 
     // Achievement
-    SPELL_FULL_HOUSE                = 72827, // does not exist in dbc but still can be used for criteria check
+    CRITERIA_FULL_HOUSE_ASSET       = 72827, // Criteria.db2 asset, not a spell
 
     // Both Adds
     SPELL_TELEPORT_VISUAL           = 41236,
@@ -92,9 +92,6 @@ enum Spells
     // Vengeful Shade
     SPELL_VENGEFUL_BLAST            = 71544,
     SPELL_VENGEFUL_BLAST_PASSIVE    = 71494,
-    SPELL_VENGEFUL_BLAST_25N        = 72010,
-    SPELL_VENGEFUL_BLAST_10H        = 72011,
-    SPELL_VENGEFUL_BLAST_25H        = 72012,
 
     // Darnavan
     SPELL_BLADESTORM                = 65947,
@@ -306,7 +303,7 @@ class boss_lady_deathwhisper : public CreatureScript
                             livingAddEntries.insert(unit->GetEntry());
 
                 if (livingAddEntries.size() >= 5)
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_FULL_HOUSE, 0, 0, me);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_FULL_HOUSE_ASSET, 0, 0, me);
 
                 if (Creature* darnavan = ObjectAccessor::GetCreature(*me, _darnavanGUID))
                 {
@@ -841,9 +838,6 @@ class npc_vengeful_shade : public CreatureScript
                 switch (spell->Id)
                 {
                     case SPELL_VENGEFUL_BLAST:
-                    case SPELL_VENGEFUL_BLAST_25N:
-                    case SPELL_VENGEFUL_BLAST_10H:
-                    case SPELL_VENGEFUL_BLAST_25H:
                         me->Kill(me);
                         break;
                     default:
