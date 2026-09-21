@@ -60,7 +60,7 @@ enum eEnums
     EMOTE_WRITHE_IN_AGONY         = -1043010,
     EMOTE_HORRENDOUS_VISION       = -1043011,
     //spell
-    SPELL_MARK_OF_THE_WILD_RANK_2 = 5232,
+    SPELL_MARK_OF_THE_WILD        = 24752,
     SPELL_SERPENTINE_CLEANSING    = 6270,
     SPELL_NARALEXS_AWAKENING      = 6271,
     SPELL_FLIGHT_FORM             = 33943,
@@ -115,7 +115,7 @@ public:
 
         if (instance)
         {
-            creature->CastSpell(player, SPELL_MARK_OF_THE_WILD_RANK_2, true);
+            creature->CastSpell(player, SPELL_MARK_OF_THE_WILD, true);
             if ((instance->GetData(TYPE_LORD_COBRAHN) == DONE) && (instance->GetData(TYPE_LORD_PYTHAS) == DONE) &&
                 (instance->GetData(TYPE_LADY_ANACONDRA) == DONE) && (instance->GetData(TYPE_LORD_SERPENTIS) == DONE))
             {
