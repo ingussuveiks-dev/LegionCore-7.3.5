@@ -15,18 +15,13 @@ enum Spells
 {
     SPELL_OFF_LINE             = 88348,
     SPELL_REAPER_STRIKE        = 88490,
-    SPELL_REAPER_STRIKE_H      = 91717,
     SPELL_SAFETY               = 88522,
-    SPELL_SAFETY_H             = 91720,
     SPELL_HARVEST              = 88495,
     SPELL_HARVEST_AURA         = 88497,
     SPELL_HARVEST_DMG          = 88501,
-    SPELL_HARVEST_DMG_H        = 91719,
     SPELL_HARVEST_SWEEP        = 88521,
-    SPELL_HARVEST_SWEEP_H      = 91718,
     SPELL_OVERDRIVE            = 88481,
     SPELL_OVERDRIVE_DMG        = 88484,
-    SPELL_OVERDRIVE_DMG_H      = 91716,
     SPELL_TARGET_BUNNY         = 71371 //rocket artillery
 };
 
@@ -154,7 +149,7 @@ class boss_foereaper5000 : public CreatureScript
                     switch (id)
                     {
                         case 1001:
-                            DoCast(me, DUNGEON_MODE(SPELL_HARVEST_SWEEP, SPELL_HARVEST_SWEEP), true);
+                            DoCast(me, SPELL_HARVEST_SWEEP, true);
                             me->RemoveAurasDueToSpell(SPELL_HARVEST_AURA);
                             if(auto harvestTarget = ObjectAccessor::GetCreature(*me, harvestTargetGuid))
                                 harvestTarget->DespawnOrUnsummon(1000);
