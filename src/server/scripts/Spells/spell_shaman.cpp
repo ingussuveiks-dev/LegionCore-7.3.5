@@ -372,43 +372,6 @@ class spell_sha_chain_heal : public SpellScript
     }
 };
 
-// Astral Recall - 556
-class spell_sha_astral_recall : public SpellScriptLoader
-{
-    public:
-        spell_sha_astral_recall() : SpellScriptLoader("spell_sha_astral_recall") { }
-
-        class spell_sha_astral_recall_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_sha_astral_recall_SpellScript);
-
-            void HandleAfterCast()
-            {
-                Unit* caster = GetCaster();
-                if(!caster)
-                    return;
-
-                if (caster->HasAura(147787)) //Glyph of Astral Fixation
-                {
-                    if (Player::TeamForRace(caster->getRace()) == HORDE)
-                        caster->CastSpell(caster, 147902, true);
-                    else
-                        caster->CastSpell(caster, 147901, true);
-                }
-            }
-
-            void Register() override
-            {
-                AfterCast += SpellCastFn(spell_sha_astral_recall_SpellScript::HandleAfterCast);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_sha_astral_recall_SpellScript();
-        }
-};
-
 // Glyph of Elemental Familiars - 148118
 class spell_sha_elemental_familiars : public SpellScriptLoader
 {
@@ -2429,7 +2392,6 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_bloodlust();
     new spell_sha_heroism();
     RegisterSpellScript(spell_sha_chain_heal);
-    new spell_sha_astral_recall();
     new spell_sha_elemental_familiars();
     new spell_sha_cloudburst_totem();
     RegisterSpellScript(spell_sha_cloudburst_heal);
