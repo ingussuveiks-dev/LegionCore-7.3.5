@@ -113,7 +113,7 @@ class instance_dark_heart_of_pandaria : public InstanceMapScript
             {
                 // Alliance players to goblin
                 if (player && player->GetTeam() == ALLIANCE)
-                    player->CastSpell(player, player->getGender() == GENDER_MALE ? SPELL_GOBLIN_ILLUSION_MALE : SPELL_GOBLIN_ILLISION_FEMALE, true);
+                    player->CastSpell(player, SPELL_GOBLIN_ILLUSION, true);
 
                 uint8 step = STEP_TALK_WITH_LEADER;
                 if (chapterFour >= DONE)
@@ -132,8 +132,7 @@ class instance_dark_heart_of_pandaria : public InstanceMapScript
 
             void OnPlayerLeave(Player* player) override
             {
-                player->RemoveAurasDueToSpell(SPELL_GOBLIN_ILLUSION_MALE);
-                player->RemoveAurasDueToSpell(SPELL_GOBLIN_ILLISION_FEMALE);
+                player->RemoveAurasDueToSpell(SPELL_GOBLIN_ILLUSION);
             }
 
             void OnCreatureCreate(Creature* creature) override

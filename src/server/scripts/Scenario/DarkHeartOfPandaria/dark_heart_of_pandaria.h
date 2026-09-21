@@ -66,8 +66,7 @@ enum Creatures
 
 enum iSpells
 {
-    SPELL_GOBLIN_ILLISION_FEMALE = 142358, // for alliance players
-    SPELL_GOBLIN_ILLUSION_MALE   = 142360,
+    SPELL_GOBLIN_ILLUSION        = 142364, // for alliance players
     SPELL_URTHARGES_SHIELD       = 141203,
 
     // Artifacts
