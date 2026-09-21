@@ -283,7 +283,7 @@ class boss_hex_lord_malacrass : public CreatureScript
                                 PlayerClass = pTarget->getClass() - 1;
                                 if (PlayerClass == CLASS_DRUID-1)
                                     PlayerClass = CLASS_DRUID;
-                                else if (PlayerClass == CLASS_PRIEST-1 && pTarget->HasSpell(15473))
+                                else if (PlayerClass == CLASS_PRIEST-1 && pTarget->HasSpell(232698))
                                     PlayerClass = CLASS_PRIEST; // shadow priest
 
                                 DoCast(pTarget, SPELL_SIPHON_SOUL);
