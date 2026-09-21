@@ -138,7 +138,7 @@ enum Spells
     SPELL_GRAVITY_LAPSE_TELE_CASTER_BACK_RIGHT3 = 35990,
 
     // Thaladred the Darkener spells
-    SPELL_PSYCHIC_BLOW                          = 10689,
+    SPELL_PSYCHIC_BLOW                          = 36966,
     SPELL_SILENCE                               = 30225,
     SPELL_REND                                  = 36965,
     // Lord Sanguinar spells
