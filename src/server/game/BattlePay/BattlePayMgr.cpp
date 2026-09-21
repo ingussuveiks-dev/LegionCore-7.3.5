@@ -32,6 +32,10 @@
 #include "CharacterService.h"
 #include "CollectionMgr.h"
 #include "Chat.h"
+#include "Item.h"
+#include "Mail.h"
+#include "SpellMgr.h"
+#include <set>
 
 using namespace Battlepay;
 
@@ -123,8 +127,7 @@ std::string Product::Serialize() const
 
 void BattlepayManager::ProcessDelivery(Purchase* purchase)
 {
-    // _existProducts.insert
-    auto player = _session->GetPlayer(); // atm only ingame shop -_-
+    Player* player = _session->GetPlayer();
 
     auto const* product = sBattlePayDataStore->GetProduct(purchase->ProductID);
     if (!product)
@@ -132,16 +135,53 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
 
     switch (product->WebsiteType)
     {
-    case Battlepay::Item:
-        for (auto const& itr : product->Items)
-            if (player)
-                player->AddItem(itr.ItemID, itr.Quantity);
-        break;
     case Battlepay::BattlePet:
-        if (player)
-            for (auto const& itr : product->Items)
-                player->AddBattlePetByCreatureId(itr.ItemID, true, true);
+    case Battlepay::Item:
+    case Battlepay::PackItems:
+    case Battlepay::ItemMount:
+    {
+        bool deliverDirectly = player && player->GetGUID() == purchase->TargetCharacter;
+        if (deliverDirectly)
+        {
+            for (Battlepay::ProductItem const& productItem : product->Items)
+                player->AddItem(productItem.ItemID, productItem.Quantity);
+            break;
+        }
+
+        CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(purchase->TargetCharacter);
+        if (!characterInfo || characterInfo->AccountId != _session->GetAccountId())
+            break;
+
+        CharacterDatabaseTransaction transaction = CharacterDatabase.BeginTransaction();
+        std::vector<::Item*> items;
+        for (Battlepay::ProductItem const& productItem : product->Items)
+        {
+            for (uint32 count = 0; count < productItem.Quantity; ++count)
+            {
+                if (::Item* item = ::Item::CreateItem(productItem.ItemID, 1, nullptr))
+                {
+                    item->SaveToDB(transaction);
+                    items.push_back(item);
+                }
+            }
+        }
+
+        for (std::size_t begin = 0; begin < items.size(); begin += MAX_MAIL_ITEMS)
+        {
+            MailDraft draft("BattlePay Shop Delivery",
+                "Your purchase for this character is attached. Thank you for using the in-game shop.");
+            std::size_t end = std::min(begin + std::size_t(MAX_MAIL_ITEMS), items.size());
+            for (std::size_t index = begin; index < end; ++index)
+                draft.AddItem(items[index]);
+
+            draft.SendMailTo(transaction, MailReceiver(purchase->TargetCharacter.GetCounter()),
+                MailSender(MAIL_NORMAL, ObjectGuid::LowType(0), MAIL_STATIONERY_GM),
+                MailCheckMask(MAIL_CHECK_MASK_COPIED | MAIL_CHECK_MASK_RETURNED));
+        }
+
+        CharacterDatabase.CommitTransaction(transaction);
         break;
+    }
     case Rename:
         if (player)
             sCharacterService->SetRename(player);
@@ -230,25 +270,77 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
         sScriptMgr->OnBattlePayProductDelivery(_session, product);
 }
 
-bool BattlepayManager::AlreadyOwnProduct(uint32 itemId) const
+bool BattlepayManager::AlreadyOwnProduct(uint32 itemId, ObjectGuid targetCharacter) const
 {
-    //if (_existProducts.find(productId) != _existProducts.end())
-    //    return turue;
+    ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
+    if (!itemTemplate)
+        return true;
 
-    auto const& player = _session->GetPlayer();
-    if (player)
+    Player* player = _session->GetPlayer();
+    if (targetCharacter.IsEmpty() && player)
+        targetCharacter = player->GetGUID();
+
+    if (player && (targetCharacter.IsEmpty() || player->GetGUID() == targetCharacter))
     {
-        auto itemTemplate = sObjectMgr->GetItemTemplate(itemId);
-        if (!itemTemplate)
-            return true;
-
-        for (auto itr : itemTemplate->Effects)
-            if (itr->TriggerType == ITEM_SPELLTRIGGER_LEARN_SPELL_ID && player->HasSpell(itr->SpellID))
-                return true;
-
         if (player->GetCollectionMgr()->HasToy(itemId))
             return true;
+
+        if (itemTemplate->GetMaxCount() > 0 && player->HasItemCount(itemId, 1, true))
+            return true;
     }
+
+    if (CharacterDatabase.PQuery("SELECT 1 FROM `account_toys` WHERE `accountId` = %u AND `itemId` = %u LIMIT 1",
+        _session->GetAccountId(), itemId))
+        return true;
+
+    std::set<uint32> learnedSpells;
+    std::set<uint32> battlePetSpecies;
+    for (ItemEffectEntry const* itemEffect : itemTemplate->Effects)
+    {
+        if (!itemEffect || itemEffect->TriggerType != ITEM_SPELLTRIGGER_LEARN_SPELL_ID || !itemEffect->SpellID)
+            continue;
+
+        learnedSpells.insert(itemEffect->SpellID);
+        SpellLearnSpellMapBounds bounds = sSpellMgr->GetSpellLearnSpellMapBounds(itemEffect->SpellID);
+        for (SpellLearnSpellMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
+            learnedSpells.insert(itr->second.spell);
+    }
+
+    for (uint32 spellId : learnedSpells)
+    {
+        if (sDB2Manager.GetMount(spellId))
+        {
+            if (player && player->GetCollectionMgr()->HasMount(spellId))
+                return true;
+
+            if (CharacterDatabase.PQuery("SELECT 1 FROM `account_mounts` WHERE `account` = %u AND `spell` = %u LIMIT 1",
+                _session->GetAccountId(), spellId))
+                return true;
+        }
+
+        if (BattlePetSpeciesEntry const* species = sDB2Manager.GetSpeciesBySpell(spellId))
+            battlePetSpecies.insert(species->ID);
+
+        if (!targetCharacter.IsEmpty() && CharacterDatabase.PQuery(
+            "SELECT 1 FROM `character_spell` WHERE `guid` = " UI64FMTD " AND `spell` = %u LIMIT 1",
+            targetCharacter.GetCounter(), spellId))
+            return true;
+    }
+
+    for (uint32 speciesId : battlePetSpecies)
+    {
+        if (player && player->GetBattlePetCountForSpecies(speciesId))
+            return true;
+
+        if (CharacterDatabase.PQuery("SELECT 1 FROM `account_battlepet` WHERE `account` = %u AND `species` = %u LIMIT 1",
+            _session->GetAccountId(), speciesId))
+            return true;
+    }
+
+    if (!targetCharacter.IsEmpty() && itemTemplate->GetMaxCount() > 0 && CharacterDatabase.PQuery(
+        "SELECT 1 FROM `item_instance` WHERE `owner_guid` = " UI64FMTD " AND `itemEntry` = %u LIMIT 1",
+        targetCharacter.GetCounter(), itemId))
+        return true;
 
     return false;
 }
@@ -260,53 +352,11 @@ auto BattlepayManager::ProductFilter(Product product) -> bool
     {
         switch (product.WebsiteType)
         {
-        case Battlepay::BattlePet:
-        case Rename:
-        case Faction:
-        case DeletedCharacter:
-        case Customization:
-        case Race:
-        case CharacterBoost:
-            //case Category:
-            //    break;
-            //case Battlepay::Spell:
-            //    break;
-            //case Currency:
-            //    break;
-            //case GuildRename:
-            //    break;
-            //case Gold:
-            //    break;
-            //case Level:
-            //    break;
-        case PremadeCharacter:
-            //    break;
-            //case RealmTransfer:
-            //    break;
-            //case ExpansionTransfer:
-            //    break;
-        case Premium:
-            //    break;
-            //case PackItems:
-            //    break;
-            //case ItemProfession:
-            //    break;
-            //case Transmogrification:
-            //    break;
-            //case CategoryProfession:
-            //    break;
-            //case CategoryPremade:
-            //    break;
+        case Battlepay::Item:
+        case PackItems:
         case ItemMount:
-            //    break;
-            //case CategoryCharacterManagement:
-            //    break;
-            //case CategoryRealmTransfer:
-            //    break;
-            //case CategoryExpansionTransfer:
-            //    break;
-            //case CategoryGold:
-            //    break;
+        case Battlepay::BattlePet:
+        case CharacterBoost:
             return true;
         default:
             return false;
@@ -395,6 +445,10 @@ void BattlepayManager::SendProductList()
     {
         Battlepay::ProductGroup* productGroup = sBattlePayDataStore->GetProductGroup(itr.GroupID);
         if (!productGroup)
+            continue;
+
+        Product const* shopProduct = sBattlePayDataStore->GetProduct(itr.ProductID);
+        if (!shopProduct || !ProductFilter(*shopProduct))
             continue;
 
         if (!player && productGroup->IngameOnly)

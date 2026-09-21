@@ -807,6 +807,28 @@ void WorldSession::Handle_NULL(WorldPackets::Null& null)
         GetOpcodeNameForLogging(null.GetOpcode()).c_str(), GetPlayerName(false).c_str());
 }
 
+void WorldSession::Handle_Ignore(WorldPackets::Null& /*packet*/)
+{
+    // The 7.3.5 client sends several optional telemetry and live-region
+    // notifications that do not require a server response.
+}
+
+bool WorldSession::ChangeTokenBalanceAndSave(uint8 tokenType, int64 change)
+{
+    if (change < 0 && GetTokenBalance(tokenType) < -change)
+        return false;
+
+    ChangeTokenBalance(tokenType, change);
+
+    LoginDatabasePreparedStatement* statement = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
+    statement->setUInt32(0, GetAccountId());
+    statement->setUInt8(1, tokenType);
+    statement->setInt64(2, change);
+    statement->setInt64(3, change);
+    LoginDatabase.Execute(statement);
+    return true;
+}
+
 void WorldSession::Handle_EarlyProccess(WorldPacket& recvPacket)
 {
     TC_LOG_ERROR("network.opcode", "Received opcode %s that must be processed in WorldSocket::OnRead from %s",

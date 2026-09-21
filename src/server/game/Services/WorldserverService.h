@@ -66,6 +66,17 @@ namespace Battlenet
         uint32 HandleRealmListRequest(std::unordered_map<std::string, Variant const*> params, game_utilities::v1::ClientResponse* response);
         uint32 HandleRealmJoinRequest(std::unordered_map<std::string, Variant const*> params, game_utilities::v1::ClientResponse* response);
     };
+
+    class ResourcesService : public WorldserverService<resources::v1::ResourcesService>
+    {
+        typedef WorldserverService<resources::v1::ResourcesService> BaseService;
+
+    public:
+        ResourcesService(WorldSession* session);
+
+        uint32 HandleGetContentHandle(resources::v1::ContentHandleRequest const* request, ContentHandle* response,
+            std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation) override;
+    };
 }
 
 #endif // WorldserverService_h__

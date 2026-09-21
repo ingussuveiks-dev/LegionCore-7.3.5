@@ -13110,23 +13110,7 @@ bool Player::HasToken(uint8 tokenType, uint32 count) const
 
 bool Player::ChangeTokenCount(uint8 tokenType, int64 change, uint8 buyType, uint64 productId)
 {
-    if (change < 0 && !HasToken(tokenType, change * -1))
-        return false;
-
-    GetSession()->ChangeTokenBalance(tokenType, change);
-
-    LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
-
-    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_INS_OR_UPD_TOKEN);
-    stmt->setUInt32(0, GetSession()->GetAccountId());
-    stmt->setUInt8(1, tokenType);
-    stmt->setInt64(2, change);
-    stmt->setInt64(3, change);
-    trans->Append(stmt);
-
-    LoginDatabase.CommitTransaction(trans);
-
-    return true;
+    return GetSession()->ChangeTokenBalanceAndSave(tokenType, change);
 }
 
 void Player::SetInventorySlotCount(uint8 slots)

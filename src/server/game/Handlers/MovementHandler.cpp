@@ -591,6 +591,8 @@ void WorldSession::HandleTimeSyncResponse(WorldPackets::Movement::TimeSyncRespon
 void WorldSession::HandleDiscardedTimeSyncAcks(WorldPackets::Movement::DiscardedTimeSyncAcks& packet)
 {
     Player* player = GetPlayer();
+    if (!player)
+        return;
 
     if (player->m_sequenceIndex != packet.MaxSequenceIndex)
         TC_LOG_ERROR("network", "Received CMSG_DISCARDED_TIME_SYNC_ACKS from player %s, but maxSequenceIndex %u isn't equal real server SequenceIndex %u", player->GetName(), packet.MaxSequenceIndex, player->m_sequenceIndex);

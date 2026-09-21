@@ -91,13 +91,6 @@ public:
 
     bool CanBuy(WorldSession* session, Battlepay::Product const* /*product*/, std::string& reason) override
     {
-        auto player = session->GetPlayer();
-        if (!player)
-        {
-            reason = sObjectMgr->GetTrinityString(Battlepay::String::NeedToBeInGame, session->GetSessionDbLocaleIndex());
-            return false;
-        }
-
         if (session->HasAuthFlag(t_Level >= 100 ? AT_AUTH_FLAG_100_LVL_UP : AT_AUTH_FLAG_90_LVL_UP))
         {
             reason = "This account already has a pending character boost. Log out and use it on the character-selection screen.";

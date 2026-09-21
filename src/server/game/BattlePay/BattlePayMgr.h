@@ -452,7 +452,7 @@ public:
 
     Battlepay::BattlePayCurrency GetShopCurrency() const;
     bool IsAvailable() const;
-    bool AlreadyOwnProduct(uint32 itemId) const;
+    bool AlreadyOwnProduct(uint32 itemId, ObjectGuid targetCharacter = ObjectGuid::Empty) const;
     void ProcessDelivery(Battlepay::Purchase* purchase);
     void RegisterStartPurchase(Battlepay::Purchase purchase);
     uint64 GenerateNewPurchaseID();

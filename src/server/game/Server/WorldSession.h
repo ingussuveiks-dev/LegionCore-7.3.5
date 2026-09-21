@@ -1261,6 +1261,7 @@ class TC_GAME_API WorldSession
         void BanListHelper(PreparedQueryResult result);
 
         void Handle_NULL(WorldPackets::Null& null);
+        void Handle_Ignore(WorldPackets::Null& packet);
         void Handle_EarlyProccess(WorldPacket& recvPacket); // just mark packets processed in WorldSocket::OnRead
         void LogUnprocessedTail(WorldPacket const* packet);
 
@@ -1991,6 +1992,7 @@ class TC_GAME_API WorldSession
         void SaveAuthFlag();
         int64 GetTokenBalance(uint8 tokenType) { return tokens.count(tokenType) > 0 ? tokens[tokenType] : 0; }
         void ChangeTokenBalance(uint8 tokenType, int64 change) { tokens.count(tokenType) > 0 ? tokens[tokenType] += change : tokens[tokenType] = change; }
+        bool ChangeTokenBalanceAndSave(uint8 tokenType, int64 change);
 
         void SendCharacterEnum(bool deleted = false);
 

@@ -11,6 +11,8 @@
 namespace
 {
 constexpr uint32 ItemHearthstone = 6948;
+constexpr uint32 ItemBoostBag = 142075;
+constexpr uint8 BoostBagCount = 4;
 }
 
 CharacterService* CharacterService::instance()
@@ -182,6 +184,26 @@ bool CharacterService::Boost(Player* player, uint16 specializationId, uint8 targ
         CharacterDatabase.CommitTransaction(transaction);
     }
 
+    // Bags are mailed separately so all four are guaranteed to arrive even
+    // when the character's current inventory is completely full.
+    {
+        CharacterDatabaseTransaction transaction = CharacterDatabase.BeginTransaction();
+        MailDraft draft("Level 100 Character Boost Bags",
+            "Four 30-slot Imbued Silkweave Bags are included with your character boost.");
+        for (uint8 count = 0; count < BoostBagCount; ++count)
+        {
+            if (Item* bag = Item::CreateItem(ItemBoostBag, 1, player))
+            {
+                bag->SaveToDB(transaction);
+                draft.AddItem(bag);
+            }
+        }
+
+        draft.SendMailTo(transaction, player, MailSender(player, MAIL_STATIONERY_GM),
+            MailCheckMask(MAIL_CHECK_MASK_COPIED | MAIL_CHECK_MASK_RETURNED));
+        CharacterDatabase.CommitTransaction(transaction);
+    }
+
     player->SaveToDB();
     TC_LOG_INFO("battlepay", "Boosted character %s (%s) to level %u with specialization %u and %zu loadout items",
         player->GetName(), player->GetGUID().ToString().c_str(), targetLevel, specializationId, boostItems.size());
@@ -248,6 +270,20 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
             MailSender(MAIL_NORMAL, ObjectGuid::LowType(0), MAIL_STATIONERY_GM),
             MailCheckMask(MAIL_CHECK_MASK_COPIED | MAIL_CHECK_MASK_RETURNED));
     }
+
+    MailDraft bagDraft("Level 100 Character Boost Bags",
+        "Four 30-slot Imbued Silkweave Bags are included with your character boost.");
+    for (uint8 count = 0; count < BoostBagCount; ++count)
+    {
+        if (Item* bag = Item::CreateItem(ItemBoostBag, 1, nullptr))
+        {
+            bag->SaveToDB(transaction);
+            bagDraft.AddItem(bag);
+        }
+    }
+    bagDraft.SendMailTo(transaction, MailReceiver(guid),
+        MailSender(MAIL_NORMAL, ObjectGuid::LowType(0), MAIL_STATIONERY_GM),
+        MailCheckMask(MAIL_CHECK_MASK_COPIED | MAIL_CHECK_MASK_RETURNED));
 
     CharacterDatabase.CommitTransaction(transaction);
     sWorld->UpdateCharacterInfoLevel(targetCharGuid, targetLevel);

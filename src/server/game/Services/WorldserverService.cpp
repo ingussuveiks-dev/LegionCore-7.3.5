@@ -31,6 +31,19 @@ Battlenet::GameUtilitiesService::GameUtilitiesService(WorldSession* session) : B
 {
 }
 
+Battlenet::ResourcesService::ResourcesService(WorldSession* session) : BaseService(session)
+{
+}
+
+uint32 Battlenet::ResourcesService::HandleGetContentHandle(resources::v1::ContentHandleRequest const* /*request*/,
+    ContentHandle* /*response*/, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
+{
+    // This optional CDN/resource lookup has no local private-server resource.
+    // Return a normal protocol-level "not found" response instead of treating
+    // the retail client's probe as an unimplemented server error.
+    return ERROR_NOT_EXISTS;
+}
+
 uint32 Battlenet::GameUtilitiesService::HandleProcessClientRequest(game_utilities::v1::ClientRequest const* request, game_utilities::v1::ClientResponse* response, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
 {
     Attribute const* command = nullptr;

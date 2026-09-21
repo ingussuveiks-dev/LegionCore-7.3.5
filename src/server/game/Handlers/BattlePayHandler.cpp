@@ -37,6 +37,41 @@ auto GetBagsFreeSlots = [](Player* player) -> uint32
     return freeBagSlots;
 };
 
+auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlepay::Product const* product) -> bool
+{
+    if (!characterInfo || !product)
+        return false;
+
+    uint32 classMask = 1u << (characterInfo->Class - 1);
+    uint64 raceMask = UI64LIT(1) << (characterInfo->Race - 1);
+    if (product->ClassMask && !(product->ClassMask & classMask))
+        return false;
+
+    for (Battlepay::ProductItem const& item : product->Items)
+    {
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item.ItemID);
+        if (!itemTemplate)
+            return false;
+
+        if (itemTemplate->AllowableClass && !(itemTemplate->AllowableClass & classMask))
+            return false;
+        if (itemTemplate->AllowableRace && !(itemTemplate->AllowableRace & raceMask))
+            return false;
+    }
+
+    return true;
+};
+
+auto SendStoreFailureMessage = [](WorldSession* session, char const* message) -> void
+{
+    if (Player* player = session->GetPlayer())
+    {
+        std::ostringstream data;
+        data << message;
+        player->SendCustomMessage("Store purchase failed ", data);
+    }
+};
+
 auto SendStartPurchaseResponse = [](WorldSession* session, Battlepay::Purchase const& purchase, Battlepay::Error const& result) -> void
 {
     WorldPackets::BattlePay::StartPurchaseResponse response;
@@ -126,9 +161,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
 
     auto mgr = session->GetBattlePayMgr();
 
-    auto player = session->GetPlayer();
-    if (!player)
-        return;
+    Player* player = session->GetPlayer();
 
     auto accountID = session->GetAccountId();
 
@@ -172,6 +205,12 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
+    if (!CharacterCanReceiveProduct(characterInfo, product))
+    {
+        SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
     purchase.CurrentPrice = product->CurrentPriceFixedPoint;
 
     mgr->RegisterStartPurchase(purchase);
@@ -191,7 +230,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
-    if (!product->Items.empty())
+    if (player && player->GetGUID() == targetCharacter && !product->Items.empty())
     {
         uint32 requiredSlots = 0;
         for (Battlepay::ProductItem const& item : product->Items)
@@ -199,9 +238,8 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
 
         if (requiredSlots > GetBagsFreeSlots(player))
         {
-            std::ostringstream data;
-            data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, session->GetSessionDbLocaleIndex());
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(session,
+                sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, session->GetSessionDbLocaleIndex()));
             SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
             return;
         }
@@ -212,9 +250,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         std::string reason;
         if (!sScriptMgr->BattlePayCanBuy(session, product, reason))
         {
-            std::ostringstream data;
-            data << reason;
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(session, reason.c_str());
             SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
             return;
         }
@@ -222,11 +258,10 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
 
     for (auto itr : product->Items)
     {
-        if (mgr->AlreadyOwnProduct(itr.ItemID))
+        if (mgr->AlreadyOwnProduct(itr.ItemID, targetCharacter))
         {
-            std::ostringstream data;
-            data << sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, session->GetSessionDbLocaleIndex());;
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(session,
+                sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, session->GetSessionDbLocaleIndex()));
             SendStartPurchaseResponse(session, *purchaseData, Battlepay::Error::PurchaseDenied);
             return;
         }
@@ -278,12 +313,7 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         return;
     }
 
-    auto player = GetPlayer();
-    if (!player)
-    {
-        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
-        return;
-    }
+    Player* player = GetPlayer();
 
     Battlepay::ProductGroup* group = sBattlePayDataStore->GetProductGroupForProductId(purchase->ProductID);
     if (!group)
@@ -305,6 +335,13 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         return;
     }
 
+    CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(purchase->TargetCharacter);
+    if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product))
+    {
+        SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
+        return;
+    }
+
     purchase->Lock = true;
     purchase->Status = Battlepay::UpdateStatus::Finish;
 
@@ -313,15 +350,13 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
         std::string reason;
         if (!sScriptMgr->BattlePayCanBuy(this, product, reason))
         {
-            std::ostringstream data;
-            data << reason;
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(this, reason.c_str());
             SendPurchaseUpdate(this, *purchase, Battlepay::Error::PaymentFailed);
             return;
         }
     }
 
-    if (!product->Items.empty())
+    if (player && player->GetGUID() == purchase->TargetCharacter && !product->Items.empty())
     {
         uint32 requiredSlots = 0;
         for (Battlepay::ProductItem const& item : product->Items)
@@ -329,9 +364,8 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
 
         if (requiredSlots > GetBagsFreeSlots(player))
         {
-            std::ostringstream data;
-            data << sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, GetSessionDbLocaleIndex());
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(this,
+                sObjectMgr->GetTrinityString(Battlepay::String::NotEnoughFreeBagSlots, GetSessionDbLocaleIndex()));
             SendStartPurchaseResponse(this, *purchase, Battlepay::Error::PurchaseDenied);
             return;
         }
@@ -339,11 +373,10 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
 
     for (auto itr : product->Items)
     {
-        if (GetBattlePayMgr()->AlreadyOwnProduct(itr.ItemID))
+        if (GetBattlePayMgr()->AlreadyOwnProduct(itr.ItemID, purchase->TargetCharacter))
         {
-            std::ostringstream data;
-            data << sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, GetSessionDbLocaleIndex());
-            player->SendCustomMessage("Store purchase failed ", data);
+            SendStoreFailureMessage(this,
+                sObjectMgr->GetTrinityString(Battlepay::String::YouAlreadyOwnThat, GetSessionDbLocaleIndex()));
             SendStartPurchaseResponse(this, *purchase, Battlepay::Error::PurchaseDenied);
             return;
         }
@@ -351,7 +384,7 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
 
     SendPurchaseUpdate(this, *purchase, Battlepay::Error::Other);
 
-    if (player->ChangeTokenCount(group->TokenType, -int64(purchase->CurrentPrice), Battlepay::BattlepayCustomType::BattlePayShop, purchase->ProductID))
+    if (ChangeTokenBalanceAndSave(group->TokenType, -int64(purchase->CurrentPrice)))
         GetBattlePayMgr()->ProcessDelivery(purchase);
 }
 
