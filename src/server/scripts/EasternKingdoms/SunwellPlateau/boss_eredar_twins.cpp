@@ -67,9 +67,7 @@ enum Spells
     SPELL_FLAME_TOUCHED     =   45348,
     SPELL_CONFLAGRATION     =   45342, //30-35 secs
     SPELL_BLAZE             =   45235, //on main target every 3 secs
-    SPELL_FLAME_SEAR        =   46771,
-    SPELL_BLAZE_SUMMON      =   45236, //187366 GO
-    SPELL_BLAZE_BURN        =   45246
+    SPELL_FLAME_SEAR        =   46771
 };
 
 class boss_sacrolash : public CreatureScript
@@ -470,7 +468,6 @@ public:
             {
 
             case SPELL_BLAZE:
-                target->CastSpell(target, SPELL_BLAZE_SUMMON, true);
             case SPELL_CONFLAGRATION:
             case SPELL_FLAME_SEAR:
                 HandleTouchedSpells(target, SPELL_FLAME_TOUCHED);
