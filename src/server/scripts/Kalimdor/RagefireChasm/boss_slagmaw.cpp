@@ -15,7 +15,6 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Containers.h"
 #include "InstanceScript.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -23,12 +22,8 @@
 
 enum SlagmawSpells
 {
-    SPELL_LAVA_SPIT             = 119434,
-    SPELL_MAGNAW_SUBMERGE       = 120384,
-    SPELL_MAGNAW_TELEPORT_NORTH = 119424, // Serverside
-    SPELL_MAGNAW_TELEPORT_EAST  = 119425, // Serverside
-    SPELL_MAGNAW_TELEPORT_SOUTH = 119426, // Serverside
-    SPELL_MAGNAW_TELEPORT_WEST  = 119428  // Serverside
+    SPELL_LAVA_SPIT       = 119434,
+    SPELL_MAGNAW_SUBMERGE = 120384
 };
 
 enum SlagmawEvents
@@ -39,24 +34,24 @@ enum SlagmawEvents
     EVENT_BOUNDARY_CHECK,
 };
 
-std::array<uint32, 4> const SlagmawTeleportSpells =
+Position const SlagmawTeleportPositions[4] =
 {
-    SPELL_MAGNAW_TELEPORT_NORTH,
-    SPELL_MAGNAW_TELEPORT_EAST,
-    SPELL_MAGNAW_TELEPORT_SOUTH,
-    SPELL_MAGNAW_TELEPORT_WEST
+    { -222.940f, 165.703f, -19.721f, 3.79782f },
+    { -226.477f, 135.704f, -19.721f, 2.33029f },
+    { -263.212f, 136.244f, -19.721f, 0.755677f },
+    { -256.389f, 172.884f, -19.721f, 5.57793f }
 };
 
 // 61463 - Slagmaw
 struct boss_slagmaw : public BossAI
 {
-    boss_slagmaw(Creature* creature) : BossAI(creature, BOSS_SLAGMAW), _lavaSpitCounter(0), _lastTeleportSpell(SPELL_MAGNAW_TELEPORT_WEST) { }
+    boss_slagmaw(Creature* creature) : BossAI(creature, BOSS_SLAGMAW), _lavaSpitCounter(0), _lastTeleportIndex(3) { }
 
     void Reset() override
     {
         _Reset();
         _lavaSpitCounter = 0;
-        _lastTeleportSpell = SPELL_MAGNAW_TELEPORT_WEST;
+        _lastTeleportIndex = 3;
     }
 
     void JustDied(Unit* /*killer*/) override
@@ -90,12 +85,15 @@ struct boss_slagmaw : public BossAI
         events.ScheduleEvent(EVENT_TELEPORT, 3s);
     }
 
-    uint32 GetNextTeleportSpell()
+    Position const& GetNextTeleportPosition()
     {
-        std::array<uint32, 3> teleportSpells = { };
-        std::ranges::remove_copy(SlagmawTeleportSpells, teleportSpells.begin(), _lastTeleportSpell);
-        _lastTeleportSpell = Trinity::Containers::SelectRandomContainerElement(teleportSpells);
-        return _lastTeleportSpell;
+        uint8 teleportIndex;
+        do
+            teleportIndex = urand(0, 3);
+        while (teleportIndex == _lastTeleportIndex);
+
+        _lastTeleportIndex = teleportIndex;
+        return SlagmawTeleportPositions[_lastTeleportIndex];
     }
 
     void UpdateAI(uint32 diff) override
@@ -131,7 +129,7 @@ struct boss_slagmaw : public BossAI
             }
             case EVENT_TELEPORT:
             {
-                DoCastSelf(GetNextTeleportSpell());
+                me->NearTeleportTo(GetNextTeleportPosition());
                 events.ScheduleEvent(EVENT_EMERGE, 1s);
                 break;
             }
@@ -157,7 +155,7 @@ struct boss_slagmaw : public BossAI
 
 private:
     uint8 _lavaSpitCounter;
-    uint32 _lastTeleportSpell;
+    uint8 _lastTeleportIndex;
 };
 
 void AddSC_boss_slagmaw()
