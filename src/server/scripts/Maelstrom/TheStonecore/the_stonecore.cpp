@@ -4,22 +4,17 @@ enum Spells
 {
     // Crystalspawn Giant
     SPELL_QUAKE              = 81008,
-    H_SPELL_QUAKE            = 92631,
 
     // Imp
     SPELL_FELL_FIREBALL      = 80344,
-    H_SPELL_FELL_FIREBALL    = 92638, 
 
     // Millhouse Manastorm
     SPELL_BLUR               = 81216,
     SPELL_MILL_FEAR          = 81442,
     SPELL_FROSTBOLT_VOLLEY   = 81440,           
-    H_SPELL_FROSTBOLT_VOLLEY = 92642,
     SPELL_IMPENDING_DOOM     = 86830,
     SPELL_SHADOW_BOLT        = 81439,           
-    H_SPELL_SHADOW_BOLT      = 92641,
     SPELL_SHADOWFURY         = 81441,
-    H_SPELL_SHADOWFURY       = 92644,
     SPELL_TIGULE             = 81220,
 
     // Stonecore Berserker
@@ -29,28 +24,23 @@ enum Spells
     // Stonecore Bruiser
     SPELL_BODY_SLAM          = 80180,
     SPELL_SHOCKWAVE          = 80195,
-    H_SPELL_SHOCKWAVE        = 92640,
 
     // Stonecore Earthshaper 
     SPELL_DUST_STORM         = 81463,
     SPELL_FORCE_OF_EARTH     = 81459,
     SPELL_GROUND_SHOCK       = 81530,       
-    H_SPELL_GROUND_SHOCK     = 92628,
     SPELL_LAVA_BURST         = 81576,
-    H_SPELL_LAVA_BURST       = 92626, 
 
     // Stonecore Flayer 
     SPELL_FLAY               = 79922,
 
     // Stonecore Magmalord (
     SPELL_IGNITE             = 80151,
-    H_SPELL_IGNITE           = 92636,
     SPELL_MAGMA_ERUPTION     = 80038,
 
     // Stonecore Rift Conjurer 
     SPELL_DEMON_PORTAL       = 80308,
     SPELL_SHADOWBOLT         = 80279,             
-    H_SPELL_SHADOWBOLT       = 92637,
 
     //Stonecore Sentry
     
