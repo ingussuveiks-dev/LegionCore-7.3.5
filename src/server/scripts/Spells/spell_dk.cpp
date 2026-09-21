@@ -44,8 +44,6 @@ enum DeathKnightSpells
     SPELL_DK_CORPSE_EXPLOSION_TRIGGERED         = 43999,
     SPELL_DK_DEATH_AND_DECAY_DAMAGE             = 52212,
     SPELL_DK_DEATH_AND_DECAY                    = 43265,
-    SPELL_DK_DEATH_AND_DECAY_SLOW               = 143375,
-    SPELL_DK_DEATH_COIL_BARRIER                 = 115635,
     SPELL_DK_DEATH_COIL                         = 47541,
     SPELL_DK_DEATH_COIL_DAMAGE                  = 47632,
     SPELL_DK_DEATH_COIL_HEAL                    = 47633,
@@ -56,47 +54,21 @@ enum DeathKnightSpells
     SPELL_DK_DEATH_STRIKE_HEAL                  = 45470,
     SPELL_DK_DECOMPOSING_AURA                   = 199720,
     SPELL_DK_DECOMPOSING_AURA_DAMAGE            = 199721,
-    SPELL_DK_ENHANCED_DEATH_COIL                = 157343,
     SPELL_DK_FROST_FEVER                        = 55095,
     SPELL_DK_GHOUL_EXPLODE                      = 47496,
-    SPELL_DK_GLYPH_OF_ABSORB_MAGIC              = 159415,
-    SPELL_DK_GLYPH_OF_ANTI_MAGIC_SHELL          = 58623,
-    SPELL_DK_GLYPH_OF_ARMY_OF_THE_DEAD          = 58669,
-    SPELL_DK_GLYPH_OF_DEATH_COIL                = 63333,
-    SPELL_DK_GLYPH_OF_DEATH_AND_DECAY           = 58629,
     SPELL_DK_GLYPH_OF_FOUL_MENAGERIE            = 58642,
-    SPELL_DK_GLYPH_OF_REGENERATIVE_MAGIC        = 146648,
-    SPELL_DK_GLYPH_OF_RUNIC_POWER_TRIGGERED     = 159430,
-    SPELL_DK_GLYPH_OF_SWIFT_DEATH               = 146645,
     SPELL_DK_GLYPH_OF_THE_GEIST                 = 58640,
     SPELL_DK_GLYPH_OF_THE_SKELETON              = 146652,
-    SPELL_DK_IMPROVED_BLOOD_PRESENCE            = 50371,
-    SPELL_DK_IMPROVED_SOUL_REAPER               = 157342,
     SPELL_DK_RUNIC_POWER_ENERGIZE               = 49088,
-    SPELL_DK_SCENT_OF_BLOOD                     = 49509,
-    SPELL_DK_SCENT_OF_BLOOD_TRIGGERED           = 50421,
     SPELL_DK_SCOURGE_STRIKE_TRIGGERED           = 70890,
-    SPELL_DK_SHADOW_OF_DEATH                    = 164047,
-    SPELL_DK_SOUL_REAPER_DAMAGE                 = 114867,
-    SPELL_DK_SOUL_REAPER_HASTE                  = 114868,
     SPELL_DK_T15_DPS_4P_BONUS                   = 138347,
     SPELL_DK_UNHOLY_PRESENCE                    = 48265,
     SPELL_DK_UNHOLY                             = 137007,
     SPELL_DK_WILL_OF_THE_NECROPOLIS             = 206967,
     SPELL_DK_BLOOD_BOIL_TRIGGERED               = 65658,
     SPELL_DK_BLOOD_GORGED_HEAL                  = 50454,
-    SPELL_DK_DEATH_STRIKE_ENABLER               = 89832,
-    SPELL_DK_FROST_PRESENCE                     = 48266,
-    SPELL_DK_IMPROVED_FROST_PRESENCE            = 50385,
-    SPELL_DK_IMPROVED_FROST_PRESENCE_TRIGGERED  = 50385,
-    SPELL_DK_IMPROVED_UNHOLY_PRESENCE           = 50392,
     SPELL_DK_IMPROVED_UNHOLY_PRESENCE_TRIGGERED = 55222,
-    SPELL_DK_RUNE_TAP                           = 48982,
-    SPELL_DK_CORPSE_EXPLOSION_VISUAL            = 51270,
-    SPELL_DK_MASTER_OF_GHOULS                   = 52143,
-    SPELL_DK_GHOUL_AS_GUARDIAN                  = 46585,
     SPELL_DK_GHOUL_AS_PET                       = 52150,
-    SPELL_DK_ROILING_BLOOD                      = 108170,
     SPELL_DK_PESTILENCE                         = 50842,
     SPELL_DK_CHILBLAINS                         = 50041,
     SPELL_DK_CHAINS_OF_ICE_ROOT                 = 53534,
@@ -104,20 +76,12 @@ enum DeathKnightSpells
     SPELL_DK_PERDITION                          = 123981,
     SPELL_DK_SHROUD_OF_PURGATORY                = 116888,
     SPELL_DK_PURGATORY_INSTAKILL                = 123982,
-    SPELL_DK_BLOOD_RITES                        = 50034,
     SPELL_DK_DEATH_SIPHON_HEAL                  = 116783,
-    SPELL_DK_BLOOD_CHARGE                       = 114851,
-    SPELL_DK_BOOD_TAP                           = 45529,
     SPELL_DK_PILLAR_OF_FROST                    = 51271,
     SPELL_DK_CONVERSION                         = 119975,
-    SPELL_DK_WEAKENED_BLOWS                     = 115798,
-    SPELL_DK_SCARLET_FEVER                      = 81132,
-    SPELL_DK_SCENT_OF_BLOOD_AURA                = 50421,
     SPELL_DK_DESECRATED_GROUND                  = 118009,
     SPELL_DK_DESECRATED_GROUND_IMMUNE           = 115018,
     SPELL_DK_ASPHYXIATE                         = 108194,
-    SPELL_DK_DARK_INFUSION_STACKS               = 91342,
-    SPELL_DK_DARK_INFUSION_AURA                 = 93426,
     SPELL_DK_RUNIC_CORRUPTION_REGEN             = 51460,
     SPELL_DK_RUNIC_EMPOWERMENT                  = 81229,
     SPELL_DK_GOREFIENDS_GRASP_GRIP_VISUAL       = 114869,
@@ -3004,23 +2968,6 @@ class spell_dk_death_and_decay : public SpellScriptLoader
     public:
         spell_dk_death_and_decay() : SpellScriptLoader("spell_dk_death_and_decay") { }
 
-        class spell_dk_death_and_decay_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_dk_death_and_decay_SpellScript);
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                if (GetCaster()->HasAura(SPELL_DK_GLYPH_OF_DEATH_AND_DECAY))
-                    if (WorldLocation const* pos = GetExplTargetDest())
-                        GetCaster()->CastSpell(pos->GetPositionX(), pos->GetPositionY(), pos->GetPositionZ(), SPELL_DK_DEATH_AND_DECAY_SLOW, true);
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_dk_death_and_decay_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-            }
-        };
-
         class spell_dk_death_and_decay_AuraScript : public AuraScript
         {
             PrepareAuraScript(spell_dk_death_and_decay_AuraScript);
@@ -3036,11 +2983,6 @@ class spell_dk_death_and_decay : public SpellScriptLoader
                 OnEffectPeriodic += AuraEffectPeriodicFn(spell_dk_death_and_decay_AuraScript::HandleDummyTick, EFFECT_2, SPELL_AURA_PERIODIC_DUMMY);
             }
         };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_dk_death_and_decay_SpellScript();
-        }
 
         AuraScript* GetAuraScript() const override
         {
