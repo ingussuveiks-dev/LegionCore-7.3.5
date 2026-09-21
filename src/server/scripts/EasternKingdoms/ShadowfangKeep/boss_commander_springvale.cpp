@@ -20,9 +20,7 @@ enum Spells
     SPELL_MALEFIC_STRIKE            = 93685,
     SPELL_SHIELD_OF_PERFIDIOUS      = 93693,
     SPELL_SHIELD_OF_PERFIDIOUS_DMG  = 93722,
-    SPELL_SHIELD_OF_PERFIDIOUS_H    = 93736, //Heroic
-    SPELL_UNHOLY_POWER              = 93686, 
-    SPELL_UNHOLY_POWER_H            = 93735, //Heroic
+    SPELL_UNHOLY_POWER              = 93686,
     SPELL_WORD_OF_SHAME             = 93852, //Heroic
     SPELL_SEPARATION_ANXIETY        = 96272, //Heroic
     SPELL_DESECRATION_AURA          = 93690,
@@ -167,11 +165,11 @@ class boss_commander_springvale : public CreatureScript
                         break;
                     }
                 }
-                if (Aura* unholypower = me->GetAura(DUNGEON_MODE(SPELL_UNHOLY_POWER, SPELL_UNHOLY_POWER_H)))
+                if (Aura* unholypower = me->GetAura(SPELL_UNHOLY_POWER))
                 {
                     if (unholypower->GetStackAmount() >= 3)
                     {
-                        me->RemoveAurasDueToSpell(DUNGEON_MODE(SPELL_UNHOLY_POWER, SPELL_UNHOLY_POWER_H));
+                        me->RemoveAurasDueToSpell(SPELL_UNHOLY_POWER);
                         
                         if (IsHeroic())
                         {
@@ -310,7 +308,7 @@ class npc_springvale_tormented_officer : public CreatureScript
                             DoCast(SPELL_SHIELD_WALL);
                             break;
                         case EVENT_FORSAKEN_ABILITY:
-                            //todo: реализовать спелл
+                            //todo: СЂРµР°Р»РёР·РѕРІР°С‚СЊ СЃРїРµР»Р»
                             break;
                         case EVENT_UNHOLY_EMPOWERMENT:
                             if (instance)
