@@ -42,9 +42,6 @@ enum Spells
     SPELL_RAGE          = 71189,
     SPELL_VOLLEY        = 70759,
     SPELL_COLUMN_OF_FROST    = 70704,
-    SPELL_COLUMN_EFFECT_10N = 70702,
-    SPELL_COLUMN_EFFECT_10H_25N = 71746,
-    SPELL_COLUMN_EFFECT_25H = 72020,
     SPELL_MANA_VOID     = 71085,
     SPELL_CORRUPTING    = 70602,
     SPELL_WASTE         = 69325,
@@ -52,7 +49,7 @@ enum Spells
     SPELL_SUPRESSION    = 70588,
     SPELL_CORROSION     = 70751,
     SPELL_BURST         = 70744,
-    SPELL_SPRAY         = 71283,
+    SPELL_GUT_SPRAY     = 70633,
     SPELL_ROT           = 72963,
     SPELL_DREAM_STATE   = 70766,
     SPELL_DREAM_PORTAL_VISUAL_PRE = 71304,
@@ -64,7 +61,6 @@ enum Spells
     SPELL_PORTAL_H_PRE  = 71977,
     SPELL_SUMMON_NIGHTMARE_PORTAL  = 71987,
     SPELL_NIGHTMARE                     = 71941,//iaiiu iia ia?nii
-    SPELL_MOD_DAMAGE                    = 68066,
     SPELL_COPY_DAMAGE                   = 71948,
     SPELL_SUMMON_SUPPRESSOR_PEREODIC    = 70912,
     SPELL_TIMER_BLAZING_SKELETON        = 70913,
@@ -806,7 +802,7 @@ class npc_gluttonous_abomination : public CreatureScript
 
                 if (m_uiSprayTimer <= diff)
                 {
-                    DoCast(me, SPELL_SPRAY);
+                    DoCast(me, SPELL_GUT_SPRAY);
                     m_uiSprayTimer = 20000;
                 } else m_uiSprayTimer -= diff;
 
