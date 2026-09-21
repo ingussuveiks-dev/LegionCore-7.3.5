@@ -189,7 +189,7 @@ public:
                                 AggroAllPlayers(boss);
                     } else if (data == DONE)
                     {
-                        DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_CHAMPIONS);
+                        DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_CHAMPIONS);
                         if (Creature* announcer = instance->GetCreature(uiAnnouncerGUID))
                         {
                             announcer->GetMotionMaster()->MovePoint(0, 742.742f, 630.207f, 411.172f);
@@ -204,7 +204,7 @@ public:
                     {
                         if (Creature* announcer = instance->GetCreature(uiAnnouncerGUID))
                         {
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_EADRIC);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_EADRIC);
                             announcer->GetMotionMaster()->MovePoint(0, 742.742f, 630.207f, 411.172f);
                             announcer->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             announcer->SummonGameObject(instance->IsHeroic()? GO_EADRIC_LOOT_H : GO_EADRIC_LOOT, 746.59f, 618.49f, 411.09f, 1.42f, 0, 0, 0, 0, 90000000);
@@ -217,8 +217,8 @@ public:
                     {
                         if (Creature* announcer = instance->GetCreature(uiAnnouncerGUID))
                         {
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_PALETRESS);
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_MEMORIES);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_PALETRESS);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_MEMORIES);
                             announcer->GetMotionMaster()->MovePoint(0, 742.742f, 630.207f, 411.172f);
                             announcer->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             announcer->SummonGameObject(instance->IsHeroic()? GO_PALETRESS_LOOT_H : GO_PALETRESS_LOOT, 746.59f, 618.49f, 411.09f, 1.42f, 0, 0, 0, 0, 90000000);
@@ -228,7 +228,7 @@ public:
                 case BOSS_BLACK_KNIGHT:
                     m_auiEncounter[3] = data;
                     if (data == DONE)
-                        DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT_BLACK_KNIGHT);
+                        DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_BLACK_KNIGHT);
                     break;
                 case DATA_GRAND_CHAMPION_ENTRY:
                     for (uint8 i=0; i<3; i++)

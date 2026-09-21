@@ -235,7 +235,7 @@ public:
                 defeated = true;
                 if (InstanceScript* instance = me->GetInstanceScript())
                 {
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 68575);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_EADRIC);
                 }
                 me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
                 me->GetMotionMaster()->MovePoint(1, me->GetHomePosition());
@@ -439,7 +439,7 @@ public:
                 defeated = true;
                 if (InstanceScript* instance = me->GetInstanceScript())
                 {
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 68574);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_PALETRESS);
                 }
                 me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
                 me->GetMotionMaster()->MovePoint(1, me->GetHomePosition());
