@@ -1778,9 +1778,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -1861,9 +1858,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -1943,9 +1937,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2085,9 +2076,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2173,9 +2161,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2271,9 +2256,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2482,9 +2464,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                     }
 
                     // For self
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2584,9 +2563,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                     }
 
                     // For self
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2702,9 +2678,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                     }
 
                     // For self
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2832,9 +2805,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -2935,9 +2905,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                 // For self
                 if (Player* trialOwner = ObjectAccessor::GetPlayer(*me, me->GetInstanceScript() ? me->GetInstanceScript()->GetGuidData(PLAYER_DATA) : ObjectGuid::Empty))
                 {
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
@@ -3133,9 +3100,6 @@ struct npc_proving_grounds_controller : public ScriptedAI
                     }
 
                     // For self
-                    for (auto&& itr : raidBuffs)
-                        trialOwner->CastSpell(trialOwner, itr, true);
-
                     SendProvingGroundsScenarioState(trialOwner, 1148, 0, 0, 33614, 248);
                 }
 
