@@ -108,21 +108,16 @@ enum eSpells
     SPELL_SUMMON_ADDS                = 144489,
     SPELL_HEARTBEAT_SOUND            = 148591,
     SPELL_ENTER_REALM_OF_YSHAARJ     = 144867,
-    SPELL_WEAKENED_BLOWS             = 115798,
 
     //Remove this absorb aura when player on mind control
     SPELL_SPIRIT_SHELL               = 114908,
-    SPELL_DIVINE_AEGIS               = 47753,
     SPELL_POWER_WORD_SHIELD          = 17,
-    SPELL_SACRED_SHIELD              = 65148,
 };
 
-uint32 auraarray[4] = 
+uint32 const auraarray[] =
 {
     SPELL_SPIRIT_SHELL,
-    SPELL_DIVINE_AEGIS,
     SPELL_POWER_WORD_SHIELD,
-    SPELL_SACRED_SHIELD,
 };
 
 enum sEvents
@@ -2388,8 +2383,8 @@ public:
         {
             if (GetTarget())
             {
-                for (uint8 n = 0; n < 4; n++)
-                    GetTarget()->RemoveAurasDueToSpell(auraarray[n]);
+                for (uint32 spellId : auraarray)
+                    GetTarget()->RemoveAurasDueToSpell(spellId);
 
                 uint32 entry = GetSpellInfo()->Id;
                 if (AuraEffect* aurEffb = GetTarget()->GetAura(entry)->GetEffect(0))
@@ -2421,7 +2416,6 @@ public:
 
             if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_DEATH)
             {
-                GetTarget()->RemoveAurasDueToSpell(SPELL_WEAKENED_BLOWS);
                 GetTarget()->SetFullHealth();
             }
         }
