@@ -3412,12 +3412,7 @@ bool Unit::isSpellBlocked(Unit* victim, SpellInfo const* spellProto, WeaponAttac
 bool Unit::isBlockCritical()
 {
     if (roll_chance_i(GetTotalAuraModifier(SPELL_AURA_MOD_BLOCK_CRIT_CHANCE)))
-    {
-        // Critical Blocks enrage the warrior
-        if (HasAura(76857))
-            CastSpell(this, 12880, true);
         return true;
-    }
 
     return false;
 }
