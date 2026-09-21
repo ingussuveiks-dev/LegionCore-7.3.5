@@ -38,27 +38,21 @@ enum eSpells
     // 67870
 
     // Marshal Jacob Alerius && Mokra the Skullcrusher || Warrior
-    SPELL_MORTAL_STRIKE = 68783,
-    SPELL_MORTAL_STRIKE_H = 68784,
+    SPELL_MORTAL_STRIKE = 67542,
     SPELL_BLADESTORM = 63784,
     SPELL_INTERCEPT = 67540,
     SPELL_ROLLING_THROW = 47115, //not implemented in the AI yet...
 
     // Ambrose Boltspark && Eressea Dawnsinger || Mage
     SPELL_FIREBALL = 66042,
-    SPELL_FIREBALL_H = 68310,
     SPELL_BLAST_WAVE = 66044,
-    SPELL_BLAST_WAVE_H = 68312,
     SPELL_HASTE = 66045,
     SPELL_POLYMORPH = 66043,
-    SPELL_POLYMORPH_H = 68311,
 
     // Colosos && Runok Wildmane || Shaman
     SPELL_CHAIN_LIGHTNING = 67529,
-    SPELL_CHAIN_LIGHTNING_H = 68319,
     SPELL_EARTH_SHIELD = 67530,
     SPELL_HEALING_WAVE = 67528,
-    SPELL_HEALING_WAVE_H = 68318,
     SPELL_HEX_OF_MENDING = 67534,
     SPELL_HEX_OF_MENDING_HEAL = 67535,
 
@@ -69,12 +63,10 @@ enum eSpells
     SPELL_LIGHTNING_ARROWS_VISUAL = 66083,
     SPELL_MULTI_SHOT = 66081,
     SPELL_SHOOT = 65868,
-    SPELL_SHOOT_H = 67988,
 
     // Lana Stouthammer Evensong && Deathstalker Visceri || Rouge
     SPELL_DEADLY_POISON = 67711,
     SPELL_EVISCERATE = 67709,
-    SPELL_EVISCERATE_H = 68317,
     SPELL_FAN_OF_KNIVES = 67706,
     SPELL_POISON_BOTTLE = 67701,
     SPELL_DUAL_WIELD = 42459,
