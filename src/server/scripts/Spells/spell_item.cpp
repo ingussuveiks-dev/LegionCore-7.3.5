@@ -1817,7 +1817,6 @@ enum Refocus
 {
     SPELL_AIMED_SHOT    = 19434,
     SPELL_MULTISHOT     = 2643,
-    SPELL_VOLLEY        = 42243,
 };
 
 class spell_item_refocus : public SpellScriptLoader
@@ -1842,8 +1841,6 @@ class spell_item_refocus : public SpellScriptLoader
                 if (caster->HasSpellCooldown(SPELL_MULTISHOT))
                     caster->RemoveSpellCooldown(SPELL_MULTISHOT, true);
 
-                if (caster->HasSpellCooldown(SPELL_VOLLEY))
-                    caster->RemoveSpellCooldown(SPELL_VOLLEY, true);
             }
 
             void Register() override
