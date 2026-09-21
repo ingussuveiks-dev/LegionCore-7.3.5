@@ -443,11 +443,6 @@ void BattlepayManager::SendProductList()
             pInfo.DisplayInfo = std::get<1>(dataPI);
         }
 
-        bool hideProductPrice = false;
-        if (pInfo.DisplayInfo.has_value() && pInfo.DisplayInfo->Flags.has_value())
-            hideProductPrice = *pInfo.DisplayInfo->Flags & BattlepayDisplayInfoFlag::HidePrice;
-        bool hasEnoughTokens = tokenBalance >= product.CurrentPriceFixedPoint;
-
         response.ProductList.ProductInfo.emplace_back(pInfo);
 
         WorldPackets::BattlePay::BattlePayProduct pProduct;
@@ -463,31 +458,10 @@ void BattlepayManager::SendProductList()
         //pProduct.UnkString = "";
         //pProduct.UnkBit = false;
 
-        for (auto& item : product.Items)
-        {
-            WorldPackets::BattlePay::ProductItem pItem;
-            pItem.ID = item.ID;
-            pItem.ItemID = product.Items.size() > 1 ? 0 : item.ItemID; ///< Disable tooltip for packs (client handle only one tooltip).
-            pItem.Quantity = item.Quantity;
-            //pItem.UnkInt1 = 0;
-            //pItem.UnkInt2 = 0;
-            //pItem.UnkByte = 0;
-
-            // if the product is already owned disable the buy button
-            // also disable the button if we don't show the price for a product
-            // and the player does not have enough tokens to pay for the product
-            pItem.HasPet = AlreadyOwnProduct(item.ItemID) || (hideProductPrice && !hasEnoughTokens);
-            pItem.PetResult = item.PetResult;
-
-            auto dataP = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
-            if (std::get<0>(dataP))
-            {
-                pItem.DisplayInfo.emplace();
-                pItem.DisplayInfo = std::get<1>(dataP);
-            }
-
-            pProduct.Items.emplace_back(pItem);
-        }
+        // Product delivery still uses Product::Items on the server. The known
+        // good 7.3.5 catalog sample exposes products through display metadata
+        // and carries no ProductItem records, so keep the wire representation
+        // equally conservative until that client substructure is verified.
 
         auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
         if (std::get<0>(dataP))

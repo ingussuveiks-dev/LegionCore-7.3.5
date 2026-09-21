@@ -234,14 +234,12 @@ WorldPacket const* WorldPackets::BattlePay::ProductListResponse::Write()
         _worldPacket << productGroupData.Flags;
 
         _worldPacket.WriteBits(productGroupData.Name.length(), 8);
-        // The protocol length includes the C-string terminator. The original
-        // writer advertised this extra byte but never put it in the packet,
-        // shifting all following shop entries for the client.
+        // The protocol stores an empty availability description as length 1.
+        // That extra unit is a client-side sentinel and is not on the wire.
         _worldPacket.WriteBits(productGroupData.IsAvailableDescription.length() + 1, 24);
         _worldPacket.WriteString(productGroupData.Name);
         if (!productGroupData.IsAvailableDescription.empty())
             _worldPacket.WriteString(productGroupData.IsAvailableDescription);
-        _worldPacket << uint8(0);
     }
 
     for (BattlePayShopEntry const& shopData : ProductList.Shop)
