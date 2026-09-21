@@ -668,7 +668,6 @@ class spell_rog_killing_spree : public SpellScriptLoader
         {
             PrepareAuraScript(spell_rog_killing_spree_AuraScript);
 
-            Position pos;
             void HandleEffectPeriodic(AuraEffect const* /*aurEff*/)
             {
                 if (Unit* caster = GetCaster())
@@ -693,19 +692,14 @@ class spell_rog_killing_spree : public SpellScriptLoader
             void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
-                {
                     caster->CastSpell(caster, 61851, true);
-                    pos = caster->GetPosition();
-                }
             }
 
-            void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes mode)
+            void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 if (Unit* caster = GetCaster())
                 {
                     caster->RemoveAurasDueToSpell(61851);
-                    if (caster->HasAura(63252))
-                        caster->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
                 }
             }
 
