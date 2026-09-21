@@ -34,7 +34,8 @@ enum Spells
     SPELL_LIGHTNING_SURGE       = 75992,
     SPELL_LIGHTNING_SURGE_DMG   = 75993,
 
-    SPELL_ACHIEV_CREDIT         = 94042
+    // Criteria.db2 asset for type 28 (be spell target), not a SpellName entry.
+    CRITERIA_GEYSER_KILL_ASSET  = 94042
 };
 
 enum Events
@@ -319,7 +320,7 @@ struct npc_lady_nazjar_honnor_guard : public ScriptedAI
     {
         if (instance)
             if (killer && killer->IsUnit() && killer->GetEntry() == NPC_GEYSER)
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEV_CREDIT, 0, 0, me);
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_GEYSER_KILL_ASSET, 0, 0, me);
     }
 
     void UpdateAI(uint32 diff) override
@@ -377,7 +378,7 @@ struct npc_lady_nazjar_tempest_witch : public ScriptedAI
     {
         if (instance)
             if (killer && killer->IsUnit() && killer->GetEntry() == NPC_GEYSER)
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEV_CREDIT, 0, 0, me);
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_GEYSER_KILL_ASSET, 0, 0, me);
     }
 
     void UpdateAI(uint32 diff) override
