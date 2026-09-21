@@ -1514,7 +1514,6 @@ public:
                 //target->CastSpell(target, SPELL_FEL_ENERGY_DUMMY, true);
 
                 target->CastSpell(target, SPELL_THE_CODEX_OF_XERRATH);
-                target->CastSpell(target, SPELL_THE_CODEX_OF_XERRATH_2);
 
                 if (Creature* caster = GetTarget()->ToCreature())
                     caster->DespawnOrUnsummon(3 * IN_MILLISECONDS);

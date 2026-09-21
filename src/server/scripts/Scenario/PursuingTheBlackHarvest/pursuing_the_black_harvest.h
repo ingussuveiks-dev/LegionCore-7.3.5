@@ -173,7 +173,6 @@ enum Spells
     SPELL_FEL_ENERGY_DUMMY_9            = 140161,
     SPELL_FEL_ENERGY_DUMMY_10           = 140163,
     SPELL_THE_CODEX_OF_XERRATH          = 101508,
-    SPELL_THE_CODEX_OF_XERRATH_2        = 137206,
 
     SPELL_PURGE_XERRATH                 = 139366,
 };
