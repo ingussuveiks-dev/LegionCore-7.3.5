@@ -29,38 +29,26 @@ enum Spells
 {
     // Phase 1
     SPELL_PLAGUE_STRIKE     = 67724,
-    //SPELL_PLAGUE_STRIKE_H   = 67884,
     SPELL_ICY_TOUCH         = 67718,
-    //SPELL_ICY_TOUCH_H       = 67881,
     SPELL_DEATH_RESPITE     = 67745,
-    //SPELL_DEATH_RESPITE_2   = 68306,
-    //SPELL_DEATH_RESPITE_3   = 66798,
     SPELL_OBLITERATE        = 67725,
-    //SPELL_OBLITERATE_H      = 67883,
     SPELL_RAISE_ARELAS      = 67705,
     SPELL_RAISE_JAEREN      = 67715,
 
     // Phase 2 - During this phase, the Black Knight will use the same abilities as in phase 1, except for Death's Respite
     SPELL_ARMY_DEAD         = 67761,
-    //SPELL_ARMY_DEAD_H       = 67874,
     SPELL_DESECRATION       = 67778,
-    //SPELL_DESECRATION_H     = 67877,
     SPELL_GHOUL_EXPLODE     = 67751,
 
     //phase 3
     SPELL_DEATH_BITE        = 67808,
-    //SPELL_DEATH_BITE_H      = 67875,
     SPELL_MARKED_DEATH      = 67823,
-    //SPELL_MARKED_DEATH_2    = 67882,
 
     SPELL_BLACK_KNIGHT_RES  = 67693,
 
     SPELL_CLAW              = 67774,
-    //SPELL_CLAW_H            = 67879,
     SPELL_LEAP              = 67749,
-    //SPELL_LEAP_H            = 67880,
     SPELL_EXPLODE           = 67729,
-    SPELL_EXPLODE_H         = 67886,
 
     SPELL_KILL_CREDIT       = 68663
 };
@@ -407,7 +395,7 @@ public:
 
         void SpellHitTarget(Unit* /*victim*/, const SpellInfo* spell) override
         {
-            if (spell->Id == SPELL_EXPLODE_H)
+            if (spell->Id == SPELL_EXPLODE)
                 instance->SetData(DATA_I_VE_HAD_WORSE, (uint32)false);
         }
 
