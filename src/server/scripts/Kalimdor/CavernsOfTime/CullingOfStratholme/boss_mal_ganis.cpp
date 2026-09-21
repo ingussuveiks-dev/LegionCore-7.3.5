@@ -35,7 +35,7 @@ enum Spells
     H_SPELL_SLEEP                               = 58849,
     SPELL_VAMPIRIC_TOUCH                        = 52723, //Heals the caster for half the damage dealt by a melee attack.
     SPELL_MAL_GANIS_KILL_CREDIT                 = 58124, // Quest credit
-    SPELL_KILL_CREDIT                           = 58630  // Non-existing spell as encounter credit, created in spell_dbc
+    CRITERIA_MAL_GANIS_ASSET                    = 58630  // Criteria.db2 type 28 asset, not a spell
 };
 
 enum Yells
@@ -119,7 +119,7 @@ public:
                 if (instance)
                 {
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, 26533, 0, 0, me);
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 58630, 0, 0, me);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_MAL_GANIS_ASSET, 0, 0, me);
                 }
             }
         }
@@ -235,11 +235,9 @@ public:
         {
             if (instance)
             {
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 1, SPELL_KILL_CREDIT, 0, me);
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_MAL_GANIS_ASSET, 0, 0, me);
                 instance->SetData(DATA_MAL_GANIS_EVENT, DONE);
                 DoCastAOE(SPELL_MAL_GANIS_KILL_CREDIT);
-                // give achievement credit and LFG rewards to players. criteria use spell 58630 which doesn't exist, but it was created in spell_dbc
-                DoCastAOE(SPELL_KILL_CREDIT);
             }
         }
 
