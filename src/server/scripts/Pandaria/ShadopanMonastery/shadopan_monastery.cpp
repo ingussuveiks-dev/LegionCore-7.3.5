@@ -20,11 +20,9 @@ enum eSpells
     // Vestige of Hatred
     SPELL_BLACK_CLEAVE          = 113020,
     SPELL_DEATH_GRIP            = 113021,
-    SPELL_ICE_TRAP              = 135382,
     SPELL_TOUCH_OF_WEAKNESS     = 113022,
 
     // Fragment of Hatred
-    //SPELL_ICE_TRAP              = 135382,
     SPELL_SINISTER_STRIKE       = 112931,
     SPELL_VOLLEY_OF_HATRED      = 112911
 };
@@ -39,11 +37,9 @@ enum eEvents
     // Vestige of Hatred
     EVENT_BLACK_CLEAVE          = 4,
     EVENT_DEATH_GRIP            = 5,
-    EVENT_ICE_TRAP              = 6,
     EVENT_TOUCH_OF_WEAKNESS     = 7,
 
     // Fragment of Hatred
-    //EVENT_ICE_TRAP              = 8,
     EVENT_SINISTER_STRIKE       = 9,
     EVENT_VOLLEY_OF_HATRED      = 10
 };
@@ -183,12 +179,10 @@ struct npc_shadopan_hatred : public ScriptedAI
         {
             events.RescheduleEvent(EVENT_BLACK_CLEAVE, 15000);
             events.RescheduleEvent(EVENT_DEATH_GRIP, urand(7500, 12500));
-            events.RescheduleEvent(EVENT_ICE_TRAP, urand(17500, 22500));
             events.RescheduleEvent(EVENT_TOUCH_OF_WEAKNESS, urand(20000, 25000));
         }
         else
         {
-            events.RescheduleEvent(EVENT_ICE_TRAP, urand(17500, 22500));
             events.RescheduleEvent(EVENT_SINISTER_STRIKE, urand(2500, 10000));
             events.RescheduleEvent(EVENT_VOLLEY_OF_HATRED, urand(7500, 12500));
         }
@@ -252,11 +246,6 @@ struct npc_shadopan_hatred : public ScriptedAI
             if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                 DoCast(target, SPELL_TOUCH_OF_WEAKNESS, false);
             events.RescheduleEvent(EVENT_VOLLEY_OF_HATRED, urand(7500, 12500));
-            break;
-        case EVENT_ICE_TRAP:
-            if (auto target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-                DoCast(target, SPELL_ICE_TRAP, false);
-            events.RescheduleEvent(EVENT_ICE_TRAP, urand(17500, 22500));
             break;
         }
     }
