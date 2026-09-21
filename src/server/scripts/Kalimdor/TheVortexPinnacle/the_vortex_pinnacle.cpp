@@ -63,7 +63,6 @@ enum Spells
     
     //gust soldier
     SPELL_AIR_NOVA              = 87933,
-    SPELL_AIR_NOVA_H            = 92753,
     SPELL_CHARGE                = 87930,
     SPELL_WIND_BLAST            = 87923,
 
