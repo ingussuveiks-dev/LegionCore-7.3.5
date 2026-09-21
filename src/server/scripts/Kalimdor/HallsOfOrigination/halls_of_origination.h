@@ -69,7 +69,8 @@ enum CreatureIds
 
 enum Achievements
 {
-    SPELL_FASTER_THAN_LIGHT        = 94067,
+    // Criteria.db2 asset for type 69 (be spell target 2), not a SpellName entry.
+    CRITERIA_FASTER_THAN_LIGHT     = 94067,
     EVENT_FASTER_THAN_LIGHT        = 24212,
     
     ACHIEV_STRAW_THAT_BROKE_CAMELS = 5294,

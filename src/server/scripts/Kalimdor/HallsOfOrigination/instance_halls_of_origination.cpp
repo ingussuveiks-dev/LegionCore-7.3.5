@@ -182,7 +182,7 @@ class instance_halls_of_origination : public InstanceMapScript
                         
                         if (uiWardensDone == 4)
                         {
-                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET2, SPELL_FASTER_THAN_LIGHT);
+                            DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET2, CRITERIA_FASTER_THAN_LIGHT);
                             HandleGameObject(uiAnraphetBossDoorGUID, true);
                             if (auto pAnraphet = instance->GetCreature(uiAnraphetGUID))
                                 pAnraphet->AI()->DoAction(1);
