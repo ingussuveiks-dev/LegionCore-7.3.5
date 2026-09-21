@@ -9154,7 +9154,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     if (!redirectTarget)
                         break;
                     CastSpell(this,59628,true);
-                    CastSpell(redirectTarget,57933,true);
                     break;
                 }
                 case 76806: // Main Gauche
