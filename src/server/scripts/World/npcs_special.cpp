@@ -4842,7 +4842,6 @@ class npc_spectral_guise : public CreatureScript
 enum PastSelfSpells
 {
     SPELL_FADING                    = 107550,
-    SPELL_ALTER_TIME                = 110909,
     SPELL_ENCHANTED_REFLECTION      = 102284,
     SPELL_ENCHANTED_REFLECTION_2    = 102288,
 };
@@ -4895,9 +4894,6 @@ class npc_past_self : public CreatureScript
                         {
                             SpellInfo const* auraInfo = aura->GetSpellInfo();
                             if (!auraInfo)
-                                continue;
-
-                            if (auraInfo->Id == SPELL_ALTER_TIME)
                                 continue;
 
                             if (auraInfo->IsPassive())
