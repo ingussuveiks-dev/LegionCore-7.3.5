@@ -3084,13 +3084,6 @@ class npc_ebon_gargoyle : public CreatureScript
                 despawnTimer = 0;
             }
 
-            void JustDied(Unit* /*killer*/) override
-            {
-                // Stop Feeding Gargoyle when it dies
-                if (Unit* owner = me->GetOwner())
-                    owner->RemoveAurasDueToSpell(50514);
-            }
-
             // Fly away when dismissed
             void SpellHit(Unit* source, SpellInfo const* spell) override
             {
