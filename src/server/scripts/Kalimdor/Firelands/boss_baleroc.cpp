@@ -21,13 +21,11 @@ enum Spells
     SPELL_TORMENT                   = 99255,
     SPELL_TORMENT_DMG               = 99256,
     SPELL_TORMENTED                 = 99257,
-    SPELL_TORMENTED_25H             = 99404,
     SPELL_TORMENTED_AOE             = 99489,
     SPELL_WAVE_OF_TORMENT           = 99261,
     SPELL_VITAL_SPARK               = 99262,
     SPELL_VITAL_FLAME               = 99263,
     SPELL_DECIMATION_BLADE          = 99352,
-    SPELL_DECIMATION_BLADE_25       = 99405,
     SPELL_DECIMATION_BLADE_DMG      = 99353,
     SPELL_INFERNO_BLADE             = 99350,
     SPELL_INFERNO_BLADE_DMG         = 99351,
@@ -218,7 +216,7 @@ class boss_baleroc : public CreatureScript
                         me->resetAttackTimer();
                     }
                 }
-                else if (me->HasAura(SPELL_DECIMATION_BLADE) || me->HasAura(SPELL_DECIMATION_BLADE_25))
+                else if (me->HasAura(SPELL_DECIMATION_BLADE))
                 {
                     if (!me->HasUnitState(UNIT_STATE_CASTING) && me->isAttackReady() && me->IsWithinMeleeRange(me->getVictim()))
                     {
@@ -484,10 +482,10 @@ class spell_baleroc_tormented_aoe : public SpellScriptLoader
                 if (!GetCaster() || !GetHitUnit())
                     return;
 
-                if ((GetCaster() == GetHitUnit()) ||  GetHitUnit()->HasAura(SPELL_TORMENTED_25H))
+                if ((GetCaster() == GetHitUnit()) || GetHitUnit()->HasAura(SPELL_TORMENTED))
                     return;
 
-                GetHitUnit()->CastSpell(GetHitUnit(), SPELL_TORMENTED_25H, true);
+                GetHitUnit()->CastSpell(GetHitUnit(), SPELL_TORMENTED, true);
             }
 
             void Register()
