@@ -46,7 +46,7 @@ enum Spells
     // Faceless Sapper
     SPELL_ENTANGLING_GRASP              = 83463,
 
-    SPELL_ENCOUNTER_COMPLETE            = 95673
+    CRITERIA_ASSET_KILL_OZUMAT          = 95673
 }; 
 
 enum Events
@@ -84,11 +84,6 @@ enum Actions
 {
     ACTION_NEPTULON_START_EVENT = 1,
     ACTION_NEPTULON_START       = 2
-};
-
-enum Achievement
-{
-    SPELL_KILL_OZUMAT   = 95673
 };
 
 const Position spawnPos[5] = 
@@ -261,11 +256,11 @@ class npc_neptulon : public CreatureScript
                                 sLFGMgr->FinishDungeon(player->GetGroup()->GetGUID(), 1146);
 
                             if (player->GetGuildId() && group->IsGuildGroup(player->GetGuildGUID(), true, true))
-                                group->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_KILL_OZUMAT, 0, 0, NULL, me);
+                                group->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_KILL_OZUMAT, 0, 0, NULL, me);
                         }
                     });
 
-                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, SPELL_ENCOUNTER_COMPLETE, me, me); 
+                    me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, CRITERIA_ASSET_KILL_OZUMAT, me, me);
                     instance->SetBossState(DATA_OZUMAT, DONE);
                     events.CancelEvent(EVENT_16);
                 }
