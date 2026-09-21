@@ -575,29 +575,6 @@ class spell_material_of_creation : public SpellScriptLoader
         }
 };
 
-enum SSpells
-{
-    //Palladin                
-    SPELL_SHIELD_OF_THE_RIGHTEOUS  = 132403,
-    //Warrior
-    SPELL_SHIELD_BLOCK             = 132404,
-    //Druid
-    SPELL_SAVAGE_DEFENSE           = 132402,
-    //Monk
-    SPELL_SHUFFLE                  = 115307,
-    //Death Knight
-    SPELL_BLOOD_SHIELD             = 77535,
-};
-
-uint32 SafeSpells[5] = 
-{
-    SPELL_SHIELD_OF_THE_RIGHTEOUS,
-    SPELL_SHIELD_BLOCK,
-    SPELL_SAVAGE_DEFENSE,
-    SPELL_SHUFFLE,
-    SPELL_BLOOD_SHIELD,      
-};
-
 //138334
 class spell_fatal_strike : public SpellScriptLoader
 {
@@ -613,14 +590,12 @@ class spell_fatal_strike : public SpellScriptLoader
                 if (!GetCaster() || !GetHitUnit())
                     return;
 
-                for (uint8 n = 0; n <= 4; n++)
+                if (GetHitUnit()->IsActiveMitigation())
                 {
-                    if (GetHitUnit()->HasAura(SafeSpells[n]))
-                    {
-                        SetHitDamage(500000);
-                        return;
-                    }
+                    SetHitDamage(500000);
+                    return;
                 }
+
                 GetCaster()->Kill(GetHitUnit(), true);
             }
 
