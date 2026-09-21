@@ -20,7 +20,6 @@ enum Spells
 {
     SPELL_CLEAVE                = 42587,
     SPELL_CONFLAGRATION         = 42380,       //Phase 2, can't find real spell(Dim Fire?)
- // SPELL_CONFL_SPEED           = 22587,       //8% increase speed, value 22587 from SPELL_CONFLAGRATION mains that spell?
     SPELL_SUMMON_PUMPKIN        = 42394,
 
     SPELL_WHIRLWIND             = 43116,
