@@ -69,7 +69,7 @@ enum Spells
     // Spinestalker
     SPELL_BELLOWING_ROAR        = 36922,
     SPELL_CLEAVE_SPINESTALKER   = 40505,
-    SPELL_TAIL_SWEEP            = 71370,
+    SPELL_TAIL_SWEEP            = 71369,
 
     // Rimefang
     SPELL_FROST_BREATH          = 71386,
