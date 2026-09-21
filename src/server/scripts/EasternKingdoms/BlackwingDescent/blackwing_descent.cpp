@@ -47,14 +47,12 @@ enum Spells
     //drakonid drudge
     SPELL_DRAKONID_RUSH                 = 79630,
     SPELL_DRUDGE_THUNDERCLAP            = 79604,
-    SPELL_DRUDGE_THUNDERCLAP_25         = 91905,
     SPELL_VENGEFUL_RAGE                 = 80035,
 
     //drakonid chainwielder
     SPELL_OVERHEAD_SMASH                = 79580,
     SPELL_GRIEVOUS_WOUND                = 80051,
     SPELL_CONSTRICTING_CHAINS           = 79589,
-    SPELL_CONSTRICTING_CHAINS_25        = 91911,
 
     //maimgor
     SPELL_MAIMGOR_BERSERK               = 80084,
@@ -93,7 +91,6 @@ enum Spells
     SPELL_TIME_LAPSE_SELF               = 80330,
     SPELL_FROST_BURN_DUMMY              = 80346,
     SPELL_FROST_BURN                    = 80336,
-    SPELL_FROST_BURN_25                 = 91896,
     SPELL_FROST_BURN_SELF               = 80338,
 
     //spirit of angerforge
@@ -126,7 +123,6 @@ enum Spells
     SPELL_BESTOWAL_OF_ANVILRAGE         = 80874,
     SPELL_SPIRIT_OF_ANVILRAGE           = 80768,
     SPELL_STORMBOLT                     = 80648, //�������
-    SPELL_STORMBOLT_25                  = 91890,
 
     //spirit of moltenfist
     SPELL_BESTOWAL_OF_MOLTENFIST        = 80876,
@@ -137,7 +133,6 @@ enum Spells
     SPELL_BESTOWAL_OF_SHADOWFORGE       = 80873,
     SPELL_SPIRIT_OF_SHADOWFORGE         = 80769,
     SPELL_DWARVEN_CHAIN_LIGHTNING       = 80646, //�������
-    SPELL_DWARVEN_CHAIN_LIGHTNING_25    = 91891,
 
     //lord victor nefarius
     //omnotron
