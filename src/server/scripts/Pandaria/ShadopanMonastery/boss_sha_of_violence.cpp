@@ -10,8 +10,7 @@ enum eSpells
     SPELL_DISORIENTING_SMASH    = 106872,
     SPELL_PARTING_SMOKE         = 127576,
     SPELL_ENRAGE                = 130196,
-    
-    SPELL_ICE_TRAP              = 110610,
+
     SPELL_EXPLOSION             = 106966
 };
 
@@ -48,7 +47,16 @@ struct boss_sha_of_violence : public BossAI
     void JustSummoned(Creature* summon) override
     {
         summons.Summon(summon);
-        summon->CastSpell(summon, SPELL_ICE_TRAP, true);
+
+        if (summon->GetEntry() == NPC_LESSER_VOLATILE_ENERGY)
+            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                summon->AI()->AttackStart(target);
+    }
+
+    void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+    {
+        if (summon->GetEntry() == NPC_LESSER_VOLATILE_ENERGY)
+            summon->CastSpell(summon, SPELL_EXPLOSION, true);
     }
 
     void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
