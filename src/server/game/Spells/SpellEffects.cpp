@@ -2588,41 +2588,6 @@ void Spell::EffectHeal(SpellEffIndex effIndex)
                 addhealth /= m_UniqueTargetInfo.size();
                 break;
             }
-            case 19750: // Selfless Healer - Increases heal of Flash of Light if it heals an other player than you
-            {
-                if (Aura* selflessHealer = caster->GetAura(114250))
-                {
-                    int32 perc = 0;
-
-                    Player* player = caster->ToPlayer();
-                    if (!player)
-                        break;
-
-                    if (player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID) != SPEC_PALADIN_HOLY)
-                    {
-                        if (AuraEffect* eff = selflessHealer->GetEffect(EFFECT_1))
-                            perc = eff->GetAmount();
-                    }
-                    else if (player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID) == SPEC_PALADIN_HOLY)
-                    {
-                        if (AuraEffect* eff = selflessHealer->GetEffect(EFFECT_3))
-                            perc = eff->GetAmount();
-                    }
-
-                    if (perc && unitTarget->GetGUID() != caster->GetGUID())
-                        AddPct(addhealth, perc);
-                    else if (unitTarget->GetGUID() == caster->GetGUID())
-                    {
-                        if (Aura* bastion = caster->GetAura(114637))
-                            if (AuraEffect* bastionEff = bastion->GetEffect(EFFECT_2))
-                            {
-                                AddPct(addhealth, bastionEff->GetAmount());
-                                bastion->Remove();
-                            }
-                    }
-                }
-                break;
-            }
             default:
                 break;
         }
