@@ -3,7 +3,7 @@
 
 enum Spells
 {
-    SPELL_BERSERK                       = 26667,
+    SPELL_BERSERK                       = 47008,
     SPELL_LAVA_SPEW                     = 77839,
     SPELL_MAGMA_SPLIT_1                 = 78359,
     SPELL_MAGMA_SPLIT_2                 = 78068,
