@@ -135,7 +135,8 @@ enum Spells
     SPELL_RAGE_OF_RAGNAROS_AOE          = 101107,
     SPELL_RAGE_OF_RAGNAROS              = 101110,
 
-    SPELL_ENCOUNTER_COMPLETE            = 102237,
+    // Criteria/encounter-credit asset, not a SpellName entry.
+    CRITERIA_RAGNAROS_COMPLETE          = 102237,
     SPELL_ACHIEVEMENT                   = 101091,
 
     // Malfurion & Cloudburst
@@ -1003,7 +1004,7 @@ class boss_ragnaros_firelands : public CreatureScript
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ACHIEVEMENT, 0, 0, me); 
 
                 // Achievement
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ENCOUNTER_COMPLETE, 0, 0, me); 
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_RAGNAROS_COMPLETE, 0, 0, me); 
                     
                 // Guild Achievement
                 Map::PlayerList const &plrList = instance->instance->GetPlayers();
@@ -1015,7 +1016,7 @@ class boss_ragnaros_firelands : public CreatureScript
                             if (Group* pGroup = pPlayer->GetGroup())
                                 if (pPlayer->GetGuildId() && pGroup->IsGuildGroup(pPlayer->GetGuildGUID(), true, true))
                                 {
-                                    pGroup->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_ENCOUNTER_COMPLETE, 0, 0, NULL, me);
+                                    pGroup->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_RAGNAROS_COMPLETE, 0, 0, NULL, me);
                                     break;
                                 }
                     }
@@ -1043,7 +1044,7 @@ class boss_ragnaros_firelands : public CreatureScript
                     }
                 }
 
-                me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, SPELL_ENCOUNTER_COMPLETE, me, me); 
+                me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, CRITERIA_RAGNAROS_COMPLETE, me, me); 
                 instance->SetBossState(DATA_RAGNAROS, DONE);
 
                 if (GetDifficultyID() == DIFFICULTY_10_N)
