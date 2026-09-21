@@ -21,6 +21,10 @@ constexpr uint8 BoostBagCount = 4;
 constexpr uint16 BoostFactionHorde = 1;
 constexpr uint16 BoostFactionAlliance = 2;
 constexpr uint16 BoostProfessionSkill = 700;
+constexpr uint32 QuestLegionReturnsAlliance = 40519;
+constexpr uint32 QuestLegionReturnsHorde = 43926;
+constexpr uint32 QuestDemonHunterLegionAlliance = 39691;
+constexpr uint32 QuestDemonHunterLegionHorde = 40976;
 
 // CharacterLoadout.db2 has no purpose-6 (level 100 boost) loadout for Demon
 // Hunters. Purpose 4 points at Rogue gear, so use the complete ilvl 680 gear
@@ -180,7 +184,17 @@ void GrantSkippedStartingZoneAbilities(Player* player)
 
 void AddLegionIntroductionQuest(Player* player, uint16 faction)
 {
-    uint32 questId = faction == BoostFactionHorde ? 43926 : 40519;
+    // Demon Hunters have their own faction-specific Legion introduction. The
+    // regular quests explicitly allow only classes 1-11, so trying to add one
+    // to a boosted Demon Hunter silently leaves it without a route to Dalaran,
+    // its class hall and the artifact weapon quest line.
+    bool const isHorde = faction == BoostFactionHorde;
+    uint32 questId;
+    if (player->getClass() == CLASS_DEMON_HUNTER)
+        questId = isHorde ? QuestDemonHunterLegionHorde : QuestDemonHunterLegionAlliance;
+    else
+        questId = isHorde ? QuestLegionReturnsHorde : QuestLegionReturnsAlliance;
+
     if (player->GetQuestStatus(questId) != QUEST_STATUS_NONE)
         return;
 
