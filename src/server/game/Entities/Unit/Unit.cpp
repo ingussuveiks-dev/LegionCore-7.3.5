@@ -9433,15 +9433,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                         _caster->CastSpell(target, 204011, true);
                     return true;
                 }
-                // Ancient Crusader (guardian)
-                case 86703:
-                {
-                    if (!GetOwner() || !GetOwner()->IsPlayer())
-                        return false;
-
-                    GetOwner()->CastSpell(this, 86700, true);
-                    return true;
-                }
                 // Light's Beacon - Beacon of Light
                 case 53651:
                 {
