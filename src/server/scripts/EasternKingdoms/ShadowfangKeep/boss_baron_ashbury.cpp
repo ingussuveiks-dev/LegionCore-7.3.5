@@ -23,12 +23,9 @@ enum Events
 enum Spells
 {
     SPELL_PAIN_AND_SUFFERING    = 93581,
-    SPELL_PAIN_AND_SUFFERING_H  = 93712,
     SPELL_ASPHYXIATE            = 93423,
-    SPELL_ASPHYXIATE_H          = 93710,
     SPELL_ASPHYXIATE_DMG        = 93422,
     SPELL_STAY_OF_EXECUTION     = 93468,
-    SPELL_STAY_OF_EXECUTION_H   = 93705,
     SPELL_STAY_OF_EXECUTION_H_T = 93706,
     SPELL_DARK_ARCHANGEL_FORM   = 93757,
     SPELL_DARK_ARCHANGEL_FORM_0 = 93766,
@@ -150,7 +147,7 @@ class boss_baron_ashbury : public CreatureScript
                             bCombo = true;
                             events.DelayEvents(7000);
                             Talk(SAY_ASPHYXIATE);
-                            DoCast(DUNGEON_MODE(SPELL_ASPHYXIATE, SPELL_ASPHYXIATE_H));
+                            DoCast(SPELL_ASPHYXIATE);
                             events.RescheduleEvent(EVENT_STAY_OF_EXECUTION, 6100);
                             events.RescheduleEvent(EVENT_ASPHYXIATE, 45000);
                             break;
