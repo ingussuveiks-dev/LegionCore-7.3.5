@@ -64,10 +64,9 @@ enum BossSpells
     SPELL_BERSERK                     = 64238, // unused
 
     // Mistress of Pain spells
-    SPELL_SHIVAN_SLASH                  = 67098,
+    SPELL_SHIVAN_SLASH                  = 66378,
     SPELL_SPINNING_STRIKE               = 66283,
     SPELL_MISTRESS_KISS                 = 66336,
-    SPELL_FEL_INFERNO                   = 67047,
     SPELL_FEL_STREAK                    = 66494,
     SPELL_LORD_HITTIN                   = 66326,   // special effect preventing more specific spells be cast on the same player within 10 seconds
     SPELL_MISTRESS_KISS_DAMAGE_SILENCE  = 66359
