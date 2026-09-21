@@ -14,7 +14,6 @@ enum Spells
     SPELL_EXPLODE_GHOUL                         = 52480,
     H_SPELL_EXPLODE_GHOUL                       = 58825,
     SPELL_SHADOW_BOLT                           = 57725,
-    H_SPELL_SHADOW_BOLT                         = 58828,
     SPELL_STEAL_FLESH                           = 52708,
     SPELL_SUMMON_GHOULS                         = 52451
 };
