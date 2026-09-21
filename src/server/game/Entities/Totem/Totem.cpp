@@ -60,43 +60,6 @@ void Totem::InitStats(uint32 duration)
     bool damageSet = false;
     uint32 spellId = GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL);
 
-    if (m_owner->IsPlayer() && m_Properties->Slot >= SUMMON_SLOT_TOTEM && m_Properties->Slot < MAX_TOTEM_SLOT)
-    {
-        // Totemic Encirclement
-        if (m_owner->HasAura(58057)
-            && spellId != 120214
-            && spellId != 120217
-            && spellId != 120218
-            && spellId != 120219)
-        {
-            for (int i = SUMMON_SLOT_TOTEM; i < MAX_TOTEM_SLOT; ++i)
-            {
-                if (i == m_Properties->Slot)
-                    continue;
-                if(m_owner->m_SummonSlot[i])
-                    if(GetMap()->GetCreature(m_owner->m_SummonSlot[i]))
-                        continue;
-                switch (i)
-                {
-                    case 1:
-                        m_owner->CastSpell(m_owner, 120217, true); // Fake Fire Totem
-                        break;
-                    case 2:
-                        m_owner->CastSpell(m_owner, 120218, true); // Fake Earth Totem
-                        break;
-                    case 3:
-                        m_owner->CastSpell(m_owner, 120214, true); // Fake Water Totem
-                        break;
-                    case 4:
-                        m_owner->CastSpell(m_owner, 120219, true); // Fake Wind Totem
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
     // set display id depending on caster's race
     if (uint32 display = m_owner->GetModelForTotem(spellId))
         SetDisplayId(display);
