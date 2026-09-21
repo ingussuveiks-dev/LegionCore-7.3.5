@@ -27,7 +27,7 @@ enum eSpells
     SPELL_PUNCTURE_WOUND        = 70278,
     SPELL_SHOVELLED             = 69572,
     SPELL_LEAPING_FACE_MAUL     = 69504, // Geist Ambusher
-    SPELL_NECROMANTIC_POWER     = 32889,
+    SPELL_NECROMANTIC_POWER     = 69753,
 };
 
 enum eEvents
