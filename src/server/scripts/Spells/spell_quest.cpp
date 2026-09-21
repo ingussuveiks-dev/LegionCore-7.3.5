@@ -1124,7 +1124,8 @@ enum RedSnapperVeryTasty
 {
     SPELL_CAST_NET          = 29866,
     ITEM_RED_SNAPPER        = 23614,
-    SPELL_NEW_SUMMON_TEST   = 49214,
+    NPC_ANGRY_MURLOC        = 17102,
+    FACTION_HOSTILE         = 14,
 };
 
 class spell_q9452_cast_net: public SpellScriptLoader
@@ -1146,8 +1147,11 @@ class spell_q9452_cast_net: public SpellScriptLoader
                 Player* caster = GetCaster()->ToPlayer();
                 if (roll_chance_i(66))
                     caster->AddItem(ITEM_RED_SNAPPER, 1);
-                else
-                    caster->CastSpell(caster, SPELL_NEW_SUMMON_TEST, true);
+                else if (Creature* murloc = caster->SummonCreature(NPC_ANGRY_MURLOC, caster->GetPosition(), TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
+                {
+                    murloc->setFaction(FACTION_HOSTILE);
+                    murloc->AI()->AttackStart(caster);
+                }
             }
 
             void Register() override
