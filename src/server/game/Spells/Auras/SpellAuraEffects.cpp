@@ -7632,12 +7632,6 @@ void AuraEffect::HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster, 
             {
                 Unit* permafrostCaster = nullptr;
                 Aura* permafrostAura = target->GetAura(66193);
-                if (!permafrostAura)
-                    permafrostAura = target->GetAura(67855);
-                if (!permafrostAura)
-                    permafrostAura = target->GetAura(67856);
-                if (!permafrostAura)
-                    permafrostAura = target->GetAura(67857);
 
                 if (permafrostAura)
                     permafrostCaster = permafrostAura->GetCaster();
