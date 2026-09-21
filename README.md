@@ -67,6 +67,29 @@ Warden requires compatible checks and careful validation before use. AHBot also
 needs an account/character setup and deliberate economy configuration; changing
 only one switch is not a production economy setup.
 
+## Legion artifact and Mage Tower coverage
+
+This fork includes class-hall artifact onboarding for all 36 Legion
+specializations and the seven original Mage Tower artifact challenges. War
+Councilor Victoria's gossip conditions, paid/free attempt paths and all seven
+scenario entrances are present. The seven challenge maps contain their
+creature, gameobject and SmartAI encounter data, and the 20 client-defined
+scenario stages have progression events connected to their encounter actions.
+
+The healer challenge, **End of the Risen Threat**, contains the shared client
+criteria event `56912`, displayed as **Your allies must survive**, in five
+`ANY` criteria branches. This is a survival guard rather than a missing
+alternate completion trigger. Crediting it directly can advance the wrong
+stage because the same event is reused by several stages. The protected allies
+instead enforce it by casting the encounter's `Restart` spell on the player
+when an ally dies; the world update normalizes that restart path for Commander
+Jarod Shadowsong, Granny Marl and Callie Carrington.
+
+This coverage has been checked against the 7.3.5.26972 client criteria data and
+the current world database. It still requires in-game completion tests for all
+seven challenge variants before it should be described as fully gameplay
+verified.
+
 ## Requirements
 
 ### Server and build dependencies
