@@ -23,7 +23,6 @@ enum Spells
 
     // Seedling Pod
     SPELL_ENERGIZE                          = 75657,
-    SPELL_ENERGIZING_GROWTH                 = 89123,   
     SPELL_SEEDLING_POD                      = 96278,
 
     // Bloodpetal
