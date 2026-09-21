@@ -13,7 +13,6 @@ enum ScriptTexts
 enum Spells
 {
     SPELL_VOODOO_BOLT   = 96346,
-    SPELL_VOODOO_BOLT_H = 96347,
     SPELL_ZANZIL_FIRE   = 96914,
     SPELL_ZANZIL_FIRE1  = 96916,
     SPELL_ZANZIL_RES1   = 96319, // zombie
@@ -111,8 +110,7 @@ class boss_zanzil : public CreatureScript
             void SpellHit(Unit* caster, SpellInfo const* spell)
             {
                 if (me->GetCurrentSpell(CURRENT_GENERIC_SPELL))
-                    if (me->GetCurrentSpell(CURRENT_GENERIC_SPELL)->m_spellInfo->Id == SPELL_VOODOO_BOLT ||
-                        me->GetCurrentSpell(CURRENT_GENERIC_SPELL)->m_spellInfo->Id == SPELL_VOODOO_BOLT_H)
+                    if (me->GetCurrentSpell(CURRENT_GENERIC_SPELL)->m_spellInfo->Id == SPELL_VOODOO_BOLT)
                         for (uint8 i = 0; i < 3; ++i)
                             if (spell->Effects[i]->Effect == SPELL_EFFECT_INTERRUPT_CAST)
                                 me->InterruptSpell(CURRENT_GENERIC_SPELL);
