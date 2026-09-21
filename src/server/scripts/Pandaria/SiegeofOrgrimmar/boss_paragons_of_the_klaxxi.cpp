@@ -22,16 +22,6 @@
 enum eSpells
 {
     //Special spells
-    //Palladin
-    SPELL_SHIELD_OF_THE_RIGHTEOUS      = 132403,
-    //Warrior
-    SPELL_SHIELD_BLOCK                 = 132404,
-    //Druid
-    SPELL_SAVAGE_DEFENSE               = 132402,
-    //Monk
-    SPELL_ELUSIVE_BREW                 = 115308,
-    //Death Knight
-    SPELL_BLOOD_SHIELD                 = 77535,
     SPELL_READY_TO_FIGHT               = 143542,
     //
 
@@ -242,15 +232,6 @@ uint32 removeaurasentry[4] =
     SPELL_AURA_ENRAGE,
     SPELL_ENRAGE,
     SPELL_PARAGONS_PURPOSE_DMG,
-};
-
-uint32 EvadeSpells[5] =
-{
-    SPELL_SHIELD_OF_THE_RIGHTEOUS,
-    SPELL_SHIELD_BLOCK,
-    SPELL_SAVAGE_DEFENSE,
-    SPELL_ELUSIVE_BREW,
-    SPELL_BLOOD_SHIELD,
 };
 
 Position bloodsumpos[3] =
@@ -1960,9 +1941,9 @@ public:
         {
             if (GetCaster() && GetHitUnit())
             {
-                for (uint8 n = 0; n < 5; n++)
-                    if (GetHitUnit()->HasAura(EvadeSpells[n]))
-                        return;
+                if (GetHitUnit()->IsActiveMitigation())
+                    return;
+
                 GetCaster()->CastSpell(GetHitUnit(), SPELL_CAUSTIC_BLOOD);
             }
         }
