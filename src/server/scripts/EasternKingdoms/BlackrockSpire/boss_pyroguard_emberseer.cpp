@@ -31,7 +31,6 @@ enum Text
 enum Spells
 {
     SPELL_ENCAGED_EMBERSEER         = 15282, // Self on spawn
-    SPELL_FIRE_SHIELD_TRIGGER       = 13377, // Self on spawn missing from 335 dbc
     SPELL_FREEZE_ANIM               = 16245, // Self on event start
     SPELL_EMBERSEER_GROWING         = 16048, // Self on event start
     SPELL_EMBERSEER_FULL_STRENGTH   = 16047, // Emberseer Full Strength
@@ -69,7 +68,6 @@ public:
             instance->SetBossState(DATA_PYROGAURD_EMBERSEER,NOT_STARTED);
             // respawn any dead Blackhand Incarcerators
             DoCast(me, SPELL_ENCAGED_EMBERSEER);
-            //DoCast(me, SPELL_FIRE_SHIELD_TRIGGER);
             _Reset();
         }
 
