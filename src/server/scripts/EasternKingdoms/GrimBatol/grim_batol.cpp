@@ -138,7 +138,6 @@ enum Spells
     SPELL_DIZZY                     = 76415,
     SPELL_MEAT_GRINDER              = 76411,
     SPELL_MEAT_GRINDER_DMG          = 76413,
-    SPELL_MEAT_GRINDER_DMG_H        = 90664,
     SPELL_MEAT_GRINDER_TRIGGER      = 76414,
 
     //twilight firecatcher
