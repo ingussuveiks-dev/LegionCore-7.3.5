@@ -14,8 +14,6 @@ enum Says
 enum Spells
 {
     SPELL_CONVERS_OUTRO                 = 249152,
-    SPELL_DAILY_ESSENCE_FELHOUNDS       = 305308,
-
     SPELL_DESTROYER_BOON                = 244049,
     SPELL_DESTROYER_BOON_ALTER          = 244050,
     SPELL_SARGERAS_BLESSING             = 246057,
@@ -167,13 +165,6 @@ struct boss_felhounds_encounters : public BossAI
         _JustDied();
         RemoveDebuff();
 
-        if (me->GetEntry() == NPC_SHATUG)
-        {
-            instance->instance->ApplyOnEveryPlayer([&](Player* player)
-            {
-                player->CastSpell(player, SPELL_DAILY_ESSENCE_FELHOUNDS, true);
-            });
-        }
     }
 
     void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override

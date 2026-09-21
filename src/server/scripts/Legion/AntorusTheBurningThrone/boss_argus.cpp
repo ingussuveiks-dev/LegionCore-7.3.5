@@ -36,8 +36,6 @@ enum Spells
 {
     SPELL_OUTRO                                 = 257606,
     SPELL_ARGUS_BONUS_ROLL                      = 250608,
-    SPELL_DAILY_ESSENCE_ARGUS                   = 305317,
-
     SPELL_ZERO_ENERGY_REGEN                     = 72242,
     SPELL_TITANIC_ESSENCE                       = 258040,
     SPELL_P1_ENERGY_CONTROLLER                  = 258041,
@@ -330,7 +328,6 @@ struct boss_argus : BossAI
                 if (me->GetThreatTarget(player->GetGUID()))
                 {
                     me->CastSpell(player, SPELL_ARGUS_BONUS_ROLL, true);
-                    player->CastSpell(player, SPELL_DAILY_ESSENCE_ARGUS, true);
                 }
 
                 player->NearTeleportTo(3112.587f, -9635.071f, 62.3f, player->GetOrientation());

@@ -77,7 +77,6 @@ enum Spells
 
     SPELL_LURING_DESTRUCTION            = 246848,
 
-    SPELL_DAILY_ESSENCE_WORLDBREAKER    = 305307,
 };
 
 enum eEvents
@@ -171,10 +170,6 @@ struct boss_worldbreaker : BossAI
 
         me->AddDelayedEvent(1000, [this]() -> void { me->CastSpell(me, SPELL_OUTRO_CONV, true); });
 
-        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-        {
-            player->CastSpell(player, SPELL_DAILY_ESSENCE_WORLDBREAKER, true);
-        });
     }
 
     void EnterEvadeMode() override

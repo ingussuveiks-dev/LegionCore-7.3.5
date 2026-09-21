@@ -30,8 +30,6 @@ enum Spells
     SPELL_RUINER_CHANNEL                = 246833,
     SPELL_SHATTERING_STRIKE_1           = 248375,
     SPELL_SHATTERING_STRIKE_2           = 254900,
-    SPELL_DAILY_ESSENCE_KINGAROTH       = 305313,
-
     //Phase 2
     SPELL_APOCALYPSE_PROTOCOL           = 246516,
     SPELL_REAVER_SPAWN                  = 246511,
@@ -188,11 +186,6 @@ struct boss_kingaroth : BossAI
         _JustDied();
         me->StopMoving();
         me->SetDisableGravity(true);
-
-        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-        {
-            player->CastSpell(player, SPELL_DAILY_ESSENCE_KINGAROTH, true);
-        });
 
         me->AddDelayedEvent(3000, [this]() -> void
         {

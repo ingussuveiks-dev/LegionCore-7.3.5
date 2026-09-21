@@ -24,8 +24,6 @@ enum Spells
     SPELL_OUTRO_CONV                    = 249674,
     SPELL_TELEPORT                      = 254245,
     SPELL_EONAR_BONUS_ROLL              = 250602,
-    SPELL_DAILY_ESSENCE_EONAR           = 305311,
-
     //Eonar
     SPELL_LIFE_ENERGY                   = 257673,
     SPELL_LIFE_FORCE                    = 250048,
@@ -300,7 +298,6 @@ struct boss_eonar : public ScriptedAI
                     instance->instance->ApplyOnEveryPlayer([&](Player* player)
                     {
                         me->CastSpell(player, SPELL_EONAR_BONUS_ROLL, true);
-                        player->CastSpell(player, SPELL_DAILY_ESSENCE_EONAR, true);
                     });
                 });
             }

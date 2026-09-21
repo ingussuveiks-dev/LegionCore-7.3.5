@@ -25,8 +25,6 @@ enum Says
 enum Spells
 {
     SPELL_OUTRO_CONV                        = 250806,
-    SPELL_DAILY_ESSENCE_SHIVARRES           = 305315,
-
     SPELL_SHARED_HEALTH                     = 144224,
     SPELL_SHIVAN_PACT_AT                    = 253189,
     SPELL_SENSE_OF_DREAD                    = 253752,
@@ -433,11 +431,6 @@ struct boss_coven_shivarres : BossAI
 
                     if (auto asara = Creature::GetCreature(*me, covenVector[0]))
                         instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, asara);
-
-                    instance->instance->ApplyOnEveryPlayer([&](Player* player)
-                    {
-                        player->CastSpell(player, SPELL_DAILY_ESSENCE_SHIVARRES, true);
-                    });
 
                     RemoveDebuffs();
                     summons.DespawnEntry(NPC_TORMENT_OF_NORGANNON);

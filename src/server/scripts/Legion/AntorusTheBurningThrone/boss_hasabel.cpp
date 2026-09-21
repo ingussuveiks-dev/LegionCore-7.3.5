@@ -33,8 +33,6 @@ enum Spells
     SPELL_PORTAL_RANCORA_AT                 = 254511,
     SPELL_PORTAL_NATHREZA_AT                = 254515,
     SPELL_BERSERK                           = 26662,
-    SPELL_DAILY_ESSENCE_HASABEL             = 305310,
-
     //Gateways XOROTH
     SPELL_XOROTH_ENTER_GATE_AT              = 244017,
     SPELL_XOROTH_EXIT_GATE_AT               = 244111,
@@ -241,10 +239,6 @@ struct boss_hasabel : BossAI
         _JustDied();
         TeleportPlayers();
         me->AddDelayedEvent(1000, [this]() -> void { me->CastSpell(me, SPELL_OUTRO_CONV, true); });
-        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-        {
-            player->CastSpell(player, SPELL_DAILY_ESSENCE_HASABEL, true);
-        });
     }
 
     void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override

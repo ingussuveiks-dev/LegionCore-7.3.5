@@ -36,8 +36,6 @@ enum Spells
     SPELL_ASSUME_COMMAND                    = 245227,
     SPELL_HIDE_MODEL                        = 245212,
     SPELL_ENERGY_DRAIN                      = 258033,
-    SPELL_DAILY_ESSENCE_ANTORAN             = 305309,
-
     //Bosses
     SPELL_EXPLOIT_WEAKNESS                  = 244892,
     SPELL_SUMMON_SHADOW_AT                  = 256436,
@@ -396,10 +394,6 @@ struct boss_antoran_high_command : BossAI
                         if (auto admiral = Creature::GetCreature(*me, commandVector[0]))
                             instance->SendEncounterUnit(ENCOUNTER_FRAME_INSTANCE_END, admiral);
 
-                        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-                        {
-                            player->CastSpell(player, SPELL_DAILY_ESSENCE_ANTORAN, true);
-                        });
                     }
                     
                     summons.DespawnEntry(NPC_ADMIRAL_POD);

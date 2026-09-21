@@ -21,8 +21,6 @@ enum Spells
     SPELL_INFERNAL_ROCKETS_1            = 248252,
     SPELL_INFERNAL_ROCKETS_2            = 248255,
     SPELL_BERSERK                       = 26662,
-    SPELL_DAILY_ESSENCE_IMONAR          = 305312,
-
     //Phase 1
     SPELL_SHOCK_LANCE                   = 247367,
     SPELL_SLEEP_CANISTER_FILTER         = 254244,
@@ -255,8 +253,6 @@ struct boss_imonar : BossAI
         _JustDied();
         SetVisibleTeleporter(true);
         instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_EMPOWERED_SHOCK_LANCE);
-        instance->DoCastSpellOnPlayers(SPELL_DAILY_ESSENCE_IMONAR);
-
         me->AddDelayedEvent(3000, [this]() -> void
         {
             instance->instance->LoadGrid(-10608.08f, 9002.58f);

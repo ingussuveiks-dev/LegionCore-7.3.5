@@ -21,8 +21,6 @@ enum Spells
     SPELL_TAESHALACH_REACH                      = 243431, // Visual sword
     SPELL_PERIODIC_ENERGY                       = 244792, // "Burning Will of Taeshalach"
     SPELL_BERSERK                               = 26662,
-    SPELL_DAILY_ESSENCE_AGGRAMAR                = 305316,
-
     //Combo Events
     SPELL_TAESHALACH_TECHNIQUE                  = 244688, // Cost energy
     SPELL_FOE_BREAKER                           = 245458,
@@ -219,11 +217,6 @@ struct boss_aggramar : BossAI
     {
         Talk(SAY_DEATH);
         _JustDied();
-
-        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-        {
-            player->CastSpell(player, SPELL_DAILY_ESSENCE_AGGRAMAR, true);
-        });
 
         me->AddDelayedEvent(3000, [this]() -> void
         {

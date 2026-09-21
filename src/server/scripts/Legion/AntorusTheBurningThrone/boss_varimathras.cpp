@@ -13,8 +13,6 @@ enum Spells
 {
     SPELL_CHRISTMAS_VARIMATHRAS         = 254076, //Winter Veil Holidays
     SPELL_INTRO_CONV                    = 250026,
-    SPELL_DAILY_ESSENCE_VARIMATHRAS     = 305314,
-
     SPELL_BERSERK                       = 26662,
     SPELL_ENERGY_GAIN                   = 244697,
     SPELL_CONTROL_AURA_AT               = 243975,
@@ -99,11 +97,6 @@ struct boss_varimathras : BossAI
     {
         Talk(SAY_DEATH);
         _JustDied();
-
-        instance->instance->ApplyOnEveryPlayer([&](Player* player)
-        {
-            player->CastSpell(player, SPELL_DAILY_ESSENCE_VARIMATHRAS, true);
-        });
 
         me->AddDelayedEvent(1000, [this]() -> void
         {
