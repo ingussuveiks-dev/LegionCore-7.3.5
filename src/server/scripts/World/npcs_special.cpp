@@ -3329,79 +3329,6 @@ public:
     }
 };
 
-class npc_lightwell : public CreatureScript
-{
-    public:
-        npc_lightwell() : CreatureScript("npc_lightwell") { }
-
-        struct npc_lightwellAI : public PassiveAI
-        {
-            npc_lightwellAI(Creature* creature) : PassiveAI(creature)
-            {
-                if (TempSummon* summon = me->ToTempSummon())
-                    if(Unit* owner = summon->GetSummoner())
-                        me->SetLevel(owner->getLevel());
-                //DoCast(me, 59907, false);
-                me->SetAuraStack(59907, me, 17);
-            }
-
-            void EnterEvadeMode() override
-            {
-                if (!me->IsAlive())
-                    return;
-
-                me->DeleteThreatList();
-                me->CombatStop(true);
-                me->ResetPlayerDamageReq();
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_lightwellAI(creature);
-        }
-};
-
-class npc_lightwell_mop : public CreatureScript
-{
-    public:
-        npc_lightwell_mop() : CreatureScript("npc_lightwell_mop") { }
-
-        struct npc_lightwell_mopAI : public PassiveAI
-        {
-            npc_lightwell_mopAI(Creature* creature) : PassiveAI(creature)
-            {
-                if (TempSummon* summon = me->ToTempSummon())
-                    if(Unit* owner = summon->GetSummoner())
-                    {
-                        me->SetLevel(owner->getLevel());
-                        me->SetMaxHealth(CalculatePct(owner->GetMaxHealth(), 50));
-                        me->SetFullHealth();
-                        me->SetMaxPower(POWER_RAGE, 0);
-                        me->SetFloatValue(UNIT_FIELD_COMBAT_REACH, 10);
-                    }
-
-                DoCast(me, 126138, true);
-                me->SetAuraStack(126150, me, 17);
-            }
-
-            void EnterEvadeMode() override
-            {
-                if (!me->IsAlive())
-                    return;
-
-                me->DeleteThreatList();
-                me->CombatStop(true);
-                me->ResetPlayerDamageReq();
-            }
-        };
-
-        CreatureAI* GetAI(Creature* creature) const override
-        {
-            return new npc_lightwell_mopAI(creature);
-        }
-};
-
 enum eTrainingDummy
 {
     NPC_ADVANCED_TARGET_DUMMY                  = 2674,
@@ -7525,8 +7452,6 @@ void AddSC_npcs_special()
     new npc_snake_trap();
     new npc_ebon_gargoyle();
     new npc_mage_mirror_image();
-    new npc_lightwell();
-    new npc_lightwell_mop();
     new mob_mojo();
     new npc_training_dummy();
     new npc_wormhole();
