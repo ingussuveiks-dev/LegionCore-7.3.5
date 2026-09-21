@@ -21,7 +21,7 @@ enum Spells
     SPELL_NETHERBEAM                = 75677,
     SPELL_FORCE_BLAST               = 76522,
     SPELL_GRAVITY_STRIKE            = 76561,
-    SPELL_GRIEVOUS_WHIRL            = 93658,
+    SPELL_GRIEVOUS_WHIRL            = 76524,
     SPELL_SHADOW_STRIKE             = 66134
 };
 
