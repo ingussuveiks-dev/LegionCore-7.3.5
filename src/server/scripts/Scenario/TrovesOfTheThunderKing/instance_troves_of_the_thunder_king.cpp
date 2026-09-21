@@ -182,7 +182,7 @@ class instance_troves_of_the_thunder_king : public InstanceMapScript
                             if (Player* scenarioOwner = ObjectAccessor::FindPlayer(GetGuidData(PLAYER_DATA)))
                             {
                                 for (uint8 i = 0; i < 10; i++)
-                                    scenarioOwner->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LOOTED_GOLDEN_CHEST_ACHIEV);
+                                    scenarioOwner->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_LOOTED_GOLDEN_CHEST);
                             }
                         }
                         break;

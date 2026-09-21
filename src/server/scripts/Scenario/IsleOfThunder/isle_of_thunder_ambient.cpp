@@ -51,7 +51,7 @@ enum IotSpells
     IOT_SPELL_TOSS_ENERGIZED_METAL      = 137547,
     IOT_SPELL_CHARGED_BOLT_PERIODIC     = 137543,
     IOT_SPELL_POWER_SURGE_ACHIEVEMENT   = 136842,
-    IOT_SPELL_SPEED_METAL_ACHIEVEMENT   = 139370,
+    IOT_CRITERIA_ASSET_SPEED_METAL      = 139370,
 };
 
 enum IotEvents
@@ -490,7 +490,7 @@ struct npc_metal_lord_meno_han : public IotAmbientAI
         for (Player* player : players)
             if (Aura* surge = player->GetAura(IOT_SPELL_POWER_SURGE_ACHIEVEMENT))
                 if (surge->GetStackAmount() > 9)
-                    player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, IOT_SPELL_SPEED_METAL_ACHIEVEMENT);
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, IOT_CRITERIA_ASSET_SPEED_METAL);
     }
     void UpdateAI(uint32 diff) override
     {

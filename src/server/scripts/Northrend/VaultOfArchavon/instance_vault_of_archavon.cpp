@@ -99,7 +99,7 @@ class instance_vault_of_archavon : public InstanceMapScript
                 }
 
                 // on every death of Archavon, Emalon and Koralon check our achievement
-                DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_EARTH_WIND_FIRE_ACHIEVEMENT_CHECK);
+                DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_EARTH_WIND_FIRE);
 
                 return true;
             }

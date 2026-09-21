@@ -46,7 +46,7 @@ enum AchievementCriteriaIds
 
 enum AchievementSpells
 {
-    SPELL_EARTH_WIND_FIRE_ACHIEVEMENT_CHECK = 68308,
+    CRITERIA_ASSET_EARTH_WIND_FIRE = 68308,
 };
 
 template<class AI>

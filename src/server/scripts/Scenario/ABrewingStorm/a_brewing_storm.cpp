@@ -43,7 +43,7 @@ enum Spells
     SPELL_SWAMP_SMASH                      = 115013,
     SPELL_EARTH_SHATTERING                 = 122142,
     SPELL_BLANCHES_ELEXIR_EFF              = 121951,
-    SPELL_PERFECT_POUR_ACHIEV              = 114876,
+    CRITERIA_ASSET_PERFECT_POUR            = 114876,
     SPELL_PARTY_OF_SIX_ACHIEV              = 127411,
 };
 
@@ -718,7 +718,7 @@ struct npc_borokhula_the_destroyer : public ScriptedAI
                 blanche->AI()->Talk(TALK_SCENARIO_END);
 
                 if (blanche->AI()->GetData(TYPE_HIT_BY_ROAD))
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_PERFECT_POUR_ACHIEV);
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_PERFECT_POUR);
 
                 if (blanche->AI()->GetData(TYPE_PARTY_OF_SIX))
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_PARTY_OF_SIX_ACHIEV);

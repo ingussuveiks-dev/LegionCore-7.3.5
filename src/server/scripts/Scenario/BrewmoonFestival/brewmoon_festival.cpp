@@ -1494,7 +1494,7 @@ class npc_warbringer_qobi : public CreatureScript
             SPELL_THROW_OIL         = 125413,
             SPELL_FIRELINE_SUMM     = 125392,
             SPELL_OIL_SLICK         = 125418,
-            SPELL_SCENARIO_COMPLETE = 127910,
+            CRITERIA_ASSET_SCENARIO_COMPLETE = 127910,
         };
 
         enum iEvents
@@ -1572,7 +1572,7 @@ class npc_warbringer_qobi : public CreatureScript
 
                     for (auto&& itr : instance->instance->GetPlayers())
                         if (Player* target = itr.getSource())
-                            target->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_SCENARIO_COMPLETE);
+                            target->UpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_SCENARIO_COMPLETE);
                 }
 
                 summons.DespawnAll();
