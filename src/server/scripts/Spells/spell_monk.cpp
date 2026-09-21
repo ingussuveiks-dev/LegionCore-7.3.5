@@ -253,34 +253,6 @@ public:
     }
 };
 
-class spell_monk_clone_cast : public SpellScriptLoader
-{
-public:
-    spell_monk_clone_cast() : SpellScriptLoader("spell_monk_clone_cast") { }
-
-    class spell_monk_clone_cast_SpellScript : public SpellScript
-    {
-        PrepareSpellScript(spell_monk_clone_cast_SpellScript);
-
-        void HandleDummy(SpellEffIndex /*effIndex*/)
-        {
-            if(Unit* caster = GetCaster())
-                if (caster->HasSpell(139598))
-                    caster->CastSpell(caster, 139597, true);
-        }
-
-        void Register() override
-        {
-            OnEffectHitTarget += SpellEffectFn(spell_monk_clone_cast_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
-        }
-    };
-
-    SpellScript* GetSpellScript() const override
-    {
-        return new spell_monk_clone_cast_SpellScript();
-    }
-};
-
 // Windwalking - 157411
 class areatrigger_at_windwalking : public AreaTriggerScript
 {
@@ -3646,7 +3618,6 @@ void AddSC_monk_spell_scripts()
 {
     new npc_monk_black_ox_statue();
     new npc_monk_niuzao();
-    new spell_monk_clone_cast();
     new spell_monk_storm_earth_and_fire_clone_visual();
     new spell_monk_storm_earth_and_fire();
     new spell_monk_diffuse_magic();
