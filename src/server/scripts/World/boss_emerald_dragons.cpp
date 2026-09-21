@@ -380,7 +380,6 @@ enum LethonSpells
 {
     SPELL_DRAW_SPIRIT               = 24811,
     SPELL_SHADOW_BOLT_WHIRL         = 24834,
-    SPELL_SPIRIT_SHADE_VISUAL       = 24908,
 };
 
 class boss_lethon : public CreatureScript
