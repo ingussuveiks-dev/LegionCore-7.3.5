@@ -421,7 +421,10 @@ void OpcodeTable::Initialize()
     DEFINE_HANDLER(CMSG_DF_READY_CHECK_RESPONSE,                            STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleLfgCompleteReadyCheck);
     DEFINE_HANDLER(CMSG_DF_SET_ROLES,                                       STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleLfgCompleteRoleCheck);
     DEFINE_HANDLER(CMSG_DF_TELEPORT,                                        STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleLfgTeleport);
-    DEFINE_HANDLER(CMSG_DISCARDED_TIME_SYNC_ACKS,                           STATUS_LOGGEDIN_OR_RECENTLY_LOGGOUT, PROCESS_THREADUNSAFE, &WorldSession::HandleDiscardedTimeSyncAcks);
+    // The 7.3.5 client can send this while transitioning from character
+    // selection into the world. The handler already safely ignores it when
+    // no Player object exists, so accept it for the authenticated session.
+    DEFINE_HANDLER(CMSG_DISCARDED_TIME_SYNC_ACKS,                           STATUS_AUTHED,    PROCESS_THREADUNSAFE, &WorldSession::HandleDiscardedTimeSyncAcks);
     DEFINE_HANDLER(CMSG_DISMISS_CRITTER,                                    STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleDismissCritter);
     DEFINE_HANDLER(CMSG_DO_MASTER_LOOT_ROLL,                                STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleDoMasterLootRoll);
     DEFINE_HANDLER(CMSG_DO_READY_CHECK,                                     STATUS_LOGGEDIN,  PROCESS_THREADUNSAFE, &WorldSession::HandleDoReadyCheck);

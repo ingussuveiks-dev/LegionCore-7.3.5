@@ -514,7 +514,13 @@ void BattlepayManager::SendProductList()
         pProduct.ProductID = product.ProductID;
         pProduct.Flags = product.Flags;
         pProduct.Type = product.Type;
-        //pProduct.UnkBits Optional<uint16> ;
+
+        // The 7.3.5 client uses this field as the character-upgrade type.
+        // Without it the product is visible in the shop, but an AVAILABLE
+        // distribution is not exposed as a boost token on character select.
+        if (product.WebsiteType == Battlepay::CharacterBoost)
+            pProduct.UnkBits = product.ScriptName.find("level90") != std::string::npos ? 1 : 2;
+
         //pProduct.UnkInt1 = 0;
         //pProduct.DisplayId = 0;
         //pProduct.ItemId = 0;
