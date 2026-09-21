@@ -46,7 +46,6 @@ enum Spells
     SPELL_WRATH_OF_RAGNAROS     = 20566,
     SPELL_LAVA_BURST            = 21158,
     SPELL_MAGMA_BLAST           = 20565,                   // Ranged attack
-    SPELL_SONS_OF_FLAME_DUMMY   = 21108,                   // Server side effect
     SPELL_RAGSUBMERGE           = 21107,                   // Stealth aura
     SPELL_RAGEMERGE             = 20568,
     SPELL_MELT_WEAPON           = 21388,
