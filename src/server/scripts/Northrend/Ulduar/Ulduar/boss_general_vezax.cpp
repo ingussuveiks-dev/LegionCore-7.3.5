@@ -50,8 +50,6 @@ enum VezaxSpells
     SPELL_SURGE_OF_DARKNESS                     = 62662,
     SPELL_SARONITE_VAPOR                        = 63323,
     SPELL_PROFOUND_OF_DARKNESS                  = 63420,
-    SPELL_CORRUPTED_RAGE                        = 68415,
-    SPELL_SHAMANTIC_RAGE                        = 30823,
     SPELL_SUMMON_SARONITE_ANIMUS                = 63145,
     SPELL_VISUAL_SARONITE_ANIMUS                = 63319,
     SPELL_PROFOUND_DARKNESS                     = 63420,
@@ -176,21 +174,6 @@ public:
             events.ScheduleEvent(EVENT_DARKNESS, 60000);
             events.ScheduleEvent(EVENT_BERSERK, 600000);
             
-            if (instance)
-            {
-                // This ability affects Shaman with the Shamanistic Rage talent
-                Map::PlayerList const &players = instance->instance->GetPlayers();
-                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-                {
-                    Player* pPlayer = itr->getSource();
-                            
-                    if (!pPlayer)
-                        continue;
-
-                    if (pPlayer->HasSpell(SPELL_SHAMANTIC_RAGE))
-                        DoCast(pPlayer, SPELL_CORRUPTED_RAGE, true);
-                }
-            }
         }
         
         void JustDied(Unit* /*victim*/) override
