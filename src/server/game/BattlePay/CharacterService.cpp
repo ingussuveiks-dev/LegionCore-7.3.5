@@ -22,6 +22,50 @@ constexpr uint16 BoostFactionHorde = 1;
 constexpr uint16 BoostFactionAlliance = 2;
 constexpr uint16 BoostProfessionSkill = 700;
 
+// CharacterLoadout.db2 has no purpose-6 (level 100 boost) loadout for Demon
+// Hunters. Purpose 4 points at Rogue gear, so use the complete ilvl 680 gear
+// earned in the Demon Hunter starting experience instead.
+uint32 const DemonHunterAllianceBoostArmor[] =
+{
+    128955, // The Brood Queen's Veil
+    128950, // Demon-Rend Shoulderblades
+    128952, // Torment Ender's Chestguard
+    128947, // Pit Lord's Cuffs
+    128954, // Power Handler's Gloves
+    128949, // Infernal Firecord Sash
+    128951, // Leggings of Sacrifice
+    128953  // Treads of Illidari Supremacy
+};
+
+uint32 const DemonHunterHordeBoostArmor[] =
+{
+    133310, // The Brood Queen's Veil
+    133311, // Demon-Rend Shoulderblades
+    133312, // Torment Ender's Chestguard
+    133313, // Pit Lord's Cuffs
+    133314, // Power Handler's Gloves
+    133315, // Infernal Firecord Sash
+    133316, // Leggings of Sacrifice
+    133317  // Treads of Illidari Supremacy
+};
+
+uint32 const DemonHunterSharedBoostItems[] =
+{
+    128945, // Inquisitor's Glowering Eye
+    128944, // Voras' Silk Drape
+    128946, // Mardum Lord Signet
+    128948, // Nefarious Ring
+    133580, // Brutarg's Sword Tip
+    128958, // Lekos' Leash
+    128956, // Fel-Etched Glaive (main hand)
+    128956, // Fel-Etched Glaive (off hand)
+    ItemHearthstone,
+    54443,  // Embersilk Bag
+    110560, // Garrison Hearthstone
+    130192, // Potato Axebeak Stew
+    141410  // Invasion Survival Kit
+};
+
 struct ProfessionDefinition
 {
     uint16 SkillId;
@@ -400,16 +444,51 @@ std::vector<uint32> CharacterService::GetBoostItems(Player const* player, uint16
     if (!player)
         return { };
 
-    std::vector<uint32> result = GetBoostItems(player->getClass(), specializationId, targetLevel);
+    std::vector<uint32> result = GetBoostItems(player->getClass(), specializationId, targetLevel, player->getRace());
     if (player->HasItemCount(ItemHearthstone, 1, true))
         result.erase(std::remove(result.begin(), result.end(), ItemHearthstone), result.end());
 
     return result;
 }
 
-std::vector<uint32> CharacterService::GetBoostItems(uint8 classId, uint16 specializationId, uint8 targetLevel) const
+std::vector<uint32> CharacterService::GetBoostItems(uint8 classId, uint16 specializationId, uint8 targetLevel, uint8 raceId) const
 {
     std::vector<uint32> result;
+
+    auto appendRequiredItems = [&](uint32 const* begin, uint32 const* end)
+    {
+        bool complete = true;
+        for (uint32 const* itemId = begin; itemId != end; ++itemId)
+        {
+            ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(*itemId);
+            if (!itemTemplate || !itemTemplate->IsUsableBySpecialization(specializationId, targetLevel, false))
+            {
+                TC_LOG_ERROR("battlepay", "Demon Hunter boost item %u is missing or unusable for specialization %u at level %u",
+                    *itemId, specializationId, targetLevel);
+                complete = false;
+                continue;
+            }
+
+            result.push_back(*itemId);
+        }
+
+        return complete;
+    };
+
+    if (classId == CLASS_DEMON_HUNTER && targetLevel >= 100)
+    {
+        bool complete = false;
+        if (raceId == RACE_BLOODELF)
+            complete = appendRequiredItems(std::begin(DemonHunterHordeBoostArmor), std::end(DemonHunterHordeBoostArmor));
+        else
+            complete = appendRequiredItems(std::begin(DemonHunterAllianceBoostArmor), std::end(DemonHunterAllianceBoostArmor));
+
+        complete &= appendRequiredItems(std::begin(DemonHunterSharedBoostItems), std::end(DemonHunterSharedBoostItems));
+        if (!complete)
+            result.clear();
+
+        return result;
+    }
 
     // Purpose 3 contains the old level-90 loadout; purpose 6 is the Legion
     // level-100 boost loadout. ItemSpec data removes weapons/trinkets intended
@@ -508,7 +587,7 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
     if (!ResolveBoostFaction(charInfo->Race, factionChoice, finalRace, faction))
         return false;
 
-    boostItems = GetBoostItems(charInfo->Class, specializationId, targetLevel);
+    boostItems = GetBoostItems(charInfo->Class, specializationId, targetLevel, finalRace);
     boostItems.erase(std::remove(boostItems.begin(), boostItems.end(), ItemHearthstone), boostItems.end());
     if (boostItems.empty())
     {
