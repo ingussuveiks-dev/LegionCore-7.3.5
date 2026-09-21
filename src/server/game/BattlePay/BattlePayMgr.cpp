@@ -458,10 +458,29 @@ void BattlepayManager::SendProductList()
         //pProduct.UnkString = "";
         //pProduct.UnkBit = false;
 
-        // Product delivery still uses Product::Items on the server. The known
-        // good 7.3.5 catalog sample exposes products through display metadata
-        // and carries no ProductItem records, so keep the wire representation
-        // equally conservative until that client substructure is verified.
+        bool hideProductPrice = false;
+        if (pInfo.DisplayInfo.has_value() && pInfo.DisplayInfo->Flags.has_value())
+            hideProductPrice = *pInfo.DisplayInfo->Flags & BattlepayDisplayInfoFlag::HidePrice;
+        bool hasEnoughTokens = tokenBalance >= static_cast<int64>(product.CurrentPriceFixedPoint);
+
+        for (auto& item : product.Items)
+        {
+            WorldPackets::BattlePay::ProductItem pItem;
+            pItem.ID = item.ID;
+            pItem.ItemID = product.Items.size() > 1 ? 0 : item.ItemID; ///< Disable tooltip for packs (client handle only one tooltip).
+            pItem.Quantity = item.Quantity;
+
+            // Disable the buy button for products already owned, or when a
+            // hidden-price product cannot be afforded.
+            pItem.HasPet = AlreadyOwnProduct(item.ItemID) || (hideProductPrice && !hasEnoughTokens);
+            pItem.PetResult = item.PetResult;
+
+            auto dataP = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
+            if (std::get<0>(dataP))
+                pItem.DisplayInfo = std::get<1>(dataP);
+
+            pProduct.Items.emplace_back(pItem);
+        }
 
         auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
         if (std::get<0>(dataP))
