@@ -193,10 +193,10 @@ enum Actions
 enum
 {
     ACHIEV_CON_SPEED_ATORY_START_EVENT          = 21597,
-    SPELL_ACHIEVEMENT_CHECK                     = 65074,
+    CRITERIA_ASSET_FREYA_ACHIEVEMENTS            = 65074,
 
     ACHIEV_LUMBERJACKED                         = 21686,
-    SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK        = 65296,
+    CRITERIA_ASSET_LUMBERJACKED                  = 65296,
 };
 
 //32906
@@ -288,7 +288,7 @@ public:
             _JustDied();
             me->setFaction(35);
             if (instance) // Kill credit
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 65074, 0, 0, me);
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_FREYA_ACHIEVEMENTS, 0, 0, me);
             // Hard mode chest
             //uint32 chest;
             //switch (EldersCount)
@@ -671,7 +671,7 @@ public:
                     if (Creature* ST = me->GetCreature(*me, instance->GetGuidData(DATA_STONEBARK)))
                         if (!IR->IsAlive())
                             if (!ST->IsAlive())
-                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
+                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_LUMBERJACKED);
              }
         }
         
@@ -822,7 +822,7 @@ public:
                     if (Creature* ST = me->GetCreature(*me, instance->GetGuidData(DATA_STONEBARK)))
                         if (!BR->IsAlive())
                             if (!ST->IsAlive())
-                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
+                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_LUMBERJACKED);
              }
         }
 
@@ -947,7 +947,7 @@ public:
                     if (Creature* IR = me->GetCreature(*me, instance->GetGuidData(DATA_IRONBRANCH)))
                         if (!BR->IsAlive())
                             if (!IR->IsAlive())
-                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_LUMBERJACKED_ACHIEVEMENT_CHECK);
+                                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_ASSET_LUMBERJACKED);
              }
         }
 
