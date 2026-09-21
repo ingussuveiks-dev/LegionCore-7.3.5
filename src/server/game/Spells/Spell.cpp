@@ -7120,7 +7120,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (m_spellInfo->ClassOptions.SpellClassSet == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->ClassOptions.SpellClassMask[0] == 0x2000)
                 {
                     Unit* target = m_targets.GetUnitTarget();
-                    if (!target || (target == m_caster && !m_caster->HasAura(49039)) || (target->IsFriendlyTo(m_caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD && !m_caster->HasAura(63333)))
+                    if (!target || (target == m_caster && !m_caster->HasAura(49039)) || (target->IsFriendlyTo(m_caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD))
                         return SPELL_FAILED_BAD_TARGETS;
                     if (!target->IsFriendlyTo(m_caster) && !m_caster->HasInArc(static_cast<float>(M_PI), target))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
