@@ -234,13 +234,14 @@ WorldPacket const* WorldPackets::BattlePay::ProductListResponse::Write()
         _worldPacket << productGroupData.Flags;
 
         _worldPacket.WriteBits(productGroupData.Name.length(), 8);
-        // This is a length-prefixed string, not a C string. Advertising one
-        // extra byte without writing it shifts every following shop entry and
-        // makes the client interpret packet data as enormous array lengths.
-        _worldPacket.WriteBits(productGroupData.IsAvailableDescription.length(), 24);
+        // The protocol length includes the C-string terminator. The original
+        // writer advertised this extra byte but never put it in the packet,
+        // shifting all following shop entries for the client.
+        _worldPacket.WriteBits(productGroupData.IsAvailableDescription.length() + 1, 24);
         _worldPacket.WriteString(productGroupData.Name);
         if (!productGroupData.IsAvailableDescription.empty())
             _worldPacket.WriteString(productGroupData.IsAvailableDescription);
+        _worldPacket << uint8(0);
     }
 
     for (BattlePayShopEntry const& shopData : ProductList.Shop)
