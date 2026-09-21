@@ -86,6 +86,11 @@ enum esAction
     ACTION_DONE                 = 2,
 };
 
+enum WoiData
+{
+    DATA_ENERGIZING_SMASH_COUNT = 1,
+};
+
 Position const janxipos  = {3829.48f, 1523.41f, 362.26f, 0.6683f};
 Position const qinxipos  = {3828.49f, 1576.28f, 362.26f, 5.9148f};
 
@@ -499,12 +504,14 @@ class mob_woi_add_generic : public CreatureScript
             InstanceScript* pInstance;
             EventMap events;
             uint32 focusspell;
+            uint8 energizingSmashCount;
             ObjectGuid targetguid;
 
             void Reset() override
             {
                 targetguid.Clear();
                 focusspell = 0;
+                energizingSmashCount = 0;
                 DoZoneInCombat(me, 150.0f);
                 switch (me->GetEntry())
                 {
@@ -573,6 +580,20 @@ class mob_woi_add_generic : public CreatureScript
             {
                 if (me->GetMap()->IsHeroic())
                     DoCast(me, SPELL_SUMMON_TITAN_SPARK, true);
+            }
+
+            uint32 GetData(uint32 type) const override
+            {
+                if (type == DATA_ENERGIZING_SMASH_COUNT)
+                    return energizingSmashCount;
+
+                return 0;
+            }
+
+            void SetData(uint32 type, uint32 data) override
+            {
+                if (type == DATA_ENERGIZING_SMASH_COUNT)
+                    energizingSmashCount = data;
             }
 
             void UpdateAI(uint32 diff) override
@@ -852,33 +873,31 @@ class spell_eperor_energizing_smash : public SpellScriptLoader
         {
             PrepareSpellScript(spell_eperor_energizing_smash_SpellScript);
 
-            uint8 stacks;
-
-            bool Load()
-            {
-                stacks = 0;
-                return true;
-            }
-
             void ResizeEffectRadiusTargetChecker(std::list<WorldObject*>& targets)
             {
                 Unit* caster = GetCaster();
                 if (!caster)
                     return;
 
-                Aura* aura = caster->GetAura(113314);
-                if (!aura)
-                    stacks = 0;
-                else
-                    stacks = aura->GetStackAmount();
+                uint32 smashCount = 0;
+                if (Creature* creature = caster->ToCreature())
+                    smashCount = creature->AI()->GetData(DATA_ENERGIZING_SMASH_COUNT);
 
-                targets.remove_if(ExactDistanceCheck(caster, 10.0f + stacks));
+                targets.remove_if(ExactDistanceCheck(caster, 10.0f + smashCount));
+            }
+
+            void HandleAfterCast()
+            {
+                if (Creature* creature = GetCaster()->ToCreature())
+                    creature->AI()->SetData(DATA_ENERGIZING_SMASH_COUNT,
+                        creature->AI()->GetData(DATA_ENERGIZING_SMASH_COUNT) + 1);
             }
 
             void Register() override
             {
                 OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_eperor_energizing_smash_SpellScript::ResizeEffectRadiusTargetChecker, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
                 OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_eperor_energizing_smash_SpellScript::ResizeEffectRadiusTargetChecker, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+                AfterCast += SpellCastFn(spell_eperor_energizing_smash_SpellScript::HandleAfterCast);
             }
         };
 
