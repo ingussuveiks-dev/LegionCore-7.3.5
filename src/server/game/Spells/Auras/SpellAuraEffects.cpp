@@ -6410,17 +6410,6 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
 
             break;
         }
-        case SPELLFAMILY_WARLOCK:
-        {
-            switch (GetId())
-            {
-                // Demonic Pact
-                case 47236:
-                    caster->CastSpell(caster, 53646, true);
-                    break;
-            }
-            break;
-        }
         default:
             break;
         }
