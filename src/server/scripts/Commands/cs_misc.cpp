@@ -3251,7 +3251,11 @@ public:
         if (!unit)
             return false;
 
-        handler->GetSession()->GetPlayer()->CastSpell(unit, 6277, true);
+        Player* player = handler->GetSession()->GetPlayer();
+        if (WorldObject* viewpoint = player->GetViewpoint())
+            player->SetViewpoint(viewpoint, false);
+
+        player->SetViewpoint(unit, true);
         return true;
     }
 
@@ -3262,7 +3266,9 @@ public:
         if (player->isPossessing())
             return false;
 
-        player->StopCastingBindSight();
+        if (WorldObject* viewpoint = player->GetViewpoint())
+            player->SetViewpoint(viewpoint, false);
+
         return true;
     }
 
