@@ -1,65 +1,201 @@
-# LegionCore
+# LegionCore 7.3.5 (build 26972)
 
-#### Table of Contents
-* [Introduction](#introduction)
-* [Requirements](#requirements)
-* [Install](#install)
-* [Data Files](#data-files)
-* [Common Issues](#common-issues)
-* [Reporting issues](#reporting-issues)
-* [Submitting fixes](#submitting-fixes)
-* [Thank you](#thank-you)
+LegionCore is an open-source World of Warcraft: Legion server emulator for the
+7.3.5 client, build **26972**. This repository is a maintained fork of
+[The Legion Preservation Project](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5),
+which originated from the 2020 UWoW source release and an older
+[TrinityCore](https://github.com/TrinityCore/TrinityCore) codebase.
 
-#### Introduction
-LegionCore is a **MMORPG** framework for WOW Legion *(Build 26972)*. This core is based off of the UWOW core leak of 2020. Which was derived from an old version of [TrinityCore](https://github.com/TrinityCore/TrinityCore). LegionCore is completely opensource and is developed by the community. To submit a pull request please follow this template [here](submitting-fixes).
+This is a development and research project. It is suitable for local servers,
+development and gameplay testing, but it should not be presented as a fully
+complete or production-ready Legion implementation. A clean startup does not
+guarantee that every quest, class mechanic, dungeon or raid encounter works.
 
-If you want you can join the community discord: [here](https://discord.gg/rft8Jv459p).
+## Current status
 
-# Requirements
- 
-[Windows specific](https://www.trinitycore.info/en/install/requirements/windows)
-  
-[Linux specific](https://www.trinitycore.info/en/install/requirements/linux)
+- Client protocol: Legion 7.3.5, build 26972 only.
+- Expansion setting: Legion (`Expansion = 6`).
+- Maximum player level: 110.
+- Server applications: `bnetserver` and `worldserver`.
+- Windows x64 Release builds are actively used and verified in this fork.
+- GitHub workflows also build the project with GCC and Clang on Linux.
+- Database auto-updates are supported for auth, characters, world and hotfixes.
+- The repository includes the data extraction tools required by this client.
 
-[Mac specific](https://www.trinitycore.info/en/install/requirements/macos)
+Recent work in this fork includes database consistency repairs, a full active
+spell-reference audit, Antorus Tier 21 script/binding repairs, quieter and more
+accurate 7.3.5 network handling, and a custom BattlePay catalogue. See the
+[spell audit](docs/audits/spell-audit-2026-09-21.md) for its exact scope and
+remaining gameplay-validation requirements.
 
-# Install
-Most of the install steps are the same as the TrinityCore ones [here](https://www.trinitycore.info/en/install/Core-Installation).
+## Fork-specific features
 
-# Data Files
-This core has been updated with tools to generate all required data files.
+- Native 7.3.5 in-game BattlePay shop available both in game and on character
+  selection, with Legion-valid mounts, pets, toys, bags, services, appearance
+  items, consumables, heirloom upgrades and Antorus tokens.
+- Persistent level 100 character boost entitlement with character,
+  specialization and neutral-Pandaren faction selection. Delivery includes a
+  specialization-appropriate starter loadout, learned progression essentials,
+  riding support, destination handling, action-bar initialization and four
+  30-slot bags.
+- Account collection checks prevent repurchasing already-owned mounts, pets or
+  toys where the client and server data allow ownership to be determined.
+- Personal XP-rate NPC with selectable rates up to the configured server cap.
+- Solocraft scaling code and per-instance configuration are present, but the
+  feature is disabled by default.
+- Windows dependency discovery and a Visual Studio 2022 CMake preset are
+  included for the local Release workflow.
 
-Run the tools in the following order, using client build 26972:
+The BattlePay catalogue is a server-specific convenience feature; it is not a
+claim to reproduce Blizzard's historical commercial storefront.
+
+## Optional systems and defaults
+
+These systems are compiled into the core but should be enabled only after
+testing them with your own database and client environment.
+
+| System | Present | Default state | Main configuration |
+| --- | --- | --- | --- |
+| BattlePay shop | Yes | Enabled | `Bpay.Enabled = 1` |
+| Warden anti-cheat | Yes | Disabled | `Warden.Enabled = 0` |
+| Extended Warden checks | Yes | Disabled | `WardenExtended.Enabled = 0` |
+| AuctionHouseBot seller | Yes | Disabled | `AuctionHouseBot.Seller.Enabled = 0` |
+| AuctionHouseBot buyer | Yes | Disabled | `AuctionHouseBot.Buyer.Enabled = 0` |
+| Solocraft | Yes | Disabled | `Solocraft.Enable = 0` |
+
+Warden requires compatible checks and careful validation before use. AHBot also
+needs an account/character setup and deliberate economy configuration; changing
+only one switch is not a production economy setup.
+
+## Requirements
+
+### Server and build dependencies
+
+- Git.
+- CMake 3.18 or newer.
+- A 64-bit C++ toolchain. Visual Studio 2022 is the maintained Windows preset;
+  the CI also exercises GCC 11 and Clang 14 on Ubuntu.
+- Boost 1.78 or newer on Windows, or 1.74 or newer on other platforms.
+- OpenSSL development libraries (OpenSSL 3.x is used by the Windows CI).
+- MySQL-compatible client headers/libraries and a MySQL or MariaDB server.
+- A legally obtained 64-bit World of Warcraft 7.3.5.26972 client.
+
+The client, copyrighted game assets, extracted client data and preconfigured
+local server credentials are not distributed by this repository.
+
+## Building
+
+### Windows x64
+
+Install Visual Studio 2022 with the **Desktop development with C++** workload,
+CMake support, Boost, OpenSSL and a MySQL-compatible client SDK. Then run:
+
+```powershell
+git clone https://github.com/ingussuveiks-dev/LegionCore-7.3.5.git
+cd LegionCore-7.3.5
+.\build.cmd
+```
+
+The script configures and builds the `default` CMake preset in Release mode.
+Build products are created under `build-extractors/bin/Release`; the install
+step copies the runnable package to `compiles`.
+
+The equivalent explicit commands are:
+
+```powershell
+cmake --preset default
+cmake --build --preset default
+cmake --install build-extractors --config Release
+```
+
+Set `BOOST_ROOT`, `OPENSSL_ROOT_DIR` or `MYSQL_ROOT_DIR` when dependencies are
+installed outside the locations detected by `cmake/WindowsDefaults.cmake`.
+
+### Linux
+
+Linux builds are covered by the GCC and Clang workflows in `.github/workflows`.
+Install the equivalent compiler, CMake, Boost, OpenSSL and MySQL/MariaDB
+development packages, then configure an out-of-source build. The exact package
+names depend on the distribution.
+
+## Databases
+
+Four databases are used:
+
+| Role | Base file |
+| --- | --- |
+| Authentication | `sql/base/auth_database.sql` |
+| Characters | `sql/base/characters_database.sql` |
+| World | `sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_world_735.26972_2024_10_23.sql` |
+| Hotfixes | `sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_hotfixes_735.26972_2024_10_23.sql` |
+
+Import the base schemas, copy the `.conf.dist` files to `.conf`, and configure
+the four connection strings. Set `SourceDirectory` to the repository root if
+the built-in updater should discover `sql/updates`. Review
+`Updates.EnableDatabases` and `Updates.AutoSetup` before the first start, and
+back up existing databases before applying updates.
+
+Never commit real database passwords, private certificates or production
+account data.
+
+## Client data
+
+Use the **26972** client and run the tools in this order:
 
 1. `mapextractor`
 2. `vmap4extractor`
 3. `vmap4assembler`
 4. `mmaps_generator`
 
-The generated folders `dbc`, `maps`, `vmaps`, `mmaps`, `cameras` and `gt` are all required.
+The runtime data directory must contain the generated `dbc`, `maps`, `vmaps`,
+`mmaps`, `cameras` and `gt` directories. Data extracted from another client
+build is not a supported substitute.
 
-# Common issues
-TODO
+## Configuration and startup
 
-# Reporting issues
-Issues can be reported via the [Github issue tracker](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/issues).
+1. Copy `bnetserver.conf.dist` to `bnetserver.conf` and
+   `worldserver.conf.dist` to `worldserver.conf`.
+2. Configure database connections, `DataDir`, network bindings, certificates
+   and `SourceDirectory`.
+3. Start `bnetserver` first.
+4. Start `worldserver` after the authentication service is ready.
+5. Stop `worldserver` with `Ctrl+C` or the server shutdown command so pending
+   database work and logs can be closed cleanly.
 
-Please take the time to review existing issues before submitting your own to
-prevent duplicates.
+The executables search for their configuration beside the executable when no
+explicit `-c` path is supplied.
 
-In addition, thoroughly read through the [issue tracker guide](https://community.trinitycore.org/topic/37-the-trinitycore-issuetracker-and-you/) to ensure
-your report contains the required information. Incorrect or poorly formed
-reports are wasteful and are subject to deletion.
+## Known limitations
 
-Note that the issue tracker guide is from TrinityCore, but it also applies for this core.
+- Content coverage is uneven and inherited scripts/data include incomplete or
+  unverified quests, encounters and class mechanics.
+- Static DB2, SQL and source audits reduce invalid references but cannot replace
+  in-game regression tests.
+- Optional systems such as Warden, AHBot and Solocraft are not enabled by
+  default and are not guaranteed to be correctly tuned for a public realm.
+- Custom shop and boost flows require the matching current world database,
+  current server binaries and the exact 7.3.5.26972 client.
+- macOS is not currently covered by this fork's CI.
 
-# Submitting fixes
-C++ fixes are submitted as pull requests via Github. For more information on how to
-properly submit a pull request, read the [how-to: maintain a remote fork](https://community.trinitycore.org/topic/9002-howto-maintain-a-remote-fork-for-pull-requests-tortoisegit/).
-For SQL only fixes, open a ticket; if a bug report exists for the bug, post on an existing ticket.
+When reporting a bug, include the current commit hash, client build, database
+update state, relevant `Server.log`/`DBErrors.log` lines, reproduction steps and
+whether the problem also exists in the upstream project.
 
-### Thank you
-- [TrinityCore Authors](https://github.com/TrinityCore/TrinityCore/blob/master/AUTHORS)
-- [LegionCore Contributors](https://github.com/dufernst/LegionCore-7.3.5/graphs/contributors)
+## Contributing
 
-> **License: GPL 2.0** read [COPYING](COPYING).
+Keep fixes focused and reproducible. C++ changes should include a successful
+build; SQL changes should be idempotent where practical and must preserve user
+data. Gameplay fixes should cite the 7.3.5 client data or a reliable Legion-era
+reference and document what was tested in game.
+
+For inherited problems, review the
+[upstream issue tracker](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/issues)
+before opening a duplicate report.
+
+## Credits and license
+
+- [TrinityCore authors](https://github.com/TrinityCore/TrinityCore/blob/master/AUTHORS)
+- [LegionCore contributors](https://github.com/dufernst/LegionCore-7.3.5/graphs/contributors)
+- [The Legion Preservation Project](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5)
+
+This project is distributed under the GNU GPL v2. See [COPYING](COPYING).
