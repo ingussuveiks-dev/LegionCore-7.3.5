@@ -3177,7 +3177,6 @@ public:
         SPELL_MAGE_FROSTBOLT        = 59638,
         SPELL_MAGE_FIREBALL         = 133,
         SPELL_MAGE_ARCANE_BLAST     = 30451,
-        SPELL_MAGE_GLYPH            = 63093,
         SPELL_INITIALIZE_IMAGES     = 102284,
         SPELL_CLONE_CASTER          = 60352,
         SPELL_INHERIT_MASTER_THREAT = 58838
@@ -3229,15 +3228,12 @@ public:
                 return;
 
             eSpells spellId = eSpells::SPELL_MAGE_FROSTBOLT;
-            /*if (owner->HasAura(SPELL_MAGE_GLYPH))
-            {*/
             switch (owner->GetSpecializationId())
             {
             case TALENT_SPEC_MAGE_ARCANE:   spellId = eSpells::SPELL_MAGE_ARCANE_BLAST; break;
             case TALENT_SPEC_MAGE_FIRE:     spellId = eSpells::SPELL_MAGE_FIREBALL;     break;
             default: break;
             }
-            //}
 
             events.ScheduleEvent(spellId, 0); ///< Schedule cast
             me->GetMotionMaster()->Clear(false);
