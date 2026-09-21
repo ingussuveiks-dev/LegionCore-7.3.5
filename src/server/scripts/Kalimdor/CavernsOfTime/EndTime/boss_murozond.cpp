@@ -37,7 +37,8 @@ enum Spells
     SPELL_TEMPORAL_SNAPSHOT             = 101592,
     SPELL_REWIND_TIME                   = 101590,
     SPELL_BLESSING_OF_BRONZE_DRAGONS    = 102364,
-    SPELL_KILL_MUROZOND                 = 110158
+    // Criteria/encounter-credit asset, not a SpellName entry.
+    CRITERIA_MUROZOND_ASSET             = 110158
 };
 
 enum Events
@@ -191,17 +192,17 @@ struct boss_murozond : public BossAI
         if (instance)
         {
             // Achievement
-            instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_KILL_MUROZOND, 0, 0, me);
+            instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_MUROZOND_ASSET, 0, 0, me);
 
             // Guild Achievement
             instance->instance->ApplyOnEveryPlayer([&](Player* player)
             {
                 if (Group* group = player->GetGroup())
                     if (player->GetGuildId() && group->IsGuildGroup(player->GetGuildGUID(), true, true))
-                        group->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, SPELL_KILL_MUROZOND, 0, 0, NULL, me);
+                        group->UpdateGuildAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, CRITERIA_MUROZOND_ASSET, 0, 0, NULL, me);
             });
 
-            me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, SPELL_KILL_MUROZOND, me, me);
+            me->GetMap()->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, CRITERIA_MUROZOND_ASSET, me, me);
 
             if (auto go = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_HOURGLASS)))
                 go->SetFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_INTERACT_COND);
