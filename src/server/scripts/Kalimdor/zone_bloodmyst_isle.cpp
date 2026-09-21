@@ -244,7 +244,7 @@ enum EndingTheirWorld
     SPELL_IMMOLATE                  = 12742,
     SPELL_CURSE_OF_BLOOD            = 8282,
 
-    SPELL_FROST_SHOCK               = 8056,
+    SPELL_FROST_SHOCK               = 12548,
     SPELL_HEALING_SURGE             = 8004, // 3.3.5 Lesser Healing Wave
     SPELL_SEARING_TOTEM             = 38116,
     SPELL_STRENGTH_OF_EARTH_TOTEM   = 31633,
