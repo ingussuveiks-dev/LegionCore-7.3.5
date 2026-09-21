@@ -1155,7 +1155,7 @@ enum TrashSpells
     SPELL_FIREBALL                                = 72163,
     SPELL_FLAMESTRIKE                             = 72169,
     SPELL_FROSTBOLT                               = 72166,
-    SPELL_CHAINS_OF_ICE                           = 72121,
+    SPELL_CHAINS_OF_ICE                           = 72171,
     SPELL_HALLUCINATION                           = 72342,
 
     // Phantom Hallucination (same as phantom mage + HALLUCINATION_2 when dies)
