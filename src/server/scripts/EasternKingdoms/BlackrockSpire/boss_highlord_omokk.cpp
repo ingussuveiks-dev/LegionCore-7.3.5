@@ -23,7 +23,7 @@
 enum Spells
 {
     SPELL_WARSTOMP                  = 24375,
-    SPELL_CLEAVE                    = 15579,
+    SPELL_CLEAVE                    = 15284,
     SPELL_STRIKE                    = 18368,
     SPELL_REND                      = 18106,
     SPELL_SUNDERARMOR               = 24317,
