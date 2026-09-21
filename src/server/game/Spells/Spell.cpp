@@ -2940,14 +2940,6 @@ void Spell::DoAllEffectOnTarget(TargetInfoPtr target)
         if (_mss > 250)
             sLog->outDiff("Spell::DoAllEffectOnTarget 4 m_damage Caster %u entry %u SpellId %u Pos %s wait %ums", m_caster->GetGUIDLow(), m_caster->GetEntry(), m_spellInfo->Id, m_caster->GetPosition().ToString().c_str(), _mss);
 
-        // Hunter's pet special attacks
-        if (m_spellInfo->ClassOptions.SpellClassSet == SPELLFAMILY_HUNTER && m_spellInfo->ClassOptions.SpellClassMask[0] & 0x00080000)
-            if (Unit * owner = caster->GetOwner())
-            {
-                // Cobra Strikes
-                if (Aura* pAura = owner->GetAura(53257))
-                    pAura->ModStackAmount(-1);
-            }
     }
     else if (m_addpower != 0)
     {
