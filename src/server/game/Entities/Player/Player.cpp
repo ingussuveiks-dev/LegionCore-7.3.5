@@ -5327,6 +5327,9 @@ void Player::learnSpell(uint32 spell_id, bool dependent, uint32 fromSkill, bool 
     }
 
     UpdateMount();
+
+    if (learning && IsInWorld())
+        AddSpellToActionBarIfAppropriate(spell_id);
 }
 
 void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bool sendMessage)
@@ -5569,6 +5572,8 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bo
             unlearnedSpells.SuppressMessaging = true;
         SendDirectMessage(unlearnedSpells.Write());
     }
+
+    RemoveSpellFromActionBar(spell_id);
 }
 
 void Player::RemoveSpellCooldown(uint32 spell_id, bool update /* = false */)
@@ -8450,6 +8455,77 @@ ActionButton* Player::AddActionButton(uint8 button, uint64 action, uint8 type)
     TC_LOG_DEBUG("entities.player", "Player::AddActionButton: Player '%s' (%s) added action '%lu' (type %u) to button '%u'",
                  GetName(), GetGUID().ToString().c_str(), action, type, button);
     return &ab;
+}
+
+bool Player::AddSpellToActionBarIfAppropriate(uint32 spellId, bool sendUpdate)
+{
+    constexpr uint8 BoostActionBarSlots = 72;
+
+    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+    if (!spellInfo || !HasActiveSpell(spellId) || spellInfo->IsPassive() || spellInfo->IsProfession() ||
+        spellInfo->IsMountOrCompanions() || spellInfo->HasAttribute(SPELL_ATTR0_HIDDEN_CLIENTSIDE) ||
+        spellInfo->HasAttribute(SPELL_ATTR0_TRADESPELL))
+        return false;
+
+    bool classOrSpecializationSpell = sSpellMgr->IsTalent(spellId);
+    if (std::vector<SpecializationSpellsEntry const*> const* specializationSpells =
+        sDB2Manager.GetSpecializationSpells(GetSpecializationId()))
+    {
+        for (SpecializationSpellsEntry const* specializationSpell : *specializationSpells)
+            if (specializationSpell->SpellID == spellId)
+            {
+                classOrSpecializationSpell = true;
+                break;
+            }
+    }
+
+    SkillLineAbilityMapBounds skillBounds = sSpellMgr->GetSkillLineAbilityMapBounds(spellId);
+    for (SkillLineAbilityMap::const_iterator itr = skillBounds.first; itr != skillBounds.second; ++itr)
+        if (!itr->second->ClassMask || (itr->second->ClassMask & getClassMask()))
+        {
+            classOrSpecializationSpell = true;
+            break;
+        }
+
+    if (!classOrSpecializationSpell)
+        return false;
+
+    for (ActionButtonList::const_iterator itr = m_actionButtons.begin(); itr != m_actionButtons.end(); ++itr)
+        if (itr->second.uState != ACTIONBUTTON_DELETED && itr->second.GetType() == ACTION_BUTTON_SPELL &&
+            itr->second.GetAction() == spellId)
+            return false;
+
+    for (uint8 button = 0; button < BoostActionBarSlots; ++button)
+    {
+        if (GetActionButton(button))
+            continue;
+
+        if (!AddActionButton(button, spellId, ACTION_BUTTON_SPELL))
+            return false;
+
+        if (sendUpdate && IsInWorld())
+            SendActionButtons(1);
+        return true;
+    }
+
+    return false;
+}
+
+bool Player::RemoveSpellFromActionBar(uint32 spellId, bool sendUpdate)
+{
+    std::vector<uint8> buttonsToRemove;
+    for (ActionButtonList::const_iterator itr = m_actionButtons.begin(); itr != m_actionButtons.end(); ++itr)
+        if (itr->second.uState != ACTIONBUTTON_DELETED && itr->second.GetType() == ACTION_BUTTON_SPELL &&
+            itr->second.GetAction() == spellId)
+            buttonsToRemove.push_back(itr->first);
+
+    for (uint8 button : buttonsToRemove)
+        RemoveActionButton(button);
+
+    if (!buttonsToRemove.empty() && sendUpdate && IsInWorld())
+        SendActionButtons(1);
+
+    return !buttonsToRemove.empty();
 }
 
 void Player::RemoveActionButton(uint8 button)

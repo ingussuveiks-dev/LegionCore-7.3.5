@@ -17,11 +17,12 @@ public:
     void ChangeFaction(Player* player);
     void ChangeRace(Player* player);
     void Customize(Player* player);
-    bool Boost(Player* player, uint16 specializationId, uint8 targetLevel);
+    bool Boost(Player* player, uint16 specializationId, uint8 targetLevel, uint16 factionChoice = 0);
     std::vector<uint32> GetBoostItems(Player const* player, uint16 specializationId, uint8 targetLevel) const;
     std::vector<uint32> GetBoostItems(uint8 classId, uint16 specializationId, uint8 targetLevel) const;
     bool BoostCharacter(WorldSession* session, ObjectGuid targetCharGuid, uint16 specializationId, uint8 targetLevel,
-        std::vector<uint32>& boostItems);
+        uint16 factionChoice, std::vector<uint32>& boostItems);
+    void FinalizeBoost(Player* player);
     void RestoreDeletedCharacter(WorldSession* session);
 
 	static CharacterService* instance();

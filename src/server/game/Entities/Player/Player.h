@@ -630,6 +630,8 @@ enum AtLoginFlags : uint16
     AT_LOGIN_CHANGE_RACE            = 0x080,
     AT_LOGIN_UNLOCK                 = 0x100,
     AT_LOGIN_LOCKED_FOR_TRANSFER    = 0x200,
+    AT_LOGIN_CHARACTER_BOOST        = 0x400,
+    AT_LOGIN_BOOST_PROFESSIONS      = 0x800,
 };
 
 typedef std::vector<QuestStatusData*>* QuestStatusVector;
@@ -2351,6 +2353,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         ActionButton* AddActionButton(uint8 button, uint64 action, uint8 type);
         void RemoveActionButton(uint8 button);
+        bool AddSpellToActionBarIfAppropriate(uint32 spellId, bool sendUpdate = true);
+        bool RemoveSpellFromActionBar(uint32 spellId, bool sendUpdate = true);
         ActionButton const* GetActionButton(uint8 button);
         void SendInitialActionButtons() { SendActionButtons(0); }
         void SendActionButtons(uint32 state);

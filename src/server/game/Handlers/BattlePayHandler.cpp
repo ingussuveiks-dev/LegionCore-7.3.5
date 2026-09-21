@@ -20,7 +20,10 @@
 #include "BattlePayData.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "SpellInfo.h"
+#include "SpellMgr.h"
 #include "DatabaseEnv.h"
+#include <set>
 
 auto GetBagsFreeSlots = [](Player* player) -> uint32
 {
@@ -42,6 +45,14 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
     if (!characterInfo || !product)
         return false;
 
+    // A neutral Pandaren has no Alliance/Horde identity yet. Services whose
+    // result depends on that identity must wait until the Wandering Isle
+    // faction choice has been completed.
+    if (characterInfo->Race == RACE_PANDAREN_NEUTRAL &&
+        (product->WebsiteType == Battlepay::Faction ||
+         product->WebsiteType == Battlepay::Race))
+        return false;
+
     uint32 classMask = 1u << (characterInfo->Class - 1);
     uint64 raceMask = UI64LIT(1) << (characterInfo->Race - 1);
     if (product->ClassMask && !(product->ClassMask & classMask))
@@ -57,6 +68,30 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
             return false;
         if (itemTemplate->AllowableRace && !(itemTemplate->AllowableRace & raceMask))
             return false;
+
+        std::set<uint32> learnedSpells;
+        for (ItemEffectEntry const* itemEffect : itemTemplate->Effects)
+        {
+            if (!itemEffect || itemEffect->TriggerType != ITEM_SPELLTRIGGER_LEARN_SPELL_ID || !itemEffect->SpellID)
+                continue;
+
+            learnedSpells.insert(itemEffect->SpellID);
+            SpellLearnSpellMapBounds bounds = sSpellMgr->GetSpellLearnSpellMapBounds(itemEffect->SpellID);
+            for (SpellLearnSpellMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
+                learnedSpells.insert(itr->second.spell);
+        }
+
+        for (uint32 spellId : learnedSpells)
+        {
+            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+            if (!spellInfo)
+                continue;
+
+            if (spellInfo->HasAttribute(SPELL_ATTR7_HORDE_ONLY) && !(raceMask & RACEMASK_HORDE))
+                return false;
+            if (spellInfo->HasAttribute(SPELL_ATTR7_ALLIANCE_ONLY) && !(raceMask & RACEMASK_ALLIANCE))
+                return false;
+        }
     }
 
     return true;

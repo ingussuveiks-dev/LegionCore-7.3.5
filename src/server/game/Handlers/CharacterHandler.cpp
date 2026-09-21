@@ -23,6 +23,7 @@
 #include "BattlePayMgr.h"
 #include "BattlegroundPackets.h"
 #include "CalendarPackets.h"
+#include "CharacterService.h"
 #include "CharacterData.h"
 #include "CharacterPackets.h"
 #include "Chat.h"
@@ -974,6 +975,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
             player->SendTalentsInfoData(false);              // original talents send already in to SendInitialPacketsBeforeAddToMap, resend reset state
             SendNotification(LANG_RESET_TALENTS);
         }
+
+        sCharacterService->FinalizeBoost(player);
 
         bool firstLogin = pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST);
         if (firstLogin)

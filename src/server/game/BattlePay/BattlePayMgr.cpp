@@ -815,12 +815,23 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
     Battlepay::Product const* product = sBattlePayDataStore->GetProduct(productId);
     CharacterInfo const* charInfo = sWorld->GetCharacterInfo(targetCharGuid);
     ChrSpecializationEntry const* specialization = sChrSpecializationStore.LookupEntry(specId);
+    bool validFactionChoice = false;
+    if (charInfo)
+    {
+        if (charInfo->Race == RACE_PANDAREN_NEUTRAL)
+            validFactionChoice = choiceId == 1 || choiceId == 2;
+        else
+        {
+            uint16 expectedChoice = Player::TeamForRace(charInfo->Race) == HORDE ? 1 : 2;
+            validFactionChoice = choiceId == 0 || choiceId == expectedChoice;
+        }
+    }
 
     if (!purchase || !product || product->WebsiteType != CharacterBoost || productId != 109 ||
         !_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP) ||
         purchase->ProductID != productId || purchase->DistributionId != distributionId ||
         !charInfo || charInfo->AccountId != _session->GetAccountId() || charInfo->Level >= 100 ||
-        !specialization || specialization->ClassID != charInfo->Class)
+        !specialization || specialization->ClassID != charInfo->Class || !validFactionChoice)
     {
         TC_LOG_ERROR("battlepay", "Rejected character boost assignment for account %u, character %s, product %u, distribution " UI64FMTD ", specialization %u",
             _session->GetAccountId(), targetCharGuid.ToString().c_str(), productId, distributionId, specId);
@@ -832,10 +843,10 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
     if (Player* player = ObjectAccessor::GetObjectInOrOutOfWorld(targetCharGuid, static_cast<Player*>(nullptr)))
     {
         boostItems = sCharacterService->GetBoostItems(player, specId, 100);
-        boosted = sCharacterService->Boost(player, specId, 100);
+        boosted = sCharacterService->Boost(player, specId, 100, choiceId);
     }
     else
-        boosted = sCharacterService->BoostCharacter(_session, targetCharGuid, specId, 100, boostItems);
+        boosted = sCharacterService->BoostCharacter(_session, targetCharGuid, specId, 100, choiceId, boostItems);
 
     if (!boosted)
     {
@@ -900,7 +911,7 @@ void BattlepayManager::Update(uint32 diff)
             responseQueued.Character = data.TargetCharacter;
             _session->SendPacket(responseQueued.Write());
 
-            if (!sCharacterService->Boost(player, data.SpecializationID, 100))
+            if (!sCharacterService->Boost(player, data.SpecializationID, 100, data.ChoiceID))
             {
                 TC_LOG_ERROR("battlepay", "Character boost delivery failed for account %u and character %s",
                     _session->GetAccountId(), data.TargetCharacter.ToString().c_str());
