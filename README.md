@@ -76,6 +76,24 @@ scenario entrances are present. The seven challenge maps contain their
 creature, gameobject and SmartAI encounter data, and the 20 client-defined
 scenario stages have progression events connected to their encounter actions.
 
+Artifact weapon acquisition is not gated to level 110. The first weapon flow
+is enabled from level 98 after the faction Legion introduction leads the
+character through Dalaran to its class hall. A level 100 boosted character is
+placed at the working Legion introduction hand-in and receives the appropriate
+Alliance, Horde or Demon Hunter introduction quest, so it can begin the same
+artifact route immediately after the boost; it does not need to level to 110
+first. Once the player makes the class-hall weapon choice, the server credits
+the selection and starts the matching acquisition quest for that class and
+specialization. The artifact itself is awarded by the acquisition
+quest/scenario rather than being granted directly by the selection handler.
+
+All 36 specialization routes are covered. The first selected artifact can be
+acquired from level 98, while quests for the remaining specialization
+artifacts follow the normal class-hall progression and become available from
+level 102. Characters already at level 110 can still complete any eligible
+unfinished acquisition routes. Mage Tower challenge appearances are separate
+endgame content and retain their level 110 and prerequisite progression.
+
 The healer challenge, **End of the Risen Threat**, contains the shared client
 criteria event `56912`, displayed as **Your allies must survive**, in five
 `ANY` criteria branches. This is a survival guard rather than a missing
