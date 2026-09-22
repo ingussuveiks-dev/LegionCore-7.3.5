@@ -26,3 +26,6 @@ cmake-build-*/
 /.codex/
 sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_hotfixes_735.26972_2024_10_23.sql
 sql/base/LegionCore_full_735.26972_2024_10_23/LegionCore_world_735.26972_2024_10_23.sql
+
+# Local administrator reference; intentionally never committed.
+/GM_COMMANDS_LOCAL.md

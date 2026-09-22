@@ -525,7 +525,8 @@ void BattlepayManager::SendProductList()
         // Without it the product is visible in the shop, but an AVAILABLE
         // distribution is not exposed as a boost token on character select.
         if (product.WebsiteType == Battlepay::CharacterBoost)
-            pProduct.UnkBits = product.ScriptName.find("level90") != std::string::npos ? 1 : 2;
+            pProduct.UnkBits = product.ScriptName.find("level90") != std::string::npos ?
+                Battlepay::Level90BoostType : Battlepay::Level100BoostType;
 
         //pProduct.UnkInt1 = 0;
         //pProduct.DisplayId = 0;
@@ -740,7 +741,8 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
     }
 
     if (product->WebsiteType == Battlepay::CharacterBoost)
-        productData.UnkBits = product->ScriptName.find("level90") != std::string::npos ? 1 : 2;
+        productData.UnkBits = product->ScriptName.find("level90") != std::string::npos ?
+            Battlepay::Level90BoostType : Battlepay::Level100BoostType;
 
     productData.ProductID = product->ProductID;
     productData.Flags = product->Flags;
@@ -839,7 +841,7 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
         if (std::get<0>(displayInfo))
             productData.DisplayInfo = std::get<1>(displayInfo);
 
-        productData.UnkBits = 2; // Legion client value for a level 100 boost.
+        productData.UnkBits = Battlepay::Level100BoostType;
         productData.ProductID = product->ProductID;
         productData.Flags = product->Flags;
         productData.Type = Battlepay::CharacterUpgradeProductType;

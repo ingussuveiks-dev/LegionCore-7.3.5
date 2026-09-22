@@ -348,6 +348,11 @@ namespace Battlepay
     // ignored even when its upgrade decorator is otherwise correct.
     constexpr uint8 CharacterUpgradeProductType = 1;
 
+    // CharacterServiceInfo.db2 record IDs used as the distribution map keys
+    // by the 7.3.5 GlueXML.  They are not sequential enum values.
+    constexpr uint16 Level100BoostType = 1;
+    constexpr uint16 Level90BoostType = 6;
+
     namespace BattlepayGroupDisplayType
     {
         enum : uint8
