@@ -91,12 +91,10 @@ public:
 
     bool CanBuy(WorldSession* session, Battlepay::Product const* /*product*/, std::string& reason) override
     {
-        if (session->HasAuthFlag(t_Level >= 100 ? AT_AUTH_FLAG_100_LVL_UP : AT_AUTH_FLAG_90_LVL_UP))
-        {
-            reason = "This account already has a pending character boost. Log out and use it on the character-selection screen.";
-            return false;
-        }
-
+        // Level boosts are account-wide consumable credits.  Buying another
+        // one while a boost is pending increases the character-select count.
+        (void)session;
+        (void)reason;
         return true;
     }
 };

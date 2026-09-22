@@ -333,6 +333,11 @@ namespace Battlepay
         };
     }
 
+    // Account-token storage is also used for repeatable, account-wide shop
+    // entitlements.  This type is intentionally not present in
+    // battlepay_token_type, so it is never shown as a spendable currency.
+    constexpr uint8 Level100BoostCreditToken = 100;
+
     namespace BattlepayGroupDisplayType
     {
         enum : uint8
@@ -446,6 +451,7 @@ namespace Battlepay
 class BattlepayManager
 {
     Battlepay::Purchase _actualTransaction;
+    std::vector<Battlepay::Purchase> _pendingBoostDistributions;
     std::map<uint32, Battlepay::Product> _existProducts;
     
     WorldSession* _session;
@@ -469,7 +475,8 @@ public:
     auto ProductFilter(Battlepay::Product product) -> bool;
     void SendProductList();
     void SendPointsBalance();
-    void SendBattlePayDistribution(uint32 productId, uint8 status, uint64 distributionId, ObjectGuid targetGuid = ObjectGuid::Empty);
+    void SendBattlePayDistribution(uint32 productId, uint8 status, uint64 distributionId,
+        ObjectGuid targetGuid = ObjectGuid::Empty, uint64 purchaseId = 0);
     std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BuildPendingBoostDistributions();
     void AssignDistributionToCharacter(ObjectGuid const& targetCharGuid, uint64 distributionId, uint32 productId, uint16 specialization_id, uint16 choice_id);
     void Update(uint32 diff);

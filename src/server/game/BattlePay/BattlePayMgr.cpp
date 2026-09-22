@@ -203,8 +203,13 @@ void BattlepayManager::ProcessDelivery(Purchase* purchase)
         break;
     case CharacterBoost:
     {
+        // A boolean auth flag cannot represent more than one purchase.  Keep
+        // the flag for compatibility with the Legion login feature packet,
+        // but persist the actual entitlement count as an account token.
+        _session->ChangeTokenBalanceAndSave(Level100BoostCreditToken, 1);
         _session->AddAuthFlag(AT_AUTH_FLAG_100_LVL_UP);
         purchase->Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+        _pendingBoostDistributions.clear();
         std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions = BuildPendingBoostDistributions();
 
         WorldPackets::BattlePay::DistributionListResponse listResponse;
@@ -680,7 +685,8 @@ void BattlepayManager::SendPointsBalance()
     }
 }
 
-void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status, uint64 distributionId, ObjectGuid targetGuid)
+void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status, uint64 distributionId,
+    ObjectGuid targetGuid, uint64 purchaseId)
 {
     WorldPackets::BattlePay::DistributionUpdate distributionBattlePay;
     auto product = sBattlePayDataStore->GetProduct(productId);
@@ -691,7 +697,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
     distributionBattlePay.DistributionObject.DistributionID = distributionId;
     distributionBattlePay.DistributionObject.Status = status;
     distributionBattlePay.DistributionObject.ProductID = productId;
-    distributionBattlePay.DistributionObject.PurchaseID = _actualTransaction.PurchaseID;
+    distributionBattlePay.DistributionObject.PurchaseID = purchaseId ? purchaseId : _actualTransaction.PurchaseID;
     distributionBattlePay.DistributionObject.Revoked = false; // not needed for us
 
     if (!targetGuid.IsEmpty())
@@ -753,8 +759,21 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
 std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManager::BuildPendingBoostDistributions()
 {
     std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> distributions;
-    if (!_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP))
+
+    int64 boostCredits = _session->GetTokenBalance(Level100BoostCreditToken);
+    if (boostCredits <= 0 && _session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP))
+    {
+        // Upgrade accounts which received the old one-bit entitlement before
+        // repeatable boost credits were introduced.
+        _session->ChangeTokenBalanceAndSave(Level100BoostCreditToken, 1);
+        boostCredits = 1;
+    }
+
+    if (boostCredits <= 0)
+    {
+        _pendingBoostDistributions.clear();
         return distributions;
+    }
 
     uint32 constexpr productId = 109;
     Battlepay::Product const* product = sBattlePayDataStore->GetProduct(productId);
@@ -765,59 +784,74 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
         return distributions;
     }
 
-    if (_actualTransaction.ProductID != productId ||
-        _actualTransaction.Status != DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE)
+    // Keep distribution identifiers stable for the lifetime of the session.
+    // The client caches these identifiers between the list/update packets and
+    // AssignUpgradeDistribution; regenerating them makes the visible token
+    // unusable.  The packet count is bounded while all credits remain stored.
+    std::size_t visibleCredits = static_cast<std::size_t>(std::min<int64>(boostCredits, 255));
+    if (_pendingBoostDistributions.size() > visibleCredits)
+        _pendingBoostDistributions.resize(visibleCredits);
+
+    while (_pendingBoostDistributions.size() < visibleCredits)
     {
-        _actualTransaction = Battlepay::Purchase();
-        _actualTransaction.ProductID = productId;
-        _actualTransaction.DistributionId = GenerateNewDistributionId();
-        _actualTransaction.PurchaseID = GenerateNewPurchaseID();
-        _actualTransaction.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+        Battlepay::Purchase pending;
+        pending.ProductID = productId;
+        pending.DistributionId = GenerateNewDistributionId();
+        pending.PurchaseID = GenerateNewPurchaseID();
+        pending.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+        _pendingBoostDistributions.emplace_back(pending);
     }
 
-    WorldPackets::BattlePay::BattlePayDistributionObject distribution;
-    distribution.DistributionID = _actualTransaction.DistributionId;
-    distribution.PurchaseID = _actualTransaction.PurchaseID;
-    distribution.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
-    distribution.ProductID = productId;
-    distribution.Revoked = false;
+    TC_LOG_INFO("battlepay", "Account %u has " SI64FMTD " level 100 boost credit(s); sending %zu stable distribution(s)",
+        _session->GetAccountId(), boostCredits, _pendingBoostDistributions.size());
 
     LocaleConstant localeIndex = _session->GetSessionDbLocaleIndex();
-    WorldPackets::BattlePay::BattlePayProduct productData;
-    for (Battlepay::ProductItem const& item : product->Items)
+    for (Battlepay::Purchase const& pending : _pendingBoostDistributions)
     {
-        WorldPackets::BattlePay::ProductItem productItem;
-        auto displayInfo = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
+        WorldPackets::BattlePay::BattlePayDistributionObject distribution;
+        distribution.DistributionID = pending.DistributionId;
+        distribution.PurchaseID = pending.PurchaseID;
+        distribution.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_AVAILABLE;
+        distribution.ProductID = productId;
+        distribution.Revoked = false;
+
+        WorldPackets::BattlePay::BattlePayProduct productData;
+        for (Battlepay::ProductItem const& item : product->Items)
+        {
+            WorldPackets::BattlePay::ProductItem productItem;
+            auto displayInfo = WriteDisplayInfo(item.DisplayInfoID, localeIndex);
+            if (std::get<0>(displayInfo))
+                productItem.DisplayInfo = std::get<1>(displayInfo);
+
+            productItem.ID = item.ID;
+            productItem.ItemID = item.ItemID;
+            productItem.Quantity = item.Quantity;
+            productItem.UnkInt1 = item.DisplayInfoID;
+            productItem.UnkInt2 = 0;
+            productItem.PetResult = 0;
+            productItem.HasPet = item.HasPet;
+            productData.Items.emplace_back(std::move(productItem));
+        }
+
+        auto displayInfo = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
         if (std::get<0>(displayInfo))
-            productItem.DisplayInfo = std::get<1>(displayInfo);
+            productData.DisplayInfo = std::get<1>(displayInfo);
 
-        productItem.ID = item.ID;
-        productItem.ItemID = item.ItemID;
-        productItem.Quantity = item.Quantity;
-        productItem.UnkInt1 = item.DisplayInfoID;
-        productItem.UnkInt2 = 0;
-        productItem.PetResult = 0;
-        productItem.HasPet = item.HasPet;
-        productData.Items.emplace_back(std::move(productItem));
+        productData.UnkBits = 2; // Legion client value for a level 100 boost.
+        productData.ProductID = product->ProductID;
+        productData.Flags = product->Flags;
+        productData.Type = product->Type;
+        productData.UnkString = "";
+        distribution.Product = std::move(productData);
+        distributions.emplace_back(std::move(distribution));
     }
-
-    auto displayInfo = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
-    if (std::get<0>(displayInfo))
-        productData.DisplayInfo = std::get<1>(displayInfo);
-
-    productData.UnkBits = 2; // Legion client value for a level 100 boost.
-    productData.ProductID = product->ProductID;
-    productData.Flags = product->Flags;
-    productData.DisplayId = product->DisplayInfoID;
-    productData.UnkString = "";
-    distribution.Product = std::move(productData);
-    distributions.emplace_back(std::move(distribution));
     return distributions;
 }
 
 void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCharGuid, uint64 distributionId, uint32 productId, uint16 specId, uint16 choiceId)
 {
-    Battlepay::Purchase* purchase = GetPurchase();
+    auto pendingItr = std::find_if(_pendingBoostDistributions.begin(), _pendingBoostDistributions.end(),
+        [distributionId](Battlepay::Purchase const& pending) { return pending.DistributionId == distributionId; });
     Battlepay::Product const* product = sBattlePayDataStore->GetProduct(productId);
     CharacterInfo const* charInfo = sWorld->GetCharacterInfo(targetCharGuid);
     ChrSpecializationEntry const* specialization = sChrSpecializationStore.LookupEntry(specId);
@@ -833,9 +867,9 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
         }
     }
 
-    if (!purchase || !product || product->WebsiteType != CharacterBoost || productId != 109 ||
+    if (pendingItr == _pendingBoostDistributions.end() || !product || product->WebsiteType != CharacterBoost || productId != 109 ||
         !_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP) ||
-        purchase->ProductID != productId || purchase->DistributionId != distributionId ||
+        _session->GetTokenBalance(Level100BoostCreditToken) <= 0 || pendingItr->ProductID != productId ||
         !charInfo || charInfo->AccountId != _session->GetAccountId() || charInfo->Level >= 100 ||
         !specialization || specialization->ClassID != charInfo->Class || !validFactionChoice)
     {
@@ -876,21 +910,29 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
     assignResponse.unkint2 = 0;
     _session->SendPacket(assignResponse.Write());
 
-    purchase->SpecializationID = specId;
-    purchase->ChoiceID = choiceId;
-    purchase->TargetCharacter = targetCharGuid;
-    purchase->Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_FINISHED;
+    Battlepay::Purchase completed = *pendingItr;
+    completed.SpecializationID = specId;
+    completed.ChoiceID = choiceId;
+    completed.TargetCharacter = targetCharGuid;
+    completed.Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_FINISHED;
 
-    SendBattlePayDistribution(productId, purchase->Status, distributionId, targetCharGuid);
-    _session->RemoveAuthFlag(AT_AUTH_FLAG_100_LVL_UP);
+    if (!_session->ChangeTokenBalanceAndSave(Level100BoostCreditToken, -1))
+    {
+        TC_LOG_ERROR("battlepay", "Could not consume level 100 boost credit for account %u after boosting %s",
+            _session->GetAccountId(), targetCharGuid.ToString().c_str());
+        return;
+    }
+
+    SendBattlePayDistribution(productId, completed.Status, distributionId, targetCharGuid, completed.PurchaseID);
+    _pendingBoostDistributions.erase(pendingItr);
+    if (_session->GetTokenBalance(Level100BoostCreditToken) <= 0)
+        _session->RemoveAuthFlag(AT_AUTH_FLAG_100_LVL_UP);
 
     _session->SendCharacterEnum();
 
     TC_LOG_INFO("battlepay", "Account %u applied level 100 boost to %s with specialization %u and %zu starter items",
         _session->GetAccountId(), targetCharGuid.ToString().c_str(), specId, boostItems.size());
 
-    // The finished update was already sent. Avoid resending it on every world tick.
-    purchase->Status = DistributionStatus::BATTLE_PAY_DIST_STATUS_NONE;
 }
 
 void BattlepayManager::Update(uint32 diff)
