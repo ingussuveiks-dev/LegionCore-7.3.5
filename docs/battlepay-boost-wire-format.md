@@ -32,3 +32,11 @@ then assign one to an eligible character. The character should reach level
 100 and the remaining balance should be 2 after another reconnect. Do not
 purchase more credits to test visibility, or consume credits without the
 account owner's choice of character and specialization.
+
+The 7.3.5 character-select AssignUpgradeDistribution request can contain a
+zero ProductID even with a valid distribution ID, target GUID and
+specialization. Resolve an omitted product ID from the session's matching
+pending distribution before validating delivery. Never substitute a default
+product for an unknown distribution, or override an explicit mismatched ID.
+Keep the account ownership, credit balance, level, specialization and faction
+checks. A rejected assignment does not consume a credit or grant any rewards.

@@ -877,6 +877,12 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
 {
     auto pendingItr = std::find_if(_pendingBoostDistributions.begin(), _pendingBoostDistributions.end(),
         [distributionId](Battlepay::Purchase const& pending) { return pending.DistributionId == distributionId; });
+    // Legion's character-select AssignUpgradeDistribution can send product 0.
+    // Resolve that omission only from an entitlement already issued to this
+    // session; explicit product IDs must still match the owned distribution.
+    if (!productId && pendingItr != _pendingBoostDistributions.end())
+        productId = pendingItr->ProductID;
+
     Battlepay::Product const* product = sBattlePayDataStore->GetProduct(productId);
     CharacterInfo const* charInfo = sWorld->GetCharacterInfo(targetCharGuid);
     ChrSpecializationEntry const* specialization = sChrSpecializationStore.LookupEntry(specId);
