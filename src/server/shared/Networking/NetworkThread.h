@@ -34,7 +34,7 @@ class NetworkThread
 {
 public:
     NetworkThread() : _connections(0), _stopped(false), _thread(nullptr), _ioContext(1),
-        _acceptSocket(_ioContext), _updateTimer(_ioContext)
+        _acceptSocket(_ioContext), _secondaryAcceptSocket(_ioContext), _updateTimer(_ioContext)
     {
     }
 
@@ -86,7 +86,10 @@ public:
         SocketAdded(sock);
     }
 
-    boost::asio::ip::tcp::socket* GetSocketForAccept() { return &_acceptSocket; }
+    boost::asio::ip::tcp::socket* GetSocketForAccept(bool secondary = false)
+    {
+        return secondary ? &_secondaryAcceptSocket : &_acceptSocket;
+    }
 
 protected:
     virtual void SocketAdded(std::shared_ptr<SocketType> /*sock*/) { }
@@ -168,6 +171,7 @@ private:
 
     Trinity::Asio::IoContext _ioContext;
     boost::asio::ip::tcp::socket _acceptSocket;
+    boost::asio::ip::tcp::socket _secondaryAcceptSocket;
     Trinity::Asio::DeadlineTimer _updateTimer;
 };
 

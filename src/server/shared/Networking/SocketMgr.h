@@ -121,10 +121,10 @@ public:
         return min;
     }
 
-    std::pair<boost::asio::ip::tcp::socket*, uint32> GetSocketForAccept()
+    std::pair<boost::asio::ip::tcp::socket*, uint32> GetSocketForAccept(bool secondary = false)
     {
         uint32 threadIndex = SelectThreadWithMinConnections();
-        return std::make_pair(_threads[threadIndex].GetSocketForAccept(), threadIndex);
+        return std::make_pair(_threads[threadIndex].GetSocketForAccept(secondary), threadIndex);
     }
 
 protected:

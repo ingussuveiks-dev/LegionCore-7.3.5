@@ -98,7 +98,10 @@ bool WorldSocketMgr::StartWorldNetwork(Trinity::Asio::IoContext& ioContext, std:
 
     _instanceAcceptor = instanceAcceptor;
 
-    _instanceAcceptor->SetSocketFactory([this]() { return GetSocketForAccept(); });
+    // The realm and instance acceptors run concurrently.  They must not hand
+    // async_accept the same socket object or one accept can consume/move the
+    // other's socket and leave the client stuck on the loading screen.
+    _instanceAcceptor->SetSocketFactory([this]() { return GetSocketForAccept(true); });
 
     _acceptor->AsyncAcceptWithCallback<&OnSocketAccept>();
     _instanceAcceptor->AsyncAcceptWithCallback<&OnSocketAccept>();
