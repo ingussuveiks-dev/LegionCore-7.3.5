@@ -6510,9 +6510,12 @@ class spell_flight_masters_whistle_argus : public SpellScript
 
     void HandleAfterCast()
     {
-        auto caster = GetCaster();
-        auto player = caster->ToPlayer();
-        if (!caster || !player)
+        Unit* caster = GetCaster();
+        if (!caster)
+            return;
+
+        Player* player = caster->ToPlayer();
+        if (!player)
             return;
 
         if (auto node = sObjectMgr->GetNearestTaxiNode(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player))

@@ -602,9 +602,11 @@ void Item::SaveToDB(CharacterDatabaseTransaction& trans)
             if (!relics.empty())
             {
                 std::stringstream output[3];
-                for (uint8 i = 0; i < relics.size() && i < 3; ++i)
+                for (uint8 i = 0; i < MAX_GEM_SOCKETS; ++i)
                 {
-                    output[i] << relics[i+2].unk1 << " " << relics[i+2].socketIndex << " " << relics[i+2].firstTier << " " << relics[i+2].secondTier << " " << relics[i+2].thirdTier << " " << relics[i+2].additionalThirdTier;
+                    auto relicItr = relics.find(i + 2);
+                    if (relicItr != relics.end())
+                        output[i] << relicItr->second.unk1 << " " << relicItr->second.socketIndex << " " << relicItr->second.firstTier << " " << relicItr->second.secondTier << " " << relicItr->second.thirdTier << " " << relicItr->second.additionalThirdTier;
                 }
 
                 stmt = CharacterDatabase.GetPreparedStatement(CHAR_REP_ITEM_INSTANCE_RELICS);
@@ -1500,7 +1502,7 @@ std::map<uint8, ItemSocketInfo> Item::GetArtifactSockets() const
     if (values.size() < 6 || values.size() % 6 != 0)
         return result;
  
-    uint8 i = 0;
+    uint32 i = 0;
     while (i < values.size())
     {
         ItemSocketInfo info;
@@ -1511,7 +1513,8 @@ std::map<uint8, ItemSocketInfo> Item::GetArtifactSockets() const
         info.thirdTier = values[i++];
         info.additionalThirdTier = values[i++];
 
-        result[info.socketIndex] = info;
+        if (info.socketIndex >= 2 && info.socketIndex < 2 + MAX_GEM_SOCKETS)
+            result[info.socketIndex] = info;
     }
 
     return result;
@@ -1579,6 +1582,9 @@ void Item::SetGem(uint16 slot, ItemDynamicFieldGems const* gem, uint32 gemScalin
 
 void Item::CreateSocketTalents(uint8 socketIndex)
 {
+    if (socketIndex < 2 || socketIndex >= 2 + MAX_GEM_SOCKETS)
+        return;
+
     std::set<uint32> bannedLables{};
     uint32 itemId = 0;
     if (GetTemplate()->GetArtifactID())
@@ -1597,13 +1603,6 @@ void Item::CreateSocketTalents(uint8 socketIndex)
                     for (auto labelId : gemEnchant->EffectArg)
                         if (labelId)
                             bannedLables.insert(labelId);
-
-    SetState(ITEM_CHANGED, GetOwner());
-
-    uint8 offset = (socketIndex - 2) * 6;
-    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, 1);
-    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, socketIndex);
-    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, 65536);
 
     std::vector<uint32> darkSpells{};
     std::vector<uint32> holySpells{};
@@ -1624,6 +1623,17 @@ void Item::CreateSocketTalents(uint8 socketIndex)
             break;
         }
     }
+
+    if (darkSpells.empty() || holySpells.empty() || thirdTierSpells.size() < 3)
+        return;
+
+    SetState(ITEM_CHANGED, GetOwner());
+
+    uint8 offset = (socketIndex - 2) * 6;
+    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, 1);
+    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, socketIndex);
+    SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, 65536);
+
     SocketTier secondTier(darkSpells[urand(0, darkSpells.size() - 1)], holySpells[urand(0, holySpells.size() - 1)] );
 
     SetDynamicStructuredValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, &secondTier);
@@ -1635,13 +1645,16 @@ void Item::CreateSocketTalents(uint8 socketIndex)
     SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, thirdTierSpells[2]);
 }
 
-void Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketIndex)
+bool Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketIndex)
 {
+    if (socketIndex < 2 || socketIndex >= 2 + MAX_GEM_SOCKETS || talentIndex > 5)
+        return false;
+
     uint32 powerId = 0;
 
     auto relicks = GetArtifactSockets();
     if (relicks.find(socketIndex) == relicks.end()) // can it?
-        return;
+        return false;
 
     if (talentIndex == 0)
         powerId = 1739;
@@ -1663,7 +1676,7 @@ void Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketInde
 
         auto relicTalent = sRelicTalentStore.LookupEntry(talentId);
         if (!relicTalent)
-            return;
+            return false;
 
         if (relicTalent->ArtifactPowerID != 0)
             powerId = relicTalent->ArtifactPowerID;
@@ -1681,15 +1694,15 @@ void Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketInde
         }
     }
     if (!powerId)
-        return;
+        return false;
 
     ItemDynamicFieldArtifactPowers const* artifactPower = GetArtifactPower(powerId);
     if (!artifactPower)
-        return;
+        return false;
 
     ArtifactPowerEntry const* artifactPowerEntry = sArtifactPowerStore.LookupEntry(artifactPower->ArtifactPowerId);
     if (!artifactPowerEntry)
-        return;
+        return false;
 
     uint8 rank = artifactPower->CurrentRankWithBonus + 1 - 1;
 
@@ -1698,7 +1711,7 @@ void Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketInde
 
     ArtifactPowerRankEntry const* artifactPowerRank = sDB2Manager.GetArtifactPowerRank(artifactPower->ArtifactPowerId, rank); // need data for next rank, but -1 because of how db2 data is structured
     if (!artifactPowerRank)
-        return;
+        return false;
 
     ItemDynamicFieldArtifactPowers newPower = *artifactPower;
     newPower.CurrentRankWithBonus += add ? 1 : (newPower.CurrentRankWithBonus > 0 ? -1 : 0);
@@ -1717,6 +1730,8 @@ void Item::AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketInde
             if (needAReqpply)
                 _player->_ApplyItemBonuses(this, GetSlot(), true);
         }
+
+    return true;
 }
 
 uint8 Item::GetSlot() const

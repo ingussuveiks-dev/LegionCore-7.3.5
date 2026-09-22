@@ -20,6 +20,35 @@
 #include "ArtifactPackets.h"
 #include "GameTables.h"
 
+namespace
+{
+    constexpr uint32 ACHIEVEMENT_NOW_YOURE_COOKING_WITH_NETHERLIGHT = 12184;
+    constexpr uint32 QUEST_AN_OFFERING_OF_LIGHT = 48559;
+    constexpr uint32 QUEST_AN_OFFERING_OF_SHADOW = 48560;
+    constexpr uint8 FIRST_ARTIFACT_RELIC_SLOT = 2;
+    constexpr uint8 LAST_ARTIFACT_RELIC_SLOT = FIRST_ARTIFACT_RELIC_SLOT + MAX_GEM_SOCKETS - 1;
+    constexpr uint8 MAX_RELIC_TALENT_INDEX = 5;
+
+    bool CanUseNetherlightCrucible(Player* player)
+    {
+        return player && player->getLevel() >= 110 &&
+            (player->HasAchieved(ACHIEVEMENT_NOW_YOURE_COOKING_WITH_NETHERLIGHT) ||
+             (player->GetQuestStatus(QUEST_AN_OFFERING_OF_LIGHT) == QUEST_STATUS_REWARDED &&
+              player->GetQuestStatus(QUEST_AN_OFFERING_OF_SHADOW) == QUEST_STATUS_REWARDED));
+    }
+
+    bool IsArtifactRelicSlot(uint32 slotIndex)
+    {
+        return slotIndex >= FIRST_ARTIFACT_RELIC_SLOT && slotIndex <= LAST_ARTIFACT_RELIC_SLOT;
+    }
+
+    bool IsArtifactRelic(Item const* item)
+    {
+        ItemTemplate const* itemTemplate = item ? item->GetTemplate() : nullptr;
+        return itemTemplate && itemTemplate->GetClass() == ITEM_CLASS_GEM && itemTemplate->GetSubClass() == ITEM_SUBCLASS_GEM_ARTIFACT_RELIC;
+    }
+}
+
 void WorldSession::HandleArtifactAddPower(WorldPackets::Artifact::AddPower& artifactAddPower)
 {
     if (!_player->GetGameObjectIfCanInteractWith(artifactAddPower.GameObjectGUID, GAMEOBJECT_TYPE_ARTIFACT_FORGE))
@@ -138,26 +167,54 @@ void WorldSession::HandleArtifactAddRelicTalent(WorldPackets::Artifact::Artifact
     if (!_player->GetGameObjectIfCanInteractWith(packet.GameObjectGUID, GAMEOBJECT_TYPE_ARTIFACT_FORGE))
         return;
 
+    if (!CanUseNetherlightCrucible(_player) || !IsArtifactRelicSlot(packet.SlotIndex) || packet.TalentIndex > MAX_RELIC_TALENT_INDEX)
+        return;
+
     Item* artifact = _player->GetItemByGuid(packet.ArtifactGUID);
-    if (!artifact)
+    if (!artifact || !artifact->GetTemplate()->GetArtifactID())
         return;
 
     auto relicks = artifact->GetArtifactSockets();
-    if (relicks.find(packet.SlotIndex) == relicks.end()) // can it?
+    auto relicItr = relicks.find(packet.SlotIndex);
+    if (relicItr == relicks.end())
         return;
 
-    if (auto gem = artifact->GetGem(packet.SlotIndex - 2))
+    ItemDynamicFieldGems const* gem = artifact->GetGem(packet.SlotIndex - FIRST_ARTIFACT_RELIC_SLOT);
+    if (!gem || !gem->ItemId)
+        return;
+
+    uint32 selectedTalents = relicItr->second.firstTier;
+    uint32 selectedTalentMask = uint32(1) << packet.TalentIndex;
+    if (selectedTalents & selectedTalentMask)
+        return;
+
+    // Tier one must be selected before tier two, and a single tier-two choice
+    // determines which tier-three branches are reachable. Never trust the
+    // client to enforce the Netherlight tree layout.
+    if (packet.TalentIndex > 0 && !(selectedTalents & (uint32(1) << 0)))
+        return;
+
+    if (packet.TalentIndex == 1 || packet.TalentIndex == 2)
     {
-        if (!gem || !gem->ItemId)
+        if (selectedTalents & ((uint32(1) << 1) | (uint32(1) << 2)))
+            return;
+    }
+    else if (packet.TalentIndex >= 3)
+    {
+        if (selectedTalents & ((uint32(1) << 3) | (uint32(1) << 4) | (uint32(1) << 5)))
+            return;
+
+        bool hasLeftPath = (selectedTalents & (uint32(1) << 1)) != 0;
+        bool hasRightPath = (selectedTalents & (uint32(1) << 2)) != 0;
+        if ((packet.TalentIndex == 3 && !hasLeftPath) ||
+            (packet.TalentIndex == 4 && !hasLeftPath && !hasRightPath) ||
+            (packet.TalentIndex == 5 && !hasRightPath))
             return;
     }
 
-    if ((1 << packet.TalentIndex) & relicks[packet.SlotIndex].firstTier)
-        return;
-
     uint32 reqLevel = 0;
     if (packet.TalentIndex > 0 )
-        reqLevel = 60 + (packet.SlotIndex - 2) * 3;
+        reqLevel = 60 + (packet.SlotIndex - FIRST_ARTIFACT_RELIC_SLOT) * 3;
     if (packet.TalentIndex > 2)
         reqLevel += 9;
 
@@ -167,19 +224,20 @@ void WorldSession::HandleArtifactAddRelicTalent(WorldPackets::Artifact::Artifact
         return;
     }
 
+    if (!artifact->AddOrRemoveSocketTalent(packet.TalentIndex, true, packet.SlotIndex))
+        return;
+
     artifact->SetState(ITEM_CHANGED, _player);
 
-    uint8 offset = (packet.SlotIndex - 2) * 6;
-    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.SlotIndex].unk1);
+    uint8 offset = (packet.SlotIndex - FIRST_ARTIFACT_RELIC_SLOT) * 6;
+    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicItr->second.unk1);
     artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, packet.SlotIndex);
-    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.SlotIndex].firstTier | (1<<packet.TalentIndex));
-    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.SlotIndex].secondTier);
-    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.SlotIndex].thirdTier);
-    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.SlotIndex].additionalThirdTier);
+    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, selectedTalents | selectedTalentMask);
+    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicItr->second.secondTier);
+    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicItr->second.thirdTier);
+    artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicItr->second.additionalThirdTier);
 
     _player->UpdateAchievementCriteria(CRITERIA_TYPE_RELIC_TALENT_UNLOCKED, 1739, 1);
-
-    artifact->AddOrRemoveSocketTalent(packet.TalentIndex, true, packet.SlotIndex);
 }
 
 void WorldSession::HandleArtifactAttuneSocketedRelic(WorldPackets::Artifact::ArtifactAttuneSocketedRelic& packet)
@@ -187,15 +245,17 @@ void WorldSession::HandleArtifactAttuneSocketedRelic(WorldPackets::Artifact::Art
     if (!_player->GetGameObjectIfCanInteractWith(packet.GameObjectGUID, GAMEOBJECT_TYPE_ARTIFACT_FORGE))
         return;
 
-    Item* artifact = _player->GetItemByGuid(packet.ArtifactGUID);
-    if (!artifact)
+    if (!CanUseNetherlightCrucible(_player) || !IsArtifactRelicSlot(packet.RelicSlotIndex))
         return;
 
-    if (auto gem = artifact->GetGem(packet.RelicSlotIndex - 2))
-    {
-        if (!gem || !gem->ItemId)
-            return;
-    }
+    Item* artifact = _player->GetItemByGuid(packet.ArtifactGUID);
+    if (!artifact || !artifact->GetTemplate()->GetArtifactID())
+        return;
+
+    ItemDynamicFieldGems const* gem = artifact->GetGem(packet.RelicSlotIndex - FIRST_ARTIFACT_RELIC_SLOT);
+    if (!gem || !gem->ItemId)
+        return;
+
     artifact->SetState(ITEM_CHANGED, _player);
 
     auto relicks = artifact->GetArtifactSockets();
@@ -205,7 +265,7 @@ void WorldSession::HandleArtifactAttuneSocketedRelic(WorldPackets::Artifact::Art
         return;
     }
 
-    uint8 offset = (packet.RelicSlotIndex - 2) * 6;
+    uint8 offset = (packet.RelicSlotIndex - FIRST_ARTIFACT_RELIC_SLOT) * 6;
     artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.RelicSlotIndex].unk1);
     artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, packet.RelicSlotIndex);
     artifact->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[packet.RelicSlotIndex].firstTier);
@@ -219,8 +279,11 @@ void WorldSession::HandleArtifactAttunePreviewRelic(WorldPackets::Artifact::Arti
     if (!_player->GetGameObjectIfCanInteractWith(packet.GameObjectGUID, GAMEOBJECT_TYPE_ARTIFACT_FORGE))
         return;
 
+    if (!CanUseNetherlightCrucible(_player))
+        return;
+
     Item* socket = _player->GetItemByGuid(packet.RelicGUID);
-    if (!socket)
+    if (!IsArtifactRelic(socket))
         return;
 
     socket->SetBinding(true);

@@ -495,7 +495,7 @@ class TC_GAME_API Item : public Object
         ItemDynamicFieldGems const* GetGem(uint16 slot) const;
         void SetGem(uint16 slot, ItemDynamicFieldGems const* gem, uint32 gemScalingLevel);
         void CreateSocketTalents(uint8 socketIndex);
-        void AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketIndex);
+        bool AddOrRemoveSocketTalent(uint8 talentIndex, bool add, uint8 socketIndex);
 
         uint8 GetSlot() const;
 

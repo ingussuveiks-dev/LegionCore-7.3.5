@@ -966,19 +966,20 @@ void WorldSession::HandleSocketGems(WorldPackets::Item::SocketGems& packet)
                             itemTarget->AddOrRemoveSocketTalent(j, false, i + 2); // delete old data
                 }
 
-                auto relicks = gems[i]->GetArtifactSockets();
-                if (!relicks.empty())
+                auto relics = gems[i]->GetArtifactSockets();
+                auto sourceRelic = relics.find(2);
+                if (sourceRelic != relics.end())
                 {
                     uint8 offset = i * 6;
-                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[2].unk1);
+                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, sourceRelic->second.unk1);
                     itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, i + 2);
-                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[2].firstTier);
-                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[2].secondTier);
-                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[2].thirdTier);
-                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, relicks[2].additionalThirdTier);
+                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, sourceRelic->second.firstTier);
+                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, sourceRelic->second.secondTier);
+                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, sourceRelic->second.thirdTier);
+                    itemTarget->SetDynamicValue(ITEM_DYNAMIC_FIELD_RELIC_TALENT_DATA, offset++, sourceRelic->second.additionalThirdTier);
 
                     for (uint8 j = 0; j <= 5; ++j)
-                        if ((1 << j) & relicks[i + 2].firstTier)
+                        if ((uint32(1) << j) & sourceRelic->second.firstTier)
                             itemTarget->AddOrRemoveSocketTalent(j, true, i + 2); // add new data
                 }
                 else
