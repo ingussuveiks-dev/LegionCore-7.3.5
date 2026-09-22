@@ -2136,6 +2136,11 @@ void WorldSession::HandleLogoutRequest(WorldPackets::Character::LogoutRequest& /
 
 void WorldSession::HandleLogoutInstant(WorldPackets::Character::LogoutInstant& /*packet*/)
 {
+    // The in-game "Your Character Boost is Ready" dialog uses the instant
+    // logout opcode.  Leaving this handler empty makes its "Log Out Now"
+    // button a no-op even though the regular game-menu logout still works.
+    if (GetPlayer())
+        LogoutPlayer(true);
 }
 
 void WorldSession::HandleSetCurrencyFlags(WorldPackets::Character::SetCurrencyFlags& packet)

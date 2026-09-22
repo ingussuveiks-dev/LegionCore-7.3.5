@@ -77,7 +77,10 @@ std::string const& BattlepayManager::GetDefaultWalletName() const
 BattlePayCurrency BattlepayManager::GetShopCurrency() const
 {
     /// @TODO: Move that to config files
-    return Krw;
+    // KRW makes the Legion glue screen show Korea's seven-day refund warning
+    // for every paid boost.  This store uses account Battle Coins rather than
+    // a regional real-money currency, so use the client's neutral beta unit.
+    return Beta;
 }
 
 bool BattlepayManager::IsAvailable() const
