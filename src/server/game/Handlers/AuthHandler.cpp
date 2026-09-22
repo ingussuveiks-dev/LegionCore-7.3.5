@@ -108,7 +108,9 @@ void WorldSession::SendFeatureSystemStatusGlueScreen()
     features.Unk14 = true;
     features.WillKickFromWorld = false;
     features.KioskModeEnabled = false;
-    features.TrialBoostEnabled = false;
+    // The paid boost flow shares the class-trial character creation path in
+    // the 7.3.5 glue UI. Only expose it while this account owns a boost.
+    features.TrialBoostEnabled = HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP);
     features.IsExpansionPreorderInStore = false;
     features.CompetitiveModeEnabled = false;
     features.TokenBalanceEnabled = true;

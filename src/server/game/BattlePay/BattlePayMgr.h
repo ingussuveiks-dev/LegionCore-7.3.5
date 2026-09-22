@@ -315,7 +315,10 @@ namespace Battlepay
         {
             Mount = 1,
             Pets = 2,
-            Services = 3,
+            // The Legion client hardcodes 22 as WOW_SERVICES_CATEGORY_ID.
+            // Upgrade distributions whose product is outside this group are
+            // not exposed as character-select boost tokens.
+            Services = 22,
             Golds = 4,
             Professions = 5,
             Armors = 7,
