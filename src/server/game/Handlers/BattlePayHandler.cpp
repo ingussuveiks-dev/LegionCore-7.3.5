@@ -495,7 +495,6 @@ void WorldSession::SendDisplayPromo(int32 promotionID /*= 0*/)
     //pProduct.UnkInt1 = 0;
     //pProduct.DisplayId = 0;
     //pProduct.ItemId = 0;
-    //pProduct.UnkInt4 = 0;
     //pProduct.UnkInt5 = 0;
     //pProduct.UnkString = "";
     //pProduct.UnkBit = false;

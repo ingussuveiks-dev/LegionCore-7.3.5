@@ -338,9 +338,7 @@ namespace Battlepay
     // battlepay_token_type, so it is never shown as a spendable currency.
     constexpr uint8 Level100BoostCreditToken = 100;
 
-    // Product 109 is the client-known level 90 upgrade.  Legion assigns the
-    // level 100 decorator to product 110; using 109 with UnkBits=2 is not
-    // enough for C_SharedCharacterServices to classify the distribution.
+    // Catalog product used to purchase and assign a level 100 upgrade.
     constexpr uint32 Level100BoostProductId = 110;
 
     // C_SharedCharacterServices only exposes distributions whose embedded
@@ -351,8 +349,9 @@ namespace Battlepay
     // CharacterServiceInfo.db2 BoostType values used as the distribution map
     // keys by the 7.3.5 GlueXML.  These are fields inside records 1 and 6,
     // not the record IDs themselves.
-    constexpr uint16 Level100BoostType = 2;
-    constexpr uint16 Level90BoostType = 1;
+    // Serialized as the product's 32-bit CharacterServiceType field.
+    constexpr uint32 Level100BoostType = 2;
+    constexpr uint32 Level90BoostType = 1;
 
     namespace BattlepayGroupDisplayType
     {

@@ -97,7 +97,9 @@ namespace WorldPackets
             uint32 UnkInt1 = 0;
             uint32 DisplayId = 0;
             uint32 ItemId = 0;
-            uint32 UnkInt4 = 0;
+            // 7.3.5: GetUpgradeDistributions groups by this uint32 (native
+            // product offset 0x118), not by the optional four-bit UnkBits.
+            uint32 CharacterServiceType = 0;
             uint32 UnkInt5 = 0;
             std::string UnkString;
             uint8 Type = 0;

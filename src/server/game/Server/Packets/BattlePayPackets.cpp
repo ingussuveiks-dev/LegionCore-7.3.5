@@ -79,7 +79,7 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePay::BattlePayProdu
     data << product.UnkInt1;
     data << product.DisplayId;
     data << product.ItemId;
-    data << product.UnkInt4;
+    data << product.CharacterServiceType;
     data << product.UnkInt5;
 
     data.WriteBits(product.UnkString.size(), 8);
