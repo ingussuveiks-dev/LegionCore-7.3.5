@@ -518,7 +518,8 @@ void BattlepayManager::SendProductList()
         WorldPackets::BattlePay::BattlePayProduct pProduct;
         pProduct.ProductID = product.ProductID;
         pProduct.Flags = product.Flags;
-        pProduct.Type = product.Type;
+        pProduct.Type = product.WebsiteType == Battlepay::CharacterBoost ?
+            Battlepay::CharacterUpgradeProductType : product.Type;
 
         // The 7.3.5 client uses this field as the character-upgrade type.
         // Without it the product is visible in the shop, but an AVAILABLE
@@ -749,7 +750,8 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
     productData.UnkInt4 = 0;
     productData.UnkInt5 = 0;
     productData.UnkString = "";
-    productData.Type = 0;
+    productData.Type = product->WebsiteType == Battlepay::CharacterBoost ?
+        Battlepay::CharacterUpgradeProductType : product->Type;
     productData.UnkBit = false;
 
     distributionBattlePay.DistributionObject.Product = std::move(productData);
@@ -840,7 +842,7 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
         productData.UnkBits = 2; // Legion client value for a level 100 boost.
         productData.ProductID = product->ProductID;
         productData.Flags = product->Flags;
-        productData.Type = product->Type;
+        productData.Type = Battlepay::CharacterUpgradeProductType;
         productData.UnkString = "";
         distribution.Product = std::move(productData);
         distributions.emplace_back(std::move(distribution));

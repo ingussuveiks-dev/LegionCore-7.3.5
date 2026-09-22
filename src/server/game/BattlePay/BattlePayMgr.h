@@ -343,6 +343,11 @@ namespace Battlepay
     // enough for C_SharedCharacterServices to classify the distribution.
     constexpr uint32 Level100BoostProductId = 110;
 
+    // C_SharedCharacterServices only exposes distributions whose embedded
+    // product has type 1.  A normal store product (type 0) is deliberately
+    // ignored even when its upgrade decorator is otherwise correct.
+    constexpr uint8 CharacterUpgradeProductType = 1;
+
     namespace BattlepayGroupDisplayType
     {
         enum : uint8

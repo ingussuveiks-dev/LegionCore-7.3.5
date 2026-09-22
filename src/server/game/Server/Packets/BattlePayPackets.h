@@ -52,6 +52,9 @@ namespace WorldPackets
 
         struct ProductDisplayVisualData
         {
+            // The 7.3.5 client exposes the first wire value as modelSceneID
+            // and the second as creatureDisplayInfoID.  These legacy member
+            // names are retained to avoid a broad packet API rename.
             uint32 DisplayId = 0;
             uint32 VisualId = 0;
             std::string ProductName;
