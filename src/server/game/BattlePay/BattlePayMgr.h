@@ -170,7 +170,10 @@ namespace Battlepay
         enum : uint8
         {
             None = 0x0,
+            CardDoesNotShowModel = 0x02,
+            CardAlwaysShowsTexture = 0x04,
             HidePrice = 0x8,
+            UseHorizontalLayoutForFullCard = 0x10,
         };
     }
 
