@@ -726,8 +726,5 @@ void WorldSession::HandleContributionGetState(WorldPackets::Misc::ContributionGe
 void WorldSession::HandleContributionCollectorContribute(WorldPackets::Misc::ContributionCollectorContribute& packet)
 {
     Creature* unit = GetPlayer()->GetNPCIfCanInteractWith(packet.ContributionTableNpcGuid, UNIT_NPC_FLAG2_CONTRIBUTION_NPC);
-    if (!unit)
-        return;
-
-    sContributionMgr.Contribute(GetPlayer(), packet.OrderIndex);
+    sContributionMgr.Contribute(GetPlayer(), unit, packet.OrderIndex);
 }

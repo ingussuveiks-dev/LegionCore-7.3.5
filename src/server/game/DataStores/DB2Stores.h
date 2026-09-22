@@ -69,11 +69,13 @@ TC_GAME_API extern DB2Storage<ChrClassesXPowerTypesEntry>               sChrClas
 TC_GAME_API extern DB2Storage<ChrRacesEntry>                            sChrRacesStore;
 TC_GAME_API extern DB2Storage<ChrSpecializationEntry>                   sChrSpecializationStore;
 TC_GAME_API extern DB2Storage<ConversationLineEntry>                    sConversationLineStore;
+TC_GAME_API extern DB2Storage<ContributionEntry>                        sContributionStore;
 TC_GAME_API extern DB2Storage<CreatureDisplayInfoEntry>                 sCreatureDisplayInfoStore;
 TC_GAME_API extern DB2Storage<CreatureDisplayInfoExtraEntry>            sCreatureDisplayInfoExtraStore;
 TC_GAME_API extern DB2Storage<CreatureFamilyEntry>                      sCreatureFamilyStore;
 TC_GAME_API extern DB2Storage<CreatureModelDataEntry>                   sCreatureModelDataStore;
 TC_GAME_API extern DB2Storage<CreatureTypeEntry>                        sCreatureTypeStore;
+TC_GAME_API extern DB2Storage<CreatureXContributionEntry>               sCreatureXContributionStore;
 TC_GAME_API extern DB2Storage<CriteriaEntry>                            sCriteriaStore;
 TC_GAME_API extern DB2Storage<CriteriaTreeEntry>                        sCriteriaTreeStore;
 TC_GAME_API extern DB2Storage<CurrencyTypesEntry>                       sCurrencyTypesStore;

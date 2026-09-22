@@ -6,6 +6,11 @@ Created by d7561985@gmail.com
 #ifndef ContributionMgr_h__
 #define ContributionMgr_h__
 
+#include <map>
+
+class Creature;
+class Player;
+
 namespace ContributionData
 {
     enum ContributionState : uint8
@@ -19,32 +24,26 @@ namespace ContributionData
 
     enum ContributionResult : uint8
     {
-        CONTRIBUTUIN_RESULT_SUCCESS = 0,
-        CONTRIBUTUIN_RESULT_MUST_BE_NEAR = 1,
-        CONTRIBUTUIN_RESULT_INCORRECT_STATE = 2,
-        CONTRIBUTUIN_RESULT_INVALID_ID = 3,
-        CONTRIBUTUIN_RESULT_QUEST_DATA_MISSING = 4,
-        CONTRIBUTUIN_RESULT_FAILED_CONDITION_CHECK = 5,
-        CONTRIBUTUIN_RESULT_UNABLE_TO_COMPLETE_TURN_IN = 6,
-        CONTRIBUTUIN_RESULT_INTERNAL_ERROR = 7
-    };
-
-    enum Contribution : uint8
-    {
-        CONTRIBUTION_MAGE_TOWER = 1,
-        CONTRIBUTION_COMMAND_CENTER = 3,
-        CONTRIBUTION_NETHER_DISRUPTOR = 4,
+        CONTRIBUTION_RESULT_SUCCESS = 0,
+        CONTRIBUTION_RESULT_MUST_BE_NEAR = 1,
+        CONTRIBUTION_RESULT_INCORRECT_STATE = 2,
+        CONTRIBUTION_RESULT_INVALID_ID = 3,
+        CONTRIBUTION_RESULT_QUEST_DATA_MISSING = 4,
+        CONTRIBUTION_RESULT_FAILED_CONDITION_CHECK = 5,
+        CONTRIBUTION_RESULT_UNABLE_TO_COMPLETE_TURN_IN = 6,
+        CONTRIBUTION_RESULT_INTERNAL_ERROR = 7
     };
 }
 
 struct ContributionLifeData
 {
-    uint32 WorldStateVareables[3];
-    ContributionData::ContributionState State;
-    uint32 UpTimeSecs;
-    uint32 CurrentLifeTimer;
-    uint32 DownTimeSecs;
-    uint32 CurrentUnderAtackTimer;
+    uint32 WorldStateVariables[3] = { 0, 0, 0 };
+    ContributionData::ContributionState State = ContributionData::CONTRIBUTION_STATE_NONE;
+    uint32 UpTimeSecs = 0;
+    uint32 DownTimeSecs = 0;
+    uint32 RemainingTimeSecs = 0;
+    uint32 AccumulationTargetValue = 0;
+    uint32 AccumulationAmountPerMinute = 0;
 };
 
 class ContributionMgr
@@ -57,13 +56,19 @@ public:
     void Update(uint32 diff);
 
     void Initialize();
-    void OnChangeContributionState(uint32 contribuiontID, ContributionData::ContributionState newState);
-    void Contribute(Player* player, uint8 contributuinID);
+    void Contribute(Player* player, Creature const* collector, uint32 orderIndex);
     void ContributionGetState(Player* player, uint32 contributionID, uint32 contributionGuid);
+    void UpdatePlayerBuffs(Player* player) const;
 
 private:
+    void ChangeContributionState(uint32 managedWorldStateID, ContributionData::ContributionState newState);
+    void SendContributionResult(Player* player, uint32 contributionID, uint32 contributionGuid, ContributionData::ContributionResult result) const;
+    void UpdateTimedState(uint32 managedWorldStateID, ContributionLifeData& data, uint32 elapsedSeconds);
+    void AdvanceOccurrence(ContributionLifeData const& data);
+    void RefreshPlayerBuffs() const;
+
     std::map<uint32, ContributionLifeData> _contributionObjects;
-    uint32 m_nextUpdate;
+    uint32 _nextUpdate;
 };
 
 #define sContributionMgr ContributionMgr::Instance()

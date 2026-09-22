@@ -108,6 +108,34 @@ the current world database. It still requires in-game completion tests for all
 seven challenge variants before it should be described as fully gameplay
 verified.
 
+## Broken Shore building contributions
+
+The Broken Shore contribution collector supports all three Legionfall
+buildings: the Mage Tower, Command Center and Nether Disruptor. The server maps
+the collector's client order index to the correct contribution, verifies the
+collector NPC and client-defined player condition, and resolves the matching
+hidden reward quest from the 7.3.5 DB2 data. Each accepted turn-in costs 100
+Legionfall War Supplies through that reward quest, grants its configured items
+and Armies of Legionfall reputation, and increments the matching personal
+contribution tracker by exactly one. Full reward inventory validation happens
+before the currency is removed.
+
+The original retail accumulation target was realm-wide. For this private-server
+environment it is scaled to 100 successful turn-ins per building, with each
+turn-in adding one percent. A completed building follows the client-defined
+lifecycle: two days Active, one day Under Attack, a short Destroyed transition,
+and then a new Building cycle. Construction progress, current state and the
+rotating occurrence are persisted as world states across restarts. Active
+building buffs are applied from `ManagedWorldStateBuff` using their occurrence
+and player-condition data and are refreshed when a player changes area.
+
+Contribution access retains the client condition requiring completion of the
+Broken Shore prerequisite quest `46286`, the Building state and at least 100 War
+Supplies. The live database migration resets the three previously stuck building
+states to a clean Building cycle. The DB2 relationships, SQL updates and Release
+build have been validated, but an end-to-end client test of all three collector
+buttons, rewards, state transitions and rotating buffs is still required.
+
 ## Requirements
 
 ### Server and build dependencies
