@@ -39,6 +39,7 @@ public:
     static ScenarioMgr* instance();
 
     Scenario* AddScenario(Map* map, lfg::LFGDungeonData const* _dungeonData, Player* player, bool find = false);
+    Scenario* AddScenario(Map* map, uint32 scenarioId);
     void RemoveScenario(uint32 instanceId);
     Scenario* GetScenario(uint32 instanceId);
 

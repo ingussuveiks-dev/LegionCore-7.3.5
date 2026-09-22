@@ -34,7 +34,7 @@ class NetworkThread
 {
 public:
     NetworkThread() : _connections(0), _stopped(false), _thread(nullptr), _ioContext(1),
-        _acceptSocket(_ioContext), _secondaryAcceptSocket(_ioContext), _updateTimer(_ioContext)
+        _updateTimer(_ioContext)
     {
     }
 
@@ -86,9 +86,9 @@ public:
         SocketAdded(sock);
     }
 
-    boost::asio::ip::tcp::socket* GetSocketForAccept(bool secondary = false)
+    std::shared_ptr<boost::asio::ip::tcp::socket> CreateSocketForAccept()
     {
-        return secondary ? &_secondaryAcceptSocket : &_acceptSocket;
+        return std::make_shared<boost::asio::ip::tcp::socket>(_ioContext);
     }
 
 protected:
@@ -170,8 +170,6 @@ private:
     SocketContainer _newSockets;
 
     Trinity::Asio::IoContext _ioContext;
-    boost::asio::ip::tcp::socket _acceptSocket;
-    boost::asio::ip::tcp::socket _secondaryAcceptSocket;
     Trinity::Asio::DeadlineTimer _updateTimer;
 };
 

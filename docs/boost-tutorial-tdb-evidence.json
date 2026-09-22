@@ -1,0 +1,562 @@
+{
+    "Source":  "TDB_full_world_1210.26091_2026_09_09.sql",
+    "SHA256":  "608534D1DC97535C92D756914A02FE36264E484B519F6E54F6D10CF56C6F4D96",
+    "Warning":  "Candidate records only. Different schema/build; never import this extract directly into legion_world.",
+    "ScannedRows":  {
+                        "creature":  262623,
+                        "creature_template":  227633,
+                        "creature_template_addon":  28481,
+                        "creature_template_gossip":  7111,
+                        "creature_text":  19962,
+                        "gameobject":  104080,
+                        "gameobject_template":  83006,
+                        "gossip_menu":  12362,
+                        "gossip_menu_option":  9777,
+                        "instance_template":  124,
+                        "npc_text":  15493,
+                        "smart_scripts":  55241,
+                        "spell_script_names":  4066,
+                        "spell_target_position":  2515,
+                        "transports":  29,
+                        "vehicle_template_accessory":  528
+                    },
+    "Columns":  {
+                    "creature":  [
+                                     "guid",
+                                     "id",
+                                     "map",
+                                     "zoneId",
+                                     "areaId",
+                                     "spawnDifficulties",
+                                     "phaseUseFlags",
+                                     "PhaseId",
+                                     "PhaseGroup",
+                                     "terrainSwapMap",
+                                     "modelid",
+                                     "equipment_id",
+                                     "position_x",
+                                     "position_y",
+                                     "position_z",
+                                     "orientation",
+                                     "spawntimesecs",
+                                     "wander_distance",
+                                     "currentwaypoint",
+                                     "curHealthPct",
+                                     "MovementType",
+                                     "npcflag",
+                                     "unit_flags",
+                                     "unit_flags2",
+                                     "unit_flags3",
+                                     "ScriptName",
+                                     "StringId",
+                                     "VerifiedBuild"
+                                 ],
+                    "creature_template":  [
+                                              "entry",
+                                              "KillCredit1",
+                                              "KillCredit2",
+                                              "name",
+                                              "femaleName",
+                                              "subname",
+                                              "TitleAlt",
+                                              "IconName",
+                                              "RequiredExpansion",
+                                              "VignetteID",
+                                              "faction",
+                                              "npcflag",
+                                              "speed_walk",
+                                              "speed_run",
+                                              "scale",
+                                              "Classification",
+                                              "dmgschool",
+                                              "BaseAttackTime",
+                                              "RangeAttackTime",
+                                              "BaseVariance",
+                                              "RangeVariance",
+                                              "unit_class",
+                                              "unit_flags",
+                                              "unit_flags2",
+                                              "unit_flags3",
+                                              "family",
+                                              "trainer_class",
+                                              "type",
+                                              "VehicleId",
+                                              "AIName",
+                                              "MovementType",
+                                              "ExperienceModifier",
+                                              "RacialLeader",
+                                              "movementId",
+                                              "WidgetSetID",
+                                              "WidgetSetUnitConditionID",
+                                              "RegenHealth",
+                                              "CreatureImmunitiesId",
+                                              "flags_extra",
+                                              "ScriptName",
+                                              "StringId",
+                                              "VerifiedBuild"
+                                          ],
+                    "creature_template_addon":  [
+                                                    "entry",
+                                                    "PathId",
+                                                    "mount",
+                                                    "MountCreatureID",
+                                                    "StandState",
+                                                    "AnimTier",
+                                                    "VisFlags",
+                                                    "SheathState",
+                                                    "PvPFlags",
+                                                    "emote",
+                                                    "aiAnimKit",
+                                                    "movementAnimKit",
+                                                    "meleeAnimKit",
+                                                    "visibilityDistanceType",
+                                                    "auras"
+                                                ],
+                    "creature_template_gossip":  [
+                                                     "CreatureID",
+                                                     "MenuID",
+                                                     "VerifiedBuild"
+                                                 ],
+                    "creature_text":  [
+                                          "CreatureID",
+                                          "GroupID",
+                                          "ID",
+                                          "Text",
+                                          "Type",
+                                          "Language",
+                                          "Probability",
+                                          "Emote",
+                                          "Duration",
+                                          "Sound",
+                                          "SoundPlayType",
+                                          "BroadcastTextId",
+                                          "TextRange",
+                                          "comment"
+                                      ],
+                    "gameobject":  [
+                                       "guid",
+                                       "id",
+                                       "map",
+                                       "zoneId",
+                                       "areaId",
+                                       "spawnDifficulties",
+                                       "phaseUseFlags",
+                                       "PhaseId",
+                                       "PhaseGroup",
+                                       "terrainSwapMap",
+                                       "position_x",
+                                       "position_y",
+                                       "position_z",
+                                       "orientation",
+                                       "rotation0",
+                                       "rotation1",
+                                       "rotation2",
+                                       "rotation3",
+                                       "spawntimesecs",
+                                       "animprogress",
+                                       "state",
+                                       "ScriptName",
+                                       "StringId",
+                                       "VerifiedBuild"
+                                   ],
+                    "gameobject_template":  [
+                                                "entry",
+                                                "type",
+                                                "displayId",
+                                                "name",
+                                                "IconName",
+                                                "castBarCaption",
+                                                "unk1",
+                                                "size",
+                                                "Data0",
+                                                "Data1",
+                                                "Data2",
+                                                "Data3",
+                                                "Data4",
+                                                "Data5",
+                                                "Data6",
+                                                "Data7",
+                                                "Data8",
+                                                "Data9",
+                                                "Data10",
+                                                "Data11",
+                                                "Data12",
+                                                "Data13",
+                                                "Data14",
+                                                "Data15",
+                                                "Data16",
+                                                "Data17",
+                                                "Data18",
+                                                "Data19",
+                                                "Data20",
+                                                "Data21",
+                                                "Data22",
+                                                "Data23",
+                                                "Data24",
+                                                "Data25",
+                                                "Data26",
+                                                "Data27",
+                                                "Data28",
+                                                "Data29",
+                                                "Data30",
+                                                "Data31",
+                                                "Data32",
+                                                "Data33",
+                                                "Data34",
+                                                "ContentTuningId",
+                                                "RequiredLevel",
+                                                "AIName",
+                                                "ScriptName",
+                                                "StringId",
+                                                "VerifiedBuild"
+                                            ],
+                    "gossip_menu":  [
+                                        "MenuID",
+                                        "TextID",
+                                        "VerifiedBuild"
+                                    ],
+                    "gossip_menu_option":  [
+                                               "MenuID",
+                                               "GossipOptionID",
+                                               "OptionID",
+                                               "OptionNpc",
+                                               "OptionText",
+                                               "OptionBroadcastTextID",
+                                               "Language",
+                                               "Flags",
+                                               "ActionMenuID",
+                                               "ActionPoiID",
+                                               "GossipNpcOptionID",
+                                               "BoxCoded",
+                                               "BoxMoney",
+                                               "BoxText",
+                                               "BoxBroadcastTextID",
+                                               "SpellID",
+                                               "OverrideIconID",
+                                               "VerifiedBuild"
+                                           ],
+                    "instance_template":  [
+                                              "map",
+                                              "parent",
+                                              "script"
+                                          ],
+                    "npc_text":  [
+                                     "ID",
+                                     "Probability0",
+                                     "Probability1",
+                                     "Probability2",
+                                     "Probability3",
+                                     "Probability4",
+                                     "Probability5",
+                                     "Probability6",
+                                     "Probability7",
+                                     "BroadcastTextID0",
+                                     "BroadcastTextID1",
+                                     "BroadcastTextID2",
+                                     "BroadcastTextID3",
+                                     "BroadcastTextID4",
+                                     "BroadcastTextID5",
+                                     "BroadcastTextID6",
+                                     "BroadcastTextID7",
+                                     "VerifiedBuild"
+                                 ],
+                    "smart_scripts":  [
+                                          "entryorguid",
+                                          "source_type",
+                                          "id",
+                                          "link",
+                                          "Difficulties",
+                                          "event_type",
+                                          "event_phase_mask",
+                                          "event_chance",
+                                          "event_flags",
+                                          "event_param1",
+                                          "event_param2",
+                                          "event_param3",
+                                          "event_param4",
+                                          "event_param5",
+                                          "event_param_string",
+                                          "action_type",
+                                          "action_param1",
+                                          "action_param2",
+                                          "action_param3",
+                                          "action_param4",
+                                          "action_param5",
+                                          "action_param6",
+                                          "action_param7",
+                                          "action_param_string",
+                                          "target_type",
+                                          "target_param1",
+                                          "target_param2",
+                                          "target_param3",
+                                          "target_param4",
+                                          "target_param_string",
+                                          "target_x",
+                                          "target_y",
+                                          "target_z",
+                                          "target_o",
+                                          "comment"
+                                      ],
+                    "spell_script_names":  [
+                                               "spell_id",
+                                               "ScriptName"
+                                           ],
+                    "spell_target_position":  [
+                                                  "ID",
+                                                  "EffectIndex",
+                                                  "OrderIndex",
+                                                  "MapID",
+                                                  "PositionX",
+                                                  "PositionY",
+                                                  "PositionZ",
+                                                  "Orientation",
+                                                  "VerifiedBuild"
+                                              ],
+                    "transports":  [
+                                       "guid",
+                                       "entry",
+                                       "name",
+                                       "phaseUseFlags",
+                                       "phaseid",
+                                       "phasegroup",
+                                       "ScriptName"
+                                   ],
+                    "vehicle_template_accessory":  [
+                                                       "entry",
+                                                       "accessory_entry",
+                                                       "seat_id",
+                                                       "minion",
+                                                       "description",
+                                                       "summontype",
+                                                       "summontimer",
+                                                       "RideSpellID"
+                                                   ]
+                },
+    "Rows":  [
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1563,
+                     "Tuple":  "(95093,0,0,\u0027Admiral Walsh\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,84,0,1,1.14286,1,0,0,1500,2000,1,1,1,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1563,
+                     "Tuple":  "(100448,0,0,\u0027General Bret Hughes\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,5,0,1732,1,1,1.14286,1,1,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1563,
+                     "Tuple":  "(100648,0,0,\u0027Target Dummy\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,9,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(101738,0,0,\u0027Arcane Construct\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,15,0,\u0027\u0027,0,1,0,43,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(101824,0,0,\u0027Target Dummy\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,9,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(102592,0,0,\u0027Alliance Infantry\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,534,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(102658,0,0,\u0027Felfire Imp\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,6,0,0,2000,1,1,1,0,0,0,0,0,3,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(103703,0,0,\u0027Target Dummy\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,12,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(104530,0,0,\u0027Target Dummy\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,9,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(105317,0,0,\u0027Warlord Zakgra\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1735,1,1,1.14286,1,1,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(105628,0,0,\u0027Magus Filinthus\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,84,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(107104,0,0,\u0027Target Dummy\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,7,0,1,1,1,0,0,2000,2000,1,1,1,0,2048,1,0,0,9,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(107541,0,0,\u0027Lieutenant Warren\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1819,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(107543,0,0,\u0027Armored Snowy Gryphon\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027vehichlecursor\u0027,0,0,35,1,1,1.14286,1,1,0,1500,2000,1,1,1,512,2048,1,160,0,1,4933,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(107953,0,0,\u0027Anchorite Taliah\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,84,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(108478,0,0,\u0027Arcane Construct\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,14,0,2,1,1,0,0,2000,2000,1,1,1,8388608,2048,0,0,0,7,0,\u0027\u0027,0,1,0,117,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(108982,0,0,\u0027Navigator Gibson\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,2774,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(108983,0,0,\u0027Navigator Lane\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1802,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(108988,0,0,\u0027Lieutenant Murray\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1819,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1564,
+                     "Tuple":  "(109010,0,0,\u0027Alliance Infantry\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1802,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,1,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(110747,0,0,\u0027Alliance Infantry\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,84,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(111776,0,0,\u0027Ambushing Fel Bat\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,3,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(111995,0,0,\u0027Horde Grunt\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1835,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(111996,0,0,\u0027Horde Grunt\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1835,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(111998,0,0,\u0027Horde Grunt\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,2361,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112000,0,0,\u0027Horde Grunt\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,2361,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112002,0,0,\u0027Seer Janidi\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,83,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112025,0,0,\u0027Staff Sereant Lazgar\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1835,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112026,0,0,\u0027Sergeant Ba\\\u0027sha\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,1835,0,1,1.14286,1,0,0,2000,2000,1,1,1,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112038,0,0,\u0027Cain Firesong\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,83,0,1,1.14286,1,0,0,2000,2000,1,1,8,0,2048,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112565,0,0,\u0027Armored Wind Rider\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027vehichlecursor\u0027,0,0,1835,0,1,1.14286,1,1,0,1500,2000,1,1,1,0,2048,1,160,0,1,4933,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(112639,0,0,\u0027Felblaze Infernal\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,0,0,35,0,1,1.14286,1,0,0,0,2000,1,1,1,0,0,0,0,0,3,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template",
+                     "Line":  1565,
+                     "Tuple":  "(114966,0,0,\u0027General Bret Hughes\u0027,\u0027\u0027,\u0027\u0027,NULL,\u0027\u0027,6,0,35,0,1,1.14286,1,1,0,0,2000,1,1,1,0,0,0,0,0,7,0,\u0027\u0027,0,1,0,0,0,0,1,0,0,\u0027\u0027,NULL,69497)"
+                 },
+                 {
+                     "Table":  "creature_template_gossip",
+                     "Line":  1719,
+                     "Tuple":  "(100448,19768,48676)"
+                 },
+                 {
+                     "Table":  "creature_template_gossip",
+                     "Line":  1719,
+                     "Tuple":  "(105317,19768,48676)"
+                 },
+                 {
+                     "Table":  "creature_template_gossip",
+                     "Line":  1719,
+                     "Tuple":  "(112565,20459,48676)"
+                 },
+                 {
+                     "Table":  "gameobject_template",
+                     "Line":  3066,
+                     "Tuple":  "(246607,15,34366,\u0027The Warbringer\u0027,\u0027\u0027,\u0027\u0027,\u0027\u0027,1,5529,1,1,0,0,0,1559,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\u0027\u0027,\u0027\u0027,NULL,22566)"
+                 },
+                 {
+                     "Table":  "gossip_menu",
+                     "Line":  3227,
+                     "Tuple":  "(19768,35374,27843)"
+                 },
+                 {
+                     "Table":  "gossip_menu",
+                     "Line":  3227,
+                     "Tuple":  "(20085,29837,27843)"
+                 },
+                 {
+                     "Table":  "gossip_menu",
+                     "Line":  3227,
+                     "Tuple":  "(20459,30357,27219)"
+                 },
+                 {
+                     "Table":  "gossip_menu_option",
+                     "Line":  3293,
+                     "Tuple":  "(19768,-5060608,0,0,\u0027I\\\u0027m ready to begin.\u0027,117010,0,0,0,0,NULL,0,0,NULL,0,NULL,NULL,27843)"
+                 },
+                 {
+                     "Table":  "gossip_menu_option",
+                     "Line":  3293,
+                     "Tuple":  "(20085,-5141762,2,0,\u0027\u003cLeave and join the assault on Lordaeron\u003e\u0027,158312,0,0,0,0,NULL,0,0,NULL,0,NULL,NULL,27843)"
+                 },
+                 {
+                     "Table":  "gossip_menu_option",
+                     "Line":  3293,
+                     "Tuple":  "(20459,-5237506,2,0,\u0027\u003cLeave and join the assault on Lordaeron\u003e\u0027,158312,0,0,0,0,NULL,0,0,NULL,0,NULL,NULL,27219)"
+                 },
+                 {
+                     "Table":  "npc_text",
+                     "Line":  3850,
+                     "Tuple":  "(29837,1,0,0,0,0,0,0,0,118580,0,0,0,0,0,0,0,41079)"
+                 },
+                 {
+                     "Table":  "npc_text",
+                     "Line":  3850,
+                     "Tuple":  "(30357,1,0,0,0,0,0,0,0,121942,0,0,0,0,0,0,0,37176)"
+                 }
+             ]
+}

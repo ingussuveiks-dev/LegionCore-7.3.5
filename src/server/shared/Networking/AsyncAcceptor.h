@@ -46,7 +46,7 @@ public:
     {
         auto [tmpSocket, tmpThreadIndex] = _socketFactory();
         // TODO: get rid of temporary variables (clang 15 cannot handle variables from structured bindings as lambda captures)
-        boost::asio::ip::tcp::socket* socket = tmpSocket;
+        std::shared_ptr<boost::asio::ip::tcp::socket> socket = tmpSocket;
         uint32 threadIndex = tmpThreadIndex;
         _acceptor.async_accept(*socket, [this, socket, threadIndex](boost::system::error_code error)
         {
@@ -114,16 +114,19 @@ public:
         _acceptor.close(err);
     }
 
-    void SetSocketFactory(std::function<std::pair<boost::asio::ip::tcp::socket*, uint32>()> func) { _socketFactory = std::move(func); }
+    void SetSocketFactory(std::function<std::pair<std::shared_ptr<boost::asio::ip::tcp::socket>, uint32>()> func) { _socketFactory = std::move(func); }
 
 private:
-    std::pair<boost::asio::ip::tcp::socket*, uint32> DefeaultSocketFactory() { return std::make_pair(&_socket, 0); }
+    std::pair<std::shared_ptr<boost::asio::ip::tcp::socket>, uint32> DefeaultSocketFactory()
+    {
+        return std::make_pair(std::make_shared<boost::asio::ip::tcp::socket>(_acceptor.get_executor()), 0);
+    }
 
     boost::asio::ip::tcp::acceptor _acceptor;
     boost::asio::ip::tcp::endpoint _endpoint;
     boost::asio::ip::tcp::socket _socket;
     std::atomic<bool> _closed;
-    std::function<std::pair<boost::asio::ip::tcp::socket*, uint32>()> _socketFactory;
+    std::function<std::pair<std::shared_ptr<boost::asio::ip::tcp::socket>, uint32>()> _socketFactory;
 };
 
 template<class T>

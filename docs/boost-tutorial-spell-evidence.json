@@ -1,0 +1,341 @@
+{
+    "Source":  "Local SpellEffect.db2; selected raw unsigned fields only, not all spell data",
+    "SHA256":  "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "RequestedSpellIDs":  [
+                              219615,
+                              223763,
+                              219912,
+                              227058,
+                              215387,
+                              215598,
+                              215607,
+                              230503,
+                              231511
+                          ],
+    "Effects":  [
+                    {
+                        "SpellID":  215387,
+                        "ID":  320098,
+                        "Effect":  6,
+                        "EffectBasePoints":  30,
+                        "EffectIndex":  0,
+                        "EffectAura":  101,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 1,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215387,
+                        "ID":  321394,
+                        "Effect":  90,
+                        "EffectBasePoints":  1,
+                        "EffectIndex":  1,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 108787,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215598,
+                        "ID":  320574,
+                        "Effect":  6,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  42,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  215599,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215598,
+                        "ID":  321393,
+                        "Effect":  90,
+                        "EffectBasePoints":  1,
+                        "EffectIndex":  1,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 108788,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215607,
+                        "ID":  320586,
+                        "Effect":  6,
+                        "EffectBasePoints":  150,
+                        "EffectIndex":  0,
+                        "EffectAura":  189,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 1879048192,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215607,
+                        "ID":  321395,
+                        "Effect":  90,
+                        "EffectBasePoints":  1,
+                        "EffectIndex":  1,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 108789,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  215607,
+                        "ID":  321396,
+                        "Effect":  136,
+                        "EffectBasePoints":  100,
+                        "EffectIndex":  2,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219615,
+                        "ID":  327210,
+                        "Effect":  3,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                22,
+                                                7
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  327773,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  227058,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  344882,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  1,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  215387,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  344884,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  2,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  215598,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  344885,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  3,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  215607,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  348065,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  4,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  230503,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  219912,
+                        "ID":  349209,
+                        "Effect":  140,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  5,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  231511,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                96,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  223763,
+                        "ID":  334695,
+                        "Effect":  3,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                5,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  227058,
+                        "ID":  341050,
+                        "Effect":  3,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  0,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  230503,
+                        "ID":  347946,
+                        "Effect":  6,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  4,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                1,
+                                                0
+                                            ]
+                    },
+                    {
+                        "SpellID":  231511,
+                        "ID":  349187,
+                        "Effect":  6,
+                        "EffectBasePoints":  0,
+                        "EffectIndex":  0,
+                        "EffectAura":  226,
+                        "DifficultyID":  0,
+                        "EffectTriggerSpell":  0,
+                        "EffectMiscValues":  [
+                                                 0,
+                                                 0
+                                             ],
+                        "ImplicitTargets":  [
+                                                25,
+                                                0
+                                            ]
+                    }
+                ]
+}

@@ -633,7 +633,10 @@ void Scenario::BroadCastPacket(const WorldPacket* data)
         return;
     }
 
-    Map* map = sMapMgr->FindMap(dungeonData->map, instanceId);
+    // Outdoor scenarios have LFG metadata, but scripts can also construct a
+    // scenario directly from its DB2 id (for example the character boost
+    // tutorial).  In that case dungeonData is intentionally null.
+    Map* map = curMap;
     if (!map || map->IsMapUnload())
         return;
 

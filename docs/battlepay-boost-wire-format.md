@@ -40,3 +40,16 @@ pending distribution before validating delivery. Never substitute a default
 product for an unknown distribution, or override an explicit mismatched ID.
 Keep the account ownership, credit balance, level, specialization and faction
 checks. A rejected assignment does not consume a credit or grant any rewards.
+
+## Pandaren faction choice
+
+The final assignment field is one uint32, not two independent uint16 values:
+`(zeroBasedFaction << 24) | specializationId`. The wire faction is Horde=0,
+Alliance=1; normalize it to the service's Horde=1, Alliance=2 only after
+validating the upper byte. Validate the lower 24 bits before narrowing to
+uint16, and retain the specialization/class check during assignment.
+
+For specialization269, Horde sends0x0000010D and Alliance sends0x0100010D.
+The former parser incorrectly read their choices as0 and256, respectively.
+`BattlePayBoostChoice.h` now decodes and validates this field; the compile-time
+regressions are in `tools/tests/BattlePayBoostChoiceTest.cpp`.

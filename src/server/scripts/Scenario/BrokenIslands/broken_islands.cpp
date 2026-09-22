@@ -537,7 +537,7 @@ public:
 };
 
 
-//! 227058 WARN! Spell not exits.
+//! 227058 - Leave for Broken Shore Queue.
 class spell_q42740 : public SpellScriptLoader
 {
 public:
@@ -3424,10 +3424,9 @@ void AddSC_brokenIslands()
     new npc_q44281();
     new npc_q42740();
     new npc_q40518();
+    new spell_q42740();
     new spell_bi_enter_stage1();
     new sceneTrigger_enterBrockenShores();
-    // Spell 227058 does not exist in the 7.3.5 client data and its former
-    // second LFG queue is already handled by the end-of-scene trigger.
     new sceneTrigger_part1();
     new npc_bi_dread_commander();
     new npc_bi_felcommander_azgalor();

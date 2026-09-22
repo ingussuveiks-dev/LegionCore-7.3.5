@@ -875,6 +875,7 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
 
 void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCharGuid, uint64 distributionId, uint32 productId, uint16 specId, uint16 choiceId)
 {
+    uint32 const requestedProductId = productId;
     auto pendingItr = std::find_if(_pendingBoostDistributions.begin(), _pendingBoostDistributions.end(),
         [distributionId](Battlepay::Purchase const& pending) { return pending.DistributionId == distributionId; });
     // Legion's character-select AssignUpgradeDistribution can send product 0.
@@ -904,8 +905,41 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
         !charInfo || charInfo->AccountId != _session->GetAccountId() || charInfo->Level >= 100 ||
         !specialization || specialization->ClassID != charInfo->Class || !validFactionChoice)
     {
-        TC_LOG_ERROR("battlepay", "Rejected character boost assignment for account %u, character %s, product %u, distribution " UI64FMTD ", specialization %u",
-            _session->GetAccountId(), targetCharGuid.ToString().c_str(), productId, distributionId, specId);
+        // Diagnose every failed gate without changing delivery/credit handling.
+        std::string reasons;
+        auto rejectReason = [&reasons](bool failed, char const* reason)
+        {
+            if (failed)
+            {
+                if (!reasons.empty())
+                    reasons += ",";
+                reasons += reason;
+            }
+        };
+        bool const hasDistribution = pendingItr != _pendingBoostDistributions.end();
+        rejectReason(!hasDistribution, "unknown_distribution");
+        rejectReason(!product, "unknown_product");
+        rejectReason(product && product->WebsiteType != CharacterBoost, "not_boost_product");
+        rejectReason(productId != Level100BoostProductId, "not_level100_product");
+        rejectReason(!_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP), "missing_auth_flag");
+        rejectReason(_session->GetTokenBalance(Level100BoostCreditToken) <= 0, "no_boost_credit");
+        rejectReason(hasDistribution && pendingItr->ProductID != productId, "distribution_product_mismatch");
+        rejectReason(!charInfo, "unknown_character");
+        rejectReason(charInfo && charInfo->AccountId != _session->GetAccountId(), "character_not_owned");
+        rejectReason(charInfo && charInfo->Level >= 100, "level_ineligible");
+        rejectReason(!specialization, "unknown_specialization");
+        rejectReason(charInfo && specialization && specialization->ClassID != charInfo->Class, "specialization_class_mismatch");
+        rejectReason(!validFactionChoice, "invalid_faction_choice");
+
+        TC_LOG_ERROR("battlepay", "Rejected character boost assignment: reasons=[%s], account=%u, character=%s, "
+            "requestedProduct=%u, resolvedProduct=%u, distribution=" UI64FMTD ", pendingProduct=%u, "
+            "specialization=%u, choice=%u, race=%u, class=%u, level=%u, specClass=%u, authFlag=%u, credits=%lld",
+            reasons.c_str(), _session->GetAccountId(), targetCharGuid.ToString().c_str(), requestedProductId,
+            productId, distributionId, hasDistribution ? pendingItr->ProductID : 0, uint32(specId), uint32(choiceId),
+            charInfo ? uint32(charInfo->Race) : 0, charInfo ? uint32(charInfo->Class) : 0,
+            charInfo ? uint32(charInfo->Level) : 0, specialization ? uint32(specialization->ClassID) : 0,
+            uint32(_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP)),
+            static_cast<long long>(_session->GetTokenBalance(Level100BoostCreditToken)));
         return;
     }
 

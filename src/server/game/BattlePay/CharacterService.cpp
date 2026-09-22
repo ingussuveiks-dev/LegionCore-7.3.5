@@ -95,6 +95,8 @@ struct BoostDestination
 {
     WorldLocation Location;
     uint16 ZoneId;
+    WorldLocation HomeLocation;
+    uint16 HomeZoneId;
 };
 
 bool ResolveBoostFaction(uint8 currentRace, uint16 requestedFaction, uint8& finalRace, uint16& faction)
@@ -122,15 +124,27 @@ bool ResolveBoostFaction(uint8 currentRace, uint16 requestedFaction, uint8& fina
     return true;
 }
 
-BoostDestination GetBoostDestination(uint16 faction)
+BoostDestination GetBoostDestination(uint16 faction, uint8 classId)
 {
-    // The retail boost tutorial used faction gunships, but that tutorial is
-    // not scripted in this core. Place the player at the first working Legion
-    // introduction hand-in instead, ready to continue the Broken Shore chain.
-    if (faction == BoostFactionHorde)
-        return { WorldLocation(1, 1352.49f, -4396.55f, 29.2122f, 2.28638f), 14 };
+    WorldLocation hordeHome(1, 1352.49f, -4396.55f, 29.2122f, 2.28638f);
+    WorldLocation allianceHome(0, -8495.11f, 1078.70f, 18.0276f, 1.56232f);
 
-    return { WorldLocation(0, -8495.11f, 1078.70f, 18.0276f, 1.56232f), 1519 };
+    // Demon Hunters have their own starting experience and no level-100
+    // boost scenario in the 7.3.5 client. Other classes begin on the faction
+    // boost gunship. The instance script attaches the player to the moving
+    // transport using the WorldSafeLocs transport-local deck coordinates.
+    if (classId == CLASS_DEMON_HUNTER)
+    {
+        if (faction == BoostFactionHorde)
+            return { hordeHome, 14, hordeHome, 14 };
+
+        return { allianceHome, 1519, allianceHome, 1519 };
+    }
+
+    if (faction == BoostFactionHorde)
+        return { WorldLocation(1557, -2556.0f, 2939.6f, 149.4f, 1.98f), 8422, hordeHome, 14 };
+
+    return { WorldLocation(1554, -2556.0f, 2939.6f, 135.6f, 1.98f), 8124, allianceHome, 1519 };
 }
 
 void LearnBoostFactionLanguages(Player* player, uint16 faction)
@@ -571,8 +585,8 @@ bool CharacterService::Boost(Player* player, uint16 specializationId, uint8 targ
     MailBoostBags(player);
     PopulateBoostActionBar(player);
 
-    BoostDestination destination = GetBoostDestination(faction);
-    player->SetHomebind(destination.Location, destination.ZoneId);
+    BoostDestination destination = GetBoostDestination(faction, player->getClass());
+    player->SetHomebind(destination.HomeLocation, destination.HomeZoneId);
     player->TeleportTo(destination.Location);
     AddLegionIntroductionQuest(player, faction);
     player->RemoveAtLoginFlag(AT_LOGIN_FIRST);
@@ -611,7 +625,7 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
     }
 
     ObjectGuid::LowType guid = targetCharGuid.GetCounter();
-    BoostDestination destination = GetBoostDestination(faction);
+    BoostDestination destination = GetBoostDestination(faction, charInfo->Class);
     CharacterDatabaseTransaction transaction = CharacterDatabase.BeginTransaction();
     AtLoginFlags boostFlags = AtLoginFlags(AT_LOGIN_RESET_SPELLS | AT_LOGIN_RESET_TALENTS | AT_LOGIN_CHARACTER_BOOST);
     if (charInfo->Level >= 60)
@@ -627,8 +641,8 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
         uint16(AT_LOGIN_FIRST), uint16(boostFlags), guid);
 
     transaction->PAppend("REPLACE INTO character_homebind (guid, mapId, zoneId, posX, posY, posZ) "
-        "VALUES (" UI64FMTD ", %u, %u, %f, %f, %f)", guid, destination.Location.GetMapId(), destination.ZoneId,
-        destination.Location.GetPositionX(), destination.Location.GetPositionY(), destination.Location.GetPositionZ());
+        "VALUES (" UI64FMTD ", %u, %u, %f, %f, %f)", guid, destination.HomeLocation.GetMapId(), destination.HomeZoneId,
+        destination.HomeLocation.GetPositionX(), destination.HomeLocation.GetPositionY(), destination.HomeLocation.GetPositionZ());
 
     std::vector<uint32> boostSpells = { 108127u };
     boostSpells.push_back(faction == BoostFactionHorde ? 669u : 668u);

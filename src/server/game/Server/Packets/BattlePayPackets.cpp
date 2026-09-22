@@ -16,6 +16,7 @@
 */
 
 #include "BattlePayPackets.h"
+#include "BattlePayBoostChoice.h"
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePay::ProductDisplayInfo const& displayInfo)
 {
@@ -361,8 +362,14 @@ void WorldPackets::BattlePay::DistributionAssignToTarget::Read()
     _worldPacket >> ProductID;
     _worldPacket >> DistributionID;
     _worldPacket >> TargetCharacter;
-    _worldPacket >> SpecializationID;
-    _worldPacket >> ChoiceID;
+    uint32 packedChoice;
+    _worldPacket >> packedChoice;
+    BoostChoice const choice = DecodeBoostChoice(packedChoice);
+    if (!choice.Valid)
+        throw ByteBufferException();
+
+    SpecializationID = choice.SpecializationID;
+    ChoiceID = choice.FactionChoice;
 }
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePay::VasPurchaseData const& purchase)

@@ -93,6 +93,17 @@ Scenario* ScenarioMgr::AddScenario(Map* map, lfg::LFGDungeonData const* dungeonD
     return scenario;
 }
 
+Scenario* ScenarioMgr::AddScenario(Map* map, uint32 scenarioId)
+{
+    if (!map || !scenarioId || _scenarioStore.find(map->GetInstanceId()) != _scenarioStore.end())
+        return nullptr;
+
+    Scenario* scenario = new Scenario(map, scenarioId);
+    _scenarioStore[map->GetInstanceId()] = scenario;
+    map->m_scenarios.insert(scenario);
+    return scenario;
+}
+
 Scenario* ScenarioMgr::GetScenario(uint32 instanceId)
 {
     return Trinity::Containers::MapGetValuePtr(_scenarioStore, instanceId);
