@@ -108,6 +108,34 @@ the current world database. It still requires in-game completion tests for all
 seven challenge variants before it should be described as fully gameplay
 verified.
 
+## Argus campaign, world quests and Netherlight Crucible
+
+The Argus campaign covers the Krokuun, Mac'Aree and Antoran Wastes progression,
+including both mutually exclusive Antorus introduction variants. Quest `48203`
+is the normal continuation after the completed campaign, while `49014` is the
+fallback offered after the Netherlight Crucible finale when the normal
+campaign prerequisite has not been rewarded. Both routes lead to the intended
+Turalyon hand-in without allowing the two introductions to be taken together.
+
+All 137 client-defined `QuestType = 3` tasks used by Krokuun, Mac'Aree, Antoran
+Wastes and the Seat of the Triumvirate have world-quest rotation entries and
+reward templates. This includes the restored special, profession, rare and
+dungeon tasks as well as the Antorus introduction branch. The Alchemy quests
+`48318` and `48323` retain their fixed rewards and grant the appropriate rank-2
+recipe only when the player is eligible for it.
+
+The Netherlight Crucible unlock requires level 110 and either account
+achievement `12184` or completion of both finale quests `48559` and `48560`.
+Relic insertion and Netherlight trait selection validate the artifact, relic
+slot, trait branch and client-defined progression gates before changing player
+data. The tier gates remain at artifact levels 60/63/66 and 69/72/75, and
+artifact/relic changes are persisted and checked when items are transferred.
+
+The client-data relationships, active world database and canonical Release
+build have been validated. The full Argus campaign, rotating world-quest set,
+reward delivery and Netherlight Crucible interaction still require end-to-end
+in-game testing before they should be considered gameplay verified.
+
 ## Broken Shore building contributions
 
 The Broken Shore contribution collector supports all three Legionfall
@@ -135,6 +163,46 @@ Supplies. The live database migration resets the three previously stuck building
 states to a clean Building cycle. The DB2 relationships, SQL updates and Release
 build have been validated, but an end-to-end client test of all three collector
 buttons, rewards, state transitions and rotating buffs is still required.
+
+## Class Hall, Legionfall and class mounts
+
+The twelve Legion Class Hall campaigns lead into the level-110 Legionfall
+campaign and its class-specific champion recruitment routes. The fifteen quests
+required by **Breaching the Tomb** (`11546`) are present, including
+**Champions of Legionfall** and its class campaign requirement. A level 100
+boosted character can begin the Legion artifact and Class Hall progression, but
+must reach level 110 and complete the Class Hall and Legionfall requirements
+before starting its class-mount chain.
+
+All twelve class-mount breadcrumbs now use **Breaching the Tomb** rather than
+the unrelated **Broken Isles Pathfinder, Part One** achievement. Their complete
+quest chains, quest-giver relations and final rewards are present. Death Knight,
+Hunter, Monk, Paladin, Rogue, Shaman and Warrior receive their retail mount
+items; Demon Hunter, Mage, Priest and Warlock learn their mounts from the final
+reward spell. The Druid Lunarwing form is also learned immediately from its
+final reward, with the existing login reconciliation retained for characters
+that completed the quest before this correction. The formerly unguarded final
+Warlock quest now requires its preceding quest and the Warlock class.
+
+The class-specific scenario data and stage triggers were also audited against
+the client criteria. Hunter's final feast stage is completed by its gossip
+spell rather than a separate SmartAI credit. In the Death Knight **Lost
+Glacier** scenario, collecting 100 **Essence of the Red** now completes the
+third stage and exposes the client-defined **Life to Death** extra-action
+button; using it advances the conversion stage, and turning in the final quest
+casts the resurrection scene and completes the last stage.
+
+The Paladin scenario currently has one functional set of six ally choices. The
+client also defines six alternate-faction allies, but their creature templates,
+spawn positions and faction phasing are not present in the world database.
+Those NPCs must not be added as overlapping unconditional spawns; completing
+that presentation requires reliable 7.3.5 spawn and phase data.
+
+These relationships have been checked against the 7.3.5.26972 achievement,
+criteria, quest, item-effect and mount data, and the canonical Release build has
+been validated. Every class-specific scenario and the complete in-game hand-off
+from Class Hall to Legionfall and the mount reward still require gameplay tests
+before the twelve routes should be described as fully verified.
 
 ## Requirements
 

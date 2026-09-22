@@ -3308,6 +3308,31 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
     else
         m_caster->EnergizeBySpell(unitTarget, m_spellInfo->Id, damage, power);
 
+    // The Lost Glacier: filling Essence of the Red completes scenario stage 3
+    // and exposes the Life to Death extra-action spell. The client data has no
+    // separate trigger spell for reaching 100 alternate power.
+    if (power == POWER_ALTERNATE && unitTarget->HasAura(241383))
+    {
+        switch (m_spellInfo->Id)
+        {
+            case 241326:
+            case 241369:
+            case 241371:
+                if (Player* player = unitTarget->ToPlayer())
+                {
+                    if (player->GetPower(POWER_ALTERNATE) == player->GetMaxPower(POWER_ALTERNATE))
+                    {
+                        player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT, 57723, 1);
+                        player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 57723, 1);
+                        player->CastSpell(player, 241389, true);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     // Mad Alchemist's Potion
     if (m_spellInfo->Id == 45051)
     {
@@ -5244,6 +5269,12 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                 {
                     if (Player* player = m_caster->ToPlayer())
                         player->learnSpell(229417, false);
+                    return;
+                }
+                case 241857: // Archdruid's Lunarwing Form
+                {
+                    if (Player* player = m_caster->ToPlayer())
+                        player->learnSpell(231437, false);
                     return;
                 }
                 case 241851: // Netherlord's Chaotic Wrathsteed
