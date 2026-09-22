@@ -19,7 +19,7 @@
 
 ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePay::ProductDisplayInfo const& displayInfo)
 {
-    data.WriteBit(displayInfo.CreatureDisplayInfoID.has_value());
+    data.WriteBit(displayInfo.IconFileDataID.has_value());
     data.WriteBit(displayInfo.VisualsId.has_value());
 
     data.WriteBits(displayInfo.Name1.length(), 10);
@@ -35,8 +35,8 @@ ByteBuffer& operator<<(ByteBuffer& data, WorldPackets::BattlePay::ProductDisplay
 
     data << static_cast<uint32>(displayInfo.Visuals.size());
 
-    if (displayInfo.CreatureDisplayInfoID)
-        data << *displayInfo.CreatureDisplayInfoID;
+    if (displayInfo.IconFileDataID)
+        data << *displayInfo.IconFileDataID;
 
     if (displayInfo.VisualsId)
         data << *displayInfo.VisualsId;

@@ -23,6 +23,7 @@
 #include "Player.h"
 #include "BattlePayData.h"
 #include "DatabaseEnv.h"
+#include "DB2Stores.h"
 #include "QuestData.h"
 #include "LoginQueryHolder.h"
 #include "ScriptMgr.h"
@@ -473,7 +474,7 @@ void BattlepayManager::SendProductList()
         sEntry.VasServiceType = itr.Flags;
         sEntry.StoreDeliveryType = itr.BannerType;
 
-        auto data = WriteDisplayInfo(itr.DisplayInfoID, localeIndex);
+        auto data = WriteDisplayInfo(itr.DisplayInfoID, localeIndex, itr.ProductID);
         if (std::get<0>(data))
         {
             sEntry.DisplayInfo.emplace();
@@ -509,7 +510,7 @@ void BattlepayManager::SendProductList()
         //std::vector<uint32> UnkInts;
         pInfo.UnkInt2 = 47; // 2 ?
 
-        auto dataPI = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
+        auto dataPI = WriteDisplayInfo(product.DisplayInfoID, localeIndex, product.ProductID);
         if (std::get<0>(dataPI))
         {
             pInfo.DisplayInfo.emplace();
@@ -520,7 +521,9 @@ void BattlepayManager::SendProductList()
 
         WorldPackets::BattlePay::BattlePayProduct pProduct;
         pProduct.ProductID = product.ProductID;
-        pProduct.Flags = product.Flags;
+        // Despite its historical name, this wire field is exposed as itemID
+        // in the store's sharedData. Deliverable ItemIDs do not populate it.
+        pProduct.Flags = product.Items.size() == 1 ? product.Items.front().ItemID : 0;
         pProduct.Type = product.WebsiteType == Battlepay::CharacterBoost ?
             Battlepay::CharacterUpgradeProductType : product.Type;
 
@@ -562,7 +565,7 @@ void BattlepayManager::SendProductList()
             pProduct.Items.emplace_back(pItem);
         }
 
-        auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex);
+        auto dataP = WriteDisplayInfo(product.DisplayInfoID, localeIndex, product.ProductID);
         if (std::get<0>(dataP))
         {
             pProduct.DisplayInfo.emplace();
@@ -630,12 +633,9 @@ std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::
         ObjectMgr::GetLocaleString(displayLocale->Name2, localeIndex, info.Name2);
 
     info.Name3 = displayInfo->Name3;
-    if (productId)
-    {
-        auto product = sBattlePayDataStore->GetProduct(productId);
-        if (!product->Items.empty())
-            info.Name3 = GeneratePackDescription(product);
-    }
+    Product const* product = productId ? sBattlePayDataStore->GetProduct(productId) : nullptr;
+    if (product && product->Items.size() > 1)
+        info.Name3 = GeneratePackDescription(product);
     else if (displayLocale)
         ObjectMgr::GetLocaleString(displayLocale->Name3, localeIndex, info.Name3);
 
@@ -643,8 +643,28 @@ std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::
     if (displayLocale)
         ObjectMgr::GetLocaleString(displayLocale->Name4, localeIndex, info.Name4);
 
-    if (displayInfo->CreatureDisplayInfoID != 0)
-        info.CreatureDisplayInfoID = displayInfo->CreatureDisplayInfoID;
+    // The first optional display value is a texture FileDataID, not a
+    // CreatureDisplayInfoID. Resolve icons from the same item data used by
+    // inventory icons; model previews continue to use the Visuals below.
+    if (product && !product->Items.empty())
+    {
+        uint32 itemId = product->Items.front().ItemID;
+        uint32 icon = 0;
+        if (ItemEntry const* item = sItemStore.LookupEntry(itemId))
+            if (item->IconFileDataID > 0)
+                icon = static_cast<uint32>(item->IconFileDataID);
+        if (!icon)
+            icon = sDB2Manager.GetItemDIconFileDataId(itemId);
+        if (icon)
+            info.IconFileDataID = icon;
+        else
+            TC_LOG_WARN("battlepay", "Store product %u has no icon for item %u", productId, itemId);
+    }
+    else if (product && product->WebsiteType == Battlepay::CharacterBoost)
+    {
+        // IconFileDataID from 7.3.5 CharacterServiceInfo.db2 (types 1 and 2).
+        info.IconFileDataID = product->ScriptName.find("level90") != std::string::npos ? 614740u : 1033987u;
+    }
 
     if (auto visualsId = displayInfo->VisualsId)
     {
@@ -735,7 +755,7 @@ void BattlepayManager::SendBattlePayDistribution(uint32 productId, uint8 status,
         productData.Items.emplace_back(productItem);
     }
 
-    auto dataP = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
+    auto dataP = WriteDisplayInfo(product->DisplayInfoID, localeIndex, productId);
     if (std::get<0>(dataP))
     {
         productData.DisplayInfo.emplace();
@@ -838,7 +858,7 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
             productData.Items.emplace_back(std::move(productItem));
         }
 
-        auto displayInfo = WriteDisplayInfo(product->DisplayInfoID, localeIndex);
+        auto displayInfo = WriteDisplayInfo(product->DisplayInfoID, localeIndex, productId);
         if (std::get<0>(displayInfo))
             productData.DisplayInfo = std::get<1>(displayInfo);
 

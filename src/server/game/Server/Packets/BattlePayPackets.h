@@ -62,7 +62,9 @@ namespace WorldPackets
         struct ProductDisplayInfo
         {
             std::vector<ProductDisplayVisualData> Visuals;
-            Optional<uint32> CreatureDisplayInfoID;
+            // Exposed as sharedData.texture by the 7.3.5 Store API.
+            // Creature display IDs belong in Visuals instead.
+            Optional<uint32> IconFileDataID;
             Optional<uint32> VisualsId;
             Optional<uint32> Flags;
             Optional<uint32> UnkInt1;
