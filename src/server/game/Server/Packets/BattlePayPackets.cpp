@@ -173,6 +173,11 @@ WorldPacket const* WorldPackets::BattlePay::DistributionListResponse::Write()
 {
     _worldPacket << Result;
     _worldPacket.WriteBits(DistributionObject.size(), 11);
+    // WriteBits can leave a partial byte pending.  The distribution objects
+    // are byte-aligned, so flush the 11-bit count before serializing them.
+    // Without this, the client consumes the first three bits of the first
+    // DistributionID as part of the count and sees an empty/corrupt list.
+    _worldPacket.FlushBits();
     for (BattlePayDistributionObject const& objectData : DistributionObject)
         _worldPacket << objectData;
 
