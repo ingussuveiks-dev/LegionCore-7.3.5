@@ -338,6 +338,11 @@ namespace Battlepay
     // battlepay_token_type, so it is never shown as a spendable currency.
     constexpr uint8 Level100BoostCreditToken = 100;
 
+    // Product 109 is the client-known level 90 upgrade.  Legion assigns the
+    // level 100 decorator to product 110; using 109 with UnkBits=2 is not
+    // enough for C_SharedCharacterServices to classify the distribution.
+    constexpr uint32 Level100BoostProductId = 110;
+
     namespace BattlepayGroupDisplayType
     {
         enum : uint8

@@ -444,7 +444,7 @@ void WorldSession::HandleBattlePayTrialBoostCharacter(WorldPackets::BattlePay::B
         return;
 
     GetBattlePayMgr()->AssignDistributionToCharacter(packet.Character,
-        distributions.front().DistributionID, 109, uint16(packet.SpecializationID), 0);
+        distributions.front().DistributionID, Battlepay::Level100BoostProductId, uint16(packet.SpecializationID), 0);
 }
 
 void WorldSession::HandleBattlePayPurchaseDetailsResponse(WorldPackets::BattlePay::BattlePayPurchaseDetailsResponse& packet)

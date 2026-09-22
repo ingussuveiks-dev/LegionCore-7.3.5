@@ -775,7 +775,7 @@ std::vector<WorldPackets::BattlePay::BattlePayDistributionObject> BattlepayManag
         return distributions;
     }
 
-    uint32 constexpr productId = 109;
+    uint32 constexpr productId = Level100BoostProductId;
     Battlepay::Product const* product = sBattlePayDataStore->GetProduct(productId);
     if (!product || product->WebsiteType != Battlepay::CharacterBoost)
     {
@@ -867,7 +867,7 @@ void BattlepayManager::AssignDistributionToCharacter(ObjectGuid const& targetCha
         }
     }
 
-    if (pendingItr == _pendingBoostDistributions.end() || !product || product->WebsiteType != CharacterBoost || productId != 109 ||
+    if (pendingItr == _pendingBoostDistributions.end() || !product || product->WebsiteType != CharacterBoost || productId != Level100BoostProductId ||
         !_session->HasAuthFlag(AT_AUTH_FLAG_100_LVL_UP) ||
         _session->GetTokenBalance(Level100BoostCreditToken) <= 0 || pendingItr->ProductID != productId ||
         !charInfo || charInfo->AccountId != _session->GetAccountId() || charInfo->Level >= 100 ||
