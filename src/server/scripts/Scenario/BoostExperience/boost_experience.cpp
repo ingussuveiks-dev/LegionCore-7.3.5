@@ -145,7 +145,21 @@ public:
         TempSummon* SummonPassenger(Transport* transport, uint32 entry, Position const& position,
             Unit* summoner = nullptr, TempSummonType type = TEMPSUMMON_MANUAL_DESPAWN, uint32 duration = 0)
         {
-            return transport->SummonPassenger(entry, position, type, nullptr, duration, summoner);
+            TempSummon* passenger = transport->SummonPassenger(entry, position, type, nullptr, duration, summoner);
+            if (!passenger)
+                return nullptr;
+
+            // Instance transports do not inherit the player's phase set.  A
+            // boost character usually has Legion intro phases, so passengers
+            // created with the transport's empty phase set existed server-side
+            // but were invisible to the player.
+            if (Player* player = GetPlayer())
+            {
+                passenger->SetPhaseId(player->GetPhases(), false);
+                passenger->UpdateObjectVisibility();
+            }
+
+            return passenger;
         }
 
         void SpawnStaticPassengers(Transport* transport)
@@ -226,8 +240,8 @@ public:
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
-            TC_LOG_INFO("scripts", "Started boost tutorial scenario %u for %s on map %u",
-                scenarioId, player->GetName(), instance->GetId());
+            TC_LOG_INFO("scripts", "Started boost tutorial scenario %u for %s on map %u (player phases: %u, transport phases: %u)",
+                scenarioId, player->GetName(), instance->GetId(), uint32(player->GetPhases().size()), uint32(transport->GetPhases().size()));
             return true;
         }
 

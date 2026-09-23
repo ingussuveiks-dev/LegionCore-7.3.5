@@ -23,6 +23,7 @@
 #include "SpellInfo.h"
 #include "SpellMgr.h"
 #include "DatabaseEnv.h"
+#include "DB2Stores.h"
 #include <set>
 
 auto GetBagsFreeSlots = [](Player* player) -> uint32
@@ -40,7 +41,7 @@ auto GetBagsFreeSlots = [](Player* player) -> uint32
     return freeBagSlots;
 };
 
-auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlepay::Product const* product) -> bool
+auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlepay::Product const* product, uint16 specializationId) -> bool
 {
     if (!characterInfo || !product)
         return false;
@@ -72,6 +73,11 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
             return false;
         if (itemTemplate->AllowableRace && !(itemTemplate->AllowableRace & raceMask))
             return false;
+
+        if (uint32 artifactId = itemTemplate->GetArtifactID())
+            if (ArtifactEntry const* artifact = sArtifactStore.LookupEntry(artifactId))
+                if (artifact->ChrSpecializationID && artifact->ChrSpecializationID != specializationId)
+                    return false;
 
         std::set<uint32> learnedSpells;
         for (ItemEffectEntry const* itemEffect : itemTemplate->Effects)
@@ -244,7 +250,11 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
-    if (!CharacterCanReceiveProduct(characterInfo, product))
+    uint16 specializationId = characterInfo->SpecId;
+    if (player && player->GetGUID() == targetCharacter)
+        specializationId = player->GetSpecializationId();
+
+    if (!CharacterCanReceiveProduct(characterInfo, product, specializationId))
     {
         SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
         return;
@@ -375,7 +385,11 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
     }
 
     CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(purchase->TargetCharacter);
-    if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product))
+    uint16 specializationId = characterInfo ? characterInfo->SpecId : 0;
+    if (player && player->GetGUID() == purchase->TargetCharacter)
+        specializationId = player->GetSpecializationId();
+
+    if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product, specializationId))
     {
         SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
         return;

@@ -27,7 +27,7 @@ Battlenet::WorldserverServiceDispatcher::WorldserverServiceDispatcher()
     AddService<WorldserverService<connection::v1::ConnectionService>>();
     AddService<WorldserverService<friends::v1::FriendsService>>();
     AddService<GameUtilitiesService>();
-    AddService<WorldserverService<presence::v1::PresenceService>>();
+    AddService<PresenceService>();
     AddService<WorldserverService<report::v1::ReportService>>();
     AddService<ResourcesService>();
     AddService<WorldserverService<user_manager::v1::UserManagerService>>();

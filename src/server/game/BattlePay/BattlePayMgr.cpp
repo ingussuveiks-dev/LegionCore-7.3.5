@@ -392,6 +392,11 @@ auto BattlepayManager::ProductFilter(Product product) -> bool
             if (itemTemplate->AllowableRace && (itemTemplate->AllowableRace & player->getRaceMask()) == 0)
                 return false;
 
+            if (uint32 artifactId = itemTemplate->GetArtifactID())
+                if (ArtifactEntry const* artifact = sArtifactStore.LookupEntry(artifactId))
+                    if (artifact->ChrSpecializationID && artifact->ChrSpecializationID != player->GetSpecializationId())
+                        return false;
+
             if (itemTemplate->GetMinFactionID() && uint32(player->GetReputationRank(itemTemplate->GetMinFactionID())) < itemTemplate->GetMinReputation())
                 return false;
 

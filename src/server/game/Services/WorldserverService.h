@@ -77,6 +77,17 @@ namespace Battlenet
         uint32 HandleGetContentHandle(resources::v1::ContentHandleRequest const* request, ContentHandle* response,
             std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation) override;
     };
+
+    class PresenceService : public WorldserverService<presence::v1::PresenceService>
+    {
+        typedef WorldserverService<presence::v1::PresenceService> BaseService;
+
+    public:
+        PresenceService(WorldSession* session);
+
+        uint32 HandleUpdate(presence::v1::UpdateRequest const* request, NoData* response,
+            std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& continuation) override;
+    };
 }
 
 #endif // WorldserverService_h__

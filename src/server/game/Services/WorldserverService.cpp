@@ -35,6 +35,19 @@ Battlenet::ResourcesService::ResourcesService(WorldSession* session) : BaseServi
 {
 }
 
+Battlenet::PresenceService::PresenceService(WorldSession* session) : BaseService(session)
+{
+}
+
+uint32 Battlenet::PresenceService::HandleUpdate(presence::v1::UpdateRequest const* /*request*/, NoData* /*response*/,
+    std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
+{
+    // The retail client publishes transient online/AFK presence fields after
+    // entering the world.  This core has no social presence backend, but the
+    // update is valid and does not need to be reported as a server error.
+    return ERROR_OK;
+}
+
 uint32 Battlenet::ResourcesService::HandleGetContentHandle(resources::v1::ContentHandleRequest const* /*request*/,
     ContentHandle* /*response*/, std::function<void(ServiceBase*, uint32, ::google::protobuf::Message const*)>& /*continuation*/)
 {
