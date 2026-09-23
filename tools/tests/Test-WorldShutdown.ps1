@@ -2,7 +2,8 @@ param(
     [string]$Runtime = "$PSScriptRoot/../../build-extractors/bin/Release",
     [switch]$EndOfInput,
     [switch]$ProbeConnections,
-    [switch]$CloseInputAfterCommand
+    [switch]$CloseInputAfterCommand,
+    [switch]$Utf8Bom
 )
 $ErrorActionPreference = 'Stop'
 $Runtime = (Resolve-Path $Runtime).Path
@@ -19,7 +20,14 @@ $info.RedirectStandardOutput = $true
 $info.RedirectStandardError = $true
 $process = [Diagnostics.Process]::new()
 $process.StartInfo = $info
-[void]$process.Start()
+# .NET Framework constructs an AutoFlush StreamWriter during Start(), which
+# can emit Console.InputEncoding's preamble even when we later use BaseStream.
+$previousInputEncoding = [Console]::InputEncoding
+try {
+    [Console]::InputEncoding = [Text.UTF8Encoding]::new($false)
+    [void]$process.Start()
+}
+finally { [Console]::InputEncoding = $previousInputEncoding }
 $stdout = $process.StandardOutput.ReadToEndAsync()
 $stderr = $process.StandardError.ReadToEndAsync()
 try {
@@ -52,18 +60,30 @@ try {
                 }
             }
         }
-        $process.StandardInput.WriteLine('server shutdown 0')
-        $process.StandardInput.Flush()
+        # Write exact bytes: .NET Framework's default StreamWriter may silently
+        # emit a BOM. Cover both inputs explicitly and keep stdin OPEN.
+        $bytes = [Text.Encoding]::UTF8.GetBytes("server shutdown 0`r`n")
+        if ($Utf8Bom) { $bytes = [byte[]](0xEF, 0xBB, 0xBF) + $bytes }
+        $process.StandardInput.BaseStream.Write($bytes, 0, $bytes.Length)
+        $process.StandardInput.BaseStream.Flush()
         if ($CloseInputAfterCommand) { $process.StandardInput.Close() }
     }
-    if (!$process.WaitForExit(60000)) { throw 'Server did not finish shutdown within 60 seconds.' }
+    if (!$process.WaitForExit(60000)) {
+        $process.StandardInput.Close()
+        if ($process.WaitForExit(30000)) {
+            $diagnostic = $stdout.GetAwaiter().GetResult()
+            Write-Output ($diagnostic.Substring([Math]::Max(0, $diagnostic.Length - 2500)))
+        }
+        throw 'Server did not finish shutdown within 60 seconds with stdin open.'
+    }
     $out = $stdout.GetAwaiter().GetResult()
     $err = $stderr.GetAwaiter().GetResult()
     $after = @(Get-ChildItem "$Runtime/Crashes" -Filter '*.dmp' -ErrorAction SilentlyContinue).Count
-    if ($process.ExitCode -ne 0 -or $after -ne $before -or !$out.Contains('(worldserver-daemon) ready...')) {
+    if ($process.ExitCode -ne 0 -or $after -ne $before -or !$out.Contains('(worldserver-daemon) ready...') -or
+        $out.Contains('There is no such command')) {
         throw "Shutdown failed: exit=$($process.ExitCode), new dumps=$($after-$before). $err"
     }
-    "PASS: EndOfInput=$EndOfInput; ProbeConnections=$ProbeConnections; CloseInputAfterCommand=$CloseInputAfterCommand; ready reached; exit=0; new crash dumps=0"
+    "PASS: EndOfInput=$EndOfInput; Utf8Bom=$Utf8Bom; ProbeConnections=$ProbeConnections; CloseInputAfterCommand=$CloseInputAfterCommand; ready reached; exit=0; new crash dumps=0"
 }
 finally {
     if (!$process.HasExited) {

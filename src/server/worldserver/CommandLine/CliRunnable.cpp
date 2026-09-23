@@ -160,6 +160,12 @@ void CliThread()
 
         if (command_str != NULL)
         {
+            // Redirected UTF-8 streams (for example .NET StreamWriter) may
+            // prefix their first command with a BOM. It is an encoding marker,
+            // not part of the command name; strip it before console conversion.
+            if (strncmp(command_str, "\xEF\xBB\xBF", 3) == 0)
+                memmove(command_str, command_str + 3, strlen(command_str + 3) + 1);
+
             for (int x=0; command_str[x]; ++x)
                 if (command_str[x] == '\r' || command_str[x] == '\n')
                 {
