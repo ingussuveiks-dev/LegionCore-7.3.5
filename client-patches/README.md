@@ -34,3 +34,10 @@ UI-source mirror. It enables `overrideArchive` and saves the original
 `Config.wtf` once as `Config.wtf.store-icon-fix.bak`. The game must be fully
 restarted after installation. Both executables share the same Interface and
 WTF directories, so the patch covers 32-bit and 64-bit clients.
+
+The installer also guards product mouse, click, tooltip, and preview callbacks
+against catalog entries disappearing during a refresh or disconnect. This fixes
+the `StoreProductCard_OnEnter` nil `entryInfo` error reported at line 3381.
+It does not establish or fix the cause of a simultaneous `WOW51900322` streaming
+disconnect: the available client logs did not identify a failing asset. Verify
+opening the store both at character selection and in-world after a full restart.

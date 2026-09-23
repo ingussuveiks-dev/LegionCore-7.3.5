@@ -122,6 +122,32 @@ elseif (-not $normalizedStoreText.Contains($fixedIconSize)) {
     throw "The Store UI icon size statement is not the expected 7.3.5 version; no changes were made."
 }
 
+# A disconnect or catalog refresh can invalidate a card before its mouse
+# callbacks run. Never dereference an entry from the previous catalog.
+$guardedCallbacks = @(
+    'StoreProductCard_OnEnter',
+    'StoreProductCard_OnClick',
+    'StoreProductCardMagnifyingGlass_OnClick',
+    'StoreProductCardItem_OnEnter'
+)
+foreach ($callback in $guardedCallbacks) {
+    $pattern = '(?s)(function ' + [regex]::Escape($callback) + '\([^\r\n]*\)\n.*?local entryInfo = C_StoreSecure\.GetEntryInfo\([^\r\n]*\);\n)'
+    $match = [regex]::Match($normalizedStoreText, $pattern)
+    if (-not $match.Success) {
+        throw "Cannot find Store UI callback: $callback"
+    }
+    $guard = "`tif (not entryInfo or not entryInfo.sharedData) then`n`t`treturn;`n`tend`n"
+    if (-not $normalizedStoreText.Substring($match.Index + $match.Length).StartsWith($guard)) {
+        $normalizedStoreText = $normalizedStoreText.Insert($match.Index + $match.Length, $guard)
+    }
+}
+$normalizedStoreText = $normalizedStoreText.Replace(
+    'if ( entryInfo.displayID ) then',
+    'if ( entryInfo and entryInfo.displayID ) then')
+$normalizedStoreText = $normalizedStoreText.Replace(
+    'return entryInfo and #entryInfo.sharedData.cards > 0;',
+    'return entryInfo and entryInfo.sharedData and entryInfo.sharedData.cards and #entryInfo.sharedData.cards > 0;')
+
 [System.IO.File]::WriteAllText($targetFile, $normalizedStoreText, $utf8WithoutBom)
 
 if (-not (Test-Path -LiteralPath $configFile -PathType Leaf)) {
