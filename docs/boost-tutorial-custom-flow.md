@@ -32,6 +32,10 @@
   219615. Client DB2 places the mutually exclusive Horde and Alliance criteria
   below an ALL node, so the generic evaluator otherwise leaves the visible
   faction objective at 1/1 without advancing to the first class lesson.
+- Scripted scenario transitions add the destination step to `ActiveSteps`
+  before sending `ScenarioState`. The old order sent a new `CurrentStep` with
+  only the previous step active, causing the 7.3.5 client to disconnect with
+  reason 16 immediately after the trainer response.
 - The exit bird is spawned only for the final departure stage. Departure
   creates an individual vehicle using vehicle layout 4933, removes
   it and its rider from the gunship, and flies away in world coordinates.

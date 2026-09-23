@@ -15,6 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "Group.h"
 #include "ScenarioMgr.h"
 #include "LFGMgr.h"
@@ -293,8 +295,22 @@ uint8 Scenario::GetStepCount(bool withBonus) const
 
 void Scenario::SetCurrentStep(uint8 step)
 {
+    if (step >= steps.size())
+    {
+        TC_LOG_ERROR("scripts", "Scenario %u rejected invalid step %u (step count %u)",
+            scenarioId, uint32(step), uint32(steps.size()));
+        return;
+    }
+
     currentStep = step;
     currentTree = GetScenarioCriteriaByStep(currentStep);
+
+    // ScenarioState must contain the current step in ActiveSteps. Sending the
+    // packet first gives the client contradictory state and 7.3.5 disconnects
+    // while processing the transition (CMSG_LOG_DISCONNECT reason 16).
+    uint32 activeStep = steps[currentStep]->ID;
+    if (std::find(ActiveSteps.begin(), ActiveSteps.end(), activeStep) == ActiveSteps.end())
+        ActiveSteps.push_back(activeStep);
 
     SendStepUpdate();
 
@@ -315,7 +331,6 @@ void Scenario::SetCurrentStep(uint8 step)
         }
     }
 
-    ActiveSteps.push_back(steps[currentStep]->ID);
 }
 
 void Scenario::UpdateCurrentStep(bool loading)
