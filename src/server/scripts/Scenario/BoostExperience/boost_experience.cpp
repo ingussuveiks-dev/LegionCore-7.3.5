@@ -17,6 +17,10 @@
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 #include "Transport.h"
+#include "MotionMaster.h"
+#include "ObjectAccessor.h"
+#include "Vehicle.h"
+#include "QuestData.h"
 
 namespace BoostExperience
 {
@@ -86,6 +90,8 @@ uint32 GetScenarioFor(Player const* player)
 
 Position Offset(Position const& base, float x, float y, float z = 0.0f, float orientation = 0.0f)
 {
+    // CUSTOM placement: only the deck origin is from WorldSafeLocs. NPC offsets
+    // and the departure flight are approximations, NOT Blizzard sniff coordinates.
     return Position(base.GetPositionX() + x, base.GetPositionY() + y,
         base.GetPositionZ() + z, orientation);
 }
@@ -212,8 +218,13 @@ public:
             if (!scenario)
                 return false;
 
-            SpawnStaticPassengers(transport);
+            if (!_setupComplete)
+            {
+                SpawnStaticPassengers(transport);
+                SpawnExit(); // The original tutorial also permits skipping lessons.
+            }
             scenario->SendStepUpdate(player, true);
+            player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
             TC_LOG_INFO("scripts", "Started boost tutorial scenario %u for %s on map %u",
                 scenarioId, player->GetName(), instance->GetId());
@@ -234,7 +245,7 @@ public:
 
         void Update(uint32 diff) override
         {
-            if (_setupComplete)
+            if (!_setupTimer)
                 return;
 
             if (_setupTimer > diff)
@@ -243,8 +254,13 @@ public:
                 return;
             }
 
-            _setupComplete = Setup();
-            _setupTimer = _setupComplete ? 0 : 500;
+            if (Setup())
+            {
+                _setupComplete = true;
+                _setupTimer = 0;
+            }
+            else
+                _setupTimer = 500;
         }
 
         void StartCombat(TempSummon* summon, Player* player)
@@ -309,6 +325,8 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
+            if (Player* player = GetPlayer())
+                player->SendActionButtons(1);
             if (_lastCombatStep == newStep)
                 return;
 
@@ -351,7 +369,7 @@ public:
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "I am ready to begin training.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        player->SEND_GOSSIP_MENU(19768, creature->GetGUID());
+        player->SEND_GOSSIP_MENU(29277, creature->GetGUID());
         return true;
     }
 
@@ -371,16 +389,119 @@ public:
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Take me to the Broken Shore.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        player->SEND_GOSSIP_MENU(creature->GetEntry() == NPC_ALLIANCE_EXIT ? 20085 : 20459, creature->GetGUID());
+        player->SEND_GOSSIP_MENU(creature->GetEntry() == NPC_ALLIANCE_EXIT ? 29837 : 30357, creature->GetGUID());
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 /*action*/) override
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
         player->CLOSE_GOSSIP_MENU();
-        player->CastSpell(player, SPELL_LEAVE_TUTORIAL, true);
+        if (sender != GOSSIP_SENDER_MAIN || action != GOSSIP_ACTION_INFO_DEF + 1 || player->GetVehicle())
+            return true;
+
+        // A separate world-space bird avoids moving a static gunship passenger.
+        player->CombatStop(true);
+        // Fill any newly learned active class spells into vacant real slots. The
+        // tutorial overlay remains visible until OnMapChanged restores this bar.
+        for (auto const& spell : player->GetSpellMapConst())
+            player->AddSpellToActionBarIfAppropriate(spell.first, false);
+        player->SummonCreature(creature->GetEntry(), creature->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 60000, 4933);
         return true;
     }
+
+    struct DepartureAI : public ScriptedAI
+    {
+        DepartureAI(Creature* creature) : ScriptedAI(creature) { }
+        ObjectGuid rider;
+        uint32 timer = 0;
+        uint8 phase = 0;
+
+        void IsSummonedBy(Unit* summoner) override
+        {
+            // Static transport passengers have no player summoner.
+            if (!summoner || !summoner->ToPlayer())
+                return;
+            rider = summoner->GetGUID();
+            me->SetReactState(REACT_PASSIVE);
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            // Vehicle 4933 belongs to the Horde tutorial exit bird in this DB.
+            // Reuse its passenger layout for the Alliance model as well.
+            if (!me->GetVehicleKit() && !me->CreateVehicleKit(4933, me->GetEntry()))
+                return;
+            timer = 500;
+        }
+
+        void UpdateAI(uint32 diff) override
+        {
+            if (!timer)
+                return;
+            if (timer > diff)
+            {
+                timer -= diff;
+                return;
+            }
+            timer = 0;
+            Player* player = ObjectAccessor::GetPlayer(*me, rider);
+            if (!player)
+                return;
+            if (phase == 0)
+            {
+                me->SetCanFly(true);
+                me->SetDisableGravity(true);
+                // Map::SummonCreature inherits its summoner's transport.
+                if (Transport* transport = me->GetTransport())
+                    transport->RemovePassenger(me);
+                if (Transport* transport = player->GetTransport())
+                    transport->RemovePassenger(player);
+                player->EnterVehicle(me, 0, true);
+                // VehicleJoinEvent is asynchronous; check after the next updates.
+                phase = 1;
+                timer = 1000;
+            }
+            else if (phase == 1)
+            {
+                if (player->GetVehicleBase() != me)
+                {
+                    phase = 3;
+                    timer = 1;
+                    return;
+                }
+                // CUSTOM short takeoff route, not an official sniffed spline.
+                me->GetMotionMaster()->MovePoint(1, me->GetPositionX() + 60.0f,
+                    me->GetPositionY() + 40.0f, me->GetPositionZ() + 45.0f, false);
+                phase = 2;
+                timer = 10000;
+            }
+            else if (phase == 2)
+            {
+                uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+                if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE && !player->GetQuestRewardStatus(questId))
+                    if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
+                        if (player->CanAddQuest(quest, false))
+                            player->AddQuest(quest, nullptr);
+                // 219912 targets passenger 0, not the caster. Casting it on the
+                // player silently missed the queue spell and left them stranded.
+                if (player->GetVehicleBase() == me)
+                    me->CastSpell(me, SPELL_LEAVE_TUTORIAL, true);
+                phase = 3;
+                timer = 15000;
+            }
+            else
+            {
+                // If the Broken Shore queue cannot launch, recover at the faction
+                // capital intro instead of leaving a character on a despawned bird.
+                player->ExitVehicle();
+                bool alliance = player->GetTeam() == ALLIANCE;
+                player->TeleportTo(alliance ? 0 : 1,
+                    alliance ? -8833.38f : 1569.59f,
+                    alliance ? 628.62f : -4397.63f,
+                    alliance ? 94.00f : 16.06f, alliance ? 1.06f : 0.54f);
+                me->DespawnOrUnsummon(1000);
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override { return new DepartureAI(creature); }
 };
 
 struct npc_boost_training_dummy : public ScriptedAI
@@ -418,20 +539,43 @@ public:
                 AttackStart(player);
         }
 
-        void JustDied(Unit* killer) override
+        bool surrendered = false;
+
+        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
         {
-            Player* player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (me->GetMapId() != MAP_ALLIANCE && me->GetMapId() != MAP_HORDE)
+                return;
+            if (surrendered)
+            {
+                damage = 0;
+                return;
+            }
+            // CUSTOM 15% surrender threshold; the video confirms yielding, not
+            // the exact health value. Clamp lethal hits before awarding progress.
+            if (damage < me->GetHealth() && me->GetHealth() - damage > me->CountPctFromMaxHealth(15))
+                return;
+            damage = 0;
+            surrendered = true;
+            me->RemoveAllAuras();
+            me->CombatStop(true);
+            me->SetReactState(REACT_PASSIVE);
+            me->setFaction(35);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetStandState(UNIT_STAND_STATE_KNEEL);
+            me->MonsterSay("I yield!", LANG_UNIVERSAL, ObjectGuid::Empty);
+            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             if (!player)
                 if (TempSummon* summon = me->ToTempSummon())
                     player = summon->GetSummoner() ? summon->GetSummoner()->ToPlayer() : nullptr;
 
             if (player)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_SPAR_COMPLETE);
+            me->DespawnOrUnsummon(5000);
         }
 
         void UpdateAI(uint32 /*diff*/) override
         {
-            if (!UpdateVictim())
+            if (surrendered || !UpdateVictim())
                 return;
 
             DoMeleeAttackIfReady();
@@ -444,6 +588,18 @@ public:
     }
 };
 
+class player_boost_tutorial_bars : public PlayerScript
+{
+public:
+    player_boost_tutorial_bars() : PlayerScript("player_boost_tutorial_bars") { }
+    void OnMapChanged(Player* player) override
+    {
+        // Outside the tutorial SendActionButtons uses the untouched full layout.
+        // This also covers teleports, disconnect recovery and the skip route.
+        player->SendActionButtons(1);
+    }
+};
+
 void AddSC_boost_experience()
 {
     new instance_boost_experience("instance_boost_experience_alliance", MAP_ALLIANCE, true);
@@ -452,4 +608,5 @@ void AddSC_boost_experience()
     new npc_boost_exit();
     RegisterCreatureAI(npc_boost_training_dummy);
     new npc_boost_sparring_opponent();
+    new player_boost_tutorial_bars();
 }

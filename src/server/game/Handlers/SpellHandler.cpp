@@ -733,6 +733,10 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionBu
     if (!player)
         return;
 
+    // Tutorial buttons are temporary; client edits must not erase the real bar.
+    if (player->GetMapId() == 1554 || player->GetMapId() == 1557)
+        return;
+
     uint32 action = ACTION_BUTTON_ACTION(packet.Action);
     uint8 type = ACTION_BUTTON_TYPE(packet.Action);
 

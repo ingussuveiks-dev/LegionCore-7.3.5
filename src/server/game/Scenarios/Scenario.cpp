@@ -376,7 +376,8 @@ void Scenario::UpdateCurrentStep(bool loading)
     if (currentStep < steps.size())
         SetStepState(steps[currentStep], SCENARIO_STEP_IN_PROGRESS);
 
-    SetStepState(steps[oldStep], SCENARIO_STEP_DONE);
+    if (oldStep < steps.size())
+        SetStepState(steps[oldStep], SCENARIO_STEP_DONE);
     // i_updateLock.unlock();
     //TC_LOG_DEBUG("challenge", "UpdateCurrentStep currentStep %u oldStep %u loading %u", currentStep, oldStep, loading);
 }
@@ -477,7 +478,7 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
             if (uint32 dungeonId = sLFGMgr->GetDungeon(groupGuid)) // lfg dungeons are rewarded through lfg
             {
                 // lfg dungeon that we are in is not current scenario
-                if (dungeonId != dungeonData->id)
+                if (!dungeonData || dungeonId != dungeonData->id)
                     return;
 
                 sLFGMgr->FinishDungeon(groupGuid, dungeonId);

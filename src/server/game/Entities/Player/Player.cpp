@@ -8364,8 +8364,39 @@ void Player::SendActionButtons(uint32 state)
 {
     WorldPackets::Spells::UpdateActionButtons packet;
 
+    // The boost lessons are a client-only overlay. Never erase the character's
+    // saved layout: reconnects and spell learning must not persist this bar.
+    bool tutorial = GetMapId() == 1554 || GetMapId() == 1557;
+    std::vector<uint32> lessonSpells;
+    if (tutorial)
+        if (Scenario* scenario = sScenarioMgr->GetScenario(GetInstanceId()))
+        {
+            std::function<void(CriteriaTree const*)> collect = [&](CriteriaTree const* tree)
+            {
+                if (!tree)
+                    return;
+                if (tree->Criteria && tree->Criteria->Entry->Type == CRITERIA_TYPE_CAST_SPELL)
+                {
+                    uint32 spell = tree->Criteria->Entry->Asset;
+                    if (HasActiveSpell(spell) && std::find(lessonSpells.begin(), lessonSpells.end(), spell) == lessonSpells.end())
+                        lessonSpells.push_back(spell);
+                }
+                for (CriteriaTree const* child : tree->Children)
+                    collect(child);
+            };
+            for (uint8 step = 1; step <= scenario->GetCurrentStep() && step < scenario->GetStepCount(false); ++step)
+                collect(sAchievementMgr->GetCriteriaTree(scenario->GetScenarioCriteriaByStep(step)));
+        }
+
     for (uint8 button = 0; button < MAX_ACTION_BUTTONS; ++button)
     {
+        if (tutorial)
+        {
+            // Also populate form/stance pages, otherwise Cat Form hides the lesson.
+            uint8 slot = button >= 72 ? button % 12 : button;
+            packet.ActionButtons[button] = slot < lessonSpells.size() ? lessonSpells[slot] : 0;
+            continue;
+        }
         ActionButtonList::const_iterator itr = m_actionButtons.find(button);
         if (itr != m_actionButtons.end() && itr->second.uState != ACTIONBUTTON_DELETED)
             packet.ActionButtons[button] = itr->second.packedData;
