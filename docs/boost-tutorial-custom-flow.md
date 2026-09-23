@@ -16,8 +16,14 @@
   spells are filtered by the existing boost action-bar helper.
 - Sparring opponents yield before lethal damage, become friendly/nonattackable,
   kneel and credit event 48772 once. Legion attackers remain lethal encounters.
-- The exit bird is available from the beginning as a skip/recovery route.
-  Departure creates an individual vehicle using vehicle layout 4933, removes
+- Training actors follow the recorded Warlock sequence: no dummy during the
+  initial conversation or pet-summoning lesson, one persistent dummy for the
+  target-based lessons, one sparring opponent, two sparring opponents, the
+  Legion wave, and finally the exit bird. Completed sparring waves are removed
+  before the next wave. Other class scenarios delay their dummy until their
+  opening pet/form/preparation lessons are complete.
+- The exit bird is spawned only for the final departure stage. Departure
+  creates an individual vehicle using vehicle layout 4933, removes
   it and its rider from the gunship, and flies away in world coordinates.
 - Spell 219912 is cast by the bird with the player in seat 0. Its DB2 passenger
   targeting triggers 227058, bound to the existing Broken Shore queue script.

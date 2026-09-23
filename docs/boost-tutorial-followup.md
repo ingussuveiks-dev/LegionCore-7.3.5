@@ -20,14 +20,22 @@ unsigned scalar values. It is not a full generic DB2 reader or spell resolver.
 
 ## Directly inspected gameplay evidence
 
-Browser inspection of selected paused frames, not continuous playback:
+The Warlock recording was reviewed across its complete 07:48 timeline using a
+10-second contact sheet plus full-resolution frames at each stage transition.
+The Paladin notes still come from selected paused frames:
 
 - [Wowhead Warlock video](https://www.youtube.com/watch?v=1cCjo_KWxPo):
   00:05 visibly identifies a beta realm; do not label this recording7.3.5.
-  00:28/00:46 identify Warlord Zakgra as instructor. Around05:27 the prior
-  Horde Grunt has yielded; the next stage requests two attackers. Around07:01
-  the demon-defense bar is45%; around07:38 it is84%. Exact yield-health
-  threshold and wave spawn times cannot be inferred from these frames.
+  00:28/00:46 identify Warlord Zakgra as instructor. No dummy is present for
+  the initial conversation or the Voidwalker-summoning lesson. One Target
+  Dummy appears for `Curses!` and remains in the forward-center deck position
+  through the last ability lesson. It is replaced by one Horde Grunt for
+  `A Quick Test`, then that yielded grunt is replaced by two fresh grunts for
+  `Challenge Accepted`. The grunts are cleared before the Legion wave. Around
+  06:50 the demon-defense bar is45%; around07:15 it is84%. The wind rider is
+  absent during training and becomes available at the back of the ship only
+  after the defense completes. Exact yield-health threshold and actor-local
+  coordinates cannot be inferred from the recording.
 - [Wowhead Paladin video](https://www.youtube.com/watch?v=Nq0hhig9Q04):
   around06:09 General Bret Hughes has congratulated the player and the exit
   stage points to the gryphon at the back of the ship, while a demon remains

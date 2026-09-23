@@ -47,9 +47,7 @@ enum Creatures : uint32
     NPC_ALLIANCE_SPAR    = 109010,
     NPC_HORDE_SPAR       = 111995,
 
-    NPC_TRAINING_DUMMY_1 = 100648,
-    NPC_TRAINING_DUMMY_2 = 101824,
-    NPC_TRAINING_DUMMY_3 = 103703,
+    NPC_TRAINING_DUMMY   = 107104,
 
     NPC_LEGION_IMP       = 102658,
     NPC_LEGION_INFERNAL  = 112639,
@@ -90,6 +88,28 @@ uint32 GetScenarioFor(Player const* player)
     }
 }
 
+uint8 GetFirstTargetLesson(uint32 scenarioId)
+{
+    // The opening lessons for these scenarios summon a pet, enter a form or
+    // prepare a weapon before the first target-based ability is introduced.
+    switch (scenarioId)
+    {
+        case 1083: // Beast Mastery Hunter: Call Pet
+        case 1084: // Affliction Warlock: Summon Voidwalker
+        case 1094: // Unholy Death Knight: Raise Dead
+        case 1132: // Frost Mage: Summon Water Elemental
+        case 1181: // Balance Druid: Moonkin Form
+        case 1182: // Enhancement Shaman: Flametongue
+        case 1214: // Survival Hunter: Call Pet
+            return 2;
+        case 1096: // Feral Druid: Cat Form, then Prowl
+        case 1133: // Assassination Rogue: Deadly Poison, then Stealth
+            return 3;
+        default:
+            return 1;
+    }
+}
+
 Position Offset(Position const& base, float x, float y, float z = 0.0f, float orientation = 0.0f)
 {
     // CUSTOM placement: only the deck origin is from WorldSafeLocs. NPC offsets
@@ -111,18 +131,19 @@ public:
     {
         instance_boost_experience_InstanceScript(InstanceMap* map, bool alliance) :
             InstanceScript(map), _alliance(alliance), _setupTimer(500), _setupComplete(false),
-            _visibilityTimer(0), _trainingDummyStage(0xFF), _lastCombatStep(0xFF), _exitSpawned(false) { }
+            _visibilityTimer(0), _trainingDummySpawned(false), _lastCombatStep(0xFF), _exitSpawned(false) { }
 
         bool _alliance;
         uint32 _setupTimer;
         bool _setupComplete;
         uint32 _visibilityTimer;
-        uint8 _trainingDummyStage;
+        bool _trainingDummySpawned;
         uint8 _lastCombatStep;
         bool _exitSpawned;
         ObjectGuid _transportGuid;
         ObjectGuid _trainingDummyGuid;
         std::vector<ObjectGuid> _passengerGuids;
+        std::vector<ObjectGuid> _sparringGuids;
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
         uint32 TransportEntry() const { return _alliance ? GO_DAWN_BLADE : GO_WARBRINGER; }
@@ -208,15 +229,14 @@ public:
             }
         }
 
-        void SetTrainingDummyForStep(uint32 step, uint8 stepCount)
+        void SetTrainingDummyForStep(Player* player, uint32 step, uint8 stepCount)
         {
-            // The three class-ability lessons immediately precede the final
-            // four encounter stages. Keep exactly one lesson target on deck.
-            uint8 wantedStage = 0xFF;
-            if (stepCount >= 7 && step >= uint32(stepCount - 7) && step <= uint32(stepCount - 5))
-                wantedStage = uint8(step - (stepCount - 7));
+            // Retail keeps one target dummy for all target-based ability
+            // lessons. It disappears when the solo sparring opponent arrives.
+            bool shouldSpawn = player && stepCount >= 5 &&
+                step >= GetFirstTargetLesson(GetScenarioFor(player)) && step < uint32(stepCount - 4);
 
-            if (_trainingDummyStage == wantedStage)
+            if (_trainingDummySpawned == shouldSpawn)
                 return;
 
             if (!_trainingDummyGuid.IsEmpty())
@@ -229,26 +249,17 @@ public:
                 _trainingDummyGuid.Clear();
             }
 
-            if (wantedStage >= 3)
-            {
-                _trainingDummyStage = wantedStage;
+            _trainingDummySpawned = false;
+            if (!shouldSpawn)
                 return;
-            }
-
-            static uint32 const dummies[] =
-            {
-                NPC_TRAINING_DUMMY_1,
-                NPC_TRAINING_DUMMY_2,
-                NPC_TRAINING_DUMMY_3
-            };
 
             if (Transport* transport = GetGunship())
-                if (TempSummon* dummy = SummonPassenger(transport, dummies[wantedStage],
-                    Offset(Deck(), -6.0f, -4.0f + 4.0f * wantedStage, 0.0f, 0.0f)))
+                if (TempSummon* dummy = SummonPassenger(transport, NPC_TRAINING_DUMMY,
+                    Offset(Deck(), -12.0f, 0.0f, 0.0f, 0.0f)))
                 {
                     dummy->SetReactState(REACT_PASSIVE);
                     _trainingDummyGuid = dummy->GetGUID();
-                    _trainingDummyStage = wantedStage;
+                    _trainingDummySpawned = true;
                     _visibilityTimer = 500;
                 }
         }
@@ -299,7 +310,7 @@ public:
             if (!_setupComplete)
                 SpawnStaticPassengers(transport);
 
-            SetTrainingDummyForStep(scenario->GetCurrentStep(), scenario->GetStepCount(false));
+            SetTrainingDummyForStep(player, scenario->GetCurrentStep(), scenario->GetStepCount(false));
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
@@ -391,6 +402,19 @@ public:
             summon->AI()->AttackStart(player);
         }
 
+        void ClearSparringWave()
+        {
+            for (ObjectGuid const& guid : _sparringGuids)
+            {
+                if (Creature* opponent = instance->GetCreature(guid))
+                    opponent->DespawnOrUnsummon();
+
+                _passengerGuids.erase(std::remove(_passengerGuids.begin(), _passengerGuids.end(), guid),
+                    _passengerGuids.end());
+            }
+            _sparringGuids.clear();
+        }
+
         void SpawnSparringWave(uint8 count)
         {
             Transport* transport = GetGunship();
@@ -400,10 +424,15 @@ public:
 
             uint32 entry = _alliance ? NPC_ALLIANCE_SPAR : NPC_HORDE_SPAR;
             Position const& deck = Deck();
+            ClearSparringWave();
             for (uint8 index = 0; index < count; ++index)
-                StartCombat(SummonPassenger(transport, entry,
-                    Offset(deck, -2.0f, -2.5f + 5.0f * index, 0.0f, 0.0f), player,
-                    TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
+                if (TempSummon* opponent = SummonPassenger(transport, entry,
+                    Offset(deck, -10.0f, -3.5f + 7.0f * index, 0.0f, 0.0f), player,
+                    TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                {
+                    _sparringGuids.push_back(opponent->GetGUID());
+                    StartCombat(opponent, player);
+                }
         }
 
         void SpawnLegionWave()
@@ -456,13 +485,16 @@ public:
             if (stepCount < 4)
                 return;
 
-            SetTrainingDummyForStep(newStep, stepCount);
+            SetTrainingDummyForStep(GetPlayer(), newStep, stepCount);
             if (newStep == stepCount - 4)
                 SpawnSparringWave(1);
             else if (newStep == stepCount - 3)
                 SpawnSparringWave(2);
             else if (newStep == stepCount - 2)
+            {
+                ClearSparringWave();
                 SpawnLegionWave();
+            }
             else if (newStep >= uint32(stepCount - 1))
                 SpawnExit();
             else
