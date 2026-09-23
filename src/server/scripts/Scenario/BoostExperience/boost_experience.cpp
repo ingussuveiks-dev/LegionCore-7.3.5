@@ -147,7 +147,23 @@ public:
         {
             TempSummon* passenger = transport->SummonPassenger(entry, position, type, nullptr, duration, summoner);
             if (!passenger)
+            {
+                TC_LOG_ERROR("scripts", "Boost tutorial failed to summon passenger %u on transport %s",
+                    entry, transport->GetGUID().ToString().c_str());
                 return nullptr;
+            }
+
+            // Transport::SummonPassenger registers runtime summons as static
+            // passengers. Moving transports may unload that collection when
+            // their current grid is considered inactive, even while a player
+            // is attached to the transport. The scenario then remains active
+            // but its trainer, dummies and entourage all disappear. Move the
+            // summon to the regular passenger collection, which is retained
+            // for the lifetime of the runtime summon.
+            transport->RemovePassenger(passenger);
+            transport->AddPassenger(passenger);
+            passenger->m_movementInfo.transport.Pos.Relocate(position);
+            passenger->m_movementInfo.transport.VehicleSeatIndex = -1;
 
             // Instance transports do not inherit the player's phase set.  A
             // boost character usually has Legion intro phases, so passengers
@@ -156,6 +172,7 @@ public:
             if (Player* player = GetPlayer())
             {
                 passenger->SetPhaseId(player->GetPhases(), false);
+                passenger->setIgnorePhaseIdCheck(true);
                 passenger->UpdateObjectVisibility();
             }
 

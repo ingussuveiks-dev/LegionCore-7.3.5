@@ -24,6 +24,8 @@
 #include "SpellPackets.h"
 #include "PlayerDefines.h"
 #include "ArtifactPackets.h"
+#include <algorithm>
+#include <vector>
 
 void WorldSession::HandleSplitItemOpcode(WorldPackets::Item::SplitItem& splitItem)
 {
@@ -1287,53 +1289,93 @@ namespace
                 break;
     }
 
-    void SortBags(Player* player, void(Player::* fn)(std::function<bool(Player*, Item*, uint8 /*bag*/, uint8 /*slot*/)>&&))
+    void SortContainer(Player* player, uint8 bag, uint8 slotStart, uint8 slotEnd)
     {
-        // First pass to stack items in caller.
-        std::unordered_map<uint32, uint32> itemsQuality;
-        typedef std::multimap<uint32, Item*> SortItemsContainer;
-        SortItemsContainer items;
+        std::vector<Item*> items;
+        for (uint8 slot = slotStart; slot < slotEnd; ++slot)
+            if (Item* item = player->GetItemByPos(bag, slot))
+                items.push_back(item);
 
-        // Second pass, we collect the informations for sorting.
-        (player->*fn)([&items, &itemsQuality](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
+        if (items.size() < 2)
+            return;
+
+        std::sort(items.begin(), items.end(), [](Item const* left, Item const* right)
         {
-            // We get the number of non-distinct items and item level for sorting.
-            items.insert(std::make_pair(item->GetEntry(), item));
-            itemsQuality[item->GetEntry()] = item->GetItemLevel();
+            ItemTemplate const* leftTemplate = left->GetTemplate();
+            ItemTemplate const* rightTemplate = right->GetTemplate();
+            if (leftTemplate && rightTemplate)
+            {
+                if (leftTemplate->GetClass() != rightTemplate->GetClass())
+                    return leftTemplate->GetClass() < rightTemplate->GetClass();
 
-            return true;
+                if (leftTemplate->GetSubClass() != rightTemplate->GetSubClass())
+                    return leftTemplate->GetSubClass() < rightTemplate->GetSubClass();
+
+                if (leftTemplate->GetQuality() != rightTemplate->GetQuality())
+                    return leftTemplate->GetQuality() > rightTemplate->GetQuality();
+            }
+
+            if (left->GetItemLevel() != right->GetItemLevel())
+                return left->GetItemLevel() > right->GetItemLevel();
+
+            if (left->GetEntry() != right->GetEntry())
+                return left->GetEntry() < right->GetEntry();
+
+            return left->GetGUIDLow() < right->GetGUIDLow();
         });
 
-        // We get advantage of the multimap properties to sort our items.
-        std::multimap<uint32, SortItemsContainer::value_type> resultMap;
-        for (auto const& pair : items)
-            resultMap.insert(std::make_pair(itemsQuality[pair.first], pair));
+        // SwapItem can merge two equal stacks and destroy the source item.
+        // Keep the desired order by GUID and look each item up again before
+        // moving it instead of retaining a possibly invalid pointer.
+        std::vector<ObjectGuid> order;
+        order.reserve(items.size());
+        for (Item* item : items)
+            order.push_back(item->GetGUID());
 
-        // Third pass to swap all the items correctly.
-        auto itr = std::begin(resultMap);
-        (player->*fn)([&resultMap, &itr](Player* player, Item* /*item*/, uint8 bag, uint8 slot)
+        uint8 targetSlot = slotStart;
+        for (ObjectGuid const& guid : order)
         {
-            if (itr == std::end(resultMap))
-                return false;
+            if (targetSlot >= slotEnd)
+                break;
 
-            uint16 pos = itr->second.second->GetPos();
-            player->SwapItem(pos, (bag << 8) | slot);
-            ++itr;
+            Item* item = nullptr;
+            for (uint8 searchSlot = slotStart; searchSlot < slotEnd; ++searchSlot)
+            {
+                Item* candidate = player->GetItemByPos(bag, searchSlot);
+                if (candidate && candidate->GetGUID() == guid)
+                {
+                    item = candidate;
+                    break;
+                }
+            }
 
-            return true;
-        });
+            // The item can already have been absorbed by a stack merge.
+            if (!item)
+                continue;
+
+            uint16 target = uint16((uint16(bag) << 8) | targetSlot);
+            if (item->GetPos() != target)
+                player->SwapItem(item->GetPos(), target);
+
+            if (player->GetItemByPos(bag, targetSlot))
+                ++targetSlot;
+        }
+    }
+
+    void SortBags(Player* player)
+    {
+        SortContainer(player, INVENTORY_SLOT_BAG_0, INVENTORY_SLOT_ITEM_START,
+            player->GetInventoryEndSlot());
+
+        for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+            if (Bag* container = (Bag*)player->GetItemByPos(INVENTORY_SLOT_BAG_0, bag))
+                SortContainer(player, bag, 0, container->GetBagSize());
     }
 }
 
 void WorldSession::HandleSortBags(WorldPackets::Item::SortBags& /*packet*/)
 {
-    // _player->ApplyOnBagsItems([](Player* player, Item* item, uint8 /*bag*/, uint8 /*slot*/)
-    // {
-    //     StoreItemInBags(player, item);
-    //     return true;
-    // });
-    //
-    // SortBags(_player, &Player::ApplyOnBagsItems);
+    SortBags(_player);
     SendPacket(WorldPackets::Item::SortBagsResult().Write());
 }
 
