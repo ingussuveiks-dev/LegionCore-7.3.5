@@ -64,6 +64,10 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
         if (!itemTemplate)
             return false;
 
+        int32 requiredLevel = itemTemplate->GetBaseRequiredLevel();
+        if (requiredLevel > 0 && characterInfo->Level < uint32(requiredLevel))
+            return false;
+
         if (itemTemplate->AllowableClass && !(itemTemplate->AllowableClass & classMask))
             return false;
         if (itemTemplate->AllowableRace && !(itemTemplate->AllowableRace & raceMask))

@@ -382,6 +382,10 @@ auto BattlepayManager::ProductFilter(Product product) -> bool
 
         if (auto itemTemplate = sObjectMgr->GetItemTemplate(itr.ItemID))
         {
+            int32 requiredLevel = itemTemplate->GetBaseRequiredLevel();
+            if (requiredLevel > 0 && player->getLevel() < uint32(requiredLevel))
+                return false;
+
             if (itemTemplate->AllowableClass && (itemTemplate->AllowableClass & player->getClassMask()) == 0)
                 return false;
 

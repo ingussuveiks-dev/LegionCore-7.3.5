@@ -16085,6 +16085,33 @@ void Player::MoveItemToInventory(ItemPosCountVec const& dest, Item* pItem, bool 
         // if this original item then it need create record in inventory
         // in case trade we already have item in other player inventory
         pLastItem->SetState(in_characterInventoryDB ? ITEM_CHANGED : ITEM_NEW, this);
+
+        // StoreNewItem creates paired artifact equipment immediately, but an
+        // item delivered through mail is moved into the inventory as an
+        // existing instance.  Create and link its hidden child here as well so
+        // a character-select BattlePay purchase is complete as soon as the
+        // attachment is claimed, without requiring another relog.
+        if (pLastItem->GetChildItem().IsEmpty())
+        {
+            if (ItemChildEquipmentEntry const* childItemEntry = sDB2Manager.GetItemChildEquipment(pLastItem->GetEntry()))
+            {
+                if (ItemTemplate const* childTemplate = sObjectMgr->GetItemTemplate(childItemEntry->ChildItemID))
+                {
+                    ItemPosCountVec childDest;
+                    uint32 childCount = 1;
+                    if (CanStoreItem_InInventorySlots(CHILD_EQUIPMENT_SLOT_START, CHILD_EQUIPMENT_SLOT_END,
+                        childDest, childTemplate, childCount, false, nullptr, NULL_BAG, NULL_SLOT) == EQUIP_ERR_OK)
+                    {
+                        if (Item* childItem = StoreNewItem(childDest, childTemplate->GetId(), update))
+                        {
+                            childItem->SetGuidValue(ITEM_FIELD_CREATOR, pLastItem->GetGUID());
+                            childItem->SetFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD);
+                            pLastItem->SetChildItem(childItem->GetGUID());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     if (pLastItem->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_BOP_TRADEABLE))
