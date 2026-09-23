@@ -107,6 +107,33 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
     return true;
 };
 
+auto GetTargetCharacterSpecialization = [](WorldSession* session, ObjectGuid const& targetCharacter,
+    CharacterInfo const* characterInfo) -> uint16
+{
+    if (!session || !characterInfo)
+        return 0;
+
+    if (Player* player = session->GetPlayer())
+        if (player->GetGUID() == targetCharacter)
+            return player->GetSpecializationId();
+
+    // `characters.specialization` stores the primary specialization, while
+    // `activespec` is the specialization currently selected by the character.
+    // Character-select purchases therefore need the latter translated through
+    // ChrSpecialization instead of trusting the cached primary specialization.
+    if (QueryResult result = CharacterDatabase.PQuery(
+        "SELECT `activespec` FROM `characters` WHERE `guid` = " UI64FMTD " LIMIT 1",
+        targetCharacter.GetCounter()))
+    {
+        uint8 activeSpec = result->Fetch()[0].GetUInt8();
+        if (ChrSpecializationEntry const* specialization =
+            sDB2Manager.GetChrSpecializationByIndex(characterInfo->Class, activeSpec))
+            return specialization->ID;
+    }
+
+    return characterInfo->SpecId;
+};
+
 auto SendStoreFailureMessage = [](WorldSession* session, char const* message) -> void
 {
     if (Player* player = session->GetPlayer())
@@ -250,9 +277,7 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
         return;
     }
 
-    uint16 specializationId = characterInfo->SpecId;
-    if (player && player->GetGUID() == targetCharacter)
-        specializationId = player->GetSpecializationId();
+    uint16 specializationId = GetTargetCharacterSpecialization(session, targetCharacter, characterInfo);
 
     if (!CharacterCanReceiveProduct(characterInfo, product, specializationId))
     {
@@ -385,9 +410,7 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
     }
 
     CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(purchase->TargetCharacter);
-    uint16 specializationId = characterInfo ? characterInfo->SpecId : 0;
-    if (player && player->GetGUID() == purchase->TargetCharacter)
-        specializationId = player->GetSpecializationId();
+    uint16 specializationId = GetTargetCharacterSpecialization(this, purchase->TargetCharacter, characterInfo);
 
     if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product, specializationId))
     {
