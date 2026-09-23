@@ -686,16 +686,10 @@ void Unit::UpdateSplinePosition(bool stop/* = false*/)
         pos.m_positionZ = loc.z;
         pos.SetOrientation(loc.orientation);
 
-        if (GetVehicleBase())
-        {
-            if (TransportBase* transport = GetDirectTransport())
-                transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
-        else if (movespline->isTransportEnter())
-        {
-            if (Transport* transport = GetTransport())
-                transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
-        }
+        // Ordinary ship passengers also move in transport-local coordinates,
+        // not only vehicle occupants or units playing a boarding spline.
+        if (TransportBase* transport = GetDirectTransport())
+            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         else // if we have transport guid, but not have transport, not set transport position to real
             loc = movespline->ComputePosition();
     }
@@ -24906,8 +24900,6 @@ void Unit::SetFacingTo(float ori)
 
     Movement::MoveSplineInit init(*this);
     init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
-    if (GetTransport())
-        init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
     init.SetFacing(ori);
     init.Launch();
 }

@@ -695,6 +695,11 @@ struct npc_boost_training_dummy : public ScriptedAI
         me->SetReactState(REACT_PASSIVE);
     }
 
+    // A training target must not chase attackers or run an evade/home spline
+    // when a lesson changes. Its position is maintained by the moving ship.
+    void AttackStart(Unit* /*target*/) override { }
+    void UpdateAI(uint32 /*diff*/) override { }
+
     void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*damageType*/) override
     {
         if (me->GetMapId() == MAP_ALLIANCE || me->GetMapId() == MAP_HORDE)

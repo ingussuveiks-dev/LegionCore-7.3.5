@@ -41,8 +41,10 @@ auto GetBagsFreeSlots = [](Player* player) -> uint32
     return freeBagSlots;
 };
 
-auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlepay::Product const* product, uint16 specializationId) -> bool
+auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlepay::Product const* product,
+    uint16 specializationId, Player* targetPlayer, std::string& reason) -> bool
 {
+    reason = "This character cannot receive this product.";
     if (!characterInfo || !product)
         return false;
 
@@ -57,7 +59,10 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
     uint32 classMask = 1u << (characterInfo->Class - 1);
     uint64 raceMask = UI64LIT(1) << (characterInfo->Race - 1);
     if (product->ClassMask && !(product->ClassMask & classMask))
+    {
+        reason = "This product is not available for your class.";
         return false;
+    }
 
     for (Battlepay::ProductItem const& item : product->Items)
     {
@@ -67,17 +72,38 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
 
         int32 requiredLevel = itemTemplate->GetBaseRequiredLevel();
         if (requiredLevel > 0 && characterInfo->Level < uint32(requiredLevel))
+        {
+            reason = "Requires character level " + std::to_string(requiredLevel) + ".";
             return false;
+        }
 
         if (itemTemplate->AllowableClass && !(itemTemplate->AllowableClass & classMask))
+        {
+            reason = "This item cannot be used by your class.";
             return false;
+        }
         if (itemTemplate->AllowableRace && !(itemTemplate->AllowableRace & raceMask))
+        {
+            reason = "This item cannot be used by your race.";
             return false;
+        }
+
+        // This used to be a catalog filter. Keep the restriction at purchase
+        // time now that in-world offers are visible even when unusable.
+        if (targetPlayer && itemTemplate->GetMinFactionID() &&
+            uint32(targetPlayer->GetReputationRank(itemTemplate->GetMinFactionID())) < itemTemplate->GetMinReputation())
+        {
+            reason = "Your reputation is too low for this item.";
+            return false;
+        }
 
         if (uint32 artifactId = itemTemplate->GetArtifactID())
             if (ArtifactEntry const* artifact = sArtifactStore.LookupEntry(artifactId))
                 if (artifact->ChrSpecializationID && artifact->ChrSpecializationID != specializationId)
+                {
+                    reason = "This artifact requires a different active specialization.";
                     return false;
+                }
 
         std::set<uint32> learnedSpells;
         for (ItemEffectEntry const* itemEffect : itemTemplate->Effects)
@@ -98,9 +124,15 @@ auto CharacterCanReceiveProduct = [](CharacterInfo const* characterInfo, Battlep
                 continue;
 
             if (spellInfo->HasAttribute(SPELL_ATTR7_HORDE_ONLY) && !(raceMask & RACEMASK_HORDE))
+            {
+                reason = "This item requires a Horde character.";
                 return false;
+            }
             if (spellInfo->HasAttribute(SPELL_ATTR7_ALLIANCE_ONLY) && !(raceMask & RACEMASK_ALLIANCE))
+            {
+                reason = "This item requires an Alliance character.";
                 return false;
+            }
         }
     }
 
@@ -279,8 +311,11 @@ auto MakePurchase = [](ObjectGuid targetCharacter, uint32 clientToken , uint32 p
 
     uint16 specializationId = GetTargetCharacterSpecialization(session, targetCharacter, characterInfo);
 
-    if (!CharacterCanReceiveProduct(characterInfo, product, specializationId))
+    std::string eligibilityReason;
+    if (!CharacterCanReceiveProduct(characterInfo, product, specializationId,
+        player && player->GetGUID() == targetCharacter ? player : nullptr, eligibilityReason))
     {
+        SendStoreFailureMessage(session, eligibilityReason.c_str());
         SendStartPurchaseResponse(session, purchase, Battlepay::Error::PurchaseDenied);
         return;
     }
@@ -412,8 +447,12 @@ void WorldSession::HandleBattlePayConfirmPurchase(WorldPackets::BattlePay::Confi
     CharacterInfo const* characterInfo = sWorld->GetCharacterInfo(purchase->TargetCharacter);
     uint16 specializationId = GetTargetCharacterSpecialization(this, purchase->TargetCharacter, characterInfo);
 
-    if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product, specializationId))
+    std::string eligibilityReason;
+    if (!characterInfo || characterInfo->AccountId != GetAccountId() || !CharacterCanReceiveProduct(characterInfo, product, specializationId,
+        player && player->GetGUID() == purchase->TargetCharacter ? player : nullptr, eligibilityReason))
     {
+        if (!eligibilityReason.empty())
+            SendStoreFailureMessage(this, eligibilityReason.c_str());
         SendPurchaseUpdate(this, *purchase, Battlepay::Error::PurchaseDenied);
         return;
     }

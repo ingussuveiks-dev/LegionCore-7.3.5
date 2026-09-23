@@ -264,7 +264,8 @@ namespace Movement
     {
         if (_transformForTransport)
         {
-            if (TransportBase* transport = _owner.GetVehicle())
+            // Both vehicles and ships use transport-local spline points.
+            if (TransportBase* transport = _owner.GetDirectTransport())
                 transport->CalculatePassengerOffset(input.x, input.y, input.z, nullptr);
         }
         return input;

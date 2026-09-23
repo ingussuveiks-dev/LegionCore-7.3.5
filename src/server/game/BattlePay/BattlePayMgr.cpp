@@ -359,6 +359,15 @@ auto BattlepayManager::ProductFilter(Product product) -> bool
     auto player = _session->GetPlayer();
     if (!player)
     {
+        // The character-select catalog request does not identify the selected
+        // character. Only offer artifacts in-world, where the class and active
+        // specialization can be checked. Inspect items rather than product IDs
+        // so artifact bundles and future catalog additions follow the same rule.
+        for (auto const& item : product.Items)
+            if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item.ItemID))
+                if (itemTemplate->GetArtifactID())
+                    return false;
+
         switch (product.WebsiteType)
         {
         case Battlepay::Item:
@@ -372,47 +381,26 @@ auto BattlepayManager::ProductFilter(Product product) -> bool
         }
     }
 
-    if (product.ClassMask && (player->getClassMask() & product.ClassMask) == 0)
-        return false;
-
-    for (auto& itr : product.Items)
+    // Catalog visibility is not purchase eligibility. Ordinary offers stay
+    // visible even when owned or unusable; purchase handlers validate them.
+    // Artifacts alone are restricted to the current class/spec in the catalog.
+    for (auto const& itr : product.Items)
     {
-        if (AlreadyOwnProduct(itr.ItemID))
-            return false;
-
         if (auto itemTemplate = sObjectMgr->GetItemTemplate(itr.ItemID))
         {
-            int32 requiredLevel = itemTemplate->GetBaseRequiredLevel();
-            if (requiredLevel > 0 && player->getLevel() < uint32(requiredLevel))
-                return false;
-
-            if (itemTemplate->AllowableClass && (itemTemplate->AllowableClass & player->getClassMask()) == 0)
-                return false;
-
-            if (itemTemplate->AllowableRace && (itemTemplate->AllowableRace & player->getRaceMask()) == 0)
-                return false;
-
             if (uint32 artifactId = itemTemplate->GetArtifactID())
+            {
+                if (product.ClassMask && !(product.ClassMask & player->getClassMask()))
+                    return false;
+                if (itemTemplate->AllowableClass && !(itemTemplate->AllowableClass & player->getClassMask()))
+                    return false;
                 if (ArtifactEntry const* artifact = sArtifactStore.LookupEntry(artifactId))
+                {
                     if (artifact->ChrSpecializationID && artifact->ChrSpecializationID != player->GetSpecializationId())
                         return false;
-
-            if (itemTemplate->GetMinFactionID() && uint32(player->GetReputationRank(itemTemplate->GetMinFactionID())) < itemTemplate->GetMinReputation())
-                return false;
-
-            for (auto effectData : itemTemplate->Effects)
-            {
-                if (effectData->SpellID != 0 && effectData->TriggerType == ITEM_SPELLTRIGGER_LEARN_SPELL_ID)
-                {
-                    if (auto spellInfo = sSpellMgr->GetSpellInfo(effectData->SpellID))
-                    {
-                        if (spellInfo->HasAttribute(SPELL_ATTR7_HORDE_ONLY) && (player->getRaceMask() & RACEMASK_HORDE) == 0)
-                            return false;
-
-                        if (spellInfo->HasAttribute(SPELL_ATTR7_ALLIANCE_ONLY) && (player->getRaceMask() & RACEMASK_ALLIANCE) == 0)
-                            return false;
-                    }
                 }
+                else
+                    return false;
             }
         }
     }
