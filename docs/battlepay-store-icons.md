@@ -42,4 +42,6 @@ layout: `SplashSecondary` declares its icon at center `(-70, 6)`, while the
 border remains at center `(-72, 1)`. It also ignores the `SplashPrimary`
 icon's declared top-left position. This cannot be corrected by a BattlePay
 packet field. Install `client-patches/Install-StoreFeaturedIconFix.ps1` to
-overlay the affected 7.3.5 UI function for both client architectures.
+overlay the affected 7.3.5 UI function for both client architectures. The
+overlay also increases regular item textures from 64x64 to 68x68 inside the
+stock 80x81 circular border.

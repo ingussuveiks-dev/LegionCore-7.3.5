@@ -28,6 +28,10 @@
   Legion wave, and finally the exit bird. Completed sparring waves are removed
   before the next wave. Other class scenarios delay their dummy until their
   opening pet/form/preparation lessons are complete.
+- The trainer explicitly advances the opening faction gate after casting
+  219615. Client DB2 places the mutually exclusive Horde and Alliance criteria
+  below an ALL node, so the generic evaluator otherwise leaves the visible
+  faction objective at 1/1 without advancing to the first class lesson.
 - The exit bird is spawned only for the final departure stage. Departure
   creates an individual vehicle using vehicle layout 4933, removes
   it and its rider from the gunship, and flies away in world coordinates.

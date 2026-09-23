@@ -61,6 +61,9 @@ $fixedAnchor = @'
 		end
 '@
 
+$originalIconSize = "`t`tself.Icon:SetSize(64, 64);"
+$fixedIconSize = "`t`tself.Icon:SetSize(68, 68);"
+
 $storeText = [System.IO.File]::ReadAllText($targetFile)
 $normalizedStoreText = $storeText.Replace("`r`n", "`n")
 if (-not $normalizedStoreText.Contains($fixedAnchor)) {
@@ -69,8 +72,16 @@ if (-not $normalizedStoreText.Contains($fixedAnchor)) {
     }
 
     $normalizedStoreText = $normalizedStoreText.Replace($originalAnchor, $fixedAnchor)
-    [System.IO.File]::WriteAllText($targetFile, $normalizedStoreText, $utf8WithoutBom)
 }
+
+if ($normalizedStoreText.Contains($originalIconSize)) {
+    $normalizedStoreText = $normalizedStoreText.Replace($originalIconSize, $fixedIconSize)
+}
+elseif (-not $normalizedStoreText.Contains($fixedIconSize)) {
+    throw "The Store UI icon size statement is not the expected 7.3.5 version; no changes were made."
+}
+
+[System.IO.File]::WriteAllText($targetFile, $normalizedStoreText, $utf8WithoutBom)
 
 if (-not (Test-Path -LiteralPath $configFile -PathType Leaf)) {
     throw "WoW Config.wtf does not exist: $configFile"

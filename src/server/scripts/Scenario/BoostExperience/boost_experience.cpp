@@ -532,10 +532,27 @@ public:
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 /*sender*/, uint32 /*action*/) override
+    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 sender, uint32 action) override
     {
+        if (sender != GOSSIP_SENDER_MAIN || action != GOSSIP_ACTION_INFO_DEF + 1)
+            return true;
+
         player->CLOSE_GOSSIP_MENU();
         player->CastSpell(player, SPELL_START_TRAINING, true);
+
+        // The opening criteria tree contains separate Horde and Alliance
+        // children under an ALL operator. The valid faction child reaches 1/1,
+        // but the mutually exclusive sibling prevents the generic criteria
+        // evaluator from advancing the step. The trainer is the only valid
+        // source of the opening spell, so finish this faction gate explicitly.
+        if (Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId()))
+            if (scenario->GetCurrentStep() == 0 && scenario->GetStepCount(false) > 1)
+            {
+                scenario->SetCurrentStep(1);
+                TC_LOG_INFO("scripts", "Boost tutorial trainer advanced %s to scenario %u step 1",
+                    player->GetName(), scenario->GetScenarioId());
+            }
+
         return true;
     }
 };

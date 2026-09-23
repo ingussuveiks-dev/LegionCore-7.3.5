@@ -10,7 +10,9 @@ same function also lacks the icon anchor declared by `SplashPrimary`.
 `Install-StoreFeaturedIconFix.ps1` overlays only
 `Blizzard_StoreUISecure.lua`, preserving the normal layout for category,
 single-feature and custom-atlas cards while restoring the XML-defined
-anchors for the primary and secondary Featured cards.
+anchors for the primary and secondary Featured cards. Regular item textures
+are rendered at 68x68 inside the stock 80x81 circular border instead of the
+undersized stock 64x64.
 
 Run from the repository root:
 
