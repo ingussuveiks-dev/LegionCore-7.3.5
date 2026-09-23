@@ -5,6 +5,10 @@
 - Ship origins use WorldSafeLocs 5219/5752. NPC offsets, the short bird flight,
   surrender at 15% health and wave timing are CUSTOM approximations, not
   Blizzard sniff data. The source explicitly marks this distinction.
+- The Horde lesson dummy uses transport-local offset (+5, -8, 0) from
+  HordeDeck, beside the trainer. The previous shared (-12, 0, 0) offset put
+  it inside the Horde cabin in the user's test. Alliance placement is unchanged;
+  the new Horde position still requires in-client visual/line-of-sight testing.
 - Every fresh tutorial instance restores the player to that faction's
   transport-local WorldSafeLoc pose before sending the scenario. A stale
   position and facing saved while logging out aboard the ship are replaced.

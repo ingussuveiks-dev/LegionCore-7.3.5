@@ -253,9 +253,14 @@ public:
             if (!shouldSpawn)
                 return;
 
+            // The Horde cabin occupies the old (-12, 0) location. Keep its
+            // dummy on the trainer's open deck, offset to the side and facing
+            // the lesson area. These remain custom transport-local positions.
+            Position const dummyPosition = _alliance
+                ? Offset(Deck(), -12.0f, 0.0f, 0.0f, 0.0f)
+                : Offset(Deck(), 5.0f, -8.0f, 0.0f, 1.5708f);
             if (Transport* transport = GetGunship())
-                if (TempSummon* dummy = SummonPassenger(transport, NPC_TRAINING_DUMMY,
-                    Offset(Deck(), -12.0f, 0.0f, 0.0f, 0.0f)))
+                if (TempSummon* dummy = SummonPassenger(transport, NPC_TRAINING_DUMMY, dummyPosition))
                 {
                     dummy->SetReactState(REACT_PASSIVE);
                     _trainingDummyGuid = dummy->GetGUID();
