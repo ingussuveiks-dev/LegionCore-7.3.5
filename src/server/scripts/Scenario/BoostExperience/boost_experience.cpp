@@ -254,10 +254,8 @@ public:
                 return false;
 
             if (!_setupComplete)
-            {
                 SpawnStaticPassengers(transport);
-                SpawnExit(); // The original tutorial also permits skipping lessons.
-            }
+
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
