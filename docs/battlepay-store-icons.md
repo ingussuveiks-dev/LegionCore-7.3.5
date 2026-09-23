@@ -24,6 +24,11 @@ Bundles use the first item's icon; multi-item bundles do not advertise a
 single-item tooltip. Level-90 and level-100 services use their respective
 CharacterServiceInfo icons (614740 and 1033987).
 
+Single-item tooltips are advertised only after the player enters the world.
+At character select, GlueXML provides `GlueTooltip` but not `GameTooltip`, and
+the stock 7.3.5 Store UI unconditionally indexes `GameTooltip` when `itemID` is
+present. Icons and model previews remain available in both environments.
+
 Client acceptance: after reconnecting, check Bags, Weapons, Armor, Toys,
 Reinforcements, Gold & Currency, Heirlooms, Raids and the boost card. Check
 single-item tooltips and verify that mount/pet models still render. These

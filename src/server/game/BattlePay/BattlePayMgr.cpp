@@ -523,7 +523,10 @@ void BattlepayManager::SendProductList()
         pProduct.ProductID = product.ProductID;
         // Despite its historical name, this wire field is exposed as itemID
         // in the store's sharedData. Deliverable ItemIDs do not populate it.
-        pProduct.Flags = product.Items.size() == 1 ? product.Items.front().ItemID : 0;
+        // The GlueXML environment has GlueTooltip but no GameTooltip, while
+        // Blizzard_StoreUIInsecure always uses GameTooltip for this field.
+        // Only advertise item tooltips after the player has entered the world.
+        pProduct.Flags = player && product.Items.size() == 1 ? product.Items.front().ItemID : 0;
         pProduct.Type = product.WebsiteType == Battlepay::CharacterBoost ?
             Battlepay::CharacterUpgradeProductType : product.Type;
 
