@@ -1,5 +1,12 @@
 # Legion 7.3.5 store icons
 
+Featured now uses the stock default card layout (`DisplayType=0`, migration
+`2026_09_23_314_use_standard_featured_store_cards.sql`). This aligns icons
+inside their circular borders in both character-selection and in-world
+stores without client modifications. The user accepted replacing the large
+splash and two secondary cards with the standard grid. Product IDs, prices,
+ordering and offers are unchanged.
+
 The loose client overlay discussed below is disabled. Its `overrideArchive=1`
 setting caused character-selection model loading failures and WOW51900322
 disconnects, including with the StoreUI folder absent. Restore
