@@ -266,9 +266,6 @@ public:
 
         void PutPlayerOnTransport(Player* player, Transport* transport)
         {
-            if (player->GetTransport() == transport)
-                return;
-
             Position const& deck = Deck();
             float x = deck.GetPositionX();
             float y = deck.GetPositionY();
@@ -276,11 +273,21 @@ public:
             float orientation = deck.GetOrientation();
             transport->CalculatePassengerPosition(x, y, z, &orientation);
 
-            player->NearTeleportTo(x, y, z, orientation);
+            // A character that logs out aboard the gunship is restored as an
+            // existing passenger with the last client-reported local offset.
+            // Do not keep that stale offset: every new tutorial instance must
+            // start at the retail WorldSafeLoc pose, facing down the deck.
+            if (Transport* currentTransport = player->GetTransport())
+                if (currentTransport != transport)
+                    currentTransport->RemovePassenger(player);
+
+            if (player->GetTransport() != transport)
+                transport->AddPassenger(player);
+
             player->m_movementInfo.transport.Guid = transport->GetGUID();
             player->m_movementInfo.transport.Pos.Relocate(deck);
             player->m_movementInfo.transport.VehicleSeatIndex = -1;
-            transport->AddPassenger(player);
+            player->NearTeleportTo(x, y, z, orientation);
         }
 
         bool Setup()

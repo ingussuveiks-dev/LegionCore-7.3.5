@@ -5,6 +5,9 @@
 - Ship origins use WorldSafeLocs 5219/5752. NPC offsets, the short bird flight,
   surrender at 15% health and wave timing are CUSTOM approximations, not
   Blizzard sniff data. The source explicitly marks this distinction.
+- Every fresh tutorial instance restores the player to that faction's
+  transport-local WorldSafeLoc pose before sending the scenario. A stale
+  position and facing saved while logging out aboard the ship are replaced.
 - The tutorial action bar is a packet overlay. It starts empty; active known
   spells from CAST_SPELL criteria in completed/current DB2 lessons accumulate
   as lessons advance. Form/stance pages also receive the lesson buttons.
