@@ -36,12 +36,15 @@ item cards show the actual purchased item/token icon, not a 3D preview of
 the equipment a token may grant.
 
 The stock 7.3.5 `StoreProductCard_ShowIcon` function reanchors every regular
-texture to the top center. That is correct for normal category cards, but it
-separates the texture from the circular border on the three-product Featured
-layout: `SplashSecondary` declares its icon at center `(-70, 6)`, while the
-border remains at center `(-72, 1)`. It also ignores the `SplashPrimary`
+texture to the top center. That separates the texture from the circular border
+on the three-product Featured layout and also ignores the `SplashPrimary`
 icon's declared top-left position. This cannot be corrected by a BattlePay
 packet field. Install `client-patches/Install-StoreFeaturedIconFix.ps1` to
 overlay the affected 7.3.5 UI function for both client architectures. The
-overlay also increases regular item textures from 64x64 to 68x68 inside the
-stock 80x81 circular border.
+patched regular product icons are anchored directly to their `IconBorder`
+centres and increased from 64x64 to 68x68 inside the stock 80x81 border.
+
+The complete loose `Blizzard_StoreUI` package, including its TOC, must be
+present. A standalone `Blizzard_StoreUISecure.lua` replacement is ignored by
+the character-selection GlueXML loader, which otherwise selects the complete
+built-in package from CASC.

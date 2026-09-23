@@ -7,12 +7,13 @@ anchors: the circular icon border is at the left side of the card, while
 `StoreProductCard_ShowIcon` moves the actual icon to the card center. The
 same function also lacks the icon anchor declared by `SplashPrimary`.
 
-`Install-StoreFeaturedIconFix.ps1` overlays only
-`Blizzard_StoreUISecure.lua`, preserving the normal layout for category,
-single-feature and custom-atlas cards while restoring the XML-defined
-anchors for the primary and secondary Featured cards. Regular item textures
-are rendered at 68x68 inside the stock 80x81 circular border instead of the
-undersized stock 64x64.
+`Install-StoreFeaturedIconFix.ps1` installs the stock 7.3.5
+`Blizzard_StoreUI` package as a loose client overlay and patches
+`Blizzard_StoreUISecure.lua`. The package TOC is required because the
+character-selection GlueXML otherwise loads the complete built-in StoreUI
+from CASC and ignores a standalone loose Lua file. Product icons are anchored
+directly to the circular border and rendered at 68x68 inside its stock 80x81
+area instead of using the undersized and misplaced stock layout.
 
 Run from the repository root:
 

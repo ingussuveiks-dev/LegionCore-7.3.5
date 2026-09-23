@@ -13,7 +13,8 @@ $storeRelativePath = 'Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUISecure.l
 $targetFile = Join-Path $ClientPath $storeRelativePath
 $targetDirectory = Split-Path -Parent $targetFile
 $configFile = Join-Path $ClientPath 'WTF\Config.wtf'
-$sourceUrl = 'https://raw.githubusercontent.com/Gethe/wow-ui-source/7.3.5/AddOns/Blizzard_StoreUI/Blizzard_StoreUISecure.lua'
+$sourceBaseUrl = 'https://raw.githubusercontent.com/Gethe/wow-ui-source/7.3.5/AddOns/Blizzard_StoreUI'
+$sourceUrl = "$sourceBaseUrl/Blizzard_StoreUISecure.lua"
 $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
 
 if (-not (Test-Path -LiteralPath $ClientPath -PathType Container)) {
@@ -21,6 +22,30 @@ if (-not (Test-Path -LiteralPath $ClientPath -PathType Container)) {
 }
 
 New-Item -ItemType Directory -Path $targetDirectory -Force | Out-Null
+
+# GlueXML selects the complete built-in StoreUI package from CASC when the
+# loose override has no TOC. Install the stock companion files as well so the
+# patched package is selected both before and after entering the world.
+$storePackageFiles = @(
+    'Blizzard_SimpleCheckout.lua',
+    'Blizzard_SimpleCheckout.xml',
+    'Blizzard_StoreUI.toc',
+    'Blizzard_StoreUI.xml',
+    'Blizzard_StoreUIInbound.lua',
+    'Blizzard_StoreUIInsecure.lua',
+    'Blizzard_StoreUIInsecure.xml',
+    'Blizzard_StoreUIOutbound.lua',
+    'Blizzard_StoreUIPatchwerk.xml',
+    'Localization.lua'
+)
+
+foreach ($storePackageFile in $storePackageFiles) {
+    $packageTarget = Join-Path $targetDirectory $storePackageFile
+    if (-not (Test-Path -LiteralPath $packageTarget -PathType Leaf)) {
+        $packageSource = (Invoke-WebRequest -UseBasicParsing -Uri "$sourceBaseUrl/$storePackageFile").Content
+        [System.IO.File]::WriteAllText($packageTarget, $packageSource, $utf8WithoutBom)
+    }
+}
 
 if (-not (Test-Path -LiteralPath $targetFile -PathType Leaf)) {
     if ($SourceFile) {
@@ -47,7 +72,7 @@ $originalAnchor = @'
 		end
 '@
 
-$fixedAnchor = @'
+$fixedAnchorV1 = @'
 	self.Icon:ClearAllPoints();
 	if (not overrideTexture) then
 		if (self == StoreFrame.SplashSingle) then
@@ -61,17 +86,33 @@ $fixedAnchor = @'
 		end
 '@
 
+$fixedAnchor = @'
+	self.Icon:ClearAllPoints();
+	if (not overrideTexture) then
+		if (self == StoreFrame.SplashSingle) then
+			self.Icon:SetPoint("TOPLEFT", 88, -99);
+		elseif (self == StoreFrame.SplashPrimary) then
+			self.Icon:SetPoint("TOPLEFT", 88, -76);
+		else
+			self.Icon:SetPoint("CENTER", self.IconBorder, "CENTER", 0, 0);
+		end
+'@
+
 $originalIconSize = "`t`tself.Icon:SetSize(64, 64);"
 $fixedIconSize = "`t`tself.Icon:SetSize(68, 68);"
 
 $storeText = [System.IO.File]::ReadAllText($targetFile)
 $normalizedStoreText = $storeText.Replace("`r`n", "`n")
 if (-not $normalizedStoreText.Contains($fixedAnchor)) {
-    if (-not $normalizedStoreText.Contains($originalAnchor)) {
+    if ($normalizedStoreText.Contains($fixedAnchorV1)) {
+        $normalizedStoreText = $normalizedStoreText.Replace($fixedAnchorV1, $fixedAnchor)
+    }
+    elseif ($normalizedStoreText.Contains($originalAnchor)) {
+        $normalizedStoreText = $normalizedStoreText.Replace($originalAnchor, $fixedAnchor)
+    }
+    else {
         throw "The Store UI file is not the expected 7.3.5 version; no changes were made."
     }
-
-    $normalizedStoreText = $normalizedStoreText.Replace($originalAnchor, $fixedAnchor)
 }
 
 if ($normalizedStoreText.Contains($originalIconSize)) {
@@ -110,5 +151,5 @@ else {
 [System.IO.File]::WriteAllText($configFile, $configText, $utf8WithoutBom)
 
 Write-Host "Installed the Legion 7.3.5 Featured-store icon alignment fix."
-Write-Host "Client UI: $targetFile"
+Write-Host "Client UI package: $targetDirectory"
 Write-Host "Restart WoW completely before testing either the 32-bit or 64-bit executable."
