@@ -33,8 +33,8 @@ template<class SocketType>
 class NetworkThread
 {
 public:
-    NetworkThread() : _connections(0), _stopped(false), _thread(nullptr), _ioContext(1),
-        _updateTimer(_ioContext)
+    NetworkThread() : _connections(0), _stopped(false), _thread(nullptr),
+        _ioContext(std::make_shared<Trinity::Asio::IoContext>(1)), _updateTimer(*_ioContext)
     {
     }
 
@@ -51,7 +51,7 @@ public:
     void Stop()
     {
         _stopped = true;
-        _ioContext.stop();
+        _ioContext->stop();
     }
 
     bool Start()
@@ -88,7 +88,13 @@ public:
 
     std::shared_ptr<boost::asio::ip::tcp::socket> CreateSocketForAccept()
     {
-        return std::make_shared<boost::asio::ip::tcp::socket>(_ioContext);
+        // The accept completion belongs to the main context and may be destroyed
+        // AFTER this network thread. Keep the socket's context alive until the
+        // pending socket itself is destroyed, including cancelled accepts.
+        auto context = _ioContext;
+        return std::shared_ptr<boost::asio::ip::tcp::socket>(
+            new boost::asio::ip::tcp::socket(*context),
+            [context](boost::asio::ip::tcp::socket* socket) { delete socket; });
     }
 
 protected:
@@ -122,7 +128,7 @@ protected:
 
         _updateTimer.expires_from_now(boost::posix_time::milliseconds(1));
         _updateTimer.async_wait([this](boost::system::error_code const&) { Update(); });
-        _ioContext.run();
+        _ioContext->run();
 
         TC_LOG_DEBUG("misc", "Network Thread exits");
         _newSockets.clear();
@@ -169,7 +175,7 @@ private:
     std::mutex _newSocketsLock;
     SocketContainer _newSockets;
 
-    Trinity::Asio::IoContext _ioContext;
+    std::shared_ptr<Trinity::Asio::IoContext> _ioContext;
     Trinity::Asio::DeadlineTimer _updateTimer;
 };
 

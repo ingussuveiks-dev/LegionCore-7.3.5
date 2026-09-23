@@ -167,6 +167,9 @@ extern int main(int argc, char **argv)
     std::shared_ptr<Trinity::Asio::IoContext> ioContext = std::make_shared<Trinity::Asio::IoContext>();
 
     sLog->Initialize(sConfigMgr->GetBoolDefault("Log.Async.Enable", false) ? ioContext.get() : nullptr);
+    // All worker guards below are destroyed first. Release the logging strand
+    // while its context still exists, including on an early startup failure.
+    std::shared_ptr<void> logContextHandle(nullptr, [](void*) { sLog->SetSynchronous(); });
 
     Trinity::Banner::Show("worldserver-daemon", [](char const* text)
     {

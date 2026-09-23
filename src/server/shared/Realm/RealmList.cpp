@@ -61,7 +61,12 @@ void RealmList::Initialize(Trinity::Asio::IoContext& ioContext, uint32 updateInt
 
 void RealmList::Close()
 {
-    _updateTimer->cancel();
+    // These services must be released before main's io_context, not later in
+    // the singleton destructor. Close is also safe after partial initialization.
+    if (_updateTimer)
+        _updateTimer->cancel();
+    _updateTimer.reset();
+    _resolver.reset();
 }
 
 void RealmList::LoadBuildInfo()

@@ -35,8 +35,10 @@
   `build-extractors/bin/Release` directory. The first rebuild exposed an invalid
   Creature::Say overload; this was corrected and rebuilt successfully.
 - worldserver loaded the installed MariaDB databases and reached `ready...`
-  (world initialization: 32 seconds), then shut down cleanly. No ERROR/FATAL or
-  missing tutorial spell/script messages appeared in that startup log.
+  (world initialization: 32 seconds). The initial claim of clean shutdown was
+  incorrect: a native crash report at 08:48:29 showed an access violation after
+  the database-close log lines. See `shutdown-crash-20260923.md` for the later
+  diagnosis, fix and verified shutdown tests.
 - Read-only legion_world checks confirmed both instance scripts, both trainers,
   both sparring scripts, both exit scripts, vehicle 4933 on the Horde exit
   template, the 227058 binding and the four relevant introduction quest rows.
