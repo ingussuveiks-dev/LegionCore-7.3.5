@@ -667,10 +667,33 @@ std::tuple<bool, WorldPackets::BattlePay::ProductDisplayInfo> BattlepayManager::
                 icon = static_cast<uint32>(item->IconFileDataID);
         if (!icon)
             icon = sDB2Manager.GetItemDIconFileDataId(itemId);
-        if (icon)
-            info.IconFileDataID = icon;
-        else
-            TC_LOG_WARN("battlepay", "Store product %u has no icon for item %u", productId, itemId);
+        // Artifact weapons often have no default (modifier 0) appearance.
+        // Their inventory icon belongs to one of the artifact appearances.
+        if (!icon)
+        {
+            for (uint32 modifiedAppearanceId : sDB2Manager.GetAllTransmogsByItemId(itemId))
+            {
+                ItemModifiedAppearanceEntry const* modified = sItemModifiedAppearanceStore.LookupEntry(modifiedAppearanceId);
+                if (!modified)
+                    continue;
+
+                uint32 appearanceIcon = sDB2Manager.GetItemDIconFileDataId(itemId, modified->ItemAppearanceModifierID);
+                if (appearanceIcon)
+                {
+                    icon = appearanceIcon;
+                    break;
+                }
+            }
+        }
+
+        if (!icon)
+        {
+            // A missing texture in a store card must never be advertised to
+            // the client. This is the stock question-mark inventory icon.
+            icon = 134400;
+            TC_LOG_WARN("battlepay", "Store product %u uses fallback icon for item %u", productId, itemId);
+        }
+        info.IconFileDataID = icon;
     }
     else if (product && product->WebsiteType == Battlepay::CharacterBoost)
     {
