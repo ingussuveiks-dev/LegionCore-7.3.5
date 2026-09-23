@@ -5,10 +5,14 @@
 - Ship origins use WorldSafeLocs 5219/5752. NPC offsets, the short bird flight,
   surrender at 15% health and wave timing are CUSTOM approximations, not
   Blizzard sniff data. The source explicitly marks this distinction.
-- The Horde lesson dummy uses transport-local offset (+5, -8, 0) from
-  HordeDeck, beside the trainer. The previous shared (-12, 0, 0) offset put
-  it inside the Horde cabin in the user's test. Alliance placement is unchanged;
-  the new Horde position still requires in-client visual/line-of-sight testing.
+- Actor offsets now use each faction's starting facing: X is forward and Y
+  is left, rotated into transport coordinates. Both factions use the same
+  lesson layout, with their own WorldSafeLoc deck height. Dummy (+5,-8),
+  sparring (+4,+/-7), and Legion ground attackers (+2..10,+/-8; infernal +3,+4)
+  stay near the trainer's lesson area instead of using negative X offsets
+  that placed the Horde dummy inside the cabin. Trainer, entourage and exit
+  placement also use this faction-relative frame. These are custom placements;
+  deck geometry and line-of-sight still require visual tests on both ships.
 - Every fresh tutorial instance restores the player to that faction's
   transport-local WorldSafeLoc pose before sending the scenario. A stale
   position and facing saved while logging out aboard the ship are replaced.

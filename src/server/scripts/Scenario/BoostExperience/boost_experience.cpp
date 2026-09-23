@@ -8,6 +8,7 @@
  */
 
 #include <algorithm>
+#include <cmath>
 
 #include "ScriptMgr.h"
 #include "Creature.h"
@@ -112,10 +113,15 @@ uint8 GetFirstTargetLesson(uint32 scenarioId)
 
 Position Offset(Position const& base, float x, float y, float z = 0.0f, float orientation = 0.0f)
 {
-    // CUSTOM placement: only the deck origin is from WorldSafeLocs. NPC offsets
-    // and the departure flight are approximations, NOT Blizzard sniff coordinates.
-    return Position(base.GetPositionX() + x, base.GetPositionY() + y,
-        base.GetPositionZ() + z, orientation);
+    // CUSTOM placement in the player's starting frame: x is forward, y is
+    // left. The faction safe locations face opposite directions on their
+    // respective transports; raw shared X/Y offsets put actors in cabins.
+    float const facing = base.GetOrientation();
+    float const cosine = std::cos(facing);
+    float const sine = std::sin(facing);
+    return Position(base.GetPositionX() + x * cosine - y * sine,
+        base.GetPositionY() + x * sine + y * cosine,
+        base.GetPositionZ() + z, Position::NormalizeOrientation(facing + orientation));
 }
 }
 
@@ -253,12 +259,9 @@ public:
             if (!shouldSpawn)
                 return;
 
-            // The Horde cabin occupies the old (-12, 0) location. Keep its
-            // dummy on the trainer's open deck, offset to the side and facing
-            // the lesson area. These remain custom transport-local positions.
-            Position const dummyPosition = _alliance
-                ? Offset(Deck(), -12.0f, 0.0f, 0.0f, 0.0f)
-                : Offset(Deck(), 5.0f, -8.0f, 0.0f, 1.5708f);
+            // Keep the target on the lesson deck beside the trainer, facing
+            // across the lesson area. Both factions use the same local layout.
+            Position const dummyPosition = Offset(Deck(), 5.0f, -8.0f, 0.0f, 1.5708f);
             if (Transport* transport = GetGunship())
                 if (TempSummon* dummy = SummonPassenger(transport, NPC_TRAINING_DUMMY, dummyPosition))
                 {
@@ -439,7 +442,7 @@ public:
             ClearSparringWave();
             for (uint8 index = 0; index < count; ++index)
                 if (TempSummon* opponent = SummonPassenger(transport, entry,
-                    Offset(deck, -10.0f, -3.5f + 7.0f * index, 0.0f, 0.0f), player,
+                    Offset(deck, 4.0f, count == 1 ? -7.0f : -7.0f + 14.0f * index, 0.0f, 3.14f), player,
                     TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
                 {
                     _sparringGuids.push_back(opponent->GetGUID());
@@ -457,10 +460,10 @@ public:
             Position const& deck = Deck();
             for (uint8 index = 0; index < 10; ++index)
                 StartCombat(SummonPassenger(transport, NPC_LEGION_IMP,
-                    Offset(deck, -8.0f + float(index % 5) * 3.0f, -5.0f + float(index / 5) * 10.0f),
+                    Offset(deck, 2.0f + float(index % 5) * 2.0f, -8.0f + float(index / 5) * 16.0f, 0.0f, 3.14f),
                     player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
 
-            StartCombat(SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, -11.0f, 0.0f),
+            StartCombat(SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
                 player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
             StartCombat(SummonPassenger(transport, NPC_LEGION_BAT, Offset(deck, 0.0f, 8.0f, 3.0f),
                 player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
