@@ -34,3 +34,12 @@ Reinforcements, Gold & Currency, Heirlooms, Raids and the boost card. Check
 single-item tooltips and verify that mount/pet models still render. These
 item cards show the actual purchased item/token icon, not a 3D preview of
 the equipment a token may grant.
+
+The stock 7.3.5 `StoreProductCard_ShowIcon` function reanchors every regular
+texture to the top center. That is correct for normal category cards, but it
+separates the texture from the circular border on the three-product Featured
+layout: `SplashSecondary` declares its icon at center `(-70, 6)`, while the
+border remains at center `(-72, 1)`. It also ignores the `SplashPrimary`
+icon's declared top-left position. This cannot be corrected by a BattlePay
+packet field. Install `client-patches/Install-StoreFeaturedIconFix.ps1` to
+overlay the affected 7.3.5 UI function for both client architectures.
