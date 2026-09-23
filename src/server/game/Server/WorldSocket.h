@@ -140,6 +140,7 @@ private:
     TimePoint _LastPingTime;
     uint32 _OverSpeedPings;
     uint32 _accountId;
+    uint32 _initializationStart;
 
     std::mutex _worldSessionLock;
     WorldSessionPtr _worldSession;

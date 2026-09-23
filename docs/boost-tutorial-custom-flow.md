@@ -8,6 +8,9 @@
 - Every fresh tutorial instance restores the player to that faction's
   transport-local WorldSafeLoc pose before sending the scenario. A stale
   position and facing saved while logging out aboard the ship are replaced.
+- An unfinished world/instance socket handshake is closed after 10 seconds.
+  This lets the 7.3.5 client's built-in WorldAttempt2..5 path retry instead of
+  leaving the loading bar blocked until the general 15-minute socket timeout.
 - The tutorial action bar is a packet overlay. It starts empty; active known
   spells from CAST_SPELL criteria in completed/current DB2 lessons accumulate
   as lessons advance. Form/stance pages also receive the lesson buttons.

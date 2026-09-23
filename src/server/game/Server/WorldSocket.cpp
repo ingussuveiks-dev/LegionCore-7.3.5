@@ -66,6 +66,7 @@ WorldSocket::WorldSocket(tcp::socket&& socket) : Socket(std::move(socket))
     _compressionStream = nullptr;
     _OverSpeedPings = 0;
     _accountId = 0;
+    _initializationStart = getMSTime();
     _authed = false;
 
     _serverChallenge.SetRand(8 * 16);
@@ -222,6 +223,21 @@ void WorldSocket::InitializeHandler(boost::system::error_code const& error, std:
 
 bool WorldSocket::Update()
 {
+    // The client opens a second world connection while entering the world.
+    // On Windows that TCP connection can occasionally remain half-initialized:
+    // it stays open, but the client never completes the initializer/encryption
+    // exchange.  Without a handshake deadline the realm connection waits for
+    // up to SocketTimeOutTime (15 minutes) and the loading bar appears frozen.
+    // Closing only the unfinished socket makes the client report
+    // CMSG_CONNECT_TO_FAILED and use its existing WorldAttempt2..5 retry path.
+    if (!_authed && GetMSTimeDiffToNow(_initializationStart) >= 10000)
+    {
+        TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s; closing it so the client can retry",
+            GetRemoteIpAddress().to_string().c_str());
+        CloseSocket();
+        return false;
+    }
+
     EncryptablePacket* queued;
     MessageBuffer buffer(_sendBufferSize);
     while (_bufferQueue.Dequeue(queued))
