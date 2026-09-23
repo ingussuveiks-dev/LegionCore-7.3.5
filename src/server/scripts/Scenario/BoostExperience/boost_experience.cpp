@@ -109,14 +109,16 @@ public:
     {
         instance_boost_experience_InstanceScript(InstanceMap* map, bool alliance) :
             InstanceScript(map), _alliance(alliance), _setupTimer(500), _setupComplete(false),
-            _lastCombatStep(0xFF), _exitSpawned(false) { }
+            _visibilityTimer(0), _lastCombatStep(0xFF), _exitSpawned(false) { }
 
         bool _alliance;
         uint32 _setupTimer;
         bool _setupComplete;
+        uint32 _visibilityTimer;
         uint8 _lastCombatStep;
         bool _exitSpawned;
         ObjectGuid _transportGuid;
+        std::vector<ObjectGuid> _passengerGuids;
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
         uint32 TransportEntry() const { return _alliance ? GO_DAWN_BLADE : GO_WARBRINGER; }
@@ -164,6 +166,7 @@ public:
             transport->AddPassenger(passenger);
             passenger->m_movementInfo.transport.Pos.Relocate(position);
             passenger->m_movementInfo.transport.VehicleSeatIndex = -1;
+            _passengerGuids.push_back(passenger->GetGUID());
 
             // Instance transports do not inherit the player's phase set.  A
             // boost character usually has Legion intro phases, so passengers
@@ -276,6 +279,46 @@ public:
 
         void Update(uint32 diff) override
         {
+            // Runtime passengers are queued for addition to the map. Their
+            // first visibility update can therefore run before they are in
+            // world, and transport passengers are skipped by the ordinary
+            // grid notifier afterwards. Synchronize them once the add queue
+            // has completed so the client receives their create packets.
+            if (_visibilityTimer)
+            {
+                if (_visibilityTimer > diff)
+                    _visibilityTimer -= diff;
+                else
+                {
+                    _visibilityTimer = 0;
+                    if (Player* player = GetPlayer())
+                    {
+                        for (ObjectGuid const& guid : _passengerGuids)
+                        {
+                            Creature* passenger = instance->GetCreature(guid);
+                            if (!passenger || !passenger->IsInWorld())
+                            {
+                                TC_LOG_ERROR("scripts", "Boost tutorial passenger %s was not added to map %u instance %u",
+                                    guid.ToString().c_str(), instance->GetId(), instance->GetInstanceId());
+                                continue;
+                            }
+
+                            bool alreadyVisible = player->HaveAtClient(passenger);
+                            if (!alreadyVisible)
+                            {
+                                passenger->SendUpdateToPlayer(player);
+                                player->AddClient(passenger->GetGUID());
+                                player->SendInitialVisiblePackets(passenger);
+                            }
+
+                            TC_LOG_INFO("scripts", "Boost tutorial passenger %u %s for %s (distance %.2f, client visible %u -> %u)",
+                                passenger->GetEntry(), passenger->GetGUID().ToString().c_str(), player->GetName(),
+                                player->GetDistance(passenger), uint32(alreadyVisible), uint32(player->HaveAtClient(passenger)));
+                        }
+                    }
+                }
+            }
+
             if (!_setupTimer)
                 return;
 
@@ -289,6 +332,7 @@ public:
             {
                 _setupComplete = true;
                 _setupTimer = 0;
+                _visibilityTimer = 500;
             }
             else
                 _setupTimer = 500;

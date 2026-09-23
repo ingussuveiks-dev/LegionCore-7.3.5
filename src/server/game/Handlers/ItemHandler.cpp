@@ -1289,12 +1289,30 @@ namespace
                 break;
     }
 
-    void SortContainer(Player* player, uint8 bag, uint8 slotStart, uint8 slotEnd)
+    void AppendContainer(Player* player, uint8 bag, uint8 slotStart, uint8 slotEnd,
+        std::vector<uint16>& positions, std::vector<Item*>& items)
     {
-        std::vector<Item*> items;
         for (uint8 slot = slotStart; slot < slotEnd; ++slot)
+        {
+            positions.push_back(uint16((uint16(bag) << 8) | slot));
             if (Item* item = player->GetItemByPos(bag, slot))
                 items.push_back(item);
+        }
+    }
+
+    void SortBags(Player* player)
+    {
+        // Retail Clean Up treats the backpack and all equipped bags as one
+        // inventory. Collect every usable position first, so empty spaces are
+        // compacted and the sorted sequence can continue across bag borders.
+        std::vector<uint16> positions;
+        std::vector<Item*> items;
+        AppendContainer(player, INVENTORY_SLOT_BAG_0, INVENTORY_SLOT_ITEM_START,
+            player->GetInventoryEndSlot(), positions, items);
+
+        for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
+            if (Bag* container = (Bag*)player->GetItemByPos(INVENTORY_SLOT_BAG_0, bag))
+                AppendContainer(player, bag, 0, container->GetBagSize(), positions, items);
 
         if (items.size() < 2)
             return;
@@ -1332,44 +1350,27 @@ namespace
         for (Item* item : items)
             order.push_back(item->GetGUID());
 
-        uint8 targetSlot = slotStart;
+        auto targetPosition = positions.begin();
         for (ObjectGuid const& guid : order)
         {
-            if (targetSlot >= slotEnd)
+            if (targetPosition == positions.end())
                 break;
 
-            Item* item = nullptr;
-            for (uint8 searchSlot = slotStart; searchSlot < slotEnd; ++searchSlot)
-            {
-                Item* candidate = player->GetItemByPos(bag, searchSlot);
-                if (candidate && candidate->GetGUID() == guid)
-                {
-                    item = candidate;
-                    break;
-                }
-            }
+            Item* item = player->GetItemByGuid(guid);
 
             // The item can already have been absorbed by a stack merge.
             if (!item)
                 continue;
 
-            uint16 target = uint16((uint16(bag) << 8) | targetSlot);
+            uint16 target = *targetPosition;
             if (item->GetPos() != target)
                 player->SwapItem(item->GetPos(), target);
 
-            if (player->GetItemByPos(bag, targetSlot))
-                ++targetSlot;
+            uint8 targetBag = uint8(target >> 8);
+            uint8 targetSlot = uint8(target & 0xFF);
+            if (player->GetItemByPos(targetBag, targetSlot))
+                ++targetPosition;
         }
-    }
-
-    void SortBags(Player* player)
-    {
-        SortContainer(player, INVENTORY_SLOT_BAG_0, INVENTORY_SLOT_ITEM_START,
-            player->GetInventoryEndSlot());
-
-        for (uint8 bag = INVENTORY_SLOT_BAG_START; bag < INVENTORY_SLOT_BAG_END; ++bag)
-            if (Bag* container = (Bag*)player->GetItemByPos(INVENTORY_SLOT_BAG_0, bag))
-                SortContainer(player, bag, 0, container->GetBagSize());
     }
 }
 
