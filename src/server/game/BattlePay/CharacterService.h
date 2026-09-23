@@ -3,6 +3,8 @@
 #define _sCharService
 
 #include "ObjectGuid.h"
+#include <string>
+#include <vector>
 
 class Player;
 class WorldSession;
@@ -20,6 +22,7 @@ public:
     bool Boost(Player* player, uint16 specializationId, uint8 targetLevel, uint16 factionChoice = 0);
     std::vector<uint32> GetBoostItems(Player const* player, uint16 specializationId, uint8 targetLevel) const;
     std::vector<uint32> GetBoostItems(uint8 classId, uint16 specializationId, uint8 targetLevel, uint8 raceId = 0) const;
+    std::string GetBoostEquipmentCache(uint8 classId, uint16 specializationId, uint8 targetLevel, uint8 raceId = 0) const;
     bool BoostCharacter(WorldSession* session, ObjectGuid targetCharGuid, uint16 specializationId, uint8 targetLevel,
         uint16 factionChoice, std::vector<uint32>& boostItems);
     void FinalizeBoost(Player* player);

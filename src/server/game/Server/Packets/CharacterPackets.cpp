@@ -16,6 +16,7 @@
  */
 
 #include "CharacterPackets.h"
+#include "CharacterService.h"
 #include "DatabaseEnv.h"
 #include "ObjectMgr.h"
 #include "PlayerDefines.h"
@@ -109,12 +110,16 @@ WorldPackets::Character::EnumCharactersResult::CharacterInfo::CharacterInfo(Fiel
     ProfessionIds[0] = 0;
     ProfessionIds[1] = 0;
 
-    Tokenizer equipment(fields[f_equipmentCache].GetString(), ' ');
+    SpecializationID = fields[f_specID].GetUInt16();
+    std::string equipmentCache = fields[f_equipmentCache].GetString();
+    if (atLoginFlags & AT_LOGIN_CHARACTER_BOOST)
+        equipmentCache = sCharacterService->GetBoostEquipmentCache(Class, SpecializationID, Level, Race);
+
+    Tokenizer equipment(equipmentCache, ' ');
     ListPosition = fields[f_slot].GetUInt8();
     LastPlayedTime = fields[f_lastPlayed].GetUInt32();
 //    if (ChrSpecializationEntry const* spec = sDB2Manager.GetChrSpecializationByIndex(Class, fields[f_specID].GetUInt16()))
 //        SpecializationID = spec->ID;
-    SpecializationID = fields[f_specID].GetUInt16();
 
     LastLoginBuild = realm.Build;
 

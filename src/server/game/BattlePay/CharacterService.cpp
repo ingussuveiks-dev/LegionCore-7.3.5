@@ -11,6 +11,7 @@
 #include "SpellMgr.h"
 #include "World.h"
 #include "WorldSession.h"
+#include <array>
 #include <set>
 
 namespace
@@ -98,6 +99,82 @@ struct BoostDestination
     WorldLocation HomeLocation;
     uint16 HomeZoneId;
 };
+
+std::string BuildBoostEquipmentCache(std::vector<uint32> const& boostItems)
+{
+    std::array<uint32, INVENTORY_SLOT_BAG_END> equippedItems = { };
+
+    auto firstFreeSlot = [&equippedItems](uint8 first, uint8 second) -> uint8
+    {
+        if (!equippedItems[first])
+            return first;
+        if (!equippedItems[second])
+            return second;
+        return first;
+    };
+
+    for (uint32 itemId : boostItems)
+    {
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId);
+        if (!itemTemplate)
+            continue;
+
+        uint8 slot = NULL_SLOT;
+        switch (itemTemplate->GetInventoryType())
+        {
+            case INVTYPE_HEAD:           slot = EQUIPMENT_SLOT_HEAD; break;
+            case INVTYPE_NECK:           slot = EQUIPMENT_SLOT_NECK; break;
+            case INVTYPE_SHOULDERS:      slot = EQUIPMENT_SLOT_SHOULDERS; break;
+            case INVTYPE_BODY:           slot = EQUIPMENT_SLOT_BODY; break;
+            case INVTYPE_CHEST:
+            case INVTYPE_ROBE:           slot = EQUIPMENT_SLOT_CHEST; break;
+            case INVTYPE_WAIST:          slot = EQUIPMENT_SLOT_WAIST; break;
+            case INVTYPE_LEGS:           slot = EQUIPMENT_SLOT_LEGS; break;
+            case INVTYPE_FEET:           slot = EQUIPMENT_SLOT_FEET; break;
+            case INVTYPE_WRISTS:         slot = EQUIPMENT_SLOT_WRISTS; break;
+            case INVTYPE_HANDS:          slot = EQUIPMENT_SLOT_HANDS; break;
+            case INVTYPE_FINGER:         slot = firstFreeSlot(EQUIPMENT_SLOT_FINGER1, EQUIPMENT_SLOT_FINGER2); break;
+            case INVTYPE_TRINKET:        slot = firstFreeSlot(EQUIPMENT_SLOT_TRINKET1, EQUIPMENT_SLOT_TRINKET2); break;
+            case INVTYPE_CLOAK:          slot = EQUIPMENT_SLOT_BACK; break;
+            case INVTYPE_WEAPON:         slot = firstFreeSlot(EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_OFFHAND); break;
+            case INVTYPE_SHIELD:
+            case INVTYPE_WEAPONOFFHAND:
+            case INVTYPE_HOLDABLE:       slot = EQUIPMENT_SLOT_OFFHAND; break;
+            case INVTYPE_RANGED:
+            case INVTYPE_2HWEAPON:
+            case INVTYPE_WEAPONMAINHAND:
+            case INVTYPE_THROWN:
+            case INVTYPE_RANGEDRIGHT:    slot = EQUIPMENT_SLOT_MAINHAND; break;
+            case INVTYPE_TABARD:         slot = EQUIPMENT_SLOT_TABARD; break;
+            case INVTYPE_BAG:
+                for (uint8 bagSlot = INVENTORY_SLOT_BAG_START; bagSlot < INVENTORY_SLOT_BAG_END; ++bagSlot)
+                {
+                    if (!equippedItems[bagSlot])
+                    {
+                        slot = bagSlot;
+                        break;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (slot != NULL_SLOT)
+            equippedItems[slot] = itemId;
+    }
+
+    std::ostringstream cache;
+    for (uint32 itemId : equippedItems)
+    {
+        if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemId))
+            cache << itemTemplate->GetInventoryType() << ' ' << sDB2Manager.GetItemDisplayId(itemId, 0) << " 0 ";
+        else
+            cache << "0 0 0 ";
+    }
+
+    return cache.str();
+}
 
 bool ResolveBoostFaction(uint8 currentRace, uint16 requestedFaction, uint8& finalRace, uint16& faction)
 {
@@ -534,6 +611,11 @@ std::vector<uint32> CharacterService::GetBoostItems(uint8 classId, uint16 specia
     return result;
 }
 
+std::string CharacterService::GetBoostEquipmentCache(uint8 classId, uint16 specializationId, uint8 targetLevel, uint8 raceId) const
+{
+    return BuildBoostEquipmentCache(GetBoostItems(classId, specializationId, targetLevel, raceId));
+}
+
 bool CharacterService::Boost(Player* player, uint16 specializationId, uint8 targetLevel, uint16 factionChoice)
 {
     if (!player || !player->GetSession())
@@ -626,6 +708,7 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
 
     ObjectGuid::LowType guid = targetCharGuid.GetCounter();
     BoostDestination destination = GetBoostDestination(faction, charInfo->Class);
+    std::string equipmentCache = BuildBoostEquipmentCache(boostItems);
     CharacterDatabaseTransaction transaction = CharacterDatabase.BeginTransaction();
     AtLoginFlags boostFlags = AtLoginFlags(AT_LOGIN_RESET_SPELLS | AT_LOGIN_RESET_TALENTS | AT_LOGIN_CHARACTER_BOOST);
     if (charInfo->Level >= 60)
@@ -634,11 +717,11 @@ bool CharacterService::BoostCharacter(WorldSession* session, ObjectGuid targetCh
     transaction->PAppend("UPDATE characters SET race = %u, level = %u, xp = 0, activespec = %u, specialization = %u, "
         "lootspecialization = %u, money = money + 5000000, health = 4294967295, mana = 4294967295, instance_id = 0, "
         "map = %u, zone = %u, position_x = %f, position_y = %f, position_z = %f, orientation = %f, "
-        "at_login = (at_login & ~%u) | %u WHERE guid = " UI64FMTD,
+        "equipmentCache = '%s', at_login = (at_login & ~%u) | %u WHERE guid = " UI64FMTD,
         finalRace, targetLevel, specialization->OrderIndex, specializationId, specializationId,
         destination.Location.GetMapId(), destination.ZoneId, destination.Location.GetPositionX(),
         destination.Location.GetPositionY(), destination.Location.GetPositionZ(), destination.Location.GetOrientation(),
-        uint16(AT_LOGIN_FIRST), uint16(boostFlags), guid);
+        equipmentCache.c_str(), uint16(AT_LOGIN_FIRST), uint16(boostFlags), guid);
 
     transaction->PAppend("REPLACE INTO character_homebind (guid, mapId, zoneId, posX, posY, posZ) "
         "VALUES (" UI64FMTD ", %u, %u, %f, %f, %f)", guid, destination.HomeLocation.GetMapId(), destination.HomeZoneId,
