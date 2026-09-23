@@ -22141,7 +22141,19 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // currently we do not support transport in bg and in world, because guid is dinamyc and after restart server guis have new value
     else if (transLowGUID)
     {
-        /*ObjectGuid transGUID = ObjectGuid::Create<HighGuid::Transport>(transLowGUID);
+        // Dynamic transport GUIDs are not stable between server runs.  Boost
+        // tutorial maps own and recreate their gunship transport per instance,
+        // and their instance script places the player back on that transport.
+        // Keep the saved scenario map/instance instead of sending a reconnecting
+        // boost character to their home bind merely because the old GUID changed.
+        if (mapId == 1554 || mapId == 1557)
+        {
+            m_movementInfo.transport.Reset();
+            transLowGUID = 0;
+        }
+        else
+        {
+            /*ObjectGuid transGUID = ObjectGuid::Create<HighGuid::Transport>(transLowGUID);
 
         Transport* transport = nullptr;
         if (GameObject* go = HashMapHolder<GameObject>::Find(transGUID))
@@ -22172,9 +22184,10 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
             }
         }
         else*/
-        {
-            TC_LOG_ERROR("entities.player", "Player (guidlow %lu) have problems with transport guid (%lu). Teleport to bind location.", guid.GetCounter(), transLowGUID);
-            RelocateToHomebind();
+            {
+                TC_LOG_ERROR("entities.player", "Player (guidlow %lu) have problems with transport guid (%lu). Teleport to bind location.", guid.GetCounter(), transLowGUID);
+                RelocateToHomebind();
+            }
         }
     }
     // currently we do not support taxi in instance
