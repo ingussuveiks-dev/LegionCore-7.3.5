@@ -7,6 +7,8 @@
  * DB2 and supply only the missing server-controlled actors and waves here.
  */
 
+#include <algorithm>
+
 #include "ScriptMgr.h"
 #include "Creature.h"
 #include "InstanceScript.h"
@@ -109,15 +111,17 @@ public:
     {
         instance_boost_experience_InstanceScript(InstanceMap* map, bool alliance) :
             InstanceScript(map), _alliance(alliance), _setupTimer(500), _setupComplete(false),
-            _visibilityTimer(0), _lastCombatStep(0xFF), _exitSpawned(false) { }
+            _visibilityTimer(0), _trainingDummyStage(0xFF), _lastCombatStep(0xFF), _exitSpawned(false) { }
 
         bool _alliance;
         uint32 _setupTimer;
         bool _setupComplete;
         uint32 _visibilityTimer;
+        uint8 _trainingDummyStage;
         uint8 _lastCombatStep;
         bool _exitSpawned;
         ObjectGuid _transportGuid;
+        ObjectGuid _trainingDummyGuid;
         std::vector<ObjectGuid> _passengerGuids;
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
@@ -194,12 +198,6 @@ public:
             if (TempSummon* creature = SummonPassenger(transport, trainer, Offset(deck, 5.0f, 0.0f, 0.0f, 3.14f)))
                 creature->SetReactState(REACT_PASSIVE);
 
-            uint32 dummies[] = { NPC_TRAINING_DUMMY_1, NPC_TRAINING_DUMMY_2, NPC_TRAINING_DUMMY_3 };
-            for (uint8 index = 0; index < 3; ++index)
-                if (TempSummon* dummy = SummonPassenger(transport, dummies[index],
-                    Offset(deck, -6.0f, -4.0f + 4.0f * index, 0.0f, 0.0f)))
-                    dummy->SetReactState(REACT_PASSIVE);
-
             uint8 index = 0;
             for (uint8 entourageIndex = 0; entourageIndex < 4; ++entourageIndex)
             {
@@ -208,6 +206,51 @@ public:
                     Offset(deck, 8.0f, -6.0f + 4.0f * index++, 0.0f, 3.14f)))
                     creature->SetReactState(REACT_PASSIVE);
             }
+        }
+
+        void SetTrainingDummyForStep(uint32 step, uint8 stepCount)
+        {
+            // The three class-ability lessons immediately precede the final
+            // four encounter stages. Keep exactly one lesson target on deck.
+            uint8 wantedStage = 0xFF;
+            if (stepCount >= 7 && step >= uint32(stepCount - 7) && step <= uint32(stepCount - 5))
+                wantedStage = uint8(step - (stepCount - 7));
+
+            if (_trainingDummyStage == wantedStage)
+                return;
+
+            if (!_trainingDummyGuid.IsEmpty())
+            {
+                if (Creature* dummy = instance->GetCreature(_trainingDummyGuid))
+                    dummy->DespawnOrUnsummon();
+
+                _passengerGuids.erase(std::remove(_passengerGuids.begin(), _passengerGuids.end(),
+                    _trainingDummyGuid), _passengerGuids.end());
+                _trainingDummyGuid.Clear();
+            }
+
+            if (wantedStage >= 3)
+            {
+                _trainingDummyStage = wantedStage;
+                return;
+            }
+
+            static uint32 const dummies[] =
+            {
+                NPC_TRAINING_DUMMY_1,
+                NPC_TRAINING_DUMMY_2,
+                NPC_TRAINING_DUMMY_3
+            };
+
+            if (Transport* transport = GetGunship())
+                if (TempSummon* dummy = SummonPassenger(transport, dummies[wantedStage],
+                    Offset(Deck(), -6.0f, -4.0f + 4.0f * wantedStage, 0.0f, 0.0f)))
+                {
+                    dummy->SetReactState(REACT_PASSIVE);
+                    _trainingDummyGuid = dummy->GetGUID();
+                    _trainingDummyStage = wantedStage;
+                    _visibilityTimer = 500;
+                }
         }
 
         void PutPlayerOnTransport(Player* player, Transport* transport)
@@ -256,6 +299,7 @@ public:
             if (!_setupComplete)
                 SpawnStaticPassengers(transport);
 
+            SetTrainingDummyForStep(scenario->GetCurrentStep(), scenario->GetStepCount(false));
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
@@ -411,6 +455,8 @@ public:
             uint8 stepCount = scenario->GetStepCount(false);
             if (stepCount < 4)
                 return;
+
+            SetTrainingDummyForStep(newStep, stepCount);
             if (newStep == stepCount - 4)
                 SpawnSparringWave(1);
             else if (newStep == stepCount - 3)
