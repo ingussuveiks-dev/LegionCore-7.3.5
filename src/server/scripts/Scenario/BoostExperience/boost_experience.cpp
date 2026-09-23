@@ -174,6 +174,7 @@ public:
             // but were invisible to the player.
             if (Player* player = GetPlayer())
             {
+                passenger->SetPhaseMask(player->GetPhaseMask(), false);
                 passenger->SetPhaseId(player->GetPhases(), false);
                 passenger->setIgnorePhaseIdCheck(true);
                 passenger->UpdateObjectVisibility();

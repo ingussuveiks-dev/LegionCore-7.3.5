@@ -466,7 +466,11 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
     pos.GetPosition(x, y, z, o);
     CalculatePassengerPosition(x, y, z, &o);
 
-    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, 0, entry, vehId, 0, x, y, z, o))
+    // Runtime passengers must inherit the transport's legacy phase mask.
+    // Creating them with mask 0 makes them fail WorldObject::InSamePhase
+    // even when their modern phase-id sets match the player. A forced create
+    // packet can then show them for one update before visibility removes them.
+    if (!summon->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(), map, GetPhaseMask(), entry, vehId, 0, x, y, z, o))
     {
         delete summon;
         return nullptr;
