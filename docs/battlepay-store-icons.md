@@ -1,5 +1,10 @@
 # Legion 7.3.5 store icons
 
+The loose client overlay discussed below is disabled. Its `overrideArchive=1`
+setting caused character-selection model loading failures and WOW51900322
+disconnects, including with the StoreUI folder absent. Restore
+`overrideArchive=0` with WoW closed; see `client-patches/README.md`.
+
 The first optional uint32 in ProductDisplayInfo is the texture FileDataID.
 The old name CreatureDisplayInfoID was misleading: sending a creature ID
 there or omitting the field does not provide an item icon. Creature models

@@ -9,6 +9,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Disabled after a reproducible 7.3.5 client regression. Removing the loose
+# StoreUI package alone is insufficient: overrideArchive=1 also breaks model
+# skin loading at character selection (Model.log: 959310, E_NOT_AVAILABLE).
+# Keep the old implementation below for reference, but never enable it again
+# through this installer. See README.md for restoring the stock client.
+throw 'StoreUI icon override is disabled: overrideArchive=1 caused WOW51900322 disconnects. Close WoW, move Interface\AddOns\Blizzard_StoreUI outside AddOns, and set overrideArchive to 0 in WTF\Config.wtf. See client-patches/README.md.'
+
 $storeRelativePath = 'Interface\AddOns\Blizzard_StoreUI\Blizzard_StoreUISecure.lua'
 $targetFile = Join-Path $ClientPath $storeRelativePath
 $targetDirectory = Split-Path -Parent $targetFile

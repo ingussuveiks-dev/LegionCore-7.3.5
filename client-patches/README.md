@@ -1,5 +1,25 @@
 # Legion 7.3.5 client UI patches
 
+## StoreUI override disabled
+
+Do not install the loose StoreUI overlay described below. The installer now
+stops before changing any files. On the local 7.3.5 client, enabling
+`overrideArchive` caused `WOW51900322` even when no shop was opened and after
+the StoreUI folder had been removed. `Model.log` reported `E_NOT_AVAILABLE`
+for the Undead male HD model (FileDataID 959310); the model and its skin files
+were independently readable from the local CASC archive. Disabling
+`overrideArchive` stopped the disconnect in the user's character-select and
+shop test.
+
+To restore the stock client, completely close WoW, move
+`Interface\AddOns\Blizzard_StoreUI` outside `Interface\AddOns` (keep a backup),
+and set `SET overrideArchive "0"` in `WTF\Config.wtf`. Restart the client.
+Both client executables share this configuration, but the successful user
+retest was performed with the 64-bit executable. The stock icon alignment
+remains a cosmetic issue; the loose overlay is not a supported fix.
+
+The installation details below are historical reference only.
+
 ## Featured store icon alignment
 
 The stock 7.3.5 Store UI gives `SplashSecondary` cards two conflicting
