@@ -36,6 +36,12 @@
   Legion wave, and finally the exit bird. Completed sparring waves are removed
   before the next wave. Other class scenarios delay their dummy until their
   opening pet/form/preparation lessons are complete.
+- The shipboard dummy is rooted so Fear can satisfy its lesson without sending
+  the dummy running off the moving deck. Warlock sparring NPCs appear at steps
+  10 and 11, after the Fear and greater-demon lessons.
+- The boost dummy uses the training-dummy unit type. Instance combat cleanup
+  drops expired dummy-only hostile references, allowing pets to leave combat
+  after their attack is stopped without dropping real encounter references.
 - The trainer explicitly advances the opening faction gate after casting
   219615. Client DB2 places the mutually exclusive Horde and Alliance criteria
   below an ALL node, so the generic evaluator otherwise leaves the visible

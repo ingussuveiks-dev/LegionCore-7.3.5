@@ -266,6 +266,9 @@ public:
                 if (TempSummon* dummy = SummonPassenger(transport, NPC_TRAINING_DUMMY, dummyPosition))
                 {
                     dummy->SetReactState(REACT_PASSIVE);
+                    // Fear still applies for the lesson criterion, but its
+                    // fleeing motion must not move a shipboard training dummy.
+                    dummy->SetControlled(true, UNIT_STATE_ROOT);
                     _trainingDummyGuid = dummy->GetGUID();
                     _trainingDummySpawned = true;
                     _visibilityTimer = 500;
@@ -692,6 +695,7 @@ struct npc_boost_training_dummy : public ScriptedAI
 {
     npc_boost_training_dummy(Creature* creature) : ScriptedAI(creature)
     {
+        me->AddUnitTypeMask(UNIT_MASK_TRAINING_DUMMY);
         me->SetReactState(REACT_PASSIVE);
     }
 

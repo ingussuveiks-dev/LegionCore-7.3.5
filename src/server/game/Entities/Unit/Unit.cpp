@@ -522,6 +522,24 @@ void Unit::Update(uint32 p_time)
             else
             {
                 m_CombatTimer = 100;
+                // Training dummies cannot die to end combat. In instances,
+                // discard their hostile references once the combat timer has
+                // expired, while preserving references to real encounters.
+                HostileRefManager& refManager = getHostileRefManager();
+                HostileReference* ref = refManager.getFirst();
+                while (ref)
+                {
+                    Unit* opponent = ref->getSource()->getOwner();
+                    ref = ref->next();
+                    if (Creature* creature = opponent ? opponent->ToCreature() : nullptr)
+                        if (creature->isTrainingDummy())
+                            refManager.deleteReference(creature);
+                }
+                if (refManager.isEmpty())
+                {
+                    ClearInCombat();
+                    m_CombatTimer = 0;
+                }
             }
         }
         else
