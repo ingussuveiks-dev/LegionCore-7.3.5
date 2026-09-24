@@ -37540,7 +37540,9 @@ void Player::PetBattleCountBattleSpecies()
 
 bool Player::HasBattlePetTraining()
 {
-    return HasSpell(119467);
+    // Both Battle Pet Training variants unlock pet battles in the 7.3.5 client.
+    // Most Horde trainers teach 125610; accepting only 119467 leaves slot 1 locked.
+    return HasSpell(119467) || HasSpell(125610);
 }
 
 uint32 Player::GetBattlePetTrapLevel()

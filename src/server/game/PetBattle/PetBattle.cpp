@@ -1301,7 +1301,8 @@ void PetBattle::Finish(uint32 winnerTeamID, bool aborted, bool ignoreAbandonPena
                     player->QuestObjectiveSatisfy(speciesInfo->ID, 1, QUEST_OBJECTIVE_DEFEATBATTLEPET, InitialWildPetGUID);
             }
 
-            if (BattleType == PETBATTLE_TYPE_PVE && PveBattleType == PVE_PETBATTLE_WILD)
+            if (!aborted && winnerTeamID == currentTeamID && BattleType == PETBATTLE_TYPE_PVE &&
+                PveBattleType == PVE_PETBATTLE_WILD)
             {
                 /// Quest progress for 12 x Learning the Ropes
                 player->KilledMonsterCredit(65355);
