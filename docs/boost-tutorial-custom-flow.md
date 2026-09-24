@@ -51,8 +51,8 @@
   only the previous step active, causing the 7.3.5 client to disconnect with
   reason 16 immediately after the trainer response.
 - The exit bird is spawned only for the final departure stage. Departure
-  creates an individual vehicle using vehicle layout 4933, removes
-  it and its rider from the gunship, and flies away in world coordinates.
+  reuses that bird with vehicle layout 4933, detaches it and its rider from
+  the gunship, waits for boarding to finish, then flies in world coordinates.
 - Spell 219912 is cast by the bird with the player in seat 0. Its DB2 passenger
   targeting triggers 227058, bound to the existing Broken Shore queue script.
   The appropriate Battle for the Broken Shore quest (40518/42740) is offered
@@ -99,3 +99,31 @@ specializations are not silently learned or automatically marked complete.
    bar and leave a playable character able to continue the Legion introduction.
 6. Confirm existing macros/custom buttons survive both normal exit and relog.
    Check druid form/warrior stance pages separately.
+
+## Follow-up on 2026-09-24: waves and landing
+
+- The 13:26–13:27 test still logged all three sparring deaths through the
+  fallback. The instance damage hook now runs after damage scaling and compares
+  target-relative health, matching the core death check. Compile-time checks
+  cover lethal hits, the 15% boundary, zero damage and 64-bit health.
+- The second sparring wave waits 2 seconds after the first opponent yields.
+  The Legion wave assigns 12 attackers round-robin to the player, trainer and
+  four entourage NPCs. Allies use the player's faction; untagged ally kills
+  bypass the individual-only achievement filter so scenario kills count.
+- The original gossip bird is detached and reused. Flight waits for both the
+  vehicle attachment and boarding spline; a duplicate bird is no longer spawned.
+- Broken Shore scene `port`, `complete` and aura 217781 share one idempotent
+  landing routine. A server check also lands passengers when their ship reaches
+  the shore, disappears, or its introduction exceeds 60 seconds. Old scene
+  callbacks cannot reattach them or restore the cinematic viewpoint afterward.
+- This custom landing places players beside existing first-beach allies:
+  Alliance NPC 90717 at (486.929, 2052.26), Horde NPC 90708 at (567.826, 1886.94).
+  Positions were checked against local `legion_world.creature` data. The old
+  199358/225152 destinations are on ships, not the beach itself.
+
+Client acceptance remains required: repeat the full sequence, check the 2-second
+gap and two independent surrenders, watch ally combat, then board and remain idle
+through arrival. Expected result is a character on the beach with no transport
+attachment. The `died before surrender` fallback must not appear. Server startup
+and gameplay were not performed for this revision because the user requested
+that the server remain stopped.

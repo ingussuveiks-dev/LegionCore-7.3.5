@@ -608,41 +608,9 @@ public:
                 if (!script)
                     return;
 
-                ObjectGuid guid = script->GetGuidData(player->GetTeam() == HORDE ? GO_HORDE_SHIP : GO_ALLIANCE_SHIP);
-                if (!guid)
-                    return;
-
-                if (GameObject *go = m->GetGameObject(guid))
-                    go->SetVisible(true);
-
-                if (script->getScenarionStep() != 0)
-                    return;
-
-                //scenation ID 1189 step 0
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 54140);
-
-                //scenation ID 786 step 0
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44060);
-
-
-                Map::PlayerList const &PlList = player->GetMap()->GetPlayers();
-
-                if (PlList.isEmpty())
-                    return;
-
-                for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-                    if (Player* plr = i->getSource())
-                    {
-                        if (Transport* transport = plr->GetTransport())
-                        {
-                            transport->RemovePassenger(plr);
-                            plr->setTransport(NULL);
-                            plr->m_movementInfo.transport.Reset();
-                        }
-
-                        plr->SendMovieStart(486);
-                        plr->CastSpell(plr, plr->GetTeam() == ALLIANCE ? 199358 : 225152, false);
-                    }
+                if (!script->GetData(DATA_LAND_AT_SHORE))
+                    player->SendMovieStart(486);
+                script->SetData(DATA_LAND_AT_SHORE, 0);
             }
         }
 
@@ -670,6 +638,8 @@ public:
         {
             if (auto data = player->GetInstanceScript())
             {
+                if (data->GetData(DATA_LAND_AT_SHORE))
+                    return true;
                 Map* m = player->FindMap();
                 if (!m)
                     return true;
@@ -725,67 +695,9 @@ public:
             if (GameObject *go = m->GetGameObject(guid))
                 go->SetVisible(true);
         }
-        if (type == "port")
-        {
-            InstanceScript *script = player->GetInstanceScript();
-
-            if (!script)
-                return true;
-
-            if (script->getScenarionStep() != 0)
-                return true;
-
-            //scenation ID 1189 step 0
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 54140);
-
-            //scenation ID 786 step 0
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44060);
-
-            if (WorldObject* obj = player->GetViewpoint())
-                player->SetViewpoint(obj, false);
-
-            player->SetUInt32Value(UNIT_FIELD_CHANNEL_SPELL, 0);
-            player->SetUInt32Value(UNIT_FIELD_CHANNEL_SPELL_XSPELL_VISUAL, 0);
-
-            if (Transport* transport = player->GetTransport())
-            {
-                transport->RemovePassenger(player);
-                player->setTransport(NULL);
-                player->m_movementInfo.transport.Reset();
-            }
-
-            Map::PlayerList const &PlList = player->GetMap()->GetPlayers();
-
-            if (PlList.isEmpty())
-                return true;
-
-            for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-                if (Player* plr = i->getSource())
-                    plr->CastSpell(plr, plr->GetTeam() == ALLIANCE ? 199358 : 225152, false);
-        }
-        if (type == "complete")
-        {
-            //scenation ID 1189 step 0
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 54140);
-
-            //scenation ID 786 step 0
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 44060);
-
-            /*if (player->GetDistance(461.8785f, 2032.679f, 0.1627506f) > 300.0f)
-            {
-                if (WorldObject* obj = player->GetViewpoint())
-                    player->SetViewpoint(obj, false);
-
-                if (Transport* transport = player->GetTransport())
-                {
-                    transport->RemovePassenger(player);
-                    player->setTransport(NULL);
-                    player->m_movementInfo.transport.Reset();
-                }
-
-                player->CastSpell(player, player->GetTeam() == ALLIANCE ? 199358 : 225152, false);
-            }*/
-        }
+        if (type == "port" || type == "complete")
+            if (InstanceScript* script = player->GetInstanceScript())
+                script->SetData(DATA_LAND_AT_SHORE, 0);
         return true;
     }
 };

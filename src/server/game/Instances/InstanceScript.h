@@ -208,6 +208,8 @@ class TC_GAME_API InstanceScript : public ZoneScript
         virtual WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) { return nullptr; }
 
         virtual void onScenarionNextStep(uint32 /*newStep*/) {}
+        // Final damage after level scaling, before applying health loss/death.
+        // Compare against creature->GetHealth(attacker), not template health.
         virtual void OnCreatureDamageTaken(Creature* /*creature*/, Unit* /*attacker*/, uint32& /*damage*/) {}
         void CreatureDies(Creature* /*creature*/, Unit* /*killer*/) override {}
         void OnCreatureCreate(Creature* creature) override;

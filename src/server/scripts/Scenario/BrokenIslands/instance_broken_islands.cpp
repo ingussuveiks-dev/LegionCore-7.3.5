@@ -24,6 +24,7 @@
 #include "InstanceScript.h"
 #include "QuestData.h"
 #include "PlayerDefines.h"
+#include "ObjectAccessor.h"
 
 class instance_broken_islands : public InstanceMapScript
 {
@@ -55,10 +56,77 @@ public:
         uint32 team = 0;
         WorldLocation loc_res_pla;  // for respawn
         bool firstEnter = false;
+        std::map<ObjectGuid, uint32> arrivalTimers;
+        std::set<ObjectGuid> boardedPlayers;
+        std::set<ObjectGuid> landedPlayers;
+
+        void LandPlayer(Player* player)
+        {
+            if (!player || !landedPlayers.insert(player->GetGUID()).second)
+                return;
+
+            bool alliance = player->GetTeam() == ALLIANCE;
+            if (GameObject* ship = instance->GetGameObject(GetGuidData(alliance ? GO_ALLIANCE_SHIP : GO_HORDE_SHIP)))
+                ship->SetVisible(true);
+            if (WorldObject* viewpoint = player->GetViewpoint())
+                player->SetViewpoint(viewpoint, false);
+            player->SetUInt32Value(UNIT_FIELD_CHANNEL_SPELL, 0);
+            player->SetUInt32Value(UNIT_FIELD_CHANNEL_SPELL_XSPELL_VISUAL, 0);
+            player->ExitVehicle();
+            if (Transport* transport = player->GetTransport())
+                transport->RemovePassenger(player);
+            player->m_movementInfo.transport.Reset();
+
+            // Custom disembark beside the faction's first beach allies
+            // (90717 / 90708). The old teleport spells lead to another ship,
+            // so a missing scene or disappearing ship still stranded players.
+            Position beach = alliance ? Position(486.929f, 2052.26f, 1.40809f, 0.0f) :
+                Position(567.826f, 1886.94f, 0.737247f, 0.0f);
+            instance->LoadGrid(beach.GetPositionX(), beach.GetPositionY());
+            player->NearTeleportTo(beach);
+            if (getScenarionStep() == 0)
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, alliance ? 44060 : 54140);
+            TC_LOG_INFO("scripts", "Broken Shore disembarked %s at beach %.2f %.2f %.2f",
+                player->GetName(), beach.GetPositionX(), beach.GetPositionY(), beach.GetPositionZ());
+        }
+
+        void Update(uint32 diff) override
+        {
+            for (auto itr = arrivalTimers.begin(); itr != arrivalTimers.end();)
+            {
+                Player* player = ObjectAccessor::FindPlayer(itr->first);
+                if (!player || player->GetMap() != instance || landedPlayers.count(itr->first))
+                {
+                    itr = arrivalTimers.erase(itr);
+                    continue;
+                }
+                itr->second += diff;
+                Transport* transport = player->GetTransport();
+                bool alliance = player->GetTeam() == ALLIANCE;
+                bool arrived = transport && transport->GetExactDist2d(alliance ? 440.495f : 521.724f,
+                    alliance ? 2024.94f : 1862.63f) < 35.0f;
+                bool shipGone = !transport && boardedPlayers.count(itr->first);
+                // The server owns disembarkation even if the client skips the
+                // scene callback, or the transport leaves its grid first.
+                if ((itr->second >= 5000 && (arrived || shipGone)) || itr->second >= 60000)
+                {
+                    LandPlayer(player);
+                    itr = arrivalTimers.erase(itr);
+                }
+                else
+                    ++itr;
+            }
+        }
+
+        void OnPlayerLeave(Player* player) override
+        {
+            arrivalTimers.erase(player->GetGUID());
+            boardedPlayers.erase(player->GetGUID());
+        }
 
         void BoardPlayer(Player* player, Transport* transport)
         {
-            if (!player || !transport)
+            if (!player || !transport || getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()))
                 return;
 
             // These are ship-local deck coordinates. Set the local offset
@@ -80,6 +148,8 @@ public:
             player->m_movementInfo.transport.Pos.Relocate(deck);
             player->m_movementInfo.transport.VehicleSeatIndex = -1;
             player->NearTeleportTo(x, y, z, orientation);
+            boardedPlayers.insert(player->GetGUID());
+            arrivalTimers.emplace(player->GetGUID(), 0);
         }
 
 
@@ -125,6 +195,10 @@ public:
             instance->LoadGrid(461.8785f, 2032.679f);
             instance->LoadGrid(472.92f, 2037.86f);
             instance->LoadGrid(591.77f, 1898.48f);
+
+            if (getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()))
+                return;
+            arrivalTimers.emplace(player->GetGUID(), 0);
 
             if (GameObject* transportGameObject = GetGameObjectByEntry(player->GetTeam() == ALLIANCE ? TRANSPORT_ALLIANCE : TRANSPORT_HORDE))
             {
@@ -620,6 +694,11 @@ public:
         {
             switch (type)
             {
+                case DATA_LAND_AT_SHORE:
+                    for (auto const& reference : instance->GetPlayers())
+                        if (Player* player = reference.getSource())
+                            LandPlayer(player);
+                    break;
                 case SCENARION_STEP_9:
                     wave_current = data;
                     releaseWave(data);
@@ -656,7 +735,7 @@ public:
             {
                 case GO_ALLIANCE_SHIP:
                 case GO_HORDE_SHIP:
-                    go->SetVisible(false);
+                    go->SetVisible(!landedPlayers.empty() || getScenarionStep() != 0);
                     objects[go->GetEntry()] = go->GetGUID();
                     break;
             }
@@ -680,6 +759,8 @@ public:
             {
                 case DATA_SCENARIO_TEAM: //getteam.
                     return team;
+                case DATA_LAND_AT_SHORE:
+                    return !landedPlayers.empty();
                 default:
                     return 0;
             }

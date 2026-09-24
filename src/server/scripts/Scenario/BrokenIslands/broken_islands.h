@@ -26,6 +26,7 @@ enum Spells
 enum Data
 {
     DATA_SCENARIO_TEAM = 0,
+    DATA_LAND_AT_SHORE = 100,
 };
 
 enum steps

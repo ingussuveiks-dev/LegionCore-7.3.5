@@ -21,6 +21,7 @@
 #include "TemporarySummon.h"
 #include "Transport.h"
 #include "MotionMaster.h"
+#include "MoveSpline.h"
 #include "ObjectAccessor.h"
 #include "Vehicle.h"
 #include "QuestData.h"
@@ -93,7 +94,7 @@ constexpr CombatStage GetCombatStage(uint32 step, uint32 stepCount)
     return step >= stepCount - 1 ? CombatStage::Exit : CombatStage::None;
 }
 
-constexpr bool ShouldSparringOpponentSurrender(uint32 health, uint32 maxHealth, uint32 damage)
+constexpr bool ShouldSparringOpponentSurrender(uint64 health, uint64 maxHealth, uint32 damage)
 {
     return damage && (damage >= health || uint64(health - damage) * 100 <= uint64(maxHealth) * 15);
 }
@@ -107,6 +108,8 @@ static_assert(ShouldSparringOpponentSurrender(100, 100, 1000), "A one-shot hit m
 static_assert(ShouldSparringOpponentSurrender(100, 100, 85), "The threshold hit must surrender");
 static_assert(!ShouldSparringOpponentSurrender(100, 100, 84), "Early damage must not surrender");
 static_assert(!ShouldSparringOpponentSurrender(10, 100, 0), "Zero damage must not surrender");
+static_assert(ShouldSparringOpponentSurrender(10000, 10000, 20000), "Scaled lethal damage must surrender");
+static_assert(!ShouldSparringOpponentSurrender(5000000000ULL, 5000000000ULL, 1), "Health must not truncate to 32 bits");
 
 CreatureAI* CreateBoostSparringAI(Creature* creature);
 
@@ -220,7 +223,9 @@ public:
         std::vector<ObjectGuid> _yieldedSparringGuids;
         std::vector<ObjectGuid> _pendingCombatGuids;
         std::vector<ObjectGuid> _legionGuids;
+        std::map<ObjectGuid, ObjectGuid> _combatTargets;
         uint32 _defenderTimer = 0;
+        uint32 _secondWaveTimer = 0;
 
         bool IsActiveSparringOpponent(ObjectGuid guid) const
         {
@@ -237,7 +242,7 @@ public:
                 (stage == CombatStage::TwoOpponents && _sparringGuids.size() == 2);
         }
 
-        void OnCreatureDamageTaken(Creature* creature, Unit* /*attacker*/, uint32& damage) override
+        void OnCreatureDamageTaken(Creature* creature, Unit* attacker, uint32& damage) override
         {
             if (!creature)
                 return;
@@ -254,9 +259,13 @@ public:
 
             // The player can exceed the opponent's entire health pool with a
             // single spell. Clamp that hit before Unit::DealDamage can kill it.
-            if (!ShouldSparringOpponentSurrender(creature->GetHealth(), creature->GetMaxHealth(), damage))
+            // Use the same target-relative health as Unit::DealDamage. The
+            // unscaled template health can be much larger for level-100 players.
+            if (!ShouldSparringOpponentSurrender(creature->GetHealth(attacker), creature->GetMaxHealth(attacker), damage))
                 return;
 
+            TC_LOG_INFO("scripts", "Boost tutorial opponent %s surrendered: scaled health %llu, final damage %u",
+                guid.ToString().c_str(), static_cast<unsigned long long>(creature->GetHealth(attacker)), damage);
             damage = 0;
             _yieldedSparringGuids.push_back(guid);
             creature->RemoveAllAuras();
@@ -310,7 +319,7 @@ public:
             if (killer && !creature->GetLootRecipient() &&
                 std::find(_defenderGuids.begin(), _defenderGuids.end(), killer->GetGUID()) != _defenderGuids.end())
                 if (Player* player = GetPlayer())
-                    player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, creature->GetEntry(), 1, 0, creature);
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, creature->GetEntry(), 1, 0, creature, true);
         }
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
@@ -401,7 +410,10 @@ public:
             uint32 const* entourage = _alliance ? allianceEntourage : hordeEntourage;
 
             if (TempSummon* creature = SummonPassenger(transport, trainer, Offset(deck, 5.0f, 0.0f, 0.0f, 3.14f)))
+            {
                 creature->SetReactState(REACT_PASSIVE);
+                _defenderGuids.push_back(creature->GetGUID());
+            }
 
             uint8 index = 0;
             for (uint8 entourageIndex = 0; entourageIndex < 4; ++entourageIndex)
@@ -533,6 +545,19 @@ public:
 
         void Update(uint32 diff) override
         {
+            if (_secondWaveTimer)
+            {
+                if (_secondWaveTimer > diff)
+                    _secondWaveTimer -= diff;
+                else
+                {
+                    _secondWaveTimer = 0;
+                    if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                        if (GetCombatStage(scenario->GetCurrentStep(), scenario->GetStepCount(false)) == CombatStage::TwoOpponents)
+                            SpawnSparringWave(2);
+                }
+            }
+
             if (_defenderTimer)
             {
                 if (_defenderTimer > diff)
@@ -546,13 +571,33 @@ public:
                         if (!defender || !defender->IsAlive() || !defender->AI() || defender->getVictim())
                             continue;
 
+                        Creature* nextTarget = nullptr;
+                        uint32 leastSupport = uint32(_defenderGuids.size()) + 1;
                         for (ObjectGuid const& legionGuid : _legionGuids)
                             if (Creature* attacker = instance->GetCreature(legionGuid))
                                 if (attacker->IsAlive() && attacker->IsInWorld())
                                 {
-                                    defender->AI()->AttackStart(attacker);
-                                    break;
+                                    if (_combatTargets[legionGuid] == defenderGuid)
+                                    {
+                                        nextTarget = attacker;
+                                        break;
+                                    }
+                                    // Once an ally's own pair is defeated, help
+                                    // the remaining fight without all selecting
+                                    // the first enemy in the spawn list.
+                                    uint32 support = 0;
+                                    for (ObjectGuid const& allyGuid : _defenderGuids)
+                                        if (Creature* ally = instance->GetCreature(allyGuid))
+                                            if (ally->getVictim() == attacker)
+                                                ++support;
+                                    if (support < leastSupport)
+                                    {
+                                        leastSupport = support;
+                                        nextTarget = attacker;
+                                    }
                                 }
+                        if (nextTarget)
+                            defender->AI()->AttackStart(nextTarget);
                     }
                 }
             }
@@ -582,7 +627,16 @@ public:
                                 }
                             }
 
-                            summon->AI()->AttackStart(player);
+                            Unit* target = ObjectAccessor::GetUnit(*summon, _combatTargets[guid]);
+                            if (!target || !target->IsAlive())
+                                target = player;
+                            summon->AddThreat(target, 100.0f);
+                            summon->AI()->AttackStart(target);
+                            TC_LOG_INFO("scripts", "Boost tutorial attacker %s assigned to %s",
+                                guid.ToString().c_str(), target->GetGUID().ToString().c_str());
+                            if (Creature* defender = target->ToCreature())
+                                if (defender->AI() && !defender->getVictim())
+                                    defender->AI()->AttackStart(summon);
                             return true;
                         }), _pendingCombatGuids.end());
                 else
@@ -648,13 +702,14 @@ public:
                 _setupTimer = 500;
         }
 
-        void StartCombat(TempSummon* summon, Player* player)
+        void StartCombat(TempSummon* summon, Unit* target)
         {
-            if (!summon || !player)
+            if (!summon || !target)
                 return;
 
             summon->setFaction(14);
-            summon->SetReactState(REACT_AGGRESSIVE);
+            summon->SetReactState(REACT_DEFENSIVE);
+            _combatTargets[summon->GetGUID()] = target->GetGUID();
             _pendingCombatGuids.push_back(summon->GetGUID());
         }
 
@@ -670,6 +725,7 @@ public:
                     _passengerGuids.end());
                 _pendingCombatGuids.erase(std::remove(_pendingCombatGuids.begin(), _pendingCombatGuids.end(), guid),
                     _pendingCombatGuids.end());
+                _combatTargets.erase(guid);
             }
             _sparringGuids.clear();
             _creditedSparringGuids.clear();
@@ -708,39 +764,42 @@ public:
             Position const& deck = Deck();
             _legionGuids.clear();
             _defenderTimer = 1000;
+            std::vector<Unit*> targets{ player };
             for (ObjectGuid const& guid : _defenderGuids)
                 if (Creature* defender = instance->GetCreature(guid))
                 {
                     CreatureAI* defenderAI = new BoostDeckDefenderAI(defender);
                     if (!defender->AIM_Initialize(defenderAI))
                         delete defenderAI;
-                    defender->setFaction(35);
+                    defender->setFaction(player->getFaction());
+                    defender->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NON_ATTACKABLE);
                     defender->SetReactState(REACT_AGGRESSIVE);
+                    targets.push_back(defender);
                 }
 
             for (uint8 index = 0; index < 10; ++index)
                 if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_IMP,
                     Offset(deck, 2.0f + float(index % 5) * 2.0f, -8.0f + float(index / 5) * 16.0f, 0.0f, 3.14f),
-                    player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                    nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
                 {
                     _legionGuids.push_back(attacker->GetGUID());
-                    StartCombat(attacker, player);
+                    StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
                 }
 
             TC_LOG_INFO("scripts", "Boost tutorial spawned Legion imps %u/10 for %s",
                 uint32(_legionGuids.size()), player->GetName());
 
             if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
-                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
             {
                 _legionGuids.push_back(attacker->GetGUID());
-                StartCombat(attacker, player);
+                StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
             }
             if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_BAT, Offset(deck, 0.0f, 8.0f, 3.0f),
-                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
             {
                 _legionGuids.push_back(attacker->GetGUID());
-                StartCombat(attacker, player);
+                StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
             }
         }
 
@@ -782,7 +841,7 @@ public:
                     SpawnSparringWave(1);
                     break;
                 case CombatStage::TwoOpponents:
-                    SpawnSparringWave(2);
+                    _secondWaveTimer = 2000;
                     break;
                 case CombatStage::LegionAttack:
                     ClearSparringWave();
@@ -864,24 +923,15 @@ public:
         if (sender != GOSSIP_SENDER_MAIN || action != GOSSIP_ACTION_INFO_DEF + 1 || player->GetVehicle())
             return true;
 
-        // Spawn in world space. Player::SummonCreature inherits the gunship
-        // transport and makes the departing bird appear to remain on deck.
         player->CombatStop(true);
         // Fill any newly learned active class spells into vacant real slots. The
         // tutorial overlay remains visible until OnMapChanged restores this bar.
         for (auto const& spell : player->GetSpellMapConst())
             player->AddSpellToActionBarIfAppropriate(spell.first, false);
-        if (TempSummon* departure = player->GetMap()->SummonCreature(creature->GetEntry(), creature->GetPosition(),
-            nullptr, 60000, nullptr, ObjectGuid::Empty, 0, 4933))
-        {
-            departure->SetPhaseMask(player->GetPhaseMask(), false);
-            departure->SetPhaseId(player->GetPhases(), false);
-            departure->setIgnorePhaseIdCheck(true);
-            if (departure->AI())
-                departure->AI()->SetGUID(player->GetGUID());
-        }
-        else
-            TC_LOG_ERROR("scripts", "Boost tutorial could not summon departure bird for %s", player->GetName());
+        // Board the actual gossip bird. A second, identical vehicle left the
+        // client showing the rider on deck while the other bird flew away.
+        if (creature->AI())
+            creature->AI()->SetGUID(player->GetGUID());
         return true;
     }
 
@@ -891,16 +941,28 @@ public:
         ObjectGuid rider;
         uint32 timer = 0;
         uint8 phase = 0;
+        uint32 boardingWait = 0;
 
         void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0) override
         {
+            if (!rider.IsEmpty())
+                return;
             rider = guid;
             me->SetReactState(REACT_PASSIVE);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             // Vehicle 4933 belongs to the Horde tutorial exit bird in this DB.
             // Reuse its passenger layout for the Alliance model as well.
             if (!me->GetVehicleKit() && !me->CreateVehicleKit(4933, me->GetEntry()))
+            {
+                rider.Clear();
+                me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 return;
+            }
+            Position worldPosition = me->GetPosition();
+            if (Transport* transport = me->GetTransport())
+                transport->RemovePassenger(me);
+            me->NearTeleportTo(worldPosition);
+            me->setActive(true);
             timer = 500;
         }
 
@@ -921,21 +983,30 @@ public:
             {
                 me->SetCanFly(true);
                 me->SetDisableGravity(true);
+                player->StopMoving();
                 if (Transport* transport = player->GetTransport())
                     transport->RemovePassenger(player);
                 player->EnterVehicle(me, 0, true);
-                // VehicleJoinEvent is asynchronous; check after the next updates.
+                // Wait for VehicleJoinEvent AND its boarding spline to finish.
                 phase = 1;
-                timer = 1000;
+                boardingWait = 0;
+                timer = 100;
             }
             else if (phase == 1)
             {
-                if (player->GetVehicleBase() != me)
+                if (player->GetVehicleBase() != me || !player->movespline->Finalized())
                 {
-                    phase = 3;
-                    timer = 1;
+                    boardingWait += 100;
+                    if (boardingWait >= 10000)
+                    {
+                        TC_LOG_ERROR("scripts", "Boost tutorial boarding did not complete for %s", player->GetName());
+                        phase = 3;
+                    }
+                    timer = 100;
                     return;
                 }
+                TC_LOG_INFO("scripts", "Boost tutorial departure bird %s boarded by %s; starting flight",
+                    me->GetGUID().ToString().c_str(), player->GetName());
                 // CUSTOM short takeoff route, not an official sniffed spline.
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX() + 60.0f,
                     me->GetPositionY() + 40.0f, me->GetPositionZ() + 45.0f, false);
