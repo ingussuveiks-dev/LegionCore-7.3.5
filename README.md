@@ -106,13 +106,21 @@ To enable the included teams:
 | `.lbot follow`, `.lbot stay`, `.lbot come` | Follow, hold position or move to you. |
 | `.lbot attack` | Attack your current target. |
 | `.lbot aggro me\|bot` | Let you or the tank bot hold threat. |
-| `.lbot self` | Toggle AI control of your own character; enabling it also teaches the class ability kit. |
+| `.lbot self` | Toggle AI control of your own character; it uses abilities your character already knows. |
 | `.lbot rescue` | Revive and teleport your character home. |
 | `.lbot creatures` | Spawn a separate four-NPC companion team. |
 | `.lbot tank\|healer\|dps` | Spawn one NPC companion of that role. |
 
 The console form names an **online** player, for example `lbot MyChar team`.
 The bare `.lbot` command spawns a single NPC tank companion.
+
+The player bot spell kits were checked against the extracted 7.3.5 `Spell.db2`,
+`SpellLevels.db2` and `SpecializationSpells.db2`. The included Blood DK, Holy
+Paladin, Fury Warrior and Holy Priest teams learn spells for their own
+specializations and current level. Removed pre-Legion party buffs are not cast;
+Holy Priest no longer receives Discipline/Shadow Shield, and Fury Execute uses
+spell `5308`. NPC companions use separate, generic combat spells. Bot spawning,
+spell effects and combat still need an in-game client test.
 
 The Windows Release build and local auth/worldserver startup were checked on
 2026-09-24: both reached `ready...`, with no startup `ERROR` or `WARN` entries,

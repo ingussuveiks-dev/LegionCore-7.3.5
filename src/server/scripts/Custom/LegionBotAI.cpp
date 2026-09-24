@@ -162,25 +162,48 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         }
     }
 
-    // Legion 7.3.5 ability kits per class
-    std::vector<uint32> GetBotSpells(uint8 cls)
+    // Grant only abilities available to this character's Legion specialization.
+    std::vector<uint32> GetBotSpells(Player const* bot)
     {
-        switch (cls)
+        switch (bot->getClass())
         {
-            case CLASS_DEATH_KNIGHT: return { 49998, 195182, 49143, 49020, 56222, 50842, 49576, 206930, 55233, 49028, 48792, 48707, 205223, 48263, 48266, 57330, 49184 }; // + passives, Horn of Winter, Howling Blast
-            case CLASS_PALADIN:      return { 19750, 20473, 35395, 82326, 223306, 20271, 31821, 633, 20217, 19740 };  // + Lay on Hands, Blessing of Kings/Might
-            case CLASS_ROGUE:        return { 53, 196819 };                         // Backstab, Eviscerate
-            case CLASS_WARRIOR:      return { 23881, 85288, 184367, 100, 355, 1719, 184364, 280735, 118000, 190411, 6673, 1160 }; // + Battle Shout, Demoralizing Shout
-            case CLASS_PRIEST:       return { 2061, 139, 17, 2060, 585, 2050, 33076, 47788, 14914, 21562, 589 }; // + Power Word: Fortitude, Shadow Word: Pain
+            case CLASS_DEATH_KNIGHT:
+                switch (bot->GetSpecializationId())
+                {
+                    case 250: return { 49998, 195182, 56222, 50842, 49576, 206930, 55233, 49028, 48792, 48707, 48263 }; // Blood
+                    case 251: return { 49998, 49143, 49020, 56222, 49576, 48792, 48707, 49184 }; // Frost
+                    default:  return { 49998, 56222, 49576, 48792, 48707 };
+                }
+            case CLASS_PALADIN:
+                if (bot->GetSpecializationId() == 65)
+                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633 }; // Holy
+                if (bot->GetSpecializationId() == 66)
+                    return { 19750, 35395, 20271, 633, 62124 }; // Protection
+                return { 19750, 35395, 20271, 633 };
+            case CLASS_ROGUE:
+                if (bot->GetSpecializationId() == 261)
+                    return { 53, 196819 }; // Subtlety
+                if (bot->GetSpecializationId() == 259)
+                    return { 196819 }; // Assassination
+                return {};
+            case CLASS_WARRIOR:
+                if (bot->GetSpecializationId() == 72)
+                    return { 23881, 85288, 184367, 100, 355, 1719, 184364, 5308, 190411 }; // Fury
+                return { 100, 355, 1719 };
+            case CLASS_PRIEST:
+                if (bot->GetSpecializationId() == 257)
+                    return { 2061, 139, 2060, 585, 2050, 33076, 47788, 14914 }; // Holy
+                return { 2061, 17, 585, 589 };
             default:                 return {};
         }
     }
 
     void LearnBotSpells(Player* bot)
     {
-        for (uint32 spellId : GetBotSpells(bot->getClass()))
-            if (!bot->HasSpell(spellId))
-                bot->addSpell(spellId, true, false, false, false);
+        for (uint32 spellId : GetBotSpells(bot))
+            if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
+                if (spellInfo->SpellLevel <= bot->getLevel() && !bot->HasSpell(spellId))
+                    bot->addSpell(spellId, true, false, false, false);
     }
 
     // ------------------------------------------------------------------
@@ -594,7 +617,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
 
     // Level gate: bots only use abilities their level would have learned
     // (keeps them from firing endgame abilities while leveling)
-    if (spellInfo->BaseLevel > bot->getLevel())
+    if (spellInfo->SpellLevel > bot->getLevel() || !bot->HasSpell(spellId))
         return;
 
     uint32 now = getMSTime();
@@ -620,7 +643,8 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         }
 
         // Face the target so melee abilities don't fail their facing check
-        bot->SetFacingToObject(target);
+        if (target != bot)
+            bot->SetFacingToObject(target);
 
         // Triggered cast: ignores the global cooldown and resource costs
         bot->CastSpell(target, spellInfo, true);
@@ -635,11 +659,6 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
             if (target->GetHealthPct() < 25.0f && !healer->HasSpellCooldown(47788))
             {
                 BotCast(healer, target, 47788);     // Guardian Spirit
-                return;
-            }
-            if (!target->HasAura(6788) && !healer->HasSpellCooldown(17))
-            {
-                BotCast(healer, target, 17);        // Power Word: Shield
                 return;
             }
             if (!healer->HasSpellCooldown(2050))
@@ -672,64 +691,10 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 BotCast(healer, target, 20473);     // Holy Shock
                 return;
             }
-            if (!healer->HasSpellCooldown(223306))
-            {
-                BotCast(healer, target, 223306);    // Bestow Faith
-                return;
-            }
             if (target->GetHealthPct() < 40.0f && !healer->HasSpellCooldown(82326))
                 BotCast(healer, target, 82326);     // Holy Light
             else
                 BotCast(healer, target, 19750);     // Flash of Light
-        }
-    }
-
-    // Keep the whole party buffed with this bot's class buffs (out of combat)
-    void BuffParty(Player* owner, std::vector<ObjectGuid> const& botGuids, Player* bot)
-    {
-        if (!owner || !bot)
-            return;
-        if (bot->isInCombat() || owner->isInCombat())
-            return;
-
-        std::vector<Player*> party;
-        party.push_back(owner);
-        for (ObjectGuid guid : botGuids)
-            if (Player* mate = ObjectAccessor::FindPlayer(guid))
-                party.push_back(mate);
-
-        switch (bot->getClass())
-        {
-            case CLASS_PALADIN:
-                for (Player* member : party)
-                {
-                    if (!member->IsAlive())
-                        continue;
-                    if (!member->HasAura(20217))
-                        BotCast(bot, member, 20217);    // Blessing of Kings
-                    else if (!member->HasAura(19740))
-                        BotCast(bot, member, 19740);    // Blessing of Might
-                }
-                break;
-            case CLASS_PRIEST:
-                for (Player* member : party)
-                {
-                    if (!member->IsAlive())
-                        continue;
-                    if (!member->HasAura(21562))
-                        BotCast(bot, member, 21562);    // Power Word: Fortitude
-                }
-                break;
-            case CLASS_WARRIOR:
-                if (!bot->HasAura(6673))
-                    BotCast(bot, bot, 6673);            // Battle Shout (party-wide)
-                break;
-            case CLASS_DEATH_KNIGHT:
-                if (!bot->HasAura(57330))
-                    BotCast(bot, bot, 57330);           // Horn of Winter (party-wide)
-                break;
-            default:
-                break;
         }
     }
 
@@ -742,15 +707,14 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 if (role == LB_ROLE_TANK)
                 {
                     // Major defensive cooldowns
-                    BotCast(caster, target, 55233);    // Vampiric Blood
-                    BotCast(caster, target, 49028);    // Dancing Rune Weapon
-                    BotCast(caster, target, 48792);    // Icebound Fortitude
-                    BotCast(caster, target, 48707);    // Anti-Magic Shell
+                    BotCast(caster, caster, 55233);    // Vampiric Blood
+                    BotCast(caster, caster, 49028);    // Dancing Rune Weapon
+                    BotCast(caster, caster, 48792);    // Icebound Fortitude
+                    BotCast(caster, caster, 48707);    // Anti-Magic Shell
                     // Damage + threat rotation
                     BotCast(caster, target, 195182);   // Marrowrend
                     BotCast(caster, target, 206930);   // Heart Strike
                     BotCast(caster, target, 49998);    // Death Strike
-                    BotCast(caster, target, 205223);   // Consumption
                     BotCast(caster, target, 50842);    // Blood Boil (AoE threat)
                 }
                 else
@@ -771,14 +735,13 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 BotCast(caster, target, 196819);       // Eviscerate
                 break;
             case CLASS_WARRIOR:
-                BotCast(caster, target, 1719);         // Recklessness
-                BotCast(caster, target, 184364);       // Enraged Regeneration
-                BotCast(caster, target, 118000);       // Dragon Roar
+                BotCast(caster, caster, 1719);         // Battle Cry
+                BotCast(caster, caster, 184364);       // Enraged Regeneration
                 BotCast(caster, target, 184367);       // Rampage
                 BotCast(caster, target, 23881);        // Bloodthirst
                 BotCast(caster, target, 85288);        // Raging Blow
                 if (target->GetHealthPct() < 20.0f)
-                    BotCast(caster, target, 280735);   // Execute
+                    BotCast(caster, target, 5308);     // Fury Execute
                 BotCast(caster, target, 190411);       // Whirlwind
                 break;
             case CLASS_PRIEST:
@@ -1004,9 +967,6 @@ bool LegionBot_ToggleSelfAI(Player* player)
             enabled = true;
         }
     }
-
-    if (enabled)
-        LearnBotSpells(player);   // make sure the player has the class kit
 
     return enabled;
 }
@@ -1515,22 +1475,6 @@ void LegionBot_Spawn(Player* owner, std::string const& charName, ChatHandler* ha
     if (bot->GetPowerType() == POWER_MANA && sObjectMgr->GetItemTemplate(LB_MANA_POTION_ID))
         bot->AddItem(LB_MANA_POTION_ID, 20);
 
-    // Party buffs (only if the bot's level could have learned them)
-    auto castBuffIfUsable = [&](uint32 spellId)
-    {
-        if (SpellInfo const* si = sSpellMgr->GetSpellInfo(spellId))
-            if (si->BaseLevel <= bot->getLevel())
-                bot->CastSpell(bot, spellId, true);
-    };
-    switch (bot->getClass())
-    {
-        case CLASS_WARRIOR:      castBuffIfUsable(6673);  break;   // Battle Shout
-        case CLASS_PALADIN:      castBuffIfUsable(20217); break;   // Blessing of Kings
-        case CLASS_PRIEST:       castBuffIfUsable(21562); break;   // Power Word: Fortitude
-        case CLASS_DEATH_KNIGHT: castBuffIfUsable(57330); break;   // Horn of Winter
-        default: break;
-    }
-
     TC_LOG_INFO("scripts.custom.legionbot", "PlayerBot: %s (guid %u) entered world map %u inst %u pos %.1f %.1f %.1f (inWorld=%d canContact=%d)",
         safeName.c_str(), lowGuid, bot->GetMapId(), bot->GetInstanceId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(),
         bot->IsInWorld() ? 1 : 0, bot->CanContact() ? 1 : 0);
@@ -1942,9 +1886,6 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
         else if (bot->GetPowerType() == POWER_MANA && bot->GetPowerPct(POWER_MANA) < 35.0f)
             BotUsePotion(bot, LB_MANA_POTION_ID);
 
-        // Party buffs (out of combat)
-        BuffParty(player, botGuids, bot);
-
         // ---- Team tactics ----
 
         // Healer: triage heals first; attack when everyone is taken care of
@@ -2058,7 +1999,10 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                 }
                 else
                 {
-                    BotCast(bot, tauntTarget, 355);         // Taunt (warrior)
+                    if (bot->getClass() == CLASS_PALADIN)
+                        BotCast(bot, tauntTarget, 62124); // Hand of Reckoning
+                    else if (bot->getClass() == CLASS_WARRIOR)
+                        BotCast(bot, tauntTarget, 355);   // Taunt
                 }
             }
         }

@@ -57,7 +57,7 @@ namespace
     uint32 const SPELL_BOT_HEAL      = 19750;  // Flash of Light
     uint32 const SPELL_BOT_ATTACK    = 35395;  // Crusader Strike
     uint32 const SPELL_BOT_JUDGEMENT = 20271;  // Judgement
-    uint32 const SPELL_BOT_SMITE     = 403;    // Lightning Bolt
+    uint32 const SPELL_BOT_LIGHTNING_BOLT = 403; // Lightning Bolt
     uint32 const SPELL_BOT_STRIKE    = 12294;  // Mortal Strike
 
     float  const FOLLOW_DISTANCE     = 2.0f;
@@ -244,7 +244,7 @@ public:
                 _attackTimer = ATTACK_COOLDOWN;
                 if (Unit* target = me->getVictim())
                     if (target->IsAlive())
-                        me->CastSpell(target, SPELL_BOT_SMITE, false);
+                        me->CastSpell(target, SPELL_BOT_LIGHTNING_BOLT, false);
             }
             else
                 _attackTimer -= diff;
