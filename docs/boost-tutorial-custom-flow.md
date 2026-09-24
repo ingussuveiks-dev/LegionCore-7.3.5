@@ -162,3 +162,23 @@ The player reported a visible Voidwalker with no portrait below the player frame
 - Registering a secondary controllable guardian unconditionally overwrote the public `UNIT_FIELD_SUMMON` link used for the primary pet. It now fills an empty link; primary-pet replacement still explicitly clears the previous link. `PetSpellInitialize` also restores a mismatched primary-pet link when refreshing an existing pet, with a diagnostic log.
 
 `Test-PetLoadSelection.ps1` compiles the production selector with regression cases for two unslotted demons, an unknown number, entry-based manual summoning, and a hunter active slot. These checks do not verify client portrait rendering. The full vehicle/map transition, pet portrait, guardian coexistence, and camera still require an in-game test with the new executable.
+
+## Departure camera retest at 15:53 (2026-09-24)
+
+The client still left the camera on the gunship with the farsight-only change.
+The server logged boarding at 15:53:20, map transfer at 15:53:30 and successful
+beach disembarkation at 15:54:30. The same run logged separate sparring surrenders
+at 15:50:10, 15:51:05 and 15:51:28 with normal target health (448698 maximum).
+
+The departure now uses `SetClientControl(bird, false)` after boarding and before
+starting movement, as other scripted flights in BrokenIslands and Stormheim do.
+This sends both client-control and active-mover packets; `SetViewpoint` alone
+only changed the farsight field. The server continues to drive the flight.
+Because seat 16967 is not a control seat, explicit restoration to the player is
+required on passenger removal, before the map-transfer spell and on fallback.
+The restoration only changes control if this bird is still the player's mover.
+
+Client verification is still required: the camera must follow the rider during
+takeoff, then return to the player on the landing ship and beach. Also test an
+early dismount and confirm no incorrect-active-mover errors occur. A successful
+server boarding log alone does not prove the client camera works.

@@ -957,12 +957,21 @@ public:
         uint8 phase = 0;
         uint32 boardingWait = 0;
 
+        void RestoreRiderControl(Player* player)
+        {
+            // Seat 16967 does not charm its vehicle, so the generic vehicle
+            // removal path does not restore the active mover for this ride.
+            if (player->GetUnitBeingMoved() == me)
+                player->SetClientControl(player, true);
+            else if (player->GetViewpoint() == me)
+                player->SetViewpoint(me, false);
+        }
+
         void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
         {
             if (!apply)
                 if (Player* player = passenger->ToPlayer())
-                    if (player->GetViewpoint() == me)
-                        player->SetViewpoint(me, false);
+                    RestoreRiderControl(player);
         }
 
         void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0) override
@@ -1029,14 +1038,17 @@ public:
                 }
                 TC_LOG_INFO("scripts", "Boost tutorial departure bird %s boarded by %s; starting flight",
                     me->GetGUID().ToString().c_str(), player->GetName());
-                // The 4933 passenger seat does not establish a camera target.
-                // Synchronize the completed attachment and explicitly follow
-                // the moving bird, then restore the player's view on exit.
+                // This seat is a passenger seat, not a controllable vehicle.
+                // A farsight field alone leaves the client's active mover on
+                // the ship. Use the same handoff as other scripted flights:
+                // send control-off and active-mover packets for the bird while
+                // the server drives it. SetClientControl also sets viewpoint.
                 me->GetVehicleKit()->RelocatePassengers();
                 player->SendMovementFlagUpdate(true);
-                if (WorldObject* viewpoint = player->GetViewpoint())
-                    player->SetViewpoint(viewpoint, false);
-                player->SetViewpoint(me, true);
+                player->SetClientControl(me, false);
+                TC_LOG_INFO("scripts", "Boost tutorial departure handoff for %s: mover %s, vehicle %s",
+                    player->GetName(), player->GetUnitBeingMoved()->GetGUID().ToString().c_str(),
+                    player->GetVehicleBase()->GetGUID().ToString().c_str());
                 // CUSTOM short takeoff route, not an official sniffed spline.
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX() + 60.0f,
                     me->GetPositionY() + 40.0f, me->GetPositionZ() + 45.0f, false);
@@ -1045,8 +1057,7 @@ public:
             }
             else if (phase == 2)
             {
-                if (player->GetViewpoint() == me)
-                    player->SetViewpoint(me, false);
+                RestoreRiderControl(player);
                 uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
                 if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE && !player->GetQuestRewardStatus(questId))
                     if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
@@ -1063,6 +1074,7 @@ public:
             {
                 // If the Broken Shore queue cannot launch, recover at the faction
                 // capital intro instead of leaving a character on a despawned bird.
+                RestoreRiderControl(player);
                 player->ExitVehicle();
                 bool alliance = player->GetTeam() == ALLIANCE;
                 player->TeleportTo(alliance ? 0 : 1,
