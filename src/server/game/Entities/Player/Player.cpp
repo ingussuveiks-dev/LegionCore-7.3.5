@@ -34238,6 +34238,10 @@ bool Player::IsCanChangeSpecToAnotherRole() const
 
 void Player::ResetTimeSync()
 {
+    // The non-seamless map transition restarts sequence numbering. Requests
+    // from the previous map must not remain at the head of the response queue.
+    while (!m_timeSyncQueue.empty())
+        m_timeSyncQueue.pop();
     m_timeSyncTimer = 0;
     m_timeSyncClient = 0;
     m_timeSyncServer = GameTime::GetGameTimeMS();

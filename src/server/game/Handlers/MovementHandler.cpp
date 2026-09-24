@@ -25,6 +25,7 @@
 #include "PlayerDefines.h"
 #include "InstancePackets.h"
 #include "Vehicle.h"
+#include "TimeSync.h"
 
 void WorldSession::HandleWorldPortResponse(WorldPackets::Movement::WorldPortResponse& /*packet*/)
 {
@@ -575,17 +576,17 @@ void WorldSession::HandleTimeSyncResponse(WorldPackets::Movement::TimeSyncRespon
 {
     Player* player = GetPlayer();
 
-    if (player->m_timeSyncQueue.empty())
+    if (!player)
+        return;
+
+    if (!TimeSync::ConsumeResponse(player->m_timeSyncQueue, packet.SequenceIndex))
     {
-        TC_LOG_DEBUG("network", "Received CMSG_TIME_SYNC_RESPONSE from player %s without requesting it (hacker?)", player->GetName());
+        TC_LOG_DEBUG("network", "Ignoring stale or unsolicited time sync response %u from %s",
+            packet.SequenceIndex, player->GetName());
         return;
     }
 
-    if (packet.SequenceIndex != player->m_timeSyncQueue.front())
-        TC_LOG_ERROR("network", "Wrong time sync counter from player %s (cheater?)", player->GetName());
-
     player->m_timeSyncClient = packet.ClientTime;
-    player->m_timeSyncQueue.pop();
 }
 
 void WorldSession::HandleDiscardedTimeSyncAcks(WorldPackets::Movement::DiscardedTimeSyncAcks& packet)
@@ -594,10 +595,9 @@ void WorldSession::HandleDiscardedTimeSyncAcks(WorldPackets::Movement::Discarded
     if (!player)
         return;
 
-    if (player->m_sequenceIndex != packet.MaxSequenceIndex)
-        TC_LOG_ERROR("network", "Received CMSG_DISCARDED_TIME_SYNC_ACKS from player %s, but maxSequenceIndex %u isn't equal real server SequenceIndex %u", player->GetName(), packet.MaxSequenceIndex, player->m_sequenceIndex);
-
-    player->m_sequenceIndex = 0;
+    // MaxSequenceIndex is the last discarded acknowledgement, whereas
+    // m_sequenceIndex is the next number to send (also used by movement).
+    TimeSync::DiscardThrough(player->m_timeSyncQueue, packet.MaxSequenceIndex, player->m_sequenceIndex);
 }
 
 void WorldSession::HandleTimeSyncResponseDropped(WorldPackets::Movement::TimeSyncResponseDropped& /*packet*/)

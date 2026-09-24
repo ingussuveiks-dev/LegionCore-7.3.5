@@ -3135,11 +3135,12 @@ void Map::RemoveAllObjectsInRemoveList()
         {
             case TYPEID_CORPSE:
             {
-                Corpse* corpse = ObjectAccessor::GetCorpse(*obj, obj->GetGUID());
-                if (!corpse)
-                    TC_LOG_ERROR("maps", "Tried to delete corpse/bones %u that is not in map.", obj->GetGUIDLow());
-                else
-                    RemoveFromMap(corpse, true);
+                // AddObjectToRemoveList already called CleanupsBeforeDelete,
+                // which unregisters the corpse from ObjectAccessor. The remove
+                // queue still owns the object; finish deleting that exact object
+                // instead of looking it up again (or finding replacement bones
+                // with the same GUID).
+                RemoveFromMap(obj->ToCorpse(), true);
                 break;
             }
         case TYPEID_DYNAMICOBJECT:
