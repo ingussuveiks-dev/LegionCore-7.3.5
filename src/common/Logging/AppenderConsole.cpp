@@ -18,6 +18,7 @@
 #include "AppenderConsole.h"
 #include "LogMessage.h"
 #include "Util.h"
+#include <mutex>
 #include <sstream>
 
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
@@ -162,6 +163,11 @@ void AppenderConsole::ResetColor(bool stdout_stream)
 
 void AppenderConsole::_write(LogMessage const* message)
 {
+    // Synchronous logging can write from several startup threads at once.
+    // Keep color changes and output together for every console appender.
+    static std::mutex consoleMutex;
+    std::lock_guard<std::mutex> lock(consoleMutex);
+
     bool stdout_stream = !(message->level == LOG_LEVEL_ERROR || message->level == LOG_LEVEL_FATAL);
 
     if (_colored)
@@ -192,6 +198,7 @@ void AppenderConsole::_write(LogMessage const* message)
 
         SetColor(stdout_stream, _colors[index]);
         utf8printf(stdout_stream ? stdout : stderr, "%s%s\n", message->prefix.c_str(), message->text.c_str());
+        fflush(stdout_stream ? stdout : stderr);
         ResetColor(stdout_stream);
     }
     else
