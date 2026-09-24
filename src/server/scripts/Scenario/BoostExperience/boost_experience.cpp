@@ -66,6 +66,13 @@ enum Criteria : uint32
     CRITERIA_SPAR_COMPLETE = 48772
 };
 
+enum InstanceData : uint32
+{
+    DATA_SPAR_SURRENDER = 1
+};
+
+CreatureAI* CreateBoostSparringAI(Creature* creature);
+
 // WorldSafeLocs 5219 and 5752 are transport-local boost spawn positions.
 Position const AllianceDeck = { 11.1372f, -0.363736f, 20.6586f, 2.937f };
 Position const HordeDeck    = { 0.720768f, 1.68496f, 34.501f, 6.2787f };
@@ -159,7 +166,37 @@ public:
         ObjectGuid _trainingDummyGuid;
         std::vector<ObjectGuid> _passengerGuids;
         std::vector<ObjectGuid> _sparringGuids;
+        std::vector<ObjectGuid> _creditedSparringGuids;
         std::vector<ObjectGuid> _pendingCombatGuids;
+
+        void SetGuidData(uint32 type, ObjectGuid guid) override
+        {
+            if (type != DATA_SPAR_SURRENDER ||
+                std::find(_sparringGuids.begin(), _sparringGuids.end(), guid) == _sparringGuids.end() ||
+                std::find(_creditedSparringGuids.begin(), _creditedSparringGuids.end(), guid) != _creditedSparringGuids.end())
+                return;
+
+            Player* player = GetPlayer();
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!player || !scenario)
+                return;
+
+            uint8 stepCount = scenario->GetStepCount(false);
+            uint32 step = scenario->GetCurrentStep();
+            if (stepCount < 4 || (step != stepCount - 4 && step != stepCount - 3))
+                return;
+
+            _creditedSparringGuids.push_back(guid);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_SPAR_COMPLETE);
+            TC_LOG_INFO("scripts", "Boost tutorial credited sparring opponent %s for %s at step %u",
+                guid.ToString().c_str(), player->GetName(), step);
+        }
+
+        void CreatureDies(Creature* creature, Unit* /*killer*/) override
+        {
+            if (creature)
+                SetGuidData(DATA_SPAR_SURRENDER, creature->GetGUID());
+        }
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
         uint32 TransportEntry() const { return _alliance ? GO_DAWN_BLADE : GO_WARBRINGER; }
@@ -374,6 +411,19 @@ public:
                             if (!summon || !summon->IsInWorld() || !summon->AI())
                                 return false;
 
+                            // Runtime transport summons can receive a generic summon AI
+                            // when the template script binding is missing or stale.
+                            // Install the tutorial AI explicitly before combat begins.
+                            if (std::find(_sparringGuids.begin(), _sparringGuids.end(), guid) != _sparringGuids.end())
+                            {
+                                CreatureAI* sparringAI = CreateBoostSparringAI(summon);
+                                if (!summon->AIM_Initialize(sparringAI))
+                                {
+                                    delete sparringAI;
+                                    return false;
+                                }
+                            }
+
                             summon->AI()->AttackStart(player);
                             return true;
                         }), _pendingCombatGuids.end());
@@ -463,6 +513,7 @@ public:
                     _pendingCombatGuids.end());
             }
             _sparringGuids.clear();
+            _creditedSparringGuids.clear();
         }
 
         void SpawnSparringWave(uint8 count)
@@ -769,7 +820,7 @@ public:
 
         bool surrendered = false;
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
+        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*type*/) override
         {
             if (me->GetMapId() != MAP_ALLIANCE && me->GetMapId() != MAP_HORDE)
                 return;
@@ -791,14 +842,9 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->SetStandState(UNIT_STAND_STATE_KNEEL);
             me->MonsterSay("I yield!", LANG_UNIVERSAL, ObjectGuid::Empty);
-            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
-            if (!player)
-                if (TempSummon* summon = me->ToTempSummon())
-                    player = summon->GetSummoner() ? summon->GetSummoner()->ToPlayer() : nullptr;
-
-            if (player)
-                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_SPAR_COMPLETE);
             me->DespawnOrUnsummon(5000);
+            if (InstanceScript* instance = me->GetInstanceScript())
+                instance->SetGuidData(DATA_SPAR_SURRENDER, me->GetGUID());
         }
 
         void UpdateAI(uint32 /*diff*/) override
@@ -815,6 +861,11 @@ public:
         return new npc_boost_sparring_opponentAI(creature);
     }
 };
+
+CreatureAI* BoostExperience::CreateBoostSparringAI(Creature* creature)
+{
+    return new npc_boost_sparring_opponent::npc_boost_sparring_opponentAI(creature);
+}
 
 class player_boost_tutorial_bars : public PlayerScript
 {
