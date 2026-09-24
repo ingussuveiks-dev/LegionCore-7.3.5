@@ -1238,7 +1238,8 @@ class TC_GAME_API WorldSession
 
         void UpdateTimeOutTime(uint32 diff)
         {
-            m_timeOutTime -= int32(diff);
+            if (sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME) > 0)
+                m_timeOutTime -= int32(diff);
         }
 
         void ResetTimeOutTime()
@@ -1248,7 +1249,7 @@ class TC_GAME_API WorldSession
 
         bool IsConnectionIdle() const
         {
-            return m_timeOutTime <= 0 && !m_inQueue;
+            return sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME) > 0 && m_timeOutTime <= 0 && !m_inQueue;
         }
 
         // Recruit-A-Friend Handling
