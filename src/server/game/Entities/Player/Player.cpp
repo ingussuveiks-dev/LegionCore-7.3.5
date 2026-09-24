@@ -33099,7 +33099,7 @@ void Player::UpdateAchievementCriteria(CriteriaTypes type, uint32 miscValue1 /*=
     // Update scenario/challenge criterias
     if (uint32 instanceId =  map && InInstance() ? map->GetInstanceId() : 0)
         if (Scenario* progress = sScenarioMgr->GetScenario(instanceId))
-            progress->GetAchievementMgr().UpdateAchievementCriteria(referenceCache);
+            progress->UpdateAchievementCriteria(referenceCache);
 
     // Update only individual achievement criteria here, otherwise we may get multiple updates
     if (Guild* guild = sGuildMgr->GetGuildById(GetGuildId()))

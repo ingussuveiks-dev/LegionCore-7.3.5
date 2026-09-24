@@ -661,7 +661,7 @@ void Scenario::BroadCastPacket(const WorldPacket* data)
 
 bool Scenario::CanUpdateCriteria(uint32 criteriaId, uint32 recursTree /*=0*/) const
 {
-    auto const& cTreeList = sDB2Manager.GetCriteriaTreeList(recursTree ? recursTree : currentTree);
+    auto const& cTreeList = sDB2Manager.GetCriteriaTreeList(recursTree ? recursTree : (_criteriaTreeForUpdate ? _criteriaTreeForUpdate : currentTree));
     if (!cTreeList)
         return false;
 
@@ -697,5 +697,15 @@ void Scenario::UpdateAchievementCriteria(CriteriaTypes type, uint32 miscValue1 /
 {
     AchievementCachePtr referenceCache = std::make_shared<AchievementCache>(referencePlayer, unit, type, miscValue1, miscValue2, miscValue3);
 
-    GetAchievementMgr().UpdateAchievementCriteria(referenceCache);
+    UpdateAchievementCriteria(referenceCache);
+}
+
+void Scenario::UpdateAchievementCriteria(AchievementCachePtr cache)
+{
+    // Finishing a step can change currentTree while the criteria manager is still
+    // iterating over this event. Keep the event on the step where it began.
+    uint32 previousTree = _criteriaTreeForUpdate;
+    _criteriaTreeForUpdate = currentTree;
+    GetAchievementMgr().UpdateAchievementCriteria(cache);
+    _criteriaTreeForUpdate = previousTree;
 }

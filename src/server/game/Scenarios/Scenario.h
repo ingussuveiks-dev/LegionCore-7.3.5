@@ -88,6 +88,7 @@ public:
 
     AchievementMgr<Scenario>& GetAchievementMgr();
     AchievementMgr<Scenario> const& GetAchievementMgr() const;
+    void UpdateAchievementCriteria(AchievementCachePtr cache);
     void UpdateAchievementCriteria(CriteriaTypes type, uint32 miscValue1 = 0, uint32 miscValue2 = 0, uint32 miscValue3 = 0, Unit* unit = nullptr, Player* referencePlayer = nullptr);
 
     std::vector<WorldPackets::Scenario::BonusObjectiveData> GetBonusObjectivesData();
@@ -117,6 +118,7 @@ protected:
 
     uint8 currentStep;
     uint32 currentTree;
+    uint32 _criteriaTreeForUpdate = 0;
     ScenarioSteps steps;
     std::vector<uint32> ActiveSteps;
 
