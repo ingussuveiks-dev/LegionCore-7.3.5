@@ -11894,7 +11894,9 @@ void Unit::SetMinion(Minion *minion, bool apply)
         }
 
         if (minion->HasUnitTypeMask(UNIT_MASK_CONTROLABLE_GUARDIAN) && !minion->ToCreature()->m_isHati)
-            SetGuidValue(UNIT_FIELD_SUMMON, minion->GetGUID());
+            // A secondary guardian must not replace the client's primary pet.
+            // The primary-pet replacement above explicitly clears this field.
+            AddGuidValue(UNIT_FIELD_SUMMON, minion->GetGUID());
 
         if (minion->m_Properties && minion->m_Properties->Title == SUMMON_TYPE_MINIPET)
             SetCritterGUID(minion->GetGUID());

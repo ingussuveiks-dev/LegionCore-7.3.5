@@ -26910,6 +26910,16 @@ void Player::PetSpellInitialize()
     if (!pet)
         return;
 
+    // The spell bar alone does not restore the client's "pet" unit/portrait.
+    // Keep its public summon link aligned with the actual permanent pet,
+    // including when an already summoned demon is called back to the player.
+    if (GetMinionGUID() != pet->GetGUID())
+    {
+        TC_LOG_INFO("entities.pet", "Restoring primary pet link for %s: %s -> %s",
+            GetName(), GetMinionGUID().ToString().c_str(), pet->GetGUID().ToString().c_str());
+        SetMinionGUID(pet->GetGUID());
+    }
+
     TC_LOG_DEBUG("misc", "Player::PetSpellInitialize entry %i", pet->GetEntry());
     CharmInfo* charmInfo = pet->GetCharmInfo();
 

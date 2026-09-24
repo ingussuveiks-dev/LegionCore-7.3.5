@@ -154,3 +154,11 @@ so the control-seat charm path is not establishing the view.
 
 The level-range regression test and Release compilation passed. A repeat client
 test is still required for actual hit counts, wave timing and camera motion.
+# Permanent pet restoration follow-up (2026-09-24)
+
+The player reported a visible Voidwalker with no portrait below the player frame after reaching Broken Shore. Two defects were found in the server paths involved:
+
+- Vehicle exit reloads a pet using entry `0` and its saved unique pet number. `Pet::GetLoadPetInfo` searched unslotted demons by creature entry even in the number-lookup branch, so the automatic reload failed. It now compares `PetNumber`.
+- Registering a secondary controllable guardian unconditionally overwrote the public `UNIT_FIELD_SUMMON` link used for the primary pet. It now fills an empty link; primary-pet replacement still explicitly clears the previous link. `PetSpellInitialize` also restores a mismatched primary-pet link when refreshing an existing pet, with a diagnostic log.
+
+`Test-PetLoadSelection.ps1` compiles the production selector with regression cases for two unslotted demons, an unknown number, entry-based manual summoning, and a hunter active slot. These checks do not verify client portrait rendering. The full vehicle/map transition, pet portrait, guardian coexistence, and camera still require an in-game test with the new executable.
