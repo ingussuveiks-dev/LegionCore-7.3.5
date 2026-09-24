@@ -208,6 +208,7 @@ class TC_GAME_API InstanceScript : public ZoneScript
         virtual WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) { return nullptr; }
 
         virtual void onScenarionNextStep(uint32 /*newStep*/) {}
+        virtual void OnCreatureDamageTaken(Creature* /*creature*/, Unit* /*attacker*/, uint32& /*damage*/) {}
         void CreatureDies(Creature* /*creature*/, Unit* /*killer*/) override {}
         void OnCreatureCreate(Creature* creature) override;
         void OnCreatureRemove(Creature* creature) override;

@@ -911,6 +911,13 @@ void Unit::DealDamageMods(Unit* victim, uint32 &damage, uint32* absorb, SpellInf
 
 uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellInfo const* spellProto, bool durabilityLoss)
 {
+    // The instance must be able to protect encounter actors even when their
+    // creature AI has not yet been initialized (for example, queued transport
+    // passengers hit by a one-shot spell).
+    if (Creature* creature = victim->ToCreature())
+        if (InstanceScript* instance = creature->GetInstanceScript())
+            instance->OnCreatureDamageTaken(creature, this, damage);
+
     if (victim->IsAIEnabled)
     {
         victim->GetAI()->DamageTaken(this, damage, damagetype);

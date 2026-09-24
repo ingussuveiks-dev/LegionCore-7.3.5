@@ -10,3 +10,9 @@
 - For Mounts and Pets store offers, set `battlepay_display_info_visuals.DisplayId` to the collectible's `CreatureDisplayInfoID` and `VisualId` to the Store UI model scene `10`. Set `battlepay_display_info.FileDataID` to `10` as well.
 - Do not copy `Mount.UiModelSceneID` or `BattlePetSpecies.CardUIModelSceneID` (`4`/`6` for many entries) into these Store scene fields. Those values caused empty cards and previews even when the model ID was correct.
 - Check both the catalog card and expanded preview in the 7.3.5 client after adding offers. Luminous Starseeker is a known working scene-10 reference; the blank Shackled Ur'zul and Shadow cards exposed this regression.
+
+# Level 100 boost tutorial regression
+
+- After changing `boost_experience.cpp` or scenario criteria handling, check the full 7.3.5 sequence: one opponent surrenders and gives 1/1, then two separate opponents surrender and give 2/2, then Legion attackers spawn, then the exit bird boards and delivers the player. Do not advance a wave from spawning or from an unrelated death.
+- Include a spell that can kill a fresh sparring opponent in one hit. The instance damage hook must turn that hit into a surrender before damage is applied, even when a transport passenger's AI is unavailable. Check the `CreatureDies` fallback log; it should not occur in a normal run.
+- Verify the matching `ScenarioStep.db2`, `CriteriaTree.db2`, and `Criteria.db2` entries from the 7.3.5 runtime data, compile the Release server, and test in game before calling the sequence verified.

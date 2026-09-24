@@ -71,6 +71,43 @@ enum InstanceData : uint32
     DATA_SPAR_SURRENDER = 1
 };
 
+enum class CombatStage : uint8
+{
+    None,
+    OneOpponent,
+    TwoOpponents,
+    LegionAttack,
+    Exit
+};
+
+constexpr CombatStage GetCombatStage(uint32 step, uint32 stepCount)
+{
+    if (stepCount < 4)
+        return CombatStage::None;
+    if (step == stepCount - 4)
+        return CombatStage::OneOpponent;
+    if (step == stepCount - 3)
+        return CombatStage::TwoOpponents;
+    if (step == stepCount - 2)
+        return CombatStage::LegionAttack;
+    return step >= stepCount - 1 ? CombatStage::Exit : CombatStage::None;
+}
+
+constexpr bool ShouldSparringOpponentSurrender(uint32 health, uint32 maxHealth, uint32 damage)
+{
+    return damage && (damage >= health || uint64(health - damage) * 100 <= uint64(maxHealth) * 15);
+}
+
+static_assert(GetCombatStage(9, 14) == CombatStage::None, "Ability lesson must precede combat");
+static_assert(GetCombatStage(10, 14) == CombatStage::OneOpponent, "First opponent must spawn alone");
+static_assert(GetCombatStage(11, 14) == CombatStage::TwoOpponents, "Second wave has two opponents");
+static_assert(GetCombatStage(12, 14) == CombatStage::LegionAttack, "Legion attacks after sparring");
+static_assert(GetCombatStage(13, 14) == CombatStage::Exit, "Exit follows the Legion attack");
+static_assert(ShouldSparringOpponentSurrender(100, 100, 1000), "A one-shot hit must surrender");
+static_assert(ShouldSparringOpponentSurrender(100, 100, 85), "The threshold hit must surrender");
+static_assert(!ShouldSparringOpponentSurrender(100, 100, 84), "Early damage must not surrender");
+static_assert(!ShouldSparringOpponentSurrender(10, 100, 0), "Zero damage must not surrender");
+
 CreatureAI* CreateBoostSparringAI(Creature* creature);
 
 struct BoostDeckDefenderAI : public ScriptedAI
@@ -180,15 +217,62 @@ public:
         std::vector<ObjectGuid> _defenderGuids;
         std::vector<ObjectGuid> _sparringGuids;
         std::vector<ObjectGuid> _creditedSparringGuids;
+        std::vector<ObjectGuid> _yieldedSparringGuids;
         std::vector<ObjectGuid> _pendingCombatGuids;
         std::vector<ObjectGuid> _legionGuids;
         uint32 _defenderTimer = 0;
 
+        bool IsActiveSparringOpponent(ObjectGuid guid) const
+        {
+            if (std::find(_sparringGuids.begin(), _sparringGuids.end(), guid) == _sparringGuids.end() ||
+                std::find(_creditedSparringGuids.begin(), _creditedSparringGuids.end(), guid) != _creditedSparringGuids.end())
+                return false;
+
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario)
+                return false;
+
+            CombatStage stage = GetCombatStage(scenario->GetCurrentStep(), scenario->GetStepCount(false));
+            return (stage == CombatStage::OneOpponent && _sparringGuids.size() == 1) ||
+                (stage == CombatStage::TwoOpponents && _sparringGuids.size() == 2);
+        }
+
+        void OnCreatureDamageTaken(Creature* creature, Unit* /*attacker*/, uint32& damage) override
+        {
+            if (!creature)
+                return;
+
+            ObjectGuid guid = creature->GetGUID();
+            if (std::find(_yieldedSparringGuids.begin(), _yieldedSparringGuids.end(), guid) != _yieldedSparringGuids.end())
+            {
+                damage = 0;
+                return;
+            }
+
+            if (!IsActiveSparringOpponent(guid))
+                return;
+
+            // The player can exceed the opponent's entire health pool with a
+            // single spell. Clamp that hit before Unit::DealDamage can kill it.
+            if (!ShouldSparringOpponentSurrender(creature->GetHealth(), creature->GetMaxHealth(), damage))
+                return;
+
+            damage = 0;
+            _yieldedSparringGuids.push_back(guid);
+            creature->RemoveAllAuras();
+            creature->CombatStop(true);
+            creature->SetReactState(REACT_PASSIVE);
+            creature->setFaction(35);
+            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            creature->SetStandState(UNIT_STAND_STATE_KNEEL);
+            creature->MonsterSay("I yield!", LANG_UNIVERSAL, ObjectGuid::Empty);
+            creature->DespawnOrUnsummon(5000);
+            SetGuidData(DATA_SPAR_SURRENDER, guid);
+        }
+
         void SetGuidData(uint32 type, ObjectGuid guid) override
         {
-            if (type != DATA_SPAR_SURRENDER ||
-                std::find(_sparringGuids.begin(), _sparringGuids.end(), guid) == _sparringGuids.end() ||
-                std::find(_creditedSparringGuids.begin(), _creditedSparringGuids.end(), guid) != _creditedSparringGuids.end())
+            if (type != DATA_SPAR_SURRENDER || !IsActiveSparringOpponent(guid))
                 return;
 
             Player* player = GetPlayer();
@@ -196,10 +280,7 @@ public:
             if (!player || !scenario)
                 return;
 
-            uint8 stepCount = scenario->GetStepCount(false);
             uint32 step = scenario->GetCurrentStep();
-            if (stepCount < 4 || (step != stepCount - 4 && step != stepCount - 3))
-                return;
 
             _creditedSparringGuids.push_back(guid);
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_SPAR_COMPLETE);
@@ -209,7 +290,18 @@ public:
 
         void CreatureDies(Creature* creature, Unit* killer) override
         {
-            if (!creature || std::find(_legionGuids.begin(), _legionGuids.end(), creature->GetGUID()) == _legionGuids.end())
+            if (!creature)
+                return;
+
+            if (IsActiveSparringOpponent(creature->GetGUID()))
+            {
+                TC_LOG_ERROR("scripts", "Boost tutorial sparring opponent %s died before surrender; crediting fallback",
+                    creature->GetGUID().ToString().c_str());
+                SetGuidData(DATA_SPAR_SURRENDER, creature->GetGUID());
+                return;
+            }
+
+            if (std::find(_legionGuids.begin(), _legionGuids.end(), creature->GetGUID()) == _legionGuids.end())
                 return;
 
             // Allies can finish Legion attackers. Their kills still count for
@@ -571,7 +663,8 @@ public:
             for (ObjectGuid const& guid : _sparringGuids)
             {
                 if (Creature* opponent = instance->GetCreature(guid))
-                    opponent->DespawnOrUnsummon();
+                    if (std::find(_yieldedSparringGuids.begin(), _yieldedSparringGuids.end(), guid) == _yieldedSparringGuids.end())
+                        opponent->DespawnOrUnsummon();
 
                 _passengerGuids.erase(std::remove(_passengerGuids.begin(), _passengerGuids.end(), guid),
                     _passengerGuids.end());
@@ -600,6 +693,9 @@ public:
                     _sparringGuids.push_back(opponent->GetGUID());
                     StartCombat(opponent, player);
                 }
+
+            TC_LOG_INFO("scripts", "Boost tutorial spawned sparring wave %u/%u for %s",
+                uint32(_sparringGuids.size()), uint32(count), player->GetName());
         }
 
         void SpawnLegionWave()
@@ -630,6 +726,9 @@ public:
                     _legionGuids.push_back(attacker->GetGUID());
                     StartCombat(attacker, player);
                 }
+
+            TC_LOG_INFO("scripts", "Boost tutorial spawned Legion imps %u/10 for %s",
+                uint32(_legionGuids.size()), player->GetName());
 
             if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
                 player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
@@ -676,26 +775,26 @@ public:
                 return;
 
             uint8 stepCount = scenario->GetStepCount(false);
-            if (stepCount < 4)
-                return;
-
             SetTrainingDummyForStep(GetPlayer(), newStep, stepCount);
-            if (newStep == stepCount - 4)
-                SpawnSparringWave(1);
-            else if (newStep == stepCount - 3)
-                SpawnSparringWave(2);
-            else if (newStep == stepCount - 2)
+            switch (GetCombatStage(newStep, stepCount))
             {
-                ClearSparringWave();
-                SpawnLegionWave();
+                case CombatStage::OneOpponent:
+                    SpawnSparringWave(1);
+                    break;
+                case CombatStage::TwoOpponents:
+                    SpawnSparringWave(2);
+                    break;
+                case CombatStage::LegionAttack:
+                    ClearSparringWave();
+                    SpawnLegionWave();
+                    break;
+                case CombatStage::Exit:
+                    _defenderTimer = 0;
+                    SpawnExit();
+                    break;
+                default:
+                    return;
             }
-            else if (newStep >= uint32(stepCount - 1))
-            {
-                _defenderTimer = 0;
-                SpawnExit();
-            }
-            else
-                return;
 
             _lastCombatStep = uint8(newStep);
         }
@@ -916,38 +1015,9 @@ public:
                 AttackStart(player);
         }
 
-        bool surrendered = false;
-
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*type*/) override
-        {
-            if (me->GetMapId() != MAP_ALLIANCE && me->GetMapId() != MAP_HORDE)
-                return;
-            if (surrendered)
-            {
-                damage = 0;
-                return;
-            }
-            // CUSTOM 15% surrender threshold; the video confirms yielding, not
-            // the exact health value. Clamp lethal hits before awarding progress.
-            if (damage < me->GetHealth() && me->GetHealth() - damage > me->CountPctFromMaxHealth(15))
-                return;
-            damage = 0;
-            surrendered = true;
-            me->RemoveAllAuras();
-            me->CombatStop(true);
-            me->SetReactState(REACT_PASSIVE);
-            me->setFaction(35);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            me->SetStandState(UNIT_STAND_STATE_KNEEL);
-            me->MonsterSay("I yield!", LANG_UNIVERSAL, ObjectGuid::Empty);
-            me->DespawnOrUnsummon(5000);
-            if (InstanceScript* instance = me->GetInstanceScript())
-                instance->SetGuidData(DATA_SPAR_SURRENDER, me->GetGUID());
-        }
-
         void UpdateAI(uint32 /*diff*/) override
         {
-            if (surrendered || !UpdateVictim())
+            if (!UpdateVictim())
                 return;
 
             DoMeleeAttackIfReady();
