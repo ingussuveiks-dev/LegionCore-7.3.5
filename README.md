@@ -102,9 +102,9 @@ To enable the included teams:
 | `.lbot info` | Show bot state and diagnostic information. |
 | `.lbot level sync\|max\|<1-110>` | Match your level, use the realm maximum or set a fixed level. |
 | `.lbot autogear` | Re-equip the bots for their current level. |
-| `.lbot assist full\|defend\|chill` | Assist your fights, defend against attackers or avoid starting fights. |
+| `.lbot assist full\|defend\|chill` | Defend the whole bot team, prioritize attackers of you or the bot itself, or follow/heal without automatic assistance. In `chill`, bots still fight back or obey a valid `.lbot attack` order. Every mode requires an active attacker. |
 | `.lbot follow`, `.lbot stay`, `.lbot come` | Follow, hold position or move to you. |
-| `.lbot attack` | Attack your current target. |
+| `.lbot attack` | Order an immediate attack on your current target only if it is already attacking you or a bot. |
 | `.lbot aggro me\|bot` | Let you or the tank bot hold threat. |
 | `.lbot self` | Toggle AI control of your own character; it uses abilities your character already knows. |
 | `.lbot rescue` | Revive and teleport your character home. |
@@ -125,24 +125,43 @@ maintains Beacon of Light on the tank and, after its final talent unlock,
 Beacon of Faith on the owner. Holy Priest refreshes Prayer of Mending on the
 tank. Missing or dispelled auras are recast; Blood DK and Fury Warrior have no
 general party buff to maintain. Combat uses a basic health/resource priority
-and normal casts, including the GCD and resource costs. With at least three
-nearby enemies already attacking the party, Blood DK prioritizes Blood Boil,
-Fury Warrior uses Whirlwind for cleave and Holy Priest can use Holy Nova.
-Three injured allies near a heal target enable Prayer of Healing; Holy Paladin
+and normal casts, including the GCD and resource costs. Offensive rotations
+use single-target spells only: area damage and cleave such as Blood Boil,
+Heart Strike, Howling Blast, Whirlwind, Dragon Roar and Holy Nova are withheld
+so nearby unpulled creatures are not hit. Bots attack or taunt only a living
+enemy currently attacking the owner or a bot; merely selecting or auto-attacking
+a creature does not authorize the bots to pull it. This also applies to the
+manual `.lbot attack` command and the separate NPC companion team. Once a
+target stops attacking the team, the bots stop attacking it.
+
+Blood DK uses Mind Freeze and Fury Warrior uses Pummel against an active cast
+on an engaged target. Holy Paladin can use Hammer of Justice and Holy Priest
+can use Holy Word: Chastise to stop a susceptible caster; these control spells
+do not provide a reliable interrupt or school lockout on immune enemies. Holy
+Paladin uses Cleanse and Holy Priest uses Purify on removable harmful auras on
+the owner or bots. The removable aura types are taken from the 7.3.5 spell
+effects; urgent healing takes precedence. Three injured allies near a heal
+target enable Prayer of Healing; Holy Paladin
 can use Light of Dawn for a nearby injured group. Fury Warriors learn
 Titan's Grip and receive two two-handed weapons where the chosen gear is
-equippable. NPC companions use separate, generic combat spells. Bot spawning,
+equippable. The separate NPC companions also interrupt active attackers:
+melee companions use Pummel and the witch doctor uses Wind Shear. The witch
+doctor dispels removable harmful auras with Purify Spirit, including outside
+combat. NPC companions use separate, generic combat spells. Bot spawning,
 talent application, spell effects and rotation performance still need an
 in-game 7.3.5 client test.
 
-For combat validation, compare one enemy with a pack of three already attacking
-the party, then repeat with an unpulled creature nearby. Injure three party
-members to check Prayer of Healing and the facing of Light of Dawn. Also check
+For combat validation, select an unpulled enemy and issue `.lbot attack`: the
+bots should refuse it. Pull one enemy, then fight near an unpulled creature;
+the bots should hit only the active attacker. Repeat with several attackers,
+with the enemy attacking a bot, and with each assist mode and the NPC team.
+Check a cast interrupt, an interrupt-immune enemy, a dispellable harmful aura,
+and a harmless friendly aura. Injure three party members to check Prayer of
+Healing and the facing of Light of Dawn. Also check
 low-level talent unlocks, Beacon renewal after dispel, resource use, threat,
 target switching, follow movement, death/resurrection, looting, dungeon queue
-and dismissal. The current AI does not yet handle interrupts, dispels, crowd
-control or encounter ground hazards. The optional NPC companions have a
-separate, simpler single-target combat script.
+and dismissal. The current AI does not handle encounter ground hazards. The
+optional NPC companions have a separate, simpler single-target combat script.
 
 The Windows Release build and local auth/worldserver startup were checked on
 2026-09-24: both reached `ready...`, with no startup `ERROR` or `WARN` entries,

@@ -27,6 +27,7 @@
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "Spell.h"
 #include "SpellMgr.h"
 #include "World.h"
 #include "WorldSession.h"
@@ -175,13 +176,13 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
             case CLASS_DEATH_KNIGHT:
                 switch (bot->GetSpecializationId())
                 {
-                    case 250: return { 49998, 195182, 56222, 50842, 49576, 206930, 55233, 49028, 48792, 48707, 48263 }; // Blood
-                    case 251: return { 49998, 49143, 49020, 56222, 49576, 48792, 48707, 49184 }; // Frost
-                    default:  return { 49998, 56222, 49576, 48792, 48707 };
+                    case 250: return { 49998, 195182, 56222, 49576, 55233, 49028, 48792, 48707, 48263, 47528 }; // Blood
+                    case 251: return { 49998, 49143, 49020, 56222, 49576, 48792, 48707, 47528 }; // Frost
+                    default:  return { 49998, 56222, 49576, 48792, 48707, 47528 };
                 }
             case CLASS_PALADIN:
                 if (bot->GetSpecializationId() == 65)
-                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633, 53563, 85222 }; // Holy, Light of Dawn
+                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633, 53563, 85222, 4987, 853 }; // Holy
                 if (bot->GetSpecializationId() == 66)
                     return { 19750, 35395, 20271, 633, 62124 }; // Protection
                 return { 19750, 35395, 20271, 633 };
@@ -193,11 +194,11 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 return {};
             case CLASS_WARRIOR:
                 if (bot->GetSpecializationId() == 72)
-                    return { 23881, 85288, 184367, 100, 355, 1719, 184364, 5308, 190411, 46917 }; // Fury, Titan's Grip
+                    return { 23881, 85288, 184367, 100, 355, 1719, 184364, 5308, 46917, 6552 }; // Fury, Titan's Grip
                 return { 100, 355, 1719 };
             case CLASS_PRIEST:
                 if (bot->GetSpecializationId() == 257)
-                    return { 2061, 139, 2060, 585, 2050, 33076, 47788, 14914, 596, 132157 }; // Holy group heal and Holy Nova
+                    return { 2061, 139, 2060, 585, 2050, 33076, 47788, 14914, 596, 527, 88625 }; // Holy
                 return { 2061, 17, 585, 589 };
             default:                 return {};
         }
@@ -267,9 +268,9 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
 
     enum LegionBotAssistMode : uint8
     {
-        LB_ASSIST_FULL   = 0, // bots fight everything you fight (default)
-        LB_ASSIST_DEFEND = 1, // bots only fight mobs that attack you
-        LB_ASSIST_CHILL  = 2  // bots never attack (follow/heal/buff only)
+        LB_ASSIST_FULL   = 0, // defend the whole team (default)
+        LB_ASSIST_DEFEND = 1, // defend the owner or the bot itself
+        LB_ASSIST_CHILL  = 2  // no automatic assistance; self-defense/manual orders remain
     };
 
     struct LegionBotSettings
@@ -722,31 +723,98 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         return count;
     }
 
-    // Count enemies already attacking the party. AoE must not be selected just
-    // because neutral or unpulled creatures happen to stand nearby.
-    uint32 CountNearbyEngagedEnemies(Player* owner, std::vector<ObjectGuid> const& botGuids,
-                                     Player* bot, Unit* primaryTarget)
+    bool IsAttackingAlly(Unit* enemy, Player* ally)
     {
-        std::set<ObjectGuid> enemies;
-        auto consider = [&](Unit* enemy)
+        return enemy && ally && enemy->IsAlive() && enemy->IsInWorld() &&
+            ally->IsAlive() && ally->IsInWorld() && enemy->GetMap() == ally->GetMap() &&
+            (enemy->getVictim() == ally || ally->getAttackers()->count(enemy) != 0);
+    }
+
+    bool IsPartyAggressor(Player* owner, std::vector<ObjectGuid> const& botGuids, Unit* enemy)
+    {
+        if (IsAttackingAlly(enemy, owner))
+            return true;
+        for (ObjectGuid guid : botGuids)
+            if (IsAttackingAlly(enemy, ObjectAccessor::FindPlayer(guid)))
+                return true;
+        return false;
+    }
+
+    bool TryDispel(Player* owner, std::vector<ObjectGuid> const& botGuids, Player* healer)
+    {
+        uint32 spellId = healer->GetSpecializationId() == 65 ? 4987 :
+            (healer->GetSpecializationId() == 257 ? 527 : 0);
+        SpellInfo const* spellInfo = spellId ? sSpellMgr->GetSpellInfo(spellId) : nullptr;
+        if (!spellInfo || !healer->HasSpell(spellId))
+            return false;
+
+        // Derive the removable types from this runtime's spell effects.
+        uint32 const dispelMask = spellInfo->GetSimilarEffectsMiscValueMask(SPELL_EFFECT_DISPEL, healer);
+        if (!dispelMask)
+            return false;
+        auto cleanse = [&](Player* ally)
         {
-            if (enemy && enemy->IsAlive() && enemy->IsInWorld() && enemy->GetMap() == bot->GetMap() &&
-                bot->IsValidAttackTarget(enemy) && bot->GetDistance(enemy) <= 8.0f)
-                enemies.insert(enemy->GetGUID());
-        };
-        auto considerAttackers = [&](Player* ally)
-        {
-            if (!ally || !ally->IsInWorld() || ally->GetMap() != bot->GetMap())
-                return;
-            for (Unit* enemy : *ally->getAttackers())
-                consider(enemy);
+            if (!ally || !ally->IsAlive() || !ally->IsInWorld() ||
+                ally->GetMap() != healer->GetMap() || healer->GetDistance(ally) > 40.0f)
+                return false;
+            DispelChargesList auras;
+            ally->GetDispellableAuraList(healer, dispelMask, auras);
+            for (auto const& entry : auras)
+            {
+                AuraApplication* application = entry.first->GetApplicationOfTarget(ally->GetGUID());
+                if (application && !application->IsPositive())
+                    return BotCast(healer, ally, spellId);
+            }
+            return false;
         };
 
-        consider(primaryTarget);
-        considerAttackers(owner);
+        if (cleanse(owner))
+            return true;
         for (ObjectGuid guid : botGuids)
-            considerAttackers(ObjectAccessor::FindPlayer(guid));
-        return uint32(enemies.size());
+            if (cleanse(ObjectAccessor::FindPlayer(guid)))
+                return true;
+        return false;
+    }
+
+    bool TryInterrupt(Player* bot, Unit* target)
+    {
+        Spell* cast = target->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+        if (!cast || cast->getState() == SPELL_STATE_FINISHED || cast->GetCastTime() <= 0)
+            cast = target->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+        if (!cast || cast->getState() == SPELL_STATE_FINISHED || !cast->IsInterruptable())
+            return false;
+
+        switch (bot->GetSpecializationId())
+        {
+            case 250: return BotCast(bot, target, 47528); // Mind Freeze
+            case 72:  return BotCast(bot, target, 6552);  // Pummel
+            case 65:  return BotCast(bot, target, 853);   // Hammer of Justice: stun, not a school lockout
+            case 257: return BotCast(bot, target, 88625); // Holy Word: Chastise: incapacitates
+            default:  return false;
+        }
+    }
+
+    bool TryInterruptEngagedCast(Player* owner, std::vector<ObjectGuid> const& botGuids,
+                                 Player* bot, bool defendOnly)
+    {
+        auto checkAlly = [&](Player* ally)
+        {
+            if (!ally || !ally->IsAlive() || !ally->IsInWorld() || ally->GetMap() != bot->GetMap())
+                return false;
+            for (Unit* attacker : *ally->getAttackers())
+                if (IsPartyAggressor(owner, botGuids, attacker) &&
+                    bot->IsValidAttackTarget(attacker) && TryInterrupt(bot, attacker))
+                    return true;
+            return false;
+        };
+
+        if (checkAlly(owner) || checkAlly(bot))
+            return true;
+        if (!defendOnly)
+            for (ObjectGuid guid : botGuids)
+                if (guid != bot->GetGUID() && checkAlly(ObjectAccessor::FindPlayer(guid)))
+                    return true;
+        return false;
     }
 
     // Class healing ability (paladin / priest)
@@ -827,7 +895,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     }
 
     // Class attack abilities for bots and the self-AI
-    void CastClassAbilities(Player* caster, Unit* target, uint32 nearbyEnemies, bool allowDamage = true)
+    void CastClassAbilities(Player* caster, Unit* target, bool allowDamage = true)
     {
         switch (caster->getClass())
         {
@@ -840,16 +908,13 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                     if (caster->GetHealthPct() < 70.0f && BotCast(caster, target, 49998)) return; // Death Strike
                     Aura* boneShield = caster->GetAura(195181);
                     if ((!boneShield || boneShield->GetStackAmount() < 5) && BotCast(caster, target, 195182)) return; // Marrowrend
-                    if (nearbyEnemies >= 3 && BotCast(caster, caster, 50842)) return; // Blood Boil cleave
-                    if (BotCast(caster, target, 206930)) return; // Heart Strike
-                    if (BotCast(caster, caster, 50842)) return;  // Blood Boil
-                    BotCast(caster, target, 49998); // Spend remaining runic power
+                    BotCast(caster, target, 49998); // Single-target fallback; Heart Strike and Blood Boil can pull neighbours
                 }
                 else
                 {
                     if (caster->GetPowerPct(POWER_RUNIC_POWER) > 70.0f && BotCast(caster, target, 49143)) return; // Frost Strike
                     if (BotCast(caster, target, 49020)) return; // Obliterate
-                    BotCast(caster, target, 49184); // Howling Blast
+                    BotCast(caster, target, 49998); // Avoid Howling Blast splash
                 }
                 break;
             case CLASS_PALADIN:
@@ -869,16 +934,11 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 if (target->GetHealthPct() < 20.0f && BotCast(caster, target, 5308)) return; // Execute
                 if (caster->GetPowerPct(POWER_RAGE) >= 85.0f && BotCast(caster, target, 184367)) return; // Rampage
                 if (BotCast(caster, target, 23881)) return; // Bloodthirst
-                if (nearbyEnemies >= 3 && BotCast(caster, target, 190411, 4500)) return; // Whirlwind cleave
                 if (BotCast(caster, target, 85288)) return; // Raging Blow
-                if (BotCast(caster, caster, 118000)) return; // Dragon Roar talent
-                if (nearbyEnemies >= 2)
-                    BotCast(caster, target, 190411); // Whirlwind filler on packs
                 break;
             case CLASS_PRIEST:
                 if (allowDamage)
                 {
-                    if (nearbyEnemies >= 3 && BotCast(caster, caster, 132157)) return; // Holy Nova
                     if (BotCast(caster, target, 14914)) return; // Holy Fire
                     BotCast(caster, target, 585); // Smite
                 }
@@ -1272,13 +1332,13 @@ void LegionBot_AssistCommand(Player* owner, std::string const& arg, ChatHandler*
     {
         s.assistMode = LB_ASSIST_FULL;
         SaveLegionBotSettings(owner);
-        handler->PSendSysMessage("|cff33ff99LegionBot:|r assist = |cffffff00full|r - bots fight everything you fight (they wait a moment so you get the first hit).");
+        handler->PSendSysMessage("|cff33ff99LegionBot:|r assist = |cffffff00full|r - bots defend anyone in the team against active attackers.");
     }
     else if (arg == "defend")
     {
         s.assistMode = LB_ASSIST_DEFEND;
         SaveLegionBotSettings(owner);
-        handler->PSendSysMessage("|cff33ff99LegionBot:|r assist = |cffffff00defend|r - bots only fight mobs that attack you (or them).");
+        handler->PSendSysMessage("|cff33ff99LegionBot:|r assist = |cffffff00defend|r - bots defend you and themselves against active attackers.");
     }
     else if (arg == "chill")
     {
@@ -1329,13 +1389,22 @@ void LegionBot_AttackCommand(Player* owner, ChatHandler* handler)
         return;
     }
 
+    std::vector<ObjectGuid> const botGuids = LegionBot_GetBotsOf(owner->GetGUID());
+    if (!IsPartyAggressor(owner, botGuids, target))
+    {
+        handler->PSendSysMessage("|cffff4444LegionBot:|r target must already be attacking you or a bot.");
+        handler->SetSentErrorMessage(true);
+        return;
+    }
+
     uint32 count = 0;
-    for (ObjectGuid botGuid : LegionBot_GetBotsOf(owner->GetGUID()))
+    for (ObjectGuid botGuid : botGuids)
     {
         Player* bot = ObjectAccessor::FindPlayer(botGuid);
         if (!bot || !bot->IsInWorld() || bot->isDead())
             continue;
-        if (!bot->IsValidAttackTarget(target))
+        if (!IsPartyAggressor(owner, botGuids, target) || !bot->IsValidAttackTarget(target) ||
+            bot->GetMap() != target->GetMap() || bot->GetDistance(target) > LB_MAX_ENGAGE_DISTANCE)
             continue;
 
         // Engage immediately (a manual attack order skips the first-swing delay)
@@ -1711,7 +1780,7 @@ void LegionBot_DismissAll(Player* owner, ChatHandler* handler)
 
 namespace
 {
-    // Self-AI: fight for the player (attack their target, use abilities + potions)
+    // Self-AI: fight attackers of the player, use abilities and potions.
     void UpdateSelfAI(Player* player)
     {
         bool enabled = false;
@@ -1728,19 +1797,20 @@ namespace
         else if (player->GetPowerType() == POWER_MANA && player->GetPowerPct(POWER_MANA) < 35.0f)
             BotUsePotion(player, LB_MANA_POTION_ID);
 
-        // Attack whatever is attacking us, or our current target
+        // Self-AI does not initiate combat from a selected or auto-attack target.
         Unit* target = player->getAttackerForHelper();
-        if (!target)
+        if (!IsAttackingAlly(target, player))
             target = player->getVictim();
 
-        if (target && target->IsAlive() && player->IsValidAttackTarget(target))
+        if (IsAttackingAlly(target, player) && player->IsValidAttackTarget(target))
         {
             if (player->getVictim() != target)
             {
                 player->Attack(target, true);
                 player->GetMotionMaster()->MoveChase(target);
             }
-            CastClassAbilities(player, target, CountNearbyEngagedEnemies(player, {}, player, target));
+            if (!TryInterrupt(player, target))
+                CastClassAbilities(player, target);
         }
     }
 
@@ -2023,13 +2093,26 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
 
         // ---- Team tactics ----
 
+        Unit* urgentHealTarget = role == LB_ROLE_HEALER ? FindLowestHpAlly(player, bot) : nullptr;
+        if ((!urgentHealTarget || urgentHealTarget->GetHealthPct() >= 40.0f) &&
+            settings.assistMode != LB_ASSIST_CHILL &&
+            TryInterruptEngagedCast(player, botGuids, bot, settings.assistMode == LB_ASSIST_DEFEND))
+            continue;
+
         // Healer: triage heals first; attack when everyone is taken care of
         bool healerCanDps = false;
         if (role == LB_ROLE_HEALER)
         {
             if (bot->GetPowerPct(POWER_MANA) > 5.0f)
             {
-                if (Unit* healTarget = FindLowestHpAlly(player, bot))
+                // Critical healing wins over cleansing; otherwise remove a
+                // dispellable harmful aura before routine healing or damage.
+                Unit* healTarget = FindLowestHpAlly(player, bot);
+                if (healTarget && healTarget->GetHealthPct() < 40.0f)
+                    CastHealAbility(bot, healTarget, player, botGuids);
+                else if (TryDispel(player, botGuids, bot))
+                    continue;
+                else if (healTarget)
                     CastHealAbility(bot, healTarget, player, botGuids);
                 else
                     healerCanDps = true;
@@ -2105,6 +2188,34 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                 target = attacker;
         }
 
+        // A target selection, auto-attack or manual command never authorizes a
+        // pull. Only a unit currently attacking a member of this team does.
+        if (!IsPartyAggressor(player, botGuids, target))
+            target = nullptr;
+        if (!target && settings.assistMode == LB_ASSIST_FULL)
+        {
+            auto findAttacker = [&](Player* ally)
+            {
+                if (!ally || !ally->IsAlive() || !ally->IsInWorld() || ally->GetMap() != bot->GetMap())
+                    return static_cast<Unit*>(nullptr);
+                for (Unit* attacker : *ally->getAttackers())
+                    if (IsPartyAggressor(player, botGuids, attacker) && bot->IsValidAttackTarget(attacker))
+                        return attacker;
+                return static_cast<Unit*>(nullptr);
+            };
+            target = findAttacker(player);
+            if (!target)
+                for (ObjectGuid otherGuid : botGuids)
+                    if ((target = findAttacker(ObjectAccessor::FindPlayer(otherGuid))))
+                        break;
+        }
+
+        if (bot->getVictim() && !IsPartyAggressor(player, botGuids, bot->getVictim()))
+        {
+            bot->AttackStop();
+            bot->GetMotionMaster()->MoveIdle();
+        }
+
         // Tank: taunt mobs off any party member (works even before we have a target)
         // Skipped in player-tank mode - the owner wants to hold aggro.
         if (role == LB_ROLE_TANK && !settings.playerTank)
@@ -2124,7 +2235,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                         }
                 }
             }
-            if (tauntTarget && tauntTarget->IsAlive() && tauntTarget != bot->getVictim() && bot->IsValidAttackTarget(tauntTarget)
+            if (IsPartyAggressor(player, botGuids, tauntTarget) && tauntTarget != bot->getVictim() && bot->IsValidAttackTarget(tauntTarget)
                 && player->GetDistance(tauntTarget) <= LB_MAX_ENGAGE_DISTANCE)
             {
                 if (bot->getClass() == CLASS_DEATH_KNIGHT)
@@ -2144,7 +2255,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
             }
         }
 
-        if (target && target->IsAlive() && bot->IsValidAttackTarget(target) &&
+        if (IsPartyAggressor(player, botGuids, target) && bot->IsValidAttackTarget(target) &&
             bot->GetDistance(target) <= LB_MAX_ENGAGE_DISTANCE)
         {
             // Give the owner the first swing: wait briefly after picking a new target
@@ -2183,8 +2294,8 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                 }
 
                 // Class attack abilities
-                CastClassAbilities(bot, target, CountNearbyEngagedEnemies(player, botGuids, bot, target),
-                    (role != LB_ROLE_HEALER) || healerCanDps);
+                if (!TryInterrupt(bot, target))
+                    CastClassAbilities(bot, target, (role != LB_ROLE_HEALER) || healerCanDps);
             }
     }
 }

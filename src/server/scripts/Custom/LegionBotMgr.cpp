@@ -23,6 +23,8 @@
 #include "ObjectMgr.h"
 #include "MotionMaster.h"
 #include "Player.h"
+#include "Spell.h"
+#include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
@@ -59,6 +61,9 @@ namespace
     uint32 const SPELL_BOT_JUDGEMENT = 20271;  // Judgement
     uint32 const SPELL_BOT_LIGHTNING_BOLT = 403; // Lightning Bolt
     uint32 const SPELL_BOT_STRIKE    = 12294;  // Mortal Strike
+    uint32 const SPELL_BOT_PUMMEL    = 6552;   // Melee interrupt
+    uint32 const SPELL_BOT_WIND_SHEAR = 57994; // Witch doctor interrupt
+    uint32 const SPELL_BOT_PURIFY_SPIRIT = 77130; // Witch doctor dispel
 
     float  const FOLLOW_DISTANCE     = 2.0f;
     float  const TELEPORT_DISTANCE   = 60.0f;
@@ -120,7 +125,7 @@ class CompanionBotAI : public CreatureAI
 public:
     CompanionBotAI(Creature* creature, CompanionBotRole role) : CreatureAI(creature),
         _role(role), _ownerGuid(ObjectGuid::Empty), _followTimer(0), _tauntTimer(0), _healTimer(0),
-        _attackTimer(0), _strikeTimer(0)
+        _attackTimer(0), _strikeTimer(0), _interruptTimer(0), _dispelTimer(0)
     {
         if (TempSummon* summon = creature->ToTempSummon())
             if (Unit* summoner = summon->GetSummoner())
@@ -154,6 +159,9 @@ public:
             return;
         }
 
+        _interruptTimer = _interruptTimer > diff ? _interruptTimer - diff : 0;
+        _dispelTimer = _dispelTimer > diff ? _dispelTimer - diff : 0;
+
         // Teleport to owner if left behind
         if (me->GetDistance(owner) > TELEPORT_DISTANCE)
         {
@@ -177,12 +185,11 @@ public:
             _attackTimer = 0;
             _strikeTimer = 0;
 
-            // Assist: attack whatever is attacking the owner (or their target)
-            Unit* assistTarget = owner->getAttackerForHelper();
-            if (!assistTarget && owner->getVictim())
-                assistTarget = owner->getVictim();
+            if (_role == ROLE_HEALER && TryDispel(owner))
+                return;
 
-            if (assistTarget && assistTarget->IsAlive() && me->IsValidAttackTarget(assistTarget))
+            Unit* assistTarget = FindDefensiveTarget(owner);
+            if (assistTarget)
                 AttackStart(assistTarget);
 
             return;
@@ -190,15 +197,17 @@ public:
 
         // --- In combat ---
         Unit* victim = me->getVictim();
-        if (!victim || !victim->IsAlive())
+        if (!IsAttackingTeam(owner, victim))
         {
-            Unit* newTarget = owner->getAttackerForHelper();
-            if (!newTarget && owner->getVictim())
-                newTarget = owner->getVictim();
-            if (newTarget && newTarget->IsAlive() && me->IsValidAttackTarget(newTarget))
+            me->AttackStop();
+            Unit* newTarget = FindDefensiveTarget(owner);
+            if (newTarget)
                 AttackStart(newTarget);
             else
+            {
+                me->GetMotionMaster()->MoveFollow(owner, FOLLOW_DISTANCE, 0.0f);
                 return;
+            }
         }
 
         // Healer behaviour
@@ -234,10 +243,16 @@ public:
                     healTarget = me;
 
                 if (healTarget)
+                {
                     me->CastSpell(healTarget, SPELL_BOT_HEAL, false);
+                    return;
+                }
             }
             else
                 _healTimer -= diff;
+
+            if (TryInterrupt(owner) || TryDispel(owner))
+                return;
 
             if (_attackTimer <= diff)
             {
@@ -254,13 +269,16 @@ public:
         }
 
         // Tank behaviour: taunt anything hitting the owner so the bot tanks it
+        if (TryInterrupt(owner))
+            return;
+
         if (_role == ROLE_TANK)
         {
             if (_tauntTimer <= diff)
             {
                 _tauntTimer = TAUNT_COOLDOWN;
                 if (Unit* ownerAttacker = owner->getAttackerForHelper())
-                    if (ownerAttacker->IsAlive() && ownerAttacker != me->getVictim() && me->IsValidAttackTarget(ownerAttacker))
+                    if (IsAttackingTeam(owner, ownerAttacker) && ownerAttacker != me->getVictim() && me->IsValidAttackTarget(ownerAttacker))
                         me->CastSpell(ownerAttacker, SPELL_BOT_TAUNT, false);
             }
             else
@@ -310,6 +328,113 @@ public:
     }
 
 private:
+    bool TryInterrupt(Unit* owner)
+    {
+        if (_interruptTimer || me->IsNonMeleeSpellCast(false))
+            return false;
+        uint32 spellId = _role == ROLE_HEALER ? SPELL_BOT_WIND_SHEAR : SPELL_BOT_PUMMEL;
+        auto interrupt = [&](Unit* enemy)
+        {
+            if (!IsAttackingTeam(owner, enemy) || !me->IsValidAttackTarget(enemy))
+                return false;
+            Spell* cast = enemy->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+            if (!cast || cast->getState() == SPELL_STATE_FINISHED || cast->GetCastTime() <= 0)
+                cast = enemy->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+            if (!cast || cast->getState() == SPELL_STATE_FINISHED || !cast->IsInterruptable())
+                return false;
+            if (me->CastSpell(enemy, spellId, false) != SPELL_CAST_OK)
+                return false;
+            _interruptTimer = 12000;
+            return true;
+        };
+        for (Unit* attacker : *owner->getAttackers())
+            if (interrupt(attacker))
+                return true;
+        for (Unit* attacker : *me->getAttackers())
+            if (interrupt(attacker))
+                return true;
+        for (Creature* companion : GetOwnerBots(owner->ToPlayer()))
+            if (companion != me)
+                for (Unit* attacker : *companion->getAttackers())
+                    if (interrupt(attacker))
+                        return true;
+        return false;
+    }
+
+    bool TryDispel(Unit* owner)
+    {
+        if (_role != ROLE_HEALER || _dispelTimer || me->IsNonMeleeSpellCast(false))
+            return false;
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_BOT_PURIFY_SPIRIT);
+        if (!spellInfo)
+            return false;
+        uint32 const dispelMask = spellInfo->GetSimilarEffectsMiscValueMask(SPELL_EFFECT_DISPEL, me);
+        if (!dispelMask)
+            return false;
+        auto cleanse = [&](Unit* ally)
+        {
+            if (!ally || !ally->IsAlive() || !ally->IsInWorld() ||
+                ally->GetMap() != me->GetMap() || me->GetDistance(ally) > 40.0f)
+                return false;
+            DispelChargesList auras;
+            ally->GetDispellableAuraList(me, dispelMask, auras);
+            for (auto const& entry : auras)
+            {
+                AuraApplication* application = entry.first->GetApplicationOfTarget(ally->GetGUID());
+                if (application && !application->IsPositive() &&
+                    me->CastSpell(ally, SPELL_BOT_PURIFY_SPIRIT, false) == SPELL_CAST_OK)
+                {
+                    _dispelTimer = 8000;
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (cleanse(owner) || cleanse(me))
+            return true;
+        for (Creature* companion : GetOwnerBots(owner->ToPlayer()))
+            if (companion != me && cleanse(companion))
+                return true;
+        return false;
+    }
+
+    bool IsAttackingTeam(Unit* owner, Unit* enemy) const
+    {
+        if (!enemy || !enemy->IsAlive() || !enemy->IsInWorld() || enemy->GetMap() != owner->GetMap())
+            return false;
+        auto attacks = [&](Unit* ally)
+        {
+            return ally && ally->IsAlive() && ally->IsInWorld() &&
+                (enemy->getVictim() == ally || ally->getAttackers()->count(enemy) != 0);
+        };
+        if (attacks(owner) || attacks(me))
+            return true;
+        for (Creature* companion : GetOwnerBots(owner->ToPlayer()))
+            if (attacks(companion))
+                return true;
+        return false;
+    }
+
+    Unit* FindDefensiveTarget(Unit* owner) const
+    {
+        auto valid = [&](Unit* enemy)
+        {
+            return IsAttackingTeam(owner, enemy) && me->IsValidAttackTarget(enemy) &&
+                me->GetDistance(enemy) <= 30.0f;
+        };
+        if (Unit* attacker = owner->getAttackerForHelper())
+            if (valid(attacker))
+                return attacker;
+        if (Unit* attacker = me->getAttackerForHelper())
+            if (valid(attacker))
+                return attacker;
+        for (Creature* companion : GetOwnerBots(owner->ToPlayer()))
+            if (Unit* attacker = companion->getAttackerForHelper())
+                if (valid(attacker))
+                    return attacker;
+        return nullptr;
+    }
+
     Unit* GetBotOwner() const
     {
         if (_ownerGuid.IsEmpty())
@@ -324,6 +449,8 @@ private:
     uint32 _healTimer;
     uint32 _attackTimer;
     uint32 _strikeTimer;
+    uint32 _interruptTimer;
+    uint32 _dispelTimer;
 };
 
 // ---------------------------------------------------------------------------
