@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <map>
 #include <mutex>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -180,7 +181,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 }
             case CLASS_PALADIN:
                 if (bot->GetSpecializationId() == 65)
-                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633, 53563 }; // Holy, Beacon of Light
+                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633, 53563, 85222 }; // Holy, Light of Dawn
                 if (bot->GetSpecializationId() == 66)
                     return { 19750, 35395, 20271, 633, 62124 }; // Protection
                 return { 19750, 35395, 20271, 633 };
@@ -196,7 +197,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 return { 100, 355, 1719 };
             case CLASS_PRIEST:
                 if (bot->GetSpecializationId() == 257)
-                    return { 2061, 139, 2060, 585, 2050, 33076, 47788, 14914 }; // Holy
+                    return { 2061, 139, 2060, 585, 2050, 33076, 47788, 14914, 596, 132157 }; // Holy group heal and Holy Nova
                 return { 2061, 17, 585, 589 };
             default:                 return {};
         }
@@ -661,7 +662,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     }
 
     // Cast normally so resource costs, range, the GCD and spell cooldowns apply.
-    bool BotCast(Player* bot, Unit* target, uint32 spellId)
+    bool BotCast(Player* bot, Unit* target, uint32 spellId, uint32 minCooldown = 1500)
     {
         if (!bot || !target || !target->IsAlive())
             return false;
@@ -691,7 +692,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         if (bot->CastSpell(target, spellInfo, false) != SPELL_CAST_OK)
             return false;
 
-        uint32 cooldown = 1500;
+        uint32 cooldown = minCooldown;
         if (spellInfo->Cooldowns.RecoveryTime > 0)
             cooldown = std::max(cooldown, uint32(spellInfo->Cooldowns.RecoveryTime));
         if (spellInfo->Cooldowns.CategoryRecoveryTime > 0)
@@ -705,12 +706,57 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         return true;
     }
 
+    uint32 CountInjuredAllies(Player* owner, std::vector<ObjectGuid> const& botGuids, Unit* center, float radius)
+    {
+        uint32 count = 0;
+        auto consider = [&](Player* ally)
+        {
+            if (ally && ally->IsAlive() && ally->IsInWorld() && ally->GetMap() == center->GetMap() &&
+                ally->GetHealthPct() < 85.0f && center->GetDistance(ally) <= radius)
+                ++count;
+        };
+
+        consider(owner);
+        for (ObjectGuid guid : botGuids)
+            consider(ObjectAccessor::FindPlayer(guid));
+        return count;
+    }
+
+    // Count enemies already attacking the party. AoE must not be selected just
+    // because neutral or unpulled creatures happen to stand nearby.
+    uint32 CountNearbyEngagedEnemies(Player* owner, std::vector<ObjectGuid> const& botGuids,
+                                     Player* bot, Unit* primaryTarget)
+    {
+        std::set<ObjectGuid> enemies;
+        auto consider = [&](Unit* enemy)
+        {
+            if (enemy && enemy->IsAlive() && enemy->IsInWorld() && enemy->GetMap() == bot->GetMap() &&
+                bot->IsValidAttackTarget(enemy) && bot->GetDistance(enemy) <= 8.0f)
+                enemies.insert(enemy->GetGUID());
+        };
+        auto considerAttackers = [&](Player* ally)
+        {
+            if (!ally || !ally->IsInWorld() || ally->GetMap() != bot->GetMap())
+                return;
+            for (Unit* enemy : *ally->getAttackers())
+                consider(enemy);
+        };
+
+        consider(primaryTarget);
+        considerAttackers(owner);
+        for (ObjectGuid guid : botGuids)
+            considerAttackers(ObjectAccessor::FindPlayer(guid));
+        return uint32(enemies.size());
+    }
+
     // Class healing ability (paladin / priest)
-    void CastHealAbility(Player* healer, Unit* target)
+    void CastHealAbility(Player* healer, Unit* target, Player* owner, std::vector<ObjectGuid> const& botGuids)
     {
         if (healer->getClass() == CLASS_PRIEST)
         {
             if (target->GetHealthPct() < 25.0f && BotCast(healer, target, 47788)) // Guardian Spirit
+                return;
+            if (CountInjuredAllies(owner, botGuids, target, 15.0f) >= 3 && BotCast(healer, target, 596)) // Prayer of Healing
                 return;
             if (target->GetHealthPct() < 75.0f && BotCast(healer, target, 2050)) // Holy Word: Serenity
                 return;
@@ -726,6 +772,13 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         {
             if (target->GetHealthPct() < 25.0f && BotCast(healer, target, 633)) // Lay on Hands
                 return;
+            if (target != healer && healer->GetDistance(target) <= 15.0f &&
+                CountInjuredAllies(owner, botGuids, healer, 15.0f) >= 3)
+            {
+                healer->SetFacingToObject(target);
+                if (BotCast(healer, healer, 85222)) // Light of Dawn, frontal cone
+                    return;
+            }
             if (target->GetHealthPct() < 75.0f && BotCast(healer, target, 20473)) // Holy Shock
                 return;
             if (target->GetHealthPct() < 55.0f && BotCast(healer, target, 19750)) // Flash of Light
@@ -774,7 +827,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     }
 
     // Class attack abilities for bots and the self-AI
-    void CastClassAbilities(Player* caster, Unit* target, uint8 /*role*/, bool allowDamage = true)
+    void CastClassAbilities(Player* caster, Unit* target, uint32 nearbyEnemies, bool allowDamage = true)
     {
         switch (caster->getClass())
         {
@@ -787,6 +840,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                     if (caster->GetHealthPct() < 70.0f && BotCast(caster, target, 49998)) return; // Death Strike
                     Aura* boneShield = caster->GetAura(195181);
                     if ((!boneShield || boneShield->GetStackAmount() < 5) && BotCast(caster, target, 195182)) return; // Marrowrend
+                    if (nearbyEnemies >= 3 && BotCast(caster, caster, 50842)) return; // Blood Boil cleave
                     if (BotCast(caster, target, 206930)) return; // Heart Strike
                     if (BotCast(caster, caster, 50842)) return;  // Blood Boil
                     BotCast(caster, target, 49998); // Spend remaining runic power
@@ -815,13 +869,16 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 if (target->GetHealthPct() < 20.0f && BotCast(caster, target, 5308)) return; // Execute
                 if (caster->GetPowerPct(POWER_RAGE) >= 85.0f && BotCast(caster, target, 184367)) return; // Rampage
                 if (BotCast(caster, target, 23881)) return; // Bloodthirst
+                if (nearbyEnemies >= 3 && BotCast(caster, target, 190411, 4500)) return; // Whirlwind cleave
                 if (BotCast(caster, target, 85288)) return; // Raging Blow
                 if (BotCast(caster, caster, 118000)) return; // Dragon Roar talent
-                BotCast(caster, target, 190411); // Whirlwind filler
+                if (nearbyEnemies >= 2)
+                    BotCast(caster, target, 190411); // Whirlwind filler on packs
                 break;
             case CLASS_PRIEST:
                 if (allowDamage)
                 {
+                    if (nearbyEnemies >= 3 && BotCast(caster, caster, 132157)) return; // Holy Nova
                     if (BotCast(caster, target, 14914)) return; // Holy Fire
                     BotCast(caster, target, 585); // Smite
                 }
@@ -1683,7 +1740,7 @@ namespace
                 player->Attack(target, true);
                 player->GetMotionMaster()->MoveChase(target);
             }
-            CastClassAbilities(player, target, LB_ROLE_DPS);
+            CastClassAbilities(player, target, CountNearbyEngagedEnemies(player, {}, player, target));
         }
     }
 
@@ -1973,7 +2030,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
             if (bot->GetPowerPct(POWER_MANA) > 5.0f)
             {
                 if (Unit* healTarget = FindLowestHpAlly(player, bot))
-                    CastHealAbility(bot, healTarget);
+                    CastHealAbility(bot, healTarget, player, botGuids);
                 else
                     healerCanDps = true;
             }
@@ -2126,7 +2183,8 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                 }
 
                 // Class attack abilities
-                CastClassAbilities(bot, target, role, (role != LB_ROLE_HEALER) || healerCanDps);
+                CastClassAbilities(bot, target, CountNearbyEngagedEnemies(player, botGuids, bot, target),
+                    (role != LB_ROLE_HEALER) || healerCanDps);
             }
     }
 }

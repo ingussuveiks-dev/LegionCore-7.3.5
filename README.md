@@ -125,11 +125,24 @@ maintains Beacon of Light on the tank and, after its final talent unlock,
 Beacon of Faith on the owner. Holy Priest refreshes Prayer of Mending on the
 tank. Missing or dispelled auras are recast; Blood DK and Fury Warrior have no
 general party buff to maintain. Combat uses a basic health/resource priority
-and normal casts, including the GCD and resource costs. Fury Warriors learn
+and normal casts, including the GCD and resource costs. With at least three
+nearby enemies already attacking the party, Blood DK prioritizes Blood Boil,
+Fury Warrior uses Whirlwind for cleave and Holy Priest can use Holy Nova.
+Three injured allies near a heal target enable Prayer of Healing; Holy Paladin
+can use Light of Dawn for a nearby injured group. Fury Warriors learn
 Titan's Grip and receive two two-handed weapons where the chosen gear is
 equippable. NPC companions use separate, generic combat spells. Bot spawning,
 talent application, spell effects and rotation performance still need an
 in-game 7.3.5 client test.
+
+For combat validation, compare one enemy with a pack of three already attacking
+the party, then repeat with an unpulled creature nearby. Injure three party
+members to check Prayer of Healing and the facing of Light of Dawn. Also check
+low-level talent unlocks, Beacon renewal after dispel, resource use, threat,
+target switching, follow movement, death/resurrection, looting, dungeon queue
+and dismissal. The current AI does not yet handle interrupts, dispels, crowd
+control or encounter ground hazards. The optional NPC companions have a
+separate, simpler single-target combat script.
 
 The Windows Release build and local auth/worldserver startup were checked on
 2026-09-24: both reached `ready...`, with no startup `ERROR` or `WARN` entries,
