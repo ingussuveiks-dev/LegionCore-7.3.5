@@ -63,7 +63,7 @@ std::mutex g_legionBotsMutex;
 
 // --- Level / autogear state (playerbot-style leveling) ---
 std::map<ObjectGuid, uint32> g_legionBotLastLevelCheck;      // owner guid -> ms of last level sync
-std::map<uint32, std::vector<uint32>> g_legionBotGearCache;  // race*100000+class*1000+level -> item entries
+std::map<uint64, std::vector<uint32>> g_legionBotGearCache;  // race/class/spec/level -> item entries
 std::map<ObjectGuid, std::pair<ObjectGuid, uint32>> g_legionBotTargetSince; // bot guid -> (target guid, ms engaged)
 
 // Bots wait this long after picking a new target before attacking, so the
@@ -143,9 +143,9 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     }
 
     // Class gear sets (Mists of Pandaria crafted, ilvl 384, level 85+)
-    std::vector<uint32> GetBotGear(uint8 cls)
+    std::vector<uint32> GetBotGear(Player const* bot)
     {
-        switch (cls)
+        switch (bot->getClass())
         {
             case CLASS_PALADIN:
                 // Intellect plate + 1H hammer + shield
@@ -156,8 +156,12 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
             case CLASS_PRIEST:
                 // Intellect cloth (Windwool) + intellect 1H mace
                 return { 82397, 82398, 82399, 82400, 82401, 82402, 82403, 82404, 82965 };
+            case CLASS_WARRIOR:
+                if (bot->GetSpecializationId() == 72)
+                    return { 82903, 82904, 82905, 82906, 82907, 82908, 82909, 82910, 82964, 82964 }; // Fury dual-wields
+                return { 82903, 82904, 82905, 82906, 82907, 82908, 82909, 82910, 82964 };
             default:
-                // Strength plate (Ghost-Forged) + 2H sword: DK tank/dps, warrior
+                // Strength plate (Ghost-Forged) + 2H sword for DK
                 return { 82903, 82904, 82905, 82906, 82907, 82908, 82909, 82910, 82964 };
         }
     }
@@ -176,7 +180,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 }
             case CLASS_PALADIN:
                 if (bot->GetSpecializationId() == 65)
-                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633 }; // Holy
+                    return { 19750, 20473, 35395, 82326, 20271, 31821, 633, 53563 }; // Holy, Beacon of Light
                 if (bot->GetSpecializationId() == 66)
                     return { 19750, 35395, 20271, 633, 62124 }; // Protection
                 return { 19750, 35395, 20271, 633 };
@@ -188,7 +192,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 return {};
             case CLASS_WARRIOR:
                 if (bot->GetSpecializationId() == 72)
-                    return { 23881, 85288, 184367, 100, 355, 1719, 184364, 5308, 190411 }; // Fury
+                    return { 23881, 85288, 184367, 100, 355, 1719, 184364, 5308, 190411, 46917 }; // Fury, Titan's Grip
                 return { 100, 355, 1719 };
             case CLASS_PRIEST:
                 if (bot->GetSpecializationId() == 257)
@@ -204,6 +208,48 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
             if (SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId))
                 if (spellInfo->SpellLevel <= bot->getLevel() && !bot->HasSpell(spellId))
                     bot->addSpell(spellId, true, false, false, false);
+    }
+
+    // One 7.3.5 talent per unlocked row for the four bundled team specs.
+    // Keep any talent already chosen for that row by the character's owner.
+    std::vector<uint32> GetBotTalents(uint32 specId)
+    {
+        switch (specId)
+        {
+            case 250: return { 19166, 19218, 19221, 22014, 19227, 19230, 21209 }; // Blood DK
+            case 65:  return { 17565, 17575, 22179, 22181, 17597, 22190, 21668 }; // Holy Paladin
+            case 72:  return { 22633, 22372, 22379, 22382, 19140, 22400, 16037 }; // Fury Warrior
+            case 257: return { 19752, 22326, 22440, 21750, 19764, 19767, 21644 }; // Holy Priest
+            default:  return {};
+        }
+    }
+
+    void LearnBotTalents(Player* bot)
+    {
+        if (bot->isInCombat() || bot->isDead())
+            return;
+
+        std::vector<uint32> const choices = GetBotTalents(bot->GetSpecializationId());
+        for (uint32 talentId : choices)
+        {
+            TalentEntry const* choice = sTalentStore.LookupEntry(talentId);
+            if (!choice || choice->ClassID != bot->getClass() ||
+                (choice->SpecID && choice->SpecID != bot->GetSpecializationId()) ||
+                choice->TierID >= bot->GetUInt32Value(PLAYER_FIELD_MAX_TALENT_TIERS))
+                continue;
+
+            bool selected = false;
+            for (auto const& known : *bot->GetTalentMap(bot->GetActiveTalentGroup()))
+                if (TalentEntry const* talent = sTalentStore.LookupEntry(known.first))
+                    if (talent->TierID == choice->TierID && bot->HasTalent(known.first, bot->GetActiveTalentGroup()))
+                    {
+                        selected = true;
+                        break;
+                    }
+
+            if (!selected)
+                bot->LearnTalent(talentId);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -446,7 +492,8 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     // Level-appropriate gear picked from the item DB (class/armor/weapon aware)
     std::vector<uint32> PickGearForLevel(Player* bot, uint8 level)
     {
-        uint32 const cacheKey = uint32(bot->getRace()) * 100000 + uint32(bot->getClass()) * 1000 + level;
+        uint64 const cacheKey = uint64(bot->getRace()) * 1000000000ULL + uint64(bot->getClass()) * 10000000ULL +
+            uint64(bot->GetSpecializationId()) * 1000ULL + level;
         auto cached = g_legionBotGearCache.find(cacheKey);
         if (cached != g_legionBotGearCache.end())
             return cached->second;
@@ -464,6 +511,8 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
                 armorSubclass = ITEM_SUBCLASS_ARMOR_PLATE;
                 primaryStat   = ITEM_MOD_STRENGTH;
                 weaponMask    = (1u << 1) | (1u << 5) | (1u << 8) | (1u << 6); // 2H axe/mace/sword, polearm
+                if (bot->GetSpecializationId() == 72)
+                    weaponMask = (1u << 1) | (1u << 5) | (1u << 8); // Titan's Grip excludes polearms
                 weaponInvType = 17;
                 break;
             case CLASS_PALADIN:
@@ -537,6 +586,14 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         if (weapon)
             items.push_back(weapon);
 
+        if (bot->GetSpecializationId() == 72 && level >= 10 && weapon)
+        {
+            uint32 offhand = 0;
+            for (uint8 c = cap; c <= maxQuality && !offhand; ++c)
+                offhand = PickItemForSlot(bot, level, ITEM_CLASS_WEAPON, 0, weaponMask, 17, primaryStat, c, items);
+            items.push_back(offhand ? offhand : weapon);
+        }
+
         if (useShield)
         {
             uint32 shield = 0;
@@ -555,7 +612,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     {
         uint8 const maxLevel = uint8(sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
         if (level >= maxLevel)
-            return GetBotGear(bot->getClass());
+            return GetBotGear(bot);
         if (level <= 1)
         {
             // Starting outfit, then fill any gaps with level-1 pickable gear
@@ -603,51 +660,49 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
         EquipBotGear(bot, bot->getLevel());
     }
 
-    // Guarded spell cast with self-managed cooldowns.
-    // Uses triggered casts so the bots are not limited to one ability per global
-    // cooldown (each ability fires on its own cooldown instead of the shared GCD).
-    void BotCast(Player* bot, Unit* target, uint32 spellId)
+    // Cast normally so resource costs, range, the GCD and spell cooldowns apply.
+    bool BotCast(Player* bot, Unit* target, uint32 spellId)
     {
         if (!bot || !target || !target->IsAlive())
-            return;
+            return false;
 
-    SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
-    if (!spellInfo)
-        return;
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
+        if (!spellInfo)
+            return false;
 
-    // Level gate: bots only use abilities their level would have learned
-    // (keeps them from firing endgame abilities while leveling)
-    if (spellInfo->SpellLevel > bot->getLevel() || !bot->HasSpell(spellId))
-        return;
+        if (spellInfo->SpellLevel > bot->getLevel() || !bot->HasSpell(spellId) ||
+            bot->HasSpellCooldown(spellId) || bot->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo) ||
+            bot->IsNonMeleeSpellCast(false))
+            return false;
 
-    uint32 now = getMSTime();
+        uint32 const now = getMSTime();
 
         {
             std::lock_guard<std::mutex> lock(g_legionBotsMutex);
-
-            auto& spellMap = g_legionBotSpellCooldowns[bot->GetGUID()];
+            auto const& spellMap = g_legionBotSpellCooldowns[bot->GetGUID()];
             auto itr = spellMap.find(spellId);
             if (itr != spellMap.end() && now < itr->second)
-                return;
-
-            // Cooldown = the spell's own cooldown, minimum 1.5s per ability
-            uint32 cooldown = 1500;
-            if (spellInfo->Cooldowns.RecoveryTime > 0)
-                cooldown = spellInfo->Cooldowns.RecoveryTime;
-            if (spellInfo->Cooldowns.CategoryRecoveryTime > 0 && spellInfo->Cooldowns.CategoryRecoveryTime > cooldown)
-                cooldown = spellInfo->Cooldowns.CategoryRecoveryTime;
-            spellMap[spellId] = now + cooldown;
-
-            g_legionBotLastCast[bot->GetGUID()] = spellId;
-            g_legionBotLastCastTime[bot->GetGUID()] = now;
+                return false;
         }
 
-        // Face the target so melee abilities don't fail their facing check
         if (target != bot)
             bot->SetFacingToObject(target);
 
-        // Triggered cast: ignores the global cooldown and resource costs
-        bot->CastSpell(target, spellInfo, true);
+        if (bot->CastSpell(target, spellInfo, false) != SPELL_CAST_OK)
+            return false;
+
+        uint32 cooldown = 1500;
+        if (spellInfo->Cooldowns.RecoveryTime > 0)
+            cooldown = std::max(cooldown, uint32(spellInfo->Cooldowns.RecoveryTime));
+        if (spellInfo->Cooldowns.CategoryRecoveryTime > 0)
+            cooldown = std::max(cooldown, uint32(spellInfo->Cooldowns.CategoryRecoveryTime));
+        {
+            std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+            g_legionBotSpellCooldowns[bot->GetGUID()][spellId] = now + cooldown;
+            g_legionBotLastCast[bot->GetGUID()] = spellId;
+            g_legionBotLastCastTime[bot->GetGUID()] = now;
+        }
+        return true;
     }
 
     // Class healing ability (paladin / priest)
@@ -655,100 +710,120 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     {
         if (healer->getClass() == CLASS_PRIEST)
         {
-            // Emergency save
-            if (target->GetHealthPct() < 25.0f && !healer->HasSpellCooldown(47788))
-            {
-                BotCast(healer, target, 47788);     // Guardian Spirit
+            if (target->GetHealthPct() < 25.0f && BotCast(healer, target, 47788)) // Guardian Spirit
                 return;
-            }
-            if (!healer->HasSpellCooldown(2050))
-            {
-                BotCast(healer, target, 2050);      // Holy Word: Serenity
+            if (target->GetHealthPct() < 75.0f && BotCast(healer, target, 2050)) // Holy Word: Serenity
                 return;
-            }
-            if (!healer->HasSpellCooldown(33076))
-            {
-                BotCast(healer, target, 33076);     // Prayer of Mending
+            if (target->GetHealthPct() < 55.0f && BotCast(healer, target, 2061)) // Flash Heal
                 return;
-            }
-            if (target->GetHealthPct() < 40.0f && !healer->HasSpellCooldown(2060))
-                BotCast(healer, target, 2060);      // Heal (big, slower)
-            else if (!healer->HasSpellCooldown(2061))
-                BotCast(healer, target, 2061);      // Flash Heal (fast)
-            else
-                BotCast(healer, target, 139);       // Renew
+            if (target->GetHealthPct() < 85.0f && !target->HasAura(139, healer->GetGUID()) && BotCast(healer, target, 139)) // Renew
+                return;
+            if (target->GetHealthPct() < 85.0f && BotCast(healer, target, 2060)) // Heal
+                return;
+            BotCast(healer, target, 2061); // Low-level fallback
         }
         else
         {
-            // Emergency save
-            if (target->GetHealthPct() < 25.0f && !healer->HasSpellCooldown(633))
-            {
-                BotCast(healer, target, 633);       // Lay on Hands
+            if (target->GetHealthPct() < 25.0f && BotCast(healer, target, 633)) // Lay on Hands
                 return;
-            }
-            if (!healer->HasSpellCooldown(20473))
-            {
-                BotCast(healer, target, 20473);     // Holy Shock
+            if (target->GetHealthPct() < 75.0f && BotCast(healer, target, 20473)) // Holy Shock
                 return;
-            }
-            if (target->GetHealthPct() < 40.0f && !healer->HasSpellCooldown(82326))
-                BotCast(healer, target, 82326);     // Holy Light
-            else
-                BotCast(healer, target, 19750);     // Flash of Light
+            if (target->GetHealthPct() < 55.0f && BotCast(healer, target, 19750)) // Flash of Light
+                return;
+            if (target->GetHealthPct() < 85.0f && BotCast(healer, target, 223306)) // Bestow Faith talent
+                return;
+            if (BotCast(healer, target, 82326)) return; // Holy Light
+            BotCast(healer, target, 19750); // Low-level fallback
         }
     }
 
+    // Maintain Holy's Beacons and Priest's Prayer of Mending on the tank.
+    void MaintainBotBuff(Player* owner, std::vector<ObjectGuid> const& botGuids, Player* bot)
+    {
+        uint32 const specId = bot->GetSpecializationId();
+        if (specId != 65 && specId != 257)
+            return;
+
+        Unit* target = owner;
+        for (ObjectGuid guid : botGuids)
+            if (GetBotRole(guid) == LB_ROLE_TANK)
+                if (Player* tank = ObjectAccessor::FindPlayer(guid))
+                    if (tank->IsAlive() && tank->IsInWorld())
+                    {
+                        target = tank;
+                        break;
+                    }
+
+        if (!target || !target->IsAlive())
+            return;
+
+        if (specId == 257)
+        {
+            if (!target->HasAura(41635, bot->GetGUID()))
+                BotCast(bot, target, 33076); // Prayer of Mending applies aura 41635
+            return;
+        }
+
+        if (!target->HasAura(53563, bot->GetGUID()))
+            if (BotCast(bot, target, 53563)) // Beacon of Light
+                return;
+
+        if (owner->IsAlive() && target != owner && bot->HasSpell(156910) &&
+            !owner->HasAura(156910, bot->GetGUID()))
+            BotCast(bot, owner, 156910); // Beacon of Faith talent
+    }
+
     // Class attack abilities for bots and the self-AI
-    void CastClassAbilities(Player* caster, Unit* target, uint8 role, bool allowDamage = true)
+    void CastClassAbilities(Player* caster, Unit* target, uint8 /*role*/, bool allowDamage = true)
     {
         switch (caster->getClass())
         {
             case CLASS_DEATH_KNIGHT:
-                if (role == LB_ROLE_TANK)
+                if (caster->GetSpecializationId() == 250)
                 {
-                    // Major defensive cooldowns
-                    BotCast(caster, caster, 55233);    // Vampiric Blood
-                    BotCast(caster, caster, 49028);    // Dancing Rune Weapon
-                    BotCast(caster, caster, 48792);    // Icebound Fortitude
-                    BotCast(caster, caster, 48707);    // Anti-Magic Shell
-                    // Damage + threat rotation
-                    BotCast(caster, target, 195182);   // Marrowrend
-                    BotCast(caster, target, 206930);   // Heart Strike
-                    BotCast(caster, target, 49998);    // Death Strike
-                    BotCast(caster, target, 50842);    // Blood Boil (AoE threat)
+                    if (caster->GetHealthPct() < 35.0f && BotCast(caster, caster, 55233)) return; // Vampiric Blood
+                    if (caster->GetHealthPct() < 30.0f && BotCast(caster, caster, 48792)) return; // Icebound Fortitude
+                    if (caster->GetHealthPct() < 50.0f && BotCast(caster, caster, 49028)) return; // Dancing Rune Weapon
+                    if (caster->GetHealthPct() < 70.0f && BotCast(caster, target, 49998)) return; // Death Strike
+                    Aura* boneShield = caster->GetAura(195181);
+                    if ((!boneShield || boneShield->GetStackAmount() < 5) && BotCast(caster, target, 195182)) return; // Marrowrend
+                    if (BotCast(caster, target, 206930)) return; // Heart Strike
+                    if (BotCast(caster, caster, 50842)) return;  // Blood Boil
+                    BotCast(caster, target, 49998); // Spend remaining runic power
                 }
                 else
                 {
-                    BotCast(caster, target, 49020);    // Obliterate
-                    BotCast(caster, target, 49143);    // Frost Strike
+                    if (caster->GetPowerPct(POWER_RUNIC_POWER) > 70.0f && BotCast(caster, target, 49143)) return; // Frost Strike
+                    if (BotCast(caster, target, 49020)) return; // Obliterate
+                    BotCast(caster, target, 49184); // Howling Blast
                 }
                 break;
             case CLASS_PALADIN:
                 if (allowDamage)
                 {
-                    BotCast(caster, target, 35395);    // Crusader Strike
-                    BotCast(caster, target, 20271);    // Judgment
+                    if (BotCast(caster, target, 20271)) return; // Judgment
+                    BotCast(caster, target, 35395); // Crusader Strike
                 }
                 break;
             case CLASS_ROGUE:
-                BotCast(caster, target, 53);           // Backstab
-                BotCast(caster, target, 196819);       // Eviscerate
+                if (caster->GetPower(POWER_COMBO_POINTS) >= 4 && BotCast(caster, target, 196819)) return; // Eviscerate
+                BotCast(caster, target, 53); // Backstab
                 break;
             case CLASS_WARRIOR:
-                BotCast(caster, caster, 1719);         // Battle Cry
-                BotCast(caster, caster, 184364);       // Enraged Regeneration
-                BotCast(caster, target, 184367);       // Rampage
-                BotCast(caster, target, 23881);        // Bloodthirst
-                BotCast(caster, target, 85288);        // Raging Blow
-                if (target->GetHealthPct() < 20.0f)
-                    BotCast(caster, target, 5308);     // Fury Execute
-                BotCast(caster, target, 190411);       // Whirlwind
+                if (caster->GetHealthPct() < 40.0f && BotCast(caster, caster, 184364)) return; // Enraged Regeneration
+                if (target->GetHealthPct() > 30.0f && BotCast(caster, caster, 1719)) return; // Battle Cry
+                if (target->GetHealthPct() < 20.0f && BotCast(caster, target, 5308)) return; // Execute
+                if (caster->GetPowerPct(POWER_RAGE) >= 85.0f && BotCast(caster, target, 184367)) return; // Rampage
+                if (BotCast(caster, target, 23881)) return; // Bloodthirst
+                if (BotCast(caster, target, 85288)) return; // Raging Blow
+                if (BotCast(caster, caster, 118000)) return; // Dragon Roar talent
+                BotCast(caster, target, 190411); // Whirlwind filler
                 break;
             case CLASS_PRIEST:
                 if (allowDamage)
                 {
-                    BotCast(caster, target, 14914);    // Holy Fire
-                    BotCast(caster, target, 585);      // Smite
+                    if (BotCast(caster, target, 14914)) return; // Holy Fire
+                    BotCast(caster, target, 585); // Smite
                 }
                 break;
             default:
@@ -798,7 +873,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     Unit* FindLowestHpAlly(Player* owner, Player* bot)
     {
         Unit* best = nullptr;
-        float lowest = 90.0f;   // heal aggressively so nobody drops
+        float lowest = 85.0f;
         Unit* tank = nullptr;
         float tankHp = 101.0f;
 
@@ -1079,6 +1154,7 @@ void LegionBot_LevelCommand(Player* owner, std::string const& arg, ChatHandler* 
             LearnBotSpells(bot);
             EquipBotGear(bot, target);
         }
+        LearnBotTalents(bot);
     }
 }
 
@@ -1467,6 +1543,7 @@ void LegionBot_Spawn(Player* owner, std::string const& charName, ChatHandler* ha
     if (bot->getLevel() != spawnLevel)
         bot->GiveLevel(spawnLevel);
     LearnBotSpells(bot);
+    LearnBotTalents(bot);
     EquipBotGear(bot, spawnLevel);
 
     // Dungeon consumables: potions in the backpack (only if the items exist in this build)
@@ -1724,6 +1801,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                     LearnBotSpells(bot);
                     EquipBotGear(bot, target);
                 }
+                LearnBotTalents(bot);
             }
         }
     }
@@ -1900,6 +1978,8 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                     healerCanDps = true;
             }
         }
+
+        MaintainBotBuff(player, botGuids, bot);
 
         // Target selection (respects the assist mode)
         Unit* target = nullptr;

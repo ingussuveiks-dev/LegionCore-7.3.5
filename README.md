@@ -119,8 +119,17 @@ The player bot spell kits were checked against the extracted 7.3.5 `Spell.db2`,
 Paladin, Fury Warrior and Holy Priest teams learn spells for their own
 specializations and current level. Removed pre-Legion party buffs are not cast;
 Holy Priest no longer receives Discipline/Shadow Shield, and Fury Execute uses
-spell `5308`. NPC companions use separate, generic combat spells. Bot spawning,
-spell effects and combat still need an in-game client test.
+spell `5308`. These four bundled specs choose one 7.3.5 talent per unlocked row
+when the row is empty, preserving any existing talent choice. Holy Paladin
+maintains Beacon of Light on the tank and, after its final talent unlock,
+Beacon of Faith on the owner. Holy Priest refreshes Prayer of Mending on the
+tank. Missing or dispelled auras are recast; Blood DK and Fury Warrior have no
+general party buff to maintain. Combat uses a basic health/resource priority
+and normal casts, including the GCD and resource costs. Fury Warriors learn
+Titan's Grip and receive two two-handed weapons where the chosen gear is
+equippable. NPC companions use separate, generic combat spells. Bot spawning,
+talent application, spell effects and rotation performance still need an
+in-game 7.3.5 client test.
 
 The Windows Release build and local auth/worldserver startup were checked on
 2026-09-24: both reached `ready...`, with no startup `ERROR` or `WARN` entries,
