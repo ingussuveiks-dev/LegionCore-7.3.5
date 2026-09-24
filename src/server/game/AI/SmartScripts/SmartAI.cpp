@@ -1023,6 +1023,14 @@ bool SmartGameObjectAI::GossipHello(Player* player, bool /*isUse*/)
     return false;
 }
 
+bool SmartGameObjectAI::GossipUse(Player* player)
+{
+    if (!go->isSpawned() || go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE))
+        return false;
+
+    return GossipHello(player, true);
+}
+
 // Called when a player selects a gossip item in the gameobject's gossip menu.
 bool SmartGameObjectAI::GossipSelect(Player* player, uint32 sender, uint32 action)
 {

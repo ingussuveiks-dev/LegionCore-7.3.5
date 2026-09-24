@@ -255,6 +255,30 @@ the current world database. It still requires in-game completion tests for all
 seven challenge variants before it should be described as fully gameplay
 verified.
 
+## Broken Isles world quests and Artifact Power
+
+At level 110, the server rotates world quests with Artifact Power item rewards.
+Completing one awards an item; use that item while the intended artifact is
+equipped to add its power. The world database also has two level-98 zone quests
+with direct Artifact Power rewards: Azsuna's `38237` and Val'sharah's `38688`.
+Most ordinary leveling quests do not directly award Artifact Power.
+
+The world updates restore reward templates for 18 valid Broken Isles world
+quests that were present in `world_quest_update` but skipped by the loader:
+two Highmountain epic quests, 14 Azsuna subzone quests and two Broken Shore
+subzone quests. Nine Azsuna entries also receive explicit task areas matching
+their target spawns. Suramar world quest `42209`, *Freeing the Taken*, now
+awards its prisoner credit when a player uses a Containment Field. The
+SmartGameObjectAI use hook now dispatches the existing gossip-use actions for
+GOOBER objects, including that field's prisoner release script.
+
+The current database and 7.3.5 client task/objective data were checked, and
+the Release worldserver loaded all 710 positive-zone rotation entries with
+reward templates. Another 31 `world_quest_update` rows use non-zone quest sorts
+or non-world-quest info types and are outside this zonal rotation repair. Quest
+completion and AP delivery still need client gameplay checks before the entire
+rotation can be called fully verified.
+
 ## Argus campaign, world quests and Netherlight Crucible
 
 The Argus campaign covers the Krokuun, Mac'Aree and Antoran Wastes progression,

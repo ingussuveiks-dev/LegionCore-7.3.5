@@ -247,6 +247,7 @@ class SmartGameObjectAI : public GameObjectAI
         static int Permissible(const GameObject* g);
 
         bool GossipHello(Player* player, bool isUse) override;
+        bool GossipUse(Player* player) override;
         bool GossipSelect(Player* player, uint32 sender, uint32 action) override;
         bool GossipSelectCode(Player* /*player*/, uint32 /*sender*/, uint32 /*action*/, const char* /*code*/) override;
         bool QuestAccept(Player* player, Quest const* quest) override;
