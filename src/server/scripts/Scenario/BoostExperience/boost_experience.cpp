@@ -111,6 +111,15 @@ uint8 GetFirstTargetLesson(uint32 scenarioId)
     }
 }
 
+void EnsureDoomguardShard(Player* player, uint32 step)
+{
+    // The earlier Affliction lessons can consume the last shard. The
+    // Doomguard lesson requires one and must remain possible on reconnect.
+    if (player && player->getClass() == CLASS_WARLOCK && step == 9 &&
+        player->GetPower(POWER_SOUL_SHARDS) < 10)
+        player->SetPower(POWER_SOUL_SHARDS, 10);
+}
+
 Position Offset(Position const& base, float x, float y, float z = 0.0f, float orientation = 0.0f)
 {
     // CUSTOM placement in the player's starting frame: x is forward, y is
@@ -150,6 +159,7 @@ public:
         ObjectGuid _trainingDummyGuid;
         std::vector<ObjectGuid> _passengerGuids;
         std::vector<ObjectGuid> _sparringGuids;
+        std::vector<ObjectGuid> _pendingCombatGuids;
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
         uint32 TransportEntry() const { return _alliance ? GO_DAWN_BLADE : GO_WARBRINGER; }
@@ -329,6 +339,7 @@ public:
                 SpawnStaticPassengers(transport);
 
             SetTrainingDummyForStep(player, scenario->GetCurrentStep(), scenario->GetStepCount(false));
+            EnsureDoomguardShard(player, scenario->GetCurrentStep());
             scenario->SendStepUpdate(player, true);
             player->SendActionButtons(1);
             setScenarioStep(scenario->GetCurrentStep());
@@ -351,6 +362,25 @@ public:
 
         void Update(uint32 diff) override
         {
+            // Transport::SummonPassenger queues creatures with AddToMapWait.
+            // Their AI is initialized only when the map processes that queue.
+            if (!_pendingCombatGuids.empty())
+            {
+                if (Player* player = GetPlayer())
+                    _pendingCombatGuids.erase(std::remove_if(_pendingCombatGuids.begin(), _pendingCombatGuids.end(),
+                        [this, player](ObjectGuid const& guid)
+                        {
+                            Creature* summon = instance->GetCreature(guid);
+                            if (!summon || !summon->IsInWorld() || !summon->AI())
+                                return false;
+
+                            summon->AI()->AttackStart(player);
+                            return true;
+                        }), _pendingCombatGuids.end());
+                else
+                    _pendingCombatGuids.clear();
+            }
+
             // Runtime passengers are queued for addition to the map. Their
             // first visibility update can therefore run before they are in
             // world, and transport passengers are skipped by the ordinary
@@ -417,7 +447,7 @@ public:
 
             summon->setFaction(14);
             summon->SetReactState(REACT_AGGRESSIVE);
-            summon->AI()->AttackStart(player);
+            _pendingCombatGuids.push_back(summon->GetGUID());
         }
 
         void ClearSparringWave()
@@ -429,6 +459,8 @@ public:
 
                 _passengerGuids.erase(std::remove(_passengerGuids.begin(), _passengerGuids.end(), guid),
                     _passengerGuids.end());
+                _pendingCombatGuids.erase(std::remove(_pendingCombatGuids.begin(), _pendingCombatGuids.end(), guid),
+                    _pendingCombatGuids.end());
             }
             _sparringGuids.clear();
         }
@@ -491,7 +523,10 @@ public:
         void onScenarionNextStep(uint32 newStep) override
         {
             if (Player* player = GetPlayer())
+            {
+                EnsureDoomguardShard(player, newStep);
                 player->SendActionButtons(1);
+            }
             if (_lastCombatStep == newStep)
                 return;
 
