@@ -357,23 +357,27 @@ void MapManager::SetMapUpdateInterval(uint32 t)
 
 void MapManager::UnloadAll()
 {
-    sInstanceSaveMgr->UnloadAll();
-
-    // Stop map befor unlooad map
+    // Map update threads must finish before instance saves or maps are freed.
     for (uint16 i = 0; i < _mapCount; ++i)
-    {
         if (Map* map = i_maps[i])
-        {
-            if (map->CanCreatedZone())
-                if (MapInstanced* inst = static_cast<MapInstanced*>(map))
-                    inst->StopInstance();
-
             map->SetMapStop();
+
+    for (auto*& thread : _mapThreads)
+    {
+        if (thread)
+        {
+            thread->join();
+            delete thread;
+            thread = nullptr;
         }
     }
 
-    // Wait when map is stop update
-    std::this_thread::sleep_for(Milliseconds(1000));
+    for (uint16 i = 0; i < _mapCount; ++i)
+        if (Map* map = i_maps[i])
+            if (map->CanCreatedZone())
+                static_cast<MapInstanced*>(map)->StopInstance();
+
+    sInstanceSaveMgr->UnloadAll();
 
     for (uint16 i = 0; i < _mapCount; ++i)
     {
@@ -383,13 +387,6 @@ void MapManager::UnloadAll()
             map->UnloadAll();
             delete map;
         }
-    }
-
-    for (auto* thread : _mapThreads)
-    {
-        if (thread)
-            thread->join();
-        delete thread;
     }
 
     sGuildMgr->UnloadAll();

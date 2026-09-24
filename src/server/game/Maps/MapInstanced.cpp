@@ -204,6 +204,8 @@ void MapInstanced::UpdateTransport(uint32 diff)
 
 void MapInstanced::UnloadAll()
 {
+    StopInstance();
+
     // Unload instanced maps
     for (InstancedMaps::iterator i = m_InstancedMaps.begin(); i != m_InstancedMaps.end(); ++i)
         i->second->UnloadAll();
@@ -220,25 +222,22 @@ void MapInstanced::UnloadAll()
     m_InstancedMaps.clear();
     m_GarrisonedMaps.clear();
 
-    for (auto thread : _zoneThreads)
-    {
-        thread.second->join();
-        delete thread.second;
-    }
-    _zoneThreads.clear();
-
     // Unload own grids (just dummy(placeholder) grids, neccesary to unload GridMaps!)
     Map::UnloadAll();
 }
 
 void MapInstanced::StopInstance()
 {
-    volatile uint32 _mapId = GetId();
-
-    // Session not need thread
     for (InstancedMaps::iterator i = m_InstancedMaps.begin(); i != m_InstancedMaps.end(); ++i)
         if (Map* const instanced = i->second)
             instanced->SetMapStop();
+
+    for (auto& thread : _zoneThreads)
+    {
+        thread.second->join();
+        delete thread.second;
+    }
+    _zoneThreads.clear();
 }
 
 /*

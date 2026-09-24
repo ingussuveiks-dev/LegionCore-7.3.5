@@ -19,6 +19,7 @@
 #ifndef TRINITY_MAP_H
 #define TRINITY_MAP_H
 
+#include <atomic>
 #include <bitset>
 
 #include "Cell.h"
@@ -727,7 +728,7 @@ class TC_GAME_API Map
         sf::contention_free_shared_mutex< > i_lockGoRespawn;
 
         bool b_isMapUnload;
-        bool b_isMapStop;
+        std::atomic<bool> b_isMapStop;
         IntervalTimer i_timer;
         IntervalTimer i_timer_se;
         IntervalTimer i_timer_op;
