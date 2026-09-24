@@ -392,13 +392,17 @@ class solocraft_system_announce : public PlayerScript
 
         void OnGiveXP(Player* player, uint32& amount, Unit* victim) override
         {
-            if (solocraftConfig.SolocraftXPBalancingEnabled)
+            if (solocraftConfig.SoloCraftEnable && solocraftConfig.SolocraftXPBalancingEnabled)
             {
                 Map* map = player->GetMap();
-                if (map && map->IsDungeon())
+                // Scenarios also satisfy IsDungeon(), but their capacity is
+                // not a dungeon group size (Broken Shore uses 80 players).
+                if (map && map->IsDungeon() && !map->IsScenario())
                 {
                     // Ensure that the players always get the same XP, even when entering the dungeon alone
                     auto maxPlayerCount= map->ToInstanceMap()->GetMaxPlayers();
+                    if (!maxPlayerCount)
+                        return;
                     auto currentPlayerCount = GetNumInGroup(player);
                     amount = uint32(amount * solocraftConfig.SoloCraftXPMod * ((float) currentPlayerCount / maxPlayerCount));
                 }
