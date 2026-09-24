@@ -100,6 +100,8 @@ To enable the included teams:
 | `.lbot spawn <name>` | Spawn one character from the configured bot account. |
 | `.lbot dismiss` | Remove your player bots and NPC companions. |
 | `.lbot info` | Show bot state and diagnostic information. |
+| `.lbot log on\|off\|status` | Start, save or inspect your bot rotation trace in the Release runtime `logs` directory. |
+| `.lbot fieldcheck` | GM/console check of the GM Island dummy positions against terrain, VMap height and line of sight. |
 | `.lbot level sync\|max\|<1-110>` | Match your level, use the realm maximum or set a fixed level. |
 | `.lbot autogear` | Re-equip the bots for their current level. |
 | `.lbot assist full\|defend\|chill` | Defend the whole bot team, prioritize attackers of you or the bot itself, or follow/heal without automatic assistance. In `chill`, bots still fight back or obey a valid `.lbot attack` order. Every mode requires an active attacker. |
@@ -113,6 +115,43 @@ To enable the included teams:
 
 The console form names an **online** player, for example `lbot MyChar team`.
 The bare `.lbot` command spawns a single NPC tank companion.
+
+### GM Island rotation range
+
+The local `legion_world` database contains seven LegionBot rotation dummies,
+installed from [`sql/custom/legionbot_rotation_dummies.sql`](sql/custom/legionbot_rotation_dummies.sql).
+On another database, first check that creature entries `900901`, `900902`,
+`900904` and spawn GUIDs `900901001`–`900901007` are free, then run that SQL
+and restart `worldserver`. Use `.tele GMIsland` and head east to the three
+separate stations near map 1, `(16282, 16275)`, `(16296, 16275)` and
+`(16313, 16275)`: one dummy, two dummies and four dummies respectively.
+Their names identify the group. Each dummy stands on the extracted 7.3.5
+terrain, remains in place, takes no damage and deals none. After a real player
+hits it once, it becomes an attacker so the defensive bots may respond. Tag
+each dummy in the two- and four-target groups to test target selection. Bot
+area damage remains disabled to protect nearby unpulled creatures.
+
+The GM/console command `.lbot fieldcheck` loads the island grid and reports
+terrain height, VMap collision height and approach line of sight for all seven
+positions. In the local runtime all seven reported `OK`. The nearest older
+creature spawn is at least 25 yards away and the nearest gameobject at least
+39 yards away. The island also has three older unrelated creature entries
+(`230001`, `230002`, `230005`) without display models; loading the grid emits
+model errors for those entries. The seven new dummies did not emit such errors.
+Non-colliding foliage and camera framing still need a visual client pass.
+
+Use `.lbot log on` before a test and `.lbot log off` after it. The command
+prints the resulting `build-extractors/bin/Release/logs/LegionBot-*.tsv` path;
+`status` shows the current file. The tab-separated trace records spell starts,
+accepted casts, cast failures, sampled skip reasons, target changes, dummy
+hits and a combat-state heartbeat every five seconds. It flushes each event so
+the last actions remain available after a crash. For a quick summary, run
+`tools/tests/Analyze-LegionBotRotation.ps1 -Path <trace-file>`. This reports
+casts by spell, failures and possible eight-second gaps during combat. The
+`result` column contains a spell cast result for `cast_failed`, attempted
+damage for `dummy_hit`, and 0/1 combat state for `state`; `detail` identifies
+sampled skip reasons. `spell_begin` means a cast passed the core's basic check,
+while `cast_accepted` records the bot AI's cast request.
 
 The player bot spell kits were checked against the extracted 7.3.5 `Spell.db2`,
 `SpellLevels.db2` and `SpecializationSpells.db2`. The included Blood DK, Holy

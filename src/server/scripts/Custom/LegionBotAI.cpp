@@ -33,7 +33,11 @@
 #include "WorldSession.h"
 
 #include <algorithm>
+#include <cstdio>
+#include <ctime>
+#include <cstring>
 #include <cstdlib>
+#include <filesystem>
 #include <map>
 #include <mutex>
 #include <set>
@@ -67,6 +71,72 @@ std::mutex g_legionBotsMutex;
 std::map<ObjectGuid, uint32> g_legionBotLastLevelCheck;      // owner guid -> ms of last level sync
 std::map<uint64, std::vector<uint32>> g_legionBotGearCache;  // race/class/spec/level -> item entries
 std::map<ObjectGuid, std::pair<ObjectGuid, uint32>> g_legionBotTargetSince; // bot guid -> (target guid, ms engaged)
+
+struct BotTrace
+{
+    FILE* file = nullptr;
+    std::string path;
+    std::map<std::string, uint32> lastSample;
+};
+
+std::map<ObjectGuid, BotTrace> g_legionBotTraces; // owner guid -> open, opt-in trace
+
+void WriteBotTraceUnlocked(ObjectGuid ownerGuid, Unit* actor, char const* event,
+                           uint32 spellId, Unit* target, int32 result,
+                           char const* detail, uint32 sampleIntervalMs = 0)
+{
+    auto itr = g_legionBotTraces.find(ownerGuid);
+    if (itr == g_legionBotTraces.end() || !actor)
+        return;
+
+    BotTrace& trace = itr->second;
+    uint32 const now = getMSTime();
+    if (sampleIntervalMs)
+    {
+        std::string const key = std::to_string(actor->GetGUID().GetCounter()) + ':' +
+            event + ':' + std::to_string(spellId) + ':' + detail;
+        uint32& last = trace.lastSample[key];
+        if (last && now - last < sampleIntervalMs)
+            return;
+        last = now;
+    }
+
+    SpellInfo const* spell = spellId ? sSpellMgr->GetSpellInfo(spellId) : nullptr;
+    float const distance = target && target->GetMap() == actor->GetMap() ? actor->GetDistance(target) : -1.0f;
+    fprintf(trace.file, "%llu\t%u\t%llu\t%llu\t%s\t%u\t%u\t%s\t%u\t%s\t%llu\t%s\t%d\t%.1f\t%.1f\t%.1f\t%.1f\t%u\t%.2f\t%.2f\t%.2f\t%s\n",
+        static_cast<unsigned long long>(std::time(nullptr)), now,
+        static_cast<unsigned long long>(ownerGuid.GetCounter()),
+        static_cast<unsigned long long>(actor->GetGUID().GetCounter()), actor->GetName(),
+        uint32(actor->getClass()), actor->ToPlayer() ? actor->ToPlayer()->GetSpecializationId() : 0,
+        event, spellId, spell && spell->SpellName ? spell->SpellName : "-",
+        target ? static_cast<unsigned long long>(target->GetGUID().GetCounter()) : 0ULL,
+        target ? target->GetName() : "-", result, actor->GetHealthPct(),
+        actor->GetPowerPct(actor->GetPowerType()), target ? target->GetHealthPct() : -1.0f,
+        distance, actor->GetMapId(), actor->GetPositionX(), actor->GetPositionY(), actor->GetPositionZ(), detail);
+    fflush(trace.file); // keep the last actions if the server crashes during a test
+}
+
+void TraceActorAction(Unit* actor, char const* event, uint32 spellId = 0,
+                      Unit* target = nullptr, int32 result = 0,
+                      char const* detail = "-", uint32 sampleIntervalMs = 0)
+{
+    if (!actor)
+        return;
+    std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+    for (auto const& trace : g_legionBotTraces)
+    {
+        ObjectGuid const ownerGuid = trace.first;
+        bool belongsToOwner = actor->GetGUID() == ownerGuid;
+        if (!belongsToOwner)
+        {
+            auto bots = g_legionBots.find(ownerGuid);
+            belongsToOwner = bots != g_legionBots.end() &&
+                std::find(bots->second.begin(), bots->second.end(), actor->GetGUID()) != bots->second.end();
+        }
+        if (belongsToOwner)
+            WriteBotTraceUnlocked(ownerGuid, actor, event, spellId, target, result, detail, sampleIntervalMs);
+    }
+}
 
 // Bots wait this long after picking a new target before attacking, so the
 // owner always gets the first swing in (playerbot-style "let the player pull").
@@ -665,33 +735,72 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     // Cast normally so resource costs, range, the GCD and spell cooldowns apply.
     bool BotCast(Player* bot, Unit* target, uint32 spellId, uint32 minCooldown = 1500)
     {
-        if (!bot || !target || !target->IsAlive())
+        if (!bot)
             return false;
+        if (!target || !target->IsAlive())
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "target_dead", 5000);
+            return false;
+        }
 
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
         if (!spellInfo)
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "missing_spell", 5000);
             return false;
+        }
 
-        if (spellInfo->SpellLevel > bot->getLevel() || !bot->HasSpell(spellId) ||
-            bot->HasSpellCooldown(spellId) || bot->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo) ||
-            bot->IsNonMeleeSpellCast(false))
+        if (spellInfo->SpellLevel > bot->getLevel())
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "level", 5000);
             return false;
+        }
+        if (!bot->HasSpell(spellId))
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "unlearned", 5000);
+            return false;
+        }
+        if (bot->HasSpellCooldown(spellId))
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "cooldown", 5000);
+            return false;
+        }
+        if (bot->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "global_cooldown", 5000);
+            return false;
+        }
+        if (bot->IsNonMeleeSpellCast(false))
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "casting", 5000);
+            return false;
+        }
 
         uint32 const now = getMSTime();
 
+        bool throttled = false;
         {
             std::lock_guard<std::mutex> lock(g_legionBotsMutex);
             auto const& spellMap = g_legionBotSpellCooldowns[bot->GetGUID()];
             auto itr = spellMap.find(spellId);
             if (itr != spellMap.end() && now < itr->second)
-                return false;
+                throttled = true;
+        }
+        if (throttled)
+        {
+            TraceActorAction(bot, "cast_skip", spellId, target, 0, "ai_cooldown", 5000);
+            return false;
         }
 
         if (target != bot)
             bot->SetFacingToObject(target);
 
-        if (bot->CastSpell(target, spellInfo, false) != SPELL_CAST_OK)
+        SpellCastResult const result = bot->CastSpell(target, spellInfo, false);
+        if (result != SPELL_CAST_OK)
+        {
+            TraceActorAction(bot, "cast_failed", spellId, target, int32(result), "cast_result", 1000);
             return false;
+        }
 
         uint32 cooldown = minCooldown;
         if (spellInfo->Cooldowns.RecoveryTime > 0)
@@ -704,6 +813,7 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
             g_legionBotLastCast[bot->GetGUID()] = spellId;
             g_legionBotLastCastTime[bot->GetGUID()] = now;
         }
+        TraceActorAction(bot, "cast_accepted", spellId, target);
         return true;
     }
 
@@ -1119,6 +1229,32 @@ float const LB_MAX_ENGAGE_DISTANCE = 30.0f;
     }
 }
 
+// Used by the optional NPC companions and the rotation test dummies.
+void LegionBot_LogAction(Player* owner, Unit* actor, char const* event,
+                         uint32 spellId, Unit* target, int32 result, char const* detail)
+{
+    if (!owner || !actor)
+        return;
+    std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+    WriteBotTraceUnlocked(owner->GetGUID(), actor, event, spellId, target, result, detail,
+        std::strcmp(event, "cast_failed") == 0 ? 1000 : 0);
+}
+
+void LegionBot_LogActor(Unit* actor, char const* event, uint32 spellId,
+                        Unit* target, int32 result, char const* detail)
+{
+    TraceActorAction(actor, event, spellId, target, result, detail);
+}
+
+void LegionBot_LogHeartbeat(Player* owner, Unit* actor)
+{
+    if (!owner || !actor)
+        return;
+    std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+    WriteBotTraceUnlocked(owner->GetGUID(), actor, "state", 0, actor->getVictim(),
+        actor->isInCombat() ? 1 : 0, "heartbeat", 5000);
+}
+
 bool LegionBot_IsBot(ObjectGuid guid)
 {
     std::lock_guard<std::mutex> lock(g_legionBotsMutex);
@@ -1136,6 +1272,73 @@ std::vector<ObjectGuid> LegionBot_GetBotsOf(ObjectGuid ownerGuid)
     if (itr == g_legionBots.end())
         return std::vector<ObjectGuid>();
     return itr->second;
+}
+
+void LegionBot_LogCommand(Player* owner, std::string const& arg, ChatHandler* handler)
+{
+    if (!owner || !handler)
+        return;
+
+    std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+    auto existing = g_legionBotTraces.find(owner->GetGUID());
+    if (arg == "status")
+    {
+        handler->PSendSysMessage("|cff33ff99LegionBot:|r rotation log %s%s%s",
+            existing == g_legionBotTraces.end() ? "off" : "on",
+            existing == g_legionBotTraces.end() ? "" : " - ",
+            existing == g_legionBotTraces.end() ? "" : existing->second.path.c_str());
+        return;
+    }
+    if (arg == "off")
+    {
+        if (existing == g_legionBotTraces.end())
+        {
+            handler->SendSysMessage("|cff33ff99LegionBot:|r rotation log is already off.");
+            return;
+        }
+        WriteBotTraceUnlocked(owner->GetGUID(), owner, "trace_stop", 0, nullptr, 0, "command");
+        std::string const path = existing->second.path;
+        fclose(existing->second.file);
+        g_legionBotTraces.erase(existing);
+        handler->PSendSysMessage("|cff33ff99LegionBot:|r rotation log saved: %s", path.c_str());
+        return;
+    }
+    if (arg != "on")
+    {
+        handler->SendSysMessage("|cff33ff99LegionBot:|r usage: .lbot log on | off | status");
+        return;
+    }
+    if (existing != g_legionBotTraces.end())
+    {
+        handler->PSendSysMessage("|cff33ff99LegionBot:|r rotation log already on: %s", existing->second.path.c_str());
+        return;
+    }
+
+    std::error_code error;
+    std::filesystem::create_directories("logs", error);
+    if (error)
+    {
+        handler->PSendSysMessage("|cffff4444LegionBot:|r cannot create logs directory: %s", error.message().c_str());
+        handler->SetSentErrorMessage(true);
+        return;
+    }
+
+    std::string const file = "logs/LegionBot-" + std::to_string(owner->GetGUID().GetCounter()) +
+        "-" + std::to_string(std::time(nullptr)) + "-" + std::to_string(getMSTime()) + ".tsv";
+    FILE* stream = fopen(file.c_str(), "w");
+    if (!stream)
+    {
+        handler->PSendSysMessage("|cffff4444LegionBot:|r cannot open rotation log: %s", file.c_str());
+        handler->SetSentErrorMessage(true);
+        return;
+    }
+
+    fprintf(stream, "epoch_s\tuptime_ms\towner_guid\tactor_guid\tactor\tclass\tspec\tevent\tspell_id\tspell\ttarget_guid\ttarget\tresult\thp_pct\tpower_pct\ttarget_hp_pct\tdistance\tmap\tx\ty\tz\tdetail\n");
+    BotTrace& trace = g_legionBotTraces[owner->GetGUID()];
+    trace.file = stream;
+    trace.path = std::filesystem::absolute(file).string();
+    WriteBotTraceUnlocked(owner->GetGUID(), owner, "trace_start", 0, nullptr, 0, "command");
+    handler->PSendSysMessage("|cff33ff99LegionBot:|r rotation log on: %s", trace.path.c_str());
 }
 
 // Toggle the self-AI for a player (the bot AI fights for them). Returns the new state.
@@ -1415,6 +1618,7 @@ void LegionBot_AttackCommand(Player* owner, ChatHandler* handler)
 
         bot->Attack(target, true);
         bot->GetMotionMaster()->MoveChase(target);
+        TraceActorAction(bot, "manual_attack", 0, target);
         ++count;
     }
 
@@ -1725,6 +1929,7 @@ void LegionBot_Spawn(Player* owner, std::string const& charName, ChatHandler* ha
         g_legionBotRoles[bot->GetGUID()] = role;
     }
 
+    TraceActorAction(bot, "spawn", 0, owner, int32(role), "player_bot");
     if (handler)
     {
         char const* roleName = (role == LB_ROLE_TANK) ? "tank" : ((role == LB_ROLE_HEALER) ? "healer" : "damage");
@@ -1762,8 +1967,9 @@ void LegionBot_DismissAll(Player* owner, ChatHandler* handler)
             }
         }
 
-        if (ObjectAccessor::FindPlayer(botGuid))
+        if (Player* bot = ObjectAccessor::FindPlayer(botGuid))
         {
+            LegionBot_LogAction(owner, bot, "dismiss", 0, owner, 0, "player_bot");
             DestroyBotPlayer(botGuid, session);
             ++count;
         }
@@ -1806,6 +2012,7 @@ namespace
         {
             if (player->getVictim() != target)
             {
+                TraceActorAction(player, "target_acquire", 0, target, 0, "self_ai");
                 player->Attack(target, true);
                 player->GetMotionMaster()->MoveChase(target);
             }
@@ -1950,6 +2157,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
 
         if (bot->isDead())
         {
+            TraceActorAction(bot, "dead", 0, nullptr, 0, "waiting_resurrection", 5000);
             // Resurrect bots once the fight is over
             if (!player->isInCombat())
             {
@@ -1960,6 +2168,9 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
             }
             continue;
         }
+
+        TraceActorAction(bot, "state", 0, bot->getVictim(), bot->isInCombat() ? 1 : 0,
+            "heartbeat", 5000);
 
         uint8 role = LB_ROLE_DPS;
         {
@@ -2212,6 +2423,7 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
 
         if (bot->getVictim() && !IsPartyAggressor(player, botGuids, bot->getVictim()))
         {
+            TraceActorAction(bot, "target_drop", 0, bot->getVictim(), 0, "not_attacking_team");
             bot->AttackStop();
             bot->GetMotionMaster()->MoveIdle();
         }
@@ -2275,7 +2487,10 @@ void LegionBot_OnPlayerUpdate(Player* player, uint32 /*diff*/)
                 continue;
 
             if (bot->getVictim() != target)
+            {
+                TraceActorAction(bot, "target_acquire", 0, target, int32(settings.assistMode), "defensive");
                 bot->Attack(target, true);
+            }
 
             // Always ensure we're chasing the target (formation movement may have taken over)
             if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
@@ -2305,6 +2520,17 @@ void LegionBot_OnPlayerLogout(Player* player)
     if (!player)
         return;
 
+    {
+        std::lock_guard<std::mutex> lock(g_legionBotsMutex);
+        auto trace = g_legionBotTraces.find(player->GetGUID());
+        if (trace != g_legionBotTraces.end())
+        {
+            WriteBotTraceUnlocked(player->GetGUID(), player, "trace_stop", 0, nullptr, 0, "logout");
+            fclose(trace->second.file);
+            g_legionBotTraces.erase(trace);
+        }
+    }
+
     DismissBotsOfOwner(player->GetGUID());
     std::lock_guard<std::mutex> lock(g_legionBotsMutex);
     g_legionPlayerAi.erase(player->GetGUID());
@@ -2325,6 +2551,13 @@ public:
     void OnLogout(Player* player) override
     {
         LegionBot_OnPlayerLogout(player);
+    }
+
+    void OnSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (spell && spell->GetSpellInfo())
+            TraceActorAction(player, "spell_begin", spell->GetSpellInfo()->Id,
+                spell->m_targets.GetUnitTarget());
     }
 };
 

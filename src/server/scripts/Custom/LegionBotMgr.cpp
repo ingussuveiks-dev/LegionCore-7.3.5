@@ -19,15 +19,19 @@
 #include "ScriptMgr.h"
 #include "Chat.h"
 #include "Creature.h"
+#include "Map.h"
+#include "MapManager.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "MotionMaster.h"
 #include "Player.h"
+#include "ScriptedCreature.h"
 #include "Spell.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "WorldSession.h"
 
+#include <cmath>
 #include <map>
 #include <mutex>
 #include <sstream>
@@ -37,6 +41,7 @@
 void LegionBot_Spawn(Player* owner, std::string const& charName, ChatHandler* handler, uint8 role = 255);
 void LegionBot_DismissAll(Player* owner, ChatHandler* handler);
 std::vector<ObjectGuid> LegionBot_GetBotsOf(ObjectGuid ownerGuid);
+bool LegionBot_IsBot(ObjectGuid guid);
 void LegionBot_DebugInfo(Player* owner, ChatHandler* handler);
 bool LegionBot_ToggleSelfAI(Player* player);
 void LegionBot_LevelCommand(Player* owner, std::string const& arg, ChatHandler* handler);
@@ -46,6 +51,12 @@ void LegionBot_AssistCommand(Player* owner, std::string const& arg, ChatHandler*
 void LegionBot_FollowCommand(Player* owner, std::string const& arg, ChatHandler* handler);
 void LegionBot_AttackCommand(Player* owner, ChatHandler* handler);
 void LegionBot_ComeCommand(Player* owner, ChatHandler* handler);
+void LegionBot_LogAction(Player* owner, Unit* actor, char const* event,
+                         uint32 spellId, Unit* target, int32 result, char const* detail);
+void LegionBot_LogActor(Unit* actor, char const* event, uint32 spellId,
+                        Unit* target, int32 result, char const* detail);
+void LegionBot_LogHeartbeat(Player* owner, Unit* actor);
+void LegionBot_LogCommand(Player* owner, std::string const& arg, ChatHandler* handler);
 
 namespace
 {
@@ -146,6 +157,8 @@ public:
 
     void JustDied(Unit* /*killer*/) override
     {
+        if (Unit* owner = GetBotOwner())
+            LegionBot_LogAction(owner->ToPlayer(), me, "dead", 0, nullptr, 0, "npc_companion");
         UnregisterBot(_ownerGuid, me->GetGUID());
     }
 
@@ -158,6 +171,8 @@ public:
             me->DespawnOrUnsummon();
             return;
         }
+
+        LegionBot_LogHeartbeat(owner->ToPlayer(), me);
 
         _interruptTimer = _interruptTimer > diff ? _interruptTimer - diff : 0;
         _dispelTimer = _dispelTimer > diff ? _dispelTimer - diff : 0;
@@ -190,7 +205,10 @@ public:
 
             Unit* assistTarget = FindDefensiveTarget(owner);
             if (assistTarget)
+            {
+                LegionBot_LogAction(owner->ToPlayer(), me, "target_acquire", 0, assistTarget, 0, "npc_defensive");
                 AttackStart(assistTarget);
+            }
 
             return;
         }
@@ -199,10 +217,15 @@ public:
         Unit* victim = me->getVictim();
         if (!IsAttackingTeam(owner, victim))
         {
+            if (victim)
+                LegionBot_LogAction(owner->ToPlayer(), me, "target_drop", 0, victim, 0, "not_attacking_team");
             me->AttackStop();
             Unit* newTarget = FindDefensiveTarget(owner);
             if (newTarget)
+            {
+                LegionBot_LogAction(owner->ToPlayer(), me, "target_acquire", 0, newTarget, 0, "npc_defensive");
                 AttackStart(newTarget);
+            }
             else
             {
                 me->GetMotionMaster()->MoveFollow(owner, FOLLOW_DISTANCE, 0.0f);
@@ -244,7 +267,7 @@ public:
 
                 if (healTarget)
                 {
-                    me->CastSpell(healTarget, SPELL_BOT_HEAL, false);
+                    CastLogged(owner, healTarget, SPELL_BOT_HEAL);
                     return;
                 }
             }
@@ -259,7 +282,7 @@ public:
                 _attackTimer = ATTACK_COOLDOWN;
                 if (Unit* target = me->getVictim())
                     if (target->IsAlive())
-                        me->CastSpell(target, SPELL_BOT_LIGHTNING_BOLT, false);
+                        CastLogged(owner, target, SPELL_BOT_LIGHTNING_BOLT);
             }
             else
                 _attackTimer -= diff;
@@ -279,7 +302,7 @@ public:
                 _tauntTimer = TAUNT_COOLDOWN;
                 if (Unit* ownerAttacker = owner->getAttackerForHelper())
                     if (IsAttackingTeam(owner, ownerAttacker) && ownerAttacker != me->getVictim() && me->IsValidAttackTarget(ownerAttacker))
-                        me->CastSpell(ownerAttacker, SPELL_BOT_TAUNT, false);
+                        CastLogged(owner, ownerAttacker, SPELL_BOT_TAUNT);
             }
             else
                 _tauntTimer -= diff;
@@ -292,9 +315,9 @@ public:
             {
                 _healTimer = HEAL_COOLDOWN * 2;
                 if (owner->IsAlive() && owner->GetHealthPct() < 45.0f)
-                    me->CastSpell(owner, SPELL_BOT_HEAL, false);
+                    CastLogged(owner, owner, SPELL_BOT_HEAL);
                 else if (me->GetHealthPct() < 40.0f)
-                    me->CastSpell(me, SPELL_BOT_HEAL, false);
+                    CastLogged(owner, me, SPELL_BOT_HEAL);
             }
             else
                 _healTimer -= diff;
@@ -306,7 +329,7 @@ public:
             _attackTimer = ATTACK_COOLDOWN;
             if (Unit* target = me->getVictim())
                 if (target->IsAlive())
-                    me->CastSpell(target, (_role == ROLE_DPS) ? SPELL_BOT_STRIKE : SPELL_BOT_ATTACK, false);
+                    CastLogged(owner, target, (_role == ROLE_DPS) ? SPELL_BOT_STRIKE : SPELL_BOT_ATTACK);
         }
         else
             _attackTimer -= diff;
@@ -318,7 +341,7 @@ public:
                 _strikeTimer = STRIKE_COOLDOWN;
                 if (Unit* target = me->getVictim())
                     if (target->IsAlive())
-                        me->CastSpell(target, SPELL_BOT_JUDGEMENT, false);
+                        CastLogged(owner, target, SPELL_BOT_JUDGEMENT);
             }
             else
                 _strikeTimer -= diff;
@@ -328,6 +351,15 @@ public:
     }
 
 private:
+    SpellCastResult CastLogged(Unit* owner, Unit* target, uint32 spellId)
+    {
+        SpellCastResult const result = me->CastSpell(target, spellId, false);
+        LegionBot_LogAction(owner->ToPlayer(), me,
+            result == SPELL_CAST_OK ? "cast_accepted" : "cast_failed",
+            spellId, target, int32(result), "npc_cast");
+        return result;
+    }
+
     bool TryInterrupt(Unit* owner)
     {
         if (_interruptTimer || me->IsNonMeleeSpellCast(false))
@@ -342,7 +374,7 @@ private:
                 cast = enemy->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
             if (!cast || cast->getState() == SPELL_STATE_FINISHED || !cast->IsInterruptable())
                 return false;
-            if (me->CastSpell(enemy, spellId, false) != SPELL_CAST_OK)
+            if (CastLogged(owner, enemy, spellId) != SPELL_CAST_OK)
                 return false;
             _interruptTimer = 12000;
             return true;
@@ -382,7 +414,7 @@ private:
             {
                 AuraApplication* application = entry.first->GetApplicationOfTarget(ally->GetGUID());
                 if (application && !application->IsPositive() &&
-                    me->CastSpell(ally, SPELL_BOT_PURIFY_SPIRIT, false) == SPELL_CAST_OK)
+                    CastLogged(owner, ally, SPELL_BOT_PURIFY_SPIRIT) == SPELL_CAST_OK)
                 {
                     _dispelTimer = 8000;
                     return true;
@@ -464,7 +496,10 @@ static void DespawnCompanions(Player* owner)
 
     for (Creature* bot : GetOwnerBots(owner))
         if (bot)
+        {
+            LegionBot_LogAction(owner, bot, "dismiss", 0, owner, 0, "npc_companion");
             bot->DespawnOrUnsummon();
+        }
 
     std::lock_guard<std::mutex> lock(g_companionBotsMutex);
     g_companionBots.erase(owner->GetGUID());
@@ -524,6 +559,8 @@ static void SpawnCompanion(Player* owner, uint32 entry, CompanionBotRole role, C
 
     RegisterBot(owner->GetGUID(), bot->GetGUID());
 
+    LegionBot_LogAction(owner, bot, "spawn", 0, owner, int32(role), "npc_companion");
+
     bot->GetMotionMaster()->MoveFollow(owner, FOLLOW_DISTANCE, 0.0f);
 
     if (handler)
@@ -547,7 +584,7 @@ public:
     {
         static std::vector<ChatCommand> CommandTable =
         {
-            { "lbot", SEC_PLAYER, true, &HandlePlayerbotCommand, "LegionBotAI: team | spawn <name> | self | dismiss | info | level | autogear | aggro | assist | follow | stay | attack | come | creatures" }
+            { "lbot", SEC_PLAYER, true, &HandlePlayerbotCommand, "LegionBotAI: team | spawn <name> | self | dismiss | info | log on|off|status | fieldcheck | level | autogear | aggro | assist | follow | stay | attack | come | creatures" }
         };
 
         return CommandTable;
@@ -584,7 +621,7 @@ public:
         }
 
         // Console/SOAP: ".lbot <playerName> <role|spawn> [charName]"
-        bool const isRoleKeyword = (first == "spawn" || first == "team" || first == "creatures" || first == "tank" || first == "healer" || first == "dps" || first == "dismiss" || first == "info" || first == "self" || first == "rescue" || first == "level" || first == "autogear" || first == "aggro" || first == "assist" || first == "follow" || first == "stay" || first == "attack" || first == "come");
+        bool const isRoleKeyword = (first == "spawn" || first == "team" || first == "creatures" || first == "tank" || first == "healer" || first == "dps" || first == "dismiss" || first == "info" || first == "log" || first == "fieldcheck" || first == "self" || first == "rescue" || first == "level" || first == "autogear" || first == "aggro" || first == "assist" || first == "follow" || first == "stay" || first == "attack" || first == "come");
         if (!target && !first.empty() && !isRoleKeyword)
         {
             target = ObjectAccessor::FindPlayerByName(first);
@@ -629,6 +666,62 @@ public:
                 return false;
             }
             LegionBot_Spawn(target, second, handler);
+            return true;
+        }
+
+        if (first == "log")
+        {
+            if (!target)
+            {
+                handler->SendSysMessage("|cffff4444LegionBot:|r specify an online player first.");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+            LegionBot_LogCommand(target, second, handler);
+            return true;
+        }
+
+        // Console or GM-only terrain/collision check for the seven test dummies.
+        if (first == "fieldcheck")
+        {
+            if (handler->GetSession() && handler->GetSession()->GetSecurity() < SEC_GAMEMASTER)
+            {
+                handler->SendSysMessage("|cffff4444LegionBot:|r fieldcheck requires GM access.");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+
+            Map* map = sMapMgr->CreateBaseMap(1);
+            if (!map)
+            {
+                handler->SendSysMessage("|cffff4444LegionBot:|r Kalimdor map unavailable.");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+            map->LoadGrid(16282.0f, 16275.0f);
+            struct FieldSpot { uint8 group; float x; float y; float z; };
+            FieldSpot const spots[] = {
+                { 1, 16282.0f, 16275.0f, 17.37f },
+                { 2, 16296.0f, 16273.0f, 18.06f },
+                { 2, 16296.0f, 16277.0f, 16.97f },
+                { 4, 16312.0f, 16273.0f, 17.79f },
+                { 4, 16315.0f, 16273.0f, 17.61f },
+                { 4, 16312.0f, 16276.0f, 16.51f },
+                { 4, 16315.0f, 16276.0f, 16.21f }
+            };
+            for (FieldSpot const& spot : spots)
+            {
+                float const terrain = map->GetHeight(spot.x, spot.y, spot.z + 3.0f, false);
+                float const collision = map->GetHeight(spot.x, spot.y, spot.z + 3.0f, true);
+                float const approach = map->GetHeight(spot.x - 6.0f, spot.y, spot.z + 8.0f, true);
+                bool const lineOfSight = map->isInLineOfSight(spot.x - 6.0f, spot.y, approach + 1.5f,
+                    spot.x, spot.y, spot.z + 1.5f, {}, VMAP::ModelIgnoreFlags::Nothing);
+                bool const clear = std::fabs(terrain - spot.z) < 0.7f &&
+                    std::fabs(collision - spot.z) < 0.7f && lineOfSight;
+                handler->PSendSysMessage("LegionBot field %u: (%.1f, %.1f, %.2f) terrain %.2f collision %.2f LOS %u %s",
+                    uint32(spot.group), spot.x, spot.y, spot.z, terrain, collision, uint32(lineOfSight),
+                    clear ? "OK" : "CHECK");
+            }
             return true;
         }
 
@@ -884,7 +977,62 @@ public:
     }
 };
 
+// The ordinary training dummy is passive. This one answers the player's first
+// hit with a stationary, zero-damage attack so defensive player bots can test
+// their rotation without an exception to the no-pull rule.
+class npc_legionbot_rotation_dummy : public CreatureScript
+{
+public:
+    npc_legionbot_rotation_dummy() : CreatureScript("npc_legionbot_rotation_dummy") { }
+
+    struct RotationDummyAI : Scripted_NoMovementAI
+    {
+        RotationDummyAI(Creature* creature) : Scripted_NoMovementAI(creature) { }
+
+        void Reset() override
+        {
+            if (!me->isTrainingDummy())
+                me->AddUnitTypeMask(UNIT_MASK_TRAINING_DUMMY);
+            me->SetReactState(REACT_DEFENSIVE);
+            me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+        }
+
+        void MoveInLineOfSight(Unit* /*who*/) override { }
+
+        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType /*type*/) override
+        {
+            uint32 const attemptedDamage = damage;
+            int32 const loggedDamage = attemptedDamage > 2147483647u ? 2147483647 : int32(attemptedDamage);
+            damage = 0;
+            if (!attacker)
+                return;
+            Player* player = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (attacker->ToPlayer())
+                LegionBot_LogActor(attacker, "dummy_hit", 0, me, loggedDamage, "prevented_damage");
+            else if (player)
+                LegionBot_LogAction(player, attacker, "dummy_hit", 0, me, loggedDamage, "prevented_damage");
+            if (player && !LegionBot_IsBot(player->GetGUID()) && !me->getVictim())
+                AttackStart(player);
+        }
+
+        void UpdateAI(uint32 /*diff*/) override
+        {
+            if (Unit* victim = me->getVictim())
+                if (!victim->IsAlive() || !victim->IsInWorld() || me->GetDistance(victim) > 40.0f)
+                    EnterEvadeMode();
+            // AttackStart establishes an attacker/victim relation, but the
+            // dummy never swings or moves toward the player.
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        return new RotationDummyAI(creature);
+    }
+};
+
 void AddSC_LegionBotMgr()
 {
     new legionbot_commandscript();
+    new npc_legionbot_rotation_dummy();
 }
