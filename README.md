@@ -234,6 +234,13 @@ level 102. Characters already at level 110 can still complete any eligible
 unfinished acquisition routes. Mage Tower challenge appearances are separate
 endgame content and retain their level 110 and prerequisite progression.
 
+Shop artifacts can also be equipped from level 98. A new artifact with no
+purchased traits shows the client's “Visit your forge” overlay until its first
+trait is unlocked at the class-hall artifact forge for 100 Artifact Power.
+This is independent of the level-110 Mage Tower requirements. For the 7.3.5
+artifact window close-button fix, see
+[client-patches/README.md](client-patches/README.md).
+
 The healer challenge, **End of the Risen Threat**, contains the shared client
 criteria event `56912`, displayed as **Your allies must survive**, in five
 `ANY` criteria branches. This is a survival guard rather than a missing

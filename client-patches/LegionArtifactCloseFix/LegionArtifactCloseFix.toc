@@ -1,0 +1,6 @@
+## Interface: 70300
+## Title: Legion Artifact Close Fix
+## Notes: Keeps the artifact window close button usable on the 7.3.5 client.
+## Version: 1.0
+
+LegionArtifactCloseFix.lua
