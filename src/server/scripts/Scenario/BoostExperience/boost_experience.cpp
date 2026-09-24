@@ -73,6 +73,17 @@ enum InstanceData : uint32
 
 CreatureAI* CreateBoostSparringAI(Creature* creature);
 
+struct BoostDeckDefenderAI : public ScriptedAI
+{
+    BoostDeckDefenderAI(Creature* creature) : ScriptedAI(creature) { }
+
+    void UpdateAI(uint32 /*diff*/) override
+    {
+        if (UpdateVictim())
+            DoMeleeAttackIfReady();
+    }
+};
+
 // WorldSafeLocs 5219 and 5752 are transport-local boost spawn positions.
 Position const AllianceDeck = { 11.1372f, -0.363736f, 20.6586f, 2.937f };
 Position const HordeDeck    = { 0.720768f, 1.68496f, 34.501f, 6.2787f };
@@ -164,10 +175,14 @@ public:
         bool _exitSpawned;
         ObjectGuid _transportGuid;
         ObjectGuid _trainingDummyGuid;
+        WorldLocation _graveyard;
         std::vector<ObjectGuid> _passengerGuids;
+        std::vector<ObjectGuid> _defenderGuids;
         std::vector<ObjectGuid> _sparringGuids;
         std::vector<ObjectGuid> _creditedSparringGuids;
         std::vector<ObjectGuid> _pendingCombatGuids;
+        std::vector<ObjectGuid> _legionGuids;
+        uint32 _defenderTimer = 0;
 
         void SetGuidData(uint32 type, ObjectGuid guid) override
         {
@@ -192,10 +207,18 @@ public:
                 guid.ToString().c_str(), player->GetName(), step);
         }
 
-        void CreatureDies(Creature* creature, Unit* /*killer*/) override
+        void CreatureDies(Creature* creature, Unit* killer) override
         {
-            if (creature)
-                SetGuidData(DATA_SPAR_SURRENDER, creature->GetGUID());
+            if (!creature || std::find(_legionGuids.begin(), _legionGuids.end(), creature->GetGUID()) == _legionGuids.end())
+                return;
+
+            // Allies can finish Legion attackers. Their kills still count for
+            // the player's defense objective; player and pet kills are already
+            // credited by the normal kill path.
+            if (killer && !creature->GetLootRecipient() &&
+                std::find(_defenderGuids.begin(), _defenderGuids.end(), killer->GetGUID()) != _defenderGuids.end())
+                if (Player* player = GetPlayer())
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_KILL_CREATURE, creature->GetEntry(), 1, 0, creature);
         }
 
         Position const& Deck() const { return _alliance ? AllianceDeck : HordeDeck; }
@@ -220,6 +243,22 @@ public:
                 return object->ToTransport();
 
             return nullptr;
+        }
+
+        WorldLocation* GetClosestGraveYard(float /*x*/, float /*y*/, float /*z*/) override
+        {
+            Transport* transport = GetGunship();
+            if (!transport)
+                return nullptr;
+
+            Position const& deck = Deck();
+            float x = deck.GetPositionX();
+            float y = deck.GetPositionY();
+            float z = deck.GetPositionZ();
+            float orientation = deck.GetOrientation();
+            transport->CalculatePassengerPosition(x, y, z, &orientation);
+            _graveyard.WorldRelocate(instance->GetId(), x, y, z, orientation);
+            return &_graveyard;
         }
 
         TempSummon* SummonPassenger(Transport* transport, uint32 entry, Position const& position,
@@ -278,7 +317,10 @@ public:
                 uint32 entry = entourage[entourageIndex];
                 if (TempSummon* creature = SummonPassenger(transport, entry,
                     Offset(deck, 8.0f, -6.0f + 4.0f * index++, 0.0f, 3.14f)))
+                {
                     creature->SetReactState(REACT_PASSIVE);
+                    _defenderGuids.push_back(creature->GetGUID());
+                }
             }
         }
 
@@ -399,6 +441,30 @@ public:
 
         void Update(uint32 diff) override
         {
+            if (_defenderTimer)
+            {
+                if (_defenderTimer > diff)
+                    _defenderTimer -= diff;
+                else
+                {
+                    _defenderTimer = 1000;
+                    for (ObjectGuid const& defenderGuid : _defenderGuids)
+                    {
+                        Creature* defender = instance->GetCreature(defenderGuid);
+                        if (!defender || !defender->IsAlive() || !defender->AI() || defender->getVictim())
+                            continue;
+
+                        for (ObjectGuid const& legionGuid : _legionGuids)
+                            if (Creature* attacker = instance->GetCreature(legionGuid))
+                                if (attacker->IsAlive() && attacker->IsInWorld())
+                                {
+                                    defender->AI()->AttackStart(attacker);
+                                    break;
+                                }
+                    }
+                }
+            }
+
             // Transport::SummonPassenger queues creatures with AddToMapWait.
             // Their AI is initialized only when the map processes that queue.
             if (!_pendingCombatGuids.empty())
@@ -544,15 +610,39 @@ public:
                 return;
 
             Position const& deck = Deck();
-            for (uint8 index = 0; index < 10; ++index)
-                StartCombat(SummonPassenger(transport, NPC_LEGION_IMP,
-                    Offset(deck, 2.0f + float(index % 5) * 2.0f, -8.0f + float(index / 5) * 16.0f, 0.0f, 3.14f),
-                    player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
+            _legionGuids.clear();
+            _defenderTimer = 1000;
+            for (ObjectGuid const& guid : _defenderGuids)
+                if (Creature* defender = instance->GetCreature(guid))
+                {
+                    CreatureAI* defenderAI = new BoostDeckDefenderAI(defender);
+                    if (!defender->AIM_Initialize(defenderAI))
+                        delete defenderAI;
+                    defender->setFaction(35);
+                    defender->SetReactState(REACT_AGGRESSIVE);
+                }
 
-            StartCombat(SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
-                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
-            StartCombat(SummonPassenger(transport, NPC_LEGION_BAT, Offset(deck, 0.0f, 8.0f, 3.0f),
-                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000), player);
+            for (uint8 index = 0; index < 10; ++index)
+                if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_IMP,
+                    Offset(deck, 2.0f + float(index % 5) * 2.0f, -8.0f + float(index / 5) * 16.0f, 0.0f, 3.14f),
+                    player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                {
+                    _legionGuids.push_back(attacker->GetGUID());
+                    StartCombat(attacker, player);
+                }
+
+            if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_INFERNAL, Offset(deck, 3.0f, 4.0f, 0.0f, 3.14f),
+                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+            {
+                _legionGuids.push_back(attacker->GetGUID());
+                StartCombat(attacker, player);
+            }
+            if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_BAT, Offset(deck, 0.0f, 8.0f, 3.0f),
+                player, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+            {
+                _legionGuids.push_back(attacker->GetGUID());
+                StartCombat(attacker, player);
+            }
         }
 
         void SpawnExit()
@@ -600,7 +690,10 @@ public:
                 SpawnLegionWave();
             }
             else if (newStep >= uint32(stepCount - 1))
+            {
+                _defenderTimer = 0;
                 SpawnExit();
+            }
             else
                 return;
 
@@ -672,13 +765,24 @@ public:
         if (sender != GOSSIP_SENDER_MAIN || action != GOSSIP_ACTION_INFO_DEF + 1 || player->GetVehicle())
             return true;
 
-        // A separate world-space bird avoids moving a static gunship passenger.
+        // Spawn in world space. Player::SummonCreature inherits the gunship
+        // transport and makes the departing bird appear to remain on deck.
         player->CombatStop(true);
         // Fill any newly learned active class spells into vacant real slots. The
         // tutorial overlay remains visible until OnMapChanged restores this bar.
         for (auto const& spell : player->GetSpellMapConst())
             player->AddSpellToActionBarIfAppropriate(spell.first, false);
-        player->SummonCreature(creature->GetEntry(), creature->GetPosition(), TEMPSUMMON_TIMED_DESPAWN, 60000, 4933);
+        if (TempSummon* departure = player->GetMap()->SummonCreature(creature->GetEntry(), creature->GetPosition(),
+            nullptr, 60000, nullptr, ObjectGuid::Empty, 0, 4933))
+        {
+            departure->SetPhaseMask(player->GetPhaseMask(), false);
+            departure->SetPhaseId(player->GetPhases(), false);
+            departure->setIgnorePhaseIdCheck(true);
+            if (departure->AI())
+                departure->AI()->SetGUID(player->GetGUID());
+        }
+        else
+            TC_LOG_ERROR("scripts", "Boost tutorial could not summon departure bird for %s", player->GetName());
         return true;
     }
 
@@ -689,12 +793,9 @@ public:
         uint32 timer = 0;
         uint8 phase = 0;
 
-        void IsSummonedBy(Unit* summoner) override
+        void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0) override
         {
-            // Static transport passengers have no player summoner.
-            if (!summoner || !summoner->ToPlayer())
-                return;
-            rider = summoner->GetGUID();
+            rider = guid;
             me->SetReactState(REACT_PASSIVE);
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             // Vehicle 4933 belongs to the Horde tutorial exit bird in this DB.
@@ -721,9 +822,6 @@ public:
             {
                 me->SetCanFly(true);
                 me->SetDisableGravity(true);
-                // Map::SummonCreature inherits its summoner's transport.
-                if (Transport* transport = me->GetTransport())
-                    transport->RemovePassenger(me);
                 if (Transport* transport = player->GetTransport())
                     transport->RemovePassenger(player);
                 player->EnterVehicle(me, 0, true);

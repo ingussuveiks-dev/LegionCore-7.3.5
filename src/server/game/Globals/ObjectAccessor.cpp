@@ -477,6 +477,11 @@ void ObjectAccessor::UnloadAll()
         if (corpse->IsInGrid())
             corpse->RemoveFromGrid();
 
+        // UnloadAll runs while maps still exist. The corpse keeps its map
+        // pointer even after leaving the world/grid, and its destructor
+        // asserts if that pointer is left attached.
+        corpse->ResetMap();
+
         delete corpse;
     }
 }

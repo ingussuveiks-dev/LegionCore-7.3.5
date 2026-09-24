@@ -23,7 +23,6 @@
 #include "Transport.h"
 #include "InstanceScript.h"
 #include "QuestData.h"
-#include "MoveSplineInit.h"
 #include "PlayerDefines.h"
 
 class instance_broken_islands : public InstanceMapScript
@@ -56,6 +55,32 @@ public:
         uint32 team = 0;
         WorldLocation loc_res_pla;  // for respawn
         bool firstEnter = false;
+
+        void BoardPlayer(Player* player, Transport* transport)
+        {
+            if (!player || !transport)
+                return;
+
+            // These are ship-local deck coordinates. Set the local offset
+            // and matching world position before sending the player to the
+            // client; a spline from the dungeon entrance starts at sea.
+            Position deck = player->GetTeam() == ALLIANCE ?
+                Position(2.39286f, 1.694546f, 5.205733f, 3.155922f) :
+                Position(-7.351539f, -3.37038f, 10.99244f, 0.4190969f);
+            float x = deck.GetPositionX();
+            float y = deck.GetPositionY();
+            float z = deck.GetPositionZ();
+            float orientation = deck.GetOrientation();
+            transport->CalculatePassengerPosition(x, y, z, &orientation);
+
+            if (Transport* previous = player->GetTransport())
+                if (previous != transport)
+                    previous->RemovePassenger(player);
+            transport->AddPassenger(player);
+            player->m_movementInfo.transport.Pos.Relocate(deck);
+            player->m_movementInfo.transport.VehicleSeatIndex = -1;
+            player->NearTeleportTo(x, y, z, orientation);
+        }
 
 
         void OnPlayerEnter(Player* player) override
@@ -96,33 +121,14 @@ public:
             player->ApplyModFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_PVP_TIMER, false);
             player->UpdatePvP(true, true);
 
-            auto transportGameObject = GetGameObjectByEntry(player->GetTeam() == ALLIANCE ? TRANSPORT_ALLIANCE : TRANSPORT_HORDE);
-            ObjectGuid transportGuid = transportGameObject ? transportGameObject->GetGUID() : ObjectGuid::Empty;
+            instance->LoadGrid(521.7239f, 1862.63f);
+            instance->LoadGrid(461.8785f, 2032.679f);
+            instance->LoadGrid(472.92f, 2037.86f);
+            instance->LoadGrid(591.77f, 1898.48f);
 
-            if (Transport* transport = player->GetMap()->GetTransport(transportGuid))
+            if (GameObject* transportGameObject = GetGameObjectByEntry(player->GetTeam() == ALLIANCE ? TRANSPORT_ALLIANCE : TRANSPORT_HORDE))
             {
-                instance->LoadGrid(521.7239f, 1862.63f);
-                instance->LoadGrid(461.8785f, 2032.679f);
-                instance->LoadGrid(472.92f, 2037.86f);
-                instance->LoadGrid(591.77f, 1898.48f);
-
-                transport->AddPassenger(player);
-
-                Movement::MoveSplineInit init(*player);
-
-                if (player->GetTeam() == ALLIANCE)
-                {
-                    //X: 2.39286 Y: 1.694546 Z: 5.205733 O: 3.155922
-                    init.MoveTo(2.39286f, 1.694546f, 5.205733f, false, true);
-                    init.SetFacing(3.155922f);
-                }else
-                {
-                    //X: -7.351539 Y : -3.37038 Z : 10.99244 O : 0.4190969
-                    init.MoveTo(-7.351539f, -3.37038f, 10.99244f, false, true);
-                    init.SetFacing(0.4190969f);
-                }
-
-                init.Launch();
+                BoardPlayer(player, transportGameObject->ToTransport());
 
                     // TODO: for all transports?
 //                    transport->AddDelayedEvent(5000, [transport]() -> void
@@ -130,6 +136,8 @@ public:
 //                        transport->EnableMovement(true);
 //                    });
             }
+            else
+                TC_LOG_INFO("scripts", "Broken Shore waiting for entry transport for player %s", player->GetName());
         }
         
         WorldLocation* GetClosestGraveYard(float x, float y, float z) override
@@ -637,6 +645,13 @@ public:
         }
         void OnGameObjectCreate(GameObject* go) override
         {
+            InstanceScript::OnGameObjectCreate(go);
+            if (go->GetEntry() == TRANSPORT_ALLIANCE || go->GetEntry() == TRANSPORT_HORDE)
+                if (Transport* transport = go->ToTransport())
+                    for (auto const& reference : instance->GetPlayers())
+                        if (Player* player = reference.getSource())
+                            if ((player->GetTeam() == ALLIANCE) == (go->GetEntry() == TRANSPORT_ALLIANCE))
+                                BoardPlayer(player, transport);
             switch (go->GetEntry())
             {
                 case GO_ALLIANCE_SHIP:
