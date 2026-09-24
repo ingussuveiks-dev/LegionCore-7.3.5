@@ -13,6 +13,7 @@ The Broken Islands Scenario
 #include "GameObjectAI.h"
 #include "QuestData.h"
 #include "CreatureGroups.h"
+#include "MoveSpline.h"
 // #include "PrecompiledHeaders/ScriptPCH.h"
 
 #define GOSSIP_ACCEPT_DUEL      "Let''s duel"
@@ -561,6 +562,45 @@ public:
                 Player *player = caster->ToPlayer();
                 if (!player)
                     return;
+
+                // The boost bird's 219912 also casts several cleanup spells on
+                // passenger 0. Let all of those effects finish before removing
+                // the passenger, then finish dismounting BEFORE JoinLfg can
+                // teleport them. SafeTeleport exits and cancels the exit spline
+                // in the same update; the 7.3.5 UI can miss UNIT_EXITING_VEHICLE
+                // and retain PlayerFrame.vehicleHidesPet on the next map.
+                uint32 departureMap = player->GetMapId();
+                if ((departureMap == 1554 || departureMap == 1557) && player->GetVehicleBase())
+                {
+                    ObjectGuid bird = player->GetVehicleBase()->GetGUID();
+                    player->AddDelayedEvent(1, [player, departureMap, bird]
+                    {
+                        if (player->GetMapId() != departureMap || !player->IsAlive() ||
+                            !player->GetVehicleBase() || player->GetVehicleBase()->GetGUID() != bird)
+                            return;
+
+                        // Keep the rider suspended during this short airborne
+                        // dismount. Preserve any pre-existing gravity setting.
+                        bool restoreGravity = !player->HasUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+                        if (restoreGravity)
+                            player->SetDisableGravity(true);
+                        player->ExitVehicle();
+                        uint32 delay = std::max<uint32>(1000, player->movespline->Duration() + 250);
+                        player->AddDelayedEvent(delay, [player, departureMap, restoreGravity]
+                        {
+                            if (restoreGravity)
+                                player->SetDisableGravity(false);
+                            if (player->GetMapId() != departureMap || !player->IsAlive() || player->GetVehicle())
+                                return;
+
+                            TC_LOG_INFO("scripts", "Boost tutorial dismount completed for %s before Broken Shore queue; spline finalized: %u",
+                                player->GetName(), uint32(player->movespline->Finalized()));
+                            std::set<uint32> slots{908};
+                            sLFGMgr->JoinLfg(player, player->GetSpecializationRoleMaskForGroup(), slots);
+                        });
+                    });
+                    return;
+                }
 
                 std::set<uint32> Slot;
                 Slot.insert(908);
