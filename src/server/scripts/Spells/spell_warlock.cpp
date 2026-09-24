@@ -55,16 +55,47 @@ class spell_warl_burning_rush : public SpellScriptLoader
     public:
         spell_warl_burning_rush() : SpellScriptLoader("spell_warl_burning_rush") { }
 
+        class spell_warl_burning_rush_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_warl_burning_rush_SpellScript);
+
+            SpellCastResult CheckCast()
+            {
+                if (GetCaster()->HasAura(111400))
+                {
+                    GetCaster()->RemoveAurasDueToSpell(111400, ObjectGuid::Empty, 0, AURA_REMOVE_BY_CANCEL);
+                    // Cancel the new cast too, otherwise it reapplies the aura.
+                    return SPELL_FAILED_DONT_REPORT;
+                }
+                return SPELL_CAST_OK;
+            }
+
+            void Register() override
+            {
+                OnCheckCast += SpellCheckCastFn(spell_warl_burning_rush_SpellScript::CheckCast);
+            }
+        };
+
+        SpellScript* GetSpellScript() const override
+        {
+            return new spell_warl_burning_rush_SpellScript();
+        }
+
         class spell_warl_burning_rush_AuraScript : public AuraScript
         {
             PrepareAuraScript(spell_warl_burning_rush_AuraScript);
 
-            void OnTick(AuraEffect const* aurEff)
+            void OnTick(AuraEffect const* /*aurEff*/)
             {
-                if (Unit* caster = GetCaster())
+                if (Unit* target = GetTarget())
                 {
-                    if (!caster->HealthAbovePct(9))
+                    if (!target->HealthAbovePct(9))
+                    {
+                        // Removing an aura inside this hook does not cancel the
+                        // current periodic tick. Suppress it before removing.
+                        PreventDefaultAction();
                         GetAura()->Remove();
+                    }
                 }
             }
 

@@ -10232,6 +10232,12 @@ bool Unit::HandleObsModEnergyAuraProc(Unit* victim, DamageInfo* /*dmgInfoProc*/,
 bool Unit::HandleModDamagePctTakenAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlags, uint32 procEx, double cooldown)
 {
     SpellInfo const* dummySpell = triggeredByAura->GetSpellInfo();
+    // Shadow Shield's effect 0 only reduces incoming damage. Effect 1 already
+    // triggers 115234 and consumes a shield stack through its spell script.
+    // Do not try to trigger spell 0 (or trigger 115234 a second time) here.
+    if (dummySpell->Id == 115232)
+        return false;
+
     //uint32 effIndex = triggeredByAura->GetEffIndex();
     //int32  triggerAmount = triggeredByAura->GetAmount();
 

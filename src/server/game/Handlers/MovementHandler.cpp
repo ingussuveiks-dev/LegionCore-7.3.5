@@ -483,8 +483,26 @@ void WorldSession::HandleSetActiveMover(WorldPackets::Movement::SetActiveMover& 
         if (player->IsInWorld() && player->GetUnitBeingMoved() && player->GetUnitBeingMoved()->IsInWorld())
         {
             if (player->GetUnitBeingMoved()->GetGUID() != packet.ActiveMover)
+            {
+                // A scripted passenger handoff can cross the client's last
+                // self-mover notification. Reassert the server-selected mover
+                // without accepting client control or restarting its spline.
+                if (packet.ActiveMover == player->GetGUID() &&
+                    player->GetVehicleBase() == player->GetUnitBeingMoved())
+                    if (VehicleSeatEntry const* seat = player->GetVehicle()->GetSeatForPassenger(player))
+                        if (!(seat->Flags & VEHICLE_SEAT_FLAG_CAN_CONTROL))
+                        {
+                            WorldPackets::Movement::MoveSetActiveMover update;
+                            update.MoverGUID = player->GetUnitBeingMoved()->GetGUID();
+                            SendPacket(update.Write());
+                            TC_LOG_DEBUG("network", "HandleSetActiveMover: resending scripted passenger mover %s",
+                                update.MoverGUID.ToString().c_str());
+                            return;
+                        }
+
                 TC_LOG_ERROR("network", "HandleSetActiveMover: incorrect mover guid: mover is %s  and should be %s",
                     packet.ActiveMover.ToString().c_str(), player->GetUnitBeingMoved()->GetGUID().ToString().c_str());
+            }
         }
     }
 }
