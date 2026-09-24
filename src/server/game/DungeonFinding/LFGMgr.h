@@ -366,6 +366,7 @@ public:
     void InitBoot(ObjectGuid gguid, ObjectGuid kguid, ObjectGuid vguid, std::string const& reason);
     void UpdateBoot(ObjectGuid gguid, ObjectGuid guid, bool accept);
     void UpdateProposal(WorldPackets::LFG::ProposalResponse response, ObjectGuid RequesterGuid);
+    bool AutoAcceptProposal(ObjectGuid playerGuid);
     void UpdateRoleCheck(ObjectGuid gguid, ObjectGuid guid = ObjectGuid::Empty, uint8 roles = PLAYER_ROLE_NONE, uint8 partyIndex = 0);
     void SetRoles(ObjectGuid guid, uint8 roles, uint32 queueId);
     void JoinLfg(Player* player, uint8 roles, LfgDungeonSet& dungeons);

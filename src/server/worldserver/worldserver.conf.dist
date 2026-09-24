@@ -3509,5 +3509,8 @@ Solocraft.VaultOftheWardensH = 5.0
 Solocraft.MawOfSoulsH = 5.0
 Solocraft.HallsOfValorH = 5.0
 
+# Account ID containing only LegionBotAI player characters. Zero disables spawning.
+LegionBot.AccountId = 0
+
 #
 ################################################################################################

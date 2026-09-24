@@ -1193,6 +1193,30 @@ uint32 LFGMgr::AddProposal(LfgProposal& proposal)
     return m_lfgProposalId;
 }
 
+bool LFGMgr::AutoAcceptProposal(ObjectGuid playerGuid)
+{
+    std::lock_guard<std::recursive_mutex> lock(m_lock);
+    for (auto const& entry : ProposalsStore)
+    {
+        LfgProposal const& proposal = entry.second;
+        auto player = proposal.players.find(playerGuid);
+        if (player == proposal.players.end() || player->second.accept != LFG_ANSWER_PENDING)
+            continue;
+
+        auto ticket = GetTicket(playerGuid, proposal.queueId);
+        if (!ticket)
+            return false;
+
+        WorldPackets::LFG::ProposalResponse response;
+        response.Ticket = *ticket;
+        response.ProposalID = proposal.id;
+        response.Accepted = true;
+        UpdateProposal(response, playerGuid);
+        return true;
+    }
+    return false;
+}
+
 void LFGMgr::UpdateProposal(WorldPackets::LFG::ProposalResponse response, ObjectGuid RequesterGuid)
 {
     std::lock_guard<std::recursive_mutex> _lock(m_lock);
