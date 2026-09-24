@@ -43,6 +43,8 @@ remaining gameplay-validation requirements.
 - Personal XP-rate NPC with selectable rates up to the configured server cap.
 - Solocraft scaling code and per-instance configuration are present, but the
   feature is disabled by default.
+- LegionBotAI player-character companions can join a party, follow, fight,
+  heal and participate in Dungeon Finder after a dedicated bot account is set up.
 - Windows dependency discovery and a Visual Studio 2022 CMake preset are
   included for the local Release workflow.
 
@@ -62,10 +64,60 @@ testing them with your own database and client environment.
 | AuctionHouseBot seller | Yes | Disabled | `AuctionHouseBot.Seller.Enabled = 0` |
 | AuctionHouseBot buyer | Yes | Disabled | `AuctionHouseBot.Buyer.Enabled = 0` |
 | Solocraft | Yes | Disabled | `Solocraft.Enable = 0` |
+| LegionBotAI | Yes | Spawning disabled | `LegionBot.AccountId = 0` |
 
 Warden requires compatible checks and careful validation before use. AHBot also
 needs an account/character setup and deliberate economy configuration; changing
 only one switch is not a production economy setup.
+
+## LegionBotAI player bots
+
+LegionBotAI is adapted from the [LrdPsychoChains WOW HUB](https://github.com/psychochaingang/LrdPsychoChains-WOW-HUB/tree/main/projects/legionbotai).
+Its four-character team uses database-backed player characters: one tank, two
+healers and one damage dealer. Horde uses Bulwark, Lovley, Ember and Faith;
+Alliance uses Aegis, Seraphine, Rook and Elowen. The extra healer can queue as
+damage for a five-player dungeon while still healing in combat.
+
+To enable the included teams:
+
+1. Check that character GUIDs `900000`–`900003` and `900010`–`900013`, and the
+   eight names above, are unused. Back up the auth and characters databases.
+2. Review and run [`sql/custom/legionbotai.sql`](sql/custom/legionbotai.sql). It
+   adds a dedicated `LEGIONBOTAI` account, eight characters, their homebinds
+   and the settings table without deleting existing rows. The script targets
+   databases named `legion_auth` and `legion_characters`; adjust those names if
+   your installation uses different ones.
+3. Find the new account ID with
+   `SELECT id FROM legion_auth.account WHERE username = 'LEGIONBOTAI';` and set
+   `LegionBot.AccountId` to that ID in `worldserver.conf`. Keep it at `0` to
+   prevent character spawning. The command accepts characters only from the
+   configured account.
+4. Build the Release worldserver, restart it and use `.lbot team` in game.
+
+| In-game command | Effect |
+| --- | --- |
+| `.lbot team` | Spawn your faction's four player bots and add them to your party. |
+| `.lbot spawn <name>` | Spawn one character from the configured bot account. |
+| `.lbot dismiss` | Remove your player bots and NPC companions. |
+| `.lbot info` | Show bot state and diagnostic information. |
+| `.lbot level sync\|max\|<1-110>` | Match your level, use the realm maximum or set a fixed level. |
+| `.lbot autogear` | Re-equip the bots for their current level. |
+| `.lbot assist full\|defend\|chill` | Assist your fights, defend against attackers or avoid starting fights. |
+| `.lbot follow`, `.lbot stay`, `.lbot come` | Follow, hold position or move to you. |
+| `.lbot attack` | Attack your current target. |
+| `.lbot aggro me\|bot` | Let you or the tank bot hold threat. |
+| `.lbot self` | Toggle AI control of your own character; enabling it also teaches the class ability kit. |
+| `.lbot rescue` | Revive and teleport your character home. |
+| `.lbot creatures` | Spawn a separate four-NPC companion team. |
+| `.lbot tank\|healer\|dps` | Spawn one NPC companion of that role. |
+
+The console form names an **online** player, for example `lbot MyChar team`.
+The bare `.lbot` command spawns a single NPC tank companion.
+
+The Windows Release build and local auth/worldserver startup were checked on
+2026-09-24: both reached `ready...`, with no startup `ERROR` or `WARN` entries,
+and `help lbot` listed the command. Spawning, combat, Dungeon Finder and
+dismissal still need an in-game 7.3.5 client test.
 
 ## Legion artifact and Mage Tower coverage
 
@@ -234,8 +286,8 @@ cd LegionCore-7.3.5
 ```
 
 The script configures and builds the `default` CMake preset in Release mode.
-Build products are created under `build-extractors/bin/Release`; the install
-step copies the runnable package to `compiles`.
+Use `build-extractors/bin/Release` as the final runtime directory. The install
+step also copies a package to `compiles`.
 
 The equivalent explicit commands are:
 
@@ -334,5 +386,8 @@ before opening a duplicate report.
 - [TrinityCore authors](https://github.com/TrinityCore/TrinityCore/blob/master/AUTHORS)
 - [LegionCore contributors](https://github.com/dufernst/LegionCore-7.3.5/graphs/contributors)
 - [The Legion Preservation Project](https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5)
+- [LrdPsychoChains WOW HUB / LegionBotAI](https://github.com/psychochaingang/LrdPsychoChains-WOW-HUB/tree/main/projects/legionbotai)
 
-This project is distributed under the GNU GPL v2. See [COPYING](COPYING).
+See [COPYING](COPYING) for the core license text. The imported LegionBotAI
+source is marked GPLv3 by its authors; see their
+[LICENSE](https://github.com/psychochaingang/LrdPsychoChains-WOW-HUB/blob/main/LICENSE).
