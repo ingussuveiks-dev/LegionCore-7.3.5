@@ -127,3 +127,30 @@ through arrival. Expected result is a character on the beach with no transport
 attachment. The `died before surrender` fallback must not appear. Server startup
 and gameplay were not performed for this revision because the user requested
 that the server remain stopped.
+
+## Follow-up after the 14:42 test on 2026-09-24
+
+The client test disproved that the previous surrender fix alone was sufficient.
+The two-second delay worked, but all three opponents surrendered with just
+2 target-relative health and final damage 2246855168. Templates 109010 and 111995
+are level 100 with HpMulti 1.5, yet their scaling rows contain MinLevel=0,
+MaxLevel=0 and Duration=100. `HasScalableLevels` previously tested only whether
+the row existed. `GetLevelForTarget` therefore clamped targets to level zero,
+and health/damage normalization used level-zero stats.
+
+`HasScalableLevels` now validates the range before enabling scaling. Duration-only
+rows use ordinary template stats; valid 100..110 scaling is retained. This
+corrects the same malformed-range behavior for other templates too (the local
+database contained 9974 zero-range rows). `CreatureScalingTest.cpp` covers zero,
+partial, reversed, overflowing and valid ranges. Sparring summons are independent
+NPCs and accept progress-producing damage only from the trainee or their pets.
+Spawn and surrender diagnostics include effective health and damage source.
+
+The server logged successful boarding at 14:43:59, but the client camera remained
+on deck. The departure now explicitly synchronizes passenger movement and sets
+the bird as viewpoint after boarding; dismount and the map-transfer spell clear
+that viewpoint. Vehicle 4933 uses seat 16967 (flags 0x40100003, no CAN_CONTROL),
+so the control-seat charm path is not establishing the view.
+
+The level-range regression test and Release compilation passed. A repeat client
+test is still required for actual hit counts, wave timing and camera motion.

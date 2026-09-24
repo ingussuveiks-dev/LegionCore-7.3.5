@@ -19,3 +19,5 @@
 - Surrender must compare final damage AFTER `GetHealthMultiplierForTarget` with `GetHealth(attacker)` / `GetMaxHealth(attacker)`. Comparing raw damage to template health allowed scaled one-shot kills to bypass surrender.
 - Preserve the 2-second pause before the two-opponent wave. The 12 Legion attackers should initially divide evenly across the player and five deck allies, including the trainer; ally kills must count for the scenario.
 - Reuse the clicked exit bird and wait for completed vehicle boarding before takeoff. Broken Shore disembarkation must also work without client scene callbacks and must detach the player before placing them beside the beach allies.
+- A `creature_template_scaling` row with a `0..0` level range is not active level scaling. Check both template and target-relative health at spawn; the 2026-09-24 test had 2 target-relative HP and billion-point normalized hits, causing immediate surrender. Keep the invalid-range regression test.
+- Verify the camera follows the departure bird in the client, not just that the server reports a passenger. Restore the player's viewpoint on dismount and before transferring maps.

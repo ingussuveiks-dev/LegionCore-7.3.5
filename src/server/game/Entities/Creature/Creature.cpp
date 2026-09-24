@@ -17,6 +17,7 @@
  */
 
 #include "Creature.h"
+#include "CreatureScaling.h"
 #include "BattlegroundMgr.h"
 #include "CellImpl.h"
 #include "CharmInfo.h"
@@ -3538,7 +3539,11 @@ void Creature::AllLootRemovedFromCorpse()
 bool Creature::HasScalableLevels() const
 {
     CreatureTemplate const* cinfo = GetCreatureTemplate();
-    return !isPet() && cinfo->levelScaling.has_value();
+    // Many templates carry duration-only (0..0) scaling records. Those are
+    // not level ranges: clamping a level-100 attacker to zero gives the NPC
+    // two health and amplifies incoming damage by the inverse health ratio.
+    return !isPet() && cinfo->levelScaling.has_value() &&
+        CreatureScaling::HasValidLevelRange(cinfo->levelScaling->MinLevel, cinfo->levelScaling->MaxLevel);
 }
 
 std::string Creature::GetAIName() const

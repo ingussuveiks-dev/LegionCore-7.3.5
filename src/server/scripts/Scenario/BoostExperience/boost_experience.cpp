@@ -257,6 +257,14 @@ public:
             if (!IsActiveSparringOpponent(guid))
                 return;
 
+            // Sparring is completed by the trainee or their pet. Damage from
+            // deck actors or unrelated summons must not advance the lesson.
+            if (!attacker || attacker->GetCharmerOrOwnerPlayerOrPlayerItself() != GetPlayer())
+            {
+                damage = 0;
+                return;
+            }
+
             // The player can exceed the opponent's entire health pool with a
             // single spell. Clamp that hit before Unit::DealDamage can kill it.
             // Use the same target-relative health as Unit::DealDamage. The
@@ -264,8 +272,10 @@ public:
             if (!ShouldSparringOpponentSurrender(creature->GetHealth(attacker), creature->GetMaxHealth(attacker), damage))
                 return;
 
-            TC_LOG_INFO("scripts", "Boost tutorial opponent %s surrendered: scaled health %llu, final damage %u",
-                guid.ToString().c_str(), static_cast<unsigned long long>(creature->GetHealth(attacker)), damage);
+            TC_LOG_INFO("scripts", "Boost tutorial opponent %s surrendered to %s: health %llu/%llu, final damage %u",
+                guid.ToString().c_str(), attacker->GetGUID().ToString().c_str(),
+                static_cast<unsigned long long>(creature->GetHealth(attacker)),
+                static_cast<unsigned long long>(creature->GetMaxHealth(attacker)), damage);
             damage = 0;
             _yieldedSparringGuids.push_back(guid);
             creature->RemoveAllAuras();
@@ -743,11 +753,15 @@ public:
             ClearSparringWave();
             for (uint8 index = 0; index < count; ++index)
                 if (TempSummon* opponent = SummonPassenger(transport, entry,
-                    Offset(deck, 4.0f, count == 1 ? -7.0f : -7.0f + 14.0f * index, 0.0f, 3.14f), player,
+                    Offset(deck, 4.0f, count == 1 ? -7.0f : -7.0f + 14.0f * index, 0.0f, 3.14f), nullptr,
                     TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
                 {
                     _sparringGuids.push_back(opponent->GetGUID());
                     StartCombat(opponent, player);
+                    TC_LOG_INFO("scripts", "Boost tutorial sparring %s initialized: level %u, target level %u, health %llu/%llu, multiplier %.6f",
+                        opponent->GetGUID().ToString().c_str(), uint32(opponent->getLevel()), uint32(opponent->GetLevelForTarget(player)),
+                        static_cast<unsigned long long>(opponent->GetHealth(player)),
+                        static_cast<unsigned long long>(opponent->GetMaxHealth(player)), opponent->GetHealthMultiplierForTarget(player));
                 }
 
             TC_LOG_INFO("scripts", "Boost tutorial spawned sparring wave %u/%u for %s",
@@ -943,6 +957,14 @@ public:
         uint8 phase = 0;
         uint32 boardingWait = 0;
 
+        void PassengerBoarded(Unit* passenger, int8 /*seatId*/, bool apply) override
+        {
+            if (!apply)
+                if (Player* player = passenger->ToPlayer())
+                    if (player->GetViewpoint() == me)
+                        player->SetViewpoint(me, false);
+        }
+
         void SetGUID(ObjectGuid const& guid, int32 /*id*/ = 0) override
         {
             if (!rider.IsEmpty())
@@ -1007,6 +1029,14 @@ public:
                 }
                 TC_LOG_INFO("scripts", "Boost tutorial departure bird %s boarded by %s; starting flight",
                     me->GetGUID().ToString().c_str(), player->GetName());
+                // The 4933 passenger seat does not establish a camera target.
+                // Synchronize the completed attachment and explicitly follow
+                // the moving bird, then restore the player's view on exit.
+                me->GetVehicleKit()->RelocatePassengers();
+                player->SendMovementFlagUpdate(true);
+                if (WorldObject* viewpoint = player->GetViewpoint())
+                    player->SetViewpoint(viewpoint, false);
+                player->SetViewpoint(me, true);
                 // CUSTOM short takeoff route, not an official sniffed spline.
                 me->GetMotionMaster()->MovePoint(1, me->GetPositionX() + 60.0f,
                     me->GetPositionY() + 40.0f, me->GetPositionZ() + 45.0f, false);
@@ -1015,6 +1045,8 @@ public:
             }
             else if (phase == 2)
             {
+                if (player->GetViewpoint() == me)
+                    player->SetViewpoint(me, false);
                 uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
                 if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE && !player->GetQuestRewardStatus(questId))
                     if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
