@@ -35,6 +35,7 @@
 #include "ProcessPriority.h"
 #include "RealmList.h"
 #include "SessionManager.h"
+#include "ServerInstanceGuard.h"
 #include "SslContext.h"
 #include "Util.h"
 #include <boost/asio/signal_set.hpp>
@@ -106,6 +107,16 @@ int main(int argc, char** argv)
         return WinServiceUninstall() ? 0 : 1;
     if (configService.compare("run") == 0)
         return WinServiceRun() ? 0 : 1;
+
+    ServerInstanceGuard instanceGuard(L"Global\\LegionCore735BnetServer");
+    if (!instanceGuard.IsFirstInstance())
+    {
+        if (instanceGuard.GetError() == ERROR_ALREADY_EXISTS)
+            fprintf(stderr, "bnetserver is already running; this copy will exit.\n");
+        else
+            fprintf(stderr, "Could not acquire the bnetserver instance guard (Windows error %lu).\n", instanceGuard.GetError());
+        return 1;
+    }
 #endif
 
     std::string configError;

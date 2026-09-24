@@ -54,6 +54,7 @@
 #include "ScriptLoader.h"
 #include "ScriptMgr.h"
 #include "ScriptReloadMgr.h"
+#include "ServerInstanceGuard.h"
 #include "TCSoap.h"
 #include "World.h"
 #include "WorldSocket.h"
@@ -152,7 +153,17 @@ extern int main(int argc, char **argv)
     if (configService.compare("uninstall") == 0)
         return WinServiceUninstall() ? 0 : 1;
     if (configService.compare("run") == 0)
-        WinServiceRun();
+        return WinServiceRun() ? 0 : 1;
+
+    ServerInstanceGuard instanceGuard(L"Global\\LegionCore735WorldServer");
+    if (!instanceGuard.IsFirstInstance())
+    {
+        if (instanceGuard.GetError() == ERROR_ALREADY_EXISTS)
+            fprintf(stderr, "worldserver is already running; this copy will exit.\n");
+        else
+            fprintf(stderr, "Could not acquire the worldserver instance guard (Windows error %lu).\n", instanceGuard.GetError());
+        return 1;
+    }
 #endif
 
     std::string configError;
