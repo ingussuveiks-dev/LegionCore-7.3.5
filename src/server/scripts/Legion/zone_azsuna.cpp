@@ -456,7 +456,8 @@ public:
             player->GetQuestStatus(44737) != QUEST_STATUS_INCOMPLETE)
             return false;
 
-        if (!go->isSpawned() || go->getLootState() != GO_READY)
+        if (!go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
+            !go->isSpawned() || go->getLootState() != GO_READY)
             return true;
 
         player->KilledMonsterCredit(115739);
