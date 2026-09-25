@@ -272,6 +272,14 @@ awards its prisoner credit when a player uses a Containment Field. The
 SmartGameObjectAI use hook now dispatches the existing gossip-use actions for
 GOOBER objects, including that field's prisoner release script.
 
+Azsuna world quest `44737`, *Helarjar Landing: Grey Shoals*, now has four
+interactive Kvaldir supply objects among its existing targets. Using a weapon
+rack or banner while the quest is active awards the virtual `115739` objective
+credit (5% progress), then the object respawns after three minutes. `115739` is
+only a credit template; it is not a creature to spawn. The 7.3.5 Release
+worldserver builds and starts with these objects, but their placement and
+interaction still need an in-game client check.
+
 The current database and 7.3.5 client task/objective data were checked, and
 the Release worldserver loaded all 710 positive-zone rotation entries with
 reward templates. Another 31 `world_quest_update` rows use non-zone quest sorts

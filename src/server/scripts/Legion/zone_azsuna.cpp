@@ -1,5 +1,6 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Player.h"
 
 enum eSpells
 {
@@ -443,6 +444,27 @@ public:
     }
 };
 
+// Grey Shoals' weapon racks and banners award the optional 5% world quest credit.
+class go_grey_shoals_supplies : public GameObjectScript
+{
+public:
+    go_grey_shoals_supplies() : GameObjectScript("go_grey_shoals_supplies") { }
+
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (go->GetMapId() != 1220 || go->GetAreaId() != 8297 ||
+            player->GetQuestStatus(44737) != QUEST_STATUS_INCOMPLETE)
+            return false;
+
+        if (!go->isSpawned() || go->getLootState() != GO_READY)
+            return true;
+
+        player->KilledMonsterCredit(115739);
+        go->SetLootState(GO_JUST_DEACTIVATED);
+        return true;
+    }
+};
+
 void AddSC_azsuna()
 {
     new boss_levantus();
@@ -450,4 +472,5 @@ void AddSC_azsuna()
     new boss_calamir();
     new boss_withered_jim();
     new spell_resonance();
+    new go_grey_shoals_supplies();
 }
