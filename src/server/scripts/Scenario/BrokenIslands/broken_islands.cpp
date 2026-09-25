@@ -2715,21 +2715,30 @@ public:
 
     struct go_240535AI : public GameObjectAI
     {
-        go_240535AI(GameObject* go) : GameObjectAI(go)
-        {
+        go_240535AI(GameObject* go) : GameObjectAI(go) { }
 
+        bool opened = false;
+
+        bool OpenCage(Player* player)
+        {
+            if (!player || opened || !go->isSpawned() ||
+                !go->IsWithinDistInMap(player, go->GetInteractionDistance()))
+                return true;
+
+            InstanceScript* instance = go->GetInstanceScript();
+            if (!instance || instance->getScenarionStep() != 5)
+                return true;
+
+            opened = true;
+            go->SetGoState(GO_STATE_ACTIVE);
+            go->SetPhaseMask(2, true);
+            go->SetVisible(false);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 53064);
+            return true;
         }
 
-        void OnSpellClick(Unit* player)
-        {
-            if (player->GetTypeId() == TYPEID_PLAYER)
-            {
-                player->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 53064);
-                go->SetGoState(GO_STATE_ACTIVE);
-                go->SetPhaseMask(2, true);
-                go->SetVisible(false);
-            }
-        }
+        bool GossipUse(Player* player) override { return OpenCage(player); }
+        bool GossipHello(Player* player, bool /*isUse*/) override { return OpenCage(player); }
     };
 
 

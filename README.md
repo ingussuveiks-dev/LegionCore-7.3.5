@@ -227,6 +227,14 @@ the selection and starts the matching acquisition quest for that class and
 specialization. The artifact itself is awarded by the acquisition
 quest/scenario rather than being granted directly by the selection handler.
 
+After the boost tutorial's ship flight, the Broken Shore introduction's sixth
+stage, *Raze the Black City*, has a progress bar. Opening either Legion Cage
+variant (`240535` or `248819`) now grants its intended scenario event `53064`
+once per cage during that stage. Demon kills also contribute. The event and
+stage were checked against the extracted 7.3.5 criteria data, and the Release
+server builds and starts with the fix. The percent change on a client still
+needs an in-game check.
+
 All 36 specialization routes are covered. The first selected artifact can be
 acquired from level 98, while quests for the remaining specialization
 artifacts follow the normal class-hall progression and become available from
