@@ -168,8 +168,14 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     if (!entry->IsDungeon() || entry->IsGarrison())
         return true;
 
+    // The Legion introduction can be resumed while its quest is unfinished.
+    // Keep the login restriction for other scenarios and completed introductions.
     if (loginCheck && entry->IsScenario())
-        return false;
+    {
+        uint32 introQuest = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+        if (mapid != 1460 || player->GetQuestStatus(introQuest) != QUEST_STATUS_INCOMPLETE)
+            return false;
+    }
 
     InstanceTemplate const* instance = sObjectMgr->GetInstanceTemplate(mapid);
     if (!instance && !entry->IsScenario())

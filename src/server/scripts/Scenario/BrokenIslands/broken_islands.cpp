@@ -14,7 +14,82 @@ The Broken Islands Scenario
 #include "QuestData.h"
 #include "CreatureGroups.h"
 #include "MoveSpline.h"
+#include "Group.h"
 // #include "PrecompiledHeaders/ScriptPCH.h"
+
+namespace
+{
+    uint32 const BrokenShoreReturnAction = GOSSIP_ACTION_INFO_DEF + 908;
+    int32 const BrokenShoreReturnOption = 99;
+
+    bool CanReturnToBrokenShore(Player* player)
+    {
+        uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+        // Offer recovery only after embarking for an unfinished introduction.
+        // A newly accepted quest still uses the NPC's normal departure option.
+        return quest && player->GetMapId() != 1460 && player->IsAlive() &&
+            !player->GetVehicleBase() && player->GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE &&
+            player->GetQuestObjectiveData(quest, int8(1)) > 0;
+    }
+
+    bool SendBrokenShoreReturnMenu(Player* player, Creature* creature)
+    {
+        if (!CanReturnToBrokenShore(player))
+            return false;
+
+        player->PrepareGossipMenu(creature, creature->GetCreatureTemplate()->GossipMenuId, true);
+        // SmartAI receives the menu's option index before the C++ handler.
+        // Auto-allocation can reuse index 0 when a database condition hides
+        // Holgar's skip option, thereby executing his Dalaran teleport too.
+        player->PlayerTalkClass->GetGossipMenu().AddMenuItem(BrokenShoreReturnOption,
+            GossipOptionNpc::None, "Return me to the Broken Shore.",
+            GOSSIP_SENDER_MAIN, BrokenShoreReturnAction, "", 0);
+        player->SendPreparedGossip(creature);
+        return true;
+    }
+
+    bool HandleBrokenShoreReturn(Player* player, uint32 sender, uint32 action)
+    {
+        if (sender != GOSSIP_SENDER_MAIN || action != BrokenShoreReturnAction)
+            return false;
+
+        player->PlayerTalkClass->SendCloseGossip();
+        if (!CanReturnToBrokenShore(player))
+            return true;
+
+        TC_LOG_INFO("scripts", "Broken Shore return requested by %s", player->GetName());
+        Group* group = player->GetGroup();
+        lfg::LFGDungeonData const* dungeon = group && group->isLFGGroup() ?
+            sLFGMgr->GetLFGDungeon(sLFGMgr->GetDungeon(group->GetGUID()), player->GetTeam()) : nullptr;
+        if (dungeon && dungeon->map == 1460 &&
+            sLFGMgr->GetState(group->GetGUID(), sLFGMgr->GetQueueId(group->GetGUID())) == lfg::LFG_STATE_DUNGEON)
+            sLFGMgr->TeleportPlayer(player, false);
+        else
+        {
+            std::set<uint32> slots{908};
+            sLFGMgr->JoinLfg(player, player->GetSpecializationRoleMaskForGroup(), slots);
+        }
+        return true;
+    }
+}
+
+// Holgar's normal quest and gossip menu remains available alongside recovery.
+class npc_broken_shore_return : public CreatureScript
+{
+public:
+    npc_broken_shore_return() : CreatureScript("npc_broken_shore_return") { }
+
+    bool OnGossipHello(Player* player, Creature* creature) override
+    {
+        return SendBrokenShoreReturnMenu(player, creature);
+    }
+
+    bool OnGossipSelect(Player* player, Creature* /*creature*/, uint32 sender, uint32 action) override
+    {
+        return HandleBrokenShoreReturn(player, sender, action);
+    }
+};
 
 #define GOSSIP_ACCEPT_DUEL      "Let''s duel"
 #define EVENT_SPECIAL 20
@@ -493,8 +568,15 @@ class npc_q42740 : public CreatureScript
 public:
     npc_q42740() : CreatureScript("npc_q42740") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
+        return SendBrokenShoreReturnMenu(player, creature);
+    }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
+    {
+        if (HandleBrokenShoreReturn(player, sender, action))
+            return true;
         player->PlayerTalkClass->ClearMenus();
 
         //214608
@@ -510,8 +592,15 @@ class npc_q40518 : public CreatureScript
 public:
     npc_q40518() : CreatureScript("npc_q40518") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
+        return SendBrokenShoreReturnMenu(player, creature);
+    }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
+    {
+        if (HandleBrokenShoreReturn(player, sender, action))
+            return true;
         player->PlayerTalkClass->ClearMenus();
 
         //214608
@@ -2594,8 +2683,15 @@ class npc_q42782_1 : public CreatureScript
 public:
     npc_q42782_1() : CreatureScript("npc_q42782_1") {}
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
+        return SendBrokenShoreReturnMenu(player, creature);
+    }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
+    {
+        if (HandleBrokenShoreReturn(player, sender, action))
+            return true;
         if (!player->HasAccountQuest(60008)) //check for account-wide quest complete before player can skip legion scenario
             return false;
 
@@ -3381,6 +3477,7 @@ public:
 
 void AddSC_brokenIslands()
 {
+    new npc_broken_shore_return();
     new npc_q42782("npc_q42782");
     new npc_q44281();
     new npc_q42740();

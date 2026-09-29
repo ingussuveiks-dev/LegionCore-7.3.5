@@ -272,10 +272,23 @@ void Group::LoadGroupFromDB(Field* fields)
 
     m_dungeonDifficulty = Player::CheckLoadedDungeonDifficultyID(Difficulty(fields[13].GetUInt8()));
     m_raidDifficulty = Player::CheckLoadedRaidDifficultyID(Difficulty(fields[14].GetUInt8()));
-    m_legacyRaidDifficulty = Player::CheckLoadedRaidDifficultyID(Difficulty(fields[15].GetUInt8()));
+    m_legacyRaidDifficulty = Player::CheckLoadedLegacyRaidDifficultyID(Difficulty(fields[18].GetUInt8()));
 
     if (m_groupFlags & GROUP_FLAG_LFG)
+    {
+        m_groupCategory = GROUP_CATEGORY_INSTANCE;
         sLFGMgr->_LoadFromDB(fields, GetGUID());
+        m_dungeon = sLFGMgr->GetLFGDungeon(sLFGMgr->GetDungeon(GetGUID()));
+        if (m_dungeon)
+        {
+            // Scenario and raid-finder difficulties are not player-selectable;
+            // CheckLoadedDungeonDifficultyID would replace them with normal.
+            if (m_dungeon->dbc->IsRaidType())
+                m_raidDifficulty = Difficulty(m_dungeon->difficulty);
+            else
+                m_dungeonDifficulty = Difficulty(m_dungeon->difficulty);
+        }
+    }
 }
 
 void Group::LoadMemberFromDB(ObjectGuid::LowType guidLow, uint8 memberFlags, uint8 subgroup, uint8 roles)

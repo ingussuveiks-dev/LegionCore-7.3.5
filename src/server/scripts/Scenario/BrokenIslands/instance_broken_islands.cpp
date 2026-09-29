@@ -153,6 +153,19 @@ public:
         }
 
 
+        void RestoreScenarioEntrance(Player* player)
+        {
+            // LFG 908 stores a ship-local deck offset. Once the scenario has
+            // landed, returning through an NPC must use the current stage's
+            // world graveyard instead. A normal relog keeps its saved position.
+            if (!player || getScenarionStep() == 0 || player->GetExactDist2d(2.39286f, 1.694546f) >= 10.0f)
+                return;
+
+            if (WorldLocation const* entrance = GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ()))
+                if (entrance->GetMapId() == 1460)
+                    player->NearTeleportTo(*entrance);
+        }
+
         void OnPlayerEnter(Player* player) override
         {
             if (!team)
@@ -197,7 +210,10 @@ public:
             instance->LoadGrid(591.77f, 1898.48f);
 
             if (getScenarionStep() != 0 || landedPlayers.count(player->GetGUID()))
+            {
+                RestoreScenarioEntrance(player);
                 return;
+            }
             arrivalTimers.emplace(player->GetGUID(), 0);
 
             if (GameObject* transportGameObject = GetGameObjectByEntry(player->GetTeam() == ALLIANCE ? TRANSPORT_ALLIANCE : TRANSPORT_HORDE))

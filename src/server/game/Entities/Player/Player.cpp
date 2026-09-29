@@ -22142,11 +22142,11 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     else if (transLowGUID)
     {
         // Dynamic transport GUIDs are not stable between server runs.  Boost
-        // tutorial maps own and recreate their gunship transport per instance,
+        // tutorial and Broken Shore maps recreate their transports per instance,
         // and their instance script places the player back on that transport.
         // Keep the saved scenario map/instance instead of sending a reconnecting
         // boost character to their home bind merely because the old GUID changed.
-        if (mapId == 1554 || mapId == 1557)
+        if (mapId == 1554 || mapId == 1557 || mapId == 1460)
         {
             m_movementInfo.transport.Reset();
             transLowGUID = 0;
