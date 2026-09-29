@@ -145,7 +145,12 @@ struct Player
     InstancePlayerBind* bind = nullptr;
     bool isGameMaster() const { return gm; }
     uint32 GetTeam() const { return team; }
-    uint32 GetQuestStatus(uint32 id) const { return id == 42740 ? hordeStatus : allianceStatus; }
+    uint32 GetQuestStatus(uint32 id) const
+    {
+        if (id == 40518) return hordeStatus;
+        if (id == 42740) return allianceStatus;
+        return QUEST_STATUS_NONE;
+    }
     Difficulty GetDifficultyID(MapEntry const*) const { return DIFFICULTY_N_SCENARIO; }
     uint32 GetMapId() const { return map; }
     float GetPositionX() const { return x; }
@@ -223,8 +228,13 @@ namespace WorldPackets { namespace Misc {
 } }
 struct QuestDataStore
 {
-    Quest alliance{40518}, horde{42740};
-    Quest const* GetQuestTemplate(uint32 id) const { return id == 40518 ? &alliance : &horde; }
+    Quest alliance{42740}, horde{40518};
+    Quest const* GetQuestTemplate(uint32 id) const
+    {
+        if (id == 42740) return &alliance;
+        if (id == 40518) return &horde;
+        return nullptr;
+    }
 } questDataStore;
 auto sQuestDataStore = &questDataStore;
 struct GroupMgr { uint32 GenerateGroupId() const { return 9; } } groupMgr;
@@ -284,6 +294,15 @@ struct EntranceFixture
 int main()
 {
     Player player;
+    auto boostQuest = [](Player* player)
+    {
+        #include "BoostBrokenShoreQuest.inc"
+        return questId;
+    };
+    assert(boostQuest(&player) == 40518); // Horde: Eitrigg, then Fate of the Horde.
+    player.team = ALLIANCE;
+    assert(boostQuest(&player) == 42740); // Alliance: Genn, then The Fallen Lion.
+    player.team = HORDE;
     assert(sMapMgr->CanPlayerEnter(1460, &player, true));
     assert(player.satisfies == 1); // Recovery must still run access requirements.
     assert(!sMapMgr->CanPlayerEnter(1500, &player, true));

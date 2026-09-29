@@ -26,6 +26,11 @@ Export-Function 'src/server/scripts/Scenario/BrokenIslands/instance_broken_islan
 Export-Function 'src/server/game/Entities/Creature/GossipDef.cpp' 'void GossipMenu::AddMenuItem(int32' 'GossipMenuAdd.inc'
 Export-Function 'src/server/game/AI/SmartScripts/SmartScript.cpp' 'case SMART_EVENT_GOSSIP_SELECT:' 'SmartGossipSelect.inc'
 
+$boostSource = [IO.File]::ReadAllText("$repo/src/server/scripts/Scenario/BoostExperience/boost_experience.cpp")
+$boostQuest = [regex]::Matches($boostSource, 'uint32 questId = player->GetTeam\(\) == ALLIANCE \? \d+ : \d+;')
+if ($boostQuest.Count -ne 1) { throw 'Cannot uniquely find the boost departure quest selection' }
+[IO.File]::WriteAllText((Join-Path $output 'BoostBrokenShoreQuest.inc'), $boostQuest[0].Value)
+
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if (!$vs) { throw 'Visual C++ compiler not found' }

@@ -172,7 +172,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     // Keep the login restriction for other scenarios and completed introductions.
     if (loginCheck && entry->IsScenario())
     {
-        uint32 introQuest = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+        uint32 introQuest = player->GetTeam() == ALLIANCE ? 42740 : 40518;
         if (mapid != 1460 || player->GetQuestStatus(introQuest) != QUEST_STATUS_INCOMPLETE)
             return false;
     }

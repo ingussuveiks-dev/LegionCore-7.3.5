@@ -2,7 +2,7 @@
 
 The login check unconditionally rejected scenario maps. On map 1460 it now
 allows a character whose faction's Battle for the Broken Shore quest is still
-incomplete (40518 Alliance, 42740 Horde), then runs the usual access checks.
+incomplete (42740 Alliance, 40518 Horde), then runs the usual access checks.
 Saved dynamic ship GUIDs are cleared so the instance can place the passenger
 on its current transport.
 
@@ -77,3 +77,22 @@ to `build-extractors/bin/Release/worldserver.exe`; its SHA-256 is
 Update 327 was applied twice, and the extracted-handler and temporary-table
 tests passed. The corrected executable has not been started for client
 validation. Both server processes were absent at handoff.
+
+## Faction quest correction
+
+The boost departure originally assigned the faction quest IDs in reverse.
+Alliance quest 42740 ends with Genn Greymane (100395); Horde quest 40518 ends
+with Eitrigg (100453), who offers Fate of the Horde (40522). Boost departure,
+scenario login and the return menu now use these same correct IDs. The
+regression runner compiles the actual boost quest selection for both factions.
+
+A Horde GM character that already completed the scenario with the wrong quest
+can preserve that completion without replaying the scenario: select the
+character, remove quest 42740, add quest 40518 and complete quest 40518 using
+the GM quest commands. Then turn it in normally to Eitrigg. This replaces the
+mistaken quest; it does not grant its reward or mark the rest of the chain
+complete. No live character database rows are edited by this fix.
+
+The quest selection change does not alter sparring waves, damage handling,
+vehicle boarding, departure flight or disembarkation. A new boost still needs
+the full client sequence checked after installing the corrected Release build.

@@ -24,7 +24,7 @@ namespace
 
     bool CanReturnToBrokenShore(Player* player)
     {
-        uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+        uint32 questId = player->GetTeam() == ALLIANCE ? 42740 : 40518;
         Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
         // Offer recovery only after embarking for an unfinished introduction.
         // A newly accepted quest still uses the NPC's normal departure option.

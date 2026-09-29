@@ -1058,7 +1058,8 @@ public:
             else if (phase == 2)
             {
                 RestoreRiderControl(player);
-                uint32 questId = player->GetTeam() == ALLIANCE ? 40518 : 42740;
+                // Alliance returns to Genn; Horde returns to Eitrigg.
+                uint32 questId = player->GetTeam() == ALLIANCE ? 42740 : 40518;
                 if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE && !player->GetQuestRewardStatus(questId))
                     if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
                         if (player->CanAddQuest(quest, false))
