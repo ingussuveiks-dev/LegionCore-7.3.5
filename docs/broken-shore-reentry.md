@@ -96,3 +96,19 @@ complete. No live character database rows are edited by this fix.
 The quest selection change does not alter sparring waves, damage handling,
 vehicle boarding, departure flight or disembarkation. A new boost still needs
 the full client sequence checked after installing the corrected Release build.
+
+## Horde finale flybys
+
+Winged Nightmare (92801) has flight enabled and follows script path 439155.
+Its last node references waypoint action 347, which was absent from both the
+runtime database and the archived database before earlier repairs. Sylvanas
+keeps summoning flybys every three seconds, so finished creatures accumulated
+at the path endpoint. World update 330 adds a source-creature despawn one
+second after that endpoint, only if action 347 is still absent. It preserves
+the flight path, Sylvanas's spells and the existing timed finale/teleport.
+
+The SQL-only fix takes effect when waypoint scripts are loaded at startup.
+Applied the update twice to the runtime database: the first run added one
+action, the second added none. Verified that node 8 still references 347,
+whose command 18 schedules the source creature's despawn after 1000 ms.
+Client confirmation of the flybys and finale visuals is still required.
