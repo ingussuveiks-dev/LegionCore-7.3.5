@@ -112,3 +112,27 @@ Applied the update twice to the runtime database: the first run added one
 action, the second added none. Verified that node 8 still references 347,
 whose command 18 schedules the source creature's despawn after 1000 ms.
 Client confirmation of the flybys and finale visuals is still required.
+
+## Demons Among Us after returning to the introduction
+
+Maiko had quest 44663 (In the Blink of an Eye) already active from the skip,
+then returned to play the introduction. After speaking to Allari for quest
+40607, objective 112731 was recorded and phase 7531 ended. Phase 7422, which
+contains the attackers and Sylvanas, required quest 44663 to be absent, so the
+player saw neither the old NPCs nor the demon attack while still at 0/12.
+
+World update 331 changes only the regular introduction's Allari-completed
+branch: phase 7422 requires objective 112731 and quest 40607 not yet rewarded.
+This supports both fighting the demons and turning in the completed quest
+when 44663 is already active. The demon hunter and post-reward branches remain
+unchanged, and no character quest progress or rewards are modified.
+
+Validated the migration twice against connection-local copies of the phase
+conditions: one row changed, then zero, with all other branches preserved.
+Eight eligibility cases passed, including before Allari, active or completed
+Blink, turning in Demons Among Us, abandonment and an already rewarded quest.
+
+Load the new condition with `.reload conditions`, then run
+`.reload phasedefinitions` to recalculate online players' phases, or restart
+worldserver. No executable rebuild is needed.
+Client confirmation of visibility, 12/12 kills and turn-in is still required.
