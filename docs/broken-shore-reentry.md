@@ -136,3 +136,9 @@ Load the new condition with `.reload conditions`, then run
 `.reload phasedefinitions` to recalculate online players' phases, or restart
 worldserver. No executable rebuild is needed.
 Client confirmation of visibility, 12/12 kills and turn-in is still required.
+
+Update 332 subsequently orders the full regular Horde introduction and fixes
+the peaceful Sylvanas handoff after rewarding 40607. It removes the old
+post-reward attack-phase branch, disables Holgar's skip and repairs stale
+active quests on login. See [Horde Legion introduction](horde-legion-introduction.md)
+for the current sequence, phase transitions and Dalaran finale.

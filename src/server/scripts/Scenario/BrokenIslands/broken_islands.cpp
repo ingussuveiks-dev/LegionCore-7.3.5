@@ -91,6 +91,76 @@ public:
     }
 };
 
+namespace LegionIntroSequence
+{
+    bool RemoveUnrewardedQuest(Player* player, uint32 questId)
+    {
+        if (player->GetQuestRewardStatus(questId) || player->GetQuestStatus(questId) == QUEST_STATUS_NONE)
+            return false;
+
+        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+            if (player->GetQuestSlotQuestId(slot) == questId)
+            {
+                player->SetQuestSlot(slot, 0);
+                player->TakeQuestSourceItem(questId, false);
+            }
+
+        player->RemoveActiveQuest(questId);
+        TC_LOG_INFO("scripts", "Legion introduction: removed out-of-sequence active quest %u for %s",
+            questId, player->GetName());
+        return true;
+    }
+
+    void RepairQuestLog(Player* player)
+    {
+        // Demon hunters have their own introduction; completed rewards are
+        // retained, including characters that already finished a legacy skip.
+        if (player->GetTeam() != HORDE || player->getClass() == CLASS_DEMON_HUNTER)
+            return;
+
+        uint32 const story[] = {40518, 40522, 40760, 40607, 40605, 44663};
+        for (uint8 i = 1; i < sizeof(story) / sizeof(story[0]); ++i)
+            if (!player->GetQuestRewardStatus(story[i - 1]))
+                RemoveUnrewardedQuest(player, story[i]);
+
+        // The level-100 ship tutorial legitimately starts at Broken Shore.
+        // Retire leftover preparation quests when that route has begun;
+        // never grant rewards for preparation that the player did not do.
+        if (player->GetQuestStatus(40518) != QUEST_STATUS_NONE)
+        {
+            RemoveUnrewardedQuest(player, 43926);
+            RemoveUnrewardedQuest(player, 44281);
+        }
+    }
+}
+
+class player_legion_intro_sequence : public PlayerScript
+{
+public:
+    player_legion_intro_sequence() : PlayerScript("player_legion_intro_sequence") { }
+
+    void OnLogin(Player* player) override
+    {
+        LegionIntroSequence::RepairQuestLog(player);
+    }
+
+    void OnQuestReward(Player* player, Quest const* quest) override
+    {
+        switch (quest->GetQuestId())
+        {
+            case 40518:
+            case 40522:
+            case 40760:
+            case 40607:
+            case 40605:
+                LegionIntroSequence::RepairQuestLog(player);
+                break;
+            default:
+                break;
+        }
+    }
+};
+
 #define GOSSIP_ACCEPT_DUEL      "Let''s duel"
 #define EVENT_SPECIAL 20
 
@@ -3478,6 +3548,7 @@ public:
 void AddSC_brokenIslands()
 {
     new npc_broken_shore_return();
+    new player_legion_intro_sequence();
     new npc_q42782("npc_q42782");
     new npc_q44281();
     new npc_q42740();
