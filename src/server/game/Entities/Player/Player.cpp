@@ -17860,6 +17860,16 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
                 case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
                     // nothing do..
                     break;
+                case ITEM_ENCHANTMENT_TYPE_ARTIFACT_POWER_BONUS_RANK_BY_TYPE:
+                case ITEM_ENCHANTMENT_TYPE_ARTIFACT_POWER_BONUS_RANK_BY_ID:
+                case ITEM_ENCHANTMENT_TYPE_ARTIFACT_POWER_BONUS_RANK_PICKER:
+                    // Item::SetEnchantment and artifact loading apply these
+                    // ranks. Applying them again here would double the bonus.
+                    break;
+                case ITEM_ENCHANTMENT_TYPE_BONUS_LIST_ID:
+                case ITEM_ENCHANTMENT_TYPE_BONUS_LIST_CURVE:
+                    // Item::SetGem calculates the relic's item-level bonus.
+                    break;
                 default:
                     TC_LOG_ERROR("entities.player", "Unknown item enchantment (id = %d) display type: %d", enchant_id, enchant_display_type);
                     break;
