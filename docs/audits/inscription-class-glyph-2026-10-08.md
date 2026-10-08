@@ -77,12 +77,17 @@ choice for every class could not be established from the available sources.
   passed. Startup reports only the previously documented waypoint 347 warning
   in DBErrors.log, with no new script validation error.
 
-The current CASC probe could not open the client storage (error 2); the expanded
+At this audit's original checkpoint, the CASC probe could not open client storage
+(error 2); the expanded
 64-file presentation set is **not** certified by a successful full-read run.
 The previous profession audit's 38-file result must not be extended to that set.
 The launched client reports 7.3.5.26972, but remains at login pending user input.
 No in-game recipe reward, crafting, glyph appearance, replacement or removal
 test has been completed in this follow-up. Do not describe visuals as verified.
+
+Subsequent offline follow-up: [profession lifecycle audit](profession-lifecycle-2026-10-08.md)
+resolved the read-sharing issue and fully read all 64 presentation files plus
+45 enchant visual files. Rendering and live character acceptance remain pending.
 
 ## Reproduction
 

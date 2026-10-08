@@ -8172,7 +8172,6 @@ void Player::SetSkill(uint16 id, uint16 step /*= 0*/, uint16 newVal /*= 0*/, uin
                 SetUInt16Value(PLAYER_FIELD_SKILL + SKILL_RANK_OFFSET + field, offset, newVal);
                 SetUInt16Value(PLAYER_FIELD_SKILL + SKILL_MAX_RANK_OFFSET + field, offset, maxVal);
 
-                UpdateSkillEnchantments(id, currVal, newVal);
                 UpdateAchievementCriteria(CRITERIA_TYPE_REACH_SKILL_LEVEL, id);
                 UpdateAchievementCriteria(CRITERIA_TYPE_LEARN_SKILL_LEVEL, id);
 
@@ -8210,6 +8209,10 @@ void Player::SetSkill(uint16 id, uint16 step /*= 0*/, uint16 newVal /*= 0*/, uin
                 for (AuraEffectList::const_iterator j = mModSkillTalent.begin(); j != mModSkillTalent.end(); ++j)
                     if ((*j)->GetMiscValue() == int32(id))
                         (*j)->HandleEffect(this, AURA_EFFECT_HANDLE_SKILL, true);
+
+                // ApplyEnchantment reads GetSkillValue. The skill status and
+                // its bonuses must exist before restoring equipped enchants.
+                UpdateSkillEnchantments(id, currVal, newVal);
 
                 // Learn all spells for skill
                 learnSkillRewardedSpells(id, newVal);

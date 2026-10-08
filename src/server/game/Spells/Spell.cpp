@@ -7273,7 +7273,10 @@ SpellCastResult Spell::CheckCast(bool strict)
                         if (activeGlyphId == glyphId)
                             return SPELL_FAILED_UNIQUE_GLYPH;
 
-                        if (sGlyphPropertiesStore.AssertEntry(activeGlyphId)->GlyphExclusiveCategoryID == glyphProperties->GlyphExclusiveCategoryID)
+                        // Zero means no exclusive category, not a shared category
+                        // for every otherwise independent cosmetic glyph.
+                        if (glyphProperties->GlyphExclusiveCategoryID &&
+                            sGlyphPropertiesStore.AssertEntry(activeGlyphId)->GlyphExclusiveCategoryID == glyphProperties->GlyphExclusiveCategoryID)
                             return SPELL_FAILED_GLYPH_EXCLUSIVE_CATEGORY;
                     }
                 }

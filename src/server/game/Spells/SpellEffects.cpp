@@ -2933,6 +2933,13 @@ void Spell::DoCreateItem(uint32 /*effIndex*/, uint32 itemtype, std::vector<uint3
         // create the new item and store it
         Item* pItem = player->StoreNewItem(dest, newitemid, true, Item::GenerateItemRandomPropertyId(newitemid, player->GetLootSpecID()), GuidSet(), bonusListIDs);
 
+        // Do not award guild progress or news for an item that was not created.
+        if (!pItem)
+        {
+            player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND);
+            return;
+        }
+
         if (Guild* guild = sGuildMgr->GetGuildById(player->GetGuildId()))
         {
             if (pProto->GetQuality() > ITEM_QUALITY_EPIC || (pProto->GetQuality() == ITEM_QUALITY_EPIC && pProto->ItemLevel >= MinNewsItemLevel[CURRENT_EXPANSION]))
@@ -2940,13 +2947,6 @@ void Spell::DoCreateItem(uint32 /*effIndex*/, uint32 itemtype, std::vector<uint3
                     guild->AddGuildNews(GUILD_NEWS_ITEM_CRAFTED, player->GetGUID(), 0, pProto->GetId(), pItem);
 
             guild->UpdateAchievementCriteria(CRITERIA_TYPE_CRAFT_ITEMS_GUILD, pProto->GetId(), num_to_add, 0, nullptr, player);
-        }
-
-        // was it successful? return error if not
-        if (!pItem)
-        {
-            player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND);
-            return;
         }
 
         // set the "Crafted by ..." property of the item
