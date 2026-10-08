@@ -112,5 +112,31 @@ endpoint for Scenario build 7.0.3.22248 returned HTTP 404, so the original early
 Legion parent/tree records remain unavailable in this investigation.
 
 No new runtime/data patch follows from these findings. The unresolved question
-is the original content of Scenario 1045 and CriteriaTree 31016, not an established
+is the complete original content of Scenario 1045 and CriteriaTree 31016, not an established
 missing step in the current playable scenarios.
+
+## Wowhead, TrinityCore forum and Blizzard search
+
+Wowhead's 2015-12-02 [build 20773 datamining report](https://www.wowhead.com/news/legion-alpha-build-20773-spell-changes-artifacts-bacon-and-more-250194)
+groups **Fill the bar**, its description **How to fill a bar!**, and **A Final
+Step** under **Test Progress Bar**. These match the surviving 7.3.5 steps
+2233/2234 in order. This strongly suggests the historical name of their missing
+parent, Scenario 1045. The article's HTML contains these labels but no scenario
+ID or complete DB2 row: the association is an inference, not a recovered record.
+MMO-Champion's independent [build 20773 datamining report](https://www.mmo-champion.com/content/5340-Beta-Patch-Build-20773)
+also lists the same parent name among new scenarios. Neither report supplies a
+7.3.5 replacement ID or a playable successor.
+
+The public TrinityCore forum search returned no posts/topics for the exact test
+scenario names, `31016`, or `1045 scenario`. Its [Custom scenario discussion](https://talk.trinitycore.org/t/custom-scenario/32054)
+does explain the delivery mechanism: in December 2019, Shauren advised using
+the relevant hotfix tables and `hotfix_data` so the client requests scenario
+records. That is implementation guidance, not evidence for these missing IDs.
+The old `community.trinitycore.org` host timed out; this was not an exhaustive
+search of archived forum content.
+
+Targeted searches of Blizzard's public news and forums found no relevant
+replacement mapping. Search absence does not establish an official removal
+decision. The newly recovered probable name strengthens the test-content
+interpretation, but does not justify reconstructing the parent or redirecting
+its steps. No additional runtime or SQL change follows from this search.

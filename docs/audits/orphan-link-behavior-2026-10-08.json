@@ -1207,5 +1207,59 @@
     },
     "replacement_mapping_found": false,
     "limitation": "Later client data corroborates retained orphan links but does not recover missing early Legion targets."
+  },
+  "public_web_research": {
+    "checked_date": "2026-10-08",
+    "probable_scenario_identity": {
+      "scenario_id": 1045,
+      "probable_name": "Test Progress Bar",
+      "historical_build": 20773,
+      "wowhead_publication_date": "2015-12-02",
+      "source": "https://www.wowhead.com/news/legion-alpha-build-20773-spell-changes-artifacts-bacon-and-more-250194",
+      "corroborating_name_source": "https://www.mmo-champion.com/content/5340-Beta-Patch-Build-20773",
+      "matched_steps": [
+        {
+          "id": 2233,
+          "title": "Fill the bar",
+          "description": "How to fill a bar!"
+        },
+        {
+          "id": 2234,
+          "title": "A Final Step"
+        }
+      ],
+      "identity_status": "Inferred from matching ordered step labels; article does not expose ScenarioID or a complete DB2 record.",
+      "full_parent_record_recovered": false,
+      "replacement_mapping_found": false
+    },
+    "trinity_forum": {
+      "search_endpoint": "https://talk.trinitycore.org/search.json",
+      "queries_with_no_posts_or_topics": [
+        "\"Test Faction Criteria\"",
+        "\"Test Progress Bar\"",
+        "31016",
+        "1045 scenario"
+      ],
+      "related_topic": "https://talk.trinitycore.org/t/custom-scenario/32054",
+      "guidance_date": "2019-12-12",
+      "guidance": "Shauren recommends corresponding hotfix tables and hotfix_data for client scenario record delivery; no mapping for the orphan IDs.",
+      "limitation": "Old community.trinitycore.org requests timed out; archived content was not exhaustively searched."
+    },
+    "blizzard_search": {
+      "domains": [
+        "worldofwarcraft.blizzard.com",
+        "news.blizzard.com",
+        "us.forums.blizzard.com",
+        "eu.forums.blizzard.com"
+      ],
+      "terms": [
+        "Test Faction Criteria",
+        "Test Progress Bar",
+        "Insanity Visual Controller"
+      ],
+      "relevant_replacement_mapping_found": false,
+      "limitation": "Public search results do not prove official removal or absence from every historical source."
+    },
+    "runtime_or_sql_change": false
   }
 }
