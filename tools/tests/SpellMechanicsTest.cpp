@@ -190,6 +190,18 @@ int main()
     Check(!s.auras.count(300) && s.auras.count(999) && !s.known.count(203) && !s.known.count(204), "Mastery cleanup, unrelated auras and level guards");
     Check(s.m_overrideSpells[20] == std::set<uint32>{202} && !s.m_spellOverrides.count(200), "Both override indexes must match new spec");
 
+    // Native 26972 links 5434/5435/5436/5576 already provide the Shadow kit.
+    // Retiring old visual controller link 4946 must not remove this coverage or
+    // teach the triggered Voidform aura as an independent active ability.
+    SpecializationSpellsEntry eruption{228260, 0}, bolt{228266, 0}, voidform{228264, 0}, shadowform{232698, 0}, oldController{194248, 0};
+    for (uint32 id : {228260u, 228266u, 228264u, 232698u, 194249u}) spellManager.spells[id] = {};
+    sDB2Manager.spells[258] = {&eruption, &bolt, &voidform, &shadowform, &oldController};
+    Player shadowBefore; shadowBefore.spec = 258; shadowBefore.LearnSpecializationSpells();
+    sDB2Manager.spells[258].pop_back();
+    Player shadowAfter; shadowAfter.spec = 258; shadowAfter.LearnSpecializationSpells();
+    Check(shadowBefore.known == shadowAfter.known && shadowAfter.known == std::set<uint32>({228260, 228266, 228264, 232698}),
+        "Removing the absent old controller must preserve all current Shadow learning links without teaching the triggered aura");
+
     SpellInfo requirement;
     requirement.EquippedItemClass = ITEM_CLASS_ARMOR;
     requirement.EquippedItemSubClassMask = 1 << 4;

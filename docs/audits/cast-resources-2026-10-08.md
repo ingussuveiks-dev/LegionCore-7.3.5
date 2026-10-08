@@ -1,5 +1,10 @@
 # Cast resources, charge persistence and orphan DB2 links — 7.3.5.26972
 
+Follow-up: [intended behavior behind the orphan links](orphan-link-behavior-2026-10-08.md)
+identifies 194248 as the old Insanity visual controller, verifies current Shadow
+learning/visual coverage, repairs delayed visual initialization and checks actual
+scenario routing. Target absence alone was not a complete behavior audit.
+
 This follows the [spell mechanics audit](spell-mechanics-2026-10-08.md).
 Confirmed resource and charge defects are repaired. The four previously
 unresolved native references are retired as stale/test links, without inventing

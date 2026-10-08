@@ -2314,6 +2314,14 @@ class spell_pri_shadowform : public AuraScript
 
     int32 update = 1000;
 
+    void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        // The old 194248 visual controller and Shadowform's 210195 trigger
+        // are absent in 7.3.5. Initialize their scripted replacement now;
+        // waiting for OnUpdate leaves a gap when entering/re-entering the form.
+        UpdateVisuals();
+    }
+
     void OnUpdate(uint32 diff)
     {
         if (update > int32(diff))
@@ -2323,6 +2331,11 @@ class spell_pri_shadowform : public AuraScript
         }
 
         update = 1000;
+        UpdateVisuals();
+    }
+
+    void UpdateVisuals()
+    {
         Unit* caster = GetCaster();
         if (!caster)
             return;
@@ -2359,6 +2372,7 @@ class spell_pri_shadowform : public AuraScript
     void Register() override
     {
         OnAuraUpdate += AuraUpdateFn(spell_pri_shadowform::OnUpdate);
+        AfterEffectApply += AuraEffectApplyFn(spell_pri_shadowform::OnApply, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
         AfterEffectRemove += AuraEffectRemoveFn(spell_pri_shadowform::OnRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
     }
 };

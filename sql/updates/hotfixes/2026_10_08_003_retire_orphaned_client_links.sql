@@ -5,6 +5,10 @@
 -- is absent in both builds. No local scenario_data/step spell bindings use them.
 -- Retire these exact stale links via supported client/server tombstones;
 -- do not invent replacement spells or fabricate a playable test scenario.
+-- Follow-up: docs/audits/orphan-link-behavior-2026-10-08.md traces 194248
+-- (old Insanity Visual Controller) to existing scripted Shadowform behavior.
+-- Native link 5576 already teaches Shadowform 232698; do not add a duplicate
+-- or teach triggered Voidform aura 194249. Live Broken Shore routes use 786/1189.
 START TRANSACTION;
 SET @orphan_hotfix_base := (SELECT COALESCE(MAX(`Id`), 0) FROM `hotfix_data`);
 INSERT INTO `hotfix_data` (`Id`, `TableHash`, `RecordID`, `Timestamp`, `Deleted`)
