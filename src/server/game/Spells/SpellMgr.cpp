@@ -2464,104 +2464,109 @@ void SpellMgr::LoadSpellVisual()
 
     mSpellVisualMap.clear();    // need for reload case
     mSpellVisualPlayOrphanMap.clear();    // need for reload case
+    mSpellVisualKitMap.clear();    // need for reload case
+
+    uint32 count = 0;
 
     //                                                  0            1            2            3             4            5        6        7
     QueryResult result = WorldDatabase.Query("SELECT spellId, SpellVisualID, MissReason, ReflectStatus, TravelSpeed, SpeedAsTime, type, HasPosition FROM spell_visual");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 visual spells. DB table `spell_visual` is empty.");
-        return;
     }
-
-    uint32 count = 0;
-    do
+    else
     {
-        Field* fields = result->Fetch();
-
-        int32 spellId = fields[0].GetInt32();
-        SpellInfo const* spellInfo = GetSpellInfo(abs(spellId));
-        if (!spellInfo)
+        do
         {
-            TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual` does not exist", abs(spellId));
-            continue;
-        }
+            Field* fields = result->Fetch();
 
-        SpellVisual templink;
-        templink.spellId = spellId;
-        templink.SpellVisualID = fields[1].GetInt32();
-        templink.MissReason = fields[2].GetUInt16();
-        templink.ReflectStatus = fields[3].GetUInt16();
-        templink.TravelSpeed = fields[4].GetFloat();
-        templink.SpeedAsTime = bool(fields[5].GetUInt8());
-        templink.type = fields[6].GetUInt8();
-        templink.HasPosition = bool(fields[7].GetUInt8());
-        mSpellVisualMap[spellId].push_back(templink);
+            int32 spellId = fields[0].GetInt32();
+            SpellInfo const* spellInfo = GetSpellInfo(abs(spellId));
+            if (!spellInfo)
+            {
+                TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual` does not exist", abs(spellId));
+                continue;
+            }
 
-        ++count;
-    } while (result->NextRow());
+            SpellVisual templink;
+            templink.spellId = spellId;
+            templink.SpellVisualID = fields[1].GetInt32();
+            templink.MissReason = fields[2].GetUInt16();
+            templink.ReflectStatus = fields[3].GetUInt16();
+            templink.TravelSpeed = fields[4].GetFloat();
+            templink.SpeedAsTime = bool(fields[5].GetUInt8());
+            templink.type = fields[6].GetUInt8();
+            templink.HasPosition = bool(fields[7].GetUInt8());
+            mSpellVisualMap[spellId].push_back(templink);
+
+            ++count;
+        } while (result->NextRow());
+    }
 
     //                                      0            1            2            3          4      5  6  7    8
     result = WorldDatabase.Query("SELECT spellId, SpellVisualID, TravelSpeed, SpeedAsTime, UnkFloat, X, Y, Z, `type` FROM spell_visual_play_orphan");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 visual spells. DB table `spell_visual_play_orphan` is empty.");
-        return;
     }
-
-    do
+    else
     {
-        Field* fields = result->Fetch();
-
-        int32 spellId = fields[0].GetInt32();
-        SpellInfo const* spellInfo = GetSpellInfo(abs(spellId));
-        if (!spellInfo)
+        do
         {
-            TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual_play_orphan` does not exist", abs(spellId));
-            continue;
-        }
+            Field* fields = result->Fetch();
 
-        SpellVisualPlayOrphan templink;
-        templink.spellId = spellId;
-        templink.SpellVisualID = fields[1].GetInt32();
-        templink.TravelSpeed = fields[2].GetFloat();
-        templink.SpeedAsTime = bool(fields[3].GetUInt8());
-        templink.UnkFloat = fields[4].GetFloat();
-        templink.type = fields[8].GetInt8();
-        templink.SourceOrientation.Relocate(fields[5].GetFloat(), fields[6].GetFloat(), fields[7].GetFloat());
-        mSpellVisualPlayOrphanMap[spellId].push_back(templink);
+            int32 spellId = fields[0].GetInt32();
+            SpellInfo const* spellInfo = GetSpellInfo(abs(spellId));
+            if (!spellInfo)
+            {
+                TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual_play_orphan` does not exist", abs(spellId));
+                continue;
+            }
 
-        ++count;
-    } while (result->NextRow());
+            SpellVisualPlayOrphan templink;
+            templink.spellId = spellId;
+            templink.SpellVisualID = fields[1].GetInt32();
+            templink.TravelSpeed = fields[2].GetFloat();
+            templink.SpeedAsTime = bool(fields[3].GetUInt8());
+            templink.UnkFloat = fields[4].GetFloat();
+            templink.type = fields[8].GetInt8();
+            templink.SourceOrientation.Relocate(fields[5].GetFloat(), fields[6].GetFloat(), fields[7].GetFloat());
+            mSpellVisualPlayOrphanMap[spellId].push_back(templink);
+
+            ++count;
+        } while (result->NextRow());
+    }
 
     //                                      0        1         2        3
     result = WorldDatabase.Query("SELECT spellId, KitType, KitRecID, Duration FROM spell_visual_kit");
     if (!result)
     {
         TC_LOG_INFO("server.loading", ">> Loaded 0 visual spells. DB table `spell_visual_kit` is empty.");
-        return;
     }
-
-    do
+    else
     {
-        Field* fields = result->Fetch();
-
-        int32 spellId = fields[0].GetInt32();
-
-        if (!GetSpellInfo(abs(spellId)))
+        do
         {
-            TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual_kit` does not exist", abs(spellId));
-            continue;
-        }
+            Field* fields = result->Fetch();
 
-        SpellVisualKit templink;
-        templink.spellId = spellId;
-        templink.KitType = fields[1].GetInt32();
-        templink.KitRecID = fields[2].GetInt32();
-        templink.Duration = fields[3].GetInt32();
-        mSpellVisualKitMap[spellId].push_back(templink);
+            int32 spellId = fields[0].GetInt32();
 
-        ++count;
-    } while (result->NextRow());
+            if (!GetSpellInfo(abs(spellId)))
+            {
+                TC_LOG_ERROR("sql.sql", "Spell %u listed in `spell_visual_kit` does not exist", abs(spellId));
+                continue;
+            }
+
+            SpellVisualKit templink;
+            templink.spellId = spellId;
+            templink.KitType = fields[1].GetInt32();
+            templink.KitRecID = fields[2].GetInt32();
+            templink.Duration = fields[3].GetInt32();
+            mSpellVisualKitMap[spellId].push_back(templink);
+
+            ++count;
+        } while (result->NextRow());
+    }
 
     TC_LOG_INFO("server.loading", ">> Loaded %u visual spells in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }

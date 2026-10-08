@@ -9,6 +9,10 @@ $ErrorActionPreference = 'Stop'
 $Runtime = (Resolve-Path $Runtime).Path
 if (Get-Process worldserver -ErrorAction SilentlyContinue) { throw 'Stop worldserver before running this test.' }
 $before = @(Get-ChildItem "$Runtime/Crashes" -Filter '*.dmp' -ErrorAction SilentlyContinue).Count
+$serverLogPath = Join-Path $Runtime 'logs/Server.log'
+$existingLog = Get-Item -LiteralPath $serverLogPath -ErrorAction SilentlyContinue
+$logOffset = if ($existingLog) { $existingLog.Length } else { 0 }
+$newLog = [Text.StringBuilder]::new()
 $started = Get-Date
 $info = [Diagnostics.ProcessStartInfo]::new()
 $info.FileName = Join-Path $Runtime 'worldserver.exe'
@@ -36,9 +40,20 @@ try {
         $ready = $false
         $deadline = $started.AddSeconds(90)
         while (!$process.HasExited -and (Get-Date) -lt $deadline) {
-            $log = Get-Item "$Runtime/logs/Server.log" -ErrorAction SilentlyContinue
-            if ($log -and $log.LastWriteTime -ge $started -and
-                (Select-String -LiteralPath $log.FullName -SimpleMatch '(worldserver-daemon) ready...' -Quiet)) {
+            if (Test-Path -LiteralPath $serverLogPath) {
+                $stream = [IO.File]::Open($serverLogPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+                try {
+                    if ($stream.Length -lt $logOffset) { $logOffset = 0; [void]$newLog.Clear() }
+                    [void]$stream.Seek($logOffset, [IO.SeekOrigin]::Begin)
+                    $reader = [IO.StreamReader]::new($stream)
+                    try { [void]$newLog.Append($reader.ReadToEnd()); $logOffset = $stream.Position }
+                    finally { $reader.Dispose() }
+                }
+                finally { $stream.Dispose() }
+            }
+            # Existing logs contain ready lines from earlier server runs.
+            # Only this process's appended output can establish readiness.
+            if ($newLog.ToString().Contains('(worldserver-daemon) ready...')) {
                 $ready = $true
                 break
             }
