@@ -2455,6 +2455,14 @@ void DB2Manager::LoadHotfixData()
             if (auto store = Trinity::Containers::MapGetValuePtr(_stores, deletedRecord.first.first))
                 store->EraseRecord(deletedRecord.first.second);
 
+    // This index is built by LoadStores before hotfix tombstones are applied.
+    // Keep deleted specialization links out of the derived lookup as well.
+    for (auto& spec : _specializationSpellsBySpec)
+        spec.second.erase(std::remove_if(spec.second.begin(), spec.second.end(), [](SpecializationSpellsEntry const* entry)
+        {
+            return !sSpecializationSpellsStore.LookupEntry(entry->ID);
+        }), spec.second.end());
+
     TC_LOG_INFO("server.loading", ">> Loaded %u hotfix records in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
 }
 

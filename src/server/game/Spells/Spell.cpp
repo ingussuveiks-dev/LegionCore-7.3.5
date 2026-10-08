@@ -5848,9 +5848,18 @@ void Spell::TakePower()
     if (!GetSpellInfo()->GetSpellPowerByCasterPower(m_caster, powerData))
         return;
 
+    uint32 paidPowerTypes = 0;
     for (SpellPowerEntry const* power : powerData)
     {
         Powers powerType = Powers(power->PowerType);
+        uint32 powerIndex = powerType == POWER_HEALTH ? MAX_POWERS : uint32(powerType);
+        if (powerType != POWER_HEALTH && powerIndex >= MAX_POWERS)
+            continue;
+        // CalcPowerCost resolves DB2 alternatives into one cost per resource.
+        // Conditional and base rows must not charge that final cost twice.
+        if (paidPowerTypes & (1u << powerIndex))
+            continue;
+        paidPowerTypes |= 1u << powerIndex;
         int32 _powerCost = GetPowerCost(powerType);
         int32 ifMissedPowerCost = GetPowerCost(powerType);
         bool hit = true;
@@ -8333,34 +8342,25 @@ SpellCastResult Spell::CheckPower()
     if (m_CastItem || m_spellInfo->NoPower())
         return SPELL_CAST_OK;
 
-    for (uint8 i = 0; i < MAX_POWERS_FOR_SPELL; ++i)
-    {
-        if (!GetSpellInfo()->IsPowerActive(i))
-            continue;
-
-        SpellPowerEntry const* power = GetSpellInfo()->GetPowerInfo(i);
-        if (!power)
-            continue;
-
-        // health as power used - need check health amount
-        if (power->PowerType == POWER_HEALTH)
-        {
-            if (int32(m_caster->GetHealth()) <= GetPowerCost(power->PowerType))
-                return SPELL_FAILED_CASTER_AURASTATE;
-            return SPELL_CAST_OK;
-        }
-        // Check valid power type
-        if (power->PowerType >= MAX_POWERS)
-        {
-            TC_LOG_ERROR("spells", "Spell::CheckPower: Unknown power type '%d'", power->PowerType);
-            return SPELL_FAILED_NO_POWER;
-        }
-    }
-
+    // CheckCast runs at preparation and again when a cast finishes. Do not
+    // retain duplicate power rows, or rows whose required aura has disappeared.
+    m_powerData.clear();
     if (m_spellInfo->GetSpellPowerByCasterPower(m_caster, m_powerData))
     {
         for (SpellPowerEntry const* power : m_powerData)
         {
+            if (power->PowerType == POWER_HEALTH)
+            {
+                if (int32(m_caster->GetHealth()) <= GetPowerCost(power->PowerType))
+                    return SPELL_FAILED_CASTER_AURASTATE;
+                // A health cost does not waive rune/mana/other resource costs.
+                continue;
+            }
+            if (power->PowerType < 0 || power->PowerType >= MAX_POWERS)
+            {
+                TC_LOG_ERROR("spells", "Spell::CheckPower: Unknown power type '%d'", power->PowerType);
+                return SPELL_FAILED_NO_POWER;
+            }
             // Check power amount
             Powers powerType = Powers(power->PowerType);
             if (int32(m_caster->GetPower(powerType)) < GetPowerCost(power->PowerType))

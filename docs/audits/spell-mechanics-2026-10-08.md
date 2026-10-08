@@ -1,5 +1,9 @@
 # Talent, equipment and aura mechanics audit — 7.3.5.26972
 
+Follow-up: [cast resources and orphan-link resolution](cast-resources-2026-10-08.md)
+documents later repairs and evidence-based retirement of the four native links
+listed below. This report and its JSON retain the original audit checkpoint.
+
 This follow-up checks the three next priorities from the profession lifecycle
 audit: specialization/talent transitions, item/enchant requirements, and aura
 stack/charge behavior. Supporting DB2 reference checks also exposed one broken

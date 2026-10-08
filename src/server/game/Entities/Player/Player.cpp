@@ -5768,6 +5768,74 @@ void Player::_SaveSpellCooldowns(CharacterDatabaseTransaction& trans)
         trans->Append(ss.str().c_str());
 }
 
+void Player::_LoadSpellCharges(PreparedQueryResult result)
+{
+    if (!result)
+        return;
+
+    uint64 now = uint64(std::chrono::duration_cast<std::chrono::milliseconds>(GameTime::GetSystemTime().time_since_epoch()).count());
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 category = fields[0].GetUInt32();
+        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(fields[1].GetUInt32());
+        SpellCategoryEntry const* categoryEntry = sSpellCategoryStore.LookupEntry(category);
+        if (!spellInfo || !categoryEntry || spellInfo->Categories.ChargeCategory != category)
+            continue;
+
+        uint8 maxCharges = GetMaxSpellCategoryCharges(categoryEntry);
+        uint32 consumed = std::min<uint32>(fields[2].GetUInt32(), maxCharges);
+        uint64 nextRecovery = fields[3].GetUInt64();
+        uint32 recoveryTime = fields[4].GetUInt32();
+        if (!consumed || !recoveryTime)
+            continue;
+
+        // Recovery continues while offline. Bound work by the small number of
+        // missing charges, not the duration of the player's absence.
+        if (nextRecovery <= now)
+        {
+            uint32 recovered = uint32(std::min<uint64>(consumed, 1 + (now - nextRecovery) / recoveryTime));
+            consumed -= recovered;
+            nextRecovery += uint64(recovered) * recoveryTime;
+        }
+        if (!consumed)
+            continue;
+
+        SpellChargeData& data = m_spellChargeData[category];
+        data.categoryEntry = categoryEntry;
+        data.spellInfo = spellInfo;
+        data.maxCharges = maxCharges;
+        data.charges = int8(maxCharges - consumed);
+        data.chargeRegenTime = recoveryTime;
+        data.timer = recoveryTime - uint32(std::min<uint64>(recoveryTime, nextRecovery - now));
+    } while (result->NextRow());
+}
+
+void Player::_SaveSpellCharges(CharacterDatabaseTransaction& trans)
+{
+    CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_SPELL_CHARGES);
+    stmt->setUInt64(0, GetGUIDLow());
+    trans->Append(stmt);
+
+    uint64 now = uint64(std::chrono::duration_cast<std::chrono::milliseconds>(GameTime::GetSystemTime().time_since_epoch()).count());
+    for (auto const& charge : m_spellChargeData)
+    {
+        SpellChargeData const& data = charge.second;
+        if (!data.spellInfo || !data.chargeRegenTime || data.charges >= data.maxCharges)
+            continue;
+
+        uint32 remaining = data.chargeRegenTime > data.timer ? data.chargeRegenTime - data.timer : 0;
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHARACTER_SPELL_CHARGES);
+        stmt->setUInt64(0, GetGUIDLow());
+        stmt->setUInt32(1, charge.first);
+        stmt->setUInt32(2, data.spellInfo->Id);
+        stmt->setUInt8(3, uint8(data.maxCharges - data.charges));
+        stmt->setUInt64(4, now + remaining);
+        stmt->setUInt32(5, data.chargeRegenTime);
+        trans->Append(stmt);
+    }
+}
+
 bool Player::HasChargesForSpell(SpellInfo const* spellInfo) const
 {
     SpellChargeDataMap::const_iterator itr = m_spellChargeData.find(spellInfo->Categories.ChargeCategory);
@@ -5783,7 +5851,8 @@ uint8 Player::GetMaxSpellCategoryCharges(SpellCategoryEntry const* categoryEntry
 
 uint32 Player::GetSpellCategoryChargesTimer(SpellCategoryEntry const* categoryEntry, SpellInfo const* spellInfo, bool sendSpeedRate/* = false*/) const
 {
-    uint32 regenTime = categoryEntry->ChargeRecoveryTime;
+    // Flat modifiers may reduce recovery to zero; unsigned arithmetic wraps.
+    float regenTime = float(categoryEntry->ChargeRecoveryTime);
 
     regenTime += GetTotalAuraModifierByMiscValue(SPELL_AURA_CHARGE_RECOVERY_MOD, categoryEntry->ID);
     regenTime += GetTotalAuraModifier(SPELL_AURA_MOD_COOLDOWN) * IN_MILLISECONDS;
@@ -5793,7 +5862,7 @@ uint32 Player::GetSpellCategoryChargesTimer(SpellCategoryEntry const* categoryEn
     if (spellInfo)
         regenTime *= const_cast<Player*>(this)->SpellCooldownModByRate(spellInfo, sendSpeedRate);
 
-    return regenTime;
+    return uint32(std::max(0.0f, regenTime));
 }
 
 uint8 Player::GetMaxSpellCategoryCharges(uint32 category) const
@@ -5856,16 +5925,16 @@ void Player::UpdateSpellCharges(uint32 diff)
         if (data.charges == data.maxCharges)
             continue;
 
-        uint32 chargeRegenTime = data.chargeRegenTime;
         data.timer += diff * data.speed;
 
-        while (data.timer >= chargeRegenTime && data.charges < data.maxCharges)
+        while (data.timer >= data.chargeRegenTime && data.charges < data.maxCharges)
         {
-            data.chargeRegenTime = GetSpellCategoryChargesTimer(data.categoryEntry, data.spellInfo);
+            // Finish the interval already in progress before calculating the next.
             data.timer -= data.chargeRegenTime;
             ++data.charges;
+            data.chargeRegenTime = GetSpellCategoryChargesTimer(data.categoryEntry, data.spellInfo);
 
-            if (data.spellInfo->Id == 2050 && HasAura(238136)) // Cosmic Ripple
+            if (data.spellInfo && data.spellInfo->Id == 2050 && HasAura(238136)) // Cosmic Ripple
                 CastSpell(this, 243241, true);
 
             if (data.charges == data.maxCharges)
@@ -5946,10 +6015,7 @@ void Player::ModSpellCharge(uint32 SpellID, int32 num)
     if (itr != m_spellChargeData.end())
     {
         SpellChargeData& data = itr->second;
-        data.charges += num;
-
-        if (data.charges < 0)
-            data.charges = 0;
+        data.charges = int8(std::max<int64>(0, std::min<int64>(data.maxCharges, int64(data.charges) + num)));
 
         if (data.maxCharges <= data.charges)
         {
@@ -5959,7 +6025,7 @@ void Player::ModSpellCharge(uint32 SpellID, int32 num)
 
         WorldPackets::Spells::SetSpellCharges setcharges;
         setcharges.Category = spellInfo->Categories.ChargeCategory;
-        setcharges.NextRecoveryTime = data.chargeRegenTime - data.timer;
+        setcharges.NextRecoveryTime = GetChargesCooldown(SpellID);
         setcharges.ConsumedCharges = data.maxCharges - data.charges;
         SendDirectMessage(setcharges.Write());
     }
@@ -5969,13 +6035,19 @@ void Player::ModSpellCharge(uint32 SpellID, int32 num)
         if (!categoryEntry)
             return;
 
+        uint8 maxCharges = GetMaxSpellCategoryCharges(categoryEntry);
+        uint32 recoveryTime = GetSpellCategoryChargesTimer(categoryEntry, spellInfo);
+        if (!maxCharges || !recoveryTime)
+            return;
+
         SpellChargeData& data = m_spellChargeData[spellInfo->Categories.ChargeCategory];
         data.categoryEntry = categoryEntry;
-        data.chargeRegenTime = GetSpellCategoryChargesTimer(categoryEntry, spellInfo);
-        data.charges = data.maxCharges = GetMaxSpellCategoryCharges(categoryEntry);
+        data.chargeRegenTime = recoveryTime;
+        data.charges = data.maxCharges = maxCharges;
         data.timer = 0;
+        data.spellInfo = spellInfo;
 
-        data.charges += num;
+        data.charges = int8(std::max<int64>(0, int64(data.charges) + num));
 
         WorldPackets::Spells::SetSpellCharges setcharges;
         setcharges.Category = spellInfo->Categories.ChargeCategory;
@@ -5996,9 +6068,9 @@ void Player::ModSpellChargeCooldown(uint32 SpellID, int32 delta)
     {
         SpellChargeData& data = itr->second;
 
-        data.timer += delta;
+        data.timer = uint32(std::max<int64>(0, std::min<int64>(UINT32_MAX, int64(data.timer) + delta)));
 
-        if (data.timer >= data.chargeRegenTime && data.charges < data.maxCharges)
+        while (data.timer >= data.chargeRegenTime && data.charges < data.maxCharges)
         {
             data.timer -= data.chargeRegenTime;
             ++data.charges;
@@ -6018,7 +6090,7 @@ void Player::ModSpellChargeCooldown(uint32 SpellID, int32 delta)
 
         WorldPackets::Spells::SetSpellCharges setcharges;
         setcharges.Category = spellInfo->Categories.ChargeCategory;
-        setcharges.NextRecoveryTime = data.chargeRegenTime - data.timer;
+        setcharges.NextRecoveryTime = GetChargesCooldown(SpellID);
         setcharges.ConsumedCharges = data.maxCharges - data.charges;
         SendDirectMessage(setcharges.Write());
     }
@@ -6045,8 +6117,8 @@ uint32 Player::GetChargesCooldown(uint32 SpellID) const
         return 0;
 
     SpellChargeDataMap::const_iterator itr = m_spellChargeData.find(spellInfo->Categories.ChargeCategory);
-    if (itr != m_spellChargeData.end())
-        return itr->second.chargeRegenTime - itr->second.timer;
+    if (itr != m_spellChargeData.end() && itr->second.charges < itr->second.maxCharges)
+        return itr->second.chargeRegenTime > itr->second.timer ? itr->second.chargeRegenTime - itr->second.timer : 0;
 
     return 0;
 }
@@ -6720,6 +6792,10 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
             trans->Append(stmt);
 
             stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_SPELL_COOLDOWN);
+            stmt->setUInt64(0, guid);
+            trans->Append(stmt);
+
+            stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHARACTER_SPELL_CHARGES);
             stmt->setUInt64(0, guid);
             trans->Append(stmt);
 
@@ -22518,6 +22594,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     SetFallInformation(0, GetPositionZ());
 
     _LoadSpellCooldowns(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSPELLCOOLDOWNS));
+    _LoadSpellCharges(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_SPELL_CHARGES));
     _LoadHonor(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_HONOR_INFO));
     UpdateHonorFields(true);
 
@@ -25183,6 +25260,7 @@ void Player::SaveToDB(bool create /*=false*/)
     _SaveTalents(trans);
     _SaveSpells(trans);
     _SaveSpellCooldowns(trans);
+    _SaveSpellCharges(trans);
     _SaveActions(trans);
     _SaveAuras(trans);
     _SaveSkills(trans);
@@ -30075,9 +30153,7 @@ void Player::SendSpellChargeData()
     for (SpellChargeDataMap::const_iterator itr = m_spellChargeData.begin(); itr != m_spellChargeData.end(); ++itr)
     {
         SpellChargeData const& chargeData = itr->second;
-        int32 diff = int32(chargeData.categoryEntry->ChargeRecoveryTime) - int32(chargeData.timer);
-        if (diff < 0)
-            diff = 0;
+        uint32 diff = chargeData.chargeRegenTime > chargeData.timer ? chargeData.chargeRegenTime - chargeData.timer : 0;
 
         entry.Category = itr->first;
         entry.NextRecoveryTime = chargeData.charges != chargeData.maxCharges ? diff : 0;

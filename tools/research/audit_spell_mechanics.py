@@ -18,6 +18,7 @@ class Data:
         self.meta = Path('src/server/game/DataStores/DB2Metadata.h').read_text()
         self.load = Path('src/server/game/DataStores/DB2LoadInfo.h').read_text()
         self.cache, self.native, self.overlaid, self.hashes, self.sql_hashes = {}, {}, {}, {}, {}
+        self.deleted = {}
 
     def export(self, name):
         path = self.sql / name
@@ -28,12 +29,12 @@ class Data:
     def rows(self, name):
         if name in self.cache:
             return self.cache[name]
-        meta = self.meta.split('struct ' + name + 'Meta\n')[1].split('\n};')[0]
+        meta = re.split('struct ' + name + 'Meta\n', self.meta, flags=re.IGNORECASE)[1].split('\n};')[0]
         index, layout, parent = re.search(r'DB2Meta instance\((-?\d+), \d+, (0x[\dA-Fa-f]+), types, arraySizes, (-?\d+)', meta).groups()
         index, parent = int(index), int(parent)
         types = re.search(r'types = "([^"]+)"', meta)[1]
         sizes = [int(v.strip()) for v in re.search(r'arraySizes\[\d+\] = \{([^}]+)', meta)[1].split(',')]
-        info = self.load.split('struct ' + name + 'LoadInfo\n')[1].split('\n};')[0]
+        info = re.split('struct ' + name + 'LoadInfo\n', self.load, flags=re.IGNORECASE)[1].split('\n};')[0]
         fields = re.findall(r'\{ (true|false), FT_\w+, "([^"]+)" \}', info)
         if index < 0:
             fields = [f for f in fields if f[1] != 'ID']
@@ -67,6 +68,16 @@ class Data:
                 self.overlaid.setdefault(name, set()).add(int(row['ID']))
                 result[int(row['ID'])] = {k: v if sql_types[k].startswith('STRING') else float(v) if sql_types[k] == 'FLOAT' else int(v)
                                           for k, v in row.items() if k != 'VerifiedBuild'}
+        tombstones = self.sql / 'mechanics-link-hotfixes.tsv'
+        if tombstones.exists():
+            table_hash = struct.unpack_from('<I', table.data, 20)[0]
+            latest = {}
+            for row in sorted(self.export(tombstones.name), key=lambda r: int(r['Id'])):
+                if int(row['TableHash']) == table_hash:
+                    latest[int(row['RecordID'])] = int(row['Deleted'])
+            self.deleted[name] = [id for id, deleted in latest.items() if deleted]
+            for id in self.deleted[name]:
+                result.pop(id, None)
         self.cache[name] = result
         return result
 
@@ -145,6 +156,7 @@ def audit(data):
                                'effective_stack_limits': sorted({a['CumulativeAura'] for a in aura_by_spell[sid]})})
     return {'build': '7.3.5.26972', 'counts': {n: len(v) for n, v in data.cache.items()},
             'reference_findings': dict(issues), 'proc_modcharges': modcharges,
+            'retired_links': {name: ids for name, ids in data.deleted.items() if ids},
             'exodar_tree_matches_native': all(tree[7898][f] == data.native['CriteriaTree'][7898][f]
                                               for f in ('CriteriaID', 'Parent', 'OrderIndex', 'Amount', 'Operator')),
             'source_hashes': data.hashes, 'sql_export_hashes': data.sql_hashes,

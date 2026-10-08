@@ -1,0 +1,395 @@
+{
+  "build": "7.3.5.26972",
+  "date": "2026-10-08",
+  "remote_evidence": {
+    "CriteriaTree-26972.csv": {
+      "url": "https://wago.tools/db2/CriteriaTree/csv?build=7.3.5.26972",
+      "sha256": "7be0847f0738d9f0f31e9ceb279692b7fb9dbf05806ab2660c427fab705d6891",
+      "records": 49712,
+      "selected_rows": [],
+      "requested_ids_absent": [
+        31016
+      ]
+    },
+    "LFGDungeons-26972.csv": {
+      "url": "https://wago.tools/db2/LFGDungeons/csv?build=7.3.5.26972",
+      "sha256": "5851aee0bb2edddf40ebdeffd0bf773ebbd17f2ab13d1d452a362ebaed429543",
+      "records": 684,
+      "selected_rows": [
+        {
+          "ID": "1027",
+          "Name_lang": "Test Scenario Faction Criteria",
+          "Description_lang": "",
+          "Flags": "71764994",
+          "MinGear": "0",
+          "MaxLevel": "255",
+          "Target_level_max": "100",
+          "MapID": "1460",
+          "Random_ID": "0",
+          "ScenarioID": "908",
+          "FinalEncounterID": "0",
+          "Bonus_reputation_amount": "0",
+          "MentorItemLevel": "0",
+          "Required_player_condition_ID": "0",
+          "MinLevel": "100",
+          "Target_level": "100",
+          "Target_level_min": "100",
+          "DifficultyID": "12",
+          "TypeID": "1",
+          "Faction": "-1",
+          "ExpansionLevel": "0",
+          "Order_index": "10",
+          "Group_ID": "38",
+          "Count_tank": "0",
+          "Count_healer": "0",
+          "Count_damage": "40",
+          "Min_count_tank": "0",
+          "Min_count_healer": "0",
+          "Min_count_damage": "1",
+          "Subtype": "3",
+          "MentorCharLevel": "0",
+          "IconTextureFileID": "136349",
+          "RewardsBgTextureFileID": "615223",
+          "PopupBgTextureFileID": "615222"
+        }
+      ],
+      "requested_ids_absent": []
+    },
+    "Scenario-25600.csv": {
+      "url": "https://wago.tools/db2/Scenario/csv?build=7.3.5.25600",
+      "sha256": "2dd3ee3c2434600e4b45a0858c9a4dd8396860ad89c4b0220ab336701fe38789",
+      "records": 440,
+      "selected_rows": [
+        {
+          "ID": "908",
+          "Name_lang": "Test Faction Criteria",
+          "AreaTableID": "0",
+          "Flags": "0",
+          "Type": "0"
+        }
+      ],
+      "requested_ids_absent": [
+        1045
+      ]
+    },
+    "Scenario-26972.csv": {
+      "url": "https://wago.tools/db2/Scenario/csv?build=7.3.5.26972",
+      "sha256": "97104a2bc9c42cbc78577694dcf39a36e97396a922c64156a12fbfca70d9b8ef",
+      "records": 440,
+      "selected_rows": [
+        {
+          "ID": "908",
+          "Name_lang": "Test Faction Criteria",
+          "AreaTableID": "0",
+          "Flags": "0",
+          "Type": "0"
+        }
+      ],
+      "requested_ids_absent": [
+        1045
+      ]
+    },
+    "ScenarioStep-25600.csv": {
+      "url": "https://wago.tools/db2/ScenarioStep/csv?build=7.3.5.25600",
+      "sha256": "7a5e72f8ef3e32e2e7e736f0dec76e95baf1e5ba94e011f0b0aabdd25bd7c4e4",
+      "records": 1635,
+      "selected_rows": [
+        {
+          "ID": "1947",
+          "Description_lang": "",
+          "Title_lang": "A Final Step",
+          "ScenarioID": "908",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "1",
+          "Flags": "0",
+          "CriteriatreeID": "31016",
+          "RelatedStep": "0"
+        },
+        {
+          "ID": "2233",
+          "Description_lang": "How to fill a bar!",
+          "Title_lang": "Fill the bar",
+          "ScenarioID": "1045",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "0",
+          "Flags": "0",
+          "CriteriatreeID": "46960",
+          "RelatedStep": "0"
+        },
+        {
+          "ID": "2234",
+          "Description_lang": "This is the final step! (cm 109970)",
+          "Title_lang": "A Final Step",
+          "ScenarioID": "1045",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "1",
+          "Flags": "0",
+          "CriteriatreeID": "46963",
+          "RelatedStep": "0"
+        }
+      ],
+      "requested_ids_absent": []
+    },
+    "ScenarioStep-26972.csv": {
+      "url": "https://wago.tools/db2/ScenarioStep/csv?build=7.3.5.26972",
+      "sha256": "f2a569eb8cc0df1c1c3e8817900705d42879fe849afb327c7156cefa9959f53d",
+      "records": 1634,
+      "selected_rows": [
+        {
+          "ID": "1947",
+          "Description_lang": "",
+          "Title_lang": "A Final Step",
+          "ScenarioID": "908",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "1",
+          "Flags": "0",
+          "CriteriatreeID": "31016",
+          "RelatedStep": "0"
+        },
+        {
+          "ID": "2233",
+          "Description_lang": "How to fill a bar!",
+          "Title_lang": "Fill the bar",
+          "ScenarioID": "1045",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "0",
+          "Flags": "0",
+          "CriteriatreeID": "46960",
+          "RelatedStep": "0"
+        },
+        {
+          "ID": "2234",
+          "Description_lang": "This is the final step! (cm 109970)",
+          "Title_lang": "A Final Step",
+          "ScenarioID": "1045",
+          "Supersedes": "0",
+          "RewardQuestID": "0",
+          "OrderIndex": "1",
+          "Flags": "0",
+          "CriteriatreeID": "46963",
+          "RelatedStep": "0"
+        }
+      ],
+      "requested_ids_absent": []
+    },
+    "SpecializationSpells-25600.csv": {
+      "url": "https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.25600",
+      "sha256": "12eccc1c19c5babc02ef292022e9cc627cd38752820a740b2ae6a1a8628db109",
+      "records": 925,
+      "selected_rows": [
+        {
+          "Description_lang": "",
+          "SpellID": "194248",
+          "OverridesSpellID": "0",
+          "SpecID": "258",
+          "DisplayOrder": "18",
+          "ID": "4946"
+        }
+      ],
+      "requested_ids_absent": []
+    },
+    "SpecializationSpells-26972.csv": {
+      "url": "https://wago.tools/db2/SpecializationSpells/csv?build=7.3.5.26972",
+      "sha256": "81095a1651ab706b2a915172c7722a50b4303419c4ac3a0871bd2b1f089c27e9",
+      "records": 899,
+      "selected_rows": [
+        {
+          "Description_lang": "",
+          "SpellID": "194248",
+          "OverridesSpellID": "0",
+          "SpecID": "258",
+          "DisplayOrder": "18",
+          "ID": "4946"
+        }
+      ],
+      "requested_ids_absent": []
+    },
+    "Spell-25600.csv": {
+      "url": "https://wago.tools/db2/Spell/csv?build=7.3.5.25600",
+      "sha256": "c33e48dc91674aef8e33d7f6c882cd824a2cb6224b1d122363fb3976d77fc7e3",
+      "records": 179199,
+      "selected_rows": [],
+      "requested_ids_absent": [
+        194248
+      ]
+    }
+  },
+  "effective_reference_audit": {
+    "build": "7.3.5.26972",
+    "counts": {
+      "Spell": 179382,
+      "ChrSpecialization": 42,
+      "Talent": 617,
+      "PvpTalent": 387,
+      "SpecializationSpells": 898,
+      "SpellProcsPerMinute": 197,
+      "SpellAuraOptions": 13054,
+      "SpellProcsPerMinuteMod": 738,
+      "SpellEquippedItems": 2642,
+      "SpellCooldowns": 17183,
+      "SpellPower": 4614,
+      "SpellReagentsCurrency": 765,
+      "SpellTotems": 3178,
+      "SkillRaceClassInfo": 150,
+      "CurrencyTypes": 108,
+      "TotemCategory": 37,
+      "Criteria": 26680,
+      "CriteriaTree": 49730,
+      "ScenarioStep": 1634,
+      "Scenario": 441
+    },
+    "reference_findings": {},
+    "proc_modcharges": [
+      {
+        "spell": 164545,
+        "charges": 0,
+        "modcharges": 3,
+        "effective_stack_limits": [
+          1
+        ]
+      },
+      {
+        "spell": 164547,
+        "charges": 0,
+        "modcharges": 3,
+        "effective_stack_limits": [
+          1
+        ]
+      },
+      {
+        "spell": 198300,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": [
+          0
+        ]
+      },
+      {
+        "spell": 208081,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": [
+          0
+        ]
+      },
+      {
+        "spell": 209493,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": [
+          0
+        ]
+      },
+      {
+        "spell": 209706,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": [
+          0
+        ]
+      },
+      {
+        "spell": 216974,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": []
+      },
+      {
+        "spell": 248625,
+        "charges": 1,
+        "modcharges": 1,
+        "effective_stack_limits": [
+          0
+        ]
+      }
+    ],
+    "retired_links": {
+      "SpecializationSpells": [
+        4946
+      ],
+      "ScenarioStep": [
+        409,
+        1947,
+        2233,
+        2234
+      ]
+    },
+    "exodar_tree_matches_native": true,
+    "source_hashes": {
+      "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+      "ChrSpecialization": "43678a1a9763ebaa08662fe305b7ceaa92b4b81f5d8e1a18b68bd0810fa14934",
+      "Talent": "37dc7493ffd527bbc3e3a60f5dcc2aadd50968161e4037e02548158cfab3cc84",
+      "PvpTalent": "1b65ac098bcb979cda27112b655ef4c2415b7c835723d21475f19373c1a5d9c1",
+      "SpecializationSpells": "b1bb630123e90ae68ae3f78eee265daaf3bd8918d4b924aa050b0f052a317a04",
+      "SpellProcsPerMinute": "3603003aba6d4300f2c4b1f7ce0d05ff4eec12f6e494f4f05c64ce4adf5432e4",
+      "SpellAuraOptions": "d799051d1d6578ed665a43a12778089b67ad7a53d5aceb9163e809ef8b3f69a2",
+      "SpellProcsPerMinuteMod": "8a83a732bed6ee0adad0503fe0594e03d9d9e9ccce44c9ada98c13d36f50e20c",
+      "SpellEquippedItems": "ee98ae7edb6601aa7ef0277287eb073d004450aacf2ba52c569eb98a86c60fda",
+      "SpellCooldowns": "c06348e7160af05d5d5d8933aa365b531f8b9fa0fc335c450acb47391118194b",
+      "SpellPower": "e201615a957e4d8c79b377495ba98e47dfbcbc8b17c51cda3cfec796ca29e99e",
+      "SpellReagentsCurrency": "6bc6a4e825c99f4e4f2862ad998635843d82201f3d3cda87f0ce30e0c3183881",
+      "SpellTotems": "030e28f64cf46b8ed127f634610e3d3581d5f7fd58b87f2224ec4a9cc0500ef8",
+      "SkillRaceClassInfo": "7733d6ae98902f1eb81e3da53f1229ddc0f5ae94f01758eb26a89c5805cdca48",
+      "CurrencyTypes": "0cc0a4f365bcd0929117f353e489ffb2294d76140b03d6c8a301963bacd88de6",
+      "TotemCategory": "08b9c4dca118b2301a11d24503763f79606df7a96de3bcadbb376051ca211030",
+      "Criteria": "8ee5f3d19d249d9a4f6a3b6745a0ab2d1a0a3b31c5b277b4942686c08e9c3750",
+      "CriteriaTree": "10568e9752f38f16492e94dd569e77293a1e4a6c07ee6c0fe33b60d7a4bddc05",
+      "ScenarioStep": "4e422b1333a7b1be8427ccb511017a93c093fa243adb83dc74e255ad1702b94e",
+      "Scenario": "e77cc130ee594bcf084c5dd451ffbc7091c27dcdbb7f8cc61c051fb162e58101"
+    },
+    "sql_export_hashes": {
+      "mechanics-hotfix-counts.tsv": "444d99694c542788c0d31a179b0a9edc87ae54836b79ef6873a48f364ce56883",
+      "mechanics-spell_aura_options.tsv": "b6efc2ec8b4c67f6009b8f3483b38439d17545d3218d4b77356e4ce5a140fad4",
+      "mechanics-spell_cooldowns.tsv": "11de35e9dfd388049996e8bd96d423245a1b6b01af44ac336f212359070f20e2",
+      "mechanics-scenario_step.tsv": "e2dfed42dd9ba869d2fd03647dc17b03ca301149f948e3abd1efea1ce7f20855",
+      "mechanics-criteria_tree.tsv": "f1ee4533c67141dd97a4a56dbae2360b664b504f22c5f823ec61bdd12d974a6b",
+      "mechanics-criteria.tsv": "3079869f00cedc47d3116d8071fc73e648727983c971596a371ecbb8f7154213",
+      "mechanics-scenario.tsv": "c8dc3f6d5b1f130063aef1672b0c6402304784f8eed2e8925a16150e4bc61fcc",
+      "mechanics-currency_types.tsv": "7bce1e300d019352e98aa785dae404ce2c7d60d2c14ce70be57e81fc0ccc7ac9",
+      "mechanics-link-hotfixes.tsv": "89b8383c3938d39af6b99011d7e9cadb93a4672d50a8490d70216e71f86624ad",
+      "visual-hotfix-spells.tsv": "e51aa547e522a9b793de0dd423744b100e3769acfedfe86cf1482b686eb3eca5",
+      "mechanics-proc.tsv": "a28d2e55ae1d4414bc151d635e389518cc007ca63cbe5e8bd9a5720ae88495e9"
+    },
+    "limitations": "Reference findings need classification: native obsolete rows and deliberate server overrides are not automatically errors. Does not verify rendering, balance, all scripts or live transitions."
+  },
+  "new_tombstones": {
+    "SpecializationSpells": [
+      4946
+    ],
+    "ScenarioStep": [
+      1947,
+      2233,
+      2234
+    ]
+  },
+  "preexisting_tombstones_in_audit": {
+    "ScenarioStep": [
+      409
+    ]
+  },
+  "local_bindings": {
+    "scenario_data_for_908_1045": 0,
+    "scenario_step_spells_for_908_1045": 0,
+    "note": "Native LFGDungeons 1027 still references test scenario 908."
+  },
+  "validation": {
+    "extracted_production_suites": [
+      "CastResourceTest",
+      "ReagentConsumptionTest",
+      "PowerConsumptionTest"
+    ],
+    "pre_fix_failed_assertions": {
+      "resource_and_recovery": 10,
+      "resource_payment": 1
+    },
+    "sql_fixture_rows_after_rollback": 0,
+    "release_build": "passed",
+    "world_shutdown_probe": "ready, exit 0, zero new crash dumps",
+    "client_acceptance": "pending"
+  }
+}

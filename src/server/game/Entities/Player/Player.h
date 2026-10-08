@@ -1052,6 +1052,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADNOTINVENTORY,
     PLAYER_LOGIN_QUERY_ACCOUNT_QUEST,
     PLAYER_LOGIN_QUERY_LOAD_PET_SLOTS,
+    PLAYER_LOGIN_QUERY_LOAD_SPELL_CHARGES,
 
     MAX_PLAYER_LOGIN_QUERY
 };
@@ -2313,6 +2314,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void RemoveAllSpellCooldown();
         void _LoadSpellCooldowns(PreparedQueryResult result);
         void _SaveSpellCooldowns(CharacterDatabaseTransaction& trans);
+        void _LoadSpellCharges(PreparedQueryResult result);
+        void _SaveSpellCharges(CharacterDatabaseTransaction& trans);
 
         bool HasChargesForSpell(SpellInfo const* spellInfo) const;
         uint8 GetMaxSpellCategoryCharges(SpellCategoryEntry const* categoryEntry) const;
