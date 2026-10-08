@@ -91,10 +91,10 @@ void WorldSession::HandleShowTradeSkill(WorldPackets::Misc::ShowTradeSkill& pack
         if (skillLine->ParentSkillLineID != packet.SkillLineID)
             continue;
 
-        if (!player->HasSkill(skillLine->ParentSkillLineID))
+        if (!player->HasSkill(skillLine->ID))
             continue;
 
-        relatedSkills.insert(skillLine->ParentSkillLineID);
+        relatedSkills.insert(skillLine->ID);
     }
 
     std::set<uint32> profSpells;

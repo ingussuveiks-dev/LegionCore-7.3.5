@@ -4836,7 +4836,7 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
                 break;
             case 28677: //Alchemy: Elixir Master
                 removeSpell(28675);
-                removeSpell(28677);
+                removeSpell(28672);
                 break;
             default:
                 break;
@@ -17900,6 +17900,12 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
 
 void Player::UpdateSkillEnchantments(uint16 skill_id, uint16 curr_value, uint16 new_value)
 {
+    // Match ApplyEnchantment's GetSkillValue check, including racial/aura bonuses.
+    // An absent skill has no effective rank even if a racial bonus remains.
+    int32 bonus = GetSkillTempBonusValue(skill_id) + GetSkillPermBonusValue(skill_id);
+    int32 currentSkill = curr_value ? std::max<int32>(0, curr_value + bonus) : 0;
+    int32 newSkill = new_value ? std::max<int32>(0, new_value + bonus) : 0;
+
     for (uint8 i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
     {
         if (m_items[i])
@@ -17912,14 +17918,14 @@ void Player::UpdateSkillEnchantments(uint16 skill_id, uint16 curr_value, uint16 
 
                 SpellItemEnchantmentEntry const* Enchant = sSpellItemEnchantmentStore.LookupEntry(ench_id);
                 if (!Enchant)
-                    return;
+                    continue;
 
                 if (Enchant->RequiredSkillID == skill_id)
                 {
                     // Checks if the enchantment needs to be applied or removed
-                    if (curr_value < Enchant->RequiredSkillRank && new_value >= Enchant->RequiredSkillRank)
+                    if (currentSkill < Enchant->RequiredSkillRank && newSkill >= Enchant->RequiredSkillRank)
                         ApplyEnchantment(m_items[i], EnchantmentSlot(slot), true);
-                    else if (new_value < Enchant->RequiredSkillRank && curr_value >= Enchant->RequiredSkillRank)
+                    else if (newSkill < Enchant->RequiredSkillRank && currentSkill >= Enchant->RequiredSkillRank)
                         ApplyEnchantment(m_items[i], EnchantmentSlot(slot), false);
                 }
 
@@ -17932,9 +17938,9 @@ void Player::UpdateSkillEnchantments(uint16 skill_id, uint16 curr_value, uint16 
 
                     if (pPrismaticEnchant && pPrismaticEnchant->RequiredSkillID == skill_id)
                     {
-                        if (curr_value < pPrismaticEnchant->RequiredSkillRank && new_value >= pPrismaticEnchant->RequiredSkillRank)
+                        if (currentSkill < pPrismaticEnchant->RequiredSkillRank && newSkill >= pPrismaticEnchant->RequiredSkillRank)
                             ApplyEnchantment(m_items[i], EnchantmentSlot(slot), true);
-                        else if (new_value < pPrismaticEnchant->RequiredSkillRank && curr_value >= pPrismaticEnchant->RequiredSkillRank)
+                        else if (newSkill < pPrismaticEnchant->RequiredSkillRank && currentSkill >= pPrismaticEnchant->RequiredSkillRank)
                             ApplyEnchantment(m_items[i], EnchantmentSlot(slot), false);
                     }
                 }
@@ -30440,9 +30446,6 @@ void Player::learnSkillRewardedSpells(uint32 skillId, uint32 skillValue)
         if (!spellInfo)
             continue;
 
-        if (HasSpell(spellInfo->Id))
-            continue;
-
         if (ability->AcquireMethod != SKILL_LINE_ABILITY_LEARNED_ON_SKILL_VALUE && ability->AcquireMethod != SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN && ability->AcquireMethod != SKILL_LINE_ABILITY_NOT_AUTO_LEARN)
             continue;
 
@@ -30467,9 +30470,17 @@ void Player::learnSkillRewardedSpells(uint32 skillId, uint32 skillValue)
 
         // need unlearn spell
         if (skillValue < ability->MinSkillLineRank && ability->AcquireMethod == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_VALUE)
+        {
             removeSpell(ability->Spell);
+            continue;
+        }
+
+        // Known rewards still need the rank check above when a skill is lowered.
+        if (HasSpell(spellInfo->Id))
+            continue;
+
         // need learn
-        else if (!IsInWorld())
+        if (!IsInWorld())
             addSpell(ability->Spell, true, true, true, false, false, ability->SkillLine);
         else
             learnSpell(ability->Spell, true, ability->SkillLine);
