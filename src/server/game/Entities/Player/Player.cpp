@@ -4056,7 +4056,9 @@ void Player::TogglePvpTalents(bool enable)
         if (!pvpTalentInfo)
             continue;
 
-        if (enable && v.second != PLAYERSPELL_REMOVED || sWorld->getBoolConfig(CONFIG_PLAYER_ALLOW_PVP_TALENTS_ALL_THE_TIME))
+        // Always-on PvP changes where selected talents work, not which talents
+        // are selected. Removed entries remain in the map until they are saved.
+        if (v.second != PLAYERSPELL_REMOVED && (enable || sWorld->getBoolConfig(CONFIG_PLAYER_ALLOW_PVP_TALENTS_ALL_THE_TIME)))
         {
             if (pvpTalentInfo->OverrideSpellID)
                 AddOverrideSpell(pvpTalentInfo->OverrideSpellID, pvpTalentInfo->SpellID);
@@ -31125,10 +31127,12 @@ bool Player::HasItemFitToSpellRequirements(SpellInfo const* spellInfo, Item cons
                 for (uint8 i : {EQUIPMENT_SLOT_HEAD, EQUIPMENT_SLOT_SHOULDERS, EQUIPMENT_SLOT_CHEST, EQUIPMENT_SLOT_WAIST, EQUIPMENT_SLOT_LEGS, EQUIPMENT_SLOT_FEET, EQUIPMENT_SLOT_WRISTS, EQUIPMENT_SLOT_HANDS})
                 {
                     Item* item = GetUseableItemByPos(INVENTORY_SLOT_BAG_0, i);
-                    if (!item || !item->IsFitToSpellRequirements(spellInfo))
+                    if (!item || item == ignoreItem || !item->IsFitToSpellRequirements(spellInfo))
                         return false;
                 }
+                return true;
             }
+            break;
         default:
             TC_LOG_ERROR("entities.player", "HasItemFitToSpellRequirements: Not handled spell requirement for item class %u", spellInfo->EquippedItemClass);
             break;

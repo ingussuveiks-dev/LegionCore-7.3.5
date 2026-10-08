@@ -1410,10 +1410,7 @@ bool Aura::ModCharges(int32 num, AuraRemoveMode removeMode)
             }
 
             if(_useStack || !m_spellInfo->IsStack())
-            {
-                ModStackAmount(num);
-                return false;
-            }
+                return ModStackAmount(num, removeMode);
         }
 
         int32 charges = m_procCharges + num;
@@ -1466,10 +1463,7 @@ bool Aura::ModStackAmount(int16 num, AuraRemoveMode removeMode)
 {
     if (SpellProcEntry const* procEntry = sSpellMgr->GetSpellProcEntry(GetId()))
         if (procEntry->modcharges != 0)
-        {
-            ModCharges(num, removeMode);
-            return false;
-        }
+            return ModCharges(num, removeMode);
 
     int16 stackAmount = m_stackAmount + num;
     int16 maxStackAmount = m_spellInfo->GetAuraOptions(GetSpawnMode())->CumulativeAura;

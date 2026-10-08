@@ -1,0 +1,157 @@
+{
+  "build": "7.3.5.26972",
+  "counts": {
+    "Spell": 179382,
+    "ChrSpecialization": 42,
+    "Talent": 617,
+    "PvpTalent": 387,
+    "SpecializationSpells": 899,
+    "SpellProcsPerMinute": 197,
+    "SpellAuraOptions": 13054,
+    "SpellProcsPerMinuteMod": 738,
+    "SpellEquippedItems": 2642,
+    "SpellCooldowns": 17183,
+    "SpellPower": 4614,
+    "SpellReagentsCurrency": 765,
+    "SpellTotems": 3178,
+    "SkillRaceClassInfo": 150,
+    "CurrencyTypes": 108,
+    "TotemCategory": 37,
+    "Criteria": 26680,
+    "CriteriaTree": 49730,
+    "ScenarioStep": 1638,
+    "Scenario": 441
+  },
+  "reference_findings": {
+    "SpecializationSpells": [
+      {
+        "row": 4946,
+        "field": "SpellID",
+        "target": 194248,
+        "source": "native DB2"
+      }
+    ],
+    "scenario_tree": [
+      {
+        "row": 1947,
+        "field": "Criteriatreeid",
+        "target": 31016,
+        "source": "native DB2"
+      }
+    ],
+    "scenario": [
+      {
+        "row": 2233,
+        "field": "ScenarioID",
+        "target": 1045,
+        "source": "native DB2"
+      },
+      {
+        "row": 2234,
+        "field": "ScenarioID",
+        "target": 1045,
+        "source": "native DB2"
+      }
+    ]
+  },
+  "proc_modcharges": [
+    {
+      "spell": 164545,
+      "charges": 0,
+      "modcharges": 3,
+      "effective_stack_limits": [
+        1
+      ]
+    },
+    {
+      "spell": 164547,
+      "charges": 0,
+      "modcharges": 3,
+      "effective_stack_limits": [
+        1
+      ]
+    },
+    {
+      "spell": 198300,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": [
+        0
+      ]
+    },
+    {
+      "spell": 208081,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": [
+        0
+      ]
+    },
+    {
+      "spell": 209493,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": [
+        0
+      ]
+    },
+    {
+      "spell": 209706,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": [
+        0
+      ]
+    },
+    {
+      "spell": 216974,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": []
+    },
+    {
+      "spell": 248625,
+      "charges": 1,
+      "modcharges": 1,
+      "effective_stack_limits": [
+        0
+      ]
+    }
+  ],
+  "exodar_tree_matches_native": true,
+  "source_hashes": {
+    "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+    "ChrSpecialization": "43678a1a9763ebaa08662fe305b7ceaa92b4b81f5d8e1a18b68bd0810fa14934",
+    "Talent": "37dc7493ffd527bbc3e3a60f5dcc2aadd50968161e4037e02548158cfab3cc84",
+    "PvpTalent": "1b65ac098bcb979cda27112b655ef4c2415b7c835723d21475f19373c1a5d9c1",
+    "SpecializationSpells": "b1bb630123e90ae68ae3f78eee265daaf3bd8918d4b924aa050b0f052a317a04",
+    "SpellProcsPerMinute": "3603003aba6d4300f2c4b1f7ce0d05ff4eec12f6e494f4f05c64ce4adf5432e4",
+    "SpellAuraOptions": "d799051d1d6578ed665a43a12778089b67ad7a53d5aceb9163e809ef8b3f69a2",
+    "SpellProcsPerMinuteMod": "8a83a732bed6ee0adad0503fe0594e03d9d9e9ccce44c9ada98c13d36f50e20c",
+    "SpellEquippedItems": "ee98ae7edb6601aa7ef0277287eb073d004450aacf2ba52c569eb98a86c60fda",
+    "SpellCooldowns": "c06348e7160af05d5d5d8933aa365b531f8b9fa0fc335c450acb47391118194b",
+    "SpellPower": "e201615a957e4d8c79b377495ba98e47dfbcbc8b17c51cda3cfec796ca29e99e",
+    "SpellReagentsCurrency": "6bc6a4e825c99f4e4f2862ad998635843d82201f3d3cda87f0ce30e0c3183881",
+    "SpellTotems": "030e28f64cf46b8ed127f634610e3d3581d5f7fd58b87f2224ec4a9cc0500ef8",
+    "SkillRaceClassInfo": "7733d6ae98902f1eb81e3da53f1229ddc0f5ae94f01758eb26a89c5805cdca48",
+    "CurrencyTypes": "0cc0a4f365bcd0929117f353e489ffb2294d76140b03d6c8a301963bacd88de6",
+    "TotemCategory": "08b9c4dca118b2301a11d24503763f79606df7a96de3bcadbb376051ca211030",
+    "Criteria": "8ee5f3d19d249d9a4f6a3b6745a0ab2d1a0a3b31c5b277b4942686c08e9c3750",
+    "CriteriaTree": "10568e9752f38f16492e94dd569e77293a1e4a6c07ee6c0fe33b60d7a4bddc05",
+    "ScenarioStep": "4e422b1333a7b1be8427ccb511017a93c093fa243adb83dc74e255ad1702b94e",
+    "Scenario": "e77cc130ee594bcf084c5dd451ffbc7091c27dcdbb7f8cc61c051fb162e58101"
+  },
+  "sql_export_hashes": {
+    "mechanics-hotfix-counts.tsv": "444d99694c542788c0d31a179b0a9edc87ae54836b79ef6873a48f364ce56883",
+    "mechanics-spell_aura_options.tsv": "b6efc2ec8b4c67f6009b8f3483b38439d17545d3218d4b77356e4ce5a140fad4",
+    "mechanics-spell_cooldowns.tsv": "11de35e9dfd388049996e8bd96d423245a1b6b01af44ac336f212359070f20e2",
+    "mechanics-scenario_step.tsv": "e2dfed42dd9ba869d2fd03647dc17b03ca301149f948e3abd1efea1ce7f20855",
+    "mechanics-criteria_tree.tsv": "f1ee4533c67141dd97a4a56dbae2360b664b504f22c5f823ec61bdd12d974a6b",
+    "mechanics-criteria.tsv": "3079869f00cedc47d3116d8071fc73e648727983c971596a371ecbb8f7154213",
+    "mechanics-scenario.tsv": "c8dc3f6d5b1f130063aef1672b0c6402304784f8eed2e8925a16150e4bc61fcc",
+    "mechanics-currency_types.tsv": "7bce1e300d019352e98aa785dae404ce2c7d60d2c14ce70be57e81fc0ccc7ac9",
+    "visual-hotfix-spells.tsv": "e51aa547e522a9b793de0dd423744b100e3769acfedfe86cf1482b686eb3eca5",
+    "mechanics-proc.tsv": "a28d2e55ae1d4414bc151d635e389518cc007ca63cbe5e8bd9a5720ae88495e9"
+  },
+  "limitations": "Reference findings need classification: native obsolete rows and deliberate server overrides are not automatically errors. Does not verify rendering, balance, all scripts or live transitions."
+}
