@@ -1105,5 +1105,107 @@
       "ScenarioID": 1189,
       "Team": 67
     }
-  ]
+  ],
+  "additional_archive_search": {
+    "build": "10.0.2.47067",
+    "tables": {
+      "scenario": {
+        "url": "https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/scenario.csv",
+        "sha256": "2b778a2340a3969244f12101d4745be13dcac6558f42e653afb63ec37d3054f4",
+        "rows": [
+          {
+            "ID": "908",
+            "Name_lang": "Test Faction Criteria",
+            "AreaTableID": "0",
+            "Type": "0",
+            "Flags": "0",
+            "UiTextureKitID": "0"
+          }
+        ],
+        "absent_ids": [
+          1045
+        ]
+      },
+      "scenariostep": {
+        "url": "https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/scenariostep.csv",
+        "sha256": "9d0dce1c5c8a63a8499e375fd8acfe5c5cf1835d07ddb3db224bfa868faf5aa9",
+        "rows": [
+          {
+            "ID": "1947",
+            "Description_lang": "",
+            "Title_lang": "A Final Step",
+            "ScenarioID": "908",
+            "CriteriatreeID": "31016",
+            "RewardQuestID": "0",
+            "RelatedStep": "0",
+            "Supersedes": "0",
+            "OrderIndex": "1",
+            "Flags": "0",
+            "VisibilityPlayerConditionID": "0",
+            "WidgetSetID": "0"
+          },
+          {
+            "ID": "2233",
+            "Description_lang": "How to fill a bar!",
+            "Title_lang": "Fill the bar",
+            "ScenarioID": "1045",
+            "CriteriatreeID": "46960",
+            "RewardQuestID": "0",
+            "RelatedStep": "0",
+            "Supersedes": "0",
+            "OrderIndex": "0",
+            "Flags": "0",
+            "VisibilityPlayerConditionID": "0",
+            "WidgetSetID": "0"
+          },
+          {
+            "ID": "2234",
+            "Description_lang": "This is the final step! (cm 109970)",
+            "Title_lang": "A Final Step",
+            "ScenarioID": "1045",
+            "CriteriatreeID": "46963",
+            "RewardQuestID": "0",
+            "RelatedStep": "0",
+            "Supersedes": "0",
+            "OrderIndex": "1",
+            "Flags": "0",
+            "VisibilityPlayerConditionID": "0",
+            "WidgetSetID": "0"
+          }
+        ],
+        "absent_ids": []
+      },
+      "criteriatree": {
+        "url": "https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/criteriatree.csv",
+        "sha256": "929308973487460bd5fef3f0de362ddd472fd8893f1c4d40ddfaa9e129764af1",
+        "rows": [
+          {
+            "ID": "46960",
+            "Description_lang": "Criteria Tree Progrees Bar",
+            "Parent": "0",
+            "Amount": "100",
+            "Operator": "4",
+            "CriteriaID": "0",
+            "OrderIndex": "0",
+            "Flags": "0"
+          },
+          {
+            "ID": "46963",
+            "Description_lang": "[TEST] Kill 10 Mook Laborers (ID 109970)",
+            "Parent": "0",
+            "Amount": "0",
+            "Operator": "4",
+            "CriteriaID": "0",
+            "OrderIndex": "0",
+            "Flags": "0"
+          }
+        ],
+        "absent_ids": [
+          31016
+        ]
+      }
+    },
+    "replacement_mapping_found": false,
+    "limitation": "Later client data corroborates retained orphan links but does not recover missing early Legion targets."
+  }
 }

@@ -88,3 +88,29 @@ This does not claim to verify the complete Broken Shore scenario in game.
 
 Rendering and real character transitions still need the 7.3.5 client. The tests
 verify emitted aura operations and dependency existence, not displayed pixels.
+
+## Additional archive search
+
+A further search found the same unresolved scenario links in an independent
+CSV archive pinned to commit `472d3a30957eb702a319a73e489407489d5aa429`, build
+10.0.2.47067. Step 1947 still targets tree 31016; steps 2233/2234 still target
+scenario 1045. Neither target exists in that snapshot's corresponding table.
+The test roots 46960/46963 still have the same labels. Sources:
+[ScenarioStep](https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/scenariostep.csv),
+[Scenario](https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/scenario.csv),
+[CriteriaTree](https://raw.githubusercontent.com/maxdekrieger/wow-csv-from-db2s/472d3a30957eb702a319a73e489407489d5aa429/versions/10.0.2.47067/csv/criteriatree.csv).
+
+This is corroboration of long-lived leftover references, **not** permission to
+import modern game data or proof that no historical replacement ever existed.
+Version-pinned rows and hashes are appended to the JSON evidence.
+
+Targeted GitHub code, commit and issue searches in TrinityCore, AshamaneCore,
+dufernst/LegionCore, The Legion Preservation Project and LegionCore-Reforged
+did not identify a repair mapping for these references. Search indexes are not
+an exhaustive examination of every historical branch. The old wow.tools export
+endpoint for Scenario build 7.0.3.22248 returned HTTP 404, so the original early
+Legion parent/tree records remain unavailable in this investigation.
+
+No new runtime/data patch follows from these findings. The unresolved question
+is the original content of Scenario 1045 and CriteriaTree 31016, not an established
+missing step in the current playable scenarios.
