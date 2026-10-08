@@ -5232,6 +5232,65 @@ class spell_gen_relearn_enchanting_quests : public SpellScript
     }
 };
 
+// 192962 - Recipe: Class Glyph (Smashing Herbs / inscription relearning).
+// Its twelve trigger spells are server-only and absent from build 26972.
+// Reconstruct the class reward with existing Legion recipes; see the audit
+// for the evidence and the limits of the original reward reconstruction.
+class spell_gen_inscription_class_glyph : public SpellScript
+{
+    PrepareSpellScript(spell_gen_inscription_class_glyph);
+
+    static uint32 RecipeForClass(uint8 playerClass)
+    {
+        switch (playerClass)
+        {
+            case CLASS_WARRIOR:      return 225560; // Glyph of the Blazing Savior
+            case CLASS_PALADIN:      return 192846; // Glyph of the Queen
+            case CLASS_HUNTER:       return 192845; // Glyph of Stellar Flare
+            case CLASS_ROGUE:        return 192841; // Glyph of Blackout
+            case CLASS_PRIEST:       return 192838; // Glyph of Ghostly Fade
+            case CLASS_DEATH_KNIGHT: return 192848; // Glyph of the Wraith Walker
+            case CLASS_SHAMAN:       return 192844; // Glyph of the Spectral Raptor
+            case CLASS_MAGE:         return 192840; // Glyph of Sparkles
+            case CLASS_WARLOCK:      return 192839; // Glyph of Fel Imp
+            case CLASS_MONK:         return 192843; // Glyph of Crackling Crane Lightning
+            case CLASS_DRUID:        return 192842; // Glyph of the Sentinel
+            case CLASS_DEMON_HUNTER: return 225528; // Glyph of Fel-Enemies
+            default:                return 0;
+        }
+    }
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        for (uint8 playerClass = CLASS_WARRIOR; playerClass <= CLASS_DEMON_HUNTER; ++playerClass)
+            if (!sSpellMgr->GetSpellInfo(RecipeForClass(playerClass)))
+                return false;
+        return true;
+    }
+
+    void PreventMissingTrigger(SpellEffIndex effIndex)
+    {
+        PreventHitDefaultEffect(effIndex);
+    }
+
+    void LearnRecipe()
+    {
+        if (Player* player = GetCaster()->ToPlayer())
+            if (player->HasSkill(SKILL_INSCRIPTION))
+                if (uint32 recipe = RecipeForClass(player->getClass()))
+                    if (!player->HasSpell(recipe))
+                        player->learnSpell(recipe, false);
+    }
+
+    void Register() override
+    {
+        // Trigger spells run in both launch phases, before OnEffectHit.
+        OnEffectLaunch += SpellEffectFn(spell_gen_inscription_class_glyph::PreventMissingTrigger, EFFECT_ALL, SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectLaunchTarget += SpellEffectFn(spell_gen_inscription_class_glyph::PreventMissingTrigger, EFFECT_ALL, SPELL_EFFECT_TRIGGER_SPELL);
+        AfterCast += SpellCastFn(spell_gen_inscription_class_glyph::LearnRecipe);
+    }
+};
+
 class spell_gen_relearn_inscription_quests : public SpellScript
 {
     PrepareSpellScript(spell_gen_relearn_inscription_quests);
@@ -8620,6 +8679,7 @@ void AddSC_generic_spell_scripts()
     RegisterSpellScript(spell_gen_relearn_leatherworking_quests);
     RegisterSpellScript(spell_gen_relearn_tailoring_quests);
     RegisterSpellScript(spell_gen_relearn_inscription_quests);
+    RegisterSpellScript(spell_gen_inscription_class_glyph);
     RegisterSpellScript(spell_gen_relearn_enchanting_quests);
     RegisterSpellScript(spell_gen_love_seat);
     RegisterSpellScript(spell_q13698_saw);

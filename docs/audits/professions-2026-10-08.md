@@ -5,8 +5,11 @@
 Five server defects fixed and covered by extracted-production-code regression
 tests. Release binaries were rebuilt in `build-extractors/bin/Release`.
 This is a data/code audit, not an in-client certification of every profession.
-One Inscription reward chain remains unresolved; the audit deliberately exits
-nonzero for it.
+The original audit left one Inscription reward chain unresolved. A subsequent
+[192962 compatibility repair](inscription-class-glyph-2026-10-08.md) implements
+all twelve class rewards and makes the updated profession audit pass. Its
+mapping is reconstructed; original Blizzard choices and in-game visuals are
+not fully confirmed. Counts and JSON below describe the original audit snapshot.
 
 ### Fixes
 
@@ -74,14 +77,15 @@ correctly in the client or that every nested texture dependency exists.
   references, not missing spells to cast or learn; leave the native data intact.
 - **Spellcloth 31373 → 31374** is handled explicitly by
   `AuraEffect::HandlePeriodicTriggerSpellAuraTick`: it summons creature 17870.
-- **Unresolved: Recipe: Class Glyph (192962)** has twelve TRIGGER_SPELL (64)
+- **Originally unresolved: Recipe: Class Glyph (192962)** has twelve TRIGGER_SPELL (64)
   effects targeting absent IDs 192969–192976 and 192978–192981. The live world
   database gives quest 39931 this reward, and the Inscription relearn script
   casts it for rewarded quest 39931. No C++ handler or exported dummy/aura-trigger
   override for it was found. Missing client rows can represent server-only data;
   they are not proof that the reward should be deleted. Correct class-to-recipe
   mapping requires authoritative 7.3.5 server data or a matching client/server
-  capture. This reward chain has **not** been repaired or verified.
+  capture. The subsequent compatibility repair handles this chain with a
+  documented reconstruction; exact original class choices remain unconfirmed.
 
 Reviewed unlearning flow: `HandleUnlearnSkill` checks the native unlearnable flag,
 then `SetSkill(id, 0)` removes skill-dependent enchant effects, clears skill and
@@ -137,6 +141,7 @@ python tools/research/audit_character_spell_chains.py `
 ./tools/tests/Test-ProfessionRegression.ps1
 ```
 
-The first audit returns exit code 1 for the twelve unresolved glyph targets;
-the reused visual scanner also reports the native cleanup/fallback references.
-Do not describe those runs as a fully passing audit.
+The original first audit returned exit code 1 for twelve unresolved glyph
+targets. After the follow-up repair and refreshing the script binding export,
+the updated profession audit returns 0. The reused raw visual scanner continues
+to report native cleanup/fallback references; see the follow-up for classification.

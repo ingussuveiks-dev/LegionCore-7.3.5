@@ -12,6 +12,7 @@ import sys
 
 sys.dont_write_bytecode = True
 from audit_spell_visuals import Table
+from audit_inscription_class_glyph import audit as audit_class_glyph
 
 # The 11 primary and four secondary professions present in Legion.
 PROFESSIONS = {164, 165, 171, 182, 197, 202, 333, 393, 755, 773, 186,
@@ -92,6 +93,11 @@ def main():
             root = abs(int(row['spell_id']))
             roots.add(root)
             graph[root].update(relearn[row['ScriptName']])
+    class_glyph = audit_class_glyph(args.dbc, args.sql_directory)
+    if not class_glyph['errors']:
+        for recipe in class_glyph['recipes']:
+            graph[192962].update([recipe['recipe'], *recipe['item_use_spells'],
+                                 *recipe['glyph_spells'], *recipe['bindable_spells']])
     visited, queue = set(), list(roots & names.keys())
     missing_edges = set()
     while queue:
@@ -109,12 +115,14 @@ def main():
                                if row['parent'] in visited and row['effect'] == 140 and row['trigger'] not in names})
     # HandlePeriodicTriggerSpellAuraTick has a native summon fallback for Spellcloth.
     scripted_fallbacks = {(31373, 31374)} & missing_edges
+    if not class_glyph['errors']:
+        scripted_fallbacks.update({(192962, child) for child in class_glyph['suppressed_trigger_ids']} & missing_edges)
     unresolved = missing_edges - set(missing_removals) - scripted_fallbacks
     trainer_rows = sql('profession-trainer.tsv')
     invalid_trainers = [r for r in trainer_rows if int(r['spell']) in missing_catalog]
     enchantments = rows('SpellItemEnchantment', {'skill': 8, 'rank': 9, 'visual': 6})
     profession_enchants = {rid: row for rid, row in enchantments.items() if row['skill'] & 0xffff in PROFESSIONS}
-    errors = []
+    errors = [['inscription_class_glyph', error] for error in class_glyph['errors']]
     referenced_enchants = set(profession_enchants)
     for row in effects.values():
         if row['parent'] in visited and row['effect'] in (53, 54, 92, 156):
@@ -162,6 +170,7 @@ def main():
         missing_catalog_spells=missing_catalog, missing_effect_or_learn_targets=sorted(missing_edges),
         missing_aura_removal_targets=missing_removals, script_handled_missing_targets=sorted(scripted_fallbacks),
         unresolved_trigger_targets=sorted(unresolved),
+        inscription_class_glyph=class_glyph,
         trainer_rows_using_missing_catalog_spells=invalid_trainers,
         relearn_scripts=relearn, errors=errors, item_visual_file_ids=sorted(item_files),
         limitations='Native catalog tombstones are not automatically server defects. Does not simulate crafting, all scripts, items, quests, racial bonuses or client rendering.')
