@@ -1691,13 +1691,16 @@ class spell_dk_death_coil : public SpellScript
         return ValidateSpellInfo({ SPELL_DK_DEATH_COIL_DAMAGE, SPELL_DK_UNHOLY_VIGOR });
     }
 
-    void HandleDummy(SpellEffIndex /*effIndex*/)
+    void HandleDummy(SpellEffIndex effIndex)
     {
         Unit* caster = GetCaster();
         Unit* target = GetHitUnit();
         if (!caster || !target)
             return;
 
+        // This script owns the payload. The legacy SQL dummy triggers would
+        // otherwise cast the damage and pet-energy spells a second time.
+        PreventHitDefaultEffect(effIndex);
         caster->CastSpell(target, SPELL_DK_DEATH_COIL_DAMAGE, true);
         if (caster->HasAura(SPELL_DK_UNHOLY))
             if (Player* player = caster->ToPlayer())

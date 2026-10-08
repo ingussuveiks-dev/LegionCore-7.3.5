@@ -53,8 +53,9 @@ broken. Of the 106 saved character spells, 50 have a direct mapping and 49
 are passive spells without one. The remaining seven are Rising Sun Kick,
 Counter Shot, Honorable Medallion and four profession entries. Rising Sun
 Kick 107428 triggers 185099, which has visual row 83557 / visual 39941.
-Counter Shot's native effect is interrupt (68); Honorable Medallion grants
-a language through aura 77. No invented visuals were added to these entries.
+Counter Shot's native effect is interrupt (68); Honorable Medallion uses
+mechanic immunity (aura 77), with a core handler that removes movement/control
+impairments. No invented visuals were added to these entries.
 
 The broad raw candidate set retains 195 IDs absent from Spell, including
 117 in the class subset. SpecializationSpells row 4946 references absent
@@ -65,7 +66,9 @@ All 106 saved character spell IDs exist in the effective catalogue.
 
 Forty existing non-passive class candidates lack a direct mapping. The JSON
 lists them for checking triggered spells, scripted effects and client
-animations. The inherited same-owner hotfix for Warrior Skyjumped 247860
+animations. The [follow-up chain audit](character-spell-chains-2026-10-08.md)
+reviews all 40, verifies their reachable model/texture assets and fixes a
+duplicate Death Coil dispatch. The inherited same-owner hotfix for Warrior Skyjumped 247860
 changes visual 8742 to 7723; both exist in 26972, and this audit does not
 establish that the override is erroneous. It is preserved.
 

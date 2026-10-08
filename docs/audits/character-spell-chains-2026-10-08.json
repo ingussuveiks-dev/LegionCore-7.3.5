@@ -1,0 +1,1126 @@
+{
+  "source_hashes": {
+    "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKit": "f132307415150dd8ba923066aa4fb8054ad815fc621179e947480e7fa2b1035d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualMissile": "8b935e8de1561fef28e2c952d5e4b5536412601d7eec8a75f9e1cfb28bf733b1",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+  },
+  "counts": {
+    "roots": 40,
+    "visuals": 59,
+    "kits": 98,
+    "attachments": 101,
+    "effect_names": 76,
+    "files": 74
+  },
+  "errors": [],
+  "other_kit_effect_types": {
+    "6": 40,
+    "5": 81,
+    "1": 13,
+    "7": 2,
+    "12": 3,
+    "10": 8,
+    "3": 1
+  },
+  "referenced_file_ids": [
+    165398,
+    165725,
+    165728,
+    165737,
+    165798,
+    165890,
+    165897,
+    165976,
+    166037,
+    166110,
+    166115,
+    166131,
+    166197,
+    166388,
+    166432,
+    166466,
+    166562,
+    166563,
+    166602,
+    166605,
+    166709,
+    166731,
+    166802,
+    166807,
+    166814,
+    166828,
+    166951,
+    166992,
+    167093,
+    167169,
+    167199,
+    167229,
+    240892,
+    452623,
+    513966,
+    571771,
+    617251,
+    656588,
+    656590,
+    656724,
+    656726,
+    1002615,
+    1054820,
+    1237666,
+    1264898,
+    1327008,
+    1362748,
+    1372783,
+    1385902,
+    1385917,
+    1386337,
+    1386338,
+    1394697,
+    1394698,
+    1394787,
+    1394788,
+    1397425,
+    1397426,
+    1525019,
+    1525020,
+    1526025,
+    1560270,
+    1608746,
+    1611186,
+    1620756,
+    1620771,
+    1630745,
+    1658079,
+    1658082,
+    1658897,
+    1658901,
+    1659590,
+    1711169,
+    1711212
+  ],
+  "spells": [
+    {
+      "ID": 75,
+      "name": "Auto Shot",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 75,
+          "name": "Auto Shot",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 1706,
+      "name": "Levitate",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 1706,
+          "name": "Levitate",
+          "visuals": []
+        },
+        {
+          "ID": 111759,
+          "name": "Levitate",
+          "visuals": [
+            38938
+          ]
+        },
+        {
+          "ID": 124433,
+          "name": "Glyph of the Heavens",
+          "visuals": [
+            25755
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 1784,
+      "name": "Stealth",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 1784,
+          "name": "Stealth",
+          "visuals": []
+        },
+        {
+          "ID": 158185,
+          "name": "Stealth",
+          "visuals": [
+            39168
+          ]
+        },
+        {
+          "ID": 196980,
+          "name": "Master of Shadows",
+          "visuals": []
+        },
+        {
+          "ID": 209427,
+          "name": "Shadow's Caress",
+          "visuals": []
+        },
+        {
+          "ID": 235027,
+          "name": "Master Assassin's Initiative",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 5019,
+      "name": "Shoot",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 5019,
+          "name": "Shoot",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 10846,
+      "name": "First Aid",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 10846,
+          "name": "First Aid",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 36554,
+      "name": "Shadowstep",
+      "bindings": [
+        "spell_rog_shadow_swiftness",
+        "spell_shadow_step_dru_rog"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 36554,
+          "name": "Shadowstep",
+          "visuals": []
+        },
+        {
+          "ID": 36563,
+          "name": "Shadowstep",
+          "visuals": [
+            39184
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 46584,
+      "name": "Raise Dead",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 46584,
+          "name": "Raise Dead",
+          "visuals": []
+        },
+        {
+          "ID": 52150,
+          "name": "Raise Dead",
+          "visuals": [
+            38778
+          ]
+        },
+        {
+          "ID": 196910,
+          "name": "Raise Skulker",
+          "visuals": [
+            38762
+          ]
+        },
+        {
+          "ID": 212027,
+          "name": "Sludge Belcher",
+          "visuals": [
+            38778
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 47540,
+      "name": "Penance",
+      "bindings": [
+        "spell_pri_evangelism",
+        "spell_pri_penance_cast"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 47540,
+          "name": "Penance",
+          "visuals": []
+        },
+        {
+          "ID": 47666,
+          "name": "Penance",
+          "visuals": [
+            57445,
+            67815,
+            70783
+          ]
+        },
+        {
+          "ID": 47750,
+          "name": "Penance",
+          "visuals": [
+            57445,
+            67814,
+            70782
+          ]
+        },
+        {
+          "ID": 47757,
+          "name": "Penance",
+          "visuals": [
+            70285,
+            70841
+          ]
+        },
+        {
+          "ID": 47758,
+          "name": "Penance",
+          "visuals": [
+            70287,
+            70842
+          ]
+        },
+        {
+          "ID": 204213,
+          "name": "Purge the Wicked",
+          "visuals": [
+            53422
+          ]
+        },
+        {
+          "ID": 204215,
+          "name": "Purge the Wicked",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 47541,
+      "name": "Death Coil",
+      "bindings": [
+        "spell_dk_death_coil"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 47541,
+          "name": "Death Coil",
+          "visuals": []
+        },
+        {
+          "ID": 47632,
+          "name": "Death Coil",
+          "visuals": [
+            38742
+          ]
+        },
+        {
+          "ID": 194310,
+          "name": "Festering Wound",
+          "visuals": [
+            55055
+          ]
+        },
+        {
+          "ID": 196263,
+          "name": "Unholy Vigor",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 52610,
+      "name": "Savage Roar",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 52610,
+          "name": "Savage Roar",
+          "visuals": []
+        },
+        {
+          "ID": 62071,
+          "name": "Savage Roar",
+          "visuals": [
+            38479
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 53428,
+      "name": "Runeforging",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 53428,
+          "name": "Runeforging",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 53478,
+      "name": "Last Stand",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 53478,
+          "name": "Last Stand",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 55095,
+      "name": "Frost Fever",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 49184,
+          "name": "Howling Blast",
+          "visuals": [
+            66692
+          ]
+        },
+        {
+          "ID": 55095,
+          "name": "Frost Fever",
+          "visuals": []
+        },
+        {
+          "ID": 237680,
+          "name": "Howling Blast",
+          "visuals": [
+            66806
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 55709,
+      "name": "Heart of the Phoenix",
+      "bindings": [
+        "spell_hun_pet_heart_of_the_phoenix"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 54114,
+          "name": "Heart of the Phoenix",
+          "visuals": [
+            39478
+          ]
+        },
+        {
+          "ID": 55709,
+          "name": "Heart of the Phoenix",
+          "visuals": []
+        },
+        {
+          "ID": 55711,
+          "name": "Weakened Heart",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 68996,
+      "name": "Two Forms",
+      "bindings": [
+        "spell_gen_two_forms"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 68996,
+          "name": "Two Forms",
+          "visuals": []
+        },
+        {
+          "ID": 97709,
+          "name": "Altered Form",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 69046,
+      "name": "Pack Hobgoblin",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 69046,
+          "name": "Pack Hobgoblin",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 81782,
+      "name": "Power Word: Barrier",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 62618,
+          "name": "Power Word: Barrier",
+          "visuals": [
+            67858
+          ]
+        },
+        {
+          "ID": 81782,
+          "name": "Power Word: Barrier",
+          "visuals": []
+        },
+        {
+          "ID": 197470,
+          "name": "Strength of Soul",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 88163,
+      "name": "Attack",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 88163,
+          "name": "Attack",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 106832,
+      "name": "Thrash",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 77758,
+          "name": "Thrash",
+          "visuals": [
+            57227,
+            66804
+          ]
+        },
+        {
+          "ID": 106830,
+          "name": "Thrash",
+          "visuals": [
+            57222
+          ]
+        },
+        {
+          "ID": 106832,
+          "name": "Thrash",
+          "visuals": []
+        },
+        {
+          "ID": 158790,
+          "name": "Thrash",
+          "visuals": []
+        },
+        {
+          "ID": 192090,
+          "name": "Thrash",
+          "visuals": []
+        },
+        {
+          "ID": 211141,
+          "name": "Thrash",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 107428,
+      "name": "Rising Sun Kick",
+      "bindings": [
+        "spell_monk_whirling_dragon_punch_activater"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 107428,
+          "name": "Rising Sun Kick",
+          "visuals": []
+        },
+        {
+          "ID": 115804,
+          "name": "Mortal Wounds",
+          "visuals": []
+        },
+        {
+          "ID": 185099,
+          "name": "Rising Sun Kick",
+          "visuals": [
+            39941
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 109132,
+      "name": "Roll",
+      "bindings": [
+        "spell_monk_roll"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 107427,
+          "name": "Roll",
+          "visuals": [
+            22459
+          ]
+        },
+        {
+          "ID": 109132,
+          "name": "Roll",
+          "visuals": []
+        },
+        {
+          "ID": 159535,
+          "name": "Yu'lon's Gift",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 115546,
+      "name": "Provoke",
+      "bindings": [
+        "spell_monk_provoke"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 115546,
+          "name": "Provoke",
+          "visuals": []
+        },
+        {
+          "ID": 116189,
+          "name": "Provoke",
+          "visuals": [
+            56431
+          ]
+        },
+        {
+          "ID": 118635,
+          "name": "Provoke",
+          "visuals": [
+            56431
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 119650,
+      "name": "Energy Usage",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 119650,
+          "name": "Energy Usage",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 119898,
+      "name": "Command Demon",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 17735,
+          "name": "Suffering",
+          "visuals": [
+            34
+          ]
+        },
+        {
+          "ID": 89751,
+          "name": "Felstorm",
+          "visuals": [
+            40092
+          ]
+        },
+        {
+          "ID": 89753,
+          "name": "Felstorm",
+          "visuals": [
+            40093
+          ]
+        },
+        {
+          "ID": 115831,
+          "name": "Wrathstorm",
+          "visuals": [
+            40092
+          ]
+        },
+        {
+          "ID": 115832,
+          "name": "Wrathstorm",
+          "visuals": [
+            40093
+          ]
+        },
+        {
+          "ID": 119898,
+          "name": "Command Demon",
+          "visuals": []
+        },
+        {
+          "ID": 119899,
+          "name": "Cauterize Master",
+          "visuals": [
+            40110
+          ]
+        },
+        {
+          "ID": 119905,
+          "name": "Cauterize Master",
+          "visuals": []
+        },
+        {
+          "ID": 119907,
+          "name": "Suffering",
+          "visuals": []
+        },
+        {
+          "ID": 119909,
+          "name": "Whiplash",
+          "visuals": []
+        },
+        {
+          "ID": 119910,
+          "name": "Spell Lock",
+          "visuals": []
+        },
+        {
+          "ID": 119911,
+          "name": "Optical Blast",
+          "visuals": []
+        },
+        {
+          "ID": 119914,
+          "name": "Felstorm",
+          "visuals": []
+        },
+        {
+          "ID": 119915,
+          "name": "Wrathstorm",
+          "visuals": []
+        },
+        {
+          "ID": 171140,
+          "name": "Shadow Lock",
+          "visuals": []
+        },
+        {
+          "ID": 171152,
+          "name": "Meteor Strike",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 147362,
+      "name": "Counter Shot",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 147362,
+          "name": "Counter Shot",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 161211,
+      "name": "Garrison Enchanting",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 161211,
+          "name": "Garrison Enchanting",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 185901,
+      "name": "Marked Shot",
+      "bindings": [
+        "spell_hun_marked_shot"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 185901,
+          "name": "Marked Shot",
+          "visuals": []
+        },
+        {
+          "ID": 187131,
+          "name": "Vulnerable",
+          "visuals": []
+        },
+        {
+          "ID": 212621,
+          "name": "Marked Shot",
+          "visuals": [
+            63365,
+            66530,
+            66770
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 190780,
+      "name": "Frost Breath",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 190778,
+          "name": "Sindragosa's Fury",
+          "visuals": [
+            49378
+          ]
+        },
+        {
+          "ID": 190780,
+          "name": "Frost Breath",
+          "visuals": []
+        },
+        {
+          "ID": 235612,
+          "name": "Frost Breath",
+          "visuals": [
+            25961
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 190925,
+      "name": "Harpoon",
+      "bindings": [
+        "spell_hun_posthaste",
+        "spell_shadow_step_dru_rog"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 118922,
+          "name": "Posthaste",
+          "visuals": [
+            39608
+          ]
+        },
+        {
+          "ID": 186260,
+          "name": "Harpoon",
+          "visuals": []
+        },
+        {
+          "ID": 190925,
+          "name": "Harpoon",
+          "visuals": []
+        },
+        {
+          "ID": 190927,
+          "name": "Harpoon",
+          "visuals": [
+            47596
+          ]
+        },
+        {
+          "ID": 213156,
+          "name": "Mark of Helbrine",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 195710,
+      "name": "Honorable Medallion",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 195710,
+          "name": "Honorable Medallion",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 198304,
+      "name": "Intercept",
+      "bindings": [
+        "spell_warr_charge_check_cast",
+        "spell_warr_intercept"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 126661,
+          "name": "Warrior Charge Drop Fire Periodic",
+          "visuals": []
+        },
+        {
+          "ID": 126664,
+          "name": "Charge",
+          "visuals": []
+        },
+        {
+          "ID": 147833,
+          "name": "Intervene",
+          "visuals": [
+            50202
+          ]
+        },
+        {
+          "ID": 198304,
+          "name": "Intercept",
+          "visuals": []
+        },
+        {
+          "ID": 198337,
+          "name": "Charge",
+          "visuals": [
+            54686
+          ]
+        },
+        {
+          "ID": 199038,
+          "name": "Leave No Man Behind",
+          "visuals": [
+            61895
+          ]
+        },
+        {
+          "ID": 199114,
+          "name": "Warrior Intervene Charge Clear",
+          "visuals": []
+        },
+        {
+          "ID": 218104,
+          "name": "Charge",
+          "visuals": [
+            54686
+          ]
+        },
+        {
+          "ID": 223658,
+          "name": "Safeguard",
+          "visuals": [
+            39271
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 199736,
+      "name": "Find Treasure",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 199736,
+          "name": "Find Treasure",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 200163,
+      "name": "Throwing Axes",
+      "bindings": [
+        "spell_hun_throwing_axes"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 200163,
+          "name": "Throwing Axes",
+          "visuals": []
+        },
+        {
+          "ID": 200167,
+          "name": "Throwing Axes",
+          "visuals": [
+            52012
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 201078,
+      "name": "Snake Hunter",
+      "bindings": [
+        "spell_hun_snake_hunter"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 201078,
+          "name": "Snake Hunter",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 204035,
+      "name": "Bastion of Light",
+      "bindings": [
+        "spell_pal_bastion_of_light"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 204035,
+          "name": "Bastion of Light",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 206505,
+      "name": "A Murder of Crows",
+      "bindings": [
+        "spell_hun_a_murder_of_crows"
+      ],
+      "presentation_paths": [
+        {
+          "ID": 131637,
+          "name": "A Murder of Crows",
+          "visuals": [
+            28511
+          ]
+        },
+        {
+          "ID": 131900,
+          "name": "A Murder of Crows",
+          "visuals": [
+            28609
+          ]
+        },
+        {
+          "ID": 131951,
+          "name": "A Murder of Crows",
+          "visuals": [
+            28621
+          ]
+        },
+        {
+          "ID": 131952,
+          "name": "A Murder of Crows",
+          "visuals": [
+            28622
+          ]
+        },
+        {
+          "ID": 206505,
+          "name": "A Murder of Crows",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 213764,
+      "name": "Swipe",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 106785,
+          "name": "Swipe",
+          "visuals": [
+            57223
+          ]
+        },
+        {
+          "ID": 213764,
+          "name": "Swipe",
+          "visuals": []
+        },
+        {
+          "ID": 213771,
+          "name": "Swipe",
+          "visuals": [
+            57228
+          ]
+        }
+      ]
+    },
+    {
+      "ID": 215769,
+      "name": "Spirit of Redemption",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 215769,
+          "name": "Spirit of Redemption",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 219432,
+      "name": "Rage of the Sleeper",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 200851,
+          "name": "Rage of the Sleeper",
+          "visuals": [
+            57816,
+            57968,
+            66802,
+            66803
+          ]
+        },
+        {
+          "ID": 219432,
+          "name": "Rage of the Sleeper",
+          "visuals": []
+        }
+      ]
+    },
+    {
+      "ID": 228545,
+      "name": "Shapeshift Form",
+      "bindings": [],
+      "presentation_paths": [
+        {
+          "ID": 228545,
+          "name": "Shapeshift Form",
+          "visuals": []
+        }
+      ]
+    }
+  ],
+  "limitations": "Presentation paths include reviewed parent effects; not all edges are casts. Direct model/texture files were fully read from CASC. Internal file dependencies, sound/camera/procedural kit effects and rendered client appearance were not verified.",
+  "client_asset_read_check": {
+    "build": "7.3.5.26972",
+    "file_count": 74,
+    "full_reads": 74,
+    "failed_reads": 0
+  }
+}
