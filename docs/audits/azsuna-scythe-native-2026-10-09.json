@@ -1,0 +1,528 @@
+{
+  "quest": 37660,
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "archive_objectives": [
+    {
+      "ID": 277154,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 0,
+      "StorageIndex": 3,
+      "ObjectID": 90401,
+      "Amount": 1,
+      "Flags": 28,
+      "Flags2": 0
+    },
+    {
+      "ID": 277151,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 1,
+      "StorageIndex": 0,
+      "ObjectID": 90403,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    },
+    {
+      "ID": 277152,
+      "QuestID": 37660,
+      "Type": 2,
+      "Order": 2,
+      "StorageIndex": 1,
+      "ObjectID": 239338,
+      "Amount": 1,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 277153,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 3,
+      "StorageIndex": 2,
+      "ObjectID": 90402,
+      "Amount": 1,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 277156,
+      "QuestID": 37660,
+      "Type": 2,
+      "Order": 4,
+      "StorageIndex": 5,
+      "ObjectID": 239332,
+      "Amount": 1,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 277157,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 5,
+      "StorageIndex": 4,
+      "ObjectID": 89276,
+      "Amount": 1,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 277158,
+      "QuestID": 37660,
+      "Type": 2,
+      "Order": 6,
+      "StorageIndex": 6,
+      "ObjectID": 237017,
+      "Amount": 1,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 277159,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 7,
+      "StorageIndex": 7,
+      "ObjectID": 89673,
+      "Amount": 1,
+      "Flags": 3,
+      "Flags2": 0
+    },
+    {
+      "ID": 277160,
+      "QuestID": 37660,
+      "Type": 2,
+      "Order": 8,
+      "StorageIndex": 8,
+      "ObjectID": 240012,
+      "Amount": 1,
+      "Flags": 6,
+      "Flags2": 0
+    },
+    {
+      "ID": 286117,
+      "QuestID": 37660,
+      "Type": 0,
+      "Order": 9,
+      "StorageIndex": 9,
+      "ObjectID": 89398,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    }
+  ],
+  "runtime_db2_objectives": [],
+  "questline": [
+    {
+      "ID": 973,
+      "QuestLineID": 82,
+      "QuestID": 37653,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 974,
+      "QuestLineID": 82,
+      "QuestID": 37658,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 975,
+      "QuestLineID": 82,
+      "QuestID": 37660,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 976,
+      "QuestLineID": 82,
+      "QuestID": 36920,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 977,
+      "QuestLineID": 82,
+      "QuestID": 37656,
+      "OrderIndex": 8
+    },
+    {
+      "ID": 978,
+      "QuestLineID": 82,
+      "QuestID": 37450,
+      "OrderIndex": 9
+    },
+    {
+      "ID": 981,
+      "QuestLineID": 82,
+      "QuestID": 37449,
+      "OrderIndex": 10
+    },
+    {
+      "ID": 1007,
+      "QuestLineID": 82,
+      "QuestID": 38834,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 2527,
+      "QuestLineID": 82,
+      "QuestID": 40815,
+      "OrderIndex": 6
+    },
+    {
+      "ID": 2528,
+      "QuestLineID": 82,
+      "QuestID": 38443,
+      "OrderIndex": 11
+    },
+    {
+      "ID": 2529,
+      "QuestLineID": 82,
+      "QuestID": 37853,
+      "OrderIndex": 12
+    },
+    {
+      "ID": 2530,
+      "QuestLineID": 82,
+      "QuestID": 37991,
+      "OrderIndex": 13
+    },
+    {
+      "ID": 2531,
+      "QuestLineID": 82,
+      "QuestID": 42271,
+      "OrderIndex": 14
+    },
+    {
+      "ID": 2532,
+      "QuestLineID": 82,
+      "QuestID": 37690,
+      "OrderIndex": 15
+    },
+    {
+      "ID": 2533,
+      "QuestLineID": 82,
+      "QuestID": 37256,
+      "OrderIndex": 16
+    },
+    {
+      "ID": 2534,
+      "QuestLineID": 82,
+      "QuestID": 37733,
+      "OrderIndex": 17
+    },
+    {
+      "ID": 2535,
+      "QuestLineID": 82,
+      "QuestID": 37257,
+      "OrderIndex": 18
+    },
+    {
+      "ID": 2536,
+      "QuestLineID": 82,
+      "QuestID": 37497,
+      "OrderIndex": 19
+    },
+    {
+      "ID": 2537,
+      "QuestLineID": 82,
+      "QuestID": 37486,
+      "OrderIndex": 20
+    },
+    {
+      "ID": 2538,
+      "QuestLineID": 82,
+      "QuestID": 37467,
+      "OrderIndex": 21
+    },
+    {
+      "ID": 2539,
+      "QuestLineID": 82,
+      "QuestID": 37468,
+      "OrderIndex": 22
+    },
+    {
+      "ID": 2540,
+      "QuestLineID": 82,
+      "QuestID": 37736,
+      "OrderIndex": 23
+    },
+    {
+      "ID": 2541,
+      "QuestLineID": 82,
+      "QuestID": 37678,
+      "OrderIndex": 24
+    },
+    {
+      "ID": 2542,
+      "QuestLineID": 82,
+      "QuestID": 37518,
+      "OrderIndex": 25
+    },
+    {
+      "ID": 2543,
+      "QuestLineID": 82,
+      "QuestID": 42370,
+      "OrderIndex": 26
+    },
+    {
+      "ID": 2544,
+      "QuestLineID": 82,
+      "QuestID": 42371,
+      "OrderIndex": 27
+    },
+    {
+      "ID": 2545,
+      "QuestLineID": 82,
+      "QuestID": 37729,
+      "OrderIndex": 28
+    },
+    {
+      "ID": 2546,
+      "QuestLineID": 82,
+      "QuestID": 37730,
+      "OrderIndex": 29
+    },
+    {
+      "ID": 2547,
+      "QuestLineID": 82,
+      "QuestID": 37469,
+      "OrderIndex": 30
+    },
+    {
+      "ID": 2548,
+      "QuestLineID": 82,
+      "QuestID": 37530,
+      "OrderIndex": 31
+    },
+    {
+      "ID": 2549,
+      "QuestLineID": 82,
+      "QuestID": 37470,
+      "OrderIndex": 32
+    },
+    {
+      "ID": 2550,
+      "QuestLineID": 82,
+      "QuestID": 38286,
+      "OrderIndex": 33
+    },
+    {
+      "ID": 2551,
+      "QuestLineID": 82,
+      "QuestID": 42213,
+      "OrderIndex": 34
+    },
+    {
+      "ID": 2937,
+      "QuestLineID": 82,
+      "QuestID": 44137,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 2938,
+      "QuestLineID": 82,
+      "QuestID": 44140,
+      "OrderIndex": 7
+    }
+  ],
+  "effects": [
+    {
+      "ID": 256658,
+      "Effect": 28,
+      "EffectBasePoints": 1,
+      "EffectIndex": 0,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 90401,
+      "EffectMiscValue2": 3634,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 46,
+      "ImplicitTarget2": 0,
+      "SpellID": 178711
+    },
+    {
+      "ID": 257106,
+      "Effect": 6,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 4,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 25,
+      "ImplicitTarget2": 0,
+      "SpellID": 178939
+    },
+    {
+      "ID": 257484,
+      "Effect": 6,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 260,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 1093,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 179183
+    },
+    {
+      "ID": 258719,
+      "Effect": 164,
+      "EffectBasePoints": 0,
+      "EffectIndex": 1,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 178708,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 179183
+    },
+    {
+      "ID": 258720,
+      "Effect": 64,
+      "EffectBasePoints": 0,
+      "EffectIndex": 2,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 178329,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 179183
+    }
+  ],
+  "runtime_sha256": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff",
+    "QuestObjective": "2175fe75a6da3adbe3ba64050da8f0b8a558a433a39505c5bee17c42429e4143"
+  },
+  "limitations": "Objective records come from 7.3.5 TDB build 25549, not the incomplete QuestObjective.db2. Recovery entry uses an offset from the existing exit; personal melee encounter and native screen effect do not reconstruct every original combat ability or cinematic."
+}

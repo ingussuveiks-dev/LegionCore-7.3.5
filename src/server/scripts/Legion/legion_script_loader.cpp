@@ -1,4 +1,5 @@
 void AddSC_azsuna();
+void AddSC_azsuna_scythe();
 void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
@@ -178,6 +179,7 @@ void AddSC_MoonkinFestival();
 void AddLegionScripts()
 {
     AddSC_azsuna();
+    AddSC_azsuna_scythe();
     AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();

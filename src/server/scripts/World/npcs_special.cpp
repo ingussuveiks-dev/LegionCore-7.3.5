@@ -5072,99 +5072,6 @@ class npc_nightmare_hitching_post : public CreatureScript
         }
 };
 
-//90401
-class npc_azsuna_allari_q37660 : public CreatureScript
-{
-public:
-    npc_azsuna_allari_q37660() : CreatureScript("npc_azsuna_allari_q37660") {}
-
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
-    {
-        if (player->GetQuestObjectiveData(37660, 90403))
-            return false;
-
-        player->PlayerTalkClass->SendCloseGossip();
-        player->RewardPlayerAndGroupAtEvent(90403, player);
-        creature->AI()->Talk(1);
-
-        return true;
-    }
-
-    struct npc_azsuna_allari_q37660AI : public ScriptedAI
-    {
-        npc_azsuna_allari_q37660AI(Creature* creature) : ScriptedAI(creature)
-        {
-            me->SetReactState(REACT_PASSIVE);
-        }
-
-        void IsSummonedBy(Unit* who) override
-        {
-            who->AddPlayerInPersonnalVisibilityList(who->GetGUID());
-            me->GetMotionMaster()->MovePath(90401, false);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        }
-
-        void MovementInform(uint32 type, uint32 id) override
-        {
-            if (type != WAYPOINT_MOTION_TYPE)
-                return;
-
-            if (id == 2)
-            {
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            }
-        }
-
-        void DoAction(int32 const action) override
-        {
-            switch (action)
-            {
-            case 1:
-                me->AddDelayedEvent(1500, [this] {
-                    if (Creature* firstdemon = me->FindNearestCreature(90402, 60.0f, true))
-                        DoCast(firstdemon, 178939);
-                });
-                me->AddDelayedEvent(4500, [this] {
-                    Talk(2);
-                });
-                break;
-            case 2:
-                me->AddDelayedEvent(1500, [this] {
-                    if (Creature* seconddemon = me->FindNearestCreature(89276, 60.0f, true))
-                        DoCast(seconddemon, 178939);
-                });
-                me->AddDelayedEvent(4500, [this] {
-                    Talk(2);
-                });
-                me->AddDelayedEvent(10000, [this] {
-                    if (Unit* Owner = me->ToTempSummon()->GetSummoner())
-                        if (Player* player = Owner->ToPlayer())
-                            player->RewardPlayerAndGroupAtEvent(89276, player);
-                });
-                me->AddDelayedEvent(15000, [this] {
-                    Talk(5);
-                });
-                me->AddDelayedEvent(20000, [this] {
-                    Talk(6);
-                });
-                me->AddDelayedEvent(25000, [this] {
-                    Talk(7);
-                });
-                me->AddDelayedEvent(30000, [this] {
-                    me->DespawnOrUnsummon(500);
-                });
-                break;
-            }
-        }
-
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_azsuna_allari_q37660AI(creature);
-    }
-};
-
 //107995
 class npc_azsuna_stellagosa_q37862 : public CreatureScript
 {
@@ -7254,7 +7161,6 @@ void AddSC_npcs_special()
     new npc_grimoire_succubus();
     new npc_grimoire_felhunter();
     new npc_grimoire_voidwalker();
-    new npc_azsuna_allari_q37660();
     new npc_azsuna_stellagosa_q37862();
     new npc_revil_kost_following_the_curse();
     new npc_revil_kost_dark_rider();
