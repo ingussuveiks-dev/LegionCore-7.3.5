@@ -98,6 +98,7 @@ class OutdoorPvPAshran : public OutdoorPvP
 
 public:
     OutdoorPvPAshran();
+    ~OutdoorPvPAshran() override;
 
     bool SetupOutdoorPvP() override;
 

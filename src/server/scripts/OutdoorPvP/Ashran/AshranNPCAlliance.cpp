@@ -522,7 +522,7 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+        ZoneScript* l_ZoneScript = creature->GetOutdoorPvP();
         if (l_ZoneScript == nullptr)
             return false;
 
@@ -549,7 +549,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -583,7 +583,7 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+        ZoneScript* l_ZoneScript = creature->GetOutdoorPvP();
         if (l_ZoneScript == nullptr)
             return false;
 
@@ -610,7 +610,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -644,7 +644,7 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+        ZoneScript* l_ZoneScript = creature->GetOutdoorPvP();
         if (l_ZoneScript == nullptr)
             return false;
 
@@ -671,7 +671,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -705,7 +705,7 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+        ZoneScript* l_ZoneScript = creature->GetOutdoorPvP();
         if (l_ZoneScript == nullptr)
             return false;
 
@@ -732,7 +732,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -798,7 +798,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -887,7 +887,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -975,7 +975,7 @@ public:
 
             /// Fangraal no longer scales their health based the number of players he's fighting.
             /// Each faction guardian's health now scales based on the number of enemy players active at the time when they're summoned.
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -1018,7 +1018,7 @@ public:
             if (p_Damage < me->GetHealth())
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -1552,7 +1552,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainAvengerTurley);
         }
 
@@ -1705,7 +1705,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainJacksonBajheera);
         }
 
@@ -1848,7 +1848,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainJohnSwifty);
         }
 
@@ -1966,7 +1966,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainTosanGalaxyfist);
         }
 
@@ -2100,7 +2100,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainBrockTheCrazed);
         }
 
@@ -2264,7 +2264,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainAluneWindmane);
         }
 
@@ -2416,7 +2416,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainChaniMalflame);
         }
 
@@ -2551,7 +2551,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainHildieHackerguard);
         }
 
@@ -2707,7 +2707,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainTaylorDewland);
         }
 
@@ -2828,7 +2828,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainMaldaBrewbelly);
         }
 
@@ -2941,7 +2941,7 @@ public:
 
         void JustDied(Unit* /*killer*/) override
         {
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainShaniFreezewind);
         }
 
@@ -3069,7 +3069,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainAnneOtther);
         }
 
@@ -3223,7 +3223,7 @@ public:
         {
             Talk(Death);
 
-            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetZoneScript()))
+            if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(me->GetOutdoorPvP()))
                 l_Ashran->HandleCaptainDeath(CaptainMathiasZunn);
         }
 
@@ -3371,7 +3371,7 @@ public:
 
         void IncreaseLapCount()
         {
-            OutdoorPvP* l_Outdoor = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            OutdoorPvP* l_Outdoor = me->GetOutdoorPvP();
             if (OutdoorPvPAshran* l_Ashran = static_cast<OutdoorPvPAshran*>(l_Outdoor))
                 l_Ashran->SetEventData(EventStadiumRacing, TEAM_ALLIANCE, 1);
         }

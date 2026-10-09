@@ -3496,6 +3496,18 @@ void Creature::GetRespawnPosition(float &x, float &y, float &z, float* ori, floa
         }
     }
 
+    // Ashran battle actors are instance-owned runtime spawns, without DB rows.
+    if (GetMapId() == 1191 && !isSummon())
+    {
+        Position const& home = GetHomePosition();
+        x = home.GetPositionX();
+        y = home.GetPositionY();
+        z = home.GetPositionZ();
+        if (ori) *ori = home.GetOrientation();
+        if (dist) *dist = 0;
+        return;
+    }
+
     x = GetPositionX();
     y = GetPositionY();
     z = GetPositionZ();

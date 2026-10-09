@@ -8,6 +8,29 @@
 
 #include "AshranMgr.hpp"
 
+namespace
+{
+    constexpr uint32 LeaveAshranAction = GOSSIP_ACTION_INFO_DEF + 1191;
+    bool ShowAshranExit(Player* player, Creature* creature)
+    {
+        if (player->GetMapId() != AshranMapID) return false;
+        player->PrepareGossipMenu(creature, creature->GetCreatureTemplate()->GossipMenuId, true);
+        player->ADD_GOSSIP_ITEM(GossipOptionNpc::None, "Leave Ashran.", GOSSIP_SENDER_MAIN, LeaveAshranAction);
+        player->SendPreparedGossip(creature);
+        return true;
+    }
+    bool LeaveAshran(Player* player, uint32 sender, uint32 action)
+    {
+        if (sender != GOSSIP_SENDER_MAIN || action != LeaveAshranAction) return false;
+        player->CLOSE_GOSSIP_MENU();
+        if (player->GetMapId() == AshranMapID && player->IsAlive() && !player->isInCombat())
+            player->SafeTeleport(WorldLocation(AshranNeutralMapID,
+                player->GetTeamId() == TEAM_HORDE ? g_HordeTeleportPos : g_AllianceTeleportPos));
+        return true;
+    }
+}
+
+
 /// Commander Anne Dunworthy - 84173
 class npc_ashran_commander_anne_dunworthy : public CreatureScript
 {
@@ -81,13 +104,18 @@ public:
         ChrisClarkie = 84257
     };
 
-    bool OnGossipHello(Player* player, Creature* /*creature*/) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (player->GetQuestStatus(ReportingForDuty) == QUEST_STATUS_INCOMPLETE)
             player->KilledMonsterCredit(ChrisClarkie);
 
-        return false;
+        return ShowAshranExit(player, creature);
     }
+    bool OnGossipSelect(Player* player, Creature*, uint32 sender, uint32 action) override
+    {
+        return LeaveAshran(player, sender, action);
+    }
+
 };
 
 /// Harrison Jones - 84223
@@ -120,7 +148,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -182,7 +210,7 @@ public:
             if (p_Action)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
@@ -226,13 +254,18 @@ public:
         AngryZurge = 84659
     };
 
-    bool OnGossipHello(Player* player, Creature* /*creature*/) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (player->GetQuestStatus(ReportingForDuty) == QUEST_STATUS_INCOMPLETE)
             player->KilledMonsterCredit(AngryZurge);
 
-        return false;
+        return ShowAshranExit(player, creature);
     }
+    bool OnGossipSelect(Player* player, Creature*, uint32 sender, uint32 action) override
+    {
+        return LeaveAshran(player, sender, action);
+    }
+
 };
 
 /// Mare Wildrunner <Warspear Farseer> - 84660

@@ -608,6 +608,8 @@ uint8 OPvPCapturePoint_Graveyard::GetGraveyardState() const
 
 OutdoorPvPAshran::OutdoorPvPAshran()
 {
+    m_GraveYard = nullptr;
+    std::fill(std::begin(m_ControlPoints), std::end(m_ControlPoints), nullptr);
     m_TypeId = OUTDOOR_PVP_ASHRAN;
     m_WorldPvPAreaId = AshranPvPAreaID;
     m_InitPointsTimer = 0;
@@ -651,12 +653,13 @@ OutdoorPvPAshran::OutdoorPvPAshran()
         m_AshranEventsLaunched[l_Index] = false;
     }
 
-    AddCreature(AllianceFactionBoss, g_FactionBossesSpawn[0], 5 * MINUTE);
-    AddCreature(AllianceMarshalKarshStormforge, g_FactionBossesGuardians[0], 5 * MINUTE);
-    AddCreature(AllianceMarshalGabriel, g_FactionBossesGuardians[1], 5 * MINUTE);
-    AddCreature(HordeFactionBoss, g_FactionBossesSpawn[3], 5 * MINUTE);
-    AddCreature(HordeGeneralAevd, g_FactionBossesGuardians[6], 5 * MINUTE);
-    AddCreature(HordeWarlordNoktyn, g_FactionBossesGuardians[7], 5 * MINUTE);
+
+}
+
+OutdoorPvPAshran::~OutdoorPvPAshran()
+{
+    for (auto graveyard : m_GraveyardList) delete graveyard;
+    m_GraveyardList.clear();
 }
 
 bool OutdoorPvPAshran::SetupOutdoorPvP()
@@ -693,7 +696,7 @@ void OutdoorPvPAshran::Initialize(uint32 zone)
 
         AddCapturePoint(m_ControlPoints[i]);
 
-        TC_LOG_ERROR("misc", "OutdoorPvPAshran: SetupOutdoorPvP:: AddCapturePoint %u", i);
+        TC_LOG_DEBUG("outdoorpvp", "OutdoorPvPAshran: AddCapturePoint %u", i);
     }
 
     m_GraveYard = new OPvPCapturePoint_Graveyard(this);
@@ -712,6 +715,13 @@ void OutdoorPvPAshran::Initialize(uint32 zone)
         AddCreature(AllianceBaseSpiritHealer + l_TeamID, g_BasesSpiritHealers[l_TeamID]);
         //AddAreaTrigger(g_HallowedGroundEntries[l_TeamID], 1, AshranHallowedGroundID, g_HallowedGroundPos[l_TeamID], 0, sMapMgr->CreateBaseMap(AshranMapID));
     }
+
+    AddCreature(AllianceFactionBoss, g_FactionBossesSpawn[0], 5 * MINUTE);
+    AddCreature(AllianceMarshalKarshStormforge, g_FactionBossesGuardians[0], 5 * MINUTE);
+    AddCreature(AllianceMarshalGabriel, g_FactionBossesGuardians[1], 5 * MINUTE);
+    AddCreature(HordeFactionBoss, g_FactionBossesSpawn[3], 5 * MINUTE);
+    AddCreature(HordeGeneralAevd, g_FactionBossesGuardians[6], 5 * MINUTE);
+    AddCreature(HordeWarlordNoktyn, g_FactionBossesGuardians[7], 5 * MINUTE);
 
     AddCreature(AllianceGuardian, g_AllianceGuardian);
     AddCreature(HordeGuardian, g_HordeGuardian);
@@ -749,7 +759,7 @@ void OutdoorPvPAshran::HandlePlayerEnterMap(ObjectGuid guid, uint32 zoneID)
 
     if (!m_IsInitialized && !m_InitPointsTimer)
     {
-        player->GetMap()->LoadAllGrids(3700.0f, 5100.0f, -5050.0f, -3510.0f, player);
+        // Capture points and dynamic actors already belong to this instance.
         m_InitPointsTimer = 2000;
     }
 
@@ -782,6 +792,8 @@ void OutdoorPvPAshran::HandlePlayerLeaveMap(ObjectGuid guid, uint32 mapID)
             m_players[player->GetTeamId()].erase(itrSet);
     }
 
+    OutdoorPvP::HandlePlayerLeaveZone(guid, AshranZoneID);
+
     SendRemoveWorldStates(player);
 
     player->RemoveAura(SpellLootable);
@@ -808,10 +820,12 @@ void OutdoorPvPAshran::HandlePlayerEnterArea(ObjectGuid guid, uint32 areaID)
     if (areaID == AshranPreAreaHorde || areaID == AshranPreAreaAlliance)
     {
         ObjectGuid guid = player->GetGUID();
-        player->AddDelayedEvent(Seconds(5).count(), [guid]() -> void
+        player->AddDelayedEvent(5 * IN_MILLISECONDS, [guid]() -> void
         {
             if (auto player2 = sObjectAccessor->FindPlayer(guid))
-                player2->SafeTeleport(AshranNeutralMapID, player2);
+                if (player2->GetMapId() == AshranMapID &&
+                    (player2->GetAreaId() == AshranPreAreaHorde || player2->GetAreaId() == AshranPreAreaAlliance))
+                    player2->SafeTeleport(AshranNeutralMapID, player2);
         });
     }
 
@@ -1738,7 +1752,7 @@ void OutdoorPvPAshran::OnCreatureCreate(Creature* creature)
         {
             TeamId l_TeamID = creature->GetEntry() == HordeSpiritGuide ? TEAM_HORDE : TEAM_ALLIANCE;
             uint8 l_GraveyardID = GetSpiritGraveyardID(creature->GetAreaId(), l_TeamID);
-            if (m_GraveyardList[l_GraveyardID])
+            if (l_GraveyardID < m_GraveyardList.size() && m_GraveyardList[l_GraveyardID])
                 m_GraveyardList[l_GraveyardID]->SetSpirit(creature, l_TeamID);
             break;
         }
@@ -1806,10 +1820,12 @@ void OutdoorPvPAshran::OnCreatureRemove(Creature* creature)
             RemoveVignetteOnPlayers(VignetteKronus, TEAM_HORDE);
             break;
         case HighWarlordVolrath:
-            DelCreature(SLGGenericMoPLargeAoI + TEAM_HORDE);
+            if (creature->GetGUID() == m_HighWarlordVolrath)
+                DelCreature(SLGGenericMoPLargeAoI + TEAM_HORDE);
             break;
         case GrandMarshalTremblade:
-            DelCreature(SLGGenericMoPLargeAoI + TEAM_ALLIANCE);
+            if (creature->GetGUID() == m_GrandMasrhalTremblade)
+                DelCreature(SLGGenericMoPLargeAoI + TEAM_ALLIANCE);
             break;
         default:
             break;
@@ -2475,7 +2491,9 @@ public:
     }
 };
 
+void AddSC_instance_ashran();
+
 void AddSC_AshranMgr()
 {
-    //new OutdoorPvP_Ashran();
+    AddSC_instance_ashran();
 }

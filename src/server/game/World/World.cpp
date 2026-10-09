@@ -3870,6 +3870,16 @@ void World::SetPlayerSecurityLimit(AccountTypes _sec)
 
 void World::ResetWeekly()
 {
+    // Also expire offline Ashran Dominance logs. Online logs are removed by
+    // Player::ResetWeeklyQuestStatus before their next character save.
+    for (uint32 questId : {38923u, 38925u})
+        if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
+            if (quest->IsWeekly() && quest->HasFlagEx(QUEST_FLAGS_EX_REMOVE_QUEST_ON_WEEKLY_RESET))
+            {
+                CharacterDatabase.PExecute("DELETE FROM character_queststatus WHERE quest = %u", questId);
+                CharacterDatabase.PExecute("DELETE FROM character_queststatus_objectives WHERE quest = %u", questId);
+            }
+
     CharacterDatabase.Execute(CharacterDatabase.GetPreparedStatement(CHAR_DEL_QUEST_STATUS_WEEKLY));
     CharacterDatabase.Execute(CharacterDatabase.GetPreparedStatement(CHAR_UPD_WEEKLY_BRACKET));
 

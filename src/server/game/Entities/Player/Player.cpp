@@ -7482,9 +7482,9 @@ void Player::RepopAtGraveyard(bool outInstance /*= false*/)
 
         if (Battlefield* bf = sBattlefieldMgr->GetBattlefieldToZoneId(GetCurrentZoneID()))
             ClosestGrave = bf->GetClosestGraveYard(this);
-        else if (sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentZoneID()) != nullptr && sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentZoneID())->GetClosestGraveyard(this) != nullptr)
+        else if (GetOutdoorPvP() != nullptr && GetOutdoorPvP()->GetClosestGraveyard(this) != nullptr)
         {
-            if (OutdoorPvP* outdoorPvP = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentZoneID()))
+            if (OutdoorPvP* outdoorPvP = GetOutdoorPvP())
                 ClosestGrave = outdoorPvP->GetClosestGraveyard(this);
         }
         else
@@ -10376,6 +10376,9 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
             break;
     }
 
+    if (GetMapId() == 1191)
+        pvpInfo.inHostileArea = true;
+
     if (zone->Flags[0] & AREA_FLAG_CAPITAL)                     // Is in a capital city
     {
         if (!pvpInfo.inHostileArea || zone->IsSanctuary())
@@ -12046,7 +12049,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
 
         loot = &personalLoot[guid];
 
-        if (auto outdoorPvP = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentZoneID()))
+        if (auto outdoorPvP = GetOutdoorPvP())
             if (outdoorPvP->GetTypeId() == OutdoorPvPTypes::OUTDOOR_PVP_ASHRAN)
                 outdoorPvP->FillCustomPvPLoots(this, *loot, bones->GetOwnerGUID());
 
@@ -19187,9 +19190,22 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
         {
             if (CriteriaTree const* tree = sAchievementMgr->GetCriteriaTree(obj.ObjectID))
             {
-                for (CriteriaTree const* node : tree->Children)
-                    if (node->Criteria && node->Criteria->Entry && (node->Criteria->Entry->Flags & CRITERIA_FLAG_RESET_ON_START))
-                        m_achievementMgr->RemoveCriteriaProgress(node);
+                if ((quest_id == 38923 || quest_id == 38925) &&
+                    quest->HasFlagEx(QUEST_FLAGS_EX_CLEAR_PROGRESS_OF_CRITERIA_TREE_OBJECTIVES_ON_ACCEPT))
+                {
+                    std::function<void(CriteriaTree const*)> clear = [&](CriteriaTree const* node)
+                    {
+                        for (auto child : node->Children) clear(child);
+                        if (node->Criteria) m_achievementMgr->RemoveCriteriaProgress(node);
+                    };
+                    clear(tree);
+                }
+                else
+                {
+                    for (CriteriaTree const* node : tree->Children)
+                        if (node->Criteria && node->Criteria->Entry && (node->Criteria->Entry->Flags & CRITERIA_FLAG_RESET_ON_START))
+                            m_achievementMgr->RemoveCriteriaProgress(node);
+                }
 
                 if (m_achievementMgr->IsCompletedCriteriaTree(tree))
                     AddDelayedEvent(2000, [this, obj]() -> void { AchieveCriteriaCredit(obj.ObjectID); });
@@ -20824,6 +20840,10 @@ void Player::KilledPlayerCredit()
 
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)
+            continue;
+
+        // These Ashran objectives must not advance from kills in another map.
+        if ((questid == 39090 || questid == 39096) && GetMapId() != 1191)
             continue;
 
         // This flag is only used for performance optimisation to prevent iterating over all quests
@@ -30677,6 +30697,20 @@ void Player::DailyReset()
 
 void Player::ResetWeeklyQuestStatus()
 {
+    // Dominance expires at the reset; Slay Them All carries unfinished kills.
+    // Do this even when the player has not rewarded any weekly quest yet.
+    for (uint32 questId : {38923u, 38925u})
+        if (Quest const* quest = sQuestDataStore->GetQuestTemplate(questId))
+            if (quest->IsWeekly() && quest->HasFlagEx(QUEST_FLAGS_EX_REMOVE_QUEST_ON_WEEKLY_RESET))
+            {
+                uint16 slot = FindQuestSlot(questId);
+                if (slot < MAX_QUEST_LOG_SIZE)
+                {
+                    SetQuestSlot(slot, 0);
+                    RemoveActiveQuest(questId);
+                }
+            }
+
     if (m_weeklyquests.empty())
         return;
 
@@ -36090,6 +36124,9 @@ void Player::SetSummonPoint(uint32 mapid, float x, float y, float z)
 
 Difficulty Player::GetDifficultyID(MapEntry const* mapEntry) const
 {
+    if (mapEntry->ID == 1191)
+        return DIFFICULTY_PVEVP_SCENARIO;
+
     if (m_scenarioId)
         if (lfg::LFGDungeonData const* data = sLFGMgr->GetLFGDungeon(m_scenarioId, (uint16)mapEntry->ID))
             return (Difficulty)data->dbc->DifficultyID;

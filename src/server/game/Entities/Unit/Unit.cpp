@@ -19267,6 +19267,11 @@ void Unit::SetContestedPvP(Player* attackedPlayer /*= nullptr*/, bool forceByAur
 
 OutdoorPvP* Unit::GetOutdoorPvP() const
 {
+    // Ashran owns its controller in the actual battle instance, not the base map.
+    if (GetMapId() == 1191 && GetMap() && GetMap()->OutdoorPvPList)
+        for (OutdoorPvP* pvp : *GetMap()->OutdoorPvPList)
+            if (pvp && pvp->GetTypeId() == OUTDOOR_PVP_ASHRAN && pvp->GetMap() == GetMap())
+                return pvp;
     if (OutdoorPvP* pvp = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentZoneID()))
         return pvp;
     if (OutdoorPvP* pvp = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(GetCurrentAreaID()))

@@ -1,5 +1,11 @@
 # Follow-up: correct identities and links for the eleven quest candidates
 
+Current follow-up status: Ashran instance/quest lifecycle and Karazhan travel plus
+44557/44683/44684 interactions are implemented and covered by the verification
+below. Earlier investigation snapshots are retained for provenance. Full client
+playthrough and visuals are still unverified; historical 44944 is not re-enabled.
+
+
 ## Confirmed correction
 
 **34314 Out of the Chains -> 34315 Gearing Up -> 34316 Seeking the Truth.**
@@ -42,8 +48,8 @@ playthrough and the successor's appearance are not verified.
 | 36164 | Previous quest **36163** | Root 36163 is disabled locally. |
 | 36167 | Previous quest **36163** | Same root. |
 | 36168 | Rewarded-quest condition **36163** | Same root; these three trials are parallel, not consecutive. |
-| 38923 | Horde **Ashran Dominance**, level 110 | Self-prerequisite and missing acquisition/event-credit implementation remain unresolved. |
-| 39090 | **Slay Them All!**, level 110 | Self-prerequisite and missing acquisition/reset behavior remain unresolved. |
+| 38923 | Horde **Ashran Dominance**, level 110 | Resolved by the instance/quest follow-up below; client playthrough pending. |
+| 39090 | **Slay Them All!**, level 110 | Resolved by the acquisition/reset follow-up below; client playthrough pending. |
 | 44556 | Original predecessor **44944 Aura of Uncertainty** | Disabled/obsolete attunement branch; no proven replacement established. |
 
 ### Seismic Matters: the existing IDs are real
@@ -267,35 +273,98 @@ inside the existing quest POIs and use runtime terrain height.
   used as a guessed substitute. The full retail trial mechanics and audience
   presentation are not reproduced by these recovery encounters.
 
-### Ashran: corrected handlers, still not an operational battle
+### Ashran: instance lifecycle and quest progression restored
 
-The source now uses native battle zone **8485**. Racing resets clear both lap
-counters, and only the winning lap awards 95099 to the winning team's registered
-participants in stadium area 7279. Reset/cancellation, losing players, other areas,
-other maps and repeated callbacks do not award it. Existing faction-leader and PvP
-kill-credit paths are not duplicated.
+The follow-up attaches the existing controller to the actual **1191 / difficulty
+25** InstanceMap, with native battle zone **8485** and minimum level **110**.
+Walk-in entry from neutral Ashran joins one shared instance across factions and
+groups. Login, world states, resurrection, kill callbacks, captains, spells and
+artifact interactions resolve that instance's controller. Chris Clarkie and Angry
+Zurge retain their quest menus and offer an explicit return to the faction's
+neutral-map entrance.
 
-**Ashran remains unfinished and is not enabled.** Native map 1191 is an instanced
-scenario. The old controller expects one world map: registering it would attach
-it to the base map, while players enter separate InstanceMaps. Its dynamic spawn
-helpers likewise insert world spawn data instead of maintaining per-instance
-encounters. It also lacks complete acquisition/reset behavior for 38923/39090.
-Resolving those issues requires an instance-aware battle lifecycle and an actual
-multi-player entry/exit test; changing a zone number or inserting one DB row does
-not make these quests playable. No speculative activation was deployed.
+Runtime spawns belong to the instance. Existing static copies of controller-owned
+actors are suppressed; unrelated questgivers remain. Controller teardown does not
+dereference capture-point objects already destroyed by grid unloading. Dead,
+invisible, stealthed and GM players cannot capture points. Ashran sets PvP state
+on PvE realms as well, and runtime actors respawn at their home positions.
 
-### Karazhan 44556
+The original faction quests **38923/38925** and **39090/39096** are offered on
+entry, respecting level, existing quest status, weekly rewards and available log
+space. Impossible self prerequisites are removed. Dominance expires at weekly
+reset for online and offline characters and clears its leader criterion on
+acceptance; unfinished Slay Them All carries over and counts kills only in Ashran.
+No entry, timer, spawn or cancellation grants quest credit.
 
-No replacement predecessor was found. The native storyline still identifies
-44944, while current [Wowhead](https://www.wowhead.com/quest=44556/return-to-karazhan)
-marks the old attunement quest obsolete. A [contemporary September 2017 report](https://www.wowhead.com/forever/news/legion-attunement-tracker-updated-for-7-3-requirements-271427)
-records that the attunement changed, but does not prove an exact replacement ID.
-[Blizzard's 7.3 notes](https://worldofwarcraft.blizzard.com/en-us/news/20947822/world-of-warcraft-73-patch-notes)
-do not resolve that ID question. The existing independent continuation quests and
-ungated map-1651 access remain intact. The historical quest was not re-enabled
-with an invented prerequisite or auto-completion workaround.
+The supported event path remains the existing **stadium race**, alongside the
+existing Korlok event. Four actual race wins can satisfy the four-event objective;
+this change does not claim implementations of the other retail side events or
+retail queue/matchmaking. Winning-team participants must be in stadium area 7279.
+The faction-leader criterion still uses the original boss kill-credit path.
+[Blizzard's Ashran preview](https://worldofwarcraft.blizzard.com/en-gb/news/19366714/62-preview-ashran-updates)
+identifies Dominance as weekly; the later objective amount is taken from this
+server's 7.3.5 quest records, not the preview's earlier five-event requirement.
+
+### Karazhan: native travel and executable continuation
+
+Native portal **266290**, spell **230118**, and the existing map-0 destination
+restore travel from Khadgar in Dalaran to Karazhan. Travel requires level 110.
+Existing 44556 logs can use the original portal and turn in outside the tower;
+its optional activation credit is only added after arrival. The historical
+44944 predecessor is preserved. The old attunement is not re-enabled with a made-up
+replacement. Fresh characters can reach the existing independent continuation and
+ungated map-1651 entrance through the portal.
+
+- **44557 Finite Numbers:** four native portal actors **115414** are restored near
+  the four existing Eredar Portal-Keepers. Native **229466** awards **115415** only
+  after a valid interaction; the actor becomes unavailable until respawn. Existing
+  demons already provide the separate **114313** kill credit.
+- **44683 Holding the Lines:** native Fel Spreaders **115027/115037** use
+  **228208/231458** and native credits **114613/114622**. Range, live actor, quest,
+  map and duplicate-interaction checks prevent credit from invalid casts.
+- **44684 Corruption Runs Deep:** the original item **141878** invokes **228271**.
+  Its native nearby-target radius is **10 yards**. The missing soil marker is
+  restored and the existing water markers are used. Credit follows an actual item
+  cast near the corresponding sample; completed sample objectives are skipped.
+
+Node positions are **recovery placements**, using existing cellar actor positions
+inside the original quest POIs; they are not represented as recovered retail
+spawn coordinates. The dungeon encounters and Khadgar's existing SmartAI are
+unchanged. [Finite Numbers](https://www.wowhead.com/quest=44557/finite-numbers),
+[Holding the Lines](https://www.wowhead.com/quest=44683/holding-the-lines) and
+[Corruption Runs Deep](https://www.wowhead.com/quest=44684/corruption-runs-deep)
+corroborate the cellar objectives; the actual spell/credit mappings are checked
+against extracted 7.3.5 DB2. Neither the current obsolete label on
+[44556](https://www.wowhead.com/quest=44556/return-to-karazhan) nor the
+[September 2017 attunement report](https://www.wowhead.com/forever/news/legion-attunement-tracker-updated-for-7-3-requirements-271427)
+is treated as proof of a replacement predecessor.
 
 ### Verification
+
+- `Test-AshranLifecycle.ps1`: compiles actual instance registration, entry, shared
+  instance selection, weekly-reset and quest-acquisition handlers. Includes
+  reentry, opposing factions, full quest logs, expired instances and static versus
+  dynamic spawn filtering.
+- `Test-KarazhanEvents.ps1`: compiles actual item/node/arrival handlers and script
+  registration; tests missing quests, range, wrong map/actor, interrupted casts,
+  duplicate interactions and no credit before arrival.
+- `Test-AshranKarazhanData.ps1`: executes migrations 06/07 twice in isolated
+  tables; checks restored actors, native click spells, weekly flags, the original
+  44944 predecessor and preservation of unrelated/custom records.
+- `Test-AshranKarazhanNative.py`: checks native map/difficulty/level, item effects,
+  target radius, teleport and credit mappings. Evidence and input hashes are in
+  `ashran-karazhan-native-2026-10-09.json`.
+- `AshranRuntimeProbe.inc`: optional validation-build integration probe, included
+  after `instance_ashran` and registered from `AddSC_instance_ashran` only while
+  testing. The real server created the real instance, initialized capture points,
+  verified unique faction bosses and instance ownership, restarted the racing
+  event, removed its old actors, then unloaded grids and destroyed the controller.
+  All stages passed on 2026-10-09 at 19:25:45. The probe is absent from the final
+  runtime registration. This found and fixed a dangling capture-point pointer
+  during teardown; startup also caught and fixed spell-registration access before
+  a cast exists.
+- Warlock/mover and pet lookup regression tests pass; the custom boost, flight,
+  scenario criteria and pet code were not changed.
 
 - `Test-CampaignEvents.ps1`: compiles extracted production gate, ritual,
   purification, wave, travel and council handlers; tests ordering, ownership,

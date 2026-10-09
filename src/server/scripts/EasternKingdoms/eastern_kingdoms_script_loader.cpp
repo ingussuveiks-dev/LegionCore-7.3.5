@@ -262,8 +262,11 @@ void AddSC_wetlands();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
+void AddSC_karazhan_campaign();
+
 void AddEasternKingdomsScripts()
 {
+    AddSC_karazhan_campaign();
     AddSC_alterac_valley();                 // Alterac Valley
     AddSC_boss_balinda();
     AddSC_boss_drekthar();

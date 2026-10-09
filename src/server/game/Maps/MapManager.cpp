@@ -170,7 +170,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
 
     // The Legion introduction can be resumed while its quest is unfinished.
     // Keep the login restriction for other scenarios and completed introductions.
-    if (loginCheck && entry->IsScenario())
+    if (loginCheck && entry->IsScenario() && mapid != 1191)
     {
         uint32 introQuest = player->GetTeam() == ALLIANCE ? 42740 : 40518;
         if (mapid != 1460 || player->GetQuestStatus(introQuest) != QUEST_STATUS_INCOMPLETE)

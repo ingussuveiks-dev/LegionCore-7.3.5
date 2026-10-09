@@ -41,7 +41,7 @@ enum eAshranDatas
     MaxStadiumRacingLaps        = 3,
 
     /// Misc
-    PlayerMinLevel              = 100,
+    PlayerMinLevel              = 110,
     AshranGenericMobTypeID      = 68553,
     TaxiPathBaseHordeToAlliance = 4665,
     TaxiPathBaseAllianceToHorde = 4666,

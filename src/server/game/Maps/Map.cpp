@@ -1365,7 +1365,13 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
     sOutdoorPvPMgr->HandlePlayerLeaveMap(player->GetGUID(), player->GetCurrentZoneID());
 
     if (InstanceScript* data_s = player->GetInstanceScript())
+    {
+        // Ashran keeps capture-point participant pointers; detach while the
+        // player is still in the map, including ordinary teleports and logout.
+        if (GetId() == 1191)
+            data_s->OnPlayerLeave(player);
         data_s->OnPlayerLeaveForScript(player);
+    }
 
     player->RemoveFromWorld();
     if (!remove)

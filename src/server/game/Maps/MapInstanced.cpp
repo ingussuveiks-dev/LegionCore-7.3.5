@@ -253,6 +253,17 @@ Map* MapInstanced::CreateInstanceForPlayer(const uint32 mapId, Player* player)
     Map* map = nullptr;
     uint32 newInstanceId = 0;                       // instanceId of the resulting map
 
+    // Ashran is a public PvPvE battle: faction/group instance binds must not
+    // split opponents into private copies. Keep its native map/difficulty.
+    if (mapId == 1191)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_lock);
+        for (auto const& pair : m_InstancedMaps)
+            if (pair.second && !pair.second->IsMapUnload())
+                return pair.second;
+        return CreateInstance(sMapMgr->GenerateInstanceId(), nullptr, DIFFICULTY_PVEVP_SCENARIO);
+    }
+
     if (IsBattlegroundOrArena())
     {
         // instantiate or find existing bg map for player

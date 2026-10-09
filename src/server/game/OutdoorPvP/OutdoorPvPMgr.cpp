@@ -234,6 +234,10 @@ ZoneScript* OutdoorPvPMgr::GetZoneScript(uint32 zoneId)
 
 bool OutdoorPvPMgr::HandleOpenGo(Player* player, ObjectGuid guid)
 {
+    if (player->GetMapId() == 1191)
+        if (OutdoorPvP* pvp = player->GetOutdoorPvP())
+            return pvp->HandleOpenGo(player, guid);
+
     for (OutdoorPvPSet::iterator itr = m_OutdoorPvPSet.begin(); itr != m_OutdoorPvPSet.end(); ++itr)
     {
         if ((*itr)->HandleOpenGo(player, guid))

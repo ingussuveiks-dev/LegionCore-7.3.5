@@ -29,6 +29,36 @@
 #include "ObjectVisitors.hpp"
 #include "BattlegroundPackets.h"
 
+namespace
+{
+    bool IsAshranInstance(Map* map)
+    {
+        return map && map->GetId() == 1191 && map->GetInstanceId() != 0;
+    }
+
+    bool IsActiveCapturePlayer(Player* player)
+    {
+        if (!player->IsOutdoorPvPActive()) return false;
+        return player->GetMapId() != 1191 || (player->IsAlive() && !player->isGameMaster() &&
+            !player->HasInvisibilityAura() && !player->HasStealthAura() && !player->isInFlight());
+    }
+
+    Creature* CreateInstanceOutdoorCreature(Map* map, uint32 entry, uint32 team,
+        float x, float y, float z, float o, uint32 respawn)
+    {
+        Creature* creature = new Creature();
+        if (!creature->Create(sObjectMgr->GetGenerator<HighGuid::Creature>()->Generate(),
+            map, PHASEMASK_NORMAL, entry, 0, team, x, y, z, o))
+        { delete creature; return nullptr; }
+        creature->SetHomePosition(x, y, z, o);
+        creature->SetRespawnDelay(respawn ? respawn : 300);
+        creature->setActive(true);
+        if (!map->AddToMap(creature))
+        { delete creature; return nullptr; }
+        return creature;
+    }
+}
+
 OPvPCapturePoint::OPvPCapturePoint(OutdoorPvP* pvp) : m_capturePoint(nullptr), m_maxValue(0.0f), m_minValue(0.0f), m_maxSpeed(0),
 m_value(0), m_team(TEAM_NEUTRAL), m_OldState(OBJECTIVESTATE_NEUTRAL),
 m_State(OBJECTIVESTATE_NEUTRAL), m_neutralValuePct(0), m_PvP(pvp)
@@ -106,6 +136,13 @@ bool OPvPCapturePoint::SetCapturePointData(go_type data)
 
 bool OPvPCapturePoint::AddObject(uint32 type, uint32 entry, uint32 map, float x, float y, float z, float o, float rotation0, float rotation1, float rotation2, float rotation3)
 {
+    if (IsAshranInstance(m_PvP->GetMap()))
+    {
+        if (GameObject* go = m_PvP->GetMap()->SummonGameObject(entry, x, y, z, o, rotation0, rotation1, rotation2, rotation3, 0))
+        { m_Objects[type] = go->GetGUID(); m_ObjectTypes[go->GetGUID()] = type; return true; }
+        return false;
+    }
+
     if (ObjectGuid::LowType guid = sObjectMgr->AddGOData(entry, map, x, y, z, o, 0, rotation0, rotation1, rotation2, rotation3))
     {
         AddGO(type, guid, entry);
@@ -122,6 +159,13 @@ bool OPvPCapturePoint::AddCreature(uint32 p_Type, creature_type data, uint32 p_S
 
 bool OPvPCapturePoint::AddCreature(uint32 type, uint32 entry, uint32 team, uint32 map, float x, float y, float z, float o, uint32 spawntimedelay)
 {
+    if (IsAshranInstance(m_PvP->GetMap()))
+    {
+        if (Creature* creature = CreateInstanceOutdoorCreature(m_PvP->GetMap(), entry, team, x, y, z, o, spawntimedelay))
+        { m_Creatures[type] = creature->GetGUID(); m_CreatureTypes[creature->GetGUID()] = type; return true; }
+        return false;
+    }
+
     if (ObjectGuid::LowType guid = sObjectMgr->AddCreData(entry, team, map, x, y, z, o, spawntimedelay))
     {
         AddCre(type, guid, entry);
@@ -141,7 +185,14 @@ bool OPvPCapturePoint::SetCapturePointData(uint32 entry, uint32 map, float x, fl
         return false;
     }
 
-    m_capturePointGUID = ObjectGuid::Create<HighGuid::GameObject>(map, entry, sObjectMgr->AddGOData(entry, map, x, y, z, o, 0, rotation0, rotation1, rotation2, rotation3));
+    if (IsAshranInstance(m_PvP->GetMap()))
+    {
+        m_capturePoint = m_PvP->GetMap()->SummonGameObject(entry, x, y, z, o, rotation0, rotation1, rotation2, rotation3, 0);
+        if (!m_capturePoint) return false;
+        m_capturePointGUID = m_capturePoint->GetGUID();
+    }
+    else
+        m_capturePointGUID = ObjectGuid::Create<HighGuid::GameObject>(map, entry, sObjectMgr->AddGOData(entry, map, x, y, z, o, 0, rotation0, rotation1, rotation2, rotation3));
     if (!m_capturePointGUID)
     {
         TC_LOG_TRACE("misc", "OPvPCapturePoint::SetCapturePointData  - NOT CREATEDCreating capture point %u", entry);
@@ -175,6 +226,16 @@ bool OPvPCapturePoint::AddObject(uint32 p_Type, go_type data)
 
 bool OPvPCapturePoint::DelCreature(uint32 type)
 {
+    if (IsAshranInstance(m_PvP->GetMap()))
+    {
+        ObjectGuid guid = m_Creatures[type];
+        m_Creatures[type].Clear();
+        m_CreatureTypes.erase(guid);
+        if (auto object = m_PvP->GetMap()->GetCreature(guid))
+        { object->AddObjectToRemoveList(); return true; }
+        return false;
+    }
+
     if (!m_Creatures[type])
     {
         TC_LOG_TRACE("misc", "opvp creature type %u was already deleted", type);
@@ -214,6 +275,17 @@ bool OPvPCapturePoint::DelCreature(uint32 type)
 
 bool OPvPCapturePoint::DelObject(uint32 type)
 {
+    if (IsAshranInstance(m_PvP->GetMap()))
+    {
+        ObjectGuid guid = m_Objects[type];
+        m_Objects[type].Clear();
+        m_ObjectTypes.erase(guid);
+        if (m_PvP->GetMap()->IsMapUnload()) return true;
+        if (auto object = m_PvP->GetMap()->GetGameObject(guid))
+        { object->Delete(); return true; }
+        return false;
+    }
+
     if (!m_Objects[type])
         return false;
 
@@ -234,7 +306,17 @@ bool OPvPCapturePoint::DelObject(uint32 type)
 
 bool OPvPCapturePoint::DelCapturePoint()
 {
-    sObjectMgr->DeleteGOData(m_capturePointGUID.GetCounter());
+    // Map unloading suppresses GO removal callbacks. The grid has already
+    // destroyed this object by the time the instance controller is destroyed.
+    if (IsAshranInstance(m_PvP->GetMap()) && m_PvP->GetMap()->IsMapUnload())
+    {
+        m_capturePoint = nullptr;
+        m_capturePointGUID.Clear();
+        return true;
+    }
+
+    if (!IsAshranInstance(m_PvP->GetMap()))
+        sObjectMgr->DeleteGOData(m_capturePointGUID.GetCounter());
     m_capturePointGUID = ObjectGuid::Empty;
 
     if (m_capturePoint)
@@ -357,7 +439,7 @@ bool OPvPCapturePoint::Update(uint32 diff)
         {
             Player* player = *itr;
             ++itr;
-            if (!m_capturePoint->IsWithinDistInMap(player, radius) || !player->IsOutdoorPvPActive())
+            if (!m_capturePoint->IsWithinDistInMap(player, radius) || !IsActiveCapturePlayer(player))
                 HandlePlayerLeave(player);
         }
     }
@@ -369,7 +451,7 @@ bool OPvPCapturePoint::Update(uint32 diff)
 
     for (std::list<Player*>::iterator itr = players.begin(); itr != players.end(); ++itr)
     {
-        if ((*itr)->IsOutdoorPvPActive() && (*itr)->GetTeamId() != TEAM_NEUTRAL)
+        if (IsActiveCapturePlayer(*itr) && (*itr)->GetTeamId() != TEAM_NEUTRAL)
         {
             if (m_activePlayers[(*itr)->GetTeamId()].insert(*itr).second)
                 HandlePlayerEnter(*itr);
@@ -716,6 +798,13 @@ bool OutdoorPvP::AddCreature(uint32 p_Type, creature_type data, uint32 p_SpawnTi
 
 bool OutdoorPvP::AddCreature(uint32 type, uint32 entry, uint32 team, uint32 mapID, float x, float y, float z, float o, uint32 p_SpawnTime /*= 0*/)
 {
+    if (IsAshranInstance(m_map))
+    {
+        if (Creature* creature = CreateInstanceOutdoorCreature(m_map, entry, team, x, y, z, o, p_SpawnTime))
+        { m_Creatures[type] = creature->GetGUID(); m_CreatureTypes[creature->GetGUID()] = type; return true; }
+        return false;
+    }
+
     if (uint64 guid = sObjectMgr->AddCreData(entry, team, mapID, x, y, z, o, p_SpawnTime))
     {
         if (!entry)
@@ -745,6 +834,16 @@ bool OutdoorPvP::AddCreature(uint32 type, uint32 entry, uint32 team, uint32 mapI
 
 bool OutdoorPvP::DelCreature(uint32 type)
 {
+    if (IsAshranInstance(m_map))
+    {
+        ObjectGuid guid = m_Creatures[type];
+        m_Creatures[type].Clear();
+        m_CreatureTypes.erase(guid);
+        if (auto object = m_map->GetCreature(guid))
+        { object->AddObjectToRemoveList(); return true; }
+        return false;
+    }
+
     if (!m_Creatures[type])
     {
         TC_LOG_TRACE("misc", "OutdoorPvP::DelCreature, creature type %u was already deleted", type);
@@ -785,6 +884,13 @@ bool OutdoorPvP::AddObject(uint32 p_Type, go_type data)
 
 bool OutdoorPvP::AddObject(uint32 type, uint32 entry, uint32 mapID, float x, float y, float z, float o, float r0, float r1, float r2, float r3)
 {
+    if (IsAshranInstance(m_map))
+    {
+        if (GameObject* go = m_map->SummonGameObject(entry, x, y, z, o, r0, r1, r2, r3, 0))
+        { m_Objects[type] = go->GetGUID(); m_ObjectTypes[go->GetGUID()] = type; return true; }
+        return false;
+    }
+
     uint64 guid = sObjectMgr->GetGenerator<HighGuid::GameObject>()->Generate();
     if (sObjectMgr->AddGOData(guid, entry, mapID, x, y, z, o, 0, r0, r1, r2, r3))
     {
@@ -798,6 +904,17 @@ bool OutdoorPvP::AddObject(uint32 type, uint32 entry, uint32 mapID, float x, flo
 
 bool OutdoorPvP::DelObject(uint32 type)
 {
+    if (IsAshranInstance(m_map))
+    {
+        ObjectGuid guid = m_Objects[type];
+        m_Objects[type].Clear();
+        m_ObjectTypes.erase(guid);
+        if (m_map->IsMapUnload()) return true;
+        if (auto object = m_map->GetGameObject(guid))
+        { object->Delete(); return true; }
+        return false;
+    }
+
     if (!m_Objects[type])
         return false;
 

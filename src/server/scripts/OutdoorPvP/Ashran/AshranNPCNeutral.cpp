@@ -118,7 +118,7 @@ public:
     {
         npc_faction_bossAI(Creature* creature) : ScriptedAI(creature)
         {
-            m_ZoneScript = sOutdoorPvPMgr->GetZoneScript(creature->GetZoneId());
+            m_ZoneScript = creature->GetOutdoorPvP();
         }
 
         enum eSpells
@@ -380,7 +380,7 @@ public:
     {
         npc_ashran_korlokAI(Creature* creature) : ScriptedAI(creature)
         {
-            m_OutdoorPvP = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+            m_OutdoorPvP = creature->GetOutdoorPvP();
             m_IsAwake = false;
             m_InFight = false;
         }
@@ -662,7 +662,7 @@ public:
     {
         npc_ashran_faction_championsAI(Creature* creature) : ScriptedAI(creature)
         {
-            m_OutdoorPvP = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(creature->GetZoneId());
+            m_OutdoorPvP = creature->GetOutdoorPvP();
 
             m_Rewarded = false;
         }
@@ -754,7 +754,7 @@ public:
             if (m_Rewarded)
                 return;
 
-            ZoneScript* l_ZoneScript = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(me->GetZoneId());
+            ZoneScript* l_ZoneScript = me->GetOutdoorPvP();
             if (l_ZoneScript == nullptr)
                 return;
 
