@@ -116,6 +116,8 @@ struct WorldSession
     void HandleShowTradeSkill(WorldPackets::Misc::ShowTradeSkill&);
 };
 #include "ProfessionRewards.inc"
+// The item-set updater is compiled and tested by ItemEffectLifecycleTest.
+void UpdateItemSetSkill(Player*, uint32, uint32) {}
 #include "ProfessionEnchantments.inc"
 #include "ProfessionShare.inc"
 int failures = 0;

@@ -35,9 +35,6 @@ void AddItemsSetItem(Player* player, Item* item)
     if (!set)
         return;
 
-    if (set->RequiredSkill && player->GetSkillValue(set->RequiredSkill) < set->RequiredSkill)
-        return;
-
     if (set->SetFlags & ITEM_SET_FLAG_LEGACY_INACTIVE)
         return;
 
@@ -82,8 +79,32 @@ void AddItemsSetItem(Player* player, Item* item)
             continue;
 
         eff->SetBonuses.insert(itemSetSpell);
-        if (!itemSetSpell->ChrSpecID || itemSetSpell->ChrSpecID == player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID))
+        // Keep equipped counts even below the skill requirement so learning or
+        // unlearning the profession can update bonuses without re-equipping.
+        if ((!set->RequiredSkill || player->GetSkillValue(set->RequiredSkill) >= set->RequiredSkillRank) &&
+            (!itemSetSpell->ChrSpecID || itemSetSpell->ChrSpecID == player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID)))
             player->ApplyEquipSpell(spellInfo, nullptr, true);
+    }
+}
+
+void UpdateItemSetSkill(Player* player, uint32 skill, uint32 skillValue)
+{
+    for (ItemSetEffect const* effect : *player->ItemSetEff)
+    {
+        if (!effect)
+            continue;
+        ItemSetEntry const* set = sItemSetStore.LookupEntry(effect->ItemSetID);
+        if (!set || !set->RequiredSkill || uint32(set->RequiredSkill) != skill)
+            continue;
+
+        for (ItemSetSpellEntry const* bonus : effect->SetBonuses)
+            if (SpellInfo const* spell = sSpellMgr->GetSpellInfo(bonus->SpellID))
+            {
+                bool apply = skillValue >= set->RequiredSkillRank &&
+                    (!bonus->ChrSpecID || bonus->ChrSpecID == player->GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID));
+                // The form-change apply path preserves an already active aura.
+                player->ApplyEquipSpell(spell, nullptr, apply, apply);
+            }
     }
 }
 

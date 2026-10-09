@@ -8147,6 +8147,7 @@ void Player::ModifySkillBonus(uint32 skillid, int32 val, bool talent)
     uint16 bonus = GetUInt16Value(field, offset);
 
     SetUInt16Value(field, offset, bonus + val);
+    UpdateItemSetSkill(this, skillid, GetSkillValue(skillid));
 }
 
 // This functions sets a skill line value (and adds if doesn't exist yet)
@@ -11094,7 +11095,7 @@ void Player::ApplyItemEquipSpell(Item* item, bool apply, bool form_change)
         if (!spellproto)
             continue;
 
-        if (spellproto->HasAura(SPELL_AURA_MOD_XP_PCT) && !GetCollectionMgr()->CanApplyHeirloomXpBonus(item->GetEntry(), getLevel()) && sDB2Manager.GetHeirloomByItemId(item->GetEntry()))
+        if (apply && spellproto->HasAura(SPELL_AURA_MOD_XP_PCT) && !GetCollectionMgr()->CanApplyHeirloomXpBonus(item->GetEntry(), getLevel()) && sDB2Manager.GetHeirloomByItemId(item->GetEntry()))
             continue;
 
         if (apply && effectData->ChrSpecializationID && effectData->ChrSpecializationID != GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID))
@@ -11271,7 +11272,9 @@ void Player::UpdateEquipSpellsAtFormChange()
             if (!spellInfo)
                 continue;
 
-            if (itemSetSpell->ChrSpecID && itemSetSpell->ChrSpecID != GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID))
+            ItemSetEntry const* set = sItemSetStore.LookupEntry(eff->ItemSetID);
+            bool missingSkill = set && set->RequiredSkill && GetSkillValue(set->RequiredSkill) < set->RequiredSkillRank;
+            if (missingSkill || (itemSetSpell->ChrSpecID && itemSetSpell->ChrSpecID != GetUInt32Value(PLAYER_FIELD_CURRENT_SPEC_ID)))
                 ApplyEquipSpell(spellInfo, nullptr, false, false);  // item set aura is not for current spec
             else
             {
@@ -17986,6 +17989,8 @@ void Player::UpdateSkillEnchantments(uint16 skill_id, uint16 curr_value, uint16 
     int32 bonus = GetSkillTempBonusValue(skill_id) + GetSkillPermBonusValue(skill_id);
     int32 currentSkill = curr_value ? std::max<int32>(0, curr_value + bonus) : 0;
     int32 newSkill = new_value ? std::max<int32>(0, new_value + bonus) : 0;
+
+    UpdateItemSetSkill(this, skill_id, newSkill);
 
     for (uint8 i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
     {

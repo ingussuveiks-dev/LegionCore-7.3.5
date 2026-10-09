@@ -3724,6 +3724,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 };
 
 void AddItemsSetItem(Player*player, Item* item);
+void UpdateItemSetSkill(Player* player, uint32 skill, uint32 skillValue);
 void RemoveItemsSetItem(Player*player, ItemTemplate const* proto);
 
 #endif

@@ -98,6 +98,10 @@ void AuraEffect::HandleEffect(Player* player, int, bool apply) const
 {
     player->ModifySkillBonus(skill, apply ? amount : -amount, talent);
 }
+// ItemEffectLifecycleTest compiles the production bonus updater. Here capture
+// the ranks passed from production skill handlers, including pre-clear removal.
+std::map<uint32, uint32> itemSetSkills;
+void UpdateItemSetSkill(Player*, uint32 skill, uint32 value) { itemSetSkills[skill] = value; }
 #include "SkillSet.inc"
 #include "SkillValue.inc"
 #include "SkillBonus.inc"
@@ -125,10 +129,12 @@ int main()
             Check(player.transitions.size() == 1 && player.transitions[0].visible == 250,
                 "Enchant restoration must run after skill status and racial bonus are initialized");
             Check(player.enchantActive, "Eligible equipped enchant must activate on learning");
+            Check(itemSetSkills[202] == 250, "Item sets must receive the effective learned rank");
             if (saved) player.mSkillStatus[202].uState = SKILL_CHANGED;
             player.known = {127123, 192846};
             player.SetSkill(202);
             Check(player.GetSkillValue(202) == 0 && !player.enchantActive, "Unlearning must remove skill and enchant effect");
+            Check(itemSetSkills[202] == 0, "Unlearning must deactivate equipped profession set bonuses");
             Check(player.transitions.back().visible == 250 && !player.transitions.back().apply,
                 "Enchant removal must see old skill before it is cleared");
             Check(!player.known.count(127123) && player.known.count(192846), "Unlearning must remove only this skill's recipes");
