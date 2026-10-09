@@ -1,0 +1,7810 @@
+{
+  "scope_rule": "MinLevel 98..110 OR QuestLevel 100..110 OR Expansion=6",
+  "limitations": "Optimistic graph only; does not prove objectives, phases, loot, class/race restrictions or scripts can execute in game.",
+  "counts": {
+    "all_quests": 30316,
+    "scoped_quests": 7228,
+    "disabled_in_scope": 9,
+    "objectives": 9850,
+    "source_relations": 9641,
+    "conditions": 739,
+    "event_relations": 22,
+    "smart_rows_exported": 9045
+  },
+  "by_quest_sort": {
+    "-444": 6,
+    "-440": 7,
+    "-439": 6,
+    "-438": 20,
+    "-437": 6,
+    "-435": 25,
+    "-434": 7,
+    "-431": 3,
+    "-429": 4,
+    "-428": 18,
+    "-427": 33,
+    "-426": 58,
+    "-425": 54,
+    "-424": 65,
+    "-423": 70,
+    "-422": 57,
+    "-421": 64,
+    "-420": 75,
+    "-419": 67,
+    "-418": 70,
+    "-417": 68,
+    "-416": 73,
+    "-413": 77,
+    "-412": 4,
+    "-411": 31,
+    "-410": 29,
+    "-409": 16,
+    "-408": 36,
+    "-407": 50,
+    "-406": 568,
+    "-405": 3,
+    "-403": 288,
+    "-401": 180,
+    "-400": 2,
+    "-399": 6,
+    "-394": 98,
+    "-392": 32,
+    "-377": 53,
+    "-373": 45,
+    "-371": 43,
+    "-368": 2,
+    "-365": 1,
+    "-364": 4,
+    "-344": 48,
+    "-324": 16,
+    "-304": 6,
+    "-284": 21,
+    "-264": 49,
+    "-261": 14,
+    "-201": 34,
+    "-182": 58,
+    "-181": 37,
+    "-162": 13,
+    "-121": 73,
+    "-101": 3,
+    "-25": 6,
+    "-24": 32,
+    "-21": 2,
+    "-1": 1,
+    "0": 716,
+    "11": 1,
+    "12": 1,
+    "14": 7,
+    "22": 2,
+    "41": 7,
+    "357": 2,
+    "394": 1,
+    "440": 3,
+    "1377": 2,
+    "1497": 5,
+    "1519": 12,
+    "1537": 5,
+    "1637": 7,
+    "3520": 4,
+    "3537": 1,
+    "3703": 1,
+    "4395": 1,
+    "4982": 3,
+    "6081": 2,
+    "6662": 23,
+    "6682": 14,
+    "6719": 52,
+    "6720": 75,
+    "6721": 6,
+    "6722": 19,
+    "6723": 56,
+    "6755": 276,
+    "6867": 1,
+    "6874": 6,
+    "6912": 6,
+    "6932": 10,
+    "6941": 109,
+    "6951": 6,
+    "6960": 4,
+    "6967": 13,
+    "6984": 10,
+    "6988": 6,
+    "6996": 7,
+    "7099": 5,
+    "7100": 2,
+    "7109": 11,
+    "7269": 18,
+    "7307": 11,
+    "7332": 1,
+    "7334": 278,
+    "7444": 3,
+    "7462": 4,
+    "7490": 3,
+    "7502": 83,
+    "7503": 404,
+    "7536": 1,
+    "7541": 420,
+    "7543": 153,
+    "7545": 18,
+    "7546": 8,
+    "7558": 304,
+    "7578": 3,
+    "7588": 12,
+    "7592": 8,
+    "7637": 527,
+    "7638": 1,
+    "7642": 3,
+    "7672": 10,
+    "7673": 8,
+    "7679": 4,
+    "7737": 1,
+    "7787": 6,
+    "7790": 1,
+    "7796": 4,
+    "7805": 7,
+    "7812": 8,
+    "7813": 2,
+    "7814": 1,
+    "7834": 5,
+    "7841": 1,
+    "7842": 22,
+    "7846": 5,
+    "7855": 8,
+    "7875": 2,
+    "7877": 3,
+    "7879": 6,
+    "7881": 5,
+    "7902": 4,
+    "7903": 2,
+    "7918": 2,
+    "7969": 1,
+    "7996": 3,
+    "8000": 24,
+    "8011": 2,
+    "8023": 5,
+    "8025": 29,
+    "8026": 16,
+    "8040": 5,
+    "8046": 2,
+    "8079": 10,
+    "8126": 1,
+    "8140": 1,
+    "8152": 2,
+    "8161": 1,
+    "8277": 2,
+    "8347": 1,
+    "8357": 3,
+    "8373": 3,
+    "8406": 3,
+    "8440": 3,
+    "8443": 11,
+    "8478": 2,
+    "8524": 27,
+    "8527": 5,
+    "8553": 1,
+    "8574": 121,
+    "8638": 25,
+    "8701": 92,
+    "8741": 1,
+    "8882": 1,
+    "8899": 52,
+    "8910": 7,
+    "8933": 1,
+    "9024": 3,
+    "9038": 1,
+    "9100": 1,
+    "9102": 1,
+    "9126": 1,
+    "9127": 1,
+    "9128": 1,
+    "9136": 2,
+    "9137": 1,
+    "9157": 1,
+    "9180": 1,
+    "9295": 2,
+    "9296": 2,
+    "9297": 1,
+    "9298": 2,
+    "9299": 2,
+    "9300": 2,
+    "9310": 23
+  },
+  "blocked_candidates": [
+    {
+      "id": 34027,
+      "title": "Groundbreaking Data",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34026
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77217",
+          "quest": "34027"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77217",
+          "quest": "34027"
+        }
+      ]
+    },
+    {
+      "id": 34028,
+      "title": "These Look Familiar...",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34027
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77217",
+          "quest": "34028"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77160",
+          "quest": "34028"
+        }
+      ]
+    },
+    {
+      "id": 34029,
+      "title": "The Prototype",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34028
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77160",
+          "quest": "34029"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77160",
+          "quest": "34029"
+        }
+      ]
+    },
+    {
+      "id": 34030,
+      "title": "The Captive Engineer",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34029
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77160",
+          "quest": "34030"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77161",
+          "quest": "34030"
+        }
+      ]
+    },
+    {
+      "id": 34315,
+      "title": "Gearing Up",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34315
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "78659",
+          "quest": "34315"
+        },
+        {
+          "kind": "npc_end",
+          "id": "78659",
+          "quest": "34315"
+        }
+      ]
+    },
+    {
+      "id": 36164,
+      "title": "The Trial of Courage",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        36163
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "80078",
+          "quest": "36164"
+        },
+        {
+          "kind": "npc_end",
+          "id": "84973",
+          "quest": "36164"
+        }
+      ]
+    },
+    {
+      "id": 36167,
+      "title": "The Trial of Heart",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        36163
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "80079",
+          "quest": "36167"
+        },
+        {
+          "kind": "npc_end",
+          "id": "84975",
+          "quest": "36167"
+        }
+      ]
+    },
+    {
+      "id": 38923,
+      "title": "Ashran Dominance",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        38923
+      ],
+      "relations": [
+        {
+          "kind": "npc_end",
+          "id": "83869",
+          "quest": "38923"
+        }
+      ]
+    },
+    {
+      "id": 39090,
+      "title": "Slay Them All!",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        39090
+      ],
+      "relations": [
+        {
+          "kind": "npc_end",
+          "id": "83869",
+          "quest": "39090"
+        }
+      ]
+    },
+    {
+      "id": 44556,
+      "title": "Return to Karazhan",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        44944
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "90417",
+          "quest": "44556"
+        },
+        {
+          "kind": "npc_end",
+          "id": "114310",
+          "quest": "44556"
+        }
+      ]
+    }
+  ],
+  "disabled": [
+    {
+      "id": 34026,
+      "title": "Garrison Campaign: Seismic Matters",
+      "reason": ""
+    },
+    {
+      "id": 36160,
+      "title": "Garrison Campaign: Every Rose Has Its Thorn",
+      "reason": ""
+    },
+    {
+      "id": 36163,
+      "title": "Garrison Campaign: The Exarch's Call",
+      "reason": ""
+    },
+    {
+      "id": 36807,
+      "title": "Assault on the Heart of Shattrath",
+      "reason": "Deprecated quest"
+    },
+    {
+      "id": 36809,
+      "title": "Assault on the Heart of Shattrath",
+      "reason": "Deprecated quest"
+    },
+    {
+      "id": 37288,
+      "title": "Resources in Ashran",
+      "reason": ""
+    },
+    {
+      "id": 37290,
+      "title": "Upgrades in Ashran",
+      "reason": ""
+    },
+    {
+      "id": 41873,
+      "title": "The Mead Master",
+      "reason": "Deprecated quest"
+    },
+    {
+      "id": 44944,
+      "title": "Aura of Uncertainty",
+      "reason": "Deprecated quest"
+    }
+  ],
+  "missing_chain_targets": [],
+  "missing_source_templates": [],
+  "missing_creature_gameobject_objective_targets": [],
+  "positive_conditions_on_missing_or_disabled_quests": [
+    {
+      "SourceTypeOrReferenceId": "19",
+      "SourceGroup": "0",
+      "SourceEntry": "36168",
+      "SourceId": "0",
+      "ElseGroup": "0",
+      "ConditionTypeOrReference": "8",
+      "ConditionTarget": "0",
+      "ConditionValue1": "36163",
+      "ConditionValue2": "0",
+      "ConditionValue3": "0",
+      "NegativeCondition": "0",
+      "ErrorTextId": "0",
+      "ScriptName": "",
+      "Comment": "true if player reward quest"
+    }
+  ],
+  "source_relations_without_static_spawn": [
+    {
+      "kind": "npc_start",
+      "id": "72230",
+      "quest": "32980"
+    },
+    {
+      "kind": "npc_start",
+      "id": "72230",
+      "quest": "33444"
+    },
+    {
+      "kind": "npc_start",
+      "id": "74253",
+      "quest": "32983"
+    },
+    {
+      "kind": "npc_start",
+      "id": "74253",
+      "quest": "32984"
+    },
+    {
+      "kind": "npc_start",
+      "id": "74330",
+      "quest": "32985"
+    },
+    {
+      "kind": "npc_start",
+      "id": "76622",
+      "quest": "33427"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77160",
+      "quest": "34029"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77160",
+      "quest": "34030"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77167",
+      "quest": "34031"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77167",
+      "quest": "34032"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77167",
+      "quest": "34033"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77167",
+      "quest": "34048"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77217",
+      "quest": "34027"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77217",
+      "quest": "34028"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77928",
+      "quest": "34035"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77928",
+      "quest": "34040"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77928",
+      "quest": "34041"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77982",
+      "quest": "34353"
+    },
+    {
+      "kind": "npc_start",
+      "id": "77982",
+      "quest": "34355"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78185",
+      "quest": "34286"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78239",
+      "quest": "34362"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78251",
+      "quest": "34338"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78251",
+      "quest": "34341"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78251",
+      "quest": "34410"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78323",
+      "quest": "34039"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78323",
+      "quest": "34042"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78323",
+      "quest": "34078"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34287"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34288"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34289"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34318"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34319"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78428",
+      "quest": "34469"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78746",
+      "quest": "34316"
+    },
+    {
+      "kind": "npc_start",
+      "id": "78785",
+      "quest": "34381"
+    },
+    {
+      "kind": "npc_start",
+      "id": "79899",
+      "quest": "34516"
+    },
+    {
+      "kind": "npc_start",
+      "id": "81195",
+      "quest": "35101"
+    },
+    {
+      "kind": "npc_start",
+      "id": "81499",
+      "quest": "35188"
+    },
+    {
+      "kind": "npc_start",
+      "id": "81499",
+      "quest": "35190"
+    },
+    {
+      "kind": "npc_start",
+      "id": "81790",
+      "quest": "34747"
+    },
+    {
+      "kind": "npc_start",
+      "id": "81790",
+      "quest": "34770"
+    },
+    {
+      "kind": "npc_start",
+      "id": "82833",
+      "quest": "35736"
+    },
+    {
+      "kind": "npc_start",
+      "id": "82833",
+      "quest": "35737"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83006",
+      "quest": "37284"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83006",
+      "quest": "39107"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83051",
+      "quest": "35838"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83053",
+      "quest": "35839"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83053",
+      "quest": "35840"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83053",
+      "quest": "35841"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83054",
+      "quest": "35842"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83054",
+      "quest": "35845"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83054",
+      "quest": "35846"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83734",
+      "quest": "35970"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83734",
+      "quest": "35972"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83734",
+      "quest": "37511"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35989"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35990"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35991"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35992"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35993"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35994"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35997"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "35998"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36000"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36005"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36007"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36009"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36010"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36012"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36013"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36014"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36016"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36017"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36157"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "36158"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "37834"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "37836"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83823",
+      "quest": "37964"
+    },
+    {
+      "kind": "npc_start",
+      "id": "83929",
+      "quest": "36006"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84185",
+      "quest": "36341"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84223",
+      "quest": "36133"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84223",
+      "quest": "39217"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84268",
+      "quest": "38408"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84459",
+      "quest": "36193"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84511",
+      "quest": "36162"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84524",
+      "quest": "36274"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84637",
+      "quest": "36220"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84684",
+      "quest": "36161"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84702",
+      "quest": "35995"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84702",
+      "quest": "36004"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84702",
+      "quest": "36206"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84889",
+      "quest": "36813"
+    },
+    {
+      "kind": "npc_start",
+      "id": "84974",
+      "quest": "36169"
+    },
+    {
+      "kind": "npc_start",
+      "id": "85048",
+      "quest": "36346"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86272",
+      "quest": "36702"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86682",
+      "quest": "36947"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86682",
+      "quest": "37126"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86682",
+      "quest": "37180"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86806",
+      "quest": "37014"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86927",
+      "quest": "37080"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86927",
+      "quest": "37129"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86933",
+      "quest": "37081"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86933",
+      "quest": "37131"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86934",
+      "quest": "37047"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86934",
+      "quest": "37127"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86945",
+      "quest": "37070"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86945",
+      "quest": "37128"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86946",
+      "quest": "37084"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86946",
+      "quest": "37137"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86946",
+      "quest": "37182"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86964",
+      "quest": "37085"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86964",
+      "quest": "37140"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86964",
+      "quest": "37181"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36988"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36989"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36990"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36991"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36992"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36993"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36994"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36998"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "36999"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37000"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37001"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37002"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37003"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37004"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37015"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37016"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37017"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37018"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37019"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37020"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86973",
+      "quest": "37021"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36914"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36976"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36977"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36978"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36979"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36980"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36981"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "36982"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37007"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37008"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37009"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37010"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37011"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37012"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37013"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37022"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37023"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37024"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37025"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37026"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37027"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86974",
+      "quest": "37028"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37035"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37036"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37037"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37038"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37039"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37040"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37041"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37053"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37054"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37055"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37056"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37057"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37058"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37059"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37063"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37064"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37065"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37066"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37067"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37068"
+    },
+    {
+      "kind": "npc_start",
+      "id": "86979",
+      "quest": "37069"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87206",
+      "quest": "36948"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87225",
+      "quest": "37029"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87225",
+      "quest": "37030"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87225",
+      "quest": "37031"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "36950"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37073"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37074"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37075"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37076"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37077"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37078"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37079"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37098"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37099"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37100"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37101"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37102"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37103"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37104"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37105"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37106"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37107"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37108"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37109"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37110"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87242",
+      "quest": "37111"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87247",
+      "quest": "37082"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87764",
+      "quest": "37191"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87764",
+      "quest": "37192"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87991",
+      "quest": "37152"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87991",
+      "quest": "37228"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87992",
+      "quest": "37153"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87992",
+      "quest": "37229"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87994",
+      "quest": "37157"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87994",
+      "quest": "37230"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87995",
+      "quest": "37155"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87995",
+      "quest": "37231"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87996",
+      "quest": "37156"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87996",
+      "quest": "37232"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87997",
+      "quest": "37154"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87997",
+      "quest": "37233"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87998",
+      "quest": "37158"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87998",
+      "quest": "37234"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87999",
+      "quest": "37159"
+    },
+    {
+      "kind": "npc_start",
+      "id": "87999",
+      "quest": "37235"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88000",
+      "quest": "37161"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88000",
+      "quest": "37236"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88001",
+      "quest": "37162"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88001",
+      "quest": "37237"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88002",
+      "quest": "37163"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88002",
+      "quest": "37238"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88003",
+      "quest": "37164"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88003",
+      "quest": "37239"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88004",
+      "quest": "37165"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88004",
+      "quest": "37240"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88005",
+      "quest": "37166"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88005",
+      "quest": "37241"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88006",
+      "quest": "37167"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88006",
+      "quest": "37242"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88007",
+      "quest": "37160"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88007",
+      "quest": "37243"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88009",
+      "quest": "37179"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88024",
+      "quest": "37148"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88024",
+      "quest": "37244"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88025",
+      "quest": "37150"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88025",
+      "quest": "37227"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88026",
+      "quest": "37151"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88026",
+      "quest": "37209"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88027",
+      "quest": "37149"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88027",
+      "quest": "37245"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88395",
+      "quest": "35786"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88395",
+      "quest": "35787"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88395",
+      "quest": "35788"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88448",
+      "quest": "36198"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88448",
+      "quest": "39233"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88458",
+      "quest": "37305"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88458",
+      "quest": "37306"
+    },
+    {
+      "kind": "npc_start",
+      "id": "88458",
+      "quest": "37307"
+    },
+    {
+      "kind": "npc_start",
+      "id": "89179",
+      "quest": "34339"
+    },
+    {
+      "kind": "npc_start",
+      "id": "89753",
+      "quest": "37756"
+    },
+    {
+      "kind": "npc_start",
+      "id": "89793",
+      "quest": "37788"
+    },
+    {
+      "kind": "npc_start",
+      "id": "89805",
+      "quest": "37773"
+    },
+    {
+      "kind": "npc_start",
+      "id": "90474",
+      "quest": "37449"
+    },
+    {
+      "kind": "npc_start",
+      "id": "90474",
+      "quest": "37450"
+    },
+    {
+      "kind": "npc_start",
+      "id": "90474",
+      "quest": "37656"
+    },
+    {
+      "kind": "npc_start",
+      "id": "90569",
+      "quest": "37960"
+    },
+    {
+      "kind": "npc_start",
+      "id": "90584",
+      "quest": "38578"
+    },
+    {
+      "kind": "npc_start",
+      "id": "91065",
+      "quest": "38203"
+    },
+    {
+      "kind": "npc_start",
+      "id": "91165",
+      "quest": "38237"
+    },
+    {
+      "kind": "npc_start",
+      "id": "91195",
+      "quest": "37756"
+    },
+    {
+      "kind": "npc_start",
+      "id": "91196",
+      "quest": "37766"
+    },
+    {
+      "kind": "npc_start",
+      "id": "91558",
+      "quest": "38412"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92223",
+      "quest": "37788"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92569",
+      "quest": "38618"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92573",
+      "quest": "38617"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92783",
+      "quest": "38684"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92783",
+      "quest": "41749"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92783",
+      "quest": "41891"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92783",
+      "quest": "41893"
+    },
+    {
+      "kind": "npc_start",
+      "id": "92909",
+      "quest": "38710"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93735",
+      "quest": "38792"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93735",
+      "quest": "38793"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93735",
+      "quest": "38794"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93735",
+      "quest": "39345"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93743",
+      "quest": "38793"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93744",
+      "quest": "38794"
+    },
+    {
+      "kind": "npc_start",
+      "id": "93775",
+      "quest": "41052"
+    },
+    {
+      "kind": "npc_start",
+      "id": "95237",
+      "quest": "41060"
+    },
+    {
+      "kind": "npc_start",
+      "id": "95237",
+      "quest": "41070"
+    },
+    {
+      "kind": "npc_start",
+      "id": "95237",
+      "quest": "41099"
+    },
+    {
+      "kind": "npc_start",
+      "id": "96183",
+      "quest": "42815"
+    },
+    {
+      "kind": "npc_start",
+      "id": "96258",
+      "quest": "39597"
+    },
+    {
+      "kind": "npc_start",
+      "id": "96286",
+      "quest": "39381"
+    },
+    {
+      "kind": "npc_start",
+      "id": "96453",
+      "quest": "40229"
+    },
+    {
+      "kind": "npc_start",
+      "id": "96488",
+      "quest": "41052"
+    },
+    {
+      "kind": "npc_start",
+      "id": "97261",
+      "quest": "38501"
+    },
+    {
+      "kind": "npc_start",
+      "id": "97261",
+      "quest": "38502"
+    },
+    {
+      "kind": "npc_start",
+      "id": "97419",
+      "quest": "39848"
+    },
+    {
+      "kind": "npc_start",
+      "id": "97429",
+      "quest": "39838"
+    },
+    {
+      "kind": "npc_start",
+      "id": "97558",
+      "quest": "39855"
+    },
+    {
+      "kind": "npc_start",
+      "id": "98519",
+      "quest": "12103"
+    },
+    {
+      "kind": "npc_start",
+      "id": "98698",
+      "quest": "39918"
+    },
+    {
+      "kind": "npc_start",
+      "id": "99343",
+      "quest": "39047"
+    },
+    {
+      "kind": "npc_start",
+      "id": "99343",
+      "quest": "39261"
+    },
+    {
+      "kind": "npc_start",
+      "id": "99689",
+      "quest": "40327"
+    },
+    {
+      "kind": "npc_start",
+      "id": "100053",
+      "quest": "40412"
+    },
+    {
+      "kind": "npc_start",
+      "id": "100786",
+      "quest": "40384"
+    },
+    {
+      "kind": "npc_start",
+      "id": "100973",
+      "quest": "44120"
+    },
+    {
+      "kind": "npc_start",
+      "id": "101061",
+      "quest": "40643"
+    },
+    {
+      "kind": "npc_start",
+      "id": "101344",
+      "quest": "40705"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102018",
+      "quest": "40832"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102333",
+      "quest": "40705"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102381",
+      "quest": "41034"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102546",
+      "quest": "40988"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102639",
+      "quest": "41010"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102924",
+      "quest": "38904"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102938",
+      "quest": "41054"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102938",
+      "quest": "41056"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102996",
+      "quest": "41040"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102996",
+      "quest": "41910"
+    },
+    {
+      "kind": "npc_start",
+      "id": "102996",
+      "quest": "41911"
+    },
+    {
+      "kind": "npc_start",
+      "id": "103506",
+      "quest": "40716"
+    },
+    {
+      "kind": "npc_start",
+      "id": "105072",
+      "quest": "41852"
+    },
+    {
+      "kind": "npc_start",
+      "id": "105072",
+      "quest": "41853"
+    },
+    {
+      "kind": "npc_start",
+      "id": "105088",
+      "quest": "41851"
+    },
+    {
+      "kind": "npc_start",
+      "id": "105152",
+      "quest": "41854"
+    },
+    {
+      "kind": "npc_start",
+      "id": "105917",
+      "quest": "42493"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106001",
+      "quest": "41777"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106001",
+      "quest": "41897"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106001",
+      "quest": "41898"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106001",
+      "quest": "41899"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106001",
+      "quest": "42065"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106538",
+      "quest": "44239"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106656",
+      "quest": "42149"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106656",
+      "quest": "42171"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106656",
+      "quest": "42206"
+    },
+    {
+      "kind": "npc_start",
+      "id": "106834",
+      "quest": "38576"
+    },
+    {
+      "kind": "npc_start",
+      "id": "108069",
+      "quest": "39578"
+    },
+    {
+      "kind": "npc_start",
+      "id": "108311",
+      "quest": "45301"
+    },
+    {
+      "kind": "npc_start",
+      "id": "108311",
+      "quest": "45385"
+    },
+    {
+      "kind": "npc_start",
+      "id": "108961",
+      "quest": "42814"
+    },
+    {
+      "kind": "npc_start",
+      "id": "109221",
+      "quest": "42821"
+    },
+    {
+      "kind": "npc_start",
+      "id": "109221",
+      "quest": "42823"
+    },
+    {
+      "kind": "npc_start",
+      "id": "109221",
+      "quest": "42824"
+    },
+    {
+      "kind": "npc_start",
+      "id": "109221",
+      "quest": "42882"
+    },
+    {
+      "kind": "npc_start",
+      "id": "109829",
+      "quest": "44206"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110348",
+      "quest": "44195"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110410",
+      "quest": "44231"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110412",
+      "quest": "44211"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110434",
+      "quest": "44218"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110437",
+      "quest": "44221"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110595",
+      "quest": "44229"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110810",
+      "quest": "44235"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110816",
+      "quest": "44212"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110817",
+      "quest": "44238"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110819",
+      "quest": "44230"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110820",
+      "quest": "44204"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110969",
+      "quest": "43395"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110969",
+      "quest": "43396"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110969",
+      "quest": "43491"
+    },
+    {
+      "kind": "npc_start",
+      "id": "110969",
+      "quest": "43540"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111191",
+      "quest": "43387"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111191",
+      "quest": "43388"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111191",
+      "quest": "43389"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111634",
+      "quest": "44234"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111734",
+      "quest": "44209"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111772",
+      "quest": "44220"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111774",
+      "quest": "44222"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111775",
+      "quest": "44224"
+    },
+    {
+      "kind": "npc_start",
+      "id": "111786",
+      "quest": "44237"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112299",
+      "quest": "44205"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112663",
+      "quest": "42597"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112666",
+      "quest": "42666"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112679",
+      "quest": "43007"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112688",
+      "quest": "42175"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112689",
+      "quest": "42516"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112693",
+      "quest": "44099"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112695",
+      "quest": "44100"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112696",
+      "quest": "42186"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112701",
+      "quest": "42844"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112982",
+      "quest": "44208"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112986",
+      "quest": "44219"
+    },
+    {
+      "kind": "npc_start",
+      "id": "112992",
+      "quest": "44226"
+    },
+    {
+      "kind": "npc_start",
+      "id": "113327",
+      "quest": "44090"
+    },
+    {
+      "kind": "npc_start",
+      "id": "113371",
+      "quest": "44227"
+    },
+    {
+      "kind": "npc_start",
+      "id": "113686",
+      "quest": "44337"
+    },
+    {
+      "kind": "npc_start",
+      "id": "114274",
+      "quest": "44544"
+    },
+    {
+      "kind": "npc_start",
+      "id": "114282",
+      "quest": "44550"
+    },
+    {
+      "kind": "npc_start",
+      "id": "114562",
+      "quest": "44663"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115464",
+      "quest": "47051"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115464",
+      "quest": "47052"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115465",
+      "quest": "44821"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115465",
+      "quest": "46078"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115465",
+      "quest": "47056"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115465",
+      "quest": "47058"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115467",
+      "quest": "47043"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115701",
+      "quest": "44876"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44057"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44058"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44948"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44949"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44950"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44953"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44954"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44956"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44959"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44960"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44961"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44962"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44967"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44968"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44969"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115784",
+      "quest": "44971"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44973"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44974"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44975"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44976"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44977"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44978"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44979"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44980"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44981"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44982"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44983"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44984"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44985"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44986"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44987"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115785",
+      "quest": "44988"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44989"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44992"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44994"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44995"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44997"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "44999"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45001"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45003"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45005"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45007"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45009"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45011"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45013"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45015"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45017"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115786",
+      "quest": "45019"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "44990"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "44991"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "44993"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "44996"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "44998"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45000"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45002"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45004"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45006"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45008"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45010"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45012"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45014"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45016"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45018"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115787",
+      "quest": "45020"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115791",
+      "quest": "44915"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115791",
+      "quest": "44920"
+    },
+    {
+      "kind": "npc_start",
+      "id": "115791",
+      "quest": "44924"
+    },
+    {
+      "kind": "npc_start",
+      "id": "116308",
+      "quest": "45188"
+    },
+    {
+      "kind": "npc_start",
+      "id": "116737",
+      "quest": "44783"
+    },
+    {
+      "kind": "npc_start",
+      "id": "116737",
+      "quest": "44787"
+    },
+    {
+      "kind": "npc_start",
+      "id": "116737",
+      "quest": "46305"
+    },
+    {
+      "kind": "npc_start",
+      "id": "117292",
+      "quest": "45587"
+    },
+    {
+      "kind": "npc_start",
+      "id": "117471",
+      "quest": "45633"
+    },
+    {
+      "kind": "npc_start",
+      "id": "117471",
+      "quest": "45647"
+    },
+    {
+      "kind": "npc_start",
+      "id": "117475",
+      "quest": "45649"
+    },
+    {
+      "kind": "npc_start",
+      "id": "117475",
+      "quest": "45650"
+    },
+    {
+      "kind": "npc_start",
+      "id": "118778",
+      "quest": "46110"
+    },
+    {
+      "kind": "npc_start",
+      "id": "118954",
+      "quest": "46080"
+    },
+    {
+      "kind": "npc_start",
+      "id": "118954",
+      "quest": "46106"
+    },
+    {
+      "kind": "npc_start",
+      "id": "118954",
+      "quest": "46107"
+    },
+    {
+      "kind": "npc_start",
+      "id": "118954",
+      "quest": "46200"
+    },
+    {
+      "kind": "npc_start",
+      "id": "119001",
+      "quest": "46000"
+    },
+    {
+      "kind": "npc_start",
+      "id": "119982",
+      "quest": "44877"
+    },
+    {
+      "kind": "npc_start",
+      "id": "119982",
+      "quest": "44888"
+    },
+    {
+      "kind": "npc_start",
+      "id": "119982",
+      "quest": "45532"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120041",
+      "quest": "45498"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120041",
+      "quest": "45528"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120041",
+      "quest": "46924"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120084",
+      "quest": "45425"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120084",
+      "quest": "46675"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120084",
+      "quest": "46676"
+    },
+    {
+      "kind": "npc_start",
+      "id": "120084",
+      "quest": "46677"
+    },
+    {
+      "kind": "npc_start",
+      "id": "122799",
+      "quest": "46253"
+    },
+    {
+      "kind": "npc_start",
+      "id": "122800",
+      "quest": "46805"
+    },
+    {
+      "kind": "npc_start",
+      "id": "129429",
+      "quest": "49077"
+    },
+    {
+      "kind": "npc_start",
+      "id": "130773",
+      "quest": "48079"
+    },
+    {
+      "kind": "npc_start",
+      "id": "130773",
+      "quest": "49756"
+    },
+    {
+      "kind": "npc_start",
+      "id": "130919",
+      "quest": "48962"
+    },
+    {
+      "kind": "npc_start",
+      "id": "220045",
+      "quest": "46730"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "40698"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "40793"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "40795"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41038"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41039"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41040"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41059"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41087"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41728"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41729"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41730"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41731"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41732"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41733"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41849"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41850"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41851"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41852"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41853"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41854"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41905"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41907"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41909"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41910"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41911"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41945"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "41946"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "42186"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "42187"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "42191"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43058"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43060"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43061"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43062"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43151"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43319"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "43359"
+    },
+    {
+      "kind": "npc_start",
+      "id": "230006",
+      "quest": "44249"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60011"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60012"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60013"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60014"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60015"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60016"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60017"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60018"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60019"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60021"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60022"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60023"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60024"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60025"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60026"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60028"
+    },
+    {
+      "kind": "npc_start",
+      "id": "542001",
+      "quest": "60029"
+    },
+    {
+      "kind": "npc_start",
+      "id": "600006",
+      "quest": "60000"
+    },
+    {
+      "kind": "npc_start",
+      "id": "600006",
+      "quest": "60001"
+    },
+    {
+      "kind": "npc_end",
+      "id": "16089",
+      "quest": "37175"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45291"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45292"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45293"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45294"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45295"
+    },
+    {
+      "kind": "npc_end",
+      "id": "18255",
+      "quest": "45296"
+    },
+    {
+      "kind": "npc_end",
+      "id": "25667",
+      "quest": "40950"
+    },
+    {
+      "kind": "npc_end",
+      "id": "26373",
+      "quest": "40950"
+    },
+    {
+      "kind": "npc_end",
+      "id": "40144",
+      "quest": "40145"
+    },
+    {
+      "kind": "npc_end",
+      "id": "40856",
+      "quest": "40859"
+    },
+    {
+      "kind": "npc_end",
+      "id": "40880",
+      "quest": "40882"
+    },
+    {
+      "kind": "npc_end",
+      "id": "47870",
+      "quest": "41395"
+    },
+    {
+      "kind": "npc_end",
+      "id": "72230",
+      "quest": "32979"
+    },
+    {
+      "kind": "npc_end",
+      "id": "72230",
+      "quest": "33444"
+    },
+    {
+      "kind": "npc_end",
+      "id": "74253",
+      "quest": "32980"
+    },
+    {
+      "kind": "npc_end",
+      "id": "74253",
+      "quest": "32983"
+    },
+    {
+      "kind": "npc_end",
+      "id": "74330",
+      "quest": "32984"
+    },
+    {
+      "kind": "npc_end",
+      "id": "74330",
+      "quest": "32985"
+    },
+    {
+      "kind": "npc_end",
+      "id": "76898",
+      "quest": "33934"
+    },
+    {
+      "kind": "npc_end",
+      "id": "76898",
+      "quest": "33939"
+    },
+    {
+      "kind": "npc_end",
+      "id": "76898",
+      "quest": "33954"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77160",
+      "quest": "34028"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77160",
+      "quest": "34029"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77161",
+      "quest": "34030"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77161",
+      "quest": "34033"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77167",
+      "quest": "34031"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77167",
+      "quest": "34032"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77167",
+      "quest": "34048"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77217",
+      "quest": "34026"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77217",
+      "quest": "34027"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77757",
+      "quest": "34181"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77773",
+      "quest": "33959"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77798",
+      "quest": "34213"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77806",
+      "quest": "34217"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77839",
+      "quest": "34244"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77928",
+      "quest": "34034"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77928",
+      "quest": "34035"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77982",
+      "quest": "34353"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77982",
+      "quest": "34354"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77982",
+      "quest": "35861"
+    },
+    {
+      "kind": "npc_end",
+      "id": "77982",
+      "quest": "35876"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78099",
+      "quest": "34299"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78112",
+      "quest": "34304"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78239",
+      "quest": "34286"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78251",
+      "quest": "34337"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78251",
+      "quest": "34338"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78323",
+      "quest": "34039"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78323",
+      "quest": "34040"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78323",
+      "quest": "34041"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78323",
+      "quest": "34042"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78428",
+      "quest": "34287"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78428",
+      "quest": "34288"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78428",
+      "quest": "34318"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78428",
+      "quest": "34469"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78470",
+      "quest": "34362"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78785",
+      "quest": "34316"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78792",
+      "quest": "34381"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78810",
+      "quest": "34289"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78821",
+      "quest": "34319"
+    },
+    {
+      "kind": "npc_end",
+      "id": "78937",
+      "quest": "34450"
+    },
+    {
+      "kind": "npc_end",
+      "id": "79327",
+      "quest": "36615"
+    },
+    {
+      "kind": "npc_end",
+      "id": "79897",
+      "quest": "34516"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81499",
+      "quest": "35188"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81499",
+      "quest": "35190"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81739",
+      "quest": "36593"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81739",
+      "quest": "37513"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81739",
+      "quest": "37514"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81790",
+      "quest": "34747"
+    },
+    {
+      "kind": "npc_end",
+      "id": "81790",
+      "quest": "34770"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82152",
+      "quest": "37433"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82180",
+      "quest": "35387"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82180",
+      "quest": "35388"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82180",
+      "quest": "35390"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82180",
+      "quest": "35392"
+    },
+    {
+      "kind": "npc_end",
+      "id": "82697",
+      "quest": "36060"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83006",
+      "quest": "37284"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83006",
+      "quest": "37285"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83006",
+      "quest": "39107"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83051",
+      "quest": "35837"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83053",
+      "quest": "35838"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83054",
+      "quest": "35844"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83734",
+      "quest": "35945"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83734",
+      "quest": "35970"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83734",
+      "quest": "35972"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35988"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35989"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35990"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35991"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35992"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35993"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35994"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35997"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "35998"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36004"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36007"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36009"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36010"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36012"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36013"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36014"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36017"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36157"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "36158"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "37834"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "37835"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "37836"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "39018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "39019"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "39022"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "39023"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83823",
+      "quest": "39024"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83929",
+      "quest": "36005"
+    },
+    {
+      "kind": "npc_end",
+      "id": "83929",
+      "quest": "36006"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84185",
+      "quest": "36134"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84223",
+      "quest": "39217"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84268",
+      "quest": "36162"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84268",
+      "quest": "36341"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84268",
+      "quest": "37191"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84270",
+      "quest": "36160"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84270",
+      "quest": "36172"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84453",
+      "quest": "37433"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84459",
+      "quest": "36193"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84511",
+      "quest": "36161"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84511",
+      "quest": "37433"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84512",
+      "quest": "37433"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84524",
+      "quest": "36274"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84637",
+      "quest": "36219"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84637",
+      "quest": "36280"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84637",
+      "quest": "36281"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84637",
+      "quest": "36282"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84684",
+      "quest": "37433"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84686",
+      "quest": "36452"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84702",
+      "quest": "35995"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84702",
+      "quest": "36000"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84702",
+      "quest": "36206"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84889",
+      "quest": "36813"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84973",
+      "quest": "36164"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84974",
+      "quest": "36168"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84974",
+      "quest": "36169"
+    },
+    {
+      "kind": "npc_end",
+      "id": "84975",
+      "quest": "36167"
+    },
+    {
+      "kind": "npc_end",
+      "id": "85048",
+      "quest": "36346"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86272",
+      "quest": "36702"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86629",
+      "quest": "36922"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86682",
+      "quest": "36947"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86682",
+      "quest": "37126"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86682",
+      "quest": "37180"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86806",
+      "quest": "37014"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86927",
+      "quest": "37080"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86927",
+      "quest": "37129"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86933",
+      "quest": "37081"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86933",
+      "quest": "37131"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86934",
+      "quest": "37047"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86934",
+      "quest": "37127"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86945",
+      "quest": "37070"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86945",
+      "quest": "37128"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86946",
+      "quest": "37084"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86946",
+      "quest": "37137"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86946",
+      "quest": "37182"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86964",
+      "quest": "37085"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86964",
+      "quest": "37140"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86964",
+      "quest": "37181"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36988"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36989"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36990"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36991"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36992"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36993"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36994"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36998"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "36999"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37000"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37001"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37002"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37003"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37004"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37015"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37017"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37019"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37020"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86973",
+      "quest": "37021"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36914"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36976"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36977"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36978"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36979"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36980"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36981"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "36982"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37007"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37008"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37009"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37010"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37011"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37012"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37013"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37022"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37023"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37024"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37025"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37026"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37027"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86974",
+      "quest": "37028"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37035"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37036"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37037"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37038"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37039"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37040"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37041"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37054"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37055"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37056"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37057"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37058"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37059"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37063"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37064"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37065"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37066"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37067"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37068"
+    },
+    {
+      "kind": "npc_end",
+      "id": "86979",
+      "quest": "37069"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87206",
+      "quest": "36948"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87225",
+      "quest": "37029"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87225",
+      "quest": "37030"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87225",
+      "quest": "37031"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "36950"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37073"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37074"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37075"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37076"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37077"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37078"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37079"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37098"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37099"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37100"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37101"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37102"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37103"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37104"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37105"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37106"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37107"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37108"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37109"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37110"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87242",
+      "quest": "37111"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87991",
+      "quest": "37152"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87991",
+      "quest": "37228"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87992",
+      "quest": "37153"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87992",
+      "quest": "37229"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87994",
+      "quest": "37157"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87994",
+      "quest": "37230"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87995",
+      "quest": "37155"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87995",
+      "quest": "37231"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87996",
+      "quest": "37156"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87996",
+      "quest": "37232"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87997",
+      "quest": "37154"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87997",
+      "quest": "37233"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87998",
+      "quest": "37158"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87998",
+      "quest": "37234"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87999",
+      "quest": "37159"
+    },
+    {
+      "kind": "npc_end",
+      "id": "87999",
+      "quest": "37235"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88000",
+      "quest": "37161"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88000",
+      "quest": "37236"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88001",
+      "quest": "37162"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88001",
+      "quest": "37237"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88002",
+      "quest": "37163"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88002",
+      "quest": "37238"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88003",
+      "quest": "37164"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88003",
+      "quest": "37239"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88004",
+      "quest": "37165"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88004",
+      "quest": "37240"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88005",
+      "quest": "37166"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88005",
+      "quest": "37241"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88006",
+      "quest": "37167"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88006",
+      "quest": "37242"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88007",
+      "quest": "37160"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88007",
+      "quest": "37243"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88009",
+      "quest": "37179"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88024",
+      "quest": "37148"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88024",
+      "quest": "37244"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88025",
+      "quest": "37150"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88025",
+      "quest": "37227"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88026",
+      "quest": "37151"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88026",
+      "quest": "37209"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88027",
+      "quest": "37149"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88027",
+      "quest": "37245"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88395",
+      "quest": "35786"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88395",
+      "quest": "35787"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88395",
+      "quest": "35788"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88448",
+      "quest": "39233"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88458",
+      "quest": "37305"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88458",
+      "quest": "37306"
+    },
+    {
+      "kind": "npc_end",
+      "id": "88458",
+      "quest": "37307"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89090",
+      "quest": "37530"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89138",
+      "quest": "37597"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89179",
+      "quest": "34339"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89995",
+      "quest": "37843"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89999",
+      "quest": "37844"
+    },
+    {
+      "kind": "npc_end",
+      "id": "89999",
+      "quest": "37845"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90227",
+      "quest": "37930"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90233",
+      "quest": "37837"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90233",
+      "quest": "37964"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90233",
+      "quest": "40501"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90237",
+      "quest": "37838"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90426",
+      "quest": "38428"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90474",
+      "quest": "36939"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90474",
+      "quest": "37450"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90474",
+      "quest": "37656"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90569",
+      "quest": "37857"
+    },
+    {
+      "kind": "npc_end",
+      "id": "90575",
+      "quest": "38016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91138",
+      "quest": "38016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91165",
+      "quest": "38232"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91328",
+      "quest": "36949"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91482",
+      "quest": "38337"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91558",
+      "quest": "38337"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91558",
+      "quest": "38342"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91622",
+      "quest": "38364"
+    },
+    {
+      "kind": "npc_end",
+      "id": "91771",
+      "quest": "38337"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92055",
+      "quest": "38458"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92055",
+      "quest": "38561"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92120",
+      "quest": "38462"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92338",
+      "quest": "39395"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92338",
+      "quest": "39396"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92452",
+      "quest": "38353"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92557",
+      "quest": "38060"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92568",
+      "quest": "38616"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92569",
+      "quest": "38616"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92569",
+      "quest": "38617"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92573",
+      "quest": "38615"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92573",
+      "quest": "38616"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92628",
+      "quest": "38607"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92628",
+      "quest": "39125"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92628",
+      "quest": "39126"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92644",
+      "quest": "38633"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92722",
+      "quest": "38667"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92783",
+      "quest": "41749"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92783",
+      "quest": "41893"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92803",
+      "quest": "38875"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92803",
+      "quest": "38879"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92803",
+      "quest": "38881"
+    },
+    {
+      "kind": "npc_end",
+      "id": "92881",
+      "quest": "38699"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93399",
+      "quest": "38376"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93535",
+      "quest": "38341"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93580",
+      "quest": "37691"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93587",
+      "quest": "38880"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93626",
+      "quest": "38883"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93658",
+      "quest": "39394"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93659",
+      "quest": "38463"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93775",
+      "quest": "38906"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "38932"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39355"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39356"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39358"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39359"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39360"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39361"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39362"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39363"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39364"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39365"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39366"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39367"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39368"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39369"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39370"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93812",
+      "quest": "39666"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39056"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39067"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39068"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39404"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39422"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39655"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93822",
+      "quest": "39665"
+    },
+    {
+      "kind": "npc_end",
+      "id": "93844",
+      "quest": "48066"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94429",
+      "quest": "39054"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94429",
+      "quest": "39082"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94429",
+      "quest": "39236"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94429",
+      "quest": "39241"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94429",
+      "quest": "39242"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94605",
+      "quest": "39176"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39243"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39245"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39246"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39401"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39423"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39674"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94789",
+      "quest": "39676"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "38932"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39355"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39356"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39358"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39359"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39360"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39361"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39362"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39363"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39364"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39365"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39366"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39367"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39368"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39369"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39370"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94801",
+      "quest": "39675"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94829",
+      "quest": "39299"
+    },
+    {
+      "kind": "npc_end",
+      "id": "94963",
+      "quest": "39269"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95002",
+      "quest": "39055"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95002",
+      "quest": "39276"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "41033"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "41060"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "41096"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "41099"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "41103"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95237",
+      "quest": "44379"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95326",
+      "quest": "39319"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95400",
+      "quest": "39388"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95400",
+      "quest": "39427"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95415",
+      "quest": "39427"
+    },
+    {
+      "kind": "npc_end",
+      "id": "95692",
+      "quest": "40591"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96183",
+      "quest": "42814"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96258",
+      "quest": "39594"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96275",
+      "quest": "40312"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96286",
+      "quest": "39860"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96453",
+      "quest": "39426"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96453",
+      "quest": "40243"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96589",
+      "quest": "39654"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96669",
+      "quest": "39688"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96669",
+      "quest": "39694"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96669",
+      "quest": "40255"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96669",
+      "quest": "40256"
+    },
+    {
+      "kind": "npc_end",
+      "id": "96676",
+      "quest": "38914"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97193",
+      "quest": "39774"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97261",
+      "quest": "39681"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97261",
+      "quest": "46071"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97261",
+      "quest": "46083"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97322",
+      "quest": "39200"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97419",
+      "quest": "38347"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97429",
+      "quest": "39838"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97538",
+      "quest": "39854"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97558",
+      "quest": "39853"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97697",
+      "quest": "39869"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97765",
+      "quest": "39962"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97842",
+      "quest": "39969"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97905",
+      "quest": "39991"
+    },
+    {
+      "kind": "npc_end",
+      "id": "97908",
+      "quest": "40833"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98026",
+      "quest": "39938"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98026",
+      "quest": "40060"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98698",
+      "quest": "40130"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98736",
+      "quest": "40129"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98744",
+      "quest": "40160"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98744",
+      "quest": "40161"
+    },
+    {
+      "kind": "npc_end",
+      "id": "98744",
+      "quest": "40166"
+    },
+    {
+      "kind": "npc_end",
+      "id": "99276",
+      "quest": "40700"
+    },
+    {
+      "kind": "npc_end",
+      "id": "99276",
+      "quest": "40725"
+    },
+    {
+      "kind": "npc_end",
+      "id": "99276",
+      "quest": "40776"
+    },
+    {
+      "kind": "npc_end",
+      "id": "99689",
+      "quest": "40195"
+    },
+    {
+      "kind": "npc_end",
+      "id": "100016",
+      "quest": "40346"
+    },
+    {
+      "kind": "npc_end",
+      "id": "100016",
+      "quest": "41000"
+    },
+    {
+      "kind": "npc_end",
+      "id": "100017",
+      "quest": "40659"
+    },
+    {
+      "kind": "npc_end",
+      "id": "100973",
+      "quest": "40593"
+    },
+    {
+      "kind": "npc_end",
+      "id": "100973",
+      "quest": "44463"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101049",
+      "quest": "40674"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101071",
+      "quest": "39131"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101547",
+      "quest": "42970"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101594",
+      "quest": "40769"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101594",
+      "quest": "40770"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101594",
+      "quest": "40771"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101628",
+      "quest": "40755"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101646",
+      "quest": "40775"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101646",
+      "quest": "40788"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101664",
+      "quest": "40777"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101670",
+      "quest": "40238"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101674",
+      "quest": "40780"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101691",
+      "quest": "40782"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101891",
+      "quest": "40805"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101908",
+      "quest": "40806"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101908",
+      "quest": "40807"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101908",
+      "quest": "40808"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101915",
+      "quest": "40811"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101927",
+      "quest": "37449"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101927",
+      "quest": "38834"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101927",
+      "quest": "44137"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101990",
+      "quest": "40825"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101990",
+      "quest": "40827"
+    },
+    {
+      "kind": "npc_end",
+      "id": "101990",
+      "quest": "40828"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102032",
+      "quest": "40841"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102033",
+      "quest": "40845"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102130",
+      "quest": "40851"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102154",
+      "quest": "40884"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102154",
+      "quest": "40885"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102171",
+      "quest": "40886"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102381",
+      "quest": "40334"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102432",
+      "quest": "40904"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102735",
+      "quest": "41016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102790",
+      "quest": "41018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102924",
+      "quest": "41052"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102938",
+      "quest": "38753"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102963",
+      "quest": "42605"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102963",
+      "quest": "42606"
+    },
+    {
+      "kind": "npc_end",
+      "id": "102996",
+      "quest": "41039"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103027",
+      "quest": "41065"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103027",
+      "quest": "41101"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103156",
+      "quest": "41120"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103156",
+      "quest": "41121"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103345",
+      "quest": "41147"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103437",
+      "quest": "41214"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103437",
+      "quest": "41222"
+    },
+    {
+      "kind": "npc_end",
+      "id": "103746",
+      "quest": "42970"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104161",
+      "quest": "41309"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41267"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41287"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41288"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41311"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41315"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41326"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41327"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41633"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41639"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41645"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41651"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41657"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41663"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41669"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104538",
+      "quest": "41675"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41272"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41292"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41293"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41312"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41316"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41338"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41339"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41634"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41640"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41646"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41652"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41658"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41664"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41670"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104539",
+      "quest": "41676"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41277"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41297"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41298"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41313"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41317"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41344"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41345"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41636"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41642"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41648"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41654"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41660"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41666"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41672"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104540",
+      "quest": "41678"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41282"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41302"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41303"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41314"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41318"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41350"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41351"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41637"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41643"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41649"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41655"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41661"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41667"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41673"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104541",
+      "quest": "41679"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41638"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41644"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41650"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41656"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41662"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41668"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41674"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "41680"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104542",
+      "quest": "43922"
+    },
+    {
+      "kind": "npc_end",
+      "id": "104586",
+      "quest": "41410"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105072",
+      "quest": "41850"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105072",
+      "quest": "41852"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105088",
+      "quest": "41851"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105089",
+      "quest": "41853"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105152",
+      "quest": "41853"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105354",
+      "quest": "40647"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105917",
+      "quest": "42494"
+    },
+    {
+      "kind": "npc_end",
+      "id": "105917",
+      "quest": "42521"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106001",
+      "quest": "41777"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106001",
+      "quest": "41897"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106001",
+      "quest": "41898"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106001",
+      "quest": "41899"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106515",
+      "quest": "42198"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106538",
+      "quest": "44239"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106557",
+      "quest": "42158"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106656",
+      "quest": "42149"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106656",
+      "quest": "42166"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106656",
+      "quest": "42206"
+    },
+    {
+      "kind": "npc_end",
+      "id": "106834",
+      "quest": "42120"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107212",
+      "quest": "42053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107213",
+      "quest": "42053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107214",
+      "quest": "42053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107215",
+      "quest": "42053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107377",
+      "quest": "42421"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107723",
+      "quest": "37447"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107723",
+      "quest": "42510"
+    },
+    {
+      "kind": "npc_end",
+      "id": "107989",
+      "quest": "42617"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108008",
+      "quest": "42229"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108069",
+      "quest": "40219"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108239",
+      "quest": "42653"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "39247"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "40249"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "41119"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "41863"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "45117"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "45993"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108311",
+      "quest": "45994"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108569",
+      "quest": "43561"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42132"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42522"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42634"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42775"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42808"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "42809"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "43186"
+    },
+    {
+      "kind": "npc_end",
+      "id": "108571",
+      "quest": "44379"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109221",
+      "quest": "42821"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109221",
+      "quest": "42822"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109221",
+      "quest": "42823"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109221",
+      "quest": "42882"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109296",
+      "quest": "42939"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109296",
+      "quest": "42952"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109334",
+      "quest": "37566"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109434",
+      "quest": "42888"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109434",
+      "quest": "43462"
+    },
+    {
+      "kind": "npc_end",
+      "id": "109829",
+      "quest": "44206"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110348",
+      "quest": "44195"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110408",
+      "quest": "44228"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110410",
+      "quest": "44231"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110412",
+      "quest": "44211"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110424",
+      "quest": "43370"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110427",
+      "quest": "44207"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110434",
+      "quest": "44218"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110437",
+      "quest": "44221"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110485",
+      "quest": "43412"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110485",
+      "quest": "44214"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110538",
+      "quest": "43360"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110538",
+      "quest": "43361"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110595",
+      "quest": "44229"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110810",
+      "quest": "44235"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110810",
+      "quest": "44236"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110816",
+      "quest": "44212"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110817",
+      "quest": "44238"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110819",
+      "quest": "44230"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110820",
+      "quest": "44204"
+    },
+    {
+      "kind": "npc_end",
+      "id": "110821",
+      "quest": "39427"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111191",
+      "quest": "43387"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111191",
+      "quest": "43388"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111634",
+      "quest": "44234"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111734",
+      "quest": "44209"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111734",
+      "quest": "44210"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111772",
+      "quest": "44220"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111773",
+      "quest": "44306"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111774",
+      "quest": "44222"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111775",
+      "quest": "44224"
+    },
+    {
+      "kind": "npc_end",
+      "id": "111786",
+      "quest": "44237"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112146",
+      "quest": "43568"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112299",
+      "quest": "44205"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112627",
+      "quest": "44080"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112708",
+      "quest": "44101"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112982",
+      "quest": "44208"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112986",
+      "quest": "44219"
+    },
+    {
+      "kind": "npc_end",
+      "id": "112992",
+      "quest": "44226"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113213",
+      "quest": "44202"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113213",
+      "quest": "44203"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113355",
+      "quest": "44415"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113355",
+      "quest": "44416"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113361",
+      "quest": "44414"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113371",
+      "quest": "44227"
+    },
+    {
+      "kind": "npc_end",
+      "id": "113836",
+      "quest": "40755"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115297",
+      "quest": "44885"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115438",
+      "quest": "44865"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115465",
+      "quest": "44782"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115465",
+      "quest": "44821"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115497",
+      "quest": "44734"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115497",
+      "quest": "44735"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115551",
+      "quest": "44803"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44948"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44949"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44950"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44953"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44954"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44956"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44957"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44958"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44959"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44960"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44961"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44962"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44967"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44968"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115784",
+      "quest": "44971"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44973"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44974"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44975"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44976"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44977"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44978"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44979"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44980"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44981"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44982"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44983"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44984"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44985"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44986"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115785",
+      "quest": "44987"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44989"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44992"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44994"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44995"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44997"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "44999"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45001"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45003"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45005"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45007"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45009"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45011"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45013"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45015"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115786",
+      "quest": "45017"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "44990"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "44991"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "44993"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "44996"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "44998"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45000"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45002"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45004"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45006"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45008"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45010"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45012"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45014"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115787",
+      "quest": "45018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "44914"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "44915"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "47043"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "47046"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "47047"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115791",
+      "quest": "47048"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115805",
+      "quest": "44926"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115805",
+      "quest": "44927"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115923",
+      "quest": "45044"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115923",
+      "quest": "45051"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115923",
+      "quest": "45055"
+    },
+    {
+      "kind": "npc_end",
+      "id": "115923",
+      "quest": "45057"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116308",
+      "quest": "45187"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116308",
+      "quest": "45192"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116396",
+      "quest": "45239"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116735",
+      "quest": "44783"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116737",
+      "quest": "44783"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116737",
+      "quest": "46305"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116760",
+      "quest": "44868"
+    },
+    {
+      "kind": "npc_end",
+      "id": "116760",
+      "quest": "45088"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117226",
+      "quest": "45561"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117226",
+      "quest": "45562"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117226",
+      "quest": "45566"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117226",
+      "quest": "45567"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117226",
+      "quest": "45568"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117292",
+      "quest": "45575"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117438",
+      "quest": "45644"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117449",
+      "quest": "45645"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117471",
+      "quest": "45632"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117471",
+      "quest": "45633"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117471",
+      "quest": "45647"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117475",
+      "quest": "45648"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117475",
+      "quest": "45649"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117475",
+      "quest": "45650"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117760",
+      "quest": "45567"
+    },
+    {
+      "kind": "npc_end",
+      "id": "117760",
+      "quest": "45568"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118009",
+      "quest": "45565"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118009",
+      "quest": "45567"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118010",
+      "quest": "45565"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118010",
+      "quest": "45566"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118010",
+      "quest": "45567"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118088",
+      "quest": "45813"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118669",
+      "quest": "46318"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118778",
+      "quest": "45406"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118954",
+      "quest": "46080"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118954",
+      "quest": "46106"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118954",
+      "quest": "46107"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118955",
+      "quest": "46106"
+    },
+    {
+      "kind": "npc_end",
+      "id": "118955",
+      "quest": "46107"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119001",
+      "quest": "45586"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119001",
+      "quest": "45614"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119077",
+      "quest": "46318"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119723",
+      "quest": "47725"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119723",
+      "quest": "47726"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119723",
+      "quest": "47727"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119982",
+      "quest": "44877"
+    },
+    {
+      "kind": "npc_end",
+      "id": "119982",
+      "quest": "45532"
+    },
+    {
+      "kind": "npc_end",
+      "id": "120041",
+      "quest": "45498"
+    },
+    {
+      "kind": "npc_end",
+      "id": "120041",
+      "quest": "45528"
+    },
+    {
+      "kind": "npc_end",
+      "id": "120084",
+      "quest": "46675"
+    },
+    {
+      "kind": "npc_end",
+      "id": "120084",
+      "quest": "46676"
+    },
+    {
+      "kind": "npc_end",
+      "id": "120084",
+      "quest": "46677"
+    },
+    {
+      "kind": "npc_end",
+      "id": "121081",
+      "quest": "47017"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122511",
+      "quest": "47808"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122513",
+      "quest": "47810"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122514",
+      "quest": "47809"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47550"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47557"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47558"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47559"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47560"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47642"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47643"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47644"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122663",
+      "quest": "47645"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122799",
+      "quest": "46253"
+    },
+    {
+      "kind": "npc_end",
+      "id": "122800",
+      "quest": "46805"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123087",
+      "quest": "47603"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123087",
+      "quest": "47604"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123087",
+      "quest": "47605"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123087",
+      "quest": "47606"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123087",
+      "quest": "47607"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123252",
+      "quest": "47663"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123781",
+      "quest": "47744"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123781",
+      "quest": "47747"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123781",
+      "quest": "47750"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123790",
+      "quest": "47745"
+    },
+    {
+      "kind": "npc_end",
+      "id": "123790",
+      "quest": "47746"
+    },
+    {
+      "kind": "npc_end",
+      "id": "124995",
+      "quest": "46842"
+    },
+    {
+      "kind": "npc_end",
+      "id": "125189",
+      "quest": "47992"
+    },
+    {
+      "kind": "npc_end",
+      "id": "125210",
+      "quest": "48053"
+    },
+    {
+      "kind": "npc_end",
+      "id": "125216",
+      "quest": "48054"
+    },
+    {
+      "kind": "npc_end",
+      "id": "130654",
+      "quest": "50318"
+    },
+    {
+      "kind": "npc_end",
+      "id": "130773",
+      "quest": "48067"
+    },
+    {
+      "kind": "npc_end",
+      "id": "130773",
+      "quest": "49756"
+    },
+    {
+      "kind": "npc_end",
+      "id": "130919",
+      "quest": "49787"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60011"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60012"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60013"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60014"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60015"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60016"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60017"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60018"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60019"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60021"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60022"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60023"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60024"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60025"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60026"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60027"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60028"
+    },
+    {
+      "kind": "npc_end",
+      "id": "542001",
+      "quest": "60029"
+    },
+    {
+      "kind": "npc_end",
+      "id": "600006",
+      "quest": "60000"
+    },
+    {
+      "kind": "npc_end",
+      "id": "600006",
+      "quest": "60001"
+    },
+    {
+      "kind": "npc_end",
+      "id": "600022",
+      "quest": "49782"
+    },
+    {
+      "kind": "npc_end",
+      "id": "600022",
+      "quest": "49928"
+    },
+    {
+      "kind": "go_start",
+      "id": "231918",
+      "quest": "35195"
+    },
+    {
+      "kind": "go_start",
+      "id": "233956",
+      "quest": "36242"
+    },
+    {
+      "kind": "go_start",
+      "id": "237821",
+      "quest": "34347"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37811"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37849"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37884"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37885"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37916"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37917"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37945"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37979"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37992"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37993"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37994"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37996"
+    },
+    {
+      "kind": "go_start",
+      "id": "239791",
+      "quest": "37997"
+    },
+    {
+      "kind": "go_end",
+      "id": "231918",
+      "quest": "35194"
+    }
+  ],
+  "events": [
+    {
+      "eventEntry": "155",
+      "id": "93538",
+      "quest": "40857"
+    },
+    {
+      "eventEntry": "159",
+      "id": "93538",
+      "quest": "41158"
+    },
+    {
+      "eventEntry": "161",
+      "id": "93538",
+      "quest": "41161"
+    },
+    {
+      "eventEntry": "164",
+      "id": "93538",
+      "quest": "41164"
+    },
+    {
+      "eventEntry": "166",
+      "id": "93538",
+      "quest": "41167"
+    },
+    {
+      "eventEntry": "156",
+      "id": "93538",
+      "quest": "41171"
+    },
+    {
+      "eventEntry": "158",
+      "id": "93538",
+      "quest": "41174"
+    },
+    {
+      "eventEntry": "160",
+      "id": "93538",
+      "quest": "41177"
+    },
+    {
+      "eventEntry": "162",
+      "id": "93538",
+      "quest": "41180"
+    },
+    {
+      "eventEntry": "165",
+      "id": "93538",
+      "quest": "41183"
+    },
+    {
+      "eventEntry": "157",
+      "id": "93538",
+      "quest": "41186"
+    },
+    {
+      "eventEntry": "163",
+      "id": "93538",
+      "quest": "41189"
+    },
+    {
+      "eventEntry": "167",
+      "id": "93538",
+      "quest": "41192"
+    },
+    {
+      "eventEntry": "96",
+      "id": "111246",
+      "quest": "44164"
+    },
+    {
+      "eventEntry": "90",
+      "id": "111246",
+      "quest": "44166"
+    },
+    {
+      "eventEntry": "94",
+      "id": "111246",
+      "quest": "44167"
+    },
+    {
+      "eventEntry": "97",
+      "id": "111246",
+      "quest": "44171"
+    },
+    {
+      "eventEntry": "95",
+      "id": "111246",
+      "quest": "44172"
+    },
+    {
+      "eventEntry": "92",
+      "id": "111246",
+      "quest": "44173"
+    },
+    {
+      "eventEntry": "93",
+      "id": "111246",
+      "quest": "44174"
+    },
+    {
+      "eventEntry": "91",
+      "id": "111246",
+      "quest": "44175"
+    },
+    {
+      "eventEntry": "98",
+      "id": "111246",
+      "quest": "45799"
+    }
+  ],
+  "input_sha256": {
+    "quests.tsv": "685c1f86499902e701f92135d58d851e6487d5bf792ebf83b8dbb79e61898de7",
+    "addons.tsv": "660200c9edde7e6831bf6aa5683068c8b92c2a64fe7b620304e4e3ff0b0d06a4",
+    "disabled.tsv": "365747aba0768d20be9c6983045bbcd779165f699b8cbf1d058e45383bd4eede",
+    "creature-templates.tsv": "0c75bcf315708b353a8c9e21054d01dea27f7104df404bf9f477e6778dfe4255",
+    "gameobject-templates.tsv": "71e03128749c8af9ba440f3680b7c910ddd8ef0511e0b6d788a7ee4863566c09",
+    "creature-spawns.tsv": "330ee9a8fff1f3d7d9d33c16a6555f0ce120e9d859f1ebda4f395bc519ee2f3c",
+    "gameobject-spawns.tsv": "27b9e0ebcc114f9c027bbb378609a46fb47e31ed8f4ef697b6f9be3b39a1fbde",
+    "relations.tsv": "472290a700c55d1f65805e461f9184b64362886ecf519b868686a7ee1cd5a942",
+    "conditions.tsv": "c606fe6803396243174f9712e2802629903891c803eb7c8925411ec8584eb068",
+    "objectives.tsv": "54d151aa0d29ef4d0a2d41323fdf424ef9189b88a0f021064f66fc6761f97e08",
+    "event-quests.tsv": "07cfd641bd6f782ec1fc1b57c1fcae5b34da65ba5227719474722f1eed575227",
+    "smart-quests.tsv": "0f1dabe70cd5a08817910cfa8b89665b14799714118f8bb85218012ff0e2d595"
+  }
+}
