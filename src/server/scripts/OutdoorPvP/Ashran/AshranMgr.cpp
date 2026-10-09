@@ -1405,6 +1405,8 @@ void OutdoorPvPAshran::EndEvent(uint8 p_EventID, bool p_ScheduleNext /*= true*/)
             SendUpdateWorldState(WorldStateLapsAlliance, 0);
             SendUpdateWorldState(WorldStateLapsHorde, 0);
             SendUpdateWorldState(WorldStateEnableLapsEvent, WorldStateDisabled);
+            m_StadiumRacingLaps[TEAM_ALLIANCE] = 0;
+            m_StadiumRacingLaps[TEAM_HORDE] = 0;
             break;
         }
         case MaxEvents:
@@ -1460,6 +1462,14 @@ void OutdoorPvPAshran::SetEventData(uint8 p_EventID, uint8 teamID, uint32 p_Data
             if (m_StadiumRacingLaps[teamID] + p_Data >= MaxStadiumRacingLaps)
             {
                 EndEvent(EventStadiumRacing);
+
+                // Only a real winning lap awards event credit. EndEvent also
+                // runs during resets/cancellation, which must not award it.
+                for (ObjectGuid guid : m_PlayersInWar[teamID])
+                    if (Player* player = ObjectAccessor::GetObjectInMap(guid, m_map, (Player*)nullptr))
+                        if (player->GetMapId() == AshranMapID && player->GetAreaId() == 7279 &&
+                            player->GetTeamId() == teamID)
+                            player->KilledMonsterCredit(95099);
 
                 if (Creature* l_Herald = GetHerald())
                 {

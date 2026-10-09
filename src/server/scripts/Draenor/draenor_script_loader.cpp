@@ -5,6 +5,9 @@ void AddSC_edge_of_reality();
 void AddSC_wod_dark_portal();
 void AddSC_wod_frostfire_ridge();
 void AddSC_draenor_campaign_recovery();
+void AddSC_bloodmaul_campaign_events();
+void AddSC_seismic_campaign();
+void AddSC_exarch_campaign();
 void AddSC_wod_shadowmoon_valley();
 
 void AddSC_instance_auchindoun();
@@ -83,6 +86,9 @@ void AddDraenorScripts()
     AddSC_wod_dark_portal();
     AddSC_wod_frostfire_ridge();
     AddSC_draenor_campaign_recovery();
+    AddSC_bloodmaul_campaign_events();
+    AddSC_seismic_campaign();
+    AddSC_exarch_campaign();
     AddSC_wod_shadowmoon_valley();
 
     AddSC_instance_auchindoun();

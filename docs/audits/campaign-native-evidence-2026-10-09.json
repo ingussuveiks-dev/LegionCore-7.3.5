@@ -1,0 +1,42 @@
+{
+  "native_version": "Legion 7.3.5 runtime",
+  "sha256": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SceneScriptText": "75c0e4c7c5fe7d753e1823a40683d9b7ed1c458952b28b08d103903cb09a19a4",
+    "SceneScriptPackageMember": "18401c336fd3faaf175698df6982f0c3f6db2902db97bfc7e5306b691dacc3e5",
+    "Map": "08adc433f6726b784211aca5e80b0b54fb791a6d702ce35195aeae136a16d2d4",
+    "LFGDungeons": "eb05aa80f05f82048bbda5931c6f34b062984de64b992e7b195ea5d2b3700d42",
+    "AreaTable": "e076490be3f9bea2f0e3ef161e86699a79aabb53ac560b63ec330fb6730fb40f"
+  },
+  "scenes": {
+    "580": 773,
+    "612": 788,
+    "602": 801,
+    "875": 1003
+  },
+  "scene_script_names": {
+    "11604": "Frostfire Ridge - \"The Shadow Gate\" Scene - Init - LWB",
+    "11605": "Frostfire Ridge - Master \"The Shadow Gate\" Scene - LWB",
+    "11609": "Frostfire Ridge - Grubnor \"The Shadow Gate\" Scene - LWB",
+    "11646": "Frostfire Ridge: (DLA) - Garrison Ch. I - Alliance - Mole Machine Ride - Fighting Pit - Main",
+    "11654": "Frostfire Ridge: (DLA) - Garrison Ch. I - Alliance - Mole Machine Ride - Workshop",
+    "11655": "Frostfire Ridge: (DLA) - Garrison Ch. I - Alliance - Mole Machine Ride - Arrive at Cave",
+    "11679": "Frostfire Ridge: (DLA) - Garrison Ch. I - Alliance - Mole Machine Leave - Main",
+    "12424": "Shadowmoon - Altar of Sha'tar - Crowning an Exarch - Init - HMC",
+    "12425": "Shadowmoon - Altar of Sha'tar - Crowning an Exarch - Master - HMC"
+  },
+  "trial_of_faith": {
+    "map": 1374,
+    "lfg": 870,
+    "difficulty": 12,
+    "native_min_damage": 1,
+    "native_max_damage": 5
+  },
+  "ashran_blocker": {
+    "battle_map": 1191,
+    "instance_type": 5,
+    "battle_zone": 8485,
+    "legacy_registered_zone": 6941,
+    "legacy_zone_map": 1116
+  }
+}

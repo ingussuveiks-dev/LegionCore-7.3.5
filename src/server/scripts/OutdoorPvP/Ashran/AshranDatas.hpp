@@ -9,7 +9,7 @@
 enum eAshranDatas
 {
     /// Maps, Zones, Areas IDs
-    AshranZoneID                = 6941,
+    AshranZoneID                = 8485, // 7.3.5 battle instance; 6941 belongs to neutral map 1116
     AshranMapID                 = 1191,
     AshranNeutralMapID          = 1116,
     AshranPreAreaHorde          = 7333,

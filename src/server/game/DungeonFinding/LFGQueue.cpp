@@ -343,6 +343,14 @@ LfgCompatibility LFGQueue::CheckCompatibility(GuidList check)
                 forceMinPlayers = true;
                 noNeedWaightConfirm = true;
             }
+            // Trial of Faith is a solo quest instance. Its native row allows
+            // 1..5 damage roles; waiting for five prevents the quest starting.
+            if (dungeon->id == 870 && dungeon->map == 1374)
+            {
+                minGroupSize = maxGroupSize = 1;
+                forceMinPlayers = true;
+                noNeedWaightConfirm = true;
+            }
         }
 
     if (sWorld->getBoolConfig(CONFIG_LFG_DEBUG_JOIN))

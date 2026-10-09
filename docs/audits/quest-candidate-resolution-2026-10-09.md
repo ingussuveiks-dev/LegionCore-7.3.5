@@ -199,3 +199,122 @@ and visual confirmation remain outstanding; these tests are not a substitute.
   replacement remains unproven. No replacement ID was invented.
 
 Custom level-100 boost, ship, bird, scenario criteria and pet paths are unchanged.
+
+## Event restoration follow-up (2026-10-09)
+
+The implementations below replace the missing server interactions with functional
+recovery encounters. They keep the native quest IDs, objective counts, quest loot
+and rewards. They do **not** claim to reconstruct every retail combat ability,
+companion behavior or cinematic transition. Combat recovery enemies currently use
+melee AI. Personal actor positions that lack native scene coordinates are chosen
+inside the existing quest POIs and use runtime terrain height.
+
+### Bloodmaul: 34381, 34318, 34469 and 34319
+
+- The Shadow Gate introduction uses spell 158051, scene 580 and **package 773**.
+  Grubnor appears at the final position in native script 11609. The gate requires
+  his defeat and an actual interaction by the owner. Receiver 78792 appears only
+  after the gate objective. An intro timeout prevents a missing client callback
+  from blocking combat.
+- Orlana 78428 offers the original parallel quests. All five existing totem items
+  must be looted from the original container/loot template. All ten souls must be
+  killed and then purified with item 110394 / spell 158278; live, foreign-owned,
+  already purified or inaccessible corpses are rejected. Spell 158282 provides
+  the original credit and purified-spirit visual, without a duplicate credit.
+- Soulgrinder Survivor requires two distinct ordered totem interactions, then
+  Borgal's defeat. Receiver 78821 appears afterwards. The optional ritual credit
+  is not substituted for the mandatory objectives.
+- The recovery keeps the original phase aura while the player is in the campaign
+  area. This is recovery phasing, not a claim that the original spirit transition
+  has been reproduced exactly. Leaving the area/map removes it; completing or
+  abandoning the relevant stages removes their personal actors.
+
+### Seismic Matters: 34026 through 34033, including 34048
+
+- Dorn and the Tremor Tracker are restored. Starting the tracker spawns two waves
+  of three Iron Grunts. Only six actual deaths complete the analysis; there is a
+  two-second inter-wave pause. Death, abandonment, leaving, timeout, summon failure
+  or a disappearing living opponent cancels the encounter without credit.
+- Workshop, engineer and return-to-Hansel discovery require finding the actual
+  personal NPC nearby and in line of sight. The mine and mole-machine objectives
+  retain four/five distinct interaction sites, with progress recovered from the
+  persisted objectives. Blackhammer's existing spawn and quest loot are retained.
+- Original scene spells 158645/158317 are connected to **788/801**, using scene
+  IDs **612/602**. Completion or a finite aura timeout uses the same guarded
+  arrival handler. An unsuccessful teleport cannot credit the prototype ride.
+- Both sabotage quests must be rewarded before Privileged Information. The blank
+  disable on 34026 is removed only with these handlers installed. The permanent
+  post-campaign garrison transport perk is not part of this recovery.
+
+### Exarch trials: 36163, 36164, 36167, 36168 and 36169
+
+- Missing trial guides, Everburn and council actors are restored; the existing
+  Plaguebloom and Tuulani placements are retained. All three trials are parallel
+  prerequisites for the council challenge.
+- Tuulani sends an eligible solo player to native **LFG 870 / map 1374 / difficulty
+  12**, the dedicated Auchindoun quest instance. Its DB2 row permits one to five
+  damage roles; an isolated queue rule starts this quest with one player instead
+  of waiting for five. The normal map-1182 dungeon and Broken Shore queue rule
+  are unchanged. Two ordered spirit fights give the existing kill objectives;
+  Yrel provides the return interaction even after abandonment.
+- The council challenge starts through Maladaar after all three trial rewards.
+  All three opponents must surrender. Raw damage is converted using the target's
+  health multiplier before comparison with target-relative health, including
+  lethal one-hit spells and pet damage. Other players cannot progress the duel.
+  A retry restores health, faction and standing state.
+- The reward's scene 875 is connected to **package 1003**, whose native scripts
+  12424/12425 crown Yrel. Package 1024 is the separate audience scene and is not
+  used as a guessed substitute. The full retail trial mechanics and audience
+  presentation are not reproduced by these recovery encounters.
+
+### Ashran: corrected handlers, still not an operational battle
+
+The source now uses native battle zone **8485**. Racing resets clear both lap
+counters, and only the winning lap awards 95099 to the winning team's registered
+participants in stadium area 7279. Reset/cancellation, losing players, other areas,
+other maps and repeated callbacks do not award it. Existing faction-leader and PvP
+kill-credit paths are not duplicated.
+
+**Ashran remains unfinished and is not enabled.** Native map 1191 is an instanced
+scenario. The old controller expects one world map: registering it would attach
+it to the base map, while players enter separate InstanceMaps. Its dynamic spawn
+helpers likewise insert world spawn data instead of maintaining per-instance
+encounters. It also lacks complete acquisition/reset behavior for 38923/39090.
+Resolving those issues requires an instance-aware battle lifecycle and an actual
+multi-player entry/exit test; changing a zone number or inserting one DB row does
+not make these quests playable. No speculative activation was deployed.
+
+### Karazhan 44556
+
+No replacement predecessor was found. The native storyline still identifies
+44944, while current [Wowhead](https://www.wowhead.com/quest=44556/return-to-karazhan)
+marks the old attunement quest obsolete. A [contemporary September 2017 report](https://www.wowhead.com/forever/news/legion-attunement-tracker-updated-for-7-3-requirements-271427)
+records that the attunement changed, but does not prove an exact replacement ID.
+[Blizzard's 7.3 notes](https://worldofwarcraft.blizzard.com/en-us/news/20947822/world-of-warcraft-73-patch-notes)
+do not resolve that ID question. The existing independent continuation quests and
+ungated map-1651 access remain intact. The historical quest was not re-enabled
+with an invented prerequisite or auto-completion workaround.
+
+### Verification
+
+- `Test-CampaignEvents.ps1`: compiles extracted production gate, ritual,
+  purification, wave, travel and council handlers; tests ordering, ownership,
+  duplicate events, partial summons, abandonment/death, failed teleports and
+  scaled lethal damage.
+- `Test-CampaignInfrastructure.ps1`: compiles the actual racing win/reset
+  handlers and isolated solo-trial queue rule; checks no credit on cancellation,
+  loss, wrong area/map or duplicate callback, and no queue change for other maps.
+- `Test-CampaignEventData.ps1`: applies all three production migrations twice in
+  isolated temporary tables; checks native goals, prerequisites, bindings,
+  idempotence, unrelated records and existing custom script/link preservation.
+- `Test-CampaignNativeData.py`: checks the extracted 7.3.5 spell effects, sparse
+  SceneScriptText records, scene-package membership, scene positions and map/LFG
+  identities. Reproducible metadata and hashes are in
+  `campaign-native-evidence-2026-10-09.json`; full client script text is not copied
+  into the repository.
+- Existing Bloodmaul actor/data, Draenor chain and Archaeology chain tests pass.
+
+A full client playthrough, visuals, encounter balance and movement remain to be
+tested. A compiler or handler test cannot establish those results. The custom
+level-100 boost, ship/bird flight, scenario criteria, pet and warlock paths are
+unchanged.
