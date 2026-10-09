@@ -5072,85 +5072,6 @@ class npc_nightmare_hitching_post : public CreatureScript
         }
 };
 
-//107995
-class npc_azsuna_stellagosa_q37862 : public CreatureScript
-{
-public:
-    npc_azsuna_stellagosa_q37862() : CreatureScript("npc_azsuna_stellagosa_q37862") {}
-
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
-    {
-        if (player->GetQuestObjectiveData(37862, 107995) || (player->GetQuestStatus(37862) == QUEST_STATUS_REWARDED
-            || player->GetQuestStatus(37862) == QUEST_STATUS_COMPLETE))
-            return false;
-
-        player->PlayerTalkClass->SendCloseGossip();
-        player->SummonCreature(107995, creature->GetPosition());
-
-        return true;
-    }
-
-    struct npc_azsuna_stellagosa_q37862AI : public ScriptedAI
-    {
-        npc_azsuna_stellagosa_q37862AI(Creature* creature) : ScriptedAI(creature)
-        {
-            me->SetReactState(REACT_PASSIVE);
-            me->SetDisableGravity(true);
-        }
-
-        void IsSummonedBy(Unit* who) override
-        {
-            if (Unit* Owner = me->ToTempSummon()->GetSummoner())
-                if (Player* player = Owner->ToPlayer())
-                    player->RewardPlayerAndGroupAtEvent(107995, player);
-            who->AddPlayerInPersonnalVisibilityList(who->GetGUID());
-            who->CastSpell(me, 77901);
-            
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->AddDelayedEvent(2000, [this] {
-                me->GetMotionMaster()->MovePath(107995, false);;
-            });
-        }
-
-        void MovementInform(uint32 type, uint32 id) override
-        {
-            if (type != WAYPOINT_MOTION_TYPE)
-                return;
-
-            if (id == 1)
-            {
-                if (Unit* Owner = me->ToTempSummon()->GetSummoner())
-                    if (Player* player = Owner->ToPlayer())
-                        player->CastSpell(player, 214402);
-                Talk(0);
-            }
-
-            if (id == 2)
-                Talk(1);
-
-            if (id == 3)
-                Talk(2);
-
-            if (id == 4)
-                Talk(3);
-
-            if (id == 9)
-            {
-                if (Unit* Owner = me->ToTempSummon()->GetSummoner())
-                    if (Player* player = Owner->ToPlayer())
-                        player->RemoveAurasDueToSpell(214402);
-                me->DespawnOrUnsummon(1000);
-            }
-        }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_azsuna_stellagosa_q37862AI(creature);
-    }
-};
-
-
 Position const revilWP[83] =
 {
     { -10340.1f, -1257.12f, 35.3007f },
@@ -7161,7 +7082,6 @@ void AddSC_npcs_special()
     new npc_grimoire_succubus();
     new npc_grimoire_felhunter();
     new npc_grimoire_voidwalker();
-    new npc_azsuna_stellagosa_q37862();
     new npc_revil_kost_following_the_curse();
     new npc_revil_kost_dark_rider();
     new npc_dalaran_defender_barrem();
