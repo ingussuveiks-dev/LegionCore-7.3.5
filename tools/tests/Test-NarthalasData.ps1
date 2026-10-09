@@ -1,8 +1,8 @@
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
-$migration=@('12_narthalas_entry','13_narthalas_wanding','14_narthalas_lessons') | ForEach-Object {Get-Content "$repo/sql/updates/world/2026_10_09_$_.sql" -Raw}
+$migration=@('12_narthalas_entry','13_narthalas_wanding','14_narthalas_lessons','15_narthalas_remove_autocomplete') | ForEach-Object {Get-Content "$repo/sql/updates/world/2026_10_09_$_.sql" -Raw}
 $migration=$migration -join "`n"
-$tables=@('gameobject_template','gameobject','quest_objectives','creature_template','smart_scripts','spell_script_names','spell_loot_template','creature_loot_template','quest_template_addon','spell_scene','areatrigger_scripts')
+$tables=@('quest_template','quest_start_scripts','gameobject_template','gameobject','quest_objectives','creature_template','smart_scripts','spell_script_names','spell_loot_template','creature_loot_template','quest_template_addon','spell_scene','areatrigger_scripts')
 $fixture=($tables | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $native=Get-Content "$repo/docs/audits/narthalas-native-2026-10-09.json" -Raw | ConvertFrom-Json
 $nativeRows=($native.objectives | ForEach-Object {"SELECT $($_.ID) ID,$($_.QuestID) QuestID,$($_.Type) Type,$($_.ObjectID) ObjectID,$($_.Amount) Amount,$($_.Flags) Flags,$($_.Flags2) Flags2"}) -join ' UNION ALL '
@@ -25,6 +25,8 @@ SELECT 'actors',COUNT(*) FROM creature_template WHERE ScriptName IN('npc_narthal
 SELECT 'runes',COUNT(*) FROM spell_scene WHERE MiscValue IN(935,936,937) AND ScriptName='scene_narthalas_rune';
 SELECT 'wand',ScriptName FROM areatrigger_scripts WHERE entry=11511;
 SELECT 'podium',ScriptName FROM gameobject_template WHERE entry=250362;
+SELECT 'start-bypass',COUNT(*) FROM quest_template WHERE ID IN(37729,42370,42371) AND StartScript<>0;
+SELECT 'old-auto-complete',COUNT(*) FROM quest_start_scripts WHERE id IN(37729,42370,42371);
 SELECT 'events',SUM(SpecialFlags & 2) FROM quest_template_addon WHERE ID IN(37729,42370,42371);
 SELECT 'prerequisites',COUNT(*) FROM quest_template_addon WHERE (ID=37729 AND PrevQuestID=42371) OR (ID=37730 AND PrevQuestID=37729);
 SELECT 'robes',QuestRequired FROM spell_loot_template WHERE Entry=179185 AND Item=120948;
@@ -41,6 +43,6 @@ try {
  $rows=& 'C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe' --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --skip-column-names --execute=$fixture
  if($LASTEXITCODE){throw 'Nar thalas SQL fixture failed'}
 } finally {$env:MYSQL_PWD=$previous}
-$expected=@("native-objectives`t0","saved-progress`t0","loot-links`t10","bookshelf`t59536","new-books`t3","unrelated-spawns`t0","old-escort`t0","shared-hide`t0","start-link`t0","unrelated-farondis`t1","escort-path`t10","spell-bindings`t4","actors`t5","runes`t3","wand`tat_narthalas_wand","podium`tgo_narthalas_podium","events`t0","prerequisites`t2","robes`t1","key`t1`t1","key-source`t1","custom`tcustom_farondis")
+$expected=@("native-objectives`t0","saved-progress`t0","loot-links`t10","bookshelf`t59536","new-books`t3","unrelated-spawns`t0","old-escort`t0","shared-hide`t0","start-link`t0","unrelated-farondis`t1","escort-path`t10","spell-bindings`t4","actors`t5","runes`t3","wand`tat_narthalas_wand","podium`tgo_narthalas_podium","start-bypass`t0","old-auto-complete`t0","events`t0","prerequisites`t2","robes`t1","key`t1`t1","key-source`t1","custom`tcustom_farondis")
 if(($rows -join '|') -ne ($expected -join '|')){throw "SQL mismatch: $($rows -join '|')"}
-'PASS: three repeatable migrations, 21 native objectives, saved progress/unrelated spawns/custom bindings, ten loot links, three books, native scenes, proper prerequisites and loot mode.'
+'PASS: four repeatable migrations, 21 native objectives, saved progress/unrelated spawns/custom bindings, ten loot links, three books, native scenes, proper prerequisites and loot mode.'

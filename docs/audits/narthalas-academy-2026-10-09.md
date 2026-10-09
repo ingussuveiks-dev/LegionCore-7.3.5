@@ -82,7 +82,7 @@ values are not imported.
   `complete`/cancel never grants credit. Remove these local auras on leaving,
   abandoning or logout. Correct prerequisites from Haunted Halls -> Pop Quiz
   and Study Hall -> Keys to **Study Hall -> Pop Quiz -> Keys**.
-- **Completion state:** 42370/42371/37729 had SpecialFlags bit 2. In this core,
+- **Completion state:** 42370/42371/37729 had start scripts that completed the event immediately; 42371 also created all three books. Remove those specific bypass commands and their StartScript bindings. They also forced SpecialFlags bit 2 back on during script loading. In this core,
   CanCompleteQuest rejects an incomplete quest with that event flag regardless
   of its filled objectives. Remove just that stale bit; their explicit
   objectives now determine completion. Already-filled old saves are recovered
@@ -100,7 +100,7 @@ values are not imported.
 - `Test-NarthalasNative.py`: ten quests/21 TDB objectives; original item effects,
   summons, wand bar/missile, rune scene hierarchy/origin and visual assets;
   verifies absent 108997/218570/212924 and reads native sparse scene text.
-- `Test-NarthalasData.ps1`: executes the three actual migrations repeatedly in
+- `Test-NarthalasData.ps1`: executes the four actual migrations repeatedly in
   temporary copies of the world tables, compares all 21 objectives to TDB,
   preserves saved indices/unrelated spawns/custom bindings, and checks the
   loot, event flags, actor/scene bindings and prerequisites.
