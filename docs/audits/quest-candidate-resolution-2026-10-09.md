@@ -133,3 +133,69 @@ The correct identities and original links are now recorded. Full restoration
 of disabled Garrison events, Ashran acquisition/credit/reset behavior and the
 Gearing Up successor's appearance remain separate unfinished implementation
 work. No in-client completion is claimed.
+
+## Gameplay repair follow-up: Bloodmaul, 34309 through 34316
+
+The subsequent implementation adds `draenor_campaign_recovery.cpp` and migration
+`2026_10_09_02_bloodmaul_campaign_progress.sql`. This is a functional recovery of
+the first four quests, not a claim that the entire campaign or all level 100–110
+quests have been restored.
+
+- **34309:** discovery credit 78060 requires the real prisoner 78659 within eight
+  yards and line of sight. Accepting the quest does not award discovery credit.
+- **34314:** objective 272536 is **sequenced (flag 2), not optional (flag 4)**.
+  The missing shackle 229414 now appears personally at the existing prisoner's
+  position while the player has key 110664. Its use handler rechecks ownership,
+  quest status and the key, then allows the ordinary GO objective credit and
+  native spell 159041. Abandoning, finishing the objective or losing the key
+  removes it. The existing Rugrum loot row is retained: LootMode=0 is accepted
+  by this core's `LootTemplate::ProcessWorld`; it is not a broken loot mode.
+- **34315:** all three existing gear containers and their ordinary quest loot
+  remain required. After hand-in, personal questgiver 78746 becomes available
+  near the prisoner and is recovered after login/return.
+- **34316:** reaching the actual quest POI polygon on the ground awards discovery
+  credit 78252. Being dead, on a taxi, outside the polygon or above the ground
+  does not. Personal receiver 78785 appears at the hand-in POI (7384, 5027),
+  with terrain-resolved height. No objective is credited just for spawning him.
+  He remains available for the existing next quest after hand-in.
+- Prerequisites require rewarding 34309 before 34314, 34315 before 34316 and
+  34316 before 34381. Quest objectives and rewards are unchanged. Actors are
+  personal, expire outside the area and are explicitly cleaned on logout.
+
+The [shackle interaction](https://www.wowhead.com/quest=34314/out-of-the-chains)
+and [cave-arrival objective](https://www.wowhead.com/quest=34316/seeking-the-truth)
+agree with the native/local objective records. Actor placement uses the existing
+prisoner and native quest POIs; this recovery does not reconstruct companion
+dialogue, escort animations or every original visual.
+
+Validation: `Test-BloodmaulCampaign.ps1` compiles the production player/GO scripts
+against a small world boundary and exercises ownership, key loss, abandonment,
+login/map return, cleanup, quest order and discovery restrictions.
+`Test-BloodmaulCampaignData.ps1` runs the production SQL in temporary tables and
+checks idempotence, isolation, custom binding preservation, mandatory shackle,
+key loot, gear goals and quest handoffs. Existing Draenor and Archaeology chain
+SQL tests also pass. The production scripts compile in Release. Client playthrough
+and visual confirmation remain outstanding; these tests are not a substitute.
+
+### Remaining implementation blockers
+
+- **34381 onward:** Grubnor 78003, gate 229026 and receiver 78792 are absent.
+  The spirit-world transition and the following Orlana/soulgrinder sequence
+  require implementation. The newly restored 34316 hand-in does not fix these.
+- **34026–34030 and the Exarch trials:** entire event actors/interactions remain
+  missing; the disabled roots have not been enabled over incomplete gameplay.
+  Native summon spells 159067/159122 create scout actors 78753/78786, not the
+  missing questgiver actors, so they are not a substitute for this repair.
+- **Ashran:** the live `outdoorpvp_template` has no Ashran controller registration.
+  Its source registers zone 6941, which native AreaTable maps to Draenor 1116;
+  the battle map 1191 uses zone 8485. Native area 7279 is the racing stadium.
+  The racing victory handler has no objective credit 95099. These are additional
+  blockers beyond the previously identified acquisition/reset problem.
+  Conversely, faction bosses 82876/82877 already have KillCredit1=98332, which
+  matches CriteriaTree 46081 -> 46082 -> Criteria 29154 (kill 98332). Ordinary
+  PvP kills already call `KilledPlayerCredit`; adding another copy would double
+  count. No partial Ashran activation or duplicate credit was introduced.
+- **44556:** the original 44944 predecessor is confirmed; a version-correct
+  replacement remains unproven. No replacement ID was invented.
+
+Custom level-100 boost, ship, bird, scenario criteria and pet paths are unchanged.

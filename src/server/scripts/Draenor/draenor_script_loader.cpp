@@ -4,6 +4,7 @@ void AddSC_wod_tanaan_jungle();
 void AddSC_edge_of_reality();
 void AddSC_wod_dark_portal();
 void AddSC_wod_frostfire_ridge();
+void AddSC_draenor_campaign_recovery();
 void AddSC_wod_shadowmoon_valley();
 
 void AddSC_instance_auchindoun();
@@ -81,6 +82,7 @@ void AddDraenorScripts()
     AddSC_edge_of_reality();
     AddSC_wod_dark_portal();
     AddSC_wod_frostfire_ridge();
+    AddSC_draenor_campaign_recovery();
     AddSC_wod_shadowmoon_valley();
 
     AddSC_instance_auchindoun();
