@@ -1,5 +1,6 @@
 void AddSC_azsuna();
 void AddSC_azsuna_scythe();
+void AddSC_faronaar_chain();
 void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
@@ -180,6 +181,7 @@ void AddLegionScripts()
 {
     AddSC_azsuna();
     AddSC_azsuna_scythe();
+    AddSC_faronaar_chain();
     AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();
