@@ -301,8 +301,6 @@ public:
         if (Creature* drawing = player->SummonCreature(Drawings[stage], floor,
             TEMPSUMMON_TIMED_DESPAWN, 300000, 0, player->GetGUID()))
         {
-            drawing->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-            drawing->SetReactState(REACT_AGGRESSIVE);
             // The native placement spell supplies its credit and book scene.
             // Kill credit remains the core's real death path, never this click.
             player->CastSpell(player, 212912 + stage, true);
@@ -314,12 +312,30 @@ public:
 struct npc_narthalas_drawing : public ScriptedAI
 {
     npc_narthalas_drawing(Creature* creature) : ScriptedAI(creature) { }
-    void UpdateAI(uint32) override
+    uint32 intro = 6500;
+    void IsSummonedBy(Unit*) override
+    {
+        // SceneScriptText 14125 returns the camera after 3 + 1.5 + 1.5 sec.
+        // Do not start a fight while the owner is still watching that scene.
+        me->SetReactState(REACT_PASSIVE);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+    }
+    void UpdateAI(uint32 diff) override
     {
         Player* player = Narthalas::Owner(me);
         if (!Narthalas::Active(player, 42371) || !player->IsWithinDistInMap(me, 80.0f))
+        {
             me->DespawnOrUnsummon();
-        else if (UpdateVictim()) DoMeleeAttackIfReady();
+            return;
+        }
+        if (intro)
+        {
+            if (intro > diff) { intro -= diff; return; }
+            intro = 0;
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
+        if (UpdateVictim()) DoMeleeAttackIfReady();
     }
 };
 

@@ -36,11 +36,11 @@ struct Motion { unsigned type=0,moves=0,id=0;Position destination;
 };
 struct CreatureAI { virtual ~CreatureAI()=default;virtual void IsSummonedBy(Unit*){}virtual void Reset(){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void UpdateAI(uint32){}virtual void MovementInform(uint32,uint32){}virtual void PassengerBoarded(Unit*,int8,bool){} };
 struct Creature:Unit {
- unsigned entry=0,expiry=0,flags=0;uint64 spawn=0,health=100,maxHealth=100;float multiplier=1;ObjectGuid owner,viewer;
+ unsigned entry=0,expiry=0,flags=0,react=0;uint64 spawn=0,health=100,maxHealth=100;float multiplier=1;ObjectGuid owner,viewer;
  bool removed=false;Motion motion;Creature* ToCreature()override{return this;}virtual TempSummon* ToTempSummon(){return nullptr;}
  unsigned GetEntry(){return entry;}uint64 GetDBTableGUIDLow(){return spawn;}
  void DespawnOrUnsummon(unsigned delay=0){if(delay)expiry=delay;else removed=true;}
- void AddPlayerInPersonnalVisibilityList(ObjectGuid g){viewer=g;}void SetReactState(int){}void SetDisableGravity(bool){}void SetCanFly(bool){}void CombatStop(bool){}
+ void AddPlayerInPersonnalVisibilityList(ObjectGuid g){viewer=g;}void SetReactState(int state){react=state;}void SetDisableGravity(bool){}void SetCanFly(bool){}void CombatStop(bool){}
  void SetFlag(unsigned,unsigned value){flags|=value;}void RemoveFlag(unsigned,unsigned value){flags&=~value;}
  uint64 GetHealth(Unit*){return health;}uint64 GetMaxHealth(Unit*){return maxHealth;}float GetHealthMultiplierForTarget(Unit*){return multiplier;}
  Motion* GetMotionMaster(){return &motion;}
@@ -194,7 +194,7 @@ int main()
   p.items[Narthalas::Books[stage]]=1;p.failedSpawn=true;book.OnGossipHello(&p,&podium);assert(!Narthalas::OwnedDrawing(&p,Narthalas::Drawings[stage]));p.failedSpawn=false;
   book.OnGossipHello(&p,&podium);auto drawing=Narthalas::OwnedDrawing(&p,Narthalas::Drawings[stage]);assert(drawing && drawing->viewer==p.guid && p.casts.back()==212912+stage);
   unsigned casts=unsigned(p.casts.size());book.OnGossipHello(&p,&podium);assert(p.casts.size()==casts && p.credits.size()==previous);
-  npc_narthalas_drawing battle(drawing);p.alive=false;battle.UpdateAI(100);assert(drawing->removed);p.alive=true;
+  npc_narthalas_drawing battle(drawing);battle.IsSummonedBy(&p);assert(drawing->react==REACT_PASSIVE && (drawing->flags & UNIT_FLAG_IMMUNE_TO_PC));battle.UpdateAI(6000);assert(drawing->react==REACT_PASSIVE);battle.UpdateAI(500);assert(drawing->react==REACT_AGGRESSIVE && !(drawing->flags & UNIT_FLAG_IMMUNE_TO_PC));p.alive=false;battle.UpdateAI(100);assert(drawing->removed);p.alive=true;
   book.OnGossipHello(&p,&podium);drawing=Narthalas::OwnedDrawing(&p,Narthalas::Drawings[stage]);assert(drawing);
   // Boundary supplied by core's actual monster death handler, not the podium.
   drawing->alive=false;p.objectives[{42371,Narthalas::Drawings[stage]}]=1;

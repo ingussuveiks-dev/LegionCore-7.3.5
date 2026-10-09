@@ -69,7 +69,7 @@ values are not imported.
   book camera scenes 1279/1280/1281 (packages 1628/1629/1630). No creature kill is
   credited by clicking or summoning. Actual kills of Kobold, Sea Skrog and
   Senegos drawings advance the saved sequence. Remove the personal drawing's
-  immunity to players, retain the existing scaling, and provide basic combat.
+  immunity to players after a 6.5-second passive intro (native camera duration is six seconds), retain the existing scaling, and provide basic combat.
   Duplicate/failed summons, death and relog allow retrying the current book.
   The books stay in inventory for the original item objectives/turn-in.
 - **37729, Pop Quiz:** native sparse SceneScriptText rows 13159/13160/13162 and
