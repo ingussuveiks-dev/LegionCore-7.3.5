@@ -73,8 +73,11 @@ is retained and the two missing reward conditions are supplied.
   removal do not credit the ride. Ground arrival records only this optional
   objective and exits the vehicle normally. Walking back remains valid.
 - **Hunger's End:** Orbyth 91155 and Ael'Yith 108721 incorrectly credited each
-  other's objectives. Ael'Yith also had no spawn/summon path. Remove those cross
-  credits and Orbyth's erroneous player-board spellclick. Recover a personal
+  other's objectives. Ael'Yith was an automatic vehicle accessory, rather than a
+  static spawn; live startup exposed that additional summon path. Replace that
+  automatic rider link along with the cross credits and player-board spellclick.
+  This avoids an extra vehicle-owned enemy alongside the player's second stage.
+  Recover a personal
   Orbyth at its original spawn, then Ael'Yith at that encounter position only
   after Orbyth's actual kill. Spawning is never a kill. A saved first kill survives
   relog or death; an abandoned attempt restarts from its saved objectives.
@@ -114,6 +117,8 @@ Orbyth's existing encounter anchor, not a claim to have recovered his retail jum
   explicit boundaries, not simulated claims of an in-game test.
 - Production Release compilation and live migration/startup are checked during
   deployment to `build-extractors/bin/Release`.
+  The first startup exposed the old accessory's dependency on spellclick;
+  migration 11 removes that exact superseded link and startup is checked again.
 
 Client confirmation is still needed for the full playthrough, pool/whelp effects,
 guide pathfinding, passenger camera, dismount and pet portrait. The custom
