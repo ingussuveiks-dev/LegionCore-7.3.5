@@ -3,6 +3,7 @@ void AddSC_azsuna_scythe();
 void AddSC_faronaar_chain();
 void AddSC_azurewing_repose();
 void AddSC_narthalas_academy();
+void AddSC_azsuna_rescue();
 void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
@@ -186,6 +187,7 @@ void AddLegionScripts()
     AddSC_faronaar_chain();
     AddSC_azurewing_repose();
     AddSC_narthalas_academy();
+    AddSC_azsuna_rescue();
     AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();
