@@ -1,5 +1,11 @@
 # Level 100–110 quest chain audit — 7.3.5.26972
 
+Follow-up: [candidate resolution](quest-candidate-resolution-2026-10-09.md)
+identifies 34315 as Shadow Hunter Bwu'ja's Garrison Campaign quest and repairs
+34314 -> 34315 -> 34316 using native DB2 evidence. The counts and JSON below
+are the initial audit snapshot, before that second repair. Remaining ordinary
+graph candidates are now nine, plus the separate 36168 condition candidate.
+
 ## Result and scope
 
 One confirmed availability defect was repaired: the rotating Archaeology chain

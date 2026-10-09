@@ -12,6 +12,17 @@ def row(prev=0, nxt=0):
 
 
 class GraphTests(unittest.TestCase):
+    def test_gearing_up_and_successor_prerequisite(self):
+        quests = {34314, 34315, 34316}
+        addons = {34315: row(34315, 34315)}
+        self.assertNotIn(34315, reachable(quests, set(), predecessors(quests, addons)))
+        addons[34315] = row(34314, 34316)
+        prev = predecessors(quests, addons)
+        self.assertEqual(prev[34315], {34314})
+        self.assertEqual(prev[34316], {34315})
+        self.assertEqual(reachable(quests, set(), prev), quests)
+        self.assertEqual(reachable(quests, {34314}, prev), set())
+
     def test_archaeology_chain(self):
         quests = {41183, 41184, 41185}
         addons = {41183: row(nxt=41183), 41184: row(41183, 41185), 41185: row(41184)}

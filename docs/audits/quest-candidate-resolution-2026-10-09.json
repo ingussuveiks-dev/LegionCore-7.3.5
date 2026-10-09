@@ -1,0 +1,596 @@
+{
+  "client_build": 26972,
+  "native_db2_sha256": {
+    "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff",
+    "QuestV2CliTask": "ce96baecf04669b7eda79a452085fb04f9890e6f3599a821dc50880bb82a530c"
+  },
+  "sql_overlay_rows_verified_zero": [
+    "quest_line_x_quest",
+    "quest_v2_cli_task"
+  ],
+  "quest_line_rows": [
+    {
+      "ID": 863,
+      "QuestLineID": 70,
+      "QuestID": 34026,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 864,
+      "QuestLineID": 70,
+      "QuestID": 34027,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 865,
+      "QuestLineID": 70,
+      "QuestID": 34028,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 866,
+      "QuestLineID": 70,
+      "QuestID": 34029,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 867,
+      "QuestLineID": 70,
+      "QuestID": 34030,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 868,
+      "QuestLineID": 70,
+      "QuestID": 34031,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 869,
+      "QuestLineID": 70,
+      "QuestID": 34032,
+      "OrderIndex": 6
+    },
+    {
+      "ID": 870,
+      "QuestLineID": 70,
+      "QuestID": 34033,
+      "OrderIndex": 7
+    },
+    {
+      "ID": 871,
+      "QuestLineID": 70,
+      "QuestID": 34048,
+      "OrderIndex": 8
+    },
+    {
+      "ID": 1414,
+      "QuestLineID": 106,
+      "QuestID": 36163,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 1415,
+      "QuestLineID": 106,
+      "QuestID": 36164,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 1416,
+      "QuestLineID": 106,
+      "QuestID": 36167,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 1417,
+      "QuestLineID": 106,
+      "QuestID": 36168,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 1418,
+      "QuestLineID": 106,
+      "QuestID": 36169,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 1419,
+      "QuestLineID": 106,
+      "QuestID": 36193,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 1614,
+      "QuestLineID": 115,
+      "QuestID": 34309,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 1615,
+      "QuestLineID": 115,
+      "QuestID": 34314,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 1616,
+      "QuestLineID": 115,
+      "QuestID": 34315,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 1617,
+      "QuestLineID": 115,
+      "QuestID": 34316,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 1618,
+      "QuestLineID": 115,
+      "QuestID": 34318,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 1619,
+      "QuestLineID": 115,
+      "QuestID": 34319,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 1620,
+      "QuestLineID": 115,
+      "QuestID": 34381,
+      "OrderIndex": 6
+    },
+    {
+      "ID": 1621,
+      "QuestLineID": 115,
+      "QuestID": 34469,
+      "OrderIndex": 7
+    },
+    {
+      "ID": 4067,
+      "QuestLineID": 294,
+      "QuestID": 45422,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 4068,
+      "QuestLineID": 294,
+      "QuestID": 44886,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 4069,
+      "QuestLineID": 294,
+      "QuestID": 44887,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 4070,
+      "QuestLineID": 294,
+      "QuestID": 44944,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 4071,
+      "QuestLineID": 294,
+      "QuestID": 44556,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 4072,
+      "QuestLineID": 294,
+      "QuestID": 44557,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 4073,
+      "QuestLineID": 294,
+      "QuestID": 44683,
+      "OrderIndex": 6
+    },
+    {
+      "ID": 4074,
+      "QuestLineID": 294,
+      "QuestID": 44684,
+      "OrderIndex": 7
+    },
+    {
+      "ID": 4075,
+      "QuestLineID": 294,
+      "QuestID": 44685,
+      "OrderIndex": 8
+    },
+    {
+      "ID": 4076,
+      "QuestLineID": 294,
+      "QuestID": 44686,
+      "OrderIndex": 9
+    },
+    {
+      "ID": 4077,
+      "QuestLineID": 294,
+      "QuestID": 44764,
+      "OrderIndex": 10
+    },
+    {
+      "ID": 4078,
+      "QuestLineID": 294,
+      "QuestID": 44733,
+      "OrderIndex": 11
+    },
+    {
+      "ID": 4117,
+      "QuestLineID": 294,
+      "QuestID": 44734,
+      "OrderIndex": 12
+    },
+    {
+      "ID": 4118,
+      "QuestLineID": 294,
+      "QuestID": 44735,
+      "OrderIndex": 13
+    }
+  ],
+  "matching_quest_task_rows": [],
+  "note": "QuestLineXQuest is storyline display order, not necessarily a sequential prerequisite. Trials 36164/36167/36168 are parallel. Retired lines can remain in DB2.",
+  "post_repair_addons": [
+    {
+      "ID": "34026",
+      "PrevQuestID": "0",
+      "NextQuestID": "34027",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34027",
+      "PrevQuestID": "34026",
+      "NextQuestID": "34028",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34028",
+      "PrevQuestID": "34027",
+      "NextQuestID": "34029",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34029",
+      "PrevQuestID": "34028",
+      "NextQuestID": "34030",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34030",
+      "PrevQuestID": "34029",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34314",
+      "PrevQuestID": "0",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34315",
+      "PrevQuestID": "34314",
+      "NextQuestID": "34316",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "34316",
+      "PrevQuestID": "0",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "36163",
+      "PrevQuestID": "0",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "36164",
+      "PrevQuestID": "36163",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "36167",
+      "PrevQuestID": "36163",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "36168",
+      "PrevQuestID": "0",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "38923",
+      "PrevQuestID": "38923",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "39090",
+      "PrevQuestID": "39090",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "44556",
+      "PrevQuestID": "44944",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    },
+    {
+      "ID": "44944",
+      "PrevQuestID": "0",
+      "NextQuestID": "0",
+      "ExclusiveGroup": "0",
+      "AllowableClasses": "0",
+      "SpecialFlags": "0",
+      "SourceSpellID": "0"
+    }
+  ],
+  "remaining_graph_candidates": [
+    {
+      "id": 34027,
+      "title": "Groundbreaking Data",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34026
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77217",
+          "quest": "34027"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77217",
+          "quest": "34027"
+        }
+      ]
+    },
+    {
+      "id": 34028,
+      "title": "These Look Familiar...",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34027
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77217",
+          "quest": "34028"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77160",
+          "quest": "34028"
+        }
+      ]
+    },
+    {
+      "id": 34029,
+      "title": "The Prototype",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34028
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77160",
+          "quest": "34029"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77160",
+          "quest": "34029"
+        }
+      ]
+    },
+    {
+      "id": 34030,
+      "title": "The Captive Engineer",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        34029
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "77160",
+          "quest": "34030"
+        },
+        {
+          "kind": "npc_end",
+          "id": "77161",
+          "quest": "34030"
+        }
+      ]
+    },
+    {
+      "id": 36164,
+      "title": "The Trial of Courage",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        36163
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "80078",
+          "quest": "36164"
+        },
+        {
+          "kind": "npc_end",
+          "id": "84973",
+          "quest": "36164"
+        }
+      ]
+    },
+    {
+      "id": 36167,
+      "title": "The Trial of Heart",
+      "level": 100,
+      "min_level": 100,
+      "predecessors": [
+        36163
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "80079",
+          "quest": "36167"
+        },
+        {
+          "kind": "npc_end",
+          "id": "84975",
+          "quest": "36167"
+        }
+      ]
+    },
+    {
+      "id": 38923,
+      "title": "Ashran Dominance",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        38923
+      ],
+      "relations": [
+        {
+          "kind": "npc_end",
+          "id": "83869",
+          "quest": "38923"
+        }
+      ]
+    },
+    {
+      "id": 39090,
+      "title": "Slay Them All!",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        39090
+      ],
+      "relations": [
+        {
+          "kind": "npc_end",
+          "id": "83869",
+          "quest": "39090"
+        }
+      ]
+    },
+    {
+      "id": 44556,
+      "title": "Return to Karazhan",
+      "level": 110,
+      "min_level": 110,
+      "predecessors": [
+        44944
+      ],
+      "relations": [
+        {
+          "kind": "npc_start",
+          "id": "90417",
+          "quest": "44556"
+        },
+        {
+          "kind": "npc_end",
+          "id": "114310",
+          "quest": "44556"
+        }
+      ]
+    }
+  ],
+  "remaining_condition_candidates": [
+    {
+      "SourceTypeOrReferenceId": "19",
+      "SourceGroup": "0",
+      "SourceEntry": "36168",
+      "SourceId": "0",
+      "ElseGroup": "0",
+      "ConditionTypeOrReference": "8",
+      "ConditionTarget": "0",
+      "ConditionValue1": "36163",
+      "ConditionValue2": "0",
+      "ConditionValue3": "0",
+      "NegativeCondition": "0",
+      "ErrorTextId": "0",
+      "ScriptName": "",
+      "Comment": "true if player reward quest"
+    }
+  ],
+  "export_sha256": {
+    "quests.tsv": "46ec36ae3c71a199b4b2ed88f5311dbf6cbb496ef3c184253cda4a651bce4254",
+    "addons.tsv": "f5cd4185177831f75c41b1490ec916c02ee9c47fae803d6ab4fdd258b9305620",
+    "disabled.tsv": "365747aba0768d20be9c6983045bbcd779165f699b8cbf1d058e45383bd4eede",
+    "creature-templates.tsv": "0c75bcf315708b353a8c9e21054d01dea27f7104df404bf9f477e6778dfe4255",
+    "gameobject-templates.tsv": "71e03128749c8af9ba440f3680b7c910ddd8ef0511e0b6d788a7ee4863566c09",
+    "creature-spawns.tsv": "330ee9a8fff1f3d7d9d33c16a6555f0ce120e9d859f1ebda4f395bc519ee2f3c",
+    "gameobject-spawns.tsv": "27b9e0ebcc114f9c027bbb378609a46fb47e31ed8f4ef697b6f9be3b39a1fbde",
+    "relations.tsv": "472290a700c55d1f65805e461f9184b64362886ecf519b868686a7ee1cd5a942",
+    "conditions.tsv": "c606fe6803396243174f9712e2802629903891c803eb7c8925411ec8584eb068",
+    "objectives.tsv": "54d151aa0d29ef4d0a2d41323fdf424ef9189b88a0f021064f66fc6761f97e08",
+    "event-quests.tsv": "07cfd641bd6f782ec1fc1b57c1fcae5b34da65ba5227719474722f1eed575227",
+    "smart-quests.tsv": "0f1dabe70cd5a08817910cfa8b89665b14799714118f8bb85218012ff0e2d595"
+  }
+}
