@@ -1,0 +1,25 @@
+# Whitewater Wash river quests — 2026-10-10
+
+Scope: 39316 Trapped Tauren, 39277 Spray and Prey, 39614 Fish Out of Water, and the handoff to 39661 Lifespring Cavern. Evidence is in `highmountain-river-native-2026-10-10.json`; the native test reads the local TDB735 archive and runtime DB2 files and records their SHA-256 hashes.
+
+## Findings and repairs
+
+* **Fish Out of Water:** the old SmartAI gave credit after six seconds if the **player was not in water** (condition 46, target 0, negated), then despawned the fish. Its once-only spell-hit event also prevented retrying a bad kick. The new handler preserves native click spell 188447, a knockback away from the player. It waits for the movement spline to finish and checks liquid depth at the fish's actual position. Dry land and a water surface below a dry landing give no credit; the fish remains available for another kick. A wet landing gives one rescue and despawns that fish. Eight rescues complete the quest; progress packets carry the total count.
+* The landing callback belongs to the current quest attempt and the latest kick. Abandon/reaccept, logout (player event destruction), death, map transfer, loss of visibility, excessive distance, fish reset/removal and a newer kick cannot award stale progress. Polling is bounded to ten seconds. Credit is scoped to 39614 because 95148 also occurs in quest 41144.
+* **Spray and Prey:** native item 127988 casts 188466, periodically triggering 188465. The two drogbar entries 95013/96124 already credited their actual spray hits, but all six linked casts summoned grubs on the player and the grubs tried to attack their summoner. The casts now target the sprayed drogbar and the grub's existing summon event attacks its explicit spell target (Smart target 129). Native SummonProperties 3359 makes these grubs player allies; ownership/faction are retained. Native SpellEffect contains only one summon spell for entry 94688: 190421. Existing grubs in the world, combat behavior and death cleanup are preserved. Alive/active-quest conditions guard the spray credit event.
+* The three river quests are parallel offers after 39496, rather than an artificial 39316 → 39614 → 39277 sequence. Corrected the two prerequisite rows and removed the two artificial next-quest links. Retained the 39277 prerequisite for 39661.
+* **Trapped Tauren:** no execution defect found. Native objective 279197 requires GO 243368 once. The existing map-1220 barricade is a goober: the production GameObject use path awards GO credit and opens it. Its existing activation event notifies nearby captive tauren. The correct Angler Creel starter/ender and captive spawns exist. No new ID, teleport, automatic completion or invented escape route was introduced.
+
+All three native objectives, amounts, storage slots and flags already match TDB735. The sprayer's native nonconsumable item effect, provided item count, reward package 18473, NPC relations, fish/drogbar population and Lifespring ender are retained. Source/drop item removal on quest abandonment is covered by the existing production cleanup test. All three click/spray spells have native visual references; this verifies the data, not their rendering.
+
+Behavior references: [contemporary Fish Out of Water playthrough and quest text](https://warcraft.blizzplanet.com/blog/comments/fish-out-of-water-highmountain-quests-alliance), [Spray and Prey playthrough](https://warcraft.blizzplanet.com/blog/comments/spray-and-prey-highmountain-quests-alliance), [Legion-era route showing the three parallel offers](https://www.wow-pro.com/highmountain-neutral/). The native QuestLine display order alone was not treated as proof of prerequisites.
+
+## Validation and limits
+
+* `Test-HighmountainRiverNative.py --write-evidence`: native objectives, item/trigger/summon chain, summon ownership category and visual references.
+* `Test-HighmountainRiver.ps1`: compiles the actual production landing/credit handlers and quest scheduler; exercises airborne/dry/wet landings, repeated and competing kicks, inactive quest, death, teleport/map/phase/range changes, fish reset/removal, timeout, eight rescues and total-count packets.
+* `Test-HighmountainRiverData.ps1`: applies the migration twice to temporary table copies and verifies native objectives, bindings, conditions, item/reward, relations and unrelated/custom script preservation. `-Live` checks the installed migration without applying it.
+* `Test-QuestAttemptCleanup.ps1`: actual quest lifetime invalidation and source/drop item cleanup.
+* Release compilation and canonical runtime startup are required before handoff; no active characters held these four quests before deployment.
+
+Client playthrough remains necessary: kick away from and toward the river (including from shallow water), two players kicking one fish, eight successful rescues, bug spray cone/visual and grubs attacking the sprayed drogbar, barricade animation and tauren response, turn-ins and arrival at Lifespring Cavern. The custom boost/ship/Broken Shore scripts, camera/mover and pet code are untouched.
