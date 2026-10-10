@@ -11,6 +11,7 @@ void AddSC_stormheim();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
+void AddSC_valsharah_tyrande_handoff();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -197,6 +198,7 @@ void AddLegionScripts()
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
+    AddSC_valsharah_tyrande_handoff();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();
