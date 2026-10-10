@@ -14,6 +14,7 @@ void AddSC_valsharah_quest_support();
 void AddSC_valsharah_tyrande_handoff();
 void AddSC_valsharah_finale();
 void AddSC_valsharah_rituals();
+void AddSC_highmountain_intro();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -203,6 +204,7 @@ void AddLegionScripts()
     AddSC_valsharah_tyrande_handoff();
     AddSC_valsharah_finale();
     AddSC_valsharah_rituals();
+    AddSC_highmountain_intro();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();
