@@ -14,6 +14,7 @@ Scope: 46 quests from the Dalaran introduction through the archdruids, both fact
 
 - Separate the plant and Lyrathos counters for 38582: they previously shared storage index 2. Restore native storage/flags for 39384/40573 and native objective flags for 39383/38684.
 - Restore hidden Bramble Wall objective 280418. Credit comes from using the existing door while on 38147. Morphael still needs an actual kill. The core skips this hidden objective as a completion requirement, matching its existing treatment of flag 16; the hook does not substitute for killing Morphael.
+- Exclude native debug spell 197654 ("Val'sharah Playtest") from the quest loader's event-flag inference. Its nine mass-completion effects were reinstating event locks at startup; the spell itself remains unchanged. Ordinary completion spells still infer their required flags, covered by a compiled production-loop regression.
 - Remove event-complete scripts and special event locks from quests already implemented by ordinary kills, spell-clicks or visiting their ender: 38142, 38381, 38382, 38384, 38225, 38235, 38147, 39384. Preserve the existing 40122 ride, its waypoint completion and phase refresh.
 - Remove Aranelle as the wrong turn-in for Archdruid of the Claw. Add Koda's missing Return to the Grove starter, restore predecessor links for the archdruid tasks and require both barrow jobs.
 - Remove 38377's mandatory 38323 prerequisite, leaving the existing alternative Return to the Grove conditions. Completing a different archdruid return no longer forces the Vale return as well. Full all-three-archdruid availability still needs a separate behavioral review.
@@ -34,7 +35,7 @@ The character migration runs once through the updater. It remaps 39384 and 40573
 - `Test-ValsharahChainNative.py`: 46 native quest definitions, 58 objectives, both native faction quest lines, reward and spell evidence.
 - `Test-ValsharahChainData.ps1`: actual world migration twice on temporary table copies; all 58 objective layouts, no overlapping counters, shared-faction conditions, removed shortcuts, rewards, item cleanup fields, custom bindings and existing ride preservation.
 - `Test-ValsharahCharacterData.ps1`: actual character migration against fixture data; remapped counters, retained plant progress, no invented boss kill, rewarded/unrelated quests preserved.
-- `Test-ValsharahChain.ps1`: compiled production wall handler, boss death/Malfurion methods and door array. Verifies interaction restrictions, no duplicate credit, detach-before-despawn, jump coordinates and exit-gossip restrictions.
+- `Test-ValsharahChain.ps1`: compiled production wall handler, boss death/Malfurion methods and door array. Verifies interaction restrictions, no duplicate credit, detach-before-despawn, jump coordinates and exit-gossip restrictions. The same compiled test exercises the actual quest-loader inference loop against the playtest spell, a real completion spell and missing quests.
 - `Test-EyeQuestChain.ps1`: existing dungeon/portal regression plus Tears-only pending/failed/successful teleports and idempotent credit.
 - Release build and post-start runtime checks recorded in the completion message. These tests do not validate client camera, NPC dialogue, visual effects or a complete playthrough.
 

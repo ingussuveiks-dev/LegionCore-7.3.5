@@ -1,8 +1,10 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <map>
 #include <vector>
 using uint32=uint32_t;using int32=int32_t;
+using uint8=uint8_t;
 enum {QUEST_STATUS_INCOMPLETE=1,DONE=3,DATA_XAVIUS=3,NPC_MALFURION_STORMRAGE=100652,SAY_DEATH=1,ACTION_1=1};
 struct GameObject;
 struct Player {int quest=1;bool alive=true,combat=false,vehicle=false;unsigned credit=0,teleports=0;float distance=1;
@@ -30,6 +32,16 @@ struct Malfurion {Instance* instance;Creature* me;
 enum {GO_GLAIDALIS_FIRE_DOOR=1,GO_DRESARON_FIRE_DOOR=2,GO_OAKHEART_DOOR=3,DATA_GLAIDALIS=0,DATA_DRESARON=2,DATA_OAKHEART=1,DOOR_TYPE_ROOM=0,BOUNDARY_NONE=0};
 struct DoorData{unsigned entry,bossId,type,boundary;};
 #include "ValDoors.inc"
+enum {MAX_SPELL_EFFECTS=11,SPELL_EFFECT_QUEST_COMPLETE=16,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=2};
+struct SpellEffect {unsigned Effect=0,MiscValue=0;};
+struct SpellInfo {unsigned Id;SpellEffect data[11];SpellEffect* Effects[11];SpellInfo(unsigned id):Id(id){for(unsigned i=0;i<11;++i)Effects[i]=&data[i];}};
+struct SpellManager {std::vector<SpellInfo*> spells;unsigned GetSpellInfoStoreSize(){return unsigned(spells.size());}SpellInfo const* GetSpellInfo(unsigned i){return spells[i];}};
+SpellManager* sSpellMgr;
+struct Quest {unsigned flags=0;bool HasSpecialFlag(unsigned f)const{return(flags&f)!=0;}void SetSpecialFlag(unsigned f){flags|=f;}};
+#define TC_LOG_ERROR(...) ((void)0)
+struct Loader {std::map<unsigned,Quest> quests;Quest const* GetQuestTemplate(unsigned q){auto i=quests.find(q);return i==quests.end()?nullptr:&i->second;}void InferFlags(){
+#include "ValQuestLoader.inc"
+}};
 int main(){
  Player p;GameObject go;go_valsharah_bramble_wall wall;
  assert(wall.OnGossipHello(&p,&go)&&p.credit==1&&go.opens==1);wall.OnGossipHello(&p,&go);assert(p.credit==1);
@@ -39,5 +51,8 @@ int main(){
  mf.sGossipSelect(&p,20530,0);assert(p.teleports==0);instance.state=DONE;mf.sGossipSelect(&p,20530,0);assert(p.teleports==1);
  mf.sGossipSelect(&p,99,0);mf.sGossipSelect(&p,20530,1);p.combat=true;mf.sGossipSelect(&p,20530,0);p.combat=false;p.vehicle=true;mf.sGossipSelect(&p,20530,0);p.vehicle=false;p.alive=false;mf.sGossipSelect(&p,20530,0);assert(p.teleports==1);
  static_assert(sizeof(doorData)/sizeof(DoorData)==4,"door sentinel missing");unsigned count=0;for(auto d=doorData;d->entry;++d){assert(++count<=3);}assert(count==3);
+ SpellInfo debug(197654),normal(42);debug.data[0]={16,38384};debug.data[1]={16,38147};normal.data[0]={16,99};normal.data[1]={16,1000};
+ SpellManager mgr{{nullptr,&debug,&normal}};sSpellMgr=&mgr;Loader loader;loader.quests[38384]={};loader.quests[38147]={};loader.quests[99]={};loader.InferFlags();
+ assert(loader.quests[38384].flags==0&&loader.quests[38147].flags==0&&loader.quests[99].flags==2);assert(debug.data[0].Effect==16);loader.InferFlags();assert(loader.quests[99].flags==2);
  std::cout<<"PASS: production wall interaction, Malfurion detach/despawn/escape ordering, exact jump coordinates, exit gossip guards and terminated dungeon door table.\n";
 }

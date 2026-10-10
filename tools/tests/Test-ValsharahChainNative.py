@@ -36,7 +36,8 @@ for line,ids in ((189,[41054,41890,43576,38675,41749,38684,43702,41763,38743]),(
 assert {141383,141387,141390,139043}<=d.rows('Item').keys()
 rewards=[r for r in d.rows('QuestPackageItem').values() if r['PackageID']==665]
 assert len(rewards)==4
-fx=[r for r in d.rows('SpellEffect').values() if r['SpellID'] in(182117,180935,192293,192295,181865,81040)]
+fx=[r for r in d.rows('SpellEffect').values() if r['SpellID'] in(182117,180935,192293,192295,181865,81040,197654)]
+assert {r['EffectMiscValue1'] for r in fx if r['SpellID']==197654 and r['Effect']==16}=={40122,38384,38382,38381,38142,38235,39384,38225,38147}
 assert not any(r['SpellID'] in(181865,81040) for r in fx) # do not revive deleted rewards
 assert any(r['SpellID']==192293 and r['Effect']==252 for r in fx)
 out=dict(scope=sorted(IDS),quests={i:{k:v for k,v in r.items() if k in('ID','LogTitle','QuestSortID','QuestPackageID','StartItem','ItemDrop1','ItemDropQuantity1','RewardItem1','RewardAmount1','RewardSpell','Flags')} for i,r in q.items()},

@@ -16,6 +16,8 @@ function Extract-Method([string]$text,[string]$needle){
 $inst=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/DarkHeartThicket/instance_darkheart_thicket.cpp" -Raw
 $start=$inst.IndexOf('DoorData const doorData[]');$end=$inst.IndexOf('};',$start)+2
 [IO.File]::WriteAllText("$output/ValDoors.inc",$inst.Substring($start,$end-$start))
+$loader=Get-Content "$PSScriptRoot/../../src/server/game/Globals/QuestData.cpp" -Raw
+[IO.File]::WriteAllText("$output/ValQuestLoader.inc",(Extract-Method $loader 'for (uint32 i = 0; i < sSpellMgr->GetSpellInfoStoreSize(); ++i)'))
 $vswhere="${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs=& $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'Visual C++ compiler not found'}

@@ -1151,6 +1151,13 @@ void QuestDataStoreMgr::LoadQuests()
         if (!spellInfo)
             continue;
 
+        // 7.3.5 "Val'sharah Playtest" bulk-completes nine story quests for
+        // testing. Its existence does not make their normal kill/click/visit
+        // objectives depend on a separate completion event. Leave the debug
+        // spell definition intact without rewriting the playable quest flags.
+        if (spellInfo->Id == 197654)
+            continue;
+
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
             if (spellInfo->Effects[j]->Effect != SPELL_EFFECT_QUEST_COMPLETE)
