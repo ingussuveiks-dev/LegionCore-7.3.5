@@ -92,7 +92,7 @@ void Arrive(Player* player, uint32 retries)
     if (player->GetQuestStatus(38743) != QUEST_STATUS_INCOMPLETE) return;
     if (!Ready(player) || player->GetDistance(Temple) > 15.0f)
     {
-        if (retries) player->AddDelayedEvent(500,[player,retries]() { Arrive(player,retries-1); });
+        if (retries) player->AddQuestDelayedEvent(38743,500,[player,retries]() { Arrive(player,retries-1); });
         return;
     }
     if (!player->GetQuestObjectiveData(38743,104799)) player->KilledMonsterCredit(104799);
@@ -104,7 +104,7 @@ void StartBattle(Player* player, Creature* source)
         player->isInCombat() || player->GetVehicle() || player->GetDistance(source) > 10.0f) return;
     // Preserve the existing transport destination; acknowledge arrival before credit/spawn.
     if (player->TeleportTo(1220,Temple.GetPositionX(),Temple.GetPositionY(),Temple.GetPositionZ(),Temple.GetOrientation()))
-        player->AddDelayedEvent(500,[player]() { Arrive(player,40); });
+        player->AddQuestDelayedEvent(38743,500,[player]() { Arrive(player,40); });
 }
 }
 

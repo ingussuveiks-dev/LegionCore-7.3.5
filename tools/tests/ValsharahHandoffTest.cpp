@@ -44,6 +44,8 @@ int main(){
  // A long death or moving away cannot permanently end recovery.
  Player late{5};late.quests[38753]=1;late.alive=false;ValsharahHandoff::AfterMovie(&late,0);assert(late.events.size()==1&&late.spawns==0);late.alive=true;late.Next();assert(late.spawns==1);
  Player away{6};away.quests[38753]=1;away.pos.z+=200;ValsharahHandoff::AfterMovie(&away,0);assert(away.events.size()==1&&away.spells.empty()&&away.spawns==0);away.pos=p.pos;away.Next();assert(away.spawns==1);
+ Player abandoned{7};abandoned.quests[38753]=1;ValsharahHandoff::Recover(&abandoned);assert(abandoned.spawns==1);abandoned.quests[38753]=0;hooks.OnUpdate(&abandoned,1);assert(world[701]->despawned);abandoned.Next();assert(abandoned.events.empty()&&abandoned.spawns==1);
+ abandoned.quests[38753]=1;ValsharahHandoff::Recover(&abandoned);assert(abandoned.spawns==2);abandoned.alive=false;hooks.OnUpdate(&abandoned,1);assert(world[702]->despawned);abandoned.alive=true;abandoned.Next();assert(abandoned.spawns==3);
  for(auto const& pair:world)delete pair.second;
  std::cout<<"PASS: production movie/teleport wait, exact native scene trigger, fallback without quest credit, personal isolation, duplicate prevention, login/death/grid recovery and cleanup.\n";
 }

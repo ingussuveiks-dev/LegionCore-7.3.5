@@ -2,6 +2,7 @@ param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-tes
 $ErrorActionPreference='Stop'
 $output=[IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Force -Path $output | Out-Null
+& "$PSScriptRoot/Export-QuestDelayedEvent.ps1" -OutputDirectory $output
 $source=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/valsharah_rituals.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 $start=$source.IndexOf('class spell_valsharah_summon_ysera_ritual');$end=$source.IndexOf('struct npc_valsharah_path_tyrande')

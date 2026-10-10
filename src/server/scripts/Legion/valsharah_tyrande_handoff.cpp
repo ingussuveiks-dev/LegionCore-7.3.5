@@ -41,7 +41,8 @@ void Clear(Player* player)
 
 void Recover(Player* player)
 {
-    if (!Needed(player)) return;
+    if (!Needed(player)) { Clear(player); return; }
+    if (!player->IsAlive()) Clear(player);
     EnsureTyrande(player);
     // Player-owned events disappear on logout. Keep recovery available after
     // death, temporary absence or a grid unload until Love Lost is rewarded.
@@ -98,6 +99,11 @@ class player_valsharah_tyrande_handoff : public PlayerScript
 {
 public:
     player_valsharah_tyrande_handoff() : PlayerScript("player_valsharah_tyrande_handoff") { }
+    void OnUpdate(Player* player, uint32) override
+    {
+        if (!ValsharahHandoff::Needed(player) || !player->IsAlive())
+            ValsharahHandoff::Clear(player);
+    }
     void OnLogin(Player* player) override
     {
         if (ValsharahHandoff::Needed(player))

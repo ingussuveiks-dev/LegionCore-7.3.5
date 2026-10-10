@@ -1957,6 +1957,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         QuestStatus GetDailyQuestStatus(uint32 quest_id) const;
         void SetQuestStatus(uint32 quest_id, QuestStatus status);
         void RemoveActiveQuest(uint32 quest_id);
+        void AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<void()>&& action);
         void RemoveRewardedQuest(uint32 quest_id);
         QuestGiverStatus GetQuestDialogStatus(Object* questGiver);
 

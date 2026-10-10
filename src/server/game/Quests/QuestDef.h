@@ -23,6 +23,7 @@
 #include "SharedDefines.h"
 #include "DatabaseEnvFwd.h"
 #include "EnumFlag.h"
+#include <memory>
 
 class Player;
 class ObjectMgr;
@@ -562,6 +563,9 @@ struct QuestStatusData
     QuestStatus Status;
     uint32 Timer;
     QuestStatusDatas ObjectiveData;
+    // Allocated only for scripts with delayed actions. Removing/restarting the
+    // quest expires their weak guards, even if it is reaccepted in the same tick.
+    std::shared_ptr<uint8> ScriptLifetime;
 };
 
 

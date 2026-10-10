@@ -49,4 +49,40 @@ The character migration runs once through the updater. It remaps 39384 and 40573
 4. **38377 / later escorts:** server execution repaired in `valsharah-rituals-2026-10-10.md`: native ritual credit after its scene duration, owner-followed waypoints and personal death-gated vigil waves with cleanup/retry. Existing alternative Return to the Grove prerequisites are retained; an all-three requirement was not established. Client choreography/pathing remains unverified.
 5. **In-game validation:** finish both faction routes; test real door collision, druid clicks, combat, transports, client objective display, dungeon escape, Tears turn-in UI and placed-pillar visibility. No game-client run occurred in this batch.
 
+## Combined recovery regression follow-up
+
+The installed DB passes a read-only check of all 46 quest records and 58 native
+objectives. `Test-ValsharahRegressionData.py` walks the post-corruption Alliance
+and Horde prerequisite routes through Tears of Elune, rejects missing prerequisites
+and the opposite faction's opening quest, and checks the actual ender phases
+6121, 6194, 6185 and 4731 at COMPLETE and REWARDED. It also checks static escort
+starter recovery after abandon and the Tears starter/ender/item bindings. This
+models those conditions; it does not certify every overlapping zone/class phase
+or a client playthrough.
+
+Three recovery defects were corrected:
+
+- The ritual's 30-second callback could credit a newly reaccepted 38377 after
+  abandoning the previous attempt. `Player::AddQuestDelayedEvent` now holds a
+  weak guard owned by that active quest status. Removing the status, explicitly
+  clearing it, or accepting it again expires the old callback. The guard is
+  allocated only for scripts using this API and is not persisted in the DB.
+- The acknowledged-temple-arrival callback and its retries for 38743 use the
+  same guard, preventing an earlier teleport from crediting a new attempt.
+- The personal 102938 ender is cleared on abandon and death, including before
+  its next recovery timer. Recovery still restores it after resurrection while
+  needed, without awarding objectives or disturbing another player.
+
+`Test-QuestAttemptCleanup.ps1` compiles the actual `QuestStatusData`, scheduling,
+`RemoveActiveQuest` and `TakeQuestSourceItem` implementations. It checks same-tick
+abandon/reaccept, independent quest timers, retained-record invalidation, Tears
+item cleanup, repeated cleanup, unrelated inventory and removal failure/keep flags.
+The ritual/finale tests execute the production scheduling implementation too;
+the ritual suite also checks both faction escorts and defense waves after abandon.
+Existing native, migration, character-progress, interaction and Eye portal suites
+are rerun alongside these tests. No new SQL or character reset is needed.
+
+Real movement, visuals, camera, dialogue, overlapping phase visibility and a full
+playthrough of both faction routes still require the 7.3.5 game client.
+
 No boost tutorial, ship/Broken Shore scenario, shared criteria handling, player mover-control or pet lookup code was changed.

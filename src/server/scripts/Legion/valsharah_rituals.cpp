@@ -77,7 +77,7 @@ void StartRitual(Player* player)
     if (Ready(player) && player->GetQuestStatus(38377) == QUEST_STATUS_INCOMPLETE && player->GetDistance(Grove) < 80.0f)
         // SceneScriptText 13744 lasts 1 + 2.5 + 7 + 18 seconds. A skip or
         // missing callback cannot award credit before this server-side wait.
-        player->AddDelayedEvent(30000,[player]() { FinishRitual(player); });
+        player->AddQuestDelayedEvent(38377,30000,[player]() { FinishRitual(player); });
 }
 void StartVigil(Player* player, Creature* source)
 {

@@ -13,7 +13,7 @@ function Extract-Method([string]$text,[string]$needle){
  return $text.Substring($start,$end-$start).Replace(' override','')
 }
 [IO.File]::WriteAllText("$output/ValHandoffScene.inc",(Extract-Method $source 'bool OnTrigger('))
-$methods=@('void OnLogin(','void OnMapChanged(','void OnLogout(','void OnQuestReward(')|ForEach-Object {Extract-Method $source $_}
+$methods=@('void OnUpdate(','void OnLogin(','void OnMapChanged(','void OnLogout(','void OnQuestReward(')|ForEach-Object {Extract-Method $source $_}
 [IO.File]::WriteAllText("$output/ValHandoffPlayer.inc",($methods -join "`n"))
 $vswhere="${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs=& $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

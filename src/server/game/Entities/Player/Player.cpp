@@ -19171,6 +19171,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
 
     // if not exist then created with set uState == NEW and rewarded=false
     QuestStatusData& status_q = m_QuestStatus[quest_id];
+    status_q.ScriptLifetime.reset();
     (*m_QuestStatusVector)[quest_id] = &status_q;
 
     // check for repeatable quests status reset
@@ -20388,6 +20389,8 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
     {
         QuestStatusData& q_status = (*m_QuestStatusVector)[quest_id] ? *(*m_QuestStatusVector)[quest_id] : m_QuestStatus[quest_id];
         q_status.Status = status;
+        if (status == QUEST_STATUS_NONE)
+            q_status.ScriptLifetime.reset();
         m_QuestStatusSave[quest_id] = QUEST_DEFAULT_SAVE_TYPE;
         (*m_QuestStatusVector)[quest_id] = &q_status;
     }
@@ -20400,6 +20403,21 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
         phaseUdateData.AddQuestUpdate(quest_id);
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
         UpdateForQuestWorldObjects();
+    });
+}
+
+void Player::AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<void()>&& action)
+{
+    QuestStatusData* status = getQuestStatus(questId);
+    if (!status || status->Status == QUEST_STATUS_NONE)
+        return;
+    if (!status->ScriptLifetime)
+        status->ScriptLifetime = std::make_shared<uint8>();
+    std::weak_ptr<uint8> lifetime = status->ScriptLifetime;
+    AddDelayedEvent(delay, [lifetime, action = std::move(action)]()
+    {
+        if (!lifetime.expired())
+            action();
     });
 }
 
