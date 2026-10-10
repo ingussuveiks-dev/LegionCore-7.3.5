@@ -4,6 +4,7 @@ void AddSC_faronaar_chain();
 void AddSC_azurewing_repose();
 void AddSC_narthalas_academy();
 void AddSC_azsuna_rescue();
+void AddSC_eye_of_azshara_quests();
 void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
@@ -188,6 +189,7 @@ void AddLegionScripts()
     AddSC_azurewing_repose();
     AddSC_narthalas_academy();
     AddSC_azsuna_rescue();
+    AddSC_eye_of_azshara_quests();
     AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();

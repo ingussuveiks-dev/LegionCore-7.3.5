@@ -54,11 +54,12 @@ public:
         ObjectGuid kingDeepbeardGUID;
         ObjectGuid bubbleGUID;
         ObjectGuid AzsharaGUID;
+        ObjectGuid TidestoneGUID;
         ObjectGuid NagasContainerGUID[4];
 
         bool StartEvent = false;
         bool StormActive = false;
-        uint8 NagasCount = 0;
+        bool AzsharaAnnounced = false;
         uint16 shelterTimer = 0;
         uint32 CheckBossTimer = 0;
         uint32 WindsTimer = 0;
@@ -89,12 +90,27 @@ public:
                     SerpentrixGUID = creature->GetGUID();
                     break;
                 case NPC_MYSTIC_SSAVEH:
-                case NPC_RITUALIST_LESHA:
-                case NPC_CHANNELER_VARISZ:
-                case NPC_BINDER_ASHIOI:
-                    NagasContainerGUID[NagasCount++] = creature->GetGUID();
+                    NagasContainerGUID[0] = creature->GetGUID();
                     break;
+                case NPC_RITUALIST_LESHA:
+                    NagasContainerGUID[1] = creature->GetGUID();
+                    break;
+                case NPC_CHANNELER_VARISZ:
+                    NagasContainerGUID[2] = creature->GetGUID();
+                    break;
+                case NPC_BINDER_ASHIOI:
+                    NagasContainerGUID[3] = creature->GetGUID();
+                    break;
+                case NPC_TIDESTONE_OF_GOLGANNETH:
+                    TidestoneGUID = creature->GetGUID();
+                    creature->SetVisible(GetBossState(DATA_WRATH_OF_AZSHARA) == DONE);
+                    break;
+                default:
+                    return;
             }
+            // Grids may load after the initial two-second check, including
+            // when returning to a saved instance. Run after AI initialization.
+            CheckBossTimer = 1;
         }
 
         void OnGameObjectCreate(GameObject* go) override
@@ -106,6 +122,7 @@ public:
                     break;
                 case GO_AZSHARA_BUBBLE:
                     bubbleGUID = go->GetGUID();
+                    CheckBossTimer = 1;
                     break;
                 default:
                     break;
@@ -121,6 +138,8 @@ public:
             {
                 WindsTimer = 0;
                 StormTimer = 0;
+                if (auto tidestone = instance->GetCreature(TidestoneGUID))
+                    tidestone->SetVisible(true);
             }
 
             DoEventCreatures();
@@ -207,7 +226,11 @@ public:
                     bubble->Delete();
 
                 boss->SetVisible(true);
-                boss->AI()->ZoneTalk(0); // "THE STORM AWAKENS"
+                if (GetBossState(DATA_WRATH_OF_AZSHARA) != DONE && !boss->isDead() && !AzsharaAnnounced)
+                {
+                    AzsharaAnnounced = true;
+                    boss->AI()->ZoneTalk(0); // "THE STORM AWAKENS"
+                }
             }
 
             for (uint8 i = 0; i < 4; ++i)
@@ -217,6 +240,8 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
+            if (player->GetQuestStatus(38286) == QUEST_STATUS_INCOMPLETE && !player->GetQuestObjectiveData(38286, 106847))
+                player->KilledMonsterCredit(106847);
             if (!StartEvent)
             {
                 if (++PlayerCount == 5)
