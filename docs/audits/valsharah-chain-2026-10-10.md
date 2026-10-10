@@ -1,0 +1,49 @@
+# Val'sharah main-story audit, 2026-10-10
+
+Scope: 46 quests from the Dalaran introduction through the archdruids, both faction variants, Tears of Elune (40890), and Darkheart Thicket (40567). This is a first repair batch, **not certification that the entire story is playable**.
+
+## Evidence
+
+- Local 7.3.5 TDB world snapshot, verified build 25549: quest definitions, 58 objectives, original reward items and quest enders. Exact input hash and extracted facts are in `valsharah-chain-native-2026-10-10.json`.
+- Runtime `QuestLineXQuest.db2`: lines 184–190, including independent Horde line 189 and Alliance line 190. These establish story membership/order; they do not by themselves prove every unlock condition or scripted action.
+- Runtime `SpellEffect`, `Item`, and `QuestPackageItem`: original click/teleport effects, three artifact-power items, and placement chest package 665. Deleted reward spells 181865 and 81040 are deliberately not restored from the older TDB snapshot.
+- Current world data: existing Bramble Wall 242279 at (1720.89,6851.81,-0.56342), Morphael 91045, druid spell-clicks, original portal destinations, dungeon bosses/accessory and quest relations.
+- Supplemental contemporary gameplay accounts: [Return to the Grove](https://www.wowhead.com/quest=38148/return-to-the-grove), [Tears of Elune](https://www.wowhead.com/quest=40890/the-tears-of-elune). Modern reward displays are not used as Legion item evidence.
+
+## Repairs in this batch
+
+- Separate the plant and Lyrathos counters for 38582: they previously shared storage index 2. Restore native storage/flags for 39384/40573 and native objective flags for 39383/38684.
+- Restore hidden Bramble Wall objective 280418. Credit comes from using the existing door while on 38147. Morphael still needs an actual kill. The core skips this hidden objective as a completion requirement, matching its existing treatment of flag 16; the hook does not substitute for killing Morphael.
+- Remove event-complete scripts and special event locks from quests already implemented by ordinary kills, spell-clicks or visiting their ender: 38142, 38381, 38382, 38384, 38225, 38235, 38147, 39384. Preserve the existing 40122 ride, its waypoint completion and phase refresh.
+- Remove Aranelle as the wrong turn-in for Archdruid of the Claw. Add Koda's missing Return to the Grove starter, restore predecessor links for the archdruid tasks and require both barrow jobs.
+- Remove 38377's mandatory 38323 prerequisite, leaving the existing alternative Return to the Grove conditions. Completing a different archdruid return no longer forces the Vale return as well. Full all-three-archdruid availability still needs a separate behavioral review.
+- Restore Horde predecessors and shared Regroup/Reading the Leaves/Softening the Target paths; fix gossip conditions that previously required mutually exclusive Alliance and Horde quests simultaneously. Preserve the completed-vigil Tyrande phase for either faction.
+- Remove Suramar's unrelated item 140758 and NPC 97140 turn-in from 43576; restore its Val'sharah metadata and keep its actual ender 103022.
+- Restore reward items 141387 (38377), 141390 (38753), and 141383 (38743). Chest package 665 remains on placement 40890, rather than also being awarded for 38743.
+- Tears of Elune now follows 38743 independently of optional dungeon 40567. Item 139043 is still provided on acceptance and removed through the existing quest item-drop/source-item cleanup on reward.
+- Extend the existing portrait-room teleport handler to 40890. Quest credit 109750 is awarded only after successful teleport acknowledgment at the downstairs destination, with alive/map/quest guards. Remove the former upstairs/downstairs proximity credit. The existing Eye quest, reverse teleport and no-bounce behavior remain tested.
+- Terminate Darkheart Thicket's door array: `LoadDoorData` scans until entry zero, so the former three-entry array read beyond its end.
+- Detach Malfurion before destroying his cage. Fix the five-argument `MoveJump` call that selected the wrong overload: coordinates/orientation/speeds are now explicit. Exit gossip requires completed Xavius encounter, the actual menu option and an alive player outside combat/vehicles. Xavius quest credit remains normal boss-kill credit.
+
+## Existing character progress
+
+The character migration runs once through the updater. It remaps 39384 and 40573 counters without discarding cave/cage progress. For 38582 the old shared counter cannot prove whether the player killed the boss. Plant progress remains in slot 2; an active, previously complete quest returns to incomplete and requires a real boss kill for the new slot 0. Already rewarded quests and unrelated quests are preserved. No rows for these quests existed in the live character objective table before this deployment.
+
+## Validation
+
+- `Test-ValsharahChainNative.py`: 46 native quest definitions, 58 objectives, both native faction quest lines, reward and spell evidence.
+- `Test-ValsharahChainData.ps1`: actual world migration twice on temporary table copies; all 58 objective layouts, no overlapping counters, shared-faction conditions, removed shortcuts, rewards, item cleanup fields, custom bindings and existing ride preservation.
+- `Test-ValsharahCharacterData.ps1`: actual character migration against fixture data; remapped counters, retained plant progress, no invented boss kill, rewarded/unrelated quests preserved.
+- `Test-ValsharahChain.ps1`: compiled production wall handler, boss death/Malfurion methods and door array. Verifies interaction restrictions, no duplicate credit, detach-before-despawn, jump coordinates and exit-gossip restrictions.
+- `Test-EyeQuestChain.ps1`: existing dungeon/portal regression plus Tears-only pending/failed/successful teleports and idempotent credit.
+- Release build and post-start runtime checks recorded in the completion message. These tests do not validate client camera, NPC dialogue, visual effects or a complete playthrough.
+
+## Remaining work discovered by this audit
+
+1. **38687 / 41763, Close Enough to Touch:** existing start scripts and timed action list 10472800 award the search objectives without visiting the locations. Six native illusion NPC templates exist but have no static spawns or summon actions; no usable waypoint path was found. Native POIs give the objective locations, but are not a complete server event implementation. This bypass is documented and not falsely called repaired by the prerequisite changes.
+2. **38743, The Fate of Val'sharah:** current gossip awards 93065 before fighting and teleports within map 1220. The only existing Ysera 93065 spawn is on obsolete scenario map 1478; runtime scenario 874 has no ScenarioStep rows, while the current quest POI is on map 1220. A correct current-map combat event must be reconstructed before removing this shortcut. No scenario ID or replacement credit has been invented.
+3. **38753 / Love Lost transition:** no static 102938 Tyrande spawn or SmartAI summon was found. Native post-corruption scene text emits `TYRANDE`; the native scene/movie chain and its server handoff require further work. The full transition is not certified by the data fixes.
+4. **38377 / later escorts:** the existing Ysera summoning gossip credits before its native scene. Existing 103022 movement and 104739 vigil scripts need complete lifecycle/group/retry review. This batch preserves them rather than claiming new implementations.
+5. **In-game validation:** finish both faction routes; test real door collision, druid clicks, combat, transports, client objective display, dungeon escape, Tears turn-in UI and placed-pillar visibility. No game-client run occurred in this batch.
+
+No boost tutorial, ship/Broken Shore scenario, shared criteria handling, player mover-control or pet lookup code was changed.

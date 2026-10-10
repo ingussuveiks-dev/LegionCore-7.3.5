@@ -105,6 +105,10 @@ public:
         {
             Talk(SAY_DEATH);
             _JustDied();
+            // Release the non-minion accessory before removing its cage.
+            // Its exit and escape movement must precede vehicle teardown.
+            if (Creature* malfurion = instance->instance->GetCreature(instance->GetGuidData(NPC_MALFURION_STORMRAGE)))
+                malfurion->ExitVehicle();
             summons.DespawnAll();
             if (Creature* malfurion = instance->instance->GetCreature(instance->GetGuidData(NPC_MALFURION_STORMRAGE)))
                 malfurion->AI()->DoAction(ACTION_1);
@@ -212,7 +216,7 @@ public:
         void DoAction(int32 const action) override
         {
             if (action == ACTION_1)
-                me->GetMotionMaster()->MoveJump(2692.97f, 1302.77f, 128.36f, 10.0f, 10.0f);
+                me->GetMotionMaster()->MoveJump(2692.97f, 1302.77f, 128.36f, 0.0f, 10.0f, 10.0f);
         }
 
         void MovementInform(uint32 type, uint32 id) override
@@ -225,7 +229,9 @@ public:
         
         void sGossipSelect(Player* player, uint32 sender, uint32 action) override
         {
-            player->TeleportTo(1466, 3248.16f, 1829.34f, 236.84f, 0.1f);
+            if (sender == 20530 && action == 0 && instance && instance->GetBossState(DATA_XAVIUS) == DONE &&
+                player->IsAlive() && !player->isInCombat() && !player->GetVehicle())
+                player->TeleportTo(1466, 3248.16f, 1829.34f, 236.84f, 0.1f);
         }
 
         void UpdateAI(uint32 diff) override

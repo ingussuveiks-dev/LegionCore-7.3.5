@@ -65,6 +65,13 @@ int main(){
  p.pos=EyeQuests::Arrival;callback();assert(p.credits[106815]==1);callback();assert(p.credits[106815]==1);
  p.credits[106815]=0;p.alive=false;callback();assert(p.credits[106815]==0);p.alive=true;p.map=1;callback();assert(p.credits[106815]==0);p.map=1220;
  p.quests[42213]=0;callback();assert(p.credits[106815]==0);p.quests[42213]=1;
+ // The shared portrait-room pad must confirm Tears of Elune independently.
+ p.quests[42213]=0;p.quests[40890]=1;p.credits[109750]=0;p.pos=upper.pos;p.teleport=false;
+ portal.UpdateAI(500);auto tearCallback=p.events.back();p.events.clear();
+ assert(p.credits[109750]==0);tearCallback();assert(p.credits[109750]==0);
+ p.teleport=false;tearCallback();assert(p.credits[109750]==0);
+ p.pos=EyeQuests::Arrival;tearCallback();tearCallback();assert(p.credits[109750]==1 && p.credits[106815]==0);
+ p.quests[40890]=0;p.quests[42213]=1;p.spells.resize(1);p.events.clear();
  p.pos=upper.pos;p.pos.z+=5;portal.UpdateAI(500);assert(p.spells.size()==1);p.pos=upper.pos;p.vehicle=true;portal.UpdateAI(500);assert(p.spells.size()==1);p.vehicle=false;
  GameObject lower;lower.entry=244560;lower.pos=EyeQuests::LowerPad;lower.players={&p};go_eye_portrait_teleporter::AI back(&lower);p.pos=lower.pos;back.UpdateAI(500);assert(p.spells.back()==192295 && p.credits[106815]==0);
  p.teleport=false;p.pos={-846.86f,4469.6f,736.04f,0};portal.UpdateAI(500);assert(p.spells.size()==2); // no arrival bounce

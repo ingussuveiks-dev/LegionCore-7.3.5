@@ -10,7 +10,7 @@ $migration
 $migration
 SELECT 'native-objectives',COUNT(*) FROM ($nativeRows) a LEFT JOIN quest_objectives b USING(ID) WHERE b.ID IS NULL OR a.QuestID<>b.QuestID OR a.Type<>b.Type OR a.StorageIndex<>b.StorageIndex OR a.ObjectID<>b.ObjectID OR a.Amount<>b.Amount OR a.Flags<>b.Flags OR a.Flags2<>b.Flags2;
 SELECT 'old-proximity',COUNT(*) FROM smart_scripts WHERE (entryorguid=106847 AND action_param1=106847) OR (entryorguid=106815 AND action_param1=106815);
-SELECT 'unrelated-credit',COUNT(*) FROM smart_scripts WHERE entryorguid=106815 AND id=1 AND action_param1=109750;
+SELECT 'unrelated-credit',(SELECT COUNT(*) FROM smart_scripts WHERE entryorguid=106815 AND id=1 AND action_param1=109750)-(SELECT COUNT(*) FROM saved_smart_scripts WHERE entryorguid=106815 AND id=1 AND action_param1=109750);
 SELECT 'pads',COUNT(*) FROM gameobject_template WHERE entry IN(244534,244560) AND type=5 AND ScriptName='go_eye_portrait_teleporter';
 SELECT 'dungeon-reward',QuestPackageID,RewardItem1,RewardAmount1 FROM quest_template WHERE ID=38286;
 SELECT 'placement-item',QuestPackageID,StartItem,ItemDrop1,ItemDropQuantity1 FROM quest_template WHERE ID=42213;
@@ -27,6 +27,6 @@ SELECT 'custom',ScriptName FROM gameobject_template WHERE entry=244534;
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
 $old=$env:MYSQL_PWD
 try{$env:MYSQL_PWD=$c[3];$rows=& 'C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe' --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --skip-column-names --execute=$fixture;if($LASTEXITCODE){throw 'Eye SQL fixture failed'}}finally{$env:MYSQL_PWD=$old}
-$expected=@("native-objectives`t0","old-proximity`t0","unrelated-credit`t1","pads`t2","dungeon-reward`t0`t141385`t1","placement-item`t18462`t137206`t137206`t1","links`t2","questender`t1","before-placement`t1","boss-scripts`t5","spawns`t6","unrelated-templates`t0","custom`tcustom_pad")
+$expected=@("native-objectives`t0","old-proximity`t0","unrelated-credit`t0","pads`t2","dungeon-reward`t0`t141385`t1","placement-item`t18462`t137206`t137206`t1","links`t2","questender`t1","before-placement`t1","boss-scripts`t5","spawns`t6","unrelated-templates`t0","custom`tcustom_pad")
 if(($rows -join '|') -ne ($expected -join '|')){throw "SQL mismatch: $($rows -join '|')"}
 'PASS: actual migration twice in temporary tables; native objective storage, correct rewards, item provision/removal, chain links, turn-in phase, all boss bindings/spawns, unrelated credit/custom scripts retained.'

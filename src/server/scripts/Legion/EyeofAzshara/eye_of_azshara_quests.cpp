@@ -12,15 +12,19 @@ Position const LowerPad = {-779.958f,4415.29f,602.629f,0};
 
 void ConfirmTeleport(Player* player, uint32 retries)
 {
-    if (!player->IsAlive() || player->GetMapId() != 1220 || player->GetQuestStatus(42213) != QUEST_STATUS_INCOMPLETE)
+    if (!player->IsAlive() || player->GetMapId() != 1220 ||
+        (player->GetQuestStatus(42213) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40890) != QUEST_STATUS_INCOMPLETE))
         return;
     if (player->IsBeingTeleported())
     {
         if (retries) player->AddDelayedEvent(500, [player, retries]() { ConfirmTeleport(player, retries - 1); });
         return;
     }
-    if (player->GetDistance(Arrival) < 8.0f && !player->GetQuestObjectiveData(42213, 106815))
+    if (player->GetDistance(Arrival) >= 8.0f) return;
+    if (player->GetQuestStatus(42213) == QUEST_STATUS_INCOMPLETE && !player->GetQuestObjectiveData(42213, 106815))
         player->KilledMonsterCredit(106815);
+    if (player->GetQuestStatus(40890) == QUEST_STATUS_INCOMPLETE && !player->GetQuestObjectiveData(40890, 109750))
+        player->KilledMonsterCredit(109750);
 }
 }
 
@@ -51,7 +55,7 @@ public:
                 if (!player->IsAlive() || player->IsBeingTeleported() || player->GetVehicle() ||
                     player->isInFlight() || player->GetDistance(go) > 2.0f) continue;
                 player->CastSpell(player, upper ? 192293 : 192295, true);
-                if (upper && player->GetQuestStatus(42213) == QUEST_STATUS_INCOMPLETE)
+                if (upper && (player->GetQuestStatus(42213) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40890) == QUEST_STATUS_INCOMPLETE))
                     player->AddDelayedEvent(500, [player]() { EyeQuests::ConfirmTeleport(player, 20); });
             }
         }
