@@ -1,0 +1,92 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objectives": [
+    {
+      "ID": 280076,
+      "QuestID": 39873,
+      "Type": 2,
+      "StorageIndex": 1,
+      "ObjectID": 244625,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    },
+    {
+      "ID": 279309,
+      "QuestID": 39373,
+      "Type": 1,
+      "StorageIndex": 0,
+      "ObjectID": 128380,
+      "Amount": 50,
+      "Flags": 0,
+      "Flags2": 1
+    },
+    {
+      "ID": 279308,
+      "QuestID": 39372,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 95311,
+      "Amount": 1,
+      "Flags": 1,
+      "Flags2": 0
+    },
+    {
+      "ID": 279991,
+      "QuestID": 39374,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 95256,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    }
+  ],
+  "starters": [],
+  "enders": [
+    {
+      "id": "95256",
+      "quest": "38912"
+    },
+    {
+      "id": "95256",
+      "quest": "39372"
+    },
+    {
+      "id": "95256",
+      "quest": "39373"
+    },
+    {
+      "id": "95256",
+      "quest": "39374"
+    }
+  ],
+  "quests": {
+    "39873": {
+      "LogTitle": "'I Have a Bad Feeling About This'",
+      "LogDescription": "'Investigate Navarrogg\\'s suspicions.'",
+      "RewardNextQuest": "0"
+    },
+    "39373": {
+      "LogTitle": "'Hags of a Feather'",
+      "LogDescription": "'Collect $1oa Hag Feathers from Witchwood Hags in the Witchwood.'",
+      "RewardNextQuest": "39374"
+    },
+    "39372": {
+      "LogTitle": "'Witch of the Wood'",
+      "LogDescription": "'Defeat the Witch of the Wood.'",
+      "RewardNextQuest": "39374"
+    },
+    "39374": {
+      "LogTitle": "'An Audience with Torok'",
+      "LogDescription": "'Speak with Torok Bloodtotem.'",
+      "RewardNextQuest": "39455"
+    },
+    "38912": {
+      "LogTitle": "'The Bloodtotem Tribe'",
+      "LogDescription": "'Meet Oakin Ironbull at Cliff\\'s Edge.'",
+      "RewardNextQuest": "39372"
+    }
+  }
+}

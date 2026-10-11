@@ -2219,6 +2219,13 @@ void DB2Manager::LoadingExtraHotfixData()
     uint8 activeSeason = sWorld->getIntConfig(CONFIG_PVP_ACTIVE_SEASON);
 
     DB2HotfixGenerator<ItemSparseEntry> itemSparseHotfixes(sItemSparseStore);
+
+    // TDB735 quest 39373 requires 50 Hag Feathers, but the shipped ItemSparse
+    // record caps possession at 30. Keep the native stack size (30).
+    itemSparseHotfixes.ApplyHotfix(128380, [](ItemSparseEntry* entry)
+    {
+        entry->MaxCount = 50;
+    }, true);
     for (auto const& itr : sItemSparseStore)
     {
         if (sWorld->getBoolConfig(CONFIG_PVP_LEVEL_ENABLE) && activeSeason != 6 && activeSeason != 7)
