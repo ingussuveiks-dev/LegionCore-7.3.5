@@ -6,36 +6,48 @@
 #include <map>
 #include <set>
 #include <vector>
-using uint32=uint32_t; using int32=int32_t; using InventoryResult=int;
+using uint8=uint8_t; using uint16=uint16_t; using uint32=uint32_t; using int32=int32_t; using InventoryResult=int;
 using PrevQuests=std::vector<int32>; using ExclusiveQuestGroups=std::multimap<int32,uint32>;
 #define ASSERT assert
 enum {QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED};
+enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
 enum {QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
  QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=1,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=2,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 enum {EQUIP_ERR_OK,EQUIP_ERR_ITEM_MAX_COUNT,EQUIP_ERR_LOOT_GONE,EQUIP_ERR_NOT_EQUIPPABLE,EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,ITEM_LIMIT_CATEGORY_MODE_HAVE};
 struct QuestObjective {int Type=1,ObjectID=128380,Amount=50,Flags=0,StorageIndex=0;};
 struct Quest {
  uint32 id; int ExclusiveGroup=0; PrevQuests prevQuests; std::vector<QuestObjective> objectives; int FlagsEx=0;
+ uint32 ItemDrop[QUEST_ITEM_COUNT]={},ItemDropQuantity[QUEST_ITEM_COUNT]={};
  auto const& GetObjectives() const{return objectives;}
  bool IsWeekly()const{return false;} bool IsSeasonal()const{return false;} bool IsRepeatable()const{return false;}
- bool IsAutoComplete()const{return false;} bool HasSpecialFlag(int)const{return false;}
+ bool IsAutoComplete()const{return false;} bool HasSpecialFlag(int flag)const{return flag==QUEST_SPECIAL_FLAGS_DELIVER && !objectives.empty();}
+ bool IsAllowedInRaid(int)const{return false;}
 };
 struct QuestStore {std::map<uint32,Quest> quests; ExclusiveQuestGroups mExclusiveQuestGroups;
  Quest const* GetQuestTemplate(uint32 id){auto i=quests.find(id);return i==quests.end()?nullptr:&i->second;}
 } store;
 auto sQuestDataStore=&store;
 struct ItemSparseEntry {int MaxCount=30,Stackable=30;};
-struct ItemTemplate {ItemSparseEntry sparse; int GetMaxCount()const{return sparse.MaxCount;} uint32 GetId()const{return 128380;} int GetLimitCategory()const{return 0;}} itemTemplate;
+struct ItemTemplate {ItemSparseEntry sparse; uint32 id=128380; int GetMaxCount()const{return sparse.MaxCount;} uint32 GetId()const{return id;} int GetLimitCategory()const{return 0;} uint32 GetMaxStackSize()const{return sparse.Stackable;}} itemTemplate;
 struct Item {bool m_lootGenerated=false;};
-struct ObjectMgr {ItemTemplate const* GetItemTemplate(uint32 id){return id==128380?&itemTemplate:nullptr;}} objectMgr;
+struct ObjectMgr {ItemTemplate const* GetItemTemplate(uint32 id){return id==itemTemplate.id?&itemTemplate:nullptr;}} objectMgr;
 auto sObjectMgr=&objectMgr;
 struct ItemLimitCategoryEntry {int Flags=0,Quantity=0;};
 struct LimitStore {ItemLimitCategoryEntry const* LookupEntry(int)const{return nullptr;}} sItemLimitCategoryStore;
 struct QuestStatusData {int Status=QUEST_STATUS_NONE; uint32 Timer=0;};
+struct Map {int GetDifficultyID()const{return 0;}} map;
+struct Group {bool isRaidGroup()const{return true;}} raidGroup;
 struct Player {
+ uint32 activeQuest=39373; bool raid=false;
  std::set<uint32> m_RewardedQuests; QuestStatusData status; uint32 bags=0,bank=0; int progress=0; unsigned completeCalls=0,reopenCalls=0;
  bool SatisfyQuestPreviousQuest(Quest const*,bool); bool SatisfyQuestRace(Quest const*,bool){return true;}
- int GetQuestStatus(uint32 id){return id==39373?status.Status:QUEST_STATUS_NONE;}
+ int GetQuestStatus(uint32 id){return id==activeQuest?status.Status:QUEST_STATUS_NONE;}
+ uint32 GetQuestSlotQuestId(uint8 slot)const{return slot==0 && status.Status!=QUEST_STATUS_NONE && status.Status!=QUEST_STATUS_REWARDED?activeQuest:0;}
+ Map const* GetMap()const{return &map;} Group const* GetGroup()const{return raid?&raidGroup:nullptr;}
+ bool InBattleground()const{return false;}
+ int GetQuestObjectiveData(Quest const*,int)const{return progress;}
+ bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
+ template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
  InventoryResult CanTakeMoreSimilarItems(uint32,uint32,Item*,uint32*,bool)const;
  uint32 GetItemCount(uint32,bool includeBank,Item* =nullptr)const{return bags+(includeBank?bank:0);}
@@ -47,12 +59,13 @@ struct Player {
  void SetQuestObjectiveData(Quest const*,QuestObjective const*,uint32 count){progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
- void DestroyItemCount(int id,int count,bool){assert(id==128380 && bags>=uint32(count));bags-=count;}
+ void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
  void RewardItems(Quest const* quest){for(auto const& obj:quest->GetObjectives()){switch(obj.Type){
 #include "BloodtotemReward.inc"
  }}}
 };
 #include "BloodtotemCore.inc"
+#include "BloodtotemItems.inc"
 struct PlayerScript {explicit PlayerScript(char const*){} virtual void OnLogin(Player*){}};
 #include "BloodtotemLogin.inc"
 struct HotfixFixture {bool notified=false;void ApplyHotfix(uint32 id,void(*fixer)(ItemSparseEntry*),bool notify){assert(id==128380);fixer(&itemTemplate.sparse);notified=notify;}};
@@ -91,5 +104,27 @@ int main()
   if(bags>=50){p.RewardItems(store.GetQuestTemplate(39373));assert(p.bags==bags-50 && p.bank==50);}
  }
  for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.status.Status=status;p.progress=30;login.OnLogin(&p);assert(p.status.Status==status && p.progress==30);}
+ // Stonedark Focus: actual production loot eligibility and item objective lifecycle.
+ store.quests[39425].objectives.push_back({QUEST_OBJECTIVE_ITEM,128343,1,0,0});
+ itemTemplate.id=128343;itemTemplate.sparse={0,1};
+ p={};p.activeQuest=39425;
+ assert(!p.HasQuestForItem(128343));
+ p.status.Status=QUEST_STATUS_INCOMPLETE;
+ assert(p.HasQuestForItem(128343) && !p.HasQuestForItem(128380) && !p.CanCompleteQuest(39425));
+ p.raid=true;assert(!p.HasQuestForItem(128343));p.raid=false;
+ assert(p.CanTakeMoreSimilarItems(128343,1,nullptr,nullptr,false)==EQUIP_ERR_OK);
+ p.ItemAddedQuestCheck(128380,1);assert(p.progress==0);
+ p.bags=1;p.ItemAddedQuestCheck(128343,1);
+ assert(p.progress==1 && p.status.Status==QUEST_STATUS_COMPLETE && !p.HasQuestForItem(128343));
+ p.ItemAddedQuestCheck(128343,1);assert(p.completeCalls==1);
+ // DestroyItemCount invokes the removal hook before changing the stack count.
+ p.ItemRemovedQuestCheck(128343,1);p.bags=0;
+ assert(p.progress==0 && p.status.Status==QUEST_STATUS_INCOMPLETE && p.HasQuestForItem(128343));
+ p.bags=1;p.ItemAddedQuestCheck(128343,1);assert(p.status.Status==QUEST_STATUS_COMPLETE);
+ p.bank=1;p.RewardItems(store.GetQuestTemplate(39425));assert(p.bags==0 && p.bank==1);
+ p.status.Status=QUEST_STATUS_REWARDED;p.m_RewardedQuests.insert(39425);
+ assert(!p.HasQuestForItem(128343) && !p.CanCompleteQuest(39425));
+ p={};p.activeQuest=39425;p.ItemAddedQuestCheck(128343,1);assert(p.progress==0);
+ std::cout<<"PASS: Stonedark Focus absent/wrong-item/raid/completed/rewarded loot gates, collect -> complete -> discard -> incomplete -> recollect, duplicate notification, reward removes exactly one from bags.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }

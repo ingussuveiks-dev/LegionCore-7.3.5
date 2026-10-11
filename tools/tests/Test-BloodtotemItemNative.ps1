@@ -23,5 +23,5 @@ $previousPath=$env:PATH
 try {
  $env:PATH="$repo/build-extractors/bin/Release;$env:PATH"
  & "$output/BloodtotemItemNative.exe" "$repo/build-extractors/bin/Release/dbc/enUS/"
- if($LASTEXITCODE){throw 'Native Hag Feather record mismatch'}
+ if($LASTEXITCODE){throw 'Native Bloodtotem item record mismatch'}
 } finally {$env:PATH=$previousPath}

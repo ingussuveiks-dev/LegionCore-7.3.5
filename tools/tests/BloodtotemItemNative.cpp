@@ -12,4 +12,7 @@ int main(int argc, char** argv)
     auto item = items.LookupEntry(128380);
     if (!item || item->MaxCount != 30 || item->Stackable != 30 || item->LimitCategory != 0) return 3;
     std::cout << "PASS: production DB2 reader confirms raw Hag Feather MaxCount=30, Stackable=30, LimitCategory=0.\n";
+    auto focus = items.LookupEntry(128343);
+    if (!focus || focus->MaxCount != 0 || focus->Stackable != 1 || focus->LimitCategory != 0) return 4;
+    std::cout << "PASS: production DB2 reader confirms raw Stonedark Focus MaxCount=0, Stackable=1, LimitCategory=0.\n";
 }

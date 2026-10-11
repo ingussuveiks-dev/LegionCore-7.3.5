@@ -10,6 +10,13 @@ foreach($pair in @(@('bool Player::SatisfyQuestPreviousQuest(', 'bool Player::Sa
  $code+=$source.Substring($start,$end-$start)
 }
 [IO.File]::WriteAllText("$output/BloodtotemCore.inc",$code)
+$code=''
+foreach($pair in @(@('bool Player::HasQuestForItem(', 'bool Player::HasQuestForCreature('),@('void Player::ItemAddedQuestCheck(', 'void Player::KilledMonster('))){
+ $start=$source.IndexOf($pair[0]);$end=$source.IndexOf($pair[1],$start)
+ if($start -lt 0 -or $end -lt 0){throw 'Missing production item lifecycle handler'}
+ $code+=$source.Substring($start,$end-$start)
+}
+[IO.File]::WriteAllText("$output/BloodtotemItems.inc",$code)
 $start=$source.IndexOf('case QUEST_OBJECTIVE_ITEM:', $source.IndexOf('void Player::RewardQuest('))
 $end=$source.IndexOf('case QUEST_OBJECTIVE_CURRENCY:',$start)
 [IO.File]::WriteAllText("$output/BloodtotemReward.inc",$source.Substring($start,$end-$start))
@@ -24,7 +31,7 @@ $cmd=@"
 @echo off
 call "$vs/VC/Auxiliary/Build/vcvars64.bat" >nul
 if errorlevel 1 exit /b 1
-cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/HighmountainBloodtotemTest.cpp" /Fe"$output/HighmountainBloodtotemTest.exe" /Fo"$output/HighmountainBloodtotemTest.obj"
+cl /nologo /EHsc /std:c++20 /W4 /I"$output" "$PSScriptRoot/HighmountainBloodtotemTest.cpp" /Fe"$output/HighmountainBloodtotemTest.exe" /Fo"$output/HighmountainBloodtotemTest.obj"
 if errorlevel 1 exit /b 1
 "$output/HighmountainBloodtotemTest.exe"
 exit /b %errorlevel%
