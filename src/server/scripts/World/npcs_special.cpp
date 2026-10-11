@@ -5721,81 +5721,6 @@ public:
     }
 };
 
-//97648
-class npc_grasp_of_underking_quest : public CreatureScript
-{
-public:
-    npc_grasp_of_underking_quest() : CreatureScript("npc_grasp_of_underking_quest") {}
-
-    bool OnGossipHello(Player* player, Creature* creature) override
-    {
-        if (player->GetQuestStatus(39025) == QUEST_STATUS_INCOMPLETE)
-        {
-            for (uint32 npcs : { 95051, 94255, 94286})
-                if (Creature* crea = creature->FindNearestCreature(npcs, 5.0f, true))
-                {
-                    if (uint32 id = crea->GetEntry())
-                        player->RewardPlayerAndGroupAtEvent(id, player);
-                    crea->SetDisableGravity(false);
-                    crea->ExitVehicle();
-                    crea->AddDelayedEvent(500, [crea] {
-                        crea->AI()->Talk(0);
-                        crea->GetMotionMaster()->MoveRandom(12.0f);
-                        crea->DespawnOrUnsummon(6500);
-                    });
-                    creature->Kill(creature);
-                }
-            return true;
-        }
-        player->PlayerTalkClass->SendCloseGossip();
-        return true;
-    }
-
-    struct npc_grasp_of_underking_questAI : public ScriptedAI
-    {
-        npc_grasp_of_underking_questAI(Creature* creature) : ScriptedAI(creature) 
-        {
-            boarded = false;
-        }
-
-        bool boarded;
-
-        void Reset() 
-        {
-            ResetGrasp();
-        }
-
-        void JustDied(Unit* /*killer*/) override
-        {
-            boarded = false;
-        }
-
-        void ResetGrasp() 
-        {
-            if (!boarded)
-            {
-                boarded = true;
-                me->AddDelayedEvent(2000, [this] {
-                    if (me->GetPositionX() == 3736.11f && me->GetPositionY() == 4887.47f)
-                        if (Creature* oro = me->SummonCreature(95051, me->GetPosition()))
-                            oro->EnterVehicle(me, 0);
-                    if (me->GetPositionX() == 3649.89f && me->GetPositionY() == 4908.65f)
-                        if (Creature* jale = me->SummonCreature(94255, me->GetPosition()))
-                            jale->EnterVehicle(me, 0);
-                    if (me->GetPositionX() == 3575.87f && me->GetPositionY() == 4839.52f)
-                        if (Creature* oakin = me->SummonCreature(94286, me->GetPosition()))
-                            oakin->EnterVehicle(me, 0);
-                });
-            }
-        }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_grasp_of_underking_questAI(creature);
-    }
-};
-
 // 90317
 enum npcs
 {
@@ -7086,7 +7011,6 @@ void AddSC_npcs_special()
     new npc_revil_kost_dark_rider();
     new npc_dalaran_defender_barrem();
     new npc_azsuna_daglop_q38237();
-    new npc_grasp_of_underking_quest();
     new npc_crash_test();
     RegisterCreatureAI(npc_azsuna_illidari_outpost_initiator);
     RegisterCreatureAI(npc_failure_detection_pylon);

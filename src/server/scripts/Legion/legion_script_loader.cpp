@@ -17,6 +17,7 @@ void AddSC_valsharah_rituals();
 void AddSC_highmountain_intro();
 void AddSC_highmountain_river();
 void AddSC_highmountain_lifespring();
+void AddSC_highmountain_riverbend();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -209,6 +210,7 @@ void AddLegionScripts()
     AddSC_highmountain_intro();
     AddSC_highmountain_river();
     AddSC_highmountain_lifespring();
+    AddSC_highmountain_riverbend();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();
