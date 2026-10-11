@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "TemporarySummon.h"
 #include "ObjectAccessor.h"
+#include "SpellScript.h"
 
 namespace RockEscape
 {
@@ -51,12 +52,28 @@ void Arrival(Player* player, ObjectGuid guid, uint32 remaining)
 struct npc_rock_escape_navarrogg : SmartAI
 {
     npc_rock_escape_navarrogg(Creature* creature) : SmartAI(creature) { }
-    bool pending = false;
+    bool pending = false, departed = false;
+    std::shared_ptr<uint8> attempt;
     std::weak_ptr<uint8> lifetime;
     void SetData(uint32 id, uint32 value) override
     {
-        if (id == RockEscape::QuestId) { pending = value != 0; return; }
+        if (id == RockEscape::QuestId) { pending = value != 0; if (!pending) attempt.reset(); return; }
         SmartAI::SetData(id,value);
+    }
+    uint32 GetData(uint32 id) const override
+    {
+        if (id == RockEscape::QuestId) return pending && !departed && !lifetime.expired();
+        return SmartAI::GetData(id);
+    }
+    void DoAction(int32 id) override
+    {
+        if (id != RockEscape::QuestId) { SmartAI::DoAction(id); return; }
+        if (!GetData(RockEscape::QuestId)) return;
+        Player* player = RockEscape::Owner(me);
+        if (!RockEscape::CanStart(player,me)) { SetData(RockEscape::QuestId,0); return; }
+        departed = true;
+        if (!player->TeleportTo(1220,&RockEscape::Destination)) { SetData(RockEscape::QuestId,0); return; }
+        RockEscape::Arrival(player,me->GetGUID(),50);
     }
     void IsSummonedBy(Unit* summoner) override
     {
@@ -77,24 +94,53 @@ struct npc_rock_escape_navarrogg : SmartAI
         if (pending && lifetime.expired()) pending = false;
         if (pending || !RockEscape::CanStart(player,me)) return;
         pending = true;
+        departed = false;
+        attempt = std::make_shared<uint8>();
+        std::weak_ptr<uint8> currentAttempt = attempt;
         player->AddQuestDelayedEvent(RockEscape::QuestId,0,[] { });
         lifetime = player->getQuestStatus(RockEscape::QuestId)->ScriptLifetime;
         ObjectGuid guid = me->GetGUID();
         player->PlayerTalkClass->SendCloseGossip();
         player->CastSpell(player,190967,true);
-        player->AddQuestDelayedEvent(RockEscape::QuestId,3000,[player,guid]
+        // The native aura tick normally dispatches this at 1200 ms. Retain a
+        // fallback for a dispelled/missing aura, scoped to this exact interaction.
+        player->AddQuestDelayedEvent(RockEscape::QuestId,3000,[player,guid,currentAttempt]
         {
-            Creature* npc = ObjectAccessor::GetCreature(*player,guid);
-            if (!npc || !RockEscape::CanStart(player,npc)) { RockEscape::Reset(player,guid); return; }
-            // TeleportTo can defer movement until a player update/client acknowledgement.
-            // Keep the guide until arrival is observed; failure must remain retryable.
-            if (!player->TeleportTo(1220,&RockEscape::Destination)) { RockEscape::Reset(player,guid); return; }
-            RockEscape::Arrival(player,guid,50);
+            if (currentAttempt.expired()) return;
+            if (Creature* npc = ObjectAccessor::GetCreature(*player,guid))
+                if (RockEscape::Owner(npc) == player) npc->AI()->DoAction(RockEscape::QuestId);
         });
+    }
+};
+
+// 7.3.5 effect 2 references absent spell 190982. Implement
+// the quest's transport here instead of attempting to cast an absent ID.
+// Effects 0/1/3 (personal credit, stun and 190983 presentation) stay native.
+class aura_rock_escape_transport : public AuraScript
+{
+    PrepareAuraScript(aura_rock_escape_transport);
+    void Tick(AuraEffect const*)
+    {
+        PreventDefaultAction();
+        Player* player = GetTarget()->ToPlayer();
+        if (!player || !RockEscape::Active(player)) return;
+        auto guids = *player->GetSummonList(96286);
+        for (ObjectGuid const& guid : guids)
+            if (Creature* npc = ObjectAccessor::GetCreature(*player,guid))
+                if (RockEscape::Owner(npc) == player && !npc->IsDespawn() && npc->AI()->GetData(RockEscape::QuestId))
+                {
+                    npc->AI()->DoAction(RockEscape::QuestId);
+                    return;
+                }
+    }
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(aura_rock_escape_transport::Tick,EFFECT_2,SPELL_AURA_PERIODIC_TRIGGER_SPELL);
     }
 };
 
 void AddSC_highmountain_rock_escape()
 {
     RegisterCreatureAI(npc_rock_escape_navarrogg);
+    RegisterAuraScript(aura_rock_escape_transport);
 }

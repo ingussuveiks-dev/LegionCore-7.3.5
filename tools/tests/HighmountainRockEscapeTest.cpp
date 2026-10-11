@@ -48,7 +48,7 @@ struct Creature:Unit {
 };
 float Player::GetDistance(Creature*c){return GetExactDist(c);}Vehicle* Player::GetVehicle(){return vehicle?&vehicle->kit:nullptr;}void Player::ExitVehicle(){if(vehicle&&!failExit){vehicle->kit.passenger=nullptr;vehicle=nullptr;}}
 struct ObjectAccessor {static Creature* GetCreature(Unit&,ObjectGuid g){auto i=world.find(g);return i==world.end()?nullptr:i->second;}};
-struct ScriptedAI {Creature* me;explicit ScriptedAI(Creature*c):me(c){c->ai=this;}virtual ~ScriptedAI()=default;virtual void IsSummonedBy(Unit*){}virtual void MoveInLineOfSight(Unit*){}virtual void JustDied(Unit*){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual uint32 GetData(uint32)const{return 0;}virtual void SetData(unsigned,unsigned){++me->signals;}std::vector<unsigned> talks;void Talk(unsigned id,ObjectGuid){talks.push_back(id);}};
+struct ScriptedAI {Creature* me;explicit ScriptedAI(Creature*c):me(c){c->ai=this;}virtual ~ScriptedAI()=default;virtual void IsSummonedBy(Unit*){}virtual void DoAction(int32){}virtual void MoveInLineOfSight(Unit*){}virtual void JustDied(Unit*){}virtual void MovementInform(uint32,uint32){}virtual void UpdateAI(uint32){}virtual void PassengerBoarded(Unit*,int8,bool){}virtual uint32 GetData(uint32)const{return 0;}virtual void SetData(unsigned,unsigned){++me->signals;}std::vector<unsigned> talks;void Talk(unsigned id,ObjectGuid){talks.push_back(id);}};
 struct PlayerScript {explicit PlayerScript(char const*){}virtual ~PlayerScript()=default;virtual void OnLogin(Player*){}virtual void OnLogout(Player*){}virtual void OnMapChanged(Player*){}virtual void OnUpdate(Player*,uint32){}};
 
 
@@ -75,6 +75,12 @@ struct SmartAI:ScriptedAI {
  void IsSummonedBy(Unit*)override{++summonCalls;}
  void SetData(uint32,uint32)override{++dataCalls;}
 };
+#define PrepareAuraScript(name) public:
+#define AuraEffectPeriodicFn(method,index,type) 0
+enum {EFFECT_2=2,SPELL_AURA_PERIODIC_TRIGGER_SPELL=23};
+struct AuraEffect {};
+struct Hook {void operator+=(int){}};
+struct AuraScript {Unit* target=nullptr;bool prevented=false;Hook OnEffectPeriodic;virtual void Register(){};void PreventDefaultAction(){prevented=true;}Unit* GetTarget(){return target;}};
 #include "HighmountainRockEscape.inc"
 void Player::CastSpell(Unit* u,unsigned spell,bool triggered)
 {
@@ -102,5 +108,13 @@ int main()
  r.deferTeleport=true;retryAI.sGossipSelect(&r,18673,0);r.Run(3000);for(unsigned i=0;i<51;++i)r.Run(100);assert(!retryAI.pending&&!retry.gone);r.teleport=false;r.deferTeleport=false;
  retryAI.sGossipSelect(&r,18673,0);r.Run(3000);assert(retry.gone);
  Player absent(4);Creature unused(96286,&absent);Move(unused,absent);npc_rock_escape_navarrogg unusedAI(&unused);absent.quest.Status=QUEST_STATUS_NONE;unusedAI.sGossipSelect(&absent,18673,0);absent.quest.Status=QUEST_STATUS_REWARDED;unusedAI.sGossipSelect(&absent,18673,0);assert(absent.casts.empty());
- std::cout<<"PASS: actual escape handler, native credit timing, owner/phase/area/LOS gating, duplicate guide/click prevention, two-player isolation, delayed acknowledgement, failed/timeout transport retry and quest-lifetime cancellation.\n";
+ // Native tick replaces absent 190982 only for an authorized, pending interaction.
+ Player a(5);Creature guide(96286,&a);Move(guide,a);npc_rock_escape_navarrogg guideAI(&guide);a.deferTeleport=true;
+ aura_rock_escape_transport tick;tick.target=&a;tick.Tick(nullptr);assert(tick.prevented&&!a.teleports);
+ guideAI.sGossipSelect(&a,18673,0);tick.Tick(nullptr);assert(a.teleports==1&&guideAI.departed&&!guide.gone);tick.Tick(nullptr);a.Run(3000);assert(a.teleports==1);FinishDeferred(a);assert(guide.gone);
+ // Failed native dispatch followed by retry must invalidate the old fallback timer.
+ Player b(6);Creature retryGuide(96286,&b);Move(retryGuide,b);npc_rock_escape_navarrogg bAI(&retryGuide);tick.target=&b;b.failTeleport=true;bAI.sGossipSelect(&b,18673,0);tick.Tick(nullptr);assert(b.teleports==1&&!bAI.pending);
+ b.failTeleport=false;bAI.sGossipSelect(&b,18673,0);b.Run(3000);assert(b.teleports==2&&retryGuide.gone);
+ Player abandoned(7);Creature abandonedGuide(96286,&abandoned);Move(abandonedGuide,abandoned);npc_rock_escape_navarrogg abandonedAI(&abandonedGuide);abandonedAI.sGossipSelect(&abandoned,18673,0);abandoned.Abandon();abandoned.Accept();tick.target=&abandoned;tick.Tick(nullptr);abandoned.Run(3000);assert(!abandoned.teleports);
+ std::cout<<"PASS: actual native periodic handler (default missing-spell cast suppressed, authorization, single dispatch and scoped fallback) plus escape handler, native credit timing, owner/phase/area/LOS gating, duplicate guide/click prevention, two-player isolation, delayed acknowledgement, failed/timeout transport retry and quest-lifetime cancellation.\n";
 }

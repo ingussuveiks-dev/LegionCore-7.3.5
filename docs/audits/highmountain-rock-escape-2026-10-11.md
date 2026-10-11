@@ -32,6 +32,10 @@ The old destination is retained: map 1220, 5435.1, 4497.69, 642.4, orientation 3
 - `Test-HighmountainRockEscapeGeometry.ps1` links the actual Release navigation library and checks the installed ground data from landing point to turn-in NPC.
 - Final Release/startup validation uses `build-extractors/bin/Release`, with database and executable backups and protected runtime hashes.
 
-## Limits
+## Follow-up: absent trigger handled (2026-10-11)
 
-The native periodic trigger 190982 is absent from the installed Spell/SpellEffect/SpellMisc data and has no hotfix row here; searches did not establish an authoritative replacement. This batch does not invent an ID or alter those client records. The functional escape is provided by the validated server teleport; native 190967/190983 presentation is retained. A 7.3.5 client retest must still confirm the stone-fist/stun presentation, pet portrait, arrival, turn-in and all three offers. Compilation and scripted tests are not proof of client visuals or a complete retail playthrough.
+Migration 08 and `aura_rock_escape_transport` now handle effect 2 directly. The native 1200 ms tick suppresses the default attempted cast of absent 190982 and dispatches only a validated, pending interaction on this player's guide. It calls the same checked transport/arrival logic. The three-second callback remains a fallback for a missing/dispelled aura; per-attempt lifetime and departed state prevent a second teleport or an old retry timer acting on a new interaction. Credit, stun, 190983 and client DB2 records remain unchanged. This supplies the required server behavior without claiming that a guessed spell is the original 190982. Tests compile and exercise the real periodic handler, including unauthorized casts, duplicate ticks, failed dispatch, stale fallback and abandonment.
+
+## Original limitation and remaining client check
+
+The native periodic trigger 190982 is absent from the installed Spell/SpellEffect/SpellMisc data and has no hotfix row here; searches did not establish an authoritative replacement. This batch does not invent an ID or alter those client records. The missing-trigger execution is now explicitly handled by the follow-up above; native 190967/190983 presentation is retained. A 7.3.5 client retest must still confirm the stone-fist/stun presentation, pet portrait, arrival, turn-in and all three offers. Compilation and scripted tests are not proof of client visuals or a complete retail playthrough.

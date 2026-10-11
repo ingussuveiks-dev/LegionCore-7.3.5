@@ -6,6 +6,7 @@ New-Item -ItemType Directory -Force -Path $output | Out-Null
 $loader=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/legion_script_loader.cpp" -Raw
 if($loader -notmatch 'void AddSC_highmountain_rock_escape\(\);' -or $loader -notmatch '(?m)^\s+AddSC_highmountain_rock_escape\(\);'){throw 'Missing Legion script registration'}
 $source=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/highmountain_rock_escape.cpp" -Raw
+if($source -notmatch 'RegisterAuraScript\(aura_rock_escape_transport\)' -or $source -notmatch 'AuraEffectPeriodicFn\(aura_rock_escape_transport::Tick,EFFECT_2,SPELL_AURA_PERIODIC_TRIGGER_SPELL\)'){throw 'Missing periodic effect binding'}
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 $source=$source.Substring(0,$source.IndexOf('void AddSC_highmountain_rock_escape()'))
 [IO.File]::WriteAllText("$output/HighmountainRockEscape.inc",$source)

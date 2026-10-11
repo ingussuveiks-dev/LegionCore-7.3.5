@@ -29,7 +29,7 @@ assert any(r['SpellID']==190967 and r['Effect']==90 and r['EffectMiscValue1']==9
 assert any(r['SpellID']==190967 and r['EffectAura']==12 for r in fx)
 assert any(r['SpellID']==190967 and r['EffectTriggerSpell']==190983 for r in fx)
 assert any(r['SpellID']==190983 and r['Effect']==3 for r in fx)
-assert any(r['SpellID']==190967 and r['EffectTriggerSpell']==190982 for r in fx)
+assert any(r['SpellID']==190967 and r['EffectTriggerSpell']==190982 and r['EffectAuraPeriod']==1200 for r in fx)
 assert not any(r['SpellID']==190982 for r in fx) # Native dangling trigger, no replacement guessed.
 misc=[r for r in d.rows('SpellMisc').values() if r['SpellID'] in (190967,190983)]
 duration=d.rows('SpellDuration')[next(r for r in misc if r['SpellID']==190967)['DurationIndex']]

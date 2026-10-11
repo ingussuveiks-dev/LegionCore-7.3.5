@@ -2,12 +2,14 @@ param([switch]$Live)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $migration=Get-Content "$repo/sql/updates/world/2026_10_11_07_highmountain_rock_escape.sql" -Raw
+$migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_11_08_highmountain_escape_trigger.sql" -Raw)
 $sql=''
 if(!$Live){
- $sql=(@('creature_template','smart_scripts','conditions','quest_template','quest_template_addon') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
+ $sql=(@('creature_template','smart_scripts','conditions','quest_template','quest_template_addon','spell_script_names') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
  $sql+="`n$migration`n$migration`n"
 }
 $sql+=@"
+SELECT 'native-trigger-handler',COUNT(*) FROM spell_script_names WHERE spell_id=190967 AND ScriptName='aura_rock_escape_transport';
 SELECT 'guide-binding',COUNT(*) FROM creature_template WHERE entry=96286 AND AIName='' AND ScriptName='npc_rock_escape_navarrogg' AND gossip_menu_id=18673 AND npcflag=3;
 SELECT 'preserved-summon',COUNT(*) FROM smart_scripts WHERE entryorguid=96286 AND source_type=0 AND event_type=54 AND ((action_type=207 AND target_type=23) OR (action_type=29 AND target_type=23) OR (action_type=85 AND action_param1=212762 AND target_type=23));
 SELECT 'old-timeline',COUNT(*) FROM smart_scripts WHERE (entryorguid=9628600 AND source_type=9) OR (entryorguid=96286 AND source_type=0 AND event_type=62 AND event_param1=18673 AND event_param2=0);
@@ -25,7 +27,7 @@ SELECT 'join',COUNT(*) FROM quest_template_addon WHERE ID=39426 AND PrevQuestID=
 SELECT 'previous',COUNT(*) FROM quest_template_addon WHERE ID=39381 AND PrevQuestID=39860 AND NextQuestID=39391;
 SELECT 'no-disable',COUNT(*) FROM disables WHERE sourceType=1 AND entry IN(39381,39391,39425,39588,39426);
 "@
-$expected=@("guide-binding`t1","preserved-summon`t3","old-timeline`t0","retry-menu`t2","option`t1","native-objective`t1","starter`t1","ender`t1","refuge-actor`t1","refuge-questgiver`t1","parallel-offers`t3","native-next`t3","branch-starters`t3","join`t1","previous`t1","no-disable`t0")
+$expected=@("native-trigger-handler`t1","guide-binding`t1","preserved-summon`t3","old-timeline`t0","retry-menu`t2","option`t1","native-objective`t1","starter`t1","ender`t1","refuge-actor`t1","refuge-questgiver`t1","parallel-offers`t3","native-next`t3","branch-starters`t3","join`t1","previous`t1","no-disable`t0")
 if(!$Live){
  $sql+=@"
 SELECT 'unrelated-guide',COUNT(*) FROM saved_creature_template a JOIN creature_template b USING(entry) WHERE (a.entry<>96286 AND (a.AIName<>b.AIName OR a.ScriptName<>b.ScriptName)) OR a.npcflag<>b.npcflag OR a.unit_flags<>b.unit_flags;
