@@ -14,7 +14,7 @@ enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
 enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=7,
  CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TIMED_TYPE_CREATURE,CRITERIA_TYPE_KILL_CREATURE};
 enum {QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
- QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=1,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=2,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
+ QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=0x10,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=0x40,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 enum {EQUIP_ERR_OK,EQUIP_ERR_ITEM_MAX_COUNT,EQUIP_ERR_LOOT_GONE,EQUIP_ERR_NOT_EQUIPPABLE,EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,ITEM_LIMIT_CATEGORY_MODE_HAVE};
 struct QuestObjective {int Type=1,ObjectID=128380,Amount=50,Flags=0,StorageIndex=0;};
 struct Quest {
@@ -169,5 +169,12 @@ int main()
  p={};p.activeQuest=39588;p.status.Status=QUEST_STATUS_INCOMPLETE;
  p.KilledMonster(&caveWarmonger,{96307});assert(p.progress==0 && p.creditPackets==0);
  std::cout<<"PASS: all nine native Feltotem credit paths count once per kill, complete exactly at 10, cap progress, ignore absent/rewarded/raid quests and exclude cave Warmonger 96307.\n";
+ store.quests[39426].objectives.push_back({QUEST_OBJECTIVE_MONSTER,95707,1,1,1});
+ p={};p.activeQuest=39426;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ assert(!p.CanCompleteQuest(39426)); // Native flag 1 tracks the minimap; it must not bypass the kill.
+ CreatureTemplate torok{95707,{95290,0}};killedCreature.entry=95707;
+ p.KilledMonster(&torok,{95707});assert(p.progress==1 && p.creditPackets==1 && p.completeCalls==1);
+ p.KilledMonster(&torok,{95707});assert(p.progress==1 && p.creditPackets==1 && p.completeCalls==1);
+ std::cout<<"PASS: Blood Debt native tracked objective remains incomplete before Torok dies; one kill completes once, alternate Feltotem credit does not double-count.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }
