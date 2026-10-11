@@ -24,6 +24,7 @@ void AddSC_highmountain_bloodtotem();
 void AddSC_highmountain_audience();
 void AddSC_highmountain_blood_trial();
 void AddSC_highmountain_blood_rite();
+void AddSC_highmountain_rock_escape();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -223,6 +224,7 @@ void AddLegionScripts()
     AddSC_highmountain_audience();
     AddSC_highmountain_blood_trial();
     AddSC_highmountain_blood_rite();
+    AddSC_highmountain_rock_escape();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();

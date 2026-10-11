@@ -45,8 +45,8 @@ void ReturnGuide(Player* player)
     auto status = player->GetQuestStatus(QuestId);
     auto next = player->GetQuestStatus(39381);
     if ((status == QUEST_STATUS_COMPLETE || (status == QUEST_STATUS_REWARDED &&
-        (next == QUEST_STATUS_NONE || next == QUEST_STATUS_INCOMPLETE))) && !Existing(player,96286))
-        player->CastSpell(player,192536,true); // Native personal Navarrogg, existing turn-in/escape SmartAI.
+        (next == QUEST_STATUS_NONE || next == QUEST_STATUS_INCOMPLETE || next == QUEST_STATUS_COMPLETE))) && !Existing(player,96286))
+        player->CastSpell(player,192536,true); // Native personal Navarrogg; retain turn-in and allow interrupted escape recovery.
 }
 void Begin(Player* player, Creature* navarrogg)
 {

@@ -25,13 +25,13 @@ SELECT 'guide-area',COUNT(*) FROM spell_area WHERE spell=192536 AND area=7807 AN
 SELECT 'guide-ender',COUNT(*) FROM creature_questender WHERE id=96286 AND quest=39860;
 SELECT 'guide-next',COUNT(*) FROM creature_queststarter WHERE id=96286 AND quest=39381;
 SELECT 'next-gate',COUNT(*) FROM quest_template_addon WHERE ID=39381 AND PrevQuestID=39860;
-SELECT 'guide-ai',COUNT(*) FROM creature_template WHERE entry=96286 AND AIName='SmartAI' AND (npcflag & 2)=2;
+SELECT 'guide-ai',COUNT(*) FROM creature_template WHERE entry=96286 AND AIName='' AND ScriptName='npc_rock_escape_navarrogg' AND (npcflag & 2)=2;
 SELECT 'escape',COUNT(*) FROM smart_scripts WHERE entryorguid=9628600 AND source_type=9;
 SELECT 'actors-position',COUNT(*) FROM creature WHERE (id=95259 AND guid=283395 AND map=1220 AND ABS(position_x-5110.94)<0.02 AND ABS(position_y-5071.74)<0.02) OR (id=97675 AND guid=283448 AND map=1220 AND ABS(position_x-5103.12)<0.02 AND ABS(position_y-5073.15)<0.02);
 SELECT 'dialogue',COUNT(*) FROM creature_text WHERE CreatureID=97418 AND ((GroupID=0 AND Text='More souls! Come and accept your fate!' AND BroadcastTextID=99494) OR (GroupID=1 AND Text='Me rip, you die!' AND BroadcastTextID=82906));
 SELECT 'no-disable',COUNT(*) FROM disables WHERE sourceType=1 AND entry IN(39860,39381);
 "@
-$expected=@("native-objectives`t0","approach-binding`t1","boss-binding`t1","portal-binding`t1","shared-scene`t0","shared-blocker`t0","old-click`t0","combat-spells`t2","boss-scaling`t1","sacrifice`t1","acceptance`t1","guide-area`t1","guide-ender`t1","guide-next`t1","next-gate`t1","guide-ai`t1","escape`t3","actors-position`t2","dialogue`t2","no-disable`t0")
+$expected=@("native-objectives`t0","approach-binding`t1","boss-binding`t1","portal-binding`t1","shared-scene`t0","shared-blocker`t0","old-click`t0","combat-spells`t2","boss-scaling`t1","sacrifice`t1","acceptance`t1","guide-area`t1","guide-ender`t1","guide-next`t1","next-gate`t1","guide-ai`t1","escape`t0","actors-position`t2","dialogue`t2","no-disable`t0")
 if(!$Live){
  $sql+=@"
 SELECT 'unrelated-bindings',COUNT(*) FROM saved_creature_template a JOIN creature_template b USING(entry) WHERE (a.entry NOT IN(95259,97418,97675) AND (a.AIName<>b.AIName OR a.ScriptName<>b.ScriptName)) OR (a.entry<>95259 AND a.npcflag<>b.npcflag) OR a.unit_flags<>b.unit_flags OR a.faction<>b.faction OR a.HealthScalingExpansion<>b.HealthScalingExpansion;

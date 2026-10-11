@@ -67,6 +67,13 @@ int main()
  p.m_RewardedQuests.insert(38912);
  for(auto id:{39372u,39373u,39873u})assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
  for(unsigned mask=0;mask<8;++mask){p.m_RewardedQuests={38912};unsigned bit=0;for(auto id:{39372u,39373u,39873u})if(mask&(1u<<bit++))p.m_RewardedQuests.insert(id);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39374),false)==(mask==7));}
+ // Refuge branches after Rock Troll in a Hard Place use the same actual core gate.
+ store.quests.emplace(39381,Quest{39381,0,{}});
+ for(auto id:{39391u,39425u,39588u}){store.quests.emplace(id,Quest{id,-39391,{39381}});store.mExclusiveQuestGroups.emplace(-39391,id);}
+ store.quests.emplace(39426,Quest{39426,0,{39391,39391,39425,39588}});
+ p.m_RewardedQuests.clear();for(auto id:{39391u,39425u,39588u})assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
+ p.m_RewardedQuests.insert(39381);for(auto id:{39391u,39425u,39588u})assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
+ for(unsigned mask=0;mask<8;++mask){p.m_RewardedQuests={39381};unsigned bit=0;for(auto id:{39391u,39425u,39588u})if(mask&(1u<<bit++))p.m_RewardedQuests.insert(id);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39426),false)==(mask==7));}
  p={};p.bags=30;assert(p.CanTakeMoreSimilarItems(128380,7,nullptr,nullptr,true)==EQUIP_ERR_ITEM_MAX_COUNT);
  HotfixFixture itemSparseHotfixes;
 #include "BloodtotemHotfix.inc"
@@ -84,5 +91,5 @@ int main()
   if(bags>=50){p.RewardItems(store.GetQuestTemplate(39373));assert(p.bags==bags-50 && p.bank==50);}
  }
  for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.status.Status=status;p.progress=30;login.OnLogin(&p);assert(p.status.Status==status && p.progress==30);}
- std::cout<<"PASS: extracted prerequisites (all 8 subsets), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
+ std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }
