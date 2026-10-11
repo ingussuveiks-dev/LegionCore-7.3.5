@@ -75,7 +75,7 @@ struct Player {
  bool CanCompleteQuest(uint32); bool IsQuestWeekRewarded(uint32){return false;} bool IsQuestSeasonalRewarded(uint32){return false;}
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
- bool HasQuestObjectiveComplete(Quest const*,QuestObjective const& obj){return progress>=obj.Amount;}
+ bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return quest->id==39456?bool(progress&(1<<obj.StorageIndex)):progress>=obj.Amount;}
  void SetQuestObjectiveData(Quest const*,QuestObjective const*,uint32 count){progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
@@ -176,5 +176,11 @@ int main()
  p.KilledMonster(&torok,{95707});assert(p.progress==1 && p.creditPackets==1 && p.completeCalls==1);
  p.KilledMonster(&torok,{95707});assert(p.progress==1 && p.creditPackets==1 && p.completeCalls==1);
  std::cout<<"PASS: Blood Debt native tracked objective remains incomplete before Torok dies; one kill completes once, alternate Feltotem credit does not double-count.\n";
+ store.quests.emplace(40229,Quest{40229,0,{39426}});
+ store.quests.emplace(39456,Quest{39456,0,{40229}});
+ store.quests[39456].objectives={{3,99619,1,0,0},{0,99619,1,3,1},{0,99624,1,12,2}};
+ for(int mask=0;mask<8;++mask){p={};p.activeQuest=39456;p.status.Status=QUEST_STATUS_INCOMPLETE;p.progress=mask;assert(p.CanCompleteQuest(39456)==((mask&3)==3));}
+ p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39456),false));p.m_RewardedQuests.insert(40229);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39456),false));
+ std::cout<<"PASS: Unexpected Allies requires both meeting and witness (all eight native objective subsets); optional wait alone cannot complete; Step into the Dark must be rewarded.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }

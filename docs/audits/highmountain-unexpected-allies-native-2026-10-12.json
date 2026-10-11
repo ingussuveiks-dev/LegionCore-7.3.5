@@ -1,0 +1,69 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objectives": [
+    {
+      "ID": 280680,
+      "QuestID": 39456,
+      "Type": 0,
+      "StorageIndex": 2,
+      "ObjectID": 99624,
+      "Amount": 1,
+      "Flags": 12,
+      "Flags2": 0
+    },
+    {
+      "ID": 280843,
+      "QuestID": 39456,
+      "Type": 0,
+      "StorageIndex": 1,
+      "ObjectID": 99619,
+      "Amount": 1,
+      "Flags": 3,
+      "Flags2": 0
+    },
+    {
+      "ID": 280678,
+      "QuestID": 39456,
+      "Type": 3,
+      "StorageIndex": 0,
+      "ObjectID": 99619,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    }
+  ],
+  "models": {
+    "108434": 63703,
+    "99624": 69863,
+    "99619": 69863,
+    "95392": 69863,
+    "93826": 73318
+  },
+  "enders": [
+    {
+      "id": "93826",
+      "quest": "39456"
+    },
+    {
+      "id": "95392",
+      "quest": "40229"
+    },
+    {
+      "id": "108434",
+      "quest": "39456"
+    }
+  ],
+  "quests": {
+    "40229": {
+      "LogTitle": "'Step into the Dark'",
+      "LogDescription": "'Speak with Navarrogg at Stonedark Grotto.'",
+      "RewardNextQuest": "39456"
+    },
+    "39456": {
+      "LogTitle": "'Unexpected Allies'",
+      "LogDescription": "'Speak with Mayla Highmountain at Thunder Totem.'",
+      "RewardNextQuest": "0"
+    }
+  }
+}
