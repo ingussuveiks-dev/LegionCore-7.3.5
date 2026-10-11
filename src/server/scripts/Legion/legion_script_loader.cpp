@@ -19,6 +19,7 @@ void AddSC_highmountain_river();
 void AddSC_highmountain_lifespring();
 void AddSC_highmountain_riverbend();
 void AddSC_highmountain_dargrul();
+void AddSC_highmountain_highground();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -213,6 +214,7 @@ void AddLegionScripts()
     AddSC_highmountain_lifespring();
     AddSC_highmountain_riverbend();
     AddSC_highmountain_dargrul();
+    AddSC_highmountain_highground();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();

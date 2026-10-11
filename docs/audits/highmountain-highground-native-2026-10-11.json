@@ -1,0 +1,165 @@
+{
+  "quests": {
+    "40515": {
+      "LogTitle": "'A Walk With the Spirits'",
+      "LogDescription": "'Speak with Spiritwalker Ebonhorn.'",
+      "QuestDescription": "'The spiritwalker you saved from Riverbend has been insufferable since his arrival. He is insisting on showing you the ways of our people so that you better understand what is to come.$b$bHe is a strange one, even by spiritwalker standards.$b$bEven so, only a fool would discard his insight. Please, go to speak with him when you get a moment.'",
+      "RewardNextQuest": "40167",
+      "Flags": "574619656"
+    },
+    "39579": {
+      "LogTitle": "'The Backdoor'",
+      "LogDescription": "'Escape the Vault.'",
+      "QuestDescription": "'This will take Mayla some time to adjust to.$b$bThat being said, we should return to Thunder Totem.$b$bJust south of here is a tunnel that should take us through the old drogbar slave enclave and then to an opening beyond.$b$bWe keep a small Skyhorn outpost there to watch and ensure nothing enters or leaves this vault without us knowing about it. They should be able to fly us back.'",
+      "RewardNextQuest": "39580",
+      "Flags": "34603016"
+    },
+    "38913": {
+      "LogTitle": "'The Skyhorn Tribe'",
+      "LogDescription": "'Meet Lasan Skyhorn at Skyhorn.'",
+      "QuestDescription": "'The Skyhorn people are some of the greatest pathfinders and hunters this world has ever known.$b$bThey are a proud people, but should be willing to listen to reason.$b$bIf the roads feel unsafe, you may ask any flight master in Highmountain to fly you there.$b$bPlease, $p, go to their leader Lasan and remind him that only together, we are Highmountain.'",
+      "RewardNextQuest": "39318",
+      "Flags": "38797320"
+    },
+    "38912": {
+      "LogTitle": "'The Bloodtotem Tribe'",
+      "LogDescription": "'Meet Oakin Ironbull at Cliff\\'s Edge.'",
+      "QuestDescription": "'The Bloodtotem are led by Torok, a volatile but useful tauren chieftain. He is wary of outsiders, but I believe you have already met an emissary to their tribe--Oakin Ironbull--whom you rescued at Riverbend.\\n\\nUse that small thread and you may be able to bring the Bloodtotem back into the fold. Highmountain needs them if we are to defeat the drogbar and reclaim the Hammer of Khaz\\'goroth. Be on your guard, $n.'",
+      "RewardNextQuest": "39372",
+      "Flags": "33554440"
+    },
+    "38909": {
+      "LogTitle": "'Get to High Ground'",
+      "LogDescription": "'Bring Jale Rivermane to Thunder Totem.'",
+      "QuestDescription": "'It is no accident that Dargrul attacked the Rivermane in force. It is their farms and their pastures that supply food for the region.$b$bPlease, get Jale to Thunder Totem. With luck, Mayla will have reinforcements to send to the area.$b$bWe will rally the survivors here and follow as quickly as we can.'",
+      "RewardNextQuest": "38912",
+      "Flags": "37748744"
+    }
+  },
+  "objectives": [
+    {
+      "ID": 281830,
+      "QuestID": 38909,
+      "Type": 0,
+      "StorageIndex": 1,
+      "ObjectID": 95078,
+      "Amount": 1,
+      "Flags": 3,
+      "Flags2": 0
+    },
+    {
+      "ID": 278984,
+      "QuestID": 38909,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 94547,
+      "Amount": 1,
+      "Flags": 1,
+      "Flags2": 0
+    }
+  ],
+  "starters": [],
+  "enders": [
+    {
+      "id": "93826",
+      "quest": "38909"
+    },
+    {
+      "id": "93841",
+      "quest": "38913"
+    },
+    {
+      "id": "95256",
+      "quest": "38912"
+    },
+    {
+      "id": "98825",
+      "quest": "40515"
+    },
+    {
+      "id": "108305",
+      "quest": "39579"
+    }
+  ],
+  "spell_effects": [
+    {
+      "ID": 275499,
+      "Effect": 28,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 95078,
+      "EffectMiscValue2": 3679,
+      "EffectRadiusIndex1": 18,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 142,
+      "ImplicitTarget2": 0,
+      "SpellID": 188583
+    }
+  ],
+  "summon_properties": {
+    "ID": 3679,
+    "Flags": 8522506,
+    "Control": 1,
+    "Faction": 1665,
+    "Title": 0,
+    "Slot": 0
+  },
+  "quest_lines": [
+    {
+      "ID": 1075,
+      "QuestLineID": 93,
+      "QuestID": 38913,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 1934,
+      "QuestLineID": 145,
+      "QuestID": 38912,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 1972,
+      "QuestLineID": 148,
+      "QuestID": 39579,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 2552,
+      "QuestLineID": 89,
+      "QuestID": 38909,
+      "OrderIndex": 5
+    }
+  ],
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "runtime_hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SummonProperties": "3affa4211a00af7c3611dbbb15c3fed13ffccb1ecee5441ce4b38a78c38bade6",
+    "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff"
+  }
+}
