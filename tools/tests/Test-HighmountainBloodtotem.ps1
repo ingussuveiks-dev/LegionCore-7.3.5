@@ -17,6 +17,9 @@ foreach($pair in @(@('bool Player::HasQuestForItem(', 'bool Player::HasQuestForC
  $code+=$source.Substring($start,$end-$start)
 }
 [IO.File]::WriteAllText("$output/BloodtotemItems.inc",$code)
+$start=$source.IndexOf('void Player::KilledMonster(');$end=$source.IndexOf('void Player::KilledPlayerCredit(',$start)
+if($start -lt 0 -or $end -lt 0){throw 'Missing production kill credit handlers'}
+[IO.File]::WriteAllText("$output/BloodtotemKills.inc",$source.Substring($start,$end-$start))
 $start=$source.IndexOf('case QUEST_OBJECTIVE_ITEM:', $source.IndexOf('void Player::RewardQuest('))
 $end=$source.IndexOf('case QUEST_OBJECTIVE_CURRENCY:',$start)
 [IO.File]::WriteAllText("$output/BloodtotemReward.inc",$source.Substring($start,$end-$start))

@@ -1,0 +1,86 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objectives": [
+    {
+      "ID": 279704,
+      "QuestID": 39588,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 95290,
+      "Amount": 10,
+      "Flags": 0,
+      "Flags2": 0
+    }
+  ],
+  "credits": {
+    "105066": [
+      95290,
+      0
+    ],
+    "105065": [
+      95290,
+      0
+    ],
+    "104328": [
+      95290,
+      0
+    ],
+    "104323": [
+      95290,
+      0
+    ],
+    "100055": [
+      95290,
+      0
+    ],
+    "96615": [
+      95290,
+      0
+    ],
+    "96423": [
+      95290,
+      0
+    ],
+    "96307": [
+      0,
+      0
+    ],
+    "95707": [
+      95290,
+      0
+    ],
+    "95290": [
+      0,
+      0
+    ]
+  },
+  "names": {
+    "105066": "'Feltotem Bonehound'",
+    "105065": "'Feltotem Bloodbinder'",
+    "104328": "'Feltotem Bloodbinder'",
+    "104323": "'Feltotem Bonehound'",
+    "100055": "'Feltotem Bloodsinger'",
+    "96615": "'Feltotem Demonkindre'",
+    "96423": "'Feltotem Bloodsinger'",
+    "96307": "'Feltotem Warmonger'",
+    "95707": "'Torok Bloodtotem'",
+    "95290": "'Feltotem Warmonger'"
+  },
+  "starters": [],
+  "enders": [
+    {
+      "id": "95421",
+      "quest": "39588"
+    }
+  ],
+  "quests": {
+    "39588": {
+      "LogTitle": "'They Will Pay With Blood'",
+      "LogDescription": "'Slay $1oa Feltotem Tauren.'",
+      "RewardNextQuest": "39426",
+      "Flags": "33554440",
+      "FlagsEx": "0"
+    }
+  }
+}

@@ -11,6 +11,8 @@ using PrevQuests=std::vector<int32>; using ExclusiveQuestGroups=std::multimap<in
 #define ASSERT assert
 enum {QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED};
 enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
+enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=7,
+ CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TIMED_TYPE_CREATURE,CRITERIA_TYPE_KILL_CREATURE};
 enum {QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
  QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=1,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=2,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 enum {EQUIP_ERR_OK,EQUIP_ERR_ITEM_MAX_COUNT,EQUIP_ERR_LOOT_GONE,EQUIP_ERR_NOT_EQUIPPABLE,EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,ITEM_LIMIT_CATEGORY_MODE_HAVE};
@@ -20,7 +22,8 @@ struct Quest {
  uint32 ItemDrop[QUEST_ITEM_COUNT]={},ItemDropQuantity[QUEST_ITEM_COUNT]={};
  auto const& GetObjectives() const{return objectives;}
  bool IsWeekly()const{return false;} bool IsSeasonal()const{return false;} bool IsRepeatable()const{return false;}
- bool IsAutoComplete()const{return false;} bool HasSpecialFlag(int flag)const{return flag==QUEST_SPECIAL_FLAGS_DELIVER && !objectives.empty();}
+ bool IsAutoComplete()const{return false;}
+ bool HasSpecialFlag(int flag)const{return !objectives.empty() && ((flag==QUEST_SPECIAL_FLAGS_DELIVER && objectives[0].Type==QUEST_OBJECTIVE_ITEM) || (flag==(QUEST_SPECIAL_FLAGS_KILL|QUEST_SPECIAL_FLAGS_CAST) && objectives[0].Type==QUEST_OBJECTIVE_MONSTER));}
  bool IsAllowedInRaid(int)const{return false;}
 };
 struct QuestStore {std::map<uint32,Quest> quests; ExclusiveQuestGroups mExclusiveQuestGroups;
@@ -35,7 +38,17 @@ auto sObjectMgr=&objectMgr;
 struct ItemLimitCategoryEntry {int Flags=0,Quantity=0;};
 struct LimitStore {ItemLimitCategoryEntry const* LookupEntry(int)const{return nullptr;}} sItemLimitCategoryStore;
 struct QuestStatusData {int Status=QUEST_STATUS_NONE; uint32 Timer=0;};
-struct Map {int GetDifficultyID()const{return 0;}} map;
+struct ObjectGuid {uint32 value=0;bool IsEmpty()const{return !value;}};
+struct CreatureTemplate {uint32 Entry=0,KillCredit[MAX_KILL_CREDIT]={};};
+struct Creature {
+ uint32 entry=0;uint32 GetEntry()const{return entry;} int GetCreatureType()const{return 1;}
+ ObjectGuid GetGUID()const{return {entry};}
+} killedCreature;
+struct Map {int GetDifficultyID()const{return 0;} Creature* GetCreature(ObjectGuid guid)const{return guid.value==killedCreature.entry?&killedCreature:nullptr;}} testMap;
+struct Guild {template<class... T> void UpdateAchievementCriteria(T...) {}};
+struct GuildManager {Guild* GetGuildById(uint32){return nullptr;}} guildManager;
+auto sGuildMgr=&guildManager;
+struct AchievementManager {void StartTimedAchievement(int,uint32){}} achievementManager;
 struct Group {bool isRaidGroup()const{return true;}} raidGroup;
 struct Player {
  uint32 activeQuest=39373; bool raid=false;
@@ -43,7 +56,14 @@ struct Player {
  bool SatisfyQuestPreviousQuest(Quest const*,bool); bool SatisfyQuestRace(Quest const*,bool){return true;}
  int GetQuestStatus(uint32 id){return id==activeQuest?status.Status:QUEST_STATUS_NONE;}
  uint32 GetQuestSlotQuestId(uint8 slot)const{return slot==0 && status.Status!=QUEST_STATUS_NONE && status.Status!=QUEST_STATUS_REWARDED?activeQuest:0;}
- Map const* GetMap()const{return &map;} Group const* GetGroup()const{return raid?&raidGroup:nullptr;}
+ Map const* GetMap()const{return &testMap;} Group const* GetGroup()const{return raid?&raidGroup:nullptr;}
+ AchievementManager* m_achievementMgr=&achievementManager;
+ void KilledMonster(CreatureTemplate const*,ObjectGuid);void KilledMonsterCredit(uint32,ObjectGuid={});
+ template<class... T> void UpdateAchievementCriteria(T...){}
+ uint32 GetGuildId()const{return 0;}void AddKillCreature(uint32,uint16,bool){}void AddTrackingQuestIfNeeded(ObjectGuid){}
+ unsigned creditPackets=0;
+ void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
+ void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
  int GetQuestObjectiveData(Quest const*,int)const{return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
@@ -66,6 +86,7 @@ struct Player {
 };
 #include "BloodtotemCore.inc"
 #include "BloodtotemItems.inc"
+#include "BloodtotemKills.inc"
 struct PlayerScript {explicit PlayerScript(char const*){} virtual void OnLogin(Player*){}};
 #include "BloodtotemLogin.inc"
 struct HotfixFixture {bool notified=false;void ApplyHotfix(uint32 id,void(*fixer)(ItemSparseEntry*),bool notify){assert(id==128380);fixer(&itemTemplate.sparse);notified=notify;}};
@@ -126,5 +147,27 @@ int main()
  assert(!p.HasQuestForItem(128343) && !p.CanCompleteQuest(39425));
  p={};p.activeQuest=39425;p.ItemAddedQuestCheck(128343,1);assert(p.progress==0);
  std::cout<<"PASS: Stonedark Focus absent/wrong-item/raid/completed/rewarded loot gates, collect -> complete -> discard -> incomplete -> recollect, duplicate notification, reward removes exactly one from bags.\n";
+ store.quests[39588].objectives.push_back({QUEST_OBJECTIVE_MONSTER,95290,10,0,0});
+ // TDB735 direct target and every alternate KillCredit1 mapping.
+ for(uint32 entry:{95290u,95707u,96423u,96615u,100055u,104323u,104328u,105065u,105066u}){
+  CreatureTemplate creature{entry,{entry==95290?0u:95290u,0}};killedCreature.entry=entry;
+  p={};p.activeQuest=39588;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  for(unsigned count=1;count<=12;++count){
+   p.KilledMonster(&creature,{entry});
+   assert(p.progress==int(std::min(count,10u)) && p.creditPackets==std::min(count,10u));
+   assert(p.status.Status==(count<10?QUEST_STATUS_INCOMPLETE:QUEST_STATUS_COMPLETE));
+   assert(p.completeCalls==(count<10?0u:1u));
+  }
+  for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){
+   p={};p.activeQuest=39588;p.status.Status=status;p.KilledMonster(&creature,{entry});assert(p.progress==0 && p.creditPackets==0);
+  }
+  p={};p.activeQuest=39588;p.status.Status=QUEST_STATUS_INCOMPLETE;p.raid=true;
+  p.KilledMonster(&creature,{entry});assert(p.progress==0);
+ }
+ // The cave Warmonger is a different native template, not an alias inferred from its name.
+ CreatureTemplate caveWarmonger{96307,{0,0}};killedCreature.entry=96307;
+ p={};p.activeQuest=39588;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ p.KilledMonster(&caveWarmonger,{96307});assert(p.progress==0 && p.creditPackets==0);
+ std::cout<<"PASS: all nine native Feltotem credit paths count once per kill, complete exactly at 10, cap progress, ignore absent/rewarded/raid quests and exclude cave Warmonger 96307.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }
