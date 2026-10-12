@@ -1,0 +1,29 @@
+{
+  "scope": "Remaining missing-model DBErrors.log entries for custom NPCs 230001 and 230002",
+  "evidence": {
+    "location": "Both existing spawns are on map 1, zone/area 876 (GM Island)",
+    "spawn_guids": [146823595, 146823596],
+    "source": ".codex/LegionCore_world_735.26972_2020_04_25.sql",
+    "source_result": "Server templates and spawns exist; neither creature_template_wdb row exists in the archived source or pre-fix live DB. Original names/models are unknown.",
+    "fallback_reference": "Custom Quest Repair 230006 uses display 308 in both archived and live data; Broken Shore Guide 230005 also uses it locally.",
+    "native_display": {"ID": 308, "ModelID": 74, "Gender": 0},
+    "native_model": {"ID": 74, "FileDataID": 124507},
+    "native_sha256": {
+      "CreatureDisplayInfo.db2": "1494eb6d4705848c4dd8ca2e463b99365d913155829e53914671da3302168e23",
+      "CreatureModelData.db2": "615e170a0fb416ff79b4b00881f521f244787221d82bc3bf547039f22b637357"
+    },
+    "creature_model_info": {"DisplayID": 308, "BoundingRadius": 0.306, "CombatReach": 1.5}
+  },
+  "repair": {
+    "migration": "2026_10_12_12_gm_island_missing_models.sql",
+    "description": "Add custom-labelled WDB definitions using valid display 308 and default health/power multipliers 1. VerifiedBuild=0 explicitly denotes a custom fallback, not a captured retail identity.",
+    "preserved": "Existing server templates, positions, flags, spells, services and character data. Reapplication preserves existing names/metadata and any nonzero display slot.",
+    "deployment": "Applied to live world DB and registered with SQL updater; running server left untouched. Takes effect on next server startup; no binary change required."
+  },
+  "validation": [
+    "Test-GmIslandModels.ps1: actual migration on connection-local temporary tables; missing definitions, repeat application, existing alternate model, model-less existing row, unrelated neighbour, absent template",
+    "Read native runtime DB2 display/model chain and live creature_model_info",
+    "After deployment both WDB rows resolve to model info; complete existing template/spawn query results equal before/after"
+  ],
+  "limitations": "Original custom identities could not be recovered. This repairs the two model-loading failures; NPC service behavior and appearance in game were not tested. No server restart or client test performed."
+}
