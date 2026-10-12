@@ -25,5 +25,14 @@
     "113986": "Ground=1, Flight=2 (CanFly). Preserved."
   },
   "validation": "Production arrival handlers and packet ordering are exercised by Test-MapObjectArrival.ps1, including cleanup, slow loading, unrelated/duplicate notifications, pre-existing flight/levitation/roots and vehicle passengers. This does not simulate the client's WMO streaming.",
-  "limitation": "The eight-second post-loading hold is a measured-problem workaround, not a per-object readiness guarantee. Client confirmation with flight disabled before entering the portal is still required, including a slow/cold asset load and normal movement after the hold ends."
+  "client_retest": "User confirmed the hold kept Maiko in place until walls/floor appeared; release landed the player on the floor without falling through. Some NPCs appeared to fall during streaming, the pet initially clipped into the floor until following, and Khadgar was not visible afterward. The five council members still levitate.",
+  "creature_followup": {
+    "change": "Both player visibility update paths defer new creature/pet creation for this observer while the arrival hold is active. Map objects and other players remain visible; known creatures still receive ordinary removal/visibility processing. Normal grace expiry or the missing-notification fallback refreshes visibility once after clearing the hold. Logout, death, map change and boarding cleanup do not create deferred units.",
+    "diagnostics": "After the release/visibility refresh, log the nearest living Khadgar within 75 yards, his server position and presence in this player's known-object set, or explicitly log his absence.",
+    "quest_data": "Khadgar 113986 spawn 349830 exists at -11112.1,-2024.85,747.54 on map 0, phases 7714/7552. Gossip 20457 option 1 requires active quest 44663 and applies 227861. No quest shortcut, extra spawn or phase change added.",
+    "council_data": "Archived 26972 templates already set InhabitType=4 for 114098..114102, consistent with current Ground=0/Flight=1. This proves the setting predates our changes, not that its retail presentation is correct.",
+    "tests": "Production arrival/deferral predicate tests include NPC and pet deferral, other objects/observers, existing-unit cleanup, one release refresh, timeout and lifecycle exclusions. Source wiring verifies both visibility paths. Warlock, pet selection and 76 introduction progression/phase checks pass.",
+    "client_status": "NPC/pet follow-up still requires a client retest. The missing Khadgar's live server position during the reported test was not observable from saved DB spawn coordinates."
+  },
+  "limitation": "The eight-second post-loading hold is a measured-problem workaround, not a per-object readiness guarantee. One player landing passed; cold/slow loads, NPC availability, pet placement and complete quest playback still need client verification."
 }

@@ -29622,6 +29622,9 @@ inline void BeforeVisibilityDestroy<Creature>(Creature* t, Player* p)
 
 void Player::UpdateVisibilityOf(WorldObject* target)
 {
+    if (ShouldDeferMapObjectArrivalVisibility(target))
+        return;
+
     if (HaveAtClient(target))
     {
         if (!canSeeOrDetect(target, false, true))
@@ -29741,6 +29744,9 @@ void Player::SendInitialVisiblePackets(Unit* target)
 template<class T>
 void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow)
 {
+    if (ShouldDeferMapObjectArrivalVisibility(target))
+        return;
+
     if (HaveAtClient(target))
     {
         if (!canSeeOrDetect(target, false, true))
@@ -29960,6 +29966,15 @@ void Player::NotifyMapObjectArrivalLoaded(int32 mapId)
         _mapObjectArrivalSettle = 8000;
 }
 
+bool Player::ShouldDeferMapObjectArrivalVisibility(WorldObject const* target)
+{
+    // Creating ground-bound NPCs/pets while the client's city WMO is absent
+    // lets them fall visually too. Defer only new creatures for this arriving
+    // observer; keep map objects streaming and existing visibility cleanup.
+    return _mapObjectArrivalMap >= 0 && _mapObjectArrivalMap == int32(GetMapId())
+        && target->IsCreature() && !HaveAtClient(target);
+}
+
 void Player::UpdateMapObjectArrival(uint32 diff)
 {
     if (_mapObjectArrivalMap < 0)
@@ -29974,21 +29989,23 @@ void Player::UpdateMapObjectArrival(uint32 diff)
     if (_mapObjectArrivalSettle)
     {
         if (diff >= _mapObjectArrivalSettle)
-            EndMapObjectArrival();
+            EndMapObjectArrival(true);
         else
             _mapObjectArrivalSettle -= diff;
     }
     else if (diff >= 30000 - _mapObjectArrivalWait)
-        EndMapObjectArrival(); // A missing loading-screen message must not leave a permanent root.
+        EndMapObjectArrival(true); // A missing loading-screen message must not leave a permanent root.
     else
         _mapObjectArrivalWait += diff;
 }
 
-void Player::EndMapObjectArrival()
+void Player::EndMapObjectArrival(bool refreshVisibility)
 {
     if (_mapObjectArrivalMap < 0)
         return;
 
+    bool showDeferredCreatures = refreshVisibility && IsInWorld()
+        && _mapObjectArrivalMap == int32(GetMapId()) && IsAlive() && !GetVehicle() && !GetTransport();
     _mapObjectArrivalMap = -1;
     _mapObjectArrivalWait = 0;
     _mapObjectArrivalSettle = 0;
@@ -29997,6 +30014,17 @@ void Player::EndMapObjectArrival()
     if (_mapObjectArrivalOwnRoot)
         SetControlled(false, UNIT_STATE_ROOT); // Retains any root aura acquired during loading.
     _mapObjectArrivalOwnRoot = false;
+
+    if (showDeferredCreatures)
+    {
+        UpdateVisibilityForPlayer();
+        if (Creature* khadgar = FindNearestCreature(113986, 75.0f))
+            TC_LOG_INFO("misc", "Dalaran arrival for %s: Khadgar %s at %.3f %.3f %.3f, visible to client %u",
+                GetName(), khadgar->GetGUID().ToString().c_str(), khadgar->GetPositionX(),
+                khadgar->GetPositionY(), khadgar->GetPositionZ(), uint32(HaveAtClient(khadgar)));
+        else
+            TC_LOG_INFO("misc", "Dalaran arrival for %s: no living Khadgar found within 75 yards after visibility refresh", GetName());
+    }
 }
 
 void Player::SendInitialPacketsBeforeAddToMap(bool login)

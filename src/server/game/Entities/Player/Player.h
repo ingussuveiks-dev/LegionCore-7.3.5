@@ -1513,7 +1513,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void BeginMapObjectArrival();
         void NotifyMapObjectArrivalLoaded(int32 mapId);
         void UpdateMapObjectArrival(uint32 diff);
-        void EndMapObjectArrival();
+        void EndMapObjectArrival(bool refreshVisibility = false);
+        bool ShouldDeferMapObjectArrivalVisibility(WorldObject const* target);
         void SendTransferAborted(uint32 mapid, TransferAbortReason reasonId, uint8 arg = 0);
         void SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time);
 

@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <cstdint>
+#define TC_LOG_INFO(...) ((void)0)
 using uint32 = uint32_t;
 using int32 = int32_t;
 constexpr uint32 MOVEMENTFLAG_CAN_FLY = 1, MOVEMENTFLAG_DISABLE_GRAVITY = 2,
@@ -21,11 +22,14 @@ struct UpdateData {
 };
 struct WorldObject {
     int id;
+    bool creature = false;
+    bool IsCreature() const { return creature; }
     explicit WorldObject(int value) : id(value) {}
     void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player*) const { data->objects.push_back(id); }
     int GetGUID() const { return id; }
     int GetEntry() const { return id; }
 };
+using Creature = WorldObject;
 struct Transport : WorldObject {
     using WorldObject::WorldObject;
     std::vector<WorldObject*> passengers;
@@ -49,12 +53,17 @@ struct Player : WorldObject {
     int mapId = 0;
     uint32 flags = 0, state = 0;
     bool alive = true, vehicle = false, rootAura = false, selfCreateProtected = false;
+    bool inWorld = true;
+    int visibilityRefreshes = 0;
     float distance = 50;
     int32 _mapObjectArrivalMap = -1;
     uint32 _mapObjectArrivalWait = 0, _mapObjectArrivalSettle = 0;
     bool _mapObjectArrivalOwnRoot = false;
     int GetMapId() const { return mapId; }
     bool IsAlive() const { return alive; }
+    bool IsInWorld() const { return inWorld; }
+    Creature* FindNearestCreature(uint32, float) { return nullptr; }
+    void UpdateVisibilityForPlayer() { assert(_mapObjectArrivalMap == -1); ++visibilityRefreshes; }
     bool CanFly() const { return flags & MOVEMENTFLAG_CAN_FLY; }
     bool IsLevitating() const { return flags & MOVEMENTFLAG_DISABLE_GRAVITY; }
     bool GetVehicle() const { return vehicle; }
@@ -71,7 +80,8 @@ struct Player : WorldObject {
     void BeginMapObjectArrival();
     void NotifyMapObjectArrivalLoaded(int32 mapId);
     void UpdateMapObjectArrival(uint32 diff);
-    void EndMapObjectArrival();
+    void EndMapObjectArrival(bool refreshVisibility = false);
+    bool ShouldDeferMapObjectArrivalVisibility(WorldObject const* target);
     void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target)
     {
         selfCreateProtected = IsLevitating() && HasUnitMovementFlag(MOVEMENTFLAG_ROOT);
@@ -92,6 +102,7 @@ struct Map {
 #include "NotifyMapObjectArrivalLoaded.inc"
 #include "UpdateMapObjectArrival.inc"
 #include "EndMapObjectArrival.inc"
+#include "ShouldDeferMapObjectArrivalVisibility.inc"
 #include "SendInitSelf.inc"
 
 int main() {
@@ -114,8 +125,20 @@ int main() {
     assert((player.session.packets.back().objects == std::vector<int>{1}));
 
     Player late;
+    WorldObject khadgar(113986), pet(416), floor(246854), otherPlayer(200);
+    khadgar.creature = pet.creature = true;
+    assert(!late.ShouldDeferMapObjectArrivalVisibility(&khadgar));
     late.flags = MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING;
     late.BeginMapObjectArrival();
+    assert(late.ShouldDeferMapObjectArrivalVisibility(&khadgar));
+    assert(late.ShouldDeferMapObjectArrivalVisibility(&pet));
+    assert(!late.ShouldDeferMapObjectArrivalVisibility(&floor));
+    assert(!late.ShouldDeferMapObjectArrivalVisibility(&otherPlayer));
+    late.known.insert(pet.id);
+    assert(!late.ShouldDeferMapObjectArrivalVisibility(&pet)); // Existing units must still get cleanup.
+    late.known.erase(pet.id);
+    Player otherObserver;
+    assert(!otherObserver.ShouldDeferMapObjectArrivalVisibility(&khadgar));
     assert(late.IsLevitating() && late.HasUnitMovementFlag(MOVEMENTFLAG_ROOT));
     assert(!late.HasUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING));
     late.UpdateMapObjectArrival(20000); // Slow loading does not consume the streaming grace.
@@ -125,7 +148,12 @@ int main() {
     late.UpdateMapObjectArrival(7000);
     late.NotifyMapObjectArrivalLoaded(0); // Duplicate notification does not extend the deadline.
     assert(late._mapObjectArrivalSettle == 1000);
+    assert(late.visibilityRefreshes == 0 && late.ShouldDeferMapObjectArrivalVisibility(&khadgar));
     late.UpdateMapObjectArrival(1000);
+    assert(late.visibilityRefreshes == 1 && !late.ShouldDeferMapObjectArrivalVisibility(&khadgar));
+    assert(!late.ShouldDeferMapObjectArrivalVisibility(&pet));
+    late.EndMapObjectArrival(true);
+    assert(late.visibilityRefreshes == 1);
     assert(late.flags == 0 && late.state == 0 && late._mapObjectArrivalMap == -1);
     late.NotifyMapObjectArrivalLoaded(0);
     assert(late._mapObjectArrivalSettle == 0);
@@ -136,6 +164,7 @@ int main() {
     assert(missing.IsLevitating());
     missing.UpdateMapObjectArrival(1);
     assert(missing.flags == 0 && missing.state == 0);
+    assert(missing.visibilityRefreshes == 1);
 
     for (int mode = 0; mode != 5; ++mode)
     {
@@ -151,7 +180,7 @@ int main() {
         skipped.EndMapObjectArrival();
         assert(skipped._mapObjectArrivalMap == -1 && skipped.flags == original);
     }
-    for (int mode = 0; mode != 4; ++mode)
+    for (int mode = 0; mode != 6; ++mode)
     {
         Player leaving;
         leaving.BeginMapObjectArrival();
@@ -159,8 +188,12 @@ int main() {
         if(mode == 1) leaving.mapId = 1220;
         if(mode == 2) leaving.alive = false;
         if(mode == 3) leaving.vehicle = true;
+        if(mode == 4) { leaving.inWorld = false; leaving.EndMapObjectArrival(true); }
+        Transport departingBoat(10);
+        if(mode == 5) leaving.transport = &departingBoat;
         leaving.UpdateMapObjectArrival(1);
         assert(leaving.flags == 0 && leaving._mapObjectArrivalMap == -1);
+        assert(leaving.visibilityRefreshes == 0);
     }
     Player rooted;
     rooted.state = UNIT_STATE_ROOT;

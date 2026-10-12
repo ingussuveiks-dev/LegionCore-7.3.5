@@ -113,6 +113,18 @@ and quest credits are unchanged. The council's explicit levitation movement
 templates are preserved; their visual intent has not been independently
 verified against a retail recording.
 
+The subsequent client retest confirmed that Maiko remained held while the
+city streamed and landed without falling through. It also exposed NPCs
+falling during loading, initial pet floor clipping, and an unavailable
+Khadgar. The follow-up defers new creature/pet visibility for the arriving
+player until the hold ends, then refreshes visibility once. Other observers
+and streaming map objects are unaffected; lifecycle cleanup does not create
+deferred units. A release diagnostic records Khadgar's server position and
+client visibility, or his absence. His saved spawn, phase and gossip still
+match the quest, but this does not prove his live position during the report.
+Retest NPC availability and pet placement; the council's pre-existing
+levitation remains unchanged pending visual evidence.
+
 ## Validation and deployment
 
 `tools/tests/Test-LegionIntroSequence.ps1` compiles the production quest-log
