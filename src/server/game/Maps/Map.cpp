@@ -908,12 +908,12 @@ bool Map::AddPlayerToMap(Player* player, bool initPlayer /*= true*/)
         return false;
 
     if (initPlayer)
+    {
+        player->ClearClient();
         SendInitSelf(player);
+    }
 
     SendInitTransports(player);
-
-    if (initPlayer)
-        player->ClearClient();
 
     if (player->IsSpectator() && player->IsSpectateRemoving())
         player->SetSpectate(false);
@@ -2841,6 +2841,21 @@ void Map::SendInitSelf(Player* player)
     #endif
 
     UpdateData data(player->GetMapId());
+
+    // A map-object transport can be the ground itself (e.g. Dalaran over
+    // Deadwind Pass). Create visible city geometry before the active player,
+    // in the same packet, instead of waiting for the later visibility update.
+    // Otherwise the client can start falling before its floor exists.
+    for (auto const& entry : m_StaticTransports)
+    {
+        StaticTransport* transport = entry.second;
+        if (!transport->IsInWorld() || !transport->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_MAP_OBJECT)
+            || player->HaveAtClient(transport) || !player->canSeeOrDetect(transport, false, true))
+            continue;
+
+        transport->BuildCreateUpdateBlockForPlayer(&data, player);
+        player->AddClient(transport->GetGUID());
+    }
 
     // attach to player data current transport data
     if (Transport* transport = player->GetTransport())

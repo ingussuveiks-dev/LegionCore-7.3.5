@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-12",
+  "client_build": 26972,
+  "quest": 44663,
+  "portal_spell": 228327,
+  "reported_failure": "The client retest of the floor-coordinate fix still fell into the basement. Maiko saved on map 0 at -11105, -2028, 707.601; intended arrival Z=747.6.",
+  "confirmed_defect": "Map::AddPlayerToMap sent SendInitSelf before the map-object static transport was created by the later visibility update. SendInitTransports covers moving transports, not the separate static-transport container. ClearClient also ran after initial creation.",
+  "city": {
+    "entry": 246854,
+    "spawn": 129023,
+    "display": 35175,
+    "phases": [7714, 7552],
+    "native_transport_animation_records": 0,
+    "native_transport_rotation_records": 0,
+    "collision_floor": 747.131
+  },
+  "change": "Create in-world visible GO_FLAG_MAP_OBJECT static transports before the player within the same UpdateData packet. Track their GUIDs after clearing old client visibility. Keep regular visibility checks and existing moving-transport passenger initialization.",
+  "unchanged": ["portal coordinates", "city transform", "quest objectives", "cinematic handoff", "boost scenario", "pet and spell behavior"],
+  "tests": [
+    "Test-MapObjectArrival.ps1 fails against old production handler and passes after correction",
+    "Test-DalaranPortalLanding.ps1: nine native city collision samples and idempotent isolated SQL pass",
+    "Test-LegionIntroSequence.ps1: production helper and 76 quest/phase checks pass"
+  ],
+  "limitations": "The packet-order defect is confirmed in production code. Its causal contribution to this particular client fall and the final collision result require an in-game retest; no client physics is simulated by the regression harness.",
+  "retest": "Use the Orgrimmar portal, verify no fall into the basement, walk beside Khadgar, then test the relocation cinematic. Retain travel credit 1 and witness credit 0 until the actual scene completes."
+}

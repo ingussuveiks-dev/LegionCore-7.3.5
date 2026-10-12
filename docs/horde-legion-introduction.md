@@ -65,6 +65,30 @@ The actual 7.3.5 runtime `SpellEffect.db2` defines:
 The runtime SceneScriptText records 14546 / 14767 confirm that package 1728
 is the Dalaran relocation cinematic and ends with `scene:EndScene()`.
 
+### Dalaran arrival ordering, 2026-10-12
+
+The portal landing update 2026_10_12_11 alone was insufficient: the client
+retest saved Maiko at Z=707.601, below the measured street floor Z=747.131.
+Dalaran over Deadwind Pass is static transport 246854 (spawn 129023), with
+GO_FLAG_MAP_OBJECT. The old map initialization sent the active player first
+and the city only in a subsequent visibility update. The native 26972
+TransportAnimation/TransportRotation tables contain no path for this entry.
+
+`Map::SendInitSelf` now puts visible map-object static transports before the
+player in the same update packet. Initial client visibility is cleared before
+this packet, preserving the city's known GUID and avoiding a duplicate create
+in the following visibility update. Normal visibility rules still apply;
+other phases, despawned objects and ordinary elevators are not forced visible.
+The portal coordinates, quest credit and cinematic destination are unchanged.
+
+`Test-MapObjectArrival.ps1` compiles the production initialization handler and
+checks packet order, visibility tracking, excluded objects and existing boat
+passengers. It failed against the old handler and passes with this change.
+`Test-DalaranPortalLanding.ps1` and all 76 intro data checks also pass. These
+prove the server ordering and data, not client collision timing: repeat the
+portal in the 7.3.5 client and confirm both standing and walking beside Khadgar
+before calling the reported fall resolved.
+
 ## Validation and deployment
 
 `tools/tests/Test-LegionIntroSequence.ps1` compiles the production quest-log
