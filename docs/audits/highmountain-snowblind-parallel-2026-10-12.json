@@ -1,0 +1,45 @@
+{
+  "scope": "Buy Us Time (39777) and The Siegebrul (39862): availability, native kill paths, questgiver phases, basic attack targets and outgoing evacuation gate. Code/data only; no client test.",
+  "findings": [
+    "Local addon chain was 38915 -> 39776 -> 39777 -> 39862 -> 42088. Both secondary battle quests therefore opened too late.",
+    "All three battle quests now require reward of 38915, point to 42088 and share negative ExclusiveGroup -39776. The existing effective requirement to reward all three before evacuation is preserved without forcing their order.",
+    "No objective or kill alias repair needed: native 39777 requires ten credits 96690, including Slinger 96691 KillCredit2=96690. Native 39862 requires one Olgrul 97546 kill.",
+    "Existing Jale/Navarrogg field spawns use phase 4104, granted by zone 7503 entry 203 when 38915 is complete or rewarded. Conditions are already correct despite an unrelated stale phase comment. Both starter/ender relations exist. The 22 enemy spawns and active 98..110 scaling are preserved.",
+    "Bash 194019 and both Stone Disc versions 196402/197483 have native TARGET_UNIT_TARGET_ANY and no duration. FillAISpellInfo classifies them as SELF; the generic combat loop passes this target to CastSpell. A local AggressorAI subclass moves only those scheduled spells to explicit-victim casts for entries 96690/96691/97546. Other template spells, dialogue, melee and assistance stay delegated to AggressorAI."
+  ],
+  "evidence": {
+    "native": "highmountain-snowblind-parallel-native-2026-10-12.json; TDB735 original objectives, alias and enders plus runtime DB2 attack effects/misc and hashes.",
+    "primary_guide": "https://www.wow-pro.com/highmountain-neutral/ (2016 guide: accepts all three before performing their objectives; its caret syntax alone is not evidence for an AND gate).",
+    "primary_addon": "https://github.com/Breeni/BtWQuestsLegion/blob/87679c8f6cdd01464548f6ba4e7bde0f7bfcc3a5/HighMountain.lua#L957-L1000",
+    "addon_sha256": "9ac7a1a13cc4ac7ba9f35b0a0fd3686fa1a917f584f444a09fb8527fef533930",
+    "gate_basis": "Preserve the current server's effective all-three reward requirement. The independent BtWQuests branch graph converges at 42088. This is not a newly invented single-quest shortcut.",
+    "core": "QuestData.cpp adds both PrevQuestID and incoming NextQuestID edges; Player::SatisfyQuestPreviousQuest requires all rewards for a negative ExclusiveGroup. Regression exercises that actual production handler."
+  },
+  "validation": [
+    "Test-HighmountainBloodtotem.ps1: all eight reward subsets for evacuation, parallel starter prerequisites, exact ten-credit completion via each native Mightstone entry, Olgrul-only completion, repeated/absent/rewarded exclusions; earlier quest regressions also pass.",
+    "Test-HighmountainSnowblindCombat.ps1: extracted production subclass casts only at victim, removes only the overridden generic events, delegates base behavior, delays for existing cast/control/CC, stops without combat/live victim, clears timers on reset.",
+    "Test-HighmountainSnowblindParallelNative.py: original TDB records and native attack target/duration contracts pass.",
+    "Test-HighmountainSnowblindParallelData.ps1: migration applied twice to temporary tables; branch/gate/alias/phase/scaling/spawn/AI checks, unrelated rows and custom group preserved.",
+    "Live data checks pass for this batch and previous Battle Worms / tribe support batches.",
+    "Release worldserver and bnetserver built successfully in build-extractors/bin/Release; --version exits successfully. Runtime config, certificates, data and DLLs preserved."
+  ],
+  "deployment": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\snowblind-parallel-20261012-203350",
+    "sha1": "98487CE64DBABF45D854A9C15791557111C0DC1A",
+    "applied": "2026-10-12T20:33:50.5536862+03:00",
+    "migration": "sql/updates/world/2026_10_12_19_highmountain_snowblind_parallel.sql",
+    "method": "Scoped backups; stopped worldserver; InnoDB transaction and RELEASED updater registration. Server remains stopped."
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_snowblind_combat.cpp": "dfc7b39ffa73ff74751f84ed282989b72697bf4596407a2731fc6a5f72ea4e65",
+    "sql/updates/world/2026_10_12_19_highmountain_snowblind_parallel.sql": "a3605d907a3f54db77517ba49d9232775f26596e25791c89b6c5b300904af102",
+    "build-extractors/bin/Release/worldserver.exe": "30516f1ab5551e95ae2730de622335d730184fc70a83e833a5ad70ab16b36367",
+    "build-extractors/bin/Release/bnetserver.exe": "adf8026543805bf2f9b5854c6c212f4c62ba43adc8ffe2abd532111a03e1d1a2"
+  },
+  "limits": [
+    "No claim of in-game verification. Observe questgiver visibility, parallel acceptance, both Mightstone kill paths, Olgrul attacks and the final all-three handoff in a 7.3.5 client.",
+    "Inherited special attacks / barricade choreography were not reconstructed. The current change fixes the demonstrated basic attack targeting defect without rewriting other shared combat behavior.",
+    "Battle Worms tribe support remains a bounded server reconstruction, with its limits in the separate audit. Naxa 197232 catalog membership alone does not establish its intended cast role; the earlier audit wording was corrected to account for CanAutoCast."
+  ],
+  "next": "Evacuate Snowmane (42088): inspect Red Skymane 106115, Tarvim Daywalker 106153 and Old Nefu 106191 gossip, escape behavior and three independent objective credits. Its prerequisite gate is repaired here; the evacuation interactions themselves are not covered."
+}

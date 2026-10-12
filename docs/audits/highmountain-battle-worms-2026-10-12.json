@@ -16,11 +16,11 @@
     }
   ],
   "retained_findings": {
-    "naxa": "No Naxa AI change. Native 197232 uses DurationIndex 21, Duration=-1, making it AICOND_AGGRO. AggressorAI::EnterCombat casts that branch directly on who. Although FillAISpellInfo classifies its target-25 effects as SELF, the ordinary combat-loop DoCast target selection is not the entry path for this permanent aura. A self-cast defect was not established.",
+    "naxa": "No Naxa AI change. Native 197232 is permanent (DurationIndex 21/-1), so it is classified AICOND_AGGRO rather than the ordinary DoCast combat path. Follow-up review found CanAutoCast rejects permanent auras on non-self targets before EnterCombat can cast them. The earlier direct-cast observation did not establish execution. This spell also appears on Rivermane Shaman 99221; its intended encounter role is not proven by catalog membership. No speculative offensive infinite aura was added to Naxa.",
     "objectives": "39776 retains 279939 -> Xist 97013, 280504 -> Naxa 99217, 280505 -> Arxas 99216. Each requires one kill, with native flag 1 and distinct storage indices 0/1/2.",
     "actors": "All three existing worm spawns are unphased on map 1220 and have active scaling 98..110. Mayla 93846 spawn 11351491 is unphased and ends both quests; the additional phase-9180 copy was not changed.",
     "starter_phase": "38915 starts at Mayla 108434, including Thunder Totem spawn 11348959 in phase 2246. Existing zone 7731 phase entry 3 requires quest 39580 rewarded. Skyhorn reward alone therefore does not establish that this starter is visible. This prerequisite/phase relationship was documented and preserved; no unsupported shortcut was added.",
-    "handoff": "Native RewardNextQuest is 39776 for 38915 and 42088 for 39776. Local addon links also lead from 39776 to 39777. The parallel quests and later evacuation gate need their own audit; this batch does not rewrite those prerequisites."
+    "handoff": "Native RewardNextQuest is 39776 for 38915 and 42088 for 39776. Follow-up migration 19 replaces the local serial addon chain with three parallel quests and an all-three-rewards evacuation gate; see highmountain-snowblind-parallel-2026-10-12.json."
   },
   "validation": [
     "Test-HighmountainBattleWormsNative.py passes: original objective absence/presence, enders, reward links, Hooked Tongue child/target data, Naxa duration and native support-button spell mappings.",

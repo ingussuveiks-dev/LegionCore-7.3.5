@@ -30,6 +30,7 @@ void AddSC_highmountain_unexpected_allies();
 void AddSC_highmountain_skyhorn_ritual();
 void AddSC_highmountain_aviash();
 void AddSC_highmountain_worm_support();
+void AddSC_highmountain_snowblind_combat();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -235,6 +236,7 @@ void AddLegionScripts()
     AddSC_highmountain_skyhorn_ritual();
     AddSC_highmountain_aviash();
     AddSC_highmountain_worm_support();
+    AddSC_highmountain_snowblind_combat();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();

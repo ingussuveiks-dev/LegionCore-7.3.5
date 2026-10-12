@@ -284,5 +284,32 @@ int main()
  p={};p.activeQuest=39776;p.status.Status=QUEST_STATUS_INCOMPLETE;p.KilledMonsterCredit(93846);assert(p.nursingProgress.empty());
  p.raid=true;for(uint32 entry:worms)p.KilledMonsterCredit(entry);assert(p.nursingProgress.empty());
  std::cout<<"PASS: Snowblind journey has no kill requirement; Battle Worms needs all three distinct deaths in every order/subset, caps duplicate credits, ignores unrelated/absent/rewarded/raid kills and requires journey reward.\n";
+ // Snowblind parallel quests and the all-three-rewards evacuation gate.
+ store.quests[39776].ExclusiveGroup=-39776;
+ store.quests.emplace(39777,Quest{39777,-39776,{38915}});
+ store.quests.emplace(39862,Quest{39862,-39776,{38915}});
+ store.quests.emplace(42088,Quest{42088,0,{39776,39777,39862}});
+ store.quests[39777].objectives={{0,96690,10,0,0}};
+ store.quests[39862].objectives={{0,97546,1,1,0}};
+ for(uint32 id:{39776,39777,39862})store.mExclusiveQuestGroups.emplace(-39776,id);
+ for(unsigned mask=0;mask<8;++mask){
+  p={};unsigned bit=0;for(uint32 id:{39776,39777,39862})if(mask&(1u<<bit++))p.m_RewardedQuests.insert(id);
+  assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(42088),false)==(mask==7));
+  for(uint32 id:{39776,39777,39862})assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
+  p.m_RewardedQuests.insert(38915);
+  for(uint32 id:{39776,39777,39862})assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
+ }
+ for(uint32 entry:{96690,96691}){
+  p={};p.activeQuest=39777;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  CreatureTemplate drogbar{entry,{0,entry==96691?96690u:0u}};killedCreature.entry=entry;
+  for(unsigned kill=1;kill<=11;++kill){p.KilledMonster(&drogbar,{entry});assert(p.progress==int(std::min(kill,10u)));assert((p.status.Status==QUEST_STATUS_COMPLETE)==(kill>=10));}
+  assert(p.completeCalls==1&&p.creditPackets==10);
+ }
+ p={};p.activeQuest=39862;p.status.Status=QUEST_STATUS_INCOMPLETE;p.KilledMonsterCredit(96690);assert(!p.progress);
+ p.KilledMonsterCredit(97546);p.KilledMonsterCredit(97546);assert(p.progress==1&&p.completeCalls==1&&p.creditPackets==1);
+ for(uint32 quest:{39777,39862})for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){
+  p={};p.activeQuest=quest;p.status.Status=state;p.KilledMonsterCredit(quest==39777?96690:97546);assert(!p.progress&&!p.creditPackets);
+ }
+ std::cout<<"PASS: Snowblind three parallel starters, all eight evacuation reward subsets, both Mightstone kill-credit paths at exactly ten, Olgrul-only completion, duplicate cap and absent/rewarded exclusions.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }
