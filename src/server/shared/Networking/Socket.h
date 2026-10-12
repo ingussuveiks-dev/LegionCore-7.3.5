@@ -163,6 +163,24 @@ public:
         OnClose();
     }
 
+    // An expired handshake has no authenticated traffic to drain. Terminate
+    // both directions and cancel the pending read; a send-only shutdown leaves
+    // a silent peer in CLOSE_WAIT and keeps this object alive through its read.
+    void AbortSocket()
+    {
+        if (_closed.exchange(true))
+            return;
+
+        boost::system::error_code error;
+        _socket.lowest_layer().set_option(boost::asio::socket_base::linger(true, 0), error);
+        _socket.lowest_layer().close(error);
+        if (error)
+            TC_LOG_DEBUG("network", "Socket::AbortSocket: %s errored when closing socket: %u (%s)", GetRemoteIpAddress().to_string().c_str(),
+                error.value(), error.message().c_str());
+
+        OnClose();
+    }
+
     /// Marks the socket for closing after write buffer becomes empty
     void DelayedCloseSocket()
     {

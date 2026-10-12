@@ -149,6 +149,9 @@ void WorldSocket::InitializeHandler(boost::system::error_code const& error, std:
 
     if (error)
     {
+        if (error == boost::asio::error::operation_aborted && !IsOpen())
+            return; // Expected completion after the handshake deadline abort.
+
         TC_LOG_ERROR("network", "WorldSocket::InitializeHandler: closed with error %s (address: %s)", error.message().c_str(), GetRemoteIpAddress().to_string().c_str());
         CloseSocket();
         return;
@@ -228,13 +231,14 @@ bool WorldSocket::Update()
     // it stays open, but the client never completes the initializer/encryption
     // exchange.  Without a handshake deadline the realm connection waits for
     // up to SocketTimeOutTime (15 minutes) and the loading bar appears frozen.
-    // WorldSession also has a deadline: some 7.3.5 clients stay in CLOSE_WAIT
-    // without reporting CMSG_CONNECT_TO_FAILED after this close.
+    // Abort both directions so a pending read cannot retain the socket after
+    // this deadline. A send-only shutdown left the client in CLOSE_WAIT.
+    // WorldSession also bounds retries when the client does not report failure.
     if (!_authed && GetMSTimeDiffToNow(_initializationStart) >= 10000)
     {
-        TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s (type %u, initializer %u, continued auth %u); closing unfinished socket",
-            GetRemoteIpAddress().to_string().c_str(), uint32(_type), uint32(_compressionStream != nullptr), uint32(_key != 0));
-        CloseSocket();
+        TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s:%u (type %u, initializer %u, continued auth %u, buffered bytes %u); aborting unfinished socket",
+            GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()), uint32(_type), uint32(_compressionStream != nullptr), uint32(_key != 0), uint32(_packetBuffer.GetActiveSize()));
+        AbortSocket();
         return false;
     }
 

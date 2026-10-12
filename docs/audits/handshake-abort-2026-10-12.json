@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-12",
+  "report": "13:09:31 login attempt reached a silent initial world connection. The 10-second deadline half-closed it at 13:09:41. Four further serials and login abort followed at 13:09:43. Its pending initializer read finally failed with Windows semaphore timeout at 13:11:41.",
+  "observations": [
+    "Realm TCP 8085 remained established; instance TCP 8086 remained FIN_WAIT_2 after the deadline.",
+    "Read-only local greeting probes received the expected server initializer on both ports; their intentional disconnects account for three EOF logs at 13:10:47.",
+    "User confirmed a subsequent Maiko login succeeded without restarting the server."
+  ],
+  "confirmed_defect": "Socket::CloseSocket only shut down sending. The unfinished async read retained the socket through shared_from_this until the silent peer or Windows finally ended it.",
+  "correction": "Only expired unauthenticated world handshakes now use AbortSocket: close both directions with zero linger, cancel outstanding operations and run OnClose once. Normal authenticated socket closure and the five-attempt session retry bound are unchanged. The initializer suppresses expected operation_aborted after closure. Timeout logging includes remote port and buffered byte count without packet contents or authentication keys.",
+  "verification": [
+    "Test-HandshakeDeadline.ps1 compiles the extracted production deadline against the actual Socket.h and opens real ephemeral loopback TCP sockets.",
+    "Old code fails because the native socket remains open.",
+    "New code passes: socket closed, pending read completes, shared ownership released without peer closure, peer receives connection_reset.",
+    "Authenticated connections and handshakes younger than the deadline remain open.",
+    "Test-InstanceConnectRetry.ps1 passes."
+  ],
+  "limitations": "The original reason the game client sometimes fails to finish the initial exchange is not yet established. This corrects deadline cleanup and delivers a reset for retry handling; repeated 7.3.5 client login testing is still required. It does not claim to fix the Dalaran floor.",
+  "deployment_requirement": "Rebuild Release and place worldserver.exe in build-extractors/bin/Release while worldserver is stopped. Preserve runtime configuration, DLLs, certificates and extracted data."
+}
