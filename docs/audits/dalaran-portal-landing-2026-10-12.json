@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-12",
+  "client_build": 26972,
+  "quest": 44663,
+  "portal_spell": 228327,
+  "reported_failure": "After taking the Orgrimmar Portal to Dalaran, travel credit was granted but Maiko fell through the floating city. Offline saved Z=558.004 at the original portal XY.",
+  "old_destination": {
+    "map": 0,
+    "x": -11099.3,
+    "y": -2211.6,
+    "z": 792,
+    "orientation": 1.32052
+  },
+  "new_destination": {
+    "map": 0,
+    "x": -11105,
+    "y": -2028,
+    "z": 747.6,
+    "orientation": 2.72
+  },
+  "collision": {
+    "gameobject": 246854,
+    "spawn": 129023,
+    "display": 35175,
+    "model": "File00111A46.xxx",
+    "world_position": [
+      -11088.3,
+      -1993.4,
+      741.034
+    ],
+    "world_rotation": 5.60251,
+    "scale": 1,
+    "phases": [
+      7714,
+      7552
+    ],
+    "old_floor": 757.8295,
+    "old_drop": 34.1705,
+    "new_center_floor": 747.131,
+    "validation": "Production GameObjectModel reader loaded the extracted runtime WMO. All nine offsets at dx/dy -1,0,1 have a floor less than one unit below the new destination. This checks the dynamic city, not just the map-0 terrain far below it.",
+    "sha256": "d8a25eca206187b81befee3d5b41272ee60d22dbc4455cbb34c86eba26d71ea8"
+  },
+  "root_cause_limit": "The old airborne landing is confirmed. The exact contribution of client collision/phase loading to falling through that surface remains unconfirmed. The replacement point is on the measured floor near Khadgar and city origin; client retest is required before claiming the fall fully resolved.",
+  "preserved": {
+    "final_teleport_spell": 230156,
+    "final_map": 1220,
+    "travel_credit": 113762,
+    "witness_credit": 114506,
+    "cinematic_scene": 1449,
+    "quest_states_and_inventory": "Before/after query output hashes identical"
+  },
+  "character_retest": {
+    "name": "Maiko",
+    "offline": true,
+    "map": 1,
+    "zone": 1637,
+    "position": [
+      1755.5,
+      -4292,
+      7.6,
+      0.08
+    ],
+    "portal_spawn": 131762,
+    "portal_entry": 216350,
+    "quest_progress": "Travel objective remains 1; teleportation witnessed remains 0. Re-entering the portal is the client test."
+  },
+  "tests": [
+    "Test-DalaranPortalLanding.ps1: native collision and isolated migration applied twice passed",
+    "Test-LegionIntroSequence.ps1: production helper and 76 quest/phase cases passed",
+    "git diff --check passed"
+  ],
+  "deployment": "SQL 2026_10_12_11 applied and registered; no executable changes or rebuild required. Canonical runtime remains build-extractors/bin/Release. Server left stopped.",
+  "client_test": "Pending user: start server, use portal, verify standing on the floor beside Khadgar, walk normally, then use his ready option for the relocation scene."
+}
