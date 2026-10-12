@@ -13,10 +13,10 @@ enum {QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STAT
 enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
 enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=7,
  CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TIMED_TYPE_CREATURE,CRITERIA_TYPE_KILL_CREATURE};
-enum {QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
+enum {QUEST_OBJECTIVE_TASK_IN_ZONE=15,QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
  QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=0x10,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=0x40,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
 enum {EQUIP_ERR_OK,EQUIP_ERR_ITEM_MAX_COUNT,EQUIP_ERR_LOOT_GONE,EQUIP_ERR_NOT_EQUIPPABLE,EQUIP_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED_IS,ITEM_LIMIT_CATEGORY_MODE_HAVE};
-struct QuestObjective {int Type=1,ObjectID=128380,Amount=50,Flags=0,StorageIndex=0;};
+struct QuestObjective {int Type=1,ObjectID=128380,Amount=50,Flags=0,StorageIndex=0;float TaskStep=0;};
 struct Quest {
  uint32 id; int ExclusiveGroup=0; PrevQuests prevQuests; std::vector<QuestObjective> objectives; int FlagsEx=0;
  uint32 ItemDrop[QUEST_ITEM_COUNT]={},ItemDropQuantity[QUEST_ITEM_COUNT]={};
@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -76,8 +76,11 @@ struct Player {
  bool CanCompleteQuest(uint32); bool IsQuestWeekRewarded(uint32){return false;} bool IsQuestSeasonalRewarded(uint32){return false;}
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
- bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){
+ if(obj.Type==QUEST_OBJECTIVE_TASK_IN_ZONE){auto qInfo=quest;switch(obj.Type){
+#include "BloodtotemProgress.inc"
+ }}return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -338,4 +341,20 @@ int main()
  p.m_RewardedQuests.insert(42512);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(40594),false));
  std::cout<<"PASS: Highmountain Stands zero-count regression, one distinct Dargrul credit, duplicate cap and reward-gated Lasan follow-up.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
+ // Native weighted progress: boarding AND 100%, not all three hidden counters.
+ store.quests[40594].objectives={{0,100712,1,1,0,0},{0,97241,100,92,1,1},{0,97217,20,92,2,5},{0,97498,20,92,3,5},{15,0,1,2,-1,0}};
+ p.activeQuest=40594;p.status.Status=QUEST_STATUS_INCOMPLETE;p.raid=false;
+ for(int boarded=0;boarded<2;++boarded)for(int small=0;small<=100;small+=10)for(int big=0;big<=20;big+=2)for(int heal=0;heal<=20;heal+=2){
+  p.nursingProgress={{0,boarded},{1,small},{2,big},{3,heal}};
+  assert(p.CanCompleteQuest(40594)==bool(boarded && small+5*big+5*heal>=100));
+ }
+ p.nursingProgress={{0,1},{1,94}};p.completeCalls=0;
+ p.KilledMonsterCredit(97217);assert(p.status.Status==QUEST_STATUS_INCOMPLETE);
+ p.KilledMonsterCredit(97241);assert(p.status.Status==QUEST_STATUS_COMPLETE && p.completeCalls==1);
+ p.KilledMonsterCredit(97241);assert(p.nursingProgress[1]==95);
+ store.quests[39780]=Quest{39780,0,{40594}};p.m_RewardedQuests.erase(40594);p.m_RewardedQuests.insert(39027);
+ assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39780),false));p.m_RewardedQuests.insert(40594);
+ assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39780),false));
+ std::cout<<"PASS: Justice weighted progress combinations, real kill-credit completion and Underking handoff.\n";
+
 }

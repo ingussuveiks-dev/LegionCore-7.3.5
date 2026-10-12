@@ -1,0 +1,52 @@
+{
+  "scope": "Justice Rains from Above (40594): code/data repair. No client playtest, as requested by the user.",
+  "findings": [
+    "The public War Eagle 100712 granted boarding credit directly on click, independently of successful summon or boarding. Native 198214 triggers 198216 to summon vehicle 100711. Its four SmartAI events immediately attempted boarding and started path 100711, then despawned at waypoint 72 or after 300 seconds.",
+    "The new summon spell guard requires an active incomplete quest, map 1220, source phase 5050, proximity and valid player state. A personal 100711 vehicle waits for passenger 0 and completion of the player's boarding spline before granting credit 100712, handing off the mover and starting flight. Duplicate, failed or stale starts do not grant credit.",
+    "The native control seat 16161 charms the vehicle. The AI overrides OnCharmed to retain waypoint and dismount callbacks instead of switching to PossessedAI. All 72 existing route coordinates are retained. Explicit linear flying movement avoids the core's terrain-unaware ground path generation. The scripted mover follows the eagle, and normal dismount completes its exit spline before aura removal and despawn. Death, abandonment, logout, timeout, missing actors and external map transfers have bounded cleanup; logout saves the recovery destination after the core's ordinary save.",
+    "The personal bird copies the rider's phase set and synchronizes subsequent changes, keeping bombing targets reachable and the ride visible when the progress bar completes. A completed quest may finish its current circuit. Incomplete players can repeat the circuit from the source; boarding credit remains capped at one.",
+    "All five objective records already matched native TDB735 and are unchanged. Boarding is mandatory. Understone Breachers contribute 1%, Earthrenders 5%, and healed Highmountain allies 5%; the hidden counters are optional contributors to one 100% progress bar, not three independent completion requirements. Rocklord 97235 already aliases credit 97241 correctly.",
+    "The vehicle retains native abilities 213467, 198380 and 213444. Existing area trigger 7105 already invokes 213474 for 40% maximum-health damage. Stonedark Crystal 198382 already supplies knockback and damage. These working spell effects, target filters and cooldowns are preserved.",
+    "Rivermane Totem 213444/213442 summons 97508 with existing aura 195025, which triggers actual healing spell 195024 every two seconds. Healing had no quest-credit handler, and all 35 bombing-phase Warbraves/Shamans started at full health. A scoped AI initializes phase-5165 actors at 50% health without passive regeneration, preserving ordinary melee behavior. Other phases retain their health and regeneration.",
+    "The healing handler awards 97498 only after positive effective healing of a living phase-5165 Warbrave or Shaman by the rider's native totem. It validates the active, live quest-bound flight and credits each target once per sortie, excluding overheal, zero healing, unrelated targets/casters and repeated periodic ticks. Native healing amount and effects are unchanged.",
+    "Lasan 97407 remains the live starter and ender; the current circuit returns beside his existing unphased spawn. The outgoing The Underking (39780) incorrectly required unrelated quest 39027. The exact old prerequisite is replaced with rewarded Justice Rains from Above (40594)."
+  ],
+  "evidence": {
+    "native": "highmountain-justice-native-2026-10-13.json: original TDB735 objective and ender rows; installed DB2 summon chain, vehicle 4512 / seat 16161, bombing effects, cooldowns, radii and Healing Stream chain, with hashes.",
+    "interaction_reference": "https://www.wow-pro.com/highmountain-neutral/ : boarding, bombing, Lasan turn-in and outgoing Underking sequence. The guide's southern turn-in location differs from the current server's retained Lasan spawn.",
+    "runtime": "Scoped live queries of source, route, template abilities, area trigger action, healing aura, phases, objectives and quest relations. Pre-change rows retained in deployment backup."
+  },
+  "validation": [
+    "Test-HighmountainJustice.ps1 compiles the production handlers and actual quest-lifetime helpers. Covers confirmed boarding before movement/credit, exact waypoint arrivals, duplicate starts/credit, completed quest continuing flight, exit spline before cleanup, two players, failure/retry, abandonment, death, missing actors, external transfer, timeout and saved logout recovery. Healing tests exclude repeat ticks, zero healing, full health, wrong phase/entry/caster and completed quests, and preserve unrelated NPC health.",
+    "Test-HighmountainBloodtotem.ps1 compiles actual prerequisite, kill credit, completion and weighted-progress code. Checks 2662 boarding/kill/heal combinations, a mixed 99%-to-100% completion, completed-quest duplicate exclusion and reward-gated Underking handoff. Prior Highmountain regressions pass.",
+    "Test-HighmountainJusticeNative.py passes against original TDB735 and installed DB2 data.",
+    "Test-HighmountainJusticeGeometry.ps1 links Release collision/navigation libraries. All 72 segments pass 13644 terrain samples and model-collision rays across a 2 m corridor using destroyed-map VMAP geometry and installed terrain tiles with parent fallback. Source recovery and dismount positions pass destroyed-terrain navmesh ground checks.",
+    "Test-HighmountainJusticeData.ps1 applies migration twice in temporary tables; verifies native objectives/abilities, bindings, removal of premature credit, 35 wounded actors, preserved unrelated/custom data and Lasan handoff. Post-deployment Justice and previous Stands live data tests pass.",
+    "Test-WarlockRegression.ps1 passes, including scripted mover resynchronization and rejection of unrelated mover GUIDs. No Warlock or pet production code changed.",
+    "Release worldserver and bnetserver compile successfully into build-extractors/bin/Release. worldserver --version succeeds (1b87c1b50189+ working-tree build). Runtime configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "deployment": {
+    "sha1": "4ED513E9D3BC5F071912FE05CBB536989B387355",
+    "applied": "2026-10-13T00:08:57.9173879+03:00",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\justice-20261013-000857",
+    "migration": "sql/updates/world/2026_10_13_00_highmountain_justice.sql",
+    "method": "Scoped backups, stopped worldserver, InnoDB transaction and RELEASED updater registration."
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_justice.cpp": "10e5b1706d6de93be54110777ed0e339b2722ebafc223e989f9d29fa26084ee9",
+    "src/server/scripts/Legion/highmountain_justice_route.h": "30f86b8aedecea85dd9075e29e5826701829936b67449768cffe89fb98e88f6c",
+    "sql/updates/world/2026_10_13_00_highmountain_justice.sql": "2247c50355584eb8469ae8f5ae5b7c32a16d0021cfd550e402068bc87ba204d5",
+    "build-extractors/bin/Release/worldserver.exe": "8977a7ec411f093f420d3eae40daced65dccf6111bc2675852a3e5e161cfad5c",
+    "build-extractors/bin/Release/bnetserver.exe": "5c8d4757876673b0e92c23a64625f46e873141a6fc64da22a68e245e0c9da3be",
+    "build-extractors/bin/Release/vmaps/1527.vmtree": "f9d85c902f38e66d88906b27aacac65462db1f607d045cdcc7954bb2a9022cdd",
+    "build-extractors/bin/Release/mmaps/15272424.mmtile": "629116b1556e9946a17879623914fdab893abcda4430a8eb20bffd188e86bfcd",
+    "build-extractors/bin/Release/maps/1220_24_24.map": "c3f042b9b83f4ed939312278a0e3b8d5216656a8ad4b60420dd86ee77b71cbc0"
+  },
+  "limits": [
+    "No client verification. Retest mounted and unmounted boarding, camera and vehicle ability bar, all three abilities, effective kill/heal progress, quest-completion phasing, dismount animation, pet portrait restoration and Lasan turn-in in the 7.3.5 client.",
+    "The existing 72-node circuit returns to the current northern Lasan spawn. This remains a functional server handoff, not a claim of retail's southern Lasan relocation or identical flight choreography.",
+    "The 18 m/s linear flight, 50% initial injury, once-per-sortie healing target deduplication, 10-second boarding/exit timeouts and 300-second flight timeout are bounded server reconstruction. Native spell values, objective weights and route coordinates are retained.",
+    "The server remains stopped. Executable validation used --version; no live gameplay session was run."
+  ],
+  "next": "The Underking (39780): meeting Mayla, Wrath of Dargrul encounter and onward Neltharion's Lair handoff."
+}

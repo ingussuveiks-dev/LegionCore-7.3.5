@@ -3,6 +3,9 @@ $ErrorActionPreference='Stop'
 $output=[IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=Get-Content "$PSScriptRoot/../../src/server/game/Entities/Player/Player.cpp" -Raw
+$progressStart=$source.IndexOf('case QUEST_OBJECTIVE_TASK_IN_ZONE:', $source.IndexOf('bool Player::HasQuestObjectiveComplete('))
+$progressEnd=$source.IndexOf('case QUEST_OBJECTIVE_PET_TRAINER_DEFEAT:', $progressStart)
+[IO.File]::WriteAllText("$output/BloodtotemProgress.inc",$source.Substring($progressStart,$progressEnd-$progressStart))
 $code=''
 foreach($pair in @(@('bool Player::SatisfyQuestPreviousQuest(', 'bool Player::SatisfyQuestClass('),@('InventoryResult Player::CanTakeMoreSimilarItems(', 'uint8 Player::GetItemLimitCategoryQuantity('),@('bool Player::CanCompleteQuest(', 'bool Player::CanCompleteRepeatableQuest('))){
  $start=$source.IndexOf($pair[0]);$end=$source.IndexOf($pair[1],$start)

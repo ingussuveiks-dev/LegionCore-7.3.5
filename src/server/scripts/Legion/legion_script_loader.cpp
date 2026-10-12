@@ -29,6 +29,7 @@ void AddSC_highmountain_blood_debt();
 void AddSC_highmountain_unexpected_allies();
 void AddSC_highmountain_skyhorn_ritual();
 void AddSC_highmountain_aviash();
+void AddSC_highmountain_justice();
 void AddSC_highmountain_worm_support();
 void AddSC_highmountain_snowblind_combat();
 void AddSC_highmountain_evacuation();
@@ -237,6 +238,7 @@ void AddLegionScripts()
     AddSC_highmountain_unexpected_allies();
     AddSC_highmountain_skyhorn_ritual();
     AddSC_highmountain_aviash();
+    AddSC_highmountain_justice();
     AddSC_highmountain_worm_support();
     AddSC_highmountain_snowblind_combat();
     AddSC_highmountain_evacuation();
