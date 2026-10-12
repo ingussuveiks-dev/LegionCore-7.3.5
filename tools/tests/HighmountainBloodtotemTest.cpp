@@ -76,7 +76,7 @@ struct Player {
  bool CanCompleteQuest(uint32); bool IsQuestWeekRewarded(uint32){return false;} bool IsQuestSeasonalRewarded(uint32){return false;}
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
- bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return quest->id==39456?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
+ bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
  void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
@@ -152,6 +152,9 @@ int main()
  p.m_RewardedQuests.insert(39322);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39387),false));
  for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39322;p.status.Status=state;p.KilledMonster(&queen,{95153});assert(!p.progress);}
  std::cout<<"PASS: Witchqueen requires High Crawliac's death, credits once, ignores unrelated/absent/rewarded kills, return to Skyhorn requires reward.\n";
+ store.quests[39387].objectives={{3,98773,1,0,0},{0,98773,1,3,1},{0,99225,1,12,2}};
+ for(int mask=0;mask<8;++mask){p={};p.activeQuest=39387;p.status.Status=QUEST_STATUS_INCOMPLETE;p.progress=mask;assert(p.CanCompleteQuest(39387)==((mask&3)==3));}
+ std::cout<<"PASS: Skyhorn ritual requires meeting plus witnessing; hidden optional wait alone cannot complete (all eight objective subsets).\n";
  store.quests[39318].objectives={{QUEST_OBJECTIVE_MONSTER,95261,8,2,0},{QUEST_OBJECTIVE_MONSTER,95403,1,0,1}};
  // Extracted production kill-credit and completion handlers: neither objective alone completes.
  p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;

@@ -27,6 +27,7 @@ void AddSC_highmountain_blood_rite();
 void AddSC_highmountain_rock_escape();
 void AddSC_highmountain_blood_debt();
 void AddSC_highmountain_unexpected_allies();
+void AddSC_highmountain_skyhorn_ritual();
 
 void AddSC_instance_antorus();
 void AddSC_boss_worldbreaker();
@@ -229,6 +230,7 @@ void AddLegionScripts()
     AddSC_highmountain_rock_escape();
     AddSC_highmountain_blood_debt();
     AddSC_highmountain_unexpected_allies();
+    AddSC_highmountain_skyhorn_ritual();
 
     AddSC_instance_antorus();
     AddSC_boss_worldbreaker();
