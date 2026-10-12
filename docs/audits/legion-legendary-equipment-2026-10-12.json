@@ -1,0 +1,672 @@
+{
+  "date": "2026-10-12",
+  "build": 26972,
+  "scope": "All native Legion legendary armor/jewelry categories 357/362: catalog and spell references; detailed review of Maiko's 12 equipped legendaries, plus Archimonde shield. Other classes do not have full combat coverage.",
+  "catalog": {
+    "equippable_items": 243,
+    "item_effect_rows": 280,
+    "missing_item_spell_ids": [],
+    "required_level_101": 242,
+    "required_level_110": [
+      {
+        "ID": 154172,
+        "Name": "Aman'Thul's Vision",
+        "RequiredLevel": 110,
+        "LimitCategory": 362,
+        "InventoryType": 12,
+        "AllowableClass": -1,
+        "SpellIDs": [
+          256814,
+          256817
+        ]
+      }
+    ],
+    "gloves": [
+      {
+        "ID": 132411,
+        "Name": "Lady Vashj's Grasp",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 128,
+        "SpellIDs": [
+          208146
+        ]
+      },
+      {
+        "ID": 132461,
+        "Name": "Xalan the Feared's Clench",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 16,
+        "SpellIDs": [
+          214620
+        ]
+      },
+      {
+        "ID": 137057,
+        "Name": "Hidden Master's Forbidden Touch",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 512,
+        "SpellIDs": [
+          213112
+        ]
+      },
+      {
+        "ID": 137058,
+        "Name": "Praetorian's Tidecallers",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 64,
+        "SpellIDs": [
+          210604
+        ]
+      },
+      {
+        "ID": 137059,
+        "Name": "Tyr's Hand of Faith",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 2,
+        "SpellIDs": [
+          206380
+        ]
+      },
+      {
+        "ID": 137060,
+        "Name": "Archavon's Heavy Hand",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 1,
+        "SpellIDs": [
+          205144
+        ]
+      },
+      {
+        "ID": 137094,
+        "Name": "The Wildshaper's Clutch",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 1024,
+        "SpellIDs": [
+          208319
+        ]
+      },
+      {
+        "ID": 137108,
+        "Name": "Kakushan's Stormscale Gauntlets",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 1,
+        "SpellIDs": [
+          207841
+        ]
+      },
+      {
+        "ID": 141321,
+        "Name": "Shivarran Symmetry",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 8,
+        "SpellIDs": [
+          226045
+        ]
+      },
+      {
+        "ID": 144242,
+        "Name": "X'oni's Caress",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 1024,
+        "SpellIDs": [
+          235039
+        ]
+      },
+      {
+        "ID": 144247,
+        "Name": "Rammal's Ulterior Motive",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 16,
+        "SpellIDs": [
+          234710
+        ]
+      },
+      {
+        "ID": 144292,
+        "Name": "Spirit of the Darkness Flame",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 2048,
+        "SpellIDs": [
+          235524
+        ]
+      },
+      {
+        "ID": 144303,
+        "Name": "MKII Gyroscopic Stabilizer",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 4,
+        "SpellIDs": [
+          235691
+        ]
+      },
+      {
+        "ID": 144355,
+        "Name": "Pyrotex Ignition Cloth",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 128,
+        "SpellIDs": [
+          235940
+        ]
+      },
+      {
+        "ID": 146668,
+        "Name": "Vigilance Perch",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 68,
+        "SpellIDs": [
+          241332
+        ]
+      },
+      {
+        "ID": 151818,
+        "Name": "The First of the Dead",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 8,
+        "SpellIDs": [
+          248110
+        ]
+      },
+      {
+        "ID": 151819,
+        "Name": "Smoldering Heart",
+        "RequiredLevel": 101,
+        "LimitCategory": 357,
+        "InventoryType": 10,
+        "AllowableClass": 64,
+        "SpellIDs": [
+          248029
+        ]
+      }
+    ],
+    "warlock_glove_count": 0
+  },
+  "runtime": {
+    "unlimited_legion_legendaries": true,
+    "meaning": "Bypasses category 357 equipped count only; level, class, armor and other requirements still apply. Pantheon category 362 is separate.",
+    "equipped_bonus_list": 3630,
+    "bonus_effects": [
+      {
+        "ID": 5736,
+        "Value1": 90,
+        "Value2": 0,
+        "Value3": 0,
+        "ParentItemBonusListID": 3630,
+        "Type": 1,
+        "OrderIndex": 0
+      },
+      {
+        "ID": 5737,
+        "Value1": 13,
+        "Value2": 0,
+        "Value3": 0,
+        "ParentItemBonusListID": 3630,
+        "Type": 9,
+        "OrderIndex": 1
+      }
+    ],
+    "equipped_required_level": 101,
+    "hotfix_overrides_of_catalog_item_sparse_or_item_effect": 0,
+    "root_spell_effect_or_misc_overrides": 0,
+    "custom_legendary_warlock_gloves": 0,
+    "deleted_hotfixes_affect_catalog_tables": false,
+    "server_restarted": false,
+    "character_changed": false,
+    "sql_activation": "Applied offline with scoped backup and updater SHA1 registration; temporary-table double-application verified."
+  },
+  "warlock_class_mask_compatible_items": [
+    {
+      "ID": 132357,
+      "Name": "Pillars of the Dark Portal",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 7,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        217519
+      ],
+      "status": "reviewed_native_and_core",
+      "note": "217519 applies -100% Gateway cast-time modifier. 113942 registered duration handler uses 217551 to alternate first use without cooldown and second use with cooldown. Shared-party gateway behavior still needs client testing.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132369,
+      "Name": "Wilfred's Sigil of Superior Summoning",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        214345
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132374,
+      "Name": "Kazzak's Final Curse",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 6,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        214225
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132375,
+      "Name": "Odr, Shawl of the Ymirjar",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 16,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        212172
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132378,
+      "Name": "Sacrolash's Dark Strike",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        207952
+      ],
+      "status": "reviewed_native_and_world_rules",
+      "note": "207952 grants +15% Corruption periodic damage; world link applies 207953 (-60% movement) on Corruption hit and removes the slow with Corruption. Combat/snapshot timing not verified in client.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132379,
+      "Name": "Sin'dorei Spite",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 9,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        208868
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132381,
+      "Name": "Streten's Sleepless Shackles",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 9,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        208821
+      ],
+      "status": "production_handlers_tested",
+      "note": "208821 tracks distinct own-UA targets; initializes existing targets on equip and removes 208822 on unequip. Previously fixed in 09b31d0d.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132393,
+      "Name": "Recurrent Ritual",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 3,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        205721
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132394,
+      "Name": "Hood of Eternal Disdain",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 1,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        205797
+      ],
+      "status": "reviewed_native_and_core",
+      "note": "205797 applies -9% duration and periodic interval modifiers to Agony; native description is 10% faster. Equipment aura removal handled by ApplyItemEquipSpell.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132407,
+      "Name": "Magistrike Restraints",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 9,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        213014
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132444,
+      "Name": "Prydaz, Xavaric's Magnum Opus",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 2,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        207428
+      ],
+      "status": "production_handlers_tested",
+      "note": "207428 ticks every 30 seconds; 207472 base absorb is 25% max health (15% tanks), before normal absorb modifiers. Capacity, bypass and removal tested.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132452,
+      "Name": "Sephuz's Secret",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        208051,
+        234867
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132455,
+      "Name": "Norgannon's Foresight",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 8,
+      "AllowableClass": 400,
+      "SpellIDs": [
+        236373
+      ],
+      "status": "production_handlers_tested",
+      "note": "236373: 6 seconds stationary, indefinite readiness, first movement starts 4-second class-specific cast-while-walking aura. Re-equip and cleanup tested.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132456,
+      "Name": "Feretory of Souls",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 6,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        205702
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 132457,
+      "Name": "Power Cord of Lethtendris",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 6,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        205753
+      ],
+      "status": "fixed_and_production_handlers_tested",
+      "note": "Old 233490->205756 link redirected the aura check to the caster and ignored four UA variants. New paid 30108 successful-hit handler checks all five own DoTs on the enemy and refunds one shard with native 25% chance. Other warlocks do not block the refund.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 132460,
+      "Name": "Alythess's Pyrogenics",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        205678
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 144249,
+      "Name": "Archimonde's Hatred Reborn",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 12,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        235169
+      ],
+      "status": "fixed_and_production_handlers_tested",
+      "note": "235169 shield base 30% max health. Old pre-absorb handler replaced remaining capacity with incoming hit. After-absorb handler now accumulates 75% of actual absorbed damage; overflow and single explosion tested against production shield loop.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 144258,
+      "Name": "Velen's Future Sight",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 12,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        235966
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 144259,
+      "Name": "Kil'jaeden's Burning Wish",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 12,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        235991,
+        236062
+      ],
+      "status": "reviewed_native_core_and_world_rules",
+      "note": "235991 creates moving/repathing area trigger 9737; one-charge hostile target action casts 235999. Native spell-aura-dummy crit rule adds the 200-point effect to crit chance; core suppresses additional caster damage scaling. Projectile and client visual require game test.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 144364,
+      "Name": "Reap and Sow",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 16,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        236114
+      ],
+      "status": "fixed_and_production_handlers_tested",
+      "note": "236114 adds 1500 ms per consumed soul. Reap Souls CheckCast is now read-only; consumption and buff happen after a successful cast. Existing 60000 ms refresh cap unchanged; high-stack boundary behavior not independently established.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 144369,
+      "Name": "Lessons of Space-Time",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 3,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        236174
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 144385,
+      "Name": "Wakener's Loyalty",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 1,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        236199
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 146666,
+      "Name": "Celumbra, the Night's Dichotomy",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 3,
+      "AllowableClass": 400,
+      "SpellIDs": [
+        241334
+      ],
+      "status": "reviewed_native_and_world_rules",
+      "note": "241334 scans with 242600 every second; no hostile target selects 241835 (1% health/second), hostile target selects 241836 (-5% damage taken, +10% movement). Linked removal cleans both helpers on unequip.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 151649,
+      "Name": "Soul of the Netherlord",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        247603,
+        247605,
+        247607,
+        247608
+      ],
+      "status": "production_equipment_dispatch_tested",
+      "note": "ItemEffect selects 247605/247607/247608 for spec 265/266/267. Native extra-talent IDs 19284/21717/21695, item check 151649. Equipment removal clears old spec aura; core preserves a talent independently selected by the player.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 151821,
+      "Name": "The Master Harvester",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 20,
+      "AllowableClass": 256,
+      "SpellIDs": [
+        248113
+      ],
+      "status": "fixed_and_production_handlers_tested",
+      "note": "248113 now rolls once from paid Soul Shards, capped by available power, instead of a static SpellPower cost. Rates 9/3/6% per shard for Affliction/Demonology/Destruction; grants or extends Soul Harvest by 8 seconds. Zero-cost, non-spell power changes and cast/hit duplicate procs excluded.",
+      "equipped_on_maiko": true
+    },
+    {
+      "ID": 152626,
+      "Name": "Insignia of the Grand Army",
+      "RequiredLevel": 101,
+      "LimitCategory": 357,
+      "InventoryType": 11,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        251977
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    },
+    {
+      "ID": 154172,
+      "Name": "Aman'Thul's Vision",
+      "RequiredLevel": 110,
+      "LimitCategory": 362,
+      "InventoryType": 12,
+      "AllowableClass": -1,
+      "SpellIDs": [
+        256814,
+        256817
+      ],
+      "status": "catalog_and_implementation_route_review_only",
+      "note": "No exhaustive combat verification in this audit.",
+      "equipped_on_maiko": false
+    }
+  ],
+  "additional_findings": [
+    {
+      "item": 154172,
+      "name": "Aman'Thul's Vision",
+      "finding": "Requires 110 in native data. Ordinary 256817->256818 proc has a data route. Empowered Pantheon mechanic is not verified: the only dedicated 257233 implementation is commented out and no live script/linked binding to 256832 was found. Do not label the entire item fully working. Correct group/raid activation requires a separate evidenced implementation and raid validation."
+    }
+  ],
+  "verification": [
+    "Read-LegionLegendaryCatalog: native sparse DB2 reader, 243 records, 280 item effects, no missing Spell IDs",
+    "Test-WarlockLegendaryEffects: paid-resource integration and no duplicate proc, three spec chances, five UA variants/ownership/free casts, Reap check/consume/unequip",
+    "Test-LegendaryDefensiveEffects: Norgannon, Prydaz, generic bypass and Archimonde production absorption loop",
+    "Test-StretenLifecycle",
+    "Test-ItemEffectLifecycle including Netherlord spec changes",
+    "Test-WarlockRegression",
+    "World migration executed twice on temporary copies; unrelated UA application preserved",
+    "Release game/scripts and worldserver compiled to canonical runtime after user stopped the active server"
+  ],
+  "limits": [
+    "No full client combat/visual verification this turn.",
+    "Catalog reference validity does not prove all 243 legendary mechanics work.",
+    "Base RequiredLevel is not an absolute promise for every instance: scaling and explicit required-level bonuses can override it. Bonus 3630 on Maiko does not.",
+    "No item was invented or unlocked for warlock gloves; all 17 native legendary gloves exclude class mask 256."
+  ],
+  "sources": [
+    "build-extractors/bin/Release/dbc/enUS/ItemSparse.db2",
+    "build-extractors/bin/Release/dbc/enUS/ItemEffect.db2",
+    "build-extractors/bin/Release/dbc/enUS/SpellEffect.db2",
+    "https://www.wowhead.com/news/new-legendaries-and-ilvl-970-upgrades-in-patch-7-2-5-264186?page=4"
+  ],
+  "native_sha256": {
+    "ItemEffect": "3241f0d3565928931a6b890643458f8b5cf775f2133ab8c103e1992f88815931",
+    "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellMisc": "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b",
+    "SpellAuraOptions": "d799051d1d6578ed665a43a12778089b67ad7a53d5aceb9163e809ef8b3f69a2",
+    "ItemBonus": "9b2f7839a2703fd4604b9387ff38d69408626676658312d8a79540fcb0aa898e",
+    "ItemSparse": "8eecbf592e1706e07c28409547eaecdc0c51c325ef3e952fb7028098dcdfec17"
+  }
+}

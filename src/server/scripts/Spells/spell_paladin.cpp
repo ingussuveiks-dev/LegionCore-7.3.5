@@ -2864,17 +2864,18 @@ class spell_pal_archimondes_hatred_reborn : public SpellScriptLoader
                     caster->CastCustomSpell(caster, 235188, &absorb, nullptr, nullptr, true);
             }
 
-            void Absorb(AuraEffect* aurEff, DamageInfo & dmgInfo, float & absorbAmount)
+            void Absorb(AuraEffect* /*aurEff*/, DamageInfo& /*dmgInfo*/, float& absorbAmount)
             {
-                absorbAmount = dmgInfo.GetDamage();
-                absorb += CalculatePct(dmgInfo.GetDamage(), GetSpellInfo()->Effects[EFFECT_1]->BasePoints);
+                // The core has already limited this amount to the remaining
+                // shield and incoming damage. Reflect only damage absorbed.
+                absorb += CalculatePct(absorbAmount, GetSpellInfo()->Effects[EFFECT_1]->BasePoints);
             }
 
             void Register() override
             {
                 OnEffectRemove += AuraEffectRemoveFn(spell_pal_archimondes_hatred_reborn_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB, AURA_EFFECT_HANDLE_REAL);
                 DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pal_archimondes_hatred_reborn_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-                OnEffectAbsorb += AuraEffectAbsorbFn(spell_pal_archimondes_hatred_reborn_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
+                AfterEffectAbsorb += AuraEffectAbsorbFn(spell_pal_archimondes_hatred_reborn_AuraScript::Absorb, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
             }
         };
 

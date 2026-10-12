@@ -121,6 +121,20 @@ int main() {
     p.collection.eligible = false;
     p.ApplyItemEquipSpell(&item, false); CHECK(p.active.empty());
     p.ApplyItemEquipSpell(&item, true); CHECK(!p.active.count(2000) && p.active.count(2001));
-    if (!failures) std::cout << "PASS: item-set skill ranks, thresholds, spec isolation and expired heirloom removal.\n";
+    // Native 26972 Soul of the Netherlord effects: only the current spec's
+    // extra talent is applied; removal must also clear the previous spec.
+    ItemEffectEntry ringBase{247603}, affliction{247605,1,265}, demonology{247607,1,266}, destruction{247608,1,267};
+    Item ring; ring.data.Effects={&ringBase,&affliction,&demonology,&destruction};
+    for (uint32 id:{247603u,247605u,247607u,247608u}) spellManager.spells[id]={id};
+    Player ringOwner;
+    for (auto row : std::vector<std::pair<uint32,uint32>>{{265,247605},{266,247607},{267,247608}}) {
+        ringOwner.spec=row.first;
+        ringOwner.ApplyItemEquipSpell(&ring,false);
+        CHECK(ringOwner.active.empty());
+        ringOwner.ApplyItemEquipSpell(&ring,true);
+        CHECK(ringOwner.active==std::set<uint32>({247603,row.second}));
+    }
+    ringOwner.ApplyItemEquipSpell(&ring,false); CHECK(ringOwner.active.empty());
+    if (!failures) std::cout << "PASS: item-set skill ranks, thresholds, spec isolation, expired heirloom removal and Netherlord ring spec effects.\n";
     return failures ? 1 : 0;
 }

@@ -15,6 +15,12 @@ $open=$source.IndexOf('{',$begin);$close=$open+1;$depth=1
 while($depth -gt 0 -and $close -lt $source.Length){if($source[$close] -eq '{'){++$depth};if($source[$close] -eq '}'){--$depth};++$close}
 if($start -lt 0 -or $begin -lt 0 -or $depth){throw 'Prydaz handler missing'}
 [IO.File]::WriteAllText("$output/Prydaz.inc",$source.Substring($begin,$close-$begin))
+$paladin=[IO.File]::ReadAllText("$repo/src/server/scripts/Spells/spell_paladin.cpp")
+$start=$paladin.IndexOf('class spell_pal_archimondes_hatred_reborn :')
+$begin=$paladin.IndexOf('float absorb =', $start);$end=$paladin.IndexOf('void Register()', $begin)
+if($start -lt 0 -or $begin -lt 0 -or $end -le $begin){throw 'Archimonde handlers missing'}
+[IO.File]::WriteAllText("$output/Archimonde.inc",$paladin.Substring($begin,$end-$begin))
+if(!$paladin.Contains('AfterEffectAbsorb += AuraEffectAbsorbFn(spell_pal_archimondes_hatred_reborn_AuraScript::Absorb')){throw 'Archimonde must account for actual absorption after the core limit'}
 $unit=[IO.File]::ReadAllText("$repo/src/server/game/Entities/Unit/Unit.cpp")
 $begin=$unit.IndexOf('void DamageInfo::ModifyDamage(');$end=$unit.IndexOf('void DamageInfo::ResistDamage(', $begin)
 if($begin -lt 0 -or $end -le $begin){throw 'Damage absorb handler missing'}

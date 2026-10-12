@@ -4,11 +4,14 @@
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <functional>
 #include <vector>
 using uint32 = uint32_t;
 using int32 = int32_t;
 using int64 = int64_t;
 using uint8 = uint8_t;
+using AuraEffectHandleModes = int;
+constexpr int EFFECT_0 = 0, EFFECT_1 = 1;
 using SpellSchoolMask = unsigned;
 constexpr int SPELL_AURA_SCHOOL_ABSORB = 69, SPELL_ATTR6_NOT_LIMIT_ABSORB = 1;
 constexpr int SPELL_AURA_MANA_SHIELD = 97, POWER_MANA = 0;
@@ -26,7 +29,9 @@ struct Unit;
 using Player = Unit;
 struct Battleground { void UpdatePlayerScore(Player*, int, float) {} };
 struct SpellInfo {
-    struct Effect { float CalcValueMultiplier(Unit*) const { return 1; } } effect;
+    struct Effect { int BasePoints = 0; float CalcValueMultiplier(Unit*) const { return 1; } } effect;
+    Effect archEffects[2]{{30}, {75}};
+    Effect* Effects[2]{&archEffects[0], &archEffects[1]};
     Effect* GetEffect(int, int) { return &effect; }
     bool HasAttribute(int) const { return false; } // Native 207472 has no unlimited-absorb flag.
     bool IsPassive() const { return false; }
@@ -36,10 +41,14 @@ struct Aura {
     AuraApplication application;
     AuraApplication* GetApplicationOfTarget(int) { return active ? &application : nullptr; }
     void CallScriptEffectAbsorbHandlers(AuraEffect*, AuraApplication const*, DamageInfo&, float&, bool&) {}
-    void CallScriptEffectAfterAbsorbHandlers(AuraEffect*, AuraApplication const*, DamageInfo&, float) {}
+    std::function<void(DamageInfo&, float&)> afterAbsorb;
+    std::function<void()> onRemove;
+    void CallScriptEffectAfterAbsorbHandlers(AuraEffect*, AuraApplication const*, DamageInfo& damage, float amount) {
+        if (afterAbsorb) afterAbsorb(damage, amount);
+    }
     void CallScriptEffectManaShieldHandlers(AuraEffect*, AuraApplication const*, DamageInfo&, float&, bool&) {}
     void CallScriptEffectAfterManaShieldHandlers(AuraEffect*, AuraApplication const*, DamageInfo&, float&) {}
-    void Remove(int) { active = false; }
+    void Remove(int) { active = false; if (onRemove) onRemove(); }
 };
 struct AuraEffect {
     float amount;
@@ -57,6 +66,11 @@ struct AuraEffect {
 struct Unit {
     std::vector<AuraEffect*> effects;
     int mana = 1000000;
+    float reflected = 0; int explosions = 0;
+    float CountPctFromMaxHealth(float pct) const { return 1000000.f * pct / 100.f; }
+    void CastCustomSpell(Unit*, int id, float* amount, void*, void*, bool) {
+        assert(id == 235188); reflected = *amount; ++explosions;
+    }
     int32 ModifyPower(int, int32 delta) { int32 taken = std::max(delta, -mana); mana += taken; return taken; }
     std::vector<AuraEffect*> GetAuraEffectsByType(int type) {
         std::vector<AuraEffect*> result;
@@ -73,6 +87,13 @@ void AddPct(float& value, float percent) { value += value * percent / 100.f; }
 float RoundToInterval(float value, float lo, float hi) { return std::clamp(value, lo, hi); }
 float RoundingFloatValue(float value) { return std::round(value); }
 int GetSpawnMode() { return 0; }
+float CalculatePct(float value, float pct) { return value * pct / 100.f; }
+struct Archimonde {
+    Unit* caster; SpellInfo info;
+    Unit* GetCaster() { return caster; }
+    SpellInfo* GetSpellInfo() { return &info; }
+#include "Archimonde.inc"
+};
 void Resolve(Unit* victim, SpellSchoolMask schoolMask, DamageInfo& dmgInfo, float auraAbsorbMod = 0) {
 #include "SchoolAbsorb.inc"
 }
@@ -105,5 +126,18 @@ int main() {
     DamageInfo modification{0}; modification.ModifyDamage(123); assert(modification.m_damage == 123);
     modification.ModifyDamage(-999); assert(modification.m_damage == 0);
     maximum.ModifyDamage(1); assert(maximum.m_damage == std::numeric_limits<uint32>::max());
+    AuraEffect archShield{0}; Unit archPlayer{{&archShield}}; Archimonde arch{&archPlayer};
+    bool recalculate = false;
+    arch.CalculateAmount(&archShield, archShield.amount, recalculate);
+    assert(archShield.amount == 300000);
+    archShield.aura.afterAbsorb = [&](DamageInfo& damage, float& amount) { arch.Absorb(&archShield, damage, amount); };
+    archShield.aura.onRemove = [&] { arch.OnRemove(&archShield, 0); };
+    DamageInfo archFirst{100000}; Resolve(&archPlayer, 1, archFirst);
+    assert(archFirst.m_absorb == 100000 && archShield.amount == 200000 && archPlayer.explosions == 0);
+    DamageInfo archOverflow{500000}; Resolve(&archPlayer, 1, archOverflow);
+    assert(archOverflow.m_absorb == 200000 && archOverflow.m_damage == 300000);
+    assert(archPlayer.reflected == 225000 && archPlayer.explosions == 1);
+    arch.OnRemove(&archShield, 0); assert(archPlayer.explosions == 1);
+    std::cout << "PASS: Archimonde production handlers/core loop cap the shield at 30% health and reflect 75% of actual absorption once.\n";
     std::cout << "PASS: production school-absorb loop consumes Prydaz capacity across all schools, caps absorption to damage, removes depleted shield, preserves overflow and handles bypass.\n";
 }

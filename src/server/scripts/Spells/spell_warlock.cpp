@@ -389,6 +389,37 @@ class spell_warl_unstable_affliction : public SpellScriptLoader
         }
 };
 
+// Power Cord of Lethtendris: the paid Unstable Affliction cast - 30108.
+// Its five DoT variants are applied by linked spells after this hit.
+class spell_warl_power_cord_of_lethtendris : public SpellScript
+{
+    PrepareSpellScript(spell_warl_power_cord_of_lethtendris);
+
+    void HandleHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target || GetSpell()->IsTriggered() || GetSpell()->GetPowerCost(POWER_SOUL_SHARDS) <= 0)
+            return;
+
+        AuraEffect const* belt = caster->GetAuraEffect(205753, EFFECT_0);
+        if (!belt)
+            return;
+
+        for (uint32 spellId : {233490, 233496, 233497, 233498, 233499})
+            if (target->HasAura(spellId, caster->GetGUID()))
+                return;
+
+        if (roll_chance_f(belt->GetAmount()))
+            caster->CastSpell(caster, 205756, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_warl_power_cord_of_lethtendris::HandleHit);
+    }
+};
+
 // Unstable Affliction (Rank 2) - 231791
 class spell_warl_unstable_affliction_R2 : public AuraScript
 {
@@ -2168,6 +2199,20 @@ class spell_warl_reap_souls : public SpellScriptLoader
                     caster->GetAreaObjectList(list, spellIdList);
 
                     if(!list.empty())
+                        return SPELL_CAST_OK;
+                }
+                SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_ULTHALESH_HAS_NO_POWER_WITHOUT_SOULS);
+                return SPELL_FAILED_CUSTOM_ERROR;
+            }
+
+            void HandleAfterCast()
+            {
+                if (Unit* caster = GetCaster())
+                {
+                    std::list<AreaTrigger*> list;
+                    std::vector<uint32> spellIdList = {216721, 216463};
+                    caster->GetAreaObjectList(list, spellIdList);
+                    if (!list.empty())
                     {
                         int32 duration = 5000;
                         if(AuraEffect* aurEff = caster->GetAuraEffect(236114, EFFECT_0)) // Reap and Sow
@@ -2193,16 +2238,14 @@ class spell_warl_reap_souls : public SpellScriptLoader
                                 areaObj->Despawn();
                             }
                         }
-                        return SPELL_CAST_OK;
                     }
                 }
-                SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_ULTHALESH_HAS_NO_POWER_WITHOUT_SOULS);
-                return SPELL_FAILED_CUSTOM_ERROR;
             }
 
             void Register() override
             {
                 OnCheckCast += SpellCheckCastFn(spell_warl_reap_souls_SpellScript::CheckCast);
+                AfterCast += SpellCastFn(spell_warl_reap_souls_SpellScript::HandleAfterCast);
             }
         };
 
@@ -3094,6 +3137,7 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_demonbolt();
     new spell_warl_imp_firebolt();
     new spell_warl_reap_souls();
+    RegisterSpellScript(spell_warl_power_cord_of_lethtendris);
     new spell_warl_call_dreadstalkers();
     new spell_warl_shadow_bite();
     new spell_warl_fel_cleave();

@@ -86,6 +86,39 @@
 #include <numeric>
 #include <limits>
 
+namespace
+{
+void TriggerMasterHarvester(Player* player, int32 powerSpent)
+{
+    if (powerSpent < 10)
+        return;
+
+    AuraEffect const* harvester = player->GetAuraEffect(248113, EFFECT_0);
+    if (!harvester)
+        return;
+
+    uint32 effectIndex;
+    switch (player->GetSpecializationId())
+    {
+        case SPEC_WARLOCK_AFFLICTION: effectIndex = EFFECT_0; break;
+        case SPEC_WARLOCK_DEMONOLOGY: effectIndex = EFFECT_1; break;
+        case SPEC_WARLOCK_DESTRUCTION: effectIndex = EFFECT_2; break;
+        default: return;
+    }
+
+    SpellInfo const* info = harvester->GetSpellInfo();
+    float chance = info->Effects[effectIndex]->BasePoints * (powerSpent / 10);
+    if (!roll_chance_f(chance))
+        return;
+
+    int32 duration = info->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS;
+    if (Aura* aura = player->GetAura(196098))
+        aura->SetDuration(aura->GetDuration() + duration);
+    else
+        player->CastSpellDuration(player, 196098, true, duration);
+}
+}
+
 float baseMoveSpeed[MAX_MOVE_TYPE] =
 {
     2.5f,                  // MOVE_WALK
@@ -8663,49 +8696,8 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                 }
                 case 248113: // The Master Harvester
                 {
-                    if (effIndex != EFFECT_0)
-                        return false;
-
-                    if (procSpell->Power.PowerType == POWER_SOUL_SHARDS)
-                    {
-                        uint32 pwr = procSpell->Power.PowerCost / 10.f;
-                        if (HasAura(137043)) // affliction
-                        {
-                            float chance = dummySpell->Effects[EFFECT_0]->BasePoints * pwr;
-                            if (!roll_chance_f(chance))
-                                return false;
-
-                            if (Aura* aur = GetAura(196098))
-                                aur->SetDuration(aur->GetDuration() + dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            else
-                                CastSpellDuration(this, 196098, true, dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            break;
-                        }
-                        if (HasAura(137044)) // demonology
-                        {
-                            float chance2 = dummySpell->Effects[EFFECT_1]->BasePoints * pwr;
-                            if (!roll_chance_f(chance2))
-                                return false;
-
-                            if (Aura* aur = GetAura(196098))
-                                aur->SetDuration(aur->GetDuration() + dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            else
-                                CastSpellDuration(this, 196098, true, dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            break;
-                        }
-                        if (HasAura(137046)) // destruction
-                        {
-                            float chance3 = dummySpell->Effects[EFFECT_2]->BasePoints * pwr;
-                            if (!roll_chance_f(chance3))
-                                return false;
-
-                            if (Aura* aur = GetAura(196098))
-                                aur->SetDuration(aur->GetDuration() + dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            else
-                                CastSpellDuration(this, 196098, true, dummySpell->Effects[EFFECT_3]->BasePoints * IN_MILLISECONDS);
-                            break;
-                        }
-                    }
+                    // Handled once when shards are paid, including variable
+                    // costs. Cast/hit procs do not establish a resource spend.
                     return false;
                 }
                 case 108370: // Soul Leech
@@ -15361,6 +15353,9 @@ void Unit::VisualForPower(Powers power, int32 curentVal, int32 modVal, int32 max
         {
             if (modVal < 0)
             {
+                if (spellInfo && !generate)
+                    TriggerMasterHarvester(player, std::min(oldVal, -modVal));
+
                 if (AuraEffect* aurEff = GetAuraEffect(215941, EFFECT_0)) // Soul Conduit
                 {
                     int8 _count = abs(modVal) / 10.f;
