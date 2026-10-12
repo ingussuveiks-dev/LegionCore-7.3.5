@@ -108,6 +108,16 @@ int main()
  }
  p.m_RewardedQuests={38913};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(38910),false));
  p.m_RewardedQuests.insert(39318);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(38910),false));
+ store.quests[38910].objectives.push_back({QUEST_OBJECTIVE_MONSTER,94991,7,0,0});
+ store.quests.emplace(39321,Quest{39321,0,{38910,38910}});
+ p={};p.activeQuest=38910;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ for(unsigned count=1;count<=9;++count){p.KilledMonsterCredit(94991);assert(p.progress==int(std::min(count,7u)));assert(p.status.Status==(count<7?QUEST_STATUS_INCOMPLETE:QUEST_STATUS_COMPLETE));}
+ assert(p.completeCalls==1&&p.creditPackets==7);
+ assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39321),false));
+ p.m_RewardedQuests.insert(38910);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39321),false));
+ for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=38910;p.status.Status=status;p.KilledMonsterCredit(94991);assert(!p.progress&&!p.creditPackets);}
+ p={};p.activeQuest=38910;p.status.Status=QUEST_STATUS_INCOMPLETE;p.KilledMonsterCredit(95261);assert(!p.progress);
+ std::cout<<"PASS: Rocs vs Eagles requires exactly seven native credits, caps duplicates, ignores unrelated/absent/rewarded credits; The Three opens only after reward.\n";
  store.quests[39318].objectives={{QUEST_OBJECTIVE_MONSTER,95261,8,2,0},{QUEST_OBJECTIVE_MONSTER,95403,1,0,1}};
  // Extracted production kill-credit and completion handlers: neither objective alone completes.
  p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;
