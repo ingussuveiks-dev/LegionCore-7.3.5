@@ -2462,7 +2462,8 @@ class spell_item_prydaz_abs : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, float & amount, bool & /*canBeRecalculated*/)
             {
-                if (auto plr = GetCaster()->ToPlayer())
+                Unit* caster = GetCaster();
+                if (auto plr = caster ? caster->ToPlayer() : nullptr)
                 {
                     if (plr->isInTankSpec()) // for tank specs
                         amount = plr->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_0]->CalcValue(plr)) * 0.6f;
@@ -2481,6 +2482,128 @@ class spell_item_prydaz_abs : public SpellScriptLoader
         {
             return new spell_item_prydaz_abs_AuraScript();
         }
+};
+
+// 236373 - Norgannon's Foresight (7.3.5: six seconds still, four seconds moving).
+class spell_item_norgannons_foresight : public AuraScript
+{
+    PrepareAuraScript(spell_item_norgannons_foresight);
+
+    uint32 stationaryTime = 0;
+    bool ready = false;
+    bool wasMoving = false;
+
+    uint32 MovementSpell(Unit* owner) const
+    {
+        switch (owner->getClass())
+        {
+            case CLASS_MAGE: return 236380;
+            case CLASS_PRIEST: return 236430;
+            case CLASS_WARLOCK: return 236431;
+            default: return 0;
+        }
+    }
+
+    void ClearEffects(Unit* owner)
+    {
+        for (uint32 spell : {234797u, 236375u, 236380u, 236430u, 236431u})
+            owner->RemoveAurasDueToSpell(spell);
+    }
+
+    void OnApply(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
+    {
+        stationaryTime = 0;
+        ready = false;
+        if (Unit* owner = GetUnitOwner())
+        {
+            // Also discard persisted helper auras from the old SQL driver.
+            ClearEffects(owner);
+            wasMoving = owner->isMoving();
+            if (MovementSpell(owner))
+            {
+                owner->CastSpell(owner, 234797, true);
+                if (wasMoving)
+                    if (Aura* marker = owner->GetAura(234797))
+                        marker->SetDuration(-1);
+            }
+        }
+    }
+
+    void OnUpdate(uint32 diff, AuraEffect* /*effect*/)
+    {
+        Unit* owner = GetUnitOwner();
+        if (!owner)
+            return;
+        uint32 spell = MovementSpell(owner);
+        if (!spell)
+            return;
+
+        bool moving = owner->isMoving();
+        if (moving)
+        {
+            stationaryTime = 0;
+            if (!wasMoving)
+            {
+                owner->CastSpell(owner, 234797, true);
+                if (Aura* marker = owner->GetAura(234797))
+                    marker->SetDuration(-1);
+                if (ready)
+                {
+                    // The native movement buff is permanent while ready.
+                    // Start its four-second lifetime only on actual movement.
+                    if (Aura* buff = owner->GetAura(spell))
+                    {
+                        buff->SetMaxDuration(4000);
+                        buff->SetDuration(4000);
+                    }
+                    ready = false;
+                }
+            }
+        }
+        else
+        {
+            if (wasMoving)
+            {
+                if (Aura* marker = owner->GetAura(234797))
+                    marker->SetDuration(6000);
+                // The preceding update interval was still a moving interval.
+                diff = 0;
+            }
+
+            if (!ready)
+            {
+                stationaryTime += std::min(diff, 6000u - stationaryTime);
+                if (stationaryTime == 6000)
+                {
+                    owner->RemoveAurasDueToSpell(234797);
+                    owner->RemoveAurasDueToSpell(236375);
+                    owner->CastSpell(owner, spell, true);
+                    ready = true;
+                }
+            }
+        }
+        wasMoving = moving;
+    }
+
+    void OnRemove(AuraEffect const* /*effect*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* owner = GetUnitOwner())
+            ClearEffects(owner);
+    }
+
+    void OnTick(AuraEffect const* /*effect*/)
+    {
+        // Movement is observed every update, not by the old three-second poll.
+        PreventDefaultAction();
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_item_norgannons_foresight::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+        OnEffectUpdate += AuraEffectUpdateFn(spell_item_norgannons_foresight::OnUpdate, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_item_norgannons_foresight::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_item_norgannons_foresight::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
 };
 
 //161775
@@ -4598,6 +4721,7 @@ void AddSC_item_spell_scripts()
     new spell_item_essence_of_wrathion();
     new spell_item_warlords_fortitude();
     new spell_item_prydaz_abs();
+    RegisterAuraScript(spell_item_norgannons_foresight);
     new spell_item_goren_gas_extractor();
     new spell_item_living_carapace();
     new spell_item_infernal_contract();

@@ -84,6 +84,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include <numeric>
+#include <limits>
 
 float baseMoveSpeed[MAX_MOVE_TYPE] =
 {
@@ -153,8 +154,10 @@ m_block(dmgInfo.blocked), m_cleanDamage(dmgInfo.cleanDamage), m_damageBeforeHit(
 
 void DamageInfo::ModifyDamage(int32 amount)
 {
-    amount = std::min(amount, int32(GetDamage()));
-    m_damage += amount;
+    // Allow restoring damage after absorption even when the absorbable part
+    // reached zero. Use a wide intermediate for the full uint32 damage range.
+    m_damage = uint32(std::max<int64>(0, std::min<int64>(
+        int64(m_damage) + amount, std::numeric_limits<uint32>::max())));
 }
 
 void DamageInfo::AbsorbDamage(int32 amount)
@@ -2692,6 +2695,21 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
         return;
     }
 
+    // Reserve the bypassed portion of this hit once, across all shields. Applying
+    // the percentage to each shield's remaining capacity let a large Prydaz
+    // shield absorb a small hit entirely even with absorption bypass active.
+    uint32 absorbIgnoringDamage = uint32(double(dmgInfo.GetDamage()) * auraAbsorbMod / 100.0);
+    auto transferBypassedDamage = [&dmgInfo](uint32 value, bool restore)
+    {
+        while (value)
+        {
+            int32 part = int32(std::min<uint32>(value, std::numeric_limits<int32>::max()));
+            dmgInfo.ModifyDamage(restore ? part : -part);
+            value -= uint32(part);
+        }
+    };
+    transferBypassedDamage(absorbIgnoringDamage, false);
+
     // We're going to call functions which can modify content of the list during iteration over it's elements
     // Let's copy the list so we can prevent iterator invalidation
     // absorb without mana cost
@@ -2719,9 +2737,6 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
         bool defaultPrevented = false;
 
         absorbAurEff->GetBase()->CallScriptEffectAbsorbHandlers(absorbAurEff, aurApp, dmgInfo, currentAbsorb, defaultPrevented);
-
-        // Apply absorb mod auras
-        AddPct(currentAbsorb, -auraAbsorbMod);
 
         // absorb must be smaller than the damage itself
         currentAbsorb = RoundToInterval(currentAbsorb, 0.f, float(dmgInfo.GetDamage()));
@@ -2794,8 +2809,6 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
         if (defaultPrevented)
             continue;
 
-        AddPct(currentAbsorb, -auraAbsorbMod);
-
         // absorb must be smaller than the damage itself
         currentAbsorb = RoundToInterval(currentAbsorb, 0.f, float(dmgInfo.GetDamage()));
 
@@ -2823,6 +2836,8 @@ void Unit::CalcAbsorbResist(Unit* victim, SpellSchoolMask schoolMask, DamageEffe
                 absorbAurEff->GetBase()->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
         }
     }
+
+    transferBypassedDamage(absorbIgnoringDamage, true);
 
     // split damage auras - only when not damaging self
     if (victim != this)

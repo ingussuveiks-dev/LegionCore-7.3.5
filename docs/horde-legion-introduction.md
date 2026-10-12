@@ -109,3 +109,13 @@ until that run finishes without manually skipping.
 
 The equipped-item audit and related Streten bracer lifecycle correction are
 recorded in `audits/maiko-legendaries-funeral-2026-10-12.json`.
+
+The follow-up report clarified that playback restarted before reaching the
+end. `Player::SendMovieStart` now rejects movie 474 if a movie is already
+being watched and records the suppressed overlap. This also covers a caller
+outside the funeral NPC's quest guard. `Test-HordeFuneral.ps1` checks this
+second barrier and permits a new explicit playback after completion/skip.
+Maiko was reset again to Eitrigg with 40518 rewarded and 40522 not started;
+the server is left stopped for the user's visible launch and client retest.
+See `audits/legendary-defensive-effects-2026-10-12.json` for the accompanying
+Norgannon timing and absorption-bypass fixes and validation limits.

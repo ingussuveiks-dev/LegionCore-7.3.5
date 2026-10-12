@@ -69,6 +69,8 @@ int main() {
         HordeFuneral::StartMovie(&p);
         assert(p.casts == std::vector<uint32>({200252, 198897, 200282}));
         assert(p.moviePackets == 1 && p.teleports == 0 && p.pending);
+        p.SendMovieStart(474); // Even a second independent caller cannot restart playback.
+        assert(p.moviePackets == 1);
         p.Update(); assert(p.teleports == 0);
         HordeFuneral::StartMovie(&p); assert(p.moviePackets == 1);
         WorldSession session{&p}; session.HandleCompleteMovie(packet);
@@ -76,6 +78,8 @@ int main() {
         session.HandleCompleteMovie(packet); p.Update(); assert(p.teleports == 1);
         // A recreated NPC cannot replay the movie while this quest is still active.
         HordeFuneral::StartMovie(&p); assert(p.moviePackets == 1);
+        p.SendMovieStart(474); // Explicit replay is possible once the old movie finished.
+        assert(p.moviePackets == 2);
     }
     WorldSession absent{nullptr}; absent.HandleCompleteMovie(packet);
     std::cout << "PASS: funeral checkpoint, delayed-state recheck, one movie/teleport, completion/skip, duplicate callback and no replay after credit.\n";

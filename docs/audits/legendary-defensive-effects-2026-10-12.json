@@ -1,0 +1,212 @@
+﻿{
+    "date":  "2026-10-12",
+    "client_build":  26972,
+    "scope":  "Prydaz shield, Norgannon movement casting and overlapping Horde funeral movie",
+    "native_spells":  [
+                          {
+                              "ID":  207428,
+                              "Name":  "Xavaric\u0027s Magnum Opus",
+                              "Description":  "Every $t1 sec, gain an absorb shield for $207472s1% of your maximum health for $207472d.",
+                              "AuraDescription":  ""
+                          },
+                          {
+                              "ID":  207472,
+                              "Name":  "Xavaric\u0027s Magnum Opus",
+                              "Description":  "$@spelldesc207428",
+                              "AuraDescription":  "Absorbs $w1 damage."
+                          },
+                          {
+                              "ID":  234797,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "$@spelldesc208213",
+                              "AuraDescription":  "You recently moved.\r\n\r\nStay still in order to gain Norgannon\u0027s Foresight."
+                          },
+                          {
+                              "ID":  236373,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "Standing still for $234797d grants you Foresight, allowing you to cast while moving for ${$236380s1/1000} sec. This duration begins when you start moving.",
+                              "AuraDescription":  ""
+                          },
+                          {
+                              "ID":  236375,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "$@spelldesc236373",
+                              "AuraDescription":  "You are not moving.\r\n\r\nStay still to get Norgannon\u0027s Foresight."
+                          },
+                          {
+                              "ID":  236380,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "$@spelldesc236373",
+                              "AuraDescription":  "Your spells may be castable while moving."
+                          },
+                          {
+                              "ID":  236430,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "$@spelldesc236373",
+                              "AuraDescription":  "Your spells may be castable while moving."
+                          },
+                          {
+                              "ID":  236431,
+                              "Name":  "Norgannon\u0027s Foresight",
+                              "Description":  "$@spelldesc236373",
+                              "AuraDescription":  "Your spells may be castable while moving."
+                          }
+                      ],
+    "native_effects":  [
+                           {
+                               "SpellID":  207428,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  23,
+                               "EffectBasePoints":  0,
+                               "EffectAuraPeriod":  30000,
+                               "EffectTriggerSpell":  207472,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  207472,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  69,
+                               "EffectBasePoints":  25,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  127,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  234797,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  4,
+                               "EffectBasePoints":  0,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  236373,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  226,
+                               "EffectBasePoints":  5,
+                               "EffectAuraPeriod":  3000,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  236375,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  4,
+                               "EffectBasePoints":  0,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  236380,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  330,
+                               "EffectBasePoints":  4000,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  236430,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  330,
+                               "EffectBasePoints":  4000,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           },
+                           {
+                               "SpellID":  236431,
+                               "EffectIndex":  0,
+                               "Effect":  6,
+                               "EffectAura":  330,
+                               "EffectBasePoints":  4000,
+                               "EffectAuraPeriod":  0,
+                               "EffectTriggerSpell":  0,
+                               "EffectMiscValue1":  0,
+                               "EffectMiscValue2":  0
+                           }
+                       ],
+    "native_durations":  [
+                             {
+                                 "spell":  207428,
+                                 "duration_ms":  null
+                             },
+                             {
+                                 "spell":  207472,
+                                 "duration_ms":  30000
+                             },
+                             {
+                                 "spell":  234797,
+                                 "duration_ms":  6000
+                             },
+                             {
+                                 "spell":  236373,
+                                 "duration_ms":  null
+                             },
+                             {
+                                 "spell":  236375,
+                                 "duration_ms":  -1
+                             },
+                             {
+                                 "spell":  236380,
+                                 "duration_ms":  -1
+                             },
+                             {
+                                 "spell":  236430,
+                                 "duration_ms":  -1
+                             },
+                             {
+                                 "spell":  236431,
+                                 "duration_ms":  -1
+                             }
+                         ],
+    "native_hashes":  {
+                          "Spell":  "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+                          "SpellMisc":  "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b",
+                          "SpellDuration":  "fd01e79e46a57d270e536cdb7d86f78f4f2b086c388bf43e51adc4bbfde4d446",
+                          "SpellEffect":  "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db"
+                      },
+    "findings":  [
+                     "Prydaz native driver 207428 triggers shield 207472 every 30000 ms; shield is 25% max health before normal absorb modifiers, 15% for tank specs, lasts 30000 ms and covers school mask 127. Existing base amount calculation was correct; added null-caster protection.",
+                     "Generic school/mana shield bypass wrongly reduced shield capacity rather than reserving part of the hit. Large shields could absorb an entire small hit despite bypass. Reserve bypassed damage once across both loops, then restore it before split damage.",
+                     "DamageInfo::ModifyDamage previously capped positive changes by remaining damage and could not restore bypassed damage from zero. Clamp the signed change in a wide intermediate instead. Existing callers checked: Ascendant Council damage-halving and new bypass transfers.",
+                     "Old Norgannon stationary poll cast 234797 every 3000 ms, whose linked rows immediately granted a 4000-ms movement buff. It did not wait six seconds or defer the four-second timer until movement.",
+                     "New 236373 AuraScript observes continuous stillness and transitions every update, uses native class-specific 236380/236430/236431, suppresses the old periodic action, and cleans helper auras on removal/re-equip/login. Migration removes the eight superseded SQL rows and binds the driver.",
+                     "SendMovieStart now rejects movie 474 while a movie is already active, in addition to the quest checkpoint guard. The exact original repeat source remains unconfirmed because the old running revision did not log movie starts/completions."
+                 ],
+    "tests":  [
+                  "Test-LegendaryDefensiveEffects.ps1: extracted Norgannon/Prydaz handlers plus production school and mana absorption loops and damage arithmetic; all passed.",
+                  "Norgannon tests: all three classes, 5999/6000 ms boundary, indefinite readiness, four-second movement expiration, interrupted charging, long updates, equip while moving, cleanup/re-equip.",
+                  "Absorption tests: all seven schools, small/large hits, depleted shield, overflow, 50%/100% bypass, multiple ordinary shields, mixed mana shield, full uint32 bypass round trip.",
+                  "Test-HordeFuneral.ps1: repeated movie packet while playing is suppressed; completion and skip permit an explicit later replay.",
+                  "Test-WarlockRegression.ps1, Test-LegionIntroSequence.ps1 (76 cases), Test-ItemEffectLifecycle.ps1 passed.",
+                  "World migration tested twice against temporary tables and then applied with scoped backups."
+              ],
+    "character_checkpoint":  "Maiko remains level 101 with gear, pets, learned spells, money and XP preserved. Broken Shore 40518 remains rewarded. Orgrimmar quests reset, next quest 40522 at Eitrigg, map 1 position 1437.34,-4990.15,12.1018.",
+    "client_confirmation_pending":  [
+                                        "Stand six seconds, move and cast; after four seconds movement must interrupt/reject affected casts. Repeat after removing/re-equipping boots.",
+                                        "Observe Prydaz shield amount with current health/versatility and consume it with damage.",
+                                        "Watch movie 474 through its natural end; inspect start/completion or suppressed-overlap logs."
+                                    ],
+    "sources":  [
+                    "https://www.wowhead.com/item=132455/norgannons-foresight",
+                    "https://www.wowhead.com/it/guide/a-guide-to-legion-legendaries-4149",
+                    "https://github.com/TrinityCore/TrinityCore/blob/7f56d6a3d9113f2b02e2444b0bd34e626d952fd8/src/server/game/Entities/Unit/Unit.cpp"
+                ]
+}

@@ -8769,6 +8769,11 @@ void Player::SendCinematicStart(uint32 CinematicSequenceId)
 
 void Player::SendMovieStart(uint32 MovieId)
 {
+    if (MovieId == 474 && isWatchingMovie())
+    {
+        TC_LOG_INFO("entities.player", "Suppressed overlapping Horde funeral movie 474 for %s", GetName());
+        return;
+    }
     TC_LOG_INFO("entities.player", "Movie %u started for %s", MovieId, GetName());
     WorldPackets::Misc::TriggerMovie packet;
     packet.MovieID = MovieId;
