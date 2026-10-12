@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -77,7 +77,7 @@ struct Player {
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
  bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -311,5 +311,20 @@ int main()
   p={};p.activeQuest=quest;p.status.Status=state;p.KilledMonsterCredit(quest==39777?96690:97546);assert(!p.progress&&!p.creditPackets);
  }
  std::cout<<"PASS: Snowblind three parallel starters, all eight evacuation reward subsets, both Mightstone kill-credit paths at exactly ten, Olgrul-only completion, duplicate cap and absent/rewarded exclusions.\n";
+ // Actual core kill-credit and completion handlers: each evacuation objective is independent.
+ store.quests[42088].objectives={{0,106115,1,0,0},{0,106153,1,0,1},{0,106191,1,0,2}};
+ std::vector<uint32> residents={106115,106153,106191};
+ for(unsigned mask=0;mask<8;++mask){
+  p={};p.activeQuest=42088;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  for(unsigned i=0;i<3;++i)if(mask&(1u<<i))p.KilledMonsterCredit(residents[i]);
+  assert((p.status.Status==QUEST_STATUS_COMPLETE)==(mask==7));
+ }
+ do{
+  p={};p.activeQuest=42088;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  p.KilledMonsterCredit(93846);assert(!p.creditPackets);
+  for(auto entry:residents){p.KilledMonsterCredit(entry);p.KilledMonsterCredit(entry);}
+  assert(p.creditPackets==3&&p.completeCalls==1&&p.nursingProgress.size()==3);
+ }while(std::next_permutation(residents.begin(),residents.end()));
+ std::cout<<"PASS: evacuation all eight objective subsets and all six orders, independent one-time credits, no unrelated Mayla credit.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }

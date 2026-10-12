@@ -1,0 +1,49 @@
+{
+  "scope": "Evacuate Snowmane (42088): code/data audit and repair. Client testing explicitly deferred by the user.",
+  "findings": [
+    "The three gossip handlers previously granted immediate credits through unguarded SmartAI lists. Red and Tarvim never picked up their native carry auras or moved. Tarvim had a corrupt fallback text and no BroadcastTextID.",
+    "C++ validates the exact resident/menu/option, active incomplete quest, unfinished resident objective, live nearby same-phase visible NPC and line of sight. SQL suppresses already-used options. Condition 41 uses ObjectID in this core, not the quest_objectives row ID.",
+    "Red and Tarvim each summon a private non-interactive actor. Only its owner sees it; the public source is hidden only from that player. Native pickup aura 210246 or 210304 and a successful ground spline launch precede the corresponding credit. Duplicate clicks cannot start a second scene.",
+    "Old Nefu replies and stays in his home. He deliberately has no escape path; the native quest still labels his conversation as an evacuation objective. His existing aura 130966 is preserved.",
+    "Source visibility and unfinished scenes recover after a failed spawn/aura/spline, quest abandon/reaccept, death, logout, map/phase/range departure or timeout. The last objective completing the quest does not cancel an already-running departure.",
+    "All three original TDB735 objectives remain unchanged: 283606 / ObjectID 106115, 283617 / 106153, 283622 / 106191, each amount 1. Mayla 93846 remains the live starter and native/live ender. The original TDB has no starter relation for 42088; no claim that its live starter came from that archive.",
+    "The quest uses intact terrain 1532. PathGenerator currently selects base map 1220 and does not account for terrain phasing. Base-map nearest ground differs by about +9 m for Red and -11 m for Tarvim. Local linear departure routes use the installed intact-terrain navmesh with height samples. No global pathfinding behavior was changed.",
+    "The base BroadcastText.db2 lacks all four relevant IDs. Runtime SQL hotfix rows 109069/109076/109086/109107 have VerifiedBuild 26124. Corrected creature_text fallbacks match those rows; Tarvim now references 109086."
+  ],
+  "evidence": {
+    "native": "highmountain-evacuation-native-2026-10-12.json: original TDB735 objective/ender records, DB2 pickup effects and SpellXSpellVisual links 55273/55311 with hashes.",
+    "behavior_reference": "https://warcraft.wiki.gg/wiki/Evacuate_Snowmane (Red takes Kaya, Tarvim carries wounded braves, Nefu refuses); movement timing/routes are reconstructed rather than sniffed.",
+    "interaction_reference": "https://www.wow-pro.com/highmountain-neutral/ (three separate chat interactions).",
+    "runtime": "Read-only live quest, spawn, gossip, template spell, phasing and 26124 hotfix dialogue queries; scoped pre-change data retained in the deployment backup."
+  },
+  "validation": [
+    "Test-HighmountainEvacuation.ps1 compiles extracted production handlers and actual visibility helpers: two owners, malformed/stale/duplicate gossip, no early credit, native aura selection, source restore, spawn/aura/launch failures, quest lifetime, death/logout/map/phase/range/timeout cleanup, Nefu stationary and departure surviving quest completion.",
+    "Test-HighmountainBloodtotem.ps1 compiles actual Player prerequisite, credit and completion handlers: all 8 evacuation objective subsets and all 6 completion orders, duplicate caps and unrelated-credit exclusion. Existing earlier Highmountain regressions pass.",
+    "Test-HighmountainEvacuationGeometry.ps1 links Release navmesh libraries and tests both source-derived linear routes at 380 samples spaced at most 0.5 m. It substitutes actual source spawn height for the first point, matching MoveSplineInit. Maximum accepted horizontal ground offset 0.08 m and height difference 0.65 m.",
+    "Test-HighmountainEvacuationNative.py passes against original TDB735 and installed DB2 files.",
+    "Test-HighmountainEvacuationData.ps1 applies migration twice to temporary tables, verifies unmodified unrelated rows/custom AI, native objectives, exact source positions, quest phases/terrain, carry spells, gossip gating, 26124 text matches and next quest.",
+    "Stopped-server deployment completed with scoped SQL backups, transaction and updater hash registration. Live evacuation and previous Snowblind parallel data tests pass.",
+    "Release worldserver and bnetserver compile successfully in build-extractors/bin/Release. worldserver --version succeeds (6ff334a7157d+ working-tree build). Runtime configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "deployment": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\evacuation-20261012-213558",
+    "sha1": "9F34A63294E15316AF6B21632F2839E2EDA55642",
+    "applied": "2026-10-12T21:35:58.7847671+03:00",
+    "migration": "sql/updates/world/2026_10_12_20_highmountain_evacuation.sql",
+    "method": "Scoped backups; stopped worldserver; InnoDB transaction and RELEASED updater registration. Server remains stopped."
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_evacuation.cpp": "5254fab4d1f110877f634af843473f55f9c053ed31ce565eb7f10297bd2907f4",
+    "sql/updates/world/2026_10_12_20_highmountain_evacuation.sql": "83a6497764fd4530bcdedb0fd685b71ca9bb0efb5a427825a61337615aa2824f",
+    "build-extractors/bin/Release/mmaps/1532.mmap": "3fa4f4f7ec55df73dbf81642f7542419d36cb11e5dfc50284a883f1d9b63489f",
+    "build-extractors/bin/Release/mmaps/15322424.mmtile": "1bdd7a670c1b2826e682c1c354454320bd51b9bfdca97fe5b304ca74c5c09487",
+    "build-extractors/bin/Release/worldserver.exe": "6650e622bfdb778c270f80f9bf4e272a4409f57a519ae343bdb8af078469cd12",
+    "build-extractors/bin/Release/bnetserver.exe": "e9f01e6010f65197d290074ea2245ba267565e869578226c0936cb3090e78678"
+  },
+  "limits": [
+    "No in-game verification. Client retest must confirm Kaya/two-brave carry visuals, actor/source visibility for two players, both departures, Nefu remaining in his hut and the Mayla turn-in.",
+    "The short departure routes, 2-second reaction delay, personal cloning and 45-second summon limit are bounded server reconstruction, not verified retail choreography. Static background warbraves are not removed without evidence identifying the exact wounded actors.",
+    "Navmesh checks establish installed ground geometry, not client animation or decorative-model rendering. The next Highmountain Stands destruction sequence is outside this change."
+  ],
+  "next": "Highmountain Stands (42512): Mayla interaction, Dargrul destruction scene, objective credit, intact/destroyed terrain transition and outgoing quest handoff."
+}

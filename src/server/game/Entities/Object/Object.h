@@ -718,6 +718,7 @@ class TC_GAME_API WorldObject : public Object, public WorldLocation
 
         bool HideForSomePlayers() const { return !_hideForGuid.empty(); }
         void AddToHideList(ObjectGuid  const& guid) { _hideForGuid.insert(guid); }
+        void RemoveFromHideList(ObjectGuid const& guid) { _hideForGuid.erase(guid); }
         bool ShouldHideFor(ObjectGuid const& guid) const { return _hideForGuid.find(guid) != _hideForGuid.end();  };
 
         void setTransport(Transport* t) { m_transport = t; }
