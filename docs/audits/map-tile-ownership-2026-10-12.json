@@ -1,0 +1,17 @@
+{
+  "reported": "2026-10-12 15:06:51 shutdown: StaticMapTree::UnloadMapTile non-loaded tile 33,23 on maps 1461,1495,1511,1527,1532,1612,1666,1671,1220.",
+  "evidence": [
+    "Server.log continues through normal database-pool shutdown after these errors; these entries alone do not demonstrate a crash.",
+    "Native runtime Map.db2 identifies all eight listed non-1220 maps as children of 1220. VMapManager2 unloads child tiles before the parent, matching the reported group and order.",
+    "MapInstanced::CreateZoneForPlayer passes the result of GetZoneId into CreateZoneMap without excluding zero. ZoneMap uses that zone ID as i_InstanceId but has a distinct m_parentMap.",
+    "Four terrain ownership paths incorrectly used i_InstanceId == 0 to identify the owner. A zone-zero copy consequently loads its own GridMap and re-loads the same global VMAP tiles as the base. Its cleanup can release those collision tiles before the base grid cleanup.",
+    "The shutdown log does not record which caller first loaded/released the tile or its zone ID. The ID-zero ownership defect is reproduced, but attribution of this exact historical shutdown to that path still requires runtime confirmation."
+  ],
+  "repair": "Use actual parent identity for ownership in LoadMapImpl, UnloadMapImpl, LoadMapAndVMap and UnloadGrid. Every child, including ID zero, borrows the base GridMap and participates in GridMapReference. Only the base loads/releases terrain, VMAP and MMAP tiles. Preserve the existing diagnostic for genuinely unmatched collision unloads.",
+  "validation": [
+    "Test-MapTileOwnership.ps1 extracts the production ownership handlers and grid cleanup branch. The old code fails the zone-zero sharing assertion; the repaired code passes zero/nonzero zone and instance copies, two borrowers, standalone terrain cleanup, grid shutdown cleanup and reload. Collision loads/releases balance exactly once per base grid lifecycle.",
+    "Test-MapObjectArrival.ps1 passes the existing Dalaran arrival, streaming hold and creature visibility regressions.",
+    "Win64 Release worldserver built successfully in build-extractors/bin/Release while the server was stopped; --version passed. Existing runtime configuration, certificate and DLL hashes are unchanged. Previous executable backed up under .codex/backups/map-tile-ownership-*."
+  ],
+  "runtime_retest": "Pending: enter Dalaran, then close worldserver normally and inspect only the new log entries. No character, quest, spawn or extracted collision data changed."
+}

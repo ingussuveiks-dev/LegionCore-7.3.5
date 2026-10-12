@@ -402,7 +402,9 @@ void Map::LoadMap(int gx, int gy, bool reload)
 
 void Map::LoadMapImpl(Map* map, int gx, int gy, bool reload)
 {
-    if (map->i_InstanceId != 0)
+    // Zone copies can have zone/instance ID 0. Only the actual parent owns
+    // terrain and collision tiles; the numeric instance ID is not ownership.
+    if (map->m_parentMap != map)
     {
         if (map->GridMaps[gx][gy])
             return;
@@ -452,7 +454,7 @@ void Map::UnloadMap(int gx, int gy)
 
 void Map::UnloadMapImpl(Map* map, int gx, int gy)
 {
-    if (map->i_InstanceId == 0)
+    if (map->m_parentMap == map)
     {
         if (map->GridMaps[gx][gy])
         {
@@ -533,7 +535,7 @@ void Map::UpdateOutdoorPvPScript()
 void Map::LoadMapAndVMap(int gx, int gy)
 {
     LoadMap(gx, gy);
-    if (i_InstanceId == 0)
+    if (m_parentMap == this)
     {
         LoadVMap(gx, gy);                                   // Only load the data for the base map
         LoadMMap(gx, gy);
@@ -2270,7 +2272,7 @@ bool Map::UnloadGrid(GridContainerType::iterator itr, bool unloadAll)
     // delete grid map, but don't delete if it is from parent map (and thus only reference)
     //+++if (GridMaps[gx][gy]) don't check for GridMaps[gx][gy], we might have to unload vmaps
     {
-        if (i_InstanceId == 0)
+        if (m_parentMap == this)
         {
             if (GridMaps[gx][gy])
             {
