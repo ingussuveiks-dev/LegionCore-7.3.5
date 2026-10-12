@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -77,7 +77,7 @@ struct Player {
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
  bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return quest->id==39456?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -118,6 +118,29 @@ int main()
  for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=38910;p.status.Status=status;p.KilledMonsterCredit(94991);assert(!p.progress&&!p.creditPackets);}
  p={};p.activeQuest=38910;p.status.Status=QUEST_STATUS_INCOMPLETE;p.KilledMonsterCredit(95261);assert(!p.progress);
  std::cout<<"PASS: Rocs vs Eagles requires exactly seven native credits, caps duplicates, ignores unrelated/absent/rewarded credits; The Three opens only after reward.\n";
+ // Haglands is a parallel pair, with both rewards required before The Witchqueen.
+ store.quests[39321].ExclusiveGroup=-39321;
+ store.quests.emplace(39429,Quest{39429,-39321,{38910}});
+ store.mExclusiveQuestGroups.emplace(-39321,39321);store.mExclusiveQuestGroups.emplace(-39321,39429);
+ store.quests.emplace(39322,Quest{39322,0,{39321,39321,39429}});
+ for(uint32 id:{39321u,39429u}){p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));p.m_RewardedQuests={38910};assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));}
+ for(unsigned mask=0;mask<4;++mask){p={};p.m_RewardedQuests={38910};if(mask&1)p.m_RewardedQuests.insert(39321);if(mask&2)p.m_RewardedQuests.insert(39429);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39322),false)==(mask==3));}
+ store.quests[39321].objectives={{QUEST_OBJECTIVE_MONSTER,95194,1,1,0},{QUEST_OBJECTIVE_MONSTER,95195,1,1,1},{QUEST_OBJECTIVE_MONSTER,95196,1,1,2}};
+ for(unsigned mask=0;mask<8;++mask){p={};p.activeQuest=39321;p.status.Status=QUEST_STATUS_INCOMPLETE;for(unsigned index=0;index<3;++index)if(mask&(1u<<index))p.KilledMonsterCredit(95194+index);assert((p.status.Status==QUEST_STATUS_COMPLETE)==(mask==7));}
+ std::vector<uint32> order={95194,95195,95196};
+ do{p={};p.activeQuest=39321;p.status.Status=QUEST_STATUS_INCOMPLETE;for(uint32 id:order){p.KilledMonsterCredit(id);p.KilledMonsterCredit(id);}assert(p.completeCalls==1&&p.creditPackets==3&&p.nursingProgress.size()==3);}while(std::next_permutation(order.begin(),order.end()));
+ for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39321;p.status.Status=state;for(uint32 id:{95194u,95195u,95196u})p.KilledMonsterCredit(id);assert(p.nursingProgress.empty());}
+ std::cout<<"PASS: The Three requires all three distinct kills in every subset/order; duplicate and absent/rewarded credits ignored; both Haglands quests open together and both rewards gate The Witchqueen.\n";
+ store.quests[39429].objectives={{QUEST_OBJECTIVE_MONSTER,95266,8,0,0},{QUEST_OBJECTIVE_MONSTER,95277,6,0,1}};
+ for(uint32 harpy:{95265u,95266u,105068u}){
+  p={};p.activeQuest=39429;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  CreatureTemplate enemy{harpy,{harpy==95266?0u:95266u,0}};killedCreature.entry=harpy;
+  for(int n=0;n<8;++n)p.KilledMonster(&enemy,{harpy});
+  assert(p.nursingProgress[0]==8&&!p.CanCompleteQuest(39429));
+  for(int n=0;n<5;++n)p.KilledMonsterCredit(95277);assert(!p.CanCompleteQuest(39429));
+  p.KilledMonsterCredit(95277);assert(p.nursingProgress[1]==6&&p.completeCalls==1);
+ }
+ std::cout<<"PASS: Assaulting the Haglands native harpy aliases count once; eight harpies alone or five loyalists are insufficient; eight plus six completes.\n";
  store.quests[39318].objectives={{QUEST_OBJECTIVE_MONSTER,95261,8,2,0},{QUEST_OBJECTIVE_MONSTER,95403,1,0,1}};
  // Extracted production kill-credit and completion handlers: neither objective alone completes.
  p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;
