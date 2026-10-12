@@ -2969,6 +2969,30 @@ public:
     }
 };
 
+namespace HordeFuneral
+{
+    bool CanStart(Player* player)
+    {
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(40522);
+        return quest && player->GetQuestStatus(40522) == QUEST_STATUS_INCOMPLETE &&
+            !player->GetQuestObjectiveData(quest, int8(2)) && !player->isWatchingMovie();
+    }
+
+    void StartMovie(Player* player)
+    {
+        // Recheck after the conversation delay: the player may have advanced
+        // the quest, abandoned it, or started another movie in the meantime.
+        if (!CanStart(player))
+            return;
+
+        player->CastSpell(player, 200252, true);
+        // 198897 plays movie 474 and its spell_linked_spell row casts 200282.
+        // Do not also teleport before the movie has put the player into the
+        // delayed-teleport state. Completion/skip releases that teleport.
+        player->CastSpell(player, 198897, true);
+    }
+}
+
 class npc_q44281_1 : public CreatureScript
 {
 public:
@@ -2996,7 +3020,7 @@ public:
 
             if (me->GetEntry() == 100442)
             {
-                if (who->ToPlayer()->GetQuestStatus(40522) != QUEST_STATUS_NONE && who->ToPlayer()->GetQuestStatus(40522) == QUEST_STATUS_INCOMPLETE)
+                if (HordeFuneral::CanStart(who->ToPlayer()))
                 {
                     GuidSet::iterator itr = m_player_for_event.find(who->GetGUID());
                     if (itr != m_player_for_event.end())
@@ -3005,9 +3029,7 @@ public:
                     who->CastSpell(who, 197944, true); // conv
                     who->AddDelayedEvent(45000, [who]() -> void
                     {
-                        who->CastSpell(who, 200252, true); //delayed criteria
-                        who->CastSpell(who, 200282, true); // criteria
-                        who->CastSpell(who, 198897, true); // movie
+                        HordeFuneral::StartMovie(who->ToPlayer());
                     });
                 }
             }

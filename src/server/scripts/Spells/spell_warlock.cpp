@@ -497,6 +497,22 @@ class spell_warl_streten_insanity : public SpellScriptLoader
     {
         PrepareAuraScript(spell_warl_streten_insanity_AuraScript);
 
+        void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            // Equipping the bracers must also count Unstable Afflictions that
+            // were already active before the item aura was applied.
+            if (AuraEffect* effect = GetEffect(EFFECT_0))
+                effect->SetAmount(1);
+        }
+
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            // The secondary damage aura has no duration of its own. Once the
+            // item driver is gone, UA updates can no longer clear its stacks.
+            if (Unit* owner = GetUnitOwner())
+                owner->RemoveAurasDueToSpell(208822);
+        }
+
         void OnUpdate(uint32 diff, AuraEffect* aurEff)
         {
             if (aurEff->GetAmount())
@@ -530,6 +546,8 @@ class spell_warl_streten_insanity : public SpellScriptLoader
         void Register() override
         {
             OnEffectUpdate += AuraEffectUpdateFn(spell_warl_streten_insanity_AuraScript::OnUpdate, EFFECT_0, SPELL_AURA_DUMMY);
+            AfterEffectApply += AuraEffectApplyFn(spell_warl_streten_insanity_AuraScript::OnApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_warl_streten_insanity_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
         }
     };
 

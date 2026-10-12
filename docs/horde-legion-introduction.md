@@ -83,3 +83,29 @@ place; update 332 supersedes its regular post-reward attack-phase branch.
 The server is left stopped. Full client verification of quest menus, funeral,
 Allari's reveal, combat, Sylvanas's handoff and the Dalaran cinematic is still
 required; passing these server/data checks does not verify client visuals.
+
+## Funeral replay report, 2026-10-12
+
+Maiko reported that the movie before arriving at 1221.57, -4450.17, 23.78
+repeated until manually skipped. Native spell 198897 plays movie 474, and
+the existing world linked-spell row casts teleport/credit spell 200282.
+The NPC also cast 200282 immediately before starting the movie. That
+redundant call is removed so the single linked teleport observes the
+movie's delayed-teleport state. The NPC now checks objective index 2
+(100934) both before its conversation and after the 45-second delay, so
+an already credited, still-active quest cannot replay the movie through
+a fresh NPC event. The delay and native three-second credit aura 200252
+are retained.
+
+`Test-HordeFuneral.ps1` compiles the production eligibility/start helpers,
+movie sender and completion handler. It checks the single deferred
+teleport, normal completion/skip, repeated callbacks and already credited
+quests. Linked-spell dispatch is simulated using the verified live row;
+this does not test client video playback. The existing log had no movie
+start/finish records, so the precise cause of the reported endless playback
+remains unconfirmed. New movie start and completion/skip log messages make
+the next client reproduction observable. Do not call the client loop fixed
+until that run finishes without manually skipping.
+
+The equipped-item audit and related Streten bracer lifecycle correction are
+recorded in `audits/maiko-legendaries-funeral-2026-10-12.json`.

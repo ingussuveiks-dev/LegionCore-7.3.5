@@ -8769,6 +8769,7 @@ void Player::SendCinematicStart(uint32 CinematicSequenceId)
 
 void Player::SendMovieStart(uint32 MovieId)
 {
+    TC_LOG_INFO("entities.player", "Movie %u started for %s", MovieId, GetName());
     WorldPackets::Misc::TriggerMovie packet;
     packet.MovieID = MovieId;
     SendDirectMessage(packet.Write());

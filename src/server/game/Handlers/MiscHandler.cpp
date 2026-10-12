@@ -297,6 +297,8 @@ void WorldSession::HandleCompleteMovie(WorldPackets::Misc::CompleteMovie& /*pack
     if (!player)
         return;
 
+    TC_LOG_INFO("entities.player", "Movie completion/skip received for %s (watching: %u)",
+        player->GetName(), uint32(player->isWatchingMovie()));
     player->setWatchinMovie(false);
     player->SetCanDelayTeleport(false);
 }

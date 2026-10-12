@@ -1,0 +1,236 @@
+﻿{
+    "date":  "2026-10-12",
+    "client_build":  26972,
+    "character":  "Maiko",
+    "level":  101,
+    "specialization":  265,
+    "scope":  "Equipped legendary item identity, native effect links and implementation review; not a full live combat verification",
+    "unlimited_legion_legendaries_config":  true,
+    "items":  [
+                  {
+                      "id":  132394,
+                      "name":  "Hood of Eternal Disdain",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  205797,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132444,
+                      "name":  "Prydaz, Xavaric\u0027s Magnum Opus",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  207428,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  146666,
+                      "name":  "Celumbra, the Night\u0027s Dichotomy",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  241334,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  151821,
+                      "name":  "The Master Harvester",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  248113,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132457,
+                      "name":  "Power Cord of Lethtendris",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  205753,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132357,
+                      "name":  "Pillars of the Dark Portal",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  217519,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132455,
+                      "name":  "Norgannon\u0027s Foresight",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  236373,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132381,
+                      "name":  "Streten\u0027s Sleepless Shackles",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  208821,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  132378,
+                      "name":  "Sacrolash\u0027s Dark Strike",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  207952,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  151649,
+                      "name":  "Soul of the Netherlord",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  247603,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      },
+                                      {
+                                          "SpellID":  247605,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  265
+                                      },
+                                      {
+                                          "SpellID":  247607,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  266
+                                      },
+                                      {
+                                          "SpellID":  247608,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  267
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  144259,
+                      "name":  "Kil\u0027jaeden\u0027s Burning Wish",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  235991,
+                                          "TriggerType":  0,
+                                          "ChrSpecializationID":  0
+                                      },
+                                      {
+                                          "SpellID":  236062,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  },
+                  {
+                      "id":  144364,
+                      "name":  "Reap and Sow",
+                      "quality":  5,
+                      "required_level":  101,
+                      "limit_category":  357,
+                      "effects":  [
+                                      {
+                                          "SpellID":  236114,
+                                          "TriggerType":  1,
+                                          "ChrSpecializationID":  0
+                                      }
+                                  ]
+                  }
+              ],
+    "native_hashes":  [
+                          {
+                              "file":  "ItemSparse.db2",
+                              "sha256":  "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+                          },
+                          {
+                              "file":  "ItemEffect.db2",
+                              "sha256":  "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931"
+                          },
+                          {
+                              "file":  "SpellEffect.db2",
+                              "sha256":  "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB"
+                          },
+                          {
+                              "file":  "Movie.db2",
+                              "sha256":  "6D84F30C77C9783EB5E1DB0A3E0A2BCC172F7BC202D6AB80A193D343DFCCA394"
+                          }
+                      ],
+    "findings":  [
+                     "Streten secondary aura 208822 has infinite duration. Add real item-aura removal cleanup and refresh existing UA targets when equipping.",
+                     "Equipped-item auras are deliberately excluded from character_aura persistence; their absence there does not prove missing live effects.",
+                     "Horde funeral quest 40522 uses movie 474 through 198897. Existing linked spell 198897 -\u003e 200282 supplies teleport and objective 100934. Remove redundant pre-movie 200282 cast and gate playback on objective index 2.",
+                     "Server.log did not contain per-movie start/completion diagnostics for the reported playback; an endless client loop is not proven fixed. Added start and completion/skip logging for the next client run."
+                 ],
+    "validation":  [
+                       "Production ItemSparse reader: all 12 items quality 5, minimum level 101, category 357.",
+                       "Native ItemEffect/SpellEffect links resolve; Soul of the Netherlord selects Affliction 247605 for spec 265.",
+                       "Test-StretenLifecycle.ps1 passed.",
+                       "Test-HordeFuneral.ps1 passed.",
+                       "Test-LegionIntroSequence.ps1: 76 progression cases passed.",
+                       "Test-ItemEffectLifecycle.ps1 and Test-WarlockRegression.ps1 passed."
+                   ],
+    "client_checks_pending":  [
+                                  "Watch funeral without skipping, verify only one movie start, one completion and one teleport.",
+                                  "Exercise each equipped legendary in combat and verify tooltip values, triggered effects and unequip/re-equip behavior."
+                              ],
+    "reference":  "https://www.wowhead.com/guide/affliction-warlock-raid-tips"
+}
