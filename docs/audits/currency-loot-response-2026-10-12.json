@@ -10,6 +10,6 @@
     "Test-CurrencyLootResponse.ps1 compiles the production currency response section. Covers Xullorax's 1149/64, Order Resources 1220, default/custom slot IDs, different viewers, personal loot and collected entries.",
     "Release game library and staged Win64 worldserver executable built successfully; staged --version passed. Staging path: build-extractors/runtime-test/currency-loot-release/worldserver.exe."
   ],
-  "deployment": "Staged executable ready; replacing canonical build-extractors/bin/Release/worldserver.exe requires the running worldserver to be stopped. Do not launch from the staging directory.",
+  "deployment": "Installed the tested executable in build-extractors/bin/Release/worldserver.exe after the user stopped worldserver; process absence verified. Installed SHA256 02600433C17D3B7FD6A132C0043C3D10856A53AC572F86BCA78E112BB3732AFD matches staging; --version passed. Previous executable backed up in .codex/backups/currency-loot-20261012-165237. Runtime configuration/certificate/DLL hashes unchanged. The version string retains pre-commit 9e537f9ca03e+ because this tested binary was built before commit 2b76bdc8. Server not started automatically.",
   "client_retest": "Pending: reopen currency-bearing loot and verify the Sightless Eye name/icon/quantity and successful collection. Existing corpse loot may expire across a restart; no unverified manual currency compensation was applied."
 }
