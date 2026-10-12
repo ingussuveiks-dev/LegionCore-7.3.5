@@ -1,5 +1,6 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "AreaTriggerAI.h"
 
 enum eSpells
 {
@@ -313,9 +314,39 @@ public:
     }
 };
 
+// 192179..192183 share area-trigger templates with older Brilliant Edge spells.
+// Restrict the added damage action to High Crawliac's native cyclone family.
+struct at_highmountain_shredding_cyclone : AreaTriggerAI
+{
+    explicit at_highmountain_shredding_cyclone(AreaTrigger* trigger) : AreaTriggerAI(trigger) { }
+
+    bool IsCyclone() const
+    {
+        return at->GetSpellId() >= 192179 && at->GetSpellId() <= 192183;
+    }
+
+    bool IsValidTarget(Unit* caster, Unit* target, AreaTriggerActionMoment /*moment*/) override
+    {
+        return IsCyclone() && caster && caster->GetEntry() == 95153 &&
+            caster->IsAlive() && caster->isInCombat() && target && target->IsAlive() &&
+            caster->IsValidAttackTarget(target);
+    }
+
+    void OnUpdate(uint32 /*diff*/) override
+    {
+        if (!IsCyclone())
+            return;
+
+        Unit* caster = at->GetCaster();
+        if (!caster || (caster->GetEntry() == 95153 && (!caster->IsAlive() || !caster->isInCombat())))
+            at->Despawn();
+    }
+};
+
 void AddSC_highmountain()
 {
     new boss_flotsam();
     new npc_jetsam_stalker();
     new boss_drugon_the_frostblood();
+    RegisterAreaTriggerAI(at_highmountain_shredding_cyclone);
 }

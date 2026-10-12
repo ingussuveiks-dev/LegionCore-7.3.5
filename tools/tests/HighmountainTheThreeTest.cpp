@@ -45,5 +45,10 @@ int main(){
   spell.unitTarget=&other;assert(spell.SpellDummyTriggered(0)&&caster.casts==2&&caster.castTarget==&other);
   // Option 6 uses CastSpell, preserving native child damage instead of using the spell ID as damage.
  }
- std::cout<<"PASS: actual dummy-trigger filter/option 6 reproduces missing links, rejects wrong handle/effect and out-of-world units, casts the native child once on each hit target without overriding damage.\n";
+ // The Witchqueen: five dummy effects must emit five children, not 25.
+ Unit queen;SpellInfo cyclone{192177};Spell parent{&cyclone,&queen,&queen};
+ for(int i=0;i<5;++i){SpellDummyTrigger row;row.spell_trigger=192179+i;row.effectmask=1<<i;manager.rows[192177].push_back(row);}
+ for(int i=0;i<5;++i){parent.damage=float(192179+i);assert(parent.SpellDummyTriggered(i));assert(queen.casts==unsigned(i+1)&&queen.castId==unsigned(192179+i)&&queen.castTarget==&queen);}
+ assert(!parent.SpellDummyTriggered(5)&&queen.casts==5);
+ std::cout<<"PASS: actual dummy-trigger filter/option 6 reproduces missing links, rejects wrong handle/effect and out-of-world units, preserves child values; cyclone emits exactly five distinct children.\n";
 }

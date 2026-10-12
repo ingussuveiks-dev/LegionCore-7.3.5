@@ -141,6 +141,17 @@ int main()
   p.KilledMonsterCredit(95277);assert(p.nursingProgress[1]==6&&p.completeCalls==1);
  }
  std::cout<<"PASS: Assaulting the Haglands native harpy aliases count once; eight harpies alone or five loyalists are insufficient; eight plus six completes.\n";
+ store.quests[39322].objectives={{QUEST_OBJECTIVE_MONSTER,95153,1,1,0}};
+ store.quests.emplace(39387,Quest{39387,0,{39322}});
+ p={};p.activeQuest=39322;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ assert(!p.CanCompleteQuest(39322));p.KilledMonsterCredit(95194);assert(!p.progress);
+ CreatureTemplate queen{95153,{0,0}};killedCreature.entry=95153;
+ p.KilledMonster(&queen,{95153});p.KilledMonster(&queen,{95153});
+ assert(p.progress==1&&p.completeCalls==1&&p.creditPackets==1);
+ assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39387),false));
+ p.m_RewardedQuests.insert(39322);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39387),false));
+ for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39322;p.status.Status=state;p.KilledMonster(&queen,{95153});assert(!p.progress);}
+ std::cout<<"PASS: Witchqueen requires High Crawliac's death, credits once, ignores unrelated/absent/rewarded kills, return to Skyhorn requires reward.\n";
  store.quests[39318].objectives={{QUEST_OBJECTIVE_MONSTER,95261,8,2,0},{QUEST_OBJECTIVE_MONSTER,95403,1,0,1}};
  // Extracted production kill-credit and completion handlers: neither objective alone completes.
  p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;
