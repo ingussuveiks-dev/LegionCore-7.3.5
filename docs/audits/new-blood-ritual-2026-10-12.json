@@ -1,0 +1,21 @@
+{
+  "report": "During The New Blood (40729), Jagganoth appeared but remained nonattackable and the ritual did not continue after Zelifrax's challenge. Nearby Underbelly chests appeared empty; an unidentified glowing cooking table only seated the player.",
+  "evidence": [
+    "The ritual Jagganoth (98831) is intentionally nonattackable. The intended sequence is a failed summoning followed by capture and transfer, not combat with this copy. Reference: https://warcraft.wiki.gg/wiki/The_New_Blood . The later combat copy 101468 is separate.",
+    "Jagganoth's JUST_SUMMONED opening (200011, linked dialogue 199943) required Calydus 99178 within 100 yards. Calydus belongs to another summon path; the Dalaran ritual instead has Ritssyn 101456. The existing capture DATA_SET event already requires nearby Ritssyn.",
+    "After dialogue 199945, timed list 9879701 moves Zelifrax to point 2. His MovementInform signals Jagganoth DATA_SET(1,1). The observed stopping point matches this handoff, but no movement trace establishes why the callback failed in the user's run.",
+    "Existing capture list 9883100 ends in spell 200038. Native 7.3.5 SpellEffect data links this through 200032 to Dreadscar Jailer 101460. Its timed list casts 199362 on the summoner after 12 seconds. Aura 260 is a screen effect; existing spell_linked_spell 199362 -> 199359 transfers to map 1522. No missing scene package was invented.",
+    "Underbelly Hoard/Cache/Spoils loot 62090/62091/62092 contains Sightless Eye currency 1149 in quantities 100/40/10. Chance zero with group zero enters LootTemplate AutoGroups, so zero is not proof of an empty-loot data defect. The currency response ID fix 2b76bdc8 was already installed after the reported screenshot; it needs a client retest.",
+    "The cooking table cannot be uniquely identified from the screenshot and recalled kitchen location. No speculative object or loot modification was made."
+  ],
+  "repair": [
+    "Add an alternative opening condition for nearby Ritssyn, retaining the Calydus branch for the other summon path.",
+    "Append an eight-second fallback after Zelifrax's approach to send the existing DATA_SET(1,1) handoff. Jagganoth's existing non-repeatable event prevents restarting capture if the ordinary movement callback already fired. The fallback grants no quest credit and changes no attack flags."
+  ],
+  "validation": [
+    "Test-NewBloodRitualData.ps1 passes against temporary table copies: repeat application, both opening branches, fallback parameters, unchanged existing script actions/flags, non-repeatable capture, existing jailer/blackout/transfer chain and preservation of a custom replacement occupying the fallback row.",
+    "SQL migration applied while worldserver was stopped, registered with SHA1 5F41E7AE7FA5E0A30B79197C375708221511C3F2, and installed rows queried back. The fixture also passes after deployment."
+  ],
+  "deployment": "SQL-only change; no executable rebuild required. Backup: .codex/backups/new-blood-ritual-20261012-172127. Canonical runtime remains build-extractors/bin/Release. Server was not started and character progress was not edited.",
+  "client_retest": "Pending: restart the server, restart the ritual through its normal quest interaction, observe Jagganoth's opening and the capture/transfer, then continue the escape scenario. If the already accepted quest cannot restart its accept-driven event, abandon/reaccept 40729 at Ritssyn. Full quest completion and crate currency collection have not been verified in the client."
+}
