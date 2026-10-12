@@ -29,8 +29,9 @@ void ConfirmTeleport(Player* player, uint32 retries)
 }
 
 // The two visual pads are type 5 (not clickable). Walking onto the actual
-// pad triggers its native teleport. Arrival points lie outside the pad's
-// radius, so returning cannot immediately send the player back downstairs.
+// pad triggers its native teleport. Use center distances: GetDistance subtracts
+// combat reach and would include the arrival points in the activation radius.
+// The duplicate event-object spell triggers are disabled by the matching SQL.
 class go_eye_portrait_teleporter : public GameObjectScript
 {
 public:
@@ -47,13 +48,13 @@ public:
             if (go->GetMapId() != 1220 || go->GetZoneId() != 7502) return;
             bool upper = go->GetEntry() == 244534;
             if ((!upper && go->GetEntry() != 244560) ||
-                go->GetDistance(upper ? EyeQuests::UpperPad : EyeQuests::LowerPad) > 1.0f) return;
+                go->GetExactDist(upper ? &EyeQuests::UpperPad : &EyeQuests::LowerPad) > 1.0f) return;
             std::list<Player*> players;
             go->GetPlayerListInGrid(players, 2.0f);
             for (Player* player : players)
             {
                 if (!player->IsAlive() || player->IsBeingTeleported() || player->GetVehicle() ||
-                    player->isInFlight() || player->GetDistance(go) > 2.0f) continue;
+                    player->isInFlight() || player->GetExactDist(go) > 2.0f) continue;
                 player->CastSpell(player, upper ? 192293 : 192295, true);
                 if (upper && (player->GetQuestStatus(42213) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40890) == QUEST_STATUS_INCOMPLETE))
                     player->AddDelayedEvent(500, [player]() { EyeQuests::ConfirmTeleport(player, 20); });

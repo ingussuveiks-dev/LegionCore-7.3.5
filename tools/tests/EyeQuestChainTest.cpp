@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -17,7 +18,9 @@ struct Group {ObjectGuid GetLeaderGUID(){return {};}};
 struct Player {
  bool alive=true,teleport=false,vehicle=false,flight=false;unsigned map=1220;Position pos;std::map<unsigned,int> quests;std::map<unsigned,unsigned> credits;std::vector<unsigned> spells;std::vector<std::function<void()>> events;
  bool IsAlive(){return alive;}unsigned GetMapId(){return map;}int GetQuestStatus(unsigned q){return quests[q];}bool IsBeingTeleported(){return teleport;}
- float GetDistance(Position p){return std::sqrt((pos.x-p.x)*(pos.x-p.x)+(pos.y-p.y)*(pos.y-p.y)+(pos.z-p.z)*(pos.z-p.z));}float GetDistance(GameObject*);
+ float reach=1.5f;
+ float GetExactDist(Position const* p){return std::sqrt((pos.x-p->x)*(pos.x-p->x)+(pos.y-p->y)*(pos.y-p->y)+(pos.z-p->z)*(pos.z-p->z));}float GetExactDist(GameObject*);
+ float GetDistance(Position p){return std::max(0.0f,GetExactDist(&p)-reach);}float GetDistance(GameObject*);
  unsigned GetQuestObjectiveData(unsigned,unsigned c){return credits[c];}void KilledMonsterCredit(unsigned c){++credits[c];}void AddDelayedEvent(unsigned,std::function<void()> f){events.push_back(f);}
  void* GetVehicle(){return vehicle?this:nullptr;}bool isInFlight(){return flight;}void CastSpell(Player*,unsigned s,bool){spells.push_back(s);teleport=true;}
  Group* GetGroup(){return nullptr;}Creature* FindNearestCreature(unsigned,float,bool){return nullptr;}
@@ -26,9 +29,12 @@ struct CreatureAI{unsigned talks=0,actions=0;void ZoneTalk(unsigned){++talks;}vo
 struct Creature {ObjectGuid guid;unsigned entry;bool visible=true,dead=false;CreatureAI ai;unsigned GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}void SetVisible(bool v){visible=v;}bool isDead(){return dead;}CreatureAI* AI(){return &ai;}};
 struct GameObject {ObjectGuid guid;unsigned entry=244534,map=1220,zone=7502;Position pos;bool deleted=false;std::list<Player*> players;
  unsigned GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}unsigned GetMapId(){return map;}unsigned GetZoneId(){return zone;}void Delete(){deleted=true;}
- float GetDistance(Position p){Player t;t.pos=pos;return t.GetDistance(p);}void GetPlayerListInGrid(std::list<Player*>& p,float){p=players;}
+ float GetExactDist(Position const* p){Player t;t.pos=pos;return t.GetExactDist(p);}
+ float GetDistance(Position p){return std::max(0.0f,GetExactDist(&p)-0.306f);}void GetPlayerListInGrid(std::list<Player*>& p,float){p=players;}
 };
-float Player::GetDistance(GameObject* g){return GetDistance(g->pos);}
+float Player::GetExactDist(GameObject* g){return GetExactDist(&g->pos);}
+// Match WorldObject::GetDistance: edge distance includes BOTH objects' sizes.
+float Player::GetDistance(GameObject* g){return std::max(0.0f,GetExactDist(g)-reach-0.306f);}
 struct ObjectAccessor{static Player* GetPlayer(Player&,ObjectGuid){return nullptr;}};
 struct InstanceMap{std::map<unsigned,Creature*> creatures;std::map<unsigned,GameObject*> objects;Creature* GetCreature(ObjectGuid id){auto it=creatures.find(id.id);return it==creatures.end()?nullptr:it->second;}GameObject* GetGameObject(ObjectGuid id){auto it=objects.find(id.id);return it==objects.end()?nullptr:it->second;}};
 struct InstanceScript {
@@ -74,6 +80,16 @@ int main(){
  p.quests[40890]=0;p.quests[42213]=1;p.spells.resize(1);p.events.clear();
  p.pos=upper.pos;p.pos.z+=5;portal.UpdateAI(500);assert(p.spells.size()==1);p.pos=upper.pos;p.vehicle=true;portal.UpdateAI(500);assert(p.spells.size()==1);p.vehicle=false;
  GameObject lower;lower.entry=244560;lower.pos=EyeQuests::LowerPad;lower.players={&p};go_eye_portrait_teleporter::AI back(&lower);p.pos=lower.pos;back.UpdateAI(500);assert(p.spells.back()==192295 && p.credits[106815]==0);
- p.teleport=false;p.pos={-846.86f,4469.6f,736.04f,0};portal.UpdateAI(500);assert(p.spells.size()==2); // no arrival bounce
+ p.teleport=false;p.pos={-846.86f,4469.6f,736.04f,0};
+ assert(p.GetDistance(&upper)<2.0f && p.GetExactDist(&upper)>2.0f); // old handler reactivated on arrival
+ portal.UpdateAI(500);assert(p.spells.size()==2);
+ for(float reach:{1.5f,5.0f,10.0f}) {
+  p.reach=reach;
+  for(int i=0;i<20;++i){p.pos=EyeQuests::Arrival;back.UpdateAI(500);p.pos={-846.86f,4469.6f,736.04f,0};portal.UpdateAI(500);}
+  assert(p.spells.size()==2); // both arrival points remain safe, including enlarged characters
+ }
+ p.reach=1.5f;p.pos=upper.pos;p.pos.x+=2.01f;portal.UpdateAI(500);assert(p.spells.size()==2);
+ p.pos=upper.pos;p.pos.x+=1.99f;portal.UpdateAI(500);assert(p.spells.size()==3&&p.spells.back()==192293);
+ p.teleport=false;p.pos=lower.pos;back.UpdateAI(500);assert(p.spells.size()==4&&p.spells.back()==192295); // walking back onto a pad still works
  std::cout<<"PASS: actual instance methods and portal handlers; entry credit, no kill substitution, late grids, duplicate naga slots, locked/final Tidestone, teleport acknowledgement/failure, wrong map/floor/death/vehicle/quest, return and no bounce.\n";
 }

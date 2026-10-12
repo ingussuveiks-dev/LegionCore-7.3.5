@@ -1,0 +1,19 @@
+{
+  "report": "Upper Dalaran teleport pad sends Maiko downstairs, then immediately returns him upstairs.",
+  "findings": [
+    "Pads 244534 and 244560 use go_eye_portrait_teleporter. Overlapping event objects 4 and 5 independently cast the same native spells 192293 and 192295, without the script's pending-teleport checks.",
+    "The script used WorldObject::GetDistance, which subtracts both object sizes. Upper arrival is about 2.92 units from the pad, but at normal 1.5 player combat reach plus 0.306 object size its effective distance is about 1.11, inside the 2-unit trigger. The previous test incorrectly modeled GetDistance as center distance and missed this.",
+    "A second cast at the source while the first teleport is pending is also possible through the separate event object. The repair removes this competing activation path instead of adding a temporary cooldown."
+  ],
+  "repair": [
+    "Use GetExactDist for pad identity and the 2-unit three-dimensional activation radius, independent of combat reach.",
+    "Disable only the original event-object triggers 4/5 when their corresponding gameobject still has the intended script. Preserve custom replacements, the original destination positions, native spells and quest credits."
+  ],
+  "validation": [
+    "Test-EyeQuestChain.ps1 passes with corrected edge-distance mocks, both arrival positions over repeated ticks at reach 1.5/5/10, activation boundary, return traversal, pending teleport, wrong floor and the existing quest credit/dungeon regressions.",
+    "Test-EyeQuestChainData.ps1 applies both migrations twice to temporary tables. Exactly two duplicate triggers disabled, unrelated triggers and custom pad scripts preserved, native quest objectives/rewards unchanged.",
+    "Win64 Release built and installed in build-extractors/bin/Release; --version passed. Runtime config/certificate/DLL hashes unchanged; previous executable and trigger rows backed up under .codex/backups/dalaran-pad-*.",
+    "SQL applied to the world DB and registered with the updater while worldserver was stopped. No character state changed."
+  ],
+  "client_retest": "Pending: use the upper pad, remain still after arrival downstairs, then deliberately walk onto the lower pad and remain still upstairs. Both directions must stop at their destination."
+}
