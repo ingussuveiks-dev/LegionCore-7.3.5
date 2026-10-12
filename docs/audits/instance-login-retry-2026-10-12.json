@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-12",
+  "incident": "Client loading bar stalled while logging Maiko into Orgrimmar after offline portal reposition. The Dalaran portal had not been used.",
+  "evidence": [
+    "Client.log 12:01:59: map 1 loaded, Character Login SEND, Start waiting for active player; still waiting at 120030ms.",
+    "Server.log 12:01:59: SendConnectToInstance; 12:02:09: unfinished world socket timed out after 10 seconds. No HandleContinuePlayerLogin or character Login record followed.",
+    "TCP snapshot: client instance port 8086 was CLOSE_WAIT, server FIN_WAIT_2; realm 8085 remained ESTABLISHED.",
+    "Character database: Maiko offline, map 1, zone 1637, position 1755.5 -4292 7.6."
+  ],
+  "diagnosis": "The 2026-09-23 socket deadline assumed closing an unfinished instance socket would cause CMSG_CONNECT_TO_FAILED. This client run did not report it, leaving the authenticated realm session waiting indefinitely. The underlying reason the client stopped the initial instance handshake is not yet identified.",
+  "changes": [
+    "Each instance connection request schedules a 12-second deadline on the authenticated session. It uses the existing five protocol attempt serials and aborts character login after the fifth failure (about 60 seconds total when the client is silent).",
+    "A deadline checks its captured connection key; retries also check current serial, PlayerLoading, absence of a player/instance connection and presence of the open realm connection.",
+    "Client failure reports are queued onto the session update thread and share the same retry handler, preventing stale reports from advancing a newer attempt.",
+    "A stale authenticated instance socket is rejected without forcing the valid realm session to exit. Duplicate instance connections and sockets for an aborted login are rejected.",
+    "Timeout logging now identifies protocol progress (initializer/continued authentication) without recording secrets."
+  ],
+  "validation": {
+    "production_handler_test": "Test-InstanceConnectRetry.ps1 passed: silent client, timeout boundaries, five-attempt cap, duplicate/stale reports, successful/cancelled logins, stale/duplicate/unknown socket linking. Scheduler/socket delivery are mocked; the retry/deadline/link handlers are extracted from production.",
+    "client": "Pending user retest; bounded server recovery is implemented, but actual client recovery and initial handshake cause are not yet confirmed."
+  },
+  "preserved": [
+    "Dalaran landing migration 2026_10_12_11",
+    "Maiko position at Orgrimmar portal, gear and quest progress",
+    "Custom boost ship, island, flight, pet and camera handlers",
+    "Canonical runtime configuration, libraries and extracted data"
+  ],
+  "deployment": "Build and deploy Release worldserver to build-extractors/bin/Release; leave server and client stopped for visible user launch."
+}

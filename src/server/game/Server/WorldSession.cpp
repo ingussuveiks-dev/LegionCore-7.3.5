@@ -837,7 +837,8 @@ void WorldSession::Handle_EarlyProccess(WorldPacket& recvPacket)
 
 void WorldSession::SendConnectToInstance(WorldPackets::Auth::ConnectToSerial serial)
 {
-    TC_LOG_INFO("network.opcode", "WorldSession::SendConnectToInstance");
+    TC_LOG_INFO("network", "Account %u: requesting instance connection, serial %u", GetAccountId(), uint32(serial));
+    _instanceConnectSerial = uint32(serial);
 
     auto instanceAddress = realm.GetAddressForClient(boost::asio::ip::address::from_string(GetRemoteAddress()));
 
@@ -862,6 +863,45 @@ void WorldSession::SendConnectToInstance(WorldPackets::Auth::ConnectToSerial ser
     connectTo.Con = CONNECTION_TYPE_INSTANCE;
 
     SendPacket(connectTo.Write());
+
+    // A closed unfinished socket does not reliably produce CONNECT_TO_FAILED
+    // in the 7.3.5 client. Keep the deadline on the authenticated realm session.
+    uint64 const key = _instanceConnectKey.Raw;
+    AddDelayedEvent(12000, [this, key, serial]()
+    {
+        if (_instanceConnectKey.Raw == key)
+            RetryInstanceConnection(serial);
+    });
+}
+
+bool WorldSession::HasInstanceConnection() const
+{
+    return m_Socket[CONNECTION_TYPE_INSTANCE] && m_Socket[CONNECTION_TYPE_INSTANCE]->IsOpen();
+}
+
+void WorldSession::RetryInstanceConnection(WorldPackets::Auth::ConnectToSerial serial)
+{
+    // Called on the session update thread, including client-reported failures.
+    // Ignore old deadlines/reports once a later attempt or login has succeeded.
+    if (!PlayerLoading() || GetPlayer() || HasInstanceConnection() ||
+        !m_Socket[CONNECTION_TYPE_REALM] || !m_Socket[CONNECTION_TYPE_REALM]->IsOpen() ||
+        _instanceConnectSerial != uint32(serial))
+        return;
+
+    using WorldPackets::Auth::ConnectToSerial;
+    switch (serial)
+    {
+        case ConnectToSerial::WorldAttempt1: SendConnectToInstance(ConnectToSerial::WorldAttempt2); break;
+        case ConnectToSerial::WorldAttempt2: SendConnectToInstance(ConnectToSerial::WorldAttempt3); break;
+        case ConnectToSerial::WorldAttempt3: SendConnectToInstance(ConnectToSerial::WorldAttempt4); break;
+        case ConnectToSerial::WorldAttempt4: SendConnectToInstance(ConnectToSerial::WorldAttempt5); break;
+        case ConnectToSerial::WorldAttempt5:
+            TC_LOG_WARN("network", "Account %u: instance connection failed after five attempts; aborting character login", GetAccountId());
+            _instanceConnectSerial = 0;
+            AbortLogin(WorldPackets::Character::LoginFailureReason::NoWorld);
+            break;
+        default: break;
+    }
 }
 
 void WorldSession::LoadAccountData(PreparedQueryResult const& result, uint32 mask)

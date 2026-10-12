@@ -228,12 +228,12 @@ bool WorldSocket::Update()
     // it stays open, but the client never completes the initializer/encryption
     // exchange.  Without a handshake deadline the realm connection waits for
     // up to SocketTimeOutTime (15 minutes) and the loading bar appears frozen.
-    // Closing only the unfinished socket makes the client report
-    // CMSG_CONNECT_TO_FAILED and use its existing WorldAttempt2..5 retry path.
+    // WorldSession also has a deadline: some 7.3.5 clients stay in CLOSE_WAIT
+    // without reporting CMSG_CONNECT_TO_FAILED after this close.
     if (!_authed && GetMSTimeDiffToNow(_initializationStart) >= 10000)
     {
-        TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s; closing it so the client can retry",
-            GetRemoteIpAddress().to_string().c_str());
+        TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s (type %u, initializer %u, continued auth %u); closing unfinished socket",
+            GetRemoteIpAddress().to_string().c_str(), uint32(_type), uint32(_compressionStream != nullptr), uint32(_key != 0));
         CloseSocket();
         return false;
     }
@@ -1026,41 +1026,16 @@ void WorldSocket::HandleAuthContinuedSessionCallback(std::shared_ptr<WorldPacket
 
 void WorldSocket::HandleConnectToFailed(WorldPackets::Auth::ConnectToFailed& connectToFailed)
 {
-    // TC_LOG_ERROR("network", "WorldSocket::HandleConnectToFailed");
-
     if (_worldSession)
     {
-        if (_worldSession->PlayerLoading())
+        WorldSession* session = _worldSession.get();
+        auto serial = connectToFailed.Serial;
+        // The session owns the callback; serialize client reports with the
+        // server deadline instead of racing login/key changes on this thread.
+        session->AddDelayedEvent(1, [session, serial]()
         {
-            switch (connectToFailed.Serial)
-            {
-                case WorldPackets::Auth::ConnectToSerial::WorldAttempt1:
-                    _worldSession->SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt2);
-                    break;
-                case WorldPackets::Auth::ConnectToSerial::WorldAttempt2:
-                    _worldSession->SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt3);
-                    break;
-                case WorldPackets::Auth::ConnectToSerial::WorldAttempt3:
-                    _worldSession->SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt4);
-                    break;
-                case WorldPackets::Auth::ConnectToSerial::WorldAttempt4:
-                    _worldSession->SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt5);
-                    break;
-                case WorldPackets::Auth::ConnectToSerial::WorldAttempt5:
-                {
-                    TC_LOG_TRACE("network", "%s failed to connect 5 times to world socket, aborting login", _worldSession->GetPlayerName().c_str());
-                    _worldSession->AbortLogin(WorldPackets::Character::LoginFailureReason::NoWorld);
-                    break;
-                }
-                default:
-                    return;
-            }
-        }
-        //else
-        //{
-        //    transfer_aborted when/if we get map node redirection
-        //    SendPacket(*WorldPackets::Auth::ResumeComms().Write());
-        //}
+            session->RetryInstanceConnection(serial);
+        });
     }
 }
 

@@ -356,12 +356,13 @@ void World::ProcessLinkInstanceSocket(std::pair<std::weak_ptr<WorldSocket>, uint
         key.Raw = linkInfo.second;
 
         WorldSessionPtr session = FindSession(uint32(key.Fields.AccountId));
-        if (!session || session->GetConnectToInstanceKey() != linkInfo.second)
+        if (!session || session->GetConnectToInstanceKey() != linkInfo.second ||
+            !session->PlayerLoading() || session->HasInstanceConnection())
         {
             sock->SendAuthResponseError(ERROR_TIMED_OUT);
             sock->DelayedCloseSocket();
-            if (session)
-                session->SetforceExit();
+            // A slow previous attempt may finish after a retry. Reject only
+            // that socket; it must not kick the valid realm/new connection.
             return;
         }
 

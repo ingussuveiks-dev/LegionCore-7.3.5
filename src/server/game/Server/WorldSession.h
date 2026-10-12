@@ -1378,6 +1378,8 @@ class TC_GAME_API WorldSession
         void HandleSetActionButtonOpcode(WorldPackets::Spells::SetActionButton& packet);
         
         void SendConnectToInstance(WorldPackets::Auth::ConnectToSerial serial);
+        void RetryInstanceConnection(WorldPackets::Auth::ConnectToSerial serial);
+        bool HasInstanceConnection() const;
         void HandleContinuePlayerLogin();
         void AbortLogin(WorldPackets::Character::LoginFailureReason reason);
 
@@ -2144,6 +2146,7 @@ class TC_GAME_API WorldSession
         AuthFlags atAuthFlag = AT_AUTH_FLAG_NONE;
 
         ConnectToKey _instanceConnectKey;
+        uint32 _instanceConnectSerial = 0;
         CharacterTemplateDataMap charTemplateData;
 
         bool canLogout;
