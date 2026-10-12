@@ -326,5 +326,16 @@ int main()
   assert(p.creditPackets==3&&p.completeCalls==1&&p.nursingProgress.size()==3);
  }while(std::next_permutation(residents.begin(),residents.end()));
  std::cout<<"PASS: evacuation all eight objective subsets and all six orders, independent one-time credits, no unrelated Mayla credit.\n";
+ store.quests.emplace(42512,Quest{42512,0,{42088}});
+ store.quests[42512].objectives={{0,107704,0,1,0}};
+ p={};p.activeQuest=42512;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ assert(p.CanCompleteQuest(42512)); // Reproduce the old zero-amount auto-completion.
+ store.quests[42512].objectives[0].Amount=1;
+ assert(!p.CanCompleteQuest(42512));p.KilledMonsterCredit(93846);assert(!p.creditPackets);
+ p.KilledMonsterCredit(107704);p.KilledMonsterCredit(107704);assert(p.creditPackets==1&&p.completeCalls==1);
+ store.quests.emplace(40594,Quest{40594,0,{42512}});
+ assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(40594),false));
+ p.m_RewardedQuests.insert(42512);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(40594),false));
+ std::cout<<"PASS: Highmountain Stands zero-count regression, one distinct Dargrul credit, duplicate cap and reward-gated Lasan follow-up.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }

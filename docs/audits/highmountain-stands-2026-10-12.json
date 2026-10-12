@@ -1,0 +1,53 @@
+{
+  "scope": "Highmountain Stands (42512): code/data audit and repair. Client testing explicitly deferred by the user.",
+  "findings": [
+    "Objective 284367 / ObjectID 107704 had Amount=0, allowing immediate completion without confronting Dargrul. Original TDB735 requires Amount=1. The migration repairs only the exact zero-valued row.",
+    "Mayla 93846 previously cast 213725 immediately on quest acceptance. Native package 1638 starts immediately rather than waiting for proximity. The exact acceptance event is removed; Mayla's unrelated proximity credit and Underking achievement event remain.",
+    "The new player script starts the original scene within 15 m of the native confrontation POI (3864,3888), on map 1220 in phase 9180, with an incomplete quest and no existing credit or conflicting scene/transport. Its Z=901.463 comes from intact-terrain navigation data.",
+    "Native spell 213725 applies scene 1287/package 1638 and triggers 205349 to complete hidden tracking quest 41246, Snowblind Mesa Phased Terrain Tracking Quest. Both effects are retained. Dargrul 107704 is created by the client scene; no speculative static spawn is added.",
+    "Scene 1287 had neither a server script nor generic SQL events. Native scripts send IMPACT at 5 seconds, EXPLOSION and TELEPORT05 at 7 seconds, then SLEEP. TELEPORT05 requests existing teleport 197461; IMPACT, EXPLOSION and SLEEP do not award credit. The core's complete event also supports an explicit scene skip.",
+    "Credit is awarded once only after the teleport is no longer pending and the player is within 3 m of the existing destination (3931.76,3922.34,905.17), beside native/live quest ender Lasan 97407. This delays the destroyed-terrain switch until arrival on safe ground.",
+    "Each player has an isolated quest-lifetime-bound run. Abandon/reaccept, death, logout, map/range departure and unrelated teleports clear stale state and the scene aura. Failed transfers time out without credit. A proximity-started run recovers missing callbacks after 30 seconds. Login reopens only unrewarded legacy COMPLETE quests with zero confrontation credit.",
+    "Existing terrain conditions are preserved. On the normal story path, quest 42512 NONE/INCOMPLETE uses intact map 1532 and COMPLETE/REWARDED uses destroyed map 1527. The independent quest 41800 override and shared phase-9180 NPC assignments are not rewritten.",
+    "The live starter is Mayla 93846; the original archive has no starter relation for this quest. Both native and live ender are Lasan 97407. The chain continues from rewarded 42512 to Justice Rains from Above (40594), then The Underking (39780)."
+  ],
+  "evidence": {
+    "native": "highmountain-stands-native-2026-10-12.json: original TDB735 objective/ender, installed DB2 spell effects, package 1638 and complete SceneScript continuation chains, with hashes.",
+    "interaction_reference": "https://www.wow-pro.com/highmountain-neutral/",
+    "runtime": "Read-only live quest, scene, teleport, POI, Lasan spawn and phase queries; scoped pre-change rows retained in deployment backup."
+  },
+  "validation": [
+    "Test-HighmountainStands.ps1 compiles extracted production handlers and actual quest-lifetime handlers. Tests cover two-player isolation, invalid context, stale/wrong/early callbacks, no credit before acknowledged arrival, duplicate exclusion, normal completion, early skip, lost callbacks, failed scene/teleport, lifecycle cleanup and legacy login repair.",
+    "Test-HighmountainBloodtotem.ps1 compiles actual Player quest handlers. Reproduces the Amount=0 auto-completion, verifies Amount=1 requires 107704, excludes unrelated credit, caps duplicates and checks the 40594 prerequisite. Earlier Highmountain regressions pass.",
+    "Test-HighmountainStandsNative.py passes against original TDB735 and installed DB2 files. Resolves Spell copy rows and sparse SceneScriptText records, including continuation chunks, before checking native scene events and effects.",
+    "Test-HighmountainStandsGeometry.ps1 links Release navigation libraries and checks source-derived positions: confrontation on intact 1532, destination on both 1532 and 1527, within 0.1 m horizontal and 0.5 m vertical tolerance.",
+    "Test-HighmountainStandsData.ps1 applies migration twice to temporary tables and verifies objective, Mayla event preservation, scene binding, teleport, Lasan handoff, chain and four-status terrain matrix. Custom objective values, custom scene scripts and unrelated rows remain unchanged.",
+    "Stopped-server SQL deployment completed with scoped backups, transaction and updater hash registration. Live Stands and preceding evacuation data tests pass.",
+    "Release worldserver and bnetserver compile successfully into build-extractors/bin/Release. worldserver --version succeeds (374821f38912+ working-tree build). Runtime configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "deployment": {
+    "sha1": "7A984415101E5400F80FA5F53669D83317597CCD",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stands-20261012-235216",
+    "applied": "2026-10-12T23:52:16.505+03:00",
+    "migration": "sql/updates/world/2026_10_12_21_highmountain_stands.sql",
+    "method": "Scoped backups; stopped worldserver; InnoDB transaction and RELEASED updater registration. Server remains stopped."
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_stands.cpp": "598e7491e2806242014ba88845c82218d454172e31922dc4739e7e4583e9d162",
+    "sql/updates/world/2026_10_12_21_highmountain_stands.sql": "07401262c3e1c7bc012fd50f3d8b2dd8961665d9dff6c73fb895f61d18dc5fc0",
+    "build-extractors/bin/Release/mmaps/1532.mmap": "3fa4f4f7ec55df73dbf81642f7542419d36cb11e5dfc50284a883f1d9b63489f",
+    "build-extractors/bin/Release/mmaps/15322424.mmtile": "1bdd7a670c1b2826e682c1c354454320bd51b9bfdca97fe5b304ca74c5c09487",
+    "build-extractors/bin/Release/mmaps/1527.mmap": "3fa4f4f7ec55df73dbf81642f7542419d36cb11e5dfc50284a883f1d9b63489f",
+    "build-extractors/bin/Release/mmaps/15272424.mmtile": "629116b1556e9946a17879623914fdab893abcda4430a8eb20bffd188e86bfcd",
+    "build-extractors/bin/Release/worldserver.exe": "edffe6312c084beba3266b808b3a3af2df18110448cbba6b0ac906c85b1d014d",
+    "build-extractors/bin/Release/bnetserver.exe": "ac87a1605353aba63b3d269d9aceafdb0b7f33c779c347264493e8cc1ed91452"
+  },
+  "limits": [
+    "No in-game verification. Client retest must confirm scene camera, Dargrul and hammer visuals, skip behavior, teleport, intact/destroyed terrain rendering, NPC visibility and Lasan turn-in.",
+    "The 15 m start radius, 5-second minimum TELEPORT05 guard, 30-second callback recovery and 10-second transfer timeout are bounded server reconstruction. Native client choreography and scene package are unchanged.",
+    "Navigation checks establish installed ground geometry, not client rendering. Shared phase-9180 NPCs include actors for later quests and were not reclassified without evidence. Quest 41800's independent terrain override is preserved.",
+    "Old cleanup spell 197435 is not used: it grants obsolete credit 100712 and removes other auras. This script removes only its scene aura 213725. No global pathfinding, mover, Warlock or pet behavior is changed.",
+    "The server remains stopped; the Release executable was smoke-tested with --version only."
+  ],
+  "next": "Justice Rains from Above (40594): eagle boarding, bombing credits and return handoff."
+}

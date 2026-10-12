@@ -1,0 +1,392 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objective": {
+    "ID": "284367",
+    "QuestID": "42512",
+    "Type": "0",
+    "Order": "0",
+    "StorageIndex": "0",
+    "ObjectID": "107704",
+    "Amount": "1",
+    "Flags": "1",
+    "Flags2": "0",
+    "ProgressBarWeight": "0",
+    "Description": "'Confront Dargrul'",
+    "VerifiedBuild": "25549"
+  },
+  "ender": [
+    {
+      "id": "97407",
+      "quest": "42512"
+    }
+  ],
+  "tracking_quest": "'Snowblind Mesa Phased Terrain Tracking Quest'",
+  "effects": [
+    {
+      "ID": 290099,
+      "Effect": 252,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 17,
+      "SpellID": 197461
+    },
+    {
+      "ID": 303200,
+      "Effect": 16,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 41246,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 205349
+    },
+    {
+      "ID": 317136,
+      "Effect": 6,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 430,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 1287,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 213725
+    },
+    {
+      "ID": 317137,
+      "Effect": 64,
+      "EffectBasePoints": 0,
+      "EffectIndex": 1,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 205349,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 213725
+    }
+  ],
+  "package_members": [
+    {
+      "ID": 7863,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 0,
+      "ChildSceneScriptPackageID": 156,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 7864,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14148,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 2
+    },
+    {
+      "ID": 7865,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14150,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 3
+    },
+    {
+      "ID": 7866,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14152,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 4
+    },
+    {
+      "ID": 7867,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14153,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 5
+    },
+    {
+      "ID": 7868,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14154,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 6
+    },
+    {
+      "ID": 7869,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14155,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 7
+    },
+    {
+      "ID": 7870,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14156,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 8
+    },
+    {
+      "ID": 7871,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14157,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 9
+    },
+    {
+      "ID": 7872,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14159,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 10
+    },
+    {
+      "ID": 7873,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14160,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 11
+    },
+    {
+      "ID": 7874,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14161,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 12
+    },
+    {
+      "ID": 7875,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14162,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 13
+    },
+    {
+      "ID": 7876,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14163,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 14
+    },
+    {
+      "ID": 8613,
+      "SceneScriptPackageID": 1638,
+      "SceneScriptID": 14843,
+      "ChildSceneScriptPackageID": 0,
+      "OrderIndex": 15
+    }
+  ],
+  "script_chunks": [
+    {
+      "id": 14148,
+      "name": "7.0 Highmountain - Mesa v2 - Globals & Functions ",
+      "next": 0,
+      "sha256": "237b7b27b18f66cb4adad6286a8a981b80295240255e8a6aa1fb88c5083181f5"
+    },
+    {
+      "id": 14150,
+      "name": "7.0 Highmountain - Mesa v2 - Init",
+      "next": 14151,
+      "sha256": "79b61ab27e6c791b53f4aaae9c7ca0a839e69a80318100300e65eeac4c322c93"
+    },
+    {
+      "id": 14151,
+      "name": "[1] 7.0 Highmountain - Mesa v2 - Init",
+      "next": 0,
+      "sha256": "ebe6ddb0c78a1ed17b5df356135a5cfae876a53876c308ba937a7a06c4df6ca9"
+    },
+    {
+      "id": 14152,
+      "name": "7.0 Highmountain - Mesa v2 - Camera - MASTER",
+      "next": 0,
+      "sha256": "653151a56f077ccbaf98fdd11e8af1595358ca5ce04a243148569d0056189df3"
+    },
+    {
+      "id": 14153,
+      "name": "7.0 Highmountain - Mesa - Teleporting Player",
+      "next": 0,
+      "sha256": "36f9a602db645ea140e8ca1398ca5f402ec8946ccd4cb5e6db73e8a8324ed519"
+    },
+    {
+      "id": 14154,
+      "name": "7.0 Highmountain - Mesa v2 - Explosion",
+      "next": 0,
+      "sha256": "7e20961e94dd8cc5ce155564c42c025945f240d9699913c719f53ab52d1b92c8"
+    },
+    {
+      "id": 14155,
+      "name": "7.0 Highmountain - Mesa v2 - Crystals",
+      "next": 0,
+      "sha256": "5f52cf4ac7b7e97b6d211ae258ec0df7acec61aca087079f1ca33ed90f0ae917"
+    },
+    {
+      "id": 14156,
+      "name": "7.0 Highmountain - Mesa v2 - Dargrul",
+      "next": 0,
+      "sha256": "935146f2a2478bc65b9009a5991567ac87edc019fd31d6581a1555b1691d5338"
+    },
+    {
+      "id": 14157,
+      "name": "7.0 Highmountain - Mesa v2 - ularogg",
+      "next": 0,
+      "sha256": "fe747ea1162bff5b1b659b76aeac9d0f476d6663544d20dd08b4ded03ac8db96"
+    },
+    {
+      "id": 14159,
+      "name": "7.0 Highmountain - Mesa v2 - drogbarArmy",
+      "next": 0,
+      "sha256": "da7b889ab82a210111711502481b22a498a6f0a0afcc38a33da0debe9a103745"
+    },
+    {
+      "id": 14160,
+      "name": "7.0 Highmountain - Mesa v2 - fury",
+      "next": 0,
+      "sha256": "461ef6b492ee3cc9aebf8ce2b1d6464fce8d7ec5341dbc6d90fcf8d2af3f5f3c"
+    },
+    {
+      "id": 14161,
+      "name": "7.0 Highmountain - Mesa - warbravesStatic",
+      "next": 0,
+      "sha256": "538ba73e96679d53f91ace9749b60c25cedfbc096ffd2bc2053122d4d18b2016"
+    },
+    {
+      "id": 14162,
+      "name": "7.0 Highmountain - Mesa v2 - warbraveRunners",
+      "next": 0,
+      "sha256": "6b429b742b998ae12e08d5cc83f07ae902bd6838a4b1979b7f4ecb3c18111551"
+    },
+    {
+      "id": 14163,
+      "name": "7.0 Highmountain - Mesa v2 - warbraveLeader",
+      "next": 0,
+      "sha256": "1bb4174d2e6237905a00efc920c71b74b5ba1733dbda84ef5813b4bfc29bfdfd"
+    },
+    {
+      "id": 14843,
+      "name": "7.0 Highmountain - Mesa v2 - Sound Track",
+      "next": 0,
+      "sha256": "d69952fc3b366738c8735b3b31e95dee00e35da2e5f3f9cb8acdc1997c7f881a"
+    }
+  ],
+  "native_events": [
+    "IMPACT",
+    "EXPLOSION",
+    "TELEPORT05",
+    "SLEEP"
+  ],
+  "db2_hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SceneScriptPackage": "59ad53f2110d0c15783f00a5516143020500e2ea083b8b62ad8b4038e3e3277c",
+    "Phase": "53c0dd7daca6e86357d04f37f408777553c2429620a04a72484af4b18146764d",
+    "SceneScriptPackageMember": "18401c336fd3faaf175698df6982f0c3f6db2902db97bfc7e5306b691dacc3e5",
+    "SceneScript": "4364252b30e32f53b23e61f0ef649974a97eabc980967ffc75ad63a9e8311bef",
+    "SceneScriptText": "75c0e4c7c5fe7d753e1823a40683d9b7ed1c458952b28b08d103903cb09a19a4"
+  }
+}
