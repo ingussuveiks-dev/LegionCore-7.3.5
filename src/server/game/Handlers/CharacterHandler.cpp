@@ -607,7 +607,10 @@ void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreen
     if (!loadingScreenNotify.Showing)
     {
         if (auto player = GetPlayer())
+        {
             player->SendInitialPacketsAfterAddToMap(true);
+            player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);
+        }
         m_playerLoading.Clear();
     }
 }

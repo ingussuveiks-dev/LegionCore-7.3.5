@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-12",
+  "client_build": 26972,
+  "user_observation": "With GM flight on, arrival first shows empty space. Walls and floor appear seconds later. Turning flight off after the city appears leaves Maiko standing without falling through.",
+  "evidence": {
+    "saved_standing_position": [-11105, -2028, 747.131],
+    "previous_basement_position": [-11105, -2028, 707.601],
+    "city_entry": 246854,
+    "city_spawn": 129023,
+    "root_client_file": "File00111A46",
+    "street_collision_group": "File00111A86",
+    "street_triangle": 22030,
+    "street_mopy": "0x08 (collision)",
+    "street_normal": "up",
+    "street_height": 747.1306,
+    "basement_collision_group": "File00145AF8",
+    "basement_triangle": 50136,
+    "basement_height": 707.6008,
+    "read_method": "Read-only CASC export of root and its 125 LOD-0 groups; vertical triangle intersections using the live city position and orientation. No client files modified."
+  },
+  "change": "For arrivals within 75 units of the visible city transport on map 0, set temporary gravity-disable and root flags before self creation. Release eight seconds after the matching loading-screen notification, with a 30-second missing-notification fallback and lifecycle cleanup. Do not grant CAN_FLY or alter camera control.",
+  "scope": "Portal coordinates, cinematic, objectives, boost scenario, NPC data and client assets are unchanged.",
+  "npc_movement": {
+    "114098_114099_114100_114101_114102": "Explicit Ground=0, Flight=1 (DisableGravity). Preserved pending independent retail visual evidence.",
+    "113986": "Ground=1, Flight=2 (CanFly). Preserved."
+  },
+  "validation": "Production arrival handlers and packet ordering are exercised by Test-MapObjectArrival.ps1, including cleanup, slow loading, unrelated/duplicate notifications, pre-existing flight/levitation/roots and vehicle passengers. This does not simulate the client's WMO streaming.",
+  "limitation": "The eight-second post-loading hold is a measured-problem workaround, not a per-object readiness guarantee. Client confirmation with flight disabled before entering the portal is still required, including a slow/cold asset load and normal movement after the hold ends."
+}

@@ -1510,6 +1510,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         void SendInitialPacketsBeforeAddToMap(bool login = true);
         void SendInitialPacketsAfterAddToMap(bool login = true);
+        void BeginMapObjectArrival();
+        void NotifyMapObjectArrivalLoaded(int32 mapId);
+        void UpdateMapObjectArrival(uint32 diff);
+        void EndMapObjectArrival();
         void SendTransferAborted(uint32 mapid, TransferAbortReason reasonId, uint8 arg = 0);
         void SendInstanceResetWarning(uint32 mapid, Difficulty difficulty, uint32 time);
 
@@ -3722,6 +3726,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32  m_lastActiveLFGRole{};
 
         std::unique_ptr<RestMgr> _restMgr;
+        int32 _mapObjectArrivalMap = -1;
+        uint32 _mapObjectArrivalWait = 0;
+        uint32 _mapObjectArrivalSettle = 0;
+        bool _mapObjectArrivalOwnRoot = false;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

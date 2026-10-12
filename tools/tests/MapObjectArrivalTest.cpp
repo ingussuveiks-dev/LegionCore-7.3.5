@@ -4,6 +4,12 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <cstdint>
+using uint32 = uint32_t;
+using int32 = int32_t;
+constexpr uint32 MOVEMENTFLAG_CAN_FLY = 1, MOVEMENTFLAG_DISABLE_GRAVITY = 2,
+    MOVEMENTFLAG_ROOT = 4, MOVEMENTFLAG_MASK_MOVING = 8, MOVEMENTFLAG_FALLING = 16, MOVEMENTFLAG_FALLING_FAR = 32;
+constexpr uint32 UNIT_STATE_ROOT = 1;
 
 constexpr int GAMEOBJECT_FIELD_FLAGS = 1, GO_FLAG_MAP_OBJECT = 0x100000;
 struct Player;
@@ -18,6 +24,7 @@ struct WorldObject {
     explicit WorldObject(int value) : id(value) {}
     void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player*) const { data->objects.push_back(id); }
     int GetGUID() const { return id; }
+    int GetEntry() const { return id; }
 };
 struct Transport : WorldObject {
     using WorldObject::WorldObject;
@@ -39,7 +46,37 @@ struct Player : WorldObject {
     Session session;
     Transport* transport = nullptr;
     std::set<int> known;
-    int GetMapId() const { return 0; }
+    int mapId = 0;
+    uint32 flags = 0, state = 0;
+    bool alive = true, vehicle = false, rootAura = false, selfCreateProtected = false;
+    float distance = 50;
+    int32 _mapObjectArrivalMap = -1;
+    uint32 _mapObjectArrivalWait = 0, _mapObjectArrivalSettle = 0;
+    bool _mapObjectArrivalOwnRoot = false;
+    int GetMapId() const { return mapId; }
+    bool IsAlive() const { return alive; }
+    bool CanFly() const { return flags & MOVEMENTFLAG_CAN_FLY; }
+    bool IsLevitating() const { return flags & MOVEMENTFLAG_DISABLE_GRAVITY; }
+    bool GetVehicle() const { return vehicle; }
+    bool HasUnitState(uint32 mask) const { return state & mask; }
+    bool HasUnitMovementFlag(uint32 mask) const { return flags & mask; }
+    void RemoveUnitMovementFlag(uint32 mask) { flags &= ~mask; }
+    void AddUnitMovementFlag(uint32 mask) { flags |= mask; }
+    void AddUnitState(uint32 mask) { state |= mask; }
+    float GetPositionZ() const { return 747.6f; }
+    float GetExactDist(WorldObject*) const { return distance; }
+    void SetFallInformation(int, float) { }
+    void SetDisableGravity(bool disable) { if(disable) flags |= MOVEMENTFLAG_DISABLE_GRAVITY; else flags &= ~MOVEMENTFLAG_DISABLE_GRAVITY; }
+    void SetControlled(bool, uint32) { if(!rootAura) { state &= ~UNIT_STATE_ROOT; flags &= ~MOVEMENTFLAG_ROOT; } }
+    void BeginMapObjectArrival();
+    void NotifyMapObjectArrivalLoaded(int32 mapId);
+    void UpdateMapObjectArrival(uint32 diff);
+    void EndMapObjectArrival();
+    void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target)
+    {
+        selfCreateProtected = IsLevitating() && HasUnitMovementFlag(MOVEMENTFLAG_ROOT);
+        WorldObject::BuildCreateUpdateBlockForPlayer(data, target);
+    }
     Transport* GetTransport() const { return transport; }
     bool HaveAtClient(WorldObject const* object) const { return known.count(object->id) != 0; }
     bool canSeeOrDetect(StaticTransport const* object, bool, bool) const { return object->visible; }
@@ -49,7 +86,12 @@ struct Player : WorldObject {
 struct Map {
     std::map<int, StaticTransport*> m_StaticTransports;
     void SendInitSelf(Player* player);
+    int GetId() const { return 0; }
 };
+#include "BeginMapObjectArrival.inc"
+#include "NotifyMapObjectArrivalLoaded.inc"
+#include "UpdateMapObjectArrival.inc"
+#include "EndMapObjectArrival.inc"
 #include "SendInitSelf.inc"
 
 int main() {
@@ -65,10 +107,79 @@ int main() {
     assert(player.session.packets.size() == 1);
     assert((player.session.packets.back().objects == std::vector<int>{246854, 1}));
     assert(player.known == std::set<int>{246854});
+    assert(player.selfCreateProtected); // No vulnerable first frame before a later movement packet.
 
     // Already known cities must not be created twice; unseen/inactive objects stay hidden.
     map.SendInitSelf(&player);
     assert((player.session.packets.back().objects == std::vector<int>{1}));
+
+    Player late;
+    late.flags = MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING;
+    late.BeginMapObjectArrival();
+    assert(late.IsLevitating() && late.HasUnitMovementFlag(MOVEMENTFLAG_ROOT));
+    assert(!late.HasUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING));
+    late.UpdateMapObjectArrival(20000); // Slow loading does not consume the streaming grace.
+    late.NotifyMapObjectArrivalLoaded(1); // Old-map notification cannot release the hold.
+    assert(late._mapObjectArrivalSettle == 0);
+    late.NotifyMapObjectArrivalLoaded(0);
+    late.UpdateMapObjectArrival(7000);
+    late.NotifyMapObjectArrivalLoaded(0); // Duplicate notification does not extend the deadline.
+    assert(late._mapObjectArrivalSettle == 1000);
+    late.UpdateMapObjectArrival(1000);
+    assert(late.flags == 0 && late.state == 0 && late._mapObjectArrivalMap == -1);
+    late.NotifyMapObjectArrivalLoaded(0);
+    assert(late._mapObjectArrivalSettle == 0);
+
+    Player missing;
+    missing.BeginMapObjectArrival();
+    missing.UpdateMapObjectArrival(29999);
+    assert(missing.IsLevitating());
+    missing.UpdateMapObjectArrival(1);
+    assert(missing.flags == 0 && missing.state == 0);
+
+    for (int mode = 0; mode != 5; ++mode)
+    {
+        Player skipped;
+        Transport otherBoat(9);
+        if (mode == 0) skipped.flags = MOVEMENTFLAG_CAN_FLY;
+        if (mode == 1) skipped.flags = MOVEMENTFLAG_DISABLE_GRAVITY;
+        if (mode == 2) skipped.vehicle = true;
+        if (mode == 3) skipped.transport = &otherBoat;
+        if (mode == 4) skipped.alive = false;
+        uint32 original = skipped.flags;
+        skipped.BeginMapObjectArrival();
+        skipped.EndMapObjectArrival();
+        assert(skipped._mapObjectArrivalMap == -1 && skipped.flags == original);
+    }
+    for (int mode = 0; mode != 4; ++mode)
+    {
+        Player leaving;
+        leaving.BeginMapObjectArrival();
+        if(mode == 0) leaving.EndMapObjectArrival(); // logout/map removal cleanup
+        if(mode == 1) leaving.mapId = 1220;
+        if(mode == 2) leaving.alive = false;
+        if(mode == 3) leaving.vehicle = true;
+        leaving.UpdateMapObjectArrival(1);
+        assert(leaving.flags == 0 && leaving._mapObjectArrivalMap == -1);
+    }
+    Player rooted;
+    rooted.state = UNIT_STATE_ROOT;
+    rooted.flags = MOVEMENTFLAG_ROOT;
+    rooted.BeginMapObjectArrival();
+    rooted.EndMapObjectArrival();
+    assert(rooted.flags == MOVEMENTFLAG_ROOT && rooted.state == UNIT_STATE_ROOT);
+    Player newlyRooted;
+    newlyRooted.BeginMapObjectArrival();
+    newlyRooted.rootAura = true;
+    newlyRooted.EndMapObjectArrival();
+    assert(newlyRooted.flags == MOVEMENTFLAG_ROOT);
+
+    Map distantMap;
+    distantMap.m_StaticTransports.emplace(city.id, &city);
+    Player distant;
+    distant.distance = 1000;
+    distantMap.SendInitSelf(&distant);
+    assert(!distant.selfCreateProtected);
 
     // Ordinary maps and existing boat/passenger initialization retain their behavior.
     map.m_StaticTransports.clear();
@@ -82,5 +193,5 @@ int main() {
     player.transport = nullptr;
     map.SendInitSelf(&player);
     assert((player.session.packets.back().objects == std::vector<int>{1}));
-    std::cout << "PASS: city before player in the same packet; phase/despawn/duplicate guards; boat passengers and ordinary maps.\n";
+    std::cout << "PASS: protected first create; loading/streaming deadlines; missing and duplicate notifications; flight, roots, death, logout, map/vehicle changes; city visibility and ordinary transports.\n";
 }

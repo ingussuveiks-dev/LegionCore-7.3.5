@@ -10,6 +10,17 @@ $end=$source.IndexOf('{',$start)+1;$depth=1
 while($depth -and $end -lt $source.Length){if($source[$end] -eq '{'){++$depth};if($source[$end] -eq '}'){--$depth};++$end}
 if($depth){throw 'Unbalanced production handler'}
 [IO.File]::WriteAllText("$output/SendInitSelf.inc",$source.Substring($start,$end-$start))
+$player=[IO.File]::ReadAllText("$repo/src/server/game/Entities/Player/Player.cpp")
+foreach($method in @('BeginMapObjectArrival','NotifyMapObjectArrivalLoaded','UpdateMapObjectArrival','EndMapObjectArrival')) {
+ $start=$player.IndexOf("void Player::$method(")
+ if($start -lt 0){throw "Missing arrival handler $method"}
+ $end=$player.IndexOf('{',$start)+1;$depth=1
+ while($depth -and $end -lt $player.Length){if($player[$end] -eq '{'){++$depth};if($player[$end] -eq '}'){--$depth};++$end}
+ if($depth){throw 'Unbalanced production handler'}
+ [IO.File]::WriteAllText("$output/$method.inc",$player.Substring($start,$end-$start))
+}
+$handler=[IO.File]::ReadAllText("$repo/src/server/game/Handlers/CharacterHandler.cpp")
+if(!$handler.Contains('player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);') -or !$player.Contains('UpdateMapObjectArrival(p_time);') -or $player -notmatch 'void Player::RemoveFromWorld\(\)\s*\{\s*EndMapObjectArrival\(\);'){throw 'Arrival lifecycle hook missing'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'MSVC not found'}
 $commands=@"

@@ -89,6 +89,30 @@ prove the server ordering and data, not client collision timing: repeat the
 portal in the 7.3.5 client and confirm both standing and walking beside Khadgar
 before calling the reported fall resolved.
 
+The subsequent flight-mode retest established that sending the city first is
+insufficient: the client shows empty space for several seconds, then streams
+the walls and floor. Disabling flight after that leaves the player standing
+normally. The native client WMO also contains an upward-facing collision face
+at Z=747.1306 (MOPY 0x08), matching the saved standing height 747.131.
+
+Arrivals within 75 units of city object 246854 on map 0 now start with gravity
+disabled and movement rooted in their initial self-create packet. This is
+scoped to the council-room arrival area. The hold ends eight seconds after
+the matching loading-screen-close notification, allowing dynamic WMO streaming
+to finish after the static map loading screen. This is a fixed grace period,
+not a collision-ready acknowledgement; unusually slow clients still require
+testing. A missing notification expires after 30 seconds. Logout, map removal,
+death and vehicle/transport transitions clear the owned hold. Existing flight,
+levitation, roots and vehicle passengers retain their own movement behavior.
+
+`Test-MapObjectArrival.ps1` also covers the protected first self-create, slow
+loading, duplicate/wrong-map/missing notifications, cleanup and existing flight
+or roots. Retest the portal with GM flight **off before entering**: wait for
+the short hold to end, walk on the floor and then speak to Khadgar. The cinematic
+and quest credits are unchanged. The council's explicit levitation movement
+templates are preserved; their visual intent has not been independently
+verified against a retail recording.
+
 ## Validation and deployment
 
 `tools/tests/Test-LegionIntroSequence.ps1` compiles the production quest-log

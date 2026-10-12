@@ -1433,6 +1433,8 @@ void Player::Update(uint32 p_time)
 
     m_isUpdate = true;
 
+    UpdateMapObjectArrival(p_time);
+
     // undelivered mail
     if (m_nextMailDelivereTime && m_nextMailDelivereTime <= GameTime::GetGameTime())
     {
@@ -2815,6 +2817,8 @@ void Player::AddToWorld()
 
 void Player::RemoveFromWorld()
 {
+    EndMapObjectArrival();
+
     if (m_areaId)
         RemovePlayerFromArea(m_areaId);
 
@@ -29929,6 +29933,72 @@ int32 Player::NextGroupUpdateSequenceNumber(GroupCategory category)
 }
 
 //! Before send self obj. update 
+void Player::BeginMapObjectArrival()
+{
+    // Called before the first self-create packet. GM flight, existing levitation
+    // and vehicle passengers already have their own movement ownership.
+    if (_mapObjectArrivalMap >= 0 || !IsAlive() || CanFly() || IsLevitating() || GetVehicle() || GetTransport())
+        return;
+
+    _mapObjectArrivalMap = int32(GetMapId());
+    _mapObjectArrivalWait = 0;
+    _mapObjectArrivalSettle = 0;
+    _mapObjectArrivalOwnRoot = !HasUnitState(UNIT_STATE_ROOT) && !HasUnitMovementFlag(MOVEMENTFLAG_ROOT);
+    RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
+    AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_ROOT);
+    if (_mapObjectArrivalOwnRoot)
+        AddUnitState(UNIT_STATE_ROOT);
+    SetFallInformation(0, GetPositionZ());
+}
+
+void Player::NotifyMapObjectArrivalLoaded(int32 mapId)
+{
+    if (_mapObjectArrivalMap >= 0 && _mapObjectArrivalMap == mapId && !_mapObjectArrivalSettle)
+        // 7.3.5 ends its loading screen before the dynamic WMO finishes streaming.
+        // There is no per-gameobject collision-ready acknowledgement. Keep an
+        // explicit grace period after loading, not a timer spent in the screen.
+        _mapObjectArrivalSettle = 8000;
+}
+
+void Player::UpdateMapObjectArrival(uint32 diff)
+{
+    if (_mapObjectArrivalMap < 0)
+        return;
+
+    if (_mapObjectArrivalMap != int32(GetMapId()) || !IsAlive() || GetVehicle() || GetTransport())
+    {
+        EndMapObjectArrival();
+        return;
+    }
+
+    if (_mapObjectArrivalSettle)
+    {
+        if (diff >= _mapObjectArrivalSettle)
+            EndMapObjectArrival();
+        else
+            _mapObjectArrivalSettle -= diff;
+    }
+    else if (diff >= 30000 - _mapObjectArrivalWait)
+        EndMapObjectArrival(); // A missing loading-screen message must not leave a permanent root.
+    else
+        _mapObjectArrivalWait += diff;
+}
+
+void Player::EndMapObjectArrival()
+{
+    if (_mapObjectArrivalMap < 0)
+        return;
+
+    _mapObjectArrivalMap = -1;
+    _mapObjectArrivalWait = 0;
+    _mapObjectArrivalSettle = 0;
+    SetFallInformation(0, GetPositionZ());
+    SetDisableGravity(false);
+    if (_mapObjectArrivalOwnRoot)
+        SetControlled(false, UNIT_STATE_ROOT); // Retains any root aura acquired during loading.
+    _mapObjectArrivalOwnRoot = false;
+}
+
 void Player::SendInitialPacketsBeforeAddToMap(bool login)
 {
     m_zoneForce = true;

@@ -2855,6 +2855,11 @@ void Map::SendInitSelf(Player* player)
 
         transport->BuildCreateUpdateBlockForPlayer(&data, player);
         player->AddClient(transport->GetGUID());
+        // The client streams this large WMO even after receiving its create.
+        // Hold arrivals near the Legion introduction's council room until the
+        // post-loading grace ends. Do not affect ships or other map objects.
+        if (GetId() == 0 && transport->GetEntry() == 246854 && player->GetExactDist(transport) < 75.0f)
+            player->BeginMapObjectArrival();
     }
 
     // attach to player data current transport data
