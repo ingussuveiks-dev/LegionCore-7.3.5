@@ -1,0 +1,147 @@
+﻿{
+    "date":  "2026-10-12",
+    "entry":  114407,
+    "name":  "Spellstalker",
+    "report":  "Client screenshot shows the ground felhound levitating in Dalaran above Karazhan.",
+    "evidence":  {
+                     "before":  "Ground=0, Flight=1 (DisableGravity), Swim=0; no spawn overrides or hover aura in template addon.",
+                     "comparisons":  "Other Spellstalker entries 103400,104488,120668 share display 10950 and default Ground=Run/Flight=None. Same-display Felslayer 3774 explicitly has Ground=1/Flight=0.",
+                     "native_display":  10950,
+                     "native_model":  8436,
+                     "model_file":  1245325,
+                     "model_hover_height":  0,
+                     "collision_method":  "Production GameObjectModel::getHeight against extracted 7.3.5 city WMO, display 35175, position -11088.3,-1993.4,741.034, orientation 5.60251, scale 1. Query at spawn Z and Z+3; both return the same nearby floor for all 14 spawns.",
+                     "samples":  [
+                                     {
+                                         "spawn":  349805,
+                                         "x":  -11123,
+                                         "y":  -2080.88989,
+                                         "z":  748.80499,
+                                         "floor":  748.82574,
+                                         "floor_from_above":  748.82574,
+                                         "gap":  -0.02075
+                                     },
+                                     {
+                                         "spawn":  349865,
+                                         "x":  -11050.2002,
+                                         "y":  -2044.22998,
+                                         "z":  749.16302,
+                                         "floor":  749.08069,
+                                         "floor_from_above":  749.08069,
+                                         "gap":  0.08233
+                                     },
+                                     {
+                                         "spawn":  349868,
+                                         "x":  -11040.7002,
+                                         "y":  -2026.75,
+                                         "z":  746.69501,
+                                         "floor":  746.6153,
+                                         "floor_from_above":  746.6153,
+                                         "gap":  0.07971
+                                     },
+                                     {
+                                         "spawn":  349883,
+                                         "x":  -11120,
+                                         "y":  -1894.03003,
+                                         "z":  760.11298,
+                                         "floor":  760.01538,
+                                         "floor_from_above":  760.01538,
+                                         "gap":  0.0976
+                                     },
+                                     {
+                                         "spawn":  349884,
+                                         "x":  -11073.7998,
+                                         "y":  -1876.80005,
+                                         "z":  760.44,
+                                         "floor":  760.35663,
+                                         "floor_from_above":  760.35663,
+                                         "gap":  0.08337
+                                     },
+                                     {
+                                         "spawn":  349906,
+                                         "x":  -11090.2002,
+                                         "y":  -1917.32996,
+                                         "z":  740.33301,
+                                         "floor":  740.24841,
+                                         "floor_from_above":  740.24841,
+                                         "gap":  0.0846
+                                     },
+                                     {
+                                         "spawn":  349926,
+                                         "x":  -11071.7002,
+                                         "y":  -1980.51001,
+                                         "z":  742.672,
+                                         "floor":  742.49762,
+                                         "floor_from_above":  742.49762,
+                                         "gap":  0.17438
+                                     },
+                                     {
+                                         "spawn":  349927,
+                                         "x":  -11124,
+                                         "y":  -1906.31995,
+                                         "z":  751.17499,
+                                         "floor":  751.08942,
+                                         "floor_from_above":  751.08942,
+                                         "gap":  0.08557
+                                     },
+                                     {
+                                         "spawn":  349936,
+                                         "x":  -11123.40039,
+                                         "y":  -2086.87988,
+                                         "z":  749.21399,
+                                         "floor":  749.12854,
+                                         "floor_from_above":  749.12854,
+                                         "gap":  0.08545
+                                     },
+                                     {
+                                         "spawn":  349959,
+                                         "x":  -11181.5,
+                                         "y":  -2006.15002,
+                                         "z":  745.34698,
+                                         "floor":  745.2511,
+                                         "floor_from_above":  745.2511,
+                                         "gap":  0.09588
+                                     },
+                                     {
+                                         "spawn":  349966,
+                                         "x":  -11172.09961,
+                                         "y":  -2057.34009,
+                                         "z":  747.96301,
+                                         "floor":  747.87769,
+                                         "floor_from_above":  747.87769,
+                                         "gap":  0.085319999999999993
+                                     },
+                                     {
+                                         "spawn":  349967,
+                                         "x":  -11117.2998,
+                                         "y":  -1930.07996,
+                                         "z":  739.32202,
+                                         "floor":  739.24152,
+                                         "floor_from_above":  739.24152,
+                                         "gap":  0.0805
+                                     },
+                                     {
+                                         "spawn":  349972,
+                                         "x":  -11147.7002,
+                                         "y":  -1967.46997,
+                                         "z":  741.37,
+                                         "floor":  741.28333,
+                                         "floor_from_above":  741.28333,
+                                         "gap":  0.08667
+                                     },
+                                     {
+                                         "spawn":  349973,
+                                         "x":  -11237.09961,
+                                         "y":  -1984.03003,
+                                         "z":  749.22198,
+                                         "floor":  749.1366,
+                                         "floor_from_above":  749.1366,
+                                         "gap":  0.08538
+                                     }
+                                 ]
+                 },
+    "change":  "Restore Ground=1 and Flight=0 only while the original air-only setting is present. Preserve spawn coordinates, combat data, Swim, Rooted, other fields, NPCs and character progress.",
+    "validation":  "Test-DalaranSpellstalkerMovement.ps1 passed isolated actual migration, repeat application and custom/unrelated preservation. Live deployment preserves complete spawn/template query results.",
+    "deployment":  "SQL applied and registered; no executable change or server restart performed. Effective on next worldserver startup.",
+    "limitation":  "Client appearance and movement after restarting still require a retest. Other floating NPC types, including council mages, are not changed by this migration."
+}
