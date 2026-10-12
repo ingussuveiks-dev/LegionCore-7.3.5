@@ -1663,7 +1663,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
 
             if (canLoot)
             {
-                lootCurrency.CurrencyID = item.item.ItemID;
+                lootCurrency.CurrencyID = item.item.CurrencyID;
                 lootCurrency.Quantity = item.count;
                 lootCurrency.LootListID = item.LootListID ? item.LootListID : ci->index+1;
                 lootCurrency.UIType = LOOT_ITEM_UI_NORMAL;

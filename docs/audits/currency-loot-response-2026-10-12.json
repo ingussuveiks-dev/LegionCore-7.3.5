@@ -1,0 +1,15 @@
+{
+  "report": "Xullorax 97388, spawn 375069 on map 1502, left a blank uncollectable loot slot after Maiko collected 29 gold.",
+  "evidence": [
+    "Creature loot 97388 contains Item=0, Currency=1149, MinCount=MaxCount=64, Chance=99.9331. Native 7.3.5 CurrencyTypes.db2 identifies 1149 as Sightless Eye, icon 801132, cap 5000. This currency has valid client data; it is not a missing quest item.",
+    "LootItem copies Item and Currency into distinct fields. Loot::BuildLootResponse incorrectly populated LootCurrency.CurrencyID from ItemID, which is zero for currency rows. LootResponse::Write serialized that zero unchanged.",
+    "Player::StoreLootItem already validates and awards item.CurrencyID, so only the response projection was wrong. The corpse's generated loot was not packet-captured; the guaranteed-near currency row and reproduced ID-zero response match the reported symptom."
+  ],
+  "repair": "Populate LootCurrency.CurrencyID from item.item.CurrencyID. Preserve currency amount, slot mapping, visibility, collection rules, ordinary items and all loot tables.",
+  "validation": [
+    "Test-CurrencyLootResponse.ps1 compiles the production currency response section. Covers Xullorax's 1149/64, Order Resources 1220, default/custom slot IDs, different viewers, personal loot and collected entries.",
+    "Release game library and staged Win64 worldserver executable built successfully; staged --version passed. Staging path: build-extractors/runtime-test/currency-loot-release/worldserver.exe."
+  ],
+  "deployment": "Staged executable ready; replacing canonical build-extractors/bin/Release/worldserver.exe requires the running worldserver to be stopped. Do not launch from the staging directory.",
+  "client_retest": "Pending: reopen currency-bearing loot and verify the Sightless Eye name/icon/quantity and successful collection. Existing corpse loot may expire across a restart; no unverified manual currency compensation was applied."
+}
