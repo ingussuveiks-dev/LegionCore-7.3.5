@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-12",
+  "client_build": 26972,
+  "scope": "Demons Among Us -> Keep Your Friends Close visibility; warlock pet regeneration, Health Funnel, Drain Soul/Drain Life, Soul Leech, Demon Skin and Soul Link.",
+  "quest": {
+    "completed": 40607,
+    "active": 40605,
+    "handoff_phase": 6745,
+    "phase_mask": 1,
+    "next_npc": 95234,
+    "next_npc_spawn": 351254,
+    "next_npc_phase_ids": [],
+    "next_npc_position": [
+      1829.63,
+      -4423.66,
+      103.736
+    ],
+    "result": "Combat phase 7422 ending is expected. Elthyn has normal mask 1 and no exclusive phase IDs; he remains visible in the Orgrimmar plateau camp. No quest/character mutation."
+  },
+  "findings": [
+    {
+      "mechanic": "Controlled creature out-of-combat regeneration",
+      "before": "Fixed 24 HP at Rate.Health=1, per pet regeneration tick.",
+      "after": "1.5% maximum HP times Rate.Health; pets use the existing 2000ms interval. Existing combat/evade and RegenHealth guards are unchanged.",
+      "reference": "https://github.com/TrinityCore/TrinityCore/blob/24f51f65860d6c9dd0ee055dca93ed39dd29c687/src/server/game/Entities/Creature/Creature.cpp",
+      "reference_date": "2018-04-12"
+    },
+    {
+      "mechanic": "Health Funnel 755 -> 217979",
+      "before": "Heal used 8% of pet maximum HP while sacrifice used 4% of caster maximum HP.",
+      "after": "Both use caster maximum HP: base 4% sacrifice, 8% pet healing per tick, six ticks. Existing stop-at-full-pet behavior retained."
+    },
+    {
+      "mechanic": "Drain Soul 198590 / Drain Life 234153",
+      "result": "Native periodic leech multiplier 2 / 6 respectively, healing the caster only. Core HandlePeriodicHealthLeechAuraTick already targets caster. Affliction gets 198590; Demonology/Destruction get 234153. No invented direct pet heal added."
+    },
+    {
+      "mechanic": "Soul Leech 108370 -> 108366",
+      "before": "Pet cumulative/capped value was calculated but not used; delayed snapshots could overwrite simultaneous contributions. AoE check inspected passive driver instead of damage spell.",
+      "after": "Accumulate against current shield, cap separately by each recipient maximum HP, exclude area damage. Pet/minion damage shields the owner and primary pet. Modifiers apply to contribution, not repeatedly to stored shield."
+    },
+    {
+      "mechanic": "Demon Skin 219272",
+      "before": "Pet recharge used owner maximum HP; initial shield cast bypassed cap.",
+      "after": "Each recipient recharges 1% of own maximum HP per native 1000ms tick, capped at 20%; same shield update helper as damage procs."
+    },
+    {
+      "mechanic": "Soul Link 108415 / 108446 -> 108447",
+      "before": "Script healed on incoming split damage, contrary to native description.",
+      "after": "Demonology-only native ability heals owner/pet for 25%/50% of new absorption granted by Soul Leech, including Demon Skin; old split-damage script removed. Requires a living primary pet and active 108446 owner aura.",
+      "boundary_interpretation": "Healing is based on actual shield increase after cap; a full shield grants no new absorption. This follows the native wording but independent retail combat-log confirmation of capped/unequal-shield edge cases is still outstanding."
+    }
+  ],
+  "live_data": {
+    "hotfix_spell_effect_overrides": 0,
+    "hotfix_spell_misc_overrides": 0,
+    "health_funnel_periodic_trigger": [
+      755,
+      217979
+    ],
+    "pet_templates_regen_enabled": [
+      416,
+      417,
+      1860,
+      1863
+    ],
+    "maiko_level": 101,
+    "maiko_online": false,
+    "maiko_active_quest": 40605,
+    "maiko_rewarded_intro": [
+      40518,
+      40522,
+      40760,
+      40607
+    ]
+  },
+  "validation": {
+    "native_db2": "tools/research/audit_warlock_pet_healing.py; see companion native JSON with SHA256 hashes",
+    "production_handler_tests": "tools/tests/Test-WarlockPetHealing.ps1 passed",
+    "shared_warlock_regression": "tools/tests/Test-WarlockRegression.ps1 passed",
+    "legendary_regression": "tools/tests/Test-WarlockLegendaryEffects.ps1 passed",
+    "intro": "tools/tests/Test-LegionIntroSequence.ps1 passed, including 76 quest/phase cases",
+    "release_libraries": "game and scripts built successfully",
+    "client": "Not run; visible HP ticks, combat end, channel healing and actual NPC rendering still need client confirmation. No hidden server was started."
+  },
+  "sql_migration": "2026_10_12_10_warlock_pet_healing.sql",
+  "preserved": [
+    "Character gear, position and quest progress",
+    "Custom boost ship, Broken Shore, bird mover/camera and pet portrait handling",
+    "Runtime configuration, certificates, DLLs, extracted data and logs"
+  ]
+}

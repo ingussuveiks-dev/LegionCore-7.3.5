@@ -1207,8 +1207,9 @@ class spell_warl_health_funnel : public SpellScriptLoader
 
             void HandleHeal(SpellEffIndex /*effIndex*/)
             {
-                if (Unit* target = GetHitUnit())
-                    SetHitHeal(target->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints, target));
+                if (GetHitUnit())
+                    if (Unit* caster = GetCaster())
+                        SetHitHeal(caster->CountPctFromMaxHealth(GetSpellInfo()->Effects[EFFECT_1]->BasePoints));
             }
 
             void HandleCast()
@@ -1369,59 +1370,22 @@ class spell_warl_demon_skin : public SpellScriptLoader
 
             void OnTick(AuraEffect const* aurEff)
             {
-                if (Unit* caster = GetCaster())
-                {
-                    int32 triggered_spell_id = 108366;
-                    float perc = aurEff->GetAmount();
-                    float addAbsorb = CalculatePct(caster->GetMaxHealth(), perc);
-                    float maxPerc = 20.f;
+                Unit* caster = GetCaster();
+                if (!caster)
+                    return;
 
-                    Unit::AuraEffectList const& mAbsorbtionPercent = caster->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT);
-                    for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent.begin(); i != mAbsorbtionPercent.end(); ++i)
-                        AddPct(addAbsorb, (*i)->GetAmount());
+                float capPct = GetSpellInfo()->Effects[EFFECT_1]->BasePoints;
+                if (AuraEffect* cap = caster->GetAuraEffect(219272, EFFECT_1))
+                    capPct = cap->GetAmount();
+                float regenPct = aurEff->GetAmount();
+                float modifier = caster->GetTotalAuraMultiplier(SPELL_AURA_MOD_ABSORB_AMOUNT);
+                float petAbsorb = 0.0f;
+                if (Player* player = caster->ToPlayer())
+                    if (Pet* pet = player->GetPet())
+                        petAbsorb = pet->AddSoulLeechAbsorb(CalculatePct(float(pet->GetMaxHealth()), regenPct) * modifier, capPct);
 
-                    if (Aura* aura = GetAura())
-                    {
-                        if (AuraEffect* eff = aura->GetEffect(EFFECT_1))
-                            maxPerc = eff->GetAmount();
-                    }
-
-                    if (Player* plr = caster->ToPlayer())
-                    {
-                        if (Unit* pet = plr->GetPet())
-                        {
-                            if (AuraEffect* auraEff = pet->GetAuraEffect(triggered_spell_id, EFFECT_0))
-                            {
-                                float maxAbsorb = pet->CountPctFromMaxHealth(maxPerc);
-                                float allAbsorb = auraEff->GetAmount() + addAbsorb;
-
-                                if (allAbsorb > maxAbsorb)
-                                    allAbsorb = maxAbsorb;
-
-                                auraEff->SetAmount(allAbsorb);
-                            }
-                            else
-                            {
-                                pet->CastCustomSpell(pet, triggered_spell_id, &addAbsorb, NULL, NULL, true);
-                            }
-                        }
-                    }
-
-                    if (AuraEffect* auraEff = caster->GetAuraEffect(triggered_spell_id, EFFECT_0))
-                    {
-                        float maxAbsorb = caster->CountPctFromMaxHealth(maxPerc);
-                        float allAbsorb = auraEff->GetAmount() + addAbsorb;
-
-                        if (allAbsorb > maxAbsorb)
-                            allAbsorb = maxAbsorb;
-
-                        auraEff->SetAmount(allAbsorb);
-                    }
-                    else
-                    {
-                        caster->CastCustomSpell(caster, triggered_spell_id, &addAbsorb, NULL, NULL, true);
-                    }
-                }
+                float ownerAbsorb = caster->AddSoulLeechAbsorb(CalculatePct(float(caster->GetMaxHealth()), regenPct) * modifier, capPct);
+                caster->HealFromSoulLeech(ownerAbsorb, petAbsorb);
             }
 
             void Register() override
@@ -1951,43 +1915,6 @@ class spell_warl_hand_of_guldan_damage : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_warl_hand_of_guldan_damage_SpellScript();
-        }
-};
-
-// Soul Link - 108446
-class spell_warl_soul_link : public SpellScriptLoader
-{
-    public:
-        spell_warl_soul_link() : SpellScriptLoader("spell_warl_soul_link") { }
-
-        class spell_warl_soul_link_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_warl_soul_link_AuraScript);
-
-            void SplitDamage(AuraEffect* aurEff, DamageInfo& /*dmgInfo*/, float& absorbAmount)
-            {
-                if (Unit* caster = GetCaster())
-                {
-                    if (Unit* owner = caster->GetOwner())
-                    {
-                        int32 ownerPerc = GetSpellInfo()->Effects[EFFECT_1]->BasePoints;
-                        int32 petPerc = GetSpellInfo()->Effects[EFFECT_2]->BasePoints;
-                        float bp0 = CalculatePct(absorbAmount, ownerPerc);
-                        float bp1 = CalculatePct(absorbAmount, petPerc);
-                        owner->CastCustomSpell(owner, 108447, &bp0, &bp1, NULL, true);
-                    }
-                }
-            }
-
-            void Register() override
-            {
-                OnEffectSplitDamage += AuraEffectAbsorbFn(spell_warl_soul_link_AuraScript::SplitDamage, EFFECT_0, SPELL_AURA_SPLIT_DAMAGE_PCT);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_warl_soul_link_AuraScript();
         }
 };
 
@@ -3131,7 +3058,6 @@ void AddSC_warlock_spell_scripts()
     RegisterSpellScript(spell_warl_call_dreadstalker);
     RegisterSpellScript(spell_warl_hand_of_guldan);
     new spell_warl_hand_of_guldan_damage();
-    new spell_warl_soul_link();
     new spell_warl_demonwrath_trigger();
     new spell_warl_eye_laser();
     new spell_warl_demonbolt();

@@ -7252,6 +7252,46 @@ bool Unit::HandleSpellCritChanceAuraProc(Unit* victim, DamageInfo* /*dmgInfoProc
     return true;
 }
 
+float Unit::AddSoulLeechAbsorb(float amount, float capPct)
+{
+    if (!IsAlive() || amount <= 0.0f)
+        return 0.0f;
+
+    AuraEffect* shield = GetAuraEffect(108366, EFFECT_0);
+    float previous = shield ? shield->GetAmount() : 0.0f;
+    float total = std::min(previous + amount, CalculatePct(float(GetMaxHealth()), capPct));
+    if (!shield)
+    {
+        CastCustomSpell(this, 108366, &total, nullptr, nullptr, true);
+        shield = GetAuraEffect(108366, EFFECT_0);
+    }
+    if (!shield)
+        return 0.0f;
+
+    // The contribution was already modified by the caller. Do not multiply
+    // the accumulated shield again when refreshing it, or exceed its cap.
+    shield->SetAmount(total);
+    shield->GetBase()->RefreshDuration();
+    return std::max(0.0f, total - previous);
+}
+
+void Unit::HealFromSoulLeech(float ownerAbsorb, float petAbsorb)
+{
+    Player* player = ToPlayer();
+    if (!player || !player->GetPet() || !player->GetPet()->IsAlive())
+        return;
+
+    AuraEffect* ownerHeal = GetAuraEffect(108446, EFFECT_1);
+    AuraEffect* petHeal = GetAuraEffect(108446, EFFECT_2);
+    if (!ownerHeal || !petHeal)
+        return;
+
+    float bp0 = CalculatePct(ownerAbsorb, ownerHeal->GetAmount());
+    float bp1 = CalculatePct(petAbsorb, petHeal->GetAmount());
+    if (bp0 > 0.0f || bp1 > 0.0f)
+        CastCustomSpell(this, 108447, &bp0, &bp1, nullptr, true);
+}
+
 //victim may be NULL
 bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect* triggeredByAura, SpellInfo const* procSpell, uint32 procFlag, uint32 procEx, double cooldown, Spell* spell)
 {
@@ -8705,83 +8745,32 @@ bool Unit::HandleDummyAuraProc(Unit* victim, DamageInfo* dmgInfoProc, AuraEffect
                     if (!damage || triggeredByAura->GetEffIndex() != EFFECT_0 || victim == this)
                         return false;
 
-                    if (dummySpell->IsTargetingArea())
+                    if (procSpell && procSpell->IsTargetingArea())
                         return false;
 
-                    Unit* warlock = nullptr;
-                    Unit* pet = nullptr;
-
-                    if (Player* plr = ToPlayer())
-                    {
-                        warlock = this;
-
-                        if (Unit* _pet = plr->GetPet())
-                            pet = _pet;
-                    }
-                    else
-                    {
-                        pet = this;
-
-                        if (Unit* owner = GetOwner())
-                            warlock = owner;
-                    }
-
+                    Player* warlock = ToPlayer();
+                    if (!warlock && GetOwner())
+                        warlock = GetOwner()->ToPlayer();
                     if (!warlock)
                         return false;
 
-                    triggered_spell_id = 108366;
-
-                    uint8 capPct = 15;
-
+                    float capPct = 15.0f;
                     if (AuraEffect* auraEff = warlock->GetAuraEffect(219272, EFFECT_1))
-                    {
                         capPct = auraEff->GetAmount();
-                    }
-                    else if (AuraEffect* auraEff = warlock->GetAuraEffect(108370, EFFECT_1))
-                        capPct = auraEff->GetAmount();
+                    else if (AuraEffect* leechCap = warlock->GetAuraEffect(108370, EFFECT_1))
+                        capPct = leechCap->GetAmount();
 
-                    int32 hasabsorb = 0;
-                    basepoints0 = CalculatePct(damage, triggerAmount);
+                    float contribution = CalculatePct(damage, triggerAmount);
+                    for (AuraEffect* modifier : warlock->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT))
+                        AddPct(contribution, modifier->GetAmount());
 
-                    Unit::AuraEffectList const& mAbsorbtionPercent = warlock->GetAuraEffectsByType(SPELL_AURA_MOD_ABSORB_AMOUNT);
-                    for (Unit::AuraEffectList::const_iterator i = mAbsorbtionPercent.begin(); i != mAbsorbtionPercent.end(); ++i)
-                        AddPct(basepoints0, (*i)->GetAmount());
-
-                    if (pet)
-                    {
-                        if (AuraEffect* auraEff = pet->GetAuraEffect(triggered_spell_id, EFFECT_0))
-                            hasabsorb = auraEff->GetAmount();
-
-                        float maxAbsorb = pet->CountPctFromMaxHealth(capPct);
-                        float bp0 = basepoints0 + hasabsorb;
-
-                        if (bp0 > maxAbsorb)
-                            bp0 = maxAbsorb;
-
-                        pet->AddDelayedEvent(10, [basepoints0, triggered_spell_id, pet]() -> void
-                        {
-                            if (!pet)
-                                return;
-                            pet->CastCustomSpell(pet, triggered_spell_id, &basepoints0, nullptr, nullptr, true);
-                        });
-                        hasabsorb = 0;
-                    }
-
-                    if (AuraEffect* auraEff = warlock->GetAuraEffect(triggered_spell_id, EFFECT_0))
-                        hasabsorb = auraEff->GetAmount();
-
-                    float maxAbsorb = warlock->CountPctFromMaxHealth(capPct);
-                    basepoints0 += hasabsorb;
-
-                    if (basepoints0 > maxAbsorb)
-                        basepoints0 = maxAbsorb;
-
-                    warlock->AddDelayedEvent(10, [basepoints0, triggered_spell_id, warlock]() -> void
-                    {
-                        if (!warlock)
-                            return;
-                        warlock->CastCustomSpell(warlock, triggered_spell_id, &basepoints0, nullptr, nullptr, true);
-                    });
+                    // Read the live shield for each contribution. Queuing precomputed
+                    // totals lost damage procs arriving in the same update.
+                    float petAbsorb = 0.0f;
+                    if (Pet* pet = warlock->GetPet())
+                        petAbsorb = pet->AddSoulLeechAbsorb(contribution, capPct);
+                    float ownerAbsorb = warlock->AddSoulLeechAbsorb(contribution, capPct);
+                    warlock->HealFromSoulLeech(ownerAbsorb, petAbsorb);
                     return true;
                 }
             }

@@ -1189,7 +1189,8 @@ void Creature::RegenerateHealth()
 
     // Not only pet, but any controlled creature
     if (GetCharmerOrOwnerGUID())
-        addvalue = uint32(24.376 * sWorld->getRate(RATE_HEALTH));
+        // Legion pets regenerate 1.5% of maximum health per two-second tick.
+        addvalue = uint64(0.015 * maxValue * sWorld->getRate(RATE_HEALTH));
     else
         addvalue = maxValue / 1.2;
 

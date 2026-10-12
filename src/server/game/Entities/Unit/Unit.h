@@ -1253,6 +1253,8 @@ class TC_GAME_API Unit : public WorldObject
         float GetHealthPct() const { return GetMaxHealth() ? 100.f * GetHealth() / GetMaxHealth() : 0.0f; }
         float GetPowerPct(Powers power) const { return GetMaxPower(power) ? 100.f * GetPower(power) / GetMaxPower(power) : 0.0f; }
         uint64 CountPctFromMaxHealth(int32 pct, Unit* victim = nullptr) const { return CalculatePct(GetMaxHealth(victim), pct); }
+        float AddSoulLeechAbsorb(float amount, float capPct);
+        void HealFromSoulLeech(float ownerAbsorb, float petAbsorb);
         uint64 CountPctFromCurHealth(int32 pct, Unit* victim = nullptr) const { return CalculatePct(GetHealth(victim), pct); }
         uint32 CountPctFromMaxMana(int32 pct) const { return CalculatePct(GetMaxPower(POWER_MANA), pct); }
         uint32 CountPctFromCurMana(int32 pct) const { return CalculatePct(GetPower(POWER_MANA), pct); }
