@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -77,7 +77,7 @@ struct Player {
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
  bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -254,5 +254,35 @@ int main()
  for(int mask=0;mask<8;++mask){p={};p.activeQuest=39456;p.status.Status=QUEST_STATUS_INCOMPLETE;p.progress=mask;assert(p.CanCompleteQuest(39456)==((mask&3)==3));}
  p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39456),false));p.m_RewardedQuests.insert(40229);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39456),false));
  std::cout<<"PASS: Unexpected Allies requires both meeting and witness (all eight native objective subsets); optional wait alone cannot complete; Step into the Dark must be rewarded.\n";
+ // Snowblind is a journey turn-in; Battle Worms requires three independent kills.
+ store.quests.emplace(38915,Quest{38915,0,{39387}});
+ store.quests.emplace(39776,Quest{39776,0,{38915}});
+ store.quests[39776].objectives={{0,97013,1,1,0},{0,99217,1,1,1},{0,99216,1,1,2}};
+ p={};p.activeQuest=38915;p.status.Status=QUEST_STATUS_INCOMPLETE;assert(p.CanCompleteQuest(38915));
+ assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39776),false));
+ p.m_RewardedQuests.insert(38915);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39776),false));
+ uint32 worms[]={97013,99216,99217};
+ do {
+  p={};p.activeQuest=39776;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  for(unsigned i=0;i<3;++i){
+   CreatureTemplate worm{worms[i],{0,0}};killedCreature.entry=worms[i];
+   p.KilledMonster(&worm,{worms[i]});p.KilledMonster(&worm,{worms[i]});
+   assert(p.creditPackets==i+1 && (p.status.Status==QUEST_STATUS_COMPLETE)==(i==2));
+  }
+  assert(p.completeCalls==1);
+ } while(std::next_permutation(std::begin(worms),std::end(worms)));
+ for(unsigned mask=0;mask<8;++mask){
+  p={};p.activeQuest=39776;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  for(unsigned i=0;i<3;++i)if(mask&(1u<<i))p.KilledMonsterCredit(worms[i]);
+  assert((p.status.Status==QUEST_STATUS_COMPLETE)==(mask==7));
+ }
+ for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){
+  p={};p.activeQuest=39776;p.status.Status=state;
+  for(uint32 entry:worms)p.KilledMonsterCredit(entry);
+  assert(p.nursingProgress.empty() && !p.creditPackets);
+ }
+ p={};p.activeQuest=39776;p.status.Status=QUEST_STATUS_INCOMPLETE;p.KilledMonsterCredit(93846);assert(p.nursingProgress.empty());
+ p.raid=true;for(uint32 entry:worms)p.KilledMonsterCredit(entry);assert(p.nursingProgress.empty());
+ std::cout<<"PASS: Snowblind journey has no kill requirement; Battle Worms needs all three distinct deaths in every order/subset, caps duplicate credits, ignores unrelated/absent/rewarded/raid kills and requires journey reward.\n";
  std::cout<<"PASS: extracted prerequisites (all 8 subsets for both branch groups), inventory limit and client hotfix, login reconciliation at 0/30/49/50/56, bank exclusion, idempotence, 50-item reward removal, untouched absent/rewarded quests.\n";
 }

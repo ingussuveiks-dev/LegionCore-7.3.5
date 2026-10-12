@@ -6,15 +6,16 @@
 #include <map>
 #include <vector>
 using uint32=uint32_t;using int32=int32_t;using SpellEffIndex=int;
-enum {DUMMY_TRIGGER_COOLDOWN=2,DUMMY_TRIGGER_CAST_OR_REMOVE=6};
+enum {DUMMY_TRIGGER_COOLDOWN=2,DUMMY_TRIGGER_CAST_OR_REMOVE=6,DUMMY_TRIGGER_CAST_IGNORE_GCD=11,LINK_UNIT_TYPE_CASTER=3,LINK_UNIT_TYPE_TARGET=5};
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Unit {
  bool world=true,cooldown=false;unsigned casts=0;uint32 castId=0;Unit* castTarget=nullptr;
- Unit* GetUnitForLinkedSpell(Unit*,Unit* target,int,Unit*){return target;}
+ Unit* GetUnitForLinkedSpell(Unit* caster,Unit* target,int type,Unit*);
  bool IsInWorld()const{return world;}bool HasSpellCooldown(uint32)const{return cooldown;}
  bool HasAura(uint32)const{return false;}
  void CastSpell(Unit* target,uint32 id,bool triggered,void*){assert(triggered);++casts;castId=id;castTarget=target;}
 };
+#include "ThreeLinkedTargets.inc"
 struct SpellDummyTrigger {
  int32 spell_trigger=0;int option=6,target=0,caster=0,targetaura=0,effectmask=1,handlemask=8,aura=0,group=0;
  float bp0=0,bp1=0,bp2=0;
@@ -50,5 +51,16 @@ int main(){
  for(int i=0;i<5;++i){SpellDummyTrigger row;row.spell_trigger=192179+i;row.effectmask=1<<i;manager.rows[192177].push_back(row);}
  for(int i=0;i<5;++i){parent.damage=float(192179+i);assert(parent.SpellDummyTriggered(i));assert(queen.casts==unsigned(i+1)&&queen.castId==unsigned(192179+i)&&queen.castTarget==&queen);}
  assert(!parent.SpellDummyTriggered(5)&&queen.casts==5);
- std::cout<<"PASS: actual dummy-trigger filter/option 6 reproduces missing links, rejects wrong handle/effect and out-of-world units, preserves child values; cyclone emits exactly five distinct children.\n";
+ // Hooked Tongue must move the struck unit toward Arxas, not move Arxas.
+ Unit worm, victim;SpellInfo hookInfo{197252};Spell hook{&hookInfo,&worm,&victim};
+ assert(!hook.SpellDummyTriggered(0));
+ SpellDummyTrigger pull;pull.option=11;pull.spell_trigger=197253;pull.caster=5;pull.target=3;
+ manager.rows[197252]={pull};
+ assert(hook.SpellDummyTriggered(0) && victim.casts==1 && victim.castId==197253 && victim.castTarget==&worm && !worm.casts);
+ hook.unitTarget=nullptr;assert(!hook.SpellDummyTriggered(0) && victim.casts==1 && !worm.casts);
+ hook.unitTarget=&victim;hook.effectHandleMode=0;assert(!hook.SpellDummyTriggered(0) && victim.casts==1);
+ hook.effectHandleMode=3;assert(!hook.SpellDummyTriggered(1) && victim.casts==1);
+ victim.world=false;assert(!hook.SpellDummyTriggered(0) && victim.casts==1);victim.world=true;
+ worm.world=false;assert(!hook.SpellDummyTriggered(0) && victim.casts==1);
+ std::cout<<"PASS: actual dummy-trigger filter/option 6 reproduces missing links, rejects wrong handle/effect and out-of-world units, preserves child values; cyclone emits exactly five distinct children; Hooked Tongue makes the hit unit cast the jump at the worm.\n";
 }

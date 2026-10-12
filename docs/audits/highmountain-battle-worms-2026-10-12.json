@@ -1,0 +1,50 @@
+{
+  "scope": "Battle of Snowblind Mesa (38915) and Battle Worms (39776): native quest objectives, Mayla availability, ordinary kill credit and worm spell execution. Code/data work only, as requested by the user.",
+  "native_evidence": "highmountain-battle-worms-native-2026-10-12.json; regenerated and compared by Test-HighmountainBattleWormsNative.py against TDB735 and the canonical runtime DB2 files.",
+  "repairs": [
+    {
+      "quest": 38915,
+      "problem": "Local objective 280011 described following Mayla but had Amount=0. The February 2018 TDB735 quest has no numeric objectives and instructs the player to travel to Snowblind Mesa and speak with Mayla.",
+      "change": "Remove only the exact known placeholder, guarded by quest, objective type, storage, object, amount, flags and description. A custom replacement with different data is preserved. No escort, synthetic arrival credit or automatic reward is added.",
+      "limitation": "The zero-amount row was a data/UI mismatch, not proof that the journey could not be completed. December 2015 alpha footage describes marching with Mayla; it does not override the later version-specific objective records."
+    },
+    {
+      "spell": 197252,
+      "problem": "Arxas has Hooked Tongue in its existing combat catalog, but its script effect had no dummy link, spell script or spell_scripts handler. Native effect 0 encodes child 197253, whose JUMP_DEST effect moves its caster to the target's front.",
+      "change": "Add a HIT_TARGET/effect-0 dummy link using option 11, caster selector 5 (hit target), target selector 3 (original caster). The struck unit casts native 197253 toward Arxas. No custom jump speed, damage, position or spell ID is invented.",
+      "handler_evidence": "Spell::SpellDummyTriggered option 11 honors triggerCaster/triggerTarget and checks both for null. Option 6 directly uses m_caster/unitTarget and would reverse this movement; compiled production-handler tests caught that distinction before deployment."
+    }
+  ],
+  "retained_findings": {
+    "naxa": "No Naxa AI change. Native 197232 uses DurationIndex 21, Duration=-1, making it AICOND_AGGRO. AggressorAI::EnterCombat casts that branch directly on who. Although FillAISpellInfo classifies its target-25 effects as SELF, the ordinary combat-loop DoCast target selection is not the entry path for this permanent aura. A self-cast defect was not established.",
+    "objectives": "39776 retains 279939 -> Xist 97013, 280504 -> Naxa 99217, 280505 -> Arxas 99216. Each requires one kill, with native flag 1 and distinct storage indices 0/1/2.",
+    "actors": "All three existing worm spawns are unphased on map 1220 and have active scaling 98..110. Mayla 93846 spawn 11351491 is unphased and ends both quests; the additional phase-9180 copy was not changed.",
+    "starter_phase": "38915 starts at Mayla 108434, including Thunder Totem spawn 11348959 in phase 2246. Existing zone 7731 phase entry 3 requires quest 39580 rewarded. Skyhorn reward alone therefore does not establish that this starter is visible. This prerequisite/phase relationship was documented and preserved; no unsupported shortcut was added.",
+    "handoff": "Native RewardNextQuest is 39776 for 38915 and 42088 for 39776. Local addon links also lead from 39776 to 39777. The parallel quests and later evacuation gate need their own audit; this batch does not rewrite those prerequisites."
+  },
+  "validation": [
+    "Test-HighmountainBattleWormsNative.py passes: original objective absence/presence, enders, reward links, Hooked Tongue child/target data, Naxa duration and native support-button spell mappings.",
+    "Test-HighmountainBattleWormsData.ps1 passes on temporary table copies: repeated application, exact child/caster/target/handle mask, unchanged other objectives/links and custom-objective preservation.",
+    "Test-HighmountainBattleWormsData.ps1 -Live passes after deployment: objectives, link, spawn/scaling, starter/ender and phase records match.",
+    "Expanded Test-HighmountainTheThree.ps1 passes with extracted production dummy options 6/11 and linked-unit caster/target selectors. Checks correct pull direction, null/missing targets, wrong handle/effect and out-of-world units, plus existing cyclone and Haglands regressions.",
+    "Expanded Test-HighmountainBloodtotem.ps1 passes with production completion, prerequisite and kill handlers. All six kill orders and all eight subsets require three distinct worms; repeated, unrelated, absent/rewarded and raid kills do not bypass the objectives. The journey has no numeric kill requirement and must be rewarded before the next quest.",
+    "git diff --check passes. Existing compiler fixture warnings remain; no production C++ was changed."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_12_17_highmountain_battle_worms.sql",
+    "sha1": "505BBAB6C9D8FFF377571EC1B04EA1849431047A",
+    "backup": ".codex/backups/battle-worms-20261012-194929",
+    "method": "Scoped mysqldump backups; stopped worldserver; InnoDB transaction with RELEASED updater registration; post-apply read-only live test.",
+    "runtime": "build-extractors/bin/Release. SQL-only repair; no executable rebuild or replacement required. Server remains stopped, so runtime caches will load the changes on next startup. Character progress was not edited."
+  },
+  "next_batch": {
+    "topic": "Battle Worms: Call the Stonedark / Call the Skyhorn / Call the Rivermane support mechanics",
+    "evidence": "Existing worm auras 213440/213433/213439 create spell area triggers 5156/5157/5158, but no corresponding areatrigger_template rows were found by entry or source spell. Native override auras 195145/195148/195150 map through OverrideSpellData 634/635/636 to calls 195144/195146/195149. Those calls send events 47244/47245/47246; no matching event_scripts or SmartAI event handlers were found, and no source handler references the calls.",
+    "remaining": "Support handler reconstruction is now implemented; see highmountain-worm-support-2026-10-12.json for evidence, limits and verification. Client acceptance remains deferred. Next audit: parallel quests 39777/39862 and the 42088 evacuation handoff."
+  },
+  "client_acceptance": "Deferred by user. Still observe the ordinary journey and hand-in, all three worm fights, Hooked Tongue movement/landing and the final reward in a 7.3.5 client. Compiled fixture tests do not verify animation or physical jump clearance.",
+  "contemporary_sources": [
+    "https://warcraft.blizzplanet.com/battle-of-snowblind-mesa/",
+    "https://warcraft.blizzplanet.com/battle-worms/"
+  ]
+}

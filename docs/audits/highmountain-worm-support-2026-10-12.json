@@ -1,0 +1,75 @@
+{
+  "scope": "Battle Worms (39776): server reconstruction of Call the Stonedark, Call the Skyhorn and Call the Rivermane. Code/data work only, per user request.",
+  "native_evidence": "highmountain-worm-support-native-2026-10-12.json; read directly from 7.3.5.26972 DB2 without overlays.",
+  "mapping": [
+    {
+      "worm": 97013,
+      "name": "Xist",
+      "bar": 195145,
+      "call": 195144,
+      "ally": 99215,
+      "ability": 194019
+    },
+    {
+      "worm": 99216,
+      "name": "Arxas",
+      "bar": 195148,
+      "call": 195146,
+      "ally": 99219,
+      "ability": 195155
+    },
+    {
+      "worm": 99217,
+      "name": "Naxa",
+      "bar": 195150,
+      "call": 195149,
+      "ally": 99221,
+      "abilities": [
+        12548,
+        192412
+      ],
+      "healing_chain": [
+        192412,
+        97508,
+        195025,
+        195024
+      ]
+    }
+  ],
+  "behavior": [
+    "Every 500 ms, offer only the nearest visible, attackable, living unfinished worm within 45 yards and line of sight. Quest/map/life/transport checks gate the bars and calls.",
+    "Preserve native 60-second cooldowns and cast times. Revalidate the captured target and quest lifetime on completion; stale or forged calls do not summon or award kill credit.",
+    "One personal temporary ally per player/tribe. Ally uses the template-associated native attack every five seconds and ordinary melee; Rivermane also summons the native Healing Stream Totem on engagement.",
+    "Set damage ownership to the player without registering a pet/guardian. Explicitly register direct summons in the existing summon list: this core returns from TempSummon::InitStats before registration when SummonProperties is absent; RemoveFromWorld handles unregistering.",
+    "Clean up on objective completion, quest abandonment/reacceptance, death, transfer, leaving range/phase/visibility, or 45-second lifetime. Remove only this ally caster's Hook Shot aura and its summoned totems. Native three distinct kill objectives are unchanged."
+  ],
+  "reconstruction_limits": [
+    "No sniffed native area-trigger geometry for 5156/5157/5158 is available. Existing native worm aura records are preserved; the player script supplies bounded proximity detection.",
+    "45-yard radius, one helper, spawn beside player, five-second attack interval and 45-second ally lifetime are server policy, not claimed retail choreography or timings.",
+    "Later destination/scene spells 213442/213444/213467/213474 were not substituted for the native 19514x call events without evidence of that relationship.",
+    "No in-client acceptance performed: button appearance, actual summon movement, scaling/balance, healing, combat credit and visual behavior still need observation."
+  ],
+  "validation": [
+    "Test-HighmountainWormSupport.ps1 passes: compiled extracted production handlers, all three calls, nearest unfinished selection, wrong/stale calls, abandon/reaccept midcast, duplicate prevention, two owners, scoped Hook Shot removal, objective ObjectID semantics, direct-summon registration, totem and bar cleanup.",
+    "Test-HighmountainWormSupportNative.py passes: native event IDs, bars, 60s cooldowns, native attacks and full heal chain.",
+    "Test-HighmountainWormSupportData.ps1 passes: twice-applied SQL in temporary tables, native spell/scaling preservation, unrelated handlers and custom AI preservation.",
+    "Test-HighmountainWormSupportData.ps1 -Live and Test-HighmountainBattleWormsData.ps1 -Live pass after deployment.",
+    "Release worldserver and bnetserver builds pass in build-extractors/bin/Release; worldserver --version exits successfully. No gameplay or full server startup test was performed."
+  ],
+  "deployment": {
+    "sha1": "AB7EAFB4AAD3E4AB27302F18E8DACE9AD50BB6FE",
+    "applied": "2026-10-12T20:18:04.1873918+03:00",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\worm-support-20261012-201804",
+    "migration": "sql/updates/world/2026_10_12_18_highmountain_worm_support.sql",
+    "runtime": "build-extractors/bin/Release",
+    "method": "Stopped worldserver, scoped mysqldump backups, transaction and RELEASED updater registration; server remains stopped."
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_worm_support.cpp": "4e81fc42610732a7df43d61c9c1e758fcd161be64b05e7d0c147249b2ababa8d",
+    "sql/updates/world/2026_10_12_18_highmountain_worm_support.sql": "459bdf77ae9ddbeff67f110a23f9b6309ec9fdba28ec2c560a93e75c1de6a7d8",
+    "build-extractors/bin/Release/worldserver.exe": "5ca369905d32dd19fe0727a1a72d18aafa84303e4d93d85d7312616cc94691a9",
+    "build-extractors/bin/Release/bnetserver.exe": "92319017c96dd46a84e5ae7a58e28591bb6ea8869a5e6efee7c26056ba7b0ff3"
+  },
+  "next": "Audit Buy Us Time (39777), The Siegebrul (39862), then evacuation handoff 42088.",
+  "review_followup": "Repeated OnCheckCast now validates the captured GUID instead of recomputing the nearest worm. Regression covers a nearer replacement and death of the original during the cast. Production fixture, neighboring kill/dummy fixtures, native data, SQL temporary/live checks and final Release build passed."
+}

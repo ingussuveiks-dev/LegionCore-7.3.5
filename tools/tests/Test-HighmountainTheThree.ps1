@@ -12,7 +12,21 @@ $caseEnd=$function.IndexOf('                case DUMMY_TRIGGER_DAM_MAXHEALTH:',$
 $tail=$function.IndexOf('            if(itr.group != 0 && check)',$caseEnd)
 if($a -lt 0 -or $b -lt 0 -or $start -lt 0 -or $caseStart -lt 0 -or $tail -lt 0){throw 'Missing production dummy trigger sections'}
 $extracted=$function.Substring(0,$start)+"            switch (itr.option) {`n"+$function.Substring($caseStart,$caseEnd-$caseStart)+"            }`n"+$function.Substring($tail)
+$case11=$function.IndexOf('                case DUMMY_TRIGGER_CAST_IGNORE_GCD:')
+$case12=$function.IndexOf('                case DUMMY_TRIGGER_MOVE_AURA:',$case11)
+if($case11 -lt 0 -or $case12 -lt 0){throw 'Missing production dummy option 11'}
+$extracted=$extracted.Replace("            switch (itr.option) {`n","            switch (itr.option) {`n"+$function.Substring($case11,$case12-$case11))
 [IO.File]::WriteAllText("$output/ThreeDummy.inc",$extracted)
+$unit=Get-Content "$root/src/server/game/Entities/Unit/Unit.cpp" -Raw
+$start=$unit.IndexOf('Unit* Unit::GetUnitForLinkedSpell(')
+$unit=$unit.Substring($start,$unit.IndexOf('bool Unit::HasAuraLinkedSpell(',$start)-$start)
+$cases=''
+foreach($pair in @(@('LINK_UNIT_TYPE_CASTER','LINK_UNIT_TYPE_SELECTED'),@('LINK_UNIT_TYPE_TARGET','LINK_UNIT_TYPE_VICTIM'))){
+ $a=$unit.IndexOf('        case '+$pair[0]+':');$b=$unit.IndexOf('        case '+$pair[1]+':',$a)
+ if($a -lt 0 -or $b -lt 0){throw 'Missing production linked-unit selector'}
+ $cases+=$unit.Substring($a,$b-$a)
+}
+[IO.File]::WriteAllText("$output/ThreeLinkedTargets.inc","Unit* Unit::GetUnitForLinkedSpell(Unit* caster,Unit* target,int type,Unit*) { switch(type) {`n$cases } return nullptr; }`n")
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'Visual C++ compiler not found'}
 $cmd=@"

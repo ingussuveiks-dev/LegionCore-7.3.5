@@ -1,0 +1,45 @@
+{
+  "scope": "Read-only code and data recheck of The Skies of Highmountain (39387): Aviash boarding, flight, exit, Lasan ritual and Mayla reward relations. Client playthrough explicitly deferred by the user.",
+  "source_revision": "82edd1ad60eab7b3a0550acf7e6d7d77b5bfa906",
+  "result": "No new blocking defect identified within the inspected paths and executed checks. This is not client acceptance or a full-server simulated playthrough.",
+  "checks_passed": [
+    "Test-HighmountainAviash.ps1: compiled production handlers, boarding before departure, movement callbacks, native exit before cleanup, retries and owner isolation.",
+    "Test-HighmountainAviashData.ps1 -Live: deployed summon, spellclick, quest condition and script bindings. The temporary-table migration mode was not rerun in this follow-up.",
+    "Test-HighmountainAviashNative.py: installed native 7.3.5 DB2 records match the saved evidence.",
+    "Test-HighmountainSkyhornRitual.ps1: compiled production ceremony, distinct meeting/witness objectives, interruption cleanup and retries.",
+    "Test-HighmountainSkyhornRitualData.ps1 -Live: deployed objectives, phases, gossip, dialogue, starter and both Mayla enders. The temporary-table migration mode was not rerun in this follow-up.",
+    "Test-HighmountainSkyhornRitualNative.py: original TDB735 objectives, enders, ritual event and summon records match saved evidence.",
+    "Test-HighmountainAviashGeometry.ps1: eight flight segments, 10539 terrain samples, zero failed segments; minimum sampled clearance 1.12799 m. Includes ground routes of 23 polygons for the ceremony, 24 from landing to Lasan and two at the recovery point.",
+    "Test-HighmountainBloodtotem.ps1: production prerequisite and completion checks, including all eight Skyhorn objective subsets.",
+    "Test-WarlockRegression.ps1: existing scripted mover resynchronization regression passes; its bundled spell checks also pass. No Warlock changes made."
+  ],
+  "additional_inspection": {
+    "summon_duration": "Native SpellMisc 168406 for 194359 uses SpellDuration 21: Duration and MaxDuration are -1. The native record has no short summon timeout.",
+    "flight_length_m": 1151.3629437356735,
+    "nominal_flight_seconds_at_18_mps": 63.9646079853152,
+    "flight_timing_limit": "Nominal time excludes boarding, exit and update scheduling; the script has a 180-second flight timeout.",
+    "summon_type": "Native SummonProperties 3054 has Control 0, Title 0 and Flags 141592 (without flag 512). Map::SummonCreature selects TempSummon, not Minion; Unit::_ExitVehicle's 200 ms owned-minion despawn branch therefore does not apply to this native summon path.",
+    "exit": "Reviewed Unit::_ExitVehicle, Vehicle::RemovePassenger and Player::SetClientControl. The script restores the mover/viewpoint and retains the native transport-exit spline. Tests do not verify client camera or Lua pet-frame events.",
+    "live_spell_dependencies": "No spell_linked_spell rows reference +/-194359 or +/-196066; no spell_area rows reference those spells or quest 39387 as start/end; no source-type-17 conditions for those spells or source-type-19/20 conditions for quest 39387 were returned.",
+    "reward_actors": "Mayla entries 93826 and 108434 have npcflag 2 and the existing SmartAI binding. Both are registered enders for 39387."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "02600433C17D3B7FD6A132C0043C3D10856A53AC572F86BCA78E112BB3732AFD",
+    "version": "9e537f9ca03e+ 2026-10-12 16:30:02 +0300 (main branch) (Win64, Release)",
+    "version_note": "Matches the installed executable recorded by currency-loot-response-2026-10-12.json; --version succeeds. No new Release build was needed because production code and SQL were unchanged.",
+    "migration_state": "2026_10_12_06_highmountain_skyhorn_ritual.sql and 2026_10_12_07_highmountain_aviash.sql are registered RELEASED.",
+    "processes": "worldserver, bnetserver and WoW client were not running during the initial process check. None was started in this follow-up."
+  },
+  "next_audit": {
+    "quest_ids": [38915, 39776],
+    "live_links": "39387 has RewardNextQuest=0 but quest_template_addon.NextQuestID=38915. Quest 38915 has PrevQuestID=39387, NextQuestID=39776 and RewardNextQuest=39776. RewardNextQuest=0 alone does not establish that there is no continuation.",
+    "live_relations": "38915 starts at Mayla 108434 and ends at 93846. Quest 39776 starts and ends at 93846.",
+    "unverified": "These follow-up relations were read from the live database only. Compare with native 7.3.5 data and inspect Mayla phasing, starter availability and objectives before changing or certifying this continuation."
+  },
+  "client_acceptance_pending": [
+    "Board Aviash through the normal quest interaction; observe the entire flight and following camera.",
+    "Observe native dismount, restored controls and pet portrait when using a permanent pet.",
+    "Meet Lasan, follow his ceremony, receive witness credit only after the pledge and claim the reward from Mayla."
+  ]
+}
