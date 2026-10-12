@@ -1,0 +1,229 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objectives": [
+    {
+      "ID": 279202,
+      "QuestID": 39318,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 95261,
+      "Amount": 8,
+      "Flags": 2,
+      "Flags2": 0
+    },
+    {
+      "ID": 280335,
+      "QuestID": 39318,
+      "Type": 0,
+      "StorageIndex": 1,
+      "ObjectID": 95403,
+      "Amount": 1,
+      "Flags": 0,
+      "Flags2": 0
+    },
+    {
+      "ID": 279198,
+      "QuestID": 38910,
+      "Type": 0,
+      "StorageIndex": 0,
+      "ObjectID": 94991,
+      "Amount": 7,
+      "Flags": 0,
+      "Flags2": 0
+    }
+  ],
+  "enders": [
+    {
+      "id": "93841",
+      "quest": "38913"
+    },
+    {
+      "id": "93841",
+      "quest": "39318"
+    },
+    {
+      "id": "95410",
+      "quest": "38910"
+    }
+  ],
+  "quests": {
+    "39318": {
+      "LogTitle": "'Nursing the Wounds'",
+      "LogDescription": "'Find Windmaster Julan and help extinguish the fires on Skyhorn.'",
+      "RewardNextQuest": "38910"
+    },
+    "38913": {
+      "LogTitle": "'The Skyhorn Tribe'",
+      "LogDescription": "'Meet Lasan Skyhorn at Skyhorn.'",
+      "RewardNextQuest": "39318"
+    },
+    "38910": {
+      "LogTitle": "'Rocs vs Eagles'",
+      "LogDescription": "'Save $1oa Captive Great Eagles.'",
+      "RewardNextQuest": "39321"
+    }
+  },
+  "quest_line": [
+    {
+      "ID": 1075,
+      "QuestLineID": 93,
+      "QuestID": 38913,
+      "OrderIndex": 0
+    },
+    {
+      "ID": 1077,
+      "QuestLineID": 93,
+      "QuestID": 39318,
+      "OrderIndex": 1
+    },
+    {
+      "ID": 1076,
+      "QuestLineID": 93,
+      "QuestID": 38910,
+      "OrderIndex": 2
+    }
+  ],
+  "effects": [
+    {
+      "ID": 276102,
+      "Effect": 6,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 4,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 188911
+    },
+    {
+      "ID": 276660,
+      "Effect": 3,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 0,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 8,
+      "EffectRadiusIndex2": 8,
+      "ImplicitTarget1": 87,
+      "ImplicitTarget2": 8,
+      "SpellID": 189168
+    },
+    {
+      "ID": 276695,
+      "Effect": 6,
+      "EffectBasePoints": 0,
+      "EffectIndex": 0,
+      "EffectAura": 293,
+      "DifficultyID": 0,
+      "EffectAmplitude": 0.0,
+      "EffectAuraPeriod": 0,
+      "EffectBonusCoefficient": 0.0,
+      "EffectChainAmplitude": 1.0,
+      "EffectChainTargets": 0,
+      "EffectDieSides": 0,
+      "EffectItemType": 0,
+      "EffectMechanic": 0,
+      "EffectPointsPerResource": 0.0,
+      "EffectRealPointsPerLevel": 0.0,
+      "EffectTriggerSpell": 0,
+      "EffectPosFacing": 0.0,
+      "EffectAttributes": 0,
+      "BonusCoefficientFromAP": 0.0,
+      "PvpMultiplier": 1.0,
+      "Coefficient": 0.0,
+      "Variance": 0.0,
+      "ResourceCoefficient": 0.0,
+      "GroupSizeBasePointsCoefficient": 1.0,
+      "EffectSpellClassMask1": 0,
+      "EffectSpellClassMask2": 0,
+      "EffectSpellClassMask3": 0,
+      "EffectSpellClassMask4": 0,
+      "EffectMiscValue1": 603,
+      "EffectMiscValue2": 0,
+      "EffectRadiusIndex1": 0,
+      "EffectRadiusIndex2": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0,
+      "SpellID": 189182
+    }
+  ],
+  "override_bar": {
+    "ID": 603,
+    "Spells1": 189168,
+    "Spells2": 0,
+    "Spells3": 0,
+    "Spells4": 0,
+    "Spells5": 0,
+    "Spells6": 0,
+    "Spells7": 0,
+    "Spells8": 0,
+    "Spells9": 0,
+    "Spells10": 0,
+    "PlayerActionBarFileDataID": 629199,
+    "Flags": 8
+  },
+  "spell_names": {
+    "188911": "Skyhorn Fire",
+    "189168": "Suppressing Wind",
+    "189182": "Totem of Winds"
+  },
+  "hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "OverrideSpellData": "bf728cfdc913db10cd1e0d08657d86d23156380d58497d281c5ce79d3e25884b",
+    "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff",
+    "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf"
+  }
+}

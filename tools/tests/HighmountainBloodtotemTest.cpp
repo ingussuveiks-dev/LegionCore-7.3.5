@@ -61,11 +61,12 @@ struct Player {
  void KilledMonster(CreatureTemplate const*,ObjectGuid);void KilledMonsterCredit(uint32,ObjectGuid={});
  template<class... T> void UpdateAchievementCriteria(T...){}
  uint32 GetGuildId()const{return 0;}void AddKillCreature(uint32,uint16,bool){}void AddTrackingQuestIfNeeded(ObjectGuid){}
+ std::map<int,int> nursingProgress;
  unsigned creditPackets=0;
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const*,int)const{return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -75,8 +76,8 @@ struct Player {
  bool CanCompleteQuest(uint32); bool IsQuestWeekRewarded(uint32){return false;} bool IsQuestSeasonalRewarded(uint32){return false;}
  bool CanTakeQuest(Quest const*,bool){return false;}
  QuestStatusData* getQuestStatus(uint32){return &status;}
- bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return quest->id==39456?bool(progress&(1<<obj.StorageIndex)):progress>=obj.Amount;}
- void SetQuestObjectiveData(Quest const*,QuestObjective const*,uint32 count){progress=int(count);}
+ bool HasQuestObjectiveComplete(Quest const* quest,QuestObjective const& obj){return quest->id==39456?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -97,6 +98,30 @@ int main()
  store.quests[39373].objectives.push_back({});
  store.quests.emplace(39374,Quest{39374,0,{39372,39372,39373,39873}});
  Player p;
+ // Native Skyhorn opening, independent of the Bloodtotem branch.
+ store.quests.emplace(38913,Quest{38913,0,{}});
+ store.quests.emplace(39318,Quest{39318,0,{38913,38913}});
+ store.quests.emplace(38910,Quest{38910,0,{39318,39318}});
+ for(auto rewarded: {std::set<uint32>{},std::set<uint32>{40229},std::set<uint32>{38913},std::set<uint32>{38913,40229}}){
+  p.m_RewardedQuests=rewarded;
+  assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39318),false)==bool(rewarded.count(38913)));
+ }
+ p.m_RewardedQuests={38913};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(38910),false));
+ p.m_RewardedQuests.insert(39318);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(38910),false));
+ store.quests[39318].objectives={{QUEST_OBJECTIVE_MONSTER,95261,8,2,0},{QUEST_OBJECTIVE_MONSTER,95403,1,0,1}};
+ // Extracted production kill-credit and completion handlers: neither objective alone completes.
+ p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ p.KilledMonsterCredit(95403);assert(p.nursingProgress[1]==1 && !p.CanCompleteQuest(39318));
+ p.KilledMonsterCredit(95403);assert(p.nursingProgress[1]==1);
+ for(int count=1;count<=9;++count){p.KilledMonsterCredit(95261);assert(p.nursingProgress[0]==std::min(count,8));assert(p.status.Status==(count<8?QUEST_STATUS_INCOMPLETE:QUEST_STATUS_COMPLETE));}
+ assert(p.completeCalls==1 && p.creditPackets==9);
+ p={};p.activeQuest=39318;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ for(int count=0;count<8;++count)p.KilledMonsterCredit(95261);
+ assert(!p.CanCompleteQuest(39318));p.KilledMonsterCredit(95403);assert(p.completeCalls==1);
+ for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39318;p.status.Status=status;p.KilledMonsterCredit(95261);p.KilledMonsterCredit(95403);assert(p.nursingProgress.empty());}
+ p={};
+ std::cout<<"PASS: Skyhorn prerequisite independent of Bloodtotem; Julan plus exactly eight fires required, duplicate credits capped, absent/rewarded quests ignored, next quest requires reward.\n";
+
  for(auto id:{39372u,39373u,39873u})assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
  p.m_RewardedQuests.insert(38912);
  for(auto id:{39372u,39373u,39873u})assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(id),false));
