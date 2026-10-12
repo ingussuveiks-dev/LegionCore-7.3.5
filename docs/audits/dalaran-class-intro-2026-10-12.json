@@ -1,0 +1,22 @@
+{
+  "report": "Maiko, level 101 warlock, completed/rewarded 44663 and arrived on map 1220 in zone 7502 with no active quests. Walking near the Wowhead quest location played Lan'dalock's Spectral Sight conversation instead of offering The Sixth.",
+  "findings": [
+    "SpellArea::IsFitToRequirements accepts only quest statuses included in quest_end_status. Spell 204860 had mask 74 (COMPLETE, INCOMPLETE, REWARDED), excluding NONE=0. Warlock class mask 256 and area 7502 were correct.",
+    "Native SpellEffect 302399 summons Ritssyn 103506 via spell 204860 and SummonProperties 3650; effect 344898 adds a dummy aura. Native duration index 5 is 300000 ms. Existing SmartAI makes the NPC personal/following, offers quest 40716 and despawns after acceptance or its timeout.",
+    "Event objects 136..140 use Smart source type 13. Their 17 quest/objective conditions incorrectly used SourceId 10. SmartScript::ProcessEvent looks up the actual source type and event ID + 1, so those guards were never applied.",
+    "Event object 139 at -795.929,4436.11,738.243 on map 1220 links kill credit 108041, conversation 2382 (Lan'dalock), and spell 216454. Its guards require active quest 42594 and completed objectives 107998,108001,108011. Maiko had none of these.",
+    "Ritssyn greeting group 0 referenced BroadcastText 105637 (Akazamzarak's coin solicitation). Effective local hotfix BroadcastText 106111 is the warlock invitation, voice 71324. Existing quest-accept action referenced missing text group 1; BroadcastText 104179 supplies the native Circle of Wills invitation, voice 63919. These text IDs are supplied by the local hotfix DB, not present in the sparse local BroadcastText.db2 export."
+  ],
+  "repairs": [
+    "Change only the original 204860 area row mask from 74 to 1; new/abandoned warlocks may receive the offer, active/completed/rewarded ones do not.",
+    "Rebind the 17 existing quest/progress guards from SourceId 10 to 13, preserving their prerequisites and custom conditions already present at the correct key.",
+    "Replace only the erroneous greeting reference and add missing acceptance text without replacing existing custom group 1 text."
+  ],
+  "validation": [
+    "Test-DalaranClassIntro.ps1 compiles the production common SpellArea predicate, QuestStatus enum and Player::SetQuestUpdate. Covers initial offer, duplicate aura prevention, acceptance cleanup, abandon/reoffer, completed/rewarded/failed states, other classes and other zones.",
+    "Test-DalaranClassIntroData.ps1 applies the actual migration twice on connection-local copies; verifies 17 guards resolve to actual Smart event scripts, no-quest/wrong-progress cases reject and correct active progress permits the reported trigger, text bindings, unrelated rows and custom replacements.",
+    "Migration applied to live world DB and registered with the updater; no character quest or inventory mutation. Runtime caches reload at next startup; server was stopped by the time of deployment."
+  ],
+  "scope_limit": "Repairs the missing initial offer and unrelated dialogue, not certification of the whole warlock campaign. Accepting the quest is still required for a quest-log entry. Ritssyn's appearance, speech, personal visibility and acceptance need a client retest. The optional portal after acceptance and the subsequent ritual/artifact chain have not been repaired or verified in this batch.",
+  "reference": "https://www.wowhead.com/quest=42594/move-like-no-other"
+}
