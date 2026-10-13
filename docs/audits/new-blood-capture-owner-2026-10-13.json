@@ -1,0 +1,18 @@
+{
+  "report": "Client retest still stops after Jagganoth's opening and Zelifrax's challenge. Only The New Blood is active; this is not the later Heart of the Dreadscar combat scenario.",
+  "confirmed": [
+    "The screenshot contains Jagganoth's opening yell, confirming the prior opening-condition repair ran. It does not contain the subsequent capture dialogue. Runtime logs do not include SmartAI debug tracing, so the precise rejected callback in this run is not recorded.",
+    "The prior fallback was on Zelifrax's timed list 9879701, eight seconds after MovePoint(2). His point-2 callback sends DATA_SET(1,1), then schedules his own despawn after six seconds. If that signal is rejected, the sender disappears before his fallback can run. The previous data-only regression did not exercise actor lifetime.",
+    "Jagganoth's DATA_SET(1,1) was gated by nearby alive Ritssyn. SmartAI::SetData supplies no invoker, so ConditionMgr evaluates the lookup from Jagganoth. Nearest-creature lookup checks phase as well as distance/liveness. This creates an unnecessary dependency on a surviving same-phase actor after a handoff; its exact state in the failed client run remains unobserved.",
+    "The two existing summon paths for Jagganoth 98831 are the Dalaran ritual and a later Calydus scene in map 1522. There are no static spawns for this entry. The capture path is specific to Dalaran map 1220 / Underbelly map 1502."
+  ],
+  "repair": [
+    "Remove only the previously added eight-second Zelifrax fallback.",
+    "Jagganoth now owns an 18-second ordinary UPDATE event that sends DATA_SET(1,1) to himself. He lives for 300 seconds in this ritual; loss/despawn of Zelifrax cannot cancel this timer. It is not a timed-action-list self-replacement, which SetScript9 explicitly rejects.",
+    "Both normal and fallback signals use the existing non-repeatable DATA_SET capture event. Its scope is now the two Dalaran maps instead of a nearby-Ritssyn lookup; the fallback has the same map restriction. The later Calydus scene in map 1522 is excluded.",
+    "Preserve the capture dialogue, native forcecast 200038 -> 200032, quest-gated jailer summon, blackout 199362 -> 199359 transfer, and quest credit. No automatic quest completion was added."
+  ],
+  "validation": "Test-NewBloodRitualData.ps1 now applies both historical and corrective migrations to temporary table copies, verifies idempotence and the complete existing transfer references, and exercises timing cases for normal/missing/rejected callbacks, disappearing sender and excluded map 1522. These are data and timeline checks, not a live client simulation.",
+  "deployment": "SQL-only migration 2026_10_13_01_new_blood_capture_owner.sql applied and registered. Backups are stored under .codex/backups/new-blood-capture-owner. Running worldserver retains cached SmartAI data until restart; no online character data was edited and no server was stopped automatically.",
+  "client_retest": "Required after worldserver restart: restart The New Blood through its quest-accept flow, click the ritual portal, hear the challenge followed by Jagganoth's capture dialogue, see the jailer/blackout and reach the Dreadscar introduction. Full in-game completion is not yet verified."
+}
