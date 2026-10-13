@@ -16,7 +16,8 @@ $migration=Get-Content "$repo/sql/updates/world/2026_10_13_06_new_blood_full_seq
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_07_new_blood_enslave_button.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_08_new_blood_five_jailers.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_09_new_blood_captors_and_allies.sql" -Raw)
-$fixture=(@('conditions','smart_scripts','gameobject_template','spell_target_position','spell_linked_spell','creature_template','spell_script_names') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
+$migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_10_new_blood_prisoner_lifecycle.sql" -Raw)
+$fixture=(@('conditions','smart_scripts','gameobject_template','spell_target_position','spell_linked_spell','creature_template','spell_script_names','creature_movement_override') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+="`n$migration`n$migration`n"
 $fixture+=@"
 SELECT JSON_OBJECT('kind','script','entry',entryorguid,'source',source_type,'id',id,'link',link,'event',event_type,'phase',event_phase_mask,'flags',event_flags,'ep1',event_param1,'ep2',event_param2,'action',action_type,'a1',action_param1,'a2',action_param2,'a3',action_param3,'target',target_type,'t1',target_param1,'t2',target_param2,'x',target_x,'y',target_y,'z',target_z) FROM smart_scripts WHERE entryorguid IN(98771,98775,98783,98793,98836,99178,99516,99627,98831,98834,101460,245233,245234,245924,9883101,9917801,9917802);
@@ -26,6 +27,8 @@ SELECT JSON_OBJECT('kind','exit','map',target_map,'z',target_position_z) FROM sp
 SELECT JSON_OBJECT('kind','book','loot',Data1) FROM gameobject_template WHERE entry=245924;
 SELECT JSON_OBJECT('kind','creature','entry',entry,'faction',faction,'flags',unit_flags) FROM creature_template WHERE entry IN(98771,98775,98783,98793,98836,101460);
 SELECT JSON_OBJECT('kind','captureScript','count',COUNT(*)) FROM spell_script_names WHERE spell_id=200033 AND ScriptName='spell_gen_new_blood_imprisoned';
+SELECT JSON_OBJECT('kind','prisonerAI','count',COUNT(*)) FROM creature_template WHERE entry IN(98775,98783,98793) AND AIName='SmartAI' AND ScriptName='npc_new_blood_prisoner';
+SELECT JSON_OBJECT('kind','prisonerGravity','count',COUNT(*)) FROM creature c JOIN creature_movement_override m ON m.SpawnId=c.guid WHERE c.map=1522 AND c.id IN(98775,98783,98793) AND m.Ground=1 AND m.Flight=1;
 "@
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
 $old=$env:MYSQL_PWD

@@ -3630,6 +3630,14 @@ void SpellMgr::LoadSpellCustomAttr()
                     effect->MiscValue = 127;
     }
 
+    // The New Blood: the rescue interaction targets protected council NPCs.
+    // Native 195039 is friendly-targeted but lacks this core's assist exception;
+    // without it spellclick fails on IMMUNE_TO_PC before reaching the rescue AI.
+    ApplySpellFix({195039}, [](SpellInfo* spellInfo)
+    {
+        spellInfo->GetMisc()->MiscData.Attributes[6] |= SPELL_ATTR6_ASSIST_IGNORE_IMMUNE_FLAG;
+    });
+
     // Cheat Death
     ApplySpellFix({45182}, [](SpellInfo* spellInfo)
     {

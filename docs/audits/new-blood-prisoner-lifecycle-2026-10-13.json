@@ -1,0 +1,67 @@
+{
+  "quest": 40729,
+  "scenario": 962,
+  "build": "7.3.5.26972",
+  "status": "Release and SQL deployed; production-handler, native-data and startup checks pass. Full in-client playthrough is still unverified.",
+  "observedFailure": "User reached Stage 3 but all three prisoners lacked chains and a usable rescue click.",
+  "missedByEarlierAudit": [
+    "Existing SpellHit/credit SQL lists did not establish whether the client could initiate that spell.",
+    "Source-18 conditions initially masked NPC_FLAG_SPELLCLICK. Guard death did not dirty the field, so the client could retain its earlier non-clickable state.",
+    "Even with the flag, native friendly-targeted spell 195039 fails the core's protected-NPC assist gates: IMMUNE_TO_PC/NPC and missing CAN_ASSIST. Its Attributes[6] is 4608 and lacks ASSIST_IGNORE_IMMUNE_FLAG.",
+    "No chain caster helpers, pose aura or release-to-landing lifecycle existed for the three map-1522 spawns.",
+    "The spell name Portal Malfunction was mistaken for evidence of flames. Its attached model is Lightning_Fel_Cast_Hand, FileDataID 166490."
+  ],
+  "changes": [
+    "Quest-local SmartAI extension only for persistent NPCs 98775/98783/98793 in scenario 962; archive summons and scenario 998 retain their original SmartAI behavior.",
+    "Ready state follows Stage 3 and nearby living guards. Actual NPC flag changes dirty client visibility; guard distances are measured from the prisoner, and an active quest is required.",
+    "Only rescue spell 195039 receives the assist-immunity exception. Ordinary spells still respect the NPC protection flags.",
+    "Four native chain helper entries 97357/97575/97578/97577 own auras 192195/192196/192198/192200. Ambient auras are applied directly with helper caster GUIDs; a neutral helper's ordinary friendly-targeted cast would fail validation.",
+    "Native pose 192214 uses AnimKit 8751. Existing prisoner coordinates are already about three yards above nearby guard ground positions; no extra hover-height lift is added.",
+    "Release 192495 clears four chains, removes the pose and root, restores gravity and starts a fall. Existing dialogue, individual credit and follower aura execute once after landing. Timeout, logout or abandonment before credit leaves a retryable captive.",
+    "Owned chain helpers are renewed while bound and expire within five seconds if their owner disappears. Release removes them immediately; repeated updates do not create duplicates.",
+    "The portal's warning now selects its native CustomSpell02 loop through AnimKit 1244. Its earlier thirteen-second Birth animation is preserved."
+  ],
+  "nativeEvidence": {
+    "faction": "2501 retains council faction 959/enemy 960, but FriendGroup=1 makes the council friendly to both Horde and Alliance players. See the previous captors-and-allies audit and the current full-sequence native DB2 test.",
+    "rescueTrees": {"98775": 46021, "98793": 46022, "98783": 46023},
+    "rescueCriteriaAssets": [47181, 47182, 47183],
+    "poseAnimKit": 8751,
+    "portalFileDataID": 607277,
+    "portalSHA256": "5b5a49ce674473684f6e26adf22cddf1d1062c70a5d88e8e22f8331b18b764e6",
+    "portalFire": "Emitter 4 is disabled in Stand and enabled in CustomSpell02. It uses texture index 5, Spells/Warlock_DemonicPortal_Fire_Greyscale.blp. Native AnimKit 1244 loops animation 214.",
+    "timingLimit": "Fire begins at the existing warning ten seconds before Jagganoth is summoned. The user's approximate fifteen-second observation is not treated as an exact retail timing source.",
+    "placementLimit": "Chain anchors are reconstructed behind the existing pillars using each prisoner's facing, +/-1.4 lateral, -0.6 forward, +2.8/-1.2 vertical. These offsets are not claimed to be packet-sniff coordinates and require visual confirmation."
+  },
+  "stageReview": [
+    {"stage":"Ritual/capture", "dataAndCode":"Birth -> click -> channel -> warning/fire -> Jagganoth -> knockback/stun -> five individually facing captors -> twelve-second channel -> blackout -> cage; ritual credit precedes sequenced escape objective.", "client":"User reached cage in prior build; current fire and captor visuals still need confirmation."},
+    {"stage":1, "dataAndCode":"Ritssyn dialogue advances to Stage 2 and supplies native Enslave Beshtal extra action.", "client":"User reached Stage 2 in prior build."},
+    {"stage":2, "dataAndCode":"Beshtal temporarily friendly, both cages open, control breaks, original hostile faction restored, Ritssyn assists. Player or pet death credit advances.", "client":"User reached Stage 3; latest friendly/ally behavior is not declared visually verified."},
+    {"stage":3, "dataAndCode":"All three guarded, suspended prisoners expose a usable rescue. Chains disappear, landing completes, each distinct rescue credits once and native followers appear. Individual completed criteria suppress a reloaded prisoner.", "client":"This turn fixes the user's blocking failure; current build not yet played."},
+    {"stage":4, "dataAndCode":"Two distinct once-only crystal events increment the barrier state. Calydus encounter supplies criterion 47234. Native GO interactions do not use the prisoner's spellclick target path.", "client":"Not verified in this run."},
+    {"stage":5, "dataAndCode":"Defeat Nelach, clean player-owned followers, summon archive copies, loot actual tome 132512 from chest 245924. Opening an empty window alone cannot advance; existing-item recovery is gated to the correct step and Nelach's death.", "client":"Not verified in this run."},
+    {"stage":6, "dataAndCode":"Native jumps/throw and council stand-ins, escape path, Xelthoth spawn at waypoint 18. Death including pet kill unlocks exit; exit credit and cleanup precede return. Quest remains for manual hand-in.", "client":"Not verified in this run."}
+  ],
+  "comparisons": [
+    {"url":"https://warcraft.wiki.gg/wiki/The_New_Blood", "use":"Quest-stage narrative and rescue interaction, compared with the user's retail screenshots."},
+    {"url":"https://www.wow-pro.com/warlock-artifact-and-class-guide/", "use":"Independent player route, including Beshtal and Ritssyn assistance."},
+    {"url":"https://github.com/AshamaneProject/AshamaneCore/blob/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles/ClassHalls/class_hall_warlock.cpp", "use":"Inspected class-hall implementation; contains introductory NPC logic, not a full New Blood rescue implementation to copy."},
+    {"url":"https://github.com/wowmodelviewer/wowmodelviewer/blob/master/src/games/wow/particle.cpp", "use":"M2 particle EnabledIn behavior: absent keys leave emitter enabled."},
+    {"url":"https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellVisualEffectName.dbd", "use":"Correct native layout to resolve effect model FileDataID."},
+    {"url":"https://www.wowhead.com/quest=40729/the-new-blood", "use":"Wowhead pages could not be directly retrieved in this run; no visual identification is claimed from an unread page."}
+  ],
+  "validation": {
+    "Test-NewBloodPrisoners.ps1":"PASS: compiled production AI plus extracted core assist gates/correction; blocked and refreshed clicks, all three prisoners, chains, landing, repeated clicks, logout/abandonment, persisted individual progress, later copies/scenario isolation.",
+    "Test-NewBloodFullSequence.ps1":"PASS: migration replay twice in isolated temporary tables, native six-stage criteria, faction data, cage, follower, barrier, tome, escape and exit paths. This is code/data coverage, not a client playthrough.",
+    "Test-NewBloodCapture.ps1":"PASS: production condition and knockback handlers, current migration replay and portal interaction/fire scheduling.",
+    "audit_new_blood_portal.py":"PASS against native DB2 and exported model 607277; fire texture/animation and Birth confirmed in data.",
+    "Release":"worldserver.exe built directly into build-extractors/bin/Release; existing SpellMgr.cpp signed/unsigned warning, no build errors.",
+    "startup":"World initialized in 30 seconds; validation DBErrors.log and stderr empty; graceful exit 0. Test server is stopped.",
+    "client":"No full playthrough or pixel-level visual confirmation performed. Do not promote these tests to that claim."
+  },
+  "deployment": {
+    "migration":"2026_10_13_10_new_blood_prisoner_lifecycle.sql",
+    "sha1":"08E35E9F5108FFDD05B308A372FBF1A4E7CE1093",
+    "backup":".codex/backups/new-blood-prisoners/20261013-160527",
+    "characterQuestOrInventoryEdited":false
+  }
+}

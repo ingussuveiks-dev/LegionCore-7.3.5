@@ -9,8 +9,10 @@ function Export-Method($path,$start,$end,$out){
 }
 Export-Method 'src/server/game/Conditions/ConditionMgr.cpp' 'bool ConditionMgr::IsObjectMeetingSmartEventConditions(' 'bool Condition::isLoaded()' 'ConditionsCall.inc'
 Export-Method 'src/server/game/Spells/SpellEffects.cpp' 'void Spell::EffectKnockBack(' 'void Spell::EffectLeapBack(' 'Knockback.inc'
-$migration=Get-Content "$repo/sql/updates/world/2026_10_13_05_new_blood_capture_and_portal.sql" -Raw
-$fixture=(@('conditions','smart_scripts') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
+# Replay the current migration against the installed baseline. Reapplying 05
+# after 09 inserts a second id=4 because smart_scripts includes link in its PK.
+$migration=Get-Content "$repo/sql/updates/world/2026_10_13_10_new_blood_prisoner_lifecycle.sql" -Raw
+$fixture=(@('conditions','smart_scripts','creature_template','creature_movement_override') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+="`n$migration`n$migration`n"
 $fixture+=@"
 SELECT CONCAT('{',ConditionTarget,',',ConditionValue1,'},') FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=98831 AND SourceGroup=3 AND ConditionTypeOrReference=22 ORDER BY ElseGroup;
@@ -21,7 +23,7 @@ SELECT 'early-interior',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND 
 SELECT 'click-interior',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=6 AND event_type=61 AND action_type=50 AND action_param1=245958;
 SELECT 'ready-delay',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=7 AND event_param1=13000 AND event_param2=13000 AND link=8 AND action_type=128 AND action_param1=0;
 SELECT 'ready-click',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=8 AND action_type=81 AND action_param1=16777216;
-SELECT 'reignite',COUNT(*) FROM smart_scripts t JOIN smart_scripts a ON a.entryorguid=98797 AND a.source_type=0 AND a.id=t.link WHERE t.entryorguid=9879701 AND t.source_type=9 AND t.id=9 AND a.event_type=61 AND a.action_type=75 AND a.action_param1=199994 AND a.target_param1=101433;
+SELECT 'reignite',COUNT(*) FROM smart_scripts t JOIN smart_scripts a ON a.entryorguid=98797 AND a.source_type=0 AND a.id=t.link WHERE t.entryorguid=9879701 AND t.source_type=9 AND t.id=9 AND a.event_type=61 AND a.action_type=128 AND a.action_param1=1244 AND a.action_param2=1 AND a.target_param1=101433;
 "@
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
 $old=$env:MYSQL_PWD

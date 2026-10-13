@@ -32,6 +32,9 @@ def meets(src,group,entry,state,source_id=0):
   if all(results):return True
  return False
 base={'scenario':962,'step':0,'quest':40729,'map':1522,'objectsNear':[245924]}
+assert next(r for r in rows if r['kind']=='prisonerAI')['count']==3
+assert next(r for r in rows if r['kind']=='prisonerGravity')['count']==3
+assert all(c['target']==1 for c in conditions if c['source']==18 and c['group'] in (98775,98783,98793) and c['type']==29)
 grant=script(98771,7,9)
 assert (grant['action'],grant['a1'],grant['a2'],grant['target'])==(11,199338,18,18)
 recovery=script(98771,8)
@@ -99,6 +102,7 @@ for scenario in [998,1011,0]:
 assert not meets(22,6,99178,base|{'step':5,'objectsNear':[]})
 for actor in [98775,98783,98793]:
  assert meets(18,actor,195039,base|{'step':2})
+ assert not meets(18,actor,195039,base|{'step':2,'quest':0})
  assert not meets(18,actor,195039,base|{'step':2,'aliveNear':[98878]})
  assert not meets(18,actor,195039,base|{'step':3})
 assert not meets(18,98775,195039,base|{'step':2,'aliveNear':[98876]})
@@ -164,6 +168,16 @@ for step,wanted in zip(steps,expected):
  assert actual==wanted,(step,actual)
 assert len(steps)==6
 fx=d.rows('SpellEffect').values()
+chain_spells={192195,192196,192198,192200}
+assert {r['EffectTriggerSpell'] for r in fx if r['SpellID']==192495 and r['Effect']==203}==chain_spells
+for spell in chain_spells|{192214}:
+ assert any(r['SpellID']==spell and r['Effect']==6 and r['EffectAura']==4 for r in fx)
+assert {r['AnimID'] for r in d.rows('AnimKitSegment').values() if r['ParentAnimKitID']==8751}=={41,115,212}
+assert any(r['SpellID']==195039 and r['Effect']==3 and r['ImplicitTarget1']==25 for r in fx)
+native_rescue=next(r for r in d.rows('SpellMisc').values() if r['SpellID']==195039)
+assert native_rescue['Attributes7']==4608 and not native_rescue['Attributes7']&8
+for tree_id,asset in [(46021,47181),(46022,47182),(46023,47183)]:
+ assert trees[tree_id]['Parent']==46020 and criteria[trees[tree_id]['CriteriaID']]['Asset']==asset
 assert any(r['SpellID']==200038 and r['Effect']==140 and r['EffectTriggerSpell']==200032 for r in fx)
 assert any(r['SpellID']==200032 and r['Effect']==28 and r['EffectMiscValue1']==101460 for r in fx)
 assert any(r['SpellID']==200033 and r['EffectAura']==12 and r['ImplicitTarget2']==92 for r in fx)

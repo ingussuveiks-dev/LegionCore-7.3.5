@@ -26,6 +26,7 @@ void AddSC_highmountain_blood_trial();
 void AddSC_highmountain_blood_rite();
 void AddSC_highmountain_rock_escape();
 void AddSC_highmountain_blood_debt();
+void AddSC_new_blood();
 void AddSC_highmountain_unexpected_allies();
 void AddSC_highmountain_skyhorn_ritual();
 void AddSC_highmountain_aviash();
@@ -238,6 +239,7 @@ void AddLegionScripts()
     AddSC_highmountain_blood_rite();
     AddSC_highmountain_rock_escape();
     AddSC_highmountain_blood_debt();
+    AddSC_new_blood();
     AddSC_highmountain_unexpected_allies();
     AddSC_highmountain_skyhorn_ritual();
     AddSC_highmountain_aviash();
