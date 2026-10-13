@@ -20886,6 +20886,11 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (!questid)
             continue;
 
+        // Lightning Rod tracks absorbed electricity, not dead drakes. Its
+        // validated spell/release handlers write the native charge objective.
+        if (questid == 38058 && real_entry == 90903)
+            continue;
+
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)
             continue;

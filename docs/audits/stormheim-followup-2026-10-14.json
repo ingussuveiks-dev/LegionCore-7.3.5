@@ -1,0 +1,66 @@
+{
+  "scope": "Lightning Rod 38058, Pins and Needles 38059 and The Windrunner's Fate 38360: executable code/data paths and progression to 38060/38362. No client gameplay requested.",
+  "status": "Confirmed blocking defects repaired and all three routes exercised with extracted production handlers, native data, scoped SQL deployment and canonical Release startup. Not client-verified.",
+  "native_evidence": "stormheim-followup-native-2026-10-14.json",
+  "findings_and_repairs": [
+    "Lightning Rod's required objective 277453 had been changed from native Transponder Charged 90866 to unrelated Class Training Credit 35841. Restore only the exact corrupted row. Counter 90903/100 retains its native optional/hidden flags 12 and storage 1.",
+    "Adolescent Storm Drake 90903 was bound to npc_amberbeam_stalker, whose constructor makes it passive, non-attackable, non-selectable and immune to school damage. Its WDB identity is a Storm Drake, not a Pandaria raid actor. Replace only that known incorrect/blank binding with the scoped followup actor. Retain active 98..110 scaling and native sleep cosmetic 133131 outside combat; remove sleep on combat entry. The actor casts its native Lightning Breath 183386 and melees. The 3-second initial/6-second repeat cadence is an implementation choice, not a recovered retail timing.",
+    "Native Lightning Breath 183386 has a cone damage effect and an alternate-power energize effect of four. Related native breaths 180677/183454 carry credit 90903 with amount one. Their handlers require an actual hit on a living eligible Alliance player wearing the pack, with a known Stormheim drake as original caster and matching phase. The real effect amount updates the durable quest counter, capped at 100. No spawn, timer or unrelated hit grants charge.",
+    "Because counter 90903 is also an actual creature entry, generic player/pet corpse credit otherwise increments it. Player::KilledMonsterCredit now excludes that entry only for quest 38058; the validated spell/rescue handlers write its charge counter directly. Other quest credit and achievements remain on their original paths. The regression compiles the whole actual kill-credit method and exercises both empty and real drake GUID dispatch plus an unrelated ordinary kill quest.",
+    "Native pack 180645 supplies alternate bar 329. Partial charge is restored from quest storage on login/re-entry; unrelated alternate-power auras are not replaced. At capacity the real marker 90866 is awarded once and charged pack 180860 is applied. Abandonment/area exit cleans the scoped pack, while the charged pack is preserved for an active/completed Signal Boost 38060. Existing UI auto-completion flags and next links for 38058/38059 are retained; no artificial quest ender was added.",
+    "Pins and Needles retains six world dragoon spawns and native click 180737. The spell's actual dummy hit on the captured original dragoon must finish before release, one rescue credit and the native one-point energize can occur. Range, map/zone, phase, visibility, LOS, life, quest, NPC entry/click flag, actor readiness and weak acceptance lifetime are checked again at completion. Interrupted, duplicate, failed or stale actions leave credit unchanged.",
+    "The original dragoon timed list hid the NPC after five seconds and restored it later but did not clear its held visual or disable repeat clicks during release. The scoped actor clears click/held visual/animation state, stands and speaks using the existing group 0. It hides after five seconds and restores its native held state at twenty seconds. Credit is once per successful physical release cycle; this is not a permanent per-player unique-GUID ledger. The legacy SmartAI spell-hit list is bypassed only for this owned Stormheim actor.",
+    "Creature initialization in this core writes SpellStateVisualID, SpellStateAnimID and SpellStateAnimKitID into WORLD_EFFECT_ID. Do not change initialization globally in this repair. The dragoon Reset writes its existing visual 45944 and animation kit 6050 to the matching native unit fields and restores native world-effect value zero. Release clears those held state fields. The native audit traces visual events, kits, attachments/model file references and the kit 6050 animation segments; actual pose/model/animation playback remains a client check.",
+    "The Windrunner's Fate enforces Saber 241031, Tattersail 91904 and Arrow 241032 in that order. Each clue interaction validates the real GO after native open-lock completion, awards one scoped capped objective and retains native page text/goober behavior. Out-of-order, repeated, wrong-faction/quest or hidden/remote objects grant nothing.",
+    "Tattersail's native spell 182313 uses self-targeted group credit. The engine clears its explicit NPC target but retains GetOriginalTarget. The new handler captures that actual clicked NPC and acceptance lifetime, suppresses unguarded group credit, and grants the personal finding marker only after the correct hit and successful completion, then uses existing dialogue group 3. No unrelated conversation cast controls progression.",
+    "Source-18 conditions restrict these clicks to the active quest and, for Tattersail, an examined saber and an unearned captain marker. The script explicitly forces UNIT_FIELD_NPC_FLAGS updates after stages and on eligibility changes, login and actor reset. Alternative condition groups and spell/AI delegation preserve other maps/zones reusing these entries.",
+    "Exact unphased duplicate Tattersail 341176 and shore Nathanos 341180 copies overlapped original spawns 340416/340422. Delete those two GUIDs only when all stored spawn properties match their respective originals. Preserve other/phased Nathanos copies and any customized duplicate with different properties."
+  ],
+  "verification": [
+    "Test-StormheimFollowup.ps1 compiles the complete extracted production actor/spell/GO/player handlers plus real AddQuestDelayedEvent, CanCompleteQuest, SatisfyQuestPreviousQuest, QuestObjectiveSatisfy and KilledMonsterCredit. Covers capped electricity, no corpse charge, six successful releases, original actor state fields/cleanup, interrupted and stale casts, retained original self-spell target, ordered Horde clues, flag refresh, durable/login/abandon/re-entry recovery, ordinary quest isolation and Signal Boost/later-map delegation. Engine hit, AI, inventory, database and network services are stubbed; actual pet attribution/combat and client rendering are not verified.",
+    "Startup registration is explicitly tested without an active Spell instance. Each native bound spell must register only matching effect slots/types, using its initialized script ID. Runtime hit/action checks are tested separately with a spell context. The runner fails every nonzero executable exit.",
+    "Test-StormheimFollowupData.ps1 applies the real migration twice to temporary snapshots, validating native objectives, all bindings, click conditions, pose/scaling, six rescues/two clues, original/duplicate guards, UI completion and hand-in/next graph. MySQL cannot self-join one temporary table, so only the unchanged original-spawn alias is redirected to its identical read-only snapshot. Actual SQL executes unchanged during deployment. Custom actor/object/spawn and unrelated data checks pass; live validation passes after deployment.",
+    "Test-StormheimFollowupNative.py independently reads original TDB735 and installed DB2 without overlays. Verifies real marker, counts/sequence, native targets/effects and energize quantities, pack power bar, lock, UI completion flags and native visual/animation dependency records. Live hotfix queries found no spell-effect/misc/visual overrides for these seven spells.",
+    "New Blood prisoner/assist and Stormheim shore production regressions pass after the scoped generic kill-credit guard. Release worldserver and bnetserver built in build-extractors/bin/Release, preserving runtime configuration, certificates, DLLs, logs and extracted data. Fresh startup/shutdown results and hashes are appended as runtime evidence."
+  ],
+  "observed_failures_and_repairs": [
+    "Compilation caught a const helper calling this core's non-const SpellScript getter; QuestId no longer has that qualifier. Temporary SQL validation caught the absent ErrorType condition column; the migration now uses the actual schema.",
+    "A stale-target test initially checked readiness while the actor was explicitly outside the world, where the scoped AI correctly delegates. It now restores world presence before asserting readiness. The native test initially assumed an explicit enemy target for 183386; installed data proves cone target 104. The assertion uses that actual record.",
+    "The initial generated native visual-trace test was truncated at a substring inside layout rather than the top-level out assignment. It was repaired before saving native evidence; the complete dependency trace passes.",
+    "Initial canonical startup crashed with exit -1073741819 during spell-script validation at startup-20261014-005209, despite no SQL/stderr text. Register called GetSpellInfo before an active Spell existed. Both registrations now use initialized m_scriptSpellId, and the compiled registration regression deliberately provides no active Spell context. The failed logs are retained; final Release startup/shutdown is checked separately."
+  ],
+  "client_checks_and_limits": [
+    "No client gameplay was performed, as requested. Check both faction routes, NPC click flag visibility after saber/quest changes, explicit cast failure/interruption, held/released poses and electric visuals, breath damage/absorption balance, alternate bar and pack rendering, actual pet/group credit, both UI auto-turn-ins, Nathanos hand-in and reward/next-quest presentation before calling whole quests client-verified.",
+    "The retained native breath and successful release routes can fill the transponder. Every static-maelstrom/puddle/other-drake ability variant, retail spawn/attack timing and exact absorption behavior is not certified by this implementation. No claim of complete retail choreography is made. No new spawns, movement paths or camera handoffs were introduced.",
+    "No generic scenario criteria, boost, pet lookup, warlock spell or scripted mover code changed. Only the one quest/entry is excluded from generic corpse credit; transport and later scenarios continue through their existing handlers."
+  ],
+  "next": "Signal Boost 38060 and A Grim Trophy 38362: defense encounter/real signal completion and trophy loot/hand-in progression.",
+  "deployment": {
+    "migration": "2026_10_14_01_stormheim_followup.sql",
+    "sha1": "4720561D882715B7EDDC8E338CB0B6EFAB481F4B",
+    "backups": ".codex/backups/stormheim-followup/20261014-005209",
+    "state": "RELEASED"
+  },
+  "runtime_evidence": {
+    "source_revision": "5922cd77df4718c10c3ffefe539797e8ef4ba70e",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-followup/startup-20261014-005453",
+      "ready": true,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0,
+      "exit_code": 0
+    },
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_followup.cpp": "92A0EE58288B5DB814E438C8A489D8BF7B337F11382592DBE8FF589D54872460",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "EFA2F12AAD5CBE802C4CA68816F07BD210C5DA344057C8F329B690AD5A665DB1",
+      "src/server/game/Entities/Player/Player.cpp": "6AECB22243C747F4501CFAA06E3B450D8E018477A5555A54132BB6C8D06860F9",
+      "sql/updates/world/2026_10_14_01_stormheim_followup.sql": "92134D4A1A05A01CA552F51EE68DE3F61CCB674EC710843BDF751CE290E36A0F",
+      "tools/tests/StormheimFollowupTest.cpp": "953B8B285D27574FFF5830FACE8B32DEDEA153E5A6D1C8C7C6B991DD2FA244D0",
+      "build-extractors/bin/Release/worldserver.exe": "FCD9FFDD2D3DD3688DAB4A95D58F4B711153E812F78BA2EAF68AEC01463BC2CB",
+      "build-extractors/bin/Release/bnetserver.exe": "056A7CC8B7A780E8B90051CE27BF0A22F710EE35ACA2C13791E629318F99768C"
+    }
+  }
+}
