@@ -26,6 +26,7 @@ def meets(src,group,entry,state,source_id=0):
    elif k==30:value=v in state.get('objectsNear',[])
    elif k==1:value=v in state.get('auras',[])
    elif k==52:value=v in state.get('criteriaTrees',[])
+   elif k==31:value=state.get('type')==v and (not c['v2'] or state.get('entry')==c['v2'])
    else:raise AssertionError(c)
    results.append(not value if c['negative'] else value)
   if all(results):return True
@@ -40,6 +41,20 @@ assert meets(22,9,98771,prisoner)
 for changed in [{'auras':[199338]},{'criteriaTrees':[46006]},{'step':0},{'step':2},{'scenario':998},{'quest':0}]:
  assert not meets(22,9,98771,prisoner|changed),changed
 assert not meets(17,0,199336,prisoner|{'criteriaTrees':[46006]})
+# Exactly the player and four surviving council actors get captors; pets,
+# Zelifrax, other NPCs and players without the quest cannot summon one.
+captives=[{'type':4,'quest':40729}]+[{'type':3,'entry':e} for e in [101456,101454,101455,101457]]
+for captive in captives:
+ assert meets(13,1,200038,captive) and meets(17,0,200032,captive)
+ assert meets(22,3,101460,captive)==(captive['type']==4)
+for bystander in [{'type':4},{'type':3,'entry':98797},{'type':3,'entry':101433},{'type':3,'entry':416}]:
+ assert not meets(13,1,200038,bystander) and not meets(17,0,200032,bystander)
+assert (script(101460,1)['action'],script(101460,1)['target'],script(101460,1)['link'])==(66,23,5)
+assert (script(101460,5)['action'],script(101460,5)['a1'],script(101460,5)['target'],script(101460,5)['link'])==(11,200033,23,0)
+assert script(101460,2)['event']==54 # linked events do not evaluate source-22 guards
+assert script(101460,0,9)['ep1']==12000 and script(101460,0,9)['a1']==199362
+assert script(101460,1,9)['ep1']==1000 and script(101460,1,9)['a1']==199359
+assert next(r for r in rows if r['kind']=='instantCaptureLinks')['count']==0
 waiting={'rewarded':[40716]}
 assert meets(23,8392,200,waiting)
 assert not meets(23,8392,200,waiting|{'quest':40729})
@@ -114,6 +129,11 @@ for step,wanted in zip(steps,expected):
  assert actual==wanted,(step,actual)
 assert len(steps)==6
 fx=d.rows('SpellEffect').values()
+assert any(r['SpellID']==200038 and r['Effect']==140 and r['EffectTriggerSpell']==200032 for r in fx)
+assert any(r['SpellID']==200032 and r['Effect']==28 and r['EffectMiscValue1']==101460 for r in fx)
+assert any(r['SpellID']==200033 and r['EffectAura']==12 and r['ImplicitTarget2']==92 for r in fx)
+assert any(r['SpellID']==200033 and r['SpellVisualID']==51979 for r in d.rows('SpellXSpellVisual').values())
+assert d.rows('SpellDuration')[36]['Duration']==1000
 assert any(r['SpellID']==199215 and r['Effect']==28 and r['EffectMiscValue1']==98834 for r in fx)
 assert any(r['SpellID']==196340 and r['Effect']==134 and r['EffectMiscValue1']==101150 for r in fx)
 assert any(r['SpellID']==199359 and r['Effect']==134 and r['EffectMiscValue1']==101420 for r in fx)
