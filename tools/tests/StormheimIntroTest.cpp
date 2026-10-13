@@ -50,7 +50,9 @@ struct Player:Unit {
 };
 #include "QuestDelayedEvent.inc"
 #include "CanCompleteQuest.inc"
-struct SmartAI {Creature* me;unsigned calls=0;explicit SmartAI(Creature* c):me(c){}virtual void MoveInLineOfSight(Unit*){++calls;}virtual void IsSummonedBy(Unit*){}virtual void UpdateAI(uint32){}virtual void MovementInform(uint32,uint32){}virtual uint32 GetData(uint32)const{return 0;}virtual void SetData(uint32,uint32){}};
+struct SmartAI {Creature* me;unsigned calls=0;explicit SmartAI(Creature* c):me(c){}virtual void MoveInLineOfSight(Unit*){++calls;}virtual void IsSummonedBy(Unit*){}virtual void UpdateAI(uint32){}virtual void MovementInform(uint32,uint32){}virtual uint32 GetData(uint32)const{return 0;}virtual void SetData(uint32,uint32){}virtual void sGossipHello(Player*){}virtual void sGossipSelect(Player*,uint32,uint32){}virtual void sQuestAccept(Player*,Quest const*){}};
+// Departure has its own production-handler regression harness.
+namespace StormheimDeparture {void Hello(Player*,Creature*){}bool Select(Player*,Creature*,uint32,uint32){return false;}bool Accept(Player*,Creature*,Quest const*){return false;}}
 // The rounds module has its own production-controller regression harness.
 namespace StormheimRounds {struct Controller {explicit Controller(Creature*){}bool Start(Unit*){return false;}bool Running()const{return false;}void Update(uint32){}void Movement(uint32,uint32){}uint32 GetData(uint32)const{return 0;}void SetData(uint32,uint32){}};}
 struct GameObjectScript {explicit GameObjectScript(char const*){}virtual bool OnGossipHello(Player*,GameObject*){return false;}};

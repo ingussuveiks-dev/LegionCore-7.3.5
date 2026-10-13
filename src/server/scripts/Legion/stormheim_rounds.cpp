@@ -1,4 +1,5 @@
 #include "stormheim_rounds.h"
+#include "stormheim_departure.h"
 #include "ScriptMgr.h"
 #include "SmartAI.h"
 #include "SpellScript.h"
@@ -290,6 +291,7 @@ struct npc_stormheim_rounds_final : SmartAI
 {
     explicit npc_stormheim_rounds_final(Creature* creature) : SmartAI(creature) { }
     void sGossipHello(Player* player) override { StormheimRounds::FinalHello(player,me); SmartAI::sGossipHello(player); }
+    void sQuestAccept(Player* player, Quest const* quest) override { if (!StormheimDeparture::Accept(player,me,quest)) SmartAI::sQuestAccept(player,quest); }
 };
 class go_stormheim_inspect_catapult : public GameObjectScript
 {

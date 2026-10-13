@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "QuestData.h"
 #include "stormheim_rounds.h"
+#include "stormheim_departure.h"
 
 namespace StormheimIntro
 {
@@ -61,6 +62,9 @@ struct npc_stormheim_introduction : SmartAI
     void MovementInform(uint32 type, uint32 id) override { if (rounds.Running()) rounds.Movement(type,id); else SmartAI::MovementInform(type,id); }
     uint32 GetData(uint32 id) const override { return rounds.Running() ? rounds.GetData(id) : SmartAI::GetData(id); }
     void SetData(uint32 id, uint32 value) override { if (rounds.Running()) rounds.SetData(id,value); else SmartAI::SetData(id,value); }
+    void sGossipHello(Player* player) override { SmartAI::sGossipHello(player); StormheimDeparture::Hello(player,me); }
+    void sGossipSelect(Player* player, uint32 menu, uint32 option) override { if (!StormheimDeparture::Select(player,me,menu,option)) SmartAI::sGossipSelect(player,menu,option); }
+    void sQuestAccept(Player* player, Quest const* quest) override { if (!StormheimDeparture::Accept(player,me,quest)) SmartAI::sQuestAccept(player,quest); }
     void MoveInLineOfSight(Unit* who) override
     {
         Player* player = who ? who->ToPlayer() : nullptr;

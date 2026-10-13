@@ -1,0 +1,64 @@
+{
+  "scope": "Greymane's Gambit 39800 and The Splintered Fleet 39801: native code/data audit, departure/re-entry repair and Horde opening report. No client run requested.",
+  "status": "Partial repair. Neither whole mission is implemented or client-verified; continue these scenarios before auditing their follow-up quests.",
+  "native_evidence": "stormheim-departure-native-2026-10-13.json",
+  "findings": [
+    "Installed 7.3.5 DB2 data identifies map 1475, Alliance LFG 969/scenario 826 and Horde LFG 998/scenario 824, both difficulty 12. There are five Alliance and six Horde stages. Both quest objectives require one mission-completion marker 113320. Their native final ScenarioStep RewardQuestID values are 39800/39801; no native QUEST_COMPLETE spell effect completes either mission.",
+    "Alliance Genn's quest acceptance teleported straight to world map 1220, bypassing scenario 826. Horde Sylvanas set a pending scenario ID then cast 228560. Native effect 45 is PLAY_MOVIE 483; that spell never queues LFG. Scenario data also used unqualified rows for both factions on the same map.",
+    "Horde quest flags differed from the native 34603008 by 65544, including AUTOCOMPLETE. Both quests had event-only completion locks. Startup testing additionally exposed seven duplicate zero-delay SCRIPT_COMMAND_QUEST_EXPLORED acceptance rows. The loader re-added the lock and acceptance filled the objective immediately. The scoped migration removes those exact rows and obsolete shortcuts and clears those flag differences.",
+    "Departure now uses Rogers' existing conditioned menu 19355/0 for Alliance and Sylvanas' menu 19342/0 or quest acceptance for Horde. Sylvanas' gossip bit is enabled. Interaction validates faction, active quest, capital map, live actor/player, phase, visibility, LOS, proximity, combat and transport state; selection also validates the stored menu/item because the core invokes AI before its own menu validation. Existing rounds/introduction controllers remain integrated.",
+    "The Horde movie is retained independently of queueing. Departure waits for completion/skip with a bounded missing-acknowledgement fallback; failed movie casts do not consume progression. Duplicate requests are suppressed. Weak quest lifetimes and generation numbers prevent callbacks from an earlier acceptance consuming a fresh one. Matching active LFG instances can be re-entered; unrelated queues/groups are preserved. Abandoned pending queues are canceled only when their single selected dungeon matches the owned attempt. Logout removes tracking.",
+    "On login, an active COMPLETE mission lacking objective 113320 is restored to INCOMPLETE, recovering old premature completion. Already rewarded history and objective-backed COMPLETE states are retained. No departure or report code grants final credit.",
+    "Map 1475 has eight installed Horde actor spawns (93486, three 93490, 94419, 94420, 94421, 94517), zero gameobjects, no Alliance actors and no instance script. The native TDB735 archive probe found no map-1475 creature/gameobject spawns either; that archive cannot supply the missing placement graph. Native criteria are script events, so template presence alone cannot implement the combat stages.",
+    "The installed Horde opening SmartAI list removed gossip permanently, awarded marker 113320 to every nearby player and teleported them out after a short conversation. A scoped report controller now pins owner, acceptance lifetime and Nathanos GUID, validates both living actors and the current scenario/step at each line, sends the retained five dialogue groups privately and advances only native event 45340 after the final line. Delays use installed text minimum times, including Nathanos' final 31340 ms. Failure resets the attempt while retaining the gossip flag for retry. Other maps/scenarios delegate to SmartAI. Actual client speech playback remains unverified."
+  ],
+  "verification": [
+    "Test-StormheimDeparture.ps1 compiles extracted production departure/report handlers and the actual Player::AddQuestDelayedEvent wrapper. Covers both faction mappings, interaction/menu rejection, active-instance recovery, wrong queues/groups, movie failure/skip/fallback, duplicate/stale callbacks, acceptance/abandonment/login states, cancellation isolation, report chronology, actor loss/combat/logout/retry and later-scenario delegation. LFG transport, movie playback and criterion routing are stubbed boundaries, not a live player run.",
+    "Test-StormheimDepartureData.ps1 applies the actual migration twice to temporary table copies and checks native objectives, flags, scoped scenario rows, entrances, client interaction bits, menu conditions, removed acceptance/SmartAI shortcuts and unrelated/custom data preservation. Live validation passed after offline deployment.",
+    "Test-StormheimDepartureNative.py independently reads installed DB2 files and compares recorded hashes/rows: all eleven native steps, trees and criteria, movie 483, map 1475, faction LFG mappings and final quest references.",
+    "Existing Test-StormheimIntro.ps1 and Test-StormheimRounds.ps1 passed after shared AI integration; both live data tests passed. Release worldserver and bnetserver built in the canonical build-extractors/bin/Release directory. No generic scenario criteria, boost, pet lookup, mover or warlock handlers changed."
+  ],
+  "observed_failures": [
+    "Initial compilation rejected a private Player::SetCanDelayTeleport call and a nonexistent criteria enum. The script uses the existing public movie state and CRITERIA_TYPE_SCRIPT_EVENT_2 (native type 92); final Release compilation passed.",
+    "Initial startup-20261013-194418 reached readiness but emitted two SQL errors identifying the acceptance-script/event-lock regression. The later startup-20261013-194612 repeated them before that SQL repair. These runs are not evidence of a clean startup; retain them separately from the final post-repair smoke test."
+  ],
+  "remaining_required_work": [
+    "Alliance Prepare for Battle and Fire at Will: missing deck guns, boarding/vehicle validation, Forsaken Dreadwing population, real attack-hit/kill events and native progress thresholds. Do not advance from spawning, gossip or a timer.",
+    "Alliance Justice from Above: missing below-decks parachute interaction, travel/landing and three distinct captain fights on The Windrunner, The Banshee's Wail and The Black Rose. Then Bats in the Bomb Bay requires seven actual flare removals; Last Stand requires Nathanos' encounter.",
+    "Horde The Eternity: Nathanos escort/boarding/travel and catapult combat against thirty Skyfire Gryphon Riders. The Blightcaller and The Black Rose require their actual paratrooper/worgen waves, including pet killing blows and credit isolation.",
+    "Horde Boarding the Skyfire: validated transfer and seven actual volatile-flare placements. Queen Takes King: Genn's encounter and the real finale/movie/arrival.",
+    "Implement owned spawn and vehicle lifecycle, failed boarding/cast/target retries, abandonment/re-entry and completed-step recovery throughout; validate collision, camera, native visual playback and both factions in a client later.",
+    "Before enabling either last stage, audit generic Scenario::Reward: it directly calls RewardQuest for native RewardQuestID, which can consume the mission and choice reward before turn-in. The native quest enders are Rogers 90749 and Nathanos 91473 in Stormheim; do not copy New Blood's final reward bypass or award 113320 until the actual mission finale and arrival have completed.",
+    "The native ScenarioStep/CriteriaTree/Criteria stage manifest is retained in the companion evidence. Actor templates with matching names are candidates, not proven scenario placement or visual evidence."
+  ],
+  "deployment": {
+    "migration": "2026_10_13_14_stormheim_departure.sql",
+    "sha1": "C19141191AD8DF9DCC7E3696D29EB2D7D093CA47",
+    "state": "RELEASED",
+    "backups": [
+      ".codex/backups/stormheim-departure/20261013-194246",
+      ".codex/backups/stormheim-departure/20261013-194717"
+    ],
+    "runtime": "build-extractors/bin/Release"
+  },
+  "runtime_evidence": {
+    "source_revision": "69c8e65dec5b73c2f623b4407567e50e037d7a37",
+    "compiled_working_tree_changes": true,
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-departure/startup-20261013-194718",
+      "ready": true,
+      "exit_code": 0,
+      "db_error_bytes": 0,
+      "stderr_bytes": 0
+    },
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_departure.cpp": "8905AC103088B99655031B9D304EEA0D5CEC805FA11A17B21D820DFDA16BAC91",
+      "src/server/scripts/Legion/stormheim_departure.h": "E1BCCD1E6EEC52CE5F56B7A47B146ECCF28D220CD49FF4CD173D2FD4684CA886",
+      "src/server/scripts/Legion/stormheim_intro.cpp": "68B8BC56300199DC9F3E28BAC30CC712C0B0C6B129A0350D801A87A4A1FA99C7",
+      "src/server/scripts/Legion/stormheim_rounds.cpp": "D9A9245F5925277EC62B2196974F8D58EAB616795BCE7EF0C0A465AD514A39B8",
+      "build-extractors/bin/Release/worldserver.exe": "49CC79BF78429D22D3A7FAF69AEE1110611ABF131D0103EA4C0CD1CDA11BA0AA",
+      "build-extractors/bin/Release/bnetserver.exe": "B234C8D309B6E28347DE8B4E212388F04EADB367FDCEE2E533775C3DECEA6987"
+    }
+  }
+}
