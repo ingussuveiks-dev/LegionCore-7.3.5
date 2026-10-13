@@ -859,6 +859,10 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     PrepareStatement(CHAR_UPD_KILL_CREATURE, "UPDATE character_stat_kill_creature SET count = ?, point = ? WHERE guid = ? AND entry = ?", CONNECTION_ASYNC);
 
     PrepareStatement(CHAR_SEL_NUM_ACCOUNT_CHARS_REACHED_LEVEL, "SELECT COUNT(guid) FROM characters WHERE account = ? AND level >= ?", CONNECTION_BOTH);
+    PrepareStatement(CHAR_SEL_STORMHEIM_MISSION, "SELECT serial,stage,air,captains,flares,frost,final FROM character_stormheim_mission WHERE guid=? AND quest=?", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_REP_STORMHEIM_MISSION, "REPLACE INTO character_stormheim_mission(guid,quest,serial,stage,air,captains,flares,frost,final) VALUES(?,?,?,0,0,0,0,0,0)", CONNECTION_SYNCH);
+    PrepareStatement(CHAR_UPD_STORMHEIM_MISSION, "UPDATE character_stormheim_mission SET stage=GREATEST(stage,?),air=GREATEST(air,?),captains=captains|?,flares=flares|?,frost=GREATEST(frost,?),final=final|? WHERE guid=? AND quest=? AND serial=?", CONNECTION_ASYNC);
+    PrepareStatement(CHAR_DEL_STORMHEIM_MISSION, "DELETE FROM character_stormheim_mission WHERE guid=? AND quest=? AND serial=?", CONNECTION_ASYNC);
 }
 
 CharacterDatabaseConnection::CharacterDatabaseConnection(MySQLConnectionInfo& connInfo, ConnectionFlags connectionFlags) : MySQLConnection(connInfo, connectionFlags)

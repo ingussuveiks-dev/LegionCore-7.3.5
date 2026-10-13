@@ -1,0 +1,69 @@
+{
+  "scope": "Complete server code/data implementation of Greymane's Gambit 39800/scenario 826 and The Splintered Fleet 39801/scenario 824. Continues the departure audit; earlier failures and evidence remain in their original audit files.",
+  "status": "All five Alliance and six Horde stages have executable server paths through the native finale and acknowledged Stormheim arrival. Verified with production-handler simulations, native data, collision probes and Release startup. Not client-verified.",
+  "native_evidence": [
+    "stormheim-departure-native-2026-10-13.json",
+    "stormheim-fleet-native-2026-10-13.json"
+  ],
+  "implementation": [
+    "Map 1475 now has its own instance controller. The real Skyfire transport 241630/display 28177 uses native taxi path 5130 and passenger map 1476. The owned player and deck actors are attached to its local coordinates; runtime summons use the retained regular passenger collection. The scripted battle holds the transport at its native stop. Entering/re-entering and graveyard recovery place the player at a supported earned checkpoint, instead of leaving them at the unsupported bare LFG entrance.",
+    "Alliance: actual gun passenger 0 boarding advances event 44799. Thirty distinct owned air targets are required before the native all-aircraft milestone 44893. The gun exposes native Flak Blast 184420 and Rapid Fire 186276. A real Skyfire Parachute GO starts the first ride using NPC 93433/native vehicle 1439; later rides use the native gryphon vehicle. Cassandra 93560, Mills 93563 and Tattersail 93486 have separate owned captain slots/events. Tattersail yields at the target-relative 20-percent threshold, including a lethal hit. Seven distinct flares then require successful cast completion. Nathanos 93603 is the final owned encounter.",
+    "Horde: the retained opening report advances event 45340. Bloodwing/native vehicle 4283 boards before scripted flight to the Eternity. The Forsaken catapult uses native vehicle 4285 and Volatile Barrel 187308; thirty distinct air targets advance event 45416. The next two ship transfers lead to the required paratrooper/Brimley and worgen waves; only completing the actual required actor slots advances events 45365/45366. Seven separate Skyfire flare placements precede the Genn 94318 encounter. His native Worgen Transform 189626 references creature 45382/display 72903, followed by the native Greymane's Frenzy chain.",
+    "An owned Icebound Dreadnought or 7th Legion Battlemage freezes the relevant weapon during the air stage. The click flag is explicitly dirtied, native Frozen stun aura is applied, the rider exits, and weapon damage requires a current owned passenger and an unfrozen weapon. Killing the specific frost actor, including with the player's pet, clears the aura and restores the click flag. An unattended or frozen weapon cannot continue granting kills through an old periodic barrage.",
+    "Every action validates the active owner, map/instance, current stage, owned GUID/slot and quest lifetime. Interaction adds range, LOS, phase, visibility, combat and teleport checks. Boarding waits for actual passenger 0; flight completes three movement callbacks and landing before the destination actors appear. Timeout/dismount/stale-serial failures clear the owned flight and permit a fresh ride. Client control returns on dismount, failure, logout and before map transfer; an old callback cannot steal control from another vehicle. Pets count on eligible owned combat kills; unrelated players, reused entries and duplicate notifications do not.",
+    "Flare activation captures the GO GUID, mission serial, cast token and weak quest lifetime. Native spell 186010 completion revalidates the target through AfterCast. A failed or interrupted cast, abandoned acceptance, missing object or changed stage gives no credit. Both GO interaction and final script checks remain executable; no timer alone awards a flare.",
+    "The character_stormheim_mission table stores earned stage/counters/masks, mission serial and finale proof. Prepared statements use the serial on updates/deletes. Updates merge monotonically, so out-of-order asynchronous writes cannot roll back a later action or consume a newly accepted mission. Abandonment invalidates the old lifetime and clears the owned population; partial ground waves restart when a new instance is reconstructed. An unchanged returning acceptance rebinds its new Player lifetime and restores earned native criteria.",
+    "Generic Scenario::Reward excludes automatic quest consumption only for 824/826 in addition to the existing 962 exception. The missions retain their native choice rewards and world quest givers. Native outro spells 185614/185616 play movie 484 and trigger native teleports 185613/185615; their effect-90 mission credit is suppressed. Durable earned finale proof drives recovery after logout or a missing callback. Objective 113320 is granted exactly once only after the player acknowledges map 1220 at the matching native arrival; the temporary stun is then removed.",
+    "Departure explicitly chooses scenario 826/824 for the matching native LFG queue and restores a prior pending scenario if queueing fails. Both factions use the native opening movie. Other queues/groups and shared actor behavior on other maps continue through the original handlers. The only scaling data correction is Genn 94318's inactive 0..0 range to the 98..110 range of the encounter peers; his two existing world-map copies inherit that corrected range. No generic health-scaling predicate or pet lookup code changed."
+  ],
+  "verification": [
+    "Test-StormheimFleet.ps1 compiles extracted production mission, actor, flight, flare and finale handlers plus the real AddQuestDelayedEvent wrapper. Both faction routes run through boarding, all required kills, distinct captain/flare slots, pet kills, frost recovery, interrupted flight retry, re-entry/new lifetime, abandonment/reaccept, native finale suppression, durable proof and acknowledged arrival exactly once. The state and existing invalid-range CreatureScaling regression executables also pass. Engine services, combat health, SQL transport boundaries and client motion are stubbed in this harness; it is not an in-game run.",
+    "Test-StormheimFleetData.ps1 applies the actual world migration twice to temporary copies and checks the full actor/GO/vehicle/click/spell graph, native transport/destinations, active Genn scaling and unrelated/custom binding preservation. The real prepared UPDATE is replayed in MySQL with reordered and stale serial writes. Live data validation passed after offline deployment.",
+    "Test-StormheimFleetNative.py reads installed 7.3.5 DB2 files without overlays and records spell effects/visual references, the thirteen-point native transport path, five vehicles, movie 484, native finale credit/periodic teleport effects and Greymane's transform data.",
+    "Test-StormheimFleetGeometry.ps1 links the real Release VMAP libraries. Fifteen source-derived model/landing points have supported feet positions; the five ship landing columns and a nine-ray parachute departure corridor have zero collision failures. The dynamic Skyfire model is loaded from its actual extracted collision asset. This checks those samples, not every possible flight corridor, player path or client render.",
+    "Existing Stormheim introduction, rounds and departure production-handler tests passed. Warlock/mover regression and New Blood full-sequence/prisoner regressions passed after the scoped reward and client-control integration. Release worldserver and bnetserver were built in build-extractors/bin/Release, preserving runtime configuration, certificates, DLLs, logs and extracted data."
+  ],
+  "observed_failures_and_repairs": [
+    "Initial compilation exposed a Windows Yield macro collision and an InstanceScript::Load name shadow; the helper is ShouldYield and checkpoint reader ReadCheckpoint. Final Release compilation passed.",
+    "The initial geometry probe found feet inside the Skyfire structure and a rear parachute point without a floor/clear exit. The player, flares and parachute were moved to supported model points with an open launch corridor; final geometry checks have zero failures.",
+    "A same-instance return initially retained an expired Player lifetime; entry now rebinds it. An aborted ride initially left its actor in the owned-flight slot; all abort paths now clear the exact actor/flight before retry. The compiled production regression covers both repairs.",
+    "A failing assertion revealed that cmd's signed negative exit status could bypass an errorlevel-1 check in a multi-executable test runner. Each executable now exits on every nonzero status. The fixed-anchor ride test explicitly walks to the interactive vehicle before boarding, and the final runner passes.",
+    "Final vehicle callback review found that Vehicle::RemovePassenger invokes PassengerBoarded(false) before Unit::_ExitVehicle clears m_vehicle. That callback now restores control without requesting a recursive exit, clears the owned flight and defers despawn for vehicle cleanup. The production test models this actual callback ordering and both complete faction flights pass."
+  ],
+  "client_checks_and_assumptions": [
+    "No client run was performed, as requested. Validate native weapon reticle/aim and damage, visible interaction flags, boarding and camera, pet portrait, parachute/gryphon/bat animation, dialogue/visual playback, walking between objectives, both faction finales and reward choices in the 7.3.5 client before calling the whole missions client-verified.",
+    "The stage graph, criteria, actor/model identities, vehicle seats, spells and ending destinations are native data. Missing placements were authored on actual static ship models and the real Skyfire model and collision-checked; they are not a recovered retail spawn sniff. Other ship-name-to-model placements, ground-wave populations, dialogue coverage and encounter pacing/balance are implementation choices. The transport is held during the scripted battle; retail choreography and exact voice timings are not certified.",
+    "Alliance's installed native air criterion is a whole-wave script milestone; the server counts thirty actual kills before emitting it. Confirm the displayed aircraft progress in the client. Collision samples do not certify every complete inter-ship path or animation envelope.",
+    "The scoped Scenario::Reward change preserves boost criteria/movement handlers. The AGENTS.md boost client sequence and pet/camera checks cannot be called verified from compilation or these simulations; retain that limitation."
+  ],
+  "deployment": {
+    "world_migration": "2026_10_13_15_stormheim_fleet.sql",
+    "world_sha1": "DE6BE0A9E766058E113A9C277C64EC6DEA97CFC1",
+    "characters_migration": "2026_10_13_01_stormheim_mission.sql",
+    "characters_sha1": "E89728E578567145F4FB811283FAE7580C1D3BE6",
+    "backups": ".codex/backups/stormheim-fleet/20261013-210048",
+    "state": "RELEASED"
+  },
+  "runtime_evidence": {
+    "source_revision": "f1319d3226be79e66eabccfcba7f473d13211e81",
+    "compiled_working_tree_changes": true,
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-fleet/startup-20261013-215020",
+      "ready": true,
+      "exit_code": 0,
+      "db_error_bytes": 0,
+      "stderr_bytes": 0
+    },
+    "canonical_runtime": "build-extractors/bin/Release",
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_fleet.cpp": "16AEED76D67CE6A56D5CD90E63D8F156BBCE064D2D83EC8B8A97ED370345B884",
+      "src/server/scripts/Legion/stormheim_fleet_state.h": "EA2DA0927454ADCE42ACCE62C97C8D6EB69F79D9444E7691A90A30803117BCCA",
+      "src/server/scripts/Legion/stormheim_departure.cpp": "7759BFF72A334A0B6FC37980002F8A389F85A312AAF43147D6D16A25DA1AA17C",
+      "src/server/game/Scenarios/Scenario.cpp": "018BABA296FE2E717AB08D9ED492266AED87CFBA9E3319374E29A86C54D9C880",
+      "src/server/database/Database/Implementation/CharacterDatabase.cpp": "875E97B9404F9F4CC00742882931800F70A76D31AF6532DE4026950AD109FE9A",
+      "build-extractors/bin/Release/worldserver.exe": "647C2C52AE7B99D3885FB7C38C86B2C052B5D2D8BDFB68A58587D2F9C30D4641",
+      "build-extractors/bin/Release/bnetserver.exe": "6CDEB0DCAA68C4C80CABAFC6CB49A50F21BAF377D558AF474B197B9ED9FBE134"
+    }
+  }
+}

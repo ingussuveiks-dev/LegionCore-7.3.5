@@ -433,7 +433,9 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
 
     // Scenario 962 ends at the gateway, but its quest is turned in to
     // Calydus in Dalaran. Do not consume it as an automatic scenario reward.
-    Quest const* quest = scenarioId == 962 ? nullptr : sQuestDataStore->GetQuestTemplate(steps[rewardStep]->RewardQuestID);
+    // Stormheim missions retain their choice rewards and world quest givers.
+    // Their scripted finale credits the objective only after arrival in Stormheim.
+    Quest const* quest = scenarioId == 962 || scenarioId == 824 || scenarioId == 826 ? nullptr : sQuestDataStore->GetQuestTemplate(steps[rewardStep]->RewardQuestID);
 
     if (pvpMap)
     {

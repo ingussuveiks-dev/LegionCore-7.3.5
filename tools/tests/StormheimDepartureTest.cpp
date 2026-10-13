@@ -26,6 +26,7 @@ struct Player {
  bool world=true,alive=true,teleport=false,combat=false,vehicle=false,transport=false,flight=false,flying=false,phase=true,visible=true,los=true,movie=false;
  float distance=2;Group* group=nullptr;Talk talk;Talk* PlayerTalkClass=&talk;
  int castResult=0;
+ uint32 scenarioId=0;uint32 GetScenarioId(){return scenarioId;}void SetScenarioId(uint32 id){scenarioId=id;}
  std::map<uint32,QuestStatusData> quests;std::vector<std::function<void()>> events;
  ObjectGuid GetGUID(){return guid;}uint32 GetTeam(){return team;}uint32 GetMapId(){return map;}uint32 GetInstanceId(){return instance;}
  bool IsInWorld(){return world;}bool IsAlive(){return alive;}bool IsBeingTeleported(){return teleport;}bool isInCombat(){return combat;}
@@ -33,7 +34,7 @@ struct Player {
  bool InSamePhase(Creature*){return phase;}bool canSeeOrDetect(Creature*){return visible;}bool IsWithinLOSInMap(Creature*){return los;}
  float GetExactDist(Creature*){return distance;}Group* GetGroup(){return group;}
  bool isWatchingMovie(){return movie;}void setWatchinMovie(bool v){movie=v;}
- int CastSpell(Player*,uint32 spell,bool){assert(spell==228560);++spellCount;if(!castResult)movie=true;return castResult;}
+ int CastSpell(Player*,uint32 spell,bool){assert(spell==(team==HORDE?228560u:186528u));++spellCount;if(!castResult)movie=true;return castResult;}
  void PrepareGossipMenu(Creature*,uint32 menuId,bool){talk.gossip.id=menuId;}void SendPreparedGossip(Creature*){++menus;}
  QuestStatusData* getQuestStatus(uint32 q){auto i=quests.find(q);return i==quests.end()?nullptr:&i->second;}
  int GetQuestStatus(uint32 q){auto s=getQuestStatus(q);return s?s->Status:QUEST_STATUS_NONE;}
@@ -47,6 +48,7 @@ struct Player {
  void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==45340);++criteriaCount;}
 };
 #include "QuestDelayedEvent.inc"
+namespace StormheimFleet {void Accepted(Player*){}}
 struct Template {uint32 GossipMenuId=19355;};
 struct Creature {
  ObjectGuid guid{100};uint32 entry=96644,map=0,instance=10;bool alive=true;Template data;Creature* companion=nullptr;
@@ -82,7 +84,7 @@ int main(){
   npc.map=1475;assert(!Select(&p,&npc,npc.data.GossipMenuId,0));npc.map=r->map;
   p.talk.gossip.exists=false;assert(Select(&p,&npc,npc.data.GossipMenuId,0)&&p.events.empty());p.talk.gossip.exists=true;p.talk.gossip.id=999;assert(Select(&p,&npc,npc.data.GossipMenuId,0)&&p.events.empty());p.talk.gossip.id=npc.data.GossipMenuId;
   assert(Select(&p,&npc,npc.data.GossipMenuId,0));Start(&p,&npc);assert(p.events.size()==2);
-  p.Next();p.Next();if(r->team==HORDE){assert(!lfgMgr.joins&&p.events.size()==1);p.movie=false;p.Next();}assert(lfgMgr.joins==1&&lfgMgr.last==r->dungeon&&p.GetQuestStatus(r->quest)==QUEST_STATUS_INCOMPLETE);
+  p.Next();p.Next();assert(!lfgMgr.joins&&p.events.size()==1);p.movie=false;p.Next();assert(lfgMgr.joins==1&&lfgMgr.last==r->dungeon&&p.GetQuestStatus(r->quest)==QUEST_STATUS_INCOMPLETE);
   // Queued and unrelated groups are preserved; an active matching instance is recoverable.
   Group g;p.group=&g;lfgMgr.dungeon=r->dungeon;lfgMgr.states[g.guid]=lfg::LFG_STATE_DUNGEON;assert(Queue(&p,*r)&&lfgMgr.teleports==1);
   lfgMgr.dungeon=123;assert(!Queue(&p,*r));g.lfg=false;assert(!Queue(&p,*r));p.group=nullptr;lfgMgr.states[p.guid]=lfg::LFG_STATE_QUEUED;auto spells=p.spellCount;Start(&p,&npc);assert(p.spellCount==spells&&p.events.empty());lfgMgr.states.clear();

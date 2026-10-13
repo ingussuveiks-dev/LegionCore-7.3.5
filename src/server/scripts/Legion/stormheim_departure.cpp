@@ -10,6 +10,7 @@
 #include "ObjectAccessor.h"
 #include "DBCEnums.h"
 #include "stormheim_departure.h"
+#include "stormheim_fleet.h"
 #include <unordered_map>
 
 namespace StormheimDeparture
@@ -81,7 +82,11 @@ bool Queue(Player* player, Route const& route)
     // Never replace an unrelated queue or enroll another group member.
     if (group || sLFGMgr->GetState(player->GetGUID(),sLFGMgr->GetQueueId(player->GetGUID())) != lfg::LFG_STATE_NONE) return false;
     lfg::LfgDungeonSet slots{route.dungeon};
+    uint32 previousScenario=player->GetScenarioId();
+    player->SetScenarioId(route.scenario);
     sLFGMgr->JoinLfg(player,lfg::PLAYER_ROLE_DAMAGE,slots);
+    if(sLFGMgr->GetState(player->GetGUID(),sLFGMgr->GetQueueId(player->GetGUID()))==lfg::LFG_STATE_NONE &&
+        player->GetScenarioId()==route.scenario)player->SetScenarioId(previousScenario);
     return true;
 }
 void Continue(Player* player, ObjectGuid npcGuid, uint64 generation, uint32 remaining)
@@ -114,7 +119,7 @@ void Start(Player* player, Creature* npc)
     pending[player->GetGUID()] = {player->getQuestStatus(For(player).quest)->ScriptLifetime,generation};
     player->PlayerTalkClass->SendCloseGossip();
     // 228560 is PLAY_MOVIE 483, not an LFG queue or mission completion.
-    if (player->GetTeam() == HORDE) player->CastSpell(player,228560,true);
+    player->CastSpell(player,player->GetTeam()==HORDE?228560:186528,true);
     ObjectGuid guid = npc->GetGUID();
     player->AddQuestDelayedEvent(For(player).quest,500,[player,guid,generation]() { Continue(player,guid,generation,360); });
 }
@@ -139,8 +144,9 @@ bool Select(Player* player, Creature* npc, uint32 menu, uint32 option)
 bool Accept(Player* player, Creature* npc, Quest const* quest)
 {
     if (!player || !npc || !quest) return false;
-    if (npc->GetEntry() == 96663 && npc->GetMapId() == 0 && quest->GetQuestId() == 39800) return true; // Depart with Rogers.
+    if (npc->GetEntry() == 96663 && npc->GetMapId() == 0 && quest->GetQuestId() == 39800) { StormheimFleet::Accepted(player); return true; } // Depart with Rogers.
     if (npc->GetEntry() != 96686 || npc->GetMapId() != 1 || quest->GetQuestId() != 39801) return false;
+    StormheimFleet::Accepted(player);
     Start(player,npc);
     return true;
 }
