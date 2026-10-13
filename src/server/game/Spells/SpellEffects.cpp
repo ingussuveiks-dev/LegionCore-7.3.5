@@ -6983,6 +6983,12 @@ void Spell::EffectKnockBack(SpellEffIndex effIndex)
 
     if (unitTarget->IsPlayer())
         unitTarget->ToPlayer()->SetKnockBackTime(getMSTime());
+
+    // Jagganoth's knockback carries a native self-targeted stun follow-up.
+    // Apply after the movement: applying a stun first can suppress knockback.
+    if (m_spellInfo->Id == 200011 && (m_caster->GetMapId() == 1220 || m_caster->GetMapId() == 1502))
+        if (uint32 followup = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell)
+            unitTarget->CastSpell(unitTarget, followup, true);
 }
 
 void Spell::EffectLeapBack(SpellEffIndex effIndex)

@@ -4282,6 +4282,14 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
     if (viewersList)
         summon->AddPlayersInPersonnalVisibilityList(*viewersList);
 
+    if (entry == 101433 && summon->HasQuestObjectScope())
+    {
+        // The model's 13s Birth sequence assembles the portal. Include its
+        // animation state in the create packet, before the client sees Stand.
+        summon->SetAnimKitId(1254); // native full-body ANIM_BIRTH
+        summon->SetDisableGravity(true);
+        summon->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // enabled when built
+    }
     AddToMap(summon->ToCreature());
     if (entry == 101456 && summon->HasQuestObjectScope())
     {

@@ -12,8 +12,8 @@ SELECT 'unphased-council',COUNT(*) FROM creature WHERE id IN(101456,98797,101454
 SELECT 'waiting-council',COUNT(*) FROM creature WHERE id IN(101456,98797,101454,101455,101457) AND map IN(1220,1502) AND PhaseId='5436';
 SELECT 'questgivers',COUNT(*) FROM creature WHERE id=101456 AND map IN(1220,1502) AND PhaseId='5436';
 SELECT 'portal-count',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND action_type=12 AND action_param1=101433;
-SELECT 'persistent-portal',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND id=2 AND action_type=12 AND action_param1=101433 AND action_param2=8 AND action_param3=0 AND link=3;
-SELECT 'persistent-visual',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND id=3 AND action_type=50 AND action_param1=245958 AND action_param2=0 AND link=4;
+SELECT 'persistent-portal',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND id=2 AND action_type=12 AND action_param1=101433 AND action_param2=8 AND action_param3=0 AND link IN(3,4);
+SELECT 'persistent-visual',COUNT(*) FROM smart_scripts WHERE action_type=50 AND action_param1=245958 AND action_param2=0 AND source_type=0 AND ((entryorguid=98797 AND id=3 AND link=4) OR (entryorguid=101433 AND id=6));
 SELECT 'independent-reset',COUNT(*) FROM smart_scripts WHERE entryorguid=10145600 AND source_type=9 AND id>=3;
 SELECT 'click-gates',COUNT(*) FROM conditions WHERE ConditionTypeOrReference=9 AND ConditionTarget=0 AND ConditionValue1=40729 AND NegativeCondition=0 AND
  ((SourceTypeOrReferenceId=18 AND SourceGroup=101433 AND SourceEntry=199966) OR (SourceTypeOrReferenceId=22 AND SourceGroup=1 AND SourceEntry=101433));
@@ -58,7 +58,7 @@ foreach($active in @($false,$true,$false,$true)) {
  if(-not (Test-WaitingPhase $false $true)){throw 'Other player lost their questgiver'}
 }
 $click=@($data | Where-Object {$_.kind -eq 'click'})
-if($click.Count -ne 6 -or $click[0].event -ne 73 -or -not ($click[0].flags -band 1)){throw 'Portal must start exactly once'}
+if($click.Count -notin @(6,9) -or $click[0].event -ne 73 -or -not ($click[0].flags -band 1)){throw 'Portal must start exactly once'}
 $actors=@(101457,101455,101454,101456,98797)
 for($i=0;$i -lt 5;$i++) {
  if($click[$i].id -ne $i -or $click[$i].link -ne ($i+1) -or $click[$i].action -ne 45 -or $click[$i].target -ne 19 -or $click[$i].entry -ne $actors[$i]){throw 'Broken portal council signal chain'}

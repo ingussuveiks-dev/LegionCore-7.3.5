@@ -1,0 +1,52 @@
+{
+  "quest": 40729,
+  "clientBuild": "7.3.5.26972",
+  "reported": "Jagganoth arrives and knocks the council back, but capture never starts; no stun; portal appears whole and falls instead of assembling.",
+  "rootCauses": [
+    "SmartAI::SetData calls ProcessEventsFor with unit=nullptr. IsObjectMeetingSmartEventConditions constructs (unit,baseObject) without fallback. The previously added map guards used target 0, so both the movement signal and the boss's timer signal failed before reaching the capture action list.",
+    "Spell 200011 effect 0 declares TriggerSpell 204833 in native DB2, but EffectKnockBack did not execute it.",
+    "Portal display 68219 uses model 8800/FileDataID 607277, whose 13-second Birth animation was never requested. The script spawned it at Z=708.5 above the known local floor (696.66)."
+  ],
+  "changes": [
+    "Use condition target 1 (base object) for capture/fallback map guards; preserve exclusion of later map-1522 Jagganoth scene.",
+    "After successful Dalaran knockback, target self-casts the native stun. Preserve immune-target early exits and other-map behavior. Trigger jailer blackout despite the stun and clear the stun after that cast; abandon also removes the native channel aura 199967.",
+    "Initialize quest-owned portal with native Birth AnimKit 1254 in its create packet, disable gravity, spawn at floor height and enable spellclick only after 13000ms.",
+    "Defer the portal's glowing interior until the ritual click. Apply native Portal Malfunction aura 199994/SpellVisual 51954 at the warning before Jagganoth arrives."
+  ],
+  "nativeEvidence": {
+    "model": "Warlock_DemonicPortal_Green",
+    "fileDataID": 607277,
+    "sha256": "5b5a49ce674473684f6e26adf22cddf1d1062c70a5d88e8e22f8331b18b764e6",
+    "birthAnimation": 127,
+    "birthDurationMs": 13000,
+    "animKit": 1254,
+    "animKitSegment": 2012,
+    "knockbackEffect": 294419,
+    "stunSpell": 204833,
+    "stunAuraType": 12,
+    "stunVisual": 1346,
+    "reference": "User supplied retail sequence screenshots; https://www.wowhead.com/ptr/quest=40729/the-new-blood also describes knockback/stun and jailer capture. Runtime IDs verified from native 26972 data, not modern webpage data."
+  },
+  "validation": {
+    "Test-NewBloodCapture.ps1": "PASS: extracted production condition dispatcher reproduces old null-invoker failure and accepts migrated map guards; extracted full knockback handler checks movement-before-stun, NPC/player, immunity, unrelated spells and later map exclusion; SQL applied twice to temporary copies",
+    "audit_new_blood_portal.py": "PASS with CASC-exported 607277 and native DB2",
+    "Test-NewBloodQuestCleanup.ps1": "PASS including channel aura cleanup",
+    "Test-NewBloodPersonalStage.ps1 -SkipMigration": "PASS on installed data",
+    "Test-NewBloodRitualData.ps1": "PASS; historical guard setup isolated in its fixture",
+    "Test-NewBloodKnockbackReset.ps1": "PASS",
+    "Test-DreadscarClaimData.ps1": "PASS",
+    "build": "Release worldserver built in canonical build-extractors/bin/Release"
+  },
+  "deployment": {
+    "migrationSHA1": "F1BB1B8C24AEA33A5C58472B398C6BE126F5A0D3",
+    "backup": ".codex/backups/new-blood-capture-portal/20261013-121147",
+    "worldserver": "Stopped during deployment; not started automatically",
+    "character": "No character data changed; abandon and reaccept 40729 for a new attempt"
+  },
+  "clientRetestRequired": [
+    "Portal assembles from ground in native Birth sequence, with expected fire/smoke and no whole-model fall; compare exact particles against user's reference.",
+    "Portal becomes clickable after assembly; fire returns before Jagganoth; knockback followed by stun swirl.",
+    "Jagganoth continues after Zelifrax challenge; jailer captures player; blackout transfers to intro prison without retaining the Dalaran stun.",
+    "Abandon/reaccept removes the old personal attempt."
+  ]
+}

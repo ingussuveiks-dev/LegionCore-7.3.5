@@ -4,6 +4,9 @@ $migration=Get-Content "$repo/sql/updates/world/2026_10_12_16_new_blood_ritual_h
 $ownerMigration=Get-Content "$repo/sql/updates/world/2026_10_13_01_new_blood_capture_owner.sql" -Raw
 $fixture=(@('conditions','smart_scripts') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+=@"
+-- Recreate the historical map guards for this older migration's fixture.
+-- Current base-object targeting is covered by Test-NewBloodCapture.ps1.
+DELETE FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=98831 AND SourceGroup IN(3,5) AND ConditionTypeOrReference=22 AND ConditionTarget=1;
 $migration
 $migration
 $ownerMigration
