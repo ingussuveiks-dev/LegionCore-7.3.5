@@ -1,0 +1,30 @@
+{
+  "scope": "The Hammer of Khaz'goroth (42454): central Dalaran teleport, Aegwynn's Gallery turn-in and placed hammer. Code/data only.",
+  "findings": [
+    "The shared upper pad cast native teleport 192293 but only credited Tidestone 42213 and Tears 40890. It never granted Hammer credit 107587. The original TDB735 has exactly one required objective for 42454: objective 284276, MONSTER 107587, amount 1, storage index 3. This missing callback blocked ordinary quest completion.",
+    "The upper pad now schedules a quest-lifetime-bound confirmation. Credit requires an active incomplete quest, a living player in world on map 1220, no pending teleport, no vehicle/transport/flight, and an exact 3D distance below 8 yards from the arrival. The radius allows ordinary movement between acknowledgement and the next 500ms poll. Pending teleports retry at most 20 times; failed upstairs casts, other floors/maps, stale abandoned/reaccepted quests and lower-pad use do not grant credit. Existing objective progress prevents duplicate credit.",
+    "Both pad directions now also reject transport/flying players and require matching phase, visibility and line of sight. Existing exact 2-yard trigger distance, anchor/zone restrictions and separate native return destination preserve no-bounce behavior. Existing Tidestone and Tears handling remains covered by the shared regression test.",
+    "Live data already matches the native quest objective, starter 250548, ender 246463, source item 137649 and removal quantity 1. The native quest has no extra placement objective. Turning in at the existing gallery quest giver is the placement action; adding another objective, item-use spell or duplicate hammer is unnecessary. Installed ItemEffect contains no effect for 137649.",
+    "Existing gallery quest giver 246463 is in phase 4590 before reward. Existing placed hammer creature 121494, display 76105 and aura 154441, is in phase 4589 after reward. Zone 7502 definitions 218/219 use inverse rewarded-42454 conditions. Core quest-state phasing notification handles the handoff. No SQL migration was needed."
+  ],
+  "evidence": "highmountain-hammer-native-2026-10-13.json records original TDB735 fields and installed SpellEffect/ItemEffect data with source hashes.",
+  "validation": [
+    "Test-EyeQuestChain.ps1 compiles the production pad/confirmation handlers and actual AddQuestDelayedEvent wrapper. Hammer checks cover pending acknowledgement, failed cast, successful arrival, normal movement after arrival, duplicate credit, quest-lifetime invalidation, timeout, invalid states and lower-pad exclusion. Existing Eye/Tears and no-bounce regressions pass.",
+    "Test-HighmountainBloodtotem.ps1 compiles actual core completion, kill-credit and reward-drop removal code. Hammer cannot complete before its own credit; unrelated credits do not count; duplicate/inactive credits are ignored. Native reward removal consumes one carried 137649 and leaves the bank copy in the fixture. Prior Highmountain regressions pass.",
+    "Test-HighmountainHammerData.ps1 performs read-only live checks for the exact objective, item fields, prerequisite and quest relations, pad bindings/spawns/destinations, disabled duplicate event triggers, gallery quest giver and placed visual, plus all four quest-status phase states. Passes.",
+    "Test-HighmountainHammerNative.py regeneration and comparison pass. Test-EyeQuestChainData.ps1 temporary-table migration regressions and Test-HighmountainLairData.ps1 -Live pass.",
+    "Release worldserver and bnetserver build and worldserver --version validation are recorded in the accompanying runtime evidence."
+  ],
+  "limits": [
+    "No client gameplay test, live teleport session or visual confirmation. In 7.3.5, verify upper-pad arrival and objective credit, gallery turn-in, disappearance of the carried quest item, and replacement of the quest giver with the placed hammer.",
+    "Servers remain stopped. Runtime configurations, certificates, DLLs, logs and extracted data are preserved. Final binaries are in build-extractors/bin/Release."
+  ],
+  "runtime": {
+    "version": "9409548eee72+ 2026-10-13 08:32:44 +0300 (main branch) (Win64, Release)",
+    "sha256": {
+      "src/server/scripts/Legion/EyeofAzshara/eye_of_azshara_quests.cpp": "ffcb4db2605769e00bcfe2178597faf870df69ce0a04df36207be5cb99307526",
+      "build-extractors/bin/Release/worldserver.exe": "d129c9e5f6bbdf32de779a3ecaf9f06976dbd98a4a57decf57e4a266bea2d28b",
+      "build-extractors/bin/Release/bnetserver.exe": "530a32c99c29e4ce37230a43d5353cde379ca75b256c7034300d1fdce6b09cdc"
+    }
+  }
+}

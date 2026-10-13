@@ -26,6 +26,9 @@ if($start -lt 0 -or $end -lt 0){throw 'Missing production kill credit handlers'}
 $start=$source.IndexOf('case QUEST_OBJECTIVE_ITEM:', $source.IndexOf('void Player::RewardQuest('))
 $end=$source.IndexOf('case QUEST_OBJECTIVE_CURRENCY:',$start)
 [IO.File]::WriteAllText("$output/BloodtotemReward.inc",$source.Substring($start,$end-$start))
+$start=$source.IndexOf("`n    if (!(quest->FlagsEx & QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS))",$source.IndexOf('void Player::RewardQuest('))+1
+$end=$source.IndexOf('    if (!quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_NOT_REMOVE_SOURCE))',$start)
+[IO.File]::WriteAllText("$output/HammerDropReward.inc",$source.Substring($start,$end-$start))
 $source=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/highmountain_bloodtotem.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 [IO.File]::WriteAllText("$output/BloodtotemLogin.inc",$source.Substring(0,$source.IndexOf('void AddSC_highmountain_bloodtotem()')))

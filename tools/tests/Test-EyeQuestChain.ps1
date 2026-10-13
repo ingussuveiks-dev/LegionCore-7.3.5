@@ -10,6 +10,7 @@ $start=$source.IndexOf('        ObjectGuid SerpentrixGUID;')
 $end=$source.IndexOf('        void Update(uint32 diff) override',$start)
 if($start -lt 0 -or $end -le $start){throw 'Cannot extract production instance methods'}
 [IO.File]::WriteAllText("$output/EyeInstanceMethods.inc", "struct EyeInstance:InstanceScript { EyeInstance(InstanceMap* m):InstanceScript(m){}`n"+$source.Substring($start,$end-$start)+"};`n")
+& "$PSScriptRoot/Export-QuestDelayedEvent.ps1" -OutputDirectory $output
 $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if (!$vs) { throw 'Visual C++ compiler not found' }

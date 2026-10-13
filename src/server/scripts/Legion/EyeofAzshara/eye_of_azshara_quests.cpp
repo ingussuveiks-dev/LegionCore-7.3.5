@@ -10,6 +10,21 @@ Position const Arrival = {-784.91f,4419.19f,602.48f,2.45236f};
 Position const UpperPad = {-844.597f,4467.76f,736.042f,0};
 Position const LowerPad = {-779.958f,4415.29f,602.629f,0};
 
+void ConfirmHammerTeleport(Player* player, uint32 retries)
+{
+    if (!player->IsInWorld() || !player->IsAlive() || player->GetMapId() != 1220 ||
+        player->GetQuestStatus(42454) != QUEST_STATUS_INCOMPLETE || player->GetVehicle() ||
+        player->GetTransport() || player->isInFlight() || player->IsFlying()) return;
+    if (player->IsBeingTeleported())
+    {
+        if (retries) player->AddQuestDelayedEvent(42454,500,[player,retries]() { ConfirmHammerTeleport(player,retries-1); });
+        return;
+    }
+    // Allow movement during the acknowledgement/poll interval, as for the other pillars.
+    if (player->GetExactDist(&Arrival) < 8.0f && !player->GetQuestObjectiveData(42454,107587))
+        player->KilledMonsterCredit(107587);
+}
+
 void ConfirmTeleport(Player* player, uint32 retries)
 {
     if (!player->IsAlive() || player->GetMapId() != 1220 ||
@@ -54,8 +69,12 @@ public:
             for (Player* player : players)
             {
                 if (!player->IsAlive() || player->IsBeingTeleported() || player->GetVehicle() ||
-                    player->isInFlight() || player->GetExactDist(go) > 2.0f) continue;
+                    player->GetTransport() || player->isInFlight() || player->IsFlying() ||
+                    !player->InSamePhase(go) || !player->canSeeOrDetect(go) || !player->IsWithinLOSInMap(go) ||
+                    player->GetExactDist(go) > 2.0f) continue;
                 player->CastSpell(player, upper ? 192293 : 192295, true);
+                if (upper && player->GetQuestStatus(42454) == QUEST_STATUS_INCOMPLETE)
+                    player->AddQuestDelayedEvent(42454,500,[player]() { EyeQuests::ConfirmHammerTeleport(player,20); });
                 if (upper && (player->GetQuestStatus(42213) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40890) == QUEST_STATUS_INCOMPLETE))
                     player->AddDelayedEvent(500, [player]() { EyeQuests::ConfirmTeleport(player, 20); });
             }

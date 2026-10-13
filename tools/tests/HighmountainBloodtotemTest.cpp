@@ -10,7 +10,7 @@ using uint8=uint8_t; using uint16=uint16_t; using uint32=uint32_t; using int32=i
 using PrevQuests=std::vector<int32>; using ExclusiveQuestGroups=std::multimap<int32,uint32>;
 #define ASSERT assert
 enum {QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED};
-enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
+enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_DROP_COUNT=4,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
 enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=3,
  CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TIMED_TYPE_CREATURE,CRITERIA_TYPE_KILL_CREATURE};
 enum {QUEST_OBJECTIVE_TASK_IN_ZONE=15,QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
@@ -84,6 +84,9 @@ struct Player {
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
+ void RewardDropItems(Quest const* quest){
+#include "HammerDropReward.inc"
+ }
  void RewardItems(Quest const* quest){for(auto const& obj:quest->GetObjectives()){switch(obj.Type){
 #include "BloodtotemReward.inc"
  }}}
@@ -390,5 +393,14 @@ int main()
  for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39781;p.status.Status=status;p.nursingProgress[0]=7;lairLogin.OnLogin(&p);assert(p.status.Status==status&&p.nursingProgress[0]==7&&!p.HasQuestForItem(128765));}
  store.quests[42454]=Quest{42454,0,{39781}};p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(42454),false));p.m_RewardedQuests.insert(39781);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(42454),false));
  std::cout<<"PASS: Lair native mandatory hammer/optional conversation, actual loot/item completion and removal, reward consumption, bank exclusion, idempotent login repair and reward-gated follow-up.\n";
+
+ store.quests[42454].objectives={{QUEST_OBJECTIVE_MONSTER,107587,1,0,3}};
+ p={};p.activeQuest=42454;p.status.Status=QUEST_STATUS_INCOMPLETE;
+ assert(!p.CanCompleteQuest(42454));p.KilledMonsterCredit(106815);p.KilledMonsterCredit(109750);assert(!p.creditPackets);
+ p.KilledMonsterCredit(107587);p.KilledMonsterCredit(107587);assert(p.completeCalls==1&&p.creditPackets==1);
+ auto& hammerQuest=store.quests[42454];hammerQuest.ItemDrop[0]=137649;hammerQuest.ItemDropQuantity[0]=1;
+ itemTemplate.id=137649;p.bags=1;p.bank=1;p.RewardDropItems(&hammerQuest);assert(p.bags==0&&p.bank==1);
+ for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=42454;p.status.Status=status;p.KilledMonsterCredit(107587);assert(!p.creditPackets);}
+ std::cout<<"PASS: Hammer requires its own single teleport objective; unrelated/duplicate/inactive credits excluded and native reward code consumes the carried quest hammer.\n";
 
 }
