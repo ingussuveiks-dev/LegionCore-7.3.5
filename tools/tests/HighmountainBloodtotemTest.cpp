@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -80,7 +80,7 @@ struct Player {
  if(obj.Type==QUEST_OBJECTIVE_TASK_IN_ZONE){auto qInfo=quest;switch(obj.Type){
 #include "BloodtotemProgress.inc"
  }}return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -356,5 +356,16 @@ int main()
  assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39780),false));p.m_RewardedQuests.insert(40594);
  assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39780),false));
  std::cout<<"PASS: Justice weighted progress combinations, real kill-credit completion and Underking handoff.\n";
+
+ store.quests[39780].objectives={{0,97266,1,3,0},{0,97352,1,1,1}};
+ for(int mask=0;mask<4;++mask){p={};p.activeQuest=39780;p.status.Status=QUEST_STATUS_INCOMPLETE;p.nursingProgress={{0,mask&1},{1,(mask>>1)&1}};assert(p.CanCompleteQuest(39780)==(mask==3));}
+ for(bool bossFirst:{false,true}){p={};p.activeQuest=39780;p.status.Status=QUEST_STATUS_INCOMPLETE;
+  p.KilledMonsterCredit(93846);p.KilledMonsterCredit(97498);assert(!p.creditPackets);
+  for(uint32 id:bossFirst?std::vector<uint32>{97266,97352}:std::vector<uint32>{97352,97266}){p.KilledMonsterCredit(id);p.KilledMonsterCredit(id);}
+  assert(p.creditPackets==2&&p.completeCalls==1&&p.nursingProgress[0]==1&&p.nursingProgress[1]==1);
+ }
+ for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39780;p.status.Status=state;p.KilledMonsterCredit(97266);p.KilledMonsterCredit(97352);assert(!p.creditPackets);}
+ store.quests[39781]=Quest{39781,0,{39780}};p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39781),false));p.m_RewardedQuests.insert(39780);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39781),false));
+ std::cout<<"PASS: Underking requires both native objectives in either order, caps duplicates, ignores unrelated/absent/completed quests and gates Neltharion's Lair on reward.\n";
 
 }

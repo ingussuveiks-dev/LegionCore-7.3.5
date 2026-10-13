@@ -12,7 +12,7 @@ if(!$Live){
 $sql+=@"
 SELECT 'native-objective',COUNT(*) FROM quest_objectives WHERE ID=284367 AND QuestID=42512 AND Type=0 AND StorageIndex=0 AND ObjectID=107704 AND Amount=1 AND Flags=1;
 SELECT 'accept-scene',COUNT(*) FROM smart_scripts WHERE entryorguid=93846 AND source_type=0 AND event_type=19 AND event_param1=42512 AND action_type=85 AND action_param1=213725;
-SELECT 'mayla-other-events',COUNT(*) FROM smart_scripts WHERE entryorguid=93846 AND source_type=0 AND ((id=0 AND event_type=60 AND action_type=33 AND action_param1=97352) OR (id=1 AND event_type=20 AND event_param1=39780 AND action_type=205 AND action_param1=27));
+SELECT 'mayla-other-events',COUNT(*) FROM smart_scripts WHERE entryorguid=93846 AND source_type=0 AND (id=1 AND event_type=20 AND event_param1=39780 AND action_type=205 AND action_param1=27);
 SELECT 'scene',COUNT(*) FROM spell_scene WHERE MiscValue=1287 AND SceneScriptPackageID=1638 AND PlaybackFlags=25 AND CustomDuration=0 AND ScriptName='scene_highmountain_stands';
 SELECT 'unsafe-sql-events',COUNT(*) FROM spell_scene_event WHERE MiscValue=1287;
 SELECT 'start',COUNT(*) FROM creature_queststarter WHERE id=93846 AND quest=42512;
@@ -35,7 +35,7 @@ SELECT CONCAT('terrain-',stage,'-',SourceEntry),MAX(met) FROM (
  ) checks GROUP BY stage,SourceEntry,ElseGroup
 ) groups_checked GROUP BY stage,SourceEntry ORDER BY FIELD(stage,'none','incomplete','complete','rewarded'),SourceEntry;
 "@
-$expected=@("native-objective`t1","accept-scene`t0","mayla-other-events`t2","scene`t1","unsafe-sql-events`t0","start`t1","end`t1","lasan`t1","teleport`t1","poi`t1","links`t2","terrain-definitions`t2")
+$expected=@("native-objective`t1","accept-scene`t0","mayla-other-events`t1","scene`t1","unsafe-sql-events`t0","start`t1","end`t1","lasan`t1","teleport`t1","poi`t1","links`t2","terrain-definitions`t2")
 $expected+=@("terrain-none-6`t0","terrain-none-7`t1","terrain-incomplete-6`t0","terrain-incomplete-7`t1","terrain-complete-6`t1","terrain-complete-7`t0","terrain-rewarded-6`t1","terrain-rewarded-7`t0")
 if(!$Live){
  $sql+=@"

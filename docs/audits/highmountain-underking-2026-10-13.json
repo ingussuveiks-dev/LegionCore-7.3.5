@@ -1,0 +1,47 @@
+{
+  "scope": "The Underking (39780): code/data repair of cave meeting, Wrath of Dargrul combat and reward-gated handoff. No client playtest, as requested.",
+  "findings": [
+    "Both original TDB735 objectives already match live data: boss 97266 (279965, storage 0, amount 1, flags 3) and meeting 97352 (280018, storage 1, amount 1, flags 1). Both are mandatory and remain unchanged. Ordinary core kill rewards retain ownership of boss credit.",
+    "Mayla template 93846 polled nearby players for meeting credit every second regardless of which spawn was nearby, including the northern camp. A duplicate 97352 gossip actor also credited nearby players. These exact SmartAI actions are removed. The player handler requires an incomplete quest, living grounded player, map 1220, proximity to the native cave POI and a living visible same-phase quest-giver Mayla within 3 m of that POI, with line of sight. Existing objective progress prevents repeat credit.",
+    "Two unphased duplicate spawns overlapped the encounter. The migration removes only exact known GUID/entry/map/phase/XYZ matches 388319 and 388320. It retains cave quest-giver 340587 and boss 340672 in phase 9180. Both retained locations have ground and a complete connecting navigation path on destroyed terrain 1527.",
+    "Wrath of Dargrul had no combat spell slots, SmartAI or C++ script. Its new AI casts native Petrifying Breath 192269 and Stone Smash 213577 while retaining normal victim selection and melee. Timers wait during casting and reset on evade/death. Scaling remains the valid 98..110 range; faction, health multiplier, loot and native spell damage/radii remain unchanged.",
+    "Native breath aura 192269 lasts 3 seconds and triggers 192270 every second. The latter stacks to ten for 15 seconds, slowing and damaging cone targets. Its two native trigger effects previously had no ten-stack gate. Effect 160 executes during LAUNCH_TARGET in this core, so the script suppresses both default petrification triggers there, then examines the applied aura after the hit. Only stack ten applies petrification, with the boss original-caster GUID.",
+    "Players, pets and other non-Warbrave targets receive native six-second Petrified 192322. Cave phase-9180 Highmountain Warbraves receive native three-minute 216101. Both native spells remove the slow. Stone Smash shatters only living phase-9180 Warbraves carrying this boss's 216101, excluding players, pets, Mayla, Jale and petrification from another caster. Reset/death removes this boss's slow and petrification from affected resolvable units; unrelated caster auras remain.",
+    "Lasan 97407 remains the starter; the retained cave Mayla 93846 remains the native quest ender and next-quest starter. Her quest-39780 reward achievement action is preserved. Existing prerequisites require rewarded Justice Rains from Above to start this quest and rewarded The Underking to start Neltharion's Lair (39781)."
+  ],
+  "evidence": {
+    "native": "highmountain-underking-native-2026-10-13.json: original TDB735 objective and ender rows; installed DB2 spell effects, stack cap, durations and radii, with hashes.",
+    "runtime": "Scoped live SQL: quest relations, objectives, NPCs, phases, scaling and spell bindings. Hotfix spell_effect, spell_misc and spell_aura_options contain no overrides for the five used encounter spells.",
+    "interaction_reference": "https://www.wow-pro.com/highmountain-neutral/ : meet cave Mayla, defeat Wrath of Dargrul, turn in and accept Neltharion's Lair."
+  },
+  "validation": [
+    "Test-HighmountainUnderking.ps1 compiles extracted production handlers: cave/state/visibility/phase/LOS meeting guards, one-time per-player credit, independent players, casting/timer behavior, stack-ten petrification, caster separation, protected shatter targets and reset/death cleanup including missing units.",
+    "Test-HighmountainBloodtotem.ps1 compiles actual prerequisite, kill credit and quest completion code. Underking tests cover all four objective subsets, both credit orders, duplicate caps, unrelated/absent/completed/rewarded exclusions and reward-gated next quest; prior Highmountain regressions also pass.",
+    "Test-HighmountainUnderkingNative.py passes against original TDB735 and installed DB2 data, including the core trigger-effect launch phase. Evidence regeneration and comparison both pass.",
+    "Test-HighmountainUnderkingGeometry.ps1 links Release navigation libraries and verifies both cave ground points and a complete path on terrain 1527, excluding the roof roughly 80 m above.",
+    "Test-HighmountainUnderkingData.ps1 recreates original defects in temporary tables, applies the migration twice, checks final data and preserves unrelated rows/custom script, event and relocated spawn values. Live mode passes after deployment.",
+    "Prior Stands temporary/live data tests and Justice live data test pass. Stands test now checks preservation of Mayla's reward achievement independently of the removed unsafe meeting poll.",
+    "Release worldserver and bnetserver build successfully into build-extractors/bin/Release. worldserver --version passes (c9315ec7d727+ working-tree build). Configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "deployment": {
+    "sha1": "250E39F478DDEB105C82183B9C7020D2AD6240C6",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\underking-20261013-073529",
+    "applied": "2026-10-13T07:35:29.4834082+03:00",
+    "migration": "sql/updates/world/2026_10_13_01_highmountain_underking.sql",
+    "method": "Stopped worldserver, scoped row backups, transaction and RELEASED updater registration."
+  },
+  "limits": [
+    "No client or live encounter verification. Retest cave entry and phase visibility, meeting objective, breath stacking/visuals, six-second player stun, NPC shatter, evade/retry, multiplayer kill credit, Mayla turn-in and outgoing dungeon quest in the 7.3.5 client.",
+    "First breath at 4 seconds with 8-second repeats, first smash at 15 seconds with 20-second repeats, meeting radius 15 m and limited Warbrave shatter policy are server reconstruction, not verified retail encounter timing. Native spell effects and values are retained.",
+    "Dargrul escape dialogue/choreography is not implemented by this change. Native spell 192468 is a kill-credit effect without an identified cinematic package; no invented cinematic or completion credit is added. This audit establishes the functional objective/combat/handoff paths within code/data scope, not retail scene parity.",
+    "The server remains stopped. Executable validation used --version; no gameplay session was run."
+  ],
+  "next": "Neltharion's Lair (39781): dungeon objective, completion credit and onward handoff.",
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_underking.cpp": "f57c991d63852c55420a99ee0a2158ff86a510f6f1563631b65e91fbb759900c",
+    "sql/updates/world/2026_10_13_01_highmountain_underking.sql": "ec5f51ff03151e83ba0b6f7f1b3b093560f9bf80f35363e2ca5630f810056e49",
+    "build-extractors/bin/Release/worldserver.exe": "c05b3b1267736fa651054d8364f41148f25133e5b29edf1b22f44622a85167ec",
+    "build-extractors/bin/Release/bnetserver.exe": "537e3ab9d82e58b713edf0cdbd58cfc0f15cc746e3002900279af08e97f10b63",
+    "build-extractors/bin/Release/mmaps/15272524.mmtile": "d3580e85761721a08fb6ef1df8c8ea4fcd351a95b963474345ac9e6687c443e7"
+  }
+}
