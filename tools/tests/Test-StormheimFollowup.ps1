@@ -22,4 +22,3 @@ $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nolo
 [IO.File]::WriteAllText("$output/run.cmd",$cmd)
 & "$output/run.cmd"
 if($LASTEXITCODE){throw 'Stormheim followup production regression failed'}
-

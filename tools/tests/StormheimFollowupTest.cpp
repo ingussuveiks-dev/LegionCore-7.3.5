@@ -171,5 +171,3 @@ int main()
  p={};p.Accept(38058);p.data[{38058,90903}]=100;watcher.OnLogin(&p);assert(p.completions==1);watcher.OnLogin(&p);assert(p.completions==1);
  std::cout<<"PASS: extracted followup/quest/kill handlers; native electricity only, no player/pet corpse charge, capped durable charge, six rescue completions, native actor state fields, interrupted/stale casts, retained original click target, ordered Horde clues, explicit NPC flag updates, retry/re-entry and later-map/Signal Boost isolation.\n";
 }
-
-
