@@ -1,0 +1,42 @@
+{
+  "quest": 40731,
+  "name": "The Heart of the Dreadscar",
+  "report": "The player accepted this quest alongside unfinished The New Blood, was immediately teleported into a burning area, and could not identify how to progress.",
+  "intended_sequence": "After the introduction and an artifact acquisition branch, return to Dreadscar, defeat Jagganoth, collect Heart of the Overlord, follow Calydus to the altar, place the heart, witness the audience and enter the class hall.",
+  "sources": [
+    "https://www.wowhead.com/quest=40731/the-heart-of-the-dreadscar",
+    "https://warcraft.blizzplanet.com/the-heart-of-the-dreadscar-affliction-warlock-artifact-questline/",
+    "https://www.wowhead.com/quest=40712/the-power-possessed",
+    "https://www.wowhead.com/quest=41156/the-power-possessed",
+    "https://www.wowhead.com/quest=42125/dark-whispers",
+    "https://www.wowhead.com/quest=43254/ritual-ruination"
+  ],
+  "findings": [
+    "The scenario is implemented in SmartAI/database data. Scenario 998 on map 1522 has native steps 2057/2058/2059, trees 46487/46489/46491, criteria 29353..29356: defeat event 48186, own item 132880, final events 48182 and 48187.",
+    "Quest 40731 had no previous quest and no acceptance conditions. Three artifact-return alternatives were instead attached to quest 42125, including a self-reward requirement. This allowed the final claim before the introduction and could block a first Demonology artifact. Simultaneously accepting 40729 and 40731 enables both phase 5444 and phase 5373 in zone 7918; the exact objects seen in the user's earlier run were not captured.",
+    "Jagganoth 101468's death action 205 targeted ACTION_INVOKER. SmartAI::JustDied passes the killing unit unchanged, while action 205 handles only Player targets. A pet killing blow therefore did not award this scripted scenario event. The nearby-player target now covers the solo scenario owner regardless of the killing unit.",
+    "Spell 200095 sends event 48173; the existing event_scripts command 17 creates heart 132880. Both corpse and summoned heart had unguarded spell clicks. Altar 246148 also had no item/step guard before granting credit and starting the finale.",
+    "Calydus accepts quest 40731, selects scenario 998, then casts teleport 200172 to map 1522. No repeat interaction previously invoked this path. Added a scoped return option for an unfinished quest in Dalaran/Underbelly.",
+    "A fresh scenario instance can restart before heart collection while the character still owns the previous heart. A guarded proximity event on the heart restores only OWN_ITEM progress after the boss step, using the actual item in inventory. It does not grant an item or bypass the boss.",
+    "The existing final chain summons Mephistroth 101477, plays conversations 200131..200133, summons the army, awards final scenario events, fades with 205574 and casts 201205. Native 201205 teleports and grants quest credit 101524; its destination is class hall map 1107, where Calydus 101097 is an existing quest ender."
+  ],
+  "repair": "Migration 2026_10_13_00_dreadscar_claim.sql adds the introduction prerequisite and four alternative artifact returns, removes the misplaced three Dark Whispers conditions, fixes pet-kill recipients, guards heart/altar interactions by native stage and item, and adds restricted return/inventory recovery paths.",
+  "validation": [
+    "Test-DreadscarClaimData.ps1 passes before and after deployment using temporary copies: repeat migration, all four artifact alternatives, rejection of intro-only progression, pet-kill target, living/dead boss click, wrong quest/scenario/stage, missing heart, full-bag retry eligibility, existing-item recovery, Dalaran-only return conditions, and final transfer references.",
+    "Test-DreadscarNative.py passes against installed DB2: three scenario stages and their criteria/assets, native heart event 48173 and completion spell 201205. Live hotfix tables contain no overrides for these scenario steps, trees or criteria.",
+    "No C++ or executable changes; no Release rebuild required. Canonical runtime remains build-extractors/bin/Release."
+  ],
+  "native_sha256": {
+    "ScenarioStep": "4e422b1333a7b1be8427ccb511017a93c093fa243adb83dc74e255ad1702b94e",
+    "CriteriaTree": "10568e9752f38f16492e94dd569e77293a1e4a6c07ee6c0fe33b60d7a4bddc05",
+    "Criteria": "8ee5f3d19d249d9a4f6a3b6745a0ab2d1a0a3b31c5b277b4942686c08e9c3750",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db"
+  },
+  "deployment": "Applied with worldserver stopped; backup .codex/backups/dreadscar-claim-20261013-090740. Registered migration SHA1 D0F2BE2E8844E5D2DCF65A12850B9CAD3A3D4D8A. No character progress or inventory edited and no server started.",
+  "limitations": [
+    "Full client traversal, combat tuning, conversations, heart interaction and class hall handoff still need an in-game run. Static/DB2 tests do not establish complete retail parity.",
+    "The existing immediate teleport on quest acceptance remains. The new return gossip is a recovery interaction; it does not reproduce the retail walk-through portal presentation.",
+    "A fresh instance may require defeating Jagganoth again. The recovery restores already-owned heart progress, not all transient scenario state."
+  ],
+  "client_retest": "Finish The New Blood and the selected artifact branch, then accept 40731. Kill Jagganoth with the pet delivering the final blow; verify stage 2. Collect the heart (also retry with initially full bags), follow Calydus, and use the altar only at stage 3 with the item. Verify audience, transfer and quest turn-in. Also exit and use Calydus's Return to Dreadscar Rift option before and after collecting the heart."
+}
