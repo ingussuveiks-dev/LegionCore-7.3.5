@@ -7,7 +7,7 @@ $end=$definitions.IndexOf('#endif',$start)
 [IO.File]::WriteAllText("$OutputDirectory/QuestStatusData.inc",$definitions.Substring($start,$end-$start))
 $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 $start=$source.IndexOf('void Player::AddQuestDelayedEvent(')
-$end=$source.IndexOf('void Player::RemoveActiveQuest(',$start)
+$end=$source.IndexOf('void Player::BindQuestObject(',$start)
 [IO.File]::WriteAllText("$OutputDirectory/QuestDelayedEvent.inc",$source.Substring($start,$end-$start))
 # Acceptance must invalidate even a retained status record; NONE invalidates
 # without erasing. Normal abandon/reward destroys the status in RemoveActiveQuest.

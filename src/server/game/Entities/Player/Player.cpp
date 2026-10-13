@@ -102,6 +102,7 @@
 #include "QuestPackets.h"
 #include "RestMgr.h"
 #include "ScenarioMgr.h"
+#include "Conversation.h"
 #include "ScenePackets.h"
 #include "ScriptsData.h"
 #include "SkillDiscovery.h"
@@ -19182,6 +19183,7 @@ void Player::AddQuest(Quest const* quest, Object* questGiver)
     // if not exist then created with set uState == NEW and rewarded=false
     QuestStatusData& status_q = m_QuestStatus[quest_id];
     status_q.ScriptLifetime.reset();
+    CancelQuestObjects(quest_id);
     (*m_QuestStatusVector)[quest_id] = &status_q;
 
     // check for repeatable quests status reset
@@ -20401,6 +20403,8 @@ void Player::SetQuestStatus(uint32 quest_id, QuestStatus status)
         q_status.Status = status;
         if (status == QUEST_STATUS_NONE)
             q_status.ScriptLifetime.reset();
+        if (status == QUEST_STATUS_NONE)
+            CancelQuestObjects(quest_id);
         m_QuestStatusSave[quest_id] = QUEST_DEFAULT_SAVE_TYPE;
         (*m_QuestStatusVector)[quest_id] = &q_status;
     }
@@ -20431,6 +20435,74 @@ void Player::AddQuestDelayedEvent(uint32 questId, uint64 delay, std::function<vo
     });
 }
 
+void Player::BindQuestObject(uint32 questId, WorldObject* object)
+{
+    QuestStatusData* status = getQuestStatus(questId);
+    if (!object || !status || status->Status == QUEST_STATUS_NONE)
+        return;
+    if (!status->ScriptObjects)
+    {
+        status->ScriptObjects = std::make_shared<QuestObjectScope>();
+        status->ScriptObjects->Owner = GetGUID();
+    }
+    object->BindQuestObjectScope(status->ScriptObjects);
+}
+
+void Player::CancelQuestObjects(uint32 questId)
+{
+    QuestStatusData* status = getQuestStatus(questId);
+    if (!status || !status->ScriptObjects)
+        return;
+    auto scope = std::move(status->ScriptObjects);
+    auto objects = scope->Cancel(); // before despawn callbacks can summon anything
+    // Only access the current map's objects from its update thread. Children
+    // left on another map observe the expired scope before their next AI tick.
+    if (!IsInWorld())
+        return;
+    for (ObjectGuid const& guid : objects)
+    {
+        if (guid.IsCreature())
+        {
+            if (Creature* creature = GetMap()->GetCreature(guid))
+            {
+                creature->SetVisible(false);
+                creature->DespawnOrUnsummon();
+            }
+        }
+        else if (guid.IsGameObject())
+        {
+            if (GameObject* object = GetMap()->GetGameObject(guid))
+                object->Delete();
+        }
+        else if (guid.IsConversation())
+            if (Conversation* conversation = ObjectAccessor::GetConversation(*this, guid))
+                conversation->Remove();
+    }
+}
+
+void Player::ResetNewBloodQuest()
+{
+    if (GetScenarioId() == 962)
+        SetScenarioId(0);
+    InterruptNonMeleeSpells(true, 199966); // ritual channel only
+    for (uint32 spell : {199966u, 204833u, 196229u, 199362u})
+        RemoveAurasDueToSpell(spell);
+
+    // Do not reset a shared map or the later Heart of the Dreadscar scenario.
+    // Release only this player's non-permanent binding to the intro instance.
+    bool inIntroduction = false;
+    if (GetMapId() == 1522)
+        if (Scenario* scenario = sScenarioMgr->GetScenario(GetInstanceId()))
+            inIntroduction = scenario->GetScenarioId() == 962;
+    if (InstancePlayerBind* bind = GetBoundInstance(1522, DIFFICULTY_NORMAL))
+        if (!bind->perm)
+            if (Scenario* scenario = sScenarioMgr->GetScenario(bind->save->GetInstanceId()))
+                if (scenario->GetScenarioId() == 962)
+                    UnbindInstance(1522, DIFFICULTY_NORMAL);
+    if (inIntroduction)
+        TeleportTo(1502, -851.0f, 4449.0f, 695.99f, 4.22f);
+}
+
 void Player::RemoveActiveQuest(uint32 quest_id)
 {
     if (!sQuestDataStore->GetQuestTemplate(quest_id))
@@ -20440,6 +20512,7 @@ void Player::RemoveActiveQuest(uint32 quest_id)
     if (!status)
         return;
 
+    CancelQuestObjects(quest_id);
     (*m_QuestStatusVector)[quest_id] = NULL;
     m_QuestStatus.erase(quest_id);
     m_QuestStatusSave[quest_id] = QUEST_DELETE_SAVE_TYPE;

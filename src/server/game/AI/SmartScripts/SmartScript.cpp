@@ -108,6 +108,8 @@ void SmartScript::ResetBaseObject()
 
 void SmartScript::ProcessEventsFor(SMART_EVENT e, Unit* unit, uint32 var0, uint32 var1, bool bvar, const SpellInfo* spell, GameObject* gob)
 {
+    if (GetBaseObject() && GetBaseObject()->IsQuestObjectExpired())
+        return;
     for (auto& mEvent : mEvents)
     {
         auto eventType = SMART_EVENT(mEvent.GetEventType());
@@ -122,6 +124,8 @@ void SmartScript::ProcessEventsFor(SMART_EVENT e, Unit* unit, uint32 var0, uint3
 
 void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, uint32 var1, bool bvar, const SpellInfo* spell, GameObject* gob)
 {
+    if (GetBaseObject() && GetBaseObject()->IsQuestObjectExpired())
+        return;
     //calc random
     if (e.GetEventType() != SMART_EVENT_LINK && e.event.event_chance < 100 && e.event.event_chance)
     {
@@ -3176,7 +3180,27 @@ ObjectList* SmartScript::GetTargets(SmartScriptHolder const& e, Unit* invoker /*
         }
         case SMART_TARGET_CLOSEST_CREATURE:
         {
-            Creature* target = GetClosestCreatureWithEntry(GetBaseObject(), e.target.closest.entry, static_cast<float>(e.target.closest.dist ? e.target.closest.dist : 100), e.target.closest.dead ? false : true);
+            float range = static_cast<float>(e.target.closest.dist ? e.target.closest.dist : 100);
+            Creature* target = nullptr;
+            if (GetBaseObject() && GetBaseObject()->HasQuestObjectScope())
+            {
+                // Filter BEFORE choosing the nearest actor. Filtering only the
+                // result can lose our actor behind a closer static/other copy.
+                ObjectList* candidates = GetWorldObjectsInDist(range);
+                for (WorldObject* candidate : *candidates)
+                    if (Creature* creature = candidate->ToCreature())
+                        if (creature->GetEntry() == e.target.closest.entry &&
+                            creature->IsAlive() == !e.target.closest.dead &&
+                            GetBaseObject()->CanTargetQuestObject(creature) &&
+                            GetBaseObject()->IsWithinDistInMap(creature, range))
+                        {
+                            range = GetBaseObject()->GetDistance(creature);
+                            target = creature;
+                        }
+                delete candidates;
+            }
+            else
+                target = GetClosestCreatureWithEntry(GetBaseObject(), e.target.closest.entry, range, !e.target.closest.dead);
             if (target)
                 l->push_back(target);
             break;
@@ -3245,6 +3269,9 @@ ObjectList* SmartScript::GetTargets(SmartScriptHolder const& e, Unit* invoker /*
         default:
             break;
     }
+
+    if (GetBaseObject() && GetBaseObject()->HasQuestObjectScope())
+        l->remove_if([this](WorldObject* target) { return !GetBaseObject()->CanTargetQuestObject(target); });
 
     if (l->empty())
     {

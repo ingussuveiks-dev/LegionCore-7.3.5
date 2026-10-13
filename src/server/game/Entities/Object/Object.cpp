@@ -2956,6 +2956,43 @@ TempSummon* WorldObject::SummonCreature(uint32 entry, const Position &pos, TempS
     return nullptr;
 }
 
+void WorldObject::BindQuestObjectScope(std::shared_ptr<QuestObjectScope> const& scope)
+{
+    _questObjectBound = true;
+    _questObjectScope = scope;
+    scope->Register(GetGUID());
+    AddPlayerInPersonnalVisibilityList(scope->Owner);
+}
+
+bool WorldObject::InheritQuestObjectScope(WorldObject const* source)
+{
+    if (!source || !source->_questObjectBound)
+        return true;
+    auto scope = source->_questObjectScope.lock();
+    if (!scope || scope->Cancelled)
+        return false;
+    BindQuestObjectScope(scope);
+    return true;
+}
+
+bool WorldObject::IsQuestObjectExpired() const
+{
+    if (!_questObjectBound)
+        return false;
+    auto scope = _questObjectScope.lock();
+    return !scope || scope->Cancelled;
+}
+
+bool WorldObject::CanTargetQuestObject(WorldObject const* target) const
+{
+    if (!_questObjectBound)
+        return true;
+    auto scope = _questObjectScope.lock();
+    if (!target || !scope || scope->Cancelled)
+        return false;
+    return target->GetGUID() == scope->Owner || target->_questObjectScope.lock() == scope;
+}
+
 GameObject* WorldObject::SummonGameObject(uint32 entry, Position pos, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime, ObjectGuid viewerGuid /*= ObjectGuid::Empty*/, GuidUnorderedSet* viewersList /*= nullptr*/, bool hasCreator /*= true*/)
 {
     return SummonGameObject(entry, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), ang, rotation0, rotation1, rotation2, rotation3, respawnTime, viewerGuid, viewersList, hasCreator);
@@ -2980,6 +3017,11 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         return nullptr;
     }
     go->SetPhaseId(GetPhases(), false);
+    if (!go->InheritQuestObjectScope(this))
+    {
+        delete go;
+        return nullptr;
+    }
     go->SetTratsport(GetTransport());
     go->SetRespawnTime(respawnTime);
 

@@ -37,6 +37,12 @@ Unit* TempSummon::GetSummoner() const
 
 void TempSummon::Update(uint32 diff)
 {
+    // Check before Creature::Update can execute AI or delayed spell events.
+    if (IsQuestObjectExpired())
+    {
+        UnSummon();
+        return;
+    }
     Creature::Update(diff);
 
     if (m_deathState == DEAD)

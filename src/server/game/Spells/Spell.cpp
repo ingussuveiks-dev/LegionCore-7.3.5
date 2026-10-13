@@ -10630,6 +10630,8 @@ WorldObjectSpellTargetCheck::~WorldObjectSpellTargetCheck()
 
 bool WorldObjectSpellTargetCheck::operator()(WorldObject* target)
 {
+    if (!_caster->CanTargetQuestObject(target))
+        return false;
     SpellCastResult res = _spellInfo->CheckTarget(_caster, target, true);
     if (_condSrcInfo)
     {

@@ -4242,6 +4242,25 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
 
     summon->SetPhaseId(phaseIds, false);
 
+    if (!summon->InheritQuestObjectScope(summoner))
+    {
+        delete summon;
+        return nullptr;
+    }
+    // New Blood's personal council actors are summoned directly by the
+    // player. Bind BEFORE InitSummon: their AI synchronously creates children.
+    // The scope then follows ordinary summons and summoned gameobjects too.
+    if (summoner && summoner->IsPlayer() && (GetId() == 1220 || GetId() == 1502))
+        switch (entry)
+        {
+            case 101456: case 98797: case 101454: case 101455: case 101457:
+            case 101460: // jailer forcecast 200032 is cast by the player
+                summoner->ToPlayer()->BindQuestObject(40729, summon);
+                break;
+            default:
+                break;
+        }
+
     summon->SetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL, spellId);
     if (summoner)
     {
@@ -4264,6 +4283,17 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
         summon->AddPlayersInPersonnalVisibilityList(*viewersList);
 
     AddToMap(summon->ToCreature());
+    if (entry == 101456 && summon->HasQuestObjectScope())
+    {
+        // The legacy 1220 ritual uses static fire markers. Give this attempt
+        // its own copies, preserving the DB positions without modifying the
+        // shared markers or another player's fire state.
+        std::list<Creature*> markers;
+        summon->GetCreatureListWithEntryInGrid(markers, 35845, 50.0f);
+        for (Creature* marker : markers)
+            if (!marker->isSummon())
+                summon->SummonCreature(35845, marker->GetPosition(), TEMPSUMMON_MANUAL_DESPAWN);
+    }
     summon->InitSummon();
     //summon->CastPetAuras(true);
 

@@ -396,6 +396,11 @@ GameObject* GameObject::CreateGameObject(uint32 entry, Map* map, Position const&
 
 void GameObject::Update(uint32 diff)
 {
+    if (IsQuestObjectExpired())
+    {
+        Delete();
+        return;
+    }
     if (m_isUpdate)
         return;
 
@@ -1565,6 +1570,8 @@ uint32 GameObject::GetVignetteId() const
 
 void GameObject::Use(Unit* user)
 {
+    if (IsQuestObjectExpired())
+        return;
     // by default spell caster is user
     Unit* spellCaster = user;
     uint32 spellId = 0;

@@ -36,6 +36,7 @@ struct Player {
  void DestroyItemCount(unsigned id,unsigned count,bool,bool=false){inventory[id]-=std::min(inventory[id],count);}
  void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
  void RemoveActiveQuest(uint32);
+ void CancelQuestObjects(uint32) {}
  bool TakeQuestSourceItem(uint32,bool);
 };
 #include "QuestDelayedEvent.inc"

@@ -594,6 +594,8 @@ void WorldSession::HandleQuestLogRemoveQuest(WorldPackets::Quest::QuestLogRemove
 
         player->TakeQuestSourceItem(questId, true); // remove quest src item from player
         player->RemoveActiveQuest(questId);
+        if (questId == 40729)
+            player->ResetNewBloodQuest();
         player->GetAchievementMgr()->RemoveTimedAchievement(CRITERIA_TIMED_TYPE_ITEM, questId);
 
         TC_LOG_INFO("network", "Player %u abandoned quest %u", player->GetGUIDLow(), questId);

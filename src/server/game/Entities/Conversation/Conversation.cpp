@@ -92,6 +92,8 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
     }
 
     Object::_Create(ObjectGuid::Create<HighGuid::Conversation>(GetMapId(), triggerEntry, guidlow));
+    if (!InheritQuestObjectScope(caster))
+        return false;
     SetPhaseMask(caster->GetPhaseMask(), false);
     SetPhaseId(caster->GetPhases(), false);
 
@@ -138,6 +140,11 @@ bool Conversation::CreateConversation(ObjectGuid::LowType guidlow, uint32 trigge
 
 void Conversation::Update(uint32 p_time)
 {
+    if (IsQuestObjectExpired())
+    {
+        Remove();
+        return;
+    }
     bool expired = false;
 
     if (GetDuration())

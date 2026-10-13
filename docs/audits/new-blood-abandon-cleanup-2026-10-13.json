@@ -1,0 +1,25 @@
+{
+  "request": "Make abandoning The New Blood (40729) clean up the previous attempt before reaccepting it.",
+  "findings": [
+    "HandleQuestLogRemoveQuest removed quest status, objective data and source items, but did not own/cancel the ritual's SmartAI actors or timed lists. The direct personal actors summon further NPCs and a gameobject; the descendants outlive their immediate summoner.",
+    "Nearest-creature SmartAI searches did not distinguish personal actors from static copies or another player's attempt. This could start a timed list on an unowned actor that ordinary personal-summon cleanup would miss.",
+    "The map-1220 ritual also addresses static world-trigger 35845 fire markers. Their original positions are retained through temporary personal copies rather than modifying/despawning shared markers. Map 1502 has no static fire-marker rows in the inspected database.",
+    "RemoveActiveQuest is used for successful rewards too. The return-to-start behavior belongs only in the abandon handler; object disposal also runs on normal status removal."
+  ],
+  "implementation": [
+    "A quest attempt owns a QuestObjectScope with owner GUID and registered object GUIDs. Objects hold weak references and children inherit the scope before InitSummon runs. Registration/cancellation use a mutex and atomic cancellation flag because descendants can remain on an old map after their owner transfers.",
+    "Only New Blood's player-summoned council actors and player-forcecast jailer in maps 1220/1502 activate this mechanism. Ordinary creatures, pets and unrelated quests keep their existing behavior.",
+    "Cancellation invalidates the scope before hiding/despawning registered creatures, deleting gameobjects and removing conversations. Remote-map survivors self-remove before their next AI/event update; no foreign map objects are accessed from the player's map thread. Expired parents cannot spawn new scoped descendants.",
+    "SmartAI selects the nearest matching actor within the same attempt and filters area/invoker targets to the owner or same-attempt objects. Implicit spell targets use the same restriction. This prevents static/other-attempt actors from continuing a cancelled ritual.",
+    "Abandon clears pending scenario 962, ritual channel 199966, arrival stun 204833, chains 196229 and blackout 199362. In the actual scenario-962 map-1522 instance it releases only the player's non-permanent intro binding and returns them beside the existing Ritssyn spawn in map 1502. It does not reset another player's instance or the later scenario 998.",
+    "Quest acceptance and explicit status NONE also cancel retained scopes. Normal quest reward cleans up objects without running the abandon-only return. Inventory, equipment, pets and unrelated auras are preserved by the new handlers."
+  ],
+  "validation": [
+    "Test-NewBloodQuestCleanup.ps1 compiles extracted production WorldObject and Player methods. It exercises descendant cleanup after parent loss, portals/conversations, remote-map expiry, same-tick reaccept, other-player isolation, owner-only targeting, late summons, repeated cancellation, scope destruction, concurrent registration/cancellation, aura isolation and intro/later-scenario binding guards.",
+    "Test-QuestAttemptCleanup.ps1 passes against production quest-status removal and source-item cleanup.",
+    "Test-EyeQuestChain.ps1 passes after the shared delayed-event exporter boundary adjustment; existing quest-attempt delayed events remain unchanged.",
+    "Test-NewBloodRitualData.ps1, Test-NewBloodKnockbackReset.ps1 and Test-DreadscarClaimData.ps1 pass."
+  ],
+  "runtime": "Release worldserver is built into the canonical build-extractors/bin/Release directory. This change requires that executable, not a SQL reload. The server is not automatically started and no character DB rows are modified.",
+  "client_validation": "Pending: abandon before channeling, during the ritual, after Jagganoth appears and during jailer capture; immediately reaccept and verify a single fresh ritual. Also abandon in the Dreadscar introduction, return beside Ritssyn and verify fresh scenario progress on the next entry. Test two simultaneous players for isolation. Full in-client behavior is not claimed verified by the native helper tests or compilation."
+}
