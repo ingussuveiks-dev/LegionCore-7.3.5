@@ -15,4 +15,9 @@ int main(int argc, char** argv)
     auto focus = items.LookupEntry(128343);
     if (!focus || focus->MaxCount != 0 || focus->Stackable != 1 || focus->LimitCategory != 0) return 4;
     std::cout << "PASS: production DB2 reader confirms raw Stonedark Focus MaxCount=0, Stackable=1, LimitCategory=0.\n";
+    auto hammer = items.LookupEntry(128765);
+    if (!hammer) return 5;
+    std::cout << "Hammer: MaxCount=" << hammer->MaxCount << ", Stackable=" << hammer->Stackable << ", Bonding=" << unsigned(hammer->Bonding) << ".\n";
+    if (hammer->MaxCount != 0 || hammer->Stackable != 50 || hammer->LimitCategory != 0 || hammer->Bonding != 4) return 6;
+    std::cout << "PASS: production DB2 reader confirms quest Hammer of Khaz'goroth 128765.\n";
 }

@@ -32,6 +32,7 @@ void AddSC_highmountain_aviash();
 void AddSC_highmountain_justice();
 void AddSC_highmountain_underking();
 void AddSC_highmountain_underking_escape();
+void AddSC_highmountain_lair();
 void AddSC_highmountain_worm_support();
 void AddSC_highmountain_snowblind_combat();
 void AddSC_highmountain_evacuation();
@@ -243,6 +244,7 @@ void AddLegionScripts()
     AddSC_highmountain_justice();
     AddSC_highmountain_underking();
     AddSC_highmountain_underking_escape();
+    AddSC_highmountain_lair();
     AddSC_highmountain_worm_support();
     AddSC_highmountain_snowblind_combat();
     AddSC_highmountain_evacuation();

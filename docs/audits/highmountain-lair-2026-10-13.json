@@ -1,0 +1,40 @@
+{
+  "scope": "Neltharion's Lair (39781): collection objective, dungeon loot eligibility, login repair, quest-giver visibility and onward handoff. Code/data only.",
+  "findings": [
+    "The live objective list contained only optional Navarrogg talk objective 279973. Native TDB735 additionally requires objective 279938: item 128765, amount 1, storage 0, flags 1, flags2 1. Without it, core completion could succeed without recovering the hammer. The migration inserts only the missing native objective and preserves the optional conversation.",
+    "Dargrul 91007 already has a 100% quest-required hammer 128765 loot row for loot modes 1/2/4. Restoring the objective restores ordinary HasQuestForItem eligibility and item-added/item-removed completion behavior. The script does not grant an item or quest credit for entering the instance, speaking to Navarrogg, or merely killing the boss; the player must loot the hammer.",
+    "A login handler reconciles only active incomplete/complete 39781 against carried hammer count, capped at the configured objective amount. It reopens premature completion without the item and completes valid existing collection. Bank items do not count, repeated login is idempotent, and absent/rewarded quests remain unchanged.",
+    "Existing static quest-giver Hammer 250548 is already spawned beside Dargrul in dungeon map 1458 and covers normal, heroic, mythic and challenge spawn masks. It ends 39781 and starts 42454. The unused 213589 summon enum in boss code does not require an additional summon: that would duplicate the existing quest giver.",
+    "The dungeon phase-5645 condition contained one contradictory group requiring complete AND rewarded 39781, plus another group showing the hammer to everyone who had not rewarded 42454. The exact old condition is corrected to (complete OR rewarded 39781) AND not rewarded 42454. The phase affects only the existing hammer spawn in this dungeon; other phase definitions are unchanged. Core SetQuestStatus already notifies phasing after collection, discard and reward.",
+    "Navarrogg 97304 retains the optional self-targeted gossip credit. Actual core kill-credit handling accepts TALKTO objectives; regression fixtures now use the real TALKTO value 3 and model special flags across all objectives. Rewarded 39780 still gates 39781, and rewarded 39781 gates 42454. Native reward processing consumes the collected 128765; the next quest has its distinct existing start item 137649."
+  ],
+  "evidence": {
+    "native": "highmountain-lair-native-2026-10-13.json: original TDB735 objective and gameobject quest relations with archive and ItemSparse hashes.",
+    "item": "Production sparse DB2 reader confirms item 128765 MaxCount=0, Stackable=50, LimitCategory=0, Bonding=4. No item hotfix or stack-limit modification was needed. Quest loot eligibility caps the required collection at one.",
+    "runtime": "Scoped live queries confirm Dargrul loot binding, quest-required item row, existing hammer spawn/masks, Navarrogg SmartAI, quest relations and exact phase conditions."
+  },
+  "validation": [
+    "Test-HighmountainBloodtotem.ps1 compiles actual prerequisite, loot eligibility, item lifecycle, completion, kill credit and item reward code, plus the new production login handler. Lair checks cover all four objective subsets, optional talk credit capped once without completion, required hammer collection, wrong item exclusion, duplicate notifications, removal/recollection, reward consumption, bank exclusion, login status/count combinations and reward-gated follow-up. Prior Highmountain regressions pass.",
+    "Test-BloodtotemItemNative.ps1 uses production DB2Storage to read installed sparse ItemSparse records, including the hammer; passes.",
+    "Test-HighmountainLairNative.py matches original TDB735 objective and quest-giver relations. Evidence regeneration and comparison both pass.",
+    "Test-HighmountainLairData.ps1 recreates original defects in temporary tables, runs migration twice, verifies native item/talk objectives, existing loot/actors/handoff and all 16 quest-status phase combinations, plus unrelated/custom-objective preservation. Temporary tests pass before and after deployment; live Lair and Underking data tests pass.",
+    "Final Release worldserver and bnetserver build succeeds in build-extractors/bin/Release. worldserver --version succeeds (1a26cff8ae58+ working-tree build). Both this migration and the preceding escape migration are registered RELEASED."
+  ],
+  "deployment": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\lair-20261013-083109",
+    "sha1": "8FFB68F0192D9DA52557D635AA1DA64554C9827A",
+    "applied": "2026-10-13T08:31:09.9331455+03:00"
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_lair.cpp": "e7a88bd8ff3eb4b4755b05e7241e4e2613d480fab6a71d49967d1c15bb13d560",
+    "sql/updates/world/2026_10_13_03_highmountain_lair.sql": "2e47698933273719d3a8d222927903c4691d6b7df85c83d7a491818e60c5a343",
+    "build-extractors/bin/Release/worldserver.exe": "95770619aec4fe4ba1bd6fe4746034d2fc3b9a70431d72bfd69123e4f9d7be05",
+    "build-extractors/bin/Release/bnetserver.exe": "eea706427d4dd6619f709b99768efc4efbfb8a9cab77cfa447e91b74fe9026ad"
+  },
+  "limits": [
+    "No client playtest or live dungeon run. Verify acceptance, optional Navarrogg interaction, Dargrul loot, item collection/removal, hammer visibility and turn-in, follow-up acceptance and relog repair in 7.3.5.",
+    "This audit checks the story quest handoff through the existing dungeon. It does not claim a new complete combat audit of all four dungeon bosses.",
+    "Already rewarded quests are not rolled back. Runtime servers remain stopped; configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "next": "The Hammer of Khaz'goroth (42454): Dalaran teleporter and Aegwynn's Gallery placement."
+}

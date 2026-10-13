@@ -1,0 +1,68 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "objectives": [
+    {
+      "ID": "279938",
+      "QuestID": "39781",
+      "Type": "1",
+      "Order": "1",
+      "StorageIndex": "0",
+      "ObjectID": "128765",
+      "Amount": "1",
+      "Flags": "1",
+      "Flags2": "1",
+      "ProgressBarWeight": "0",
+      "Description": "'Hammer of Khaz\\'goroth'",
+      "VerifiedBuild": "25549"
+    },
+    {
+      "ID": "279973",
+      "QuestID": "39781",
+      "Type": "3",
+      "Order": "0",
+      "StorageIndex": "1",
+      "ObjectID": "97304",
+      "Amount": "1",
+      "Flags": "4",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Speak with Navarrogg'",
+      "VerifiedBuild": "25549"
+    },
+    {
+      "ID": "284276",
+      "QuestID": "42454",
+      "Type": "0",
+      "Order": "0",
+      "StorageIndex": "3",
+      "ObjectID": "107587",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Central Dalaran teleport used'",
+      "VerifiedBuild": "25549"
+    }
+  ],
+  "ender": [
+    {
+      "id": "246463",
+      "quest": "42454"
+    },
+    {
+      "id": "250548",
+      "quest": "39781"
+    }
+  ],
+  "starter": [
+    {
+      "id": "250548",
+      "quest": "42454"
+    }
+  ],
+  "item_probe": "Test-BloodtotemItemNative.ps1 uses the production sparse DB2 reader for item 128765: MaxCount=0, Stackable=50, Bonding=4.",
+  "db2_hashes": {
+    "ItemSparse": "8eecbf592e1706e07c28409547eaecdc0c51c325ef3e952fb7028098dcdfec17"
+  }
+}

@@ -29,6 +29,9 @@ $end=$source.IndexOf('case QUEST_OBJECTIVE_CURRENCY:',$start)
 $source=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/highmountain_bloodtotem.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 [IO.File]::WriteAllText("$output/BloodtotemLogin.inc",$source.Substring(0,$source.IndexOf('void AddSC_highmountain_bloodtotem()')))
+$source=Get-Content "$PSScriptRoot/../../src/server/scripts/Legion/highmountain_lair.cpp" -Raw
+$source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
+[IO.File]::WriteAllText("$output/LairLogin.inc",$source.Substring(0,$source.IndexOf('void AddSC_highmountain_lair()')))
 $source=Get-Content "$PSScriptRoot/../../src/server/game/DataStores/DB2Stores.cpp" -Raw
 $start=$source.IndexOf('itemSparseHotfixes.ApplyHotfix(128380,');$end=$source.IndexOf('}, true);',$start)+'}, true);'.Length
 [IO.File]::WriteAllText("$output/BloodtotemHotfix.inc",$source.Substring($start,$end-$start))

@@ -11,7 +11,7 @@ using PrevQuests=std::vector<int32>; using ExclusiveQuestGroups=std::multimap<in
 #define ASSERT assert
 enum {QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED};
 enum {MAX_QUEST_LOG_SIZE=25,QUEST_ITEM_COUNT=4,QUEST_SPECIAL_FLAGS_DELIVER=4};
-enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=7,
+enum {MAX_KILL_CREDIT=2,QUEST_SPECIAL_FLAGS_KILL=8,QUEST_SPECIAL_FLAGS_CAST=16,QUEST_OBJECTIVE_MONSTER=0,QUEST_OBJECTIVE_TALKTO=3,
  CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CRITERIA_TIMED_TYPE_CREATURE,CRITERIA_TYPE_KILL_CREATURE};
 enum {QUEST_OBJECTIVE_TASK_IN_ZONE=15,QUEST_OBJECTIVE_ITEM=1,INVALIDREASON_DONT_HAVE_REQ=1,QUEST_SPECIAL_FLAGS_EXPLORATION_OR_EVENT=1,QUEST_SPECIAL_FLAGS_TIMED=2,
  QUEST_OBJECTIVE_FLAG_HIDE_ITEM_GAINS=0x10,QUEST_OBJECTIVE_FLAG_PART_OF_PROGRESS_BAR=0x40,QUEST_OBJECTIVE_FLAG_OPTIONAL=4,QUEST_FLAGS_EX_KEEP_ADDITIONAL_ITEMS=1};
@@ -23,7 +23,7 @@ struct Quest {
  auto const& GetObjectives() const{return objectives;}
  bool IsWeekly()const{return false;} bool IsSeasonal()const{return false;} bool IsRepeatable()const{return false;}
  bool IsAutoComplete()const{return false;}
- bool HasSpecialFlag(int flag)const{return !objectives.empty() && ((flag==QUEST_SPECIAL_FLAGS_DELIVER && objectives[0].Type==QUEST_OBJECTIVE_ITEM) || (flag==(QUEST_SPECIAL_FLAGS_KILL|QUEST_SPECIAL_FLAGS_CAST) && objectives[0].Type==QUEST_OBJECTIVE_MONSTER));}
+ bool HasSpecialFlag(int flag)const{return std::any_of(objectives.begin(),objectives.end(),[flag](QuestObjective const& obj){return (flag==QUEST_SPECIAL_FLAGS_DELIVER && obj.Type==QUEST_OBJECTIVE_ITEM) || (flag==(QUEST_SPECIAL_FLAGS_KILL|QUEST_SPECIAL_FLAGS_CAST) && (obj.Type==QUEST_OBJECTIVE_MONSTER || obj.Type==QUEST_OBJECTIVE_TALKTO));});}
  bool IsAllowedInRaid(int)const{return false;}
 };
 struct QuestStore {std::map<uint32,Quest> quests; ExclusiveQuestGroups mExclusiveQuestGroups;
@@ -66,7 +66,7 @@ struct Player {
  void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const&,uint32){++creditPackets;}
  void SetQuestStatus(uint32,int value){status.Status=value;}
  bool InBattleground()const{return false;}
- int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
+ int GetQuestObjectiveData(Quest const* quest,int index)const{if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780||quest->id==39781){auto it=nursingProgress.find(index);return it==nursingProgress.end()?0:it->second;}return progress;}
  bool HasQuestForItem(uint32)const; void ItemAddedQuestCheck(uint32,uint32); void ItemRemovedQuestCheck(uint32,uint32);
  template<class F> void AddDelayedEvent(int,F callback){callback();} void UpdateForQuestWorldObjects(){}
  void SendCanTakeQuestResponse(int,Quest const*,char const*){}
@@ -80,7 +80,7 @@ struct Player {
  if(obj.Type==QUEST_OBJECTIVE_TASK_IN_ZONE){auto qInfo=quest;switch(obj.Type){
 #include "BloodtotemProgress.inc"
  }}return (quest->id==39456||quest->id==39387)?bool(progress&(1<<obj.StorageIndex)):GetQuestObjectiveData(quest,obj.StorageIndex)>=obj.Amount;}
- void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
+ void SetQuestObjectiveData(Quest const* quest,QuestObjective const* obj,uint32 count){if(quest->id==39318||quest->id==39321||quest->id==39429||quest->id==39776||quest->id==42088||quest->id==40594||quest->id==39780||quest->id==39781)nursingProgress[obj->StorageIndex]=int(count);else progress=int(count);}
  void CompleteQuest(uint32){status.Status=QUEST_STATUS_COMPLETE;++completeCalls;}
  void IncompleteQuest(uint32){status.Status=QUEST_STATUS_INCOMPLETE;++reopenCalls;}
  void DestroyItemCount(int id,int count,bool){assert(uint32(id)==itemTemplate.id && bags>=uint32(count));bags-=count;}
@@ -93,6 +93,7 @@ struct Player {
 #include "BloodtotemKills.inc"
 struct PlayerScript {explicit PlayerScript(char const*){} virtual void OnLogin(Player*){}};
 #include "BloodtotemLogin.inc"
+#include "LairLogin.inc"
 struct HotfixFixture {bool notified=false;void ApplyHotfix(uint32 id,void(*fixer)(ItemSparseEntry*),bool notify){assert(id==128380);fixer(&itemTemplate.sparse);notified=notify;}};
 int main()
 {
@@ -367,5 +368,27 @@ int main()
  for(int state:{QUEST_STATUS_NONE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39780;p.status.Status=state;p.KilledMonsterCredit(97266);p.KilledMonsterCredit(97352);assert(!p.creditPackets);}
  store.quests[39781]=Quest{39781,0,{39780}};p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39781),false));p.m_RewardedQuests.insert(39780);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(39781),false));
  std::cout<<"PASS: Underking requires both native objectives in either order, caps duplicates, ignores unrelated/absent/completed quests and gates Neltharion's Lair on reward.\n";
+
+ // Native dungeon collection: the optional conversation cannot replace the hammer.
+ store.quests[39781].objectives={{QUEST_OBJECTIVE_ITEM,128765,1,1,0},{QUEST_OBJECTIVE_TALKTO,97304,1,4,1}};
+ itemTemplate.id=128765;itemTemplate.sparse={0,50};
+ for(int mask=0;mask<4;++mask){p={};p.activeQuest=39781;p.status.Status=QUEST_STATUS_INCOMPLETE;p.nursingProgress={{0,mask&1},{1,(mask>>1)&1}};assert(p.CanCompleteQuest(39781)==bool(mask&1));}
+ p={};p.activeQuest=39781;p.status.Status=QUEST_STATUS_INCOMPLETE;assert(p.HasQuestForItem(128765)&&!p.CanCompleteQuest(39781));
+ p.KilledMonsterCredit(97304);p.KilledMonsterCredit(97304);assert(p.nursingProgress[1]==1&&p.creditPackets==1&&p.status.Status==QUEST_STATUS_INCOMPLETE);
+ p.ItemAddedQuestCheck(137649,1);assert(!p.nursingProgress[0]);p.bags=1;p.ItemAddedQuestCheck(128765,1);
+ assert(p.status.Status==QUEST_STATUS_COMPLETE&&p.nursingProgress[0]==1&&!p.HasQuestForItem(128765));
+ p.ItemAddedQuestCheck(128765,1);assert(p.completeCalls==1);
+ p.ItemRemovedQuestCheck(128765,1);p.bags=0;assert(p.status.Status==QUEST_STATUS_INCOMPLETE&&p.nursingProgress[0]==0&&p.HasQuestForItem(128765));
+ p.bags=1;p.ItemAddedQuestCheck(128765,1);p.bank=1;p.RewardItems(store.GetQuestTemplate(39781));assert(p.bags==0&&p.bank==1);
+ player_highmountain_lair lairLogin;
+ for(int status:{QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE})for(uint32 bags:{0u,1u,2u}){
+  p={};p.activeQuest=39781;p.status.Status=status;p.bags=bags;p.bank=1;p.nursingProgress={{0,0},{1,1}};
+  lairLogin.OnLogin(&p);assert(p.nursingProgress[0]==int(std::min(bags,1u))&&p.nursingProgress[1]==1);
+  assert(p.status.Status==(bags?QUEST_STATUS_COMPLETE:QUEST_STATUS_INCOMPLETE));auto complete=p.completeCalls,open=p.reopenCalls;
+  lairLogin.OnLogin(&p);assert(p.completeCalls==complete&&p.reopenCalls==open);
+ }
+ for(int status:{QUEST_STATUS_NONE,QUEST_STATUS_REWARDED}){p={};p.activeQuest=39781;p.status.Status=status;p.nursingProgress[0]=7;lairLogin.OnLogin(&p);assert(p.status.Status==status&&p.nursingProgress[0]==7&&!p.HasQuestForItem(128765));}
+ store.quests[42454]=Quest{42454,0,{39781}};p={};assert(!p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(42454),false));p.m_RewardedQuests.insert(39781);assert(p.SatisfyQuestPreviousQuest(store.GetQuestTemplate(42454),false));
+ std::cout<<"PASS: Lair native mandatory hammer/optional conversation, actual loot/item completion and removal, reward consumption, bank exclusion, idempotent login repair and reward-gated follow-up.\n";
 
 }
