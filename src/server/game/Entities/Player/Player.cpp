@@ -20485,7 +20485,7 @@ void Player::ResetNewBloodQuest()
     if (GetScenarioId() == 962)
         SetScenarioId(0);
     InterruptNonMeleeSpells(true, 199966); // ritual channel only
-    for (uint32 spell : {199966u, 199967u, 204833u, 196229u, 199362u})
+    for (uint32 spell : {199966u, 199967u, 204833u, 196229u, 199362u, 199338u, 195045u, 195066u, 195068u, 199195u})
         RemoveAurasDueToSpell(spell);
 
     // Do not reset a shared map or the later Heart of the Dreadscar scenario.

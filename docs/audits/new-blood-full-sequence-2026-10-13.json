@@ -1,0 +1,195 @@
+{
+  "quest": 40729,
+  "name": "The New Blood",
+  "scenario": 962,
+  "clientBuild": 26972,
+  "date": "2026-10-13",
+  "status": "Code/data audit and regression tests passed; full client playthrough pending",
+  "sources": [
+    "https://www.wowhead.com/quest=40729/the-new-blood",
+    "https://warcraft.wiki.gg/wiki/The_New_Blood",
+    "build-extractors/bin/Release/dbc/enUS/ScenarioStep.db2",
+    "build-extractors/bin/Release/dbc/enUS/CriteriaTree.db2",
+    "build-extractors/bin/Release/dbc/enUS/Criteria.db2",
+    "build-extractors/bin/Release/dbc/enUS/SpellEffect.db2"
+  ],
+  "earlyEscape": {
+    "cause": "Quest objectives were serialized by StorageIndex: escape slot 0 preceded ritual slot 2, so its sequenced flag had no preceding ritual. Jailer also incorrectly awarded escape credit 101150.",
+    "fix": "Present objective 281139 before 282105 while retaining save slots. Remove jailer escape credit. Native capture spell 199359 credits ritual 101420; only native exit spell 196340 credits escape 101150.",
+    "characterProgressChanged": false
+  },
+  "stages": [
+    {
+      "stage": "Ritual and capture",
+      "checks": [
+        "Previous portal/capture production regressions pass",
+        "Quest objective ordering compiled from production loader",
+        "No escape credit during capture",
+        "Intro stun/blackout removed in prison"
+      ],
+      "clientCheck": "Portal assembly, stun, dialogue, jailer and landing inside cage"
+    },
+    {
+      "stage": 1,
+      "title": "Far From Home",
+      "step": 1944,
+      "tree": 46003,
+      "criteria": [
+        [
+          92,
+          47152
+        ]
+      ],
+      "checks": [
+        "Ritssyn dialogue producer present",
+        "Extra action aura 199338 leads to native Enslave Beshtal 199336"
+      ],
+      "clientCheck": "Listen until stage 2; extra action appears"
+    },
+    {
+      "stage": 2,
+      "title": "The Dread Warden",
+      "step": 1945,
+      "tree": 46005,
+      "criteria": [
+        [
+          92,
+          47333
+        ],
+        [
+          92,
+          47179
+        ]
+      ],
+      "checks": [
+        "Enslave gated to stage 2 and active quest",
+        "Both player cage 245100 and Ritssyn cage 245102 opened",
+        "Existing escape placement and Beshtal hostile transition retained",
+        "Death criterion targets nearby players, independent of pet last hit"
+      ],
+      "clientCheck": "Enslave, leave cage, defeat Beshtal"
+    },
+    {
+      "stage": 3,
+      "title": "The Shattered Council",
+      "step": 1949,
+      "tree": 46020,
+      "criteria": [
+        [
+          92,
+          47181
+        ],
+        [
+          92,
+          47182
+        ],
+        [
+          92,
+          47183
+        ]
+      ],
+      "checks": [
+        "All three release spell handlers present",
+        "Rescues gated to correct stage and nearby living captors",
+        "Follower spells 195045/195066/195068 resolve to native summons"
+      ],
+      "clientCheck": "Defeat captors and rescue all three allies"
+    },
+    {
+      "stage": 4,
+      "title": "Jailbreak",
+      "step": 1953,
+      "tree": 46042,
+      "criteria": [
+        [
+          92,
+          47234
+        ]
+      ],
+      "checks": [
+        "Two distinct activators required; one cannot be counted twice",
+        "Bridge Calydus range event grants native criterion"
+      ],
+      "clientCheck": "Disable both crystals; meet Calydus beyond barrier"
+    },
+    {
+      "stage": 5,
+      "title": "The Pit Lord's Secrets",
+      "step": 1950,
+      "tree": 46018,
+      "criteria": [
+        [
+          36,
+          132512
+        ]
+      ],
+      "checks": [
+        "Chest now references existing loot 245924 with item 132512",
+        "Item requires current stage and defeated Nelach",
+        "Opening chest cannot start pursuit",
+        "Retained item recovered only after Nelach is defeated",
+        "Archive dialogue finishes before confrontation",
+        "Nelach cleanup casts on players, including pet kill"
+      ],
+      "clientCheck": "Defeat Nelach, actually loot tome, hear archive dialogue"
+    },
+    {
+      "stage": 6,
+      "title": "To Fight Another Day",
+      "step": 1952,
+      "tree": 46063,
+      "criteria": [
+        [
+          92,
+          47404
+        ]
+      ],
+      "checks": [
+        "Archive Jagganoth has a separate stage-gated timed sequence",
+        "Native conversations 199070..199074 restored",
+        "Native Shinfel throw 199175 and landing ping 199048",
+        "Native smash 199150/199154/199166; bounded landing along existing escape path",
+        "Native NPC landing root 33356 removed before Calydus starts path",
+        "Archive stand-ins retired after escape followers spawn",
+        "Native infernal spell 199215 summons Xelthoth 98834 at gateway",
+        "Pet or player kill unlocks exit controller; portal cannot skip boss",
+        "Native final criterion precedes native exit spell 196340",
+        "Scenario does not auto-reward 40729; Calydus 101097 remains hand-in target"
+      ],
+      "clientCheck": "Follow Calydus, defeat Xelthoth, enter portal, turn in quest to Calydus"
+    }
+  ],
+  "resetAndReturn": [
+    "Clear scenario-only follower/extra action auras on abandonment and exit",
+    "Cancel old Dalaran quest-owned objects before native return teleport",
+    "Waiting council phase remains hidden for completed/rewarded 40729",
+    "Preserve map 1522 scenario 998 and normal rewards for other scenarios",
+    "No Maiko position, quest progress, inventory or pets edited"
+  ],
+  "validation": [
+    "Test-NewBloodFullSequence.ps1: migration applied twice to temporary tables; native six-stage DB2; positive/negative gates; production objective loader/jump destinations/reward selection",
+    "Test-NewBloodCapture.ps1: production condition dispatcher and knockback",
+    "Test-NewBloodQuestCleanup.ps1: production lifetime/reset",
+    "Test-DreadscarClaimData.ps1: later scenario 998",
+    "Test-WarlockRegression.ps1: warlock handlers and mover resynchronization",
+    "Release worldserver build succeeded in canonical runtime",
+    "git diff --check"
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "sql": "2026_10_13_06_new_blood_full_sequence.sql",
+    "sha1": "8F8EB3FC006DD5FEA7DC7ACF2C6C515DBFF93086",
+    "backups": [
+      ".codex/backups/new-blood-full-sequence/20261013-130035",
+      ".codex/backups/new-blood-full-sequence/20261013-130710"
+    ],
+    "serverStarted": false
+  },
+  "limits": [
+    "Tests do not execute a complete live client playthrough or a live SmartAI instance",
+    "Dialogue delays and throw/landing coordinates reconstruct the sequence using existing safe spawn/path positions; exact retail timings/positions are not claimed",
+    "Native portal assembly, hand attachment/throw rendering, NPC pathing, terrain collision and final portal appearance require in-game confirmation",
+    "No claim of pixel-perfect cinematic parity",
+    "For a clean test of an attempt affected by old premature credits, abandon and accept again after starting the new server"
+  ]
+}

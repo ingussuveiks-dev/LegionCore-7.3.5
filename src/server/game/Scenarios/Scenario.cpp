@@ -431,7 +431,9 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
     if (!pvpMap && !map)
         return;
 
-    Quest const* quest = sQuestDataStore->GetQuestTemplate(steps[rewardStep]->RewardQuestID);
+    // Scenario 962 ends at the gateway, but its quest is turned in to
+    // Calydus in Dalaran. Do not consume it as an automatic scenario reward.
+    Quest const* quest = scenarioId == 962 ? nullptr : sQuestDataStore->GetQuestTemplate(steps[rewardStep]->RewardQuestID);
 
     if (pvpMap)
     {

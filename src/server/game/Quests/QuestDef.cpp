@@ -225,7 +225,13 @@ void Quest::LoadQuestObjective(Field* fields)
     obj.TaskStep = fields[8].GetFloat();
     obj.Description = fields[9].GetString();
     obj.Bugged = fields[10].GetBool();
-    Objectives.push_back(obj);
+    // StorageIndex is a save slot, not presentation order. The New Blood's
+    // ritual occupies slot 2 but must precede its sequenced escape objective.
+    // Preserve the slots so existing character progress is not reinterpreted.
+    if (obj.QuestID == 40729 && obj.ID == 281139)
+        Objectives.insert(Objectives.begin(), obj);
+    else
+        Objectives.push_back(obj);
 
     // dont enable this before test in game - this data seems mostly related to location quest ( kill / destruct etc smthng in zone to get 100 % bar )
     /*for (QuestObjectiveEntry const* entry : sQuestObjectiveStore)

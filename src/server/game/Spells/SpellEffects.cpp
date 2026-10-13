@@ -1931,6 +1931,22 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     uint32 triggered_spell_id = m_spellInfo->GetEffect(effIndex, m_diffMode)->TriggerSpell;
     DelayCastEvent* delayCast = GetSpellTriggerDelay(effIndex, triggered_spell_id);
 
+    // The New Blood: the native smash spells use a script-provided landing
+    // destination. Without it TARGET_DEST_NEARBY_ENTRY resolves to the caster
+    // and the party jumps in place. Reuse the existing escape path's landing.
+    if (m_caster->GetMapId() == 1522)
+        switch (m_spellInfo->Id)
+        {
+            case 199166: // player
+            case 199162: // council / Calydus
+            case 199189:
+            case 199191:
+                destTarget->Relocate(3090.2f, 992.214f, 257.026f);
+                break;
+            default:
+                break;
+        }
+
     // Init dest coordinates
     float x, y, z, o = 0.0f;
     destTarget->GetPosition(x, y, z);
@@ -2142,6 +2158,11 @@ void Spell::EffectTeleportUnits(SpellEffIndex effIndex)
     {
         if (uint32 customLoadingScreenId = m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue)
             player->SendDirectMessage(WorldPackets::Misc::CustomLoadScreen(m_spellInfo->Id, customLoadingScreenId).Write());
+
+        // The New Blood returns to the same area as its personal ritual.
+        // Expire that attempt's portal/council before the area becomes visible.
+        if (m_spellInfo->Id == 196340 && player->GetMapId() == 1522)
+            player->CancelQuestObjects(40729);
 
         player->TeleportTo(mapid, x, y, z, orientation, unitTarget == m_caster ? TELE_TO_SPELL | TELE_TO_NOT_LEAVE_COMBAT : 0, m_spellInfo->Id);
     }
