@@ -62,7 +62,7 @@ struct Player
     uint32 scenarioId=962,mapId=1502,instanceId=0;
     bool inWorld=true,bound=false;
     InstancePlayerBind binding;
-    std::set<uint32> auras{199966,199967,204833,196229,199362,199338,195045,195066,195068,199195,999999};
+    std::set<uint32> auras{199966,199967,200033,204833,196229,199362,199338,195045,195066,195068,199195,999999};
     unsigned interrupted=0,teleports=0,unbinds=0;
     ObjectGuid GetGUID(){return playerGuid;}
     Map* GetMap(){return &map;}

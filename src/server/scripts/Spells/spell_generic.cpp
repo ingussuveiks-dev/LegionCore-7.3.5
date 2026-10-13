@@ -7981,6 +7981,29 @@ class spell_q29347_crayfish : public AuraScript
     }
 };
 
+// 200033 - The New Blood: the jailer channels, the captive is imprisoned.
+class spell_gen_new_blood_imprisoned : public SpellScript
+{
+    PrepareSpellScript(spell_gen_new_blood_imprisoned);
+
+    void FilterCaster(WorldObject*& target)
+    {
+        Unit* caster = GetCaster();
+        // Native effects 0/1 include both caster and selected target. Applying
+        // their stun/visual aura to the jailer wraps him in the captive's chains.
+        // Retain the explicit captive and the spell's native channel visual.
+        if (target == caster && caster->GetEntry() == 101460 &&
+            (caster->GetMapId() == 1220 || caster->GetMapId() == 1502))
+            target = nullptr;
+    }
+
+    void Register() override
+    {
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_gen_new_blood_imprisoned::FilterCaster, EFFECT_0, TARGET_UNIT_CASTER);
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_gen_new_blood_imprisoned::FilterCaster, EFFECT_1, TARGET_UNIT_CASTER);
+    }
+};
+
 // 229837
 class spell_big_red_rays : public SpellScript
 {
@@ -8687,6 +8710,7 @@ void AddSC_generic_spell_scripts()
     RegisterAuraScript(spell_q29347_bait);
     RegisterAuraScript(spell_q29347_crayfish);
     RegisterSpellScript(spell_big_red_rays);
+    RegisterSpellScript(spell_gen_new_blood_imprisoned);
     RegisterSpellScript(spell_set_up_board);
     RegisterAuraScript(spell_hearthstation_horde);
     RegisterAuraScript(spell_hearthstation_alliance);

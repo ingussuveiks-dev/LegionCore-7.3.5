@@ -1,0 +1,27 @@
+{
+  "quest": 40729,
+  "clientBuild": "7.3.5.26972",
+  "reported": "Jailers wear purple chains instead of channeling toward captives; Beshtal never looks friendly and Ritssyn attacks the player after the cage opens.",
+  "findings": [
+    "Native 200033 effects 0/1 select both caster (1) and explicit target (92), applying stun and its visual aura to the jailer as well as the captive. Jailer template 101460 also carried UNIT_FLAG_STUNNED.",
+    "Native SpellVisual 51979 has caster kit 4911 with attachment points 21/22 and target kit 62464. Preserve these native kits rather than substituting an unrelated visual.",
+    "199336 is a scripted dummy spell; its 204831 response is also a dummy aura, not charm. The SmartAI sequence never changed Beshtal's faction.",
+    "Council template faction 2757 is neutral to player factions. Native faction 2501 differs only by FriendGroup=1; it retains faction 959 and enemy 960. This prevents friendly-player retaliation while preserving combat against Beshtal."
+  ],
+  "changes": [
+    "SpellScript removes only jailer 101460's self aura targets in Dalaran maps 1220/1502; explicit captive targets and other casters/maps are preserved. Clear template stun flag, capture aura before transfer and capture aura on abandonment.",
+    "Use player-friendly native faction 2501 for prison council 98771/98775/98783/98793.",
+    "Beshtal becomes faction 35 during cage opening, restores his original 2102 at the escape warning, attacks and signals freed Ritssyn to fight him. This is temporary scripted control, not a permanent demon pet."
+  ],
+  "references": [
+    "User supplied retail capture sequence screenshots and observed failure screenshots.",
+    "https://www.wow-pro.com/warlock-artifact-and-class-guide/ describes defeating Beshtal with Ritssyn's aid.",
+    "https://warcraft.wiki.gg/wiki/The_New_Blood describes the temporary control, both cages opening and Beshtal becoming hostile again."
+  ],
+  "validation": {
+    "Test-NewBloodFullSequence.ps1": "PASS: migrations replay twice in temporary tables; actual linked friendly/hostile transitions and ally attack signal; native DB2 faction equivalence, visual kits and all six scenario stages; extracted production target filter negative paths.",
+    "Test-NewBloodQuestCleanup.ps1": "PASS: extracted production reset removes 200033 with other attempt auras, preserving unrelated auras and later scenario.",
+    "Release": "Built worldserver into canonical build-extractors/bin/Release.",
+    "client": "Pending: verify hand animation/effect, facing, temporary green Beshtal and Ritssyn assisting in combat. No claim of pixel-perfect visual verification."
+  }
+}

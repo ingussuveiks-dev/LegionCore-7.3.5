@@ -55,6 +55,29 @@ assert script(101460,2)['event']==54 # linked events do not evaluate source-22 g
 assert script(101460,0,9)['ep1']==12000 and script(101460,0,9)['a1']==199362
 assert script(101460,1,9)['ep1']==1000 and script(101460,1,9)['a1']==199359
 assert next(r for r in rows if r['kind']=='instantCaptureLinks')['count']==0
+assert next(r for r in rows if r['kind']=='captureScript')['count']==1
+creatures={r['entry']:r for r in rows if r['kind']=='creature'}
+assert not creatures[101460]['flags'] & 0x40000 # jailer must channel, not appear stunned
+assert script(101460,4)['link']==9 and script(101460,9)['a1']==200033
+# Follow the actual linked lists: friendly throughout the cage-opening walk,
+# then restore hostile template before attacking, and ask the ally for help.
+def chain(entry,start):
+ result=[]
+ while True:
+  r=script(entry,start);assert start not in [x['id'] for x in result]
+  result.append(r)
+  if not r['link']:return result
+  start=r['link']
+enslave=chain(98836,0)
+assert [r['id'] for r in enslave]==[0,17,1,2,10]
+assert (script(98836,17)['action'],script(98836,17)['a1'])==(2,35)
+release=chain(98836,7)
+assert [r['id'] for r in release]==[7,18,8,11,12,19]
+assert (script(98836,18)['action'],script(98836,18)['a1'])==(2,0)
+assert creatures[98836]['faction']==2102
+assert (script(98836,19)['action'],script(98836,19)['a1'],script(98836,19)['a2'],script(98836,19)['t1'])==(45,2,1,98771)
+assert (script(98771,9)['event'],script(98771,9)['ep1'],script(98771,9)['ep2'],script(98771,9)['action'],script(98771,9)['t1'])==(38,2,1,49,98836)
+assert all(creatures[e]['faction']==2501 for e in (98771,98775,98783,98793))
 waiting={'rewarded':[40716]}
 assert meets(23,8392,200,waiting)
 assert not meets(23,8392,200,waiting|{'quest':40729})
@@ -120,6 +143,18 @@ assert script(99178,26)['a2']==9917801 and script(99178,24)['ep1']==18
 assert script(99178,24)['a1']==199215
 # Native ScenarioStep/CriteriaTree/Criteria, no guessed replacement IDs.
 d=Data(Path('build-extractors/bin/Release/dbc/enUS'),Path('__native_only__'))
+factions=d.rows('FactionTemplate')
+old,new=factions[2757],factions[2501]
+assert {k:v for k,v in old.items() if k not in ('ID','FriendGroup')}=={k:v for k,v in new.items() if k not in ('ID','FriendGroup')}
+assert old['FriendGroup']==0 and new['FriendGroup']==1
+assert new['Enemies1']==factions[2102]['Faction']==960
+assert factions[35]['FriendGroup'] & 1 and not factions[35]['EnemyGroup']
+# Keep the verified native caster/captive kits; do not guess a visual ID.
+from audit_spell_visuals import Table
+events=Table(d.dbc/'SpellVisualEvent.db2',-1,0xAE75BC3C)
+assert {(events.value(i,6),events.value(i,7)) for i in range(events.count) if events.parents.get(i)==51979}=={(1,4911),(2,62464)}
+attachments=Table(d.dbc/'SpellVisualKitModelAttach.db2',2,0xBCE18649)
+assert {attachments.value(i,4) for i in range(attachments.count) if attachments.parents.get(i)==4911}=={21,22}
 steps=sorted((r for r in d.rows('ScenarioStep').values() if r['ScenarioID']==962),key=lambda r:r['OrderIndex'])
 trees=d.rows('CriteriaTree'); criteria=d.rows('Criteria')
 expected=[{(92,47152)},{(92,47179),(92,47333)},{(92,47181),(92,47182),(92,47183)},{(92,47234)},{(36,132512)},{(92,47404)}]
