@@ -1,0 +1,43 @@
+{
+  "quest": 40729,
+  "name": "The New Blood",
+  "client": "7.3.5",
+  "reported": "Static council remained alongside personal copies; overlapping portals did not continue the ritual when clicked.",
+  "runtimeChecked": "c8c009612868 Release, canonical runtime, started 2026-10-13 10:53; this was not an outdated executable.",
+  "evidence": {
+    "unphasedStaticCouncilBefore": 10,
+    "staticPortalGuids": [146813190, 146890511],
+    "extraRitssyn1220": 146813196,
+    "originalRitssyn1220Preserved": 365955,
+    "existingWaitingPhase": "phase_definitions 8392/200 -> 5436; requires previous quest 40716 and excludes active quest 40729",
+    "personalPortalLifetimeBeforeMs": 140000,
+    "independentRitssynResetBeforeMsAfterIntro": 121000,
+    "clickHandler": "101433 event 73 sends data to personal council; Zelifrax data 3/3 starts 9879701; static actors are outside the quest-owned scope"
+  },
+  "changes": [
+    "Assign nine static waiting actors to existing phase 5436. Retain one questgiver on each Dalaran map; remove the extra unphased map-1220 Ritssyn.",
+    "Remove only the two static portal spawns. Preserve the scripted portal NPC and its visual gameobject.",
+    "Wait for the player without a 140-second portal expiration or independent Ritssyn reset. Quest-owned cleanup still removes attempt objects on abandon/reward/logout.",
+    "Gate both the spellclick and SmartAI click event on active quest 40729."
+  ],
+  "validation": {
+    "regressionReproducedBeforeMigration": true,
+    "Test-NewBloodPersonalStage.ps1": "PASS: migration twice on temporary real-data copies; static actors, phase conditions across accept/abandon/reaccept and other player, persistent portal, once-only linked click chain, capture continuation and unrelated spawn preservation",
+    "Test-NewBloodQuestCleanup.ps1": "PASS: extracted production cleanup handlers including descendants, portals, another player and expired attempts",
+    "Test-NewBloodRitualData.ps1": "PASS",
+    "Test-NewBloodKnockbackReset.ps1": "PASS: historical migration regression remains independently covered",
+    "Test-DreadscarClaimData.ps1": "PASS"
+  },
+  "limits": [
+    "Server logs did not record which portal GUID the client clicked. The exact clicked object cannot be reconstructed.",
+    "These are data and production-handler tests, not a completed in-game playthrough. Retest one visible waiting council, replacement by personal actors on accept, a click after waiting over three minutes, Jagganoth capture, and abandon/reaccept cleanup.",
+    "No unverified replacement spell IDs or portal coordinates were introduced."
+  ],
+  "deployment": {
+    "result": "Applied and verified with worldserver stopped; installed c8c00961 Release executable already contains the required quest-owned cleanup. No binary change required.",
+    "migrationSha1": "E2E2A28ED1FFE17FC2245DA5E3B5D9C7674F1F71",
+    "backup": ".codex/backups/new-blood-personal-stage/20261013-111950",
+    "character": "Maiko was offline and had already abandoned 40729. No character, inventory, location or other quest data was modified.",
+    "installedDataTest": "Test-NewBloodPersonalStage.ps1 -SkipMigration PASS"
+  }
+}
