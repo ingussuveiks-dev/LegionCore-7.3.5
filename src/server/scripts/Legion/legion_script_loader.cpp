@@ -8,6 +8,7 @@ void AddSC_eye_of_azshara_quests();
 void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
+void AddSC_stormheim_intro();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -221,6 +222,7 @@ void AddLegionScripts()
     AddSC_broken_shore();
     AddSC_highmountain();
     AddSC_stormheim();
+    AddSC_stormheim_intro();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();

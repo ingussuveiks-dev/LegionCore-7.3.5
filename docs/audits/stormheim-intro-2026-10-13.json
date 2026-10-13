@@ -1,0 +1,44 @@
+{
+  "scope": "First Stormheim introduction batch: Alliance 39735 -> A Royal Summons 38035 and Horde 39864 -> The Warchief Beckons 38307, through the existing Dalaran portals to their capital staging areas. Code/data only.",
+  "findings": [
+    "Both introduction quests had duplicated zero-delay SCRIPT_COMMAND_QUEST_EXPLORED start commands that completed them on acceptance. These commands also reinstated SpecialFlags 2 at server load. The migration removes only those exact commands and the orphan event bit. Arrival near the matching visible Dalaran quest giver now writes native objective 97377 only to this faction's active introduction, rather than all quests sharing that marker.",
+    "Rogers 96644 had a proximity update that completed 38035 without reading its letter or taking the portal; Nathanos 96683 had a separate proximity completion of 39864. Those exact shortcuts are removed. The new introduction AI inherits SmartAI and retains the existing routines for their later capital appearances and summoned Making the Rounds actors.",
+    "Installed ItemEffect links Alliance summons 128687 to 191405 and Horde summons 128692 to 191467. Native effects grant read credit 96644/96683 and summon conversations 1417/1409. Effect 219 is SUMMON_CONVERSATION; absence of spell_scene events was an incorrect initial research hypothesis and is not the cause of this defect. No SceneScriptPackage binding was added.",
+    "Native TDB735 requires reading the letter plus a sequenced arrival objective: Alliance 96663, Horde 96686. Live Alliance objective 280241 had been substituted with 97549, which the portal spell credits before teleport acknowledgement. The guarded migration restores native 96663 only when the exact substituted row remains unchanged.",
+    "Existing portals 244567/244571 are already placed in Dalaran phases 6648/6638 and use native spells 192465/192477. Their existing spell_target_position rows remain unchanged. The new portal interaction requires a living in-world player of the matching faction, active incomplete summons, recorded letter-read progress, matching phase/visibility/LOS, a spawned selectable portal and exact proximity. It casts the existing native teleport and queues confirmation only on successful cast.",
+    "Arrival credit requires teleport acknowledgement, the proper destination map, exact 3D proximity below 12 yards and no vehicle/transport/flight. The radius covers acknowledgement polling movement and the existing Alliance destination above the deck. Pending cross-map teleports retain bounded retry even while the player is outside the old map. Quest-owned callbacks are invalidated by abandon/reaccept, duplicates are capped, and login recovers a read summons only at its real destination. No item or quest auto-completion substitute was introduced.",
+    "Existing capital quest givers, provided letters, reward prerequisites and phase conditions remain intact. This batch hands off to Making the Rounds 38206/39698; their inspection/salute/escort execution and the later departure missions 39800/39801 are not certified by this batch. Alternate 44700/44701 introductions have no native objective rows in the live database and are not modified."
+  ],
+  "validation": [
+    "Test-StormheimIntro.ps1 compiles actual production introduction/portal/login handlers, the actual AddQuestDelayedEvent wrapper and Player::CanCompleteQuest. Both factions pass: no completion before each required objective; orphan event-lock regression; proper Dalaran arrival; wrong faction/map/floor/death/phase/visibility/LOS/transport exclusion; unread letter rejection; failed cast and failed teleport; acknowledgement including temporary removal from world; stale abandon/reaccept; duplicate cap; timeout; independent players; death after cast and subsequent login recovery; absent/complete/rewarded and shared-marker isolation.",
+    "Test-StormheimIntroNative.py reads original TDB735 and installed ItemEffect/SpellEffect without overlays, checks native objectives/item casts/conversations/teleports and absence of QUEST_COMPLETE effects for the four quests. Regeneration and comparison pass; source hashes and adjacent handoff quest data are in stormheim-intro-native-2026-10-13.json.",
+    "Test-StormheimIntroData.ps1 recreates original defects in temporary copies, applies the real migration twice, checks all four native quest objectives, provided letters, quest givers, reward prerequisites, portal spells/spawns/destinations, phase records and preserved Making the Rounds paths. Other objective/event-bit/actor/portal/start-script data and custom script/objective changes remain preserved. Temporary and live checks pass.",
+    "The first startup test exposed quest_start_scripts restoring the removed event flags; that defect was repaired before final validation. A subsequent smoke test reused an old log and sent shutdown before fresh readiness, exceeding its shutdown timeout. The final test uses a fresh log directory, reaches ready, shuts down with exit 0 and has empty DBErrors.log/stderr.log. These checks confirm server loading, not client interaction or visual playback."
+  ],
+  "deployment": {
+    "migration": "2026_10_13_12_stormheim_introduction.sql",
+    "sha1": "ABC503FEFD404F5D7EDF592029438D8572C4C6DF",
+    "backups": [
+      ".codex/backups/stormheim-intro/20261013-180718",
+      ".codex/backups/stormheim-intro/20261013-180909"
+    ],
+    "observed_startup_error_log": ".codex/stormheim-startup-before/DBErrors.log"
+  },
+  "limits": [
+    "No client test of initial actor pose/interaction flags, letter conversation, portal visuals, loading screen, Alliance deck landing, objective UI, turn-in or phasing. Existing destinations and art were retained, not visually verified.",
+    "These four quests have no kill stage, so pet killing blows do not apply. Later combat scenarios, their shared actors and full departure choreography require separate executable audits.",
+    "Already rewarded quest histories are not rolled back. This change does not certify the whole Stormheim campaign. Runtime configuration, certificates, DLLs, logs and extracted data are preserved; servers are left stopped."
+  ],
+  "next": "Making the Rounds: Alliance 38206 and Horde 39698. Trace personal escort startup, deck-gun/catapult inspection, salute action-bar target checks, final conversation/credit, combat prerequisites, missing actor/failed cast/abandon/re-entry retries; then the departure missions Greymane's Gambit 39800 and The Splintered Fleet 39801.",
+  "runtime": {
+    "version": "5a5c08531cdf+ 2026-10-13 17:48:21 +0300 (main branch) (Win64, Release)",
+    "startup": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\stormheim-intro\\startup-20261013-181317",
+    "release": "build-extractors/bin/Release",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_intro.cpp": "57d4c80cc14216553856f69ef638ee0d324a5b0a277319bd6f511fcdf06171d8",
+      "sql/updates/world/2026_10_13_12_stormheim_introduction.sql": "c222c56b4a077c62a1c9676241bf828607dddd9e8459f24fea2e552729766186",
+      "build-extractors/bin/Release/worldserver.exe": "de80a2ed3fddfa7ebfe072d1c30d4a64a894a1943b25a9d357f300e6af95eeaf",
+      "build-extractors/bin/Release/bnetserver.exe": "38fc5843c28f5a0ed130cf1fc200520464d229c0a54bdbbfcac00d6b5bd22593"
+    }
+  }
+}
