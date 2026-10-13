@@ -1,0 +1,29 @@
+{
+  "entry": 97586,
+  "name": "Underbelly Guard",
+  "map": 1502,
+  "evidence": "Five coincident or approximately 0.32m separated pairs with identical template, phase, orientation, movement and event memberships 81/201. Neither phase nor different events separated the duplicates.",
+  "pairs": [
+    {"keep": 261919, "remove": 272932},
+    {"keep": 261920, "remove": 272933},
+    {"keep": 261921, "remove": 272935},
+    {"keep": 261924, "remove": 272939},
+    {"keep": 261937, "remove": 272942}
+  ],
+  "validation": {
+    "temporaryDatabaseCopies": "Migration applied twice successfully",
+    "installedGuardCount": 11,
+    "remainingCoincidentPairsWithinHalfMeter": 0,
+    "preservedOriginals": 5,
+    "preservedOriginalEventLinks": 10,
+    "removedDuplicateEventLinks": 10,
+    "otherDependencies": "No addon, formation, pool, linked respawn, negative-guid SmartAI, event model/equipment/vendor/flag, movement override or conversation references found for removed spawns"
+  },
+  "deployment": {
+    "sha1": "493D36ADE54F7BA669B49154BD397C461386309C",
+    "backup": ".codex/backups/underbelly-guard-duplicates/20261013-113105",
+    "database": "Applied and verified; update registered",
+    "runtime": "Worldserver was running and was not interrupted. Existing loaded copies disappear on next restart. No binary change required.",
+    "clientRetest": "Pending server restart"
+  }
+}
