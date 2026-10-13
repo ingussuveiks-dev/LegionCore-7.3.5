@@ -93,12 +93,12 @@ assert script(99627,0)['a1']==92 and script(99627,0)['target']==7
 for step in range(6):
  state=base|{'step':step}
  assert meets(17,0,199336,state)==(step==1)
- assert meets(22,6,98831,state)==(step==5)
+ # Archive start is checked by the compiled production lifecycle test.
  assert meets(22,6,99178,state)==(step==5)
  assert meets(22,1,99627,state)==(step==5)
 for scenario in [998,1011,0]:
  state=base|{'scenario':scenario,'step':5}
- for e,g in [(98831,6),(99178,6),(99627,1)]:assert not meets(22,g,e,state)
+ for e,g in [(99178,6),(99627,1)]:assert not meets(22,g,e,state)
 assert not meets(22,6,99178,base|{'step':5,'objectsNear':[]})
 for actor in [98775,98783,98793]:
  assert meets(18,actor,195039,base|{'step':2})
@@ -138,13 +138,12 @@ assert chain[0]==(205,92) and chain[-1]==(85,196340)
 assert set(a for kind,a in chain if kind==28)=={195045,195066,195068,199195,199338}
 assert script(99627,0)['a2']==47404
 assert script(99516,4)['action']==11 and script(99516,4)['a2']==18 and script(99516,4)['target']==18
-assert script(9883101,4,9)['action']==45 and script(9883101,4,9)['t1']==98783 # DIE ignores target lists!
 assert script(98783,7)['action']==11 and script(98783,7)['a1']==199175 and script(98783,7)['target']==8
 assert script(98783,9)['ep1']==199048 and script(98783,9)['action']==37
-assert script(9883101,7,9)['action']==45 and script(9883101,7,9)['a1']==3
 assert script(99178,6)['action']==28 and script(99178,6)['a1']==33356
 assert script(99178,26)['a2']==9917801 and script(99178,24)['ep1']==18
 assert script(99178,24)['a1']==199215
+assert (98831,0,5) not in scripts and not any(k[0]==9883101 for k in scripts) # archive owned by tested C++ lifecycle
 # Native ScenarioStep/CriteriaTree/Criteria, no guessed replacement IDs.
 d=Data(Path('build-extractors/bin/Release/dbc/enUS'),Path('__native_only__'))
 factions=d.rows('FactionTemplate')

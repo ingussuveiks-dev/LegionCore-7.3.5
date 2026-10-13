@@ -6,6 +6,7 @@
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
+#include "Log.h"
 #include <array>
 #include <cmath>
 
@@ -215,7 +216,94 @@ struct npc_new_blood_prisoner : SmartAI
     }
 };
 
+// Own the archive handoff in the scenario, rather than depending on a single
+// JUST_SUMMONED condition check. The ritual's Jagganoth keeps its DB AI.
+struct npc_new_blood_jagganoth : SmartAI
+{
+    explicit npc_new_blood_jagganoth(Creature* creature) : SmartAI(creature) { }
+    bool started = false;
+    uint32 timer = 1000;
+    uint8 action = 0;
+    ObjectGuid guide;
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (me->GetMapId() == 1522 && summoner && summoner->GetEntry() == 99178)
+            guide = summoner->GetGUID();
+        SmartAI::IsSummonedBy(summoner);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        Scenario* progress = me->GetMapId() == 1522 ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        if (!guide.IsEmpty() && progress && progress->GetScenarioId() == 962 && progress->GetCurrentStep() == 5 && action < 8)
+        {
+            if (!started)
+            {
+                started = true;
+                me->setActive(true);
+                TC_LOG_INFO("scripts.ai", "New Blood: archive confrontation started (instance %u)", me->GetInstanceId());
+            }
+            if (timer > diff)
+                timer -= diff;
+            else
+            {
+                static uint32 const delays[] = {2500, 6000, 9000, 1000, 1000, 3000, 1000, 0};
+                static uint32 const dialogue[] = {199070, 199071, 199072, 199073};
+                if (action < 4 || action == 6)
+                {
+                    uint32 spell = action < 4 ? dialogue[action] : 199074;
+                    // Conversation spells have native self range. Each player
+                    // is their own caster, with actors resolved by the conversation.
+                    me->GetMap()->ApplyOnEveryPlayer([spell](Player* player)
+                    {
+                        if (player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+                        {
+                            SpellCastResult result = player->CastSpell(player, spell, true);
+                            TC_LOG_INFO("scripts.ai", "New Blood: archive conversation %u result %u (instance %u)", spell, uint32(result), player->GetInstanceId());
+                        }
+                    });
+                }
+                else if (action == 4)
+                {
+                    if (Creature* shinfel = me->FindNearestCreature(98783, 80.0f, true))
+                        shinfel->AI()->SetData(2, 2);
+                }
+                else if (action == 5)
+                {
+                    SpellCastResult result = me->CastSpell(3095.98f, 963.538f, 257.38f, 199150, true);
+                    TC_LOG_INFO("scripts.ai", "New Blood: archive smash cast result %u (instance %u)", uint32(result), me->GetInstanceId());
+                    if (result != SPELL_CAST_OK)
+                    {
+                        timer = 1000;
+                        return;
+                    }
+                }
+                else if (action == 7)
+                {
+                    Creature* calydus = ObjectAccessor::GetCreature(*me, guide);
+                    if (!calydus)
+                    {
+                        timer = 1000; // Never silently consume the handoff.
+                        return;
+                    }
+                    calydus->setActive(true);
+                    // SmartAI::StartPath rejects an actor still in combat.
+                    // The guide flees the smash; he must not acquire Jagganoth.
+                    calydus->CombatStop(true);
+                    calydus->SetReactState(REACT_PASSIVE);
+                    calydus->AI()->SetData(3, 3);
+                    TC_LOG_INFO("scripts.ai", "New Blood: Calydus escape signalled (instance %u)", me->GetInstanceId());
+                }
+                timer = delays[action++];
+            }
+        }
+        SmartAI::UpdateAI(diff);
+    }
+};
+
 void AddSC_new_blood()
 {
     RegisterCreatureAI(npc_new_blood_prisoner);
+    RegisterCreatureAI(npc_new_blood_jagganoth);
 }

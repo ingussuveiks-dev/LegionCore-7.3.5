@@ -3,7 +3,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/new-blood-prisoners"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/new_blood.cpp" -Raw
-$a=$source.IndexOf('struct npc_new_blood_prisoner');$b=$source.IndexOf('void AddSC_new_blood()', $a)
+$a=$source.IndexOf('struct npc_new_blood_prisoner');$b=$source.IndexOf('// Own the archive handoff', $a)
 if($a -lt 0 -or $b -lt 0){throw 'Prisoner production AI not found'}
 [IO.File]::WriteAllText("$output/NewBloodPrisoner.inc",$source.Substring($a,$b-$a))
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw

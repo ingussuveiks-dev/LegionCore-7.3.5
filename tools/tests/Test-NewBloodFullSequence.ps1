@@ -17,6 +17,7 @@ $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_07_new_blood_e
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_08_new_blood_five_jailers.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_09_new_blood_captors_and_allies.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_10_new_blood_prisoner_lifecycle.sql" -Raw)
+$migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_11_new_blood_archive_handoff.sql" -Raw)
 $fixture=(@('conditions','smart_scripts','gameobject_template','spell_target_position','spell_linked_spell','creature_template','spell_script_names','creature_movement_override') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+="`n$migration`n$migration`n"
 $fixture+=@"

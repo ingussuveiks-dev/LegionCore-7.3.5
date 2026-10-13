@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-13",
+  "quest": 40729,
+  "scenario": 962,
+  "clientEvidence": {
+    "passed": [
+      "User confirms three prisoners have correct chains and can be freed",
+      "User reaches actual tome and final scenario stage"
+    ],
+    "failed": [
+      "Portal birth begins late/assembled; warning fire absent",
+      "No jailer hand visual",
+      "Archive Jagganoth appears but no dialogue, smash, chase or meteors; exit is inert"
+    ],
+    "intendedBehavior": "Ritssyn remains injured on one knee after Beshtal. He does not accompany the player."
+  },
+  "changes": [
+    "Scenario-local Jagganoth AI retains its summoner Calydus GUID and starts only at scenario 962 step 5. Other map/scenario AI remains SmartAI.",
+    "Native dialogue spells 199070/71/72/73/74 are cast by each eligible player on themselves. Native smash 199150 must cast successfully before continuing.",
+    "Clear Calydus combat before SmartAI StartPath, which rejects combat actors. Send the existing root-release/path/meteors/follower sequence to this exact guide; retry a missing guide instead of consuming the handoff.",
+    "Remove superseded archive SmartAI trigger/action list. Log dialogue cast results, smash result and escape signal.",
+    "Explicit one-shot Birth 1254 after create, with 13200ms readiness allowing its complete native 13-second playback.",
+    "Portal fire 1244 is an independent timed action before Jagganoth, rather than a link skipped when the warning conversation cast fails.",
+    "Send native hand kit 4911 only on each jailer, duration 12000ms. Native data ties kit to visual 51979 and attachments 21/22."
+  ],
+  "diagnosticLimits": [
+    "No packet/AI trace was captured from the already-failed client attempt. The precise original reason for the archive JUST_SUMMONED trigger not completing is not proven.",
+    "The new production controller and SQL paths are compiled/tested; end-to-end client rendering/movement/quest completion still require a client run.",
+    "The blank minimap itself has not been fixed; completion should be guided by the native Calydus escape route.",
+    "Birth restart and explicit fire/hand playback are rendering corrections pending client confirmation, not verified pixel matches."
+  ],
+  "validation": {
+    "Test-NewBloodArchive.ps1": "PASS: extracted production controller, delayed step, exact guide, combat release, once-only transition, failed-smash retry, wrong scenario/map isolation",
+    "Test-NewBloodCapture.ps1": "PASS: current migration replay twice, complete ritual tail retained, Birth/fire/hand targeting plus production capture/knockback regression",
+    "Test-NewBloodFullSequence.ps1": "PASS: native DB2 criteria and SQL progression/death/exit gates after migration replay",
+    "Test-NewBloodPrisoners.ps1": "PASS: production prisoner interaction/landing/chain lifecycle unchanged",
+    "Release": "Built in build-extractors/bin/Release",
+    "startup": "PASS: canonical Release reached ready, graceful shutdown exit 0; DBErrors.log and stderr.log empty. Logs: build-extractors/runtime-test/new-blood-archive/startup. Server left stopped; no client gameplay verified."
+  },
+  "migration": "2026_10_13_11_new_blood_archive_handoff.sql",
+  "migrationSHA1": "14B32995A74508960348EF30ACB71D03248B9D68",
+  "backup": ".codex/backups/new-blood-archive/20261013-173021",
+  "sources": [
+    {
+      "url": "https://warcraft.wiki.gg/wiki/The_New_Blood",
+      "use": "Ritssyn wounded/not following; archive smash, chase, Xelthoth exit sequence"
+    },
+    {
+      "url": "https://www.wow-pro.com/warlock-artifact-and-class-guide/",
+      "use": "Contemporaneous guide: Jagganoth throws player away, follow Calydus to leave"
+    },
+    {
+      "path": "build-extractors/bin/Release/dbc/enUS",
+      "use": "Native spells, scenario criteria, AnimKit1254/1244, SpellVisual51979/kit4911; existing native audit scripts"
+    }
+  ]
+}

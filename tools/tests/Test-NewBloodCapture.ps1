@@ -11,7 +11,7 @@ Export-Method 'src/server/game/Conditions/ConditionMgr.cpp' 'bool ConditionMgr::
 Export-Method 'src/server/game/Spells/SpellEffects.cpp' 'void Spell::EffectKnockBack(' 'void Spell::EffectLeapBack(' 'Knockback.inc'
 # Replay the current migration against the installed baseline. Reapplying 05
 # after 09 inserts a second id=4 because smart_scripts includes link in its PK.
-$migration=Get-Content "$repo/sql/updates/world/2026_10_13_10_new_blood_prisoner_lifecycle.sql" -Raw
+$migration=Get-Content "$repo/sql/updates/world/2026_10_13_11_new_blood_archive_handoff.sql" -Raw
 $fixture=(@('conditions','smart_scripts','creature_template','creature_movement_override') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+="`n$migration`n$migration`n"
 $fixture+=@"
@@ -21,9 +21,12 @@ SELECT 'stun-release',COUNT(*) FROM smart_scripts t JOIN smart_scripts a ON a.en
 SELECT 'ground-portal',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND id=2 AND link=4 AND target_z BETWEEN 696.65 AND 696.67;
 SELECT 'early-interior',COUNT(*) FROM smart_scripts WHERE entryorguid=98797 AND source_type=0 AND action_type=50 AND action_param1=245958;
 SELECT 'click-interior',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=6 AND event_type=61 AND action_type=50 AND action_param1=245958;
-SELECT 'ready-delay',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=7 AND event_param1=13000 AND event_param2=13000 AND link=8 AND action_type=128 AND action_param1=0;
+SELECT 'ready-delay',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=7 AND event_param1=13200 AND event_param2=13200 AND link=8 AND action_type=128 AND action_param1=0;
+SELECT 'birth-restart',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=9 AND event_param1=200 AND action_param1=1254 AND action_param2=0;
+SELECT 'hands-only',COUNT(*) FROM smart_scripts WHERE entryorguid=101460 AND source_type=0 AND id=10 AND action_type=27 AND action_param1=4911 AND action_param3=12000 AND target_type=1;
+SELECT 'ritual-tail',COUNT(*) FROM smart_scripts WHERE entryorguid=9879701 AND source_type=9 AND ((id=11 AND action_param1=98831 AND event_param1=10000) OR (id=12 AND action_param1=199945 AND event_param1=10000) OR (id=13 AND action_type=69));
 SELECT 'ready-click',COUNT(*) FROM smart_scripts WHERE entryorguid=101433 AND source_type=0 AND id=8 AND action_type=81 AND action_param1=16777216;
-SELECT 'reignite',COUNT(*) FROM smart_scripts t JOIN smart_scripts a ON a.entryorguid=98797 AND a.source_type=0 AND a.id=t.link WHERE t.entryorguid=9879701 AND t.source_type=9 AND t.id=9 AND a.event_type=61 AND a.action_type=128 AND a.action_param1=1244 AND a.action_param2=1 AND a.target_param1=101433;
+SELECT 'reignite',COUNT(*) FROM smart_scripts WHERE entryorguid=9879701 AND source_type=9 AND id=10 AND action_type=128 AND action_param1=1244 AND action_param2=0 AND target_param1=101433;
 "@
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
 $old=$env:MYSQL_PWD
@@ -32,7 +35,7 @@ $conditions=@($rows | Where-Object {$_.StartsWith('{')})
 if($conditions.Count -ne 2){throw 'Missing migrated capture conditions'}
 [IO.File]::WriteAllText("$output/CaptureConditions.inc",($conditions -join "`n"))
 $counts=@($rows | Where-Object {-not $_.StartsWith('{')})
-$expected=@('base-map-guards:4','stun-release:1','ground-portal:1','early-interior:0','click-interior:1','ready-delay:1','ready-click:1','reignite:1') | ForEach-Object {$_.Replace(':',"`t")}
+$expected=@('base-map-guards:4','stun-release:1','ground-portal:1','early-interior:0','click-interior:1','ready-delay:1','birth-restart:1','hands-only:1','ritual-tail:3','ready-click:1','reignite:1') | ForEach-Object {$_.Replace(':',"`t")}
 if(($counts -join '|') -ne ($expected -join '|')){throw "Unexpected ritual data: $counts"}
 $map=Get-Content "$repo/src/server/game/Maps/Map.cpp" -Raw
 $a=$map.IndexOf('if (entry == 101433 && summon->HasQuestObjectScope())')
