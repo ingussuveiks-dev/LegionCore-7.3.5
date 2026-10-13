@@ -9,6 +9,7 @@ void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
 void AddSC_stormheim_intro();
+void AddSC_stormheim_rounds();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -223,6 +224,7 @@ void AddLegionScripts()
     AddSC_highmountain();
     AddSC_stormheim();
     AddSC_stormheim_intro();
+    AddSC_stormheim_rounds();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();

@@ -2,6 +2,7 @@
 #include "SmartAI.h"
 #include "Player.h"
 #include "QuestData.h"
+#include "stormheim_rounds.h"
 
 namespace StormheimIntro
 {
@@ -53,7 +54,13 @@ void ConfirmArrival(Player* player, Journey const& journey, uint32 retries)
 
 struct npc_stormheim_introduction : SmartAI
 {
-    explicit npc_stormheim_introduction(Creature* creature) : SmartAI(creature) { }
+    explicit npc_stormheim_introduction(Creature* creature) : SmartAI(creature), rounds(creature) { }
+    StormheimRounds::Controller rounds;
+    void IsSummonedBy(Unit* summoner) override { if (!rounds.Start(summoner)) SmartAI::IsSummonedBy(summoner); }
+    void UpdateAI(uint32 diff) override { if (rounds.Running()) rounds.Update(diff); else SmartAI::UpdateAI(diff); }
+    void MovementInform(uint32 type, uint32 id) override { if (rounds.Running()) rounds.Movement(type,id); else SmartAI::MovementInform(type,id); }
+    uint32 GetData(uint32 id) const override { return rounds.Running() ? rounds.GetData(id) : SmartAI::GetData(id); }
+    void SetData(uint32 id, uint32 value) override { if (rounds.Running()) rounds.SetData(id,value); else SmartAI::SetData(id,value); }
     void MoveInLineOfSight(Unit* who) override
     {
         Player* player = who ? who->ToPlayer() : nullptr;

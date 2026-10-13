@@ -1,0 +1,53 @@
+{
+  "scope": "Making the Rounds: Alliance 38206 and Horde 39698, through inspection, salute, final conversation and reward-gated departure quest availability. Code/data only.",
+  "findings": [
+    "Native TDB735 requires three actions in each faction: Alliance inspect deck gun 96662, salute 96661, speak with Genn 96663; Horde inspect catapult gameobject 247491, salute 96688, speak with Tattersail 96689. All six live objective rows already match native storage, amount and sequenced flags. No objective or reward was replaced with auto-completion.",
+    "The existing personal escorts progressed through timer-driven SmartAI lists and awarded final NPC credit automatically. They did not wait for inspection or salute or require the player to initiate the final conversation. The new quest-lifetime-bound controller retains the three existing waypoint paths and dialogue groups for each faction, waits for each actual action and requires acknowledged node arrival before advancing movement. Spawn or timer expiry does not grant progress.",
+    "Rogers' shared introduction AI now also hosts the capital escort controller; Sylvanas 96686 uses the same integration. Dalaran introduction behavior remains covered. Other maps delegate to SmartAI. Additional capital-map/owner-quest conditions keep legacy JUST_SUMMONED escort actions out of later scenarios reusing these entries. Existing static NPCs and departure-quest actions remain available.",
+    "Guides retain the summoning player's GUID and quest lifetime, are personally visible and walk with the existing animation override. Guide combat is cleared before movement; owner combat or distance pauses progress. Failed motion retries the same node. Missing paths do not consume the stage. Missing/expired guides are recreated near the capital staging area from the earliest unfinished objective, preserving inspection and salute progress. Abandon/reaccept invalidates old controllers and queued callbacks.",
+    "The retained ship waypoints are not covered by ground polygons in the installed navmesh: the Release probe found no matching deck polygon at all 59 points. The controller follows the retained short deck segments directly without ground path generation, avoiding navigation projection away from the deck. The probe verifies all 53 within-path segments remain short (<=12 yards, <=5 yards vertical change); it does not certify client model collision or full clearance.",
+    "Alliance gun 110898 is already spellclick-enabled and uses native 220521, an ANY-unit dummy with range index 12 and a cast time. Its old SmartAI hit credit is replaced by a scoped spell handler: the gun, phase, LOS, nearby live personal guide and active inspection stage must remain valid on the actual hit, and the original quest lifetime must still exist. Failed/interrupted/stale casts give no credit. Duplicate hits are capped. The now-empty stock SmartAI binding is cleared only if no custom script or remaining events exist.",
+    "The gun model's origin is elevated above the deck (spawn Z 198.621 while adjacent retained walking points are around Z 193.5); display 71615 has recorded combat reach 6.5. Inspection keeps ordinary unit interaction reach with an additional 8-yard exact center limit. A raised-model fixture passes while another-floor targets remain rejected. The gun spawn/model and click flag are unchanged; no dynamic Source-18 flag condition was added.",
+    "Horde catapult retains ordinary GOOBER KillCreditGO processing, behind a guard requiring a valid inspection stage and nearby personal guide. Invalid faction/map/phase/LOS/inactive/duplicate uses are rejected. Existing GO shape, flags and interaction data are unchanged.",
+    "Native bars 753/754 expose 220291/220525 and are applied by self-targeted 220293/220526 only after the guide reaches the salute stage. Cast validation requires the proper faction spell, current bar, completed inspection and nearby live guide. Native self credit, ranger event 53167/53130 and bar-removal effects remain unchanged. A legacy Horde explicit-target row pointed at Sylvanas; it now points at the owner/summoner. The native effect itself already targets the caster, so that row alone is not evidence of a previously misapplied aura.",
+    "The native salute event retains the existing ranger formations and personal SmartAI salute pose. Installed Emotes 66 maps to animation 113 with no visual kit. Native spell visual references and bar data are recorded separately; no new visual or model asset was invented. Rendering, attachments and animation playback remain unverified in the client.",
+    "Final credit now follows a player-initiated, personally addressed conversation with the proper visible capital NPC. Genn uses groups 0/1 with the existing 4/5-second waits; Tattersail uses group 3 and the existing 6-second wait. Callbacks pin both guide and final-NPC GUIDs, validate the current quest lifetime and interaction again, and restore retry if the target disappears or the player moves away/enters combat. Credits and completion are written only once.",
+    "Only invalid partial final-conversation progress from the old timed lists is reconciled: final credit is cleared if inspection or salute is missing on an active incomplete quest. Valid earlier actions and already completed/rewarded histories are retained. Bar cleanup and guide recovery cover abandonment, death, logout and re-entry. The existing reward prerequisites lead to Greymane's Gambit 39800 or The Splintered Fleet 39801; those departure missions are the next audit batch."
+  ],
+  "validation": [
+    "Test-StormheimRounds.ps1 compiles the actual controller, action guards, inspection hit/lifetime and final-conversation helpers plus production CanCompleteQuest/AddQuestDelayedEvent. Both factions pass all eight objective subsets, early/wrong/stale movement acknowledgements, motion/path/summon/cast failures, combat pause, actual inspection hit, raised gun origin, post-check LOS loss, duplicate cap, stale cast after abandon/reaccept, salute and final ordering, missing final actor retry, queued dialogue invalidation, re-entry and independent owners. Fixture callbacks do not simulate client rendering.",
+    "Test-StormheimRoundsNative.py reads original TDB735 via the prior introduction reader and installed DB2 without overlays. Checks the six objectives, bars/spells, gun ANY target, native range, self credits, ranger event IDs, bar removal, visual references and salute emote; evidence regeneration and comparison pass.",
+    "Test-StormheimRoundsData.ps1 applies the real SQL twice in temporary tables and verifies both quest chains, exact objective rows, bindings, scoped summon conditions, native gun/catapult data, all six contiguous retained paths, native summon and ranger-formation rows, next quest requirements, unrelated data and custom bindings. Temporary and live checks pass.",
+    "Test-StormheimRoundsGeometry.ps1 links actual Release navigation libraries and exports all 59 current waypoints. The initial deck-ground expectation failed and is preserved as a limitation; the final diagnostic verifies 53 bounded direct segments and reports missing deck coverage honestly.",
+    "Test-StormheimIntro.ps1 and Test-StormheimIntroData.ps1 -Live pass after the shared AI changes. Release worldserver/bnetserver builds succeed in the canonical runtime directory. Final startup/shutdown and hashes are recorded in runtime evidence."
+  ],
+  "deployment": {
+    "migration": "2026_10_13_13_stormheim_rounds.sql",
+    "sha1": "55BEE3EC807507FFA5D6F24FD4A580E8FCB33BCE",
+    "backups": [
+      ".codex/backups/stormheim-rounds/20261013-190204",
+      ".codex/backups/stormheim-rounds/20261013-190411"
+    ]
+  },
+  "limits": [
+    "No client gameplay test. Check initial personal guide pose/flags, deck walking and ramps, the raised clickable gun, catapult interaction, complete inspection cast, bar appearance/removal, both salute animations and ranger formations, final NPC dialogue/UI/phase handoff, abandonment and relog in 7.3.5.",
+    "The controller reconstructs execution from native objectives/spells and retained world choreography. It is not a captured retail replay or certification of ship model collision. Neither the navigation diagnostic nor simulated movement establishes client deck clearance.",
+    "These quests have no kill objective. Combat prerequisites are tested, but pet killing blows apply to the subsequent combat missions, which remain unaudited here.",
+    "Runtime configuration, certificates, DLLs, logs and extracted data are preserved; servers are left stopped."
+  ],
+  "next": "Greymane's Gambit (39800, Alliance) and The Splintered Fleet (39801, Horde): actual departure/scenario, combat stages, native mission-complete credit 113320 and arrival at the first Stormheim world quest givers.",
+  "runtime": {
+    "version": "3a25b6b990cd+ 2026-10-13 18:14:40 +0300 (main branch) (Win64, Release)",
+    "startup": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\stormheim-rounds\\startup-20261013-191009",
+    "startupReady": true,
+    "exitCode": 0,
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_rounds.cpp": "e42a23c2854f182846d3bd27f2e7cd224fd304378fe8691aac54cead217353bf",
+      "src/server/scripts/Legion/stormheim_rounds.h": "a0d9b678eef22d38a4b30dd3afd83e7cd1aa1942c8c2b4f3653fd1a1cad2736d",
+      "src/server/scripts/Legion/stormheim_intro.cpp": "85ce8fee2b9e21aeae8568363acae0cc9aeebe472b64fd141924d566a7831aa9",
+      "sql/updates/world/2026_10_13_13_stormheim_rounds.sql": "5725e28142309126968036fd2042cd2060d29216aac50ab4e9b22db8c06adc3c",
+      "build-extractors/bin/Release/worldserver.exe": "c7bf4c2c330429b70a9383ae1c184a0ee79191aaf59257d838e28ff3808b3a2a",
+      "build-extractors/bin/Release/bnetserver.exe": "a196ea46ea700c0b12ca633a77399d3fe573d4f70b2fe908906a9f68715ff13c"
+    }
+  }
+}
