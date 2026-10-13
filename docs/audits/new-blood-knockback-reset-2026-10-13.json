@@ -1,0 +1,23 @@
+{
+  "report": "User's observations predate the latest capture-owner fix: Jagganoth's arrival displaces the portal and surrounding actors; reaccepting The New Blood exposes a timed-list self-replacement error for 10145600.",
+  "evidence": {
+    "native": "Installed 7.3.5 SpellEffect row 294419: spell 200011, effect index 0, effect 98 (knockback), targets 22/7 (caster source/area entry), trigger 204833 (stun). Original live DB has no implicit-target conditions for this spell.",
+    "SpellEffect_sha256": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "script": "Jagganoth 98831 casts 200011 on summon. Zelifrax 98797 must subsequently challenge him and reach movement point 2. The Summoning Portal is also a creature (101433), so an unrestricted unit-area selection can move it. The same Jagganoth entry is summoned by Calydus 99178 in the later map-1522 escape.",
+    "reference": "https://warcraft.blizzplanet.com/blog/comments/the-new-blood-affliction-warlock-artifact-questline",
+    "reference_scope": "The Legion-era walkthrough documents Zelifrax's challenge, Jagganoth's response and capture, followed by the later escape. The exact new target whitelist is a repair inferred from native spell semantics and the existing scenario actors, not a claimed packet-sniff reconstruction.",
+    "reset": "10145600 id 3 calls 10145601 on self from its own timed list. SmartScript::SetScript9 explicitly rejects this while isProcessingTimedActionList is true. Action 200 in the recovery tail is BOSS_EVADE: it clears combat/threat and moves home; it does not replace or clear the timed list. There are no Ritssyn EVADE handlers that start another timed list."
+  },
+  "repair": [
+    "Source 13/effect mask 1 conditions restrict spell 200011 in maps 1220 and 1502 to quest-40729 players and council entries 101454/101455/101456/101457. Zelifrax, portal NPC/object, boss, jailers, pets and unrelated bystanders are excluded. Intended council/player knockback and its native strength/stun are retained.",
+    "An AND branch of two negative caster-map conditions preserves targeting outside Dalaran/Underbelly, including Calydus's later map-1522 scene.",
+    "Flatten 10145601's recovery actions into 10145600: hide at 136 seconds from list start, evade/home, restore NPC flags and visibility at 141 seconds. Keep the source recovery list and the engine's self-replacement guard unchanged. Match only the known broken call site and preserve customized calls."
+  ],
+  "validation": [
+    "Test-NewBloodKnockbackReset.ps1 uses temporary DB copies, recreates the original broken call, applies the migration twice, checks the actual stored conditions against participant/nonparticipant/map matrices and compares the flattened timeline to the intended original nested timeline. This is not a live client or full SmartAI simulation.",
+    "Read and asserted the installed SpellEffect.db2 effect index, type, targets and stun trigger, rather than assuming the spell layout from a different version.",
+    "Test-NewBloodRitualData.ps1 and Test-DreadscarClaimData.ps1 pass after deployment. Live DB readback confirms eight conditions, the seven-step flattened list and the registered migration hash."
+  ],
+  "deployment": "Applied SQL-only update 2026_10_13_02_new_blood_knockback_reset.sql; registered SHA1 E606FA06F3505C72F26B37A8DFBDFD3A12342B9C. Affected-row backups: .codex/backups/new-blood-knockback-reset/20261013-100155. Worldserver was stopped when applied and will load the data on next start. No binary, character progress or inventory changes.",
+  "client_retest": "Pending. Start worldserver with the new data and restart the ritual. Confirm the portal remains fixed, Zelifrax can issue his challenge, council/player knockback occurs, capture proceeds to Dreadscar, and an abandoned/idle ritual no longer produces the timed-action self-replacement error. The user's report was from before the capture-owner repair, not a failed retest of that repair."
+}
