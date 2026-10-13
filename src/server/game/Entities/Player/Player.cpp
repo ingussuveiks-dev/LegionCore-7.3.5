@@ -22660,6 +22660,23 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
     _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
+    // The New Blood's scenario selector is transient. Restore it before login
+    // adds the player to map 1522 (also used by the later order-hall scenario).
+    // A new instance has no saved scenario criteria or actor state: restart at
+    // the native prison arrival, never at a stale archive/escape coordinate.
+    if (GetMapId() == 1522 && getClass() == CLASS_WARLOCK && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(40729))
+    {
+        Scenario* introduction = sScenarioMgr->GetScenario(GetInstanceId());
+        if (!introduction || introduction->GetScenarioId() == 962)
+        {
+            SetScenarioId(962);
+            if (!introduction)
+            {
+                Relocate(2959.64f, 1126.32f, 212.0f, 6.27446f);
+                TC_LOG_INFO("entities.player", "The New Blood: restoring player %u at the prison in a fresh scenario instance", GetGUIDLow());
+            }
+        }
+    }
     _LoadDailyQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS));
     _LoadWeeklyQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS));
     _LoadSeasonalQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS));

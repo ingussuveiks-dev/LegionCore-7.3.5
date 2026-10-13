@@ -173,7 +173,10 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     if (loginCheck && entry->IsScenario() && mapid != 1191)
     {
         uint32 introQuest = player->GetTeam() == ALLIANCE ? 42740 : 40518;
-        if (mapid != 1460 || player->GetQuestStatus(introQuest) != QUEST_STATUS_INCOMPLETE)
+        bool brokenShoreIntro = mapid == 1460 && player->GetQuestStatus(introQuest) == QUEST_STATUS_INCOMPLETE;
+        bool newBloodIntro = mapid == 1522 && player->GetScenarioId() == 962 &&
+            player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE;
+        if (!brokenShoreIntro && !newBloodIntro)
             return false;
     }
 
