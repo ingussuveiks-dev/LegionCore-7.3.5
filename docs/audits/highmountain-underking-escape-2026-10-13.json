@@ -1,0 +1,33 @@
+{
+  "scope": "Implements the missing post-Wrath Dargrul escape, code/data only. Supersedes the unimplemented-escape limitation in highmountain-underking-2026-10-13.json.",
+  "behavior": [
+    "One shared scene per actual cave boss death in map 1220 phase 9180. No start on spawn, evade, spell hit or unrelated death. Duplicate death callbacks are guarded.",
+    "Temporary Dargrul 97442 retains native equipment 132179, becomes passive and immune, faces the cave audience, speaks BroadcastText 99475 with native sound 54321, then casts actual escape spell 192468. SQL adds a dedicated unambiguous text group without deleting the conflicting old unused group.",
+    "The native cast takes 1.3 seconds and uses visual 49855 with cast/impact kits 59129/59128. Its zero-entry kill-credit effect is suppressed; ordinary boss kill credit is unchanged.",
+    "Only the confirmed spell-finish callback creates temporary rock rubble and starts the short retreat to the portal. Verified point arrival despawns Dargrul. Cast and movement timeouts recover missing callbacks; summon lifetime is bounded to 30 seconds. Rubble expires independently after 30 seconds and has collision disabled, keeping shared cave navigation and the existing portal usable.",
+    "No player camera, control, teleport, phase or quest state is modified by the escape. Shared observers can leave or log out without invalidating stored player pointers because the scene holds none."
+  ],
+  "validation": [
+    "Extracted production encounter and escape tests pass: death/phase/location guards, one start per kill, ordered dialogue/cast/retreat, duplicate and wrong callbacks, cast/path/prop failure handling and no additional credit.",
+    "Native DB2 evidence test passes for effect, cast time and visual kits. SQL temporary-table double application and custom-data preservation pass; deployed escape and Underking data checks pass.",
+    "Escape start and destination lie on connected cave navmesh ground in destroyed map 1527. Release worldserver/bnetserver built into build-extractors/bin/Release; worldserver --version succeeds."
+  ],
+  "deployment": {
+    "sha1": "931AB5D44E5B995629356AD05EBE3DA61D4BDFEC",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\underking-escape-20261013-082246",
+    "applied": "2026-10-13T08:22:46.9325089+03:00"
+  },
+  "sha256": {
+    "src/server/scripts/Legion/highmountain_underking.cpp": "eeb43cc98ec405e500412386a21baa1b9f40e0c7045933c835cc684deaaefe26",
+    "src/server/scripts/Legion/highmountain_underking_escape.cpp": "05b9c3bdce598ebd7e4640a120a29bf3e7c350e178a8087a3b7604f02b6093c2",
+    "sql/updates/world/2026_10_13_02_highmountain_underking_escape.sql": "81cec0fc1a0fdfaa0752f3b24dc026c66e9b2e8dce0d2cb805602b0f362fc65a",
+    "build-extractors/bin/Release/worldserver.exe": "986575ee85aa5ac573f17b49db70d5a703697f9c90cebe58e9ada8f35cf1e127",
+    "build-extractors/bin/Release/bnetserver.exe": "ec4b01a4ed6d7a339202e7f405ded987c94584800c2c5ac643b13e68ea6db3b6"
+  },
+  "limits": [
+    "No 7.3.5 client playtest. Confirm voice, hammer animation/impact, retreat and rubble appearance in client.",
+    "This is server choreography using the native escape spell and dialogue. The 2-second opening pause, 6.006-second line interval, short cave retreat and temporary Rock Rubble 190386 placement are reconstruction; no retail camera/terrain swap is claimed.",
+    "Runtime server remains stopped. Configuration, certificates, DLLs, logs and extracted data preserved."
+  ],
+  "next": "Neltharion's Lair (39781)."
+}

@@ -6,6 +6,8 @@
 #include "ObjectAccessor.h"
 #include <set>
 
+void StartHighmountainUnderkingEscape(Creature* boss);
+
 namespace Underking
 {
 constexpr uint32 Quest = 39780, Wrath = 97266, Meeting = 97352;
@@ -43,6 +45,7 @@ struct npc_highmountain_underking : ScriptedAI
     npc_highmountain_underking(Creature* creature) : ScriptedAI(creature) { }
     EventMap attacks;
     std::set<ObjectGuid> affected;
+    bool escaped = false;
     void Cleanup()
     {
         for (ObjectGuid guid : affected)
@@ -50,7 +53,7 @@ struct npc_highmountain_underking : ScriptedAI
                 for (uint32 spell : {192270u,192322u,216101u}) unit->RemoveAurasDueToSpell(spell,me->GetGUID());
         affected.clear();
     }
-    void Reset() override { attacks.Reset(); Cleanup(); }
+    void Reset() override { attacks.Reset(); Cleanup(); escaped = false; }
     void EnterCombat(Unit*) override
     {
         attacks.Reset();
@@ -64,6 +67,11 @@ struct npc_highmountain_underking : ScriptedAI
     void JustDied(Unit*) override
     {
         attacks.Reset(); Cleanup();
+        if (!escaped)
+        {
+            escaped = true;
+            StartHighmountainUnderkingEscape(me);
+        }
         // Ordinary kill rewards own the 97266 credit. Never grant it on spawn,
         // a spell hit, an ally death or a reset.
     }
