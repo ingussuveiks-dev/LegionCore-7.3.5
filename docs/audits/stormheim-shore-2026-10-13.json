@@ -1,0 +1,111 @@
+{
+  "scope": "First Stormheim shore quests after Alliance 39800 and Horde 39801: 38036, 38052, 38053, 38057, 38332, 38357 and 38358. Code/data only, as requested; no client gameplay.",
+  "status": "Seven quest giver, prerequisite, objective, turn-in and next-quest paths audited. Confirmed medical loot-link and Pump progression defects repaired, with extracted production handlers and live SQL validation. Not client-verified.",
+  "native_evidence": "stormheim-shore-native-2026-10-13.json",
+  "quests": [
+    {
+      "id": 38036,
+      "name": "Supplies From the Skies",
+      "giver_and_ender": 90783,
+      "path": "Five item 123876 from the nine retained Skyfire Medical Supplies 241275 spawns. The existing quest-only 100-percent loot row was unreachable because the native chest's Data1 remained zero. Bind that chest to its existing loot template 241275; preserve lock 1691 and native chest handling. Inventory reward/consumption and loot RNG/ownership remain core services."
+    },
+    {
+      "id": 38052,
+      "name": "Boarded!",
+      "giver_and_ender": 90749,
+      "path": "Eight Forsaken kills using objective 90899/storage 1. Deathstalker 92224 retains KillCredit1=90899. Existing active 98..110 scaling, hostile templates and world spawns retained. No replacement combat-credit script."
+    },
+    {
+      "id": 38053,
+      "name": "Assault and Battery",
+      "giver_and_ender": 90866,
+      "path": "Tinkmaster Overspark requests one battery 122295 from Dread-Rider Malwick 90902. The existing non-grouped quest loot row, chance 98.8837 and mode zero are valid for this core. Actual LootTemplate::Process accepts mode zero; do not rewrite it based on another core's semantics. The existing next link 38058 remains."
+    },
+    {
+      "id": 38057,
+      "name": "The Lost Legion",
+      "giver": 90783,
+      "ender": 92414,
+      "path": "Native report/delivery quest with no quest_objectives rows and no special exploration/event lock. Its turn-in is Knight-Captain Rhodes. The real CanCompleteQuest accepts this state; NPC distance/visibility and reward validation remain the normal quest handler. Next link 38059 retained; do not fabricate an objective or acceptance-completion cast."
+    },
+    {
+      "id": 38332,
+      "name": "The Ranger Lord",
+      "giver": 91473,
+      "ender": 91158,
+      "path": "Dread-Rider Cullen sends the player to Nathanos Blightcaller. Native report/delivery quest with no objective rows or exploration/event lock. Ordinary NPC hand-in is retained; next link 38360 unchanged. Earlier departure prose incorrectly named 91473 as Nathanos; the WDB identifies Cullen 91473 and Nathanos 91158. Mission hand-in IDs in code/data were already correct."
+    },
+    {
+      "id": 38357,
+      "name": "Side Effects May Include Mild Undeath",
+      "giver_and_ender": 91590,
+      "path": "Ten volatile subjects using objective 91569. Volatile Sailor 91563 retains KillCredit1=91569. Existing hostile actors, spawns and active 98..110 scaling retained. Quest-only scripted pet/kill behavior was not added."
+    },
+    {
+      "id": 38358,
+      "name": "Pump it Up",
+      "giver": 91590,
+      "enders": [
+        91590,
+        91693
+      ],
+      "path": "Twenty-one retained Volatile Barrels 240600/249829 in map 1220/area 7563 use native lock 2382 and open-lock spell 182021. Native Pump 181981 has effect-90 credit 91693 with base 14/die sides 6, a 15..20 quantity. Generic effect-90 ignores that quantity and grants one kill; no handler previously converted a full counter into required marker 91590. Restore optional/hidden Flags 12 on counter 277818, increment it by the real native effect value on successful AfterCast, cap at 100 and award required marker exactly once at capacity."
+    }
+  ],
+  "implementation": [
+    "The GO hook runs after the native open-lock completes. It validates Horde, active quest, life, world/map/area, phase, visibility, LOS, five-yard range, combat/vehicle/transport state, object entry/spawn/ready state and client flags. It holds a GO GUID/token/weak quest lifetime only during native instant triggered Pump. CheckCast and effect/AfterCast revalidate that proof; failed/missing handlers and interrupted/abandoned/reaccepted/stale attempts grant nothing and consume no goober interaction.",
+    "The script casts native Pump itself, while bound barrels' Data10 is zero. A successful cast returns to normal goober animation/cooldown handling without the core casting Pump twice. Custom bindings and other spell values are preserved. No owned barrel spawns or generic spell/loot/quest engine behavior changed.",
+    "Quest objective storage is the durable progress source. A scoped player hook restores native alternate bar 335/Gauge 181970 at partial progress when returning alive to this shore and does not overwrite an unrelated alternate-power aura. At 100 it repairs a missing filled marker and uses native full-container aura 182151. Abandonment/reward or leaving the shore removes the two scoped auras; reacceptance starts from the core's reset counters. Logout clears temporary attempts. No new character table is needed.",
+    "Native 181970 and 182151 both reference visual 46358. The audit traces SpellXSpellVisual through visual events, kits, model attachments and effect-name file IDs. Attachment rows record native animation sentinel 65535 and no overriding animation kit. This establishes data references; actual model assembly, cast/absorption effects and animation playback still require a client test.",
+    "All seven quests have positive rewarded-fleet prerequisites and existing visible questgiver flags. The real prerequisite handler rejects a merely completed/unrewarded fleet quest and accepts its rewarded state. Alliance faction selection is inherited through the earlier faction introduction chain; Horde quests retain their race mask. Existing native giver/ender and successor rows are preserved."
+  ],
+  "verification": [
+    "Test-StormheimShore.ps1 compiles the extracted complete shore GO/spell/player handlers and real AddQuestDelayedEvent, CanCompleteQuest, SatisfyQuestPreviousQuest, QuestObjectiveSatisfy and LootTemplate::Process. Covers all seven prerequisite gates, normal report quests, combat/item counters, capping/completion, two players and both barrel entries, successful 15..20 quantities, required filled marker once, stale/interrupted/unarmed/failed casts, invalid interactions, abandonment/reacceptance, login/area re-entry and unrelated alternate-power isolation. Every nonzero executable exit fails the runner.",
+    "The compiled harness uses engine/DB/inventory/RNG/interaction boundaries as stubs. Its normal combat/item assertions execute the real objective and completion functions, not actual kills or item looting in game. The real ordinary loot processor demonstrates that non-grouped LootMode=0 is eligible when RNG/conditions succeed and rejects an incompatible nonzero mode. KillRewarder::_RewardKillCredit and Player::KilledMonster were inspected for retained native kill aliases; actual pet/group corpse ownership and faction NPC rendering are unverified in the client.",
+    "Test-StormheimShoreData.ps1 applies the actual migration twice to temporary table copies, validates seven quest gates, eight ender rows, both mission hand-ins, three next links, native report quests, five active scaling ranges, kill aliases, nine supplies/21 barrels and custom/unrelated data preservation. The same checks pass against the deployed world DB.",
+    "Test-StormheimShoreNative.py independently reads original TDB735 quests/objects and installed DB2 without overlays. Verifies native objectives, optional/hidden counter, required filled marker, next links, item 122702 without an assumed usable-item spell, the native Pump/open-lock effects and actual instant/cast-time records, lock-spell association, alternate bar 0..100 and visual dependency/attachment records.",
+    "Existing StormheimFleet production-route/state/scaling regressions pass after integration. Canonical Release worldserver and bnetserver built in build-extractors/bin/Release. Runtime configuration, certificates, DLLs, logs and extracted data preserved. Fresh startup/shutdown and file hashes recorded in runtime evidence.",
+    "Live hotfix spell_effect, spell_misc and spell_x_spell_visual queries returned zero overrides for 181970/181981/182021/182144/182151. World updates records the deployed migration hash as RELEASED."
+  ],
+  "observed_failures_and_repairs": [
+    "Medical supplies had a valid loot row but chest Data1=0. The new scoped migration links it to 241275; temporary and live checks pass.",
+    "Pump waste objective Flags had been flattened from native 12 to zero. This made the hidden counter an independent hard completion requirement; restore the native bits without erasing other locally configured flags.",
+    "Pump had no executable quantity/full-container path. Retain native interaction/spell identity while handling its actual quantity, durable progress, full marker and recovery. Failure/duplicate/stale proof paths are compiled into the regression.",
+    "The initial LootMode=0 hypothesis was disproven by the actual ordinary loot processor. No battery-loot migration is included. The regression records that mode zero is valid in this codebase.",
+    "Initial Release compilation used an incorrect GetLootState spelling; this core's accessor is getLootState. The corrected production build passes. A test initially compared cumulative packet count to zero after reacceptance; it now compares the pre-failure count and checks that failed casting adds no packets.",
+    "Final packet review found that the new credit helper sent the added quantity instead of the cumulative Count expected by QuestUpdateAddCredit. It now sends the capped current total, and the regression asserts packet Count against the stored quest objective at every Pump/full marker update."
+  ],
+  "client_checks_and_limits": [
+    "No WoW client gameplay was performed, as requested. Verify actual faction arrival/mission reward, visible questgiver menus, open-lock cast interruption, medical inventory looting and bag-full behavior, battery RNG/loot ownership, pet/group killing blows, actor poses/phasing, alternate bar/backpack/absorption visuals and hand-in reward choices before calling these whole quests client-verified.",
+    "Native spell 182144 also carries a 3..7 waste-credit quantity. Its optional Wretch/alternate collection route is not implemented or certified by this change. The required barrel route completes the quest using native Pump 181981; no claim of complete retail encounter choreography or every optional collection path is made.",
+    "Existing duplicate world Nathanos copies and later 38058/38059/38360 sequences were outside this repair. Their rows/visibility were not changed. No generic scenario criteria, boost, pet lookup, warlock spell or mover code changed."
+  ],
+  "next": "Lightning Rod 38058, Pins and Needles 38059 and The Windrunner's Fate 38360: actual follow-up interactions, progress, native visuals and arrival/hand-in lifecycle.",
+  "deployment": {
+    "migration": "2026_10_13_16_stormheim_shore.sql",
+    "sha1": "08D2A0AD0FEA9D368829083873D231730251C5FD",
+    "backups": ".codex/backups/stormheim-shore/20261013-232814",
+    "state": "RELEASED"
+  },
+  "runtime_evidence": {
+    "source_revision": "a0d31afe1bed34d4dcaff69d7edd7d54452770eb",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "smoke": {
+      "ready": true,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0,
+      "logs": "build-extractors/runtime-test/stormheim-shore/startup-20261013-233102"
+    },
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_shore.cpp": "33EE83859C1843B0C17F14C1A3A0F807BA83E22C17945152D36F07BCF78E52EF",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "3F6D82BDD78F356190A835300ACBFF9484C2704AE23B5AF6AE5EC2C0E8E3E16D",
+      "sql/updates/world/2026_10_13_16_stormheim_shore.sql": "9DC624D8C7129B6297ABF26E06B69E5749411A1EEC8FE79F929ED29C9323A3E6",
+      "tools/tests/StormheimShoreTest.cpp": "44E0178E034729A54EB4BDD5807411B0FEE4EBA05133BA3F0BCF3B9E2CB86DD1",
+      "build-extractors/bin/Release/worldserver.exe": "0EBFB17EC8DB2AF15DC00641CDCB71C946A45486C9705654EB8C4A17DD99544D",
+      "build-extractors/bin/Release/bnetserver.exe": "1B43BE920B72D7FF1799C83BD5FF3BC127949EAD6C2871BA5390FD58362BC22F"
+    }
+  }
+}

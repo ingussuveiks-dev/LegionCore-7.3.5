@@ -12,6 +12,7 @@ void AddSC_stormheim_intro();
 void AddSC_stormheim_rounds();
 void AddSC_stormheim_departure();
 void AddSC_stormheim_fleet();
+void AddSC_stormheim_shore();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -229,6 +230,7 @@ void AddLegionScripts()
     AddSC_stormheim_rounds();
     AddSC_stormheim_departure();
     AddSC_stormheim_fleet();
+    AddSC_stormheim_shore();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
