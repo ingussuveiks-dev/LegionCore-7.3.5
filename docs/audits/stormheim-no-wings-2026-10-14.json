@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38318,
+    38613
+  ],
+  "status": "Code/data fix, native/extracted production regressions, canonical Release build, scoped offline SQL deployment and clean startup/shutdown complete. Client gameplay not performed, as requested.",
+  "findings_and_changes": [
+    "Native TDB735 objectives277696/38318 and278221/38613 are mandatory monster91484, slot0/amount1/flags0. Preserve these objectives, faction race masks and next38410/38615 Impalement Insurance. Horde had four identical empty zero-delay command7 self-completion rows, StartScript38613 and SpecialFlags2; remove only that exact placeholder, detach an empty list, preserve custom/delayed scripts and flags. OnLogin restores a matching native COMPLETE-with-zero-counter quest to INCOMPLETE; no personal-character SQL rewrite.",
+    "Generic points91975/91983 incorrectly cast121975 Keg Breaking, native jump42/destination63, range10 and Pandaria visual20531. Existing alternate point91979 already uses182478. Restore182478 for the two known default rows. The original archive has no captured spellclick mapping for these points: this choice is an inference from the native gun graph and the installed alternate point, not claimed original SQL evidence. Other spellclick variants91984/92022/92017/92072 remain unchanged.",
+    "Native182478 has friendly target21, but the real points are neutral faction190/Faction148, flags768 and lack ordinary assist permission. Original ally-target validation fails before the script. A single spell correction switches that effect to explicit ANY unit25, with point/launcher/flags/conditions/phase/visibility/LOS/range checks in OnCheckCast. No global assistance, charm, vehicle, pet, mover, boost or scenario handler is changed; SpellMgr recalculates explicit masks after custom corrections.",
+    "Intercept160 at OnEffectLaunchTarget, not Hit: the real EffectTriggerSpell runs during launch. Suppress its default chain only for the recognized map1220 point types and cast native182467 with the clicked Unit and destination. That spell summons the real hook91971 and applies182468. TARGET_DEST_CASTER_SUMMON18 would otherwise put the hook behind the player; a scoped summon-effect handler relocates its actual hit destination to the validated clicked point before native summon creation. Target46 in182469 uses the explicit point through the native destination selector. Do not teleport or synthesize movement.",
+    "Configure only a newly-created hook AI owned by this acquisition; ignore preexisting or custom hook AIs. Native summon properties64 have Control0/Slot0; the hook has no vehicle and no primary pet slot. Bind quest wall hooks to the current acceptance scope. Native182468 lasts3s; only natural EXPIRE triggers the consumed-once hook action and native182469 jump with182470 tether. Early removal, loss of launcher, logout/map/phase/instance change or abandonment cannot start quest flight. A missing hook aura consumes the failed helper so a subsequent successful retry cannot jump twice. Helpers time out after10s; successful ones remain5s after launch for the native4s tether, failed ones2s.",
+    "Credit requires exact Alliance91983 spawn294335 or Horde91975 spawn294296, map1220/zone7541, matching team and active native quest. Watch the actual newly-created EFFECT_MOTION_TYPE spline with its original ID and instance for at most10.1s through native AddQuestDelayedEvent. Require Finalized, unchanged intended destination and player within2yd in3D of the real wall point. Interrupted/replaced motion, wrong wall height, failed cast, another point or another faction earns nothing. Set only the matching native91484 objective to1, send its native credit packet and run CanCompleteQuest once; do not grant group/pet/kill credit.",
+    "The old source73 SmartAI action33 executes on every click, even when native casts fail. Its actual target_type0/target_param1=7 relies on GetTargets treating NONE as the invoker. Remove only the exact two known placeholders, including empty Difficulties; custom SAI rows remain. The generic Unit::HandleSpellClick still works normally.",
+    "Points retain spellclick flag16777216, aura182476, displays/model data and all coordinates. Ready checks actual flag and native canSeeSpellClickOn, which includes source18 conditions, as well as cast target validation. Current source18 rows are absent. Migration refuses to replace a legacy click with custom source18 conditions or an already-existing replacement row, and preserves custom hook bindings. Native non-wall182478 uses, including91979, remain usable with a carried launcher without granting quest credit. Bank-only ownership can complete pickup but cannot operate the gun: retrieve the actual item into carried inventory.",
+    "Scout placeholders108403 at294303/294336 overlap the two real wall points and have Wait Here200484 but no installed SetData handler. Preserve these and source quest-accept actions91481/92566; successful grappling now uses the existing permanent visible points and does not depend on that no-op activation. Alliance wall is52.6yd from Lorna at the old conversation location; the native quest explicitly instructs the player to move to the ridge before using the50yd gun.",
+    "Eight VMAP/map anchors passed at both wall points, scouts, sources and hand-in NPCs. Alliance recipient91519 is in phase6456 enabled by rewarded38312 and retained until38410 reward. Original TDB No Wings enders are91519 and92567; installed extra Horde ender/source92566 is preserved. Native completion/reward/prerequisite/race/GetNextQuest relation tests cover both branches. The previous pickup regression no longer asserts that the next Horde quest must remain broken; it compares next start-hook preservation against its temporary snapshot instead."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimNoWings.ps1",
+      "result": "PASS",
+      "evidence": ".codex/no-wings-test.log",
+      "details": "Actual script handlers and launch-hook registration, native AddQuestDelayedEvent, full Spell::EffectJumpDest and CalculateJumpSpeeds, native CheckExplicitTarget and actual immunity/reaction gates plus production spell correction. Both factions; correct/other/cross-faction points, new spline and actual arrival, wrong height/interruption, grant/aura/cast failure and retry, natural/early expiry, independent players, missing click flag/condition visibility, phase/LOS/range, abandonment/reacceptance, logout/instance/map transfer, timeout and legacy empty COMPLETE repair. Fake summon creation, aura clock/removal invocation, spline storage/MoveJump, item lookup, map/network/status/completion and explicit-mask metadata routing; not a full server/client simulation."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNoWingsHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/no-wings-handoff-test.log",
+      "details": "Extracted full native objective satisfaction, CanCompleteQuest, CanRewardQuest, race/previous prerequisite and GetNextQuest with related receiver. Reward storage/quest log/NPC registry are fixtures; native full reward/loot packet flow is not exercised."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNoWingsData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/no-wings-data-test.log",
+        ".codex/no-wings-data-live.log"
+      ],
+      "details": "Temporary migration replay and final live rows; exact objectives, four handler bindings, default click replacement, no premature SAI/start credit, next links/prerequisites and recipient phase. Custom hook/start-action/flags, conditioned/duplicate clicks and other point types preserved."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNoWingsNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-no-wings-native-2026-10-14.json",
+      "details": "Original TDB quests/end objectives/next and enders; native26972 effect graph, durations/ranges/summon properties/faction, visual kits/effects/attachments/model records and hashes. No item-use effect for138111."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNoWingsGeometry.ps1",
+      "result": "PASS:8 anchors,0 failures",
+      "evidence": ".codex/no-wings-geometry.log"
+    },
+    {
+      "command": "Previous pickup and Thorignir code/data, QuestCriteriaCredit regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/no-wings-pickup-regression.log",
+        ".codex/no-wings-pickup-replay-regression.log",
+        ".codex/no-wings-pickup-data-regression.log",
+        ".codex/no-wings-thorignir-regression.log",
+        ".codex/no-wings-thorignir-data-regression.log",
+        ".codex/no-wings-criteria-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/no-wings-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Initial release compile exposed the exact core AI signatures (SetGUID const reference/GetGUID non-const), the function name shadowing Quest and effect160 naming. Corrected these before successful Release builds.",
+    "Native effect review caught a Hit-stage interception being too late for160: use actual launch registration, and the fixture dispatches that registered launch list. Native target review also disproved using the original ally target on faction190 protected points; test the actual explicit-target and immunity/reaction branches.",
+    "Initial geometry runner expected7 points after adding8; all eight actual floor probes were already valid, corrected the cardinality. Initial handoff fixture forgot to register its receiver in the native lookup registry; registered it and both next relations passed.",
+    "Initial SQL guard used target_type7, but the actual imported rows are target_type0/param1=7. Native NONE target resolution uses the click invoker, so they really could grant premature credit. Corrected the exact deletion and replay tests.",
+    "Initial native data probe tried to interpret182476 misc3996 as a PlayerCondition record;3996 is absent in that table. Removed that unsupported inference and trace the native effect/visual data without claiming its meaning or actual rendering.",
+    "Existing pickup test expected38613 StartScript to stay unrepaired; this follow-up intentionally removes it. Replaced that stale expectation with snapshot-based next-hook preservation for migration13. A next-addon temporary snapshot initially omitted38410/38615; included them and prerequisite assertions passed.",
+    "Legacy COMPLETE with counter0 is recoverable, but old erroneous click counter1 is indistinguishable from a real historical completion. Preserve that data; no automatic destructive personal reset or claim that old completed/rewarded characters have replayed the wall."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_14_stormheim_no_wings.sql",
+    "sha1": "8DBA8B2694FA512BC7AAA83AFC8AEEA1871F80CB",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-no-wings\\20261014-202245",
+    "state": "RELEASED"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-no-wings\\startup-20261014-202128",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "note": "Canonical executable, temporary config/log directory, explicit backed-up migration14; final SQL replay added a custom-condition guard after this last smoke without changing the applied default runtime rows."
+  },
+  "build": {
+    "base_head": "8879a34520949a6d3ff681bad63ad3aa3daee616",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "4acfe750f2be62aeed9eabf95a367913c2d87af959b28297687f5878d3c546d3",
+    "bnet_sha256": "a39491d0f730ed2e359e573e6d7a22c26a93c45f8ef7d5c44e4b2f506b84916d",
+    "source_sha256": "96fa130ad1de9fd52995846713435fd454e2eabce96ff578505aa8d48de5ba88",
+    "spell_mgr_sha256": "5e15c0dbae8da4c7b92141c44866f7b454c833baef24f551b9f062a7bd03de97",
+    "note": "Preserved runtime configs/certificates/DLLs/logs/data. No server remains running."
+  },
+  "pending_client_checks": [
+    "Both factions: carried launcher, actual point visibility/click flags,50yd cast from ridge, protected neutral target acceptance, native initial hook/fire/tether,3s cue, flight animation/trajectory/collision, landing2yd/full wall height and one native objective/quest packet.",
+    "Full bags/bank-only launcher retrieval, login/re-entry, premature aura removal, failed summon/cast, interrupted jump, abandonment/reacceptance and two simultaneous players. Native summon/update/aura ordering, GUID registration and packets are mocked, so a successful C++ build/extracted test does not verify actual scene execution.",
+    "No vehicle/charm/client-control handoff is used. Still inspect player camera and primary pet/portrait before and after the native jump and owned helper summon; no client claim is made from summon property/slot data.",
+    "Actual Alliance91519/Horde92567 hand-in and next38410/38615 offer; existing extra92566 ender and overlapping scout markers remain as installed. Native NPC phase/popup/visual playback/localization must be inspected in the client.",
+    "General travel through other point variants91984/92022/92017/92072 remains outside this quest-pair fix; do not describe all Stormheim/Suramar grapple routes as repaired or client-verified."
+  ],
+  "next": {
+    "quests": [
+      38410,
+      38615
+    ],
+    "title": "Impalement Insurance",
+    "scope": "Actual harpoon launcher interactions/destruction count and cleanup, both factions, Horde legacy start completion and next handoff."
+  }
+}

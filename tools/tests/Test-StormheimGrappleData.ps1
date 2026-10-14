@@ -19,15 +19,14 @@ SELECT 'physical-pickup-relations',COUNT(*) FROM creature_queststarter WHERE id=
 SELECT 'physical-pickup-visual',COUNT(*) FROM creature_template_addon WHERE entry=107840 AND auras='214101';
 SELECT 'retained-smart-grants',COUNT(*) FROM smart_scripts WHERE source_type=0 AND entryorguid IN(91222,92561) AND action_type=56 AND action_param1=138111 AND action_param2=1;
 SELECT 'next-source-reuse',COUNT(*) FROM smart_scripts WHERE source_type=0 AND entryorguid IN(91481,92566) AND event_type=19 AND event_param1 IN(38318,38613) AND action_type=45 AND target_type=10 AND target_param2=108403;
-SELECT 'next-scope-not-repaired',COUNT(*) FROM quest_template WHERE ID=38613 AND StartScript=38613;
 SELECT 'preserved-races',COUNT(*) FROM quest_template WHERE (ID=38312 AND AllowableRaces=824181837) OR(ID=38612 AND AllowableRaces=234881970);
 '@
-$expected=@("native-pickup-objectives`t2","supply-actors`t4","normal-completion`t2","no-placeholder-completion`t0","detached-empty-start`t1","pickup-native`t1","physical-pickup-relations`t1","physical-pickup-visual`t1","retained-smart-grants`t2","next-source-reuse`t2","next-scope-not-repaired`t1","preserved-races`t2")
+$expected=@("native-pickup-objectives`t2","supply-actors`t4","normal-completion`t2","no-placeholder-completion`t0","detached-empty-start`t1","pickup-native`t1","physical-pickup-relations`t1","physical-pickup-visual`t1","retained-smart-grants`t2","next-source-reuse`t2","preserved-races`t2")
 if(!$Live){
  $sql+=@"
 SELECT 'preserved-actors',COUNT(*) FROM creature_template a JOIN saved_creature_template b USING(entry) WHERE a.npcflag<>b.npcflag OR a.unit_flags<>b.unit_flags OR a.faction<>b.faction OR (a.entry=107840 AND (a.AIName<>b.AIName OR a.ScriptName<>b.ScriptName));
 SELECT 'preserved-next-objectives',COUNT(*) FROM quest_objectives a JOIN saved_quest_objectives b USING(ID) WHERE a.QuestID IN(38318,38613) AND (a.Type<>b.Type OR a.ObjectID<>b.ObjectID OR a.Flags<>b.Flags);
-SELECT 'preserved-quest-flags',COUNT(*) FROM quest_template a JOIN saved_quest_template b USING(ID) WHERE a.Flags<>b.Flags OR a.FlagsEx<>b.FlagsEx OR a.RewardNextQuest<>b.RewardNextQuest;
+SELECT 'preserved-quest-flags',COUNT(*) FROM quest_template a JOIN saved_quest_template b USING(ID) WHERE a.Flags<>b.Flags OR a.FlagsEx<>b.FlagsEx OR a.RewardNextQuest<>b.RewardNextQuest OR (a.ID IN(38318,38613) AND a.StartScript<>b.StartScript);
 UPDATE quest_objectives SET Type=1,ObjectID=999,Flags=4 WHERE ID=277684;
 UPDATE creature_template SET ScriptName='custom' WHERE entry=91222;
 UPDATE quest_template_addon SET SpecialFlags=9 WHERE ID=38612;

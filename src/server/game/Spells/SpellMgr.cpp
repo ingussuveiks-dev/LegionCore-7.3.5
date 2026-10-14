@@ -3630,6 +3630,13 @@ void SpellMgr::LoadSpellCustomAttr()
                     effect->MiscValue = 127;
     }
 
+    // Grapple points use neutral faction190 and protected unit flags. Native
+    //182478's ally-only target fails before its point/launcher/range checks.
+    ApplySpellFix({182478}, [](SpellInfo* spellInfo)
+    {
+        spellInfo->Effects[EFFECT_0]->TargetA = TARGET_UNIT_TARGET_ANY;
+    });
+
     // The New Blood: the rescue interaction targets protected council NPCs.
     // Native 195039 is friendly-targeted but lacks this core's assist exception;
     // without it spellclick fails on IMMUNE_TO_PC before reaching the rescue AI.
