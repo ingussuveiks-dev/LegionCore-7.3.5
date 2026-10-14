@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    39593
+  ],
+  "status": "Code/data repairs, native-handler regressions and canonical Release startup complete; client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "The four original item objectives are 279722/128493/slot3, 279724/128495/slot1, 279725/128496/slot2 and 279726/128497/slot4, each amount 1. Preserve these non-contiguous native slots and all quest rows; neither kills nor GO dummy credit replaces real item collection.",
+    "All four live chest templates 243819/243820/243822/243823 had Data1=0, while their gameobject_loot_template rows already supplied the matching fragments at 100 percent, quest-required, LootMode=1. GameObjectTemplate::GetLootId returns chest.chestLoot (Data1), and Player::SendLoot only fills loot when this ID is nonzero. The extracted production path reproduces empty loot with zero and the matching item after guarded Data1=entry repair. Keep native lock 1691, models, flags, scale, restock/consumable/personal-loot settings, positions and existing loot rows.",
+    "Production sparse ItemSparse loading confirms all four items have MaxCount=0, Stackable=1, Bonding=4 and LimitCategory=0. Quest eligibility is handled by real HasQuestForItem, rather than by an invented unique-item restriction. Progress changes through the native item add/remove/acceptance adjustment handlers; CanRewardQuest still requires the items in bags even when bank-inclusive acceptance adjustment fills a slot.",
+    "The old full Yotnar spawn 338528/96257 used phase 6754, whose only current condition is rewarding 39592. This exposes the physical body before fragment return and fails to provide the next NPC when taking the valid direct 39590 -> 39593 alternative without rewarding Will. Original next quest 39594 thanks the player for making Yotnar whole again and explicitly requires rewarded 39593. Preserve the existing predecessor alternatives instead of imposing a new archive prerequisite.",
+    "Phase 6754 also contains Nighteyes 106897/12864348, a separate quest-41215 actor. Preserve that spawn, definition and 39592 condition. Move only the exact known Yotnar spawn/coordinates from 6754 to supported native phase 6665 (Flags=0), with new zone-7541 definition 650 and source-23 rewarded-39593 condition. Before deployment, phase 6665 was absent from live creature/GO/phase-definition use and spell_phase; native PhaseXPhaseGroup and aura-261/326 misc-value fields do not reference it. Custom loot IDs, spawn phases, phase definitions and conditions are guarded.",
+    "The actual RewardQuest item-consumption branch removes the four requirements; its native 100-ms quest-phase notification marks the new condition as related. The extracted Condition::QUESTREWARDED, PhaseMgr::CheckDefinition/NeedsPhaseUpdateWithData/NotifyConditionChanged/Recalculate/Update handlers leave the full body hidden at incomplete/complete-but-unrewarded status and request refreshed phase visibility after reward. This enables physical next giver 96257 and native 39594 predecessor gate for both factions and predecessor alternatives, including re-entry/recalculation.",
+    "Keep Yotnar Head 243836/114802 in phase 6532 as the native fragment offer/hand-in and existing archive/side-quest giver. It remains available for unfinished parallel archive quests; no new automatic next-quest popup or assembly spell is invented. Restored Yotnar keeps native model 25217, questgiver flag 2 and SmartAI/39597 behavior. Its template has no configured passive spell/state visual/animation kit, and no matching creature/template addon supplies one.",
+    "Eight canonical GridMap/VMAP anchors pass: four fragment GOs, head hand-in, full Yotnar, Havi and preserved Nighteyes. Native arm/foot GO pivots may sit about 1.25 metres above the local floor; models/scale and coordinates are preserved. No static position is moved."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimWatcher.ps1",
+      "result": "PASS",
+      "evidence": ".codex/watcher-tests.log",
+      "details": "Compiles unchanged GameObjectTemplate::GetLootId, regular Player::SendLoot fill branch, LootTemplate::Process, Player::HasQuestForItem/ItemAddedQuestCheck/ItemRemovedQuestCheck/AdjustQuestReqItemCount/CanCompleteQuest/CanRewardQuest/SatisfyQuestPreviousQuest/KilledMonsterCredit, reward item-case/phase callback and native condition/phase handlers. Fake storage/session/map/group/template/loot services. Exercises empty legacy chests versus four matching item rows; real item eligibility/counts/slots, no kill progress, duplicate pickup without duplicate completion, loss/recollection, unrelated items, abandonment/reacceptance with retained inventory, separate players, bank-only reward rejection, item consumption, reward-only body phase and next offer for both factions and both predecessor alternatives. Full lock-cast, network loot/storage/reward protocol and visible rendering are not simulated."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWatcherData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshots seed four zero-loot templates/old Yotnar phase, apply migration twice, check exact objectives/loot/physical offer/hand-in/next relationships and isolated phase; preserve Nighteyes/shared phase, head, flags/models/personal settings/positions and custom loot/spawn/condition/definition states. No accept/reward script shortcuts are present for 39593. Live post-deployment state checked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWatcherNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-watcher-native-2026-10-14.json",
+      "details": "Original TDB735 four item IDs/amounts/slots, restoration/next-quest descriptions, native GO lock/models/bounds, Yotnar display/model data, supported phase and native group/phase-aura collision checks with hashes. Original TDB also leaves chest Data1 zero; the loot link is a server configuration repair, not claimed as native client data."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWatcherItemsNative.ps1",
+      "result": "PASS",
+      "evidence": ".codex/watcher-items.log",
+      "details": "Production DB2Storage reads actual sparse ItemSparse records."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWatcherGeometry.ps1",
+      "result": "PASS: 8 anchors, 0 failures",
+      "evidence": ".codex/watcher-geometry.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimWill.ps1 and Test-StormheimWillData.ps1 -Live",
+      "result": "PASS",
+      "evidence": ".codex/watcher-prior-will.log"
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/watcher-build.log",
+      "details": "Completed targets in canonical runtime. This task changes SQL/data only, without new server C++ handlers."
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Checking loot rows alone hid the executable failure: four Data1=0 chest templates selected no loot. The production GetLootId/regular-loot path reproduces the failure and corrected collection.",
+    "The shared 6754 phase condition initially looked suitable for a direct reward-gate change, but inspection found Nighteyes and quest 41215 using the same phase. The shared phase was preserved and only Yotnar was isolated. Original 39594 text and real predecessor alternatives establish why reward of 39593, not 39592, is the correct body/next-giver gate.",
+    "Early fixture compiler errors involved Group service methods, WorldObject::ToPlayer and passing a wrapper as Player this. The regular loot branch now executes as an actual fixture Player method, with native source unchanged. Native phase collision validation was strengthened to inspect both misc-value fields for both 261/326 aura types, reflecting RegisterPhasingAuraEffect using miscValueB for PhaseID; phase 6665 remains collision-free in these data."
+  ],
+  "client_checks_and_limits": [
+    "No WoW client gameplay was performed, as requested. Confirm both faction offers, fragment sparkle/interaction flags/cast bars/pose and real loot-to-bag UI, failed/full-bag pickup, shared chest/group behavior and restock, actual item loss/retry/re-entry, all four counts, head hand-in/item consumption, body phase transition after reward/relog, preservation of Nighteyes, and the next 39594 offer.",
+    "The restoration is a server phase appearance of the existing NPC model. An exact retail limb-assembly animation/conversation is not established or implemented. The head remains for other parallel quests; inspect its visual overlap with the full body in the client. Source/data/geometry/session stubs and startup do not certify these visuals or client protocol behavior.",
+    "The compiled canonical runtime includes the pre-existing uncommitted new_blood.cpp changes. Their files/audit/migration are untouched and excluded from this commit; this task does not apply or certify that migration."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_07_stormheim_watcher.sql",
+    "sha1": "83C87C62D859E2A966440B7C86063F802E686D63",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-watcher\\20261014-115322",
+    "state": "RELEASED"
+  },
+  "next": "39594 A Trial of Might: archive activation/record and Yotnar challenge progression.",
+  "runtime_evidence": {
+    "source_revision": "f39363fa3b58e32e0b04445014fbc0b1c1f98c93",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "server_processes_after_validation": "stopped",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-watcher/startup-20261014-115323",
+      "ready": true,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0
+    },
+    "sha256": {
+      "sql/updates/world/2026_10_14_07_stormheim_watcher.sql": "ddff38abbc4b28061a80d4e2db7948aca63e6c5b5a90fc17c012daaafbeec58f",
+      "build-extractors/bin/Release/worldserver.exe": "2416d5e68356227732091fb759da84009865662176bde1e30ea7e8011d84702a",
+      "build-extractors/bin/Release/bnetserver.exe": "e5c7291180f9cf6f49e6dc3f06ac5ef2c51473bbd38acc52ba15d38a7460daf3"
+    },
+    "preexisting_compiled_source_sha256": {
+      "src/server/scripts/Legion/new_blood.cpp": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325"
+    }
+  }
+}
