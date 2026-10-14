@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    39592
+  ],
+  "status": "Code/data repair and production-handler regressions complete; client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "Original TDB735 objective 279721 is Type=2, GO 243802, amount 1, storage slot 3. The live row was a surrogate Type=0/NPC 96144. Restore only that exact known row without changing ID or persistent slot.",
+    "The initial addon had SpecialFlags=2 (manual exploration), and quest_template.StartScript=39592 invoked four identical quest_start_scripts rows (delay 0, command 7, datalong 39592, distance and coordinates zero). Production MapScripts dispatches AreaExploredOrEventHappens, which marks the quest complete immediately. The extracted unchanged handlers demonstrate that it becomes rewardable at zero record objective data. Remove only these four exact placeholder rows; detach only an empty start list; clear only flag-2 state without a remaining custom exploration action. Custom start actions/hooks/flags are protected.",
+    "Keep the original Yotnar Head 243836 offer/hand-in, normal quest type, positive predecessor alternatives (39590 explicit and 39591 incoming next link), and NextQuestID=39593. No speculative serial requirement or race/faction gate is added.",
+    "Unpowered GO 243814 activation now creates a private console 96139 only from a validated synchronous GO call. Guard all three GameObjectScript/GossipHello/GossipUse packet paths for quest/alive/map/zone/phase/distance/LOS/visibility/spawn/flags/scope. Exact owner console/powered GO GUIDs and quest acceptance tokens reject duplicate, foreign and stale interactions.",
+    "Retain the installed SmartAI charging sequence: talk at 1.5 seconds, two raiders at 4, first raider dialogue at 6, 50-percent message at 36, three more raiders at 41, second dialogue at 43, 75-percent message at 88, Warmonger at 93. Preserve native nonzero pauses after delayed updates. Coordinates come from the installed event/SmartAI/spell target rows. Five-minute console and two-minute enemy lifetimes remain; a missing live defender aborts for retry.",
+    "Private 96129/108263 enemies retain native SmartAI combat spells and template/scaling/loot data, with explicit AttackStart on the owning player. Track all six exact summon GUIDs. Owned player/pet killing blows remove only the corresponding live roster member, once. Timers and spawn counts do not grant credit. Power becomes accessible after the Warmonger and five raiders are actually defeated, including boss-first ordering. This adds an explicit complete-defense prerequisite rather than certifying the exact retail charging/combat choreography; that remains client-unverified.",
+    "The previous Warmonger death invoker-cast started the record immediately and could make a pet its owner. Defeat now enables private powered GO 243802 at the real unpowered GO position. The owner must click it; native 190707 summons controller 96144 and triggers 190708 to summon exact dragon 96067. Public unpowered GO hiding/restoration is per owner. Missing dragon or failed casting/creation cancels for retry.",
+    "Require successful owner-copy 233562/shader 190549 casts and successful creation of conversations 773/774/775 (197658/197659/197660) at 2/7/13 seconds. Wait for their complete production server lifetimes, including the 5000-ms tail: native actor durations 3150/3050/2200 yield final credit no earlier than 20200 ms with timely updates. The old controller credited at 18000 ms independently of conversation success. Credit uses actual Player::KillCreditGO and original storage slot.",
+    "The exact scoped dragon receives the native channel/release SetData actions at 7/13 seconds, invoking unchanged SmartAI spells 190752/190758. It must remain alive, present, in phase and in scope until final credit, including after the third conversation begins. Source proofs and DB2 effects/visual kits/attachments/model/animation identifiers do not establish visible playback.",
+    "Private helper lights reuse the two installed archive positions. Captured original quest scope expires all actors/helpers/powered GO/conversations on failure, abandonment, reacceptance, death, logout/map transfer, phase/range loss or timeout; old cleanup cannot cancel a fresh quest acceptance. Unarmed uses of the four bound entries, including shared static raiders/later scenarios, delegate to their original SmartAI.",
+    "Eight actual canonical GridMap/VMAP anchors pass: unpowered console, invisible controller, three enemy positions, player-copy/dragon spell destinations and archive light. No static spawn was moved for this quest. Invisible/hologram anchors are natively elevated by about 1.4 units; actual pose, animation and collision/rendering remain client checks."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimWill.ps1",
+      "result": "PASS",
+      "evidence": ".codex/will-tests.log",
+      "details": "Complete extracted production script plus unchanged Player::CanCompleteQuest, CanRewardQuest, SatisfyQuestPreviousQuest, KilledMonsterCredit, KillCreditGO, QuestObjectiveSatisfy, AddQuestDelayedEvent, AreaExploredOrEventHappens and native MapScripts SCRIPT_COMMAND_QUEST_EXPLORED dispatch. Fake map/summon/casts/AI combat/inventory/scope/conversation services. Starts with no enemies/controller; exercises exact timed 2+3 waves, six actual owned death callbacks including pet and boss-first, access click, exact dragon lifetime and three created records, original slot and real GO credit, both factions, once-only packets, failures, retries, delayed updates, missing/foreign kills, all three packet paths, reaccept/map/logout/death/phase/range, independent players and unarmed delegation. Also reproduces the old zero-progress rewardable acceptance shortcut using real legacy handlers."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWillData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshots seed the original surrogate/flag/four duplicate start actions, apply migration twice, check original objective/flag/hook restoration, native wave schedule/counts, active 98..110 scaling, physical offer/hand-in and bindings; preserve custom scripts/objectives/flags/start hooks and unrelated Valor/next-quest rows. Live state checked after deployment."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWillNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-will-native-2026-10-14.json",
+      "details": "Original archive and installed canonical DB2 spell effects/native copy+dragon summon/conversation IDs/locks/properties, dragon display 67133/model data, visual child/fallback/event/kit/attachment/effect models and animation fields, with hashes. No native quest-complete effect for 39592 was found. Original TDB unpowered GO Data2=0; the live event/charging schedule is an existing server addition, not claimed as original archive data."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWillGeometry.ps1",
+      "result": "PASS: 8 anchors, 0 failures",
+      "evidence": ".codex/will-geometry.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimValor.ps1 and Test-StormheimValorData.ps1 -Live",
+      "result": "PASS",
+      "evidence": ".codex/will-prior-valor.log"
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/will-build-complete.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "First startup (111542) reached readiness but reported 310 DBErrors bytes and 290 stderr bytes: quest_start_scripts command 7 restored the exploration flag. A later pre-fix startup (111847) retained the same warning. These were not clean validation runs. Inspection found four identical acceptance-completion rows and StartScript=39592; the full legacy executable handler regression reproduced zero-objective rewardability. Guarded removal/detachment resolved the load warning. Final startup has zero DBErrors/stderr.",
+    "Initial pure data correction of SpecialFlags=2 was insufficient because script loading reintroduced it. The final migration handles both the source hook and flag, with custom exploration-hook guards. This evidence is retained despite subsequent successful checks.",
+    "Early fixture compile errors were pointer-to-pointer GetAI and missing legacy packet/type/distance/save-state services; these fake services were corrected without changing native extracted handlers. An initial GO-failure assertion expected immediate console.stopped before its next update; tests now execute the cancellation/update lifecycle.",
+    "Source review found that checking the dragon only at conversation creation could still grant credit if it disappeared during the last lifetime. The controller now checks it on every update through final credit; a regression removes it after the third conversation and confirms no completion."
+  ],
+  "client_checks_and_limits": [
+    "No WoW client gameplay was performed, as requested. Before client verification, confirm both faction offers and initial incomplete status, console flags/cast bars/pose, lights, 2+3 attackers and Warmonger timing/health/combat/player-or-pet last hits, failure/retry and independent users, powered-console replacement/click, copied player/dragon appearance, native channel/release animations, three recorded voices/lines and final 1/1/reward UI.",
+    "The full defense prerequisite is a deliberate server progression guard. Native charging timings/positions and abilities are retained, but exact retail pacing, combat balance, audio/hologram effects and client packet/rendering behavior are not certified by source simulations, SQL, static collision data or startup.",
+    "The compiled runtime also contains pre-existing uncommitted new_blood.cpp changes. Their files/audit/migration remain untouched and excluded from this commit; this task neither applies nor certifies that migration."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "migration": "2026_10_14_06_stormheim_will.sql",
+    "sha1": "15C2D4322BA93DE10C7A9EB8FF5EFDE586040547",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-will\\20261014-112028",
+    "initial_backup": ".codex/backups/stormheim-will/20261014-111542",
+    "original_start_script_backup": ".codex/backups/stormheim-will/20261014-112028"
+  },
+  "next": "39593 The Shattered Watcher: inspect four native fragment objectives and their collection/hand-in lifecycle.",
+  "runtime_evidence": {
+    "source_revision": "ff4e64e0069953b34d462d7a21aa38828071a674",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "server_processes_after_validation": "stopped",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-will/startup-20261014-112029",
+      "ready": true,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0
+    },
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_will.cpp": "be6c422917ee3574444e2a25f589d86b3b322c0ac524952ece5059ba243bc016",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "de3970b084cec75995625f21d81f946fb0777d70d1935077ad401e969b2127ab",
+      "sql/updates/world/2026_10_14_06_stormheim_will.sql": "3b3a1c9fccc24e9671d086155ef6a26a2ee4c7ae0f4e0f48af37327972a08210",
+      "build-extractors/bin/Release/worldserver.exe": "5216bf3231b8b21a509071f9b5856ead724606d430a7bbd4fa0757afa3cde8fc",
+      "build-extractors/bin/Release/bnetserver.exe": "bbcf6094ef419d02d0859960d82f295b90c2298d085776d1a059c0dff7502ab1"
+    },
+    "preexisting_compiled_source_sha256": {
+      "src/server/scripts/Legion/new_blood.cpp": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325"
+    }
+  }
+}
