@@ -1,0 +1,26 @@
+{
+  "quest": 42128,
+  "observed": [
+    "User selected Demonology, then accepted all offered quests. Character has active Ritual Reagents 42128 and Finding the Scepter 43100; rewarded 40684, 40688 and prematurely available 43984.",
+    "Initial screenshot was beside Ratstallion and Crate of Ratstallion Harnesses in the Underbelly; those are not reagent objectives.",
+    "User subsequently reached Aged Snowplum Brandy in the Legerdemain Lounge. The object's quest tooltip was correct but opening it produced empty loot; Stag Blood Sample was already credited."
+  ],
+  "root_cause": "All three reagent chest templates 249742, 249744 and 249748 had Data1 (chestLoot) zero. Their guaranteed quest-only loot rows already existed under their own entry IDs, but native GameObjectTemplate::GetLootId returned zero and Player::SendLoot skipped FillLoot. A questItem1 field is not a loot source link.",
+  "repair": "Migration 2026_10_14_09_ritual_reagents_loot_links.sql links only the three type-3 objects with zero Data1 to their existing loot. Preserves loot rows, quest-only item restrictions, phases, personal flags, visuals and nonzero custom links. No character edits or quest reset.",
+  "items": [
+    {"object":249742,"name":"Freshly Dug Grave","item":136983},
+    {"object":249744,"name":"Can of Overheated Oil","item":136985},
+    {"object":249748,"name":"Aged Snowplum Brandy","item":136987}
+  ],
+  "reference": "https://www.wowhead.com/quest=42128/ritual-reagents",
+  "validation": {
+    "regression": "PASS: temporary SQL tables reproduce all three zero links; replay migration twice; join each native-selected loot source to its actual quest 42128 item objective and guaranteed QuestRequired loot row. Checks unrelated New Blood tome and original flags, quest, personal-loot and interaction settings preserved. Compiles extracted production GameObjectTemplate::GetLootId with these resolved rows.",
+    "deployment": "PASS: applied migration SHA1 937BE3B09D2C32FB0BE4F9EC307397992D3AEB27; backed up relevant template and loot rows under .codex/backups/ritual-reagents-loot/20261014-161920. Readback confirms all three links and 100% quest-only item rows.",
+    "startup": "PASS: after user stopped worldserver, canonical Release runtime reached ready and shut down gracefully with exit 0. No C++ executable change for this SQL repair. Logs under build-extractors/runtime-test/ritual-reagents-loot/startup.",
+    "client": "Pending: open and loot all three objects, receive each objective once, return to ritual Calydus, and advance to Looking into the Darkness. Stag interaction was observed credited by user; the rest of the artifact chain and encounter visuals are not verified by this loot repair."
+  },
+  "separate_observations": [
+    "Artifact-selection order still exposes 43984 before the intended campaign stage. This migration does not change acquisition branches or the user's accepted quests.",
+    "Ratstallion display NPC 110708 has no click flag; crate NPC 110743 already has spellclick 220218. That separate Underbelly interaction requires its own diagnosis, not quest loot changes."
+  ]
+}
