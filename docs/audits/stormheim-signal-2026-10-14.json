@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-14",
+  "scope": "Code/data validation only; no WoW client gameplay, as requested. Signal Boost 38060 and A Grim Trophy 38362.",
+  "source_base_revision": "89929a3a1bfe569cd804068fafe3a3f0d3f916a9",
+  "result": {
+    "38060": "Repaired validated private defense encounter and actual help-arrival/boss-surrender progression; offline production/data/geometry/native and Release startup validation. Client behavior still pending.",
+    "38362": "No repair needed in this scope. Existing real head drop, collection/removal/hand-in gates and subsequent trial prerequisites pass code/data checks."
+  },
+  "confirmed_findings": [
+    "Propeller 240235 is a native type-10 goober: Lock 1690, quest 38060, Data2/event 44654 and Data10/spell 0. GameObject::Use executes the event before checking active quest; event scripts grant marker 92475 before attempting its summon. A failed spawn could leave a start marker without an encounter.",
+    "The installed controller runs four bat-rider spawns at 6/11/16/21 seconds, then help after another 60 seconds. Its Dreadwing 92547 reaches waypoint 16 and casts 210262. Installed SpellEffect proves that spell is a self dummy with no helper summon; no matching helper summons or spell-script binding complete the Rogers/Overspark/Vethir bridge.",
+    "Original Vethir health-percent SmartAI polling grants monster marker 90907 to players within 40 yards. It is not a before-damage surrender and can be skipped by a lethal hit. Successful surrender must acknowledge the exact encounter boss and owner, including the owner of a pet.",
+    "Ground propeller 127609 is at Z=526.777. Exact elevated copy 114500 has the same XY/phase at Z=536.777; native map/VMAP ground at its XY is 526.618. Only the matching elevated duplicate is removed, with phase, position, orientation, spawnMask, state and personal_size guards.",
+    "Thane Wildsky 91571 has an ordinary map-1220 Stormheim spawn 289127, real loot ID 91571, valid 98..110 scaling and head quest item 122746. Quest-required head row retains Chance=98.9921, LootMode=0, GroupId=0 and count 1. LootTemplate::Process accepts zero mask for this ordinary ungrouped row.",
+    "The actual sparse ItemSparse record, read by the production DB2 loader, has MaxCount=0, Stackable=1, Bonding=4, LimitCategory=0. QuestData marks an item objective as DELIVER at load despite addon SpecialFlags=0. Real ItemAddedQuestCheck/ItemRemovedQuestCheck update 38362; real CanRewardQuest requires the head in carried inventory.",
+    "38060 has the original Rogers enders 90749/92557; 38362 has Nathanos 91158 as starter/ender. The Ancient Trials 38210/38459 are reward-gated by those quests and offered by Muninn 97306/Huginn 97305. Obsolete/alternate 38308 also has PrevQuestID=38362 but no starter/ender; no automatic route to it was invented."
+  ],
+  "implementation": [
+    "A scoped propeller handler checks live/spawned object, Alliance active quest, real charged pack, range, phase, visibility, LOS, movement/combat restrictions and repeat completion. A successful controller initialization alone gives marker 92475. Existing native GO event rows are preserved; the scoped handler consumes the normal interaction and emits the native custom animation only after a valid summon.",
+    "Controller and child actors share the exact owner and phase plus personal visibility. The quest-acceptance lifetime token rejects abandon/reaccept and stale sessions; death, logout/map/phase/range changes, missing actors, flight timeout, boss evade and ten-minute attempt timeout clean up summons and permit retry. Saved start credit is capped and never substitutes for defense success.",
+    "Four native bat-rider entries/coordinates/timing/120-second lifetime and Dreadwing 17-point installed flight route/180-second lifetime are preserved. Help actors are placed beside the controller on verified ground after movement callback 16, then speak original 4-second Rogers/Overspark dialogue before Vethir spawns. Help spawn failure aborts and remains retryable. Flight spawning/time passage/unrelated movement never grants defense.",
+    "Owned Vethir compares final normalized damage (same float division as DealDamage, which follows creature AI) with GetHealth(attacker)/GetMaxHealth(attacker). Reaching 50 percent or an otherwise lethal player/pet strike zeros damage, stops combat, becomes nonattackable/friendly and acknowledges the exact controller boss once. It flies along the original retreat endpoint. Owned combat actors reject attacks/credit from unrelated players. Later-map/unowned actors delegate to SmartAI.",
+    "Personal Rogers stays available after completion until hand-in/cleanup. The native quest end script still removes charged pack on reward. The player hook restores the charged pack for an active/completed Signal Boost when 38058 is rewarded, including login, without modifying boost/mover/pet/warlock paths.",
+    "SQL only binds six actor templates/one GO and removes the exact elevated duplicate. It preserves existing custom script bindings, other quests/actors, native objective indexes/sequence/flags, event rows, dialogue and trophy loot."
+  ],
+  "verification": [
+    "Test-StormheimSignal.ps1 compiles the entire extracted production controller/actor/GO/player code and actual AddQuestDelayedEvent, CanCompleteQuest, CanRewardQuest, SatisfyQuestPreviousQuest, QuestObjectiveSatisfy, KilledMonsterCredit, ItemAddedQuestCheck, ItemRemovedQuestCheck and LootTemplate::Process handlers. Covers rejected interactions, failed controller/wave/help/boss summons, exact real arrival, both-player isolation, scaled/pet/threshold surrender once, retry/token/cleanup/timeouts, later-map delegation, pack recovery, real head collection/removal/recollection, carried-versus-bank hand-in and reward-gated followups. World, AI service, motion, network, RNG and inventory are stubbed; this is not in-game combat/loot verification.",
+    "Test-StormheimSignalData.ps1 applies the real migration twice to temporary snapshots, validates bindings, attackable boss/scaling, native objectives, path, exact duplicate removal, real loot/spawn/hand-in/next trial graph and custom/unrelated preservation. MySQL temporary self-join limitation redirects only the unchanged original alias to its identical saved snapshot. Live post-deployment validation passes.",
+    "Test-StormheimSignalGeometry.ps1 uses production GridMap/VMAP against canonical extracted runtime data: all 17 flight segments pass 3303 terrain samples plus model LOS across a two-metre corridor; four ground/controller/helper/propeller placements are within one metre of terrain/model floor. Direct point movement preserves the installed airborne route. Bat/Vethir approach/retreat client collision/rendering is not certified by this probe.",
+    "Test-StormheimSignalNative.py reads original TDB735 objectives/GO/endpoints and installed native DB2 without overlays, tracing actual spell effects/misc/targets, signal and retained combat visual events/kits/model attachments/models, GO model/lock and item fingerprint. The separate production sparse-record probe verifies the physical quest item. Read-only hotfix queries found no relevant effect/misc overrides.",
+    "Existing Stormheim followup production and live data regressions pass, including retaining the charged pack during 38060 and native rescue/clue routes. Canonical Release worldserver and bnetserver are built in build-extractors/bin/Release; fresh worldserver readiness and clean shutdown are recorded below."
+  ],
+  "rejected_hypotheses_and_observed_failures": [
+    "44654 initially appeared to be an unrelated spell, but the actual goober layout and GameObject::Use establish it is the event field; no spell-ID substitution was made.",
+    "The timed-list last row stores event_type=6, but SetScript9 converts timed-list events according to timerType=2 to SMART_EVENT_UPDATE. That field is not by itself a broken death trigger. MovementInform event type parameter zero is also a wildcard, not proof of a broken MovePoint callback.",
+    "LootMode=0 and addon SpecialFlags=0 do not invalidate the trophy. Actual ordinary loot filtering and quest loader/item handlers establish valid behavior; chance and mode are preserved. Native trophy objective Flags2=1 differs from live zero; no speculative change was made because no observed core failure depended on it.",
+    "Initial native item inspection using the regular WDC1 Python reader failed because ItemSparse uses sparse records. The native item check now uses the actual production DB2 reader; the failed regular-reader attempt is not treated as item evidence.",
+    "Initial extracted test compilation required C++20 for production explicit-this captures and additional inventory/loot service stubs. These fixture issues were repaired before accepting test results; extracted production bodies remain unchanged."
+  ],
+  "client_checks_and_limits": [
+    "No client gameplay performed. Check actual propeller flag/use/open-lock animation, charged pack/signal rendering, native bat/Vethir spells and balance, personal visibility with two players, actual pet/group combat and loot, real Dreadwing flight/helper dialogues, Vethir retreat, quest UI/choice rewards, Nathanos/Rogers hand-in and abandonment/re-entry before calling whole quests client-verified.",
+    "This supplies executable code progression based on installed timings/entries/path/dialogue and native objectives. Exact retail choreography, helper dismount/transport models, native periodic Distress Signal/area-trigger semantics and all ambient variants remain unverified. Spell 183439 is used for its traced native visual; the periodic 183266 references absent 183265 effects in the inspected native set and is not used as a substitute completion trigger.",
+    "Runtime build includes pre-existing uncommitted New Blood source changes, which were present before this task. Their files, audit and migration are preserved and excluded from this Stormheim commit; this task does not certify their behavior or apply their migration."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_03_stormheim_signal.sql",
+    "sha1": "5F6DBB41929DD69EFA3A1290CB5EF57E73D62EE4",
+    "backup": ".codex/backups/stormheim-signal/20261014-082813",
+    "state": "RELEASED"
+  },
+  "next": "The Ancient Trials: Alliance 38210 (Muninn) and Horde 38459 (Huginn), then their shared 38331 chain. Check real interaction, travel/trial transition and reward/next-stage graph.",
+  "runtime_evidence": {
+    "source_revision": "89929a3a1bfe569cd804068fafe3a3f0d3f916a9",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-signal/startup-20261014-083952",
+      "ready": true,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0,
+      "exit_code": 0
+    },
+    "previous_smoke_success": "build-extractors/runtime-test/stormheim-signal/startup-20261014-082846",
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_signal.cpp": "6f8d76f0c8d105bff2699c262465a5ac4ecb72c7e8bce91454dd4e306ceff3fa",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "265c3c24dc5cc3338464093e95b7d9445763d9dd4586200c5563aee720c8674c",
+      "sql/updates/world/2026_10_14_03_stormheim_signal.sql": "7d599e4891f7e80fe3cb0e66adfb83313ad93739df0e965ffd51cb18d6ad7d2e",
+      "build-extractors/bin/Release/worldserver.exe": "b80fe3f60a83a8a9f864b48103aeaa18cdd0fd945bd07ef4ce5f5f4bf358b32d",
+      "build-extractors/bin/Release/bnetserver.exe": "e75d75ed1b4aab63385ec1aeb13a1d3f2a74032b6b129ee7097b2a0881ac2b8c"
+    },
+    "preexisting_compiled_source_sha256": {
+      "src/server/scripts/Legion/new_blood.cpp": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325"
+    }
+  }
+}
