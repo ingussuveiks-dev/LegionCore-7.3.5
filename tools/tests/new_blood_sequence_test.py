@@ -94,12 +94,10 @@ for step in range(6):
  state=base|{'step':step}
  assert meets(17,0,199336,state)==(step==1)
  # Archive start is checked by the compiled production lifecycle test.
- assert meets(22,6,99178,state)==(step==5)
  assert meets(22,1,99627,state)==(step==5)
 for scenario in [998,1011,0]:
  state=base|{'scenario':scenario,'step':5}
- for e,g in [(99178,6),(99627,1)]:assert not meets(22,g,e,state)
-assert not meets(22,6,99178,base|{'step':5,'objectsNear':[]})
+ assert not meets(22,1,99627,state)
 for actor in [98775,98783,98793]:
  assert meets(18,actor,195039,base|{'step':2})
  assert not meets(18,actor,195039,base|{'step':2,'quest':0})
@@ -114,7 +112,7 @@ assert meets(22,26,99178,base|{'step':4,'items':{132512:1}})
 assert not meets(22,26,99178,base|{'step':4,'items':{132512:1},'aliveNear':[99516]})
 assert next(r for r in rows if r['kind']=='book')['loot']==245924
 assert (245924,1,0) not in scripts # opening loot cannot start the chase
-assert script(99178,5)['event']==60 and script(99178,5)['phase']==1
+assert (99178,0,5) not in scripts and not any(k[0]==9917802 for k in scripts)
 assert script(9917801,4,9)['action']==22 and script(9917801,4,9)['a1']==1
 assert script(245234,0,1)['flags']&1
 assert script(245233,0,1)['action']==23 and script(245233,1,1)['phase']==2

@@ -302,8 +302,76 @@ struct npc_new_blood_jagganoth : SmartAI
     }
 };
 
+// The archive's persistent Calydus owns the transition from actual tome credit.
+// Do not gate it on a transient SmartAI phase set by the Nelach dialogue chain.
+struct npc_new_blood_archive_guide : SmartAI
+{
+    explicit npc_new_blood_archive_guide(Creature* creature) : SmartAI(creature) { }
+    uint32 timer = 1000;
+    uint8 action = 0;
+    bool started = false;
+
+    void UpdateAI(uint32 diff) override
+    {
+        Scenario* progress = me->GetMapId() == 1522 && me->GetDBTableGUIDLow() == 369458
+            ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        if (progress && progress->GetScenarioId() == 962 && progress->GetCurrentStep() == 5 && action < 4)
+        {
+            bool eligible = false;
+            me->GetMap()->ApplyOnEveryPlayer([&eligible](Player* player)
+            {
+                if (player->IsAlive() && player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE &&
+                    player->GetDistance(3093.55f, 970.747f, 257.738f) < 60.0f)
+                    eligible = true;
+            });
+            if (eligible)
+            {
+                if (!started)
+                {
+                    started = true;
+                    me->setActive(true);
+                    TC_LOG_INFO("scripts.ai", "New Blood: tome credited; archive guide starting confrontation (instance %u)", me->GetInstanceId());
+                }
+                if (timer > diff)
+                    timer -= diff;
+                else if (action < 3)
+                {
+                    static uint32 const spells[] = {199066, 199068, 199069};
+                    static uint32 const delays[] = {7000, 4000, 2000};
+                    uint32 spell = spells[action];
+                    me->GetMap()->ApplyOnEveryPlayer([spell](Player* player)
+                    {
+                        if (player->IsAlive() && player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+                        {
+                            SpellCastResult result = player->CastSpell(player, spell, true);
+                            TC_LOG_INFO("scripts.ai", "New Blood: tome conversation %u result %u (instance %u)", spell, uint32(result), player->GetInstanceId());
+                        }
+                    });
+                    timer = delays[action++];
+                }
+                else
+                {
+                    // Keep the real guide as summoner for Jagganoth's exact-GUID handoff.
+                    if (me->SummonCreature(98831, 3091.58f, 946.882f, 257.464f, 1.4768f, TEMPSUMMON_MANUAL_DESPAWN))
+                    {
+                        ++action;
+                        TC_LOG_INFO("scripts.ai", "New Blood: archive Jagganoth summoned (instance %u)", me->GetInstanceId());
+                    }
+                    else
+                    {
+                        timer = 1000;
+                        TC_LOG_ERROR("scripts.ai", "New Blood: archive Jagganoth summon failed; retrying (instance %u)", me->GetInstanceId());
+                    }
+                }
+            }
+        }
+        SmartAI::UpdateAI(diff);
+    }
+};
+
 void AddSC_new_blood()
 {
     RegisterCreatureAI(npc_new_blood_prisoner);
     RegisterCreatureAI(npc_new_blood_jagganoth);
+    RegisterCreatureAI(npc_new_blood_archive_guide);
 }

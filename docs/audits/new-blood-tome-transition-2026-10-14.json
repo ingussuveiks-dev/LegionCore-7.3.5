@@ -1,0 +1,36 @@
+{
+    "quest":  40729,
+    "scenario":  962,
+    "client_failure":  "User reached and looted the tome, but archive Jagganoth did not appear and escape never started.",
+    "evidence":  [
+                     "Offline Maiko inventory contains item 132512 (item GUID 182). Saved position is map 1522, instance 1, 3095.5 / 974.854 / 257.738.",
+                     "2026-10-14 gameplay Server.log contains no New Blood archive confrontation log; last attempt ended with a clean shutdown at 07:35:46.",
+                     "The previous production controller test started with an already-summoned Jagganoth. It did not execute the upstream book-to-summon transition.",
+                     "Old Calydus event 5 required SmartAI phase 1, which depended on Nelach\u0027s death link and a timed dialogue list. Scenario tome credit did not independently start this transition."
+                 ],
+    "limits":  [
+                   "No live AI phase trace was captured before the user stopped the server. The exact failed link in this attempt is not established.",
+                   "Full client playback, Calydus path, meteor rendering, Xelthoth death and return still require a client run. Tests are not client verification.",
+                   "Blank minimap and earlier ritual visual reports are not addressed by this scoped change."
+               ],
+    "repair":  [
+                   "The persistent archive Calydus (spawn 369458) owns the transition, restricted to map 1522, scenario 962, final step 5 and a living active quest participant within 60 yards of the archive.",
+                   "Native pre-summon conversations 199066, 199068 and 199069 use player-self casting and existing 7/4/2-second delays. Conversation failure cannot suppress the summon.",
+                   "Summon native Jagganoth at the existing position with Calydus as actual summoner; retry unsuccessful summons and consume the transition only after success. Remove the superseded SmartAI event/action list to prevent duplicate summons.",
+                   "The prison copy and later scenarios retain their SmartAI behavior. No character quest, inventory or position changes made in this repair."
+               ],
+    "validation":  {
+                       "archive":  "PASS: extracted production guide and boss controllers wired through the summon callback; no boss initially, timing, failed dialogue, failed summon/retry, once-only summon, dialogue/smash/exact-guide escape handoff, wrong map/scenario/spawn, dead/absent/questless player",
+                       "sequence":  "PASS: migration replay twice, native DB2 stage/credit and exit gates",
+                       "prisoners":  "PASS: production prisoner lifecycle and explicit target validation",
+                       "release":  "PASS: canonical build-extractors/bin/Release/worldserver.exe rebuilt; obsolete PCH regenerated after compiler mismatch",
+                       "startup":  "PASS: ready=True, exit=0; DBErrors.log and stderr.log empty; server stopped"
+                   },
+    "migration":  "2026_10_14_02_new_blood_tome_transition.sql",
+    "deployment":  {
+                       "backup":  ".codex/backups/new-blood-tome/20261014-080317",
+                       "migrationSHA1":  "DD7E3FEC595C85250DF161085B21C2EC6859E432",
+                       "runtimeSHA256":  "F3A4D561139CA3929AB45D472810E49F0165EF63B777ED86AEF7C72904EB6AEA",
+                       "startupLogs":  "build-extractors/runtime-test/new-blood-tome/startup"
+                   }
+}
