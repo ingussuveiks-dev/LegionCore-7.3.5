@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38414
+  ],
+  "status": "Code/data repair, extracted production/native regressions, canonical Release build, scoped backed-up SQL deployment and clean startup/shutdown complete. Client gameplay was not performed, as requested; the whole rescue and its visuals are not client-verified.",
+  "findings_and_changes": [
+    "Heart of a Dragon is shared by both factions. Native TDB735 objectives277830/91734 and277831/91737 are mandatory MONSTER/amount1/slots0 and1. The first has Flags0; Azariah has Flags3 (SEQUENCED|TRACKED_ON_MINIMAP), whereas installed data had2. Restore only that known2 row to3; retain both required counters, races, rewards, next39652 and stored SpecialFlags0. The runtime quest loader derives the KILL flag from monster objectives.",
+    "Finding the Thorignir Mother is EventObject613/guid410365 at2009.2,2578.84,486.069, radius10, outdoor map1220/zone7541. Its old SmartEventObject source13/event89 credits91734 for an alive entering player without verifying a finalized/grounded arrival. The new binding validates the exact installed event, normal metadata and INCOMPLETE quest, both factions, phase/radius, alive/in-world player, no teleport/vehicle/transport/taxi/falling/flying, finalized spline and actual floor within1yd. Check BEFORE native EventObject::Update inserts affectedPlayers so an invalid airborne/no-quest entry can retry in place; revalidate at dispatch. Increment only the visitor's first counter once, use native empty victim GUID and CanCompleteQuest.",
+    "Actual Azariah91737/guid294111 at2022.28,2603.25,467.236 has native hostile faction14, SmartAI, scaling98..110, display64191 and no kill aliases. Native KillRewarder::_RewardKillCredit queues50ms then resolves the corpse and calls Player::KilledMonster, which awards91737. Preserve its six native combat/death/channel actions, spells188154/188210, talks94513/94514 and death SetData1,1 to nearest91570 (target19 distance0 defaults100yd). No summon/click/login/mother dialogue grants a synthetic boss credit.",
+    "Native KilledMonsterCredit caps the mandatory boss counter, but does not enforce the SEQUENCED flag as a server-side prerequisite. A real boss kill before the approach region records91737 while the quest remains incomplete; reaching the valid approach later can complete it. Tests explicitly retain this native behavior and both required counters. No duplicate kill reward, alias rewrite or forced replacement boss.",
+    "Thrymjaris91570/guid294116 at2026.87,2629.76,467.371 is the existing shared protected dragon, faction190/flags33536/display67133. Addon bytes1=3 authors the sleeping pose. Its old SetData chain removes auras and plays free dialogue, but never changes that pose. Bind a SmartAI subclass only for known empty/SmartAI templates. Exact outdoor GUID scope distinguishes summoned copies, other maps/instances and later uses; their original SmartAI behavior is delegated.",
+    "Use the exact known Azariah GUID to decide capture state. Ignore a premature release signal while that boss is alive or unavailable. Once dead, remove only182091, set STAND and invoke the original SmartAI SetData1,1 once per loaded capture epoch. Native SmartAI supplies a null invoker; the actual TALK action still speaks from its base actor and starts its timer. Keep groups3/2,6000ms timings and Broadcast98750/98752/Sound53201/53202. Progress does not depend on dialogue creation, the mother being loaded, or the signal succeeding.",
+    "A1s AI reconciliation retries release when a dead known boss is loaded after re-entry or a missed signal, without giving any player credit. An alive/respawned boss restores sleeping/captured state and clears the release latch. When out of combat and the mother's corruption aura is absent, retry the original boss self-cast182091 so its native nearby-entry/condition graph can rebind the dragon after both actors load. Preserve the boss as aura caster; do not interrupt combat with retries or directly add a new aura from the player/dragon. Missing actors and failed casts remain retryable.",
+    "Native182091 is Fel Corruption Channel: dummy aura, caster/nearby-entry targets1/38, permanent duration21 and source13 condition restricting the nearby creature to91570. Keep that graph and addon/OOCombat cast. The entry-wide original SAI removes all auras and is retained for other spawns/summons. Copy its three native dialogue/link rows into the exact DB spawn list -294116, changing only that copy to remove182091. Native SmartScript prefers GUID lists before entry lists. Skip pre-existing custom GUID lists and their actor binding. The wrapper also clears182091 on every release epoch, independent of the LINK once-only flag. No entry-wide aura lifecycle change remains.",
+    "NPC96465 Vethir already exists at146706156/1977.46,2551.44,489.014, ends38414 and starts39652 Where Dragons Rule. Next39652 has alternative PrevQuestID40568, but native QuestData loader adds current38414 via its NextQuestID39652. Both faction native reward/prerequisite/GetNextQuest tests pass without rewriting the alternative predecessor or relocating a giver. Its two existing39652 gossip/teleport SAI rows are retained for the next audit.",
+    "StartScript38414 references an empty list. Detach only if still empty; no self-completion action was observed at this stage. OnLogin repairs only matching native COMPLETE state missing either mandatory counter to INCOMPLETE, preserving counters, valid completion and rewarded state. No personal-character SQL edits or exact-stage crash persistence feature.",
+    "The installed mother SAI has no escape/flee flight path or flight spell. This change repairs capture/release pose, corruption cleanup and existing dialogue; it does not invent or claim an implemented escape spline. Actual dragon release/escape animation and the authored flight presentation require client evidence. Native area4479/188210 template and188211 enter/exit actions, other combat effects and actor models are preserved and traced as metadata, not verified combat/visual playback."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimHeart.ps1",
+      "result": "PASS",
+      "evidence": ".codex/heart-test.log",
+      "details": "Actual event eligibility/credit/login repair and mother Reset/SetData/Update lifecycle; full native EventObject::Update/activation, Unit pet/player owner resolution, delayed KillRewarder::_RewardKillCredit, Player::KilledMonster/KilledMonsterCredit/CanCompleteQuest, SmartAI::SetData and TALK action with null invoker. Both factions, once counters, airborne/vehicle/teleport/phase/instance/no-quest failures, retry in place, missing mother/boss and missed signal, real kill before approach, respawn/release cycles, corrupted COMPLETE repair, unrelated aura/actor/instance preservation, abandonment before delayed credit, logout/reaccept and distinct selected recipients. Failed channel retry and no retry during combat. The actual native creature GUID/entry script selection branch is compiled and checks the scoped versus generic list preference."
+    },
+    {
+      "command": "Primary regression limits",
+      "result": "Recorded",
+      "details": "Map height/grid/phase/positions, GUID owner storage, quest inventory/status/save/packets, cast/aura application, SmartAI Update/Reset and text delivery are fixtures. The full Unit::Kill loot/damage/group-selection path,50ms real scheduling, aura targeting/visual playback, later6000ms talk timer and client packet processing are not executed. Recipients are selected by the fixture; this is not a full party/raid reward test. A credited affectedPlayers entry needs leaving/re-entering after abandoning/reaccepting; no cache-reset feature is claimed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/heart-handoff-test.log",
+      "details": "Extracted native prerequisite loader plus objective completion, reward/race/previous-quest checks and GetNextQuest. Both faction predecessors reach shared38414, both counters are needed, actual96465 offers39652 despite its alternative40568 prerequisite, and old91249 is not the hand-in/next actor. Registry/storage remain fixtures; client hand-in pending."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/heart-data-test.log",
+        ".codex/heart-data-live.log"
+      ],
+      "details": "Temporary migration twice and final live state: exact native mandatory flags/counts, grounded event binding/anchor, mother binding/sleep pose/spawn/corruption/dialogue, untouched boss credit/combat/target/addon, empty hook cleanup and actual next actor/relations/alternative predecessor. Custom event/mother binding/aura action/objective/start list preserved; race/reward/quest flags unchanged. Three scoped GUID rows, untouched entry-wide removal and pre-existing custom GUID binding/list preservation are checked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartGeometry.ps1",
+      "result": "PASS with explicit sleeping-pose reference",
+      "evidence": ".codex/heart-geometry.log",
+      "details": "Native GridMap/VMAP at613, boss, original Vethir and actual hand-in Vethir. The large sleeping dragon's authored Z467.371 lies1.901yd below the nearby VMAP surface469.272 and uses a separate2yd pose-reference tolerance. Coordinates are retained; this is not proof of correct dragon feet/collision or a walking/escape path. Other NPC tolerance1yd; event surface486.069 matches."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-heart-native-2026-10-14.json",
+      "details": "Original TDB objectives/POIs/quest/relation data, native corruption/combat effects and recursive trigger descendants, SpellXSpellVisual/visual kits/model attachments/animation fields, displays64191/67133/68213 and models with file hashes. Metadata cannot verify channel visuals, boss combat or escape animation."
+    },
+    {
+      "command": "Previous Winter Moonlight code/live data and Another Way code regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/heart-winter-regression.log",
+        ".codex/heart-winter-data-regression.log",
+        ".codex/heart-another-way-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/heart-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "The initial native objective assertion assumed installed Azariah Flags2 was original. TDB735 proves Flags3; restore the missing minimap bit and preserve sequencing rather than treating the second objective as optional.",
+    "The first geometry run used1yd grounded tolerance for the large sleeping dragon and failed at1.901yd below a nearby surface. Preserve the authored pose/location and record a separate reference tolerance; do not describe it as verified ground placement.",
+    "A suspected missing invoker for mother's TALK does not itself suppress speech. The native action defaults to its base actor even when targets/invoker are null; compiled that actual action and retained the existing dialogue instead of adding redundant text.",
+    "Inspection showed actual kill credit is delayed50ms by KillRewarder, not granted directly during JustDied. Tests execute the native callback and preserve independence from mother dialogue/signaling and corpse availability.",
+    "Native KilledMonsterCredit does not enforce the SEQUENCED objective flag. Tests retain natural early boss credit and require the approach counter before completion, rather than inventing a second death/kill-credit path.",
+    "The first missing-mother fixture still directly called its AI despite removal from the registry. Corrected signal dispatch to omit unavailable actors, then verified natural boss completion remains independent.",
+    "No authored dragon escape flight was found in the installed SAI/path data. Do not represent the standing/corruption/dialogue repair as an implemented or client-verified flight.",
+    "Final staged review caught that changing the entry-wide aura row would affect later91570 copies despite the C++ GUID scope. Restored the original entry-wide action, introduced only the -294116 list, tested native GUID selection and custom GUID preservation, backed up/replayed the corrected SQL and confirmed clean startup."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "migration": "2026_10_14_18_stormheim_heart.sql",
+    "sha1": "A1E98D5557281FEE2F4B73499F2F72F06F38E266",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-heart\\20261015-001601"
+  },
+  "startup": {
+    "exit_code": 0,
+    "ready": true,
+    "DBErrors_bytes": 0,
+    "directory": "build-extractors/runtime-test/stormheim-heart/startup-20261015-001636",
+    "stderr_bytes": 0,
+    "updates_enabled": false,
+    "stopped": true,
+    "note": "Scoped migration18 with World table backups and registration, canonical executable and temporary config/logs. Canonical runtime configs/certificates/DLLs/logs/extracted data preserved; unrelated automatic migrations disabled."
+  },
+  "build": {
+    "bnet_sha256": "af05beaed3679b688dedcba7282f164e8524de75352b5633be9ce459c8972ace",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "3309c33ef47cf65dff9034d02189b4b26658cf26653258bf799eb57361e6ce26",
+    "base_head": "84fb16ac790ed938952ffd4250711d9b61f6e406",
+    "source_sha256": "527aa603c0ea84741440623b1c2d52ea52e0810d5be797f0b9c865eae0cc550c"
+  },
+  "pending_client_checks": [
+    "Both factions: visible entrance/approach and grounded first credit once, actual cave route from the upper486.069 checkpoint to Azariah/Thrymjaris around467, jump/fall/flight/vehicle rejection and retry; native progress saving and abandon/reaccept after leaving a credited region.",
+    "Initial dragon model67133/sleep pose3/placement relative to cave floor, protected flags, actual boss-cast182091 nearby-entry targeting/aura caster and corruption visual kits; actors loading in either order, failed casts, combat interruption and boss respawn rebind.",
+    "Azariah model64191, actual melee/188154 recursive forcecast effects/188210 area4479/188211 damage and visuals, minimap flag, player/pet killing blows, actual group/raid eligibility and corpse lifecycle. No spawn/dialogue gives boss credit; both mandatory counters cap at1.",
+    "Native death handoff and free standing pose/aura cleanup once per capture epoch, other auras retained, dialogue98750 then98752/6s timers/voice53201/53202, re-entry and duplicate/missing signal recovery. Actual release/escape animation/flight remains unresolved; no escape spline is implemented by this change.",
+    "Actual Vethir96465 questgiver/gossip flag, both faction hand-in and39652 next UI, and unchanged player camera/primary pet/portrait. New scripts do not modify pet lookup, guardians, vehicles or scripted mover control. Fresh server/grid reload reconstructs the visible shared scene from loaded boss state, not an exact saved player stage."
+  ],
+  "next_scope": {
+    "quests": [
+      39652
+    ],
+    "title": "Where Dragons Rule",
+    "next": 38624
+  },
+  "completed_date": "2026-10-15"
+}
