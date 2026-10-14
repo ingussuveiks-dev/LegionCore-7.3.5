@@ -18,7 +18,8 @@ Branch const branches[] = {{38318,ALLIANCE,91983,294335}, {38613,HORDE,91975,294
 bool Point(Creature* point)
 {
     return point && point->IsInWorld() && point->GetMapId() == 1220 &&
-        (point->GetEntry() == 91975 || point->GetEntry() == 91983 || point->GetEntry() == 91979);
+        (point->GetEntry() == 91975 || point->GetEntry() == 91983 || point->GetEntry() == 91979 ||
+            point->GetEntry() == 92017 || point->GetEntry() == 92072);
 }
 bool Ready(Player* player, Creature* point)
 {
@@ -27,7 +28,8 @@ bool Ready(Player* player, Creature* point)
         Point(point) && point->IsAlive() && !point->IsQuestObjectExpired() &&
         point->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK) && player->canSeeSpellClickOn(point) &&
         player->GetItemByEntry(Launcher) && player->InSamePhase(point) && player->canSeeOrDetect(point) &&
-        player->IsWithinDistInMap(point, 50.0f) && player->IsWithinLOSInMap(point);
+        player->IsWithinCombatRange(point, player->GetSpellMaxRangeForTarget(point, sSpellMgr->GetSpellInfo(182478))) &&
+        player->IsWithinLOSInMap(point);
 }
 uint32 ActiveQuest(Player* player, Creature* point)
 {
@@ -40,6 +42,25 @@ uint32 ActiveQuest(Player* player, Creature* point)
                     if (objective.Type == QUEST_OBJECTIVE_MONSTER && objective.ObjectID == 91484 &&
                         objective.StorageIndex == 0 && objective.Amount == 1 && !(objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL))
                         return branch.quest;
+    return 0;
+}
+uint32 LifetimeQuest(Player* player, Creature* point)
+{
+    if (uint32 quest = ActiveQuest(player, point)) return quest;
+    if (!player || !Point(point) || point->GetZoneId() != 7541 || player->GetInstanceId() != 0) return 0;
+    uint32 quest = player->GetTeam() == ALLIANCE ? 38412 : 38618;
+    if (player->GetQuestStatus(quest) != QUEST_STATUS_INCOMPLETE) return 0;
+    if (Quest const* info = sQuestDataStore->GetQuestTemplate(quest))
+    {
+        bool across = false, top = false;
+        for (QuestObjective const& objective : info->GetObjectives())
+            if (objective.Type == QUEST_OBJECTIVE_MONSTER && objective.Amount == 1 && !(objective.Flags & QUEST_OBJECTIVE_FLAG_OPTIONAL))
+            {
+                across |= objective.ObjectID == 91728 && objective.StorageIndex == 0;
+                top |= objective.ObjectID == 91729 && objective.StorageIndex == 1 && (objective.Flags & QUEST_OBJECTIVE_FLAG_SEQUENCED);
+            }
+        if (across && top) return quest;
+    }
     return 0;
 }
 void RepairLegacy(Player* player)
@@ -140,7 +161,7 @@ class spell_stormheim_grapple_start : public SpellScript
                 if (auto* ai = dynamic_cast<npc_stormheim_grapple_hook*>(hook->AI()))
                 {
                     ai->SetGUID(point->GetGUID(), 0);
-                    if (uint32 quest = StormheimNoWings::ActiveQuest(player, point)) player->BindQuestObject(quest, hook);
+                    if (uint32 quest = StormheimNoWings::LifetimeQuest(player, point)) player->BindQuestObject(quest, hook);
                     if (!player->HasAura(182468)) ai->DoAction(2);
                 }
     }

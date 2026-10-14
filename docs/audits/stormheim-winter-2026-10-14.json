@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38412,
+    38618
+  ],
+  "status": "Code/data repair and extracted production/native regressions complete; canonical Release build and scoped backed-up deployment validated. No client gameplay was performed, as requested. This does not verify a whole climbing route or client visual.",
+  "findings_and_changes": [
+    "Above the Winter Moonlight requires crossing to the mountain path (91728/slot0/amount1/Flags0), then reaching the top (91729/slot1/amount1/Flags2 SEQUENCED). Original TDB735 and installed objectives277826/277827/278229/278230 agree. Preserve both required stages, race masks, rewards, native next38414 Heart of a Dragon and the existing quest POIs.",
+    "Stages are installed EventObjects, not AreaTriggers:611/guid410363/radius5 at2299.91,2343.38,311.742 and612/guid410364/radius10 at2174.72,2454.51,481.376. Both use source13/event89 SmartEventObject kill credits, and612 links conversation2549. Its old source22 conditions use SourceId10 (SCENE), whereas these events are source13 (EVENTOBJECT); those conditions do not constrain the event as their comments suggest. Preserve these rows for native delegation, but the new scoped handler validates the actual quest/faction/sequence directly.",
+    "The original SmartEventObject accepts any alive entering player, without checking teleport, vehicle/transport/taxi, falling/flying, spline completion or grounded height. Native EventObject::Update inserts affectedPlayers after dispatch; a failed attempt is then suppressed until the player leaves. Bind only known611/612 templates with radius5/10, Flags0 and no teleport/spell fields to eventobject_stormheim_winter. Its IsTriggerMeets validates eligibility BEFORE insertion, so an airborne, unaccepted or out-of-order entry can retry in place once valid. Revalidate at OnTrigger and increment only the matching player's native objective once; top requires the first counter. Preserve native activation/removal/radius behavior, other players and original SmartScript behavior for other spawns/maps/instances/custom metadata.",
+    "Scoped credit requires exact installed outdoor1220/zone7541/instance0 event spawn, matching mandatory metadata/faction/INCOMPLETE quest, alive/in-world player, correct phase/radius, no teleport/vehicle/transport/taxi/falling/flying, finalized spline and player within1yd of actual Map::GetHeight. Use the native empty victim GUID for these synthetic monster credits, send one count packet and call CanCompleteQuest. The existing region semantics remain: valid presence in the region qualifies, without requiring a new click if re-entering at the checkpoint.",
+    "Ordinary point types92017/92072 still used121975 Keg Breaking. Restore only known click rows to182478 and include both entries in the existing shared gun handler. Keep native182467 hook91971,1824683s charge, natural-expiry182469 jump and1824704s tether, target validation, LOS, phase, interaction flags, item138111, failure cleanup and native movement/camera behavior. No core pet, mover or spell metadata changes.",
+    "The previous shared gun guard used IsWithinDistInMap(50), which adds bounding radii. Native Spell::CheckRange uses IsWithinCombatRange plus GetSpellMaxRangeForTarget. Actual installed model62719 has BoundingRadius0.25 but CombatReach85, with nominal native SpellRange37=50. The validated tower center is64.683yd from first path point294024; bounding-radius gating wrongly blocks it while native combat-reach gating allows it. Use the same native range API rather than increasing SpellRange or hardcoding85. This applies to all five supported shared gun entries; native base-range selection and actual scaled reaches stay authoritative. Full cast-time spell modifiers/CheckRange are not executed by the fixture.",
+    "Bind helper hooks used during38412/38618 to the current native quest object lifetime only when matching mandatory across/top metadata is present. Abandon/reaccept invalidates an old hook before the charge expires, preventing a stale launch. Existing No Wings arrival credit remains scoped to its own wall spawns/quest91484; shared mountain points do not award that quest, and Winter credits come from actual valid EventObject entry rather than click/spawn.",
+    "The next quest text states the source guide cannot help after crossing. Another Way's personal91558/92569 guide remains valid through main reward and next acceptance, then despawns once active38412/38618 has91728 credit. Both faction lifetime tests cover this handoff. Vethir91249 is a separate existing shared questgiver at294030/2182.78,2433.03,485.375 and is not modified.",
+    "Initiate existing conversation2549 after progression succeeds, independently of its creation/playback. World conversation_data references line5378 and conversation_creature entry91249. Native sparse DB2 loader resolves line5378 to BroadcastText98424, VisualKit0, AnimKit0 and SpeechType0. Base BroadcastText.db2 lacks98424, but the effective Hotfix row contains the expected text and Sound53031. Native conversation generation finds the nearest creature by entry91249; its stored old creatureGuid928705 is not used by that branch. Do not rewrite the GUID or invent another visual/animation.",
+    "Horde38618 StartScript38618 is an empty dangling list, not an observed self-completion action. Detach only when still empty; preserve SpecialFlags0 and custom nonempty lists. OnLogin repairs only matching native COMPLETE quests missing either required counter, preserving valid completion/rewarded states and counters. No personal-character SQL update or new persistent stage storage.",
+    "Shared next38414 has PrevQuestID38412, but native QuestData::LoadQuests also appends each preceding quest's NextQuestID as an OR prerequisite. Both38412 and38618 already have NextQuestID38414. Native loader and player eligibility tests prove Horde access without loosening or removing the Alliance predecessor. Both finish at Vethir, who starts38414. Existing92566 still ends38618 but does not start38414; preserve that fallback and record that its hand-in does not immediately offer the shared next quest. Next38414's StartScript38414 remains for the next audit."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimWinter.ps1",
+      "result": "PASS",
+      "evidence": ".codex/winter-test.log",
+      "details": "Actual stage predicates/OnTrigger/login repair, full native EventObject::Update/ActivatedForPlayer and native CanCompleteQuest. Both faction sequences; top-before-across; grounded/spline/movement/vehicle/transport/taxi/dead/teleport/phase/instance/floor/quest failures; retry in place after rejection; counter/packet cap; optional conversation failure; separate players; logout/re-entry; abandon/reaccept after leaving the credited region; valid completion; native/custom delegation. Grid player enumeration, map floor, phase, positions, quest counter/packet storage, SmartScript dispatch and conversation creation are fixtures. A credited native affectedPlayers entry still requires leaving/re-entering after abandonment/reaccept; no cache-reset feature is claimed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterGun.ps1",
+      "result": "PASS",
+      "evidence": ".codex/winter-gun-test.log",
+      "details": "Actual shared gun/hook/aura/launch handlers, full native EffectJumpDest/CalculateJumpSpeeds/IsWithinCombatRange and native delayed quest callback. Both new point entries and faction quests; lifetime cancellation; no click/No Wings objective credit; default reach bounds, actual64.683yd tower-to-path vector with point reach85, and beyond total reach rejection. Native spell maximum is stubbed to the independently verified50; combat reach/scale/modifier loading, world spline advancement, object scope binding and client packets are fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/winter-handoff-test.log",
+      "details": "Extracted actual QuestData previous/next prerequisite construction plus native completion/reward/race/SatisfyQuestPreviousQuest/GetNextQuest. Horde fails with the incomplete guessed Alliance-only predecessor list and succeeds after real native loader adds38618; Vethir offers38414 after either reward,92566 fallback does not. Registry/reward persistence are fixtures; client quest UI is pending."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/winter-data-test.log",
+        ".codex/winter-data-live.log"
+      ],
+      "details": "Temporary migration twice and installed final data: two restored gun rows, event templates/anchors/stages, actual range model62719/85, existing first point/gun, Vethir relations/template/spawn, native loader links and retained SAI/conversation/legacy scene conditions/next hook. Custom click flags/script/event flags/start actions preserved; reward/race/quest flags unchanged."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterGeometry.ps1",
+      "result": "PASS with one explicit elevated anchor",
+      "evidence": ".codex/winter-geometry.log",
+      "details": "Native GridMap/VMAP: ten event/point/recipient anchors satisfy ground tolerance. Point294040 is8.715yd above floor473.648, so it is separately bounded as an elevated hook, not falsely reported as grounded. Its native coordinates are preserved; actual use/fall/landing is unverified. Eleven total anchors do not prove the entire navigable ascent."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-winter-native-2026-10-14.json",
+      "details": "Original TDB quests/objectives/POIs/relations; native gun range/charge/tether/jump effects and SpellXSpellVisual/visual kit/model attachment graph; point62719 and Vethir68213 displays/models with hashes. Sparse ConversationLine hash and native-loader test reference retained. Metadata is not client playback evidence."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWinterConversation.ps1",
+      "result": "PASS",
+      "evidence": ".codex/winter-conversation-native.log",
+      "details": "Production DB2Storage sparse reader confirms line5378 ->98424 and logs native kit/animation/speech fields. Effective Hotfix text98424/Sound53031 exists despite its absence from base BroadcastText. No Hotfix/runtime data modified; audio/model/actor visibility and playback pending."
+    },
+    {
+      "command": "Previous No Wings code/target/live data, Another Way code/live data and Impalement code regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/winter-no-wings-regression.log",
+        ".codex/winter-no-wings-data-regression.log",
+        ".codex/winter-another-way-regression.log",
+        ".codex/winter-another-way-data-regression.log",
+        ".codex/winter-impalement-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/winter-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Initial discovery looked for AreaTriggers and a nonexistent conversation_template table. These are EventObjects/source13 and conversation_data/creature records; use their actual native handlers and schema.",
+    "The first geometry test treated294040 as a grounded NPC and failed at8.715yd elevation. Do not lower it based only on a VMAP sample: retain the existing air anchor with an explicit separate bound and pending client landing check.",
+    "A roof-edge probe showed the validated center is64.683yd from294024 and did not establish a grounded launch position inside the guessed50yd bound. Inspecting the native range function and actual model table exposed the relevant difference: CombatReach85 versus BoundingRadius0.25. Corrected the guard to the exact native combat-range API and added a64.683yd production/native regression; no range metadata or point coordinates changed.",
+    "The generic Python reader rejects sparse ConversationLine. Switched this record to the production sparse DB2 loader. Its line exists, but the initial base-only BroadcastText assertion failed; checked the effective Hotfix row instead and retained the base absence explicitly.",
+    "Copied fixtures needed actual Player::GetDistance, M_PI, the global object form of sWorldSafeLocsStore and a no-op cast stub to compile the full native EventObject update. The final test compiles that method without modifying it.",
+    "Temporary npc_spellclick_spells initially shadowed the first91975 point's real row by snapshotting only the two new types. Included91975 in the temporary snapshot and reran, rather than falsely reporting that its installed gun binding was absent.",
+    "An abbreviated prerequisite fixture would falsely block Horde at38414 because it omitted NextQuestID-derived predecessors. Extracted and executed the native loader branch and preserved the valid database links."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_17_stormheim_winter.sql",
+    "sha1": "45E74DA9FF9051480D08B6F96FD5D6E16D311BB8",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-winter\\20261014-231650",
+    "state": "RELEASED"
+  },
+  "startup": {
+    "exit_code": 0,
+    "ready": true,
+    "stderr_bytes": 0,
+    "note": "Final canonical executable, explicit migration17 backed up and registered; temporary config/logs and disabled unrelated automatic migrations. Runtime config/certificates/DLLs/logs/extracted data preserved.",
+    "stopped": true,
+    "updates_enabled": false,
+    "DBErrors_bytes": 0,
+    "directory": "build-extractors/runtime-test/stormheim-winter/startup-20261014-232430"
+  },
+  "build": {
+    "winter_source_sha256": "cf5402ee993b3d889f5aa60d4e7b74cf6cec222f7192f56cdd1270632c046a6c",
+    "bnet_sha256": "30b400eae5e7d6b63b3f5cfc6658ec93ea8a3916d06b642e3a4444642941989c",
+    "world_sha256": "1a761f4798d594f7a93a03a560b38bcb104a1d197e1bd6eb2e616d011db48957",
+    "runtime": "build-extractors/bin/Release",
+    "base_head": "13f69097927a09390444a556a1dc2cc086f50d23",
+    "gun_source_sha256": "aaca15b46a726bcda031d262e4e43c8b5231ed5577455bcf3650a67268833c4b",
+    "guide_source_sha256": "d14d2ceeabe8235ca500ab7e5ca9b546ba34670d375e75ac69ebcfea5eea8578"
+  },
+  "pending_client_checks": [
+    "Both factions: actual source guide quest offer at the tower, first294024 gun cursor/flag/LOS/cast range with model combat reach, native3s charge/4s tether/jump animation, completed landing and91728 once. Actual roof edge, safety and navigable ascent are not established by static floors/range arithmetic.",
+    "Use intermediate shared91975/91983/92017/92072 points through the mountain, especially elevated294040. Check actual collision, fall/landing, spline finalization/flags, movement interruption, missing-item/vehicle/phase failures, abandonment/reaccept and two simultaneous characters.",
+    "Guide91558/92569 stays through main reward/next acceptance, then disappears after crossing; no later scenario/player pet ownership or portrait/camera regression. No mover/pet core code was changed and no client effect is claimed verified.",
+    "Top612 ground entry after91728,91729 and complete once, Vethir68213 initial spawn/pose/private conversation2549, line98424/Sound53031 and actual talk/model playback even when optional conversation creation fails. Late quest actors/other EventObject spawns retain their native delegation.",
+    "Vethir actual hand-in/race/prerequisite/next38414 UI for both factions. Horde92566 still supports fallback hand-in but offers no38414; visit Vethir for the canonical continuation. Native quest counters persist, not exact actor/animation state after a crash."
+  ],
+  "next_scope": {
+    "quests": [
+      38414
+    ],
+    "title": "Heart of a Dragon",
+    "next": 39652
+  }
+}

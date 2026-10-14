@@ -162,5 +162,6 @@ int main(){
  {Run r;store.quests[38342].objectives[1].Flags=0;r.Kill();r.Tick();assert(!r.Guide()&&!r.p.GetQuestObjectiveData(38342,98255));store.quests[38342].objectives[1].Flags=2;}
  for(auto q:{38342u,38617u}){Run r(q);r.Kill();r.Tick();auto packets=r.p.packets;r.script.OnLogin(&r.p);assert(r.p.GetQuestStatus(q)==QUEST_STATUS_COMPLETE&&r.p.packets==packets);}
  {Creature staticGuide;staticGuide.entry=91558;npc_stormheim_another_way_guide ai(&staticGuide);Run r;ai.IsSummonedBy(&r.p);ai.UpdateAI(1);assert(!ai.scoped&&ai.delegated==2&&staticGuide.world);}
- std::cout<<"PASS: production tower/guide/repair handlers and native kill/completion; both factions, boss-first roof/grounded/spline gates, failed summon retry, pets, once-only credit, acceptance lifetime, handoff, logout and throttle.\n";
+ for(auto q:{38342u,38617u}){Run r(q);r.Tick();auto* guide=r.Guide();auto next=q==38342?38412u:38618u;r.p.m_RewardedQuests.insert(q);r.p.quests.erase(q);r.p.Accept(next);assert(guide->ai->GetData(StormheimAnotherWay::ValidKey));r.p.data[{next,91728}]=1;guide->ai->UpdateAI(1);assert(!guide->world);}
+ std::cout<<"PASS: production tower/guide/repair handlers and native kill/completion; both factions, boss-first roof/grounded/spline gates, failed summon retry, pets, once-only credit, acceptance lifetime, handoff, logout, throttle and guide cleanup after crossing.\n";
 }

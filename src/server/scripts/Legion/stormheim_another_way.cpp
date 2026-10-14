@@ -47,6 +47,8 @@ bool Active(Player* player, uint32 quest)
 }
 bool Story(Player* player, Branch const& branch)
 {
+    // The native next quest says the guide stays behind once we cross.
+    if (player && Active(player, branch.next) && player->GetQuestObjectiveData(branch.next, 91728)) return false;
     return Scope(player) && player->GetTeam() == branch.team && Definition(branch) &&
         (Active(player, branch.quest) || Active(player, branch.next) ||
             (player->GetQuestRewardStatus(branch.quest) && !player->GetQuestRewardStatus(branch.next)));
