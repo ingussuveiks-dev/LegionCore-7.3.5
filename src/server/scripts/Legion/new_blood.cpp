@@ -7,6 +7,8 @@
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "Log.h"
+#include "Spell.h"
+#include "SpellScript.h"
 #include <array>
 #include <cmath>
 
@@ -222,6 +224,7 @@ struct npc_new_blood_jagganoth : SmartAI
 {
     explicit npc_new_blood_jagganoth(Creature* creature) : SmartAI(creature) { }
     bool started = false;
+
     uint32 timer = 1000;
     uint8 action = 0;
     ObjectGuid guide;
@@ -310,11 +313,66 @@ struct npc_new_blood_archive_guide : SmartAI
     uint32 timer = 1000;
     uint8 action = 0;
     bool started = false;
+    bool escaping = false;
+    uint32 hazardPoll = 0;
+
+    void SetData(uint32 id, uint32 value) override
+    {
+        SmartAI::SetData(id, value);
+        Scenario* progress = me->GetMapId() == 1522 && me->GetDBTableGUIDLow() == 369458
+            ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        if (id != 3 || value != 3 || !progress || progress->GetScenarioId() != 962 || progress->GetCurrentStep() != 5)
+            return;
+        escaping = true;
+        EnsureHazards();
+        TC_LOG_INFO("scripts.ai", "New Blood: escape hazards started (instance %u)", me->GetInstanceId());
+    }
+
+    void EnsureHazards()
+    {
+        // These native, already placed fire emitters otherwise activate only
+        // in scenario 998. Ignite them at the escape handoff, not at tome loot.
+        std::list<Creature*> fires;
+        GetCreatureListWithEntryInGrid(fires, me, 101052, 200.0f);
+        for (Creature* fire : fires)
+            if (!fire->HasAura(199231))
+                fire->AI()->SetData(1, 1); // Native 199234 missile -> 199231 ground fire.
+        // Keep the native 3-second periodic missile, independent of the
+        // preceding follower spell's linked-action cast result.
+        if (!me->HasAura(199044))
+            me->CastSpell(me, 199044, true);
+    }
 
     void UpdateAI(uint32 diff) override
     {
         Scenario* progress = me->GetMapId() == 1522 && me->GetDBTableGUIDLow() == 369458
             ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        bool participant = false;
+        if (escaping)
+            me->GetMap()->ApplyOnEveryPlayer([&participant](Player* player)
+            {
+                if (player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+                    participant = true;
+            });
+        if (escaping && (!participant || !progress || progress->GetScenarioId() != 962 || progress->GetCurrentStep() != 5))
+        {
+            me->RemoveAurasDueToSpell(199044);
+            std::list<Creature*> fires;
+            GetCreatureListWithEntryInGrid(fires, me, 101052, 200.0f);
+            for (Creature* fire : fires)
+                fire->RemoveAurasDueToSpell(199231);
+            escaping = false;
+        }
+        if (escaping)
+        {
+            if (hazardPoll > diff)
+                hazardPoll -= diff;
+            else
+            {
+                hazardPoll = 3000;
+                EnsureHazards(); // Also ignite emitters in grids loaded as the party advances.
+            }
+        }
         if (progress && progress->GetScenarioId() == 962 && progress->GetCurrentStep() == 5 && action < 4)
         {
             bool eligible = false;
@@ -369,9 +427,46 @@ struct npc_new_blood_archive_guide : SmartAI
     }
 };
 
+// Keep the native missile/impact visuals and 3-second periodic trigger. Its
+// 200-yard implicit destination radius is an encounter search area, not a
+// useful impact location for the player running along this winding route.
+class spell_new_blood_escape_meteor : public SpellScript
+{
+    PrepareSpellScript(spell_new_blood_escape_meteor);
+
+    void TargetRoute()
+    {
+        Creature* guide = GetCaster()->ToCreature();
+        if (!guide || guide->GetMapId() != 1522 || guide->GetDBTableGUIDLow() != 369458)
+            return;
+        Scenario* progress = sScenarioMgr->GetScenario(guide->GetInstanceId());
+        if (!progress || progress->GetScenarioId() != 962 || progress->GetCurrentStep() != 5)
+            return;
+        Player* runner = nullptr;
+        guide->GetMap()->ApplyOnEveryPlayer([&runner, guide](Player* player)
+        {
+            if (!runner && player->IsAlive() && player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE &&
+                player->IsWithinDistInMap(guide, 60.0f))
+                runner = player;
+        });
+        if (!runner)
+            return;
+        Position impact = runner->GetFirstCollisionPosition(frand(4.0f, 8.0f), frand(-1.0f, 1.0f));
+        WorldLocation destination(1522, impact.GetPositionX(), impact.GetPositionY(), impact.GetPositionZ(), impact.GetOrientation());
+        SetExplTargetDest(destination);
+        GetSpell()->AddDestTarget(SpellDestination(destination), EFFECT_0);
+    }
+
+    void Register() override
+    {
+        OnCast += SpellCastFn(spell_new_blood_escape_meteor::TargetRoute);
+    }
+};
+
 void AddSC_new_blood()
 {
     RegisterCreatureAI(npc_new_blood_prisoner);
     RegisterCreatureAI(npc_new_blood_jagganoth);
     RegisterCreatureAI(npc_new_blood_archive_guide);
+    RegisterSpellScript(spell_new_blood_escape_meteor);
 }

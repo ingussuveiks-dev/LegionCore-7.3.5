@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 #include <functional>
+#include <list>
+#include <set>
 using uint32=uint32_t; using uint8=uint8_t;
 constexpr int QUEST_STATUS_INCOMPLETE=3, REACT_PASSIVE=0;
 enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED_BAD_TARGETS };
@@ -21,6 +23,10 @@ auto sScenarioMgr=&manager;
 struct ActorAI { int signals=0; void SetData(int,int){++signals;} };
 struct Creature:Unit {
  uint32 dbGuid=369458; int summons=0; bool failSummon=false; Creature* summoned=nullptr; std::function<void()> onSummon;
+ std::set<uint32> auras;
+ bool HasAura(uint32 id){return auras.count(id)!=0;}
+ void RemoveAurasDueToSpell(uint32 id){auras.erase(id);}
+ SpellCastResult CastSpell(Creature*,uint32 id,bool){auras.insert(id);return SPELL_CAST_OK;}
  uint32 GetDBTableGUIDLow(){return dbGuid;}
  Creature* SummonCreature(uint32 summonedEntry,float,float,float,float,int){assert(summonedEntry==98831);++summons;if(failSummon)return nullptr;if(onSummon)onSummon();return summoned;}
  uint32 mapId=1522; Map map; ActorAI ai; bool active=false, combat=true; int react=1,smashes=0; bool failSmash=false;
@@ -35,7 +41,10 @@ namespace ObjectAccessor { Creature* GetCreature(Creature&,ObjectGuid g){auto i=
 struct SmartAI {
  Creature* me; int delegated=0; explicit SmartAI(Creature* c):me(c){}
  virtual void IsSummonedBy(Unit*){} virtual void UpdateAI(uint32){++delegated;}
+ virtual void SetData(uint32,uint32){}
 };
+std::list<Creature*> fireEmitters;
+void GetCreatureListWithEntryInGrid(std::list<Creature*>& out,Creature*,uint32 entry,float){assert(entry==101052);out=fireEmitters;}
 #include "NewBloodArchive.inc"
 int main(){
  Creature boss,guide; guide.entry=99178;guide.guid.id=7;actors[7]=&guide;
@@ -94,5 +103,11 @@ int main(){
  for(int i=0;i<90;++i){liveGuideAI.UpdateAI(1000);if(liveGuide.summons)liveBossAI.UpdateAI(1000);}
  assert(liveGuide.summons==1 && liveBoss.smashes==1 && liveGuide.ai.signals==1);
  assert((liveReader.spells==std::vector<uint32>{199066,199068,199069,199070,199071,199072,199073,199074}));
+ // Native fire emitters and repeated meteors start only on the escape signal.
+ Creature unlit,lit;lit.auras.insert(199231);fireEmitters={&unlit,&lit};
+ liveGuideAI.SetData(1,1);assert(!unlit.ai.signals && liveGuide.auras.empty());
+ liveGuideAI.SetData(3,3);assert(unlit.ai.signals==1 && !lit.ai.signals && liveGuide.HasAura(199044));
+ scenario.id=998;liveGuideAI.SetData(3,3);assert(unlit.ai.signals==1);
+ liveGuideAI.UpdateAI(1000);assert(!liveGuideAI.escaping && !liveGuide.HasAura(199044) && !lit.HasAura(199231));
  std::cout<<"PASS: production archive timeline, delayed stage, exact guide, combat release, once-only handoff and scenario isolation\n";
 }

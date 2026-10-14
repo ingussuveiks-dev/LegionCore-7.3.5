@@ -1,0 +1,45 @@
+{
+    "quest":  40729,
+    "scenario":  962,
+    "client_evidence":  [
+                            "User reached the final gateway during escape, with Calydus present and final objective incomplete, but no infernal to defeat.",
+                            "User saw a falling projectile, possibly only once, and no persistent burning ground along the escape.",
+                            "Gameplay log at 14:10 confirms tome conversations, Jagganoth summon/dialogue/smash and exact Calydus escape handoff all ran. These earlier transitions now have client evidence; complete quest completion remains unverified."
+                        ],
+    "native_findings":  [
+                            "Spell 199215 effect 0 summons 98834 using SummonProperties 64, but implicit destination target 46 is a nearby-entry search. No source-13 conditions or spell_target_position existed. SelectImplicitNearbyTargets does not accept the preexisting explicit destination as a fallback in that branch, so the SAI coordinates alone do not guarantee a summon.",
+                            "Native aura 199044 has unlimited duration and a 3000ms periodic trigger of 199031. That missile triggers 199036 Fel Meteor and uses SpellVisual 51706 / missile set 7110; impact visual is 61624. Its destination targets 125/86 use a 200-yard radius. A single visible projectile does not prove that the periodic aura ticked only once; impacts can be far off the escape route.",
+                            "Map 1522 already contains 92 entry-101052 Fire Wall Bunny spawns in phase 5444. Their reset event is gated to scenario 998, while SetData(1,1) casts native 199234, which triggers persistent 199231 / area trigger 5517 / visual 51761. The New Blood escape never sent this activation signal."
+                        ],
+    "repair":  [
+                   "Add the native infernal spell destination at the existing gateway coordinates, map 1522, 3088.45 / 834.382 / 243.846. Preserve the existing waypoint summon and infernal-death portal lock, including pet killing blows.",
+                   "At the archive guide\u0027s escape signal, activate existing fire emitters and ensure the native meteor aura independently of the preceding follower spell\u0027s linked-action success. Poll for newly loaded emitters while escaping. Stop the meteor aura and remove fire auras when the scenario ends or no incomplete-quest participant remains.",
+                   "A scoped OnCast hook on 199031 redirects both explicit and effect destinations near an alive active participant, using collision-aware positions. The native missile, impact spell and 3-second periodic interval remain unchanged. Other maps, scenario IDs, guide spawns and stages retain their destinations."
+               ],
+    "limits":  [
+                   "The 4-to-8-yard impact offset is a bounded gameplay implementation choice, not recovered retail coordinates. Existing fire emitter placement is reused; exact retail fire activation choreography is not certified.",
+                   "No new damage tuning or area-trigger damage actions were introduced. This repair preserves the existing native damage behavior and repairs playback/activation.",
+                   "The test compiles the actual target-46 emergency-resolution branch and actual meteor hook, not the entire spell engine. Client rendering, infernal combat and final transfer still need a client run."
+               ],
+    "validation":  {
+                       "Test-NewBloodEscape.ps1":  "PASS: actual target-46 resolution with and without DB destination despite explicit coordinates; repeated meteor destination updates and scope/eligibility checks",
+                       "Test-NewBloodArchive.ps1":  "PASS: tome-to-summon-to-escape, native fire/meteor activation and cleanup, scenario isolation",
+                       "Test-NewBloodFullSequence.ps1":  "PASS: migration replay twice, actual destination/binding and native DB2 trigger/visual chains; existing infernal death and portal gates retained",
+                       "Test-NewBloodPrisoners.ps1":  "PASS: prisoner lifecycle and assist/click regressions unchanged",
+                       "Release":  "PASS: built build-extractors/bin/Release/worldserver.exe",
+                       "startup":  "PASS: ready=True, graceful exit=0; DBErrors.log and stderr.log empty; server left stopped"
+                   },
+    "migration":  "2026_10_14_03_new_blood_escape_hazards.sql",
+    "sources":  [
+                    "build-extractors/bin/Release/dbc/enUS: SpellEffect, SpellMisc, SpellDuration, SpellRadius, SpellXSpellVisual, SpellVisual, SummonProperties",
+                    "https://warcraft.wiki.gg/wiki/The_New_Blood: search-indexed escape dialogue and infernal-before-exit sequence; direct page fetch was blocked",
+                    "https://warcraft.wiki.gg/wiki/Warlock_Campaign: search-indexed repeated fel meteors and infernal before the gateway"
+                ],
+    "deployment":  {
+                       "runtime":  "build-extractors/bin/Release/worldserver.exe",
+                       "backup":  ".codex/backups/new-blood-escape/20261014-145713",
+                       "migrationSHA1":  "D674564626E4571CC918BB5EC61A40EF24282E97",
+                       "runtimeSHA256":  "4AA6D64CE41818677751D11F2E838B3556A5CA437C9AAADF7F42C1B9E07E2B2C",
+                       "logs":  "build-extractors/runtime-test/new-blood-escape/startup"
+                   }
+}

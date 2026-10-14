@@ -141,6 +141,9 @@ assert script(98783,9)['ep1']==199048 and script(98783,9)['action']==37
 assert script(99178,6)['action']==28 and script(99178,6)['a1']==33356
 assert script(99178,26)['a2']==9917801 and script(99178,24)['ep1']==18
 assert script(99178,24)['a1']==199215
+infernal=next(r for r in rows if r['kind']=='infernalDestination')
+assert infernal['map']==1522 and abs(infernal['x']-3088.45)<0.01 and abs(infernal['y']-834.382)<0.01 and abs(infernal['z']-243.846)<0.01
+assert next(r for r in rows if r['kind']=='meteorBinding')['count']==1
 assert (98831,0,5) not in scripts and not any(k[0]==9883101 for k in scripts) # archive owned by tested C++ lifecycle
 # Native ScenarioStep/CriteriaTree/Criteria, no guessed replacement IDs.
 d=Data(Path('build-extractors/bin/Release/dbc/enUS'),Path('__native_only__'))
@@ -181,6 +184,12 @@ assert any(r['SpellID']==200033 and r['EffectAura']==12 and r['ImplicitTarget2']
 assert any(r['SpellID']==200033 and r['SpellVisualID']==51979 for r in d.rows('SpellXSpellVisual').values())
 assert d.rows('SpellDuration')[36]['Duration']==1000
 assert any(r['SpellID']==199215 and r['Effect']==28 and r['EffectMiscValue1']==98834 for r in fx)
+assert any(r['SpellID']==199215 and r['ImplicitTarget1']==46 for r in fx)
+assert any(r['SpellID']==199044 and r['EffectAura']==23 and r['EffectAuraPeriod']==3000 and r['EffectTriggerSpell']==199031 for r in fx)
+assert any(r['SpellID']==199031 and r['Effect']==32 and r['EffectTriggerSpell']==199036 for r in fx)
+assert any(r['SpellID']==199234 and r['EffectTriggerSpell']==199231 for r in fx)
+assert any(r['SpellID']==199231 and r['EffectAura']==395 and r['EffectMiscValue1']==5517 for r in fx)
+assert any(r['SpellID']==199231 and r['SpellVisualID']==51761 for r in d.rows('SpellXSpellVisual').values())
 assert any(r['SpellID']==196340 and r['Effect']==134 and r['EffectMiscValue1']==101150 for r in fx)
 assert any(r['SpellID']==199359 and r['Effect']==134 and r['EffectMiscValue1']==101420 for r in fx)
 assert any(r['SpellID']==199338 and r['EffectAura']==293 and r['EffectMiscValue1']==643 and r['ImplicitTarget1']==1 for r in fx)

@@ -19,6 +19,7 @@ $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_09_new_blood_c
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_10_new_blood_prisoner_lifecycle.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_13_11_new_blood_archive_handoff.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_14_02_new_blood_tome_transition.sql" -Raw)
+$migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_14_03_new_blood_escape_hazards.sql" -Raw)
 $fixture=(@('conditions','smart_scripts','gameobject_template','spell_target_position','spell_linked_spell','creature_template','spell_script_names','creature_movement_override') | ForEach-Object {"CREATE TEMPORARY TABLE saved_$_ LIKE $_; INSERT INTO saved_$_ SELECT * FROM $_; CREATE TEMPORARY TABLE $_ LIKE saved_$_; INSERT INTO $_ SELECT * FROM saved_$_;"}) -join "`n"
 $fixture+="`n$migration`n$migration`n"
 $fixture+=@"
@@ -27,6 +28,8 @@ SELECT JSON_OBJECT('kind','condition','source',SourceTypeOrReferenceId,'group',S
 SELECT JSON_OBJECT('kind','instantCaptureLinks','count',COUNT(*)) FROM spell_linked_spell WHERE spell_trigger=199362 AND spell_effect=199359;
 SELECT JSON_OBJECT('kind','exit','map',target_map,'z',target_position_z) FROM spell_target_position WHERE id=196340;
 SELECT JSON_OBJECT('kind','book','loot',Data1) FROM gameobject_template WHERE entry=245924;
+SELECT JSON_OBJECT('kind','infernalDestination','map',target_map,'x',target_position_x,'y',target_position_y,'z',target_position_z) FROM spell_target_position WHERE id=199215;
+SELECT JSON_OBJECT('kind','meteorBinding','count',COUNT(*)) FROM spell_script_names WHERE spell_id=199031 AND ScriptName='spell_new_blood_escape_meteor';
 SELECT JSON_OBJECT('kind','creature','entry',entry,'faction',faction,'flags',unit_flags) FROM creature_template WHERE entry IN(98771,98775,98783,98793,98836,101460);
 SELECT JSON_OBJECT('kind','captureScript','count',COUNT(*)) FROM spell_script_names WHERE spell_id=200033 AND ScriptName='spell_gen_new_blood_imprisoned';
 SELECT JSON_OBJECT('kind','prisonerAI','count',COUNT(*)) FROM creature_template WHERE entry IN(98775,98783,98793) AND AIName='SmartAI' AND ScriptName='npc_new_blood_prisoner';
