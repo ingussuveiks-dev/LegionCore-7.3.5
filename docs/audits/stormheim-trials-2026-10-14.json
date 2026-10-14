@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-14",
+  "scope": "Code/data only, as requested. The Ancient Trials Alliance 38210 / Horde 38459, plus their shared Havi's Test 38331 transition.",
+  "source_base_revision": "4322acd41cf114e370eace6a4251e6a621d070e0",
+  "result": {
+    "38210": "Native empty-objective travel and Havi hand-in verified offline; Muninn invitation repaired without adding kill credit or flight.",
+    "38459": "Native empty-objective travel, Havi hand-in and shared next quest verified offline; original Huginn invitation preserved.",
+    "38331": "Removed known older fourth objective and exact duplicate Havi; repaired single validated vehicle creation through all GO interaction entry points, acceptance-bound ownership, real ingredient impacts, possession-safe proof/cleanup, native party credit and retry."
+  },
+  "evidence": [
+    "Original TDB735 has no objectives for 38210/38459 and ends both at Havi 96254. CanCompleteQuest therefore completes their objective-free journal state after acceptance; actual hand-in still uses the real Havi quest-giver interaction. Current starters are Muninn 97306 / Huginn 97305 at faction phase locations 4589 / 6375. These are travel quests, not scripted raven flights.",
+    "The live addon uses positive exclusive group 38459 for the two alternatives, both NextQuestID=38331. QuestData builds the shared predecessor vector from PrevQuestID and incoming NextQuestID links. Real SatisfyQuestPreviousQuest accepts a rewarded alternative, without requiring both factions. Havi starts/ends 38331, then offers 39590.",
+    "Huginn already has quest-accept action 85 casting 183614. Its name is Runed Scroll, but native effect 219 actually creates conversation 2237; current conversation_actor identifies Havi 96254, actor 53077, display 64208. Muninn lacked the equivalent accept row; the otherwise identical Rogers row is not a substitute because Rogers is not the starter. The new Muninn row has no linked progression, so failed cosmetic dialogue cannot consume any quest transition.",
+    "Native 7.3.5 Havi's Test contains exactly 285317/110610 slot 0, 285318/110611 slot 1, 285319/110612 slot 2, one ingredient each. Live also had older 279982/98244/Stew Stirred at slot 0, build 21287. The old row shares veggie storage and can be implicitly satisfied by it; it is a stale duplicate/UI definition, not proof that completion was impossible.",
+    "Ingredient GOs 252074/252076/252080 have lock 1691 and native summon spells 219922/219933/219945 in Data10. Their SmartAI GossipHello also invokes the same spell. SmartGameObjectAI::GossipUse returns false, so GameObject::Use continues into its normal goober spell path. ReportUse directly calls GO AI and bypasses GameObjectScript. Both paths need one shared guard; otherwise repeated or wrong-quest use and duplicate summons remain possible.",
+    "Native summons create entries 110605/110608/110609, properties 64, vehicle 4888, duration 30000. Original timed lists request 52391 boarding after 2000 ms plus invoker-cast dispatch; vehicle spell1 is 219921/219935/219946. Native seat 16863 controls the vehicle and permits manual exit; missile targeting ID is 492.",
+    "Native throws use effect 32 / trajectory target 89 and trigger impacts 219924/219936/219947. Those impacts are dummy effects at destination with area-entry target 8 and radius record 7 = 2 metres. Parent/impact Attributes[6] do not change caster to charmer. Thus the actual vehicle GUID, not whichever vehicle the player currently rides, remains the source of a delayed hit.",
+    "Pot 110604 listens to real impact SpellHit events, grants 110610/110611/110612 via native SmartAI action 33 and independently links stew splash 219925. That action already enumerates vehicle passengers and invokes real RewardPlayerAndGroupAtEvent; native group credit is preserved.",
+    "Controllable boarding runs Unit::UpdateCharmAI, saving the script in i_disabledAI and replacing current AI with PossessedAI. Creature updates current AI, so finding the owner through current AI or relying solely on original UpdateAI would break progress and cleanup. Proof is keyed by exact vehicle GUID and original script lifetime; unit-owned monitoring runs while possessed.",
+    "Common unphased Havi 340423 and duplicate 341181 have identical entry/phase/mask/position/orientation and NPC flags. Only that exact duplicate is removed. Separate Havi 338597 in phase 6364 and all existing ingredient/pot sites are retained."
+  ],
+  "implementation": [
+    "Guarded SQL adds the missing Muninn invitation, removes only the matching older objective and exact duplicate Havi, binds three GOs/four actor templates/three impacts, and preserves custom script bindings, native actor flags, vehicle IDs/spells, original SmartAI rows and later quest prerequisites.",
+    "GO GameObjectScript, GossipUse and ReportUse/GossipHello converge on one handler validating active/alive quest owner of either faction, map/zone/area, spawned object, flags, range, phase, visibility/LOS, combat/vehicle restrictions, already-completed ingredient and one pending/current seat. Native direct summon occurs once; creation is linked to the clicked object and current acceptance token. No credit is given by grabbing, summoning or boarding.",
+    "A valid freshly created seat is private to its owner. Its public NPC spellclick flag is removed and dirtied; original native timed boarding remains available and generic vehicle control/exit handles the seat. A ten-second failure deadline allows retry if boarding fails. Abandon/reaccept, death, phase/location change, logout and completed quest reject the old token and clean up the seat. Exiting a boarded seat also frees it for the next ingredient immediately.",
+    "A proof registry tracks original scripted actor state across PossessedAI replacement. Unit-owned 500 ms checks remain active while possessed and are cancelled on entity deletion. Destruction removes proof and matching owner registry entries, without erasing a newer attempt. Cleanup is idempotent and restores ordinary vehicle state through ExitVehicle, without adding manual mover/farsight or core AI changes.",
+    "Native area target filtering retains only live same-phase pot actors for the exact owned/boarded ingredient vehicle. Pot SpellHit repeats that token/seat/entry validation and consumes one receipt before native passenger/group credit and splash. Wrong ingredient, wrong passenger, player/pet/unarmed caster, stale acceptance or repeated hit cannot advance the owner. Other areas/maps and unarmed actor AI retain their SmartAI path; no generic kill-credit, scenario, boost, pet lookup or warlock handler changed."
+  ],
+  "verification": [
+    "Test-StormheimTrials.ps1 compiles the entire extracted production GO/AI/impact implementation plus real AddQuestDelayedEvent, CanCompleteQuest, CanRewardQuest, SatisfyQuestPreviousQuest, QuestObjectiveSatisfy, KilledMonsterCredit, RewardPlayerAndGroupAtEvent, SmartAI passenger-credit action and Unit::UpdateCharmAI. The fixture uses the real current/disabled-AI replacement before throwing. Covers both faction routes, no artificial travel objectives, real three pot hits, all three GO entry points, private independent players, retained party range behavior, failed/duplicate grabs, invalid interactions/targets/passengers, failed boarding, stale-caster identity, acceptance-token cleanup, immediate next-ingredient retry, destructor registry isolation and later-map/unarmed delegation. World, timers, motion, network, inventory, group distance and cast services are stubbed; no client play is verified.",
+    "Test-StormheimTrialsData.ps1 applies the real migration twice to temporary snapshots, checks native empty travel objectives and three unique ingredient slots, raven invitation/flags/phase locations, Havi enders/next gates, exact duplicate removal, native vehicle/boarding/pot actions, WDB credit markers and custom/unrelated preservation. Only an unchanged original-spawn alias is redirected to a saved snapshot to work around MySQL temporary self-joins. The migration executes unchanged at deployment. Live checks pass.",
+    "Test-StormheimTrialsNative.py independently reads original TDB735 and installed DB2 without overlays. Checks native summon/missile/dummy targets, retained vehicle caster, 30-second duration, control/exit seat flags, radius, lock/GO models and full visual kit/attachment/model dependency trace. Read-only hotfix checks found no relevant spell-effect/misc overrides. Spell names are descriptive, not accepted as visual proof.",
+    "Test-StormheimTrialsGeometry.ps1 uses production GridMap/VMAP on canonical runtime data. Eight current raven/Havi/ingredient/stew/pot locations pass ground/model placement checks; common site terrain area is 7808. Pot credit 290743 lies 1.47299 metres from visible stew GO 127741, within native impact radius 2. No new route or coordinate was introduced; actual projectile, player walkability, rendering and collision require client confirmation.",
+    "Existing Signal Boost/trophy production and live data regressions pass. Final Release worldserver/bnetserver are in build-extractors/bin/Release and fresh worldserver readiness/clean shutdown/hashes are recorded below; runtime configuration, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "observed_failures_and_rejected_hypotheses": [
+    "Absent rows in creature_template for credit entries 110610/110611/110612 initially looked invalid. Actual LoadCreatureTemplatesWDB creates entries/pointers from creature_template_wdb, and GetCreatureTemplate returns that merged storage. All three native WDB markers exist; no unnecessary synthetic spawn/template repair was added.",
+    "Native SmartAI action 33 already supports a vehicle invoker by looking up its seated players. It does not simply discard vehicle credit. Its original party semantics are retained rather than replaced by a speculative owner-only generic handler.",
+    "The older Stew Stirred objective shares veggie slot 0 and is implicitly satisfied by the same count. It is removed as a known outdated definition and UI duplicate, not described as an independently reproduced hard progression block.",
+    "The first fixture kept original AI active after boarding, hiding the controllable-seat problem. Reading real UpdateCharmAI exposed PossessedAI replacement and lack of original update dispatch. The repaired fixture compiles that actual handler and swaps AI before hits; original proof/monitoring now remain valid during possession. Earlier startup success alone did not verify this interaction.",
+    "Initial fixture compilation required delivery-flag and native target-list adapter stubs. A logout assertion incorrectly expected a removed-world player lookup to perform dismount; the fixture now models ordinary logout exit before removal. Initial SQL snapshots omitted raven rows and therefore reported missing locations; those rows were added to the snapshot, without changing production spawn data."
+  ],
+  "client_checks_and_limits": [
+    "No WoW client gameplay was performed, as requested. Confirm quest offer/invitation visibility for both faction phases, actual travel/Havi hand-in, only one seat per click through each UI path, generic boarding/control/action bar, aiming and three real impacts, held-food/reload/splash visuals, party behavior, exit/camera and permanent pet portrait, quest reward/next UI, abandonment/re-entry and failed boarding before calling the whole chain client-verified.",
+    "Native hold/cancel/reload/leave spell records and animation dependencies are traced but their complete retail choreography is not certified. This change preserves original seat, spells and boarding lists, validates concrete progression and cleanup, and does not add a scripted flight, manual active-mover resynchronization or spell-name-based visual substitute.",
+    "The compiled runtime also contains pre-existing uncommitted New Blood source changes. Their files/audit/migration remain untouched and are excluded from this Stormheim commit; this task does not apply or certify them."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_04_stormheim_trials.sql",
+    "sha1": "01F6E4B2DB45EFFE5BAC105DD64D6E1C001A75D3",
+    "state": "RELEASED",
+    "backup": ".codex/backups/stormheim-trials/20261014-092929"
+  },
+  "next": "Ahead of the Game 39590 and A Trial of Valor 39591: champion head collection/Yotnar hand-in, then actual archive activation, completed holographic record and next-quest progression.",
+  "runtime_evidence": {
+    "source_revision": "4322acd41cf114e370eace6a4251e6a621d070e0",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-trials/startup-20261014-094222",
+      "ready": true,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0
+    },
+    "previous_startup_success": "build-extractors/runtime-test/stormheim-trials/startup-20261014-093045",
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_trials.cpp": "3aa491d1693546010cf2c5e94c7deb14de648ac79323a6caadd341d887340155",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "5f79bc8ac8362c763d82aad24f44443f1762102e6961de5919445cf332e9dbfb",
+      "sql/updates/world/2026_10_14_04_stormheim_trials.sql": "9211ef4c2c813d45cc231d5dec8528352c111edb983b2752e7b4fe5774813b03",
+      "build-extractors/bin/Release/worldserver.exe": "2ff05eef6e7ca3d21e2fe9860ca770f60e387e6e077d4ac65741afc64b90dd4b",
+      "build-extractors/bin/Release/bnetserver.exe": "bcc5606e58a329b523086146b7de14852744b8b346162ed03299a32f969a9d0c"
+    },
+    "preexisting_compiled_source_sha256": {
+      "src/server/scripts/Legion/new_blood.cpp": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325"
+    }
+  }
+}
