@@ -1,0 +1,27 @@
+{
+  "quest": 40729,
+  "scenario": 962,
+  "observed": [
+    "User restarted after fixes, returned to the prison, and still had the previous attempt's tome in the bag.",
+    "User reached the archive again: the tome shimmered and opened a loot window, but it was empty because the unique item was already owned.",
+    "Read-only character query confirmed offline Maiko (guid 1), map 1522, incomplete quest 40729, and item_instance 184 with itemEntry 132512."
+  ],
+  "diagnosis": "Fresh-instance re-entry resets scenario actors/criteria to the prison, but previously retained the unique encounter tome. Abandonment also omitted this item. Existing-tome SmartAI recovery did not progress this observed run; its exact failed condition has not been established.",
+  "repair": [
+    "Record the existing fresh-prison restart decision, then remove tome 132512 from loaded inventory/bank with native DestroyItemCount. Do not attempt deletion before item loading.",
+    "Remove the same encounter item when quest 40729 is abandoned through ResetNewBloodQuest. Repeated cleanup is harmless.",
+    "Preserve a valid tome on live-scenario re-entry, other maps/classes, completed/rewarded quests and later scenario 998. No other inventory entries are selected."
+  ],
+  "validation": {
+    "login": "PASS: extracted production login blocks, stale inventory/bank tome, no tome, unrelated items, existing live scenario, quest/class/map/reward gates and later-scenario isolation.",
+    "abandonment": "PASS: extracted production quest cleanup, stale inventory/bank tome removal, repeat cleanup, unrelated items, actor scope and later instance/binding isolation.",
+    "release": "PASS: CMake Release worldserver built in build-extractors/bin/Release. SHA256 E1C405172C129D374BAA3682172E731EF79487FA0D0AD087741506D90D92466B.",
+    "startup": "PASS: canonical runtime reached ready, graceful shutdown exit 0; DBErrors.log and stderr.log empty. Logs: build-extractors/runtime-test/new-blood-tome-reset/startup. Server left stopped.",
+    "client": "Pending: fresh prison start without stale tome, complete archive fight, loot tome once, verify next stage and eventual completion. Native item deletion/save and loot UI are not exercised by the mock inventory fixture."
+  },
+  "limits": [
+    "This corrects fresh-run inventory coherence; it does not persist exact scenario stage across server restarts.",
+    "Earlier portal, hand, fire and escape visual changes remain subject to their existing client verification notes; this fix does not verify them.",
+    "No direct character database modification is needed: the fresh-instance login path cleans the stale item after loading it."
+  ]
+}

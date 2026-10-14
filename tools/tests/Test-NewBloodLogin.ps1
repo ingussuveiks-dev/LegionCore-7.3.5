@@ -13,6 +13,10 @@ $a=$source.IndexOf('    // The New Blood''s scenario selector is transient.')
 $b=$source.IndexOf('    _LoadDailyQuestStatus(', $a)
 if($a -lt 0 -or $b -lt $a){throw 'Login restoration missing'}
 [IO.File]::WriteAllText("$output/Restore.inc",$source.Substring($a,$b-$a))
+$a=$source.IndexOf('    // Match inventory to a fresh prison restart')
+$b=$source.IndexOf('    if (IsVoidStorageUnlocked())', $a)
+if($a -lt $source.IndexOf('    _LoadNotInventory(holder.') -or $b -lt $a){throw 'Fresh restart item cleanup must follow inventory loading'}
+[IO.File]::WriteAllText("$output/InventoryRestore.inc",$source.Substring($a,$b-$a))
 $source=Get-Content "$repo/src/server/game/Maps/MapManager.cpp" -Raw
 $a=$source.IndexOf('        bool brokenShoreIntro =')
 $b=$source.IndexOf('    InstanceTemplate const* instance', $a)

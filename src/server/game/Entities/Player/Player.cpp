@@ -20482,6 +20482,10 @@ void Player::CancelQuestObjects(uint32 questId)
 
 void Player::ResetNewBloodQuest()
 {
+    // This unique encounter item belongs to the abandoned introduction run.
+    // Leaving it behind makes the archive's next loot window empty.
+    if (uint32 tomeCount = GetItemCount(132512, true))
+        DestroyItemCount(132512, tomeCount, true);
     if (GetScenarioId() == 962)
         SetScenarioId(0);
     InterruptNonMeleeSpells(true, 199966); // ritual channel only
@@ -22685,6 +22689,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // adds the player to map 1522 (also used by the later order-hall scenario).
     // A new instance has no saved scenario criteria or actor state: restart at
     // the native prison arrival, never at a stale archive/escape coordinate.
+    bool restartNewBloodAtPrison = false;
     if (GetMapId() == 1522 && getClass() == CLASS_WARLOCK && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(40729))
     {
         Scenario* introduction = sScenarioMgr->GetScenario(GetInstanceId());
@@ -22693,6 +22698,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
             SetScenarioId(962);
             if (!introduction)
             {
+                restartNewBloodAtPrison = true;
                 Relocate(2959.64f, 1126.32f, 212.0f, 6.27446f);
                 TC_LOG_INFO("entities.player", "The New Blood: restoring player %u at the prison in a fresh scenario instance", GetGUIDLow());
             }
@@ -22728,6 +22734,12 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     _LoadInventory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADINVENTORY), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ARTIFACTS), time_diff);
     _LoadNotInventory(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADNOTINVENTORY), time_diff);
+
+    // Match inventory to a fresh prison restart only after items are loaded.
+    // A live introduction retains its valid tome and current scenario progress.
+    if (restartNewBloodAtPrison)
+        if (uint32 tomeCount = GetItemCount(132512, true))
+            DestroyItemCount(132512, tomeCount, false);
 
     if (IsVoidStorageUnlocked())
         _LoadVoidStorage(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADVOIDSTORAGE), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VOIDSTORAGE_ITEM));

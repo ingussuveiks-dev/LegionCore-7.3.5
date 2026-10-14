@@ -64,6 +64,9 @@ struct Player
     InstancePlayerBind binding;
     std::set<uint32> auras{199966,199967,200033,204833,196229,199362,199338,195045,195066,195068,199195,999999};
     unsigned interrupted=0,teleports=0,unbinds=0;
+    uint32 tome=1,bankTome=1,unrelatedItem=7;
+    uint32 GetItemCount(uint32 item,bool bank){assert(item==132512 && bank);return tome+bankTome;}
+    void DestroyItemCount(uint32 item,uint32 count,bool update){assert(item==132512 && count==tome+bankTome && update);tome=bankTome=0;}
     ObjectGuid GetGUID(){return playerGuid;}
     Map* GetMap(){return &map;}
     bool IsInWorld(){return inWorld;}
@@ -116,6 +119,8 @@ int main()
     a.CancelQuestObjects(40729);a.CancelQuestObjects(40729);assert(fresh.IsQuestObjectExpired());
     a.quests[40729]={};a.BindQuestObject(40729,&fresh);a.quests.clear();assert(fresh.IsQuestObjectExpired()); // logout/destruction
     a.ResetNewBloodQuest();assert(!a.scenarioId&&!a.teleports&&a.auras==std::set<uint32>{999999});
+    assert(!a.tome && !a.bankTome && a.unrelatedItem==7);
+    a.ResetNewBloodQuest();assert(!a.tome && !a.bankTome); // repeat reset is harmless
     scenarios.data[50]={962};InstanceSave save{50};a.binding={false,&save};a.bound=true;a.mapId=1522;a.instanceId=50;
     a.ResetNewBloodQuest();assert(a.teleports==1&&a.unbinds==1&&!a.bound);
     scenarios.data[51]={998};save.id=51;a.instanceId=51;a.bound=true;a.scenarioId=998;
