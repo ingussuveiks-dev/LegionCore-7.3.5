@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 using uint32 = uint32_t;
 constexpr int CLASS_WARLOCK=9, QUEST_STATUS_INCOMPLETE=3;
 constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
@@ -12,8 +13,10 @@ struct Player {
     int map=1522, cls=9, status=3, selector=0, loads=0; bool rewarded=false, relocated=false;
     uint32 tome=0, bankTome=0, unrelated=7;
     bool itemsLoaded=false;
-    uint32 GetItemCount(uint32 item, bool bank){assert(item==132512 && bank && itemsLoaded);return tome+bankTome;}
-    void DestroyItemCount(uint32 item,uint32 count,bool update){assert(item==132512 && !update && count==tome+bankTome && itemsLoaded);tome=bankTome=0;}
+    // Loaded bag items have not entered the world yet; native Bag::GetItemCount
+    // returns zero here (covered with the actual method in the inventory test).
+    uint32 GetItemCount(uint32 item, bool bank){assert(item==132512 && bank && itemsLoaded);return 0;}
+    void DestroyItemCount(uint32 item,uint32 count,bool update){assert(item==132512 && !update && count>=tome+bankTome && itemsLoaded);tome=bankTome=0;}
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
     void _LoadQuestStatus(int savedStatus){++loads;status=savedStatus;}
     bool early(){uint32 mapId=map,instanceId=1;

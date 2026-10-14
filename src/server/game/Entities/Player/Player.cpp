@@ -132,6 +132,7 @@
 #include "WorldStateMgr.h"
 #include "WorldStatePackets.h"
 #include "WowTime.hpp"
+#include <limits>
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
@@ -22737,9 +22738,10 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     // Match inventory to a fresh prison restart only after items are loaded.
     // A live introduction retains its valid tome and current scenario progress.
+    // Bag::GetItemCount excludes items not yet in world during login; destroy
+    // by entry directly so a loaded bag cannot conceal a stale encounter item.
     if (restartNewBloodAtPrison)
-        if (uint32 tomeCount = GetItemCount(132512, true))
-            DestroyItemCount(132512, tomeCount, false);
+        DestroyItemCount(132512, std::numeric_limits<uint32>::max(), false);
 
     if (IsVoidStorageUnlocked())
         _LoadVoidStorage(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADVOIDSTORAGE), holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_VOIDSTORAGE_ITEM));

@@ -4,6 +4,6 @@
   "evidence": "Read-only character query confirms quest 40729 in character_queststatus_rewarded for Maiko, guid 1, now map 1502; no remaining active quest row.",
   "diagnosis": "The handler logs receipt of every completion request as ERROR unconditionally, before validating its outcome. This message alone is not a failed turn-in.",
   "repair": "Change the receipt trace to DEBUG; preserve all validation, real error paths and quest behavior.",
-  "validation": "Reviewed one-line logging-only change. No behavior test added. Release compilation is recorded with the pending tome-load follow-up.",
+  "validation": "Reviewed the full receipt handler and reward call: receipt is traced unconditionally before template lookup, NPC/involved-quest, interaction and status validation; it does not report a failed check. The real invalid-quest ERROR remains. Successful reward is evidenced by the user's completion and saved rewarded row. One-line logging-only change, no behavior test added. Release compiled, deployed and startup ready/exit 0 with the tome-load follow-up; DBErrors/stderr empty.",
   "client_limit": "User confirms completion with manual tome deletion. Automatic stale-tome cleanup still failed in the client; this does not verify that fix or the detailed escape visuals."
 }

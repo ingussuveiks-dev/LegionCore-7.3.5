@@ -23,5 +23,15 @@
     "This corrects fresh-run inventory coherence; it does not persist exact scenario stage across server restarts.",
     "Earlier portal, hand, fire and escape visual changes remain subject to their existing client verification notes; this fix does not verify them.",
     "No direct character database modification is needed: the fresh-instance login path cleans the stale item after loading it."
-  ]
+  ],
+  "client_retest": {
+    "result": "FAILED: with Release E1C405172C129D374BAA3682172E731EF79487FA0D0AD087741506D90D92466B the player still held the tome at prison stage 2. The 15:30:22 server log confirms the fresh-prison branch ran.",
+    "workaround": "User manually deleted the tome and subsequently finished and turned in quest 40729; rewarded database row confirmed. Do not reset or modify this completed character.",
+    "root_cause": "Bag::GetItemCount requires each contained item to be IsInWorld(). Loaded bag items are not yet in world inside Player::LoadFromDB, so the guarded deletion saw zero and skipped removal. The original test's simplified counter incorrectly counted these items.",
+    "repair": "Keep the fresh-instance/class/map/quest guards, but invoke native DestroyItemCount by item entry with the maximum count directly. That scan visits loaded inventory/bank bags without the world-state filter; do not modify generic bag-count semantics.",
+    "regression": "PASS: extracted actual Player::GetItemCount, Bag::GetItemCount, Player::DestroyItemCount, slot enums and production login cleanup. Reproduces zero count for loaded bag/bank tome, verifies direct deletion there and in backpack/bank slots, world-loaded items, repeat/absent cleanup, unrelated items and live-scenario preservation. Existing login and abandonment tests also pass.",
+    "release": "PASS: Release game target compiled, linked with current libraries, then copied to canonical build-extractors/bin/Release/worldserver.exe after user closed WoW/worldserver. SHA256 E0156A1606329A9519A82CFC3452A74F893650BFF67B2A95AD933F7F17E297DD. Prior executable backup: .codex/backups/new-blood-tome-loaded/20261014-154911.",
+    "startup": "PASS: canonical executable reached ready and shut down gracefully, exit 0; DBErrors.log and stderr.log empty. Logs: build-extractors/runtime-test/new-blood-tome-loaded/startup. Server left stopped.",
+    "client": "Pending automatic cleanup with corrected follow-up; successful user completion used manual deletion."
+  }
 }
