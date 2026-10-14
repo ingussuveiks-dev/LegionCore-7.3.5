@@ -1,0 +1,22 @@
+{
+    "report":  "User cast the ordinary Enslave Demon icon on a subsequent NPC after leaving the New Blood cage; worldserver crashed.",
+    "crash":  "build-extractors/bin/Release/Crashes/_worldserver.exe_[14-10_12-57-10].txt",
+    "exception":  "C0000005 ACCESS_VIOLATION",
+    "diagnosis":  {
+                      "function":  "CharmInfo::InitCharmCreateSpells+0xa4",
+                      "sectionOffset":  "0001:000000000183E6E4",
+                      "caller":  "Unit::SetCharmedBy+0x1085",
+                      "cause":  "The high-level instanced-creature restriction dereferenced GetOwner()-\u003eIsPlayer() without checking for a null owner. Charming sets a charmer, not an owner; ordinary world NPCs can therefore reach this branch ownerless.",
+                      "symbolEvidence":  "Re-linked the retained objects/libraries into a diagnostic executable with /INCREMENTAL /OPT:NOREF /OPT:NOICF and a map. Its complete .text section is byte-identical to the crashing executable (42613248 bytes). The old runtime map dated September 23 was not used.",
+                      "retainedDiagnosticFiles":  ".codex/crash-20261014-125710"
+                  },
+    "repair":  "Treat an absent owner as not player-owned while preserving the existing level, instance and controllable-guardian restrictions. No quest data or character state changes.",
+    "validation":  {
+                       "Test-CharmCreateSpells.ps1":  "PASS: compiles actual production InitCharmCreateSpells; ownerless high-level instance NPC, player owner, NPC owner, guardian, low level, non-instance, null map and player targets",
+                       "Test-WarlockRegression.ps1":  "PASS: Burning Rush and scripted mover checks",
+                       "release":  "PASS: built canonical build-extractors/bin/Release/worldserver.exe",
+                       "startup":  "PASS: ready=True, exit=0; DBErrors.log and stderr.log empty; logs in build-extractors/runtime-test/charm-owner-crash/startup; server left stopped",
+                       "client":  "Ordinary Enslave Demon in the reported client situation still needs a client retest."
+                   },
+    "runtimeSHA256":  "369A07268EDAB3C4A93789FBA08F253DF82A5932621D64D4334D7A2F42FEE534"
+}
