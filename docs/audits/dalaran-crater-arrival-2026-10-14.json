@@ -1,0 +1,25 @@
+{
+  "quest": 43100,
+  "object": 246008,
+  "object_name": "Portal to Dalaran Crater",
+  "observed": "User took the optional portal for Finding the Scepter, received credit, fell, and reported a rock appearing after the character; possibly another NPC fell too. User initially remained at the landing point, then continued elsewhere.",
+  "data": {
+    "portal_spell": 228507,
+    "teleport_spell": 228508,
+    "destination": {"map":0,"x":303.22,"y":347.21,"z":125,"orientation":1.72194},
+    "saved_character_after_fall": {"map":0,"x":303.22,"y":347.21,"z":-65.7109},
+    "native_terrain_height": -65.7102,
+    "native_vmap_height_from_125_150_500": -200000,
+    "nearby_spawned_gameobjects": "No gameobject rows on map 0 in X 150..450, Y 200..500.",
+    "npc_at_ground": {"guid":343978,"entry":62622,"name":"Crusader Jorny the Deified","x":303.087,"y":347.229,"z":-65.6277}
+  },
+  "method": "Built read-only probe against current Release libraries. Loaded GridMap maps/0000_31_31.map (LoadResult 0) and VMAP map 0 tile 31/31 (load result 1). Native GridMap::getHeight and VMapManager2::getHeight queried the exact portal XY. Probe and build log retained under .codex/dalaran-crater-geometry.*.",
+  "interpretation": "Installed destination is in air roughly 190.7 units above terrain. The saved landing height matches native terrain within 0.001, supporting landing on the ground rather than falling through it. No static collision floor or dynamic gameobject platform was found at the destination. The nearby named NPC is already spawned at ground level; this does not identify any other actor the user saw.",
+  "reference": "https://www.wowhead.com/quest=43100/finding-the-scepter",
+  "reference_scope": "Original quest walkthrough describes the Chamber of the Guardian portal to Dalaran Crater and the fall. Ancient Portal documentation independently describes a high arrival, but it is not used as sole evidence for this different portal's installed destination.",
+  "limits": [
+    "This measurement does not establish which visible rock the user saw or the timing of client terrain streaming; no client recording was captured.",
+    "No portal coordinates, map-object arrival guard, NPC positions or character progress changed.",
+    "Unknown-spell 81040 remains unresolved. The Ratstallion chain checked so far has no such reference, and user deferred the repetition check. Do not claim it fixed."
+  ]
+}
