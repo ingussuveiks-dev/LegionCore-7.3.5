@@ -1,0 +1,9 @@
+{
+  "quest": 40729,
+  "observed": "User completed and turned in The New Blood after manually deleting the stale tome. At 15:37:55 the server logged Received CMSG_QUESTGIVER_COMPLETE_QUEST as ERROR for NPC 101097.",
+  "evidence": "Read-only character query confirms quest 40729 in character_queststatus_rewarded for Maiko, guid 1, now map 1502; no remaining active quest row.",
+  "diagnosis": "The handler logs receipt of every completion request as ERROR unconditionally, before validating its outcome. This message alone is not a failed turn-in.",
+  "repair": "Change the receipt trace to DEBUG; preserve all validation, real error paths and quest behavior.",
+  "validation": "Reviewed one-line logging-only change. No behavior test added. Release compilation is recorded with the pending tome-load follow-up.",
+  "client_limit": "User confirms completion with manual tome deletion. Automatic stale-tome cleanup still failed in the client; this does not verify that fix or the detailed escape visuals."
+}
