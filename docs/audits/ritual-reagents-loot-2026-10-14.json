@@ -21,6 +21,6 @@
   },
   "separate_observations": [
     "Artifact-selection order still exposes 43984 before the intended campaign stage. This migration does not change acquisition branches or the user's accepted quests.",
-    "Ratstallion display NPC 110708 has no click flag; crate NPC 110743 already has spellclick 220218. That separate Underbelly interaction requires its own diagnosis, not quest loot changes."
+    "Ratstallion display NPC 110708 has no click flag; crate NPC 110743 already has spellclick 220218. Native SpellEffect 328358 is CREATE_ITEM (24), item 139421, caster target 1. Read-only query after logout confirms Maiko already owns one Ratstallion Harness (139421). This crate grants a bag item directly, not a loot window or a ride by clicking the display rat; use the harness to summon the ride. No speculative script or data change made to this interaction. Item-use boarding itself remains unverified in the client."
   ]
 }
