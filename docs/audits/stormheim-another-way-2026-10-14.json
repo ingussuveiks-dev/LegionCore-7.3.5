@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38342,
+    38617
+  ],
+  "status": "Code/data fix, extracted production/native regressions, canonical Release build, backed-up SQL deployment and clean startup/shutdown complete. Client gameplay was not performed, as requested.",
+  "findings_and_changes": [
+    "Another Way requires killing Gunnlaug Scaleheart91240 and then climbing the tower98255. Original TDB735 objectives277721/278227 are MONSTER91240, slot0, amount1, Flags1 (minimap);277825/278228 are MONSTER98255, slot1, amount1, Flags2 (SEQUENCED, not optional). Live boss flags had become0; restore only those known rows. Preserve the mandatory sequence, races, rewards and next38412/38618 Above the Winter Moonlight.",
+    "The actual boss294152 is present at2377.94,2348.66,267.842 and retains hostile faction16, SmartAI combat casts186488/186476/187406, dialogue94002, display63107 and WDB KillCredit1=113889. Native Player::KilledMonster awards Entry91240 first, then its alias113889; the alias does not prevent the objective and must not be overwritten. Pet-owner resolution is a fixture feeding that native method; the complete Unit death pipeline was not executed.",
+    "Tower credit actor98255 has no static spawn and no installed native summon SpellEffect. Its old update SAI blindly credited players within10yd every1s. Delete only that exact row and award the native counter from the player update after actual roof arrival and boss credit. Both original TDB735 and installed quest POIs place the tower at2348,2380. Native VMAP gives the top roof335.429; nearby hook92017/guid294051 is only300.555 with floor300.469 and is not the final roof.",
+    "Tower validation requires the matching faction/native mandatory objective metadata, INCOMPLETE quest, boss counter present, tower counter absent, live/alive player on outdoor map1220/zone7541/instance0, no teleport/vehicle/transport/taxi/falling/flying, finalized spline, XY within9yd, Z within2yd of335.429 and actual Map::GetHeight floor near the roof with player within1yd of that floor. Increment only that player's slot1, send one native credit packet and call native CanCompleteQuest. Guide/dialogue/summon failure cannot block this stage. Presence on the valid roof after killing the boss qualifies; the original radius-trigger semantics do not require proof of a particular climbing route.",
+    "Native Alliance91553 quest acceptance already casts205485 to summon91558. Native Horde92569 has no installed static spawn or38617 acceptance summon;92566 remains the actual installed starter/ender fallback. Reuse205485/205487, whose actual SUMMON effect creates91558/92569 via SummonProperties2919 (Control1, Flags131866, Slot6, owned personal guardian), native destination142 and permanent duration. This establishes the summon graph, not client pet portrait behavior.",
+    "Bind only known empty/SmartAI91558/92569 templates to a SmartAI subclass. Delegate native JustSummoned actions207 personal visibility, linked Follow29 and SetData dialogue98747/98748. Capture exact owner GUID and the quest acceptance ScriptLifetime for main-stage actors. Repeated updates reuse only that owner's valid guide and retry a failed native summon; another player's actor cannot satisfy the lookup. Static/unrelated actors and custom template bindings retain their own behavior.",
+    "The guide must survive RewardQuest for the main quest while offering the next quest. It deliberately is not bound to the main quest's QuestObjectScope, which would despawn the hand-in actor during the reward barrier. Acceptance token invalidates abandonment/reaccept actors; owner/story scope removes scoped actors after logout, death, map/instance/zone exit or next-quest reward. Native main rewarded/next active state keeps the actor through hand-in. On the earned roof/rewarded stage, move only an out-of-range owner guide to the player, restore Follow and independently trigger existing dialogue once when its questgiver flag and phase permit it. Never move the player or pet.",
+    "Player updates are throttled to1s with a GUID timer map protected by a mutex for map-thread access; release the mutex before casts or world changes. Remove timers when scope ends or the player logs out. OnLogin restores only matching native COMPLETE main quests missing either mandatory counter to INCOMPLETE; valid completion, rewarded quests, other quests and native counters remain intact. No personal-character SQL updates or new persistent stage storage.",
+    "Horde38617 StartScript38617 references an empty quest_start_scripts list and SpecialFlags is already0. Detach only that empty reference; there were no observed self-completion actions at this stage. Preserve custom nonempty lists, native guide SAI, boss combat/alias,92566 script/spawns/relations and next38618 StartScript38618 for the next audit."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimAnotherWay.ps1",
+      "result": "PASS",
+      "evidence": ".codex/another-way-test.log",
+      "details": "Extracted actual tower, guide, login/logout/update handlers and native Player::KilledMonster/KilledMonsterCredit/QuestObjectiveSatisfy/CanCompleteQuest. Both factions, boss-first sequencing, lower ledge/air/falling/flying/spline/vehicle/transport/death/floor failures, once-only completion, failed summon retry, acceptance token/reaccept/abandon cleanup, reward barrier, logout, instance/map exclusion, custom script/native metadata preservation, distinct owners, static SmartAI delegation, pet-owner input and throttle. Cast execution, positions/map floor, summon list, SmartAI actions, ownership resolver, packet transport and completion storage are fixtures; actual movement/guardian lifecycle and client UI are not executed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAnotherWayHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/another-way-handoff-test.log",
+      "details": "Full extracted native CanCompleteQuest, CanRewardQuest, race/previous-quest checks and GetNextQuest relations for91558/92569 plus installed92566 Horde fallback. Boss-only progress cannot complete; both mandatory counters can. NPC registry/reward storage are fixtures, not real client hand-in."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAnotherWayGeometry.ps1",
+      "result": "PASS:5 anchors,0 failures",
+      "evidence": ".codex/another-way-geometry.log",
+      "details": "Actual installed GridMap/VMAP height at boss, Alliance starter, Horde fallback, lower grapple ledge and corrected tower roof. No navigable ascent, client collision or NPC pathfinding claim."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAnotherWayData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/another-way-data-test.log",
+        ".codex/another-way-data-live.log"
+      ],
+      "details": "Migration twice in temporary tables, original mandatory flags/counts, questgiver bindings, six native guide actions, existing Alliance summon, exact blind-credit removal, empty Horde hook, unchanged normal flags, native kill alias/combat and next/fallback relations/POI. Custom script/objective flags/start action/tower id or range survive. Native template/faction/unit flags and quest reward/race fields preserved. No persistent writes from the data regression itself."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAnotherWayNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-another-way-native-2026-10-14.json",
+      "details": "Original TDB quest/objective/POI/next relations; native guide summon205485/205487,2919 properties, boss and guide displays63107/34520/65132/models, combat SpellEffect/SpellXSpellVisual and visual-kit/model-attachment graph with file hashes. Metadata is not evidence that a visual or animation played in the client."
+    },
+    {
+      "command": "Previous Impalement Insurance and No Wings code plus live data regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/another-way-impalement-regression.log",
+        ".codex/another-way-impalement-data-regression.log",
+        ".codex/another-way-no-wings-regression.log",
+        ".codex/another-way-no-wings-data-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/another-way-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "The initial guessed roofZ300 probe failed at the tower POI: the highest floor was335.429. The lower300.469 ledge exists but cannot prove top-of-tower arrival; corrected the production anchor and native geometry test.",
+    "The first native-kill fixture omitted the QUEST_SPECIAL_FLAGS_KILL derived by the native quest loader from monster objectives. Added this derived runtime flag instead of rewriting live SpecialFlags0 or inventing a boss alias problem.",
+    "The initial fixture distance helper inspected the target's default distance rather than the guide's distance and hid guide repositioning; corrected it before validating the actual production handoff branch.",
+    "Adding outdoor instance scope exposed a duplicate GetInstanceId declaration in the fixture. Removed the old constant stub and tested instance1 rejection. The final production Release build succeeded.",
+    "The temporary SQL regression caught a missing space after a -- comment in migration16, which MariaDB would parse as SQL. Corrected before deployment and confirmed replay/live data.",
+    "Primary and handoff regressions initially reused executable/command output filenames. Gave each test separate names and reran both successfully to avoid concurrent-run collisions."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "sha1": "4C6A92524465FA47DDB5842F1467F6404C34DCDE",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-another-way\\20261014-224208",
+    "migration": "2026_10_14_16_stormheim_another_way.sql"
+  },
+  "startup": {
+    "updates_enabled": false,
+    "directory": "build-extractors/runtime-test/stormheim-another-way/startup-20261014-224208",
+    "DBErrors_bytes": 0,
+    "exit_code": 0,
+    "note": "Explicit migration16 with scoped World table backups, canonical executable and temporary config/logs. Runtime configs/certificates/DLLs/logs/extracted data preserved; unrelated automatic migrations disabled.",
+    "stopped": true,
+    "stderr_bytes": 0,
+    "ready": true
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "acd9e59d509d6d5ee72c4075e3084e2893f4034d75f6ddbe11047b75d23b246f",
+    "base_head": "5730016ea960431a2f5bb63462340ee31f2db876",
+    "source_sha256": "7ada23b45b3a071ef8d5462bbee4ef14e0212b658427d64da763a0ea9fe21a2b",
+    "bnet_sha256": "1cc84fb543cfc00a1306ee1227d298a98292adfe68195a5955852682c5bb75b0"
+  },
+  "pending_client_checks": [
+    "Both factions: native boss spawn/pose/model63107, combat casts and visuals, player and pet killing blows/group credit exactly once, boss objective followed by sequenced tower objective; no credit on lower ledge, jump/fall/flight/vehicle and actual credit at grounded roof arrival.",
+    "Actual climb using the existing grappling points/native movement, collision and finalized spline at the top. The geometry reader only confirms local floors; it does not prove a navigable route or client animation/camera.",
+    "Personal guide91558/92569 initial summon/follow/visibility/questgiver flag, correct own actor with two simultaneous characters, guide catch-up/teleport at the tower, independent native dialogue98747/98748 playback, phase/range and combat hand-in, reward barrier then Above the Winter Moonlight offer.",
+    "Abandon/reaccept, logout/login, death/resurrection, map/scenario entry and next-quest reward cleanup/retry in actual runtime. Native quest counters persist; this fix does not claim exact actor/stage restoration after a crash.",
+    "Primary pet, its portrait, player camera/mover and guardian coexistence after native Slot6 guide summons and guide teleport. No core pet/mover code was changed, but native metadata or simulated ownership is not a client verification.",
+    "Horde92566 remains an installed fallback with two overlapping spawns; native92573 has no installed spawn and original story placement remains unverified. Next38618 still has its own StartScript38618 for a separate audit."
+  ],
+  "next_scope": {
+    "quests": [
+      38412,
+      38618
+    ],
+    "title": "Above the Winter Moonlight",
+    "next": 38414
+  }
+}

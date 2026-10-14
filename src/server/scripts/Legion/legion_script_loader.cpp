@@ -23,6 +23,7 @@ void AddSC_stormheim_blessing();
 void AddSC_stormheim_grapple();
 void AddSC_stormheim_no_wings();
 void AddSC_stormheim_impalement();
+void AddSC_stormheim_another_way();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -251,6 +252,7 @@ void AddLegionScripts()
     AddSC_stormheim_grapple();
     AddSC_stormheim_no_wings();
     AddSC_stormheim_impalement();
+    AddSC_stormheim_another_way();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
