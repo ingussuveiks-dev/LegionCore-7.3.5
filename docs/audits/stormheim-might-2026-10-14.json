@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    39594
+  ],
+  "status": "Code/data implementation, production-handler regressions, native evidence, canonical Release build and clean offline startup/shutdown complete. Client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "39594 A Trial of Might has two mandatory original monster objectives: 279739/96290/slot0 (learn about the Trial of Might), followed by 279732/96175/slot5 with Flags=2 (SEQUENCED, not OPTIONAL). Preserve quest/objective rows and the 39593 reward prerequisite; 39597 unlocks after rewarding 39594.",
+    "Installed GO243817 invokes event243817 and console96176 at3546.24,2163.73,234.228. Console action list sends three data3 messages and a data4 message to target CREATURE_GUID with GUID0. The production predicate compares only DB GUID, so it matches arbitrary summoned creatures, including the console, without testing entry35845. No installed static35845 exists in this vault. Generic helper data4 attempts190773 then spawns96175; native190773 itself is only a dummy effect and cannot repair the missing server chain.",
+    "All three interaction paths are handled: GameObjectScript OnGossipHello, AI GossipUse and AI GossipHello for ReportUse. Actual spawned/selectable flag, quest/alive/map/zone/phase/visibility/LOS/distance checks gate activation. Per-owner registry prevents duplicate runs. Only synchronous validated GO activation arms96176; arbitrary summons and later zones use original SmartAI.",
+    "Private96176/35845/96175 use the existing quest-object scope and exact original acceptance token. Preserve the native console announcement at1.5s, power visual190763 at3s, activation190773/opponent at6s, then Yotnar groups3 and0 with8s pauses before challenge group1 and first credit. One transition per update prevents server stalls from collapsing pauses. No invented conversation/recording spell replaces Yotnar narration.",
+    "The private projection is anchored at the installed opponent XY3502.97,2164.51 with original orientation6.23052. Source Z231.977 is2.55m above VMAP229.427, so both helper and Yotnar use Map::GetHeight after checking finite floor and maximum5m correction. The public console and restored hand-in Yotnar coordinates remain unchanged.",
+    "Original SmartAI invincibility compares raw pre-normalization damage with target-relative health. The extracted native handler misses a fresh100-damage hit with multiplier0.001 against1000HP. Private DamageTaken instead compares final normalized damage with target-relative health and the25-percent surrender boundary before damage is applied; invalid multipliers/foreign hits are blocked. Player and owner-pet hits both surrender, including a fresh lethal strike.",
+    "Surrender stops combat, protects Yotnar, validates native68442, plays group4, waits5s, plays group2, grants only this owners once-only second objective, then expires the exact original scope. No reward for a death, despawn, timeout, failed kneel, absent projector/controller or unrelated attacker. Preserve real progress already earned when restarting, without duplicate first credit.",
+    "96175 keeps native active98..110 scaling and model25217. The existing physical restored96257/338528 in phase6665 supplies the hand-in and next offer39597. NPC96258 remains an existing alternate relation, without adding an unverified extra static spawn.",
+    "Migration08 binds only known empty/SmartAI defaults to the new script. Original generic35845 SmartAI rows, Yotnar dialogue/scaling/flags/model, public GO data and prior quest registrations remain intact for unrelated reuse/rollback. A scope/entry guard delegates unrelated uses to SmartAI."
+  ],
+  "observed_failures_and_corrections": [
+    "Initial production-handler reproductions show GUID0 selecting any summoned NPC and raw invincibility missing a scaled lethal hit.",
+    "First stale-acceptance regression found that checking only IsQuestObjectExpired in the registry delayed an immediate restart. Use now validates the old AI acceptance, stops only that original scope and starts a fresh run without waiting for a later update.",
+    "The inherited max(terrain,VMAP) geometry probe falsely selected the outdoor hillside for this underground archive; corrected probe matches native indoor selection. Its corrected reading then exposed the actual2.55m floating opponent anchor, now resolved to the indoor floor.",
+    "Initial native assertion wrongly assumed the archive contained the installed custom event. Original TDBData2=0 and Data3=300000; liveData2=243817 and Data3=180000. These differences are recorded rather than mislabeled as native values. Migration preserves live values."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimMight.ps1",
+      "result": "PASS",
+      "evidence": ".codex/might-test.log",
+      "details": "Production quest completion/reward/predecessor handlers and the complete new archive/actor script, with fake map/network/AI/spawn services. Includes original native GUID predicate and raw SmartAI damage handler to reproduce both defects; validates three GO packet routes, timers, both factions, original objective slots, owner/pet hits, scaled fresh one-shot, 2-HP invalid-range case, invalid multipliers, failed height/cast/summon, exactly-once credit, no victory on death/evade/timeout, retained first-stage progress on retry, original weak-scope cleanup on logout/map transfer/abandon, new acceptance isolation and unrelated SmartAI delegation."
+    },
+    {
+      "command": "tools/tests/Test-StormheimMightData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": null,
+      "details": "Temporary table snapshots apply the migration twice, verify native objectives/scaling/relations/dialogues/spawn and unrelated/custom protections. Live post-deployment checks passed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimMightNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": ".codex/might-native.log",
+      "details": "Original TDB735 objectives/types/slots/sequenced flag, archive lock/template and native 26972 spell effects/visual events/kits/attachments/animations/models, Yotnar model and hashes. Native 190773 is a dummy activation, not a native summon or conversation."
+    },
+    {
+      "command": "tools/tests/Test-StormheimMightGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/might-geometry.log",
+      "details": "Three actual VMAP/map anchors passed. Probe follows the indoor-aware Map::GetHeight selection, rejects the outdoor hillside as a cave floor, and checks the installed opponent anchor offset before resolving its spawn onto the indoor floor."
+    },
+    {
+      "command": "Prior Valor/Will/Watcher code and live SQL regressions",
+      "result": "PASS",
+      "evidence": null,
+      "details": "All three production regression runners and all three live data runners passed after rebinding the shared 35845 template."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/might-build-final.log",
+      "details": "Both executables built in build-extractors/bin/Release. Final build includes all final Might C++ changes; configuration/runtime files preserved."
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_14_08_stormheim_might.sql",
+    "state": "RELEASED",
+    "sha1": "741C88B5ED3E8276F83B013B767C4D859985F50E",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-might\\20261014-123603"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-might\\startup-20261014-123603",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "reason": "Avoid applying the unrelated uncommitted New Blood migration during this scoped validation."
+  },
+  "build": {
+    "runtime": "build-extractors/bin/Release",
+    "base_head": "0b79f736069b0ac01c6f888a21e4d5387a772612",
+    "bnet_sha256": "9c79c733324848329a5bb073ee42afc58286409f0c7ee93e1dc7726bada259b9",
+    "world_sha256": "62f75f9f61f8dc0d9fab026f85dc3dc2284dfbb660be731a70915d0a4dd3f587",
+    "might_source_sha256": "af8cb059a277b9a21ba8b2df2cac5ded823cdfed9e5b4701abb5009bdb096873",
+    "preexisting_new_blood_working_source_sha256": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325",
+    "note": "The existing dirty New Blood source is present in the compiled working tree. Its files and migration were not edited, committed, deployed or verified by this task."
+  },
+  "pending_client_checks": [
+    "Actual catalog of interaction flags/cast bar, GO click, private actor visibility for independent players and both factions, phase transitions and re-entry/abandonment/retry in the7.3.5 client.",
+    "Native190763/190773 projection playback and placement, Yotnar birth/model animation/dialogue/audio, two8-second narration pauses, real combat/target-scaled health, native68442 pose and5-second surrender/finale, cleanup and turn-in/39597 offer.",
+    "The three installed data3 rows all target GUID0 and supply no distinct watcher positions. This repair uses one exact private projection at the installed Yotnar XY; a three-watcher light arrangement is not claimed as native or client-verified. Validate intended light arrangement in the client before asserting visual fidelity.",
+    "Actual network quest packets, melee combat/evade and pet killing blow behavior were simulated through extracted handlers, not played in game. Native definitions, successful casts in a fake runtime, build and startup do not prove client rendering or a complete gameplay run."
+  ],
+  "next": {
+    "quest": 39597,
+    "native_title": "'The Blessing of the Watchers'",
+    "scope": "Audit blessing completion/visuals, owner attribution and handoff to38473 next."
+  }
+}
