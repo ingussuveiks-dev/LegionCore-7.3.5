@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-14",
+  "scope": "Player::AchieveCriteriaCredit delayed quest completion",
+  "status": "Production-handler regressions and canonical Release build/clean startup passed; client gameplay not performed.",
+  "problem": "Repeated native quest criteria callbacks could increment an already-satisfied objective and queue multiple completions. The one-second unguarded AddDelayedEvent called CompleteQuest even after abandoning or immediately reaccepting the quest, resurrecting a removed acceptance or completing its replacement.",
+  "fix": "Skip satisfied criteria objectives; bind completion to the original acceptance with existing AddQuestDelayedEvent; recheck CanCompleteQuest when the callback runs. The normal criteria/objective path and delay remain unchanged.",
+  "validation": {
+    "command": "tools/tests/Test-QuestCriteriaCredit.ps1",
+    "result": "PASS",
+    "evidence": ".codex/criteria-credit-test.log",
+    "details": "Extracts actual new AchieveCriteriaCredit and unchanged acceptance-token helper, completion/race/prerequisite/reward handlers. Reconstructs the prior production handler by reversing only this patch and reproduces two queued completions, duplicate objective increments and abandoned status becoming COMPLETE. Tests fixed once-only credit, abandonment, reacceptance before callback, objective loss/recovery, wrong criteria ID and a non-grapple criteria quest. Map/network/storage and quest status services are fake."
+  },
+  "build": {
+    "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+    "runtime": "build-extractors/bin/Release",
+    "result": "PASS",
+    "evidence": ".codex/criteria-credit-build.log",
+    "base_head": "bbee6d8969ef26335df6a36be1467cb4b2e48a4d",
+    "world_sha256": "2c3a9bd4db0fc62dbf47dfa9c6fce96e7d9b7a5c93fa0becf0103d208b7f42f3"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\quest-criteria-credit\\startup-20261014-190016",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "automatic_updates": false
+  },
+  "limits": [
+    "Only the one-second Player quest-criteria completion callback is repaired; the upstream achievement-manager100ms criteria dispatch is unchanged.",
+    "No scenario criteria or boost sequence handling was changed; no client quest UI, scenario recovery or whole quest gameplay is claimed verified.",
+    "The first fixture link failed because its inherited race declaration needed the actual Race.inc implementation; the fixture was corrected without removing production checks."
+  ],
+  "related_next": "Restore the native criteria-based A Grapple a Day pickup in a separate commit."
+}

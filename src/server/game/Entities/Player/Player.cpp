@@ -36920,7 +36920,7 @@ void Player::AchieveCriteriaCredit(uint32 criteriaID)
             if (obj.Type != QUEST_OBJECTIVE_COMPLETE_CRITERIA_TREE)
                 continue;
 
-            if (obj.ObjectID == criteriaID)
+            if (obj.ObjectID == criteriaID && !HasQuestObjectiveComplete(qInfo, obj))
             {
                 int32 Amount = GetQuestObjectiveData(qInfo, obj.StorageIndex) + 1;
                 SetQuestObjectiveData(qInfo, &obj, Amount);
@@ -36928,7 +36928,10 @@ void Player::AchieveCriteriaCredit(uint32 criteriaID)
                 //SMSG_QUEST_UPDATE_ADD_CREDIT_SIMPLE
                 if (CanCompleteQuest(questid))
                 {
-                    AddDelayedEvent(1000, [this, questid]() -> void { CompleteQuest(questid); });
+                    AddQuestDelayedEvent(questid, 1000, [this, questid]()
+                    {
+                        if (CanCompleteQuest(questid)) CompleteQuest(questid);
+                    });
                     break;
                 }
             }
