@@ -3621,6 +3621,15 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         return;
     }
 
+    // Impalement Insurance must consume its goober only after the native
+    // opening spell and lock validation succeed. Direct GO Use cannot prove
+    // that the client's dismantling cast completed.
+    if (gameObjTarget && gameObjTarget->GetEntry() == 251257 &&
+        gameObjTarget->GetMapId() == 1220 && gameObjTarget->GetZoneId() == 7541 &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_stormheim_impalement" &&
+        gameObjTarget->AI()->GossipHello(player, true))
+        return;
+
     if (gameObjTarget)
         SendLoot(guid, LOOT_SKINNING);
     else if (itemTarget)

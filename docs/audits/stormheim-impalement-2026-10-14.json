@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38410,
+    38615
+  ],
+  "status": "Code/data fix, extracted native interaction/lock/condition regressions, canonical Release build, scoped backed-up SQL deployment and clean startup/shutdown complete. Client gameplay not performed, as requested.",
+  "findings_and_changes": [
+    "Original TDB735 objectives277824/38410 and278225/38615 are mandatory GAMEOBJECT251257, amount7/slot0/flags0. Both factions share17 installed map1220/zone7541 Hrydshal launchers. Preserve objectives, existing faction/allied-race masks, models, coordinates, rotations and next38342/38617 Another Way.",
+    "Horde38615 had four identical zero-delay command7 self-completion placeholders, StartScript38615 and SpecialFlags2. Delete only these exact empty actions, detach the start hook only for an empty list and clear only known flag2 when no custom exploration action remains. OnLogin repairs matching native COMPLETE state with fewer than7 credits to INCOMPLETE. Rewarded/unrelated/custom-objective quests and actual7/7 completion remain unchanged; no personal-character SQL rewrite.",
+    "Launcher phase6779/definition127 was enabled only by active38410 and excluded active41451. Every installed251257 spawn contains that phase. Add OR branch1 for active38615 with the same41451 exclusion. Require the exact phase and two known base conditions, preserve custom existing branch1 or additional base restrictions and replay without duplicates. The native CONDITION_QUESTTAKEN branch evaluates only INCOMPLETE, so the phase naturally ends at completion; hand-in NPCs use independent existing phases.",
+    "GameObject251257 is native goober10 with lock43. Data10 is the spell field and is0; Data14 is openTextID80413. The initial80413 spell lookup found Explosive Bonding Compound, but that is unrelated to this GO field and is never cast by this fix. The actual lock has Type2=skill, Index2=13, Skill2=0. Native opening spells6478/22810 use OPEN_LOCK33/MiscValue13 and1s cast time;3365 uses5 and cannot open this lock. Preserve native opening and the Dismantling caption instead of inventing a demolition spell or timer.",
+    "The normal client opening route already calls GameObject::Use after successful EffectOpenLock. However, direct CMSGGameObjectUse calls Use immediately; the old goober unconditionally KillCreditGO before its auto-close, and Data10=0 provides no later demolition action. The new gameobject script blocks that direct/report-use path. The native EffectOpenLock calls the new AI only AFTER CanOpenLock succeeds, scoped to entry251257/map1220/zone7541 and exact go_stormheim_impalement script name. Custom scripts, other objects/maps and failed/wrong lock operations keep the original route.",
+    "At the successful hit, validate native objective metadata, active matching faction, live/alive player, no vehicle/transport/teleport, spawned and nonexpired object, native type/lock, actual IN_USE/NOT_SELECTABLE flags, phase/visibility/hide list/interaction range/LOS. Set IN_USE and GO_JUST_DEACTIVATED before incrementing only that player's native gameobject objective. Send native credit packet and run CanCompleteQuest at7; no group/pet/kill or accept-time credit. The same shared object spawn cannot count twice or be dismantled by a second user until normal respawn.",
+    "Use the existing GameObject::Update deactivation/despawn animation, template consumption and respawn behavior. Live Data5=1, animprogress255 and base180s respawn are retained, as are Data3=3000/Data20=0 and flags262144. Actual respawn time can be reduced by existing player-count configuration. This is per spawn lifecycle, not a permanent unique-GUID ledger: a launcher can count again after normal respawn, including after re-login. Quest counters persist natively; no new delayed tasks, private clones, cooldown tables, global state or credential/character backups are committed.",
+    "Original native hand-in is Alliance91553/Horde92573. Alliance91553 exists in phase6458 unlocked by rewarded38318; native92573 has no installed spawn/summon path. Existing live Horde92566 already ends38615 and starts38617 and has two preserved overlapping spawns. Native next/reward/race/prerequisite tests verify both canonical relations and that actual installed Horde fallback. Do not describe92573 as live or invent an unproven placement; actual hand-in/next client UI and eventual native-story placement remain open checks."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimImpalement.ps1",
+      "result": "PASS",
+      "evidence": ".codex/impalement-test.log",
+      "details": "Actual launcher script/AI/login repair; full native CanOpenLock, native EffectOpenLock completion/failure gate including the scoped callback, native GameObject::Use prefix and native CONDITION_QUESTTAKEN case. Before/after direct-use routing, wrong lock type, both factions,7 counts/cap, same-spawn duplication, second player/respawn, phase/hide/LOS/range/flags/expired/dead/vehicle/transport/logout/abandon/reaccept failures and custom/unrelated-map delegation. Quest counters/completion packets, GO state/update/respawn, cast scheduling, map/item/skill and ElseGroup AND/OR routing are fixtures; full CheckCast/1s timing/native GO Update and client packets are not executed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/impalement-handoff-test.log",
+      "details": "Extracted full native objective completion, reward eligibility, race/previous-quest prerequisites and GetNextQuest relation lookup for both native enders and installed Horde92566 fallback. Reward storage/NPC registry are fixtures; not actual client hand-in."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/impalement-data-test.log",
+        ".codex/impalement-data-live.log"
+      ],
+      "details": "Temporary migration twice, exact objectives/object bindings/native field contract, phase branches with preserved exclusion,17 actual spawns, removal of Horde placeholders, next links/prerequisites, actual fallback giver/ender rows. Custom script/flags/delayed action/phase branch and template/reward fields preserved."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-impalement-native-2026-10-14.json",
+      "details": "Original TDB quests/objectives/goober fields/model/enders/next, native lock43, opening effects/times, visual kits/effects and display8245/File124328 with hashes. Opening visuals have2 visuals/4 events but no model attachments; retain that absence instead of asserting a fire/explosion model."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementGeometry.ps1",
+      "result": "PASS:17 anchors,0 failures",
+      "evidence": ".codex/impalement-geometry.log"
+    },
+    {
+      "command": "Previous No Wings code/live data and pickup live data regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/impalement-no-wings-regression.log",
+        ".codex/impalement-no-wings-data-regression.log",
+        ".codex/impalement-pickup-data-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/impalement-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Initial discovery queried nonexistent gameobject_template_addon and used an unsupported WDB column name in an earlier helper; use this repository's actual single template schema. No schema or character table was added.",
+    "Initial investigation interpreted Data14 as a spell and looked up80413. Native GameObjectData.h establishes Data10=spell/Data14=openTextID; corrected the premise before implementing the lock-completion path. The valid normal opening route was already post-cast, while the direct-use packet bypassed it.",
+    "The copied native visual reader required nonempty attachments from the previous grappling graph. Opening has no such attachments; preserve the empty trace and real GO model, not an invented explosion proof.",
+    "Original92573 hand-in exists as template/relation but has no live spawn/summon row. The installed92566 fallback provides hand-in and next quest. This limitation is retained explicitly, not hidden behind the fake canonical-NPC handoff test.",
+    "Native deactivation/respawn and cast interruption/timing remain client/runtime interaction checks. A successful startup or mocked state setter alone does not prove those animations, packet ordering or client cancellation."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_15_stormheim_impalement.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-impalement\\20261014-221013",
+    "state": "RELEASED",
+    "sha1": "644D1F4C3D635BA91C625C40F85021302AD54485"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-impalement\\startup-20261014-221014",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "note": "Explicit migration15 with scoped table backups, canonical executable and temporary config/logs. Canonical config and unrelated automatic migrations untouched."
+  },
+  "build": {
+    "base_head": "c5ae424f3a7854ae16d864421891f3f2edd50e48",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "4c1d1994b7f7235b483c36cdd168709bf9d92762f97ea44fc13396b01854e08e",
+    "bnet_sha256": "4a91a243fac79b946288568911f7e1b52a20a9656a0f288af16ff6dc62521c8f",
+    "source_sha256": "820ce27b8fc75a79d932a570a34327f8f26239851e3d86c052a46f73ed53921c",
+    "spell_effects_sha256": "94f1e841051b659756f46cdf9a34aa2a77b21045bbc4fce758a463580e6b1d73",
+    "note": "Preserved configs/certificates/DLLs/logs/extracted data; no server remains running."
+  },
+  "pending_client_checks": [
+    "Both factions: launcher visibility after accepting quests (and the41451 exclusion), native interaction flag/cursor/caption, actual selected opening spell/1s bar and interruption by movement/combat, correct flags/target/range/LOS checks and exact once-only packet at successful completion.",
+    "Native GameObject::Update destruction/despawn animation/model124328 and effective shared respawn timing; second-player behavior, re-login during despawn, abandonment/retry and progress persistence. The fixtures manually reset a spawn and do not emulate its actual update loop or save/load.",
+    "All17 wall launchers: actual quaternion/orientation, model collision and accessibility with the carried grapple launcher. No coordinates/rotations were changed; VMAP floor evidence alone does not verify model orientation or client route.",
+    "Alliance91553 and actual Horde92566 hand-in/next38342/38617 offer and native quest indicators/phase UI. Horde92573 placement and the preserved duplicate92566 bodies require later story/client review. No whole quest/visual is called client-verified."
+  ],
+  "next": {
+    "quests": [
+      38342,
+      38617
+    ],
+    "title": "Another Way",
+    "scope": "Champion kill credit, tower/climbing/grapple criteria and next38342->38412 /38617->38618 handoff; audit legacy Horde placeholders."
+  }
+}
