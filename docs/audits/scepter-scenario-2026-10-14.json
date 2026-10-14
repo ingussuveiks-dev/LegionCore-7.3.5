@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-14",
+  "quest": 43153,
+  "scenario": 1155,
+  "map": 1630,
+  "status": "SQL repair installed; automated interaction replay and native condition checks passed; full client run pending",
+  "reported_failure": {
+    "stage": "1 to 2",
+    "location": "Ruins of D-Block",
+    "errors": [
+      "Entry 602 SourceType 13 Event 0 Link Event 1 not found or invalid",
+      "Entry 601 SourceType 13 Event 0 Link Event 1 not found or invalid"
+    ],
+    "client_title_observed": "The Broken Shore"
+  },
+  "evidence": {
+    "native": "scepter-native-2026-10-14.json",
+    "source": "https://www.wowhead.com/quest=43153/an-eye-for-a-scepter",
+    "source_use": "Original Legion walkthrough comments and native DB2 criteria, not modern reward values. No third-party code copied.",
+    "hotfix_counts": {
+      "scenario_step_1155": 0,
+      "relevant_spell_effects": 0
+    },
+    "production_paths": [
+      "SmartAI::SetData",
+      "SmartScript::ProcessEventsFor / ProcessAction / GetTargets",
+      "ConditionMgr::IsObjectMeetingSmartEventConditions",
+      "CONDITION_SCENARION_STEP",
+      "SmartGameObjectAI::GossipUse",
+      "GameObject::Use GOOBER",
+      "InstanceMap::AddPlayerToMap",
+      "Scenario constructor and ScenarioMgr",
+      "SmartAI::StartPath / waypoint and text callbacks",
+      "SpellInfo::CheckExplicitTarget and native target 25",
+      "Spell::EffectTeleportUnits"
+    ],
+    "portal_credit": "Native 218595 effect 1 is personal kill credit 109835. Native 220374 teleports to map1220 and gives unrelated credit110607; quest return credit109837 is supplied by Calydus109838 proximity."
+  },
+  "repairs": [
+    "Source-22 scenario conditions selected the null Unit invoker in SetData and timer callbacks. Select base actor target 1 instead; production SetData and condition branch compiled in regression.",
+    "Event objects 601/602 referenced absent link 1. Remove links; retain the real SetData actions with scenario step gates.",
+    "Arrival credit was downstream of fallible conversation cast 218995. Award the actual arrival first and keep the conversation independent.",
+    "The entry portal had no explicit scenario selector. Its SmartGameObjectAI use now sets 1155 before native teleport 218595; this also selects the native scenario difficulty before map creation.",
+    "The screenshot Stage 1 title The Broken Shore differs from native 1155 Where Are They?. The original live scenario ID was not captured; stale selection is an inference, not a proven sole cause.",
+    "Nagaz duplicated event ID 6; renumber the text-3 callback to 18. Mark the timed proximity dialogue nonrepeatable so LOS updates cannot restart its timer indefinitely.",
+    "Nagaz death criteria targeted the killer (which may be a pet). Select the nearby player explicitly.",
+    "Only Tyranis handled the native 219203 click; the clickable chain hook now relays SetData to the same one-time release chain. Room exit resolves the alternative leave-to-fate choice only on the outward side of the native trigger.",
+    "Armond death prematurely read the manifest and completed its stage. It now unlocks the actual page; the click starts the reading dialogue. Protect Armond until the guide reaches his wing. Widen death callback to 60 yards: the enabling waypoint is over 30 yards away.",
+    "The generic Effects Bunny entry had the Hold teleport on both map-1630 spawns and shared unrelated maps. Scope entry and retry to DB spawn 370846; keep native vortex spell 204465 on its existing step gates.",
+    "Occultharon could die before Allaris reached the room or within callback distance. Protect the boss until actual path 10995603 point 20, then activate it. Widen the death-to-guide lookup to 100 yards and keep the callback independent of the killer.",
+    "Return portal creation is before the optional conversation cast. Final scenario criterion 52901 and quest credit 109836 retain their native separate roles; Calydus 109838 proximity supplies return credit 109837."
+  ],
+  "stages": [
+    {
+      "number": 1,
+      "title": "Where Are They?",
+      "step_id": 2700,
+      "criteria_tree": 49405,
+      "interaction": "Enter D-Block: event 601 or nearby entrance-guide recovery -> criterion 52741, optional conversation 2897.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 2,
+      "title": "The Other Players",
+      "step_id": 2715,
+      "criteria_tree": 49483,
+      "interaction": "Entrance pair conversation and descent: Allaris/Nagaz text/path callbacks -> criterion type 73 asset 52859.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 3,
+      "title": "The Third One",
+      "step_id": 2716,
+      "criteria_tree": 49485,
+      "interaction": "Approach Tyranis: event object 60 -> criterion 52860, conversation 2907.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 4,
+      "title": "An Unfortunate Accident",
+      "step_id": 2717,
+      "criteria_tree": 49487,
+      "interaction": "Click Tyranis or hook using 219203, or leave the alcove: remove auras, criterion 52861, jump, summon Nagaz, despawn Tyranis.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 5,
+      "title": "Back to Searching",
+      "step_id": 2718,
+      "criteria_tree": 49491,
+      "interaction": "Meet the new Nagaz: one proximity dialogue -> criterion 52869 and ambush route.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 6,
+      "title": "A Secret Meeting",
+      "step_id": 2719,
+      "criteria_tree": 49493,
+      "interaction": "Follow Nagaz, faction changes to hostile 14; death by player or pet -> criterion 52870, reopen door, summon new Allaris.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 7,
+      "title": "Back to the Manifest",
+      "step_id": 2720,
+      "criteria_tree": 49514,
+      "interaction": "Meet summoned Allaris: one dialogue -> criterion 52898, open blocker and begin manifest route.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 8,
+      "title": "The Final Wing",
+      "step_id": 2724,
+      "criteria_tree": 49516,
+      "interaction": "Guide reaches Armond wing; remove protection, kill Armond, unlock manifest. Click manifest; reading completes criterion 52899 and departure route.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 9,
+      "title": "Baradin Hold",
+      "step_id": 2725,
+      "criteria_tree": 49518,
+      "interaction": "Exit D-Block and reach Baradin Hold entrance spawn 370846: criterion 52900 and native 219338 teleport. A stage-9 retry handles a failed delayed cast.",
+      "client_status": "not yet verified after this repair"
+    },
+    {
+      "number": 10,
+      "title": "The Eye of the Beast",
+      "step_id": 2726,
+      "criteria_tree": 49520,
+      "interaction": "Join static interior Allaris; follow route. At point 20 activate Occultharon. Death -> retrieval dialogue -> criterion 52901 and quest credit 109836 -> portal 110800. Native click 220374 returns to map1220, Calydus109838 proximity credits109837 and is questender.",
+      "client_status": "not yet verified after this repair"
+    }
+  ],
+  "validation": {
+    "command": "tools/tests/Test-ScepterScenario.ps1",
+    "native_export": "python tools/research/audit_scepter_scenario.py",
+    "passed": [
+      "SQL migration twice in session-local shadow tables; no writes by the tests",
+      "Unique event IDs and every link resolves to LINK event",
+      "Compiled production SetData receives null invoker; old target 0 fails, target 1 passes all ten steps; wrong scenario, noninstance and missing instance fail",
+      "SQL-driven all-ten-stage replay, starting without the later summoned guide or exit portal",
+      "Conversation failure does not block arrival or portal creation",
+      "Repeated LOS does not reset essential timed dialogue",
+      "Both hook and prisoner click converge on one release; leaving the room alternative does not fire while walking further into the alcove",
+      "Pet killing blows on Nagaz, Armond and final boss",
+      "Manifest locked before Armond; his death alone gives no stage credit; a missing guide does not consume the click",
+      "Boss remains protected at waypoint 19; activates only at actual waypoint 20",
+      "Failed/delayed first Hold teleport can retry at the correct entrance spawn",
+      "Native click spell, three teleport destinations and final Calydus questender/return-credit routing",
+      "No faction-specific conditions; native friendly faction 1665 has Alliance and Horde friend-group bits"
+    ],
+    "scope": "Replay interprets migrated SQL using simplified actors/positions. It does not execute the entire server AI, collision, navigation, spell validation or teleport networking. Native C++ test executes the production condition branch and SetData method, not a whole login/client.",
+    "pending_client": [
+      "Fresh entry shows scenario 1155 title and Stage 2 at D-Block, including entry after server restart at the reported position",
+      "Dialogue cadence, path navigation and client-visible spellclick flags on actual Tyranis/hook and manifest",
+      "Tyranis chain/vortex rendering and jump/despawn on both choices; exit-side distance 25 is inferred from native positions/radius, not a retail sniff",
+      "Both factions and pet killing blows in real client combat",
+      "Final boss activation, native combat spells, Eye credit, return portal click and quest turn-in at Calydus",
+      "Abandon/reaccept, death, disconnect and rejoin live instance; exact-stage persistence after a fresh server instance is not implemented or claimed"
+    ],
+    "release": "SQL-only change; existing canonical Release executable retained; no C++ production code changed"
+  },
+  "deployment": {
+    "migration": "2026_10_14_10_scepter_scenario_sequence.sql",
+    "sha1": "520216EC26364CEB41A57B20388F436D11DC3740",
+    "backup": "Private local SQL backup taken before transactional deployment; no character or inventory reset",
+    "startup": {
+      "ready": true,
+      "exit_code": 0,
+      "log_directory": "build-extractors/runtime-test/scepter-scenario/startup-20261014-180017",
+      "quest_script_load_errors": [],
+      "unrelated_errors_retained": [
+        "npc_stormheim_blessing has no database script assignment",
+        "aura_stormheim_blessing_finish has no database script assignment"
+      ],
+      "note": "Concurrent, unrelated Stormheim work is present in the canonical runtime and working tree. It is excluded from this fix; these warnings were not suppressed.",
+      "runtime_sha256": "46F02D5BC91F9668E416775E54294413FAC23FD231483CE3BD643ACF2A48A828"
+    }
+  }
+}
