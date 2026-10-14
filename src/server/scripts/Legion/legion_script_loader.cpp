@@ -19,6 +19,7 @@ void AddSC_stormheim_trials();
 void AddSC_stormheim_valor();
 void AddSC_stormheim_will();
 void AddSC_stormheim_might();
+void AddSC_stormheim_blessing();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -243,6 +244,7 @@ void AddLegionScripts()
     AddSC_stormheim_valor();
     AddSC_stormheim_will();
     AddSC_stormheim_might();
+    AddSC_stormheim_blessing();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();

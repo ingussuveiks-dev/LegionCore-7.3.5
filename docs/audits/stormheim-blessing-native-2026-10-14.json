@@ -1,0 +1,1318 @@
+{
+  "archive": "TDB_world_735.00_2018_02_19.sql",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "quests": [
+    {
+      "ID": "39597",
+      "LogTitle": "'The Blessing of the Watchers'",
+      "LogDescription": "'Speak to Yotnar to receive the blessing of the watchers.'",
+      "QuestDescription": "'As is your due for passing the Trial of Might, I will grant you the blessing of the watchers. \\n\\nFurthermore, to aid you in your trials to come, I will bestow upon your artifact the power of the vault\\'s keeper. May it serve you well in your time of need.\\n\\nSpeak to me when you are ready to receive this gift.'",
+      "Flags": "39845896",
+      "FlagsEx": "327680",
+      "RewardNextQuest": "38473",
+      "RewardItem1": "141398",
+      "RewardAmount1": "1",
+      "RewardSpell": "0"
+    },
+    {
+      "ID": "38473",
+      "LogTitle": "'Will of the Thorignir'",
+      "LogDescription": "'Meet with Lorna Crowley outside of Hrydshal to begin the trial of the Thorignir.'",
+      "QuestDescription": "'In the summit of storms the dragons await. Born of the gods, they will test your will. \\n\\nThey roost above Hrydshal, where their children serve the Drekirjar. But they are no allies to man or vrykul, and so you must earn their blessing as they see fit.\\n\\nA friend of yours awaits in Hrydshal, no doubt searching for the answers you now possess. Go to her, and together, you will test your might against the storm!'",
+      "Flags": "39845896",
+      "FlagsEx": "8192",
+      "RewardNextQuest": "38312",
+      "RewardItem1": "0",
+      "RewardAmount1": "0",
+      "RewardSpell": "81040"
+    }
+  ],
+  "objectives": [
+    {
+      "ID": "279738",
+      "QuestID": "39597",
+      "Type": "0",
+      "Order": "0",
+      "StorageIndex": "5",
+      "ObjectID": "96285",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Yotnar\\'s Blessing Received'",
+      "VerifiedBuild": "25549"
+    }
+  ],
+  "addons": [],
+  "objects": [],
+  "go_starters": [],
+  "go_enders": [],
+  "spell_names": {
+    "190904": "Yotnar's Blessing",
+    "190905": "Yotnar's Blessing",
+    "229746": "Empowering"
+  },
+  "native": {
+    "SpellEffect": [
+      {
+        "ID": 279937,
+        "Effect": 6,
+        "EffectBasePoints": 0,
+        "EffectIndex": 0,
+        "EffectAura": 26,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 0,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 0,
+        "ImplicitTarget1": 1,
+        "ImplicitTarget2": 92,
+        "SpellID": 190904
+      },
+      {
+        "ID": 279938,
+        "Effect": 6,
+        "EffectBasePoints": 0,
+        "EffectIndex": 0,
+        "EffectAura": 26,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 0,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 0,
+        "ImplicitTarget1": 92,
+        "ImplicitTarget2": 0,
+        "SpellID": 190905
+      },
+      {
+        "ID": 346542,
+        "Effect": 240,
+        "EffectBasePoints": 100,
+        "EffectIndex": 0,
+        "EffectAura": 0,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 1,
+        "EffectMiscValue2": 3,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 0,
+        "ImplicitTarget1": 1,
+        "ImplicitTarget2": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 346543,
+        "Effect": 3,
+        "EffectBasePoints": 0,
+        "EffectIndex": 1,
+        "EffectAura": 0,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 30693,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 0,
+        "ImplicitTarget1": 1,
+        "ImplicitTarget2": 0,
+        "SpellID": 229746
+      }
+    ],
+    "SpellMisc": [
+      {
+        "ID": 164919,
+        "CastingTimeIndex": 5,
+        "DurationIndex": 21,
+        "RangeIndex": 37,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 136243,
+        "Speed": 0.0,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 696516992,
+        "Attributes2": 1060,
+        "Attributes3": 273170437,
+        "Attributes4": 269681152,
+        "Attributes5": 8388608,
+        "Attributes6": 393224,
+        "Attributes7": 4608,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 0,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 190904
+      },
+      {
+        "ID": 164920,
+        "CastingTimeIndex": 1,
+        "DurationIndex": 39,
+        "RangeIndex": 37,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 136243,
+        "Speed": 0.0,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 696254848,
+        "Attributes2": 1056,
+        "Attributes3": 273170437,
+        "Attributes4": 269681152,
+        "Attributes5": 8388736,
+        "Attributes6": 393224,
+        "Attributes7": 4608,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 1048576,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 190905
+      },
+      {
+        "ID": 203903,
+        "CastingTimeIndex": 5,
+        "DurationIndex": 0,
+        "RangeIndex": 1,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 132883,
+        "Speed": 0.4000000059604645,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 0,
+        "Attributes2": 0,
+        "Attributes3": 0,
+        "Attributes4": 0,
+        "Attributes5": 0,
+        "Attributes6": 0,
+        "Attributes7": 0,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 16,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 229746
+      }
+    ],
+    "SpellXSpellVisual": [
+      {
+        "ID": 87470,
+        "SpellVisualID": 49406,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 0,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 190904
+      },
+      {
+        "ID": 87471,
+        "SpellVisualID": 49407,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 0,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 190905
+      },
+      {
+        "ID": 110507,
+        "SpellVisualID": 59872,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43082,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 110508,
+        "SpellVisualID": 59827,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43028,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 110509,
+        "SpellVisualID": 53716,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43024,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 110510,
+        "SpellVisualID": 53731,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43026,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 110511,
+        "SpellVisualID": 53732,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43023,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      },
+      {
+        "ID": 110512,
+        "SpellVisualID": 53895,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 43027,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 229746
+      }
+    ],
+    "SpellTargetRestrictions": [],
+    "SpellDuration": [
+      {
+        "ID": 21,
+        "Duration": -1,
+        "MaxDuration": -1,
+        "DurationPerLevel": 0
+      },
+      {
+        "ID": 39,
+        "Duration": 2000,
+        "MaxDuration": 2000,
+        "DurationPerLevel": 0
+      }
+    ],
+    "SpellCastTimes": [
+      {
+        "ID": 1,
+        "Base": 0,
+        "Minimum": 0,
+        "PerLevel": 0
+      },
+      {
+        "ID": 5,
+        "Base": 2000,
+        "Minimum": 2000,
+        "PerLevel": 0
+      }
+    ],
+    "ItemEffect": [
+      {
+        "ID": 31659,
+        "SpellID": 229746,
+        "CoolDownMSec": -1,
+        "CategoryCoolDownMSec": -1,
+        "Charges": -1,
+        "SpellCategoryID": 0,
+        "ChrSpecializationID": 0,
+        "LegacySlotIndex": 0,
+        "TriggerType": 0,
+        "ItemID": 141398
+      }
+    ],
+    "CreatureDisplayInfo": [
+      {
+        "ID": 25217,
+        "CreatureModelScale": 1.2999999523162842,
+        "ModelID": 40,
+        "NPCSoundID": 0,
+        "SizeClass": 3,
+        "Flags": 0,
+        "Gender": 0,
+        "ExtendedDisplayInfoID": 0,
+        "PortraitTextureFileDataID": 0,
+        "CreatureModelAlpha": 255,
+        "SoundID": 5244,
+        "PlayerOverrideScale": 0.0,
+        "PortraitCreatureDisplayInfoID": 0,
+        "BloodID": 0,
+        "ParticleColorID": 0,
+        "DissolveEffectID": 0,
+        "ObjectEffectPackageID": 0,
+        "AnimReplacementSetID": 0,
+        "UnarmedWeaponType": -1,
+        "StateSpellVisualKitID": 0,
+        "PetInstanceScale": 1.0,
+        "MountPoofSpellVisualKitID": 0,
+        "TextureVariationFileDataID1": 126220,
+        "TextureVariationFileDataID2": 126221,
+        "TextureVariationFileDataID3": 0
+      }
+    ],
+    "CreatureModelData": [
+      {
+        "ID": 40,
+        "ModelScale": 1.0,
+        "FootprintTextureLength": 18.0,
+        "FootprintTextureWidth": 12.0,
+        "FootprintParticleScale": 1.0,
+        "CollisionWidth": 0.6111111044883728,
+        "CollisionHeight": 2.031277894973755,
+        "MountHeight": 4.309959888458252,
+        "GeoBox1": -1.626471996307373,
+        "GeoBox2": -2.5981616973876953,
+        "GeoBox3": -0.005346856079995632,
+        "GeoBox4": 1.2611689567565918,
+        "GeoBox5": 2.442171096801758,
+        "GeoBox6": 7.497973442077637,
+        "WorldEffectScale": 1.0,
+        "AttachedEffectScale": 1.0,
+        "MissileCollisionRadius": 0.0,
+        "MissileCollisionPush": 0.0,
+        "MissileCollisionRaise": 0.0,
+        "OverrideLootEffectScale": 0.0,
+        "OverrideNameScale": 0.0,
+        "OverrideSelectionRadius": 0.0,
+        "TamedPetBaseScale": 1.0,
+        "HoverHeight": 0.0,
+        "Flags": 2,
+        "FileDataID": 126214,
+        "SizeClass": 3,
+        "BloodID": 1,
+        "FootprintTextureID": 1,
+        "FoleyMaterialID": 0,
+        "FootstepCameraEffectID": 21,
+        "DeathThudCameraEffectID": 23,
+        "SoundID": 40,
+        "CreatureGeosetDataID": 0
+      }
+    ]
+  },
+  "visual_trace": {
+    "visuals": [
+      {
+        "ID": 49406,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 49407,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 53716,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 53731,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 53732,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 53895,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 59827,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      },
+      {
+        "ID": 59872,
+        "targeting_kit": 0,
+        "hostile": 0,
+        "caster": 0,
+        "low_violence": 0
+      }
+    ],
+    "events": [
+      {
+        "ID": 105921,
+        "kit": 58514,
+        "parent": 49406
+      },
+      {
+        "ID": 105922,
+        "kit": 58515,
+        "parent": 49406
+      },
+      {
+        "ID": 105923,
+        "kit": 58509,
+        "parent": 49406
+      },
+      {
+        "ID": 105924,
+        "kit": 58510,
+        "parent": 49406
+      },
+      {
+        "ID": 105925,
+        "kit": 58513,
+        "parent": 49407
+      },
+      {
+        "ID": 114856,
+        "kit": 65043,
+        "parent": 53716
+      },
+      {
+        "ID": 114857,
+        "kit": 75352,
+        "parent": 53716
+      },
+      {
+        "ID": 114858,
+        "kit": 64980,
+        "parent": 53716
+      },
+      {
+        "ID": 114859,
+        "kit": 64980,
+        "parent": 53716
+      },
+      {
+        "ID": 115162,
+        "kit": 65043,
+        "parent": 53731
+      },
+      {
+        "ID": 115163,
+        "kit": 75352,
+        "parent": 53731
+      },
+      {
+        "ID": 115164,
+        "kit": 65007,
+        "parent": 53731
+      },
+      {
+        "ID": 115165,
+        "kit": 65007,
+        "parent": 53731
+      },
+      {
+        "ID": 115166,
+        "kit": 65043,
+        "parent": 53732
+      },
+      {
+        "ID": 115167,
+        "kit": 75352,
+        "parent": 53732
+      },
+      {
+        "ID": 115168,
+        "kit": 65008,
+        "parent": 53732
+      },
+      {
+        "ID": 115169,
+        "kit": 65008,
+        "parent": 53732
+      },
+      {
+        "ID": 117390,
+        "kit": 65043,
+        "parent": 53895
+      },
+      {
+        "ID": 117391,
+        "kit": 75352,
+        "parent": 53895
+      },
+      {
+        "ID": 117392,
+        "kit": 65265,
+        "parent": 53895
+      },
+      {
+        "ID": 117393,
+        "kit": 65265,
+        "parent": 53895
+      },
+      {
+        "ID": 129574,
+        "kit": 65043,
+        "parent": 59827
+      },
+      {
+        "ID": 129575,
+        "kit": 75352,
+        "parent": 59827
+      },
+      {
+        "ID": 129576,
+        "kit": 73299,
+        "parent": 59827
+      },
+      {
+        "ID": 129577,
+        "kit": 73299,
+        "parent": 59827
+      },
+      {
+        "ID": 130333,
+        "kit": 65043,
+        "parent": 59872
+      },
+      {
+        "ID": 130334,
+        "kit": 75352,
+        "parent": 59872
+      },
+      {
+        "ID": 130335,
+        "kit": 73357,
+        "parent": 59872
+      },
+      {
+        "ID": 130336,
+        "kit": 73357,
+        "parent": 59872
+      }
+    ],
+    "kits": [
+      {
+        "ID": 58509,
+        "fallback": 0
+      },
+      {
+        "ID": 58510,
+        "fallback": 0
+      },
+      {
+        "ID": 58513,
+        "fallback": 0
+      },
+      {
+        "ID": 58514,
+        "fallback": 0
+      },
+      {
+        "ID": 58515,
+        "fallback": 0
+      },
+      {
+        "ID": 64980,
+        "fallback": 0
+      },
+      {
+        "ID": 65007,
+        "fallback": 0
+      },
+      {
+        "ID": 65008,
+        "fallback": 0
+      },
+      {
+        "ID": 65043,
+        "fallback": 0
+      },
+      {
+        "ID": 65265,
+        "fallback": 0
+      },
+      {
+        "ID": 73299,
+        "fallback": 0
+      },
+      {
+        "ID": 73357,
+        "fallback": 0
+      },
+      {
+        "ID": 75352,
+        "fallback": 0
+      }
+    ],
+    "kit_effects": [
+      {
+        "ID": 120470,
+        "type": 6,
+        "effect": 22257,
+        "parent": 58509
+      },
+      {
+        "ID": 120471,
+        "type": 6,
+        "effect": 22258,
+        "parent": 58510
+      },
+      {
+        "ID": 120472,
+        "type": 2,
+        "effect": 309257,
+        "parent": 58510
+      },
+      {
+        "ID": 120473,
+        "type": 2,
+        "effect": 309258,
+        "parent": 58510
+      },
+      {
+        "ID": 120477,
+        "type": 2,
+        "effect": 309262,
+        "parent": 58513
+      },
+      {
+        "ID": 120478,
+        "type": 2,
+        "effect": 309263,
+        "parent": 58513
+      },
+      {
+        "ID": 120479,
+        "type": 6,
+        "effect": 22259,
+        "parent": 58513
+      },
+      {
+        "ID": 120480,
+        "type": 6,
+        "effect": 22260,
+        "parent": 58514
+      },
+      {
+        "ID": 120481,
+        "type": 6,
+        "effect": 22261,
+        "parent": 58515
+      },
+      {
+        "ID": 120482,
+        "type": 2,
+        "effect": 309264,
+        "parent": 58515
+      },
+      {
+        "ID": 137842,
+        "type": 2,
+        "effect": 318960,
+        "parent": 64980
+      },
+      {
+        "ID": 137868,
+        "type": 2,
+        "effect": 318979,
+        "parent": 64980
+      },
+      {
+        "ID": 137877,
+        "type": 2,
+        "effect": 318986,
+        "parent": 64980
+      },
+      {
+        "ID": 137920,
+        "type": 2,
+        "effect": 319009,
+        "parent": 65007
+      },
+      {
+        "ID": 137921,
+        "type": 2,
+        "effect": 319010,
+        "parent": 65007
+      },
+      {
+        "ID": 137924,
+        "type": 2,
+        "effect": 319011,
+        "parent": 65008
+      },
+      {
+        "ID": 137925,
+        "type": 2,
+        "effect": 319012,
+        "parent": 65008
+      },
+      {
+        "ID": 138023,
+        "type": 6,
+        "effect": 25437,
+        "parent": 65043
+      },
+      {
+        "ID": 138040,
+        "type": 6,
+        "effect": 25440,
+        "parent": 64980
+      },
+      {
+        "ID": 138042,
+        "type": 6,
+        "effect": 25441,
+        "parent": 65007
+      },
+      {
+        "ID": 138043,
+        "type": 6,
+        "effect": 25442,
+        "parent": 65008
+      },
+      {
+        "ID": 138572,
+        "type": 2,
+        "effect": 319381,
+        "parent": 65265
+      },
+      {
+        "ID": 138573,
+        "type": 2,
+        "effect": 319382,
+        "parent": 65265
+      },
+      {
+        "ID": 138574,
+        "type": 6,
+        "effect": 25525,
+        "parent": 65265
+      },
+      {
+        "ID": 160354,
+        "type": 2,
+        "effect": 331712,
+        "parent": 73299
+      },
+      {
+        "ID": 160356,
+        "type": 2,
+        "effect": 331714,
+        "parent": 73299
+      },
+      {
+        "ID": 160357,
+        "type": 6,
+        "effect": 29087,
+        "parent": 73299
+      },
+      {
+        "ID": 160451,
+        "type": 2,
+        "effect": 331770,
+        "parent": 65043
+      },
+      {
+        "ID": 160452,
+        "type": 2,
+        "effect": 331771,
+        "parent": 65043
+      },
+      {
+        "ID": 160500,
+        "type": 2,
+        "effect": 331811,
+        "parent": 73357
+      },
+      {
+        "ID": 160501,
+        "type": 2,
+        "effect": 331812,
+        "parent": 73357
+      },
+      {
+        "ID": 160502,
+        "type": 6,
+        "effect": 29102,
+        "parent": 73357
+      },
+      {
+        "ID": 161453,
+        "type": 5,
+        "effect": 70407,
+        "parent": 58514
+      },
+      {
+        "ID": 161454,
+        "type": 5,
+        "effect": 70408,
+        "parent": 58510
+      },
+      {
+        "ID": 161455,
+        "type": 5,
+        "effect": 70409,
+        "parent": 58513
+      },
+      {
+        "ID": 161457,
+        "type": 5,
+        "effect": 70417,
+        "parent": 58513
+      },
+      {
+        "ID": 161458,
+        "type": 5,
+        "effect": 70407,
+        "parent": 58509
+      },
+      {
+        "ID": 161459,
+        "type": 5,
+        "effect": 70411,
+        "parent": 58509
+      },
+      {
+        "ID": 161462,
+        "type": 5,
+        "effect": 70417,
+        "parent": 58510
+      },
+      {
+        "ID": 166004,
+        "type": 5,
+        "effect": 72760,
+        "parent": 75352
+      },
+      {
+        "ID": 166021,
+        "type": 5,
+        "effect": 72822,
+        "parent": 65043
+      }
+    ],
+    "model_attachments": [
+      {
+        "ID": 309257,
+        "effect_name": 23193,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 58510
+      },
+      {
+        "ID": 309258,
+        "effect_name": 15322,
+        "attachment": 1,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 58510
+      },
+      {
+        "ID": 309262,
+        "effect_name": 20882,
+        "attachment": 1,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 58513
+      },
+      {
+        "ID": 309263,
+        "effect_name": 5239,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 58513
+      },
+      {
+        "ID": 309264,
+        "effect_name": 15764,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 58515
+      },
+      {
+        "ID": 318960,
+        "effect_name": 4909,
+        "attachment": 21,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 64980
+      },
+      {
+        "ID": 318979,
+        "effect_name": 4909,
+        "attachment": 22,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 64980
+      },
+      {
+        "ID": 318986,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 64980
+      },
+      {
+        "ID": 319009,
+        "effect_name": 4909,
+        "attachment": 22,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 65007
+      },
+      {
+        "ID": 319010,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 65007
+      },
+      {
+        "ID": 319011,
+        "effect_name": 4909,
+        "attachment": 22,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 65008
+      },
+      {
+        "ID": 319012,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 65008
+      },
+      {
+        "ID": 319381,
+        "effect_name": 4909,
+        "attachment": 22,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 65265
+      },
+      {
+        "ID": 319382,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 65265
+      },
+      {
+        "ID": 331712,
+        "effect_name": 4909,
+        "attachment": 21,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 73299
+      },
+      {
+        "ID": 331714,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 73299
+      },
+      {
+        "ID": 331770,
+        "effect_name": 119,
+        "attachment": 21,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 65043
+      },
+      {
+        "ID": 331771,
+        "effect_name": 119,
+        "attachment": 22,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0,
+        "low_def": 0,
+        "parent": 65043
+      },
+      {
+        "ID": 331811,
+        "effect_name": 4909,
+        "attachment": 21,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177551,
+        "low_def": 0,
+        "parent": 73357
+      },
+      {
+        "ID": 331812,
+        "effect_name": 23014,
+        "attachment": 19,
+        "start_anim": 65535,
+        "loop_anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 1045177544,
+        "low_def": 0,
+        "parent": 73357
+      }
+    ],
+    "effect_names": [
+      {
+        "ID": 119,
+        "model_file_id": 166339,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 4909,
+        "model_file_id": 240882,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 5239,
+        "model_file_id": 253568,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 15322,
+        "model_file_id": 252722,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 15764,
+        "model_file_id": 166031,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 20882,
+        "model_file_id": 982939,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 23014,
+        "model_file_id": 1059108,
+        "texture_file_id": 0
+      },
+      {
+        "ID": 23193,
+        "model_file_id": 196561,
+        "texture_file_id": 0
+      }
+    ]
+  },
+  "runtime_hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellMisc": "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b",
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellTargetRestrictions": "abec83c32ea756abb62cb354be05405c072c72eb37f47c786c8482c0f5ecd3a2",
+    "SpellDuration": "fd01e79e46a57d270e536cdb7d86f78f4f2b086c388bf43e51adc4bbfde4d446",
+    "SpellCastTimes": "0165dfa786959bfb76a123432b49bb464dbdb23bca0facc810603a88f38c0b6c",
+    "ItemEffect": "3241f0d3565928931a6b890643458f8b5cf775f2133ab8c103e1992f88815931",
+    "CreatureDisplayInfo": "1494eb6d4705848c4dd8ca2e463b99365d913155829e53914671da3302168e23",
+    "CreatureModelData": "615e170a0fb416ff79b4b00881f521f244787221d82bc3bf547039f22b637357",
+    "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKit": "f132307415150dd8ba923066aa4fb8054ad815fc621179e947480e7fa2b1035d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2",
+    "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf"
+  },
+  "limits": "Native spell/effect/visual/kit/attachment/model definitions and quest slots are data evidence. Client interaction, narration, encounter combat, projection placement/animation, artifact reward display/use, audio and visuals remain unverified."
+}

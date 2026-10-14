@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    39597
+  ],
+  "status": "Code/data fix, production-handler regressions, native visual/item evidence, canonical Release build and clean offline startup/shutdown completed. Client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "Original39597 The Blessing of the Watchers asks the player to speak to Yotnar when ready. Original objective279738 is mandatory monster96285 amount1 atStorageIndex5. Existing localized ready option18672/0, BroadcastText97814, says I am ready to accept your gift, Yotnar. Preserve original39594 reward prerequisite, hand-in at96254 Havi, and next38473 Will of the Thorignir.",
+    "Before repair,96257 started shared SmartAI list9625700 on quest acceptance: four talk groups0..3 with6-second delays then credit96285 to last invoker. It never casts a blessing. Shared timed lists can be replaced by a later invoker; quest acceptance and elapsed talk timers are not a readiness choice or actual effect completion.96258 already had the readiness menu/flags but no installed selection handler or static spawn.",
+    "Guarded SQL enables gossip on the installed restored96257 by changing only native questgiver-only flag2/menu0 defaults to flag3/menu18672. Both96257 and existing alternate96258 use the new SmartAI subclass. A source15 condition displays the existing option only while39597 is incomplete. Preserve original SmartAI rows, broadcast text, model25217, unit flags/faction/scaling/positions/phase6665 and all quest relations.",
+    "OnQuestAccept suppresses only the old39597 shared timed list in Stormheim. A valid public gossip opening records exact sourceGUID and a weak original acceptance token. Selection validates active quest/alive/map/zone/phase/visibility/LOS/distance and actual gossip flag, exact offered source, non-null matching token, menu18672/slot0 and a real sent menu item. Duplicate or forged/stale selection cannot start a second run.",
+    "The valid choice summons one private96257 at the exact source position/orientation, binds it to this acceptance/owner, removes interaction flags from the private actor and hides the original only from its owner. Original restored/publicNPC remains available for other players. Preserve existing talk0 at start, talk1 at6s, talk2 at12s and talk3 at18s; one transition per update preserves pauses during server stalls.",
+    "Native190904 effect0 is root26 on caster1 plus explicit target92, with duration-1;190905 is root26 on explicit target92 with2000ms duration. Target92 is the explicit object target, not a nearest/selected-by-distance player. Cast190904 at6s with the exact owner target and require both owner and caster to receive their exact-caster auras. At12s remove only that caster190904 and cast190905 on the owner; its production AuraScript must observe actual application and natural AURA_REMOVE_BY_EXPIRE. At18s grant original owner-only slot5 credit only after that expiry. Accepted cast, elapsed timer, dispel/cancellation, a missing aura or foreign target never substitutes for completion.",
+    "Stop/destructor removes only this actorGUIDs190904/190905 roots. FindPlayer(owner,false) reaches a still-registered player during map transfer or temporary absence from the world. Logout proactively stops the private actor. Cleanup expires the original weak quest-object scope even when current-map owner lookup fails, restores the original NPC, and cannot cancel a newer acceptance, erase its roots or unhide its replacement. Preserve others caster auras. Native Aura::CanBeSaved excludes summon-cast auras; no generic save/charm/mover/pet handlers changed.",
+    "Original quest reward is one item141398 Blessing of the Watchers, but liveRewardItem1/RewardAmount1 were0/0. Restore only this empty pair to141398/1; preserve custom rewards and all other quest fields. Production sparse ItemSparse load confirms its name, Stackable1, MaxCount0, Bonding1. Native ItemEffect31659 uses spell229746 on use withCharges-1; that spell includes artifact-power effect240 with base100. The ceremonial root/visual spells themselves do not grant artifact power. Reward remains normal quest hand-in plus item use; no invented direct power grant and no retrospective edit to already rewarded characters.",
+    "Unarmed/later-zone NPC uses delegate to original SmartAI. SQL migration repeats safely and preserves custom AI/scripts/conditions/rewards, Might actors, quest flags/slots/next relations and the existing readiness text. All final binaries reside in build-extractors/bin/Release; runtime configuration/certificates/DLLs/log/data directories preserved."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimBlessing.ps1",
+      "result": "PASS",
+      "evidence": ".codex/blessing-test.log",
+      "details": "Compiles the actual new NPC/Player/AuraScript handlers plus unchanged native AddQuestDelayedEvent, CanCompleteQuest, CanRewardQuest and previous-quest handlers. Fake world/maps/menu/spawn/auras/storage/network services. Both factions and both public source entries; acceptance without readiness, duplicate/new-offer replay, stale/missing/wrong-menu items, exact source/token/flags, both casts and missing applications, cancellation versus natural expiry, delayed expiry, summon failure/retry, negative pet killing blow, death/timeout/logout/map/phase/range/teleport cleanup, old-acceptance/destructor isolation, unrelated SmartAI delegation and exact-caster root preservation. Aura expiry is delivered to the extracted callback by the fixture; the full spell engine/client root/visual behavior is not emulated."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBlessingData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshots seed old flag/menu/empty reward, apply migration twice, verify bindings/condition/native objective/reward/physical hand-in/next offer. Custom AI/script/reward/condition and unrelated quest/actor data are preserved. Live post-deployment checks passed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBlessingNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-blessing-native-2026-10-14.json",
+      "details": "Original TDB735 readiness story, objective/slot/amount, rewarditem and next quest. Installed native26972 SpellEffect/SpellMisc/SpellXSpellVisual -> events/kits/effects/model attachments/animation data/model fileIDs, root durations/cast time, item use spell, Yotnar display/model and source hashes."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBlessingItemNative.ps1",
+      "result": "PASS",
+      "evidence": ".codex/blessing-item-native.log",
+      "details": "Production DB2Storage loads the actual sparse native ItemSparse record141398. Hotfix item_effect query has no replacement rows for this item."
+    },
+    {
+      "command": "tools/tests/Test-StormheimWatcherGeometry.ps1",
+      "result": "PASS: eight existing source/hand-in/next anchors,0 failures",
+      "evidence": ".codex/blessing-geometry.log",
+      "details": "No new static coordinates; private actor uses the source position. Client model/actor overlap and facing remain pending."
+    },
+    {
+      "command": "Prior Might and Watcher code and live data regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/blessing-might-regression.log",
+        ".codex/blessing-watcher-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/blessing-build-final.log",
+      "details": "Canonical final Release worldserver and bnetserver. Final build includes the root cleanup/global-lookup and non-null offer-token corrections."
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Original acceptance/timed-credit chain contained no190904 or190905 action; an18-second dialogue alone awarded the objective. Native quest readiness text and existing localized option identified the missing interaction, while native effects identified the missing ceremony.",
+    "Original TDB reward141398/1 was absent live. A real sparse native item load, original reward fields and native use-spell/effect establish the guarded restoration.",
+    "Inspection found that an expired weak offer token could compare equal to a null token on a newly accepted quest. Require a non-null original token before accepting a gossip choice; stale-offer regression covers reacceptance before any ceremony exists.",
+    "Initial cleanup regression exposed an inherited fake FindPlayer that wrongly performed current-map lookup. Fixture was corrected to global lookup. Production default FindPlayer also rejects a registered player temporarily outside the world; cleanup now passesfalse and the regression covers map transfer and temporary world absence.",
+    "Native BroadcastText via the generic regular-table research parser did not expose97807; no native voice/text playback assertion is based on that failed lookup. Existing database texts/BroadcastText IDs are preserved and actual localized voice/dialogue is a client check."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_11_stormheim_blessing.sql",
+    "sha1": "649A07CD25A0E6CE944835121443C979B003B0B2",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-blessing\\20261014-180831",
+    "state": "RELEASED"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-blessing\\startup-20261014-180832",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "note": "Scoped migration was applied explicitly with table backups. Startup disabled automatic updates to avoid other in-progress work."
+  },
+  "build": {
+    "base_at_start": "3c1c54cd",
+    "head_before_task_commit": "cc50e1a3083b08924ed8a46be71c49dbe1eec730",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "2126841e4cf8cdef4227ef4c57c56a1c1de063ffc0f15a4db42ea734355616f6",
+    "bnet_sha256": "f5925d410a54535d80b2039b12ac0ddb5f0557646190fcf2fb97dd54c362049e",
+    "blessing_source_sha256": "c0e4747a198a1147d32831057ff0e909398025dd8f7c011e71652acdc7176011",
+    "note": "Shared workspace contained unrelated Scepter SQL/tests/audits work. None of those files were edited, staged or deployed by this task; their automatic deployment was disabled during smoke testing."
+  },
+  "pending_client_checks": [
+    "7.3.5 readiness option/localization and native quest list, both factions, interaction flags, private actor replacement/facing/pose and concurrent-player visibility; abandon/reaccept, re-entry and logout during each stage.",
+    "Actual190904/190905 explicit target validation and root application on protected friendly Yotnar/owner, native casting/beam/weapon/attachment/animation playback, sounds/dialogue and actual2-second aura expiry. Scripted accepted-cast and fake application/expiry checks do not prove the client rendered the blessing.",
+    "18-second ceremony completion, exactly-once quest packet/slot5 update, cleanup and normal return to Havi, native hand-in reward141398 in bags, real use/consumption/artifact-power effect and next38473 offer including faction/phase eligibility. Full native reward storage/mail/inventory/network protocol and the item-use handler were not simulated.",
+    "Other caster roots must remain; this ceremony root must disappear on cancellation/dismount-independent travel/map transfer/logout. No client gameplay was performed and the whole quest/visual is not claimed as client-verified."
+  ],
+  "next": {
+    "quest": 38473,
+    "title": "Will of the Thorignir",
+    "scope": "Audit Havi handoff, faction recipient and Hrydshal arrival/next quests."
+  }
+}
