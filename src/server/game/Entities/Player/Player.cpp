@@ -18714,7 +18714,15 @@ Quest const* Player::GetNextQuest(ObjectGuid guid, Quest const* quest)
     case HighGuid::Vehicle:
     {
         if (Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid))
+        {
             objectQR = sQuestDataStore->GetCreatureQuestRelationBounds(creature->GetEntry());
+            // The shared Watchers blessing stores the Alliance next quest.
+            // Havi offers a separate, race-restricted Thorignir handoff to
+            // Horde players. Keep the normal relation and eligibility checks.
+            if (quest->GetQuestId() == 39597 && nextQuestID == 38473 && GetTeam() == HORDE &&
+                GetMapId() == 1220 && GetZoneId() == 7541 && creature->GetEntry() == 96254)
+                nextQuestID = 38611;
+        }
         else
             return nullptr;
         break;

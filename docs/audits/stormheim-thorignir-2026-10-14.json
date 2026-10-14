@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38473,
+    38611
+  ],
+  "status": "Faction handoff code/data repair, production-handler regressions, native quest evidence, canonical Release build and clean offline startup/shutdown complete. Client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "Will of the Thorignir is two native faction breadcrumbs:38473 Alliance goes from Havi96254 to Commander Lorna Crowley91222, then38312 A Grapple a Day;38611 Horde goes from the same Havi to Dread-Rider Cullen92561, then38612 A Grapple a Day. Both have no native or live objectives and complete on acceptance through normal CanCompleteQuest. The hand-in/reward gate, not a fabricated monster/arrival counter, unlocks their next quests.",
+    "Live Alliance38473 already correctly requires rewarding39597. Horde38611 incorrectly required early38459 Seal Your Fate. Real SatisfyQuestPreviousQuest plus SatisfyQuestRace reproduce an eligible Horde offer after rewarding38459 alone; guarded migration12 changes only PrevQuestID38459 ->39597 when the same row still has native NextQuestID38612. Preserve custom prerequisite/next link and all unrelated addon fields.",
+    "Shared blessing39597 stores native RewardNextQuest38473, and Player::GetNextQuest follows that single configured link. For Horde this is the wrong Alliance quest, rejected by the real native race handler. At the exact39597 ->38473 Havi96254 creature handoff, in Stormheim/map1220 and for Horde, select38611 before the normal quest-starter relation loop. Keep all normal relation/template and later CanTakeQuest checks; no offer is returned if Havi lacks38611 or the actor is missing. Other quests, configured links, NPCs, later zones/maps, player auto-completion and gameobject paths retain normal behavior.",
+    "Preserve expanded live race masks824181837 Alliance and234881970 Horde, including allied races. Original2018 TDB masks18875469 and33555378 identify the native faction split but are not suitable replacements for the live masks. Tests use extracted SatisfyQuestRace and enumerate all64 mask bits, rather than the prior generic fixtures always-true race check.",
+    "Native QuestLineXQuest chapter129 ends39597 after the shared watcher trials; chapters132 and133 start the two Thorignir faction quests and their matching grapple successors. Original shared quest metadata contains only Alliance next38473. The Horde cross-chapter prerequisite repair is inferred from this parallel story sequence and existing Alliance39597 gate; QuestLineXQuest itself does not encode an explicit addon prerequisite.",
+    "Native old TDB RewardSpell81040 is absent from installed26972 SpellEffect. Both live breadcrumbs already have RewardSpell0; preserve that value and normal reward/phase handling instead of reviving a missing phase spell. Existing Alliance phase6656 condition remains reward38473. No new spell, visual, scene, movement, pet/charm, actor AI or static phase/coordinate change was introduced.",
+    "Physical questgiver sources remain native public Havi340423/96254 at3510.71,2605.91,318.983; Lorna294395/91222 at2706.91,2864.66,309.565; Cullen290793/92561 at2881.42,2432.47,242.064. All have npcflag2 and unphased map1220 spawns. Existing templates have factions35/2165/68 respectively and models76630/34520/65132. Native VMAP/map height checks passed all three anchors.",
+    "Previous Blessing audit correctly left faction/next-offer gameplay pending; its shared next38473 metadata did not establish the Horde branch. This audit adds the actual faction race checks and correct38611 handoff while preserving the earlier audit and its pending client verification."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimThorignir.ps1",
+      "result": "PASS",
+      "evidence": ".codex/thorignir-test.log",
+      "details": "Compiles full modified Player::GetNextQuest and unchanged native prerequisite/race/CanCompleteQuest/CanRewardQuest handlers. Fake quest registry, quest-status persistence, map/object lookup, inventory/group/network services. Reproduces legacy early Horde prerequisite and the configured Alliance next failing Horde race eligibility; validates both corrected faction offers, real allied-race mask checks, native empty-breadcrumb acceptance/completion, reward-only next eligibility, abandonment/re-entry and exact Havi/quest/map/zone scope. Covers other quest IDs/links, missing actor/relations, other recipients and unchanged auto-complete player/gameobject query routes. Does not simulate full AddQuest/RewardQuest/network quest UI or NPC reaction/interaction."
+    },
+    {
+      "command": "tools/tests/Test-StormheimThorignirData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshot seeds old Horde predecessor, applies migration twice and checks both39597 gates, original next links/empty objectives/live race masks/questgiver and successor relations/physical flags/Alliance reward phase. Preserves other fields/addons/custom predecessor or next link. Live post-deployment state checked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimThorignirNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-thorignir-native-2026-10-14.json",
+      "details": "Original TDB735 faction titles, stories/race masks/no objectives/next recipients, installed native shared and faction QuestLineXQuest chapters, NPC display/model data, absent legacy81040 effects and source hashes. No client rendering or cross-chapter prerequisite is asserted solely from line metadata."
+    },
+    {
+      "command": "tools/tests/Test-StormheimThorignirGeometry.ps1",
+      "result": "PASS:3 anchors,0 failures",
+      "evidence": ".codex/thorignir-geometry.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimBlessing.ps1 and Test-StormheimBlessingData.ps1 -Live",
+      "result": "PASS",
+      "evidence": ".codex/thorignir-blessing-regression.log",
+      "details": "The previous readiness/root/application/expiry/cleanup/reward implementation remains intact. Its old fake race method is not used as evidence for Horde next eligibility; this task adds actual native race-handler coverage."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/thorignir-build.log",
+      "details": "Both targets built in canonical runtime; Player.cpp recompiled with the final handoff change. Existing unrelated signedness/enum-float compiler warnings remain outside this edit."
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Initial live Horde gate was38459 while Alliance required39597; the native predecessor/race regression reproduced early availability and correctly rejected it after the repair.",
+    "The single shared next38473 returned from normal GetNextQuest fails Horde race eligibility after the blessing. The scoped override chooses the matching existing Havi relation38611, preserving normal eligibility and missing-relation failure paths.",
+    "Initial test compilation needed the fixture Quest::HasFlag const qualifier to match the real method. No production behavior or eligibility guard was removed to make the test pass.",
+    "An initial broad native-title search also found unrelated Thorignir/world-quest/treasure titles; final native evidence is limited to the shared prerequisite and both actual faction branch quests. Legacy81040 absence was verified rather than assumed to be a missing reward needing restoration."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_12_stormheim_thorignir_handoff.sql",
+    "sha1": "B88E8D86CA746EDAEC603E9B114948092338D04D",
+    "state": "RELEASED",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-thorignir\\20261014-183129"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-thorignir\\startup-20261014-183129",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "note": "Applied only migration12 with scoped addon backup; automatic startup migrations disabled for this validation."
+  },
+  "build": {
+    "base_head": "04bfded383d8ef6f513338b048599311b20f163c",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "133326f1db282058c8605a40bce1c4bd24bbb0ae3eee0fa0f5546a9892f6f197",
+    "bnet_sha256": "1442e38f6cc62b7cb84b1cf77dd0069042c29126a2a9e8c9b16b00797a6427bc",
+    "player_source_sha256": "de49a571c35ec07f4ced914ac861c3cf263948efe012a7b556cd66f60e35a3a7",
+    "note": "Runtime configuration, certificates, DLLs, logs and extracted data preserved; no character data/backups or runtime files staged."
+  },
+  "pending_client_checks": [
+    "Full7.3.5 blessing reward at Havi with actual Alliance/Horde and allied-race characters, next-quest popup/list/query UI, and refusal of the early Horde38611 offer before blessing39597 reward.",
+    "Accept the correct faction breadcrumb, normal instant-complete quest log presentation, travel to and interact with Lorna/Cullen, real dialogue/reaction/pose/model and hand-in/next38312 or38612 offer. Abandon/re-entry and repeat gossip/UI checks remain client work.",
+    "Alliance native reward phase6656, later phase/NPC reuse and full reward/network protocol are not reproduced by the handoff fixture. No whole quest or visual is claimed client-verified.",
+    "Next grapple quests38312/38612 are only checked for original IDs/race/prerequisite/questgiver relationships. Their item pickup, use/movement, existing scripts and any client scene require the next audit.",
+    "Changes govern newly offered handoffs; previously accepted/rewarded Horde38611 quests are not revoked and no personal character state is rewritten."
+  ],
+  "next": {
+    "quests": [
+      38312,
+      38612
+    ],
+    "title": "A Grapple a Day",
+    "scope": "Audit both faction grapple item supply/use, movement and forward handoff."
+  }
+}
