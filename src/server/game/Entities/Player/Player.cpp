@@ -22493,6 +22493,21 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
                     instanceId = 0;
     }
 
+    // Restore the selector before CreateMap chooses this scenario's difficulty.
+    // Only this shared-map login needs quest status this early; do not consume
+    // the same prepared result a second time in the normal quest-loading block.
+    bool newBloodQuestStatusLoaded = mapId == 1522 && getClass() == CLASS_WARLOCK;
+    if (newBloodQuestStatusLoaded)
+    {
+        _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
+        if (GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+        {
+            Scenario* introduction = sScenarioMgr->GetScenario(instanceId);
+            if (!introduction || introduction->GetScenarioId() == 962)
+                SetScenarioId(962);
+        }
+    }
+
     // NOW player must have valid map
     // load the player's map here if it's not already loaded
     Map* map = sMapMgr->CreateMap(mapId, this);
@@ -22662,7 +22677,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // after spell load, learn rewarded spell if need also - test on achievements
     _LoadSpellRewards();
     // after rewarded spell load various quest statuses
-    _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
+    if (!newBloodQuestStatusLoaded)
+        _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
     _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
     // The New Blood's scenario selector is transient. Restore it before login

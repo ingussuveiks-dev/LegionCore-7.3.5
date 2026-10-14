@@ -174,7 +174,12 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     {
         uint32 introQuest = player->GetTeam() == ALLIANCE ? 42740 : 40518;
         bool brokenShoreIntro = mapid == 1460 && player->GetQuestStatus(introQuest) == QUEST_STATUS_INCOMPLETE;
-        bool newBloodIntro = mapid == 1522 && player->GetScenarioId() == 962 &&
+        // Scenario construction consumes the temporary selector before this
+        // post-AddPlayer login check. Validate the actual instance as well.
+        Scenario* activeScenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        bool newBloodIntro = mapid == 1522 &&
+            ((activeScenario && activeScenario->GetScenarioId() == 962) ||
+             (!activeScenario && player->GetScenarioId() == 962)) &&
             player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE;
         if (!brokenShoreIntro && !newBloodIntro)
             return false;

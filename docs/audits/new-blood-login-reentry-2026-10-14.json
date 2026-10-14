@@ -1,0 +1,35 @@
+{
+    "quest":  40729,
+    "scenario":  962,
+    "observed":  [
+                     "13:29 client opened an unfinished connection but sent zero initializer bytes. Server deadline closed it at ten seconds; remaining client attempts failed immediately.",
+                     "Live read-only TCP probes received the expected 48-byte server initializer on ports 8085 and 8086.",
+                     "After a full client restart without restarting worldserver, 13:37:04 login continued successfully and logged New Blood prison restoration; user then appeared in Orgrimmar.",
+                     "Quest 40729 remained incomplete. The observed login rejection occurred after transport authentication, rather than during loading the saved quest."
+                 ],
+    "diagnosis":  [
+                      "Scenario construction clears Player::GetScenarioId(). MapManager::CanPlayerEnter(loginCheck=true) previously required that transient selector to still equal 962, so the post-AddPlayer check rejected the actual scenario and CharacterHandler teleported to homebind.",
+                      "The old regression invoked access before simulating selector consumption and therefore did not cover the actual login order.",
+                      "The selector was also restored after CreateMap, too late to influence scenario difficulty selection. Quest status is now loaded early only for warlock logins into the shared map 1522, and is not consumed again later."
+                  ],
+    "repair":  "Restore active introduction selection before map creation; validate the actual live instance scenario after addition, with the transient selector used only before an instance scenario exists. Reject other live scenarios even if a stale selector says 962.",
+    "network_limit":  "No new network change made. Restarting the client resolved this observed initializer stall. The precise client-side cause is not established; timeout/retry tests do not establish that future client stalls cannot occur.",
+    "recovery_limit":  "The full scenario actor/criteria state is not persisted across a server crash. A fresh instance restarts at the native prison checkpoint with the quest still accepted. This is not exact-stage restoration.",
+    "validation":  {
+                       "Test-NewBloodLogin.ps1":  "PASS: early status/selection, selector consumed before access, actual live scenario 962, stale selector versus scenario 998, quest/class/map gates and existing live position",
+                       "Test-InstanceConnectRetry.ps1":  "PASS: deadlines, retry bound, queued/stale failures and successful/cancelled login",
+                       "Test-HandshakeDeadline.ps1":  "PASS: real loopback socket close/read cancellation and authenticated/young socket survival",
+                       "stagedRelease":  "PASS: current Release objects/libraries linked to build-extractors/runtime-test/new-blood-login-reentry/build/worldserver.exe",
+                       "deployment":  "PASS: copied Release exe and matching map into canonical runtime after client/server stopped",
+                       "startup":  "PASS: ready=True, exit=0; DBErrors.log and stderr.log empty; server left stopped",
+                       "client":  "Pending client re-entry after deployment"
+                   },
+    "recovery":  {
+                     "position":  "map 1522, instance 0, 2959.64 / 1126.32 / 212",
+                     "runtimeBackup":  ".codex/backups/new-blood-login-reentry/20261014-135822",
+                     "characterBackup":  ".codex/backups/maiko-prison-login/20261014-135822",
+                     "character":  "Maiko, guid 1",
+                     "quest":  "40729 still accepted; objective rows preserved (0=0, 1=0, 2=1)",
+                     "runtimeSHA256":  "18AF28CF19513730881B75A08DDABEC440800E10A470CB4E63E56D8E44DD66B3"
+                 }
+}

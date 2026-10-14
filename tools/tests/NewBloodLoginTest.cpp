@@ -3,12 +3,19 @@
 #include <iostream>
 using uint32 = uint32_t;
 constexpr int CLASS_WARLOCK=9, QUEST_STATUS_INCOMPLETE=3;
+constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 #define TC_LOG_INFO(...) ((void)0)
 struct Scenario { int id; int GetScenarioId(){return id;} };
 struct Manager { Scenario* scenario=nullptr; Scenario* GetScenario(uint32){return scenario;} } manager;
 auto sScenarioMgr=&manager;
 struct Player {
-    int map=1522, cls=9, status=3, selector=0; bool rewarded=false, relocated=false;
+    int map=1522, cls=9, status=3, selector=0, loads=0; bool rewarded=false, relocated=false;
+    struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
+    void _LoadQuestStatus(int savedStatus){++loads;status=savedStatus;}
+    bool early(){uint32 mapId=map,instanceId=1;
+#include "EarlyRestore.inc"
+        return newBloodQuestStatusLoaded;
+    }
     uint32 GetMapId(){return map;} int getClass(){return cls;}
     int GetQuestStatus(int){return status;} bool IsQuestRewarded(int){return rewarded;}
     int GetInstanceId(){return 1;} int GetScenarioId(){return selector;}
@@ -23,14 +30,23 @@ bool allowed(Player* player, uint32 mapid){int introQuest=40518;
 return true;
 }
 int main(){
+    // Actual login order: status/selector before CreateMap, then the constructor
+    // consumes the selector, then the post-add access check sees the live scenario.
+    Player resumed;resumed.status=0;assert(resumed.early());
+    assert(resumed.loads==1 && resumed.selector==962 && resumed.status==3);
+    resumed.restore();Scenario created{962};manager.scenario=&created;
+    resumed.selector=0;assert(allowed(&resumed,1522));
+    manager.scenario=nullptr;
     Player p; p.restore(); assert(p.selector==962 && p.relocated && allowed(&p,1522));
     Scenario live{962};manager.scenario=&live;p=Player{};p.restore();assert(p.selector==962 && !p.relocated);
     live.id=998;p=Player{};p.restore();assert(!p.selector && !p.relocated && !allowed(&p,1522));
+    p.selector=962;assert(!allowed(&p,1522)); // stale selector cannot override a later live scenario
     manager.scenario=nullptr;
-    for(int status:{0,1,6}){p=Player{};p.status=status;p.restore();assert(!p.selector && !p.relocated && !allowed(&p,1522));}
+    for(int status:{0,1,6}){p=Player{};p.holder.status=status;assert(p.early());assert(p.loads==1 && !p.selector);p.restore();assert(!p.selector && !p.relocated && !allowed(&p,1522));}
     p=Player{};p.rewarded=true;p.restore();assert(!p.selector && !p.relocated);
     p=Player{};p.cls=1;p.restore();assert(!p.selector && !p.relocated);
-    for(int map:{1,1502,1460}){p=Player{};p.map=map;p.restore();assert(!p.selector && !p.relocated);}
+    assert(!p.early() && !p.loads);
+    for(int map:{1,1502,1460}){p=Player{};p.map=map;p.restore();assert(!p.selector && !p.relocated);assert(!p.early() && !p.loads);}
     p=Player{};assert(allowed(&p,1460));p.status=0;assert(!allowed(&p,1460));
     p=Player{};p.selector=998;assert(!allowed(&p,1522));p.selector=962;assert(!allowed(&p,1500));
     std::cout << "PASS: fresh prison restore, live instance position, quest/class/map gates, later scenario and Broken Shore isolation\n";
