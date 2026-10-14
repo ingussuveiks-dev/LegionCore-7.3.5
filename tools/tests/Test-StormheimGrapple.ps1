@@ -1,0 +1,39 @@
+$ErrorActionPreference='Stop'
+$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$output="$repo/build-extractors/runtime-test/stormheim-grapple"
+New-Item -ItemType Directory -Force -Path $output | Out-Null
+& "$PSScriptRoot/Export-QuestDelayedEvent.ps1" -OutputDirectory $output
+$source=Get-Content "$repo/src/server/scripts/Legion/stormheim_grapple.cpp" -Raw
+$source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
+[IO.File]::WriteAllText("$output/Grapple.inc",$source.Substring(0,$source.IndexOf('void AddSC_stormheim_grapple()')))
+$core=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
+foreach($segment in @(
+ @('ItemEntry','Item* Player::GetItemByEntry(','void Player::DestroyItemCount(Item*'),
+ @('SetRewarded','void Player::SetRewardedQuest(','void Player::FailQuest('),
+ @('CriteriaCredit','void Player::AchieveCriteriaCredit(','void Player::SendVersionMismatchWarinings('),
+ @('NextQuest','Quest const* Player::GetNextQuest(','bool Player::CanSeeStartQuest('),
+ @('Race','bool Player::SatisfyQuestRace(','bool Player::SatisfyQuestReputation('),
+ @('KillCreditGO','void Player::KillCreditGO(','bool Player::TalkedToCreature('),
+ @('CanRewardQuest','bool Player::CanRewardQuest(Quest const* quest, bool msg)','bool Player::CanRewardQuest(Quest const* quest, uint32 reward'),
+ @('CanCompleteQuest','bool Player::CanCompleteQuest(','bool Player::CanCompleteRepeatableQuest('),
+ @('PreviousQuest','bool Player::SatisfyQuestPreviousQuest(','bool Player::SatisfyQuestClass('),
+ @('KilledMonsterCredit','void Player::KilledMonsterCredit(','void Player::KilledPlayerCredit('),
+ @('GroupCredit','void Player::RewardPlayerAndGroupAtEvent(','bool Player::IsAtGroupRewardDistance('),
+ @('QuestObjectiveSatisfy','void Player::QuestObjectiveSatisfy(','void Player::SetQuestStatus(')
+)){
+ $a=$core.IndexOf($segment[1]);$b=$core.IndexOf($segment[2],$a)
+ if($a -lt 0 -or $b -lt 0){throw "Missing core handler $($segment[0])"}
+ [IO.File]::WriteAllText("$output/$($segment[0]).inc",$core.Substring($a,$b-$a))
+}
+$effects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
+$a=$effects.IndexOf('void Spell::EffectQuestComplete(');$b=$effects.IndexOf('void Spell::EffectForceDeselect(',$a)
+[IO.File]::WriteAllText("$output/QuestCompleteEffect.inc",$effects.Substring($a,$b-$a))
+$achievement=Get-Content "$repo/src/server/game/Achievements/AchievementMgr.cpp" -Raw
+$a=$achievement.LastIndexOf('        case CRITERIA_TYPE_COMPLETE_QUEST:',$achievement.IndexOf('// if miscValues != 0'))
+$b=$achievement.IndexOf('        case CRITERIA_TYPE_KILLED_BY_CREATURE:',$a)
+[IO.File]::WriteAllText("$output/CompleteQuestRequirement.inc",$achievement.Substring($a,$b-$a))
+$vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++20 /W4 /I`"$output`" `"$PSScriptRoot/StormheimGrappleTest.cpp`" /Fe`"$output/test.exe`" /Fo`"$output/test.obj`"`r`nif not %errorlevel%==0 exit /b %errorlevel%`r`n`"$output/test.exe`"`r`n"
+[IO.File]::WriteAllText("$output/run.cmd",$cmd)
+& "$output/run.cmd"
+if($LASTEXITCODE){throw 'Stormheim grapple production regression failed'}

@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    38312,
+    38612
+  ],
+  "status": "Native pickup criteria restoration, supply/retry/login code, extracted production regressions, canonical Release build and clean offline startup/shutdown complete. Client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "Original A Grapple a Day objectives277684/38312 and278219/38612 are mandatory Type14 COMPLETE_CRITERIA_TREE atslot0, amount1, flags0, using native trees55241 and55243. Live data replaced both with optional item138111 Type1/Flags4; the real CanCompleteQuest skips optional objectives and can complete these without pickup. Restore only the exact known surrogate rows; preserve original IDs/slots, races, text and next relations.",
+    "Native roots55241/55243 have children55242/55244, amount1, using Criteria34526/34527 Type27 COMPLETE_QUEST and asset39775.39775 is the native QuestType0 Stormforged Grapple Launcher pickup quest, RewardItem138111/1, Flags37748744. Existing pickup NPC107840 starts/ends it and has addon aura214101. Preserve this normal pickup path and all its native metadata/positions.",
+    "Primary Lorna91222 and Cullen92561 already give138111 on main quest acceptance through SmartAI action56. A shared SmartAI subclass now supplies the same real item only if no existing launcher is found, including loaded bag/bank items, then records the actual acquired pickup status with native SetRewardedQuest(39775) and dispatches COMPLETE_QUEST criteria39775. It does not directly fake a main quest counter or give the item twice. Exact main objective metadata, branch team, related NPC entry, map1220/zone7541, alive/visible/phase/LOS/range/questgiver flag and active main/next quest gate this operation. Keep the existing native quest UI.",
+    "Native191831 Grapple Credit effect16 targets caster and references39775, but Spell::EffectQuestComplete only marks an out-of-log quest if it has TRACKING. The actual native/live39775 Flags37748744 do not include1024. An accepted cast alone therefore does nothing in the ordinary spare-item path. The regression executes this native no-op branch; acquisition uses the same native reward-status setter directly after proving real ownership instead of changing native quest flags or depending on an ineffective cast. Original Horde reward spell191831 is preserved.",
+    "Repeated acceptance/gossip retains the existing item and earned flag. Full-bag/failed AddItem cannot create a pickup flag; talking to the appropriate giver/receiver retries. Lorna receiver91481 and Cullen receiver92566 also support resupply while a main or No Wings Required quest is active, including the existing secondary Horde38612 starter. Unrelated quest acceptances, later maps and custom objective shapes delegate to original SmartAI. Original item-grant and next-quest SetData rows remain in SQL.",
+    "OnLogin resynchronizes active restored main quests from the permanent pickup flag or actual owned item. Native GetItemByEntry scans item positions directly and sees loaded bag/bank items with world=false; it avoids the earlier count-filter pitfall. A legacy optional counter/completed status without real acquisition evidence is reset to incomplete and0 before rebuilding criteria. Already-earned pickup status is permanent, so reacceptance need not recopy the item. No personal character SQL rewrite or blind item deletion occurs.",
+    "Horde38612 also had four duplicated zero-delay command7 self-completion placeholders and SpecialFlags2. Delete only these exact empty rows, detach StartScript38612 only if its list becomes empty and clear only known flag2 when no custom exploration action remains. Keep RewardSpell191831 and all custom actions/flags, other quests and next38613 data.",
+    "An independent generic callback defect was repaired and pushed first as28e3b3cf: AchieveCriteriaCredit skips satisfied objectives, uses the original acceptance token and rechecks completion after1s. The native pickup criteria rely on that fix for duplicate/abandon/reaccept safety. Its audit is docs/audits/quest-criteria-credit-2026-10-14.json; upstream achievement-manager100ms dispatch remains unchanged.",
+    "Production sparse ItemSparse confirms138111 Stormforged Grapple Launcher, MaxCount0, Stackable1, Bonding1 and LimitCategory0. Native/queried hotfix ItemEffect has no use effect for this item. The actual wall jump belongs to next quests38318/38613 No Wings Required and their point spellclick/movement chain, not this pickup objective. No mover, camera, pet/charm or scenario handler is changed here.",
+    "Keep native popup/visual aura214101: effect6/aura4 with its SpellXSpellVisual -> kits/effects/model attachments and models. A visual effect-name model file0 is not claimed as a rendered gun; existing NPC displays328/72713 and corresponding model data are recorded separately. Seven source/receiver/pickup VMAP/map anchors passed; no coordinates/models/aura were changed. Two existing Cullen92566 spawns340415 and341175 overlap and are preserved, with actual visible duplication left for client inspection."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimGrapple.ps1",
+      "result": "PASS",
+      "evidence": ".codex/grapple-test.log",
+      "details": "Compiles actual supply/login handlers plus unchanged native GetItemByEntry, SetRewardedQuest, Spell::EffectQuestComplete and COMPLETE_QUEST criterion-requirement branch, and current criteria-credit/acceptance-token/completion/race/reward helpers. Fake raw slot/bag storage, AddItem capacity, map/visibility/status/network and achievement-progress routing. Both factions, receivers/secondary Horde starter, failed grant/retry, bag/bank world=false ownership, no duplicate grant, ineffective non-tracking cast, earned-marker replay, legacy optional-counter repair, abandonment/reacceptance, independent players, eligibility and unrelated/custom/later-map delegation. Native criterion asset requirements and Player credit are exercised; full achievement tree/progress persistence, packet timing, native AddItem storage/mail and full hidden quest reward protocol are not simulated."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGrappleData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshots seed both optional surrogates/four duplicated Horde placeholders/flag2, apply migration twice, check native mandatory roots, scoped bindings, preserved real pickup reward/aura/relations/races/old SmartAI and next source reuse. Custom objective/actor/flags/nonzero-delay action/hook and unrelated fields preserved. Live post-deployment checks passed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGrappleNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-grapple-native-2026-10-14.json",
+      "details": "Original TDB735 objectives/mandatory flags/slots, pickup quest reward/type/non-tracking flags, next story; installed26972 roots/children/criteria asset/type, actual191831 effect and214101 aura/visual/kits/attachment/model data; no native item-use effect and source hashes."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGrappleItemNative.ps1",
+      "result": "PASS",
+      "evidence": ".codex/grapple-item-native.log",
+      "details": "Production DB2Storage reads actual sparse ItemSparse138111. Queried hotfix ItemEffect also has no replacement row for138111."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGrappleGeometry.ps1",
+      "result": "PASS:7 anchors,0 failures",
+      "evidence": ".codex/grapple-geometry.log"
+    },
+    {
+      "command": "Previous Thorignir code/live data and QuestCriteriaCredit regressions",
+      "result": "PASS",
+      "evidence": [
+        ".codex/grapple-thorignir-regression.log",
+        ".codex/grapple-criteria-regression.log"
+      ]
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/grapple-build-final.log",
+      "details": "Final direct acquisition helper compiled in canonical runtime; configs/certificates/DLLs/logs/extracted data preserved."
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Native criteria inspection disproved the prior assumption that Flags4 optional item objectives were the original pickup contract. Restore Type14/55241/55243 rather than making the invented item objectives mandatory.",
+    "Initial native191831 use looked sufficient to mark39775, but the SQL test found the real quest lacks TRACKING. Native effect regression reproduces the accepted-cast/no-op branch. Keep the real quest flags; use actual ownership and the native acquisition status helper.",
+    "Initial fixture criterion dispatch was swallowed by an inherited variadic no-op overload instead of the extracted native requirement branch. Restrict that unused multi-argument stub and route the actual two-argument call to native criteria validation; the test then exercises the complete supply-to-objective path.",
+    "Initial criterion-requirement extraction selected the wrong repeated switch label. Anchor to the actual miscValue1 requirement block. A PowerShell here-string generation attempt also failed before producing a data runner; the final saved runner uses explicit native snapshots and passed replay/live checks.",
+    "Next38613 still has legacy start-completion data; point91975/91983 currently give91484 on spellclick and Scout Grapple Point108403 has no installed SetData handler. These are recorded for the next No Wings Required audit, not described as verified movement or fixed by this pickup change."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_13_stormheim_grapple_pickup.sql",
+    "state": "RELEASED",
+    "sha1": "7018267B6091245AD3BC4F416E55416C38D4F46E",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-grapple\\20261014-192218"
+  },
+  "startup": {
+    "directory": "build-extractors\\runtime-test\\stormheim-grapple\\startup-20261014-192219",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "stopped": true,
+    "updates_enabled": false,
+    "note": "Explicit scoped migration13 with table backups; no unrelated automatic migration applied during smoke testing."
+  },
+  "build": {
+    "base_head": "28e3b3cf0392e60b5cec6c9400f1377d84490c58",
+    "runtime": "build-extractors/bin/Release",
+    "world_sha256": "74d26e2a62604ebd5633885f075dad509b7584e9fe15454ce82cd7254e003369",
+    "bnet_sha256": "28877ea8535b16fe1061f03a57b49031baf941e23158e62e5f18d713f0d759a0",
+    "grapple_source_sha256": "5f8e731de9856daae68fa24ceebb08f8deb0250fc47233412b25ef4757129fff"
+  },
+  "pending_client_checks": [
+    "Both faction acceptances, native launcher receipt/popup/quest UI and actual Type14 criterion packet/progress dispatch; full bags and loaded bag/bank/re-login/reaccept scenarios with no duplicate item.",
+    "Legacy optional COMPLETE state normalization, body/world questgiver indicators, native pickup NPC107840 aura214101/display/pose/visual playback/localization and ordinary hidden quest reward path. Metadata or accepted spell/compiled fake inventory does not prove client interaction/rendering.",
+    "Actual hand-in to Lorna91481/Cullen92566 and next38318/38613 offer; later source-entry reuse and the preserved overlapping Cullen spawns require client inspection.",
+    "No Wings Required wall jumps, cast targets, boarding/movement completion/credit/pet/camera behavior are not verified or repaired in this commit. No whole quest/visual is claimed client-verified. Only current code/data checks were authorized.",
+    "Earned39775 pickup status is permanent like the native criteria asset; item loss does not revoke past acquisition. Resupply is gated to active main/next quests at the matching giver/receiver."
+  ],
+  "next": {
+    "quests": [
+      38318,
+      38613
+    ],
+    "title": "No Wings Required",
+    "scope": "Audit point activation, successful grapple movement/arrival credit, both factions and next legacy placeholders."
+  }
+}
