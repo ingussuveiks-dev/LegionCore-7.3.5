@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-14",
+  "scope": [
+    39590,
+    39591
+  ],
+  "status": "Code/data repairs and regressions completed; client gameplay deliberately not performed.",
+  "findings_and_changes": [
+    "Ahead of the Game 39590 uses native item objectives 128508/128509 in slots 0/1 and missing Felskorn champion marker 96255 in slot 2, rather than a third loot item. Both quest-required head drops remain unchanged (94.6443/94.3289 percent, LootMode=0); production sparse DB2 loader confirms Stackable=1, Bonding=4, LimitCategory=0, MaxCount=0. Original physical Havi offer and Yotnar Head 243836 hand-in/next offer remain intact.",
+    "The installed Trial of Valor objective 279720 had been changed to NPC credit 96078. Original TDB735 build-25549 data specifies GO 243801, Type=2, storage slot 3. Restore only the exact known surrogate row, preserving ID, slot and existing stored progress.",
+    "Original powered-console template and native recording summon 190557 provide the Accessing Record stage. The previous enemy-death SmartAI skipped this interaction and started a record immediately. Now activate private console 96122, retain native 2-second portal and 7-second enemy schedule/positions, defeat private 96121 with an owner/player or owner/pet killing blow, spawn owner-scoped powered console at the actual unpowered GO position, click that exact GO, and summon the scoped record controller via the native spell.",
+    "Guard GameObjectScript, GossipHello and GossipUse packet routes with active quest/alive/map/zone/phase/distance/LOS/visibility/spawn/flags/scope checks. Exact owner console and powered GO GUIDs prevent unrelated/duplicate/stale access. Default native GO credit and duplicate event launch are suppressed by the handler. Only a synchronous, validated GO activation may start a private console; direct unarmed summons, including in the same zone with 39591 active, retain their original SmartAI.",
+    "Old controller SmartAI grants NPC credit at 21 seconds independently of conversation-cast success. The new controller requires successful copy/shader casts, successful creation of conversations 776/777/778 (native spells 197661/197662/197663), and complete server conversation lifetimes. Native actor durations 4300/3850/2800 plus the production 5000-ms tail yield final credit no earlier than 23800 ms when updates are timely. Large updates cannot catch up by skipping creation/waiting. No server result certifies playback on a client.",
+    "Use captured quest acceptance token and original quest-object scope. Stop is idempotent; original scope expires even when the owner is absent from the map after logout/transfer, without canceling a new acceptance. Scoped summons, helpers, powered GO and conversations expire together. Native five-minute attempt deadline remains. A fresh valid activation can retry after failure.",
+    "Copy installed archive light-helper positions into private scoped helpers rather than setting data on all shared 34527 entries. Restore the public unpowered console for the owner after completion/failure; old-console cleanup cannot remove a newer attempt's hide state. Unrelated and later unarmed uses of the three NPC entries delegate to SmartAI.",
+    "Static projector 114823/243818 was at (3479.78,2130.51,233.305), while runtime terrain/VMAP floor there is 286.569. Native model file 1255595 has max local Z 7.2793579, so even its size-3 top is below the floor. Guarded SQL relocates only this exact old spawn to native spell_target_position 190557 (3442.67,2098.51,278.34), with matching orientation/quaternion. Runtime floor at the recording center is 277.297. No guessed coordinates or unrelated spawn changes.",
+    "Keep the pre-existing 39590 -> 38442 addon branch and 39591/39592 gates. 38442 is A Worthy Challenger; 39592 is the separate A Trial of Will archive. Incoming next links and explicit predecessors are alternatives in the real core, rather than proof of a forced serial dependency."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimValor.ps1",
+      "result": "PASS",
+      "evidence": ".codex/valor-tests.log",
+      "details": "Compiles the complete extracted production script and real Player::CanCompleteQuest, CanRewardQuest, SatisfyQuestPreviousQuest, KilledMonsterCredit, KillCreditGO, QuestObjectiveSatisfy and AddQuestDelayedEvent. Fake map, casts, summon services, scope services, items and conversations; no client. Test begins with no console/opponent/record, runs activation/timed enemy/death/powered click/three waits/real objective credit, both factions, owner pet kill, no duplicate credits, all three packet routes, conversation/cast/summon/GO failures, retry and stale acceptance, abandonment/death/map/phase/logout/range, explicit interaction guards, independent private attempts and foreign-killer/access rejection."
+    },
+    {
+      "command": "tools/tests/Test-StormheimValorData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Temporary snapshots apply migration twice, guard custom scripts/objectives/spawns, preserve native flags/access spell/other Trial of Will objective; live head loot, missing marker condition/location, GO hand-ins/starter/gates, restored slot, conversation actors and native projector destination checked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimValorNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-valor-native-2026-10-14.json",
+      "details": "Original archive definitions plus installed 7.3.5 DB2 effects/visuals/child visuals/kits/attachments/model files/GO bounds/locks/summon properties and hashes. Names are not used as visual proof. Original TDB console Data2 is zero; the live event_scripts map-event schedule is an existing server addition, recorded separately."
+    },
+    {
+      "command": "tools/tests/Test-StormheimValorItemsNative.ps1",
+      "result": "PASS",
+      "details": "Actual production DB2Storage reads sparse ItemSparse records for both champion heads."
+    },
+    {
+      "command": "tools/tests/Test-StormheimValorGeometry.ps1",
+      "result": "PASS: 8 anchors, 0 failures",
+      "evidence": ".codex/valor-geometry-final.log",
+      "details": "Actual canonical GridMap/VMAP files. Native invisible console and initial enemy positions are elevated less than 2 units; their in-client landing/pose is unverified."
+    },
+    {
+      "command": "tools/tests/Test-StormheimTrials.ps1 and Test-StormheimTrialsData.ps1 -Live",
+      "result": "PASS"
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/valor-build-final.log"
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "The original archive comparison failed when the live surrogate NPC credit was assumed native. Reading original objective 279720 established native Type=2/ObjectID=243801 and exposed the skipped powered-console interaction. The restored data and actual KillCreditGO handler now match the original slot.",
+    "The first static geometry run failed projector 114823 by over 53 vertical units. Native model bounding box rules out a harmless large-pivot explanation. The exact old row was moved to the installed native recording destination and all eight anchors then passed.",
+    "Initial fixture assertions expected the public console to restore before its next AI tick. Native cancellation/despawn and scoped console update restore it; tests now exercise this lifecycle. Scope cancellation was also made explicit for owner lookup failure after map transfer/logout.",
+    "Early fixture compiler errors involved unused previous-test SmartCredit and distance stubs; these were corrected. A cast-failure fixture initially set a shadowed Player field rather than the actual Unit overload; the corrected failure path passes. All source failures and client gaps above remain recorded after repairs."
+  ],
+  "client_checks_and_limits": [
+    "No WoW client gameplay was performed, as requested. Before client verification, check both factions' offers, head loot UI/hand-in, native missing-champion discovery/conversation, console initial flags/pose/cast bars, portal/lighting, opponent level/health/landing/combat and player/pet killing blows, powered-console replacement/visibility/interaction, copied player hologram/shader/animation, all three voices/recordings, credit/reward UI, abandonment/re-entry/relog and overlapping independent players.",
+    "This work proves server handlers/data, static geometry, compilation and startup only. Actual dialogue, animation, light/portal/hologram visual playback and in-game interaction are not certified by SQL, simulated regressions or a successful Release build.",
+    "The built runtime also includes the pre-existing uncommitted new_blood.cpp changes. Their files, audit and migration remain untouched and excluded from this commit; this task does not apply or certify that migration."
+  ],
+  "deployment": {
+    "migration": "2026_10_14_05_stormheim_valor.sql",
+    "state": "RELEASED",
+    "sha1": "5F9AD0FE1B83A32FFC8AAD71005D3D2E1F732ACE",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-valor\\20261014-105616",
+    "initial_backup": ".codex/backups/stormheim-valor/20261014-104420",
+    "original_projector_backup": ".codex/backups/stormheim-valor/20261014-104723"
+  },
+  "next": "39592 A Trial of Will, then the following 39593 stage; inspect its native definition before implementation.",
+  "runtime_evidence": {
+    "source_revision": "bac3652ea769fa4cfd16d9e28f576b85c5e92cdb",
+    "compiled_working_tree_changes": true,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "smoke": {
+      "logs": "build-extractors/runtime-test/stormheim-valor/startup-20261014-105850",
+      "ready": true,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "db_error_bytes": 0
+    },
+    "previous_startups": [
+      "build-extractors/runtime-test/stormheim-valor/startup-20261014-104421",
+      "build-extractors/runtime-test/stormheim-valor/startup-20261014-104752",
+      "build-extractors/runtime-test/stormheim-valor/startup-20261014-105024"
+    ],
+    "server_processes_after_validation": "stopped",
+    "sha256": {
+      "src/server/scripts/Legion/stormheim_valor.cpp": "57ba7ffd0d8d70a42fccc0734280d5799298709b9f25e6e4429b5ddc87a69a2a",
+      "src/server/scripts/Legion/legion_script_loader.cpp": "069ceca69259877a11456add3ed461654c8e9b8b91cc0a694094d1019def05bc",
+      "sql/updates/world/2026_10_14_05_stormheim_valor.sql": "dfd44e30db0a7c528d0a8fbf3561ac30ae1b422d7c9d80ebf0268d55533fbac9",
+      "build-extractors/bin/Release/worldserver.exe": "77934eae16cd1ae7ecaade02d6fa96d6ff86a5765567cf0219a7f62e58bfbe0f",
+      "build-extractors/bin/Release/bnetserver.exe": "351e1c55813e3e5709127dab3b70c7afe45652dd863933d9603a9cfa99dddaab"
+    },
+    "preexisting_compiled_source_sha256": {
+      "src/server/scripts/Legion/new_blood.cpp": "342c6bba48ea4080dd3959e5816e910db8e60f5b314e1d40feedc78e990fd325"
+    }
+  }
+}
