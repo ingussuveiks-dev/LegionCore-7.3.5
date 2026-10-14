@@ -5,6 +5,11 @@
 - Preserve the runtime configuration files, certificates, DLLs, logs directory, and extracted data directories in `build-extractors/bin/Release`.
 - Do not treat `compiles` as the final server launch directory.
 
+# Commit and push convention
+
+- After completing a fix and its relevant checks, create a focused commit with the implementation, regression tests and audit, then push the current branch to `origin`. This is the user's standing preference; report the commit hash and distinguish automated checks from pending client verification.
+- Keep separate problems in separate commits. Review the staged diff, exclude runtime data, credentials and personal character backups, and do not force-push shared history.
+
 # Legion 7.3.5 shop previews
 
 - For Mounts and Pets store offers, set `battlepay_display_info_visuals.DisplayId` to the collectible's `CreatureDisplayInfoID` and `VisualId` to the Store UI model scene `10`. Set `battlepay_display_info.FileDataID` to `10` as well.
@@ -30,6 +35,7 @@
 - Burning Rush (111400) must toggle off on recast. Its low-health periodic hook must call `PreventDefaultAction()` before removing the aura; removal alone does not stop the current damage tick.
 - Shadow Shield (115232) effect 0 reduces damage; effect 1 triggers 115234, whose script consumes a stack. Do not trigger a second retaliation from effect 0 or look up spell ID 0.
 - Run `tools/tests/Test-WarlockRegression.ps1` after changes to these paths or scripted mover resynchronization. The tests compile extracted production handlers; client confirmation of toggling, visuals, pet portrait, and camera remains necessary.
+- Ordinary Enslave Demon sets a charmer without giving the NPC an owner. `CharmInfo::InitCharmCreateSpells` must handle a null `GetOwner()` when checking high-level instance spell restrictions. The 2026-10-14 crash was this dereference after leaving the New Blood cage; run `tools/tests/Test-CharmCreateSpells.ps1` for ownerless, owned, guardian and map/level branches.
 
 # Scripted quest and visual regressions
 
@@ -40,3 +46,5 @@
 - Never describe a whole quest or visual as client-verified based only on compilation, SQL presence or simulated tests. Record evidence, assumptions, missing client checks and observed failures in the quest audit; retain them across subsequent fixes.
 - In The New Blood, wounded Ritssyn intentionally stays behind after the cage escape; Calydus guides the finale. Preserve the archive summoner GUID when handing off to that guide. SmartAI StartPath refuses actors in combat, so test the combat prerequisite and failed/missing-guide retries before consuming the transition.
 - A failed SMART_ACTION_CAST can return before its linked action runs. Essential progression and independent visuals must not depend on an unrelated conversation cast succeeding. Test failure paths as well as SQL row presence; confirm native Birth/fire/hand visual playback separately in the client.
+- The archive regression must begin with no Jagganoth: actual tome-stage completion must invoke Calydus's summon, then run Jagganoth's dialogue/smash and the exact guide's escape handoff. Starting a test with the boss already spawned missed the 2026-10-14 failure. Persistent scenario progress must not depend solely on a transient SmartAI phase set by an earlier dialogue chain.
+- Re-entry tests must include scenario construction before the final login access check. Scenario's constructor consumes `Player::GetScenarioId()`; validate the live instance's scenario ID after `AddPlayerToMap`, and restore the selector before `CreateMap` chooses difficulty. The old test checked access before consumption and missed the Orgrimmar fallback. A fresh New Blood instance restarts at the prison because actor/criteria state is not persisted; do not claim exact-stage recovery after a crash.
