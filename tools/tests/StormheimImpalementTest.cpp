@@ -26,7 +26,7 @@ struct Player:Unit {uint32 team=ALLIANCE,updates=0,completions=0;bool world=true
  uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army {std::vector<int> currentUnits[1];} armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}
 };
 struct Template {uint32 type=10,flags=262144;struct Goober {uint32 open=43;} goober;};
-struct GameObject {uint32 entry=251257,map=1220,zone=7541,flags=0,state=0,nativeFallback=0,scriptId=1;uint32 GetScriptId(){return scriptId;}bool world=true,spawned=true,expired=false,hidden=false;ObjectGuid guid{10};Template info;::GameObjectAI* ai=nullptr;void Use(Unit*);
+struct GameObject {uint32 GetDBTableGUIDLow(){return 0;}uint32 entry=251257,map=1220,zone=7541,flags=0,state=0,nativeFallback=0,scriptId=1;uint32 GetScriptId(){return scriptId;}bool world=true,spawned=true,expired=false,hidden=false;ObjectGuid guid{10};Template info;::GameObjectAI* ai=nullptr;void Use(Unit*);
  bool IsInWorld(){return world;}uint32 GetEntry(){return entry;}uint32 GetMapId(){return map;}uint32 GetZoneId(){return zone;}bool isSpawned(){return spawned;}bool IsQuestObjectExpired(){return expired;}bool HasFlag(uint32,uint32 mask){return (flags&mask)!=0;}uint32 GetGoType(){return info.type;}Template* GetGOInfo(){return &info;}bool ShouldHideFor(ObjectGuid){return hidden;}float GetInteractionDistance(){return 5;}
  ObjectGuid GetGUID(){return guid;}void SetFlag(uint32,uint32 flag){flags|=flag;}void SetLootState(uint32 s,Unit*){state=s;}auto AI()->::GameObjectAI*{return ai;}
 };

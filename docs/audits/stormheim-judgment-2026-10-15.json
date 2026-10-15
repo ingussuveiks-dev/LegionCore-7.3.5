@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    38811
+  ],
+  "next_handoff": 38817,
+  "source_base_revision": "4bab56c2",
+  "status": "Judgment Day code/data lifecycle repaired, tested, deployed and built in canonical Release. Client gameplay was expressly excluded; dialogue/visual/combat playback and actual completion remain unverified.",
+  "findings_and_changes": [
+    "Original TDB38811 Judgment Day requires three MONSTER objectives278464/92889 Heimir slot0,278465/92918 Rythas slot1,278466/92920 Oktel slot2, each amount1/Flags0. Current World matches. Vydhar93231 starts it; actual Shieldmaiden Iounn93446/guid291874 ends it and offers38817 Regal Remains. Preserve quest/objective/race/reward/previous/next definitions and existing valid saved progress; no character data reset or inferred legacy normalization.",
+    "Installed bowls241869/guid115152,241868/guid115115 and241864/guid115119 had GOSSIP_HELLO64 -> timed list80, then7.5s -> ordinary manual summon8. Shared report/use routes could start that repeatable chain without proving a completed native opening. Only group0 of each ruler was called; existing Heimir/Rythas group1 dialogue was unused. The general native death/KilledMonsterCredit path DID already award kills; the defect is not that every old kill lacked credit, but that the ritual had no acceptance/owner/stage/duplicate/cleanup boundary. Keep that distinction from the initial investigation.",
+    "Register only these three actual DB bowl identities on outdoor1220/zone7541. Known identities moved beyond1yd from their installed anchors fail closed; unrelated GUIDs/maps retain SmartAI without an extra native gossip dispatch. Preserve native display14638, flags262148, lock1691, quest38811, six-second Data3, all coordinates/respawns and later bowl241877/38815. Scoped initial script/report-use/GossipUse never start a run. A core EffectOpenLock callback after successful native CanOpenLock invokes only the exact matching DB bowl/script; wrong locks/cancelled/direct use do not progress.",
+    "Native lock1691 is ordinary Open/type5 with no required skill, not kneeling/type13. Native3365 has effect33/MiscValue5/GO-item target23 and1000ms cast time. Add one scoped spell_stormheim_judgment_opening binding to3365. At CheckCast retain actual bowl GUID and current ScriptLifetime; before native hit/default effect recheck identity, live/current acceptance, metadata, active quest, player alive/world/map/phase/visibility/LOS/range, no combat/vehicle/transport and unfinished ruler. Reject a stale cast after abandonment/reacceptance, retargeted GO or distant player. Other Opening targets delegate. Cast timing/target construction themselves remain engine/client checks, not fixture proof.",
+    "After a valid completion, one active personal attempt per player waits the installed7.5s delay, then summons that sites original ruler at the installed SAI point. Supply viewerGuid BEFORE native Map::SummonCreature visibility/create, retain exact returned actor GUID and bind it to quest scope. Personal rulers remain passive and immune to PC/NPC damage during dialogue. Heimir/Rythas play groups0 then1 with authored6s/5s pauses; Oktel plays its sole group0 with authored4s pause. One transition per update prevents a stalled tick from skipping dialogue. Release native faction14/scaling98..110 and ordinary melee only after dialogue. No retail-special-ability repertoire or exact retail timing is claimed.",
+    "Only that exact owned ruler in fighting stage can take damage from its owner or the owners pet/guardian. A real JustDied with that killer credits its one native objective once and calls real CanCompleteQuest; timers, spawn, dialogue, unrelated killers, early deaths and generic/group/talk paths cannot award38811. Native Unit::Kill generic reward precedes JustDied, so two narrow Player.cpp guards suppress only38811 and its three ruler IDs; other quests using those IDs retain native credit. Diagnostic strings prove both guards in Release. This bundle requires its matching content bindings; custom bindings are preserved by the SQL guard but require a compatible progression adapter rather than assuming the old generic38811 credit remains enabled.",
+    "Keep a private incense35845 helper at the clicked bowl, supplied a viewer before creation. Its shared template remains npc_stormheim_might_actor; disable AI only on this particular private helper before the first update, so unrelated generic SmartAI fire/update spells cannot run there. Reuse184831 from existing3584500 incense lists as one optional self cast. Native184831 is a7-second dummy aura -> visual47364 -> event108223(7..8,target2) -> kit55598 -> attachment41961/effect23204/attachment19 -> model240786. Failed/missing helper or cast does not block the ruler or credit. This placement/single-cast private use is authored; actual smoke, attachment playback and ruler appearance need the client.",
+    "Player update and actor validation cancel on abandonment/new acceptance, death, teleport, map/phase/visibility loss, vehicle/transport, missing source/actor, more than80yd from the bowl, evade or180s total attempt age. Cleanup uses retained GUIDs on the original map, including logout/map-change; completed ruler corpse cleanup requests3s and removes helper. A failed summon clears the attempt so the same unfinished bowl can be used again. Preserve completed per-ruler objective data across relog; fresh attempts restart the current ruler, not an exact combat checkpoint. No mover, permanent pet lookup, pet-slot, scenario-resume or unrelated quest behavior is changed.",
+    "Migration37 atomically binds six existing templates and adds the single Opening script name when all known base bindings/faction/objectives match. Replay twice preserves full rows apart from AIName/ScriptName, preserves shared helper35845, later241877, text/scaling/SAI/spawns/other spell scripts; custom GO or king bindings skip the entire SQL repair including new spell binding. Actual environment passes all installed binding checks. Row-scoped backup and SHA1 RELEASED registration accompany the transaction."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimJudgment.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/judgment-final-test.log",
+      "details": "Compiles production quest handlers, actual delayed lifetime, full new GO/spell/player/ruler handlers, native CanOpenLock and post-lock EffectOpenLock segment, KilledMonsterCredit/TalkedToCreature, loader/race/completion/reward/GetNextQuest. Both factions, actual3 objectives/Iounn38817 despite alternative39791 predecessor; exact lock/type, original target/current cast lifetime, report/direct/cancel/stale/retarget/distant failures, dialogue immunity/release, owner/pet deaths once, concurrent owners, no group/generic/talk bypass, cleanup/retry/visual failures, unowned actor/GO delegation and custom binding refusal. World storage, inventory/summon construction, cast timing/interrupt delivery, attack/damage pipeline, packets and rendering use fixtures. Canonical EXE contains GO/king/Opening registrations and both guard diagnostics; actual scripts/game final-link inputs checked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgmentData.ps1; tools/tests/Test-StormheimJudgmentData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/judgment-data.log",
+        ".codex/judgment-data-live.log"
+      ],
+      "details": "Real migration twice in temporary snapshots, actual objectives/models/scaling/three DB positions/SAI summon positions and7500ms delays, existing incense lists, all six template and one spell binding; full-row preservation and custom whole-repair isolation. Five effective BroadcastText Hotfix rows present; all five absent from native file are not mislabeled native. All19 preceding Soulthorn objects remain untouched."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgmentCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/judgment-catalog.log",
+      "native_output": [
+        "lock1691 slot=0 type=0 index=0 skill=0",
+        "lock1691 slot=1 type=2 index=5 skill=0",
+        "lock1691 slot=2 type=0 index=0 skill=0",
+        "lock1691 slot=3 type=0 index=0 skill=0",
+        "lock1691 slot=4 type=0 index=0 skill=0",
+        "lock1691 slot=5 type=0 index=0 skill=0",
+        "lock1691 slot=6 type=0 index=0 skill=0",
+        "lock1691 slot=7 type=0 index=0 skill=0",
+        "display63347 model=2940 file=233367",
+        "display63369 model=2940 file=233367",
+        "display63370 model=2940 file=233367",
+        "display328 model=114 file=1112735",
+        "bowl14638 file=850842",
+        "broadcast95185 native=0 (requires checked Hotfix overlay)",
+        "broadcast95188 native=0 (requires checked Hotfix overlay)",
+        "broadcast95192 native=0 (requires checked Hotfix overlay)",
+        "broadcast95193 native=0 (requires checked Hotfix overlay)",
+        "broadcast95196 native=0 (requires checked Hotfix overlay)",
+        "PASS: native ordinary Open lock1691/type5, three ruler displays, helper and bowl; missing native dialogue IDs explicitly require checked Hotfix overlays."
+      ],
+      "input_sha256": {
+        "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+        "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+        "BroadcastText": "D50A56F4FB049DC0A4FB585F3C8CE5CA05819B3E95CA9B4D8CAC03E1AF548D59",
+        "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+        "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23"
+      },
+      "details": "Actual production C++ DB2Storage confirms lock1691/type5, ruler63347/63369/63370 -> model2940/file233367, helper328 ->114/file1112735, bowl14638/file850842. Existing World model metadata has positive radius/reach for all four; no DB spawn/model overrides for new personal summons. Native BroadcastText absence is reported explicitly and resolved through existing checked Hotfix rows. Relevant SpellEffect/SpellMisc/SpellXSpellVisual, CreatureDisplayInfo and Lock Hotfix override counts0."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgmentNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-judgment-native-2026-10-15.json",
+      "details": "Original TDB quest/objectives/bowls/next with SHA256 and native spell/visual/kit/attachment/model chain with runtime hashes. Regular26972 relationship table reader follows the existing audit_character_spell_chains.py physical mapping. ModelAttach has a relationship field missing from runtime LoadInfo and its core store is disabled; do not reinterpret that mismatch as packed PlayerCondition decoding or client animation proof."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgmentGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/judgment-geometry.log",
+      "details": "Real Release MMAP/Detour and runtime tiles. Iounn -> three bowl approaches through53/41/25 polygons, turn-in approach1; ruler -> respective bowl approaches2/2/4. Interaction approaches within5yd; native ruler nearest ground157.928/128.551/139.602 is close to original157.74/128.48/139.0. No invented teleport, new route, floor replacement or rendering guarantee."
+    },
+    {
+      "command": "Test-StormheimImpalement.ps1; Test-StormheimMight.ps1; Test-StormheimFungus.ps1; Test-StormheimRunewood.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": [
+        ".codex/judgment-impalement-regression.log",
+        ".codex/judgment-might-regression.log",
+        ".codex/judgment-fungus-regression.log",
+        ".codex/judgment-runewood-regression.log"
+      ],
+      "details": "Existing native open-lock launcher, shared helper archive/surrender, previous Soulcap item flow and personal Runewood/generic-credit guards pass. Impalement fixture adds only DB-GUID accessor needed to compile actual expanded post-lock dispatcher; no launcher production change."
+    },
+    {
+      "command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": [
+        ".codex/judgment-configure.log",
+        ".codex/judgment-build.log"
+      ],
+      "details": "Final executables built into build-extractors/bin/Release. Verify actual scripts/game final-link library paths and EXE implementation markers, no global OutDir workaround. Existing config/certificates/DLLs/logs/extracted data preserved."
+    },
+    {
+      "command": "Canonical Release startup after template/spell migration",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-judgment/startup-20261015-193117",
+      "details": "Ready=True; graceful exit0; DBErrors.log0 bytes; stderr0 bytes. New templates/scripts loaded by full server process start, not partial loot/data reload. Updater disabled only for isolated smoke config. Server stopped after validation."
+    }
+  ],
+  "observed_investigation_failures": [
+    "Initial native lock fixture assumed kneeling/type13. Actual C++ DB2Storage rejected this assumption; native lock1691/type5 and actual3365/type5 now drive both tests and implementation. Do not infer lock type from the Placing caption.",
+    "All five selected dialogue IDs were absent from native BroadcastText.db2. Native reader reported the absence; actual existing Hotfix rows resolve them. No invented replacement text or native-source claim.",
+    "Generic Data.rows rejected SpellVisualKitModelAttach because LoadInfo omits its extra relationship field. Kept that limitation and used the established exact regular26972 physical relationship reader for visual references; did not alter core metadata or claim C++ validation of this table.",
+    "Fixtures initially did not capture the original opening acceptance. Added the scoped Opening3365 script and explicit stale acceptance/retarget/range cases before deployment."
+  ],
+  "deployment": {
+    "migration": "2026_10_15_37_stormheim_judgment.sql",
+    "sha1": "F32D3999B2E70436264BFC5EC42A1F4AC10D23F0",
+    "state": "RELEASED",
+    "row_scoped_backup": ".codex/backups/stormheim-judgment/20261015-193116",
+    "characters_modified": false
+  },
+  "pending_client_checks": [
+    "Both factions: actual bowl cursor/Placing cast/interrupt and report-use; no ruler from cancelled cast, old acceptance or repeated click. No client gameplay was performed.",
+    "Actual personal incense smoke/attachment19, ruler models/pose, all5 dialogue lines/audio and the authored pauses; simultaneous players at the same bowl must see their own actors.",
+    "Each fight remains protected until dialogue ends, then attacks and can be defeated by player or pet, yields its one objective and cannot be repeated for another ruler. Full retail special-ability behavior is not recovered here; current native templates had no combat spell rows.",
+    "Actual logout/reentry, abandonment/reacceptance, death/evade/distance/phase/failed summon retry and shared-world interaction access; server spawn/AI paths are not fully proven by fixtures.",
+    "Actual all3 completion, Iounn turn-in and38817 offer/reward/save. Regal Remains38817 item collection is the next separate audit; the later Ashildir bowl241877/38815 remains unchanged."
+  ]
+}

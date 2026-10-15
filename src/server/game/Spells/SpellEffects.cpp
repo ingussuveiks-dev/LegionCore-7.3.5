@@ -3630,6 +3630,16 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         gameObjTarget->AI()->GossipHello(player, true))
         return;
 
+    // The three Judgment Day bowls must start their private ritual only after
+    // this opening effect passed the native lock check, never from report-use.
+    if (gameObjTarget && gameObjTarget->GetMapId() == 1220 && gameObjTarget->GetZoneId() == 7541 &&
+        ((gameObjTarget->GetEntry() == 241864 && gameObjTarget->GetDBTableGUIDLow() == 115119) ||
+         (gameObjTarget->GetEntry() == 241868 && gameObjTarget->GetDBTableGUIDLow() == 115115) ||
+         (gameObjTarget->GetEntry() == 241869 && gameObjTarget->GetDBTableGUIDLow() == 115152)) &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_stormheim_judgment" &&
+        gameObjTarget->AI()->GossipHello(player, true))
+        return;
+
     if (gameObjTarget)
         SendLoot(guid, LOOT_SKINNING);
     else if (itemTarget)

@@ -36,6 +36,7 @@ void AddSC_stormheim_dragons();
 void AddSC_stormheim_cry_thunder();
 void AddSC_stormheim_bones();
 void AddSC_stormheim_runewood();
+void AddSC_stormheim_judgment();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -277,6 +278,7 @@ void AddLegionScripts()
     AddSC_stormheim_cry_thunder();
     AddSC_stormheim_bones();
     AddSC_stormheim_runewood();
+    AddSC_stormheim_judgment();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();

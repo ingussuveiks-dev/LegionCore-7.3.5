@@ -20980,6 +20980,14 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
             continue;
         }
 
+        // Judgment Day credits the exact personal ruler only after its ritual
+        // and dialogue have completed, including an owning pet's killing blow.
+        if (questid == 38811 && (real_entry == 92889 || real_entry == 92918 || real_entry == 92920))
+        {
+            TC_LOG_DEBUG("quest", "Judgment Day: ignored generic kill credit for player %u ruler %u", GetGUIDLow(), real_entry);
+            continue;
+        }
+
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)
             continue;
@@ -21140,6 +21148,14 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         if (questid == 38778 && (entry == 93196 || entry == 93185 || entry == 93340 || entry == 93341))
         {
             TC_LOG_DEBUG("quest", "Turn the Keys: ignored generic talk credit for player %u marker %u", GetGUIDLow(), entry);
+            continue;
+        }
+
+        // Judgment Day credits the exact personal ruler only after its ritual
+        // and dialogue have completed, including an owning pet's killing blow.
+        if (questid == 38811 && (entry == 92889 || entry == 92918 || entry == 92920))
+        {
+            TC_LOG_DEBUG("quest", "Judgment Day: ignored generic talk credit for player %u ruler %u", GetGUIDLow(), entry);
             continue;
         }
 
