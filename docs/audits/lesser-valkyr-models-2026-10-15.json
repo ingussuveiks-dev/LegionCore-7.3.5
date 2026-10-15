@@ -1,0 +1,25 @@
+{
+  "entry": 45239,
+  "name": "Lesser Val'kyr",
+  "observed": "DBErrors.log 2026-10-14 16:54:22 reports three failed creature initializations with the same generic no-model message.",
+  "cause": "Template WDB displays 25517/33997 and their creature_model_info rows are valid, but eight of fifteen spawns explicitly override them with display 26101. That display is absent from native 7.3.5 CreatureDisplayInfo and the installed hotfix table, and has no creature_model_info. Native ChooseDisplayId returns the spawn override; InitEntry then fails the GetCreatureModelRandomGender branch. Checking template models alone missed the cause.",
+  "repair": "Migration 2026_10_15_23 resets only entry 45239/modelid 26101 overrides to 0, selecting the existing valid template models. Seven explicit display-25517 spawns, spawn positions, template models and unrelated NPCs are preserved. No invented model metadata, generic fallback or error suppression.",
+  "data": {
+    "CreatureDisplayInfo_db2_sha256": "1494eb6d4705848c4dd8ca2e463b99365d913155829e53914671da3302168e23",
+    "valid_displays": [25517,33997],
+    "invalid_display": 26101,
+    "after_live_counts": {"template_selection_0":8,"explicit_25517":7,"invalid_26101":0}
+  },
+  "tests": {
+    "Test-LesserValkyrModels.ps1": "PASS: temporary SQL fixture recreates invalid spawn overrides, applies migration twice and checks valid overrides, unrelated entries, coordinates and template models. Native DB2 plus installed display hotfix/deletion metadata are read. Extracted production ChooseDisplayId, GetCreatureDisplay, template selection, GetCreatureModelRandomGender and InitEntry model branch reproduce the old failure and initialize repaired spawn model cases with both valid template variants.",
+    "live_database": "Applied with private backup; eight invalid overrides removed. Earlier 601/602 event links remain 0."
+  },
+  "startup": {
+    "status": "PASS: final canonical executable reached ready and exited gracefully with code 0 after both live DB repairs. DBErrors.log and stderr.log are empty.",
+    "logs": "build-extractors/runtime-test/db-errors/startup-2026-10-15",
+    "runtime_sha256": "3B4D8CF2E5994D229C7D94119CEDFD324C67C54BACA4A3303D93A66B468E5612",
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "code_change": "None. Both repairs are data-only and use the existing compiled production handlers."
+  },
+  "limits": "The executable regression covers native model selection and initialization branches, not a full world/client spawn. Startup without a player does not load all affected grids. In-game NPC rendering and movement remain pending. Historical error logs are preserved."
+}
