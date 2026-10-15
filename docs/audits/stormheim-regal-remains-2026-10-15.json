@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    38817
+  ],
+  "next_handoff": 38815,
+  "source_base_revision": "22df4c55",
+  "status": "Regal Remains five loot links repaired, tested and deployed. Canonical Release starts cleanly. User requested code/data only; collection/turn-in/visuals in the client remain unverified.",
+  "findings_and_changes": [
+    "Original TDB38817 Regal Remains has one required ITEM objective278485: Ashildir's Bones124512, amount8, StorageIndex1, Flags0. Current World matches. Shieldmaiden Iounn93446 starts it, Iounn97270 ends it and offers38815 Waking the Shieldmaiden. Preserve all original objective storage/type/count/race/reward/next definitions; the next244450 Rune of Reformation interaction is outside this repair.",
+    "Five existing chest templates241870..241874 have questItem1=124512, Data8=38817 and lock1690, but Data1=0. Five World loot rows already give one quest-required bone with mode1/group0/currency0/reference0. Native GetLootId returns Data1; both FillLoot paths in Player::SendLoot are guarded by if(lootid). Quest metadata/sparkle and existing loot rows therefore did not make these chests deliver bones. Original TDB also retains zero selectors; its loot/starter rows are recorded separately from live World evidence.",
+    "Migration38 sets only Data1=entry for these five matching type3/item/quest templates when the matching existing guaranteed1..1 quest loot row exists. Preserve nonzero custom selectors and skip missing loot. No loot row, chance, quest flag, personal/shared rule, model, size, spawn, coordinates, phase, respawn, NPC or character data is edited. Replay twice yields full expected rows with only five selector changes and preserves unrelated Soulthorn241866.",
+    "Chest241872 has Chance100.185. This is not a rejected loader row in this core: native LootStoreItem::IsValid accepts it and Roll returns true immediately for Chance>=100 before rate/random/dungeon/zone modifiers. Preserve its exact stored value rather than introducing a rate normalization unrelated to the missing link. Native regression reads the actual migration-selected five rows, executes admission and all rate/dungeon/zone combinations, and confirms no random/rate lookup; a50-percent control does use the stochastic path. Invalid group/minimum controls still reject.",
+    "Thirteen current map1220/zone7541 spawns:241870 has1,241871 has2,241872 has1,241873 has2,241874 has7, all spawnMask1/phaseMask1/180-second respawn. Preserve five native displays20764/17934/18974/25607/18988 and sizes3/2/3/2/0.5, flags4, Data15=0/no group rules and Data30=0/nonpersonal behavior. Original lock1690 has ordinary Open/type5 and no required profession. Native C++ DB2Storage confirms all display files and sparse item124512 MaxCount0/Stackable10/Bonding4/AllowableRace-1/Flags67584,8192,0; relevant item/lock/GO-display/Iounn-display Hotfix override counts0, and no item_template_addon override exists.",
+    "Native HasQuestForItem/ItemAddedQuestCheck deliver the ITEM objective only from actual item acquisition, at slot1, and complete at8. Generic kill credit for item124512 and unrelated items do not advance it. Item loss reopens progress; native AdjustQuestReqItemCount caps reconstructed counts at8. CanRewardQuest requires8 carried items even if bank contents reconstructed a completed objective; the actual RewardQuest item case consumes8 because FlagsEx0, preserving surplus. Full inventory loading/deletion, actual loot-window/cast/StoreLootItem and whole RewardQuest remain outside the fixture.",
+    "Preserve actual prerequisite alternatives:38817 Prev39791 plus incoming Next38817 from38811/39791;38815 Prev38816 plus incoming Next38815 from38817/38816. Real loader and SatisfyQuestPreviousQuest accept a rewarded alternative with ExclusiveGroup0. Both factions and both38817 entry alternatives reach the exact97270 next-quest relation after reward. The earlier93446 giver does not offer38815. Do not invent an all-of gate or a source item.",
+    "Two current97270 spawns338670 and341219 have identical map/phase/position3416.96,977.193,101.426 and no model override. Both use the same valid native69637 display/model8891 and positive existing World model metadata, NPC questgiver flag2 and the same quest relation. Both GUIDs pass native entry-based GetNextQuest in the fixture. These overlapping rows are recorded as an existing data observation, not silently deleted or described as visually checked; their client appearance needs separate confirmation."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimRegalRemains.ps1",
+      "result": "PASS",
+      "evidence": ".codex/regal-test.log",
+      "details": "Runs actual migration snapshots first; compiles extracted GetLootId, full LootStoreItem::IsValid/Roll, HasQuestForItem/ItemAddedQuestCheck/ItemRemovedQuestCheck/AdjustQuestReqItemCount, completion/reward checks, predecessor loader/race/GetNextQuest and actual RewardQuest item case. Reads five real SQL-repaired selectors/chances, tests guaranteed100/100.185 against all modifier flags, random-path control, eight item notifications at storage1, removal/recovery, bank restriction, consumption/surplus, saved-count reconstruction and abandon/reaccept fixture states, both factions/alternative predecessors and both actual97270 GUIDs. Inventory/world/network storage remain Heart fixtures; no actual client/spell/loot transfer or full login/reward execution is claimed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRegalRemainsData.ps1; tools/tests/Test-StormheimRegalRemainsData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/regal-data.log",
+        ".codex/regal-data-live.log"
+      ],
+      "details": "Real SQL twice in temporary tables; full-row expected comparison for5 chests plus unrelated Soulthorn, unchanged loot rows/rates, custom selector retention and missing-loot refusal. Actual objective/13 spawns/display/size/shared settings/relations/predecessors and both overlapping ender records. Installed live selectors all equal their actual five loot entries."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRegalRemainsCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/regal-catalog.log",
+      "native_output": [
+        "item124512 name=Ashildir's Bones max=0 stack=10 bonding=4 races=-1 flags=67584,8192,0",
+        "lock1690 ordinary Open/type5, no skill",
+        "display20764 file=955870",
+        "display17934 file=955864",
+        "display18974 file=955866",
+        "display25607 file=955858",
+        "display18988 file=797854",
+        "Iounn69637 model=8891",
+        "PASS: native sparse Ashildir bones item permits eight, lock1690 and all five bone displays/Iounn exist; no rendering certification."
+      ],
+      "input_sha256": {
+        "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+        "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+        "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+        "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+      },
+      "details": "Actual C++ sparse DB2Storage reads item124512, Lock1690, five original GO displays and Iounn69637. Linked against real canonical worldserver project dependencies. No guessed packed offsets or invented model metadata."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRegalRemainsNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-regal-remains-native-2026-10-15.json",
+      "details": "Original TDB SHA256, exact8-item/storage1 objective, all5 original zero-selector chest records/native lock settings,38815 next and ordinary Open3365/effect33/type5. Distinguishes original archive rows from installed World loot/spawn/relations."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRegalRemainsGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/regal-geometry.log",
+      "details": "Reuses existing generic Judgment ground-approach reader compiled with real Release MMAP/Detour and installed tiles. All13 recorded bone anchors have connected paths from actual Iounn approach within conservative exact5yd interaction bounds, through45/44/34/44/20/4/33/24/31/51/55/57/61 polygons. Does not prove client collision, visual placement or safety from combat hazards."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgment.ps1 -VerifyReleaseBinary; tools/tests/Test-RitualReagentsLoot.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/regal-judgment-regression.log",
+        ".codex/regal-reagents-regression.log"
+      ],
+      "details": "Previous ritual/ruler lifecycle and actual canonical scripts/game final-link inputs remain valid. Adds5 explicit Regal chest target cases to the production Opening3365 fixture, proving its scoped Judgment script delegates these entries to native loot dispatch. Similar quest-chest selector regression passes; no prior production handler changed."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6; canonical startup after template update",
+      "result": "PASS",
+      "evidence": [
+        ".codex/regal-build.log",
+        "build-extractors/runtime-test/stormheim-regal-remains/startup-20261015-194225"
+      ],
+      "details": "SQL-only production repair; both final executables remain built in build-extractors/bin/Release. Configurations/certificates/DLLs/logs/extracted data preserved. Full new server process reloads GO templates: ready=True, graceful exit0, DBErrors.log0 bytes and stderr0 bytes. Updater disabled only in isolated smoke config. Server stopped afterwards."
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_15_38_stormheim_regal_remains.sql",
+    "sha1": "497013E6331CED6A3301C60B87644F8B906637F9",
+    "state": "RELEASED",
+    "row_scoped_backup": ".codex/backups/stormheim-regal-remains/20261015-194225",
+    "updated": "Only gameobject_template241870..241874.Data1",
+    "characters_modified": false
+  },
+  "pending_client_checks": [
+    "Actual appearance, cursor, opening/collection/loot window for all five bone models; all13 original placements and shared-player/respawn behavior.",
+    "Eight real item transfers, full bags/cancelled opening, actual objective persistence after relog and item loss, native abandonment cleanup/reacceptance; fixtures do not execute whole inventory or login systems.",
+    "Actual Iounn97270 turn-in consumes8 and offers38815 once for both factions; inspect visibility/appearance of the two overlapping existing97270 spawns.",
+    "Waking the Shieldmaiden38815 Rune of Reformation244450, Ashildir revival and later handoff are the next separate quest audit; they are not verified by this collection fix."
+  ]
+}
