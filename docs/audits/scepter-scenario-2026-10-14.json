@@ -177,5 +177,33 @@
       "note": "Concurrent, unrelated Stormheim work is present in the canonical runtime and working tree. It is excluded from this fix; these warnings were not suppressed.",
       "runtime_sha256": "46F02D5BC91F9668E416775E54294413FAC23FD231483CE3BD643ACF2A48A828"
     }
-  }
+  },
+  "client_followups": [
+    {
+      "date": "2026-10-15",
+      "observation": "User confirms entry portal was usable, but visually kept opening/closing while present.",
+      "gap_in_previous_checks": "The original ten-stage replay validated selector and teleport routing, not the actual M2 animation/alpha tracks.",
+      "evidence": "tol-barad-portal-native-2026-10-15.json",
+      "cause": "Display8834/FileDataID165828 uses Stand0 by default: its opening flare alpha goes 0->32767->0. The portal had no persistent state animation override, so that opening flash repeated. No repeating SAI cast/animation event exists on entry251699.",
+      "repair": "Only gameobject_template251699.SpellStateAnimKitID changes from0 to native2133: segment0 plays Stand once, segment1 loops Hold158. Existing model, GO type/data, teleport218595 and scenario selector1155 are preserved.",
+      "migration": "2026_10_15_21_tol_barad_portal_animation.sql",
+      "sha1": "5D348EDA68A170FD3F356CA49967C0F658296BB9",
+      "automated": "Actual native M2 and DB2 audit PASS; both SQL migrations twice and all ten stage interaction replays PASS.",
+      "client_status": "First appearance, sustained portal display, another click, re-entry and another player pending after repair.",
+      "deployment": "Backed up original template and installed transactionally while worldserver stopped. SQL-only change; canonical Release executable and configs preserved.",
+      "startup": {
+        "ready": true,
+        "exit_code": 0,
+        "db_errors_empty": true,
+        "stderr_empty": true,
+        "logs": "build-extractors/runtime-test/tol-barad-portal/startup-2026-10-15-085011"
+      },
+      "native_hotfix_override_counts": {
+        "AnimKit2133": 0,
+        "AnimKitSegment2133": 0,
+        "AnimKitConfig341": 0
+      },
+      "production_field_delivery": "GameObject::Create copies template visualData SpellStateAnimKitID to GAMEOBJECT_FIELD_SPAWN_TRACKING_STATE_ANIM_KIT_ID for the client; no recurring SAI animation or repeated cast is added."
+    }
+  ]
 }

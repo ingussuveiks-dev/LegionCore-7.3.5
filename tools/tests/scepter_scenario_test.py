@@ -217,6 +217,8 @@ assert set(scripts[110021,0])=={0}
 assert scripts[-370846,0][1]['a2']==52900
 assert next(r for r in data['go'] if r['entry']==251699)['spell']==218595
 assert scripts[251699,1][0]['action']==204 and scripts[251699,1][0]['a1']==1155
+assert next(r for r in data['go'] if r['entry']==251699)['animKit']==2133
+assert next(r for r in data['go'] if r['entry']==247351)['animKit']==0
 assert not any(c['type']==6 for c in data['condition'])
 assert {(r['entry'],r['spell'],r['flags']) for r in data['spellclick']}=={
     (109964,219203,1),(110030,219203,1),(110800,220374,1)}

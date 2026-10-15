@@ -1,0 +1,122 @@
+{
+  "build": "7.3.5.26972",
+  "gameobject": 251699,
+  "display": 8834,
+  "file_data_id": 165828,
+  "model": "Creature_SpellPortal_LargeShadow",
+  "model_sha256": "122a04dfda5ba3a8707486b43bb8034eef8c89e3591ef6c9d632d6e8fcbd0bfb",
+  "sequences": [
+    {
+      "id": 0,
+      "variation": 0,
+      "duration_ms": 1667,
+      "movement_speed": 0.0,
+      "flags": 160,
+      "frequency": 32767
+    },
+    {
+      "id": 158,
+      "variation": 0,
+      "duration_ms": 3334,
+      "movement_speed": 0.0,
+      "flags": 32,
+      "frequency": 32767
+    },
+    {
+      "id": 159,
+      "variation": 0,
+      "duration_ms": 633,
+      "movement_speed": 0.0,
+      "flags": 161,
+      "frequency": 32767
+    }
+  ],
+  "opening_flare_color_tracks": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "opening_flare_alpha_stand": [
+    0,
+    32767,
+    0
+  ],
+  "opening_flare_alpha_hold": [
+    0
+  ],
+  "decay_mesh_alpha": [
+    32767,
+    0
+  ],
+  "kit": {
+    "ID": 2133,
+    "OneShotDuration": 0,
+    "OneShotStopAnimKitID": 2137,
+    "LowDefAnimKitID": 0
+  },
+  "segments": [
+    {
+      "ID": 3697,
+      "AnimStartTime": 0,
+      "EndConditionParam": 0,
+      "EndConditionDelay": 0,
+      "Speed": 1.0,
+      "OverrideConfigFlags": 0,
+      "ParentAnimKitID": 2133,
+      "AnimID": 0,
+      "AnimKitConfigID": 341,
+      "SegmentFlags": 0,
+      "BlendInTimeMs": 0,
+      "BlendOutTimeMs": 0,
+      "OrderIndex": 0,
+      "StartCondition": 0,
+      "StartConditionParam": 0,
+      "EndCondition": 0,
+      "ForcedVariation": 0,
+      "LoopToSegmentIndex": 255,
+      "StartConditionDelay": 0
+    },
+    {
+      "ID": 3698,
+      "AnimStartTime": 0,
+      "EndConditionParam": 0,
+      "EndConditionDelay": 0,
+      "Speed": 1.0,
+      "OverrideConfigFlags": 0,
+      "ParentAnimKitID": 2133,
+      "AnimID": 158,
+      "AnimKitConfigID": 341,
+      "SegmentFlags": 4,
+      "BlendInTimeMs": 0,
+      "BlendOutTimeMs": 0,
+      "OrderIndex": 1,
+      "StartCondition": 2,
+      "StartConditionParam": 0,
+      "EndCondition": 1,
+      "ForcedVariation": 0,
+      "LoopToSegmentIndex": 1,
+      "StartConditionDelay": 0
+    }
+  ],
+  "source_sha256": {
+    "GameObjectDisplayInfo": "23b4e725c73048de7da7d765be0410f7d9cba2ae07447c0765c8ebeb0586c4d8",
+    "AnimKit": "b3b895f30bee3ced65a107c638eead9931fdf5c4f1efe1da73d328fc99faa5f1",
+    "AnimKitSegment": "65a0658e7afdc5fcd2ccbc62ea76cd289344e9b6fc2a32cf6e6e96eb896a381b",
+    "AnimKitConfig": "8547687bcd11326b113a9845532c061bad5c0de03ce44881177c6a70d0cf39c3"
+  },
+  "result": "PASS",
+  "client_rendering_verified": false,
+  "limits": "Native M2/DB2 evidence; actual first appearance, sustained display, use, re-entry and a second player require client verification."
+}
