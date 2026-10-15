@@ -4,7 +4,7 @@
   "name": "Ritual Ruination",
   "map": 1220,
   "zone": 7543,
-  "status": "Release repair installed; user confirmed login at ritual and stationary pet summoning. Remaining interactions and visuals require client retests.",
+  "status": "Release repairs installed; user confirmed ritual login, pet summon/follow, no repeated movie, no duplicate image/dialogue and successful Scepter acquisition. Saved quest is complete, final turn-in is not yet confirmed.",
   "client_confirmation": "2026-10-15: user confirmed login at ritual and stationary pet summoning; after34c1c18f also confirmed the repeated-location movie is gone and pet follows. The later screenshot proves Allaris credit reached the pickup objective, but exposes rapidly duplicated Image of Gul'dan/dialogue. See ritual-personal-actors-2026-10-15.json. Pet portrait, camera, full quest and later interactions remain unverified.",
   "context": "The affected character finished/rewarded An Eye for a Scepter43153 and accepted43254. The previous corrected Scepter executable logged its fresh-instance restoration at10:59:35; the user subsequently reached Stage6 and the character database now records43153 rewarded. This is evidence of reaching the next quest, not verification of every previous visual or interaction.",
   "observed_failures": [
@@ -44,9 +44,9 @@
   },
   "test_limits": "The production helper test uses fixture managers/inventory/map/teleport services. It does not execute the full login, SmartAI dialogue scheduler, every spell effect, real combat, client loot UI, collision streaming or pet rendering. SQL replay verifies admission/links and repeatability; it is not a full client playthrough.",
   "pending_client": [
-    "Stationary pet summoning after login is user-confirmed. Still check that the permanent pet follows and that its action bar/portrait, camera, client mover and speed agree after travel and return.",
+    "Stationary pet summoning and following after login are user-confirmed. Still check action bar/portrait, camera and mover behavior after all alternate travel/return paths.",
     "Speak to Gul'dan, observe native dialogue/portal movement and actual hostile Allaris combat, including pet killing blow and a fast kill. Existing combat spell loadout/tuning and exact retail infernal behavior are not certified by these tests.",
-    "Actual artifact loot window, full bags then retry, scene1365 playback and subsequent altar channel. Native scene/event/visual presence is not playback evidence.",
+    "Actual Scepter acquisition is user-confirmed. Full bags then retry, exact scene1365 playback and interrupted altar channel still need separate client checks. Native scene/event/visual presence is not playback evidence.",
     "Interrupted altar channel, abandonment/reacceptance, death, disconnect/relog, overlapping participants and a failed/missing personal helper. Shared original introduction dialogue is retained; multiplayer timing requires client checks.",
     "Native sabotage visuals, personal portal discovery/use, actual Dalaran arrival and Calydus turn-in/next quest. First portal placement uses an existing supported prop coordinate, not a claimed retail sniff."
   ],

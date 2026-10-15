@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-15",
+  "scope": "All36 artifact selections across12 classes,149 native7.3.5 race/class combinations,202 quest records including native quest-line alternatives, source/condition/actor/loot metadata and current shop artifacts. Structural audit plus selected executable regressions; not a full client traversal of every route.",
+  "automated": {
+    "onboarding": "Compiled actual class_hall_artifact_onboarding namespace and player hooks. All36 choice/response/reward spell mappings match native data.900 race/class and owned/unowned cases cover actual selection/login/retry, foreign class/chosen flags, level, unavailable quest data, existing/completed/rewarded quests, full quest log and later recovery. A shop copy alone does not auto-start a quest.",
+    "quest_admission": "2431 cases execute native Player::SatisfyQuestClass and SatisfyQuestRace against the202 audited quest/mask records and149 race/class pairs. Alternative faction/race branches retain their native restrictions; this is not a claim that every race may accept every branch.",
+    "native_catalog": "Sparse ItemSparse is read by native DB2Storage with Artifact and ChrSpecialization. The regular DB2 research reader checks PlayerChoice reward spell effects, QuestLineXQuest, ScenarioStep, CriteriaTree/Criteria and LFG metadata. The report retains source/snapshot/native hashes.",
+    "scenario_recovery": "Existing generic live/fresh scenario checkpoint handler/data tests and legacy New Blood/Broken Shore/Scepter regressions pass. BrokenShoreReentryTest's older fixture gained the new generic recovery API stubs so it can compile current production access checks; generic recovery behavior remains covered separately.",
+    "deployed_smoke": "Canonical Release marker checks and startup/world+instance TCP/shutdown smoke pass, exit0/no new crash dumps. Final server ready13:17:17 Europe/Riga; no new DBErrors after saved byte offset249. Historical unrelated errors retained."
+  },
+  "repairs_installed": [
+    "Eight artifact chests: existing loot links, real completed-loot progression, full-bag retry boundary and a unique shop/bank-copy completion path with native OWN_ITEM event. See artifact-acquisition-2026-10-15.json.",
+    "371 SmartAI scenario-step conditions across51 scenarios now inspect their base actor at callbacks with no player invoker. Scene10 and unrelated conditions remain unchanged. See smart-scenario-actor-conditions-2026-10-15.json.",
+    "Ulthalesh compass loot plus Ariden's optional-cast-independent, scaled-hit-safe and correctly ordered defeat/chest/guide finale. See ulthalesh-2026-10-15.json.",
+    "Previously installed Ritual Ruination flight/mover recovery, wrong-quest movie suppression and personal-actor duplicate prevention retained. The user confirmed pet summoning/following, no repeated movie, no duplicate Gul'dan/dialogue and obtaining the Scepter. Saved43254 is complete, not rewarded; final turn-in remains unconfirmed."
+  ],
+  "after_snapshot": "artifact-routes-2026-10-15.json has0 remaining findings under its automated missing-loot/choice/admission rules, and7 separate actor LINK review findings. A zero hard-finding count does not mean zero gameplay defects.",
+  "unresolved_review": [
+    "100812 quest-accept events4/5 link to absent6. The clone summon precedes the broken link and its independent spawn path exists; the missing action is unknown.",
+    "105332 gossip0 and105697 spellclick0 grant their native quest credit then link to absent1. Their intended follow-up actions remain unknown.",
+    "100475 events1/6 link to absent7/8 in Off To Adventure40633, and shared100438 reward9 links to absent10 for later quest45440. These are not silently filled with invented teleport/credit actions.",
+    "Report includes these reused actors even where a flagged event belongs to an earlier/later quest rather than the artifact's active branch. Executable reachability and intended behavior need further evidence."
+  ],
+  "client_pending": [
+    "Full Ulthalesh40495 through40712 turn-in, and shared40731/40821 only if unfinished; source portal entry, all988 steps, pet/maximum-range kill, actual loot/shop/bank copy, guide return and abandonment/live/fresh re-entry.",
+    "Actual native interactions, scenes, visuals, offhand grants, combat, vehicles, camera, pet portrait and final quest rewards for every other artifact route. Eligibility/SQL tests do not certify these.",
+    "Legitimately triggered movie stop/resume on finish and skip; the user confirmation covers suppression of the unrelated ritual movie, not playback movement for every movie."
+  ],
+  "preservation": "No personal quest/chosen flags, character inventory or class/race data were reset for this audit. Affected world rows and executables are privately backed up; runtime configuration/certificates/DLLs/bnetserver and extracted data retained."
+}

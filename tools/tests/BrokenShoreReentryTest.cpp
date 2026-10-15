@@ -130,7 +130,12 @@ struct Creature
     CreatureTemplate info;
     CreatureTemplate const* GetCreatureTemplate() const { return &info; }
 };
-struct Scenario { uint32 GetScenarioId() const { return 0; } };
+struct Map;
+struct Scenario {
+    uint32 GetScenarioId() const { return 0; }
+    Map* GetMap() const { return nullptr; }
+    bool IsCompleted(bool) const { return false; }
+};
 struct ScenarioManager { Scenario* GetScenario(uint32) const { return nullptr; } } scenarioManager;
 auto sScenarioMgr = &scenarioManager;
 struct Player
@@ -158,6 +163,8 @@ struct Player
     uint32 GetMapId() const { return map; }
     uint32 GetInstanceId() const { return 7; }
     uint32 GetScenarioId() const { return 0; }
+    Map* GetMap() const { return nullptr; }
+    bool CanResumeScenarioLogin(uint32) const { return false; }
     uint32 getClass() const { return 1; }
     bool IsQuestRewarded(uint32) const { return false; }
     float GetPositionX() const { return x; }

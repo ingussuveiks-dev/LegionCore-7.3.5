@@ -1,7 +1,8 @@
 {
   "date": "2026-10-15",
   "quest": 43254,
-  "status": "Canonical Release installed and automated checks passed; client retest pending",
+  "status": "Canonical Release installed; user confirmed no duplicate image/dialogue and successful Scepter acquisition",
+  "client_confirmation": "Afterb442942b the user answered jā viss tagad ir kā vajag tālāk arī viss strādāja ieroci dabūju. This confirms image/dialogue recovery and actual weapon acquisition, with further progress reported. Saved43254 status is complete but not rewarded; final turn-in/next quest is not asserted as client-verified.",
   "observed": "After defeating Allaris, the user showed many overlapping Image of Gul'dan dialogue bubbles and rapidly repeated chat. The quest tracker had advanced to Take the Scepter of Sargeras. This is evidence of duel completion and a post-duel recovery failure, not a verified artifact pickup.",
   "cause": [
     "RitualRuination::Recover runs on every player update. Owned incorrectly relied on Unit::GetSummonList to find actors made with WorldObject::SummonCreature.",
@@ -28,7 +29,7 @@
     "preservation": "Graceful shutdown and private executable backup; nine protected runtime configuration/certificate/DLL/bnetserver hashes unchanged. No SQL or character progress reset required."
   },
   "client_pending": [
-    "Relog at the post-duel stage: one Gul'dan image, one initial line and one delayed follow-up; no accumulating bubbles or slowdown while waiting/moving in the ritual area.",
-    "Loot the Scepter, perform sabotage, use one return portal and turn in to one Calydus. Check retry, relog, abandonment and overlapping participants without duplicate actors."
+    "Normal post-duel image/dialogue and Scepter acquisition are user-confirmed. Still check prolonged waiting, actor loss/recovery, abandonment and overlapping participants without accumulating copies.",
+    "User reported further progress and saved quest is complete. Confirm the final Calydus turn-in/next quest, detailed sabotage/portal visuals and alternate retry paths separately."
   ]
 }
