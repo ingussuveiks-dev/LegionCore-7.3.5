@@ -1,0 +1,123 @@
+{
+  "quest": {
+    "id": 38818,
+    "name": "The Final Judgment"
+  },
+  "date": "2026-10-15",
+  "status": "Progression/ownership repair validated in code/data; full native combat/cinematic fidelity remains unfinished and client verification pending",
+  "scope": "Code/data only. Authored private confrontation and reliable Helheim progression; no client gameplay or character edits.",
+  "findings": [
+    "Original TDB735 and live World both require objective278476 MONSTER93442/storage0/amount1, described as Runeseer Faljar confronted. Preserve the objective, flags, all races, Prev38815 and RewardNextQuest0. Live Ashildir93234 starts38818;97319 on outdoor map1463 ends it and offers39837 after reward. Native GetNextQuest correctly returns null for38818 because RewardNextQuest0:39837 is a normal quest-menu offer, not an automatic next window.",
+    "Old93093 SmartAI waited for0..1-percent health but its invincibility floor was raw1HP on aggro (35HP on reset), before target-relative normalization. Its timed list targeted closest player24 for a spell, teleport1463 and93442 credit. A different nearby player could receive the ending.97319 additionally granted93442 to any player within10yd every second, without a completed confrontation. Retire only the known93093/9309300 rows and exact97319 ambient-credit row, with the new93093 binding as a migration guard.",
+    "Exact story anchors are DB377348/entry93093 at3626.52,791.312,38.7806/phase4005 and DB292001/entry93428 at3639.2,777.75,40.2274. Begin within40yd with active38818, actual loaded source GUIDs, matching phase and LOS. Select by DB GUID through a creature list so another private clone cannot intercept nearest-entry resolution. Personal viewer is supplied before both private actors are created; bind them to the quest and hide only those two public source GUIDs for that owner. Native faction16, display64593/model8323/file1132140 and active98..110 scaling are retained.",
+    "Faljar addon89319 is Quest Invisibility22 (native aura18/type30), paired with player detection100044/aura19/type30 from spell_area7653 for INCOMPLETE38818.209363 is an intro trigger/aura395/4870. Remove these two only on the owned replacement, clear its PC immunity and retain Rune Channel209164 until the first legitimate combat entry.209164 is a copied Spell record resolving to Rune Channel, not a missing spell. Preserve captive Ashildir native display68635/model8891/file1339502, kneel8 and209164 pose. Completed-ending recovery must not require seeing the invisible public Faljar after the incomplete-only detection aura has gone.",
+    "Add default-empty UnitAI::DamageTakenAfterScaling and call it for AI-enabled creatures after damage/=GetHealthMultiplierForTarget and after the existing instance hook, before the native death check. Owned Faljar compares that final damage against GetHealth(attacker)/GetMaxHealth(attacker); reaching1percent or a lethal blow zeros damage, keeps the actor alive at1HP and begins the ending once. Owner pets/guardians qualify through their player; outsiders do not. The raw DamageTaken override only rejects invalid attackers and starts the native opening text/ends the rune channel. Existing instance protection runs first; unrelated AI retains the extracted production empty default.",
+    "Confrontation completion writes native93442/storage0 once at confirmed surrender, before the delayed transfer. This saved objective is the durable ending checkpoint; no transient stage is the sole proof of victory. A complete quest still in the actual Haustvald area resumes only its ending after logout/reload, without another fight or second credit. A fresh incomplete attempt restarts the confrontation. Helheim1463 has native Map.InstanceType0 and no instance_template row; no Scenario checkpoint/state is invented.",
+    "The private ending uses existing Faljar text groups4 and2, retaining five-second then twelve-second delays from the old list. It standard-teleports only its owner to the existing1463 destination343.62,354.5,30.54,4.57 beside97319. Rejected requests retry after3s; accepted pending transfers wait, and synchronous map-change cleanup cannot invalidate a later run reference. Standard CombatStopWithPets/TeleportTo provide the existing pet/zone lifecycle. No player aura, mover, vehicle, farsight or camera override is added.",
+    "Native208544 is Runic Bulwark with school immunity and periodic208547, not a banishment; the old player-targeted cast is removed.209310 is End Conversation/effect219/conversation1867.209241 is actual Banish to Helheim but contains transform/flying/immunity/pacify/disarm and other controls; this repair does not blindly apply it or rely on a scene callback. Full native Runestone/Bulwark combat and banishment conversation/cinematic are NOT reconstructed here. The current owned combat is an authored melee encounter; this material fidelity limit is retained for the next work item, not presented as a completed retail quest.",
+    "Cleanup covers quest lifetime replacement/abandonment, logout, map/phase/visibility change, death, missing actor/spirit,80yd range, vehicle/transport,180s timeout, combat evade and failed summon. A completed protected ending ignores ordinary evade without resetting its timer. Clear restores source hide lists and cancels private actors. Native source phase4005 definition7541/151 remains gated by incomplete/complete38818 AND not active45522. Other Faljar entries117199 and116496, their complete SAI rows and later class content are unchanged.",
+    "Scope generic KilledMonsterCredit/TalkedToCreature guards only to quest38818/marker93442. Ambient, group or unrelated bunny/talk events cannot bypass the owned confrontation. Other quests with93442 still receive ordinary credit. No quest is advanced at spawn, merely on arrival in Helheim or from an unrelated death."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgment.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/final-judgment-test-final.log",
+      "details": "Compiles actual private script, full native normalized-damage/instance/AI call block, production default AI method and Player credit/completion/reward/predecessor/GetNextQuest handlers. Both factions and owner/pet scales0.001/1/100, first-hit kills, near1percent, exactly-once, source selection/private viewers, concurrent owners, initial PC flag release, channel cleanup,5+12s timing, rejected/synchronous transfer, saved-completion resume, cancellation/lifetime/death/map/phase/visibility/range/vehicle/transport/evade/timeout/summon failure, generic-credit isolation and normal next-menu semantics. World/actual summoning/spell validation/transport packets remain fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentData.ps1; tools/tests/Test-StormheimFinalJudgmentData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/final-judgment-data.log",
+        ".codex/final-judgment-live.log"
+      ],
+      "details": "Actual migration twice in temporary tables; seeds retired legacy shapes even after deployment. Full template comparison, full other-Faljar SAI comparison, custom binding/extra rows preservation, exact12 bad rows removed. Live objective/relations/native no-auto-next/scaling/phase/detection/poses/anchors/Helheim NPC/no instance pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-final-judgment-native-2026-10-15.json",
+      "details": "Original archive objective and quest text/next route, native spell effect types for invisibility/detection, intro, Bulwark, conversation and banishment; outdoor Map1463. Input SHA256 and explicit fidelity limits retained."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/final-judgment-catalog.log",
+      "details": "Native C++ DB2Storage reads both display/model files, all seven relevant Spell names including copied209164, detection and outdoor Helheim. Hotfix effects/misc/display override counts0."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/final-judgment-geometry.log",
+      "details": "Generic existing MMAP/Detour probe now optionally accepts a map ID, default1220 retained.44 polygons from source Ashildir to Faljar,5 to captive spirit,1 from1463 landing to turn-in NPC; installed Release ground data. These do not prove client collision/visual placement."
+    },
+    {
+      "command": "tools/tests/Test-DarkWhispersFinale.ps1 -VerifyReleaseBinary; tools/tests/Test-UlthaleshDamage.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/final-judgment-dark.log",
+        ".codex/final-judgment-ulthalesh.log"
+      ],
+      "details": "Existing instance post-scaling protection, lethal/pet/normal hits and actor/scenario isolation pass with the extended native damage block. Compatibility fixtures gain disabled AI/default-method fields; existing instance behavior remains authoritative before the new AI hook."
+    },
+    {
+      "command": "tools/tests/Test-StormheimReformation.ps1 -VerifyReleaseBinary; tools/tests/Test-StormheimJudgment.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": [
+        ".codex/final-judgment-reformation.log",
+        ".codex/final-judgment-judgment.log"
+      ],
+      "details": "Prior rune credit/personal helper and ruler lifecycle/opening/regression paths remain valid with scoped38818 guards."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6; canonical startup",
+      "result": "PASS",
+      "evidence": [
+        ".codex/final-judgment-build.log",
+        ".codex/final-judgment-build-final.log",
+        "build-extractors/runtime-test/stormheim-final-judgment/startup-20261015-204359"
+      ],
+      "details": "UnitAI API and all dependent core/scripts compiled into canonical Release, with actual final-link scripts/game inputs and implementation markers verified. Fresh runtime after migration: ready=True, graceful exit0, DBErrors.log0 bytes, stderr0 bytes. Configurations/certificates/DLLs/logs/data preserved; server stopped afterwards."
+    }
+  ],
+  "catalog_output": [
+    "display64593 model=8323 file=1132140",
+    "display68635 model=8891 file=1339502",
+    "spell89319 name=Quest Invisibility 22",
+    "spell100044 name=Generic Quest Invisibility Detection 22",
+    "spell209164 name=Rune Channel",
+    "spell209363 name=Intro Sequence Trigger",
+    "spell208544 name=Runic Bulwark",
+    "spell209310 name=End Conversation",
+    "spell209241 name=Banish to Helheim",
+    "map1463 outdoor type=0",
+    "PASS: native DB2Storage Faljar/Ashildir displays/models, copied spell records, detection/intro and outdoor Helheim. No rendered combat/cinematic certification."
+  ],
+  "catalog_input_sha256": {
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "Map": "08ADC433F6726B784211ACA5E80B0B54FB791A6D702CE35195AEAE136A16D2D4"
+  },
+  "deployment": {
+    "state": "RELEASED",
+    "migration": "2026_10_15_40_stormheim_final_judgment.sql",
+    "sha1": "6D07B2F6D5A4948CEE9EDE7DCD0A9BF4F0BDD5B8",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-final-judgment\\20261015-204359"
+  },
+  "observed_client_failures": [],
+  "client_checks_pending": [
+    "Native flag/phase/detection admission and visible private actors/poses, attackability, actual melee challenge and dialogue; concurrent players and pets.",
+    "Scaled one-hit and normal surrender, one93442 credit, interrupt/retry/evade/abandon/reaccept/relog with incomplete versus completed confrontation.",
+    "Helheim arrival/collision/loading release, movement and pet portrait, source actor cleanup,97319 turn-in and39837 normal quest-menu offer."
+  ],
+  "unfinished_content": [
+    "Native Runestone/Bulwark combat choreography and destruction interaction.",
+    "Full Banish to Helheim conversation/cinematic/visual playback; native209241 control lifecycle has not been implemented or client verified."
+  ],
+  "next_work": {
+    "quest": 38818,
+    "task": "Finish the native runestone combat and banishment presentation before calling the whole quest restored. Following progression quest is39837 An Unworthy Task."
+  }
+}

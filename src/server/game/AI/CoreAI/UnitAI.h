@@ -224,6 +224,10 @@ class TC_GAME_API UnitAI
         // for attack reaction use AttackedBy called for not DOT damage in Unit::DealDamage also
         virtual void DamageTaken(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType dmgType) { }
 
+        // Final damage after target-relative health scaling, before the death
+        // check. Scripted outdoor surrenders must also survive scaled one-shots.
+        virtual void DamageTakenAfterScaling(Unit* /*attacker*/, uint32& /*damage*/, DamageEffectType /*damageType*/) { }
+
         // Called when the creature receives heal
         virtual void HealReceived(Unit* /*done_by*/, uint32& /*addhealth*/) {}
 

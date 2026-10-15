@@ -11,8 +11,9 @@
 // Actual Release navmesh libraries and installed 7.3.5 ground data.
 int main(int argc, char** argv)
 {
-    if (argc != 3) return 2;
-    MMAP::MMapManager mm; mm.InitializeThreadUnsafe({{1220,{}}});
+    if (argc != 3 && argc != 4) return 2;
+    uint32 map = argc == 4 ? uint32(std::stoul(argv[3])) : 1220;
+    MMAP::MMapManager mm; mm.InitializeThreadUnsafe({{map,{}}});
     std::string root = argv[1]; std::ifstream in(argv[2]);
     float points[2][3], nearest[2][3], ext[3]={6,3,6};
     dtPolyRef refs[2]={},path[2048]; int count=0;
@@ -23,10 +24,10 @@ int main(int argc, char** argv)
         if (!(in >> p[2] >> p[0] >> p[1])) return 3;
         int tx=int(32-p[2]/533.33333f),ty=int(32-p[0]/533.33333f);
         for(int dx=-1;dx<=1;++dx)for(int dy=-1;dy<=1;++dy)
-            if(tiles.insert({tx+dx,ty+dy}).second)mm.loadMap(root+"/",1220,tx+dx,ty+dy);
+            if(tiles.insert({tx+dx,ty+dy}).second)mm.loadMap(root+"/",map,tx+dx,ty+dy);
     }
-    mm.loadMapInstance(root+"/",1220,0);
-    auto query=mm.GetNavMeshQuery(1220,0); if (!query) return 4;
+    mm.loadMapInstance(root+"/",map,0);
+    auto query=mm.GetNavMeshQuery(map,0); if (!query) return 4;
     dtQueryFilter filter;filter.setIncludeFlags(NAV_GROUND);
     struct Approach {dtPolyRef ref;float p[3];};std::vector<Approach> choices[2];
     for(unsigned i=0;i<2;++i) {

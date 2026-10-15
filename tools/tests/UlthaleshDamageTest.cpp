@@ -5,8 +5,10 @@ using uint32=uint32_t;using uint64=uint64_t;using DamageEffectType=int;
 constexpr int SMART_EVENT_DAMAGED=0;
 #define TC_LOG_INFO(...) ((void)0)
 struct Creature;struct InstanceScript;
+struct DefaultAI{void DamageTakenAfterScaling(struct Unit*,uint32&,DamageEffectType){}};
 struct Unit{bool pet=false;uint32 Deal(Creature*,uint32);};
 struct Creature{
+ bool IsAIEnabled=false;DefaultAI defaultAI;DefaultAI* AI(){return &defaultAI;}
  uint32 entry=100344;uint64 hp=100000,targetHp=1000;float multiplier=0.001f;bool alive=true;InstanceScript* instance=nullptr;
  uint32 GetEntry(){return entry;}bool IsAlive(){return alive;}uint64 GetHealth(){return hp;}uint64 GetHealth(Unit*){return targetHp;}
  void SetHealth(uint64 v){hp=v;targetHp=v;}float GetHealthMultiplierForTarget(Unit*){return multiplier;}
@@ -19,6 +21,7 @@ struct SmartAI{Creature* me;uint32 mInvincibilityHpLevel=1;Script script;Script*
 struct InstanceScript{uint32 scenario=988;void OnCreatureDamageTaken(Creature* c,Unit* a,uint32& damage){DarkRidersArtifact::ProtectFinale(c,a,damage,scenario);}};
 uint32 Unit::Deal(Creature* victim,uint32 damage)
 {
+ DamageEffectType damagetype=0;
  SmartAI ai{victim};ai.DamageTaken(this,damage,0);
  // Native Unit damage scaling and instance hook; actual cached health is
  // captured after AI but before scaling. Unrelated aura/threat logic omitted.

@@ -1207,12 +1207,21 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     // Encounter protection must see the final, level-scaled damage used by
     // the death check below, including changes made by creature AI.
     if (Creature* creature = victim->ToCreature())
+    {
         if (InstanceScript* instance = creature->GetInstanceScript())
         {
             instance->OnCreatureDamageTaken(creature, this, damage);
             if (!damage)
                 return 0;
         }
+
+        if (creature->IsAIEnabled)
+        {
+            creature->AI()->DamageTakenAfterScaling(this, damage, damagetype);
+            if (!damage)
+                return 0;
+        }
+    }
 
     if (!victim->IsControlledByPlayer() || victim->IsVehicle())
     {

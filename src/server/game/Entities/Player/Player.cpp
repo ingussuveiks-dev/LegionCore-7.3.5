@@ -20968,6 +20968,14 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (questid == 38058 && real_entry == 90903)
             continue;
 
+        // The Final Judgment records the owned Faljar confrontation, not a
+        // nearby Helheim questgiver's periodic or generic group credit.
+        if (questid == 38818 && real_entry == 93442)
+        {
+            TC_LOG_DEBUG("quest", "The Final Judgment: ignored generic kill credit");
+            continue;
+        }
+
         // Cry Thunder counts only a registered personal assault target's death
         // and the completed return flight. No generic/group/bunny shortcut.
         if (questid == 38624 && (real_entry == 91767 || real_entry == 92360 || real_entry == 91768))
@@ -21140,6 +21148,12 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         uint32 questid = GetQuestSlotQuestId(i);
         if (!questid)
             continue;
+
+        if (questid == 38818 && entry == 93442)
+        {
+            TC_LOG_DEBUG("quest", "The Final Judgment: ignored generic talk credit");
+            continue;
+        }
 
         // Cry Thunder advances through confirmed boarding, owned kills and landing.
         if (questid == 38624 && (entry == 91767 || entry == 92360 || entry == 91768))

@@ -10,8 +10,10 @@ constexpr int SMART_EVENT_DAMAGED=9,SMART_EVENT_UPDATE_IC=0,SMART_EVENT_HEALTH_P
 #include "EventFlags.inc"
 #define TC_LOG_INFO(...) ((void)0)
 struct Creature;struct InstanceScript;
+struct DefaultAI {void DamageTakenAfterScaling(struct Unit*,uint32&,DamageEffectType){}};
 struct Unit {bool pet=false;uint32 Deal(Creature*,uint32);};
 struct Creature {
+    bool IsAIEnabled=false;DefaultAI defaultAI;DefaultAI* AI(){return &defaultAI;}
     uint32 entry=106652;uint64 hp=100000,maxHp=100000,targetHp=1000;
     float multiplier=1;bool alive=true,combat=true;InstanceScript* instance=nullptr;
     uint32 GetEntry(){return entry;}bool IsAlive(){return alive;}bool isInCombat(){return combat;}
@@ -27,6 +29,7 @@ struct SmartAI {Creature* me;uint32 mInvincibilityHpLevel=0;Script script;Script
 struct InstanceScript {uint32 scenario=1097;void OnCreatureDamageTaken(Creature* c,Unit* a,uint32& damage){DarkWhispersArtifact::ProtectFinale(c,a,damage,scenario);}};
 uint32 Unit::Deal(Creature* victim,uint32 damage)
 {
+    DamageEffectType damagetype=0;
     SmartAI ai{victim};ai.DamageTaken(this,damage,0);
     uint64 health=victim->GetHealth(this);
 #include "NativeScaledHook.inc"
