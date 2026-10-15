@@ -39,6 +39,7 @@ void AddSC_stormheim_runewood();
 void AddSC_stormheim_judgment();
 void AddSC_stormheim_reformation();
 void AddSC_stormheim_final_judgment();
+void AddSC_stormheim_helheim_disguise();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -283,6 +284,7 @@ void AddLegionScripts()
     AddSC_stormheim_judgment();
     AddSC_stormheim_reformation();
     AddSC_stormheim_final_judgment();
+    AddSC_stormheim_helheim_disguise();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();

@@ -1,0 +1,67 @@
+{
+  "quest": { "id": 38347, "title": "Stealth by Seaweed" },
+  "date": "2026-10-15",
+  "status": "Code/data repair deployed to the canonical Release runtime; native regression, catalog, geometry, migration and startup checks passed. No WoW client verification performed.",
+  "observed_failures": [
+    "Guarm's old OOC_LOS action33 credited mere proximity while disguised and also emitted kill achievement credit without a kill.",
+    "Exit EventObject334 relayed SetData to a nearby unowned Ashildir; the actor credited the nearest player rather than the entering owner.",
+    "The exit quest condition used SourceId10 (Scene), but the actual dispatcher is EventObject13.",
+    "Colborn's essential disguise depended on the linked controller cast succeeding. Native192299 triggers the absent81040 as well as the192298 guardian-slot6 summon.",
+    "The old rows did not establish an owned follower lifecycle, retry failed summons/casts, or scope cancellation and re-entry to this quest run."
+  ],
+  "native_records": {
+    "evidence": "stormheim-helheim-disguise-native-2026-10-15.json contains original TDB records, archive SHA256 and native build26972 table hashes/effect/visual records.",
+    "objective": "277732 MONSTER91386/storage1/amount1/flags0. Preserve the live FlagsEx12288 (original4096), StartScript0, quest prerequisites and all character progress.",
+    "handoff": "Both38324 and38339 must be rewarded before38347. Colborn91531 starts38347. Ashildir97419 and persistent97480 end38347 and start39848; RewardNextQuest39848 is unchanged.",
+    "disguise": "181705 Kvaldir Disguise: dummy aura/visual, trigger181709, native credit91531 and flying restriction336; duration299000ms. Credit91531 does not satisfy this91386 objective.",
+    "reaction": "181709 Helira's Gaze: aura139, faction14, reaction rank3 (neutral), indefinite duration. Native Guarm factionTemplate16 references faction14.",
+    "legacy_controller": "192299 Maintain Summon Ashildir: aura428 ->192298, plus absent81040; duration3600000ms.192298 summons97419 using properties3281/control1/slot6/flags8390426 including512, taking the guardian branch. The replacement deliberately does not cast either controller/summon spell.",
+    "target_checks": "Native SpellTargetRestrictions has no rows for these spells. Self casts avoid protected-friendly assistance checks. Full native cast admission and actual aura application are not executed by the lifecycle fixture.",
+    "models": "Native C++ DB2Storage: Guarm display70104 -> model9028/file1369759; Ashildir68635 ->8891/file1339502. Installed creature_model_info supplies positive bounding radius/combat reach for both.",
+    "visual": "181705 visual46255 -> events100336/100338/100339 -> kits23500/54089. Kit model attachment records use attachment points19/34, animation65535 and AnimKit0; linked files240953,469401,382344,438019,199754. Other kit effect types remain raw/undecoded. These links do not prove rendered playback or retail choreography.",
+    "hotfixes": "Read-only installed Hotfix queries found no selected Spell, SpellEffect, SpellMisc, CreatureDisplayInfo70104/68635 or FactionTemplate16 overrides."
+  },
+  "implementation": {
+    "scope": "Outdoor map1463/zone7588/instance0; explicitly exclude later Warrior phase8306. Only38347 incomplete/complete or rewarded38347 awaiting39848 creates a run. Definition checks require the exact native objective and both migration bindings.",
+    "ownership": "A private wild97419 uses Player::SummonCreature with null summon properties and owner visibility. It does not occupy the native guardian slot. Adopt only the synchronous summon callback for this owner/current quest lifetime; foreign actors delegate to normal SmartAI.",
+    "guide": "Passive, immune to PC/NPC damage, active and following1.5yd behind. Retry missing/dead/wrong-phase/over70yd guides. Native SmartAI Reset dialogue and39848 acceptance actions remain available. Guide failure or optional guide visual failure cannot block passage credit; permanent97480 is a fallback.",
+    "auras": "Apply self181705 and independently retry181709 every500ms while eligible and outside combat. Renew missing/expired disguise. Remove only this player's self-cast192299/181705/181709 on scoped cleanup. Explicit removal leaves other casters untouched; full multi-caster aura stacking is not simulated.",
+    "approach": "Record approach within40yd and LOS on the source side Y<=526.597 of the living phase-visible native Guarm DB11546644 near455.686,526.597,5.13701. Missing/dead/hidden guard, combat or lost self auras resets the approach. Later Guarm DB12743029 cannot satisfy this check.",
+    "passage": "Require the recorded approach and exact loaded EventObject334/DB400326 at454.412,565.988,0.083255, within its4yd radius, same phase, living guard, both self auras, no combat and current run. Store an actual enter callback then retry while stationary; failed conditions do not consume the transition.",
+    "credit": "Set the native objective directly once and run CanCompleteQuest/CompleteQuest. Generic kill, group, pet-kill and talk credit cannot advance38347; the kill guard checks both raw entry and GUID-resolved entry to reject aliases. Other quests using91386 retain their normal credit.",
+    "lifetime": "QuestStatusData ScriptLifetime separates abandonment/reacceptance. Death, teleport, flight, vehicle, transport, map/zone/phase change or invalid stage clears the run and guide. Incomplete re-entry requires a new approach; complete saved state reconstructs the guide. OnLogin first clears any old in-memory run and retires scoped legacy self auras/controller before rebuilding.",
+    "next_window": "Retain the same personal questgiver after38347 reward until39848 is accepted. This preserves GetNextQuest from that actual GUID and avoids despawning the giver before the next acceptance. Acceptance clears the guide and self auras on the next update.",
+    "authored_behavior": "Private wild follower,1.5yd spacing,70yd recovery,500ms retry,40yd source-side approach sampling and automatic299s disguise renewal are authored robustness choices, not proven retail choreography.",
+    "player_state": "No new player mover, viewpoint, vehicle or primary-pet slot assignment. Existing native legacy-controller removal is used for old192298 minions. Client movement, camera and pet portrait still need verification."
+  },
+  "migration": {
+    "file": "2026_10_15_44_stormheim_helheim_disguise.sql",
+    "sha1": "F361ACF34049B9C84E961E1EF6581557DD7AF65B",
+    "changes": "Bind97419 and exit334 to the new scripts. Retire exactly five recognized shortcuts (Colborn accept/LINK, Guarm proximity, Ashildir nearest-player credit, exit SetData relay) and two old Source22 conditions. Clear empty SmartAI bindings for91531/91386 only when no source0 events or custom script remain.",
+    "preservation": "Preserve unrelated/custom bindings/events/conditions, all four retained97419 dialogue/39848 acceptance actions, permanent97480, quest relations/objectives, factions/models/flags/positions, phase definitions and later Warrior actors. No character reset or item changes.",
+    "validation": "Real MySQL temporary-table replay twice with full-row comparisons and custom-binding cases; post-deployment live checks passed. Deployment recorded in World updates with a scoped private backup before changes."
+  },
+  "automated_checks": [
+    "Test-StormheimHelheimDisguise.ps1 -VerifyReleaseBinary: production module plus extracted native Player credit/completion/prerequisite/next-quest handlers. Both factions, concurrent owners, exact living guard/exit, once-only and aliased credit, failure/retry, aura loss, cancellation, legacy cleanup, re-entry, optional guide failure, same-GUID39848 handoff and phase8306 isolation passed.",
+    "Test-StormheimHelheimDisguiseData.ps1 and -Live: repeated real MySQL migration, full template/SAI/condition preservation, exact objectives/actors/phase/relations and custom bindings passed.",
+    "Test-StormheimHelheimDisguiseCatalog.ps1: native C++ DB2Storage actor model chain, spell names,81040 absence and Guarm faction passed.",
+    "Test-StormheimHelheimDisguiseNative.py: original objective and actual native effects, durations, summon properties and visual chain agree with committed evidence.",
+    "Test-StormheimHelheimDisguiseGeometry.ps1: real Release MMAP/Detour connects Colborn to approach (59 polygons), approach to exit (12), and exit to persistent97480 (40). Exit ground0.584946 lies within the4yd event volume. This does not prove client collision, visibility, follow movement or aggro.",
+    "Test-StormheimHelheimSupplies.ps1 -VerifyReleaseBinary, Test-StormheimUnworthyTask.ps1 and Test-StormheimFinalJudgment.ps1 -VerifyReleaseBinary passed after the Player credit changes.",
+    "cmake --build build-extractors --config Release --target worldserver bnetserver -j6 succeeded. Canonical build-extractors/bin/Release/worldserver.exe contains all three script bindings and both credit diagnostics; actual scripts/game Release final-link libraries precede the executable. No global OutDir override used.",
+    "Isolated canonical Release startup reached ready=True and gracefully exited0; DBErrors.log and stderr.log are both empty. Runtime configs, certificates, DLLs and extracted data preserved."
+  ],
+  "limits": [
+    "Extracted production handlers execute against fixtures for world objects, aura application, movement, follow motion, network packets and character state. They do not exercise complete session login, inventory serialization, native reputation/aggro or streamed grids.",
+    "Native DB2/visual/model records and MMAP connectivity do not verify client rendering, actual casts, follow spacing, voice playback or physical traversal.",
+    "Prior supply audit's three unresolved bone navmesh approaches127694/127702/127704 remain unresolved; this change neither erases those failures nor verifies all upstream pickups.",
+    "No client run was requested or performed. No whole quest or visual is marked client-verified."
+  ],
+  "pending_client_checks": [
+    "Both factions: accept38347 after both supplies, see actual disguise/reaction and personal Ashildir, approach living Guarm and cross exact exit once; Guarm should remain neutral while disguised.",
+    "Verify proximity, killing/pet killing blows and unrelated owners do not complete the quest; interrupted casts, combat, aura loss, death, abandonment/retry and login do not leave stuck progression or effects.",
+    "Verify personal follower movement/visibility/dialogue, sustained disguise, permanent97480 fallback and same-GUID38347 reward ->39848 window/acceptance.",
+    "Verify later Warrior phase8306 behavior remains intact and camera, movement, permanent pet and pet portrait remain correct before/during/after the disguise and legacy-controller cleanup."
+  ],
+  "next": "39848 A Desperate Bargain. Current discovery has no creature_questender row for39848; investigate its actual native completion protocol and two objectives before deciding the repair."
+}
