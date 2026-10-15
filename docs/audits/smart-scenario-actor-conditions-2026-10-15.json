@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-15",
+  "status": "Migration installed; compiled native admission and startup checks passed; full client route checks pending",
+  "problem": "SmartScript::ProcessEventsFor checks source22 conditions before ProcessEvent's unit-or-baseObject fallback. SetData, TextOver, waypoint and timed callbacks can have no Unit invoker. A target0 scenario condition then rejects a valid callback even though the base actor belongs to the running instance.",
+  "scope": "371 target0 conditions across51 scenario IDs, for Creature0, GameObject1 and TimedActionList9 sources.26 matching conditions already use target1 and remain valid. Scene10 and other condition kinds/sources are preserved.",
+  "change": "Use ConditionTarget1, the base actor passed by ConditionSourceInfo(unit,baseObject), for these scenario-step conditions. No scenario IDs, stages, criteria counts or actor behaviors are skipped.",
+  "automated": "Test-SmartScenarioActorConditions.ps1 replays the migration twice in temporary shadow tables and compiles the actual initial SmartEvent target binding plus native scenario condition. All397 fixture rows cover correct stage/instance, missing actor, wrong stage and null invoker. Unrelated/Scene conditions are unchanged.",
+  "limits": "This is executable condition admission coverage with fixture map/scenario managers, not full scheduler or client traversal of51 scenarios. Native actor paths, casts, phasing, loot and visuals still need their separate tests.",
+  "deployment": "Installed migration SHA1 6AC7DF5D52844302A9B96A292D470054AC3ED631; final server ready13:17:17 Europe/Riga. No new DBErrors after offset249. Affected rows privately backed up; Scene10 and other conditions preserved. Scepter scenario replay/native null-invoker tests and New Blood login regression also passed after installation.",
+  "related": ["scepter-scenario-2026-10-15.json", "artifact-routes-2026-10-15.json"]
+}
