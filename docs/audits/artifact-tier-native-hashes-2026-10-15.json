@@ -1,0 +1,18 @@
+﻿[
+    {
+        "table":  "Artifact",
+        "Hash":  "7407628EE7C6E25301FF402FCF3902B88F7A1ACDC38476BC84BE9ADD26331DF2"
+    },
+    {
+        "table":  "ArtifactPower",
+        "Hash":  "E6F56B86AF69582AD34D544BC59DC577F5DB34B2DBAC3EE9725BB7B30E5DFD43"
+    },
+    {
+        "table":  "ArtifactPowerRank",
+        "Hash":  "95F060DA07BD1707912D9B3E4C626CF8C44DB87EFC1B74FAF5B59899945BCF6F"
+    },
+    {
+        "table":  "ArtifactPowerLink",
+        "Hash":  "EAB9C7BEA057102928611E738A0E6B0B7D971AA8BA13F9B943B3F96D77A226D3"
+    }
+]

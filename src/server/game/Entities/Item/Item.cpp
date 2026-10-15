@@ -3359,7 +3359,10 @@ void Item::ActivateFishArtifact(uint8 /*artifactId*/)
 void Item::InitArtifactsTier(uint8 artifactId)
 {
     std::vector<ArtifactPowerEntry const*> artifactPowers = sDB2Manager.GetArtifactPowers(artifactId);
-    m_artifactPowerIdToIndex.assign(sArtifactPowerStore.GetNumRows() + 1, -1);
+    // This appends powers to an already initialized artifact. Clearing the
+    // index here leaves the base tree and relic traits in the dynamic field,
+    // but makes GetArtifactPower reject every purchase on those visible nodes.
+    // Retain their indexes and any ranks already learned in the new tier.
     for (ArtifactPowerEntry const* artifactPower : artifactPowers)
     {
         if (m_artifactPowerIdToIndex[artifactPower->ID] != -1)
@@ -3375,6 +3378,7 @@ void Item::InitArtifactsTier(uint8 artifactId)
         powerData.CurrentRankWithBonus = ((artifactPower->Flags & ARTIFACT_POWER_FLAG_NO_LINK_REQUIRED) && !artifactPower->Tier) ? 1 : 0;
         SetArtifactPower(&powerData, true);
     }
+    TC_LOG_INFO("entities.player", "Artifact tier: preserved prior power indexes for item %u (%u powers)", GetEntry(), uint32(m_artifactPowerCount));
 }
 
 void Item::CopyArtifactDataFromParent(Item* parent)
