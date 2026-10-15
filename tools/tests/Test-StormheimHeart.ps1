@@ -19,6 +19,7 @@ foreach($segment in @(
  if($a -lt 0 -or $b -lt 0){throw "Missing core handler $($segment[0])"}
  [IO.File]::WriteAllText("$output/$($segment[0]).inc",$core.Substring($a,$b-$a))
 }
+Copy-Item "$repo/src/server/scripts/Legion/stormheim_heart_route.h" "$output/HeartRoute.inc"
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_heart.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
 [IO.File]::WriteAllText("$output/Heart.inc",$source.Substring(0,$source.IndexOf('void AddSC_stormheim_heart()')))

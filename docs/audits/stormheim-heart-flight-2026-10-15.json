@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    38414
+  ],
+  "previous_audit": "stormheim-heart-2026-10-14.json",
+  "status": "Departure implemented, production-script regression and native collision probes passed; canonical Release built and clean startup/shutdown passed. No client gameplay performed.",
+  "implementation": [
+    "Extend only the existing outdoor captive Thrymjaris91570/DBGUID294116 in map1220 zone7541 instance0. The exact native dead Azariah294111 gate, natural kill credit, per-GUID SmartAI dialogue/aura list and other actors/instances are preserved. No SQL change is required after migration18.",
+    "Wait16000ms after release: native group3 starts immediately, group2 after6000ms; Sound53202 duration9446ms. Timing is relative to release and assumes ordinary server ticks, not a client voice completion callback. Optional dialogue cannot block rescue credit.",
+    "Use native MoveTakeoff then eleven total linear flight stages through the southern cave mouth and out to1870,2470,680, rather than crossing the cave roof. Subsequent MovePoint calls disable path generation and use velocity14. Route is an authored repair derived from runtime geometry, not an extracted retail flight path. No passenger, client mover or pet lookup is changed.",
+    "Wait for both finalized spline and distance<1yd at each expected endpoint. Keep the actor active during travel. Only at the final endpoint hide the dragon, clear motion and restore its original can-fly/gravity/active flags, then relocate the hidden DB actor home. Keep the separate summit92218 intact. The surviving home actor reconciles a respawned captor and restarts capture; it is not permanently despawned.",
+    "For a stalled/interrupted/failed launch, return visibly free to the authored home after20s, retry after5s, at most three attempts. On final failure retain her free at home and log the failure without granting progression. Reset/respawn restores visibility, captured pose, flags and once-only SmartAI actions. Missing boss during an already released flight does not stop departure. Re-entry after grid reconstruction can replay the release when a dead boss is loaded; exact visual-stage persistence is not implemented."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimHeart.ps1",
+      "result": "PASS",
+      "evidence": ".codex/heart-flight-test.log",
+      "details": "Compiles actual updated production script plus existing native quest/kill/event/owner/null-invoker TALK handlers. Both factions,16s delay, takeoff and every node, finalized without endpoint / endpoint without finalized rejection, final-only disappearance, missing boss during flight, boss respawn/reset, original flags restoration, three bounded failure retries, no extra credit/dialogue and previous rescue lifecycle. Creature movement launch/spline progress/visibility/active state/teleport and SmartAI Update are fixtures, not client movement execution."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartFlightGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/heart-flight-geometry.log",
+      "details": "Native Release GridMap/VMAP,3339 floor samples and27 rays per segment for11 segments, horizontal offsets -2/0/+2 and vertical0/3/6. Native WMO floor takes precedence inside the cave mouth because the terrain heightfield spans the opening; outside the WMO use terrain. Minimum sampled clearance0.884918yd after initial pose allowance. Negative control rejects direct vertical shortcut. Initial sleeping origin remains1.901yd below nearby floor; collision probe begins3.5yd above that origin. Initial lift from sleeping pose is not independently proven clear. This4x4x6 envelope does not cover the entire model GeoBox (roughly27x19x14) or animated wings."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartData.ps1 -Live",
+      "result": "PASS",
+      "evidence": ".codex/heart-flight-data.log",
+      "details": "Previous scoped actor binding/dialogue/capture data, actual next giver and both mandatory objectives remain valid; no new migration."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHeartHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/heart-flight-handoff.log",
+      "details": "Both faction native reward/prerequisite/GetNextQuest handoff to39652 retained."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/heart-flight-build.log",
+      "worldserver_sha256": "1774E2BCE33A564D7D685FC68BCDCD498098C256E8BC77DD087F06B1FB80682A",
+      "runtime": "build-extractors/bin/Release"
+    },
+    {
+      "command": "Canonical worldserver startup with isolated logs and Updates.EnableDatabases=0, then server shutdown0",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-heart/startup-20261015-072135",
+      "details": "Ready=True, exit0, DBErrors0bytes, stderr0bytes, stopped."
+    }
+  ],
+  "observed_failures_retained": [
+    "Initial direct vertical departure collided with the cave roof. A simple straight route toward the source also intersected cave walls.",
+    "Coarse search missed a corridor later found with2.5yd samples. Raising a cave-mouth point2yd hit the roof. Retain the lower checked route.",
+    "Using the heightfield as the cave-mouth floor incorrectly treated the opening as solid terrain; the dedicated probe records its WMO-floor rule instead of claiming native Map::GetHeight equivalence."
+  ],
+  "pending_client_checks": [
+    "Actual stand/takeoff animation, voice timing, flight posture, model/wings through the cave entrance and disappearance only beyond the visible departure route.",
+    "Full both-faction rescue, pet killing blow, another player observing the shared dragon, abandonment/retry and re-entry, missing actors/respawn and failed-flight recovery.",
+    "No claim of client-verified quest, camera, pet portrait or visuals. The user explicitly scoped this run to code/data."
+  ]
+}

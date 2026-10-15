@@ -6,7 +6,9 @@
 #include "Player.h"
 #include "QuestData.h"
 #include "MoveSpline.h"
+#include "MotionMaster.h"
 #include "Map.h"
+#include "stormheim_heart_route.h"
 #include <cmath>
 
 namespace StormheimHeart
@@ -110,6 +112,11 @@ struct npc_stormheim_heart_mother : SmartAI
     explicit npc_stormheim_heart_mother(Creature* creature) : SmartAI(creature) { }
     bool released = false;
     uint32 timer = 0;
+    enum class Flight { Waiting, Moving, Departed, Failed };
+    Flight flight = Flight::Waiting;
+    uint32 delay = 0, travel = 0, retries = 0;
+    size_t node = 0;
+    bool movementSaved = false, wasFlying = false, wasLevitating = false, wasActive = false;
     bool Scoped() const
     {
         return me->GetEntry() == 91570 && me->GetDBTableGUIDLow() == 294116 && me->GetMapId() == 1220 &&
@@ -124,16 +131,88 @@ struct npc_stormheim_heart_mother : SmartAI
     {
         if (released) return;
         released = true;
+        flight = Flight::Waiting;
+        delay = 16000; // Group 2 starts at 6s; its native voice lasts 9446ms.
+        retries = 0;
         me->RemoveAurasDueToSpell(182091);
         me->SetStandState(UNIT_STAND_STATE_STAND);
         SmartAI::SetData(1, 1); // Existing free/retaliation dialogue, with a null invoker.
+    }
+    void RestoreMovement()
+    {
+        if (!movementSaved) return;
+        me->GetMotionMaster()->Clear();
+        me->StopMoving();
+        me->SetCanFly(wasFlying);
+        me->SetDisableGravity(wasLevitating);
+        me->setActive(wasActive);
+        movementSaved = false;
+    }
+    void ReturnHome()
+    {
+        // Hide the relocation; retain the DB actor so a respawned captor can
+        // restart the rescue. The summit has its own quest giver (92218).
+        me->SetVisible(false);
+        RestoreMovement();
+        Position const& home = me->GetHomePosition();
+        me->NearTeleportTo(home.GetPositionX(), home.GetPositionY(), home.GetPositionZ(), home.GetOrientation());
+    }
+    void Launch()
+    {
+        travel = 0;
+        Position const& point = StormheimHeart::Departure[node];
+        if (!node)
+            me->GetMotionMaster()->MoveTakeoff(100, point.GetPositionX(), point.GetPositionY(), point.GetPositionZ());
+        else
+            me->GetMotionMaster()->MovePoint(100 + uint32(node), point, false, 14.0f);
+    }
+    void UpdateDeparture(uint32 diff)
+    {
+        if (!released || flight == Flight::Departed || flight == Flight::Failed) return;
+        if (flight == Flight::Waiting)
+        {
+            if (delay > diff) { delay -= diff; return; }
+            movementSaved = true;
+            wasFlying = me->HasUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+            wasLevitating = me->IsLevitating();
+            wasActive = me->isActiveObject();
+            me->setActive(true);
+            me->SetCanFly(true);
+            me->SetDisableGravity(true);
+            flight = Flight::Moving;
+            node = 0;
+            Launch();
+            return;
+        }
+        travel += diff;
+        if (me->movespline->Finalized() && me->GetExactDist(&StormheimHeart::Departure[node]) < 1.0f)
+        {
+            if (++node == StormheimHeart::DepartureSize)
+            {
+                flight = Flight::Departed;
+                ReturnHome(); // Disappear only after actually reaching the sky endpoint.
+            }
+            else Launch();
+        }
+        else if (travel >= 20000)
+        {
+            ReturnHome();
+            me->SetVisible(true);
+            flight = ++retries < 3 ? Flight::Waiting : Flight::Failed;
+            delay = 5000;
+            if (flight == Flight::Failed)
+                TC_LOG_ERROR("scripts", "Heart of a Dragon: Thrymjaris departure failed after three attempts; retained at home without extra quest credit.");
+        }
     }
     void Reset() override
     {
         SmartAI::Reset();
         if (!Scoped()) return;
+        if (released || movementSaved) ReturnHome();
+        me->SetVisible(true);
         released = false;
         timer = 0;
+        flight = Flight::Waiting;
         me->SetStandState(UNIT_STAND_STATE_SLEEP);
     }
     void SetData(uint32 id, uint32 value) override
@@ -146,6 +225,7 @@ struct npc_stormheim_heart_mother : SmartAI
     {
         SmartAI::UpdateAI(diff);
         if (!Scoped()) return;
+        UpdateDeparture(diff);
         if (timer > diff) { timer -= diff; return; }
         timer = 1000;
         if (Creature* boss = Boss())
@@ -153,6 +233,7 @@ struct npc_stormheim_heart_mother : SmartAI
             if (!boss->IsAlive()) Release(); // Re-entry/failed signal recovery, never a kill credit.
             else
             {
+                if (released) Reset(); // Restore motion and reset once-only actions for the next capture epoch.
                 released = false;
                 me->SetStandState(UNIT_STAND_STATE_SLEEP);
                 // Retry the existing out-of-combat native channel after both
