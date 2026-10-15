@@ -1,0 +1,19 @@
+{
+  "spell": 219565,
+  "aura": 219567,
+  "reported_failure": "Maiko still sees Commander's Valor far from the altar while doing40824 and without active43414.",
+  "native_evidence": "219567 is the override-spell aura for OverrideSpellData750/219565. The eleven altar EventObject templates have native configured radii1 or3 yards. The tooltip's20-yard cast range is not the visibility radius.",
+  "root_causes": [
+    "All13 quest conditions on11 SmartScript entries were assigned to Scene source10 instead of EventObject13. Thus the enter event granted the aura without its quest gate.",
+    "The altar SmartScripts had enter89 grant219567 but no exit90 cleanup. The persistent aura could remain anywhere in the class hall or across a saved session."
+  ],
+  "implementation": [
+    "Move the existing conditions to source13, preserving their exact quest IDs, negative conditions and DK OR alternatives.",
+    "On leaving the altar, remove219567. Validate the aura every update and the initial219565 cast against the actual live EventObject, its configured radius, map/phase and the same nonempty native SmartScript condition list. This also cleans a stale loaded aura and rejects remote casts.",
+    "Preserve scene-completion219410 and all unrelated auras; no arbitrary zone-wide or20-yard visibility check is introduced."
+  ],
+  "automated_validation": "Test-CommandersValor.ps1 compiles the production admission function and checks all11 entries, live/missing object, radius boundary, wrong map/phase, teleport and absent/failed quest conditions. Temporary SQL replay twice checks13 gates,11 exit callbacks,2 bindings and unrelated-condition preservation.",
+  "deployment": "Canonical Release rebuilt; both script markers verified in worldserver.exe. Migration30 applied/registered E7B84389D8BCA54FF634133453382144468C0570. Live readback:13 source13 gates and11 exit callbacks. Startup/shutdown probe passed with no new crash dumps. Native quest-condition regression Test-KingsPathMovie also passes; completed/rewarded quests are excluded by the preserved native quest-taken condition.",
+  "client_verified": false,
+  "pending_client_checks": "At the correct campaign quest, approach/leave the native altar circle and verify the extra action appears/disappears. Verify no button on40824, after relog, abandonment or completion, and verify the legitimate raise-weapon scene still completes. Other class-hall circle positions were checked as database records, not in clients."
+}
