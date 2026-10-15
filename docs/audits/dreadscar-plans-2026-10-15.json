@@ -2,6 +2,7 @@
   "quest": 40824,
   "title": "The Path of the Dreadscar",
   "reported_failure": "Maiko cannot target Dreadscar Battle Plans; after relog something appears briefly and sinks. An invisible obstacle remains at the scouting pool.",
+  "client_retest_after_movement_fix": "User confirms the board and Ritssyn are visible. Right-click now opens the native text27251 'View available missions.', but the dialogue contains no selectable option. This verifies visibility only; zone selection and turn-in remain unverified. Follow-up: adventure-map-gossip-2026-10-15.json.",
   "expected_sequence": "Accept from the resurrected Ritssyn, approach Dreadscar Battle Plans, open its native AdventureMap menu, choose an available zone, receive Zone Chosen credit from the native adventure-quest selector, and turn in to Ritssyn at the pool.",
   "evidence": [
     "Spawn339088 is present in base phase6930 at3038.36,887.68,247.333, beside Maiko's reported location. Display71039 selects native model9125/FileDataID1308068.",

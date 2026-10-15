@@ -234,9 +234,14 @@ uint64 GossipMenu::GetRequiredNpcFlagForOption(GossipOptionNpc optionNpc)
             requiredNpcFlag = UNIT_NPC_FLAG2_TRADESKILL_NPC;
             break;
         case GossipOptionNpc::GarrisonRecruitment:
-        case GossipOptionNpc::AdventureMap:
         case GossipOptionNpc::GarrisonTalent:
             requiredNpcFlag = UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE;
+            break;
+        case GossipOptionNpc::AdventureMap:
+            // PrepareGossipMenu checks the first NPC flag field. Scouting
+            // maps expose normal gossip here; their secondary mission flag
+            // is neither a first-field flag nor a class-hall upgrade flag.
+            requiredNpcFlag = UNIT_NPC_FLAG_GOSSIP;
             break;
 //        case GossipOptionNpc::ContributionCollector:
 //            requiredNpcFlag = UNIT_NPC_FLAG_2_CONTRIBUTION_COLLECTOR;

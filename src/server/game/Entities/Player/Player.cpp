@@ -18533,6 +18533,7 @@ void Player::OnGossipSelect(WorldObject* source, uint32 gossipListId, uint32 men
                 WorldPackets::NPC::ShowAdventureMap packet;
                 packet.Guid = guid;
                 SendDirectMessage(packet.Write());
+                TC_LOG_DEBUG("entities.player", "AdventureMap: opening scouting map for player %u at creature %u", GetGUIDLow(), source->GetEntry());
             }
             break;
         case GossipOptionNpc::GarrisonTalent:
