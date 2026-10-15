@@ -21,7 +21,7 @@ struct Player {
     void _LoadQuestStatus(int savedStatus){++loads;status=savedStatus;}
     bool early(){uint32 mapId=map,instanceId=1;
 #include "EarlyRestore.inc"
-        return newBloodQuestStatusLoaded;
+        return scenarioQuestStatusLoaded;
     }
     uint32 GetMapId(){return map;} int getClass(){return cls;}
     int GetQuestStatus(int){return status;} bool IsQuestRewarded(int){return rewarded;}

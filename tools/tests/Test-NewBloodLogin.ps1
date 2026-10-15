@@ -8,9 +8,9 @@ $b=$source.IndexOf('    // NOW player must have valid map', $a)
 if($a -lt 0 -or $b -lt $a){throw 'Early selector restoration missing'}
 [IO.File]::WriteAllText("$output/EarlyRestore.inc",$source.Substring($a,$b-$a))
 if($b -gt $source.IndexOf('    Map* map = sMapMgr->CreateMap(mapId, this);')){throw 'Selector restored after map creation'}
-if(!$source.Contains("if (!newBloodQuestStatusLoaded)`r`n        _LoadQuestStatus") -and !$source.Contains("if (!newBloodQuestStatusLoaded)`n        _LoadQuestStatus")){throw 'Quest result would be consumed twice'}
+if(!$source.Contains("if (!scenarioQuestStatusLoaded)`r`n        _LoadQuestStatus") -and !$source.Contains("if (!scenarioQuestStatusLoaded)`n        _LoadQuestStatus")){throw 'Quest result would be consumed twice'}
 $a=$source.IndexOf('    // The New Blood''s scenario selector is transient.')
-$b=$source.IndexOf('    _LoadDailyQuestStatus(', $a)
+$b=$source.IndexOf('    // Keep a live Scepter instance', $a)
 if($a -lt 0 -or $b -lt $a){throw 'Login restoration missing'}
 [IO.File]::WriteAllText("$output/Restore.inc",$source.Substring($a,$b-$a))
 $a=$source.IndexOf('    // Match inventory to a fresh prison restart')

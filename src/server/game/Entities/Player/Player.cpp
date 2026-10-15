@@ -22524,17 +22524,23 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     }
 
     // Restore the selector before CreateMap chooses this scenario's difficulty.
-    // Only this shared-map login needs quest status this early; do not consume
+    // These quest scenarios need quest status this early; do not consume
     // the same prepared result a second time in the normal quest-loading block.
-    bool newBloodQuestStatusLoaded = mapId == 1522 && getClass() == CLASS_WARLOCK;
-    if (newBloodQuestStatusLoaded)
+    bool scenarioQuestStatusLoaded = (mapId == 1522 || mapId == 1630) && getClass() == CLASS_WARLOCK;
+    if (scenarioQuestStatusLoaded)
     {
         _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
-        if (GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+        if (mapId == 1522 && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
         {
             Scenario* introduction = sScenarioMgr->GetScenario(instanceId);
             if (!introduction || introduction->GetScenarioId() == 962)
                 SetScenarioId(962);
+        }
+        if (mapId == 1630 && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE)
+        {
+            Scenario* scepter = sScenarioMgr->GetScenario(instanceId);
+            if (!scepter || scepter->GetScenarioId() == 1155)
+                SetScenarioId(1155);
         }
     }
 
@@ -22707,7 +22713,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // after spell load, learn rewarded spell if need also - test on achievements
     _LoadSpellRewards();
     // after rewarded spell load various quest statuses
-    if (!newBloodQuestStatusLoaded)
+    if (!scenarioQuestStatusLoaded)
         _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
     _LoadQuestStatusObjectives(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_QUEST_STATUS_OBJECTIVES));
     _LoadQuestStatusRewarded(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW));
@@ -22728,6 +22734,24 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
                 Relocate(2959.64f, 1126.32f, 212.0f, 6.27446f);
                 TC_LOG_INFO("entities.player", "The New Blood: restoring player %u at the prison in a fresh scenario instance", GetGUIDLow());
             }
+        }
+    }
+    // Keep a live Scepter instance's actors, criteria and saved position. A
+    // fresh instance has neither actor nor criteria persistence; start at the
+    // real entry spell destination rather than in an inaccessible later wing.
+    if (GetMapId() == 1630 && getClass() == CLASS_WARLOCK && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(43153))
+    {
+        Scenario* scepter = sScenarioMgr->GetScenario(GetInstanceId());
+        if (!scepter || scepter->GetScenarioId() == 1155)
+        {
+            SetScenarioId(1155);
+            if (!scepter)
+                if (SpellTargetPosition const* entrance = sSpellMgr->GetSpellTargetPosition(218595))
+                    if (entrance->target_mapId == GetMapId())
+                    {
+                        Relocate(entrance->target_X, entrance->target_Y, entrance->target_Z, entrance->target_Orientation);
+                        TC_LOG_INFO("entities.player", "An Eye for a Scepter: restoring player %u at the entrance in a fresh scenario instance", GetGUIDLow());
+                    }
         }
     }
     _LoadDailyQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADDAILYQUESTSTATUS));

@@ -204,6 +204,14 @@
         "AnimKitConfig341": 0
       },
       "production_field_delivery": "GameObject::Create copies template visualData SpellStateAnimKitID to GAMEOBJECT_FIELD_SPAWN_TRACKING_STATE_ANIM_KIT_ID for the client; no recurring SAI animation or repeated cast is added."
+    },
+    {
+      "date": "2026-10-15",
+      "observation": "User reports next-day login moved the affected character to Orgrimmar instead of continuing the scenario. Active incomplete43153 and its entry objective were retained in the character database.",
+      "gap_in_previous_checks": "The SQL interaction replay exercised portal entry and progression, but not Player::LoadFromDB, InstanceMap::AddPlayerToMap, Scenario constructor selector consumption and the final CheckInstanceLoginValid admission check.",
+      "cause": "Map1630 remained excluded by the scenario login guard, and its transient1155 selector was not restored during login. The exact original saved map/instance was not captured before the fallback; the guard failure is reproduced through extracted production code.",
+      "repair_and_validation": "See scepter-login-2026-10-15.json. Restore the quest-gated selector before map creation, admit the actual live1155 scenario, retain live progress/position, and replay a fresh instance from the native entry destination. Exact-stage persistence across server restart is not implemented.",
+      "client_status": "Login after recovery, live-instance relog, fresh-instance replay and the actual ten gameplay stages still require client confirmation. Prior unverified gameplay and visual checks remain pending."
     }
   ]
 }

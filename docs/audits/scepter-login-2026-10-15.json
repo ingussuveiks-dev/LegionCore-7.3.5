@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-15",
+  "quest": 43153,
+  "scenario": 1155,
+  "map": 1630,
+  "status": "Automated login/sequence regressions and Release build passed; installed in canonical runtime; offline character recovered; server ready; client retest pending",
+  "reported_failure": "After the previous day's Stage 1 to 2 repair, the player logged in the next day and appeared in Orgrimmar instead of continuing the scenario.",
+  "evidence": [
+    "Read-only character inspection confirmed the affected character has active incomplete quest43153 and its entry objective remains credited; its saved location is now map1. No pre-login map1630 position or live instance ID was captured, so the exact original login is not reconstructed from logs.",
+    "The previous progression repair was SQL-only. MapManager::CanPlayerEnter still rejected map1630 on login, independently of quest progress. CharacterHandler performs that check after AddPlayerToMap and falls back to the character's home bind.",
+    "Player::GetScenarioId is transient and is consumed by Scenario's constructor. Restoring only an entry-portal selector cannot fix a later login; the selector must be restored before CreateMap and the final admission check must accept the actual instance scenario1155.",
+    "Runtime spell_target_position218595 points to map1630 at -854.89,1188.86,114.29, orientation3.1683. Recovery uses that configured native entry destination rather than hard-coded later-stage coordinates.",
+    "Existing native scenario/criteria evidence and the original interaction audit remain in scepter-native-2026-10-14.json and scepter-scenario-2026-10-14.json. This change does not claim that the earlier client stage failure or any later gameplay/visual has been client-verified."
+  ],
+  "implementation": [
+    "Load quest status once before CreateMap for warlocks saved on map1630, alongside the existing map1522 handling. Restore selector1155 only for incomplete43153 and no conflicting live scenario.",
+    "After quest/reward loading and map selection, retain a live1155 instance's actor/criteria state and saved position. If no live scenario exists, restore selector1155 and relocate to the entry spell's destination on the matching map.",
+    "Allow login to map1630 only for a warlock with incomplete, unrewarded43153 and a matching live1155 scenario (or its selector before construction). A stale selector cannot override a conflicting live scenario. Existing difficulty, player-condition, corpse, group and access-requirement checks still run.",
+    "No persistent scenario criteria or actor storage is introduced. Rejoining a live instance retains its current stage; a fresh instance after unload/restart replays from the entrance. Quest objectives, inventory and rewards are not reset by the server fix."
+  ],
+  "automated": {
+    "Test-ScepterLogin.ps1": "PASS: extracts production early/late login blocks, quest-load guard, actual InstanceMap::AddPlayerToMap scenario-creation block, Scenario constructor selector branch, and final login gate. Covers saved/changed/zero instance IDs, consumption before final admission, fresh arrival, live stage/position, conflicting scenario, single quest-result consumption, map/class/status/reward gates, unrelated-map denial and absent/wrong-map destination.",
+    "Test-ScepterScenario.ps1": "PASS: migration twice in temporary tables, unique IDs/links, ten-stage replay for both factions, pet kills, locked manifest, portal creation and compiled native null-invoker condition logic.",
+    "Test-NewBloodLogin.ps1": "PASS: existing fresh/live962 handling, later998 rejection and stale tome cleanup. Fixture/runner updated for the shared quest-load guard and separate Scepter block.",
+    "Test-BrokenShoreReentry.ps1": "PASS: full production admission function, LFG restoration and entrance recovery, including startup SQL checks. Its fixture was already missing the Scenario APIs added by the earlier New Blood repair; supplied those stubs as well as the new class/reward dependencies."
+  },
+  "test_limits": "Extracted production blocks execute with fixture map/DB2/quest storage and manager services. They do not run the full login packet exchange, client UI, collision or native NPC movement. Ten-stage replay is a SQL-driven simulation, not client gameplay.",
+  "pending_client": [
+    "Log in after the recovery and confirm the actual scenario1155 title and D-Block Stage1 to2 transition.",
+    "Disconnect/relog during an active instance and confirm the same stage, actors and position survive.",
+    "Restart/unload the server instance, log in from a later wing and confirm safe fresh entrance replay without an Orgrimmar fallback.",
+    "Complete the ten actual interactions, including Tyranis/hook, manifest click, pet killing blows, Hold teleport, boss activation and return/hand-in. Check visuals independently, plus both factions and abandon/retry."
+  ],
+  "deployment": {
+    "build": "cmake --build build-extractors --config Release --target worldserver -- /m:2 /p:OutDir=<isolated validation directory> /verbosity:minimal /nologo; exit0. Existing unrelated compiler warnings retained.",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "5946834E4CC3B45C89FDC35D721A3A3848C8561C797BDEE199FABA7A15E96C88",
+    "preservation": "Copied only worldserver.exe and its PDB into canonical Release. Hash-checked9 existing config/DLL/certificate/bnetserver files; runtime data/log directories retained. Private backup of prior executable, logs and affected character/quest rows is excluded from Git.",
+    "character_recovery": "With worldserver stopped, a guarded transaction moved only the reported offline character from the observed Orgrimmar coordinates to spell218595's map1630 entry destination, instance_id0. Required matching name/GUID/class, incomplete43153, no rewarded43153 and unchanged prior position; exactly1 row changed. Quest status and all three objective rows were unchanged (0,0,1). No inventory, rewards or other character rows were reset.",
+    "smoke_test": "Test-WorldShutdown.ps1 -ProbeConnections PASS on deployed executable: ready, six TCP greetings, graceful exit0, no new crash dumps. Deliberately closed probe sockets generate six expected local initialization disconnect messages, not gameplay failures.",
+    "final_startup": "Canonical worldserver and bnetserver running; worldserver ready at2026-10-15 10:46:42 Europe/Riga. DBErrors.log empty. This is startup evidence, not an authenticated client login.",
+    "client_verification": "Pending; no WoW client gameplay or authenticated login performed."
+  }
+}

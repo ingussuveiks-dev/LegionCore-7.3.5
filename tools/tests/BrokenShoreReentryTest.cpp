@@ -23,7 +23,7 @@ enum { ALLIANCE = 469, HORDE = 67, QUEST_STATUS_NONE = 0, QUEST_STATUS_COMPLETE 
     EXPANSION_WARLORDS_OF_DRAENOR = 5, EXPANSION_LEGION = 6, CONFIG_INSTANCE_IGNORE_RAID = 0,
     TRANSFER_ABORT_DIFFICULTY = 0, TRANSFER_ABORT_LOCKED_TO_DIFFERENT_INSTANCE = 1,
     GOSSIP_ACTION_INFO_DEF = 1000, GOSSIP_SENDER_MAIN = 1, TARGET_ICONS_COUNT = 8,
-    GOSSIP_MAX_MENU_ITEMS = 32, SMART_EVENT_GOSSIP_SELECT = 62 };
+    GOSSIP_MAX_MENU_ITEMS = 32, SMART_EVENT_GOSSIP_SELECT = 62, CLASS_WARLOCK = 9 };
 #define TC_LOG_DEBUG(...)
 #define TC_LOG_INFO(...)
 #define ASSERT(value) assert(value)
@@ -130,6 +130,9 @@ struct Creature
     CreatureTemplate info;
     CreatureTemplate const* GetCreatureTemplate() const { return &info; }
 };
+struct Scenario { uint32 GetScenarioId() const { return 0; } };
+struct ScenarioManager { Scenario* GetScenario(uint32) const { return nullptr; } } scenarioManager;
+auto sScenarioMgr = &scenarioManager;
 struct Player
 {
     bool gm = false, alive = true, vehicle = false, allowed = true;
@@ -153,6 +156,10 @@ struct Player
     }
     Difficulty GetDifficultyID(MapEntry const*) const { return DIFFICULTY_N_SCENARIO; }
     uint32 GetMapId() const { return map; }
+    uint32 GetInstanceId() const { return 7; }
+    uint32 GetScenarioId() const { return 0; }
+    uint32 getClass() const { return 1; }
+    bool IsQuestRewarded(uint32) const { return false; }
     float GetPositionX() const { return x; }
     float GetPositionY() const { return y; }
     float GetPositionZ() const { return z; }

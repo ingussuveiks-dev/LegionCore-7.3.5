@@ -168,8 +168,8 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     if (!entry->IsDungeon() || entry->IsGarrison())
         return true;
 
-    // The Legion introduction can be resumed while its quest is unfinished.
-    // Keep the login restriction for other scenarios and completed introductions.
+    // These quest scenarios can be resumed while their quests are unfinished.
+    // Keep the login restriction for other scenarios and completed quests.
     if (loginCheck && entry->IsScenario() && mapid != 1191)
     {
         uint32 introQuest = player->GetTeam() == ALLIANCE ? 42740 : 40518;
@@ -181,7 +181,11 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
             ((activeScenario && activeScenario->GetScenarioId() == 962) ||
              (!activeScenario && player->GetScenarioId() == 962)) &&
             player->GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE;
-        if (!brokenShoreIntro && !newBloodIntro)
+        bool scepterQuest = mapid == 1630 && player->getClass() == CLASS_WARLOCK &&
+            ((activeScenario && activeScenario->GetScenarioId() == 1155) ||
+             (!activeScenario && player->GetScenarioId() == 1155)) &&
+            player->GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE && !player->IsQuestRewarded(43153);
+        if (!brokenShoreIntro && !newBloodIntro && !scepterQuest)
             return false;
     }
 
