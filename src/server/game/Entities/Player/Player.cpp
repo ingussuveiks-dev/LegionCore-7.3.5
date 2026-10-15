@@ -1436,6 +1436,7 @@ void Player::Update(uint32 p_time)
     m_isUpdate = true;
 
     UpdateMapObjectArrival(p_time);
+    UpdateMovieMovement(p_time);
 
     // undelivered mail
     if (m_nextMailDelivereTime && m_nextMailDelivereTime <= GameTime::GetGameTime())
@@ -2145,6 +2146,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
             return true;
         }
 
+        EndMovieMovement();
         if (!(options & TELE_TO_NOT_UNSUMMON_PET))
         {
             //same map, only remove pet if out of range for new position
@@ -2222,6 +2224,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
                 return true;
             }
 
+            EndMovieMovement();
             SetSelection(ObjectGuid::Empty);
             CombatStop();
             ResetContestedPvP();
@@ -2828,6 +2831,7 @@ void Player::AddToWorld()
 void Player::RemoveFromWorld()
 {
     EndMapObjectArrival();
+    EndMovieMovement();
 
     if (m_areaId)
         RemovePlayerFromArea(m_areaId);
@@ -8788,6 +8792,20 @@ void Player::SendMovieStart(uint32 MovieId)
         TC_LOG_INFO("entities.player", "Suppressed overlapping Horde funeral movie 474 for %s", GetName());
         return;
     }
+    // A movie hides key-up input. Stop the current command and explicitly
+    // suspend the on-foot self mover before hiding the world. Do not take
+    // ownership of a vehicle, flight, transport or scripted camera.
+    if (!_movieMovementHeld && IsInWorld() && IsAlive() && !IsBeingTeleported() &&
+        GetUnitBeingMoved() == this && !GetVehicle() && !GetTransport() && !isInFlight() &&
+        !HasUnitState(UNIT_STATE_CONTROLLED) && (!GetViewpoint() || GetViewpoint() == this))
+    {
+        StopMoving();
+        RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING_OR_TURN);
+        _movieMovementHeld = true;
+        _movieMovementRemaining = 10 * MINUTE * IN_MILLISECONDS;
+        SetClientControl(this, false);
+        TC_LOG_DEBUG("entities.player", "Movie movement held for %s", GetName());
+    }
     TC_LOG_INFO("entities.player", "Movie %u started for %s", MovieId, GetName());
     WorldPackets::Misc::TriggerMovie packet;
     packet.MovieID = MovieId;
@@ -8796,6 +8814,43 @@ void Player::SendMovieStart(uint32 MovieId)
     // used for chacking plr state.
     setWatchinMovie(true);
     SetCanDelayTeleport(true);
+}
+
+void Player::EndMovieMovement()
+{
+    if (!_movieMovementHeld)
+        return;
+
+    _movieMovementHeld = false;
+    _movieMovementRemaining = 0;
+    // Do not steal a mover/camera acquired by another script during playback.
+    if (IsInWorld() && GetUnitBeingMoved() == this && !GetVehicle() && !GetTransport() &&
+        !isInFlight() && (!GetViewpoint() || GetViewpoint() == this))
+    {
+        StopMoving();
+        RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING_OR_TURN);
+        SetClientControl(this, true); // Native control states still apply; roots/gravity are untouched.
+    }
+}
+
+void Player::UpdateMovieMovement(uint32 diff)
+{
+    if (!_movieMovementHeld)
+        return;
+    if (!IsAlive() || GetUnitBeingMoved() != this || GetVehicle() || GetTransport() || isInFlight() ||
+        (GetViewpoint() && GetViewpoint() != this))
+    {
+        EndMovieMovement();
+        return;
+    }
+    if (diff >= _movieMovementRemaining)
+    {
+        TC_LOG_INFO("entities.player", "Movie movement timeout for %s; releasing missing completion", GetName());
+        setWatchinMovie(false);
+        SetCanDelayTeleport(false);
+    }
+    else
+        _movieMovementRemaining -= diff;
 }
 
 bool Player::HasAreaExplored(uint32 AreaID)
@@ -31824,6 +31879,9 @@ void Player::SetClientControl(Unit* target, bool allowMove)
 {
     // a player can never client control nothing
     ASSERT(target);
+
+    if (target == this && IsMovieMovementHeld())
+        allowMove = false;
 
     // still affected by some aura that shouldn't allow control, only allow on last such aura to be removed
     if (target->HasUnitState(UNIT_STATE_CONTROLLED))

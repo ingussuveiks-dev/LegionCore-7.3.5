@@ -74,6 +74,8 @@ struct Player:WorldObject {
     void NotifyMapObjectArrivalLoading(int32 mapId);
     void NotifyMapObjectArrivalLoaded(int32 mapId);
     bool IsMapObjectArrivalProtected()const;
+    bool movieHeld=false;
+    bool IsMovieMovementHeld()const{return movieHeld;}
     void UpdateMapObjectArrival(uint32 diff);
     void EndMapObjectArrival(bool refreshVisibility=false);
     bool ShouldDeferMapObjectArrivalVisibility(WorldObject const* target);
@@ -188,7 +190,9 @@ int main(){
     near.NotifyMapObjectArrivalLoaded(0);assert(near._mapObjectArrivalSettle==8000);
     MovementInfo stale;WorldSession session{&near};session.RelocateMover(stale);
     assert(!session.relocations&&near.IsLevitating());
-    near.UpdateMapObjectArrival(8000);session.RelocateMover(stale);assert(session.relocations==1);
+    near.movieHeld=true;
+    near.UpdateMapObjectArrival(8000);session.RelocateMover(stale);assert(!session.relocations);
+    near.movieHeld=false;session.RelocateMover(stale);assert(session.relocations==1);
     // Short movement on an already-visible platform must not root combat blinks.
     near.x=dest.x;UpdateData shortBlink(0);nearMap.BuildPlayerArrivalObjects(&near,dest,shortBlink,true);
     assert(!near.IsMapObjectArrivalProtected()&&shortBlink.objects.empty());

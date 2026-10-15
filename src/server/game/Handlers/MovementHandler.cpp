@@ -263,7 +263,7 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
                 if (charmer->IsPlayer())
                     plrMover = charmer->ToPlayer();
 
-    if (plrMover && (plrMover->IsBeingTeleported() || plrMover->IsMapObjectArrivalProtected()))
+    if (plrMover && (plrMover->IsBeingTeleported() || plrMover->IsMapObjectArrivalProtected() || plrMover->IsMovieMovementHeld()))
         return;
 
     GetPlayer()->ValidateMovementInfo(&movementInfo);
@@ -673,7 +673,7 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
     // ACKs still pass validation/anticheat bookkeeping in their handlers, but
     // stale pre-arrival movement must not replace the protected flags/position.
     if (Player* player = mover->ToPlayer())
-        if (player->IsMapObjectArrivalProtected())
+        if (player->IsMapObjectArrivalProtected() || player->IsMovieMovementHeld())
             return;
 
     Map* map = mover->GetMap();

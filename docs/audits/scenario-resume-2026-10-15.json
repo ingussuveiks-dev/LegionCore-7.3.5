@@ -32,7 +32,7 @@
     "Enter a scenario, progress, logout/login while the instance survives: same stage and actors.",
     "Logout inside a scenario, restart server, login: native first stage at recorded entrance, with correct difficulty and usable interactions.",
     "Check two scenarios sharing a map, repeated re-entry, quest abandonment/reacceptance, completed scenario exit and normal dungeon/raid/PvP restrictions.",
-    "Retest Maiko's outdoor Ritual Ruination arrival and stationary pet summoning, then all six quest objectives and return to Dalaran."
+    "User confirmed outdoor Ritual Ruination login at the ritual and stationary pet summoning. All six objectives, return to Dalaran and generic instance live/fresh re-entry still need client verification; this outdoor confirmation does not certify generic scenario checkpoints."
   ],
   "deployment": {
     "status": "Canonical Release installed and server ready; client relog/restart confirmation pending",

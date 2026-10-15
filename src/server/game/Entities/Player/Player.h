@@ -2969,6 +2969,9 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         void SendCinematicStart(uint32 CinematicSequenceId);
         void SendMovieStart(uint32 MovieId);
+        void EndMovieMovement();
+        void UpdateMovieMovement(uint32 diff);
+        bool IsMovieMovementHeld() const { return _movieMovementHeld; }
 
         uint32 realmTransferid;
         void SetTransferId(uint32 Id) { realmTransferid = Id; }
@@ -3166,7 +3169,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         /***              E.T.C.                               ***/
         /*********************************************************/
         bool isWatchingMovie() const { return m_watching_movie; }
-        void setWatchinMovie(bool s) { m_watching_movie = s; }
+        void setWatchinMovie(bool s) { m_watching_movie = s; if (!s) EndMovieMovement(); }
 
         const SpellInQueue* GetSpellInQueue() const;
         void HandleSpellInQueue();
@@ -3718,6 +3721,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         PlayerLfgCooldownMap m_playerLfgCooldown;
 
         bool m_watching_movie;
+        bool _movieMovementHeld = false;
+        uint32 _movieMovementRemaining = 0;
 
         AreaTriggerEntry const *LastAreaTrigger;
         std::unordered_map<uint32, SceneEventStatus> m_sceneStatus;

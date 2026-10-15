@@ -4,7 +4,8 @@
   "name": "Ritual Ruination",
   "map": 1220,
   "zone": 7543,
-  "status": "Native data, extracted production handlers and SQL replay checked; verified Release repair installed; server ready; client retest pending",
+  "status": "Release repair installed; user confirmed login at ritual and stationary pet summoning. Remaining interactions and visuals require client retests.",
+  "client_confirmation": "2026-10-15 user: Esmu pie rituāla, pets izsaucas. This confirms ritual location after login and ability to summon the pet while stationary. It does not confirm pet following, portrait, camera or the full quest. Subsequent repeated-movie/running report is tracked in movie-movement-2026-10-15.json.",
   "context": "The affected character finished/rewarded An Eye for a Scepter43153 and accepted43254. The previous corrected Scepter executable logged its fresh-instance restoration at10:59:35; the user subsequently reached Stage6 and the character database now records43153 rewarded. This is evidence of reaching the next quest, not verification of every previous visual or interaction.",
   "observed_failures": [
     "After the Fel Bat transfer, the user reported running in place, a pet that did not follow, and an apparently empty ritual area. The NPCs eventually appeared; do not retain the earlier assumption that the initial Gul'dan spawn was permanently absent.",
@@ -43,7 +44,7 @@
   },
   "test_limits": "The production helper test uses fixture managers/inventory/map/teleport services. It does not execute the full login, SmartAI dialogue scheduler, every spell effect, real combat, client loot UI, collision streaming or pet rendering. SQL replay verifies admission/links and repeatability; it is not a full client playthrough.",
   "pending_client": [
-    "Immediately after loading, stationary pet summoning succeeds; the permanent pet follows, and its action bar/portrait, camera, client mover and speed agree after travel and return.",
+    "Stationary pet summoning after login is user-confirmed. Still check that the permanent pet follows and that its action bar/portrait, camera, client mover and speed agree after travel and return.",
     "Speak to Gul'dan, observe native dialogue/portal movement and actual hostile Allaris combat, including pet killing blow and a fast kill. Existing combat spell loadout/tuning and exact retail infernal behavior are not certified by these tests.",
     "Actual artifact loot window, full bags then retry, scene1365 playback and subsequent altar channel. Native scene/event/visual presence is not playback evidence.",
     "Interrupted altar channel, abandonment/reacceptance, death, disconnect/relog, overlapping participants and a failed/missing personal helper. Shared original introduction dialogue is retained; multiplayer timing requires client checks.",

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-15",
+  "status": "Canonical Release installed, migration applied and startup/connection/shutdown smoke passed; client retest pending",
+  "observed": [
+    "User reported continued forward running during a movie, distant position on skip/completion and repeated playback when revisiting the location during Ritual Ruination43254.",
+    "Runtime log records Movie636 for Maiko at12:32:53,12:34:08 and12:34:19 with completion/skip acknowledgements."
+  ],
+  "cause": [
+    "Outdoor EventObject372, spawn410093 map1220 at-645.391,2589.34,82.386, invokes239912. Its quest46282 condition was bound to source10(Scene), while SmartEventObject uses source13. It therefore played The King's Path movie during unrelated warlock content.",
+    "Native239912 effect0 plays636 and effect3 credits119426, the actual46282 objective. A negative objective condition also prevents replay for a credited participant.",
+    "SendMovieStart previously sent the movie and tracked watching state without stopping/suspending the existing client movement command. Completion only cleared watching/delayed teleport state."
+  ],
+  "changes": [
+    "Correct only EventObject372's misplaced quest condition; require incomplete46282 and uncredited119426. The separately offered247188 replay gossip is retained.",
+    "For an on-foot self mover, stop/clear movement and send client control-off before TriggerMovie; reject normal movement and ACK relocation during this hold. Existing root/gravity states are not acquired or removed.",
+    "Release on complete/skip, existing scripted watching-state resets, actual near/far transfer, removal from world or a ten-minute missing-completion watchdog. A delayed transfer request retains the hold.",
+    "Exclude vehicles, transports, flights, another mover/viewpoint and pre-existing controlled states; cleanup does not steal a newly assigned scripted mover/camera. Native SetClientControl retains independent control states."
+  ],
+  "automated": [
+    "Test-KingsPathMovie.ps1: temporary-table migration replay, source13/native objective and unrelated condition preservation; compiled native quest-taken/objective conditions for unrelated, initial, credited/relog, completed/rewarded and abandon/retry states.",
+    "Test-MovieMovement.ps1: compiled extracted start/end/update/watching setter and native control gate; completion/skip, no stale flags, timeout, overlapping funeral guard, independent root/gravity, exclusions and ownership changes. Production movement/ACK and teleport lifecycle integration inspected by the test.",
+    "Test-WarlockRegression.ps1 and Test-MapObjectArrival.ps1 PASS, including native ACK rejection while the movie remains active after the separate arrival hold ends.",
+    "Canonical binary marker checks PASS for the movie, global scenario recovery and previous Ritual Ruination handlers. Test-WorldShutdown.ps1 -ProbeConnections PASS: ready, world/instance TCP greetings, exit0 and no new crash dumps."
+  ],
+  "deployment": {
+    "worldserver_sha256": "6F61EA1832366DA8AF19B0F0DB03BA840F17DB07CBABB89A19CBA53938D9C6B1",
+    "migration_sha1": "8C61ABB9EF7B6D09D39A420F11244BB35F6655EC",
+    "preservation": "Graceful shutdown, private executable/log/affected-condition backup; nine protected configuration/certificate/DLL/bnetserver hashes unchanged. No character resets. Artifact audit migrations and script registrations withheld from this deployment.",
+    "startup": "The first redirected background launch received closed console input and shut down cleanly after ready; relaunched in a hidden dedicated console. This is launch input handling, not a movie regression."
+  },
+  "client_pending": [
+    "Run over the ritual location repeatedly and after relog: no King's Path movie should start for a character without46282.",
+    "During a legitimately triggered movie, hold forward before playback, then both finish and skip; confirm no movement during playback and normal movement afterwards.",
+    "Confirm pet following/portrait and scripted camera/vehicle behavior. Mocked ownership/state tests do not certify client packet behavior."
+  ]
+}
