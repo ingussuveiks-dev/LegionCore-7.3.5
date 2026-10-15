@@ -1,0 +1,46 @@
+{
+  "reported_failure": "The client reached Dark Whispers stage 5, Screams of the Skull. Interrupted Mephistroth's ritual shows 1/1, but Mephistroth Defeated remains 0/1 after the boss disappears/is killed, so stage 6 does not start. This is a new client-observed progression failure after the separate Immolate crash repair. Earlier entry and stages through the barrier and demon waves were traversed by the user; artifact pickup and full completion remain unverified.",
+  "native_data": {
+    "reader": "DarkWhispersCatalog.cpp uses the production DB2Storage reader against the canonical 7.3.5 runtime files.",
+    "scenario": 1097,
+    "map": 1498,
+    "quest": 42125,
+    "boss": 106652,
+    "stage_5": {"step": 2478,"order_index": 4,"tree": 48050,"ritual": {"tree": 48051,"criteria": 30107,"type": 92,"asset": 50961},"defeat": {"tree": 48052,"criteria": 30108,"type": 92,"asset": 50962}},
+    "stage_6": {"step": 2479,"order_index": 5,"tree": 48053,"pickup": {"tree": 48054,"criteria": 30109,"type": 92,"asset": 50945}},
+    "hashes_sha256": {
+      "ScenarioStep.db2": "4E422B1333A7B1BE8427CCB511017A93C093FA243ADB83DC74E255AD1702B94E",
+      "CriteriaTree.db2": "10568E9752F38F16492E94DD569E77293A1E4A6C07EE6C0FE33B60D7A4BDDC05",
+      "Criteria.db2": "8EE5F3D19D249D9A4F6A3B6745A0AB2D1A0A3B31C5B277B4942686C08E9C3750"
+    }
+  },
+  "root_cause": "The only original victory chain was a SmartAI health poll at 0..8 percent. Mephistroth had no lethal-damage protection and could die in one hit before any such poll, matching the user's missing defeat credit. There is no on-death fallback. Independently, the original chain required successful cast 152821 before reaching credit, skull summon and despawn. Native SMART_ACTION_CAST returns before LINK when every cast fails. Credit targeted ACTION_INVOKER, which can be a pet or absent during a timed health poll; action 205 only credits Player targets. These are executable failure paths; the exact last damaging spell from the reported client attempt was not captured.",
+  "implementation": [
+    "Bind an instance script to map 1498, preserving any unrelated custom binding. Its existing Unit post-scaling damage hook only protects live Mephistroth 106652 in scenario 1097. A lethal hit becomes zero damage and sets health to 1, allowing the existing SmartAI low-health retreat to run. Other entries/scenarios and ordinary nonlethal damage are unchanged.",
+    "Move ritual credit 50961 to a nonrepeatable in-combat poll, gated to the base actor's scenario 1097/order 4. This also permits a boss pulled early to credit when the correct step becomes active.",
+    "Keep transform 152821 as an independent low-health event. The separate low-health speech directly links to defeat credit 50962, existing Thal'kiel SetData(2,2), skull object 249821 summon and boss despawn. A failed optional cast cannot consume that chain.",
+    "Use a nearby Player target within 100 yards for the two criteria, including pet damage cases. Stage conditions inspect ConditionTarget 1 because the polls have no Unit invoker. Keep all events nonrepeatable, preserve the skull's native coordinates/loot and the existing artifact acquisition callback. No character quest/rank/item data is edited."
+  ],
+  "automated_checks": [
+    "Test-DarkWhispersFinale.ps1 reads native ScenarioStep/CriteriaTree/Criteria and asserts the exact stage-5 and stage-6 routes before testing SQL or combat.",
+    "Migration is applied twice in temporary shadow tables. Rows match across replay; all three no-invoker actor/step gates and the map binding are checked; unrelated custom instance binding is preserved.",
+    "Native C++ fixture compiles extracted production SmartAI::DamageTaken, Unit's final scaling/instance-hook block, the new protected-finale function, SmartEventFlags and SmartScript's in-combat/health event branches. SQL-derived rows drive a modeled action/LINK adapter. Sixteen player/pet, four-scale and optional-cast success/failure combinations survive repeated lethal hits and emit one ritual credit, one defeat credit, one skull and one cleanup chain. A tiny raw hit that becomes lethal only after scaling is covered.",
+    "Normal nonlethal damage and ordinary low-health retreat, other actor/scenario/dead/null-attacker branches, repeated polls, wrong steps and out-of-combat polling are covered. The adapter models player selection, criteria progression and actor actions; it does not execute the whole live SmartScript engine or prove Thal'kiel's animation/response.",
+    "Test-ScepterScenario.ps1 passes its existing native null-invoker/base-actor scenario-condition test and separate Scepter sequence checks.",
+    "Canonical Release build completed from the actual scripts.lib. Test-DarkWhispersFinale -VerifyReleaseBinary confirms the instance registration and scoped guard marker in worldserver.exe. Test-ScenarioResume -VerifyReleaseBinary passes.",
+    "Test-WorldShutdown -ProbeConnections reaches ready, responds on both ports and exits with code 0, no new crash dumps. DBErrors remains 5309 bytes. Nine protected configuration/certificate/DLL/bnetserver hashes are unchanged."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "7AB46DC89E544096881A04B769A0006694B0AB6DBE705D478D1A71E28896DF99",
+    "migration": "2026_10_15_32_dark_whispers_finale.sql",
+    "migration_sha1": "349D02A18D4D734CDBA92CFD93151611AB3BEA88"
+  },
+  "recovery": "A server restart is required for the new instance binding and template/scripts. Existing generic login recovery restarts this active scenario in a fresh instance; exact stage-5 actors and criteria are not persisted across a process restart. No manually granted victory credit or artifact is used to conceal the failed encounter.",
+  "client_verified": false,
+  "pending_client_checks": [
+    "Relog and replay the active scenario. Confirm pet/movement and stage transitions, then defeat Mephistroth with a strong player hit and/or pet finishing hit. Verify stage 6 appears and exactly one skull is lootable.",
+    "Take the Skull of the Man'ari, verify stage 7 and the exit portal, then return and turn in the quest. Confirm the actual transform, speech, skull/guide presentation and cleanup in the 7.3.5 client.",
+    "Full alternate-race/faction and shop-owned Skull acquisition runs have not been client tested by this repair. Preserve these limitations until new client evidence arrives."
+  ]
+}

@@ -14,6 +14,7 @@ void AddSC_dreadscar_followup();
 void AddSC_commanders_valor();
 void AddSC_artifact_acquisition();
 void AddSC_dark_riders_artifact();
+void AddSC_dark_whispers_artifact();
 void AddSC_stormheim_rounds();
 void AddSC_stormheim_departure();
 void AddSC_stormheim_fleet();
@@ -252,6 +253,7 @@ void AddLegionScripts()
     AddSC_commanders_valor();
     AddSC_artifact_acquisition();
     AddSC_dark_riders_artifact();
+    AddSC_dark_whispers_artifact();
     AddSC_stormheim_rounds();
     AddSC_stormheim_departure();
     AddSC_stormheim_fleet();
