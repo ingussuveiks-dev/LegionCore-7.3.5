@@ -3023,7 +3023,10 @@ bool Aura::CallScriptCheckAreaTargetHandlers(Unit* target)
         auto hookItrEnd = loadedScript->DoCheckAreaTarget.end(), hookItr = loadedScript->DoCheckAreaTarget.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
             if (!(*hookItr).Call(loadedScript, target))
+            {
+                loadedScript->_FinishScriptCall();
                 return false;
+            }
         loadedScript->_FinishScriptCall();
     }
     return true;
@@ -3410,7 +3413,13 @@ bool Aura::CallScriptCheckProcHandlers(AuraApplication const* aurApp, ProcEventI
         auto hookItrEnd = itr->DoCheckProc.end(), hookItr = itr->DoCheckProc.begin();
         for (; hookItr != hookItrEnd; ++hookItr)
             if (!(*hookItr).Call(itr, eventInfo))
+            {
+                // A check can run inside this aura's effect callback (for
+                // example Immolate's triggered Soul Shard energize). Restore
+                // that callback's state even when the nested proc is rejected.
+                itr->_FinishScriptCall();
                 return false;
+            }
         itr->_FinishScriptCall();
     }
     return true;

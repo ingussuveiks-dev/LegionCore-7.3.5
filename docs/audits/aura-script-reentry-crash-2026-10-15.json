@@ -1,0 +1,44 @@
+{
+  "reported_failure": "Worldserver crashed during the middle Warlock artifact acquisition route, Dark Whispers (quest 42125), map 1498. The character was playing Destruction; the artifact route does not determine the active combat specialization.",
+  "crash_evidence": {
+    "dump": "_worldserver.exe_[15-10_15-52-24].dmp",
+    "original_executable_sha256": "ADBF557C77C7E7638A0242C0F4171562DC8ECF2CDCAB53ABD5411947A7DABFFC",
+    "fault": "C0000005 at module RVA 0x2149C3E: the deliberate null write in Trinity::Assert, not an unexplained invalid NPC pointer.",
+    "assertion": "SpellScript.cpp:1164, AuraScript::_IsDefaultActionPrevented is called in a wrong place",
+    "stack": [
+      "Trinity::Assert",
+      "AuraScript::_IsDefaultActionPrevented",
+      "Aura::CallScriptEffectProcHandlers",
+      "Unit::ProcDamageAndSpellFor",
+      "Unit::ProcDamageAndSpell",
+      "AuraEffect::HandlePeriodicDamageAurasTick",
+      "AuraEffect::PeriodicTick / Update",
+      "Aura::UpdateOwner / Unit::_UpdateSpells / Creature::Update / map update thread"
+    ],
+    "dump_memory": "Unwound saved RSI from the assertion frame points to the current loaded-script iterator. Its AuraScript has m_scriptSpellId 0x2F405 = 193541 and m_currentScriptState 0x19 = AURA_SCRIPT_HOOK_CHECK_PROC. The outer dispatcher had prepared AURA_SCRIPT_HOOK_EFFECT_PROC (0x1C). World spell_script_names maps 193541 to spell_warl_immolate_proc.",
+    "symbol_limits": "The preexisting canonical MAP was from October 14 and was not treated as a matching symbol file. A private relink of current object/library inputs produced a new MAP with shifted addresses; it was not byte-identical to the crashed image. Function identification was corroborated against original-image instruction bytes, assertion string references/line number, matching function byte sequences and dump object state. Original executable and minidump remain private."
+  },
+  "root_cause": "The production Immolate proc awards a Soul Shard fragment by casting triggered energize 193540. That can re-enter the same aura's proc checks. The energize has no matching critical Immolate damage, so CheckProc rejects it. Aura::CallScriptCheckProcHandlers returned false before _FinishScriptCall, leaving the nested CHECK_PROC state and application on the stack. The outer effect dispatcher then queried default-action suppression in CHECK_PROC and asserted. Ordinary rejected checks also accumulated stale stack entries. The area-target check dispatcher had the identical unbalanced rejection path.",
+  "implementation": "Call _FinishScriptCall before either rejecting dispatcher returns false. This restores the enclosing hook, application and PreventDefaultAction flag, or the initial state for ordinary checks. Preserve short-circuit rejection, approved-check behavior, the actual Immolate handler and its critical-hit/50 percent condition. Do not suppress assertions, bypass proc checks or change quest/character data.",
+  "automated_checks": [
+    "Test-AuraScriptReentry.ps1 extracts the production AuraScript hook enum/state store, prepare/finish/default-action methods, proc/area/effect dispatchers and complete spell_warl_immolate_proc class, then compiles a native C++ fixture.",
+    "With -BaselineRevision de3e3837, the real nested critical Immolate -> 193540 energize -> rejected proc path fails at the same production _IsDefaultActionPrevented assertion. The fixture reports the failure as an exception instead of crashing the test runner.",
+    "Fixed code passes 100 nested Immolate proc executions with exactly 100 fragment casts and restored default-action suppression/application/state; 1000 rejected ordinary ticks; unrelated damage and failed chance; multiple scripts and early rejection; empty checks; nested periodic/area rejection and removed-aura guards. All finished calls leave an empty state stack.",
+    "Test-WarlockRegression.ps1 passes existing Burning Rush and scripted mover regressions.",
+    "Test-ScenarioResume.ps1 -VerifyReleaseBinary passes the production fresh restart/live rejoin and login gates; canonical recovery markers are present.",
+    "Release worldserver rebuilt from the actual src/server/game/Release/game.lib into build-extractors/bin/Release. Fresh matching worldserver.map generated. Native disassembly confirms the false-check branch at preferred VA 0x141828F67 calls _FinishScriptCall through thunk 0x14006321E -> 0x14151FF30 before returning false. The success branch calls the same finish method.",
+    "Test-WorldShutdown.ps1 -ProbeConnections reaches ready, responds on both ports and exits with code 0; no new crash dumps. DBErrors remains 5309 bytes, with old historical messages preserved. Nine protected configuration/certificate/DLL/bnetserver hashes are unchanged."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "executable_sha256": "0208854FD275E13905B899AD6FED4397DF540D2534A51848C1DDC99FD205D6A2",
+    "ready": "2026-10-15 16:11:44 +0300",
+    "database_changes": false
+  },
+  "reentry_limits": "The existing generic recovery restarts an active quest in a fresh instance after a process crash. It does not persist exact actor/criteria state. Do not promise continuation at the precise pre-crash fight.",
+  "client_verified": false,
+  "pending_client_checks": [
+    "Relog into Dark Whispers, confirm scenario restart/re-entry, pet and normal movement, then repeat Destruction combat with critical Immolate ticks and complete acquisition of the Skull of the Man'ari.",
+    "This repair addresses the demonstrated shared aura crash. Whole-route NPC interactions, visuals, race/faction coverage and artifact completion are not established by these native tests or server startup."
+  ]
+}

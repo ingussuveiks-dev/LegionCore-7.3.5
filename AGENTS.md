@@ -33,6 +33,7 @@
 
 # Warlock spell regressions
 
+- Rejected aura proc and area-target checks must finish their script call before returning. Immolate 193541 -> triggered energize 193540 can re-enter and reject its own proc check; leaving CHECK_PROC active crashes the outer effect dispatcher in `_IsDefaultActionPrevented`. Run `tools/tests/Test-AuraScriptReentry.ps1` when changing aura hook dispatch or reentrant Warlock procs; preserve the enclosing application and default-action suppression as well as an empty stack after ordinary checks.
 - Burning Rush (111400) must toggle off on recast. Its low-health periodic hook must call `PreventDefaultAction()` before removing the aura; removal alone does not stop the current damage tick.
 - Shadow Shield (115232) effect 0 reduces damage; effect 1 triggers 115234, whose script consumes a stack. Do not trigger a second retaliation from effect 0 or look up spell ID 0.
 - Run `tools/tests/Test-WarlockRegression.ps1` after changes to these paths or scripted mover resynchronization. The tests compile extracted production handlers; client confirmation of toggling, visuals, pet portrait, and camera remains necessary.
