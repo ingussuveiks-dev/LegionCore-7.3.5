@@ -1,0 +1,27 @@
+{
+  "quest": 40824,
+  "title": "The Path of the Dreadscar",
+  "reported_failure": "Maiko cannot target Dreadscar Battle Plans; after relog something appears briefly and sinks. An invisible obstacle remains at the scouting pool.",
+  "expected_sequence": "Accept from the resurrected Ritssyn, approach Dreadscar Battle Plans, open its native AdventureMap menu, choose an available zone, receive Zone Chosen credit from the native adventure-quest selector, and turn in to Ritssyn at the pool.",
+  "evidence": [
+    "Spawn339088 is present in base phase6930 at3038.36,887.68,247.333, beside Maiko's reported location. Display71039 selects native model9125/FileDataID1308068.",
+    "The CASC model is 7AF_Warlock_MissionBoard01, opaque and with a single Stand animation. Its root has no translation or scale keys: no native sinking animation explains the report.",
+    "Its old movement template Ground1/Flight2 permits flight but does not disable gravity. Other stationary scouting maps93787/102669 use Ground0/Flight1. The production Creature::UpdateMovementFlags branch is compiled in the regression fixture.",
+    "All comparable scouting NPCs use UNIT_FLAG2_PREVENT_SELECT_NPC. Failure of /targetexact alone does not prove absence; this normal native interaction flag is preserved.",
+    "The native menu18747 option31 sends ShowAdventureMap. Player::setAdventureQuestID grants97067 only after a valid adventure quest is selected. The fix does not grant selection credit from proximity, NPC spawning or merely opening gossip.",
+    "Ritssyn101921 has only two static resurrection-site spawns, neither near the pool. The active quest now recovers one personal, quest-bound copy beside the board; the original resurrection actors, existing zone-selection fallback and quest relations are preserved."
+  ],
+  "implementation": [
+    "Set only101979 movement to Ground0/Swim0/Flight1/Rooted1, preserving its native model, coordinates, pose and interaction flags.",
+    "For an active incomplete/complete40824, recover a personal Ritssyn within35 yards of the pool. Inspect actual nearby owned quest-bound actors, rather than the empty direct-summon registry; prune own duplicates and retry failed summons.",
+    "Existing quest-object lifecycle cancels the personal actor on abandonment/reward; logout/map change explicitly cancels it. No character quest reset or item grant is required. This is a recovery handoff, not a reconstruction of the original retail walking dialogue."
+  ],
+  "automated_validation": [
+    "Test-DreadscarPlans.ps1: extracted production movement and adventure-credit functions, 10000 recovery updates, duplicate repair, failed/missing actor retry, owner separation, incomplete/complete quest states, wrong quest/class/map/height and teleport boundaries.",
+    "Migration applied twice in temporary tables; unrelated movement rows, native AdventureMap menu, base-phase spawn,97067 objective and101921 turn-in relation preserved.",
+    "audit_dreadscar_plans.py: actual CASC M2 plus native7.3.5 DB2 references and hashes; see adjacent model evidence JSON."
+  ],
+  "deployment": "Canonical build-extractors/bin/Release/worldserver.exe rebuilt and implementation marker verified; SHA256 C862222C79E4FDAC32911BF9E8F3D67348ADF4E6319DB0E18071EAC42FCD5D15. Migration29 applied/registered B79F34981B4D1B1B2B085A1CDC16C01451DE8E3B; live readback Ground0/Swim0/Flight1/Rooted1. Nine configuration/certificate/DLL/bnetserver hashes preserved. Test-WorldShutdown -ProbeConnections: ready, exit0, no new crash dumps.",
+  "client_verified": false,
+  "pending_client_checks": "After canonical Release restart: first appearance and sustained board visibility, right-click AdventureMap UI, an available zone on each faction, exactly one Zone Chosen credit, one personal Ritssyn at the pool, turn-in, abandonment/reaccept and relog. The user has not yet verified this fix."
+}

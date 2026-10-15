@@ -45,6 +45,8 @@
 
 # Scripted quest and visual regressions
 
+- Dreadscar Battle Plans101979 is a stationary scouting-board model, not an ordinary walking NPC. Keep Ground0/Flight1 (disabled gravity); Flight2 only enables flying and let the model fall under the floor. Preserve its native display71039, menu18747 AdventureMap option31 and normal scouting interaction flags. Only actual zone selection awards97067. Run `Test-DreadscarPlans.ps1`; visibility, AdventureMap UI and personal Ritssyn40824 turn-in still require the client.
+
 - SmartAI difficulty failures require checking the `Difficulties` column and deprecated event flag bits together. Frostwolf Battleguard 14285 had only dungeon/raid 1,3 filters on outdoor difficulty 0; clearing the column without removing bits 0x1E makes the loader reject the events instead. Preserve nonrepeatable flags and run `tools/tests/Test-FrostwolfSmartDifficulty.ps1` against extracted production admission logic.
 - A valid creature template does not prove a spawn can initialize: `creature.modelid` overrides template selection. Lesser Val'kyr 45239 had eight overrides to absent 7.3.5 display 26101, while its template displays were valid. Check native DB2/hotfix existence and model metadata, then run `tools/tests/Test-LesserValkyrModels.ps1` through the actual override, selection and InitEntry model branch. Do not invent model metadata or suppress the shared error message.
 
