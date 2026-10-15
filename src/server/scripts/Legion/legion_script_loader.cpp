@@ -11,6 +11,7 @@ void AddSC_stormheim();
 void AddSC_stormheim_intro();
 void AddSC_ritual_ruination();
 void AddSC_artifact_acquisition();
+void AddSC_dark_riders_artifact();
 void AddSC_stormheim_rounds();
 void AddSC_stormheim_departure();
 void AddSC_stormheim_fleet();
@@ -246,6 +247,7 @@ void AddLegionScripts()
     AddSC_stormheim_intro();
     AddSC_ritual_ruination();
     AddSC_artifact_acquisition();
+    AddSC_dark_riders_artifact();
     AddSC_stormheim_rounds();
     AddSC_stormheim_departure();
     AddSC_stormheim_fleet();
