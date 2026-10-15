@@ -1,0 +1,320 @@
+{
+  "quests": [
+    {
+      "id": 38324,
+      "title": "Accessories of the Cursed"
+    },
+    {
+      "id": 38339,
+      "title": "A Little Kelp From My Foes"
+    }
+  ],
+  "date": "2026-10-15",
+  "status": "Supply collection code/data checked;38324 loot selector repaired. Premature38347 reward-window issue found and pending a separate focused fix. Client verification remains pending.",
+  "failure": "All16 installed Cursed Bones240586 spawns use one chest template with Data1=0 despite existing quest loot240586 ->122611. GameObjectTemplate::GetLootId returns0; Player::SendLoot skips FillLoot. A questItem1 field and an ITEM objective do not supply a loot selector.",
+  "repair": "Migration43 sets only240586.Data1=240586 when the recognized chest/quest/lock fields and exact existing100% quest loot agree. Preserve flags2113540,size1.75,lock2160,quest38324, personal/group settings, all spawn positions/states,60-second respawn and every loot row. Different selectors or missing/wrong loot are not overwritten.",
+  "native_records": {
+    "38324": "Objective277700 ITEM122611/storage0/8/flags0; native sparse Cursed Bones maxCount0,stack1,bonding4,races-1. Eight free slots may be needed; inventory-space UI is not modeled.",
+    "38339": "Objective277717 ITEM122619/storage0/20/flags0; native sparse Kvaldir Seaweed maxCount0,stack10,bonding4,races-1.",
+    "gathering": "Actual native lock2160 case1 type2/index13/skill0. Native6478 effect33 OPEN_LOCK/misc13/target23.3365/type5 does not fit; the extracted real CanOpenLock rejects it. No profession or item key is needed.",
+    "models": "Pile display6328 -> FileDataID190437. Kvaldir25633/70917 -> model8529/file1260044. Colborn63385 ->2594/file122815. Native C++ DB2Storage reads sparse items and display/model tables.",
+    "catalog_overrides": "Read-only installed Hotfix queries found no rows for these two sparse items,2160,6478 effects,6328 or the three actor displays.",
+    "original_data_limits": "Original TDB gives ITEM objectives and next38347, but no selected creature/gameobject loot rows. Its Kvaldir templates have faction35/lootid0 and the pile has personal60523/security1. Installed hostile faction16/lootids and shared pile settings are retained; do not blindly restore the incomplete originals. Original objective Flags2=1 differs from live0; code does not use it for these counters and it is retained unchanged."
+  },
+  "seaweed_result": {
+    "finding": "No defect found in the installed38339 supply path. Preserve both drop rows and their probabilities/count ranges.",
+    "drops": [
+      {
+        "entry": 91575,
+        "name": "Kvaldir Soulflayer",
+        "chance": 67.0591,
+        "item": 122619,
+        "questRequired": 1,
+        "lootMode": 0,
+        "group": 0,
+        "min": 1,
+        "max": 5,
+        "shared": 0
+      },
+      {
+        "entry": 93377,
+        "name": "Kvaldir Mistcaller",
+        "chance": 59.4284,
+        "item": 122619,
+        "questRequired": 1,
+        "lootMode": 0,
+        "group": 0,
+        "min": 1,
+        "max": 5,
+        "shared": 0
+      }
+    ],
+    "sources": "Both live hostile templates link lootid=entry.23 Soulflayer and10 Mistcaller map1463 spawns have modelid0; this includes2+1 later warrior8306 copies, which are preserved. Native display and model metadata exist; valid98..110 scaling rows are retained.",
+    "execution": "Full native ordinary LootTemplate::Process uses if(lootmode!=0 && !(lootmode & difficultyMask)); zero is a wildcard. Group0 entries are not the distinct shared/group path with a mandatory nonzero mask. Native Roll honors success/failure and rates; HasQuestForItem gates actually taking generated quest items. A kill does not directly add either ITEM objective.",
+    "pet_and_permissions": "Unit::Kill resolves GetCharmerOrOwnerPlayerOrPlayerItself before ordinary/personal loot generation, then selects eligible recipients. This source path was traced; full pet damage, loot-recipient/group assignment and network permission handling were not executed by the collection fixture."
+  },
+  "handoff": {
+    "data": "Both quests Prev39837, ExclusiveGroup-38324, NextQuestID/RewardNextQuest38347; actual Colborn91531 starts/ends both, freed DB11546819 in5577.38347.Prev38324 plus negative group requires BOTH rewards, in either order.",
+    "test_result": "Native predecessor loader, item collection/reward eligibility, item consumption and GetNextQuest candidate are tested with both races/factions and both reward orders.",
+    "open_issue": "Native Creature reward branch in QuestHandler.cpp sends the GetNextQuest candidate details without CanTakeQuest unless auto-accepting. GetNextQuest returns38347 after only one parallel reward, despite CanTakeQuest correctly refusing it. This is a premature details window, not a demonstrated acceptance bypass. Separate focused repair follows."
+  },
+  "automated_checks": [
+    {
+      "command": "Test-StormheimHelheimSuppliesData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": "Real MySQL double replay, whole-row comparison, unrelated cage/custom selector/personal/group settings, missing/wrong loot refusal, both item objectives/source rows, Colborn and parallel chain. Live migration checked after application."
+    },
+    {
+      "command": "Test-StormheimHelheimSupplies.ps1",
+      "result": "PASS",
+      "evidence": "Extracted production GetLootId, CanOpenLock, full ordinary LootTemplate::Process, Roll/IsValid, item eligibility/add/remove/reconstruction, reward item consumption and quest prerequisites. Mode0 passes; incompatible nonzero mask, failed roll and failed condition do not generate.8 actual bone increments and20 seaweed, both factions and reward orders, bank/retry/surplus boundaries."
+    },
+    {
+      "command": "Test-StormheimHelheimSuppliesCatalog.ps1",
+      "result": "PASS",
+      "evidence": [
+        "item122611 name=Cursed Bones max=0 stack=1 bonding=4 races=-1 flags=2048,12288,0",
+        "item122619 name=Kvaldir Seaweed max=0 stack=10 bonding=4 races=-1 flags=2048,12288,0",
+        "lock2160 case0 type=0 index=0 skill=0",
+        "lock2160 case1 type=2 index=13 skill=0",
+        "lock2160 case2 type=0 index=0 skill=0",
+        "lock2160 case3 type=0 index=0 skill=0",
+        "lock2160 case4 type=0 index=0 skill=0",
+        "lock2160 case5 type=0 index=0 skill=0",
+        "lock2160 case6 type=0 index=0 skill=0",
+        "lock2160 case7 type=0 index=0 skill=0",
+        "bones6328 file=190437",
+        "actor25633 model=8529 file=1260044",
+        "actor70917 model=8529 file=1260044",
+        "actor63385 model=2594 file=122815",
+        "PASS: native sparse bones/seaweed limits, Gathering lock2160/type13, pile model and both Kvaldir/Colborn display/model chains. No rendered/looting-client verification."
+      ]
+    },
+    {
+      "command": "Test-StormheimHelheimSuppliesNative.py",
+      "result": "PASS",
+      "evidence": "Original TDB735 parser and native runtime26972 Gathering effect/lock; records/hashes in companion native audit."
+    },
+    {
+      "command": "Audit-StormheimHelheimSuppliesGeometry.ps1",
+      "result": "PARTIAL:13/16 connected;3 unresolved, retained as failures",
+      "evidence": "Actual Release MMAP/Detour NAV_GROUND approach survey from freed Colborn;5yd target bounds.13 reachable piles exceed the required8. Navmesh absence is not proof that a player cannot jump/reach an isolated surface; do not move these existing spawns without collision/client evidence."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": "Canonical Release incremental validation; this supply fix changes data, not production C++."
+    }
+  ],
+  "geometry": [
+    {
+      "spawn": 127672,
+      "position": [
+        443.217,
+        416.009,
+        9.61258
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 443.217,416.009,9.96912 through 26 native navmesh polygons."
+    },
+    {
+      "spawn": 127676,
+      "position": [
+        470.568,
+        366.78,
+        2.35279
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 470.568,366.78,2.68498 through 46 native navmesh polygons."
+    },
+    {
+      "spawn": 127680,
+      "position": [
+        531.215,
+        383.642,
+        0.0335421
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 531.215,383.642,0.37507 through 55 native navmesh polygons."
+    },
+    {
+      "spawn": 127681,
+      "position": [
+        551.05,
+        363.931,
+        0.561058
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 551.05,363.931,0.753822 through 59 native navmesh polygons."
+    },
+    {
+      "spawn": 127682,
+      "position": [
+        482.276,
+        313.134,
+        2.73789
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 482.276,313.134,2.72939 through 31 native navmesh polygons."
+    },
+    {
+      "spawn": 127689,
+      "position": [
+        534.043,
+        286.422,
+        -1.76765
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 533.333,286.422,0.0627289 through 56 native navmesh polygons."
+    },
+    {
+      "spawn": 127690,
+      "position": [
+        562.503,
+        336.672,
+        12.367
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 562.503,336.672,12.6803 through 51 native navmesh polygons."
+    },
+    {
+      "spawn": 127693,
+      "position": [
+        524.472,
+        260.7,
+        -2.44268
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 523.733,263.2,-1.53727 through 48 native navmesh polygons."
+    },
+    {
+      "spawn": 127694,
+      "position": [
+        481.293,
+        243.425,
+        4.32903
+      ],
+      "connected": false,
+      "native_exit": 6,
+      "evidence": "FAIL: no connected interaction approaches (5,1)."
+    },
+    {
+      "spawn": 127695,
+      "position": [
+        527.778,
+        248.16,
+        -2.51252
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 527.894,246.359,-1.53727 through 59 native navmesh polygons."
+    },
+    {
+      "spawn": 127696,
+      "position": [
+        501.842,
+        221.773,
+        2.14552
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 501.842,221.773,3.71538 through 53 native navmesh polygons."
+    },
+    {
+      "spawn": 127698,
+      "position": [
+        454.174,
+        215.503,
+        1.9989
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 454.174,215.503,1.70946 through 46 native navmesh polygons."
+    },
+    {
+      "spawn": 127699,
+      "position": [
+        493.885,
+        213.221,
+        2.24208
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 493.885,213.221,2.41434 through 61 native navmesh polygons."
+    },
+    {
+      "spawn": 127701,
+      "position": [
+        525.672,
+        206.832,
+        6.84672
+      ],
+      "connected": true,
+      "native_exit": 0,
+      "evidence": "PASS: Source approach 366.422,369.746,27.5065 -> target approach 525.672,206.832,7.02547 through 62 native navmesh polygons."
+    },
+    {
+      "spawn": 127702,
+      "position": [
+        427.42,
+        194.024,
+        -3.0863
+      ],
+      "connected": false,
+      "native_exit": 6,
+      "evidence": "FAIL: no connected interaction approaches (5,5)."
+    },
+    {
+      "spawn": 127704,
+      "position": [
+        392.632,
+        219.474,
+        0.0459121
+      ],
+      "connected": false,
+      "native_exit": 6,
+      "evidence": "FAIL: no connected interaction approaches (5,3)."
+    }
+  ],
+  "catalog_hashes": {
+    "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+    "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+  },
+  "deployment": {
+    "migration": "2026_10_15_43_stormheim_cursed_bones.sql",
+    "sha1": "B944C6D737BAB0AEC4BC26540653857F8CD3D7AE",
+    "backup": ".codex/backups/stormheim-helheim-supplies/20261015-224422",
+    "state": "RELEASED"
+  },
+  "startup": {
+    "runtime": "build-extractors/bin/Release",
+    "logs": "build-extractors/runtime-test/stormheim-helheim-supplies/startup-20261015-224423",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "server_stopped": true
+  },
+  "fixture_limits": "World/grid/condition lookup, count RNG, inventory writes/storage, serialization, death/recipient/group rules and network are fixtures or source traces. Native handler fragments are executed, not an integrated client/session. No client confirmation of pile appearance, cast interruption, corpse interaction, loot UI, model playback or turn-in windows.",
+  "pending_client_checks": [
+    "Fresh accept both from freed Colborn; cursor/pose/flags on all piles, actual Gathering6478, interrupted/failed cast, open-without-looting, loot pickup and8/8. Check bag-space errors with eight nonstacking bones.",
+    "Three native NAV_GROUND failures retained:127694 at481.293,243.425,4.32903;127702 at427.42,194.024,-3.0863;127704 at392.632,219.474,0.0459121. Check supporting surfaces and jumps in the client before any position repair.",
+    "Kill both Kvaldir species with player and pet, inspect ordinary/personal/group corpse loot and actual1..5 seaweed rolls; reach20/20; no extra quest loot when complete/rewarded. Check both factions and concurrent players.",
+    "Abandon/reaccept/re-enter, inventory/bank removal, respawn, existing warrior8306 content, both reward orders and pending38347 automatic-window repair."
+  ],
+  "next": {
+    "quest": 38347,
+    "title": "Stealth by Seaweed",
+    "prerequisite": "Finish the separate premature38347 handoff fix, then audit the disguise/Guarm passage."
+  }
+}
