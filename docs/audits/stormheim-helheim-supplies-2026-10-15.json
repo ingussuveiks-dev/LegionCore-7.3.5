@@ -10,7 +10,7 @@
     }
   ],
   "date": "2026-10-15",
-  "status": "Supply collection code/data checked;38324 loot selector repaired. Premature38347 reward-window issue found and pending a separate focused fix. Client verification remains pending.",
+  "status": "Supply collection repaired and automated lifecycle checks passed. Native NPC reward-next window eligibility fixed in the companion handoff audit. Geometry13/16 connected;3 unresolved and all client checks remain pending.",
   "failure": "All16 installed Cursed Bones240586 spawns use one chest template with Data1=0 despite existing quest loot240586 ->122611. GameObjectTemplate::GetLootId returns0; Player::SendLoot skips FillLoot. A questItem1 field and an ITEM objective do not supply a loot selector.",
   "repair": "Migration43 sets only240586.Data1=240586 when the recognized chest/quest/lock fields and exact existing100% quest loot agree. Preserve flags2113540,size1.75,lock2160,quest38324, personal/group settings, all spawn positions/states,60-second respawn and every loot row. Different selectors or missing/wrong loot are not overwritten.",
   "native_records": {
@@ -56,7 +56,11 @@
   "handoff": {
     "data": "Both quests Prev39837, ExclusiveGroup-38324, NextQuestID/RewardNextQuest38347; actual Colborn91531 starts/ends both, freed DB11546819 in5577.38347.Prev38324 plus negative group requires BOTH rewards, in either order.",
     "test_result": "Native predecessor loader, item collection/reward eligibility, item consumption and GetNextQuest candidate are tested with both races/factions and both reward orders.",
-    "open_issue": "Native Creature reward branch in QuestHandler.cpp sends the GetNextQuest candidate details without CanTakeQuest unless auto-accepting. GetNextQuest returns38347 after only one parallel reward, despite CanTakeQuest correctly refusing it. This is a premature details window, not a demonstrated acceptance bypass. Separate focused repair follows."
+    "open_issue": "Native Creature reward branch in QuestHandler.cpp sends the GetNextQuest candidate details without CanTakeQuest unless auto-accepting. GetNextQuest returns38347 after only one parallel reward, despite CanTakeQuest correctly refusing it. This is a premature details window, not a demonstrated acceptance bypass. Separate focused repair follows.",
+    "resolution": {
+      "audit": "stormheim-helheim-handoff-2026-10-15.json",
+      "behavior": "NPC/player reward-next details and automatic acceptance now require CanTakeQuest; independent reward callbacks still run. Original failure evidence above is retained."
+    }
   },
   "automated_checks": [
     {
@@ -310,11 +314,11 @@
     "Fresh accept both from freed Colborn; cursor/pose/flags on all piles, actual Gathering6478, interrupted/failed cast, open-without-looting, loot pickup and8/8. Check bag-space errors with eight nonstacking bones.",
     "Three native NAV_GROUND failures retained:127694 at481.293,243.425,4.32903;127702 at427.42,194.024,-3.0863;127704 at392.632,219.474,0.0459121. Check supporting surfaces and jumps in the client before any position repair.",
     "Kill both Kvaldir species with player and pet, inspect ordinary/personal/group corpse loot and actual1..5 seaweed rolls; reach20/20; no extra quest loot when complete/rewarded. Check both factions and concurrent players.",
-    "Abandon/reaccept/re-enter, inventory/bank removal, respawn, existing warrior8306 content, both reward orders and pending38347 automatic-window repair."
+    "Abandon/reaccept/re-enter, inventory/bank removal, respawn, existing warrior8306 content, both reward orders and repaired38347 automatic-window behavior."
   ],
   "next": {
     "quest": 38347,
     "title": "Stealth by Seaweed",
-    "prerequisite": "Finish the separate premature38347 handoff fix, then audit the disguise/Guarm passage."
+    "prerequisite": "Reward-next handoff repaired; next content audit is the disguise/Guarm passage."
   }
 }

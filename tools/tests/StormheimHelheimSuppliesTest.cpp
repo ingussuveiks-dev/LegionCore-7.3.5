@@ -78,6 +78,18 @@ struct Spell {
 };
 #include "CanOpenLock.inc"
 
+struct ScriptManager {uint32 accepts=0;void OnQuestAccept(Player*,Creature*,Quest const*){++accepts;}} scriptManager;auto sScriptMgr=&scriptManager;
+// Exact NPC reward-next block, including the independent reward callback.
+// Quest prerequisite/race routines and GetNextQuest are extracted above;
+// packet delivery, inventory space and script callbacks remain fixtures.
+void RewardNext(Player& player,Creature& giver,Quest const* quest,bool self=false)
+{
+    Player* _player=&player;Creature* creatureQGiver=self?nullptr:&giver;
+    WorldObject* object=self?static_cast<WorldObject*>(&player):&giver;
+    struct {ObjectGuid QuestGiverGUID;uint32 ItemChoiceID=0;} packet{self?player.GetGUID():giver.GetGUID()};
+#include "RewardNext.inc"
+}
+
 int main(int argc,char** argv)
 {
     _set_abort_behavior(0,_WRITE_ABORT_MSG|_CALL_REPORTFAULT);
@@ -100,7 +112,7 @@ int main(int argc,char** argv)
     for(auto const& row:_questTemplates){auto qinfo=row.second;
 #include "QuestPrevLoader.inc"
     }
-    Creature colborn;colborn.entry=91531;colborn.guid={11546819};creatures[colborn.guid]=&colborn;
+    Creature colborn;colborn.entry=91531;colborn.guid={11546819};SmartAI colbornAI(&colborn);creatures[colborn.guid]=&colborn;
     for(auto team:{ALLIANCE,HORDE})for(auto first:{38324u,38339u}){
         Player p;p.team=team;p.race=team==ALLIANCE?1:2;
         for(auto id:{38324u,38339u})assert(!p.CanTakeQuest(&store.quests[id],false));p.m_RewardedQuests.insert(39837);
@@ -124,9 +136,22 @@ int main(int argc,char** argv)
         // Removal, reload counts, bank-only reward refusal and required item consumption.
         p.ItemRemovedQuestCheck(122619,1);--p.bags[122619];assert(p.HasQuestForItem(122619));++p.bags[122619];p.ItemAddedQuestCheck(122619,1);
         p.bank[122611]=8;p.bags[122611]=0;p.AdjustQuestReqItemCount(&store.quests[38324]);assert(p.GetQuestObjectiveData(38324,122611)==8&&!p.CanRewardQuest(&store.quests[38324],false));p.bank[122611]=0;p.bags[122611]=8;
-        for(auto id:{first,first==38324?38339u:38324u}){auto q=&store.quests[id];assert(p.CanRewardQuest(q,false));Consume(p,q);p.m_RewardedQuests.insert(id);p.quests.erase(id);assert(p.CanTakeQuest(&next,false)==(p.m_RewardedQuests.count(38324)&&p.m_RewardedQuests.count(38339)));}
+        for(auto id:{first,first==38324?38339u:38324u}){auto q=&store.quests[id];assert(p.CanRewardQuest(q,false));Consume(p,q);p.m_RewardedQuests.insert(id);p.quests.erase(id);bool eligible=p.m_RewardedQuests.count(38324)&&p.m_RewardedQuests.count(38339);assert(p.CanTakeQuest(&next,false)==eligible);uint32 callbacks=colbornAI.delegated;RewardNext(p,colborn,q);assert(p.menu.detailed.size()==(eligible?1u:0u)&&colbornAI.delegated==callbacks+1);}
         assert(!p.bags[122611]&&!p.bags[122619]&&p.GetNextQuest(colborn.GetGUID(),&store.quests[first])==&next);
     }
     for(auto id:{38324u,38339u}){auto q=&store.quests[id];uint32 item=q->objectives[0].ObjectID,amount=q->objectives[0].Amount;Player p;p.Accept(id);p.bags[item]=3;p.AdjustQuestReqItemCount(q);assert(p.GetQuestObjectiveData(id,item)==3);p.quests.erase(id);assert(!p.HasQuestForItem(item));p.Accept(id);p.AdjustQuestReqItemCount(q);assert(p.GetQuestObjectiveData(id,item)==3);p.bags[item]=amount+1;p.AdjustQuestReqItemCount(q);assert(p.GetQuestObjectiveData(id,item)==int32(amount));p.CompleteQuest(id);Consume(p,q);assert(p.bags[item]==1);}
-    std::cout<<"PASS: native Gathering2160/6478 lock, chest selector, full ordinary loot Process/Roll including wildcard mode0 and failed rolls,8 bones/20 seaweed actual item updates, retry/removal/bank/reload/reward consumption, both factions and both parallel reward orders before38347. World, drop-count RNG, inventory and network are fixtures.\n";
+    // The NPC protocol guard also covers other quest IDs and automatic accept;
+    // the reward callback must still run when details cannot be sent.
+    auto& previous=store.quests[700];previous.id=700;previous.NextQuestIdChain=702;
+    auto& other=store.quests[702];other.id=702;other.prevQuests={701};store.quests[701].id=701;store.starters.emplace(91531,702);
+    Player p;p.popup=702;uint32 callbacks=colbornAI.delegated;RewardNext(p,colborn,&previous);assert(p.menu.detailed.empty()&&!p.popup&&colbornAI.delegated==callbacks+1);
+    p.m_RewardedQuests.insert(701);RewardNext(p,colborn,&previous);assert(p.menu.detailed.size()==1&&p.GetQuestStatus(702)==QUEST_STATUS_NONE);
+    other.autoAccept=true;p.canAdd=false;RewardNext(p,colborn,&previous);assert(p.menu.detailed.size()==2&&p.GetQuestStatus(702)==QUEST_STATUS_NONE);
+    p.canAdd=true;uint32 accepts=scriptManager.accepts;RewardNext(p,colborn,&previous);assert(p.menu.detailed.size()==3&&p.GetQuestStatus(702)==QUEST_STATUS_INCOMPLETE&&scriptManager.accepts==accepts+1);
+    Player popup;popup.guid.high=HighGuid::Player;popup.popup=702;previous.flags=QUEST_FLAGS_AUTOCOMPLETE;other.autoAccept=false;
+    RewardNext(popup,colborn,&previous,true);assert(!popup.popup&&popup.menu.detailed.empty());
+    popup.m_RewardedQuests.insert(701);RewardNext(popup,colborn,&previous,true);assert(popup.popup==702&&popup.menu.detailed.size()==1);
+    Creature unrelated;unrelated.entry=999;unrelated.guid={999};SmartAI unrelatedAI(&unrelated);creatures[unrelated.guid]=&unrelated;
+    RewardNext(p,unrelated,&previous);assert(unrelatedAI.delegated==1&&p.menu.detailed.size()==3);
+    std::cout<<"PASS: native Gathering2160/6478, chest selector and full ordinary loot Process/Roll;8 bones/20 seaweed item lifecycle, both factions and both reward orders. Native NPC reward-next dispatch hides ineligible38347/other details, preserves reward callbacks and eligible normal/auto-accept behavior. World, count RNG, inventory and network are fixtures.\n";
 }

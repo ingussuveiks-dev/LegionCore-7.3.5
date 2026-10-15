@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-15",
+  "quests": [
+    38324,
+    38339
+  ],
+  "next_quest": 38347,
+  "status": "Code repaired; native extracted-handler regressions and canonical Release checks passed. Client handoff and three existing optional bone approach failures remain unverified.",
+  "problem": "The NPC/player branch of WorldSession::HandleQuestGiverChooseReward sent GetNextQuest candidate details unconditionally. CanTakeQuest was checked only inside automatic acceptance. After either Helheim supply quest alone, candidate38347 existed although native negative-exclusive-group prerequisites correctly required both rewards. This is a code-derived premature details window; no client observation or acceptance bypass is claimed.",
+  "reproduction": {
+    "command": "Test-StormheimHelheimSupplies.ps1 against the original reward handler",
+    "result": "FAIL as expected",
+    "evidence": "Extracted original NPC reward-next block sent a detail packet after the first parallel reward; assertion detailed.size==(eligible?1:0) failed. Full supply collection and native prerequisite checks had already passed. No accepted-quest state was required to reproduce the extra window."
+  },
+  "implementation": [
+    "Move CanTakeQuest(nextQuest,false) outside the automatic-accept-only condition to guard all NPC/player reward-next details and automatic acceptance. This is the same eligibility policy already present in the gameobject branch; use the shared native method rather than quest/map/actor whitelists.",
+    "Retain CanAddQuest for automatic acceptance, existing script/AI accept callbacks, the eligible details window and self-popup behavior. Ineligible candidates clear stale popup state and emit a debug diagnostic.",
+    "Keep the current quest reward callback outside the guarded next-quest block. Blocking an unavailable follow-up must not skip the giver AI sQuestReward callback. Missing next relations also retain that callback.",
+    "No quest relation, predecessor, reward-next metadata or progress reset. GetNextQuest remains a candidate lookup. The existing negative group-38324 still requires38324 AND38339 rewards in either order before38347.",
+    "This shared reward-protocol repair applies to NPC and player reward sources. The gameobject branch and actual quest acceptance security checks are unchanged. It does not implement38347 disguise/Guarm content."
+  ],
+  "tests": [
+    {
+      "command": "Test-StormheimHelheimSupplies.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": "Extracted exact NPC reward-next block through independent sQuestReward callback. Both factions and both Helheim reward orders: first details0, second details1. Other quest IDs also reject missing prerequisites; eligible ordinary/automatic accept, failed CanAddQuest, self-popup clearing/creation, missing candidate relation and independent reward callbacks pass. Supply collection/native loot mode0 tests still pass."
+    },
+    {
+      "command": "Test-StormheimUnworthyTask.ps1",
+      "result": "PASS",
+      "evidence": "Earlier cage/phase/parallel offer and native prerequisite checks preserved."
+    },
+    {
+      "command": "Test-StormheimRegalRemains.ps1",
+      "result": "PASS",
+      "evidence": "Earlier chest selection, item lifecycle and alternative-prerequisite handoff checks preserved."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": "Build log explicitly compiles QuestHandler.cpp, updates build-extractors/src/server/game/Release/game.lib and links build-extractors/bin/Release/worldserver.exe. bnetserver remains in the same canonical runtime directory. No OutDir override or runtime config/data replacement."
+    },
+    {
+      "command": "Canonical Release binary verification",
+      "result": "PASS",
+      "evidence": "New reward-next debug diagnostic exists in the deployed executable; actual Release final-link game.lib input is resolved from worldserver.vcxproj and does not postdate the executable. Native handler tests execute the changed production dispatch fragment."
+    }
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "949a7ba0f4f014e327b386512e3601ef7d2e24b329062291a08141b2cf0effe4",
+    "bnetserver_sha256": "263263ea7fc21c9a082fe694def3b9dac8c822a284cf043f97cf2c7631070aa6",
+    "startup": {
+      "logs": "build-extractors/runtime-test/stormheim-helheim-handoff/startup-20261015-225111",
+      "ready": true,
+      "exit_code": 0,
+      "DBErrors_bytes": 0,
+      "stderr_bytes": 0,
+      "server_stopped": true
+    }
+  },
+  "scope_limits": [
+    "The fixture executes the production NPC next-window block, GetNextQuest, predecessor loader and previous-quest/race/item handlers. Its CanTakeQuest wrapper composes the extracted prerequisite/race routines; account/world condition/session admission, full WorldSession reward/inventory mutations, packet delivery, script side effects and grids are fixtures. It is not an integrated client session.",
+    "Native CanAddQuest outcomes are supplied by the fixture; this checks dispatch ordering and does not certify the full inventory/log-capacity implementation. Debug marker and final-link checks plus a successful startup do not certify client UI behavior.",
+    "Original supply audit retains13/16 connected native NAV_GROUND approaches and failures127694,127702,127704. These existing optional positions were not moved. The supply item objective can use the13 connected piles, but all actual interactions and isolated surfaces remain client checks.",
+    "No quest is called client-verified. No player inventory, character records, race restrictions, personal/group loot settings, pet/mover/camera state or later warrior phase spawns were changed."
+  ],
+  "pending_client_checks": [
+    "Both factions: complete38324 first, then38339; repeat in reverse order. First reward must not show38347. After the second, the normal38347 details window should appear from Colborn and acceptance should succeed.",
+    "Confirm each reward is consumed/granted once, Colborn quest menu remains usable and optional dialogue/visual callbacks play. Check unrelated eligible normal and auto-accept quest windows, plus self-popup quests, in normal gameplay.",
+    "Full corpse/pet/group seaweed looting, Gathering/cursed-bone loot UI and model visibility, bag-space errors, cancellation/retry/re-entry and the three retained geometry failures from the supply audit."
+  ],
+  "next": {
+    "quest": 38347,
+    "title": "Stealth by Seaweed",
+    "scope": "Audit native disguise, Guarm passage/credit, cleanup and Ashildir turn-in toward39848."
+  }
+}

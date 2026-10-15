@@ -1,3 +1,4 @@
+param([switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
 & "$PSScriptRoot/Test-StormheimHelheimSuppliesData.ps1"
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
@@ -42,6 +43,11 @@ $fixture=$fixture.Replace('bool HasAura(uint32 a)', 'bool HasQuestForItem(uint32
 $fixture=$fixture.Replace('struct Quest {', 'constexpr int QUEST_ITEM_COUNT=6;struct ItemTemplate {uint32 GetQuality()const{return 0;}int GetMaxCount()const{return 0;}uint32 GetMaxStackSize()const{return 10;}};struct ItemStore {ItemTemplate item;ItemTemplate const* GetItemTemplate(uint32){return &item;}} itemStore;auto sObjectMgr=&itemStore;struct Quest {')
 $fixture=$fixture.Replace('uint32 GetMaxStackSize()const{return 10;}', 'uint32 GetMaxStackSize()const{return 10;}uint32 GetInventoryType()const{return 0;}')
 $fixture=$fixture.Replace('struct Unit:WorldObject {','struct Unit:WorldObject {uint32 GetTypeId(){return ToPlayer()?4:0;}bool HasAura(uint32){return false;}')
+$fixture=$fixture.Replace('struct WorldObject {','struct WorldObject {bool IsPlayer(){return ToPlayer()!=nullptr;}')
+$fixture=$fixture.Replace('struct Quest {','struct Quest {bool autoAccept=false;bool IsAutoAccept()const{return autoAccept;}')
+$fixture=$fixture.Replace('struct PlayerMenu {','struct PlayerMenu {std::vector<uint32> detailed;void SendQuestGiverQuestDetails(Quest const* q,ObjectGuid,bool,bool){detailed.push_back(q->id);}')
+$fixture=$fixture.Replace('uint32 GetTeam(){return team;}','bool canAdd=true;uint32 popup=0;bool CanAddQuest(Quest const*,bool){return canAdd;}void AddQuestAndCheckCompletion(Quest const* q,WorldObject*){Accept(q->id);}void SetPopupQuestId(uint32 id){popup=id;}uint32 GetTeam(){return team;}')
+$fixture=$fixture.Replace('virtual void sQuestAccept(Player*,Quest const*)','virtual void sQuestReward(Player*,Quest const*,uint32){++delegated;}virtual void sQuestAccept(Player*,Quest const*)')
 $fixture=$fixture.Replace('uint32 GetTeam(){return team;}','uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army {std::vector<int> currentUnits[1];} armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}uint32 GetTeam(){return team;}')
 [IO.File]::WriteAllText("$output/HelheimSuppliesFixture.inc",$fixture)
 $go=Get-Content "$repo/src/server/game/Entities/GameObject/GameObjectData.cpp" -Raw
@@ -59,8 +65,26 @@ $a=$loot.IndexOf('void LootTemplate::Process(Loot&');$b=$loot.IndexOf('void Loot
 $spells=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
 $a=$spells.IndexOf('SpellCastResult Spell::CanOpenLock(');$b=$spells.IndexOf('void Spell::SetSpellValue(',$a)
 [IO.File]::WriteAllText("$output/CanOpenLock.inc",$spells.Substring($a,$b-$a))
+$handler=Get-Content "$repo/src/server/game/Handlers/QuestHandler.cpp" -Raw
+$a=$handler.IndexOf('                    if (Quest const* nextQuest = _player->GetNextQuest(')
+$end='creatureQGiver->AI()->sQuestReward(_player, quest, packet.ItemChoiceID);'
+$b=$handler.IndexOf($end,$a)+$end.Length
+if($a -lt 0 -or $b -lt $a){throw 'Native NPC reward-next block missing'}
+[IO.File]::WriteAllText("$output/RewardNext.inc",$handler.Substring($a,$b-$a))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++20 /W4 /I`"$output`" `"$PSScriptRoot/StormheimHelheimSuppliesTest.cpp`" /Fe`"$output/StormheimHelheimSupplies.exe`" /Fo`"$output/StormheimHelheimSupplies.obj`"`r`nif not %errorlevel%==0 exit /b %errorlevel%`r`n`"$output/StormheimHelheimSupplies.exe`" `"$output/loot-fixture.tsv`" `"$output/drops-fixture.tsv`"`r`n"
 [IO.File]::WriteAllText("$output/run-StormheimHelheimSupplies.cmd",$cmd)
 & "$output/run-StormheimHelheimSupplies.cmd"
 if($LASTEXITCODE){throw 'HelheimSupplies production regression failed'}
+if($VerifyReleaseBinary){
+ $exe="$repo/build-extractors/bin/Release/worldserver.exe"
+ $bytes=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($exe))
+ if(!$bytes.Contains('Quest reward: next quest %u is not available after reward of %u.')){throw 'Canonical Release lacks reward-next admission implementation'}
+ [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
+ $release=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
+ $relative=$release.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -match 'game\\Release\\game.lib$'} | Select-Object -First 1
+ if(!$relative){throw 'Actual final-link game input missing'}
+ $lib=[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $relative))
+ if(!(Test-Path $lib) -or (Get-Item $lib).LastWriteTimeUtc -gt (Get-Item $exe).LastWriteTimeUtc){throw 'Canonical executable predates actual game final-link input'}
+ 'PASS: canonical executable reward-next diagnostic marker and actual game final-link input.'
+}

@@ -476,24 +476,34 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
                     // Send next quest
                     if (Quest const* nextQuest = _player->GetNextQuest(packet.QuestGiverGUID, quest))
                     {
-                        if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true) && _player->CanTakeQuest(nextQuest, true))
+                        // Parallel prerequisites must be satisfied before a
+                        // next-quest window or automatic acceptance is sent.
+                        if (_player->CanTakeQuest(nextQuest, false))
                         {
-                            if (creatureQGiver)
+                            if (nextQuest->IsAutoAccept() && _player->CanAddQuest(nextQuest, true))
                             {
-                                sScriptMgr->OnQuestAccept(_player, creatureQGiver, nextQuest);
-                                creatureQGiver->AI()->sQuestAccept(_player, nextQuest);
+                                if (creatureQGiver)
+                                {
+                                    sScriptMgr->OnQuestAccept(_player, creatureQGiver, nextQuest);
+                                    creatureQGiver->AI()->sQuestAccept(_player, nextQuest);
+                                }
+
+                                _player->AddQuestAndCheckCompletion(nextQuest, object);
                             }
 
-                            _player->AddQuestAndCheckCompletion(nextQuest, object);
+                            // Previous quest has been rewarded via popup. The player may now accept the follow quest from himself.
+                            if (object->IsPlayer() && quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && !nextQuest->IsAutoAccept())
+                                _player->SetPopupQuestId(nextQuest->GetQuestId());
+                            else
+                                _player->SetPopupQuestId(0);
+
+                            _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
                         }
-
-                        // Previous quest has been rewarded via popup. The player may now accept the follow quest from himself.
-                        if (object->IsPlayer() && quest->HasFlag(QUEST_FLAGS_AUTOCOMPLETE) && !nextQuest->IsAutoAccept())
-                            _player->SetPopupQuestId(nextQuest->GetQuestId());
                         else
+                        {
                             _player->SetPopupQuestId(0);
-
-                        _player->PlayerTalkClass->SendQuestGiverQuestDetails(nextQuest, packet.QuestGiverGUID, true, false);
+                            TC_LOG_DEBUG("network", "Quest reward: next quest %u is not available after reward of %u.", nextQuest->GetQuestId(), quest->GetQuestId());
+                        }
                     }
 
                     if (creatureQGiver)
