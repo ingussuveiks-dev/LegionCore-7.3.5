@@ -98,7 +98,7 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     "trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, summonedPetNumber, at_login, zone, online, death_expire_time, taxi_path, dungeonDifficulty, "
     "totalKills, todayKills, yesterdayKills, chosenTitle, watchedFaction, "
     "health, mana, instance_id, activespec, specialization, lootspecialization, exploredZones, equipmentCache, knownTitles, actionBars, "
-    "grantableLevels, lfgBonusFaction, raidDifficulty, legacyRaidDifficulty, created_time, killPoints FROM characters WHERE guid = ?", CONNECTION_ASYNC);
+    "grantableLevels, lfgBonusFaction, raidDifficulty, legacyRaidDifficulty, created_time, killPoints, scenarioResume FROM characters WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_SEL_GROUP_MEMBER, "SELECT guid FROM group_member WHERE memberGuid = ?", CONNECTION_BOTH);
     PrepareStatement(CHAR_SEL_CHARACTER_AURAS, "SELECT caster_guid, slot, spell, effect_mask, recalculate_mask, stackcount, maxduration, remaintime, remaincharges FROM character_aura WHERE guid = ?", CONNECTION_ASYNC);
     PrepareStatement(CHAR_SEL_CHARACTER_AURAS_EFFECTS, "SELECT slot, effect, baseamount, amount FROM character_aura_effect WHERE guid = ?", CONNECTION_ASYNC);
@@ -476,7 +476,7 @@ void CharacterDatabaseConnection::DoPrepareStatements()
     "logout_time=?,is_logout_resting=?,extra_flags=?,summonedPetNumber=?,at_login=?,zone=?,death_expire_time=?,taxi_path=?,"
     "totalKills=?,todayKills=?,yesterdayKills=?,chosenTitle=?,"
     "watchedFaction=?,health=?,mana=?,latency=?,activespec=?,specialization=?,lootspecialization=?,exploredZones=?,"
-    "equipmentCache=?,knownTitles=?,actionBars=?,grantableLevels=?,online=?,lfgBonusFaction=?,killPoints=? WHERE guid=?", CONNECTION_ASYNC);
+    "equipmentCache=?,knownTitles=?,actionBars=?,grantableLevels=?,online=?,lfgBonusFaction=?,killPoints=?,scenarioResume=? WHERE guid=?", CONNECTION_ASYNC);
 
     PrepareStatement(CHAR_UPD_ADD_AT_LOGIN_FLAG, "UPDATE characters SET at_login = at_login | ? WHERE guid = ?", CONNECTION_BOTH);
     PrepareStatement(CHAR_UPD_REM_AT_LOGIN_FLAG, "UPDATE characters set at_login = at_login & ~ ? WHERE guid = ?", CONNECTION_ASYNC);

@@ -42,6 +42,7 @@
 #include "PlayerTaxi.h"
 #include "QuestDef.h"
 #include "ReputationMgr.h"
+#include "ScenarioResume.h"
 #include "SpellMgr.h"
 #include "Unit.h"
 #include "Util.h"
@@ -3206,6 +3207,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         uint16 GetScenarioId() const { return m_scenarioId; }
         void SetScenarioId(uint16 scenarioId) { m_scenarioId = scenarioId; }
+        void RecordScenarioEntrance();
+        void PrepareScenarioLogin(uint32 mapId, uint32 instanceId);
+        bool CanResumeScenarioLogin(uint32 scenarioId) const;
+        uint32 GetScenarioLoginInstance() const { return m_scenarioLoginInstance; }
 
         // Adventures.
         uint16 getAdventureQuestID();
@@ -3723,6 +3728,9 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         CollectionMgr* _collectionMgr;
 
         uint16 m_scenarioId = 0;
+        ScenarioResume m_scenarioResume;
+        uint32 m_scenarioLoginId = 0;
+        uint32 m_scenarioLoginInstance = 0;
         uint16 m_adventure_questID = 0;
 
         WargameRequest* _wargameRequest;

@@ -12,7 +12,7 @@ struct Player;
 struct InstanceMapFixture;
 namespace lfg {struct LFGDungeonData {int map=1630,id=0;};}
 struct Group {lfg::LFGDungeonData const* m_dungeon=nullptr;};
-struct Scenario { int id; int step=0; int GetScenarioId(){return id;} };
+struct Scenario { int id; int step=0; int GetScenarioId(){return id;} void* GetMap(){return nullptr;} bool IsCompleted(bool){return false;} };
 struct Manager {
     std::map<int,Scenario*> scenarios;
     Scenario created{0};
@@ -41,6 +41,8 @@ struct LFGManager {
 } lfgManager;
 auto sLFGMgr=&lfgManager;
 struct Player {
+    int m_scenarioLoginId=0;
+    void* GetMap(){return nullptr;} bool CanResumeScenarioLogin(int){return false;}
     int map=1630,cls=9,status=0,selector=0,instance=17,loads=0;
     bool rewarded=false,relocated=false; float x=-400,y=-4500,z=170,o=0;
     struct Holder {int status=3;int GetPreparedResult(int){return status;}} holder;
@@ -118,5 +120,6 @@ int main(){
     p=Player{};p.status=3;p.selector=1155;assert(!allowed(&p,1631));
     spellManager.missing=true;p.restore();assert(!p.relocated);
     spellManager.missing=false;spellManager.destination.target_mapId=1;p.restore();assert(!p.relocated);
+    p=Player{};p.m_scenarioLoginId=998;assert(p.early()&&!p.selector);p.restore();assert(!p.relocated);
     std::cout<<"PASS: production Scepter login restores selector before map creation; constructor consumes it before access; fresh entrance, live stage/position, one quest load, map/class/status/wrong-scenario and destination gates\n";
 }

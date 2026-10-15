@@ -22128,7 +22128,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
         f_totalKills, f_todayKills, f_yesterdayKills, f_chosenTitle, f_watchedFaction,
         f_health, f_mana, f_instance_id, f_activespec, f_specialization, f_lootspecialization, f_exploredZones, f_equipmentCache, f_knownTitles, f_actionBars,
         f_grantableLevels, f_lfgBonusFaction, f_raidDifficulty, f_legacyRaidDifficulty, f_created_time,
-        f_killPoints
+        f_killPoints, f_scenarioResume
     };
 
     PreparedQueryResult result = holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
@@ -22274,6 +22274,8 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     uint32 mapId = fields[f_map].GetUInt16();
     uint32 instanceId = fields[f_instance_id].GetUInt32();
+    m_scenarioResume.Read(fields[f_scenarioResume].GetString());
+    TC_LOG_INFO("entities.player", "Login saved location: player %u map %u instance %u transport " UI64FMTD " checkpoint %u",GetGUIDLow(),mapId,instanceId,uint64(transLowGUID),m_scenarioResume.scenario);
 
     SetDungeonDifficultyID(CheckLoadedDungeonDifficultyID(Difficulty(fields[f_dungeonDifficulty].GetUInt8())));
     SetRaidDifficultyID(CheckLoadedRaidDifficultyID(Difficulty(fields[f_raidDifficulty].GetUInt8())));
@@ -22315,6 +22317,16 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     m_atLoginFlags = fields[f_at_login].GetUInt16();
     bool mustResurrectFromUnlock = false;
+
+    // Restore before the stale-transport fallback and before map creation.
+    // An explicit character unlock still takes precedence over a checkpoint.
+    if (!(m_atLoginFlags & AT_LOGIN_UNLOCK) && mapEntry && IsPositionValid())
+        PrepareScenarioLogin(mapId,instanceId);
+    if (m_scenarioLoginId)
+    {
+        m_movementInfo.transport.Reset();
+        transLowGUID = 0;
+    }
 
     if(m_atLoginFlags & AT_LOGIN_UNLOCK)
     {
@@ -22530,13 +22542,13 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     if (scenarioQuestStatusLoaded)
     {
         _LoadQuestStatus(holder.GetPreparedResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
-        if (mapId == 1522 && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
+        if (!m_scenarioLoginId && mapId == 1522 && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE)
         {
             Scenario* introduction = sScenarioMgr->GetScenario(instanceId);
             if (!introduction || introduction->GetScenarioId() == 962)
                 SetScenarioId(962);
         }
-        if (mapId == 1630 && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE)
+        if (!m_scenarioLoginId && mapId == 1630 && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE)
         {
             Scenario* scepter = sScenarioMgr->GetScenario(instanceId);
             if (!scepter || scepter->GetScenarioId() == 1155)
@@ -22546,7 +22558,9 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
 
     // NOW player must have valid map
     // load the player's map here if it's not already loaded
-    Map* map = sMapMgr->CreateMap(mapId, this);
+    Map* map = m_scenarioLoginInstance ? sMapMgr->FindMap(mapId,m_scenarioLoginInstance) : nullptr;
+    if (!map)
+        map = sMapMgr->CreateMap(mapId, this);
 
     if (!map)
     {
@@ -22586,7 +22600,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     }
 
     // if the player is in an instance and it has been reset in the meantime teleport him to the entrance
-    if (instanceId && !sInstanceSaveMgr->GetInstanceSave(instanceId) && !map->IsBattlegroundOrArena() && !map->CanCreatedZone() && !map->IsGarrison())
+    if (instanceId && !m_scenarioLoginId && !sInstanceSaveMgr->GetInstanceSave(instanceId) && !map->IsBattlegroundOrArena() && !map->CanCreatedZone() && !map->IsGarrison())
     {
         AreaTriggerStruct const* at = sAreaTriggerDataStore->GetMapEntranceTrigger(mapId);
         if (at)
@@ -22722,7 +22736,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // A new instance has no saved scenario criteria or actor state: restart at
     // the native prison arrival, never at a stale archive/escape coordinate.
     bool restartNewBloodAtPrison = false;
-    if (GetMapId() == 1522 && getClass() == CLASS_WARLOCK && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(40729))
+    if ((!m_scenarioLoginId || m_scenarioLoginId == 962) && GetMapId() == 1522 && getClass() == CLASS_WARLOCK && GetQuestStatus(40729) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(40729))
     {
         Scenario* introduction = sScenarioMgr->GetScenario(GetInstanceId());
         if (!introduction || introduction->GetScenarioId() == 962)
@@ -22739,7 +22753,7 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     // Keep a live Scepter instance's actors, criteria and saved position. A
     // fresh instance has neither actor nor criteria persistence; start at the
     // real entry spell destination rather than in an inaccessible later wing.
-    if (GetMapId() == 1630 && getClass() == CLASS_WARLOCK && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(43153))
+    if ((!m_scenarioLoginId || m_scenarioLoginId == 1155) && GetMapId() == 1630 && getClass() == CLASS_WARLOCK && GetQuestStatus(43153) == QUEST_STATUS_INCOMPLETE && !IsQuestRewarded(43153))
     {
         Scenario* scepter = sScenarioMgr->GetScenario(GetInstanceId());
         if (!scepter || scepter->GetScenarioId() == 1155)
@@ -25463,6 +25477,11 @@ void Player::SaveToDB(bool create /*=false*/)
 
         stmt->setUInt32(index++, GetLfgBonusFaction());
         stmt->setFloat(index++, m_killPoints);
+        // Store the checkpoint in the same transaction as the saved map/position.
+        // A completed run or a normal exit must not resurrect an old scenario.
+        if (Scenario* progress = GetMap()->IsScenario() ? sScenarioMgr->GetScenario(GetInstanceId()) : nullptr)
+            if (progress->IsCompleted(false)) m_scenarioResume = {};
+        stmt->setString(index++, m_scenarioResume.Write());
 
         // Index
         stmt->setUInt64(index++, GetGUIDLow());

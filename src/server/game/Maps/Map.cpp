@@ -938,6 +938,8 @@ bool Map::AddPlayerToMap(Player* player, bool initPlayer /*= true*/)
     sScriptMgr->OnPlayerEnterMap(this, player);
     sOutdoorPvPMgr->HandlePlayerEnterMap(player->GetGUID(), player->GetCurrentZoneID());
 
+    player->RecordScenarioEntrance();
+
     return true;
 }
 

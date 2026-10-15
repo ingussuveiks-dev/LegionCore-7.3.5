@@ -11,7 +11,7 @@ function Export-Block($source,$first,$last,$file) {
 }
 $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 Export-Block $source '    // Restore the selector before CreateMap chooses' '    // NOW player must have valid map' 'EarlyRestore.inc'
-if($source.IndexOf('    // Restore the selector before CreateMap chooses') -gt $source.IndexOf('    Map* map = sMapMgr->CreateMap(mapId, this);')){throw 'Selector restored too late'}
+if($source.IndexOf('    // Restore the selector before CreateMap chooses') -gt $source.IndexOf('    Map* map = m_scenarioLoginInstance')){throw 'Selector restored too late'}
 Export-Block $source '    if (!scenarioQuestStatusLoaded)' '    _LoadQuestStatusObjectives(' 'NormalQuestLoad.inc'
 Export-Block $source '    // Keep a live Scepter instance' '    _LoadDailyQuestStatus(' 'ScepterRestore.inc'
 $source=Get-Content "$repo/src/server/game/Maps/MapManager.cpp" -Raw

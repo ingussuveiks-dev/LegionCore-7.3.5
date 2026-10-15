@@ -6,10 +6,12 @@ using uint32 = uint32_t;
 constexpr int CLASS_WARLOCK=9, QUEST_STATUS_INCOMPLETE=3;
 constexpr int PLAYER_LOGIN_QUERY_LOADQUESTSTATUS=0;
 #define TC_LOG_INFO(...) ((void)0)
-struct Scenario { int id; int GetScenarioId(){return id;} };
+struct Scenario { int id; int GetScenarioId(){return id;} void* GetMap(){return nullptr;} bool IsCompleted(bool){return false;} };
 struct Manager { Scenario* scenario=nullptr; Scenario* GetScenario(uint32){return scenario;} } manager;
 auto sScenarioMgr=&manager;
 struct Player {
+    int m_scenarioLoginId=0;
+    void* GetMap(){return nullptr;} bool CanResumeScenarioLogin(int){return false;}
     int map=1522, cls=9, status=3, selector=0, loads=0; bool rewarded=false, relocated=false;
     uint32 tome=0, bankTome=0, unrelated=7;
     bool itemsLoaded=false;
@@ -61,5 +63,7 @@ int main(){
     for(int map:{1,1502,1460}){p=Player{};p.map=map;p.restore();assert(!p.selector && !p.relocated && p.tome==1);assert(!p.early() && !p.loads);}
     p=Player{};assert(allowed(&p,1460));p.status=0;assert(!allowed(&p,1460));
     p=Player{};p.selector=998;assert(!allowed(&p,1522));p.selector=962;assert(!allowed(&p,1500));
-    std::cout << "PASS: fresh prison restore removes stale inventory/bank tome after loading; live instance, other items, quest/class/map gates, later scenario and Broken Shore preserved\n";
+    manager.scenario=nullptr;p=Player{};p.m_scenarioLoginId=998;
+    assert(p.early()&&!p.selector);p.restore();assert(!p.relocated&&p.tome==1);
+    std::cout << "PASS: fresh prison restore removes stale inventory/bank tome after loading; live instance, other items, quest/class/map gates, recorded later scenario and Broken Shore preserved\n";
 }

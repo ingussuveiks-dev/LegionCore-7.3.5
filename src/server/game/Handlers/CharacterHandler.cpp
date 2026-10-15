@@ -883,8 +883,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
             
         }
 
-        if (!player->GetMap()->AddPlayerToMap(player) || !player->GetMap()->IsGarrison() && !player->CheckInstanceLoginValid())
+        bool addedToLoginMap = player->GetMap()->AddPlayerToMap(player);
+        bool validLoginMap = addedToLoginMap && (player->GetMap()->IsGarrison() || player->CheckInstanceLoginValid());
+        if (!validLoginMap)
         {
+            TC_LOG_ERROR("entities.player", "Login map rejected: player %u map %u instance %u added %u; using exit/home fallback",player->GetGUIDLow(),player->GetMapId(),player->GetInstanceId(),uint32(addedToLoginMap));
             if (AreaTriggerStruct const* at = sAreaTriggerDataStore->GetGoBackTrigger(player->GetMapId()))
                 player->TeleportTo(at->target_mapId, at->target_X, at->target_Y, at->target_Z, player->GetOrientation());
             else

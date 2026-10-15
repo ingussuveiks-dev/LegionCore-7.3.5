@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-15",
+  "problem": "Login admission rejected scenario maps except a growing list of quest-specific exceptions. The selected scenario was transient and consumed during scenario construction; saved map/instance/coordinates alone did not identify a fresh run or reconstruct its actors.",
+  "observed": [
+    "The user reported another immediate Orgrimmar arrival on login with Maiko after the Ritual Ruination deployment. The saved character row was already map1/zone14; quest43254 retained only arrival objective1. No new login-map/transport error was present in the older log. The exact path of that outdoor displacement cannot be proven retrospectively.",
+    "Ritual Ruination is an outdoor phased quest on map1220, not an instanced Scenario. Generic instance recovery does not by itself explain or repair this observed outdoor displacement. Its previous movement/controller repair and unverified client observations remain in ritual-ruination-2026-10-15.json."
+  ],
+  "implementation": [
+    "Record the actual scenario identity, map, instance, server boot time and entrance when a player successfully enters a native scenario. Save the versioned checkpoint in characters.scenarioResume in the same transaction as ordinary character position; keep current position separate from the entrance.",
+    "Read and validate the checkpoint before stale-transport fallback, difficulty selection and map creation. A matching live scenario in the same server run preserves actors, criteria and saved coordinates. A missing/recycled/restarted instance begins at the recorded entrance because scenario actors and criteria are not persisted.",
+    "Validate native Scenario/LFG map routing, scenario steps, map type and coordinates. Exclude battlegrounds, Ashran, garrisons and challenge-mode scenarios. Keep remaining map admission, capacity, difficulty, condition and binding checks. Final admission validates the live instance after the constructor has consumed the selector.",
+    "Existing New Blood and Scepter bootstrap/quest-item handling remains for old saves, but cannot override a different recorded scenario on a shared map. A normal exit and a completed scenario clear the checkpoint. An explicit character unlock retains priority.",
+    "Log original saved map/instance/transport and the exact post-add login rejection before exit/home fallback. These diagnostics must remain visible rather than suppressing failures."
+  ],
+  "automated": {
+    "Test-ScenarioResume.ps1": "PASS: compiles extracted production methods and the actual post-construction access branch; tests fresh entrance, live run, consumed selector, different scenario/map, recycled instance/boot ID, completion, invalid/missing data, late-entry fallback, entrance retention and normal exit cleanup.",
+    "Test-ScenarioResumeData.ps1": "PASS: actual migration twice against a temporary clone of the native character schema; checkpoint/current-position roundtrip and native SELECT/UPDATE wiring. No live character fixture inserted.",
+    "Test-NewBloodLogin.ps1": "PASS including recorded later scenario precedence.",
+    "Test-ScepterLogin.ps1": "PASS: previous early selection, native constructor consumption, post-add access and fresh/live behavior.",
+    "Test-NewBloodTomeInventory.ps1": "PASS: native loaded inventory/bank deletion boundaries retained.",
+    "Test-NewBloodQuestCleanup.ps1": "PASS: quest lifetime, abandonment and later scenario isolation retained.",
+    "Test-PetLoadSelection.ps1": "PASS.",
+    "Test-WarlockRegression.ps1": "PASS."
+  },
+  "limits": [
+    "No exact-stage resurrection after restart is claimed: actors, paths, dialogue timers, summons and scenario criteria are not serialized by this change. Generic fresh runs restart at their entrance; content-specific unique items and other quest restart contracts still need their own handlers, as New Blood already has.",
+    "New checkpoints apply after a successful entry and character save with this implementation. Old saves without a checkpoint retain existing quest-specific recovery; ambiguous shared maps are not guessed from arbitrary active quests.",
+    "A native scenario without matching LFG routing cannot use this generic reconstruction path. Ordinary dungeons, raids, outdoor phased quests and intentional exits are outside its scope.",
+    "Tests use fixture map/instance/storage services and do not replace real client relog, server restart, pet, vehicle, camera, collision, visual or full quest interaction checks."
+  ],
+  "pending_client": [
+    "Enter a scenario, progress, logout/login while the instance survives: same stage and actors.",
+    "Logout inside a scenario, restart server, login: native first stage at recorded entrance, with correct difficulty and usable interactions.",
+    "Check two scenarios sharing a map, repeated re-entry, quest abandonment/reacceptance, completed scenario exit and normal dungeon/raid/PvP restrictions.",
+    "Retest Maiko's outdoor Ritual Ruination arrival and stationary pet summoning, then all six quest objectives and return to Dalaran."
+  ],
+  "deployment": {
+    "status": "Canonical Release installed and server ready; client relog/restart confirmation pending",
+    "worldserver_sha256": "7B48A5232153D5F04E680FB40D34BF6EAD44C178F1B6EDCED8B8A3650DF75197",
+    "migration_sha1": "956919FB775E35E57434D0B2869192E41C16C324",
+    "release": "Built dependencies in their actual generated-project locations and linked build-extractors/bin/Release/worldserver.exe. Binary validation found live/fresh recovery, login diagnostics and both new native character SELECT/UPDATE SQL strings. Previous Scepter and Ritual implementation markers also passed.",
+    "preservation": "Graceful console-break shutdown; private executable/log/affected-character-table backups. Nine protected runtime configuration/certificate/DLL/bnetserver hashes unchanged. No personal data or backups committed.",
+    "one_time_character_return": "With worldserver stopped and the active43254/arrival1/home-map admission verified, moved only Maiko's saved position/map/zone to the existing ritual arrival. Quest status, objective, inventory and aura dumps match pre-deployment SHA256 hashes exactly. This repair is a one-time character location restoration, not proof that the outdoor login displacement cause was repaired.",
+    "smoke": "Test-WorldShutdown.ps1 -ProbeConnections PASS: ready, world and instance TCP greetings, graceful exit0, no new crash dumps. Database prepared statements initialized with the new column.",
+    "final_start": "Canonical worldserver PID4496 ready at2026-10-15 12:06:05 Europe/Riga; bnetserver retained. Final logs assessed from saved offsets; older unrelated DBErrors entries retained."
+  }
+}

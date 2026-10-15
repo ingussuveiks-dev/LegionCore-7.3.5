@@ -1,0 +1,108 @@
+#include "ScenarioResume.h"
+#include <cassert>
+#include <iostream>
+#include <map>
+using uint32=uint32_t;using uint16=uint16_t;using uint64=uint64_t;
+#define TC_LOG_INFO(...) ((void)0)
+constexpr int SCENARIO_TYPE_CHALLENGE_MODE=1;
+constexpr int QUEST_STATUS_INCOMPLETE=3,ALLIANCE=0,CLASS_WARLOCK=9;
+struct Position {
+    float x=10,y=20,z=30,o=1;
+    float GetPositionX()const{return x;}float GetPositionY()const{return y;}
+    float GetPositionZ()const{return z;}float GetOrientation()const{return o;}
+    void Relocate(float a,float b,float c,float d){x=a;y=b;z=c;o=d;}
+};
+struct MapEntry {
+    uint32 ID=9000;bool scenario=true,pvp=false,garrison=false;
+    bool IsScenario()const{return scenario;}bool IsBattlegroundOrArena()const{return pvp;}
+    bool IsGarrison()const{return garrison;}
+};
+struct ScenarioEntry {int Type=0;};
+struct ScenarioStore {ScenarioEntry value;bool missing=false;ScenarioEntry const* LookupEntry(uint32 id){return missing||!id?nullptr:&value;}} sScenarioStore;
+struct MapStore {MapEntry value;bool missing=false;MapEntry const* LookupEntry(uint32 id){return missing||value.ID!=id?nullptr:&value;}} sMapStore;
+struct Map {
+    MapEntry entry;
+    uint32 GetId()const{return entry.ID;}bool IsScenario()const{return entry.IsScenario();}
+    MapEntry const* GetEntry()const{return &entry;}
+};
+struct Scenario {
+    Map* map;uint32 id=777,step=0;bool completed=false;
+    Map* GetMap(){return map;}uint32 GetScenarioId(){return id;}
+    bool IsCompleted(bool){return completed;}uint32 GetCurrentStep(){return step;}
+};
+struct ScenarioManager {
+    std::map<uint32,Scenario*> entries;bool missingSteps=false;
+    Scenario* GetScenario(uint32 id){auto i=entries.find(id);return i==entries.end()?nullptr:i->second;}
+    int const* GetScenarioSteps(uint32){static int steps;return missingSteps?nullptr:&steps;}
+} scenarios;
+auto sScenarioMgr=&scenarios;
+struct LfgManager {
+    struct Data {float x=1,y=2,z=3,o=4;} data;
+    bool missing=false;
+    Data const* GetLFGDungeon(uint16 scenario,uint16 map){return missing||scenario!=777||map!=9000?nullptr:&data;}
+} lfg;
+auto sLFGMgr=&lfg;
+namespace GameTime {uint64 GetStartTime(){return 1000;}}
+struct MapManager {
+    static bool IsValidMapCoord(uint32,float x,float y,float z,float o){return std::isfinite(x)&&std::isfinite(y)&&std::isfinite(z)&&std::isfinite(o)&&std::abs(x)<17000&&std::abs(y)<17000&&std::abs(z)<17000;}
+};
+struct Player {
+    ScenarioResume m_scenarioResume;
+    uint32 m_scenarioLoginId=0,m_scenarioLoginInstance=0,selector=0,instance=42;
+    Map map;Position pos;bool inWorld=true,transport=false,vehicle=false,relocated=false;
+    struct Session {bool loading=false;bool PlayerLoading(){return loading;}} session;
+    Session* GetSession(){return &session;}
+    Map* GetMap()const{return const_cast<Map*>(&map);}uint32 GetMapId()const{return map.GetId();}
+    uint32 GetGUIDLow(){return 1;}uint32 GetInstanceId(){return instance;}
+    int GetTeam(){return 1;}int getClass(){return 1;}int GetQuestStatus(int){return 0;}
+    bool IsQuestRewarded(int){return false;}uint32 GetScenarioId(){return selector;}
+    bool IsInWorld(){return inWorld;}bool GetTransport(){return transport;}bool GetVehicle(){return vehicle;}
+    Position GetPosition(){return pos;}void SetScenarioId(uint16 id){selector=id;}
+    void Relocate(float x,float y,float z,float o){pos.Relocate(x,y,z,o);relocated=true;}
+    void PrepareScenarioLogin(uint32,uint32);bool CanResumeScenarioLogin(uint32)const;void RecordScenarioEntrance();
+};
+#include "Resume.inc"
+bool allowed(Player* player,uint32 mapid){
+#include "Access.inc"
+    return true;
+}
+ScenarioResume saved(){ScenarioResume r;r.map=9000;r.scenario=777;r.instance=42;r.boot=1000;r.x=100;r.y=200;r.z=300;r.o=2;return r;}
+int main()
+{
+    ScenarioResume r,original=saved();assert(r.Read(original.Write())&&r.Write()==original.Write());
+    for(auto value:{"","2 9000 777 42 1000 1 2 3 4","1 9000 0 42 1000 1 2 3 4","1 9000 70000 42 1000 1 2 3 4","1 9000 777 42 1000 nan 2 3 4","1 9000 777 42 1000 1 2 3 4 junk","1 9000 777 42 1000 1 2 3"})assert(!r.Read(value)&&r.Write().empty());
+    Player p;p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);
+    assert(p.selector==777&&p.relocated&&p.pos.x==100&&!p.m_scenarioLoginInstance);
+    // Native constructor consumes the selector before the final login check.
+    p.selector=0;assert(p.CanResumeScenarioLogin(777)&&!p.CanResumeScenarioLogin(778));
+    p=Player{};Scenario live{&p.map};scenarios.entries[42]=&live;p.m_scenarioResume=saved();
+    p.PrepareScenarioLogin(9000,42);assert(p.m_scenarioLoginInstance==42&&!p.relocated&&p.pos.x==10);
+    p.RecordScenarioEntrance();assert(p.m_scenarioResume.x==100&&!p.selector);
+    assert(allowed(&p,9000));p.m_scenarioLoginId=778;assert(!allowed(&p,9000));p.m_scenarioLoginId=777;
+    p.m_scenarioResume.boot=999;p.m_scenarioLoginInstance=0;p.PrepareScenarioLogin(9000,42);assert(p.relocated&&!p.m_scenarioLoginInstance);
+    p=Player{};live.map=&p.map;live.completed=true;p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);
+    assert(!p.m_scenarioLoginId&&!p.selector&&!p.m_scenarioResume.scenario);
+    live.completed=false;live.id=778;p=Player{};live.map=&p.map;p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.relocated&&!p.m_scenarioLoginInstance);
+    live.id=777;p=Player{};Map other;other.entry.ID=8000;live.map=&other;p.m_scenarioResume=saved();p.PrepareScenarioLogin(9000,42);assert(p.relocated&&!p.m_scenarioLoginInstance);
+    scenarios.entries.clear();
+    for(int invalid=0;invalid<8;++invalid){
+        p=Player{};p.m_scenarioResume=saved();
+        if(invalid==0)p.m_scenarioResume.map=8000;
+        if(invalid==1)p.m_scenarioResume.x=20000;
+        if(invalid==2)sMapStore.value.scenario=false;
+        if(invalid==3)sMapStore.value.pvp=true;
+        if(invalid==4)sMapStore.value.garrison=true;
+        if(invalid==5)sScenarioStore.value.Type=1;
+        if(invalid==6)lfg.missing=true;
+        if(invalid==7)scenarios.missingSteps=true;
+        p.PrepareScenarioLogin(9000,42);assert(!p.selector&&!p.m_scenarioResume.scenario);
+        sMapStore.value=MapEntry{};sScenarioStore.value={};lfg.missing=false;scenarios.missingSteps=false;
+    }
+    p=Player{};live={&p.map};scenarios.entries[42]=&live;p.RecordScenarioEntrance();
+    assert(p.m_scenarioResume.x==10&&p.m_scenarioResume.scenario==777&&p.m_scenarioResume.boot==1000);
+    p.pos.x=900;live.step=4;p.RecordScenarioEntrance();assert(p.m_scenarioResume.x==10);
+    p.m_scenarioResume={};p.RecordScenarioEntrance();assert(p.m_scenarioResume.x==1);
+    p.m_scenarioResume={};lfg.data.x=lfg.data.y=lfg.data.z=0;p.RecordScenarioEntrance();assert(!p.m_scenarioResume.scenario);
+    p.m_scenarioResume=saved();p.map.entry.scenario=false;p.RecordScenarioEntrance();assert(!p.m_scenarioResume.scenario);
+    std::cout<<"PASS: production checkpoint parsing, fresh restart, live rejoin, consumed selector, ID reuse/boot separation, completion, map/type/routing gates and entrance retention/exit cleanup\n";
+}
