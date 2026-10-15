@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    38624,
+    39803
+  ],
+  "status": "Cry Thunder code/data implementation and 39803 handoff checks complete. Automated script/core/native-data/geometry/SQL/Release/startup checks passed. User explicitly excluded client gameplay; whole quest, action bar, visuals, camera and pet portrait remain unverified in the client.",
+  "findings_and_changes": [
+    "Original TDB Cry Thunder38624 requires TALKTO278235/91767 slot0 amount1, MONSTER278236/92360 slot3 amount150 Flags2, then MONSTER278237/91768 slot1 amount1 Flags2. Preserve the native stages, faction-neutral races and next39803. Installed StartScript38624 auto-credited begin/leave and explored the quest; the summit acceptance also teleported directly to the hand-in without any assault. Remove those shortcuts for the known native configuration.",
+    "Exact summit92218/guid146706157 receives a GUID-before-entry SmartAI list copying original IDs0 and3. Keep hello handling and later43560 summon; omit only38624 acceptance teleport. Preserve entry-wide three-row list and unrelated actors. Prior39652 giver script remains unchanged. Source91767/guid388111 at2080.96/2639.05/676.364 is the native182921 spellclick actor; no new source18 conditions hide its client flag. Check quest/source/actual target/lifetime and native spellclick flag at cast and completion; other sources delegate the native summon.",
+    "182921 SUMMON runs at HIT, so suppress its native effect there and summon personal92302 with explicit native4133/driver seat15388. The previous39652 flight overrides only its own actor to4367; do not change the shared92302 template, vehicle or global spell slots. Assign183058/183065/183042/183471 only to this personal actor before boarding. Native VehicleSpellInitialize exposes them, including SUMMON183065; the separate charm helper restriction is not this vehicle packet loop. Driver seat controls assault movement and camera. No source claim of retail choreography.",
+    "Require actual passenger0 and finalized boarding spline before begin credit. Thirty personal92367/92312/92384 clones reuse actual Hrydshal91204/91205/91417 DB positions and native ground heights; hide only this rider from overlapping original actors/source and restore those hide-list entries using the original outdoor scene map on cleanup. Templates have no original actor spawns for the quest variants. Registered real JustDied callbacks with native player/pet/vehicle ownership count exactly once, capped150; replenish after8s. Spawning, elapsed time, unrelated kills, group/generic alias credit and absent invokers cannot count. Real generic Player kill/talk handlers bypass only these three38624 markers; other matching quests retain ordinary behavior.",
+    "Attack scripts retain native area candidates and remove all except living registered personal targets.183042 native zero radius falls back to visibility range outside instances in Spell::SelectImplicitAreaTargets; apply an authored150yd cap rather than inventing candidates. Native183065/191761 summons92342. Scoped storms preserve native183073/AT4045 visual46719, gain the rider as owner, and cast native183072 at the nearest personal target within12yd every1s for10s. The timer is authored because installed AT has no damage action rows; native cooldowns, damage effects, knockback and visual graph remain intact. Unrelated storms delegate SmartAI.",
+    "End Flight requires150 actual credited kills, Hrydshal rectangle2350..2720/2250..2680, z200..<820, and current-phase vertical native LOS to850. Suppress native183471 trigger191803 at LAUNCH and LAUNCH_TARGET; suppressing only HIT would miss native EffectTriggerSpell. Hand movement to scripted control, climb vertically at24yd/s, cross authored geometry-checked return nodes, then descend. Each node advances only at finalized spline and its actual endpoint, independently of a charmed creature AI callback.",
+    "Restore player control/viewpoint before native ExitVehicle to landing3070.21/2249.24/223.3. Retain ride until exit spline completes; leave credit requires same quest lifetime, begin+150, grounded landing within3yd. Missing successful exit can near-teleport to Landing and waits for acknowledged/final grounded placement. Timeout, death, phase/visibility loss, manual exit, missing actor, abandonment/reacceptance and invalid zone recover safely without final credit. Boarding timeout10s, assault30min, each return node60s. External map/teleport keeps its destination; original-map lookup cleans personal actors/hides. Ordinary logout saves safe Source after normal save; preserve durable kill counters. A crash has no exact flight-stage recovery guarantee.",
+    "Login repairs only COMPLETE38624 states missing native required counters; valid complete/rewarded states remain. Native Huginn97074/guid290836 receives38624 and offers39803 The Trials Continue.39803 leads to Havi92539 and39804; this commit verifies that handoff, not the following quest implementation.",
+    "Migration readiness skips custom scripts, unknown/changed legacy start actions and foreign summit GUID lists. Apply only known bindings, detach StartScript, remove the three known legacy rows and compatibility SpecialFlags explored bit. Shared templates/abilities, original positions, quest rewards and next relation are preserved. Backup only affected rows, transactionally install migration20 and record exact SHA1 as RELEASED."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimCryThunder.ps1",
+      "result": "PASS",
+      "evidence": ".codex/cry-test-final.log",
+      "details": "Extracted actual production script and quest lifetime helper. Boarding/150 actual script death callbacks/exit gating, duplicate caps, rider isolation and pet resolution fixture, owned spell filters, storm aura/ticks/selection, all return nodes, acknowledged successful recovery, timeout, stale casts/reacceptance, unrelated click delegation, per-actor buttons, abandon/death/phase/visibility/manual exit/logout/map transfer and original-actor hiding restoration. Movement, packets, damage, vehicles and quest storage/completion are fixtures; same faction-neutral script repeated for two faction labels."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunderCore.ps1",
+      "result": "PASS",
+      "evidence": ".codex/cry-core-final.log",
+      "details": "Extracted native KilledMonster/KilledMonsterCredit/TalkedToCreature/CanCompleteQuest, owner resolution and Unit death-to-AI dispatch block. Blocks only38624 marker aliases/group shortcuts, preserves another matching quest, native player/pet/controlled-vehicle resolution and AI-disabled negative. Actual VehicleSpellInitialize button loop exposes four per-actor abilities including summon, respects conditions. Engine storage/condition/packet fixture; not full Unit damage math or spell pipeline. Also reruns prior Heart regression."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunderHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/cry-handoff-final.log",
+      "details": "Actual prerequisite loader and player race/previous/completion/reward/GetNextQuest handlers, both races,39652 prerequisite, begin+150+landing requirements, actual Huginn handoff39803. Registry/inventory fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunderGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/cry-geometry.log",
+      "details": "Native Release GridMap/VMAP33 anchors;1672 sky-grid samples with return corridors and sampled descent rays; minimum sky clearance482.303yd. Landing to Huginn connected through2 native MMAP polygons. Initial dynamic climb is runtime vertical LOS-gated. Full model wings/seat/client offsets remain unchecked."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunderNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-cry-thunder-native-2026-10-15.json",
+      "details": "Original TDB quest/objective/POI/next metadata, native spell effect/trigger/cooldown/power/range/radius, driver vehicle/seat, faction/display/model and complete visual graph with input hashes. Metadata is not client visual playback."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunderData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/cry-data-final.log",
+        ".codex/cry-deployment.json"
+      ],
+      "details": "Temporary-table migration twice and custom actor/start/GUID preservation; installed bindings, native3 stages, detached shortcuts, retained shared AI/later43560, untouched shared bar/vehicle, native click,30 unchanged source anchors, storm AT and Huginn/next relations."
+    },
+    {
+      "command": "Test-StormheimDragons.ps1; Test-StormheimDragonsData.ps1 and -Live; Test-StormheimMight.ps1; Test-StormheimFollowup.ps1; Test-WarlockRegression.ps1; Test-CharmCreateSpells.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/cry-dragons.log",
+        ".codex/cry-old-might.log",
+        ".codex/cry-followup.log",
+        ".codex/cry-warlock.log",
+        ".codex/cry-charm.log"
+      ],
+      "details": "Preserves prior39652 flow, original39594 Test of Might, earlier kill-credit paths, scripted mover resynchronization/unrelated mover rejection and ownerless/owned/guardian charm paths. No warlock gameplay work. Old Dragons snapshot reset removes only the newly owned summit list in temporary tables before replaying its own older migration; live assertions retained."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/cry-build-final.log",
+      "runtime": "build-extractors/bin/Release",
+      "worldserver_sha256": "d9c44ba25f3d42b4a761b743db895e92faddabd2a74b95d49c7a69616eeba496"
+    },
+    {
+      "command": "Canonical worldserver startup with isolated logs and database auto-updates disabled, then server shutdown0",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-cry-thunder/startup-20261015-082750",
+      "details": "Ready=True, exit0, DBErrors0bytes, stderr0bytes; server stopped. A subsequent header-guard/fixture-include rename rebuilt successfully; behavior unchanged."
+    }
+  ],
+  "implementation_corrections_retained": [
+    "Provisional shorthand Might collided with existing39594 source/test filenames. Detected before deployment; copied new work to CryThunder names, restored all original files byte-for-byte, verified original stormheim_might.cpp blob ae010e480a3b60ee15ef698ba1c4603bef45090c and reran its native regression. Loader preserves both distinct registrations.",
+    "Initial provisional global92302 ability-slot edit was caught by SQL shared-bar regression, removed before deployment and replaced with per-actor slots.",
+    "Native summon hook HIT and end-flight trigger LAUNCH/LAUNCH_TARGET were checked against actual engine handlers; zero-radius fallback corrected from an assumed empty search to native visibility candidates before final checks."
+  ],
+  "client_checks_pending": [
+    "Accept38624 after39652 at summit without old teleport; native91767 spellclick target/cast, actual driver boarding, four usable vehicle buttons, free-flight controls, camera and permanent pet/portrait.",
+    "Native Thunder Bite, Tempest summon/visual/damage/knockback and Storm Fury at ground targets, actual scaled damage/deaths,150 visible counters and distinct nearby riders; no overlaid originals visible.",
+    "End Flight restriction and climb/return/descent, passenger/model/wings clearance, native exit spline, grounded final credit exactly once, control restored and pet portrait/vehicle flags cleared.",
+    "Abandon/reaccept, logout/login, interrupted return/manual dismount/death, external map transfer, retries and retained kills; no stranded actor or stale hidden source.",
+    "Both factions complete/reward at Huginn and see39803, then proceed to Havi; no claim of full39803 or later chain verification."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-cry-thunder\\20261015-082749",
+    "sha1": "4BE7159D6FE1455BBC7FE8382B0B8FF83BBC68B6",
+    "migration": "2026_10_15_20_stormheim_cry_thunder.sql"
+  }
+}

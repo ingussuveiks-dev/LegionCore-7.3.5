@@ -6,7 +6,7 @@ $sql=''
 if(!$Live){
  $tables=@{creature_template='entry IN(92302,96465,92218)';creature='guid IN(146706156,146706157)';smart_scripts='source_type=0 AND entryorguid IN(92302,96465,92218,-146706156,-146706157)'}
  foreach($table in $tables.Keys){$sql+="CREATE TEMPORARY TABLE saved_$table AS SELECT * FROM $table WHERE $($tables[$table]); CREATE TEMPORARY TABLE $table AS SELECT * FROM saved_$table;`n"}
- $sql+="UPDATE creature_template SET ScriptName='',AIName=IF(entry=92302,'','SmartAI');`n$migration`n$migration`n"
+ $sql+="DELETE FROM smart_scripts WHERE entryorguid=-146706157 AND comment LIKE '%Cry Thunder38624%'; UPDATE creature_template SET ScriptName='',AIName=IF(entry=92302,'','SmartAI');`n$migration`n$migration`n"
 }
 $sql+=@'
 SELECT 'ride',COUNT(*) FROM creature_template WHERE entry=92302 AND ScriptName='npc_stormheim_dragons' AND VehicleId=4133;

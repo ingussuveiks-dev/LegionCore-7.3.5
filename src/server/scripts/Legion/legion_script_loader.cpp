@@ -27,6 +27,7 @@ void AddSC_stormheim_another_way();
 void AddSC_stormheim_winter();
 void AddSC_stormheim_heart();
 void AddSC_stormheim_dragons();
+void AddSC_stormheim_cry_thunder();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -259,6 +260,7 @@ void AddLegionScripts()
     AddSC_stormheim_winter();
     AddSC_stormheim_heart();
     AddSC_stormheim_dragons();
+    AddSC_stormheim_cry_thunder();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
