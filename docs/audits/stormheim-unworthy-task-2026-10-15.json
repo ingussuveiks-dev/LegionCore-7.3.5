@@ -1,0 +1,130 @@
+{
+  "quest": 39837,
+  "title": "An Unworthy Task",
+  "date": "2026-10-15",
+  "status": "Code/data repaired and automated checks passed; WoW 7.3.5 client verification pending.",
+  "scope": "Code and data only, per user. Focused migration; no production C++ changes or new actors, scripts, spells, transport, camera or pet state.",
+  "observed_failures": [
+    "Installed21737 quest_template.StartScript39837 schedules three identical delay0 command7 QUEST_EXPLORED rows. Map::ScriptsProcess calls Player::AreaExploredOrEventHappens, which sets COMPLETE directly and flags objectives without requiring the cage. Acceptance bypassed the actual objective and switched to the freed Colborn phase.",
+    "Installed21108 cage241778 was type0 DOOR, lock1690, condition35984, no GO quest credit. Both GameObject::Use and Spell::SendLoot door branches only toggle/start spawn scripts; none existed for spawn25164548. Removing acceptance completion alone would strand the quest.",
+    "SpecialFlags2 is an obsolete EXPLORATION_OR_EVENT requirement. Native Player::CanCompleteQuest rejects an INCOMPLETE quest carrying that bit even after its real GO objective reaches1/1. It must be removed along with the shortcut."
+  ],
+  "implementation": [
+    "Restore original TDB735 type10 GOOBER and all33 data-union fields for the recognized unbound legacy cage: lock1691, quest39837, autoClose3000ms, no spell, openText21400, AllowMultiInteract1, DontPlayOpenAnim1. Preserve display7469, flags0, spawn and unrelated fields. Leave custom AI/Script bindings or different type/legacy lock layouts alone.",
+    "Clear only StartScript39837 on quest39837. Remove only exact obsolete command7 rows when no quest still references that start-script ID. Clear only exploration bit2 when39837 no longer has a custom start script; preserve other special bits.",
+    "Keep objective280004 Type2 GAMEOBJECT241778/storage1/amount1/flags0, its existing saved slot, all races and native quest menu route. Native QuestData admission sets KILL|CAST for this objective; native GameObject::Use goober branch supplies KillCreditGO. No timer, creature death, pet death, optional spell or dialogue gates this GO objective.",
+    "Use the existing phase lifecycle: incomplete39837 =>5578/cage and caged Colborn; complete or rewarded39837 =>5577/freed Colborn. Player::CompleteQuest calls SetQuestStatus, whose100ms callback notifies PhaseMgr and updates quest world objects. Do not move or duplicate the phase actors.",
+    "Preserve RewardNextQuest38339 and addon NextQuestID38324: both38324 and38339 are Colborn offers with Prev39837 and negative ExclusiveGroup-38324. Native reward GetNextQuest opens38339;38324 remains a normal parallel offer. Both rewards are required for38347. Do not flatten this into one linear predecessor."
+  ],
+  "world_records": {
+    "cage": {
+      "entry": 241778,
+      "spawn": 25164548,
+      "map": 1463,
+      "zone": 7588,
+      "phase": "5578",
+      "position": [
+        364.608,
+        414.724,
+        18.7292
+      ],
+      "display": 7469
+    },
+    "caged_colborn": {
+      "entry": 91531,
+      "spawn": 11546820,
+      "phase": "5578",
+      "position": [
+        364.825,
+        414.858,
+        18.8863
+      ]
+    },
+    "freed_colborn": {
+      "entry": 91531,
+      "spawn": 11546819,
+      "phase": "5577",
+      "position": [
+        366.422,
+        369.746,
+        27.5921
+      ]
+    },
+    "later_warrior_colborn": {
+      "spawn": 12742987,
+      "phase": "8306",
+      "unchanged": true
+    },
+    "native_models": "Cage display7469 -> FileDataID195417; Colborn63385 -> model2594. Both records exist in26972 native data; relevant installed Hotfix overrides are absent.",
+    "phase_conditions": "Source23 zone7588 entry2 CONDITION_QUESTTAKEN9/39837; entry3 Else0 CONDITION_QUEST_COMPLETE28/39837 OR Else1 CONDITION_QUESTREWARDED8/39837."
+  },
+  "automated_checks": [
+    {
+      "command": "tools/tests/Test-StormheimUnworthyTask.ps1",
+      "result": "PASS",
+      "evidence": "Extracted native CanOpenLock, full GOOBER switch branch, KillCreditGO, CanCompleteQuest, CanRewardQuest, GetQuestStatus, ConditionMgr quest predicates, prerequisite loader/race/GetNextQuest. Reproduces old door no-credit and old exploration-bit deadlock; both factions, one credit, per-player click, retry/abandon/re-entry, pet/unrelated/expired boundaries and parallel next quests."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUnworthyTaskData.ps1; same with -Live",
+      "result": "PASS",
+      "evidence": "Real MySQL temporary-table migration replay twice and deployed rows; whole-row comparisons, unrelated cage/quests, native objective/relations/phase definitions/actors, custom start/AI/event flag and shared-script preservation, no Hotfix catalog overrides. Credentials read privately."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUnworthyTaskNative.py",
+      "result": "PASS",
+      "evidence": "Original TDB735 parser and runtime26972 lock1691 key-skill5,3365 effect33/misc5/target23, model chain and outdoor map1463. Full records/hashes in the companion native audit."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUnworthyTaskGeometry.ps1",
+      "result": "PASS",
+      "evidence": "Actual Release MMAP/Detour data, map1463. Ashildir341.621,356.556,30.5468 -> cage approach20.3731z through17 polygons; cage -> freed Colborn approach27.5065z through15 polygons. Conservative interaction approach radius5yd, not a client collision/render test."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgment.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": "Existing global3365 Judgment wrapper delegates the added241778 cage regression; native post-lock completion dispatch reaches its regular SendLoot fallback. Canonical binary markers and actual scripts/game final-link library paths verified."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": "Incremental canonical Release validation; no production C++ changed. Both executable outputs are in build-extractors/bin/Release."
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_15_42_stormheim_unworthy_task.sql",
+    "backup": ".codex/backups/stormheim-unworthy-task/20261015-214615",
+    "sha1": "43B84466F6C00CAB8A6268C88D7A0E282CFB9C36",
+    "state": "RELEASED"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "startup": "build-extractors/runtime-test/stormheim-unworthy-task/startup-20261015-214615",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "server_stopped_after_test": true,
+    "worldserver_sha256": "3b936ee787f0dc82ce11ddd4ee313f377cb03151b2eecc7008cb559adad41839",
+    "bnetserver_sha256": "a11cb6924a6a70bb5c98ec6aedb0e530a7d197c22e3e2683d3751bab74aa98f4"
+  },
+  "limits_and_preserved_history": [
+    "This repairs executable progression using native quest-object semantics; it does not reconstruct a retail Colborn walk/dialogue scene or certify an opening animation. Original Data26 DontPlayOpenAnim1 is preserved even though this core goober branch sets ACTIVE. Existing phase swap replaces caged Colborn with the freed actor at the camp; no authored private escort was added.",
+    "The native handler/lock/phase predicate routines execute in fixtures. World grids, full spell scheduling/interruption/target admission, PhaseMgr visibility delivery, network, account login and database quest serialization are not integrated or client tests. Lock acceptance and GO credit are exercised as separate native components; no claim of malformed-client packet hardening.",
+    "Standard GO Use can credit an ordinary valid interaction; no new global Opening3365 restriction is imposed. Shared GO activation/reset uses existing core behavior; concurrent player retry after the ordinary3-second reset requires client confirmation.",
+    "Incomplete restart uses existing saved native objective state. An abandoned/reaccepted quest restarts at zero. Map1463 is outdoor, not a Scenario instance: no ScenarioResume or exact actor checkpoint claim. Previously shortcut-completed/rewarded character progress is retained; this migration does not revoke player progress or rewrite characters.",
+    "Original TDB archive contains native cage/objective/template records but no selected cage/Colborn world-spawn rows; installed World spawn/phase relations are checked separately. Earlier Faljar audit failures and evidence remain in their original documents."
+  ],
+  "pending_client_checks": [
+    "Fresh39837 acceptance must remain incomplete and show cage in5578; reach cage from Ashildir, click/cast standard3365, interrupt/fail/retry, observe cooperative-spirit1/1 only after interaction.",
+    "Actual cage/prisoner pose, interaction cursor/flags, opening/model presentation,5578->5577 visibility delivery, collision and freed Colborn at the camp; do not call the release animation verified from the native model/GO state alone.",
+    "Repeat clicks, two simultaneous players, death/re-entry/abandon/reaccept and later warrior8306 phase; both factions. No pet killing blow should replace the cage interaction. Standard movement, camera and primary pet portrait should remain usable.",
+    "Turn in at Colborn91531, confirm automatic38339 window plus normal38324 parallel offer, and complete both before38347 is available."
+  ],
+  "next": {
+    "quests": [
+      38324,
+      38339
+    ],
+    "reason": "Audit the two parallel Colborn tasks and their shared38347 handoff."
+  }
+}
