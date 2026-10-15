@@ -20973,6 +20973,13 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (questid == 38624 && (real_entry == 91767 || real_entry == 92360 || real_entry == 91768))
             continue;
 
+        // Turn the Keys needs one confirmed turn at each personal Runewood stone.
+        if (questid == 38778 && (real_entry == 93196 || real_entry == 93185 || real_entry == 93340 || real_entry == 93341))
+        {
+            TC_LOG_DEBUG("quest", "Turn the Keys: ignored generic kill credit for player %u marker %u", GetGUIDLow(), real_entry);
+            continue;
+        }
+
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)
             continue;
@@ -21129,6 +21136,12 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         // Cry Thunder advances through confirmed boarding, owned kills and landing.
         if (questid == 38624 && (entry == 91767 || entry == 92360 || entry == 91768))
             continue;
+
+        if (questid == 38778 && (entry == 93196 || entry == 93185 || entry == 93340 || entry == 93341))
+        {
+            TC_LOG_DEBUG("quest", "Turn the Keys: ignored generic talk credit for player %u marker %u", GetGUIDLow(), entry);
+            continue;
+        }
 
         Quest const* qInfo = sQuestDataStore->GetQuestTemplate(questid);
         if (!qInfo)

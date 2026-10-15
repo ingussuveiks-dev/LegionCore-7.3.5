@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    39796,
+    38778
+  ],
+  "source_base_revision": "a9b3966e",
+  "status": "39796 code/data travel handoff checked;38778 progression and personal runestone lifecycle repaired, tested, deployed and built in canonical Release. Client gameplay excluded; full retail visuals/choreography remain unverified.",
+  "findings_and_changes": [
+    "Original TDB39796 To Haustvald has no objectives and ends at Vydhar93231/guid292106,3073.09/1056.88/127.021. Preserve objective-free native journal completion and actual Vydhar hand-in, predecessor39804, races and next38778. Do not invent travel credit, flight or teleport.",
+    "Native38778 Turn the Keys has mandatory278431/93196 amount3 slot0 and optional hidden markers278432/93185 slot1,278491/93340 slot2,278492/93341 slot3, each amount1 Flags28. Live definitions match. Preserve all four records, flags and next38810 The Dreaming Fungus; Vydhar starts/ends this quest.",
+    "Native personal runestone variants93182/93342/93343 have display63471, questinteract cursor, spellclick184579 cast_flags1, and original SmartAI hit lists. Their only original action chain awarded the same93196 credit, hid the actor (action47), then restored visibility after15s; it never stored a site marker and could repeat one stone for all3. No current spell_area/controller links or native summon destinations existed, so the intended three personal actors were not being created.",
+    "Reuse native controller192155/192156/192157 -> aura428 HandleSummonController ->184582/184792/184794 -> entries93182/93342/93343, SummonProperties719 Flags16 personal spawn, Control0 wild ordinary summon, duration3600000ms. Add the missing target46 spell_target_position rows at unchanged Runestone Base241763/guid115106/115223/115221 locations3116.57/1247.91/125.037,2992.34/1126.41/130.259,3181.52/1054.34/117.037. Native SelectImplicitNearbyTargets prefers same-map DB destinations before explicit referer fallback; there are no source13 implicit-entry conditions. This is the existing native summon path, with supplied authored destinations tied to actual bases/quest POIs.",
+    "Player script starts a current-acceptance attempt near an unfinished site (80yd), polls at500ms, and requests that sites native controller. Only a matching pending summon, exact expected entry/site/current lifetime and script binding registers as owned. Keep native personal visibility, bind actors to the quest-object scope and make them passive/active. No monster or marker credit on timers, aura application, spawning or proximity. Failed/missing summons retry after2s. Outside100yd clear that site and aura; phase/visibility loss invalidates and replaces stale actors. The80/100yd radii, retry timing and15s completed-attempt retention are authored behavior.",
+    "184579 is an instant native dummy with explicit-any unit target25, not a three-second channel or a client scene callback. Check the retained original clicked NPC, registered exact GUID/site, live INCOMPLETE quest, native metadata and current acceptance token; require actor/player alive/in-world, actual spellclick flag, same phase, visibility/LOS, within6 exact yards, no combat/vehicle/transport/taxi and unfinished site. A matching real HIT_TARGET plus AfterCast consumes the site once. Disable its spellclick flag, send an authored quarter-turn facing update, store the native unique marker, derive93196 as the count of distinct markers and use actual CanCompleteQuest. No claim that the90-degree facing update recovers the full retail animation or rune mechanism.",
+    "Owned actors suppress only old184579 SmartAI hit dispatch, preventing its repeatable generic/group credit path. Unowned/later-map actors delegate SmartAI. Native Player::KilledMonsterCredit and TalkedToCreature bypass only38778 and its four marker entries; other quests sharing those entries retain ordinary credit. Diagnostic strings identify rejected generic kill/talk shortcuts and prove both handlers are in the deployed executable. Pets/nonplayers cannot consume an owned site, and another player cannot use the registered personal actor.",
+    "Explicit original-map GUID cleanup is necessary: native controller removal calls RemoveAllMinionsByFilter(spell,1), which scans m_Controlled, while these are ordinary wild personal summons. Cleanup despawns actual tracked actors as well as removing their three auras. Handles abandonment/reacceptance, death, zone/map change, logout and phase/visibility replacement. Prevent summon casts before a player enters the world, since saved controller auras can reapply while loading; login removes these three scoped quest-controller IDs even on another map before normal outdoor recovery. No vehicle/charm/mover, primary pet slot or pet lookup changes.",
+    "On login/attempt initialization, derive total from the three persistent native site markers. A legacy generic total3 without unique evidence is restored to INCOMPLETE with total0; retain any existing valid unique markers and valid complete/rewarded states. Existing unproven generic totals are not proof of three distinct turns. No exact cast-stage persistence is claimed after a crash; durable markers allow unfinished sites to be recreated.",
+    "Migration35 binds only known empty/native scripts, exact original three hit rows and clicks, expected quest markers and absent/known destinations. Preserve original entry-wide SmartAI/timed rows for unrelated actors, all quest definitions/races/rewards/relations, model/flags, original DB actors/GOs and later world-quest objects. Replay twice is idempotent; custom actor scripts and custom destination rows skip the whole repair. Backup only three actor-template rows, three destination IDs and four owned spell bindings; register SHA1 as RELEASED in the same transaction."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimRunewood.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/runewood-final-test.log",
+      "details": "Compiles actual production player/actor/spell handlers, native aura428 controller apply/remove handler, AddQuestDelayedEvent lifetime, native KilledMonsterCredit/TalkedToCreature, prerequisite loader, race/previous/completion/reward/GetNextQuest handlers. Both factions39804 -> empty travel39796 -> Vydhar38778 ->38810; actual3 unique turns/markers/total, no-hit/stale/repeated casts, another owner/pet rejection, failed summon retry, death/zone/map/logout cleanup, reacceptance, preserved saved markers, legacy normalization, phase replacement, off-world summon rejection and stale login aura removal. Native world storage, summon construction/destination selection, cast/network/facing/rendering are fixtures; no client verification."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRunewoodNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-runewood-native-2026-10-15.json",
+      "details": "Original TDB travel/mandatory+optional stages/next/POIs, native controller428/summon/effect/target46/personal wild719/cast-time/duration/range and display/model records with input hashes. These spells have no SpellXSpellVisual rows; names do not establish an activation VFX. Relevant SpellEffect/SpellMisc hotfix override counts0."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRunewoodData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/runewood-data.log",
+        ".codex/runewood-data-live.log"
+      ],
+      "details": "Real migration twice in temporary snapshots, installed three templates/destinations/clicks/four bindings, all four native objectives/travel/next/actual Vydhar relations and original12 SAI rows. Native source18/source13 condition sets empty. Custom actor scripts/destination rows retained without partial merge."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRunewoodGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/runewood-geometry.log",
+      "details": "Actual canonical Release MMAP/Detour libraries and runtime navmesh. Searches real interaction approaches rather than assuming model centers are standable. Vydhar approach3073.8/1057.59/129.459 connects to three rune approaches through28/20/19 polygons. Rune approaches obey exact6yd script bound; Vydhar uses native model radius2.52414 plus5yd NPC interaction range. Adjacent tiles loaded. No new walking route or client collision/model certification."
+    },
+    {
+      "command": "Test-StormheimBones.ps1; Test-StormheimFollowup.ps1; Test-StormheimCryThunderCore.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/runewood-bones-regression.log",
+        ".codex/runewood-followup-regression.log",
+        ".codex/runewood-cry-core-regression.log"
+      ],
+      "details": "Previous39804->39796 flow, earlier exact quest kill-credit paths and native generic kill/talk/alias/vehicle-bar regressions retained. Cry core also runs original Heart regression. No new warlock/gameplay work."
+    },
+    {
+      "command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": [
+        ".codex/runewood-configure.log",
+        ".codex/runewood-build.log"
+      ],
+      "runtime": "build-extractors/bin/Release",
+      "details": "No global OutDir override. Actual link inputs scripts/Release/scripts.lib and game/Release/game.lib match the build paths and predate final exe; deployed binary contains new rune script registration and both new core-guard diagnostic strings. Runtime configuration/certs/DLL/logs/extracted data preserved."
+    },
+    {
+      "command": "Canonical worldserver startup with isolated logs, database auto-updates disabled, then server shutdown0",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-runewood/startup-20261015-182000",
+      "details": "Ready=True, exit0, DBErrors0bytes, stderr0bytes; server stopped."
+    }
+  ],
+  "failures_assumptions_and_limits_retained": [
+    "The initial target-position draft included an EffectIndex column; live schema inspection caught its absence before replay/deployment and it was removed. Initial fixture compile needed existing SpellInfo and taxi/target adapters; no production implementation was replaced by fixture code.",
+    "The first reused geometry probe treated exact actor centers as player foot positions and loaded only endpoint tiles. Vydhars unchanged large-tree root had a different nearby lower polygon; center-to-center path failed. The corrected probe loads adjacent tiles and searches actual standable approach polygons within interaction bounds. It finds connected upper approaches; this does not justify moving the NPC or globally relaxing gameplay distances.",
+    "Native184579/summon/controller records have no SpellXSpellVisual graph. The facing quarter-turn is an authored visual repair tied to the real instant turn; retail M2 turning/pacing, glow, bonds/release and full Vydhar scene remain client-unverified.",
+    "Existing251431 Empowered Runestones are a different interaction (217072); keep them untouched. In particular, DB115105 lies near the northern base and may overlap visually with the personal quest actor. The client must confirm the large rune is distinguishable from the chained three-stone world-quest object; do not certify that overlap from SQL or navmesh.",
+    "Existing Vydhar flavor216211/conversation2586 is not attached by this fix. Its stored three records all use idx0 and no specific native per-stage trigger was recovered here. Vydhar stage narration/release is not certified, and the repair does not invent voice lines, replace that conversation or gate essential credit on cosmetic casts.",
+    "An old complete count without unique markers is intentionally repaired rather than treated as proven distinct progress. Native optional marker storage and generic completion are exercised with fixture quest storage; actual relog UI still needs client confirmation."
+  ],
+  "secondary_reference": {
+    "url": "https://www.wowhead.com/quest=38778/turn-the-keys",
+    "use": "Sanity check only: comments distinguish the large clickable turning stones from the separate chained multi-stone object; implementation IDs and mechanics come from local native TDB/DB2/core. Modern reward data was not imported."
+  },
+  "client_checks_pending": [
+    "Both faction travel39796 hand-in at Vydhar and38778/38810 offer/reward UI; native empty journal completion is not automatic reward.",
+    "Actual appearance/model/cursor/private visibility of all three summoned stones, geometry alignment with bases, no confusing overlap with later Empowered Runestones.",
+    "Native explicit-target admission, real instant184579 hit/turn playback, one unique site at a time and3/3 only after all three; repeated same-site/pet/group/other-owner paths.",
+    "Abandon/reaccept, failed summon/cast, death, phase changes, logout/relog on/off Stormheim and external map transfer: no stale rune/controller, durable completed sites retained, ordinary permanent pet unaffected.",
+    "Actual Vydhar visual/narration/release and complete retail choreography remain outside automated proof; see retained limitations."
+  ],
+  "next": "The Dreaming Fungus38810 and its neighboring Runewood quests.38810 implementation is not changed in this commit.",
+  "deployment": {
+    "sha1": "AB834C305756A67724748ABABD2C78F96730602D",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-runewood\\20261015-181637",
+    "migration": "2026_10_15_35_stormheim_runewood.sql",
+    "state": "RELEASED"
+  },
+  "runtime_sha256": {
+    "build-extractors/bin/Release/worldserver.exe": "6464cefdf02b21a3f1ce7d8acd8435a001a85b88e17a419fc86ab1b7db2204f4",
+    "build-extractors/bin/Release/bnetserver.exe": "3083fd55ca347c0bbe9bed9c71f25e744f83e599c63d38dcf337761dfc233479",
+    "build-extractors/src/server/scripts/Release/scripts.lib": "0dbf0ce73ae765f8cd323b608ddbfc16620f6f1786617e833fc97110c692c429",
+    "build-extractors/src/server/game/Release/game.lib": "c5969b17a734b9db938971321fe48d45cef27cf4d091499f68c69d44c9443cc7"
+  }
+}
