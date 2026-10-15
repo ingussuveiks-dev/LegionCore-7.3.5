@@ -1,0 +1,45 @@
+{
+  "request": "Ignore generated Python caches, commit and push; inspect/fix still-active DBErrors.log problems; tests may run the server temporarily, but both worldserver and bnetserver must remain stopped afterwards.",
+  "python_cache": "Commit 5b457841 adds __pycache__/, *.pyc and *.pyo to .gitignore. git check-ignore confirms both reported research bytecode files are excluded. Source Python files remain tracked; no cache deletion or runtime/credential commit is needed.",
+  "historical_log": {
+    "bytes": 5309,
+    "sha256": "CF57E069B726A6221FEC2E49775A9BE4127F445426599FB1E9169C020121D5AD",
+    "last_entry": "2026-10-15 14:21:21 +0300",
+    "archive": "build-extractors/bin/Release/logs/archive/DBErrors-2026-10-15-before-go-flag-fix.log",
+    "preservation": "Moved the entire stopped-server log to the archive and verified its hash. Created a fresh current DBErrors.log for the startup check. Historical errors are retained rather than erased or suppressed."
+  },
+  "findings": [
+    {
+      "error": "Entry 251879, source 1, event 1, Unhandled Action type 106",
+      "status": "Actual unresolved runtime dispatcher gap, repaired in this change.",
+      "cause": "SmartAIMgr admits GO flag actions SET 104, ADD 105 and REMOVE 106, but SmartScript::ProcessAction had no cases for them. The manifest's existing action 106/flag16 was valid SQL yet could not clear GO_FLAG_NOT_SELECTABLE. Two other live rows on Metal Stake 193025 use action104; those use the same missing family. No live action105 rows were found.",
+      "repair": "Implement all three related operations on each selected GameObject's GAMEOBJECT_FIELD_FLAGS. SET replaces, ADD sets bits, REMOVE clears bits. Skip non-GO targets, release selector lists and preserve native LINK continuation. Keep the data rows and existing error logging for genuinely unknown actions."
+    },
+    {
+      "error": "Entry 110556, event8, invalid action type0",
+      "status": "Already repaired by migration2026_10_15_24_ritual_ruination.sql.",
+      "evidence": "Live entry110556 has no event8/action0 and its death action has link0. Test-RitualRuinationData passes migration replay and scoped preservation checks. No additional deletion or SQL repair is applied."
+    },
+    {
+      "error": "Eleven Commander's Valor EventObjects reject event90 for source13",
+      "status": "Already repaired by migration2026_10_15_31_commanders_valor_exit.sql.",
+      "evidence": "All eleven live exit rows use native OFFTRIGGER91 with aura removal219567. Test-CommandersValor -VerifyReleaseBinary checks native enum/admission/dispatch, migration replay, altar/quest/phase boundaries and the compiled implementation. No event90 rows remain for those exits."
+    }
+  ],
+  "regression_evidence": [
+    "Test-SmartGameObjectFlags -BaselineRevision5b457841 compiles the baseline dispatcher selection plus native LINK tail and fails with Unhandled GO flag action. The actual requested operation is attempted, not just loader admission.",
+    "Fixed native test compiles the production handler cases, native action constants and actual LINK tail. It checks manifest flag16 removal while preserving other flags/fields, replace/add/remove, repeated/high/zero masks, mixed/multiple/empty/null targets, selector lifetime and LINK continuation including empty selection. The fixture models object field setters and selection; it is not an in-client click test.",
+    "Test-ScepterScenario now executes the native GO flag test before its SQL/actor replay. Existing Horde/Alliance ten-step route replay and native null-invoker conditions pass. The prior Python model's false assumption about available flag handlers is recorded in the Scepter audit.",
+    "Canonical Release worldserver rebuilt from actual game.lib into build-extractors/bin/Release. Test-SmartGameObjectFlags -VerifyReleaseBinary confirms the new dispatcher marker.",
+    "Test-WorldShutdown -ProbeConnections passes ready, both TCP port greetings and normal exit0 with no new crash dump. The fresh DBErrors.log remains empty. Final process enumeration confirms both worldserver and bnetserver stopped."
+  ],
+  "deployment": {
+    "worldserver_sha256": "B083041E90357C153939C7398D9C77EC78B85E2DFD6C5D481D38A797FAF445F1",
+    "database_changes": false,
+    "new_current_log_bytes": 0,
+    "protected_runtime_files": "All nine configuration/certificate/DLL/bnetserver hashes are verified unchanged. The existing logs directory and extracted data are retained."
+  },
+  "client_verified": false,
+  "pending_client_checks": "Scepter manifest should become visible/selectable after Armond's death, and only an actual click should start its reading/next stage. Metal Stake104 behavior is native-handler tested, not client played. Empty startup logs alone cannot verify actions requiring a quest interaction.",
+  "final_runtime_requirement": "Leave both worldserver and bnetserver stopped. Do not start a persistent final worldserver after the temporary ready/connection/shutdown verification."
+}

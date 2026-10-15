@@ -849,6 +849,33 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             delete targets;
             break;
         }
+        case SMART_ACTION_SET_GO_FLAG:
+        case SMART_ACTION_ADD_GO_FLAG:
+        case SMART_ACTION_REMOVE_GO_FLAG:
+        {
+            ObjectList* targets = GetTargets(e, unit);
+            if (!targets)
+                break;
+
+            for (WorldObject* target : *targets)
+            {
+                if (GameObject* object = target->ToGameObject())
+                {
+                    if (e.GetActionType() == SMART_ACTION_SET_GO_FLAG)
+                        object->SetUInt32Value(GAMEOBJECT_FIELD_FLAGS, e.action.goFlag.flag);
+                    else if (e.GetActionType() == SMART_ACTION_ADD_GO_FLAG)
+                        object->SetFlag(GAMEOBJECT_FIELD_FLAGS, e.action.goFlag.flag);
+                    else
+                        object->RemoveFlag(GAMEOBJECT_FIELD_FLAGS, e.action.goFlag.flag);
+
+                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction: gameobject flags action %u, entry %u, mask %u",
+                        e.GetActionType(), object->GetEntry(), e.action.goFlag.flag);
+                }
+            }
+
+            delete targets;
+            break;
+        }
         case SMART_ACTION_SET_UNIT_FLAG:
         {
             ObjectList* targets = GetTargets(e, unit);

@@ -213,5 +213,6 @@
       "repair_and_validation": "See scepter-login-2026-10-15.json. Restore the quest-gated selector before map creation, admit the actual live1155 scenario, retain live progress/position, and replay a fresh instance from the native entry destination. Exact-stage persistence across server restart is not implemented.",
       "client_status": "The first recovery retest failed: the client loaded map1630 then transferred to Orgrimmar. The delivered executable had linked the older game.lib despite a successful redirected-output build. See the retained failure evidence and corrected final-link/binary regression in scepter-login-2026-10-15.json. Login after corrected deployment, live-instance relog, fresh-instance replay and actual gameplay/visuals remain pending."
     }
-  ]
+  ],
+  "go_flag_dispatch_followup_2026_10_15": "DBErrors.log review found that action 106 on manifest 251879 was still unhandled by native SmartScript::ProcessAction. The earlier Python replay modeled removal of flag 16 and therefore did not establish an executable manifest unlock. See dberrors-review-2026-10-15.json: native 104/105/106 handlers and extracted-production regression now implement and test the operation. Test-ScepterScenario invokes that native test before the modeled route. Actual manifest visibility/click and subsequent progression remain client checks."
 }

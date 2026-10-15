@@ -1,5 +1,6 @@
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+& "$PSScriptRoot/Test-SmartGameObjectFlags.ps1"
 $output="$repo/build-extractors/runtime-test/scepter-scenario"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_14_10_scepter_scenario_sequence.sql" -Raw
