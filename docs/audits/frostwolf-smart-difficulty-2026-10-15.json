@@ -1,0 +1,19 @@
+{
+  "entry": 14285,
+  "name": "Frostwolf Battleguard",
+  "observed": "DBErrors.log 2026-10-14 16:53:17 and 16:53:38 repeatedly reports events present but none loaded because of instance flags.",
+  "cause": "All four SmartAI events had Difficulties='1,3'. Nine installed spawns are on Eastern Kingdoms map 0, whose ordinary difficulty is 0. Native SmartScript::FillScript rejects every event. The old event_flags values 2/3 also contain a deprecated difficulty bit: clearing only Difficulties would instead make SmartAIMgr reject the rows.",
+  "repair": "Migration 2026_10_15_22 removes the difficulty filter and deprecated difficulty bits for entry 14285/source 0. Nonrepeatable bits, spells, targets and timings are retained. Error logging and runtime filtering are unchanged.",
+  "native_data": {
+    "Difficulty_db2_sha256": "173dbf790a6ea55afa02bd639214c8795003623159f6f8f993abccad43f9f2bc",
+    "difficulty_1_instance_type": 1,
+    "difficulty_3_instance_type": 2,
+    "scope": "IDs 1 and 3 are dungeon/raid difficulties, not a valid restriction for the installed outdoor spawns."
+  },
+  "tests": {
+    "Test-FrostwolfSmartDifficulty.ps1": "PASS: connection-local SQL fixture reconstructs old rows, applies repair twice, preserves actions/timings and unrelated entry. Compiles extracted production FillScript and deprecated-flags validation: old difficulty-0 input reproduces the exact error; repaired rows load all four events on difficulty 0/1/3; unrelated restricted events and invalid deprecated flags remain rejected.",
+    "live_database": "Applied with private backup. Four rows verified: Difficulties empty; flags 0,1,1,1."
+  },
+  "runtime": "Data-only repair; no C++ production changes or replacement executable required. Shared final startup validation is recorded in lesser-valkyr-models-2026-10-15.json.",
+  "limits": "Native handler tests verify event admission, not the full combat rotation in the client. Existing nonrepeatable behaviour is preserved. Historical DBErrors.log entries were not deleted."
+}

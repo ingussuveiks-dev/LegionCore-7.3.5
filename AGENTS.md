@@ -44,6 +44,8 @@
 
 # Scripted quest and visual regressions
 
+- SmartAI difficulty failures require checking the `Difficulties` column and deprecated event flag bits together. Frostwolf Battleguard 14285 had only dungeon/raid 1,3 filters on outdoor difficulty 0; clearing the column without removing bits 0x1E makes the loader reject the events instead. Preserve nonrepeatable flags and run `tools/tests/Test-FrostwolfSmartDifficulty.ps1` against extracted production admission logic.
+
 - The New Blood (40729, scenario 962) exposed a gap between checking SQL rows and checking an executable interaction. For each stage verify initial spawn/pose, client-visible interaction flags, cast target validation, action completion, credit exactly once, cleanup, and the next stage. Include abandonment/retry, re-entry, pet killing blows, both factions, and later scenarios reusing the same NPC entries.
 - Source-18 spellclick conditions can hide a client's NPC flag. A guard death or scenario-step change does not automatically dirty that field. Verify its actual update and then the spell's explicit target checks; protected friendly NPCs can still reject assistance. Run `tools/tests/Test-NewBloodPrisoners.ps1` for the prisoner lifecycle and target regression.
 - Trace a visual through native SpellEffect/SpellXSpellVisual, visual kits, attachment points, model and animation data. A matching spell name is not visual evidence: 199994 uses Lightning_Fel_Cast_Hand, while portal model 607277's fire is in CustomSpell02/AnimKit 1244. Preserve the portal's 13-second Birth animation; do not replace it with a fully assembled falling summon.
