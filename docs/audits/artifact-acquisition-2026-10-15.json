@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-15",
+  "status": "Eight chest repairs installed in canonical Release; automated checks passed; client pickup/scene checks pending",
+  "problem": "Eight chest templates had existing100-percent artifact loot but Data1=0. Their native equip spells do not create an item; several gossip actions could also award scene/credit before real loot. A unique weapon bought from the shop makes a second copy unlootable without an owned-item completion path.",
+  "objects": {"249812":128861,"248572":128868,"246699":128403,"249814":127857,"251049":128862,"246021":128942,"249821":128943,"246437":128858},
+  "repair": [
+    "Link only these existing SmartGameObjectAI chest loot templates and attach a scoped acquisition handler. Preserve lock, quest/personal loot settings, visuals and native completed-loot chains. Remove only three identified early gossip credit casts.",
+    "Without the item, use actual native loot; incomplete loot/full bags do not dispatch completion. With an existing inventory/bank weapon, a valid class/quest/visible nearby chest click dispatches the same native GO_JUST_DEACTIVATED event once, without another item grant.",
+    "After the owned-item callback, emit the native StoreNewItem OWN_ITEM(item,1) criterion event that a newly looted weapon would have emitted. Ulthalesh's final native step uses OWN_ITEM128942; merely replaying its scene would leave a previously bought weapon's scenario unfinished.",
+    "Keep class, active/nonrewarded quest, object flags/spawn, teleport/death, map, phase, visibility, line of sight and distance guards because ScriptMgr gossip runs before native GameObject::Use admission. Existing custom artifact handlers and Scepter252054 are preserved."
+  ],
+  "automated": [
+    "Test-ArtifactAcquisition.ps1 compiles the production handler and actual SetLootState/SmartGameObjectAI callback bridge; ordinary/owned/bank copies, native full-loot predicate, repeat click, alternate quests, class/quest/visibility/location/flag failure gates, unrelated Scepter and ownership event are checked.",
+    "Test-ArtifactAcquisitionData.ps1 applies SQL twice to temporary real-schema tables. All8 native GetLootId selectors return the matching existing loot entry/item; lock/quest/personal settings, state70 roots and LINK destinations survive, and unrelated/custom handlers are preserved."
+  ],
+  "deployment": {
+    "worldserver_sha256": "282C4C6B30B25829F6BA52D42CEEBE6EE72C0E9A6FA1363D39F9A8C6FAB6A94B",
+    "migration_sha1": "759BB3AC270B45DF5028EEB7BE7A45D918E1597B",
+    "evidence": "New acquisition, Ulthalesh, Ritual, movie and global-resume implementation markers verified in canonical binary. Installed table snapshot shows8 linked/registered chests and valid native completion roots. Startup/connection/shutdown smoke passed; final server ready13:17:17 Europe/Riga, no new DBErrors after offset249. Nine protected runtime file hashes unchanged; private executable/affected-world-table backups retained."
+  },
+  "limits": "The tests use fixture inventory/visibility/AI services; real loot windows, full bags/retry, bank ownership, shop copies, scenes, pet/camera behavior and final quest handoff require client verification. All36 artifact routes are structurally audited separately; these8 repairs do not certify all36 end to end."
+}
