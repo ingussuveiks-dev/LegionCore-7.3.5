@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-15",
+  "quest": 43254,
+  "name": "Ritual Ruination",
+  "map": 1220,
+  "zone": 7543,
+  "status": "Native data, extracted production handlers and SQL replay checked; verified Release repair installed; server ready; client retest pending",
+  "context": "The affected character finished/rewarded An Eye for a Scepter43153 and accepted43254. The previous corrected Scepter executable logged its fresh-instance restoration at10:59:35; the user subsequently reached Stage6 and the character database now records43153 rewarded. This is evidence of reaching the next quest, not verification of every previous visual or interaction.",
+  "observed_failures": [
+    "After the Fel Bat transfer, the user reported running in place, a pet that did not follow, and an apparently empty ritual area. The NPCs eventually appeared; do not retain the earlier assumption that the initial Gul'dan spawn was permanently absent.",
+    "The later screenshot shows Gul'dan present but Can't do that while moving when summoning the missing pet. User's live Lua result while standing: speed0, vehiclefalse, petfalse.",
+    "Read-only character data retained the five-minute219917 controller aura after the direct transfer. Quest43254 had only entry objective110523 credited. Database locations/auras are saved snapshots, not a replacement for live movement inspection. The client/server movement disagreement is observed; the repair's actual camera/pet behavior still requires a retest."
+  ],
+  "sources": {
+    "native": "ritual-ruination-native-2026-10-15.json",
+    "walkthrough": "https://www.wowhead.com/quest=43254/ritual-ruination",
+    "secondary_description": "https://warcraft.wiki.gg/wiki/Ritual_Ruination",
+    "scope": "Use original Legion objectives/walkthrough order, not modern Remix rewards. Runtime DB2, SQL and server code determine actual routing. No third-party implementation copied."
+  },
+  "sequence": [
+    {"step": 1, "objective": 110523, "action": "Click Fel Bat110479 at Krasus' Landing, arrive near -666.047,2613.08,81.0715 on Broken Shore. Credit only after real destination/teleport completion. The existing direct transfer is retained; a retail bat flight route is not reconstructed."},
+    {"step": 2, "objective": 110581, "action": "Use Gul'dan110533's native gossip110533. Preserve native timed dialogue and Allaris110556's response; the existing final dialogue callback grants listening credit and changes Allaris to hostile. Added active-quest gossip admission."},
+    {"step": 3, "objective": 110556, "action": "Defeat Allaris; standard creature-kill credit advances the native objective. Stop respawning the introduction Gul'dan on death. Supply the post-duel Image of Gul'dan110548 personally from actual quest progress, retaining native text117590/117591."},
+    {"step": 4, "objective": 110603, "action": "Open Scepter chest252054 and actually loot artifact128941. Repair Data1=252054, preserve existing loot/lock1691 and native219839 scene1365/credit. Its effect249 is ForceEquipItem, not an item grant; casting the scene before real loot could award credit without giving the artifact. Full bags must leave this step retryable."},
+    {"step": 5, "objective": 110606, "action": "Use Legion Altar252046 only after all earlier objectives and with the artifact. Preserve native219920 ten-second periodic trigger219923, scene/effects and event53053. Guard both initial cast and completion, including interrupted or stale completion."},
+    {"step": 6, "objective": 110607, "action": "After sabotage, recover a personal110800 return portal on known supported ground beside the route. Native220374 handles the actual Dalaran transfer. Suppress only this quest's early credit and confirm arrival before awarding escape. Supply personal native quest ender101097 at the existing Dalaran destination so turn-in is executable."}
+  ],
+  "implementation": [
+    "Replace Fel Bat's old immediate-credit/teleport SAI pair with a scoped219917 spell handler. Suppress its unused native controller/trigger before the existing direct transfer and use TELE_TO_ZONE_MAP: this is a same-map zone crossing and needs the normal pet/map transfer lifecycle.",
+    "For already affected participants near the ritual, remove only the stale219917 aura, stop its residual movement, clear moving/turning flags, restore self control and ask the native temporary-pet loader to resummon. Preserve other root/gravity auras and unrelated vehicles/transport/flight. Do not force-create a pet that was independently dismissed.",
+    "Gate artifact pickup, ritual start/completion and escape by the real six objective counters, class, active/reward status, location and inventory. All credited events remain native quest objectives; no artificial scenario ID or stage UI is invented for this phased outdoor sequence.",
+    "Retire phase7027 after the duel and phase7028 after sabotage; retain native7029 boundaries. Personal post-duel image/portal phases follow the owner after the delayed objective phase refresh. Bind helpers to the player's quest scope; logout/map change and ordinary quest cleanup release them. Failed/missing summons retry from actual quest progress.",
+    "Return portal creation is independent of optional conversation2966. The shared220374 route from scenario1155 remains unchanged. Character quest counters, inventory, rewards and position are not reset by deployment."
+  ],
+  "automated_checks": {
+    "Test-RitualRuination.ps1": "PASS: extracted production six-step gates, native Unit::isMoving predicate, stale-controller cleanup with independent root preserved, pet reload/dismissal scope, real landing/zone transfer, failed/missing ACK timeout, abandonment, every missing prerequisite, item ownership, personal helper retry/capping and destination-confirmed escape/ender recovery.",
+    "Test-RitualRuinationData.ps1": "PASS: migration twice in temporary shadow tables, actual artifact loot link, five spell bindings, introduction admission, native phase boundaries, removal of old duel reset, valid LINK destinations, and unrelated chest/previous scenario preservation. Counts returned as JSON strings are normalized numerically.",
+    "audit_ritual_ruination.py": "PASS against installed native26972 DB2:219917 controller/219877 summon routing, five-minute duration,249 equip rather than create-item behavior, nine-second pickup scene aura, ten-second ritual trigger/credit, native escape teleport and lock1691. Export includes source hashes.",
+    "Test-WarlockRegression.ps1": "PASS: Burning Rush cancellation/toggle and extracted scripted-mover handoff validation.",
+    "Test-PetLoadSelection.ps1": "PASS: native pet-number/slot selection.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary": "PASS: previous login lifecycle and implementation present in canonical executable.",
+    "Release": "PASS: built dependencies in their actual generated-project locations, then linked worldserver directly to canonical build-extractors/bin/Release; the unique Ritual recovery implementation is present in the delivered executable. No global OutDir override."
+  },
+  "test_limits": "The production helper test uses fixture managers/inventory/map/teleport services. It does not execute the full login, SmartAI dialogue scheduler, every spell effect, real combat, client loot UI, collision streaming or pet rendering. SQL replay verifies admission/links and repeatability; it is not a full client playthrough.",
+  "pending_client": [
+    "Immediately after loading, stationary pet summoning succeeds; the permanent pet follows, and its action bar/portrait, camera, client mover and speed agree after travel and return.",
+    "Speak to Gul'dan, observe native dialogue/portal movement and actual hostile Allaris combat, including pet killing blow and a fast kill. Existing combat spell loadout/tuning and exact retail infernal behavior are not certified by these tests.",
+    "Actual artifact loot window, full bags then retry, scene1365 playback and subsequent altar channel. Native scene/event/visual presence is not playback evidence.",
+    "Interrupted altar channel, abandonment/reacceptance, death, disconnect/relog, overlapping participants and a failed/missing personal helper. Shared original introduction dialogue is retained; multiplayer timing requires client checks.",
+    "Native sabotage visuals, personal portal discovery/use, actual Dalaran arrival and Calydus turn-in/next quest. First portal placement uses an existing supported prop coordinate, not a claimed retail sniff."
+  ],
+  "deployment": {
+    "migration": "2026_10_15_24_ritual_ruination.sql",
+    "migration_sha1": "404BAC9BC5B3807143652B80AFD575FEB9EC2685",
+    "worldserver_sha256": "FA93CB3083CAD6C3EF74B000B09013D42E6505D4C202A6E7E123688841F819C0",
+    "preservation": "Graceful console-break shutdown, private executable/log/affected-world-row backup, transactional migration registration and9 protected runtime file hashes retained. No character SQL reset.",
+    "smoke": "Test-WorldShutdown.ps1 -ProbeConnections PASS: ready, both TCP listener greetings, graceful exit0 and no new crash dumps. Startup exposed invalid SAI action0 used as an attempted no-op; replaced it by deleting the obsolete row and unlinking its predecessor before final startup.",
+    "retained_unrelated_log": "An older11:07:17 error for scenario1155 manifest251879 action106 exists in DBErrors.log. It was not suppressed or treated as a Ritual failure; full logs retained. Final-start errors are assessed from a recorded byte offset.",
+    "final_startup": "Canonical worldserver ready at2026-10-15 11:44:16 Europe/Riga; bnetserver retained. No new DBErrors.log records after the saved final-start offset. Client movement, pet and full six-step traversal still pending."
+  }
+}

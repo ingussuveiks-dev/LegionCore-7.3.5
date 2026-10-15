@@ -9,6 +9,7 @@ void AddSC_broken_shore();
 void AddSC_highmountain();
 void AddSC_stormheim();
 void AddSC_stormheim_intro();
+void AddSC_ritual_ruination();
 void AddSC_stormheim_rounds();
 void AddSC_stormheim_departure();
 void AddSC_stormheim_fleet();
@@ -242,6 +243,7 @@ void AddLegionScripts()
     AddSC_highmountain();
     AddSC_stormheim();
     AddSC_stormheim_intro();
+    AddSC_ritual_ruination();
     AddSC_stormheim_rounds();
     AddSC_stormheim_departure();
     AddSC_stormheim_fleet();
