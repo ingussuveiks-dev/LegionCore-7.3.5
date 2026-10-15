@@ -211,7 +211,7 @@
       "gap_in_previous_checks": "The SQL interaction replay exercised portal entry and progression, but not Player::LoadFromDB, InstanceMap::AddPlayerToMap, Scenario constructor selector consumption and the final CheckInstanceLoginValid admission check.",
       "cause": "Map1630 remained excluded by the scenario login guard, and its transient1155 selector was not restored during login. The exact original saved map/instance was not captured before the fallback; the guard failure is reproduced through extracted production code.",
       "repair_and_validation": "See scepter-login-2026-10-15.json. Restore the quest-gated selector before map creation, admit the actual live1155 scenario, retain live progress/position, and replay a fresh instance from the native entry destination. Exact-stage persistence across server restart is not implemented.",
-      "client_status": "Login after recovery, live-instance relog, fresh-instance replay and the actual ten gameplay stages still require client confirmation. Prior unverified gameplay and visual checks remain pending."
+      "client_status": "The first recovery retest failed: the client loaded map1630 then transferred to Orgrimmar. The delivered executable had linked the older game.lib despite a successful redirected-output build. See the retained failure evidence and corrected final-link/binary regression in scepter-login-2026-10-15.json. Login after corrected deployment, live-instance relog, fresh-instance replay and actual gameplay/visuals remain pending."
     }
   ]
 }

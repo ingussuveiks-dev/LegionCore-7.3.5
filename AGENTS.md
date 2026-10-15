@@ -4,6 +4,7 @@
 - Temporary and validation builds may use other build directories, but completed Release builds must be built or copied to `build-extractors/bin/Release` before handoff.
 - Preserve the runtime configuration files, certificates, DLLs, logs directory, and extracted data directories in `build-extractors/bin/Release`.
 - Do not treat `compiles` as the final server launch directory.
+- A global MSBuild `OutDir` override can write new static libraries elsewhere while CMake's generated final-link dependencies still name the original `src/server/*/Release/*.lib` paths. Check the actual final-link inputs and verify the implementation in the deployed executable. A successful build, matching copy hash and startup alone missed the stale Scepter login code on 2026-10-15; run `Test-ScepterLogin.ps1 -VerifyReleaseBinary` for that path.
 
 # Commit and push convention
 

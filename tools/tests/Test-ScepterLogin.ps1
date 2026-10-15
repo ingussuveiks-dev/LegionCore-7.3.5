@@ -1,3 +1,4 @@
+param([switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/scepter-login"
@@ -26,3 +27,12 @@ $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nolo
 [IO.File]::WriteAllText("$output/run.cmd",$cmd)
 & "$output/run.cmd"
 if($LASTEXITCODE){throw 'Scepter login regression failed'}
+if($VerifyReleaseBinary){
+    $binary="$repo/build-extractors/bin/Release/worldserver.exe"
+    $bytes=[IO.File]::ReadAllBytes($binary)
+    $ascii=[Text.Encoding]::ASCII.GetString($bytes)
+    if(!$ascii.Contains('An Eye for a Scepter: restoring player %u at the entrance in a fresh scenario instance')){
+        throw 'Canonical Release executable does not contain the compiled Scepter login recovery; check the libraries used by the final link'
+    }
+    "PASS: canonical Release executable contains the production Scepter login recovery"
+}

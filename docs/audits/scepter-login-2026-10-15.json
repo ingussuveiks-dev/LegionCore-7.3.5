@@ -3,7 +3,7 @@
   "quest": 43153,
   "scenario": 1155,
   "map": 1630,
-  "status": "Automated login/sequence regressions and Release build passed; installed in canonical runtime; offline character recovered; server ready; client retest pending",
+  "status": "Client retest exposed stale libraries in the delivered executable; corrected final link installed and binary/startup checks passed; new client retest pending",
   "reported_failure": "After the previous day's Stage 1 to 2 repair, the player logged in the next day and appeared in Orgrimmar instead of continuing the scenario.",
   "evidence": [
     "Read-only character inspection confirmed the affected character has active incomplete quest43153 and its entry objective remains credited; its saved location is now map1. No pre-login map1630 position or live instance ID was captured, so the exact original login is not reconstructed from logs.",
@@ -32,6 +32,7 @@
     "Complete the ten actual interactions, including Tyranis/hook, manifest click, pet killing blows, Hold teleport, boss activation and return/hand-in. Check visuals independently, plus both factions and abandon/retry."
   ],
   "deployment": {
+    "superseded": "Client retest on2026-10-15 disproved this handoff: executable started successfully but lacked the compiled Scepter recovery. Retained below as failed deployment evidence; see client_followup.",
     "build": "cmake --build build-extractors --config Release --target worldserver -- /m:2 /p:OutDir=<isolated validation directory> /verbosity:minimal /nologo; exit0. Existing unrelated compiler warnings retained.",
     "canonical_runtime": "build-extractors/bin/Release",
     "worldserver_sha256": "5946834E4CC3B45C89FDC35D721A3A3848C8561C797BDEE199FABA7A15E96C88",
@@ -40,5 +41,21 @@
     "smoke_test": "Test-WorldShutdown.ps1 -ProbeConnections PASS on deployed executable: ready, six TCP greetings, graceful exit0, no new crash dumps. Deliberately closed probe sockets generate six expected local initialization disconnect messages, not gameplay failures.",
     "final_startup": "Canonical worldserver and bnetserver running; worldserver ready at2026-10-15 10:46:42 Europe/Riga. DBErrors.log empty. This is startup evidence, not an authenticated client login.",
     "client_verification": "Pending; no WoW client gameplay or authenticated login performed."
+  },
+  "client_followup": {
+    "date": "2026-10-15",
+    "observations": [
+      "The first login failed with World server is down. Both server processes/listeners remained healthy. The socket received zero initializer bytes, hit its10-second deadline and the session aborted after five attempts. This occurred before character/scenario loading.",
+      "After restarting the client, login succeeded at10:53:03, but the user reported Orgrimmar again. Client.log confirms the exact map1630 -> map1 transition immediately after self creation. Database map1630 alone was stale and did not prove the live location.",
+      "The standalone build's game.lib contained the new recovery message, but the delivered worldserver.exe did not. Generated worldserver.vcxproj uses an explicit relative src/server/game/Release/game.lib dependency; globally overriding OutDir wrote the new library elsewhere without updating that final-link dependency. The linker silently used the older library.",
+      "The original startup/port smoke check therefore proved availability only. It did not prove that the executable included the implementation. This deployment mistake is separate from the intermittent socket initialization failure."
+    ],
+    "correction": "Restore the newly compiled game.lib to the exact generated-project dependency location, update its build timestamp and relink worldserver with BuildProjectReferences=false into the validation output directory. Verify the unique production recovery message in the final executable before copying it to canonical Release.",
+    "binary_regression": "Test-ScepterLogin.ps1 -VerifyReleaseBinary adds a check against the actual canonical executable. Confirmed that it rejects the old delivered executable even while extracted source tests pass. After deployment, both the extracted lifecycle test and the canonical binary check PASS. The marker detects this stale-link regression; it is not a replacement for gameplay verification.",
+    "network_checks": "Test-InstanceConnectRetry.ps1 and native Test-HandshakeDeadline.ps1 PASS.24 real parallel/sequential connections to both running listeners received the exact server initializer and auth challenge, max32ms. These checks and a later successful authenticated login do not establish the original cause of the silent client handshake.",
+    "corrected_worldserver_sha256": "C42089EEFD590715EB6B9758365754C71EBD62F8250CDB2AA7674A41DC5A7025",
+    "corrected_deployment": "Stopped worldserver with a graceful console break; backed up the failed executable, logs and current character/quest rows privately. Copied the verified executable/PDB into canonical Release, preserving the same9 config/DLL/certificate/bnetserver files. A guarded transaction moved exactly1 offline character from its newly observed map1 position1352.49,-4396.55,29.1288 back to the native218595 destination; quest status/objectives0,0,1 retained.",
+    "corrected_startup": "On the corrected canonical executable, Test-WorldShutdown.ps1 -ProbeConnections PASS: ready, greetings, graceful exit0 and no new dumps. Final worldserver ready at2026-10-15 10:58:17 Europe/Riga; bnetserver retained; DBErrors.log empty. Runtime executable SHA256 matches the corrected link artifact.",
+    "client_status": "Login retention and Stage1 to2 still pending after corrected binary deployment; no whole-quest or visual verification claimed."
   }
 }
