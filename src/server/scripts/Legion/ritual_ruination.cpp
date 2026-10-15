@@ -86,10 +86,21 @@ bool CanRuin(Player* p)
 }
 Creature* Owned(Player* p,uint32 entry)
 {
-    for (ObjectGuid const& guid:*p->GetSummonList(entry))
-        if (Creature* c=ObjectAccessor::GetCreature(*p,guid))
-            if (c->IsAlive()) return c;
-    return nullptr;
+    // Direct WorldObject summons have no SummonProperties. InitStats returns
+    // before inserting them into Unit::tempSummonList, so that list cannot
+    // prove absence. Inspect real, quest-bound actors and their summoner.
+    std::list<Creature*> actors;
+    p->GetCreatureListWithEntryInGrid(actors,entry,300.0f);
+    Creature* found=nullptr;
+    for (Creature* c:actors)
+        if (TempSummon* summon=c->ToTempSummon())
+            if (c->IsAlive() && !c->IsQuestObjectExpired() && c->HasQuestObjectScope() &&
+                summon->GetSummonerGUID()==p->GetGUID())
+            {
+                if (!found) found=c;
+                else c->DespawnOrUnsummon(); // Repair duplicates from an interrupted attempt, scoped to this owner.
+            }
+    return found;
 }
 Creature* Personal(Player* p,uint32 entry,Position const& pos)
 {
@@ -97,6 +108,7 @@ Creature* Personal(Player* p,uint32 entry,Position const& pos)
     if (Creature* c=p->SummonCreature(entry,pos,TEMPSUMMON_MANUAL_DESPAWN,0,0,p->GetGUID()))
     {
         p->BindQuestObject(QuestId,c);
+        TC_LOG_INFO("entities.player","Ritual Ruination: created quest-bound actor %u for player %u",entry,p->GetGUIDLow());
         return c;
     }
     return nullptr;

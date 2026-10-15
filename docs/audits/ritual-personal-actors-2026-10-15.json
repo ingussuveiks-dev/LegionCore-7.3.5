@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-15",
+  "quest": 43254,
+  "status": "Canonical Release installed and automated checks passed; client retest pending",
+  "observed": "After defeating Allaris, the user showed many overlapping Image of Gul'dan dialogue bubbles and rapidly repeated chat. The quest tracker had advanced to Take the Scepter of Sargeras. This is evidence of duel completion and a post-duel recovery failure, not a verified artifact pickup.",
+  "cause": [
+    "RitualRuination::Recover runs on every player update. Owned incorrectly relied on Unit::GetSummonList to find actors made with WorldObject::SummonCreature.",
+    "This direct summon overload passes null SummonProperties. TempSummon::InitStats returns on null properties before the owner tempSummonList insertion. The actor still has its summoner GUID and enters the map; InitSummon runs its dialogue.",
+    "Every recovery update therefore created another image and repeated its IsSummonedBy dialogue. The same helper also affected the return portal and Dalaran quest ender.",
+    "The earlier fixture inserted every direct summon into the owner list, masking the production contract. That assumption is removed."
+  ],
+  "repair": [
+    "Search actual nearby creatures and require a living TempSummon, matching summoner GUID, active quest scope and nonexpired lifetime. The 300-yard search covers the full admitted ritual radius plus the existing helper coordinates.",
+    "Reuse the first valid owned actor and despawn additional valid copies for that owner. Do not remove another participant's actors, DB/static creatures, unbound summons or actors from an expired attempt.",
+    "Keep recovery after actor loss and failed summoning. Do not globally change TempSummon ownership, reset objectives, award pickup credit or skip the remaining quest.",
+    "Graceful restart removes already accumulated transient duplicates. Other unfinished artifact migrations/script registrations are withheld from this focused deployment."
+  ],
+  "automated": [
+    "Test-RitualRuination.ps1 compiles the production recovery namespace with a direct-summon fixture whose registry remains empty. 10000 updates each for image110548, portal110800 and Calydus101097 create one bound actor; actor loss/retry and duplicate pruning are checked.",
+    "DirectSummonRegistryTest.cpp executes the native InitStats prefix and its real registry insertion boundary with null properties. Property-specific slot/faction branches after the early return are deliberately omitted; this is a contract regression, not full TempSummon emulation.",
+    "Existing six-stage gates, arrival/escape credit boundaries, stale flight cleanup, failed summons, visibility ownership and item requirements remain tested. Shared/static/unbound/expired actors are excluded from reuse and pruning."
+  ],
+  "retained_client_evidence": "Before this duplicate repair, user confirmed the unrelated King's Path movie no longer repeats at the ritual and the pet follows. Movie playback movement for a legitimately started movie is still a separate pending client check.",
+  "deployment": {
+    "worldserver_sha256": "4BE7AB510D874EF301EDEEF51EE84473DB6C7A83E1AEA9E758E01308C1001378",
+    "release": "Compiled/linked canonical build-extractors/bin/Release/worldserver.exe. New actor-recovery marker and previous flight/movie markers verified in the executable.",
+    "checks": "Test-RitualRuination.ps1 -VerifyReleaseBinary, Test-RitualRuinationData.ps1 and Test-MovieMovement.ps1 -VerifyReleaseBinary PASS. Test-WorldShutdown.ps1 -ProbeConnections PASS: ready, both TCP listener greetings, exit0, no new crash dumps.",
+    "preservation": "Graceful shutdown and private executable backup; nine protected runtime configuration/certificate/DLL/bnetserver hashes unchanged. No SQL or character progress reset required."
+  },
+  "client_pending": [
+    "Relog at the post-duel stage: one Gul'dan image, one initial line and one delayed follow-up; no accumulating bubbles or slowdown while waiting/moving in the ritual area.",
+    "Loot the Scepter, perform sabotage, use one return portal and turn in to one Calydus. Check retry, relog, abandonment and overlapping participants without duplicate actors."
+  ]
+}

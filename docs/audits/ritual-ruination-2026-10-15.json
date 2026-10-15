@@ -5,7 +5,7 @@
   "map": 1220,
   "zone": 7543,
   "status": "Release repair installed; user confirmed login at ritual and stationary pet summoning. Remaining interactions and visuals require client retests.",
-  "client_confirmation": "2026-10-15 user: Esmu pie rituāla, pets izsaucas. This confirms ritual location after login and ability to summon the pet while stationary. It does not confirm pet following, portrait, camera or the full quest. Subsequent repeated-movie/running report is tracked in movie-movement-2026-10-15.json.",
+  "client_confirmation": "2026-10-15: user confirmed login at ritual and stationary pet summoning; after34c1c18f also confirmed the repeated-location movie is gone and pet follows. The later screenshot proves Allaris credit reached the pickup objective, but exposes rapidly duplicated Image of Gul'dan/dialogue. See ritual-personal-actors-2026-10-15.json. Pet portrait, camera, full quest and later interactions remain unverified.",
   "context": "The affected character finished/rewarded An Eye for a Scepter43153 and accepted43254. The previous corrected Scepter executable logged its fresh-instance restoration at10:59:35; the user subsequently reached Stage6 and the character database now records43153 rewarded. This is evidence of reaching the next quest, not verification of every previous visual or interaction.",
   "observed_failures": [
     "After the Fel Bat transfer, the user reported running in place, a pet that did not follow, and an apparently empty ritual area. The NPCs eventually appeared; do not retain the earlier assumption that the initial Gul'dan spawn was permanently absent.",

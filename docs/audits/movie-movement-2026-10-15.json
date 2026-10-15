@@ -1,6 +1,7 @@
 {
   "date": "2026-10-15",
-  "status": "Canonical Release installed, migration applied and startup/connection/shutdown smoke passed; client retest pending",
+  "status": "Canonical Release installed; user confirmed no repeated movie at ritual and pet follows. Legitimate movie movement playback still needs client verification.",
+  "client_confirmation": "User answered jā viss tagad ir tā kā jābūt to the repeated ritual location/no replay/pet follows check. This does not certify a separately and legitimately triggered movie's stop/resume behavior.",
   "observed": [
     "User reported continued forward running during a movie, distant position on skip/completion and repeated playback when revisiting the location during Ritual Ruination43254.",
     "Runtime log records Movie636 for Maiko at12:32:53,12:34:08 and12:34:19 with completion/skip acknowledgements."

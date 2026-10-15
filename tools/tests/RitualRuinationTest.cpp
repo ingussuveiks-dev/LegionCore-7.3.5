@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <list>
 #include <iostream>
 using uint32=uint32_t;
 constexpr int CLASS_WARLOCK=9,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1;
@@ -15,10 +16,20 @@ struct ObjectGuid{int id=0;bool operator==(ObjectGuid const& o)const{return id==
 ObjectGuid ObjectGuid::Empty;
 struct Position{float x,y,z,o;};
 struct Player;
-struct Creature{bool alive=true;int entry=0;ObjectGuid guid;bool IsAlive(){return alive;}void SetPhaseId(std::set<uint32> const&,bool){}};
+struct Creature;using TempSummon=Creature;
+struct Creature{
+ bool alive=true;int entry=0;ObjectGuid guid,owner;Position pos{};
+ bool bound=false,expired=false,temporary=true;
+ bool IsAlive(){return alive;}void SetPhaseId(std::set<uint32> const&,bool){}
+ TempSummon* ToTempSummon(){return temporary?this:nullptr;}
+ bool IsQuestObjectExpired(){return expired;}bool HasQuestObjectScope(){return bound;}
+ ObjectGuid GetSummonerGUID(){return owner;}void DespawnOrUnsummon(){alive=false;}
+};
 std::map<int,Creature> creatures;
+int nextCreature=1,nextOwner=1;
 struct ObjectAccessor{static Creature* GetCreature(Player&,ObjectGuid g){auto i=creatures.find(g.id);return i==creatures.end()?nullptr:&i->second;}};
 struct Player{
+ ObjectGuid guid{nextOwner++};
  int cls=9,status=3,map=1220,zone=7543;bool reward=false,world=true,alive=true,tele=false,vehicle=false,transport=false,flight=false;
  bool aura=true,pet=false,savedPet=true,allowTeleport=true,allowSummon=true;
  int item=0,control=0,stop=0,spline=0,resummon=0,phase=0,binds=0,next=1,teleOptions=0;
@@ -42,14 +53,16 @@ struct Player{
  void StopMoving(){++stop;}void DisableSpline(){++spline;}
  void RemoveUnitMovementFlag(int f){flags&=~f;}void SetClientControl(Player* p,bool allow){assert(p==this && allow);++control;}
  void ResummonPetTemporaryUnSummonedIfAny(){++resummon;if(savedPet)pet=true;}
- Phase GetPhaseMgr(){return {this};}int GetGUIDLow(){return 1;}ObjectGuid GetGUID(){return {1};}
+ Phase GetPhaseMgr(){return {this};}int GetGUIDLow(){return guid.id;}ObjectGuid GetGUID(){return guid;}
  void KilledMonsterCredit(int id,ObjectGuid){objectives[id]=1;}
  void AddQuestDelayedEvent(int q,int ms,std::function<void()> f){assert(q==43254 && ms==500);events.push_back(f);}
  bool TeleportTo(int m,Position const* p,int options){if(!allowTeleport)return false;map=m;pos=*p;teleOptions=options;tele=true;return true;}
  bool HasItemCount(int id,int amount){assert(id==128941 && amount==1);return item>=amount;}
  std::vector<ObjectGuid>* GetSummonList(int entry){return &summons[entry];}
- Creature* SummonCreature(int entry,Position const&,int type,int,int,ObjectGuid owner){assert(type==TEMPSUMMON_MANUAL_DESPAWN && owner==GetGUID());if(!allowSummon)return nullptr;int id=next++;creatures[id]={true,entry,{id}};summons[entry].push_back({id});return &creatures[id];}
- void BindQuestObject(int q,Creature*){assert(q==43254);++binds;}
+ Creature* SummonCreature(int entry,Position const& location,int type,int,int,ObjectGuid owner){assert(type==TEMPSUMMON_MANUAL_DESPAWN && owner==GetGUID());if(!allowSummon)return nullptr;int id=nextCreature++;creatures[id]={true,entry,{id},owner,location};return &creatures[id];}
+ // Match native property-less direct summons: no tempSummonList insertion.
+ void GetCreatureListWithEntryInGrid(std::list<Creature*>& out,uint32 entry,float radius){for(auto& pair:creatures)if(pair.second.entry==int(entry)&&GetExactDist(&pair.second.pos)<=radius)out.push_back(&pair.second);}
+ void BindQuestObject(int q,Creature* c){assert(q==43254);c->bound=true;++binds;}
  void Run(){auto current=std::move(events);events.clear();for(auto& f:current)f();}
 };
 #include "Ritual.inc"
@@ -80,5 +93,21 @@ int main(){
  returning.tele=false;returning.zone=7502;returning.pos=Dalaran;returning.Run();assert(Stage(&returning)==6 && Owned(&returning,101097));
  Player wrong;credits(wrong,5);wrong.pos.x+=1000;ConfirmEscape(&wrong,2);wrong.Run();wrong.Run();assert(Stage(&wrong)==5 && wrong.events.empty());
  Player other;other.status=0;Recover(&other);assert(!other.binds);other.status=3;other.reward=true;Recover(&other);assert(!other.binds);
+ // Repeated real player updates must not depend on native tempSummonList.
+ for(int n:{3,5,6}){
+  Player q;q.aura=false;credits(q,n);if(n==6){q.pos=Dalaran;q.zone=7502;}
+  uint32 entry=n==3?110548:n==5?110800:101097;
+  for(int i=0;i<10000;++i)Recover(&q);
+  assert(q.binds==1&&q.GetSummonList(entry)->empty()&&Owned(&q,entry));
+  Creature* first=Owned(&q,entry);first->alive=false;Recover(&q);assert(q.binds==2&&Owned(&q,entry)!=first);
+  Creature* duplicate=q.SummonCreature(entry,q.pos,TEMPSUMMON_MANUAL_DESPAWN,0,0,q.GetGUID());q.BindQuestObject(43254,duplicate);
+  Owned(&q,entry);int live=0;for(auto& pair:creatures)if(pair.second.owner==q.GetGUID()&&pair.second.entry==int(entry)&&pair.second.alive)++live;assert(live==1);
+ }
+ Player isolation;isolation.aura=false;credits(isolation,3);
+ Creature* staticActor=isolation.SummonCreature(110548,Image,TEMPSUMMON_MANUAL_DESPAWN,0,0,isolation.GetGUID());staticActor->temporary=false;
+ Creature* unbound=isolation.SummonCreature(110548,Image,TEMPSUMMON_MANUAL_DESPAWN,0,0,isolation.GetGUID());
+ Creature* stale=isolation.SummonCreature(110548,Image,TEMPSUMMON_MANUAL_DESPAWN,0,0,isolation.GetGUID());isolation.BindQuestObject(43254,stale);stale->expired=true;
+ Recover(&isolation);assert(Owned(&isolation,110548)&&Owned(&isolation,110548)!=staticActor&&Owned(&isolation,110548)!=unbound&&Owned(&isolation,110548)!=stale);
+ assert(staticActor->alive&&unbound->alive); // Shared/unrelated actors are never pruned.
  assert(!Active(nullptr));std::cout<<"PASS: production six-step gates, real-arrival credit, zone transfer, stale controller/movement cleanup, pet reload scope, item ownership, personal recovery/retry and confirmed escape\n";
 }
