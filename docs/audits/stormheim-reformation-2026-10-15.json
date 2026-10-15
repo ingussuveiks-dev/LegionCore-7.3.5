@@ -1,0 +1,120 @@
+{
+  "quest": {
+    "id": 38815,
+    "name": "Waking the Shieldmaiden",
+    "next": 38818
+  },
+  "date": "2026-10-15",
+  "status": "Code/data checks passed; client verification pending",
+  "scope": "Server code and data only, as requested. No character edits or client gameplay.",
+  "findings": [
+    "Installed objective278471 used GAMEOBJECT244450/storage1/amount1 (VerifiedBuild21737). Native GameObject::Use grants KillCreditGO before attempting its goober spell, so failed activation could already expose phase6776/Ashildir. Original TDB735/VerifiedBuild25549 instead has MONSTER97281 at the same objective ID/storage1/amount1; native192069 effect1 is KILL_CREDIT90/97281/self. Restore only this known substitute to the original objective, preserving ID/slot/amount/flags and existing saved counters. Native objective getters confirm the saved slot1 count remains readable after changing ObjectID; no character progress reset.",
+    "Rune244450 DB115183 has native lock1691/Open3365/effect33/type5, quest38815 and spell192069. Native GameObject::CastSpell sees192069 self-target credit and makes the player cast on self. The full native target46 selector without a spell_target_position uses that unit target, placing the helper at the player feet. Add the missing destination from the exact existing rune spawn3532.88,887.547,53.4053/orientation2.82809 on map1220. Do not overwrite a custom destination or invent a new location. The native selector test reproduces the old varying player position and verifies the repaired fixed altar destination, wrong-map refusal and unrelated spell behavior.",
+    "Native192069 summons97281 with properties719/Flags16/ControlWILD0/Slot0 for10000ms; this is the only native summon spell for that helper. Map::SummonCreature assigns created-by-spell and personal visibility before AddToMap, then InitSummon invokes IsSummonedBy. No permanent pet/guardian slot or player mover is changed. Native helper displays328/model114/file1112735 and27823/model1731/file124640 and World model metadata exist. There are no current DB helper spawns, SAI rows, addon or existing script.",
+    "192069 has no own SpellXSpellVisual and the unbound helper had no effect action. Add one scoped SmartAI wrapper for actual192069 summons at the altar, from a live player on outdoor1220/zone7541 with38815 incomplete/complete. Preserve SmartAI delegation, bind the helper to quest cancellation and cast native192062 normally once. Its2-second cast and2-second scale aura carry visual49745, kits58979/58980/58981, attachment19 and model FileDataIDs464111/327753/196561/349187. This helper/spell association is authored; the traced chain proves referenced data, not full retail awakening choreography or rendered model playback. Optional visual failure awards no custom credit and cannot block the native rune credit. Native summon lifetime remains10s.",
+    "Native effect90 -> RewardPlayerAndGroupAtEvent -> KilledMonsterCredit grants restored97281 only on the player hit and preserves ordinary eligible nearby group credit. GO use, unrelated241877 bowl and nonplayer/pet effect targets cannot complete the restored objective. Repeat effects cap at1. The helper casts no credit; its optional failure and repeated IsSummonedBy cannot duplicate it. Tests cover both factions, either rewarded38816 or38817 prerequisite, cancellation/reacceptance and scripted summon scoping. Summoning, full cast validation, packets and world scheduling are fixture boundaries.",
+    "Persistent phase definition7541/20 grants6776 on COMPLETE38815 OR REWARDED38815 (source23 ElseGroups0/1, condition28/8). It is not a transient script timer. Preserve another existing6776 definition7541/123 gated by40544. Ashildir93234 already has questgiver flag2/display68635 and both turn-in38815 and starter38818 relations. Existing overlapping spawns338671/341220 share phase6776 and location3532.89,887.594,54.7112; record them without unproven deduplication. Native GetNextQuest resolves both GUIDs. Their actual appearance remains a client check.",
+    "Native LoadGameObjectForQuests includes GOOBER entries with positive goober.questID, and ActivateToQuest tests that quest incomplete. Restoring a MONSTER objective therefore retains rune quest activation via Data1=38815. GO_FLAG_NODESPAWN4 and native3-second auto-close/release permit retry. The existing shared Opening3365 Judgment wrapper delegates the exact rune115183, proven by an added regression; the three Judgment bowls and later241877 remain unchanged.",
+    "Next38818 The Final Judgment retains objective93442/storage0 and its current93234 starter/97319 map1463 ender. This task checks the handoff only; Faljar confrontation/Helheim transition and final quest completion belong to the next audit."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimReformation.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/reformation-test-final.log",
+      "details": "Compiles the actual helper, full native nearby selector, native effect90 and Player objective getters/credit/completion/reward/predecessor/GetNextQuest handlers. Covers fixed destination, no GO shortcut, native player hit/once, optional failure, both factions and both prior-quest alternatives, saved slot compatibility, helper rejection/one cast/untriggered cast/quest cleanup. World, full spell engine, packets and client are fixtures. Confirms binding in canonical executable and actual scripts/game final-link library timestamps."
+    },
+    {
+      "command": "tools/tests/Test-StormheimReformationData.ps1; tools/tests/Test-StormheimReformationData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/reformation-test-final.log",
+        ".codex/reformation-live.log"
+      ],
+      "details": "Runs actual migration twice in temporary tables and full-row comparisons, preserving objective ID/storage/flags, unrelated38818 and93234/93428 templates. Tests custom binding/destination/objective preservation and missing exact source refusal. Installed live objective, destination, binding, rune settings, phase conditions, both Ashildir rows, model metadata and next relation pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimReformationNative.py --write-evidence; tools/tests/Test-StormheimReformationNative.py",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-reformation-native-2026-10-15.json",
+      "details": "Original TDB objective97281/storage1/38818 and rune spell/lock. Native summon719/10s, separate effect90,192062 cast/aura and complete49745 visual/kit/attachment/model references with input SHA256. Records absence of192069 own visual; does not infer playback."
+    },
+    {
+      "command": "tools/tests/Test-StormheimReformationCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/reformation-catalog.log",
+      "details": "Native C++ DB2Storage reads actual lock1691, both helper displays/models, Ashildir68635/model8891/file1339502 and rune22781/file984707. Linked against canonical Release project dependencies."
+    },
+    {
+      "command": "tools/tests/Test-StormheimReformationGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/reformation-geometry.log",
+      "details": "Existing generic MMAP/Detour reader built with actual Release libraries and installed tiles. Connected native ground approaches Iounn -> rune39 polygons, rune -> Ashildir1 polygon, within5yd. Not client collision/rendering proof."
+    },
+    {
+      "command": "tools/tests/Test-StormheimJudgment.ps1 -VerifyReleaseBinary; tools/tests/Test-StormheimRegalRemains.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/reformation-judgment.log",
+        ".codex/reformation-regal.log"
+      ],
+      "details": "Prior ruler lifecycle/credit regressions pass; exact Rune244450/115183 delegates through ordinary Opening3365 without starting Judgment. Prior eight-bone item/reward and Iounn38815 handoff still pass."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6; canonical startup",
+      "result": "PASS",
+      "evidence": [
+        ".codex/reformation-build.log",
+        ".codex/reformation-build-final.log",
+        "build-extractors/runtime-test/stormheim-reformation/startup-20261015-201516"
+      ],
+      "details": "New source compiled and linked into canonical build-extractors/bin/Release. Full fresh process reloads migrated objective/templates/destination; ready=True, graceful exit0, DBErrors.log0 bytes, stderr0 bytes. Runtime config/certificates/DLLs/logs/extracted data preserved; server stopped afterwards."
+    }
+  ],
+  "hotfix_checks": {
+    "source": ".codex/reformation-hotfix.tsv",
+    "spell_effects_3365_192069_192062": 0,
+    "spell_misc_192069_192062": 0,
+    "spell_visual_links_192069_192062": 0,
+    "helper_and_ashildir_display_overrides": 0,
+    "rune_display_override": 0
+  },
+  "catalog_output": [
+    "lock1691 slot=0 type=0 index=0 skill=0",
+    "lock1691 slot=1 type=2 index=5 skill=0",
+    "lock1691 slot=2 type=0 index=0 skill=0",
+    "lock1691 slot=3 type=0 index=0 skill=0",
+    "lock1691 slot=4 type=0 index=0 skill=0",
+    "lock1691 slot=5 type=0 index=0 skill=0",
+    "lock1691 slot=6 type=0 index=0 skill=0",
+    "lock1691 slot=7 type=0 index=0 skill=0",
+    "display328 model=114 file=1112735",
+    "display27823 model=1731 file=124640",
+    "display68635 model=8891 file=1339502",
+    "rune22781 file=984707",
+    "PASS: native Open lock1691/type5, both Bone Effect Bunny displays/models, Ashildir and Rune of Reformation display. Rendering remains unverified."
+  ],
+  "catalog_input_sha256": {
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8"
+  },
+  "deployment": {
+    "migration": "2026_10_15_39_stormheim_reformation.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-reformation\\20261015-201516",
+    "state": "RELEASED",
+    "sha1": "F85BCAA01587250A448F8489991347AF17806659"
+  },
+  "client_checks_pending": [
+    "Use Rune of Reformation through the normal client opening cast; confirm its visible interaction and placement at the altar, bone visual cast/playback/removal and Ashildir appearance/dialogue/turn-in. No complete retail cinematic fidelity has been claimed.",
+    "Interrupt or fail opening and retry after the native cooldown; abandon/reaccept before/after activation, leave/re-enter and relog with incomplete/complete/rewarded state. Confirm no duplicate credit and saved completion still turns in.",
+    "Both factions, eligible group member behavior, pet present, concurrent players and the existing overlapping Ashildir/Iounn spawn appearance. Verify another player cannot see the personal helper.",
+    "Accept38818 at the actual visible Ashildir; confrontation and transition are separate next-task work."
+  ],
+  "observed_client_failures": [],
+  "next": {
+    "quest": 38818,
+    "name": "The Final Judgment"
+  }
+}
