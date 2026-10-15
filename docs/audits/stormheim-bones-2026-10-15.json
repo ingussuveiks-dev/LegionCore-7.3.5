@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    39803,
+    39804
+  ],
+  "source_base_revision": "a7f3ebcb",
+  "status": "Code/data checks and repair complete; client gameplay explicitly excluded.39803 is native travel without objectives.39804 retains actual butchering credit, adds its missing native Havi conversation, removes an invalid actor AnimKit and repairs truncated conversation lifetime. No whole-quest/client verification claim.",
+  "evidence_and_changes": [
+    "Original TDB735:39803 The Trials Continue asks to meet Havi in Valdisdall, has no objectives and leads to39804. Live Huginn97074/guid290836 starts it; Havi92539/guid291280 ends it. Native CanCompleteQuest may mark an objective-free travel quest complete on acceptance, while actual reward still uses Havi. Preserve this, all race flags and predecessor38624; do not invent a talk marker, flight or teleport.",
+    "39804 Speaking of Bones asks to butcher a moose while learning the next trial. Native objective279981 is MONSTER97340 amount1 slot0; next39796 To Haustvald. Havi starts/ends39804 and starts39796. Menu20539 option1 and9253901 timed list belong to later44721, not the butchering entry point. Preserve that menu, both conditions and all Havi AI/later44771 behavior.",
+    "Actual clickable Ironhorn Buck98230/guid338655 is at3188.92/1514.62/181.191, map1220/zone7541/area7803. Native spellclick192171 cast_flags1 makes the player cast on the NPC; Spell::InitExplicitTargets retains the original NPC before removing the redundant explicit unit target for the self-targeted effect. Preserve native display63734, questinteract cursor, spellclick NPC flag, faction190 and protected unit flags768. Aura114371 supplies native aura66 feign death and aura12 stun without changing actual ALIVE death state. The script uses that existing live-but-feigning actor, not a synthetic dead corpse.",
+    "Native192171 is effect134 (group kill credit97340), self target1, cast-time record192 Base15000ms. Initial shorthand assumed3s from the cast index; reading the actual record disproved this before deployment. Preserve native fifteen-second nominal casting and native Spell::EffectKillCredit -> RewardPlayerAndGroupAtEvent -> KilledMonsterCredit/capped quest completion. No shared core credit/group/movement/pet handler changed.",
+    "Added spell_stormheim_bones_butchering on192171. Require actual clicked98230/guid338655, current quest lifetime, the one native required objective, INCOMPLETE quest, actual source spellclick flag, alive/in-world player/source, outdoor Stormheim, no vehicle/transport/combat/teleport, same phase, visibility, LOS and distance<=6yd. Require original static Havi291280 alive/visible/same phase within60yd. Capture the original target and weak acceptance token at CheckCast; revalidate on HIT_TARGET. Suppress only invalid scoped effect hits. Valid hits retain the native default group credit; interrupted casts produce no effect. A second concurrent cast cannot replay the narration after completion.",
+    "AfterCast plays native192170 only after actual valid self hit, native97340 credit and the same acceptance token, allowing the now-COMPLETE status. Native effect219 creates conversation2247. A failed optional conversation cast cannot revoke credit or block next quest. Other maps delegate original spell behavior. No newly invented Havi gossip, actor replacement, visual substitution or narrated timer-based credit.",
+    "No existing SmartAI cast row, spell script or linked-spell row connected192171 to192170. Native2247 has lines4740..4743; native C++ DB2 reader resolves broadcasts98439..98442, each AdditionalDuration1000ms and the expected next-line chain. Database line starts are0/2300/6600/10200ms; actor53077 uses Havi96254/display64208. Preserve this existing actor/line/visual graph rather than substitute the similarly named92539 creature_text lines98443..98446.",
+    "Conversation::GenerateDynamicFieldData sums actor duration; CreateConversation adds5000ms. Old actor duration3350 produced8350ms lifetime, before final line starts10200. Scoped update changes known3350 to13550 (last start10200 plus the existing3350 tail budget), so native total becomes18550. Actual native generator and creation-duration block are executed in regression. This is an authored conservative lifetime repair; exact audio length and full retail choreography remain unverified.",
+    "Installed SpellStateAnimKitID192171 is a spell ID, absent from native AnimKit and hotfix anim_kit. Clear only that known value on98230, preserving114371 pose and real model. Do not invent kit metadata or replace the model. Other kit values are preserved.",
+    "Migration34 requires exact known source/Havi/objective/click and empty/native buck AI. Skip foreign192171 script bindings/custom buck scripts; replay is idempotent. Only the new spell binding, known invalid AnimKit field and known short conversation_actor row change. Preserve source positions, templates/poses/flags otherwise, all native quests/rewards/races/relations, later Havi menus/AI and custom duration/kit values. Transactional deployment backs up those three affected row sets and records exact SHA1 as RELEASED."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimBones.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/bones-final-test.log",
+      "details": "Compiles actual production spell script, real AddQuestDelayedEvent, native effect134/group kill credit/completion/prerequisite/race/reward/GetNextQuest handlers, actual Conversation::GenerateDynamicFieldData and CreateConversation duration block. Both factions38624 -> empty travel39803 -> butcher39804 ->39796, native nearby-party range and distant-party rejection, correct original actor, self hit, exactly-one narration/credit, duplicate/concurrent casts, stale acceptance, abandonment, interruption/no hit, death/map/phase/visibility/LOS/distance/teleport, missing Havi/buck and optional conversation failure. Demonstrates old8350ms truncation vs18550ms fix. World, native spell timing/target pipeline, packets and cast/rendering services are fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBonesCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/bones-catalog.log",
+      "details": "Production DB2Storage loads actual sparse ConversationLine.db2 (the Python regular-WDC1 reader cannot read it) and AnimKit. Verifies expected line records and absence of kit192171. The native Python audit independently checks remaining regular tables; hotfix queries found no192171 AnimKit or relevant SpellEffect/SpellMisc overrides."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBonesNative.py --write-evidence and normal comparison mode",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-bones-native-2026-10-15.json",
+      "details": "Original TDB travel/objective/next/POI, native15s cast/effect134/credit97340,192170->2247, feign-death aura/model and native visual/kit/attachment graph, hashes and actual C++ sparse-line reader output. Metadata is not playback evidence."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBonesData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/bones-data.log",
+        ".codex/bones-data-live.log"
+      ],
+      "details": "Unchanged real migration twice on temporary snapshots, known invalid kit/short duration repaired, foreign scripts/custom kit/custom duration retained. Installed binding, all native travel/objective/chain/relations, real source/click/pose/model, Havi later AI/menu conditions and conversation records. No live edits during snapshot tests."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBonesGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/bones-geometry.log",
+      "details": "Uses existing production MMAP/Detour ground checker against unchanged real Havi/buck positions and actual final-link Release libraries: connected through8 ground polygons. This is local interaction walkability, not proof of the entire Huginn-to-Valdisdall travel route, rendering or client cursor."
+    },
+    {
+      "command": "tools/tests/Test-StormheimCryThunder.ps1; tools/tests/Test-StormheimCryThunderHandoff.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/bones-prior-cry.log",
+        ".codex/bones-prior-handoff.log"
+      ],
+      "details": "Previous actual ride/death/return/exit fixtures and native38624 completion/Huginn->39803 handoff retained."
+    },
+    {
+      "command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": [
+        ".codex/bones-configure.log",
+        ".codex/bones-build.log"
+      ],
+      "runtime": "build-extractors/bin/Release",
+      "details": "No global OutDir override. Build log shows stormheim_bones.cpp -> src/server/scripts/Release/scripts.lib -> canonical worldserver.exe. Verification reads actual Release final-link dependency, checks its timestamp against executable and finds new unique Bones script registration in deployed binary. Existing runtime configs/certs/DLLs/logs/extracted data preserved."
+    },
+    {
+      "command": "Canonical worldserver startup with isolated logs, database updates disabled, then server shutdown0",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-bones/startup-20261015-175353",
+      "details": "Ready=True, exit0, DBErrors0bytes, stderr0bytes. No server process left running."
+    }
+  ],
+  "failures_and_limits_retained": [
+    "Initial investigation mistook the later Havi gossip menu for the current interaction. Actual original POI3188/1514 identified existing buck338655 and its already functional native credit path. The repaired gap is missing narration/invalid pose metadata/short conversation lifetime, not an asserted inability of native effect134 to grant credit.",
+    "Initial fixture compilation duplicated existing DBGUID helpers and lacked native effect/Conversation GUID adapters; corrected fixture adapters before tests passed. Initial data check mislabeled the installed field as AnimID; named-field query proved AnimKitID. No failed provisional schema queries or guessed values were applied.",
+    "The first native audit assumed cast index192 meant3s and guessed a feign aura enum. Actual native rows proved15s and aura66; preserved original mechanics. Regular Python DB2 reader rejected sparse ConversationLine, so switched only that table to native C++ DB2Storage.",
+    "Party credit remains native: eligible nearby party members may complete from one successful butchering cast. They are not required to each click the buck. Conversation visibility follows native group conversation logic. No exact resumed cast/stage persistence after logout/crash; an incomplete cast can be retried at the unchanged buck."
+  ],
+  "client_checks_pending": [
+    "Both factions accept39803 from Huginn, walk to Valdisdall, reward at actual Havi and receive39804; objective-free journal completion must not be confused with automatic reward.",
+    "Buck initial model/feign-death pose/cursor and client-visible click; actual cast admission/animation and15s nominal progress, successful native1/1 credit, nearby-party behavior and no credit after movement/interruption/abandonment.",
+    "192170/2247 appears with native Havi actor, all four lines finish, model/animations/attachments and voice/caption pacing;18550ms server lifetime does not certify full audio/rendering.",
+    "Re-entry/retry, two independent players, failed optional conversation, no later44721/44771 regression, actual39804 reward and39796 offer."
+  ],
+  "next": "To Haustvald39796 and the Vydhar handoff toward38778; not implemented or client-verified by this commit.",
+  "deployment": {
+    "state": "RELEASED",
+    "sha1": "351C79EF9D0333A1FC039007861C836BC6EEA8A5",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-bones\\20261015-175350",
+    "migration": "2026_10_15_34_stormheim_bones.sql"
+  },
+  "runtime_sha256": {
+    "build-extractors/bin/Release/worldserver.exe": "c3e95de06c9c51b5cbf955f43265d52fec334353ed48841fec83c234b7263177",
+    "build-extractors/bin/Release/bnetserver.exe": "03fd49c9f0ad713785677cb99c27256d0dbf1bdb1d71ff82740af8f6b6e2753f",
+    "build-extractors/src/server/scripts/Release/scripts.lib": "42971f431e73a13991ea161095d2cf177a46ed219b81f6ce25e50c498bdfc9eb"
+  }
+}
