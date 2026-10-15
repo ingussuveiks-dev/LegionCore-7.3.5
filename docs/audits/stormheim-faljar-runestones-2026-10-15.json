@@ -1,0 +1,112 @@
+{
+  "quest": 38818,
+  "date": "2026-10-15",
+  "status": "Known runestone/ending code and data gaps implemented; client verification pending",
+  "previous_commit": "ac9db43039da214f123a584500a2d7ed8e2aaf99",
+  "previous_audit": "docs/audits/stormheim-final-judgment-2026-10-15.json",
+  "findings": [
+    "Completes the explicit runestone/presentation gaps recorded in the prior progression repair. Two shield phases gate Faljar at authored70percent and35percent health; even a scaled fresh-target killing blow stops at each gate. The final1percent/lethal surrender is reachable only after two actual owned rune destructions. No spawn, repeated hit, cosmetic cast or duplicate death advances the rune counter or native quest objective.",
+    "Use native Runic Bulwark208544 on the owned Faljar himself: school immunity127 and periodic208547. Keep a separate scripted shield gate when that optional cast fails. Stop attacking/chasing with AttackStop/MoveIdle/passive reaction during the shield; after the actual rune death remove only his208544 and resume attacking the owner. Do not cast this spell on the player as the old shared timed list did.",
+    "Native97221 scenery anchors291988 at3630.62,759.943,38.7806/orientation5.05479 and291989 at3655.53,784.203,39.1235/orientation3.80961 identify the two rune positions. Native attack proxy97222 shares display65123/model8446/file1139506 and has no World spawns. Bind a new script only to that otherwise-unbound template, retaining its global faction35/level1/flags0. The private proxy alone receives faction16, passive reaction,1HP and native208811/208815 visuals, with personal viewer before creation and quest lifetime binding. Hide/restore only the corresponding static97221 for that owner;97223 scenery and other players remain untouched.",
+    "Only that acceptance, active rune GUID and owner/player pet killing blow can remove its shield. Null/unrelated deaths leave the gate and allow another proxy to spawn. Missing source/summon failure retries without counting; expired scope/map/phase/visibility/death/abandonment clears all private actors and restores hidden scenery. Reset the ending age at confrontation completion so a long legitimate fight cannot consume its finishing time budget.",
+    "208547 damage and209177 force-cast dummy both use native effect0 area selector15. New area hooks restrict only an owned scripted93093 to its player and their units, preserve ordinary other casters including later Faljar entries, clear targets after shield removal, and clear queued ticks after the run is erased. Ownership is checked through the actual NPC AI, not just its entry or a nearest player.",
+    "Native C++ ConversationLine lookup resolves the current five-line chain3955 ->3957 ->3958 ->3959 ->3960.3956 is absent;3957 is present with updated BroadcastText114753, not98469/98470. An initial scan by the old98460..98480 text range missed that revised line; direct lookup corrected the assumption before final code/data. Existing conversation1867 also reuses array indices0/1 and contains a corrupt final timing/flags record. The new sequence leaves this unrelated/shared packet data unchanged and voices the native five lines directly through the exact private speakers.",
+    "Seven new owned text groups use native text/voice pairs: two rune hints98462/53045 and98466/53048; finale98468/53050,114753/69871,98471/53053,98472/53054,98473/53055. Existing ambient/other combat groups are preserved. Current source Hotfix rows contain all seven English texts/voices and native C++ DB2Storage finds every SoundKit. Dialogue starts after the existing5s surrender pause; intervals4200/7971/4452ms retain the useful native-record timings, final two5s pauses are authored. No claim of exact retail film timing.",
+    "After the last voice, cast actual native209241 on the player and allow its full native20-second duration. Its transform references World creature83693 Temporal Anomaly ->display61276/model1731/file124640, not display83693. Its own native visual54974 and transform/fly/no-actions/immunity/pacify/disarm effects provide the presentation. There is no new vehicle, active mover, farsight or manual camera/flight flag override. Remove only the self-cast copy this run actually applied before standard TeleportTo, and on logout/map change/death/abandonment/cleanup. Pre-existing copies and unrelated aura IDs are not removed by this script; normal engine aura handlers preserve independent effects.",
+    "Banishment cast failure still runs the ending timer and standard transfer; transfer rejection retries. Map-change callbacks may clear synchronously without stale run access. A saved complete confrontation in Haustvald still resumes only the ending, preserving players completed by the earlier repair. Incomplete fights restart their actors/runes on re-entry; actor/rune progress is not serialized or claimed to recover exactly after a crash.",
+    "Retire209363 only from the known93093 public addon while its new script binding is active; the private implementation now owns its intro and the public source must not emit the obsolete4870 trigger alongside it. Preserve Rune Channel209164 and Quest Invisibility89319, all other addons/templates and the native detection/phase rules. Data tests accept both historical and repaired source aura sets when auditing the preceding migration.",
+    "All full-quest client claims remain pending. Mechanics, locations, spell and current dialogue data are implemented, with authored thresholds/one-hit proxies/pauses explicitly distinguished from measured native references. Actual difficulty, visual/voice playback and arrival movement/pet portrait need the7.3.5 client."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgment.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "evidence": ".codex/faljar-runes-test-final.log",
+      "details": "Actual production lifecycle, normalized-damage hook/default and Player credit handlers. Both factions/player and pet lethal hits at0.001/1/100 scales pass both mandatory rune gates before surrender. Exact rune kills, concurrent owners,1HP proxy/faction/visibility, spawn/death retry, periodic target owner filtering and late-tick suppression, native ending timing, failed shield/banish cast, interrupted/cancelled banishment, independent aura preservation, rejected/synchronous transfer and saved ending resume. World/spell/aura engine/network remain fixtures; explicit native API calls are tested, not a client renderer."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFaljarRunesData.ps1; tools/tests/Test-StormheimFaljarRunesData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/faljar-runes-data.log",
+        ".codex/faljar-runes-live.log"
+      ],
+      "details": "Real migration twice in temporary tables, full unrelated template/addon/old-text comparison; independent spell adapter and custom rune binding retained. Exact source points, no97222 DB spawns, transform source, seven voice rows, two area-script bindings and repaired intro addon; installed live state passes."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/faljar-cinematic-catalog.log",
+      "details": "Native DB2Storage validates four displays/models, copied spell names, five current ConversationLine records, absence3956/current114753 and seven SoundKit records. Native file hashes retained; Hotfix texts/voices checked separately."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFaljarRunesNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-faljar-runestones-native-2026-10-15.json",
+      "details": "Native self shield/immunity/ticks, both area selectors, rune effects/visuals and20s209241 controls. Follows SpellXSpellVisual/Event/Kit/KitEffect/ModelAttach/effect models and animation fields using established regular26972 relationship mapping. Not playback/physical resource certification."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFinalJudgmentGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/faljar-runes-geometry.log",
+      "details": "Actual canonical MMAP/Detour ground paths:44/5 polygons to fight/spirit,9/7 to both runes,1 on1463 from landing to questgiver. Within conservative5yd approaches; client collision remains pending."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6; canonical fresh startup",
+      "result": "PASS",
+      "evidence": [
+        ".codex/faljar-runes-build.log",
+        ".codex/faljar-runes-build-final.log",
+        "build-extractors/runtime-test/stormheim-final-judgment/runestones-startup-20261015-211251"
+      ],
+      "details": "Canonical Release rebuilt; implementation markers/actual final-link scripts/game inputs checked. Fresh process reloads templates/addon/text/spell bindings after migration: ready=True, graceful exit0, DBErrors.log0 bytes, stderr0 bytes. Runtime configurations/certificates/DLLs/logs/data preserved; server stopped afterwards."
+    }
+  ],
+  "catalog_output": [
+    "display64593 model=8323 file=1132140",
+    "display68635 model=8891 file=1339502",
+    "display65123 model=8446 file=1139506",
+    "display61276 model=1731 file=124640",
+    "spell89319 name=Quest Invisibility 22",
+    "spell100044 name=Generic Quest Invisibility Detection 22",
+    "spell209164 name=Rune Channel",
+    "spell209363 name=Intro Sequence Trigger",
+    "spell208544 name=Runic Bulwark",
+    "spell209310 name=End Conversation",
+    "spell209241 name=Banish to Helheim",
+    "map1463 outdoor type=0",
+    "line 3955 text=98468 next=3957",
+    "line 3957 text=114753 next=3958",
+    "line 3958 text=98471 next=3959",
+    "line 3959 text=98472 next=3960",
+    "line 3960 text=98473 next=0",
+    "PASS: native five-line finale chain, removed3956, current114753 and all seven voice kits.",
+    "PASS: native DB2Storage Faljar/Ashildir displays/models, copied spell records, detection/intro and outdoor Helheim. No rendered combat/cinematic certification."
+  ],
+  "catalog_input_sha256": {
+    "SoundKit": "2643655DDBBC10B9F58CC6BCFB15CF2B2C588F0F13571C980F3AB2B7154547CE",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "ConversationLine": "EF9A39EDEEF5F58AEBD0741839291A1A4E4AB745BE881C3E155B9767C5BA7039",
+    "Map": "08ADC433F6726B784211ACA5E80B0B54FB791A6D702CE35195AEAE136A16D2D4",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF"
+  },
+  "hotfix_evidence": ".codex/faljar-runes-hotfix.tsv",
+  "deployment": {
+    "state": "RELEASED",
+    "migration": "2026_10_15_41_stormheim_faljar_runestones.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-faljar-runestones\\20261015-211250",
+    "sha1": "02F70C7DC6D39A9867ACCF08F459B8FA1D010300"
+  },
+  "client_checks_pending": [
+    "Attackability and both personal rune shields: normal and one-hit spells, pet killing blows, correct1HP proxy selection, no cross-player visibility/damage/credit, missing-source retry and natural combat tuning.",
+    "Both native hint voices and full current five-line finale from the correct private speakers; shield, rune activation/break, native209241 transform/animation/effects/audio for20s.",
+    "Banishment interruption/abandonment/logout/death and saved-ending login; camera, movement/gravity/control release, native pet portrait and standard Helheim arrival/turn-in39837 menu."
+  ],
+  "observed_client_failures": [],
+  "unfinished_code_data": [],
+  "next": {
+    "quest": 39837,
+    "name": "An Unworthy Task"
+  }
+}

@@ -1,5 +1,7 @@
 param([switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
+& "$PSScriptRoot/Test-StormheimFinalJudgmentData.ps1"
+& "$PSScriptRoot/Test-StormheimFaljarRunesData.ps1"
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/stormheim-final-judgment"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -60,6 +62,10 @@ $start=$ai.IndexOf('        virtual void DamageTakenAfterScaling(')
 $end=$ai.IndexOf("`n",$start)
 $nativeDefault=$ai.Substring($start,$end-$start)
 $fixture=$fixture.Replace('struct SmartAI {', 'struct SmartAI {'+$nativeDefault)
+$fixture=$fixture.Replace('struct Creature:Unit {', 'struct Creature:Unit {void AttackStop(){victim=nullptr;}struct Motion {void MoveIdle(){}} motion;Motion* GetMotionMaster(){return &motion;}uint32 faction=0;void setFaction(uint32 v){faction=v;}void SetMaxHealth(uint64 v){maximum=v;}uint64 GetMaxHealth(){return maximum;}')
+$fixture=$fixture.Replace('bool HasAura(uint32){return false;}', 'std::set<uint32> activeAuras;bool HasAura(uint32 id){return activeAuras.count(id);}')
+$fixture=$fixture.Replace('void RemoveAurasDueToSpell(uint32 id){removedAuras.insert(id);}', 'void RemoveAurasDueToSpell(uint32 id){removedAuras.insert(id);activeAuras.erase(id);}')
+$fixture=$fixture.Replace('Player* ToPlayer()override{return this;}', 'void RemoveAurasDueToSpell(uint32 id,ObjectGuid caster){if(caster==GetGUID())auras.erase(id);Unit::RemoveAurasDueToSpell(id,caster);}Player* ToPlayer()override{return this;}')
 [IO.File]::WriteAllText("$output/FinalJudgmentFixture.inc",$fixture)
 
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_final_judgment.cpp" -Raw
@@ -78,7 +84,7 @@ if($LASTEXITCODE){throw 'Final Judgment production regression failed'}
 if($VerifyReleaseBinary){
  $exe="$repo/build-extractors/bin/Release/worldserver.exe"
  $bytes=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($exe))
- foreach($marker in @('npc_stormheim_final_judgment','The Final Judgment: ignored generic kill credit','The Final Judgment: ignored generic talk credit')){if(!$bytes.Contains($marker)){throw "Canonical executable lacks $marker"}}
+ foreach($marker in @('npc_stormheim_final_judgment','npc_stormheim_faljar_rune','spell_stormheim_faljar_bulwark','The Final Judgment: ignored generic kill credit','The Final Judgment: ignored generic talk credit')){if(!$bytes.Contains($marker)){throw "Canonical executable lacks $marker"}}
  [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
  $release=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
  foreach($name in @('scripts','game')){

@@ -4,7 +4,7 @@
     "name": "The Final Judgment"
   },
   "date": "2026-10-15",
-  "status": "Progression/ownership repair validated in code/data; full native combat/cinematic fidelity remains unfinished and client verification pending",
+  "status": "Progression plus runestone/native-ending code and data implemented by follow-up; client verification pending",
   "scope": "Code/data only. Authored private confrontation and reliable Helheim progression; no client gameplay or character edits.",
   "findings": [
     "Original TDB735 and live World both require objective278476 MONSTER93442/storage0/amount1, described as Runeseer Faljar confronted. Preserve the objective, flags, all races, Prev38815 and RewardNextQuest0. Live Ashildir93234 starts38818;97319 on outdoor map1463 ends it and offers39837 after reward. Native GetNextQuest correctly returns null for38818 because RewardNextQuest0:39837 is a normal quest-menu offer, not an automatic next window.",
@@ -112,12 +112,14 @@
     "Scaled one-hit and normal surrender, one93442 credit, interrupt/retry/evade/abandon/reaccept/relog with incomplete versus completed confrontation.",
     "Helheim arrival/collision/loading release, movement and pet portrait, source actor cleanup,97319 turn-in and39837 normal quest-menu offer."
   ],
-  "unfinished_content": [
+  "next_work": {
+    "quest": 39837,
+    "task": "An Unworthy Task; actual client checks for38818 remain pending."
+  },
+  "historical_scope": "Findings/validation below retain the initial ac9db430 progression repair; subsequent completion is recorded separately.",
+  "followup_audit": "docs/audits/stormheim-faljar-runestones-2026-10-15.json",
+  "resolved_unfinished_content": [
     "Native Runestone/Bulwark combat choreography and destruction interaction.",
     "Full Banish to Helheim conversation/cinematic/visual playback; native209241 control lifecycle has not been implemented or client verified."
-  ],
-  "next_work": {
-    "quest": 38818,
-    "task": "Finish the native runestone combat and banishment presentation before calling the whole quest restored. Following progression quest is39837 An Unworthy Task."
-  }
+  ]
 }

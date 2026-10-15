@@ -17,7 +17,7 @@ SELECT 'scaling',LevelScalingMin,LevelScalingMax FROM creature_template_scaling 
 SELECT 'models',COUNT(*) FROM creature_model_info WHERE DisplayID IN(64593,68635) AND BoundingRadius>0 AND CombatReach>0;
 SELECT 'phase',ElseGroup,ConditionTypeOrReference,ConditionValue1,NegativeCondition FROM conditions WHERE SourceTypeOrReferenceId=23 AND SourceGroup=7541 AND SourceEntry=151 ORDER BY ElseGroup,ConditionValue1;
 SELECT 'detection',COUNT(*) FROM spell_area WHERE spell=100044 AND area=7653 AND quest_start=38818 AND quest_start_status=8 AND autocast=1;
-SELECT 'poses',COUNT(*) FROM creature_template_addon WHERE (entry=93093 AND auras='209164 209363 89319') OR (entry=93428 AND bytes1=8 AND auras='209164');
+SELECT 'poses',COUNT(*) FROM creature_template_addon WHERE (entry=93093 AND auras IN('209164 209363 89319','209164 89319')) OR (entry=93428 AND bytes1=8 AND auras='209164');
 SELECT 'instance',COUNT(*) FROM instance_template WHERE map=1463;
 "@
 if(!$Live){$sql+=@"

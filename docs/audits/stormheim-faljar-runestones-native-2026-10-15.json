@@ -1,0 +1,974 @@
+{
+  "effects": [
+    {
+      "ID": 308565,
+      "SpellID": 208544,
+      "EffectIndex": 0,
+      "Effect": 6,
+      "EffectAura": 4,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 25,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 308566,
+      "SpellID": 208544,
+      "EffectIndex": 1,
+      "Effect": 6,
+      "EffectAura": 40,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 127,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 308567,
+      "SpellID": 208544,
+      "EffectIndex": 2,
+      "Effect": 6,
+      "EffectAura": 23,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 208547,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 308571,
+      "SpellID": 208547,
+      "EffectIndex": 0,
+      "Effect": 2,
+      "EffectAura": 0,
+      "EffectBasePoints": 81,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 22,
+      "ImplicitTarget2": 15
+    },
+    {
+      "ID": 309030,
+      "SpellID": 208811,
+      "EffectIndex": 0,
+      "Effect": 46,
+      "EffectAura": 0,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 0,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309033,
+      "SpellID": 208811,
+      "EffectIndex": 1,
+      "Effect": 6,
+      "EffectAura": 4,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309036,
+      "SpellID": 208815,
+      "EffectIndex": 0,
+      "Effect": 6,
+      "EffectAura": 4,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309601,
+      "SpellID": 209177,
+      "EffectIndex": 0,
+      "Effect": 3,
+      "EffectAura": 0,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 22,
+      "ImplicitTarget2": 15
+    },
+    {
+      "ID": 309602,
+      "SpellID": 208544,
+      "EffectIndex": 3,
+      "Effect": 140,
+      "EffectAura": 0,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 209177,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309685,
+      "SpellID": 209241,
+      "EffectIndex": 0,
+      "Effect": 6,
+      "EffectAura": 56,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 83693,
+      "EffectMiscValue2": 10,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309686,
+      "SpellID": 209241,
+      "EffectIndex": 1,
+      "Effect": 6,
+      "EffectAura": 201,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309687,
+      "SpellID": 209241,
+      "EffectIndex": 2,
+      "Effect": 6,
+      "EffectAura": 40,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 127,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309688,
+      "SpellID": 209241,
+      "EffectIndex": 3,
+      "Effect": 6,
+      "EffectAura": 321,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309689,
+      "SpellID": 209241,
+      "EffectIndex": 4,
+      "Effect": 6,
+      "EffectAura": 147,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 2065,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309690,
+      "SpellID": 209241,
+      "EffectIndex": 5,
+      "Effect": 6,
+      "EffectAura": 60,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309691,
+      "SpellID": 209241,
+      "EffectIndex": 6,
+      "Effect": 6,
+      "EffectAura": 67,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309692,
+      "SpellID": 209241,
+      "EffectIndex": 7,
+      "Effect": 6,
+      "EffectAura": 254,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309693,
+      "SpellID": 209241,
+      "EffectIndex": 8,
+      "Effect": 6,
+      "EffectAura": 278,
+      "EffectBasePoints": 0,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309694,
+      "SpellID": 209241,
+      "EffectIndex": 9,
+      "Effect": 136,
+      "EffectAura": 0,
+      "EffectBasePoints": 100,
+      "EffectMiscValue1": 0,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    },
+    {
+      "ID": 309695,
+      "SpellID": 209241,
+      "EffectIndex": 10,
+      "Effect": 6,
+      "EffectAura": 77,
+      "EffectBasePoints": 100,
+      "EffectMiscValue1": 11,
+      "EffectMiscValue2": 0,
+      "EffectTriggerSpell": 0,
+      "ImplicitTarget1": 1,
+      "ImplicitTarget2": 0
+    }
+  ],
+  "misc": [
+    {
+      "ID": 182575,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 86,
+      "RangeIndex": 6,
+      "SchoolMask": 32,
+      "SpellIconFileDataID": 134423,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 0,
+      "Attributes2": 16388,
+      "Attributes3": 0,
+      "Attributes4": 0,
+      "Attributes5": 0,
+      "Attributes6": 268435457,
+      "Attributes7": 16777216,
+      "Attributes8": 0,
+      "Attributes9": 134217728,
+      "Attributes10": 0,
+      "Attributes11": 0,
+      "Attributes12": 64,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 208544
+    },
+    {
+      "ID": 182578,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 0,
+      "RangeIndex": 1,
+      "SchoolMask": 32,
+      "SpellIconFileDataID": 134423,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 524288,
+      "Attributes2": 0,
+      "Attributes3": 0,
+      "Attributes4": 0,
+      "Attributes5": 0,
+      "Attributes6": 0,
+      "Attributes7": 0,
+      "Attributes8": 0,
+      "Attributes9": 0,
+      "Attributes10": 1048576,
+      "Attributes11": 0,
+      "Attributes12": 0,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 208547
+    },
+    {
+      "ID": 182838,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 21,
+      "RangeIndex": 1,
+      "SchoolMask": 1,
+      "SpellIconFileDataID": 136243,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 690225536,
+      "Attributes2": 1192,
+      "Attributes3": 273170436,
+      "Attributes4": 458752,
+      "Attributes5": 8388736,
+      "Attributes6": 393224,
+      "Attributes7": 4096,
+      "Attributes8": 64,
+      "Attributes9": 0,
+      "Attributes10": 0,
+      "Attributes11": 0,
+      "Attributes12": 0,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 208811
+    },
+    {
+      "ID": 182842,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 21,
+      "RangeIndex": 1,
+      "SchoolMask": 1,
+      "SpellIconFileDataID": 136243,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 690225536,
+      "Attributes2": 1192,
+      "Attributes3": 273170436,
+      "Attributes4": 458752,
+      "Attributes5": 8388736,
+      "Attributes6": 393224,
+      "Attributes7": 4096,
+      "Attributes8": 64,
+      "Attributes9": 0,
+      "Attributes10": 0,
+      "Attributes11": 0,
+      "Attributes12": 0,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 208815
+    },
+    {
+      "ID": 183198,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 0,
+      "RangeIndex": 1,
+      "SchoolMask": 32,
+      "SpellIconFileDataID": 134423,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 218628224,
+      "Attributes2": 168,
+      "Attributes3": 16388,
+      "Attributes4": 0,
+      "Attributes5": 129,
+      "Attributes6": 917512,
+      "Attributes7": 0,
+      "Attributes8": 0,
+      "Attributes9": 32,
+      "Attributes10": 1048576,
+      "Attributes11": 0,
+      "Attributes12": 0,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 209177
+    },
+    {
+      "ID": 183262,
+      "CastingTimeIndex": 1,
+      "DurationIndex": 18,
+      "RangeIndex": 181,
+      "SchoolMask": 8,
+      "SpellIconFileDataID": 627487,
+      "Speed": 0.0,
+      "ActiveIconFileDataID": 0,
+      "LaunchDelay": 0.0,
+      "DifficultyID": 0,
+      "Attributes1": 603980160,
+      "Attributes2": 268533896,
+      "Attributes3": 4,
+      "Attributes4": 0,
+      "Attributes5": 0,
+      "Attributes6": 1024,
+      "Attributes7": 0,
+      "Attributes8": 0,
+      "Attributes9": 0,
+      "Attributes10": 0,
+      "Attributes11": 0,
+      "Attributes12": 0,
+      "Attributes13": 0,
+      "Attributes14": 0,
+      "SpellID": 209241
+    }
+  ],
+  "banishment_duration": {
+    "ID": 18,
+    "Duration": 20000,
+    "MaxDuration": 20000,
+    "DurationPerLevel": 0
+  },
+  "visuals": [
+    {
+      "ID": 97525,
+      "SpellVisualID": 54826,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 208544
+    },
+    {
+      "ID": 97532,
+      "SpellVisualID": 54830,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 208811
+    },
+    {
+      "ID": 97534,
+      "SpellVisualID": 54832,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 208815
+    },
+    {
+      "ID": 97750,
+      "SpellVisualID": 54953,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 208547
+    },
+    {
+      "ID": 97754,
+      "SpellVisualID": 0,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 209177
+    },
+    {
+      "ID": 97796,
+      "SpellVisualID": 54974,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 209241
+    }
+  ],
+  "visual_events": [
+    {
+      "ID": 118173,
+      "parent": 54953,
+      "start": 3,
+      "end": 13,
+      "target": 1,
+      "kit": 66620
+    },
+    {
+      "ID": 118174,
+      "parent": 54953,
+      "start": 6,
+      "end": 13,
+      "target": 1,
+      "kit": 66621
+    },
+    {
+      "ID": 118175,
+      "parent": 54953,
+      "start": 6,
+      "end": 13,
+      "target": 2,
+      "kit": 66621
+    },
+    {
+      "ID": 120516,
+      "parent": 54974,
+      "start": 6,
+      "end": 13,
+      "target": 1,
+      "kit": 66709
+    },
+    {
+      "ID": 120517,
+      "parent": 54974,
+      "start": 6,
+      "end": 13,
+      "target": 2,
+      "kit": 66709
+    },
+    {
+      "ID": 120519,
+      "parent": 54974,
+      "start": 7,
+      "end": 8,
+      "target": 2,
+      "kit": 66645
+    },
+    {
+      "ID": 120661,
+      "parent": 54826,
+      "start": 7,
+      "end": 8,
+      "target": 1,
+      "kit": 66447
+    },
+    {
+      "ID": 120662,
+      "parent": 54826,
+      "start": 7,
+      "end": 8,
+      "target": 2,
+      "kit": 66451
+    },
+    {
+      "ID": 120663,
+      "parent": 54826,
+      "start": 11,
+      "end": 12,
+      "target": 2,
+      "kit": 66448
+    },
+    {
+      "ID": 120665,
+      "parent": 54830,
+      "start": 7,
+      "end": 8,
+      "target": 2,
+      "kit": 66453
+    },
+    {
+      "ID": 141771,
+      "parent": 54832,
+      "start": 7,
+      "end": 8,
+      "target": 2,
+      "kit": 66457
+    }
+  ],
+  "kits": [
+    {
+      "ID": 66447,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66448,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66451,
+      "Flags": 131072,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66453,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66457,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66620,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66621,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66645,
+      "Flags": 131072,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    },
+    {
+      "ID": 66709,
+      "Flags": 0,
+      "FallbackPriority": 0.0,
+      "FallbackSpellVisualKitID": 0,
+      "DelayMin": 0,
+      "DelayMax": 0
+    }
+  ],
+  "kit_effects": [
+    {
+      "ID": 141515,
+      "parent": 66447,
+      "type": 2,
+      "effect": 321117
+    },
+    {
+      "ID": 141521,
+      "parent": 66453,
+      "type": 2,
+      "effect": 321122
+    },
+    {
+      "ID": 141528,
+      "parent": 66457,
+      "type": 2,
+      "effect": 321129
+    },
+    {
+      "ID": 141901,
+      "parent": 66620,
+      "type": 2,
+      "effect": 321366
+    },
+    {
+      "ID": 141902,
+      "parent": 66621,
+      "type": 2,
+      "effect": 321367
+    },
+    {
+      "ID": 141979,
+      "parent": 66645,
+      "type": 5,
+      "effect": 49910
+    },
+    {
+      "ID": 141980,
+      "parent": 66645,
+      "type": 2,
+      "effect": 321422
+    },
+    {
+      "ID": 141984,
+      "parent": 66645,
+      "type": 2,
+      "effect": 321425
+    },
+    {
+      "ID": 141996,
+      "parent": 66447,
+      "type": 2,
+      "effect": 321432
+    },
+    {
+      "ID": 142065,
+      "parent": 66448,
+      "type": 1,
+      "effect": 9859
+    },
+    {
+      "ID": 142067,
+      "parent": 66448,
+      "type": 6,
+      "effect": 26081
+    },
+    {
+      "ID": 142068,
+      "parent": 66448,
+      "type": 2,
+      "effect": 321467
+    },
+    {
+      "ID": 142085,
+      "parent": 66451,
+      "type": 2,
+      "effect": 321478
+    },
+    {
+      "ID": 142145,
+      "parent": 66709,
+      "type": 2,
+      "effect": 321510
+    },
+    {
+      "ID": 169107,
+      "parent": 66448,
+      "type": 5,
+      "effect": 75295
+    }
+  ],
+  "attachments": [
+    {
+      "ID": 321117,
+      "parent": 66447,
+      "effect_name": 23925,
+      "attachment": 127,
+      "start_anim": 1045168128,
+      "anim": 1045168286,
+      "end_anim": 1045168287,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321122,
+      "parent": 66453,
+      "effect_name": 27193,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 1045172525
+    },
+    {
+      "ID": 321129,
+      "parent": 66457,
+      "effect_name": 27193,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 1045174161
+    },
+    {
+      "ID": 321366,
+      "parent": 66620,
+      "effect_name": 18217,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321367,
+      "parent": 66621,
+      "effect_name": 22897,
+      "attachment": 127,
+      "start_anim": 1045168128,
+      "anim": 1045168286,
+      "end_anim": 1045168287,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321422,
+      "parent": 66645,
+      "effect_name": 19791,
+      "attachment": 127,
+      "start_anim": 1045168128,
+      "anim": 1045168286,
+      "end_anim": 1045168287,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321425,
+      "parent": 66645,
+      "effect_name": 19791,
+      "attachment": 127,
+      "start_anim": 1045168128,
+      "anim": 1045168286,
+      "end_anim": 1045168287,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321432,
+      "parent": 66447,
+      "effect_name": 23925,
+      "attachment": 127,
+      "start_anim": 1045168128,
+      "anim": 1045168286,
+      "end_anim": 1045168287,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321467,
+      "parent": 66448,
+      "effect_name": 20452,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321478,
+      "parent": 66451,
+      "effect_name": 22897,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 0
+    },
+    {
+      "ID": 321510,
+      "parent": 66709,
+      "effect_name": 18495,
+      "attachment": 127,
+      "start_anim": 65535,
+      "anim": 65535,
+      "end_anim": 65535,
+      "anim_kit": 0
+    }
+  ],
+  "effect_models": [
+    {
+      "ID": 23925,
+      "parent": 0,
+      "model_file": 1112617,
+      "texture_file": 0
+    },
+    {
+      "ID": 27193,
+      "parent": 0,
+      "model_file": 1139506,
+      "texture_file": 0
+    },
+    {
+      "ID": 27193,
+      "parent": 0,
+      "model_file": 1139506,
+      "texture_file": 0
+    },
+    {
+      "ID": 18217,
+      "parent": 0,
+      "model_file": 915948,
+      "texture_file": 0
+    },
+    {
+      "ID": 22897,
+      "parent": 0,
+      "model_file": 1026578,
+      "texture_file": 0
+    },
+    {
+      "ID": 19791,
+      "parent": 0,
+      "model_file": 967573,
+      "texture_file": 0
+    },
+    {
+      "ID": 19791,
+      "parent": 0,
+      "model_file": 967573,
+      "texture_file": 0
+    },
+    {
+      "ID": 23925,
+      "parent": 0,
+      "model_file": 1112617,
+      "texture_file": 0
+    },
+    {
+      "ID": 20452,
+      "parent": 0,
+      "model_file": 969438,
+      "texture_file": 0
+    },
+    {
+      "ID": 22897,
+      "parent": 0,
+      "model_file": 1026578,
+      "texture_file": 0
+    },
+    {
+      "ID": 18495,
+      "parent": 0,
+      "model_file": 916389,
+      "texture_file": 0
+    }
+  ],
+  "runtime_hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellMisc": "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b",
+    "SpellDuration": "fd01e79e46a57d270e536cdb7d86f78f4f2b086c388bf43e51adc4bbfde4d446",
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKit": "f132307415150dd8ba923066aa4fb8054ad815fc621179e947480e7fa2b1035d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+  },
+  "limits": "Native regular26972 visual relationships use the established extra ModelAttach relationship mapping omitted from its disabled core store. The full native209241 spell plays its own transform/fly/no-actions/visual and expires after20s; the script removes only a self-cast copy it actually applied before map transfer or cancellation. Native C++ DB2Storage separately validates transform display61276/model1731/file124640 via World creature83693, rune65123/model8446/file1139506, five current dialogue line IDs and seven sound kits. This is reference/handler evidence, not model, animation, voice, movement, camera or pet portrait certification in a client. Rune thresholds70/35percent, one-hit attack proxies and dialogue pauses are authored choices; no claim of exact retail combat tuning or film timing."
+}

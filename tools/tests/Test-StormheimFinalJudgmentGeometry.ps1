@@ -20,7 +20,7 @@ if($LASTEXITCODE){throw 'FinalJudgment native ground build failed'}
 $previousPath=$env:PATH
 try {
  $env:PATH="$repo/build-extractors/bin/Release;$env:PATH"
- foreach($pair in @(@('3532.89 887.594 54.7112','3626.52 791.312 38.7806'),@('3626.52 791.312 38.7806','3639.2 777.75 40.2274'))) {
+ foreach($pair in @(@('3532.89 887.594 54.7112','3626.52 791.312 38.7806'),@('3626.52 791.312 38.7806','3639.2 777.75 40.2274'),@('3626.52 791.312 38.7806','3630.62 759.943 38.7806'),@('3626.52 791.312 38.7806','3655.53 784.203 39.1235'))) {
   $pair | Set-Content "$output/ground.txt"
   & "$output/FinalJudgmentGround.exe" "$repo/build-extractors/bin/Release" "$output/ground.txt"
   if($LASTEXITCODE){throw 'Haustvald confrontation approaches are not connected'}
