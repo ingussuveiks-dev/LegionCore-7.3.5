@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    38810
+  ],
+  "next_handoff": 38811,
+  "source_base_revision": "ae63da80",
+  "status": "Code/data loot-link repair tested and deployed; canonical Release starts cleanly. Gameplay and client visuals were expressly excluded and remain unverified.",
+  "findings_and_changes": [
+    "The Dreaming Fungus38810 has one native required ITEM objective278463: Soulcap124504, amount8, storage0, Flags0. Vydhar93231 starts and ends38810, and starts next38811 Judgment Day. Original TDB confirms the quest/objective/ender/chest and RewardNextQuest38811. The original archive contains no selected creature_queststarter or Soulthorn loot rows; current World starter/loot rows are separately inspected, not attributed to that archive.",
+    "All19 live Soulthorn241866 spawns are map1220/spawnMask1/phaseMask1,180-second respawn. Native display28223, flags4, lock1690, questItem1=124504 and Data8=38810 are present. The only current loot row241866/124504 is guaranteed100%, quest-required, mode1, group0,1..1. Data1 was0. GetLootId returns that chest selector; Player::SendLoot guards both shared/personal FillLoot paths with if(lootid). questItem1 can light the object through ActivateToQuest but cannot fill loot. Thus the installed rows did not constitute a usable collection path.",
+    "Migration36 changes only Data1 from0 to241866 for the matching type3/Soulcap/38810 template with the expected existing loot row. It preserves all other template fields, all spawns, lock/quest settings, native nonpersonal/no-group-rules chest behavior, loot rates and objective/reward/relations. Nonzero custom selectors or absent expected loot skip repair. Replay twice has exactly the same final full template rows as a one-field expected change; unrelated Runestone Base241763 remains identical.",
+    "Native C++ DB2Storage reads sparse Soulcap124504: MaxCount0, Stackable10, Bonding4. Lock1690 has one skill-key slot for lock-type5 with Skill0; native ordinary Open3365 has effect33/MiscValue5. Spell::CanOpenLock maps only profession lock types to a required skill, so this ordinary Open does not require Herbalism. GameObjectDisplayInfo28223 resolves FileDataID1237525. Relevant item_sparse/lock/gameobject_display_info hotfix counts are0; item_template_addon has no124504 override. Existence does not certify M2 rendering or physical access to every spawn.",
+    "QuestData derives DELIVER for the ITEM objective despite addon SpecialFlags0. Native HasQuestForItem permits drops only while incomplete and below8; native ItemAddedQuestCheck updates the objective from actual item acquisition and completes at8. Kill credit for item entry124504 and unrelated-item acquisition do not advance this ITEM objective. Native ItemRemovedQuestCheck reopens progress when an item is lost; AdjustQuestReqItemCount rebuilds counts for existing items and caps at8. CanRewardQuest requires eight in carried inventory, even when bank items reconstructed a completed objective. The actual RewardQuest item case consumes8 because FlagsEx0 does not preserve required items; surplus remains.",
+    "Preserve the existing predecessor graph:38810 Prev39788 plus incoming Next38810 from38778 and39788; both predecessors have ExclusiveGroup0. The real loader and SatisfyQuestPreviousQuest treat either rewarded predecessor as sufficient. No evidence justifies replacing this with an all-of gate. Test both alternatives and both factions, then actual Vydhar relation/GetNextQuest for38811; a93446 ender of the following quest is not its starter. No38811 kings, offering ritual, incense item or combat implementation is changed in this commit."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimFungus.ps1",
+      "result": "PASS",
+      "evidence": ".codex/fungus-test.log",
+      "details": "Compiles extracted production GetLootId, HasQuestForItem, ItemAddedQuestCheck, ItemRemovedQuestCheck, AdjustQuestReqItemCount, CanCompleteQuest, CanRewardQuest, predecessor loader/check, race, GetNextQuest and RewardQuest item case. Exercises8 actual item notifications, no kill/unrelated item credit, completion cap, loss/recovery, bank restriction, consumption/surplus, abandonment/reacceptance/reconstructed counts, both factions/alternative predecessors and correct actual next giver. World/inventory operation/network storage use inherited Heart fixtures; full FillLoot, opening spell, StoreLootItem and whole RewardQuest are not executed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFungusData.ps1; tools/tests/Test-StormheimFungusData.ps1 -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/fungus-data.log",
+        ".codex/fungus-data-live.log"
+      ],
+      "details": "Real SQL twice in temporary snapshots, exact objective/loot/spawn/template/relations/prerequisites; entire before/after template comparison, unrelated chest, nonzero custom selector and missing-loot refusal. Live check confirms installed Data1=241866 and original other settings."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFungusCatalog.ps1",
+      "result": "PASS",
+      "evidence": ".codex/fungus-catalog.log",
+      "native_output": [
+        "item124504 name=Soulcap max=0 stack=10 bonding=4 flags=67584,8192,0",
+        "lock1690 slot=0 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=1 type=2 index=5 skill=0 action=0",
+        "lock1690 slot=2 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=3 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=4 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=5 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=6 type=0 index=0 skill=0 action=0",
+        "lock1690 slot=7 type=0 index=0 skill=0 action=0",
+        "display28223 file=1237525",
+        "PASS: native sparse Soulcap permits eight items; Lock1690 is ordinary Open/type5, no profession; actual Soulthorn display exists."
+      ],
+      "input_sha256": {
+        "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+        "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+        "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+      },
+      "details": "Real production C++ sparse DB2 loader and libraries from actual canonical worldserver final-link dependencies. Asserts native item count/stack/bonding, exact lock slots and display file. No guessed packed offsets."
+    },
+    {
+      "command": "tools/tests/Test-StormheimFungusNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-fungus-native-2026-10-15.json",
+      "details": "Original TDB SHA256/native quest, objective, chest, ender and next IDs; original missing loot link retained as evidence; native ordinary Open effect33/type5 and input hash. Current starter/loot data checked separately."
+    },
+    {
+      "command": "tools/tests/Test-StormheimRunewood.ps1 -VerifyReleaseBinary; tools/tests/Test-RitualReagentsLoot.ps1",
+      "result": "PASS",
+      "evidence": [
+        ".codex/fungus-runewood-regression.log",
+        ".codex/fungus-reagents-regression.log"
+      ],
+      "details": "Previous Runewood progression retained; canonical executable contains previous implemented handlers and both kill/talk guards, with actual scripts/game final-link inputs checked. Similar quest-chest loot selector regression remains passing."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": ".codex/fungus-build.log",
+      "details": "Both final Release executables remain in build-extractors/bin/Release; this repair changes SQL only, no C++ runtime implementation was modified. Configurations, data, logs, certificates and DLLs preserved."
+    },
+    {
+      "command": "Canonical Release startup after template migration",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-fungus/startup-20261015-185150",
+      "details": "World initialized/ready=True, graceful shutdown exit0, DBErrors.log0 bytes, stderr0 bytes. Updater disabled only in isolated startup config. Template loaded after complete process restart, not loot-only reload. Server stopped after validation."
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_15_36_stormheim_dreaming_fungus.sql",
+    "sha1": "C97751EBF96FAD227C416E16B1E2EB7D0078F483",
+    "state": "RELEASED",
+    "row_scoped_backup": ".codex/backups/stormheim-fungus/20261015-185142",
+    "updated": "World.gameobject_template241866.Data1=241866",
+    "characters_modified": false
+  },
+  "pending_client_checks": [
+    "Actual Soulthorn appearance, sparkle/cursor, accessibility/collision and opening/collection animation across the19 original Runewood spawns.",
+    "Actual loot window and8 successful Soulcap transfers, cancelled opening/full bags, shared object respawn with another player, no loot without active need; both factions.",
+    "Inventory objective persistence after relog, item loss/recovery and abandonment/reacceptance using native quest-item cleanup; full inventory operations are not fixtures in the client.",
+    "Actual Vydhar turn-in consumes8 items, completes38810 once and offers38811; next Judgment Day ritual/kings are separate unaudited content."
+  ]
+}
