@@ -604,6 +604,9 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
 
 void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreenNotify& loadingScreenNotify)
 {
+    if (loadingScreenNotify.Showing)
+        if (Player* player = GetPlayer())
+            player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
     if (!loadingScreenNotify.Showing)
     {
         if (auto player = GetPlayer())

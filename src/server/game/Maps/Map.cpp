@@ -51,6 +51,7 @@
 #include "WildBattlePet.h"
 #include "WorldStateMgr.h"
 #include "GuildMgr.h"
+#include <cmath>
 
 namespace {
 
@@ -913,6 +914,18 @@ bool Map::AddPlayerToMap(Player* player, bool initPlayer /*= true*/)
     {
         player->ClearClient();
         SendInitSelf(player);
+    }
+    else
+    {
+        // Seamless transfers keep the client-side self object. They still
+        // need destination geometry and explicit movement orders, just like
+        // a near teleport, and have no loading-screen completion message.
+        UpdateData data(GetId());
+        BuildPlayerArrivalObjects(player, *player, data, true);
+        WorldPacket packet;
+        if (data.BuildPacket(&packet))
+            player->GetSession()->SendPacket(&packet);
+        player->NotifyMapObjectArrivalLoaded(int32(GetId()));
     }
 
     SendInitTransports(player);
@@ -2763,7 +2776,9 @@ bool Map::getObjectHitPos(std::set<uint32> const& phases, bool otherUsePlayerPha
 float Map::GetHeight(std::set<uint32> const& phases, float x, float y, float z, bool vmap /*= true*/, float maxSearchDist /*= DEFAULT_HEIGHT_SEARCH*/, DynamicTreeCallback* dCallback /*= nullptr*/) const
 {
     float vmapZ = GetHeight(x, y, z, vmap, maxSearchDist);
-    float goZ = _dynamicTree.getHeight(x, y, z, maxSearchDist, phases, dCallback);
+    // The sixth argument is a phasing-rules bool, not the callback. Passing
+    // only dCallback there silently discarded the supporting-object result.
+    float goZ = _dynamicTree.getHeight(x, y, z, maxSearchDist, phases, dCallback != nullptr, dCallback);
     if (vmapZ > goZ && dCallback)
         dCallback->go = nullptr;
 
@@ -2836,6 +2851,50 @@ bool Map::HavePlayers() const
     return !m_mapRefManager.isEmpty();
 }
 
+void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination, UpdateData& data, bool notifyMovement)
+{
+    // Load the destination's visible grid objects before checking its floor.
+    // A supporting GO can be in an adjacent grid or have a distant origin.
+    float range = player->GetSightRange();
+    std::list<GameObject*> objects;
+    Trinity::GameObjectInRangeCheck check(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ(), range);
+    Trinity::GameObjectListSearcher<Trinity::GameObjectInRangeCheck> searcher(player, objects, check);
+    CellCoord coord = Trinity::ComputeCellCoord(destination.GetPositionX(), destination.GetPositionY());
+    Cell cell(coord); // Deliberately allow grid creation at the destination.
+    cell.Visit(coord, Trinity::makeGridVisitor(searcher), *this, range, destination.GetPositionX(), destination.GetPositionY());
+
+    // Large map-object transports are not ordinary grid objects.
+    for (auto const& entry : m_StaticTransports)
+        if (entry.second->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_MAP_OBJECT)
+            && destination.GetExactDist(entry.second) <= entry.second->GetVisibilityRange())
+            objects.push_back(entry.second);
+
+    DynamicTreeCallback floor;
+    float height = GetHeight(player->GetPhases(), destination.GetPositionX(), destination.GetPositionY(),
+        destination.GetPositionZ() + 2.0f, true, 5.0f, &floor);
+    bool supported = floor.go && std::isfinite(height) && std::fabs(height - destination.GetPositionZ()) <= 2.0f
+        && floor.go->IsInWorld() && player->canSeeOrDetect(floor.go, false, false);
+    bool needsArrivalHold = supported && (!notifyMovement || !player->HaveAtClient(floor.go)
+        || player->GetExactDist(&destination) > range);
+    if (supported)
+        objects.push_back(floor.go);
+
+    for (GameObject* object : objects)
+    {
+        if (!object->IsInWorld() || player->HaveAtClient(object) || !player->canSeeOrDetect(object, false, false))
+            continue;
+        object->BuildCreateUpdateBlockForPlayer(&data, player);
+        player->AddClient(object->GetGUID());
+    }
+
+    // Only an actual phase-visible collision floor qualifies. Air destinations
+    // (including deliberate drop portals), ships, vehicles and GM flight keep
+    // their normal movement semantics. A short blink on an already-known floor
+    // needs no hold. A long same-map teleport can still be streaming that model.
+    if (needsArrivalHold)
+        player->BeginMapObjectArrival(notifyMovement);
+}
+
 void Map::SendInitSelf(Player* player)
 {
     #ifdef TRINITY_DEBUG
@@ -2844,25 +2903,9 @@ void Map::SendInitSelf(Player* player)
 
     UpdateData data(player->GetMapId());
 
-    // A map-object transport can be the ground itself (e.g. Dalaran over
-    // Deadwind Pass). Create visible city geometry before the active player,
-    // in the same packet, instead of waiting for the later visibility update.
-    // Otherwise the client can start falling before its floor exists.
-    for (auto const& entry : m_StaticTransports)
-    {
-        StaticTransport* transport = entry.second;
-        if (!transport->IsInWorld() || !transport->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_MAP_OBJECT)
-            || player->HaveAtClient(transport) || !player->canSeeOrDetect(transport, false, true))
-            continue;
-
-        transport->BuildCreateUpdateBlockForPlayer(&data, player);
-        player->AddClient(transport->GetGUID());
-        // The client streams this large WMO even after receiving its create.
-        // Hold arrivals near the Legion introduction's council room until the
-        // post-loading grace ends. Do not affect ships or other map objects.
-        if (GetId() == 0 && transport->GetEntry() == 246854 && player->GetExactDist(transport) < 75.0f)
-            player->BeginMapObjectArrival();
-    }
+    // Geometry creates precede the first self-create, including normal GOs
+    // rather than only the old Dalaran map-object special case.
+    BuildPlayerArrivalObjects(player, *player, data);
 
     // attach to player data current transport data
     if (Transport* transport = player->GetTransport())

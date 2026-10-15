@@ -2085,6 +2085,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
     if (IsHasDelayedTeleport() && m_Teleports) // Not teleported if we relocate in zone
         return false;
 
+    EndMapObjectArrival(); // A second teleport must not inherit the old hold.
     // client without expansion support
     if (GetSession()->Expansion() < mEntry->ExpansionID)
     {
@@ -2169,6 +2170,12 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
         {
             Position newPos;
             newPos.Relocate(x, y, z, orientation);
+            NotifyMapObjectArrivalLoading(int32(mapid));
+            UpdateData arrivalObjects(mapid);
+            GetMap()->BuildPlayerArrivalObjects(this, newPos, arrivalObjects, true);
+            WorldPacket arrivalPacket;
+            if (arrivalObjects.BuildPacket(&arrivalPacket))
+                GetSession()->SendPacket(&arrivalPacket);
             SendTeleportPacket(newPos); // this automatically relocates to oldPos in order to broadcast the packet in the right place
         }
     }
@@ -2364,6 +2371,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
             m_teleport_dest = WorldLocation(mapid, x, y, z, orientation);
             m_teleport_options = options;
             SetFallInformation(0, z);
+            NotifyMapObjectArrivalLoading(int32(mapid));
 
             // move packet sent by client always after far teleport
             // code for finish transfer to new map called in WorldSession::HandleWorldPortAck at client packet
@@ -30081,7 +30089,7 @@ int32 Player::NextGroupUpdateSequenceNumber(GroupCategory category)
 }
 
 //! Before send self obj. update 
-void Player::BeginMapObjectArrival()
+void Player::BeginMapObjectArrival(bool notifyMovement)
 {
     // Called before the first self-create packet. GM flight, existing levitation
     // and vehicle passengers already have their own movement ownership.
@@ -30090,22 +30098,51 @@ void Player::BeginMapObjectArrival()
 
     _mapObjectArrivalMap = int32(GetMapId());
     _mapObjectArrivalWait = 0;
-    _mapObjectArrivalSettle = 0;
+    _mapObjectArrivalSettle = _mapObjectArrivalLoadedMap == _mapObjectArrivalMap ? 8000 : 0;
     _mapObjectArrivalOwnRoot = !HasUnitState(UNIT_STATE_ROOT) && !HasUnitMovementFlag(MOVEMENTFLAG_ROOT);
     RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING | MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
-    AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_ROOT);
-    if (_mapObjectArrivalOwnRoot)
-        AddUnitState(UNIT_STATE_ROOT);
+    if (notifyMovement)
+    {
+        // A near-teleport self packet carries only destination coordinates,
+        // not movement flags. Its already-known player needs explicit orders.
+        SetDisableGravity(true);
+        if (_mapObjectArrivalOwnRoot)
+            SetControlled(true, UNIT_STATE_ROOT);
+    }
+    else
+    {
+        AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_ROOT);
+        if (_mapObjectArrivalOwnRoot)
+            AddUnitState(UNIT_STATE_ROOT);
+    }
     SetFallInformation(0, GetPositionZ());
+}
+
+void Player::NotifyMapObjectArrivalLoading(int32 mapId)
+{
+    _mapObjectArrivalLoadedMap = -1;
+    if (_mapObjectArrivalMap == mapId)
+        _mapObjectArrivalSettle = 0;
 }
 
 void Player::NotifyMapObjectArrivalLoaded(int32 mapId)
 {
+    if (mapId != int32(GetMapId()) && (!IsBeingTeleportedFar() || mapId != int32(GetTeleportDest().GetMapId())))
+        return;
+    // LoadingScreenNotify can precede WorldPortResponse / SendInitSelf.
+    // Retain that acknowledgement instead of spending the timeout rooted.
+    _mapObjectArrivalLoadedMap = mapId;
     if (_mapObjectArrivalMap >= 0 && _mapObjectArrivalMap == mapId && !_mapObjectArrivalSettle)
         // 7.3.5 ends its loading screen before the dynamic WMO finishes streaming.
         // There is no per-gameobject collision-ready acknowledgement. Keep an
         // explicit grace period after loading, not a timer spent in the screen.
         _mapObjectArrivalSettle = 8000;
+}
+
+bool Player::IsMapObjectArrivalProtected() const
+{
+    return _mapObjectArrivalMap >= 0 && _mapObjectArrivalMap == int32(GetMapId())
+        && IsAlive() && !GetVehicle() && !GetTransport();
 }
 
 bool Player::ShouldDeferMapObjectArrivalVisibility(WorldObject const* target)
@@ -30152,7 +30189,8 @@ void Player::EndMapObjectArrival(bool refreshVisibility)
     _mapObjectArrivalWait = 0;
     _mapObjectArrivalSettle = 0;
     SetFallInformation(0, GetPositionZ());
-    SetDisableGravity(false);
+    if (!HasAuraType(SPELL_AURA_DISABLE_GRAVITY))
+        SetDisableGravity(false);
     if (_mapObjectArrivalOwnRoot)
         SetControlled(false, UNIT_STATE_ROOT); // Retains any root aura acquired during loading.
     _mapObjectArrivalOwnRoot = false;
@@ -30160,12 +30198,7 @@ void Player::EndMapObjectArrival(bool refreshVisibility)
     if (showDeferredCreatures)
     {
         UpdateVisibilityForPlayer();
-        if (Creature* khadgar = FindNearestCreature(113986, 75.0f))
-            TC_LOG_INFO("misc", "Dalaran arrival for %s: Khadgar %s at %.3f %.3f %.3f, visible to client %u",
-                GetName(), khadgar->GetGUID().ToString().c_str(), khadgar->GetPositionX(),
-                khadgar->GetPositionY(), khadgar->GetPositionZ(), uint32(HaveAtClient(khadgar)));
-        else
-            TC_LOG_INFO("misc", "Dalaran arrival for %s: no living Khadgar found within 75 yards after visibility refresh", GetName());
+        TC_LOG_DEBUG("maps", "Object-floor arrival completed for %s on map %u", GetName(), GetMapId());
     }
 }
 

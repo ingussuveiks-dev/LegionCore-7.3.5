@@ -209,6 +209,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
 
     uint32 old_zone = plMover->GetCurrentZoneID();
     plMover->UpdatePosition(plMover->GetTeleportDest(), true);
+    plMover->NotifyMapObjectArrivalLoaded(int32(plMover->GetMapId()));
 
     uint32 newzone, newarea;
     plMover->GetZoneAndAreaId(newzone, newarea);
@@ -262,7 +263,7 @@ void WorldSession::HandleMovementOpcode(OpcodeClient opcode, MovementInfo& movem
                 if (charmer->IsPlayer())
                     plrMover = charmer->ToPlayer();
 
-    if (plrMover && plrMover->IsBeingTeleported())
+    if (plrMover && (plrMover->IsBeingTeleported() || plrMover->IsMapObjectArrivalProtected()))
         return;
 
     GetPlayer()->ValidateMovementInfo(&movementInfo);
@@ -668,6 +669,12 @@ void WorldSession::RelocateMover(MovementInfo &movementInfo)
     Unit* mover = _player->GetUnitBeingMoved();
     if (!mover)
         return;
+
+    // ACKs still pass validation/anticheat bookkeeping in their handlers, but
+    // stale pre-arrival movement must not replace the protected flags/position.
+    if (Player* player = mover->ToPlayer())
+        if (player->IsMapObjectArrivalProtected())
+            return;
 
     Map* map = mover->GetMap();
     Player* plrMover = mover->ToPlayer();

@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-15",
+  "request": "Review common teleport loading so characters remain on destination objects instead of falling before those objects stream.",
+  "status": "Core fix built and automated checks passed; cold-client rendering and movement release remain unverified in game.",
+  "confirmed_source_findings": [
+    "Initial self creation previously preceded ordinary grid gameobject creation. The existing early-object path covered only map-object transports, with the hold restricted to map 0 / entry 246854 / 75 yards.",
+    "Map::GetHeight passed DynamicTreeCallback* to DynamicMapTree::getHeight's preceding bool argument. The implicit conversion discarded the actual supporting-object callback.",
+    "Near teleport packets do not serialize complete self movement flags. An already-known self requires explicit gravity/root orders.",
+    "Movement and movement ACK relocation could replace protected position/flags; an early loading-screen completion could be lost before the hold began."
+  ],
+  "implementation": [
+    "Load destination grids, gather visible ordinary GOs and map-object transports, and trace the real phase-visible dynamic floor within two units of the destination. Send these creates before self creation or near-teleport coordinates.",
+    "Forward the collision callback to the correct native argument. Include a supporting object's create even if its origin lies outside the ordinary search radius.",
+    "Use common floor-based protection instead of the Dalaran entry whitelist. Hold gravity and movement for newly created floors or distant arrivals; short same-map blinks on an already-known floor remain immediate.",
+    "Handle near/seamless transfers with explicit movement orders and their completion path; cache early loading completion. Ignore movement relocation while protection is active.",
+    "Preserve independent root and gravity auras; clean up on departure, death, map change, transport/vehicle boarding, completion or timeout. Defer new creature/pet visibility only for the arriving observer."
+  ],
+  "timing_and_limits": {
+    "post_load_grace_ms": 8000,
+    "missing_completion_fallback_ms": 30000,
+    "policy": "Existing bounded grace retained and generalized. LoadingScreenNotify or near ACK is not an exact per-model collision-ready acknowledgement. This is not a guarantee against arbitrarily slow client streaming.",
+    "scope": "Actual phase-visible dynamic gameobject floors. Static terrain/WMO map loading retains its normal protocol. Invalid coordinates, missing collision data and intentional air destinations require their own diagnosis.",
+    "air_drop": "Portal spell 228508's measured air destination remains unchanged; the earlier audit found terrain about 190.7 units below it, not a supporting dynamic platform.",
+    "protocol_research": "The local MoveTeleport PreloadWorld field was inspected but not changed: a field name and newer-client documentation do not establish 7.3.5 collision readiness. No new packet format or invented object-ready ACK was introduced."
+  },
+  "automated_evidence": {
+    "Test-MapObjectArrival.ps1": "PASS. Extracted production arrival/height/lifecycle handlers: object ordering, ordinary and distant-origin floors, known/hidden floors, different maps, grid-before-ray, callback forwarding, short versus distant near teleports, explicit gravity/root orders, early/late/duplicate notifications, protected ACK relocation, timeout and aura ownership cleanup. Source boundary checks cover seamless transfer and visibility hooks.",
+    "Test-DalaranPortalLanding.ps1": "PASS. Actual extracted Dalaran WMO and production DynamicMapTree: nine valid landing samples, supporting GO callback with the arrival ray, wrong-phase rejection and disabled collision. Existing isolated idempotent portal migration check also passed.",
+    "Test-WarlockRegression.ps1": "PASS. Burning Rush, Shadow Shield and scripted mover handoff production-handler regressions.",
+    "Release": "cmake --build build-extractors --config Release --target worldserver --parallel 10: exit 0.",
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "runtime_sha256": "3B4D8CF2E5994D229C7D94119CEDFD324C67C54BACA4A3303D93A66B468E5612",
+    "startup": "Final binary: ready=true, graceful exit=0; DBErrors.log and stderr.log empty. Logs: build-extractors/runtime-test/teleport-arrival/startup-2026-10-15-final.",
+    "startup_retry": "An earlier smoke attempt reached ready and closed all database pools, but exceeded the helper's 20-second process-exit limit and was terminated by its cleanup. Retest with a 45-second exit limit completed normally; do not erase this observation or describe every smoke attempt as passing."
+  },
+  "client_checks_pending": [
+    "Cold-cache cross-map arrival onto a dynamic platform, including the large Dalaran city WMO: geometry, stable height and movement release.",
+    "Distant same-map arrival and seamless transfer onto newly visible floors; immediate short blink on an existing floor.",
+    "Loading longer than the grace, delayed notification, rapid consecutive teleports, logout/relogin and combat interactions during arrival.",
+    "Both factions and destination phases; GM flight, vehicle/ship passengers, independent root/gravity auras, scripted flight camera and permanent pet portrait."
+  ],
+  "data_changes": "None. No character quest/inventory/position changes. Existing runtime configuration, certificates, DLLs, logs and extracted data preserved."
+}

@@ -37,6 +37,11 @@
 - Run `tools/tests/Test-WarlockRegression.ps1` after changes to these paths or scripted mover resynchronization. The tests compile extracted production handlers; client confirmation of toggling, visuals, pet portrait, and camera remains necessary.
 - Ordinary Enslave Demon sets a charmer without giving the NPC an owner. `CharmInfo::InitCharmCreateSpells` must handle a null `GetOwner()` when checking high-level instance spell restrictions. The 2026-10-14 crash was this dereference after leaving the New Blood cage; run `tools/tests/Test-CharmCreateSpells.ps1` for ownerless, owned, guardian and map/level branches.
 
+# Teleport arrival regression
+
+- Send destination geometry before the self-create or near-teleport coordinates. Find the actual phase-visible supporting collision object, including ordinary grid GOs and map-object transports; do not replace this with an entry/map whitelist or levitate intentional air destinations. `DynamicMapTree::getHeight` takes a phasing bool before its callback: an implicitly converted callback pointer silently loses the supporting object. Run `Test-MapObjectArrival.ps1` and the native WMO collision test `Test-DalaranPortalLanding.ps1`.
+- Near and seamless transfers retain the client's self object and need explicit gravity/root orders, not just server movement flags. Retain early load acknowledgements, reject movement/ACK relocation during the hold, preserve independent root/gravity auras, and test timeout/cleanup. Short blinks on a known floor must remain immediate. The 8-second post-load grace (30-second missing-notification fallback) is bounded protection, not proof that the renderer has loaded every collision model. Cold-client platform arrival, movement release, flight, vehicle, camera and pet portrait still require client checks.
+
 # Scripted quest and visual regressions
 
 - The New Blood (40729, scenario 962) exposed a gap between checking SQL rows and checking an executable interaction. For each stage verify initial spawn/pose, client-visible interaction flags, cast target validation, action completion, credit exactly once, cleanup, and the next stage. Include abandonment/retry, re-entry, pet killing blows, both factions, and later scenarios reusing the same NPC entries.

@@ -4,6 +4,15 @@ $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output="$repo/build-extractors/runtime-test/map-object-arrival"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=[IO.File]::ReadAllText("$repo/src/server/game/Maps/Map.cpp")
+foreach($item in @(
+ @('BuildPlayerArrivalObjects','void Map::BuildPlayerArrivalObjects('),
+ @('GetArrivalHeight','float Map::GetHeight(std::set<uint32> const& phases')
+)) {
+ $start=$source.IndexOf($item[1]);if($start -lt 0){throw "Missing native map handler $($item[0])"}
+ $end=$source.IndexOf('{',$start)+1;$depth=1
+ while($depth -and $end -lt $source.Length){if($source[$end] -eq '{'){++$depth};if($source[$end] -eq '}'){--$depth};++$end}
+ [IO.File]::WriteAllText("$output/$($item[0]).inc",$source.Substring($start,$end-$start))
+}
 $start=$source.IndexOf('void Map::SendInitSelf(Player* player)')
 if($start -lt 0){throw 'Missing production map arrival handler'}
 $end=$source.IndexOf('{',$start)+1;$depth=1
@@ -11,8 +20,8 @@ while($depth -and $end -lt $source.Length){if($source[$end] -eq '{'){++$depth};i
 if($depth){throw 'Unbalanced production handler'}
 [IO.File]::WriteAllText("$output/SendInitSelf.inc",$source.Substring($start,$end-$start))
 $player=[IO.File]::ReadAllText("$repo/src/server/game/Entities/Player/Player.cpp")
-foreach($method in @('BeginMapObjectArrival','NotifyMapObjectArrivalLoaded','UpdateMapObjectArrival','EndMapObjectArrival','ShouldDeferMapObjectArrivalVisibility')) {
- $returnType = if($method -eq 'ShouldDeferMapObjectArrivalVisibility') {'bool'} else {'void'}
+foreach($method in @('BeginMapObjectArrival','NotifyMapObjectArrivalLoading','NotifyMapObjectArrivalLoaded','IsMapObjectArrivalProtected','UpdateMapObjectArrival','EndMapObjectArrival','ShouldDeferMapObjectArrivalVisibility')) {
+ $returnType = if($method -in @('ShouldDeferMapObjectArrivalVisibility','IsMapObjectArrivalProtected')) {'bool'} else {'void'}
  $start=$player.IndexOf("$returnType Player::$method(")
  if($start -lt 0){throw "Missing arrival handler $method"}
  $end=$player.IndexOf('{',$start)+1;$depth=1
@@ -22,6 +31,16 @@ foreach($method in @('BeginMapObjectArrival','NotifyMapObjectArrivalLoaded','Upd
 }
 $handler=[IO.File]::ReadAllText("$repo/src/server/game/Handlers/CharacterHandler.cpp")
 if(!$handler.Contains('player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);') -or !$player.Contains('UpdateMapObjectArrival(p_time);') -or $player -notmatch 'void Player::RemoveFromWorld\(\)\s*\{\s*EndMapObjectArrival\(\);'){throw 'Arrival lifecycle hook missing'}
+if(!$handler.Contains('player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);')){throw 'Loading begin hook missing'}
+$movement=[IO.File]::ReadAllText("$repo/src/server/game/Handlers/MovementHandler.cpp")
+$a=$movement.IndexOf('void WorldSession::RelocateMover(');$a=$movement.IndexOf('{',$a)+1
+$b=$movement.IndexOf('    Map* map = mover->GetMap();',$a)
+if($a -le 0 -or $b -lt $a){throw 'Movement relocation prefix missing'}
+[IO.File]::WriteAllText("$output/ArrivalRelocatePrefix.inc",$movement.Substring($a,$b-$a))
+if(!$movement.Contains('plMover->NotifyMapObjectArrivalLoaded(int32(plMover->GetMapId()));') -or !$movement.Contains('plrMover->IsBeingTeleported() || plrMover->IsMapObjectArrivalProtected()')){throw 'Near ACK or ordinary movement protection missing'}
+$a=$player.IndexOf('GetMap()->BuildPlayerArrivalObjects(this, newPos, arrivalObjects, true);')
+$b=$player.IndexOf('SendTeleportPacket(newPos);',$a)
+if($a -lt 0 -or $b -lt $a -or $player.IndexOf('GetSession()->SendPacket(&arrivalPacket);',$a) -gt $b){throw 'Near teleport must send geometry before coordinates'}
 foreach($signature in @('void Player::UpdateVisibilityOf(WorldObject* target)', 'void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow)')) {
  $pattern = [regex]::Escape($signature) + '\s*\{\s*if \(ShouldDeferMapObjectArrivalVisibility\(target\)\)\s*return;'
  if($player -notmatch $pattern){throw "Visibility path does not defer new creatures: $signature"}
@@ -44,3 +63,7 @@ $add=$source.Substring($source.IndexOf('bool Map::AddPlayerToMap('))
 $add=$add.Substring(0,$add.IndexOf('template<class T>'))
 if($add.IndexOf('player->ClearClient();') -gt $add.IndexOf('SendInitSelf(player);')){throw 'Initial city visibility tracking discarded after creating the player'}
 'PASS: client visibility is cleared before initial objects are sent.'
+if($add -notmatch 'else\s*\{(?s:.*?)BuildPlayerArrivalObjects\(player, \*player, data, true\);(?s:.*?)SendPacket\(&packet\);(?s:.*?)NotifyMapObjectArrivalLoaded\(int32\(GetId\(\)\)\);'){
+ throw 'Seamless transfer requires destination objects, explicit movement orders and completion without a loading screen'
+}
+'PASS: seamless transfers retain the object-first arrival lifecycle.'

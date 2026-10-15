@@ -64,6 +64,7 @@ class Weather;
 class WorldLocation;
 class WorldObject;
 class WorldPacket;
+class UpdateData;
 class BrawlersGuild;
 class StaticTransport;
 struct WildBattlePetPool;
@@ -270,6 +271,7 @@ class TC_GAME_API Map
         bool IsGridLoaded(float x, float y) const;
         void LoadGrid(Position& pos);
         void LoadGrid(float x, float y);
+        void BuildPlayerArrivalObjects(Player* player, Position const& destination, UpdateData& data, bool notifyMovement = false);
         bool UnloadGrid(GridContainerType::iterator itr, bool unloadAll);
         virtual void UnloadAll();
         void ResetGridExpiry(NGrid& grid, float factor = 1) const;

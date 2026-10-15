@@ -1510,8 +1510,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         void SendInitialPacketsBeforeAddToMap(bool login = true);
         void SendInitialPacketsAfterAddToMap(bool login = true);
-        void BeginMapObjectArrival();
+        void BeginMapObjectArrival(bool notifyMovement = false);
+        void NotifyMapObjectArrivalLoading(int32 mapId);
         void NotifyMapObjectArrivalLoaded(int32 mapId);
+        bool IsMapObjectArrivalProtected() const;
         void UpdateMapObjectArrival(uint32 diff);
         void EndMapObjectArrival(bool refreshVisibility = false);
         bool ShouldDeferMapObjectArrivalVisibility(WorldObject const* target);
@@ -3731,6 +3733,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         std::unique_ptr<RestMgr> _restMgr;
         int32 _mapObjectArrivalMap = -1;
+        int32 _mapObjectArrivalLoadedMap = -1;
         uint32 _mapObjectArrivalWait = 0;
         uint32 _mapObjectArrivalSettle = 0;
         bool _mapObjectArrivalOwnRoot = false;

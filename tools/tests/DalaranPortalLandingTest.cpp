@@ -1,5 +1,6 @@
 #include <set>
 #include "GameObjectModel.h"
+#include "DynamicTree.h"
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -7,6 +8,10 @@
 // Use the production collision reader against the extracted 7.3.5 city WMO.
 struct DalaranOwner : GameObjectModelOwnerBase
 {
+    // Identity only: the collision reader stores this pointer in its callback
+    // and never dereferences it. No fake GameObject class/layout is linked.
+    GameObject const* identity = nullptr;
+    GameObject const* GetOwner() const override { return identity; }
     bool IsSpawned() const override { return true; }
     uint32 GetDisplayId() const override { return 35175; }
     uint8 GetNameSetId() const override { return 0; }
@@ -23,7 +28,10 @@ int main(int argc, char** argv)
     if (argc != 5)
         return 1;
     LoadGameObjectModelList(argv[1]);
-    std::unique_ptr<GameObjectModel> model(GameObjectModel::Create(std::make_unique<DalaranOwner>(), argv[1]));
+    int identityToken = 0;
+    auto owner = std::make_unique<DalaranOwner>();
+    owner->identity = reinterpret_cast<GameObject const*>(&identityToken);
+    std::unique_ptr<GameObjectModel> model(GameObjectModel::Create(std::move(owner), argv[1]));
     if (!model)
         return 2;
     model->enableCollision(true);
@@ -41,5 +49,24 @@ int main(int argc, char** argv)
     float oldFloor = model->getHeight(-11099.3f, -2211.6f, 792, 100, {7714, 7552}, true);
     if (oldFloor < 700 || 792 - oldFloor < 30)
         return 4;
+    // Use the production dynamic collision tree with the new arrival query's
+    // exact search window, not only a mocked 'floor exists' result.
+    DynamicMapTree tree;
+    tree.insert(*model);
+    tree.balance();
+    DynamicTreeCallback support;
+    float arrivalFloor = tree.getHeight(x, y, z + 2, 5, {7714,7552}, true, &support);
+    if (!std::isfinite(arrivalFloor) || std::fabs(arrivalFloor-z) > 2
+        || support.go != reinterpret_cast<GameObject*>(&identityToken))
+        return 5;
+    DynamicTreeCallback hidden;
+    if (std::isfinite(tree.getHeight(x,y,z+2,5,{999},true,&hidden)) || hidden.go)
+        return 6;
+    model->enableCollision(false);
+    DynamicTreeCallback disabled;
+    if (std::isfinite(tree.getHeight(x,y,z+2,5,{7714,7552},true,&disabled)) || disabled.go)
+        return 7;
+    tree.remove(*model);
     std::cout << "PASS: nine landing samples within 1 unit of the city floor; old landing gap=" << 792 - oldFloor << '\n';
+    std::cout << "PASS: actual Dalaran WMO/dynamic-tree arrival support callback, 5-yard ray, phase rejection and disabled collision\n";
 }
