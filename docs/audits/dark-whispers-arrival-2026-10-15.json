@@ -1,0 +1,30 @@
+{
+  "reported_failure": "Following finale deployment fa8ccc7f, the user reports stage 4 does not start and explicitly confirms stage 3 Demon Hunting / Mephistroth's Barrier crossed remains 0/1 after crossing with teleport gates. The user calls them Demonic Circle/gates; exact spell identity is not established. Crossing with Demonic Gateway is intended; walking through fel fire is not a progression requirement.",
+  "observed_runtime": "The earlier Mephistroth post-scaling guard executed at 16:50:05 and later Immolate ticks did not kill him, but the earlier barrier criterion remained missing according to the client. The last saved player position was near the native barrier-arrival marker at 1188.13, 5013.35, 56.4768. The actual live LOS invoker sequence was not logged, so pet-first consumption is a reproduced code failure path rather than a directly recorded callback from that attempt.",
+  "root_cause": "Wild Imps 99739 event 1 is a nonrepeatable OOC_LOS event with radius 30, friendly invokers allowed, and a base-actor scenario-1097/step-2 condition. It did not require a Player invoker. A friendly pet may activate it while its owner is farther than 30 yards away. ProcessAction marks it runOnce before UPDATE_ACHIEVEMENT_CRITERIA selects a nearby Player; with no Player available, credit 50918 is skipped, but the linked speech and first wave are still started. Later player arrival cannot re-run the consumed event. Independently, teleporting to a stationary position should not rely solely on a subsequent movement/LOS notification.",
+  "implementation": [
+    "Add source-22 event-group-2 condition OBJECT_ENTRY/TYPEID_PLAYER on invoker target 0, alongside the existing live-scenario condition on actor target 1. Pets and other friendly NPCs are rejected before runOnce is consumed. Preserve the original event, radius, credit, stage condition, linked waves and shared-entry scripts.",
+    "In the existing map-1498 instance script, every 500 ms during scenario 1097/order 2, check actual Players at native far-side DB marker 376351. Require an active unrewarded quest, alive/in-world/not teleporting, correct map and phase, live marker/AI and proximity. Do not retry at entrance marker 376353 or other shared-entry actors.",
+    "Retry via CreatureAI::MoveInLineOfSight_Safe with the Player as invoker. Native SmartAI LOS, range, combat, scenario and nonrepeatable checks remain authoritative. This adds no forced criterion or direct stage jump and creates no duplicate wave controller. Log successful recovery only after the scenario becomes order 3."
+  ],
+  "automated_checks": [
+    "Test-DarkWhispersArrival.ps1 replays migration 33 twice in temporary shadow conditions. It confirms existing actor step gates and the new Player-invoker gate, and checks the unchanged native event-1 flags/radius/credit/link data.",
+    "C++ fixture compiles the production arrival helper, native OBJECT_ENTRY condition branch, OOC_LOS event branch and safe LOS wrapper. Baseline admission reproduces pet-first runOnce consumption with zero credit and one wave. The fixed gate rejects that pet, and a stationary Player arrival credits exactly once and starts exactly one wave without any client movement callback.",
+    "Repeated checks, delayed LOS availability, actor combat followed by retry, dead/offline/teleporting/wrong-map player, missing/rewarded quest, completed active quest, wrong phase, missing AI, wrong scenario/step and entrance-marker exclusion are tested. Player search, condition admission and action/criteria outcomes use a fixture adapter; this is not an in-client scenario playthrough.",
+    "Test-DarkWhispersFinale -VerifyReleaseBinary passes after the arrival integration, retaining native DB2 stage-5/6 checks and lethal-hit/optional-cast/pet cases. The extraction boundary is updated to keep its finale-only fixture isolated.",
+    "Test-WarlockRegression passes Burning Rush and scripted mover regressions. Canonical Release is rebuilt from the actual scripts.lib, and Test-DarkWhispersArrival -VerifyReleaseBinary finds the arrival marker.",
+    "Test-WorldShutdown -ProbeConnections reaches ready, responds on both ports and exits with code 0, no new crash dumps. DBErrors remains 5309 bytes; nine protected configuration/certificate/DLL/bnetserver hashes are unchanged. The final hidden worldserver is started separately with its canonical working directory."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "E615DF6BBB32942BFBD44659A4B796378F4D3F2D6776B7847BA2E762C1F60269",
+    "migration": "2026_10_15_33_dark_whispers_arrival.sql",
+    "migration_sha1": "2DAE0EE33619142748EE0FC310FD1261E98D6982"
+  },
+  "client_verified": false,
+  "pending_client_checks": [
+    "After restart, replay scenario stage 3 using Demonic Gateway across the fel strip. Confirm stage 4 starts at the far side and its enemy waves advance normally. Also check an arrival with the demon pet ahead of the player.",
+    "Complete stage 5, verify stage 6/skull acquisition and stage 7/exit/turn-in. Preserve the earlier reported failures and do not mark the finale or full route client verified until the user confirms them."
+  ],
+  "recovery_limit": "A process restart loads the new condition and instance retry; generic active-scenario recovery starts a fresh run. Already consumed transient events/criteria are not claimed to persist at the exact failed stage. No personal quest/item state is manually altered."
+}

@@ -10,7 +10,7 @@ foreach($expected in @('step 2478 4 48050','step 2479 5 48053','tree 48051 48050
 }
 function Extract([string]$s,[string]$start,[string]$end){$a=$s.IndexOf($start);$b=$s.IndexOf($end,$a);if($a -lt 0 -or $b -lt 0){throw "Missing production section: $start"};return $s.Substring($a,$b-$a)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/dark_whispers_artifact.cpp" -Raw
-[IO.File]::WriteAllText("$out/ProtectFinale.inc",(Extract $source 'namespace DarkWhispersArtifact' 'class instance_dark_whispers_artifact'))
+[IO.File]::WriteAllText("$out/ProtectFinale.inc",(Extract $source 'namespace DarkWhispersArtifact' 'namespace DarkWhispersArrival'))
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 [IO.File]::WriteAllText("$out/NativeScaledHook.inc",(Extract $source '    damage /= victim->GetHealthMultiplierForTarget(this);' '    if (!victim->IsControlledByPlayer()'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw

@@ -38,6 +38,7 @@
   },
   "recovery": "A server restart is required for the new instance binding and template/scripts. Existing generic login recovery restarts this active scenario in a fresh instance; exact stage-5 actors and criteria are not persisted across a process restart. No manually granted victory credit or artifact is used to conceal the failed encounter.",
   "client_verified": false,
+  "subsequent_client_failure": "After deployment fa8ccc7f, the user reports stage 4 did not begin and explicitly confirms stage 3 Demon Hunting / Mephistroth's Barrier crossed remained 0/1 after using their teleport gates. The runtime logged the new Mephistroth damage guard, but the finale could not advance while an earlier stage was incomplete. Stage-6 repair is still not client verified. See dark-whispers-arrival-2026-10-15.json for the separately reproduced pet-first event-consumption path and stationary arrival repair.",
   "pending_client_checks": [
     "Relog and replay the active scenario. Confirm pet/movement and stage transitions, then defeat Mephistroth with a strong player hit and/or pet finishing hit. Verify stage 6 appears and exactly one skull is lootable.",
     "Take the Skull of the Man'ari, verify stage 7 and the exit portal, then return and turn in the quest. Confirm the actual transform, speech, skull/guide presentation and cleanup in the 7.3.5 client.",
