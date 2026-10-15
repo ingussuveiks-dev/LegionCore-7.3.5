@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-15",
+  "scope": [
+    39652
+  ],
+  "status": "Code/data repair complete; production script fixtures, native DB2/quest handoff/geometry, SQL replay/live checks, canonical Release build and clean startup/shutdown passed. Client gameplay was explicitly excluded and remains pending.",
+  "findings_and_changes": [
+    "Native Where Dragons Rule39652 requires MONSTER279773/96466 slot0 amount1 (Fly to the top of Thorims Peak), then279774/96467 slot1 amount1 Flags2 (Speak to Thrymjaris). Preserve shared races, flags, mandatory stages and next38624. Native loader accepts38414 or40568 as predecessors; do not flatten that alternative.",
+    "Actual source is96465/guid146706156, map1220/zone7541/instance0,1977.46,2551.44,489.014. Existing menu18693 option0 Broadcast98282 has OptionNpc0, which is the generic gossip type, and source15 quest-active condition. Its old two-row SmartAI chain credits96466 and teleports to2082.43,2643.01,676.92 immediately. Replace this exact static interaction in a SmartAI subclass. Keep the entry-wide SQL rows for unrelated copies, other maps and instances.",
+    "Validate native mandatory objectives, INCOMPLETE quest, finalized grounded player at source, alive/in-world source/player, same phase, visibility/LOS, no combat/teleport/taxi/flying/falling/transport/vehicle. Cache the actual hello source GUID and weak current quest lifetime; select must match that offer, current lifetime, menu18693 and actually offered option0. Clear the menu before starting; failed summon can retry via another hello. No credit at accept, hello, select, summon, boarding or early nodes.",
+    "Native Ride Vethir182921 identifies dragon92302, display68213. Its default vehicle4133/seat15388 is a control seat; this quest giver96465 instead has vehicle4367/seat15925, a non-control head attachment21 with riding animation91. Directly summon92302 at the source with a per-summon4367 override, validate the actual vehicle ID, and make it personal/passive/protected/active. Native Creature::CreateFromProto honors positive vehId overrides, preserving the global template default4133 and the original4367 giver. No global spell destination, vehicle/seat edit, pet lookup or guardian replacement. Seat15925 is not generally enterable/exitable; native EnterVehicle explicitly requests seat0, whose AddPassenger path bypasses automatic free-seat selection. Client manual-exit UI availability is not claimed.",
+    "Use the existing tested Aviash movement lifecycle locally: request native EnterVehicle0, wait for both passenger0 and finalized player boarding spline, relocate passengers, send movement flags and SetClientControl(dragon,false) before launching. Restore SetClientControl(player,true)/viewpoint on dismount, interruption, map transfer and logout. Linear MovePoint nodes at18yd/s go out from the cliff, around the mountain and descend to the installed summit destination. This is an authored geometry-checked repair, not a recovered retail spline.",
+    "Each node requires the matching native MovementInform ID/type, final spline and endpoint distance<0.5yd. At the final node mark success, stop and restore mover, use native ExitVehicle/CalcExitVehiclePos to land at2082.43,2643.01,676.926. Retain actor/state until the exit spline finishes. Only then, grounded within3yd at the summit and in the same quest lifetime, increment only39652/96466 once and use native CanCompleteQuest. No group/nearby broadcast credit or other quests sharing a credit alias.",
+    "Boarding timeout10s, flight timeout180s, missing/dead actor, death, manual mid-flight exit, phase/visibility loss, abandonment/reacceptance and external transfer restore the mover and cancel credit. Interrupted rides return to the source after exit, without overriding an external teleport or another vehicle. Missing exit completion gets a10s fallback. A successful fallback near teleport waits in Recovering for its acknowledgement/finalized grounded placement before credit; unresolved recovery times out without credit. Ordinary logout saves the safe recovery destination after the cores normal save. A crash between ordinary saves has no exact-stage/midair recovery guarantee.",
+    "Summit Thrymjaris92218/guid146706157 at2042.73,2662.03,666.41 no longer grants unconditional hello credit from that exact actor. Require grounded same-phase visible/LOS interaction within15yd, no remaining ride and first counter96466 before incrementing only39652/96467. Valid complete/rewarded states and both later native quest-accept actions (38624 teleport and43560 summon) are retained. Other copies delegate SmartAI.",
+    "Migration19 binds only known empty/native AI templates and known original source actions. Skip foreign scripts, custom source actions and pre-existing source/summit GUID lists. Keep entry-wide SmartAI rows, source15 conditions, gossip text/type, both vehicle templates, factions/flags, positions and later quest actions. Back up only the three changed creature_template rows and register the exact migration SHA1 as RELEASED.",
+    "Original TDB reward is141399x1; installed quest has0x0. This flight/progression repair preserves the installed reward difference and records it as unresolved intent. Do not describe all quest rewards or the whole quest as retail/client verified."
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimDragons.ps1",
+      "result": "PASS",
+      "evidence": ".codex/dragons-test.log",
+      "details": "Compiles actual production script and native quest delayed-event lifetime helper. Real script hello/select/starting/summon registration, invalid menu/option/stale acceptance and failed summon retry; boarding before mover and spline, every node/wrong type/location/nonfinal spline, first credit only after exit and second only at mother after first, distinct players, duplicates, native vehicle ID guard, cancellation/death/phase/visibility/missing actor/manual exit/timeout/logout/external transfer, acknowledged successful recovery, invalid native objective metadata and unrelated actor delegation. Quest storage/completion, map/phase/LOS, native vehicle join/exit/movement/teleport packets and AI transport are fixtures. The loop repeats the same faction-neutral code; actual native both-race prerequisite/completion behavior is covered separately."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDragonsHandoff.ps1",
+      "result": "PASS",
+      "evidence": ".codex/dragons-handoff.log",
+      "details": "Reuse Heart fixture with extracted real native prerequisite loader and Player completion/reward/race/previous/GetNextQuest handlers. Both race branches and both previous quests38414/40568, both mandatory counters, actual92218 receiver/next38624 and rejection of old96465 for that next quest. Registry and inventory remain fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDragonsGeometry.ps1",
+      "result": "PASS",
+      "evidence": ".codex/dragons-geometry.log",
+      "details": "Reuse native Aviash GridMap/VMAP checker with actual new route header:8 linear flight segments,4725 terrain samples, +/-2yd corridor and0/2/4yd vertical rays, minimum clearance2.20416yd. Reuse native Skyhorn MMAP checker: summit landing to actual Thrymjaris is connected through7 ground polygons. Prior Heart geometry validates the source/summit authored floors; landing676.926 matches native floor. Full animated model/wings and client seat offsets are not represented by this corridor."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDragonsNative.py --write-evidence",
+      "result": "PASS",
+      "evidence": "docs/audits/stormheim-dragons-native-2026-10-15.json",
+      "details": "Original TDB stages/next referenced from preserved Heart native audit, native SpellEffect182921->92302, Vehicle4133/4367 and seats15388/15925 with hashes. Metadata, not visual playback."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDragonsData.ps1 and -Live",
+      "result": "PASS",
+      "evidence": [
+        ".codex/dragons-data.log",
+        ".codex/dragons-data-live.log"
+      ],
+      "details": "Migration twice in temporary table snapshots, custom ride/action/GUID preservation, actual installed binding/anchors/quest/mandatory counters/next/reward0x0/menu/condition, original vehicles and all old SAI/later accept actions."
+    },
+    {
+      "command": "tools/tests/Test-WarlockRegression.ps1",
+      "result": "PASS",
+      "evidence": ".codex/dragons-mover-regression.log",
+      "details": "Required scripted mover resynchronization and unrelated mover rejection regression, plus existing compiled production Burning Rush/Shadow Shield cases. No new warlock work or client testing."
+    },
+    {
+      "command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+      "result": "PASS",
+      "evidence": [
+        ".codex/dragons-configure.log",
+        ".codex/dragons-build.log"
+      ],
+      "runtime": "build-extractors/bin/Release",
+      "worldserver_sha256": "5d2b92d0c694373fa8fa375da654ae100e4991fda6fdc328d8f2c53ac0a585f1"
+    },
+    {
+      "command": "Canonical worldserver startup with isolated logs, Updates.EnableDatabases=0, then server shutdown0",
+      "result": "PASS",
+      "evidence": "build-extractors/runtime-test/stormheim-dragons/startup-20261015-073646",
+      "details": "Ready=True, exit0, DBErrors0bytes, stderr0bytes, stopped."
+    }
+  ],
+  "deployment": {
+    "sha1": "0BA73D2FFD4638A08F2EC6D5F11C7A6341CC6E2F",
+    "state": "RELEASED",
+    "migration": "2026_10_15_19_stormheim_dragons.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-dragons\\20261015-073641"
+  },
+  "observed_failures_and_limits_retained": [
+    "An initial diagonal from the boarding point clipped the cliff. An initial vertical node520 before heading out clears the native geometry.",
+    "The native182921 actor has a control seat; using it unchanged can replace AI with charm AI. The scoped4367 override and actual vehicle ID guard avoid that path.",
+    "A successful emergency near teleport cannot be treated as immediate grounded completion. The Recovering phase explicitly waits for acknowledgement and a final grounded placement, preserving the recorded failure rather than assuming the fixture teleport proves native delivery.",
+    "Static giver96465 stays available for other players while a personal92302 ride appears. Exact summon/boarding presentation and any visible overlap for the rider need client review. No authored retail dialogue/conversation or full-model animation was recovered for this flight.",
+    "Installed reward0x0 versus original141399x1 is retained with unresolved intent; no reward restoration is included."
+  ],
+  "pending_client_checks": [
+    "Both factions: actual menu display, select, personal dragon summon, completed boarding, camera follows the flying dragon, each route/wing/model animation, descent and native exit spline; no credit until successful delivery and no second credit before talking to Thrymjaris.",
+    "Manual exit, missing actor/failed join/flight/exit, abandonment/reacceptance, re-entry/logout and two players. Validate safe recovery and visibility cleanup in a real client.",
+    "Permanent pet and portrait before/after boarding/dismount/map changes; UnitExists(pet), PetUsesPetFrame(), UnitInVehicle(player), PlayerFrame.vehicleHidesPet and PetFrame visibility. Native client UNIT_EXITING_VEHICLE processing and camera restoration remain unverified.",
+    "Actual turn-in and38624 offer. That next quests own acceptance teleport/combat sequence remains for its separate audit."
+  ]
+}
