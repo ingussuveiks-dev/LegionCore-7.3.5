@@ -3,6 +3,7 @@
   "scenario": 1097,
   "map": 1498,
   "client_verified": false,
+  "followup_client_failure": "After a7288abf the actual client run logged AuraScript::GetTarget hook errors for aura_dark_whispers_ritual_beam212497. The helper-only test did not execute the real OnAuraUpdate context. Corrected and retained in dark-whispers-beam-hook-2026-10-16.json; earlier automation did not verify live beam cleanup. The same run also stopped at stage4 with waves3/3 and leaders0/1, audited separately in dark-whispers-leaders-2026-10-16.json.",
   "reported_failures": [
     "Thal'kiel appears on the floor below the floating green binding.",
     "Mephistroth does not visibly carry the skull; skull and binding disappear.",

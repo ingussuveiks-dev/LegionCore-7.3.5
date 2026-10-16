@@ -145,7 +145,7 @@ class aura_dark_whispers_ritual_beam : public AuraScript
     PrepareAuraScript(aura_dark_whispers_ritual_beam);
     void Update(uint32)
     {
-        if (DarkWhispersIntro::StopBeam(GetCaster(), GetTarget()))
+        if (DarkWhispersIntro::StopBeam(GetCaster(), GetUnitOwner()))
             Remove();
     }
     void Register() override { OnAuraUpdate += AuraUpdateFn(aura_dark_whispers_ritual_beam::Update); }

@@ -1,0 +1,15 @@
+{
+  "scope": "Dark Whispers212497 per-caster ritual beam cleanup",
+  "client_verified": false,
+  "observed_failure": "Actual post-a7288abf client run produced repeated Server.log ERROR [scripts]: aura_dark_whispers_ritual_beam Spell212497 AuraScript::GetTarget called in a hook in which the call won't have effect. DBErrors.log remained empty; checking that file and startup alone missed active script errors.",
+  "cause": "OnAuraUpdate executes AURA_SCRIPT_HOOK_ON_UPDATE without an AuraApplication. Native GetTarget permits only application-related hooks, logs and returns null here. The earlier StopBeam helper fixture never executed the actual script callback or native getter.",
+  "fix": "Use GetUnitOwner, which accesses the unit-owned aura directly. Keep caster-specific application removal and preserve other doomweavers' beams. Do not broaden GetTarget's valid hooks or suppress its error.",
+  "checks": [
+    "Test-DarkWhispersBeamHook.ps1 extracts the real beam class, native Aura::CallScriptAuraUpdateHandlers, actual hook enum and GetTarget/GetUnitOwner implementations. Three active beam instances execute30000 callbacks with no application and no errors; one enters combat, another dies, a caster disappears and a foreign target remains unaffected.",
+    "The same test against a7288abf reproduces the error and fails errors==0. The current implementation passes. Test-DarkWhispersIntro.ps1 now invokes this hook-context regression instead of relying solely on helper tests.",
+    "Full Release worldserver built to build-extractors/bin/Release with canonical game.lib/scripts.lib and fresh linker map. VerifyReleaseBinary decodes the actual beam Update relative calls, resolving incremental-link E9 thunks: GetUnitOwner is called and GetTarget is not.",
+    "Relevant introduction, arrival and finale regressions passed. Startup/shutdown reached ready and exited0 with no new dumps. No new scripts/sql ERROR lines after the16:17:41 user shutdown; six network reset messages at16:27:39 correspond to the test's six TCP greeting probes intentionally closing connections. Old client errors remain in Server.log. Active beam playback is still a client check."
+  ],
+  "release_sha256": "9DA07E9747636D136A806EFD72CF8F7D2B48441A53607C6ACEB9F19FAC58E018",
+  "limits": "Native hook-context execution proves the API error is fixed. It does not verify rendered beam interruption, skull alignment, hand placement or audio. The user's stage4->5 failure is an independent leader-credit problem and is not hidden by this change."
+}
