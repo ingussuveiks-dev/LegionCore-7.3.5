@@ -20968,6 +20968,13 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (questid == 38058 && real_entry == 90903)
             continue;
 
+        if (questid == 40003 && ((entry >= 97983 && entry <= 97985) || entry == 98186 ||
+            (real_entry >= 97983 && real_entry <= 97985) || real_entry == 98186))
+        {
+            TC_LOG_DEBUG("quest", "Stem the Tide: ignored generic portal credit");
+            continue;
+        }
+
         if (questid == 40002 && (entry == 97981 || entry == 97982 || real_entry == 97981 || real_entry == 97982))
         {
             TC_LOG_DEBUG("quest", "A Familiar Fate: ignored generic binding credit");
@@ -21192,6 +21199,12 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         uint32 questid = GetQuestSlotQuestId(i);
         if (!questid)
             continue;
+
+        if (questid == 40003 && ((entry >= 97983 && entry <= 97985) || entry == 98186))
+        {
+            TC_LOG_DEBUG("quest", "Stem the Tide: ignored generic portal talk credit");
+            continue;
+        }
 
         if (questid == 40002 && (entry == 97981 || entry == 97982))
         {

@@ -47,6 +47,7 @@ void AddSC_stormheim_geir();
 void AddSC_stormheim_lifeblood();
 void AddSC_stormheim_heavy_burden();
 void AddSC_stormheim_familiar_fate();
+void AddSC_stormheim_stem_tide();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -299,6 +300,7 @@ void AddLegionScripts()
     AddSC_stormheim_lifeblood();
     AddSC_stormheim_heavy_burden();
     AddSC_stormheim_familiar_fate();
+    AddSC_stormheim_stem_tide();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
