@@ -1,0 +1,16 @@
+{
+  "quest": 42128,
+  "item": 136986,
+  "report": "User showed a leftover Stag Blood Sample and suspected excess quest or loot grants.",
+  "evidence": [
+    "Maiko has rewarded quest42128 and one remaining item136986. This snapshot does not prove the origin of that particular copy.",
+    "Objective283818 requires one sample. Docile Stag106581 SmartAI event0 grants one via gossip19586 option0, not creature loot.",
+    "Both gossip choices had only an active-quest condition, so option0 could grant repeated samples while the other reagents remained outstanding. The action itself had no quest/count conditions."
+  ],
+  "change": "Keep original quest gates, hide collection choices with a sample in inventory or bank, and independently guard the grant against stale or repeated selections. Preserve the existing option1 behavior; this fix does not implement its missing dark-magic branch.",
+  "character_data_changed": false,
+  "automated_checks": "Test-RitualReagentsSample.ps1: 72 quest/inventory/bank route combinations, SQL replay, preservation of unrelated conditions. These model the native condition semantics and do not constitute a client interaction test.",
+  "runtime_checks": "Canonical Release startup installed migration6410337E4C30EA8B0F7EDBCA392573B1130B9EA2, reached ready and shut down with exit0, no new crash dumps or ERROR log lines. Both worldserver and bnetserver are stopped.",
+  "client_verified": false,
+  "pending": "On a character with incomplete42128 and no sample, collect once, verify both choices hide, and verify repeated interaction cannot grant another. After deleting a needed sample the choice should return. Existing extra copies are not automatically deleted."
+}
