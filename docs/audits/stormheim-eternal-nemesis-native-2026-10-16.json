@@ -1,0 +1,169 @@
+{
+  "creature_questender": [
+    {
+      "id": "97480",
+      "quest": "39849"
+    },
+    {
+      "id": "97480",
+      "quest": "39857"
+    }
+  ],
+  "creature_template": [
+    {
+      "entry": "97480",
+      "name": "'Ashildir'",
+      "modelid1": "68635",
+      "faction": "35",
+      "npcflag": "2",
+      "AIName": "''",
+      "ScriptName": "''"
+    },
+    {
+      "entry": "91387",
+      "name": "'Helya'",
+      "modelid1": "65043",
+      "faction": "35",
+      "npcflag": "0",
+      "AIName": "''",
+      "ScriptName": "''"
+    }
+  ],
+  "gameobject_queststarter": [
+    {
+      "id": "244559",
+      "quest": "39857"
+    }
+  ],
+  "gameobject_template": [
+    {
+      "entry": "244559",
+      "type": "2",
+      "displayId": "328",
+      "name": "'Helya\\'s Altar'",
+      "IconName": "'questinteract'",
+      "castBarCaption": "''",
+      "unk1": "''",
+      "size": "1.25",
+      "Data0": "0",
+      "Data1": "19547",
+      "Data2": "0",
+      "Data3": "18790",
+      "Data4": "0",
+      "Data5": "0",
+      "Data6": "0",
+      "Data7": "0",
+      "Data8": "0",
+      "Data9": "0",
+      "Data10": "0",
+      "Data11": "0",
+      "Data12": "0",
+      "Data13": "0",
+      "Data14": "0",
+      "Data15": "0",
+      "Data16": "0",
+      "Data17": "0",
+      "Data18": "0",
+      "Data19": "0",
+      "Data20": "0",
+      "Data21": "0",
+      "Data22": "0",
+      "Data23": "0",
+      "Data24": "0",
+      "Data25": "0",
+      "Data26": "0",
+      "Data27": "0",
+      "Data28": "0",
+      "Data29": "0",
+      "Data30": "0",
+      "Data31": "0",
+      "Data32": "0",
+      "RequiredLevel": "0",
+      "AIName": "''",
+      "ScriptName": "''",
+      "VerifiedBuild": "22566"
+    }
+  ],
+  "quest_objectives": [
+    {
+      "ID": "280021",
+      "QuestID": "39849",
+      "Type": "1",
+      "Order": "0",
+      "StorageIndex": "0",
+      "ObjectID": "128854",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "1",
+      "ProgressBarWeight": "0",
+      "Description": "''",
+      "VerifiedBuild": "25549"
+    }
+  ],
+  "quest_template": [
+    {
+      "ID": "39857",
+      "LogTitle": "'The Eternal Nemesis'",
+      "LogDescription": "'Return to Ashildir and inform her of Helya\\'s challenge.'",
+      "QuestDescription": "'<Helya\\'s voice echoes in the sky above the altar>\\n\\nYou say that you do not belong here among the unworthy, outsider, but your spirit fragments so easily. How am I to know you speak the truth? \\n\\nI cannot, so you must show me.\\n\\nBring yourself to the eternal battlefield and face my champion. If you manage to defeat him, then I may grant you a pardon.'",
+      "Flags": "33554440",
+      "FlagsEx": "0",
+      "RewardNextQuest": "39849"
+    },
+    {
+      "ID": "39849",
+      "LogTitle": "'To Light the Way'",
+      "LogDescription": "'Collect a Helheim Waylight from Bloodbeard in Helheim.'",
+      "QuestDescription": "'Helya must think her challenge unwinnable. We will show her different.\\n\\nI am unsure what she did, but Helya has weakened you somehow. I have seen similar effects on my shieldmaidens, and now they are trapped by Helya\\'s minions.\\n\\nI may know a way, however. The Kvaldir ships carry special lanterns bound to this place to navigate through the fog. It is said that the light of these lanterns can release bonds of the spirit.\\n\\nThere is a kvaldir ship nearby. See if you can find one there.'",
+      "Flags": "33554440",
+      "FlagsEx": "0",
+      "RewardNextQuest": "39850"
+    }
+  ],
+  "original_39849_starter_present": false,
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "native_catalog": [
+    "line4748 broadcast=98489 next=7170 additional=2000 visualKit=0 animKit=0",
+    "line7170 broadcast=120831 next=0 additional=1000 visualKit=0 animKit=0",
+    "display65043 model=8570 file=1266228 gender=1",
+    "display68635 model=8891 file=1339502 gender=1",
+    "sound52999 exists=1",
+    "sound53000 exists=1",
+    "sound70180 exists=1",
+    "Ashildir factionTemplate190 faction=148 hostileToAlliance=0 hostileToHorde=0",
+    "Ashildir faction148 CanHaveReputation=0",
+    "PASS: native sparse2252 line4748 and next7170, Helya/Ashildir models/gender and three sound kits. World explicitly sends only4748; client playback/next-line semantics remain unverified."
+  ],
+  "runtime_hashes": {
+    "ConversationLine": "EF9A39EDEEF5F58AEBD0741839291A1A4E4AB745BE881C3E155B9767C5BA7039",
+    "FactionTemplate": "09CB3CC83A73C74F6737B69F601002FAD091F74B646534175B3BFDACEF67FF9E",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "Faction": "BA63ECFA9BAB1435A9A680D0565B3A3DBCA83861AAC2F91E8B86A0924D640A0A",
+    "SoundKit": "2643655DDBBC10B9F58CC6BCFB15CF2B2C588F0F13571C980F3AB2B7154547CE",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23"
+  },
+  "live_world": [
+    "quest\t39857\t33554440\t0\t0\t0\t39849\t18446744073709551615\t39848\t39849\t0",
+    "objectives\t0",
+    "relations\t1",
+    "next\t1",
+    "next-objective\t1",
+    "altar\t1",
+    "ashildir\t1",
+    "phase\t2",
+    "sai\t97480\t0\t0\t20\t39857\t1\t0\t7",
+    "sai\t244559\t1\t0\t19\t39857\t206\t2252\t7",
+    "actor\t2252\t0\t50552\t91387\t65043\t0\t1\t0\t3400",
+    "line\t2252\t4748\t0\t0\t620\t0",
+    "creature-actors\t0",
+    "unrelated-line\t0",
+    "ash-text\t1"
+  ],
+  "live_hotfix": [
+    "voice\t98488\t52999\t0",
+    "voice\t98489\t53000\t0",
+    "voice\t120831\t70180\t0",
+    "line-overlay\t0"
+  ],
+  "limits": "No confirmed code/data defect in installed39857. Original TDB lacks the39849 starter relation; installed97480/39849 is present and exercised, and must not be removed by restoring the incomplete archive. Native completion before callback still invokes the actual inherited GO acceptance action2062252. World explicitly emits line4748 only; native next7170 has Valarjar-specific text. Do not infer rendered playback or add that line to all classes without evidence. Preserve native zero objectives and33554440 flags; no migration or character reset."
+}

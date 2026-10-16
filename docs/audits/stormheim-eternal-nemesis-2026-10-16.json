@@ -1,0 +1,42 @@
+{
+  "quest": { "id": 39857, "title": "The Eternal Nemesis" },
+  "date": "2026-10-16",
+  "status": "Code/data audit complete; no confirmed blocking defect in the installed quest. Added native regression coverage and evidence. No server implementation, SQL migration, character reset or runtime data change was necessary. Client verification remains pending.",
+  "findings": [
+    "39857 intentionally has zero objective rows. Native AddQuestAndCheckCompletion marks it COMPLETE immediately, then still invokes the GameObject's quest-accept callbacks. Do not add a synthetic approach/kill objective or wait for a scene callback to complete this messenger quest.",
+    "The actual inherited SmartGameObjectAI::QuestAccept dispatches event19/quest39857 on the existing bargain altar script. Its installed action206 summons conversation2252 for target7 (the accepting player), even though the quest is already COMPLETE.",
+    "The native action206 path uses the player as conversation caster at the player's current position. It does not try to use the GameObject as a Unit in this zero-coordinate branch. The exact World actor/line rows successfully pass native Conversation::GenerateDynamicFieldData.",
+    "Conversation failure or missing optional actor data does not undo the already completed quest or block reward at Ashildir. An empty objective list is not an accidental auto-reward: reward still requires the proper questgiver interaction.",
+    "The original TDB archive has no97480/39849 starter relation. The installed World already has this required relation; the actual native GetNextQuest path uses it successfully. Preserve the installed repair rather than restoring the incomplete archive.",
+    "Ashildir's creature_text.Sound0 is not missing live voice: CreatureTextMgr selects the gendered BroadcastText sound. Native display68635 is female, and installed Hotfix broadcast98488 supplies female sound52999.",
+    "Native line4748 points to7170, whose broadcast120831 addresses a Valarjar. World2252 explicitly supplies only4748. No code/data evidence here proves client next-line behavior or justifies adding Warrior-specific speech for all classes. Preserve the existing rows and retain this client check."
+  ],
+  "native_and_live_data": {
+    "evidence": "stormheim-eternal-nemesis-native-2026-10-16.json includes original TDB records/archive SHA256, native C++ catalog output/table hashes and read-only World/Hotfix rows.",
+    "quest": "Flags33554440/FlagsEx0, zero objectives, StartScript0/CompleteScript0, all races.39848 reward is the prerequisite; NextQuestID/RewardNextQuest39849. These installed fields agree with the original39857 records.",
+    "source": "Base altar244559 DB127713 on outdoor map1463, type2/flags0/menu18790, script go_stormheim_helheim_bargain. No new click, ownership, phase or acceptance gate introduced.",
+    "conversation": "Installed source1 row0: event19 quest39857 -> action206 conversation2252 target7, no LINK. World actor index0: actor50552/creature91387/display65043/flags0,1,0/duration3400ms. World line index0:4748/start0/unk1=620/unk2=0. No ambient creature-GUID resolution is required by this actor branch.",
+    "native_line": "Sparse ConversationLine4748 references broadcast98489, next7170, additional2000ms, SpellVisualKit0/AnimKit0.7170 references120831, next0, additional1000ms, kits0. Native sound53000 exists; installed Hotfix98489 supplies Helya's female response. Native Conversation::CreateConversation adds5000ms to the3400ms actor duration; full object creation/renderer timing is not exercised by the fixture.",
+    "models": "Helya display65043 -> model8570/file1266228/gender1. Ashildir68635 ->8891/file1339502/gender1. Native SoundKit52999,53000,70180 exist. These references do not certify rendered model, animation or voice playback.",
+    "return": "Persistent Ashildir97480 DB11546796 at327.851,574.399,6.34934, no spawn phase override/model override, native display68635, npcflag2, SmartAI. FactionTemplate190 -> Faction148 is not hostile to native player factions1/2 and cannot have reputation, so no hostile/unfriendly reputation gate is apparent in the native NPC interaction branch.",
+    "phase": "Zone7588 phase-definition5 gives5575 for COMPLETE39857 or rewarded39857 through native condition types28/8. Immediate completion makes the first condition available on acceptance; reward retains the second. Ashildir's unphased spawn is preserved. Full client phase/visibility behavior is not simulated.",
+    "reward_and_next": "Ashildir ends39857 and starts39849. Native reward event20/39857 -> talk group0/broadcast98488 is retained. Same actual Ashildir GUID resolves39849 after reward; before reward its positive prerequisite refuses acceptance.39849's native ITEM128854/storage0/amount1 objective is still unsatisfied when its quest is first added without that item.",
+    "compatibility": "No change to39848's validated option0, later39855 option1/teleport, Warrior phase8306 or any unrelated conversation. No mover, vehicle, aura, camera, pet or inventory cleanup added."
+  },
+  "automated_checks": [
+    "Test-StormheimEternalNemesis.ps1: executes the full extracted AddQuestAndCheckCompletion function, CanTakeQuest chain with native status/race/prerequisite/completion/reward/GetNextQuest handlers, actual bargain GO class inheriting native SmartGameObjectAI::QuestAccept, native quest event filter, native action206 and native Conversation::GenerateDynamicFieldData. Live read-only World rows supply the tested action/actor/line.",
+    "Both factions: prerequisite rejection before39848 reward, COMPLETE before script/AI callbacks, one acceptance callback/conversation, duplicate acceptance refusal, optional conversation failure/missing actor independent of reward, exact actor/line payload, saved COMPLETE state without replaying acceptance, same-GUID Ashildir39849 handoff and next quest's unsatisfied item objective passed.",
+    "Test-StormheimEternalNemesisData.ps1: read-only exact quest/objectives, starter/ender/next relations, persistent Ashildir, altar binding, phase conditions, native SAI and installed Hotfix voice rows passed. No migration replay was needed because no database repair was made.",
+    "Test-StormheimEternalNemesisCatalog.ps1: actual C++ DB2Storage reads sparse lines4748/7170, Helya/Ashildir model chains/gender, all three SoundKits, faction template hostility and Faction148 CanHaveReputation=false. Source final-link dependencies come from the generated Release worldserver project.",
+    "Test-StormheimEternalNemesisGeometry.ps1: real Release MMAP/Detour connects altar to the actual Ashildir return through77 polygons, with ground23.3334 ->6.33729. This does not prove client collision/visibility or movement.",
+    "Test-StormheimEternalNemesisNative.py: original archive plus live rows/native catalog agree with committed evidence, including the original archive's missing39849 starter.",
+    "The wrapper reruns the upstream bargain/disguise regressions and canonical Release binary verification. Existing build-extractors/bin/Release implementation/bindings and actual game/scripts final-link inputs passed; no production source changed and no new server build/deployment was claimed."
+  ],
+  "limits_and_pending_client_checks": [
+    "Session packet admission, AddQuest's inventory/history storage, other CanTakeQuest admission branches, world/grid/phase behavior, conversation object creation, networking and rendering are fixtures. This test does not replace a login/serialization or client run.",
+    "Verify actual altar39848 reward ->39857 acceptance, Helya2252 actor/voice and whether the client attempts7170. Check both factions and non-Warrior characters before changing this native chain.",
+    "Walk back to persistent Ashildir, confirm questgiver marker/phase and female reward line98488/52999, reward39857 and accept39849 in the same client window. Repeat after reconnect and abandonment/reacceptance.",
+    "Previous38347/39848 client checks remain pending. The older supply audit's three unresolved bone navigation approaches127694/127702/127704 remain unresolved; this audit does not erase them or certify the entire Helheim chain."
+  ],
+  "next": "39849 To Light the Way: native item128854 collection, source/loot interaction and Ashildir handoff39850."
+}
