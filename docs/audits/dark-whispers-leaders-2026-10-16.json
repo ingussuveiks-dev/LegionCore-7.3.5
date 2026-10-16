@@ -1,0 +1,35 @@
+{
+  "quest": 42125,
+  "scenario": 1097,
+  "map": 1498,
+  "client_verified": false,
+  "observed_failure": "Post-a7288abf client screenshot remains Stage4 The Legion: waves3/3, leaders0/1; Mephistroth is still attackable with visually empty health. Server.log confirms the scaled-killing-blow guard ran. Actual leader killing-blow ownership is not present in the captured log.",
+  "native_requirements": {
+    "stage4": "ScenarioStep2477 order3 -> CriteriaTree48047:30105 type92 asset50959 amount1 for both leaders, and30106 type92 asset50960 amount3 for waves.",
+    "stage5": "ScenarioStep2478 order4 -> CriteriaTree48050:50961 ritual interrupted and50962 Mephistroth defeated. Its existing actor-stage conditions intentionally prevent retreat/credit during Stage4.",
+    "leaders": "Lady Tyrana106825 and Pain Mistress Nikta106827 are summoned by the final wave marker. Their spawn positions are approximately13yards apart. Each death checks that no living counterpart remains within the native50-yard radius."
+  },
+  "reproduced_paths": [
+    "Both death actions205 target ACTION_INVOKER7. Native dispatcher calls ToPlayer only. A pet killer is not a Player, so leaders50959 credit is silently skipped while linked barrier/conversation actions still run. The screenshot is consistent with this reproduced path; it does not identify the exact killer.",
+    "The last-leader proximity condition used target0, the killer. A ranged or distant pet killer can evaluate proximity from the wrong point. Use target1, the dying base actor.",
+    "The linked stage5 conversation212550 was INVOKER_CAST85. A pet could become its caster. Native effect219 creates conversation2226; this optional presentation must be player-owned and independent of pet ownership."
+  ],
+  "changes": [
+    "Keep both last-leader death gates, native50-yard radius, nonrepeatable flags, links and all wave handling. Change the proximity condition origin to the dying leader.",
+    "Award50959 through the normal action205 to players within100yards, independent of whether a player, pet or ownerless source delivered the killing blow. Preserve phase and instance filtering in the native target selector.",
+    "Replace the two optional conversation actions with normal CAST11, TRIGGERED|CAST_FORCE_TARGET_SELF18, targeting nearby players. Each player casts on itself; optional cast failure cannot undo the preceding essential credit.",
+    "Preserve the post-scaling Mephistroth guard and Stage5 low-health polls. Do not force-complete the scenario, reset character progress or let a lethal hit bypass the scripted finale."
+  ],
+  "checks": [
+    "Test-DarkWhispersLeaders.ps1 compiles actual SmartAI player-distance and invoker selectors, action205, CAST action and NearCreature condition branch. Covers both death orders, player/pet/null killers, wrong killer-proximity origin, absent/out-of-range players, foreign map filtering and failed optional conversation.",
+    "The native action205 fixture explicitly reproduces old pet-target credit loss and verifies that selecting the nearby Player fixes it. The criterion counter is a test endpoint; full Scenario progression is not claimed as live-tested.",
+    "Production DB2 reader confirms both Stage4 requirements and Stage5 order. Temporary SQL replay twice confirms the two death chains and actor-target conditions while preserving existing wave action fields.",
+    "Canonical Release includes the separate beam-hook fix. Fresh startup automatically applied2026_10_16_09_dark_whispers_leaders.sql; Test-WorldShutdown.ps1 -ProbeConnections passed ready, six TCP greetings, exit0 and no new dumps. No new scripts/sql errors. Six network reset diagnostics are from those test sockets closing, not the scenario. Old client failure history remains in Server.log and a private copy."
+  ],
+  "pending_client_checks": [
+    "Fresh scenario: player kills both leaders, then repeat with pet killing the last leader, in both orders; first leader must not advance, last must change Stage4 to Stage5 with waves3/3.",
+    "Optional stage5 conversation and barrier open; Mephistroth ritual credit, low-health retreat, Stage6 skull pickup and full quest completion.",
+    "Previous introduction visual/audio checks remain pending; this stage4 fix does not mark the full scenario client-verified."
+  ],
+  "runtime": "Release binary9DA07E9747636D136A806EFD72CF8F7D2B48441A53607C6ACEB9F19FAC58E018; final servers stopped. A fresh instance after restart begins at the entrance; this fix does not persist exact actor/criteria state."
+}
