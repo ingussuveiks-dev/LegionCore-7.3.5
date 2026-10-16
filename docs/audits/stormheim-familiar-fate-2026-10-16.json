@@ -1,0 +1,226 @@
+{
+  "quest": 40002,
+  "title": "A Familiar Fate",
+  "status": "code/data repair passed; client verification pending",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "creature_template": [
+      {
+        "entry": "97979",
+        "name": "'Vethir'",
+        "modelid1": "68213",
+        "gossip_menu_id": "0",
+        "faction": "35",
+        "npcflag": "2",
+        "AIName": "''",
+        "ScriptName": "''"
+      },
+      {
+        "entry": "97890",
+        "name": "'Dravax'",
+        "modelid1": "65486",
+        "gossip_menu_id": "0",
+        "faction": "35",
+        "npcflag": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      },
+      {
+        "entry": "91743",
+        "name": "'Circle of Binding'",
+        "modelid1": "62584",
+        "gossip_menu_id": "0",
+        "faction": "35",
+        "npcflag": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "280263",
+        "QuestID": "40003",
+        "Type": "0",
+        "Order": "3",
+        "StorageIndex": "3",
+        "ObjectID": "98186",
+        "Amount": "3",
+        "Flags": "28",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280174",
+        "QuestID": "40003",
+        "Type": "0",
+        "Order": "2",
+        "StorageIndex": "2",
+        "ObjectID": "97985",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'South Portal Destroyed'",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280173",
+        "QuestID": "40003",
+        "Type": "0",
+        "Order": "1",
+        "StorageIndex": "1",
+        "ObjectID": "97984",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'East Portal Destroyed'",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280172",
+        "QuestID": "40003",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "97983",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'North Portal Destroyed'",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280170",
+        "QuestID": "40002",
+        "Type": "0",
+        "Order": "1",
+        "StorageIndex": "1",
+        "ObjectID": "97981",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Vethir Freed'",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280169",
+        "QuestID": "40002",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "97982",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Jailer\\'s Shard'",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "40003",
+        "LogTitle": "'Stem the Tide'",
+        "LogDescription": "'Use the Stormforged Horn to destroy the three Felbound Portals in Gates of Valor.'",
+        "QuestDescription": "'Skovald has profaned the Gates of Valor with his demonic allies. Among his forces his twisted mystics have conjured portals to ferry his fel allies from their blighted worlds. \\n\\nIf we wish to stem this tide, these portals must be destroyed. \\n\\nI will gather my allies. Take this horn and signal when you have found a portal, and we will strike from the skies!'",
+        "Flags": "38928392",
+        "FlagsEx": "8192",
+        "StartItem": "129161",
+        "ItemDrop1": "129161",
+        "ItemDropQuantity1": "1",
+        "RewardNextQuest": "0"
+      },
+      {
+        "ID": "40002",
+        "LogTitle": "'A Familiar Fate'",
+        "LogDescription": "'Collect the Jailer\\'s Shard from Dravax and free Vethir from his prison.'",
+        "QuestDescription": "'We had come to defend the Halls of Valor... I was taken from the sky...\\n\\nI cannot break free of my bindings. Find the jailer who made this cell...\\n\\nSet me free, friend...'",
+        "Flags": "33554440",
+        "FlagsEx": "8192",
+        "StartItem": "0",
+        "ItemDrop1": "129106",
+        "ItemDropQuantity1": "1",
+        "RewardNextQuest": "40003"
+      }
+    ]
+  },
+  "world_live": [
+    "quest\t40002\t33554440\t8192\t0\t0\t129106\t1\t40003\t40001\t40003\t0",
+    "objective\t280169\t0\t0\t97982\t1\t0",
+    "objective\t280170\t0\t1\t97981\t1\t0",
+    "relations\t1",
+    "next\t1",
+    "binding\t1",
+    "spell-binding\t1",
+    "source-drop\t1",
+    "menu\t1",
+    "item-condition\t1",
+    "old-action\t1",
+    "spawn\t291388\t97890\t2946.9\t1239.42\t184.415",
+    "spawn\t291392\t97979\t2875.26\t1208.98\t188.763",
+    "spawn\t291393\t91743\t2873.21\t1207.08\t188.763"
+  ],
+  "hotfix": [
+    "item\t0",
+    "use\t0",
+    "spell\t0"
+  ],
+  "native_catalog": [
+    "item 129106 Jailer's Shard max=0 stack=1 flags=67648,8192",
+    "item 129161 Stormforged Horn max=0 stack=1 flags=67648,8192",
+    "use item=129106 spell=193253 trigger=5 charges=0",
+    "use item=129161 spell=193327 trigger=0 charges=0",
+    "spell 193253 Credit - Shard Collected",
+    " effect=134 aura=0 misc=97982,0 trigger=0 target=1,0 radius=0",
+    "spell 193262 Credit - Vethir Freed",
+    " effect=134 aura=0 misc=97981,0 trigger=0 target=1,0 radius=0",
+    "spell 193327 Call Vethir",
+    " effect=3 aura=0 misc=0,0 trigger=0 target=38,0 radius=13",
+    "display 62584 model 8497 file 986958",
+    "display 65486 model 8161 file 1108258",
+    "display 68213 model 8673 file 1280971",
+    "quest40002 line138 order0; native item/spell/model references only, not client playback"
+  ],
+  "native_hashes": {
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "QuestLineXQuest": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
+    "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "ItemEffect": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357"
+  },
+  "ground_route": "PASS: Source approach 2946.9,1239.42,184.524 -> target approach 2873.21,1207.08,188.808 through 19 native navmesh polygons.",
+  "findings": [
+    "97982 is Credit - Shard Collected, not Dravax. Actual Dravax97890 DB291388 already drops quest-required129106 (installed75.985% chance). Quest ItemDrop129106/quantity1 makes it eligible via native HasQuestForItem; native ItemEffect193253/trigger5 casts on obtaining/storing it. Initial suspicion of a missing collection implementation was corrected before changing data. No extra shard, kill credit on Dravax death, loot chance change or invented item-use spell is added.",
+    "Circle of Binding91743 DB291393 at the native release POI already has menu18828/option0, item condition129106 and SmartAI33/credit97981 followed by close-gossip. Native Spell::EffectKillCredit134 and SmartAI action33 both call RewardPlayerAndGroupAtEvent. Thus one player obtaining a shard and clicking the circle can advance both counters for nearby group members who possess no shard and never click. Menu item conditions are not re-evaluated by that SmartAI action at selection time.",
+    "The bound shard193253 handler suppresses native group credit and checks its actual cast item/owner/self target. A scoped PlayerScript reconciles an active quest from an actual carried shard, including after loaded-bag visibility becomes available; it never creates the item. First counter is not a substitute for the item at release. The exact base circle rechecks active quest, collection counter, actual carried shard, current menu/item, own source/map/phase, life/flight/vehicle/combat/LOS/visibility and native NPC interaction distance. Both counters are written individually once; generic kill/talk/group delivery is blocked only for these two40002 objectives.",
+    "The successful owner loses only their view of the binding through the existing hide-list/visibility API. Public circle/Vethir objects, NPC flags and Vethir sleeping addon remain unchanged for other players. Tracking immediately records the hide and cleans it on abandonment/logout/map transfer; saved completed/rewarded progress hides the circle again nearby. This is authored personal visibility behavior, not recovered retail animation choreography. No unproven model animation, flight, vehicle, camera, pet or teleport behavior is introduced.",
+    "Shard stays until native reward/abandonment ItemDrop cleanup. FlagsEx8192 does not contain KEEP_ADDITIONAL_ITEMS1; addon SpecialFlags0 does not contain NOT_REMOVE_SOURCE16. No character progress or inventory reset is performed. Legacy counters already granted by the old group behavior are retained because their provenance cannot be recovered safely. Vethir97979 remains starter/ender and still supplies40003 Stem the Tide after reward; its Stormforged Horn129161/use193327 remains native."
+  ],
+  "automated": [
+    "Test-StormheimFamiliarFate.ps1 -VerifyReleaseBinary compiles the complete production module with freshly extracted Player::HasQuestForItem, Spell::EffectKillCredit, SmartAI action33, native group/kill/talk/completion/reward/next handlers. Both factions, independent group owners, old native dispatchers versus unrelated quest999 sharing, actual item versus no/fake cast item, repeat selection, stale menu/item, invalid phase/map/LOS/life/transport/flight/combat/source, combat-reach distance, loaded-bag retry, abandonment and saved completion, owner-only binding visibility cleanup/re-entry, and native next-giver eligibility pass.",
+    "Test-StormheimFamiliarFateData.ps1 repeats the real migration against connection-local tables, compares full modified/protected rows, checks custom-script preservation, real source-item eligibility metadata, exact actors/menu/condition/native old action, and unchanged Vethir/next quest. -Live verifies the deployed migration. No Hotfix item/use/credit-effect overrides are present.",
+    "Test-StormheimFamiliarFateCatalog.ps1 uses native C++ DB2Storage on sparse ItemSparse and regular item/effect/spell/display/model/quest-line data. Native ground navmesh has a19-polygon route between conservative5yd Dravax and Circle approaches. Spell names are not proof of visual playback.",
+    "Previous40001 Valor Door and40078 Heavy Burden native regression suites pass after the shared Player guard change. Release worldserver built with its actual original game/scripts library link inputs and deployed directly to canonical build-extractors/bin/Release; no global OutDir override. Registration/guard markers and actual link-input timestamps are verified. Canonical executable startup reached ready and exited0 with fresh DBErrors/stderr empty."
+  ],
+  "release": {
+    "migration": "2026_10_16_06_stormheim_familiar_fate.sql",
+    "migration_sha1": "0121574570148B3E6FEA75EF38EE3C67CD382FF8",
+    "worldserver_sha256": "700E1D878E91E212B1C3AA0BE38B131C4CE47AAD49147CC73EA2C7C6DA9CC4D6",
+    "smoke_directory": "build-extractors/runtime-test/stormheim-familiar-fate/startup-20261016-120724",
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "limits": [
+    "C++ tests execute extracted production handlers but inventory storage/count visibility, character persistence/reward mutation, world/grid/network/NPC invocation and menu condition admission are fixtures. Actual loot RNG/loot window, pet killing blow/loot rights, database login and reward item deletion are not end-to-end client tests. Generic source-item cleanup was inspected in the native core and preserved; tests model abandonment storage/item deletion. The native eligibility function does execute against fixture inventory state.",
+    "Client pending: Dravax combat and loot (player and pet kills, both factions), actual obtain trigger and each player item/counters, Circle menu and stale-menu rejection, binding disappearance only for its owner, Vethir visibility/pose/reward, abandon/retry/relog and full40003 handoff. No whole-quest or visual client verification is claimed.",
+    "Previous38347/39848/39857/39849/39850/39851/39853/39855/40078/40001 client checks remain pending. Earlier bone navmesh failures127694/127702/127704 remain unresolved; this successful ground route does not clear them."
+  ],
+  "next": "40003 Stem the Tide: native Stormforged Horn129161/193327, three Felbound Portals and Vethir air strikes, retry/cleanup and next handoff. Code/data only."
+}

@@ -46,6 +46,7 @@ void AddSC_stormheim_drowning_valkyra();
 void AddSC_stormheim_geir();
 void AddSC_stormheim_lifeblood();
 void AddSC_stormheim_heavy_burden();
+void AddSC_stormheim_familiar_fate();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -297,6 +298,7 @@ void AddLegionScripts()
     AddSC_stormheim_geir();
     AddSC_stormheim_lifeblood();
     AddSC_stormheim_heavy_burden();
+    AddSC_stormheim_familiar_fate();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
