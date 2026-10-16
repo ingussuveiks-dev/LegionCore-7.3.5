@@ -41,6 +41,7 @@ void AddSC_stormheim_reformation();
 void AddSC_stormheim_final_judgment();
 void AddSC_stormheim_helheim_disguise();
 void AddSC_stormheim_helheim_bargain();
+void AddSC_stormheim_sundered();
 void AddSC_suramar();
 void AddSC_valsharah();
 void AddSC_valsharah_quest_support();
@@ -287,6 +288,7 @@ void AddLegionScripts()
     AddSC_stormheim_final_judgment();
     AddSC_stormheim_helheim_disguise();
     AddSC_stormheim_helheim_bargain();
+    AddSC_stormheim_sundered();
     AddSC_suramar();
     AddSC_valsharah();
     AddSC_valsharah_quest_support();
