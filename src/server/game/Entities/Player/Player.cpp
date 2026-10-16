@@ -37395,7 +37395,7 @@ void Player::UnLockThirdSocketIfNeed(Item* item)
 
     if (item->GetTotalPurchasedArtifactPowers() > 35 && !item->GetModifier(ITEM_MODIFIER_ARTIFACT_TIER) && sWorld->getBoolConfig(CONFIG_ARTIFACT_TIER_ENABLE))
     {
-        uint64 free_xp = item->GetUInt32Value(ITEM_FIELD_ARTIFACT_XP);
+        uint64 free_xp = item->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP);
         for (uint32 i = 36; i <= item->GetTotalPurchasedArtifactPowers(); i++)
             if (GtArtifactLevelXPEntry const* cost = sArtifactLevelXPGameTable.GetRow(i))
                     free_xp += cost->XP;

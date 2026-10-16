@@ -1,0 +1,17 @@
+{
+  "report": "After purchasing the full original Skull of the Man'ari tree, the extra circle did not unlock. The user correctly questioned needing a restart.",
+  "evidence": [
+    "Saved item128943 had tier0 and totalrank54; its original final power1391 had20 purchased ranks. Other owned artifacts were already tier1.",
+    "The configured automatic >35-purchased-rank empowerment existed in Player::UnLockThirdSocketIfNeed, called on login and quest reward paths. HandleArtifactAddPower did not invoke it.",
+    "The automatic transition read ITEM_FIELD_ARTIFACT_XP through GetUInt32Value despite its uint64 storage, truncating high AP balances before refunding ranks36 onward."
+  ],
+  "change": "Invoke the existing configured unlock after each successful artifact purchase, following cost and equipped-power updates. Keep its threshold/configuration and one-time rank normalization/refund. Read the full64-bit AP balance. Preserve the previous tier-index repair, existing learned base ranks and relic bonuses. No character database edits or AP/rank resets.",
+  "automated_checks": [
+    "Test-ArtifactTierProgression.ps1 extracts the real Item initialization/index/purchase and Player automatic-tier block, using native7.3.5 DB2 powers, ranks and links.",
+    "All36 class artifacts preserve indexes;324 sequential base-rank purchases pass existing cost, replay and forge checks.",
+    "Native Demonology35-to36 purchase empowers in the same handler; disabled feature remains disabled; saved54 recovery refunds19 ranks once; AP above2^32 survives; repeated unlock does not refund again."
+  ],
+  "client_verified": false,
+  "runtime_checks": "Release rebuilt in build-extractors/bin/Release with original game.lib/scripts.lib final-link paths. Executable SHA25673120DFCD755691C668BD2B3382E08DD27D8A23551E4C892D4D40B45366EDE7D passed VerifyReleaseBinary marker checks. Startup reached ready, shutdown exit0 with no new crash dumps. Both servers left stopped.",
+  "pending": "Verify the circle appears in the open forge window at threshold without logout/restart, sequential purchases continue, and saved Skull54 state recovers on login with the full AP balance. Release compilation/startup alone cannot verify client UI refresh."
+}

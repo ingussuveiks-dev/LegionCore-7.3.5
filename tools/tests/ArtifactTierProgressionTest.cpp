@@ -14,11 +14,12 @@ constexpr uint32 ARTIFACT_POWER_FLAG_NO_LINK_REQUIRED=2,ARTIFACT_POWER_FLAG_SCAL
 constexpr int ITEM_MODIFIER_ARTIFACT_TIER=1,ITEM_FIELD_ARTIFACT_XP=2,ITEM_DYNAMIC_FIELD_ARTIFACT_POWERS=3,ITEM_CHANGED=4,GAMEOBJECT_TYPE_ARTIFACT_FORGE=47,CRITERIA_TYPE_OPEN_ARTIFACT_POWERS=5;
 enum ArtifactCategory{ARTIFACT_CATEGORY_CLASS=1,ARTIFACT_CATEGORY_FISH=2};
 #define TC_LOG_INFO(...) ((void)0)
+#define TC_LOG_DEBUG(...) ((void)0)
 #include "PowerStruct.inc"
 struct ArtifactEntry{uint32 ID,ArtifactCategoryID,Spec;};
 struct ArtifactPowerEntry{uint32 ID,ArtifactID,Flags,MaxPurchasableRank,Tier;};
 struct ArtifactPowerRankEntry{uint32 SpellID;};
-template<class T>struct Store{std::map<uint32,T> rows;T const* LookupEntry(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}uint32 GetNumRows(){return rows.empty()?0:rows.rbegin()->first+1;}};
+template<class T>struct Store{std::map<uint32,T> rows;T const* LookupEntry(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}T const* AssertEntry(uint32 id){auto p=LookupEntry(id);assert(p);return p;}uint32 GetNumRows(){return rows.empty()?0:rows.rbegin()->first+1;}};
 Store<ArtifactPowerEntry>sArtifactPowerStore;Store<ArtifactEntry>sArtifactStore;
 struct Manager{
  Manager* operator->(){return this;}
@@ -40,6 +41,7 @@ struct Item{
  explicit Item(uint32 id):proto{id}{}
  ItemTemplate* GetTemplate(){return &proto;}uint32 GetEntry(){return proto.artifactId;}
  uint32 GetModifier(int)const{return tier;}uint64 GetUInt64Value(int)const{return xp;}void SetUInt64Value(int,uint64 n){xp=n;}
+ uint32 GetUInt32Value(int)const{return uint32(xp);}void SetModifier(int,uint32 v){tier=v;}int GetGUID(){return 1;}
  void SetState(int,Player*){++saves;}bool IsEquipped(){return equipped;}void ActivateFishArtifact(uint32){}
  auto const& GetArtifactPowers()const{return values;}
  template<class T>T const* GetDynamicStructuredValue(int,int16 index)const{return index<int(values.size())?reinterpret_cast<T const*>(&values[index]):nullptr;}
@@ -53,9 +55,17 @@ struct Item{
 #include "Tier.inc"
 #include "Lookup.inc"
 #include "Total.inc"
-struct Player{Item* item;bool forge=true;int applies=0,credits=0;
+namespace WorldPackets{namespace Artifact{struct ArtifactTraitsRefunded{int Guid=0,UnkInt=0,UnkInt2=0;int Write(){return 1;}};}}
+constexpr int CONFIG_ARTIFACT_TIER_ENABLE=1;
+struct World{bool enabled=true;bool getBoolConfig(int){return enabled;}} world;auto sWorld=&world;
+struct Player{Item* item;bool forge=true;int applies=0,credits=0,refunds=0;
  bool GetGameObjectIfCanInteractWith(int,int){return forge;}Item* GetItemByGuid(int id){return id==1?item:nullptr;}
- void ApplyArtifactPowerRank(Item*,ArtifactPowerRankEntry const*,bool){++applies;}void UpdateAchievementCriteria(int,int){++credits;}};
+ void ApplyArtifactPowerRank(Item*,ArtifactPowerRankEntry const*,bool){++applies;}void UpdateAchievementCriteria(int,int){++credits;}
+ void SendDirectMessage(int){++refunds;}
+ void UnLockThirdSocketIfNeed(Item* item){
+#include "AutoTier.inc"
+ }
+};
 namespace WorldPackets{namespace Artifact{struct AddPower{struct Power{uint32 PowerID;uint8 Rank;};int GameObjectGUID=7,ArtifactGUID=1;std::vector<Power>Powers;};}}
 struct WorldSession{Player* _player;void HandleArtifactAddPower(WorldPackets::Artifact::AddPower&);};
 #include "Purchase.inc"
@@ -93,5 +103,30 @@ int main(int argc,char**argv){
  if(!player.credits){std::cerr<<"FAIL: no extra-rank candidates for native artifact "<<a.ID<<'\n';return 2;}assert(item.GetTotalPurchasedArtifactPowers()>total);++classes;
  if(a.ID==38){assert(item.GetArtifactPower(804)->PurchasedRank==4);Item loaded(38);loaded.tier=1;loaded.InitArtifactPowers(38);for(auto const& p:item.values)loaded.SetArtifactPower(&p);assert(loaded.GetArtifactPower(804)->PurchasedRank==4);}
  }
- assert(classes==36);std::cout<<"PASS: "<<classes<<" native class artifacts preserve old/relic indexes and tier idempotence; "<<purchases<<" sequential real base-rank purchases, costs and replay/forge rejection; Scepter reload\n";
+ assert(classes==36);
+ // Native Skull of the Man'ari: cross 35 points with an actual purchase,
+ // then reproduce the client's already saved54 state without resetting AP.
+ for(uint32 initialCounter:{1u,20u}){
+ uint32 skull=0;for(auto const& a:sArtifactStore.rows)if(a.second.Spec==266)skull=a.first;assert(skull);
+ Item item(skull);item.InitArtifactPowers(uint8(skull));uint32 counter=0;
+ for(auto power:item.values){auto p=sArtifactPowerStore.LookupEntry(power.ArtifactPowerId);if(p->ArtifactID!=skull)continue;
+ if(p->MaxPurchasableRank==20){counter=p->ID;power.PurchasedRank=uint8(initialCounter);}else power.PurchasedRank=uint8(p->MaxPurchasableRank);
+ power.CurrentRankWithBonus=power.PurchasedRank;item.SetArtifactPower(&power);}
+ assert(counter&&item.GetTotalPurchasedArtifactPowers()==34+initialCounter);
+ Player player{&item};WorldSession session{&player};auto xp=item.xp;
+ if(initialCounter==1){
+ WorldPackets::Artifact::AddPower request;request.Powers.push_back({counter,2});
+ world.enabled=false;session.HandleArtifactAddPower(request);assert(item.tier==0&&item.GetArtifactPower(counter)->PurchasedRank==2&&item.xp==xp-17);
+ world.enabled=true;player.UnLockThirdSocketIfNeed(&item);assert(item.xp==xp);
+ Item live(skull);live.InitArtifactPowers(uint8(skull));
+ for(auto p:item.values){if(sArtifactPowerStore.LookupEntry(p.ArtifactPowerId)->Tier)continue;live.SetArtifactPower(&p);}
+ auto p=*live.GetArtifactPower(counter);p.PurchasedRank=1;p.CurrentRankWithBonus=1;live.SetArtifactPower(&p);
+ Player livePlayer{&live};WorldSession liveSession{&livePlayer};auto liveXp=live.xp;liveSession.HandleArtifactAddPower(request);
+ assert(live.tier==1&&livePlayer.refunds==1&&live.GetArtifactPower(counter)->PurchasedRank==1&&live.xp==liveXp);
+ auto paid=live.xp;livePlayer.UnLockThirdSocketIfNeed(&live);assert(live.xp==paid&&livePlayer.refunds==1);
+ }else{player.UnLockThirdSocketIfNeed(&item);assert(item.xp==xp+19*17);}
+ assert(item.tier==1&&item.GetArtifactPower(counter)->PurchasedRank==1&&player.refunds==1);
+ auto paid=item.xp;player.UnLockThirdSocketIfNeed(&item);assert(item.xp==paid&&player.refunds==1);
+ }
+ std::cout<<"PASS: "<<classes<<" native class artifacts preserve indexes; "<<purchases<<" sequential purchases; skull immediate35-to36 empowerment, configured disable, saved54 recovery, 64-bit AP/refund and idempotence\n";
 }

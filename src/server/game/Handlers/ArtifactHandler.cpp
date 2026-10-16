@@ -159,6 +159,10 @@ void WorldSession::HandleArtifactAddPower(WorldPackets::Artifact::AddPower& arti
     artifact->SetUInt64Value(ITEM_FIELD_ARTIFACT_XP, artifact->GetUInt64Value(ITEM_FIELD_ARTIFACT_XP) - xpCost);
     artifact->SetState(ITEM_CHANGED, _player);
     _player->UpdateAchievementCriteria(CRITERIA_TYPE_OPEN_ARTIFACT_POWERS, 1);
+    // A purchase can cross the configured empowerment threshold. Append the
+    // new tier now instead of waiting for login or another socket check.
+    _player->UnLockThirdSocketIfNeed(artifact);
+    TC_LOG_DEBUG("entities.player", "Artifact empowerment: purchase threshold check for item %u", artifact->GetEntry());
 }
 
 
