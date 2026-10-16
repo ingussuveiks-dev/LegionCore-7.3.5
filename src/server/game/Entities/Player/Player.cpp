@@ -20968,6 +20968,12 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (questid == 38058 && real_entry == 90903)
             continue;
 
+        if (questid == 39848 && (entry == 97479 || entry == 97696 || real_entry == 97479 || real_entry == 97696))
+        {
+            TC_LOG_DEBUG("quest", "A Desperate Bargain: ignored generic throne credit");
+            continue;
+        }
+
         // Stealth by Seaweed records the disguised passage beyond the living
         // guard, never a nearby guard, kill, group or nearest-player shortcut.
         if (questid == 38347 && (entry == 91386 || real_entry == 91386))
@@ -21156,6 +21162,12 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         uint32 questid = GetQuestSlotQuestId(i);
         if (!questid)
             continue;
+
+        if (questid == 39848 && (entry == 97479 || entry == 97696))
+        {
+            TC_LOG_DEBUG("quest", "A Desperate Bargain: ignored generic throne talk credit");
+            continue;
+        }
 
         if (questid == 38347 && entry == 91386)
         {

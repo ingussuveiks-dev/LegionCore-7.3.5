@@ -1,0 +1,52 @@
+{
+  "quest": { "id": 39848, "title": "A Desperate Bargain" },
+  "date": "2026-10-16",
+  "status": "Code/data repair deployed to canonical Release; automated native fragments, migration, catalog, geometry and startup checks passed. No WoW client run performed.",
+  "findings": [
+    "There is no missing NPC ender: native and installed gameobject_questender244559/39848 is Helya's Altar. The same type2 object starts39857. Preserve these relations.",
+    "The altar's old SmartAI gossip event ran before Player::OnGossipSelect validated the current menu. It matched packet menu18790/option0 without checking an actual offered option, current quest acceptance, distance, phase or the preceding approach counter.",
+    "Generic action33 propagates through RewardPlayerAndGroupAtEvent. Both the altar's spoke credit and the periodic97695/97696 approach credit could advance nearby group members who had not performed that interaction, and emitted kill achievement credit for non-kill objectives.",
+    "The sequenced flag2 on speak objective280017 controls client presentation; native completion checks still require both objectives but generic credit does not enforce their order.",
+    "Native action85 schedules its cast200ms later and then runs LINK. Its cast failure did not block the old LINK credit. This audit does not attribute a progression failure to that cast; the defect is unvalidated/shared interaction credit."
+  ],
+  "native_records": {
+    "evidence": "stormheim-helheim-bargain-native-2026-10-16.json records original TDB objectives, quest/GO relations, spell effects and hashes; the catalog test uses the native C++ DB2Storage reader for sparse tables.",
+    "objectives": "280092 MONSTER97696/storage0/amount1/flags0: Approach Helya's Throne.280017 MONSTER97479/storage2/amount1/flags2: Speak with Helya. Preserve both and all character progress.",
+    "quest": "38347 reward is the prerequisite;39848 RewardNextQuest/NextQuestID39857. Live Flags0 differ from original38797320 and remain unchanged; no StartScript, CompleteScript or exploration-event special flag.",
+    "altar": "GO244559 type2, Data1 questgiver19547, Data3 gossip18790, Data10 condition0, flags0,size1.25. Base DB127713 at490.429,721.396,23.2744. Installed display7786 -> file195090 is preserved; original TDB display328 is not blindly restored.",
+    "menu": "Option0 has OptionNpc None0 and broadcast99443, visible only for incomplete39848 through source15 condition9. Native Player::PrepareGossipMenu admits None for type2 and type10 GOs. Native SmartGameObjectAI::GossipUse forwards to virtual GossipHello after spawn/flag admission.",
+    "approach": "Exact base97696 markers DB338828/340857 share484.451,717.054,23.3577. Preserve both duplicates, their positions and original5yd approach intent; no spawn deletion. Lady Sylvanas97695 is not the objective source.",
+    "conversation": "Native212898 Helya Conversation effect219/misc2251/destination18 creates conversation2251, using caster position when no explicit destination exists. World actor50552 supplies creature91387/display65043 directly; actor duration5898ms, line4747 at0ms. Native line4747 references broadcast98487, next0, additional500ms, visual/animation kits0. Existing Conversation code adds a5-second object lifetime margin.",
+    "voice": "Base BroadcastText98487 is absent in extracted DB2; installed Hotfix supplies the female Helya text and sound52998. Native SoundKit52998 exists. Menu broadcasts99442/99443 are also supplied by Hotfix with ConditionID0. No4747 ConversationLine or212898 SpellEffect overrides were found. Missing base broadcast is not treated as missing live speech.",
+    "models": "Native65043 -> model8570/file1266228 (Helya);328 ->114/file1112735 and alternate27823 ->1731/file124640 (credit markers); Sylvanas28213 ->8454/file1245874. No direct SpellXSpellVisual row for212898; speech/model playback is not certified by these links.",
+    "later_content": "GO25210114 and marker12743040 are later Warrior phase8306 clones. Native altar39857 acceptance conversation2252 and39855 option1 credit97487/teleport1220 remain unchanged.2252 line4748 continues to7170; its complete later playback is outside this fix. EventObject335/192518 legacy-controller removal remains unchanged."
+  },
+  "repair": {
+    "scope": "Outdoor map1463/zone7588/instance0, incomplete39848, alive and outside teleport/vehicle/transport/flight/combat; exclude Warrior phase8306. Require exactly the two expected native objectives before any progress.",
+    "approach": "ScriptedAI polls actual players every500ms at the two exact living97696 base spawns. Require source position, live phase/visibility, LOS and center distance<=5yd. Directly write the approach objective once, without shared group or fake kill credit. Temporary failure can retry while stationary.",
+    "selection": "The type2 altar retains native menu preparation and SmartGameObjectAI. An actual admitted GossipUse/Hello records the player's weak ScriptLifetime for this exact altar. Option0 requires that offer, the current menu18790/item0, same acceptance, completed approach, local position/phase/LOS and current eligible state. Clear the menu/offer before committing one direct speak credit.",
+    "conversation_failure": "After the validated request, attempt native212898 as a triggered self cast. The cast and optional conversation failure do not gate or duplicate credit. This immediate cast replaces the old200ms scheduled action85 and is an authored reliability choice.",
+    "persistence": "No transient approach state: the existing native counter survives ordinary saved quest progress. A restored approach still needs a new real altar menu. Abandon/reaccept invalidates old menu authorization through ScriptLifetime. No delayed actor/credit callbacks, player mover, vehicle, aura, camera or pet-slot changes are introduced.",
+    "generic_guards": "Player::KilledMonsterCredit rejects raw and GUID-resolved97479/97696 for39848; TalkedToCreature rejects both. Other quests using those entries retain native credit. Production group and alias cases execute in regression tests.",
+    "migration": "2026_10_16_00_stormheim_helheim_bargain.sql binds marker97696 and altar244559 together only from recognized bindings; retires exactly two periodic approach rows and the first bargain option's cast/LINK rows. Preserve three altar rows for39857 acceptance/later exit and two Sylvanas speech rows. No changes to objectives, relations, flags, loot, phases, models, positions or characters.",
+    "custom_limits": "Migration refuses a preexisting custom marker/altar script pair. Full-row replay checks preserved unrelated fields and native rows. The stock marker has no remaining SAI events after retirement; its new ScriptedAI does not dispatch arbitrary future SmartAI rows."
+  },
+  "automated_checks": [
+    "Test-StormheimHelheimBargain.ps1 -VerifyReleaseBinary: production module and extracted Player completion/reward/race/prerequisite/GetNextQuest/kill/group/talk handlers, native SmartGameObjectAI::GossipUse and native GO gossip option admission. Both factions/owners, sequence, duplicates, aliased and actual shared-group credit, stale/absent menus, reacceptance, map/phase/vehicle/flight/combat/LOS/range/death boundaries, stationary retry, optional conversation failure, saved approach and actual GO39857 handoff passed.",
+    "Test-StormheimHelheimBargainData.ps1 and -Live: real MySQL temporary-table replay twice, full-row preservation, custom binding refusal, exact native objectives/relations/positions, later Warrior clones and retained dialogue/exit rows passed.",
+    "Test-StormheimHelheimBargainCatalog.ps1: native DB2Storage models, altar display, spell, sparse lines4747/4748 and SoundKit52998; actual installed Hotfix voice/menu and absence of selected overrides passed.",
+    "Test-StormheimHelheimBargainNative.py: original archive objectives, altar relations and native212898 ->2251,192518 -> removal192299 agree with committed evidence.",
+    "Test-StormheimHelheimBargainGeometry.ps1: real Release MMAP/Detour connects previous exit334 to throne approach through87 polygons, then altar through2. Ground heights23.8378/23.3334 fit interaction ranges; actual client collision remains unverified.",
+    "Upstream disguise regression runs from the bargain wrapper; supplies and Final Judgment -VerifyReleaseBinary regressions also passed after the Player guard changes.",
+    "CMake regenerated scripts.vcxproj to include the new module, then Release worldserver and bnetserver built successfully. Actual game/scripts Release final-link inputs and canonical executable's two new bindings/two guard diagnostics passed verification. No global OutDir override.",
+    "World migration SHA1 144E605FD37E4F8938F7CE13249B034633D2A000 applied with a scoped private backup and updates record. Canonical Release startup20261016-065820 reached ready=True, exited0 gracefully, and produced empty DBErrors.log/stderr.log. Runtime configs, certificates, DLLs and extracted data preserved; validation server stopped."
+  ],
+  "limits_and_pending_client_checks": [
+    "World objects, gossip preparation outside the extracted GO admission branch, casts, aura/session/network behavior and persistence storage are fixtures. GetNextQuest/reward eligibility is executed, but the full client quest-reward packet/UI is not reproduced.",
+    "500ms polling, center-distance5yd, LOS/visibility admission, per-acceptance menu authorization and triggered conversation cast are authored robustness details, not evidence of exact retail choreography.",
+    "Verify both factions can approach, see the intended option, hear/see Helya2251, receive one1/1 for each stage, turn in at the actual altar and accept39857 in the same client window.",
+    "Verify retries, reconnect, abandonment/reacceptance, simultaneous/grouped players and no owner/pet/group bypass in the client. Confirm later Warrior phase and Helheim39855 exit remain usable; the later exit's own implementation has not been declared verified.",
+    "Previous38347 client disguise/follower/Guarm checks remain pending. Earlier supply audit's three failed bone navmesh approaches127694/127702/127704 remain unresolved. No previous failure or client-check requirement is erased by this fix."
+  ],
+  "next": "39857 The Eternal Nemesis: altar acceptance/conversation2252, return to Ashildir97480 and handoff39849."
+}
