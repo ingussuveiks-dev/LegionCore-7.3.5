@@ -1,0 +1,158 @@
+{
+  "quest": 43349,
+  "title": "The Aegis of Aggramar",
+  "status": "existing code/data route passes selected native checks; client verification pending; no production repair needed",
+  "original_archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "gameobject_questender": [
+      {
+        "id": "251992",
+        "quest": "43349"
+      }
+    ],
+    "gameobject_queststarter": [
+      {
+        "id": "251991",
+        "quest": "43349"
+      }
+    ],
+    "gameobject_template": [
+      {
+        "entry": "251992",
+        "name": "'The Aegis of Aggramar'",
+        "type": "2",
+        "displayId": "35704",
+        "size": "0.75",
+        "Data0": "0",
+        "Data1": "20353",
+        "Data2": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "285226",
+        "QuestID": "43349",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "110409",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Central Dalaran teleport used'",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "43349",
+        "LogTitle": "'The Aegis of Aggramar'",
+        "LogDescription": "'Secure the Aegis of Aggramar in the Chamber of the Guardian in Dalaran.'",
+        "QuestDescription": "'Now that it\\'s out of the hands of the Legion, the Aegis should be brought back to Dalaran for safekeeping while the hunt continues for the rest of the Pillars of Creation.\\n\\nIt should be safe in the central portal chamber until the time comes when it is needed.'",
+        "StartItem": "0",
+        "RewardNextQuest": "0",
+        "Flags": "37748744",
+        "FlagsEx": "8192"
+      }
+    ]
+  },
+  "world_live": [
+    "quest\t43349\t33554440\t18446744073709551615\t0\t0\t40072\t0\t0",
+    "objective\t285226\t43349\t0\t110409\t1\t0\t0",
+    "starter\t251991\t43349",
+    "ender\t251992\t43349",
+    "go\t251992\t2\t35704\t0\t0.75\t0\t20353\t0\t\t\t37794",
+    "spawn\t25178660\t251992\t1220\t7502\t8045\t1\t1\t4592\t-854.191\t4456.02\t592.614",
+    "event\t410008\t510\t1220\t7502\t8045\t\t-785.162\t4419.39\t602.464",
+    "event-template\t510\t5\t0\t0\t0\tSmartEventObject",
+    "smart\t0\t1\t89\t33\t107587\t7\t\t0",
+    "smart\t1\t2\t61\t33\t110409\t7\t\t0",
+    "smart\t2\t3\t61\t33\t109750\t7\t\t0",
+    "smart\t3\t0\t61\t33\t106815\t7\t\t0",
+    "override-count\t0",
+    "phase\t216\t4592\t16",
+    "phase\t217\t4591\t16",
+    "phase-condition\t7502\t216\t8\t0\t43349\t1",
+    "phase-condition\t7502\t217\t8\t0\t43349\t0",
+    "phase-condition\t7672\t7\t14\t0\t40072\t1",
+    "phase-condition\t7672\t7\t14\t0\t43349\t0",
+    "event-condition-count\t0",
+    "menu\t20353\t0\t28",
+    "next-count\t0"
+  ],
+  "hotfix": [
+    "go-display\t0",
+    "phase\t0",
+    "spell-effect\t0"
+  ],
+  "native_catalog": [
+    "Aegis display35704 file 1361813 minZ -2.55803 maxZ 2.59331",
+    "native phase 3554",
+    "native phase 4591",
+    "native phase 4592",
+    "native direct/group spell credit effects for110409 0"
+  ],
+  "native_db2_sha256": {
+    "GameObjectDisplayInfo": "23b4e725c73048de7da7d765be0410f7d9cba2ae07447c0765c8ebeb0586c4d8",
+    "Phase": "53c0dd7daca6e86357d04f37f408777553c2429620a04a72484af4b18146764d",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa"
+  },
+  "floor_checks": [
+    "npc 410008 Z=602.464 floor=602.464 terrain_area=8445 PASS",
+    "object 25178660 Z=592.614 floor=588.957 terrain_area=8445 PASS",
+    "2 Dalaran chamber entry/Aegis anchors; 0 failures. Client collision loading and teleport visuals remain unverified."
+  ],
+  "ground_route": [
+    "PASS: Source approach -785.162,4419.39,602.484 -> target approach -854.191,4456.02,589.139 through 17 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 3 corners, length=81.703yd.",
+    "corner 0 -785.162 4419.39 602.484",
+    "corner 1 -835.467 4454.67 588.884",
+    "corner 2 -854.191 4456.02 589.139"
+  ],
+  "geometry_inputs_sha256": {
+    "mmaps/1220.mmap": "3fa4f4f7ec55df73dbf81642f7542419d36cb11e5dfc50284a883f1d9b63489f",
+    "vmaps/1220.vmtree": "b160c8a9d7bac51e4030b3bfb4d0e7d46710b639bfb0bce655f78e199d15b8b0",
+    "maps/1220_33_23.map": "9aea667f750f0432db582ccd3382b5f8a0c5378601231398dd20223335c67145",
+    "vmaps/1220_23_33.vmtile": "7e5fe61f35ace4a23fc51b062ba3cbf90d9b6103e814caa7d65da081772ccc2d",
+    "mmaps/12203222.mmtile": "9e50bc5574dc0d5e8ca18ee4ece41b49207904f71d9314b541e6bec72286654c",
+    "mmaps/12203223.mmtile": "9f25d25c79223554f0c0479e36b5ea10620f6504883ab48cba1f2bcd289dd4f0",
+    "mmaps/12203224.mmtile": "51b30e1c8f6f40b959c3c40a1988815d1c0c220398db483c5e11d44e196663bb",
+    "mmaps/12203322.mmtile": "741285b2634d70e9c002d2a18e859540a01a2e29c5f417020ea64d4e4cbc92f7",
+    "mmaps/12203323.mmtile": "2a765274bf0f0d340615a5e0e20998ccf24739381dd650483cfb157cf2fc4cd5",
+    "mmaps/12203324.mmtile": "ef60e95b46095df6f49d333e679c932eb86e7c813910102ad59fb79a324163d8",
+    "mmaps/12203422.mmtile": "739f5b94e99bdbd6767d0d3a0d021e39d383c7deabfef83314c114a08bc307d8",
+    "mmaps/12203423.mmtile": "6feadb4a50b19fd7a499b12edf958ad800f28c0aed5aceaf14102b7fb27b8444",
+    "mmaps/12203424.mmtile": "64ab3ac330c69b06afba9973199e5d3bb5e6d4382acfaf2b1118c31b032fe5bb"
+  },
+  "findings": [
+    "43349 is the Dalaran safekeeping handoff after40072, not a second dungeon claim. Preserve its existing251991 starter, PrevQuestID40072, required monster credit110409 and outdoor251992 questgiver ender. There is no item objective or start item and no automatic next quest; installed addon has no direct PrevQuestID43349 successor.",
+    "Credit110409 is named Credit - Portal Taken. Existing EventObject510/DB410008 at map1220,-785.162,4419.39,602.464, radius5, SmartEventObject, flags0 dispatches ONTRIGGER89. Existing LINK0->1->2->3 grants107587,110409,109750,106815 via action33/invoker7. No negative-GUID override or source13/source22 conditions block this route. Preserve other Pillar credits, shared native group rewards and the existing entry event; do not invent a pedestal click-credit script.",
+    "Selected real EventObject::Update, ActivatedForPlayer, SmartEventObject::OnTrigger, SmartScript base-object selection, invoker target branch and action33 execute against the exported chain. Native player/group credit, objectives, completion and questgiver request-reward admission execute. Both factions, duplicate entry, distance/phase/death/no quest, abandon/retry, nearby/far group members and saved objective counter pass.",
+    "An ordinary type2 Aegis Use prepares the quest menu and allows the existing43349 reward request. PrepareGossipMenu filters menu20353 option0/OptionNpc28 for GameObjects; this unrelated armament option does not suppress the independently prepared quest menu. Test executes the actual GO option-admission branch and native GO Use prologue/questgiver branch; no menu repair is indicated.",
+    "Phase7502/216 grants4592 while43349 is not rewarded, including NONE/incomplete/complete.7502/217 grants4591 after reward. Dungeon phase7672/7 requires40072 not-NONE and43349 NONE. Native rewarded-condition and phase-update type handlers pass. RewardQuest schedules NotifyConditionChanged after the rewarded-set insertion without a quest flag gate. Original Flags37748744 versus installed33554440 lacks UPDATE_PHASE_SHIFT, but this server notification is unconditional; do not change that bit merely from the archive difference.",
+    "Outdoor251992/DB25178660 stays at-854.191,4456.02,592.614, phase4592, display35704, scale0.75, existing SpellStateVisualID37794. Native model file1361813 boundsZ[-2.55803,2.59331], phases3554/4591/4592 exist. The regular26972 SpellVisual table reader finds37794; no visual assignment changed or playback verified.",
+    "Native floor at chamber entry602.464 and pedestal-side588.957 pass; elevated object center is3.657yd above supporting floor, within conservative5yd center reach. The ground-only8192-node query connects entry to an exact5yd object approach through17 polygons,3 corners,81.703yd. Terrain area8445 differs from stored area8045; the connected native collision/ground surface is recorded without rewriting spawn area metadata."
+  ],
+  "checks": [
+    "Test-AegisReturnData.ps1 exports and checks the installed full route and native-reference overlays. It performs no DB writes.",
+    "Test-AegisReturn.ps1 compiles selected production/native handlers plus exported live quest/event data, including prerequisite/reward and phase conditions; upstream40072/40005/40004 regressions pass.",
+    "Test-AegisReturnCatalog.ps1 compiles against original Release DB2/GridMap/VMap/MMap/Detour libraries. Native catalog, both supporting floors and complete ground route pass.",
+    "No implementation or migration changed, so no new Release build/deployment or startup is claimed. Canonical executable is retained from8a5729b2; audit records its hash."
+  ],
+  "release": {
+    "worldserver_sha256": "A1B9F8AB69DDAC8BF49796CC6E4070E5BB656880A22716EF03339EFD6F0BACB0",
+    "production_change": false,
+    "migration": null
+  },
+  "limits": [
+    "SmartAI event selection/LINK traversal is a fixture scheduler constrained to the four exported rows; it does not execute the entire loader/dispatcher. World/player enumeration, phase assignment, visibility/LOS, PlayerCondition, packet/menu preparation, unrelated CanTakeQuest predicates and persistence writes remain fixtures. Reward request acceptance is checked, not a complete reward opcode/SQL round trip.",
+    "Native group sharing can credit a nearby eligible party member without that member entering the5yd event. Preserve this existing action33 behavior. EventObject flags0 allows exit/re-entry retries. If acceptance or abandon/reaccept occurs while already inside an activated event, leave its radius and re-enter; the generic EventObject does not automatically reset affectedPlayers on quest changes. A dead entrant can likewise need exit/re-entry. No new automatic stationary recovery is claimed.",
+    "A standalone native SpellVisual DB2Storage load in the initial diagnostic reader faulted before catalog output. It was removed from this scoped helper; the established regular-table reader confirms37794 instead. No live server/client visual fault was reproduced and no core DB2 change was made.",
+    "Client pending: actual Halls pedestal offer/accept, route/portal to the Dalaran chamber, entry credit and group behavior, outdoor phase4592 Aegis visibility/selection, reward and4591 refresh, both factions and abandon/relog. The existing state visual and reward package presentation remain unverified. No whole quest, visual, persistence or client sequence is certified.",
+    "Earlier client requirements remain.40003 starting route was resolved as audit-node exhaustion; bone approaches127694/127702/127704 remain recorded as unresolved and are not cleared by this Dalaran route."
+  ],
+  "next": "The direct40072->43349 chain ends here. Next code/data audit: revisit the three retained38324 bone approach failures127694/127702/127704, beginning with exact source geometry and Detour diagnostics; do not move spawns without evidence."
+}
