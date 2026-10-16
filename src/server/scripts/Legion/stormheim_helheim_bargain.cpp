@@ -5,6 +5,7 @@
 #include "GossipDef.h"
 #include "GameObject.h"
 #include "QuestData.h"
+#include "stormheim_lifeblood.h"
 #include <list>
 #include <map>
 
@@ -96,6 +97,7 @@ struct go_stormheim_helheim_bargain : SmartGameObjectAI
 
     bool GossipHello(Player* player, bool isUse) override
     {
+        StormheimLifeblood::Offer(player, go);
         using namespace StormheimHelheimBargain;
         for (auto it = offered.begin(); it != offered.end();)
             if (it->second.expired()) it = offered.erase(it); else ++it;
@@ -113,7 +115,8 @@ struct go_stormheim_helheim_bargain : SmartGameObjectAI
     bool GossipSelect(Player* player, uint32 menu, uint32 option) override
     {
         using namespace StormheimHelheimBargain;
-        // Retain the native39857 acceptance and later39855 exit option1.
+        if (StormheimLifeblood::Select(player, go, menu, option)) return true;
+        // Retain native39857 acceptance and unrelated SmartAI selections.
         if (menu != 18790 || option != 0)
             return SmartGameObjectAI::GossipSelect(player, menu, option);
         auto offer = offered.find(player->GetGUID());

@@ -42,7 +42,7 @@ DELETE FROM saved_smart_scripts WHERE (source_type=0 AND entryorguid IN(97695,97
 $sql+=@"
 SELECT 'bindings',COUNT(*) FROM creature_template t JOIN gameobject_template g ON g.entry=244559 WHERE t.entry=97696 AND t.AIName='' AND t.ScriptName='npc_stormheim_helheim_throne' AND g.AIName='' AND g.ScriptName='go_stormheim_helheim_bargain' AND g.type=2 AND g.Data1=19547 AND g.Data3=18790 AND g.Data10=0 AND g.flags=0 AND g.displayId=7786 AND g.size=1.25;
 SELECT 'retired',COUNT(*) FROM smart_scripts WHERE (source_type=0 AND entryorguid IN(97695,97696) AND id=0) OR (source_type=1 AND entryorguid=244559 AND id IN(1,2));
-SELECT 'native-altar',COUNT(*) FROM smart_scripts WHERE entryorguid=244559 AND source_type=1 AND id IN(0,3,4);
+SELECT 'native-altar',COUNT(*) FROM smart_scripts WHERE entryorguid=244559 AND source_type=1 AND id=0 AND event_type=19 AND event_param1=39857 AND action_type=206 AND action_param1=2252;
 SELECT 'native-sylvanas',COUNT(*) FROM smart_scripts WHERE entryorguid=97695 AND source_type=0 AND id IN(1,2);
 "@
 if(!$Live){$sql+=@"
@@ -55,7 +55,7 @@ SELECT 'custom-event',COUNT(*) FROM smart_scripts WHERE entryorguid=97696 AND so
 "@}
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';');$old=$env:MYSQL_PWD
 try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Bargain SQL failed'}}finally{$env:MYSQL_PWD=$old}
-foreach($line in @("objective`t280017`t0`t2`t97479`t1`t2","objective`t280092`t0`t0`t97696`t1`t0","quest`t39848`t0`t0`t0`t0`t39857`t18446744073709551615`t38347`t39857`t0","enders`t1","next`t1","markers`t2","altar`t1","later-altar`t1","later-marker`t1","gossip`t2","conditions`t2","conversation`t1","bindings`t1","retired`t0","native-altar`t3","native-sylvanas`t2")){if($rows -notcontains $line){throw "Missing: $line"}}
+foreach($line in @("objective`t280017`t0`t2`t97479`t1`t2","objective`t280092`t0`t0`t97696`t1`t0","quest`t39848`t0`t0`t0`t0`t39857`t18446744073709551615`t38347`t39857`t0","enders`t1","next`t1","markers`t2","altar`t1","later-altar`t1","later-marker`t1","gossip`t2","conditions`t2","conversation`t1","bindings`t1","retired`t0","native-altar`t1","native-sylvanas`t2")){if($rows -notcontains $line){throw "Missing: $line"}}
 if(!$Live){
  foreach($table in @('creature_template','gameobject_template','smart_scripts')){
   $a="actual-$table`t";$e="expected-$table`t"

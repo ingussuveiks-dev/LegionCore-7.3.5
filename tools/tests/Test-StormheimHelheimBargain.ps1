@@ -23,6 +23,7 @@ $a=$core.IndexOf('            switch',$a);$b=$core.IndexOf("`n        }",$a)
 [IO.File]::WriteAllText("$output/NativeGoMenu.inc",$core.Substring($a,$b-$a))
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_helheim_bargain.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
+$source='namespace StormheimLifeblood { void Offer(Player*,GameObject*){} bool Select(Player*,GameObject*,unsigned,unsigned){return false;} }' + "`n" + $source
 [IO.File]::WriteAllText("$output/Bargain.inc",$source.Substring(0,$source.IndexOf('void AddSC_stormheim_helheim_bargain()')))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++20 /W4 /I`"$output`" `"$PSScriptRoot/StormheimHelheimBargainTest.cpp`" /Fe`"$output/HelheimBargain.exe`" /Fo`"$output/HelheimBargain.obj`"`r`nif not %errorlevel%==0 exit /b %errorlevel%`r`n`"$output/HelheimBargain.exe`"`r`n"
