@@ -1,0 +1,845 @@
+{
+  "quest": 39853,
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "quest_template": [
+      {
+        "ID": "39853",
+        "LogTitle": "'Victory is Eternal'",
+        "LogDescription": "'Defeat Geir in the Eternal Battlefield in Helheim.'",
+        "QuestDescription": "'There is no more cause for hesitation. Now is the time to strike.\\n\\nWe will defeat this foul behemoth and meet Helya\\'s bargain. The path out of Helheim awaits, outsider. \\n\\nPrepare yourself.'",
+        "Flags": "34603016",
+        "FlagsEx": "0",
+        "RewardNextQuest": "39855"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "280031",
+        "QuestID": "39853",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "1",
+        "ObjectID": "91948",
+        "Amount": "1",
+        "Flags": "1",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      }
+    ]
+  },
+  "native": {
+    "SpellEffect": [
+      {
+        "ID": 264731,
+        "Effect": 6,
+        "EffectBasePoints": 0,
+        "EffectIndex": 0,
+        "EffectAura": 23,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 1500,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 182868,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 0,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 0,
+        "ImplicitTarget1": 1,
+        "ImplicitTarget2": 0,
+        "SpellID": 182866
+      },
+      {
+        "ID": 264733,
+        "Effect": 2,
+        "EffectBasePoints": 24374,
+        "EffectIndex": 0,
+        "EffectAura": 0,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 1251,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 0,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 20,
+        "ImplicitTarget1": 22,
+        "ImplicitTarget2": 15,
+        "SpellID": 182868
+      },
+      {
+        "ID": 264734,
+        "Effect": 98,
+        "EffectBasePoints": 90,
+        "EffectIndex": 1,
+        "EffectAura": 0,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 0,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 20,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 0,
+        "EffectRadiusIndex2": 20,
+        "ImplicitTarget1": 22,
+        "ImplicitTarget2": 15,
+        "SpellID": 182868
+      },
+      {
+        "ID": 264749,
+        "Effect": 2,
+        "EffectBasePoints": 73124,
+        "EffectIndex": 0,
+        "EffectAura": 0,
+        "DifficultyID": 0,
+        "EffectAmplitude": 0.0,
+        "EffectAuraPeriod": 0,
+        "EffectBonusCoefficient": 0.0,
+        "EffectChainAmplitude": 1.0,
+        "EffectChainTargets": 0,
+        "EffectDieSides": 3751,
+        "EffectItemType": 0,
+        "EffectMechanic": 0,
+        "EffectPointsPerResource": 0.0,
+        "EffectRealPointsPerLevel": 0.0,
+        "EffectTriggerSpell": 0,
+        "EffectPosFacing": 0.0,
+        "EffectAttributes": 0,
+        "BonusCoefficientFromAP": 0.0,
+        "PvpMultiplier": 1.0,
+        "Coefficient": 0.0,
+        "Variance": 0.0,
+        "ResourceCoefficient": 0.0,
+        "GroupSizeBasePointsCoefficient": 1.0,
+        "EffectSpellClassMask1": 0,
+        "EffectSpellClassMask2": 0,
+        "EffectSpellClassMask3": 0,
+        "EffectSpellClassMask4": 0,
+        "EffectMiscValue1": 0,
+        "EffectMiscValue2": 0,
+        "EffectRadiusIndex1": 32,
+        "EffectRadiusIndex2": 29,
+        "ImplicitTarget1": 47,
+        "ImplicitTarget2": 16,
+        "SpellID": 182877
+      }
+    ],
+    "SpellMisc": [
+      {
+        "ID": 156856,
+        "CastingTimeIndex": 287,
+        "DurationIndex": 27,
+        "RangeIndex": 1,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 458976,
+        "Speed": 0.0,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 0,
+        "Attributes2": 64,
+        "Attributes3": 0,
+        "Attributes4": 0,
+        "Attributes5": 0,
+        "Attributes6": 134218240,
+        "Attributes7": 0,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 0,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 182866
+      },
+      {
+        "ID": 156858,
+        "CastingTimeIndex": 1,
+        "DurationIndex": 0,
+        "RangeIndex": 1,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 458976,
+        "Speed": 0.0,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 0,
+        "Attributes2": 0,
+        "Attributes3": 0,
+        "Attributes4": 0,
+        "Attributes5": 0,
+        "Attributes6": 0,
+        "Attributes7": 0,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 0,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 182868
+      },
+      {
+        "ID": 156866,
+        "CastingTimeIndex": 91,
+        "DurationIndex": 0,
+        "RangeIndex": 1,
+        "SchoolMask": 1,
+        "SpellIconFileDataID": 132356,
+        "Speed": 0.0,
+        "ActiveIconFileDataID": 0,
+        "LaunchDelay": 0.0,
+        "DifficultyID": 0,
+        "Attributes1": 0,
+        "Attributes2": 0,
+        "Attributes3": 0,
+        "Attributes4": 0,
+        "Attributes5": 0,
+        "Attributes6": 0,
+        "Attributes7": 0,
+        "Attributes8": 0,
+        "Attributes9": 0,
+        "Attributes10": 0,
+        "Attributes11": 0,
+        "Attributes12": 0,
+        "Attributes13": 0,
+        "Attributes14": 0,
+        "SpellID": 182877
+      }
+    ],
+    "SpellXSpellVisual": [
+      {
+        "ID": 82090,
+        "SpellVisualID": 46658,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 0,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 182866
+      },
+      {
+        "ID": 82092,
+        "SpellVisualID": 46659,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 0,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 182868
+      },
+      {
+        "ID": 82098,
+        "SpellVisualID": 46662,
+        "Probability": 1.0,
+        "CasterPlayerConditionID": 0,
+        "CasterUnitConditionID": 0,
+        "ViewerPlayerConditionID": 0,
+        "ViewerUnitConditionID": 0,
+        "SpellIconFileID": 0,
+        "ActiveIconFileID": 0,
+        "Flags": 0,
+        "DifficultyID": 0,
+        "Priority": 0,
+        "SpellID": 182877
+      }
+    ],
+    "cast_times": [
+      {
+        "ID": 1,
+        "Base": 0,
+        "Minimum": 0,
+        "PerLevel": 0
+      },
+      {
+        "ID": 91,
+        "Base": 2800,
+        "Minimum": 2800,
+        "PerLevel": 0
+      },
+      {
+        "ID": 287,
+        "Base": 650,
+        "Minimum": 650,
+        "PerLevel": 0
+      }
+    ],
+    "durations": [
+      {
+        "ID": 27,
+        "Duration": 3000,
+        "MaxDuration": 3000,
+        "DurationPerLevel": 0
+      }
+    ],
+    "visual_events": [
+      {
+        "ID": 102876,
+        "parent": 46658,
+        "start": 1,
+        "end": 2,
+        "target": 1,
+        "kit": 54647
+      },
+      {
+        "ID": 102877,
+        "parent": 46658,
+        "start": 3,
+        "end": 13,
+        "target": 1,
+        "kit": 54650
+      },
+      {
+        "ID": 102878,
+        "parent": 46659,
+        "start": 3,
+        "end": 13,
+        "target": 1,
+        "kit": 54662
+      },
+      {
+        "ID": 102879,
+        "parent": 46659,
+        "start": 6,
+        "end": 13,
+        "target": 1,
+        "kit": 54665
+      },
+      {
+        "ID": 102880,
+        "parent": 46659,
+        "start": 6,
+        "end": 13,
+        "target": 2,
+        "kit": 54665
+      },
+      {
+        "ID": 102881,
+        "parent": 46662,
+        "start": 1,
+        "end": 2,
+        "target": 1,
+        "kit": 54654
+      },
+      {
+        "ID": 102882,
+        "parent": 46662,
+        "start": 3,
+        "end": 13,
+        "target": 1,
+        "kit": 54655
+      },
+      {
+        "ID": 102883,
+        "parent": 46662,
+        "start": 6,
+        "end": 13,
+        "target": 1,
+        "kit": 54667
+      },
+      {
+        "ID": 102884,
+        "parent": 46662,
+        "start": 6,
+        "end": 13,
+        "target": 2,
+        "kit": 54667
+      }
+    ],
+    "kits": [
+      {
+        "ID": 54647,
+        "Flags": 0,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54650,
+        "Flags": 131072,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54654,
+        "Flags": 131072,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54655,
+        "Flags": 131072,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54662,
+        "Flags": 131072,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54665,
+        "Flags": 0,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      },
+      {
+        "ID": 54667,
+        "Flags": 0,
+        "FallbackPriority": 0.0,
+        "FallbackSpellVisualKitID": 0,
+        "DelayMin": 0,
+        "DelayMax": 0
+      }
+    ],
+    "kit_effects": [
+      {
+        "ID": 111676,
+        "parent": 54647,
+        "type": 6,
+        "effect": 20609
+      },
+      {
+        "ID": 111681,
+        "parent": 54650,
+        "type": 6,
+        "effect": 20612
+      },
+      {
+        "ID": 111682,
+        "parent": 54650,
+        "type": 2,
+        "effect": 40902
+      },
+      {
+        "ID": 111683,
+        "parent": 54650,
+        "type": 2,
+        "effect": 40903
+      },
+      {
+        "ID": 111684,
+        "parent": 54650,
+        "type": 2,
+        "effect": 40904
+      },
+      {
+        "ID": 111691,
+        "parent": 54654,
+        "type": 6,
+        "effect": 20615
+      },
+      {
+        "ID": 111692,
+        "parent": 54654,
+        "type": 2,
+        "effect": 40906
+      },
+      {
+        "ID": 111693,
+        "parent": 54655,
+        "type": 6,
+        "effect": 20616
+      },
+      {
+        "ID": 111694,
+        "parent": 54655,
+        "type": 2,
+        "effect": 40908
+      },
+      {
+        "ID": 111695,
+        "parent": 54655,
+        "type": 2,
+        "effect": 40909
+      },
+      {
+        "ID": 111696,
+        "parent": 54655,
+        "type": 2,
+        "effect": 40910
+      },
+      {
+        "ID": 111712,
+        "parent": 54662,
+        "type": 2,
+        "effect": 40913
+      },
+      {
+        "ID": 111713,
+        "parent": 54662,
+        "type": 2,
+        "effect": 40914
+      },
+      {
+        "ID": 111714,
+        "parent": 54662,
+        "type": 2,
+        "effect": 40915
+      },
+      {
+        "ID": 111721,
+        "parent": 54665,
+        "type": 6,
+        "effect": 20622
+      },
+      {
+        "ID": 111722,
+        "parent": 54665,
+        "type": 2,
+        "effect": 40916
+      },
+      {
+        "ID": 111723,
+        "parent": 54667,
+        "type": 6,
+        "effect": 20623
+      },
+      {
+        "ID": 111724,
+        "parent": 54667,
+        "type": 2,
+        "effect": 40917
+      },
+      {
+        "ID": 171693,
+        "parent": 54654,
+        "type": 5,
+        "effect": 77465
+      },
+      {
+        "ID": 171694,
+        "parent": 54655,
+        "type": 5,
+        "effect": 77466
+      },
+      {
+        "ID": 171695,
+        "parent": 54662,
+        "type": 5,
+        "effect": 77467
+      }
+    ],
+    "attachments": [
+      {
+        "ID": 40902,
+        "parent": 54650,
+        "effect_name": 10272,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40903,
+        "parent": 54650,
+        "effect_name": 18383,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40904,
+        "parent": 54650,
+        "effect_name": 18383,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40906,
+        "parent": 54654,
+        "effect_name": 23212,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40908,
+        "parent": 54655,
+        "effect_name": 16200,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40909,
+        "parent": 54655,
+        "effect_name": 18383,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40910,
+        "parent": 54655,
+        "effect_name": 15745,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40913,
+        "parent": 54662,
+        "effect_name": 10272,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40914,
+        "parent": 54662,
+        "effect_name": 18383,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40915,
+        "parent": 54662,
+        "effect_name": 18383,
+        "attachment": 19,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40916,
+        "parent": 54665,
+        "effect_name": 15471,
+        "attachment": 34,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      },
+      {
+        "ID": 40917,
+        "parent": 54667,
+        "effect_name": 15471,
+        "attachment": 34,
+        "start_anim": 65535,
+        "anim": 65535,
+        "end_anim": 65535,
+        "anim_kit": 0
+      }
+    ],
+    "effect_models": [
+      {
+        "ID": 10272,
+        "parent": 0,
+        "model_file": 512211,
+        "texture_file": 0
+      },
+      {
+        "ID": 18383,
+        "parent": 0,
+        "model_file": 915946,
+        "texture_file": 0
+      },
+      {
+        "ID": 18383,
+        "parent": 0,
+        "model_file": 915946,
+        "texture_file": 0
+      },
+      {
+        "ID": 23212,
+        "parent": 0,
+        "model_file": 1034149,
+        "texture_file": 0
+      },
+      {
+        "ID": 16200,
+        "parent": 0,
+        "model_file": 796590,
+        "texture_file": 0
+      },
+      {
+        "ID": 18383,
+        "parent": 0,
+        "model_file": 915946,
+        "texture_file": 0
+      },
+      {
+        "ID": 15745,
+        "parent": 0,
+        "model_file": 797898,
+        "texture_file": 0
+      },
+      {
+        "ID": 10272,
+        "parent": 0,
+        "model_file": 512211,
+        "texture_file": 0
+      },
+      {
+        "ID": 18383,
+        "parent": 0,
+        "model_file": 915946,
+        "texture_file": 0
+      },
+      {
+        "ID": 18383,
+        "parent": 0,
+        "model_file": 915946,
+        "texture_file": 0
+      },
+      {
+        "ID": 15471,
+        "parent": 0,
+        "model_file": 796592,
+        "texture_file": 0
+      },
+      {
+        "ID": 15471,
+        "parent": 0,
+        "model_file": 796592,
+        "texture_file": 0
+      }
+    ],
+    "visual_animations": [],
+    "animation_kits": [],
+    "segments": []
+  },
+  "runtime_hashes": {
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "SpellMisc": "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b",
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellCastTimes": "0165dfa786959bfb76a123432b49bb464dbdb23bca0facc810603a88f38c0b6c",
+    "SpellDuration": "fd01e79e46a57d270e536cdb7d86f78f4f2b086c388bf43e51adc4bbfde4d446",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2",
+    "AnimKitSegment": "65a0658e7afdc5fcd2ccbc62ea76cd289344e9b6fc2a32cf6e6e96eb896a381b",
+    "SpellVisualKit": "f132307415150dd8ba923066aa4fb8054ad815fc621179e947480e7fa2b1035d"
+  },
+  "native_cpp_catalog": [
+    "line4752 broadcast=98495 next=0 additional=500 visualKit=0 animKit=0",
+    "display24301 model=2745 file=125228",
+    "display65043 model=8570 file=1266228",
+    "Geir faction1814 hostileToAlliance=1 hostileToHorde=1",
+    "Helya female sound53006 exists=1",
+    "spell182866 name=Crushing Stomp",
+    " effect=6 aura=23 trigger=182868 target=1,0",
+    "spell182868 name=Crushing Stomp",
+    " effect=2 aura=0 trigger=0 target=22,15",
+    " effect=98 aura=0 trigger=0 target=22,15",
+    "spell182877 name=Smash",
+    " effect=2 aura=0 trigger=0 target=47,16",
+    "PASS: native Geir/Helya model chains, faction hostile to both players, three combat spell records and sparse2256 line4752 chain. Actual combat, spell timing, sound/animation and client conversation playback remain unverified."
+  ],
+  "catalog_hashes": {
+    "SpellMisc": "2C2C50A36C91FC53ACA60D202FFD606E4547ABB8DAA75392D6BD65D345C1821B",
+    "ConversationLine": "EF9A39EDEEF5F58AEBD0741839291A1A4E4AB745BE881C3E155B9767C5BA7039",
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "SoundKit": "2643655DDBBC10B9F58CC6BCFB15CF2B2C588F0F13571C980F3AB2B7154547CE",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "FactionTemplate": "09CB3CC83A73C74F6737B69F601002FAD091F74B646534175B3BFDACEF67FF9E",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF"
+  },
+  "limits": "Original39853 is a normal Geir91948 kill objective, with existing source0 SmartAI combat182866/182877 and optional death conversation2256. Native DB2 and regular26972 visual relationships establish spell/kit/model references, not timed combat or M2 playback. The supported C++ reader independently checks sparse line4752/broadcast98495, hostile faction1814, model24301 and female sound53006; the World/Hotfix overlay is checked separately. The repair changes only the eligible pet/guardian death-event invoker on the original spawn, using its home position to allow combat movement. Native kill selection/50ms credit/group reward and later Warrior spawns retain their original paths. No full client fight, tapping, loot distribution, voice or39855 exit choreography is verified."
+}
