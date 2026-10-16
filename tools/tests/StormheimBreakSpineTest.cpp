@@ -51,17 +51,17 @@ int main(int argc,char** argv)
     auto& q=store.quests[40004];q.id=40004;
     while(std::getline(input,line)){
         std::istringstream in(line);std::string kind;in>>kind;
-        if(kind=="quest"){uint32 id,type,level,flagsEx,item,reward,next,exclusive;uint64 races;in>>id>>type>>level>>q.flags>>flagsEx>>races>>item>>reward>>q.PrevQuestID>>next>>exclusive>>q.special;assert(id==40004&&type==2&&level==98&&!item&&!reward&&!q.PrevQuestID&&!next&&!exclusive);q.AllowableRaces=races;}
+        if(kind=="quest"){uint32 id,type,level,flagsEx,item,reward,next;int exclusive;uint64 races;in>>id>>type>>level>>q.flags>>flagsEx>>races>>item>>reward>>q.PrevQuestID>>next>>exclusive>>q.special;assert(id==40004&&type==2&&level==98&&!item&&!reward&&!next);assert(q.PrevQuestID==40002&&exclusive==-40003);q.AllowableRaces=races;}
         if(kind=="objective"){uint32 id,flags;int index;QuestObjective o;in>>id>>o.Type>>o.ObjectID>>o.Amount>>index>>flags;assert(flags==1&&o.Type==0&&o.Amount==1&&index>=3&&index<=6);o.Flags=flags;o.StorageIndex=int8(index);q.objectives.push_back(o);++objectives;}
         if(kind=="spell"){unsigned entry,spell,mask;std::string restrictions;in>>entry>>spell>>mask;in>>restrictions;assert(!mask&&restrictions.empty());CreatureSpell data;assert(data.CanUseInDifficulty(0));++spells;}
     }
-    assert(objectives==4&&spells==10);q.special|=QUEST_SPECIAL_FLAGS_KILL; // Native quest loader derives this from MONSTER objectives.
+    assert(objectives==4&&spells==10);store.quests[40002].id=40002;if(q.PrevQuestID)q.prevQuests={q.PrevQuestID};q.special|=QUEST_SPECIAL_FLAGS_KILL; // Native quest loader derives this from MONSTER objectives.
     Creature giver;giver.entry=97986;giver.guid={338656};giver.fields[UNIT_FIELD_NPC_FLAGS]=3;creatures[giver.guid]=&giver;SmartAI giverAI(&giver);Creature starter;starter.entry=97979;SmartAI starterAI(&starter);
     std::vector<uint32> order{97822,97859,97942,97944};
     for(auto team:{ALLIANCE,HORDE})for(bool petKill:{false,true}){
         do{
             Player p;p.guid={1000+team+unsigned(petKill)};p.team=team;p.race=team==ALLIANCE?1:2;
-            assert(p.CanTakeQuest(&q,false));p.AddQuestAndCheckCompletion(&q,&starter);assert(!p.CanCompleteQuest(40004)&&!p.CanRewardQuest(&q,false));
+            p.m_RewardedQuests.insert(40002);assert(p.CanTakeQuest(&q,false));p.AddQuestAndCheckCompletion(&q,&starter);assert(!p.CanCompleteQuest(40004)&&!p.CanRewardQuest(&q,false));
             p.KilledMonsterCredit(97948);p.KilledMonsterCredit(105123);p.TalkedToCreature(97948,{});assert(!p.packets);
             unsigned kills=0;
             for(auto entry:order){

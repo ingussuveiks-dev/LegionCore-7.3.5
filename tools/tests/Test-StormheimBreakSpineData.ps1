@@ -48,7 +48,9 @@ if(!$Live){
  $rows=@($rows | Where-Object {$_ -notlike "objective`t*"})
  foreach($r in $actual){$f=$r.Split("`t");if($f[1] -eq '40004'){$rows+="objective`t$($f[0])`t$($f[2])`t$($f[4])`t$($f[5])`t$($f[3])`t$($f[6])"}}
 }
-foreach($expected in @("quest`t40004`t2`t98`t38797320`t8192`t18446744073709551615`t0`t0`t0`t0`t0`t0","starter`t97979`t40004","ender`t97986`t40004","scripts`t0","conditions`t0","disabled`t0","objective`t280178`t0`t97822`t1`t3`t1","objective`t280179`t0`t97859`t1`t4`t1","objective`t280180`t0`t97944`t1`t5`t1","objective`t280181`t0`t97942`t1`t6`t1")){if($rows -notcontains $expected){throw "Missing World evidence $expected"}}
+foreach($expected in @("starter`t97979`t40004","ender`t97986`t40004","scripts`t0","conditions`t0","disabled`t0","objective`t280178`t0`t97822`t1`t3`t1","objective`t280179`t0`t97859`t1`t4`t1","objective`t280180`t0`t97944`t1`t5`t1","objective`t280181`t0`t97942`t1`t6`t1")){if($rows -notcontains $expected){throw "Missing World evidence $expected"}}
+$acceptedQuestRows=@("quest`t40004`t2`t98`t38797320`t8192`t18446744073709551615`t0`t0`t40002`t0`t-40003`t0")
+if(!($rows | Where-Object {$_ -in $acceptedQuestRows})){throw 'Unexpected Break the Spine chain metadata'}
 if(@($rows | Where-Object {$_ -like "spawn`t*"}).Count -ne 4 -or @($rows | Where-Object {$_ -like "spell`t*"}).Count -ne 10){throw 'Missing lieutenant/spell rows'}
 foreach($entry in @(97822,97859,97942,97944)){if($rows -notcontains "scaling`t$entry`t98`t110"){throw 'Inactive scaling range'}}
 $rows | Set-Content "$out/$(if($Live){'world-live'}else{'world'}).tsv"
