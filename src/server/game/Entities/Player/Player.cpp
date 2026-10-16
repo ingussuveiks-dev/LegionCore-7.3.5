@@ -20968,6 +20968,12 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (questid == 38058 && real_entry == 90903)
             continue;
 
+        if (questid == 40078 && (entry == 98239 || real_entry == 98239))
+        {
+            TC_LOG_DEBUG("quest", "A Heavy Burden: ignored generic fish credit");
+            continue;
+        }
+
         if (questid == 39855 && (entry == 97487 || real_entry == 97487))
         {
             TC_LOG_DEBUG("quest", "Paid in Lifeblood: ignored generic exit credit");
@@ -21180,6 +21186,12 @@ bool Player::TalkedToCreature(uint32 entry, ObjectGuid guid)
         uint32 questid = GetQuestSlotQuestId(i);
         if (!questid)
             continue;
+
+        if (questid == 40078 && entry == 98239)
+        {
+            TC_LOG_DEBUG("quest", "A Heavy Burden: ignored generic fish talk credit");
+            continue;
+        }
 
         if (questid == 39855 && entry == 97487)
         {
