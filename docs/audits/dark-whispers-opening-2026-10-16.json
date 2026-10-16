@@ -1,0 +1,25 @@
+{
+  "quest": 42125,
+  "scenario": 1097,
+  "client_verified": false,
+  "reported": "Mephistroth should begin Foolish warlock while running toward the skull, finish the entire first line, then pick up the skull and continue. Current client run instead has a silent approach and speech only at pickup. User supplied an original-scene reference frame.",
+  "evidence": {
+    "action_order": "SmartAI106692 event0 UPDATE60 starts path106692 and links event1 TALK group0 in the same dispatcher call. There is no waypoint-arrival trigger delaying the first line. TEXT_OVER group0 then invokes group1 and the pickup phase.",
+    "range": "Live creature_text group0 was SAY12. Active worldserver.conf ListenRange.Say=40 and ListenRange.Yell=300. Initial Mephistroth position1021.39/5137.38/58.2669 is approximately41.85,45.39 and49.13yards from the three ritual doomweavers. A nearby player can therefore be outside SAY range when the one-shot opening is transmitted.",
+    "native_delivery": "CreatureTextMgr::SendText derives finalType from creature_text.Type and passes it to both SendSound and SendChatPacket. Their normal-range paths use GetRangeForChatType. A later move into range does not replay the initial text or sound packet; group1 is the first heard line after the16500ms timer.",
+    "voice": "BroadcastText110315 keeps sound kit62314, native client FileDataID1384890, measured16.005896-second recording. Existing16500ms timer covers it. No voice files, text or shared audio configuration changed."
+  },
+  "change": "Set only CreatureID106692 GroupID0 ID0 BroadcastTextID110315 to YELL14. Preserve SAY12 for groups1/2, the immediate WP_START->TALK link, full16500ms opening timer, skull boarding callback/retry and subsequent native summon/departure sequence.",
+  "checks": [
+    "Test-DarkWhispersOpening.ps1 compiles extracted production WP_START, TALK, LINK continuation, text-over timer and GetRangeForChatType. The fixture records the first SendChat call in the same frame as running begins; no Player target is present in the30-yard selector, exercising the native fallback talker.",
+    "Native range-function fixture reproduces old SAY40 exclusion at all three initial distances and accepts them under YELL300. Timer fixture prevents pickup before the full clip, then invokes the second line. SendChat is a test endpoint; actual client packet, audio and bubble rendering are not claimed as verified.",
+    "Temporary creature_text fixture starts with broken SAY12. SQL replay repairs it and a second application is stable, preserving other Mephistroth lines/finale text. Live SmartAI rows confirm immediate approach speech and full first-line timer before pickup phase. Test-DarkWhispersIntro.ps1 includes this regression and passed with the other introduction checks.",
+    "Database-only correction using existing canonical Release9DA07E9747636D136A806EFD72CF8F7D2B48441A53607C6ACEB9F19FAC58E018. Test-WorldShutdown.ps1 passed ready, exit0 and no new dumps; migration10 applied and live opening Type14 confirmed, later groups remain12. No source/binary changes or global ListenRange edits were required."
+  ],
+  "pending_client_checks": [
+    "From each ritual caster position, including a pet killing the last caster, hear and see Foolish warlock as Mephistroth begins approaching.",
+    "The complete first voice finishes before the skull pickup; then As for you and the remaining dialogue/visuals play once in order.",
+    "Earlier skull alignment, hand attachment and full scenario completion remain pending client checks."
+  ],
+  "runtime": "Canonical build-extractors/bin/Release; servers left stopped; no character progress edits."
+}

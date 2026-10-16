@@ -2,6 +2,7 @@ param([string]$MigrationFile="$PSScriptRoot/../../sql/updates/world/2026_10_16_0
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 & "$PSScriptRoot/Test-DarkWhispersBeamHook.ps1"
+& "$PSScriptRoot/Test-DarkWhispersOpening.ps1"
 $out="$repo/build-extractors/runtime-test/dark-whispers-intro"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 function Extract([string]$path,[string]$start,[string]$end,[string]$name){
