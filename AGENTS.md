@@ -33,6 +33,8 @@
 
 # Warlock spell regressions
 
+- Specialization activation must load even an empty saved action query. Preserve spells auto-added during learning: first-use layouts must insert fresh NEW rows for the destination spec, while existing layouts retain saved positions/macros/items and merge new spells without duplicates. The 2026-10-16 first Demonology activation left only two saved buttons; unchanged/changed source-spec states were reused without destination rows, or learning additions were cleared by the late load. Run `Test-ActionBarPersistence.ps1 -VerifyReleaseBinary`; first activation, manual layouts, switch-back, logout and restart still need client verification. Action IDs are uint64 in SQL and must be loaded with GetUInt64.
+
 - Rejected aura proc and area-target checks must finish their script call before returning. Immolate 193541 -> triggered energize 193540 can re-enter and reject its own proc check; leaving CHECK_PROC active crashes the outer effect dispatcher in `_IsDefaultActionPrevented`. Run `tools/tests/Test-AuraScriptReentry.ps1` when changing aura hook dispatch or reentrant Warlock procs; preserve the enclosing application and default-action suppression as well as an empty stack after ordinary checks.
 - Burning Rush (111400) must toggle off on recast. Its low-health periodic hook must call `PreventDefaultAction()` before removing the aura; removal alone does not stop the current damage tick.
 - Shadow Shield (115232) effect 0 reduces damage; effect 1 triggers 115234, whose script consumes a stack. Do not trigger a second retaliation from effect 0 or look up spell ID 0.

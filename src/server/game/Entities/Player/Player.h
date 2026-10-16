@@ -3320,7 +3320,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         /***                   LOAD SYSTEM                     ***/
         /*********************************************************/
 
-        void _LoadActions(PreparedQueryResult result);
+        void _LoadActions(PreparedQueryResult result, bool preserveLearnedActions = false);
         void _LoadAuras(PreparedQueryResult result, PreparedQueryResult resultEffect, uint32 timediff);
         void _LoadGlyphAuras();
         void _LoadBoundInstances(PreparedQueryResult result);

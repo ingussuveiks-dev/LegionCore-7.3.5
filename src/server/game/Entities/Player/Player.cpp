@@ -23305,9 +23305,15 @@ bool Player::isAllowedToLoot(const Creature* creature)
     return false;
 }
 
-void Player::_LoadActions(PreparedQueryResult result)
+void Player::_LoadActions(PreparedQueryResult result, bool preserveLearnedActions)
 {
+    // Specialization spells are learned before their saved bar can be
+    // validated. Keep the resulting automatic additions across this load.
+    ActionButtonList pendingActions;
+    if (preserveLearnedActions)
+        pendingActions.swap(m_actionButtons);
     m_actionButtons.clear();
+    bool const hasSavedActions = bool(result);
 
     if (result)
     {
@@ -23315,7 +23321,7 @@ void Player::_LoadActions(PreparedQueryResult result)
         {
             Field* fields = result->Fetch();
             uint8 button = fields[0].GetUInt8();
-            uint64 action = fields[1].GetUInt32();
+            uint64 action = fields[1].GetUInt64();
             uint8 type = fields[2].GetUInt8();
 
             if (ActionButton* ab = AddActionButton(button, action, type))
@@ -23330,6 +23336,28 @@ void Player::_LoadActions(PreparedQueryResult result)
             }
         } while (result->NextRow());
     }
+
+    for (auto const& pending : pendingActions)
+    {
+        ActionButton const& action = pending.second;
+        if (action.uState == ACTIONBUTTON_DELETED)
+            continue;
+
+        if (!hasSavedActions)
+        {
+            // First visit: retain valid shared buttons and newly learned
+            // spells, but insert them as NEW rows for this specialization.
+            AddActionButton(pending.first, action.GetAction(), uint8(action.GetType()));
+        }
+        else if (action.uState != ACTIONBUTTON_UNCHANGED && action.GetType() == ACTION_BUTTON_SPELL)
+        {
+            // Existing layouts keep their positions. Newly learned spells
+            // may fill empty slots without replacing saved macros or items.
+            AddSpellToActionBarIfAppropriate(uint32(action.GetAction()), false);
+        }
+    }
+    if (preserveLearnedActions)
+        TC_LOG_DEBUG("entities.player", "Action bar: preserved learned actions while loading specialization %u", GetActiveTalentGroup());
 }
 
 void Player::_LoadAuras(PreparedQueryResult result, PreparedQueryResult resultEffect, uint32 timediff)
@@ -34676,8 +34704,7 @@ void Player::ActivateTalentGroup(ChrSpecializationEntry const* spec)
     CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_ACTIONS_SPEC);
     stmt->setUInt64(0, GetGUIDLow());
     stmt->setUInt8(1, GetActiveTalentGroup());
-    if (PreparedQueryResult result = CharacterDatabase.Query(stmt))
-        _LoadActions(result);
+    _LoadActions(CharacterDatabase.Query(stmt), true);
 
     SendActionButtons(1);
     InitialPowers();

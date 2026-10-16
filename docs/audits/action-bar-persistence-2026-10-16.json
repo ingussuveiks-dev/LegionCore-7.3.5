@@ -1,0 +1,15 @@
+{
+  "report": "First-ever Demonology activation removed old spells and auto-placed new ones, but those buttons vanished after restart. User confirmed manually arranged specializations survive switching normally.",
+  "evidence": [
+    "The affected active spec1 had only two saved character_action rows, unlike populated specs0 and2. This is a saved-state snapshot, not a complete packet trace of the original switch.",
+    "ActivateTalentGroup saves outgoing actions, learns incoming spells with automatic placement, then queries the destination actions. Previously _LoadActions only ran for a nonempty query.",
+    "An empty destination inherited outgoing UNCHANGED/CHANGED action states; _SaveActions therefore skipped or UPDATEd rows absent from the destination. For a populated destination, _LoadActions cleared newly auto-added spells.",
+    "The character_action.action column and save handlers use uint64, but the load handler narrowed IDs with GetUInt32."
+  ],
+  "change": "Always load destination actions after spec learning. During this spec-only load, capture pending actions first. Empty destinations copy valid pending buttons into fresh NEW rows; populated destinations keep saved slots and merge only pending new/changed spells through the existing auto-placement helper. Ordinary login does not merge previous in-memory bars. Read full64-bit action IDs.",
+  "automated_checks": "Test-ActionBarPersistence.ps1 extracts production ActionButton state management and Add/Remove/Load/Save handlers. A statement-aware database fixture distinguishes INSERT from UPDATE-on-missing, tests first activation, retained shared spell/macro, old-spec rejection, existing custom macro/item positions, new/changed spells, duplicates, save/relog, repeated loads, deletion, same-spec replacement and destination isolation. The spell-classification helper is stubbed to its duplicate/empty-slot contract; its native DB2 classification is not verified by this harness.",
+  "character_changes": "No character action rows edited manually. A private local snapshot was retained before graceful shutdown; it is excluded from Git.",
+  "runtime_checks": "Full Release rebuilt in canonical build-extractors/bin/Release, SHA256B684449441DBC8FB8A9AFE97B2463041DA518154DA11D48B518B366713F44949. Original game.lib/scripts.lib final-link paths retained. VerifyReleaseBinary marker check and native persistence tests passed. Startup ready, shutdown exit0, no new crash dumps. Both servers stopped; saved per-spec row counts unchanged by the startup test.",
+  "client_verified": false,
+  "pending": "Test first activation on a fresh specialization and restart after automatic placement. For the already affected partially saved spec, switch away and back after deployment to relearn its spells; confirm auto-added spells survive logout/restart and existing manually arranged layouts retain positions."
+}
