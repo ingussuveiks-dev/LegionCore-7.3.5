@@ -1,0 +1,25 @@
+{
+  "quest": 42125,
+  "scenario": 1097,
+  "client_verified": false,
+  "reported_failure": "After killing the last of the three doomweavers around the skull, the green shield remained. User specifies it must disappear then, before Mephistroth approaches and takes the skull.",
+  "cause": "Binding211683 is the skull's own infinite aura, independent of the three caster-owned212497 beams. Previous changes removed it only on Mephistroth's PassengerBoarded event. Stopping all beams therefore did not clear this shield at the requested moment.",
+  "evidence": "Native211683 -> visual55714 -> kit67620 -> model attaches322888/322889 -> AntiMagic_State_Base165564 and Fel_Fire_Precast_Hand166071, traced in the introduction audit. The spell is applied by creature_template_addon to106693; no need to change visual assets, model, height or gravity.",
+  "changes": [
+    "Append LINK5 REMOVEAURASFROMSPELL28 for211683 on the nearby106693 to the existing last-doomweaver death -> Mephistroth summon action. The native position-summon branch reaches LINK even on summon failure; Mephistroth's UPDATE approach cannot execute until this death action returns.",
+    "Keep the last-living-doomweaver condition, but evaluate it from the dying base actor rather than a distant player/pet killer. The first two deaths leave the shield intact.",
+    "Preserve actual boarding and its idempotent stale-aura cleanup, the visible skull, native elevated positions and disabled gravity. The separate final-ritual skull is more than200yards away and outside this50-yard selection."
+  ],
+  "automated_checks": [
+    "Test-DarkWhispersBinding.ps1 compiles the actual NearCreature condition branch, position-summon branch, LINK continuation and REMOVEAURASFROMSPELL dispatcher. All six death orders retain the binding until the third death; then remove it while preserving the skull, unrelated aura and separate finale skull. Both successful and failed summons reach cleanup;10000 repeats remain safe.",
+    "SQL fixture starts with the old missing LINK and checks idempotent replay, unchanged original spawn coordinates/type and nonrepeatable death flag, base-actor condition, boarding fallback and unrelated introduction/finale actions.",
+    "Test-DarkWhispersIntro.ps1 -VerifyReleaseBinary passed with this regression, the real beam-hook context test, opening/timer and boarding/attack checks. This is a database-only fix; existing canonical Release9DA07E9747636D136A806EFD72CF8F7D2B48441A53607C6ACEB9F19FAC58E018 already implements the native actions.",
+    "Test-WorldShutdown.ps1 passed ready, exit0 and no new dumps. Startup applied migration11; live death LINK5, aura211683 removal and ConditionTarget1 were confirmed. No binary/config/client asset changes."
+  ],
+  "pending_client_checks": [
+    "Green shield stays after kills1/2 and disappears immediately after kill3, including a pet killing blow; skull stays floating and visible.",
+    "Mephistroth then speaks during approach, takes the unshielded skull only after the full opening line, continues dialogue and summons the Overfiend.",
+    "Earlier hand placement, departure visuals and full scenario completion remain pending; automated dispatch tests do not verify rendered visuals."
+  ],
+  "runtime": "build-extractors/bin/Release; servers left stopped after validation; no character-progress edits."
+}
