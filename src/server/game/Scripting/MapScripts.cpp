@@ -649,7 +649,7 @@ void Map::ScriptsProcess()
 
                         if (auto sum = pSummoner->SummonCreature(step.script->TempSummonCreature.CreatureEntry, x, y, z, o, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, step.script->TempSummonCreature.DespawnDelay))
                         {
-                            TC_LOG_ERROR("scripts", "%s creature was spawned (entry: %u).", step.script->GetDebugInfo().c_str(), step.script->TempSummonCreature.CreatureEntry);
+                            TC_LOG_DEBUG("scripts", "%s creature was spawned (entry: %u).", step.script->GetDebugInfo().c_str(), step.script->TempSummonCreature.CreatureEntry);
                             if (step.script->TempSummonCreature.PersonalVisible && pSummoner->ToPlayer())
                             {
                                 sum->AddPlayerInPersonnalVisibilityList(pSummoner->GetGUID());

@@ -1,0 +1,15 @@
+{
+  "scope": "SCRIPT_COMMAND_TEMP_SUMMON_CREATURE success logging",
+  "reported": "event_scripts 50917 creature was spawned (entry: 106644) was emitted at ERROR",
+  "cause": "The successful SummonCreature branch used TC_LOG_ERROR. The message is not evidence of a failed or duplicate summon.",
+  "change": "Log only the successful branch at DEBUG. Preserve missing entry and failed summon ERROR messages and personal visibility behavior.",
+  "checks": {
+    "production_dispatcher": "Test-MapSummonLog.ps1 compiles the extracted production case: success, failure, missing entry, missing source and delayed personal visibility pass.",
+    "baseline": "The same test against pre-fix HEAD failed errors==0 && debugs==1, reproducing the false ERROR.",
+    "build": "Canonical Release worldserver compiled and linked with the original game.lib and scripts.lib paths; no OutDir override.",
+    "startup": "Test-WorldShutdown.ps1 -ProbeConnections: ready, world and instance TCP greetings, shutdown exit 0, no new server dumps. DBErrors.log remained empty.",
+    "runtime": "build-extractors/bin/Release; worldserver and bnetserver left stopped"
+  },
+  "client_verified": false,
+  "limits": "This severity correction does not prove a summon AI, visual or scenario transition works in the client. Those are audited separately in dark-whispers-intro-2026-10-16.json."
+}
