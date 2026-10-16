@@ -1,0 +1,58 @@
+{
+  "issue": "Halls of Valor Odyn surrender on the threshold-crossing hit",
+  "date": "2026-10-16",
+  "status": "production/native regression passed; client verification pending",
+  "baseline_commit": "6813b929",
+  "actor": 95676,
+  "map": 1477,
+  "encounter": 4,
+  "observed_before_repair": [
+    "Native pre-scaling DamageTaken tested only existing HealthBelowPct81. A fresh lethal hit set health80% and damage0 but left the encounter IN_PROGRESS and emitted no95676 quest credit until another hit. The regression extracts that actual old handler from the pinned commit and reproduces it.",
+    "Raw damage could exceed unscaled template health while the normalized hit remained small for the attacker-relative pool. The old raw-health cap could therefore force80% early."
+  ],
+  "implementation": [
+    "Use the existing DamageTakenAfterScaling virtual hook; Unit::DealDamage invokes it after final damage normalization and before its lethal comparison. Compare final damage against GetHealth(attacker)/GetMaxHealth(attacker), preserving the existing strict below81% threshold. Both ordinary threshold-crossing and fresh scaled lethal hits surrender immediately.",
+    "Once surrender begins, set damage0 and encounterComplete before callbacks; retain80% displayed health, native_JustDied encounter transition, dungeon1809 achievement,200988 removal, map-wide95676 player credit, faction/flags/combat/home cleanup,5000ms despawn and optional208534 achievement. Repeated incoming hits are suppressed without repeating completion or credit. Zero damage and dormant/completed states cannot start a completion; a ready first spell uses the ordinary combat-entry callback.",
+    "Spell::DoAllEffectOnTarget calls DealSpellDamage before CombatStart. If the unlocked intro is finished, faction16 is attackable, Skovald is DONE and Odyn is not DONE, a first spell can initialize ordinary combat through SetInCombatWith before evaluating surrender. Protected/dormant/locked states do not bootstrap. The extracted native EnterCombat body preserves achievement initialization and event scheduling.",
+    "Core damage/combat dispatch, instance encounter/loot code and spell handlers are unchanged. The separate Aegis claim repair has its own migration/audit."
+  ],
+  "tests": {
+    "command": "tools/tests/Test-HallsOdynSurrender.ps1 -VerifyReleaseBinary",
+    "production_extractions": [
+      "Odyn DamageTakenAfterScaling method",
+      "pinned old Odyn DamageTaken method",
+      "Unit post-scaling hook dispatch",
+      "Unit::GetHealth(Unit*) and GetMaxHealth(Unit*)",
+      "Creature::GetHealthMultiplierForTarget",
+      "Odyn EnterCombat body; source ordering checks for Spell damage before CombatStart and Unit combat-entry callback"
+    ],
+    "cases": [
+      "original first-hit stall reproduced",
+      "ordinary and scaled lethal hits",
+      "target pools1000 and1000000 with template health1000000000",
+      "large raw but small normalized hit remains ordinary damage",
+      "strict81% boundary",
+      "player and Unit/pet attacker forms",
+      "map-wide credit to two players exactly once",
+      "repeated hits, inactive encounters and zero damage",
+      "optional achievement enabled/disabled and preserved cleanup",
+      "ready first-spell and post-wipe bootstrap exactly once; dormant, faction35, Skovald-locked and immune rejection"
+    ],
+    "result": "PASS"
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "A1B9F8AB69DDAC8BF49796CC6E4070E5BB656880A22716EF03339EFD6F0BACB0",
+    "marker": "Odyn: surrender after final scaled damage",
+    "actual_scripts_final_link_timestamp_check": "PASS",
+    "startup_directory": "build-extractors/runtime-test/halls-aegis/startup-20261016-191250",
+    "startup": "ready, graceful exit0",
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "limits": [
+    "The actual handler, native target health/max/multiplier getters and post-scaling dispatcher execute. Level-stat lookup, map/player enumeration, SetInCombatWith/BossAI::_EnterCombat/_JustDied side effects, achievements, movement/despawn and health mutation/death comparison outside the extracted dispatcher are fixture services; this is not a complete Unit::DealDamage or persistence integration test.",
+    "The Release marker and actual scripts final-link input are checked; startup does not exercise a live Odyn fight. Client confirmation remains necessary on normal/heroic/mythic/keystone:20% trial damage, high-damage first hit, pet blow, no corpse, exactly one encounter/quest reward, cleanup/loot and achievement behavior.",
+    "No full dungeon, Aegis visual, quest completion or client verification is claimed by this surrender regression."
+  ]
+}

@@ -211,32 +211,52 @@ public:
             me->RemoveAreaObject(SpellsRunicAt[data]);
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (me->HealthBelowPct(81) && !encounterComplete)
-            {
-                encounterComplete = true;
-                me->StopAttack();
-                Talk(SAY_DEATH);
-                _JustDied();
-                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_DUNGEON_ENCOUNTER, 1809);
-                instance->DoRemoveAurasDueToSpellOnPlayers(200988);
-                instance->instance->ApplyOnEveryPlayer([&](Player* player) {  player->KilledMonsterCredit(me->GetEntry()); });
-                me->setFaction(35);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                me->CombatStop();
-                me->GetMotionMaster()->MoveTargetedHome();
-                me->DespawnOrUnsummon(5000);
-
-                if (GetData(DATA_ACHIEVEMENT))
-                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 208534);
-            }
-            
-            if (damage >= me->GetHealth())
+            if (encounterComplete)
             {
                 damage = 0;
-                me->SetHealth(me->CountPctFromMaxHealth(80));
+                return;
             }
+
+            // Match Unit::DealDamage's final damage and target-relative health.
+            // End the trial on the hit crossing81%, including a scaled one-shot,
+            // rather than waiting for a second hit on a protected80% boss.
+            uint64 health = me->GetHealth(attacker), maximum = me->GetMaxHealth(attacker);
+            uint64 threshold = CalculatePct(maximum, 81);
+            if (!damage || !maximum) return;
+
+            // Spell::DoAllEffectOnTarget can deal its first damage before
+            // CombatStart. Start only the already unlocked, attackable trial;
+            // SetInCombatWith invokes the ordinary EnterCombat callback once.
+            if (instance->GetBossState(DATA_ODYN) != IN_PROGRESS)
+            {
+                if (!attacker || intro || me->getFaction() != 16 ||
+                    instance->GetBossState(DATA_SKOVALD) != DONE || instance->GetBossState(DATA_ODYN) == DONE ||
+                    me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NON_ATTACKABLE)) return;
+                me->SetInCombatWith(attacker);
+                if (instance->GetBossState(DATA_ODYN) != IN_PROGRESS) return;
+            }
+            if (health >= threshold && damage <= health - threshold) return;
+
+            damage = 0;
+            TC_LOG_DEBUG("scripts", "Odyn: surrender after final scaled damage");
+            encounterComplete = true;
+            me->SetHealth(me->CountPctFromMaxHealth(80));
+            me->StopAttack();
+            Talk(SAY_DEATH);
+            _JustDied();
+            instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_DUNGEON_ENCOUNTER, 1809);
+            instance->DoRemoveAurasDueToSpellOnPlayers(200988);
+            instance->instance->ApplyOnEveryPlayer([&](Player* player) {  player->KilledMonsterCredit(me->GetEntry()); });
+            me->setFaction(35);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            me->CombatStop();
+            me->GetMotionMaster()->MoveTargetedHome();
+            me->DespawnOrUnsummon(5000);
+
+            if (GetData(DATA_ACHIEVEMENT))
+                instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_BE_SPELL_TARGET, 208534);
         }
 
         void UpdateAI(uint32 diff) override
