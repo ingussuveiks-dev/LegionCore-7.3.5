@@ -127,6 +127,7 @@ void AddSC_boss_wrath_of_azshara();
 
 void AddSC_instance_halls_of_valor();           //Halls of Valor
 void AddSC_boss_odyn();
+void AddSC_halls_of_valor_aegis();
 void AddSC_boss_hyrja();
 void AddSC_boss_hymdall();
 void AddSC_boss_fenryr();
@@ -381,6 +382,7 @@ void AddLegionScripts()
     
     AddSC_instance_halls_of_valor();           //Halls of Valor
     AddSC_boss_odyn();
+    AddSC_halls_of_valor_aegis();
     AddSC_boss_hyrja();
     AddSC_boss_hymdall();
     AddSC_boss_fenryr();

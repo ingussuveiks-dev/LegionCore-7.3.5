@@ -28,11 +28,12 @@ int main(int argc, char** argv)
         std::cout << "PASS: failed, partial, exhausted and truncated queries cannot pass.\n";
         return 0;
     }
-    if (argc != 4) return 2;
+    if (argc != 4 && argc != 5) return 2;
     int budget = std::stoi(argv[3]);
     if (budget < 1 || budget > 65535) return 2;
+    uint32 map = argc == 5 ? uint32(std::stoul(argv[4])) : 1220;
     MMAP::MMapManager mm;
-    mm.InitializeThreadUnsafe({{1220,{}}});
+    mm.InitializeThreadUnsafe({{map,{}}});
     std::string root = argv[1];
     std::ifstream input(argv[2]);
     float points[2][3];
@@ -43,9 +44,9 @@ int main(int argc, char** argv)
         if (!(input >> point[2] >> point[0] >> point[1])) return 3;
         int tx = int(32-point[2]/533.33333f), ty = int(32-point[0]/533.33333f);
         for (int dx=-1; dx<=1; ++dx) for (int dy=-1; dy<=1; ++dy)
-            if (tiles.insert({tx+dx,ty+dy}).second) mm.loadMap(root+"/",1220,tx+dx,ty+dy);
+            if (tiles.insert({tx+dx,ty+dy}).second) mm.loadMap(root+"/",map,tx+dx,ty+dy);
     }
-    auto mesh = mm.GetNavMesh(1220);
+    auto mesh = mm.GetNavMesh(map);
     if (!mesh) return 4;
     dtNavMeshQuery query;
     if (!Complete(query.init(mesh,budget))) return 4;

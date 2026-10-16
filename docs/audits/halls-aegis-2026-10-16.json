@@ -1,0 +1,235 @@
+{
+  "quest": 40072,
+  "title": "Halls of Valor: Securing the Aegis",
+  "status": "scoped progression/data repair and native checks passed; client verification pending",
+  "original_archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "creature_template": [
+      {
+        "entry": "97988",
+        "name": "'Havi'",
+        "modelid1": "76630",
+        "faction": "35",
+        "npcflag": "2",
+        "unit_flags": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      },
+      {
+        "entry": "95676",
+        "name": "'Odyn'",
+        "modelid1": "67230",
+        "faction": "35",
+        "npcflag": "0",
+        "unit_flags": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      },
+      {
+        "entry": "95675",
+        "name": "'God-King Skovald'",
+        "modelid1": "65873",
+        "faction": "35",
+        "npcflag": "0",
+        "unit_flags": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "gameobject_questender": [
+      {
+        "id": "251991",
+        "quest": "40072"
+      }
+    ],
+    "gameobject_queststarter": [
+      {
+        "id": "251991",
+        "quest": "43349"
+      }
+    ],
+    "gameobject_template": [
+      {
+        "entry": "251991",
+        "name": "'The Aegis of Aggramar'",
+        "type": "2",
+        "displayId": "35704",
+        "size": "1",
+        "Data0": "0",
+        "Data1": "20352",
+        "Data2": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "285235",
+        "QuestID": "40072",
+        "Type": "0",
+        "Order": "1",
+        "StorageIndex": "1",
+        "ObjectID": "95676",
+        "Amount": "1",
+        "Flags": "3",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Odyn defeated'",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "280268",
+        "QuestID": "40072",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "110425",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Claim the Aegis of Aggramar'",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "40072",
+        "LogTitle": "'Halls of Valor: Securing the Aegis'",
+        "LogDescription": "'Defeat God-King Skovald in the Halls of Valor and claim the Aegis of Aggramar.'",
+        "QuestDescription": "'The Felskorn may be broken, but the head of the beast yet lives. The God-King will still vie for the Aegis if left unchecked.\\n\\nYou, who have completed trials upon trials, must not let this come to pass. You must claim the Aegis over Skovald\\'s broken bones!\\n\\nThe Halls of Valor await!'",
+        "RewardNextQuest": "0",
+        "StartItem": "0",
+        "QuestPackageID": "0",
+        "Flags": "33554440",
+        "FlagsEx": "8192"
+      },
+      {
+        "ID": "43349",
+        "LogTitle": "'The Aegis of Aggramar'",
+        "LogDescription": "'Secure the Aegis of Aggramar in the Chamber of the Guardian in Dalaran.'",
+        "QuestDescription": "'Now that it\\'s out of the hands of the Legion, the Aegis should be brought back to Dalaran for safekeeping while the hunt continues for the rest of the Pillars of Creation.\\n\\nIt should be safe in the central portal chamber until the time comes when it is needed.'",
+        "RewardNextQuest": "0",
+        "StartItem": "0",
+        "QuestPackageID": "18465",
+        "Flags": "37748744",
+        "FlagsEx": "8192"
+      }
+    ]
+  },
+  "observed_before_repair": [
+    "110425 is Credit - Aegis of Aggramar, not an actual Havi talk target. The required first counter had no interaction writer. Gameobject251991 was already a native questgiver/40072 ender/43349 starter, but had no script; the original native Use branch only prepared its quest menu. The regression reproduces an incomplete quest after an earned95676 counter and a baseline pedestal click.",
+    "Installed285235 had Flags2, while original735 has Flags3 (tracked plus sequenced). Its entry95676 is Odyn; it must not be replaced with Skovald95675 merely because the quest summary names Skovald.",
+    "A generic standing-object2yd floor diagnostic initially rejected the Aegis center754.515 over floor750.567. This was an inappropriate model-center predicate, not a confirmed spawn error. The corrected conservative native5yd interaction approach and complete navmesh route pass without moving the object."
+  ],
+  "world_live": [
+    "quest\t40072\t33554440\t18446744073709551615\t0\t0\t40005\t0\t0",
+    "quest\t43349\t33554440\t18446744073709551615\t0\t0\t40072\t0\t0",
+    "objective\t280268\t40072\t0\t110425\t1\t0\t0",
+    "objective\t285235\t40072\t0\t95676\t1\t1\t3",
+    "go\t251991\t2\t35704\t0\t1\t0\t20352\t0\t\tgo_halls_of_valor_quest_aegis",
+    "spawn\t25178659\t251991\t1477\t7672\t7672\t8388870\t1\t3554\t2375.19\t559.552\t754.515",
+    "go-starter\t251991\t43349",
+    "go-ender\t251991\t40072",
+    "havi-starter\t97988\t40072",
+    "havi-ender\t97988\t40072",
+    "phase\t7672\t7\t3554\t16",
+    "phase-condition\t14\t0\t40072\t1",
+    "phase-condition\t14\t0\t43349\t0",
+    "dungeon\t1477\tinstance_halls_of_valor",
+    "boss\t262390\t95675\t1477\t2570.29\t529.05\t748.741\t0\tboss_god_king_skovald\tGod-King Skovald\t65873",
+    "boss\t262179\t95676\t1477\t2345.16\t528.757\t770.299\t0\tboss_odyn\tOdyn\t67230",
+    "menu\t20352\t0\t1\t122309",
+    "scaling\t95675\t98\t110",
+    "scaling\t95676\t98\t110"
+  ],
+  "hotfix": [
+    "display\t0",
+    "model\t0",
+    "go-display\t0",
+    "phase\t0",
+    "map\t0",
+    "difficulty\t0",
+    "quest-line\t0"
+  ],
+  "native_catalog": [
+    "display 65873 model 8518 file 1255702",
+    "display 67230 model 8695 file 1284603",
+    "display 76630 model 8323 file 1132140",
+    "Aegis display35704 file 1361813 minZ -2.55803 maxZ 2.59331",
+    "map1477 difficulty 1",
+    "map1477 difficulty 2",
+    "map1477 difficulty 8",
+    "map1477 difficulty 23",
+    "quest 40072 line 138 order 4",
+    "native direct/group spell credit effects for110425 0",
+    "native flags3=tracked|sequenced; map1477 dungeon and phase3554 exist"
+  ],
+  "native_input_hashes": {
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "QuestLineXQuest": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
+    "Map": "08ADC433F6726B784211ACA5E80B0B54FB791A6D702CE35195AEAE136A16D2D4",
+    "Phase": "53C0DD7DACA6E86357D04F37F408777553C2429620A04A72484AF4B18146764D",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+    "MapDifficulty": "3AC734985B0EFF360F014B1742FB9334B690AACA0B53EDC2B885294CC3551E28"
+  },
+  "floor_checks": [
+    "npc 0 Z=749 floor=749 terrain_area=7672 PASS",
+    "object 25178659 Z=754.515 floor=750.567 terrain_area=7672 PASS",
+    "2 Aegis Odyn arena/pedestal anchors; 0 failures. Client collision loading and teleport visuals remain unverified."
+  ],
+  "ground_route": [
+    "route1 2399.3 528.85 749 -> 2375.19 559.552 754.515",
+    "PASS: Source approach 2399.3,528.85,749.147 -> target approach 2375.19,559.552,750.658 through 4 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 2 corners, length=39.0666yd.",
+    "corner 0 2399.3 528.85 749.147",
+    "corner 1 2375.19 559.552 750.658"
+  ],
+  "selected_geometry_inputs_sha256": {
+    "mmaps/1477.mmap": "9a362eea7630e7d654849a2f6e5d2bffcbf3b2103e9a4efce95ce96634571860",
+    "vmaps/1477.vmtree": "cfb73d758edf17b6bb3c2d364e8da5f44a0563637f5fa5a4ec716597d82ab120",
+    "maps/1477_27_30.map": "6dbc02566982dde034b97a6c916608da208abe0feae31dac91dc71fb499251ba",
+    "maps/1477_27_31.map": "fc356ae3109e480f77384631bbe1e8d67d3a50a53c632d2f749d832b1a8417db",
+    "vmaps/1477_30_27.vmtile": "f25314970b0ea8ac1d4a16f59f08d25bb4eb1b538c670421a9b9523b74999fe6",
+    "vmaps/1477_31_27.vmtile": "1f393013adbe09d5eb5edfe3c1c967c0366ccb879daa4914183c180f6a490698",
+    "mmaps/14772629.mmtile": "6abd5db3e02880f573f42c90f7c3211e4bc1a47d58dc23ee2bbd21a6048b4bd7",
+    "mmaps/14772630.mmtile": "afa346b5eba7ec2d0e6e1dbf1e069018ec91d5e2804ded68b7b85587e46fc879",
+    "mmaps/14772631.mmtile": "9eafa76c5d970b1c94d8454502a99c4eabca5feb5797d1c4fe5627233b2d5f9b",
+    "mmaps/14772632.mmtile": "8b412d293a5151b0f3ab0767acdd29d2256deea774e7d9376d2554419a3bef26",
+    "mmaps/14772730.mmtile": "5fe1b284952ccdf5dbeaed43e10c412e4ebbcf21ac00f87ab09fa1a12bb27410",
+    "mmaps/14772731.mmtile": "1269ce07cb262e72d9297924cbc74566dfb3ed8cfdfdc48bbb955348697f3c6f"
+  },
+  "findings": [
+    "Keep both original mandatory monster objectives:280268/110425 amount1 storage0 Flags0 and285235/95676 amount1 storage1 Flags3. Migration15 restores only the missing tracked bit and binds the existing questgiver pedestal. No physical item, chest loot link, new spawn or guessed visual/scene is added: native Aegis251991 is type2, not a loot chest, and the quest requires credit rather than an item objective.",
+    "The actual public pedestal DB25178659 remains at2375.19,559.552,754.515 in map1477/zone7672, phase3554, display35704/scale1, spawnMask8388870. Native dungeon difficulties1/2/8/23 are normal/heroic/keystone/mythic. Phase7672/7 remains conditional on40072 not-NONE and43349 NONE; native Phase3554 exists. Template relations and all phase/source rows are preserved.",
+    "Production GameObjectAI::GossipUse validates exact entry/spawn/map/instance/coordinates, active exact quest definition, alive/world/source spawn state, selectable flags, same live map and phase3554, visibility/LOS, native questgiver interaction admission and PlayerCondition. Require both instance Skovald and Odyn states DONE plus this acceptance already holding the earned95676 counter. A saved DONE instance alone cannot mint a new boss credit for a late joiner or a freshly reaccepted quest.",
+    "Only an actual successful pedestal use writes110425 directly for that player, sends one objective update and runs native completion. Repeated use, another party member, no quest, wrong/later Aegis251992, another spawn/instance/map, absent phase, death, combat/taxi/vehicle/transport/teleport, distance/LOS/condition or protected object flags cannot grant the claim. Public object and other players remain usable. Native SpellEffect contains no direct/group credit90/134 effect for110425; adding a random Aegis combat spell is not the missing interaction.",
+    "Return false from GossipUse to continue the actual GameObject::Use questgiver branch. The completed40072 can be turned in at the native Aegis ender. After reward, this same object offers43349 under its existing PrevQuestID40072.40072 RewardNextQuest0 stays0, so there is no invented automatic next window. The installed additional Havi97988 ender is retained; original TDB confirms the pedestal ender/43349 starter, not a new Havi talk-credit step.",
+    "Odyn95676 survives his trial. Separate commit e8344013 repairs his threshold-crossing hit with the native post-scaling hook and target-relative health, including an initial spell before CombatStart. It preserves the ordinary encounter transition and map-wide95676 delivery. Skovald95675 retains his normal BossAI death transition. This claim fix does not replace either encounter with proximity/spawn/loot credit.",
+    "Model evidence: native display35704 references file1361813, bounding Z[-2.55803,2.59331]. Skovald65873 resolves to8518/file1255702, Odyn67230 to8695/file1284603, Havi76630 to8323/file1132140. Both bosses have active98..110 scaling. Checked model/display/map/difficulty/phase/quest-line Hotfix overlays are absent.",
+    "Native terrain/VMap arena floor749 and pedestal-side floor750.567 pass. The object center is3.948yd above that floor; conservative exact5yd center approaches connect from Odyn arena2399.3,528.85,749 to2375.19,559.552,750.658 through4 ground polygons, two corners and39.0666yd. This does not depend on extra model bounding-box reach and does not prove client visual placement. The shared audit helper now accepts an optional map ID while retaining1220 by default;40003 regression still reproduces its1024-node exhaustion and passes all four8192-node routes."
+  ],
+  "checks": [
+    "Test-HallsAegisData.ps1 repeats the real migration in connection-local copies and compares full changed/protected rows, including the other Aegis, all quest relations and phase conditions. Custom script and flag bits survive. -Live checks deployed object, objectives, prerequisites, relations, instance binding, phase, bosses and active scaling; native-reference Hotfix checks pass.",
+    "Test-HallsAegis.ps1 -VerifyReleaseBinary compiles the complete production GO class plus fresh GameObject::Use prologue/questgiver branch, Player::GetGameObjectIfCanInteractWith, objective/completion/status/race/prerequisite/reward and native request-reward/NPC/GO admission. Baseline missing claim reproduced. Both factions,28 guard cases, duplicate claims, actual party isolation and separate member use, no quest, saved counter re-entry, abandon/reaccept and43349 reward gate pass. Production callback returns into the real questgiver Use branch.",
+    "Test-HallsOdynSurrender.ps1 -VerifyReleaseBinary executes the actual old/new surrender handlers, native EnterCombat body, post-scaling dispatcher and real target health/max/multiplier getters. First lethal/scaled/player-pet, first spell bootstrap, normal boundary, large raw/small final, repeat/dormant/protected/achievement/party credit cases pass; its dedicated audit records limits.",
+    "Test-HallsAegisCatalog.ps1 reads native26972 DB2 stores and links Release GridMap/VMap/MMap/Detour libraries. Native models, virtual-credit spell scan, quest line, phase/map/difficulties, two floor/interaction anchors and complete ground route pass. Test-HallsAegisNative.py reproduces original archive and installed evidence. Upstream Salvation40005 and Break the Spine40004 native regressions pass.",
+    "Release worldserver built directly in canonical build-extractors/bin/Release, original actual scripts/game link paths, no OutDir override. New Aegis registration and Odyn final-damage marker are present; actual scripts final-link timestamp check passes. Migration15 deployed transactionally after private scoped backup and updates SHA1 registration. Fresh final canonical startup reached ready, exited0, and left new DBErrors/stderr empty. Runtime configuration/certificates/DLLs/extracted data remain preserved."
+  ],
+  "release": {
+    "migration": "2026_10_16_15_halls_of_valor_aegis.sql",
+    "migration_sha1": "BD95699A9FCDDABF5FE378AB8DE0E55B664DD6E2",
+    "worldserver_sha256": "A1B9F8AB69DDAC8BF49796CC6E4070E5BB656880A22716EF03339EFD6F0BACB0",
+    "smoke_directory": "build-extractors/runtime-test/halls-aegis/startup-20261016-191250",
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "limits": [
+    "Production GO code and selected native engine handlers execute. Actual encounter save/load, world lookup/map enumeration, phasing/visibility/LOS/PlayerCondition services, menu preparation, packets/inventory/XP writes and real combat are fixture services. GO interaction uses a conservative center-distance fixture instead of the native rotated model-box calculation; installed geometry independently supplies an exact5yd approach. Native CanTakeQuest dispatch uses fixture defaults for unrelated component predicates. No full opcode/client or dungeon integration run is claimed.",
+    "An abandoned/reaccepted quest loses its original native95676 objective. A completed instance does not re-award that kill at the pedestal; another qualifying Odyn encounter is required. Ordinary relog/re-entry with the saved counter1 can claim in the matching completed instance. This is an explicit boundary, not exact-stage scenario recovery or new character persistence.",
+    "Client pending: Havi offer after40005 reward, dungeon/phase3554 object visibility/model/click, normal/heroic/mythic/keystone encounters including first high-damage spell and pet blows, Odyn survival/achievement/loot cleanup, actual Aegis tracking/claim/turn-in, both factions and two players, abandon/retry/relog, and43349 offer. No full quest, dungeon, animation, scene or visual is client-verified.",
+    "Prior quest/client limitations remain.40003 starting navmesh issue is resolved as audit node exhaustion in6ca7ba29; earlier bone approach failures127694/127702/127704 remain unresolved. This repair changes no other Aegis or scenario object."
+  ],
+  "next": "43349 The Aegis of Aggramar: pedestal acceptance, outdoor Aegis251992/phase4592, credit110409 and next handoff. Code/data only."
+}
