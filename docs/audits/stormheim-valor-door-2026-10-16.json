@@ -1,0 +1,101 @@
+{
+  "quest": 40001,
+  "title": "Knocking on Valor's Door",
+  "status": "code/data audit passed; no confirmed implementation defect; client pending",
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "creature_questender": [
+      {
+        "id": "97979",
+        "quest": "40001"
+      }
+    ],
+    "creature_template": [
+      {
+        "entry": "97979",
+        "name": "'Vethir'",
+        "modelid1": "68213",
+        "gossip_menu_id": "0",
+        "faction": "35",
+        "npcflag": "2",
+        "unit_flags": "0",
+        "unit_flags2": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "40001",
+        "LogTitle": "'Knocking on Valor\\'s Door'",
+        "LogDescription": "'Find Vethir in the Felskorn Camp.'",
+        "QuestDescription": "'The Halls of Valor is your destiny to claim, but it is already in the claiming. The God-King befouls its steps with demons and wickedness.\\n\\nYour dragon allies have come to Halls\\' defense, but they need your aid. The vrykul have taken the leader of the storm dragons, the one you call Vethir.\\n\\nFree your dragon friend, champion, and wash the Felskorn from the Gates of Valor!'",
+        "Flags": "33554440",
+        "FlagsEx": "0",
+        "RewardNextQuest": "40002"
+      }
+    ]
+  },
+  "world_evidence": [
+    "quest\t40001\t2\t98\t33554440\t0\t0\t0\t0\t0\t40002\t18446744073709551615\t40078\t40002\t0\t0\t0",
+    "objectives\t0",
+    "starter\t92539\t40001",
+    "ender\t97979\t40001",
+    "prior\t1",
+    "next\t1",
+    "next-objective\t280169\t0\t97982\t1\t0",
+    "next-objective\t280170\t0\t97981\t1\t1",
+    "actor\t1",
+    "addon\t97979\t0\t0\t3\t0\t0\t",
+    "spawn-addon\t0",
+    "model\t68213\t0.75\t6.75",
+    "menu\t12618\t17749",
+    "menu-options\t0",
+    "scripts\t0",
+    "conditions\t0",
+    "havi\t1"
+  ],
+  "hotfix_evidence": [
+    "display\t0",
+    "model\t0",
+    "faction-template\t0",
+    "faction\t0",
+    "quest-line\t0"
+  ],
+  "native_catalog": [
+    "quest 40002 line 138 order 0",
+    "quest 40078 line 135 order 11",
+    "quest40001 has no native QuestLineXQuest row; handoff is established by World relations",
+    "Vethir display 68213 scale 0.75 model 8673 file 1280971 modelScale 1",
+    "faction190 vs 1 hostile 0 friendly 0",
+    "faction190 vs 2 hostile 0 friendly 0",
+    "faction190 reputationFaction 148",
+    "faction148 canHaveReputation 0"
+  ],
+  "native_hashes": {
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "QuestLineXQuest": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
+    "Faction": "BA63ECFA9BAB1435A9A680D0565B3A3DBCA83861AAC2F91E8B86A0924D640A0A",
+    "FactionTemplate": "09CB3CC83A73C74F6737B69F601002FAD091F74B646534175B3BFDACEF67FF9E",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357"
+  },
+  "ground_route": "PASS: Source approach 3214.38,1543.61,180.995 -> target approach 2875.26,1208.98,188.791 through 118 native navmesh polygons.",
+  "behavior": [
+    "Native AddQuestAndCheckCompletion marks this no-objective quest complete on acceptance. This is not reward: the native request-reward handler requires the involved Vethir questgiver and successful interaction admission.40001 has neither AUTOCOMPLETE0x10000 nor exploration/event special flag. No invented proximity, kill, spell or gossip credit is added.",
+    "Rewarded40078 is required for fresh acceptance. Havi92539 supplies40001; Vethir97979 is the ender and supplies40002 only after40001 reward.40002 A Familiar Fate keeps both monster objectives97982/97981 and does not complete on acceptance.40001 has no native QuestLineXQuest row; World relations establish this bridge between line135 and line138.",
+    "Base Vethir DB291392 has no display override, no phase-ID restriction or spawn addon. Native display68213 resolves to model8673/file1280971; World model metadata exists. Installed template addon bytes1=3 preserves sleeping pose, no aura; npcflag3 remains gossip+questgiver and33536 does not contain NOT_SELECTABLE0x02000000. Native faction190 is non-hostile to human/orc templates1/2 and faction148 has no reputation bar. No Hotfix overlay for the audited references. Original TDB instead has questgiver-only npcflag2, faction35, no gossip menu and no template addon; it confirms display/questgiver/turn-in design, not the provenance or retail accuracy of the installed pose/menu/faction.",
+    "The installed ground navmesh connects conservative exact5yd approaches to the native Havi and Vethir coordinates through118 polygons. This does not simulate enemy combat, client model loading, visual occlusion or player navigation. Native interaction additionally includes combat reach; the fixture models6.75+1.5yd sizes, but geometry passes without relying on this extension."
+  ],
+  "automated_checks": [
+    "Test-StormheimValorDoorData.ps1: read-only live World/Hotfix invariants for chain, zero objectives, exact base actor/model/pose/flags/menu and no quest-specific SmartAI/conditions. No SQL migration.",
+    "Test-StormheimValorDoor.ps1: freshly extracts native CanTakeQuest dispatch, status/race/previous/completion/reward/next, AddQuestAndCheckCompletion, HandleQuestGiverRequestReward, CanInteractWithQuestGiver and GetNPCIfCanInteractWith. Both factions; prior merely complete versus rewarded; unaccepted/rewarded quest rejection; wrong giver; dead, out-of-world, flying, charmed, hostile, distant and unflagged actor rejection; abandon/reaccept, saved complete status; exact Havi->Vethir->40002 handoff.",
+    "Test-StormheimValorDoorCatalog.ps1: real C++ DB2Storage readers, native faction methods and linked Release navmesh libraries. Test-StormheimValorDoorNative.py: original735 TDB narrative, no-objective design, Vethir ender/template and reproducible evidence."
+  ],
+  "limits": [
+    "The native CanTakeQuest dispatcher is extracted, but class/level/skill/reputation/timed/group/conditions component predicates are fixture defaults; actual DB restrictions are inspected separately. AddQuest storage, completion persistence, rewarded-set mutation, NPC AI callbacks, packet delivery, world lookup, hostility/reputation and distance are fixtures. Full RewardQuest inventory/currency/XP writes, client packets and database reconnect are not executed. Saved-complete is a reconstructed state test, not a login integration test.",
+    "No production source or database mutation; no new Release server build/startup needed. The catalog tests compile standalone native readers using existing Release link inputs. No claim of deployed executable proof for the newly extracted handler tests.",
+    "Pending client: Havi offer after40078; travel and Vethir visibility/pose/quest marker, actual click/reward, abandonment/relog, both factions,40002 offer. The full40002 prison/combat/release sequence is outside this audit.",
+    "Earlier38347/39848/39857/39849/39850/39851/39853/39855/40078 client checks remain pending. Previous bone navmesh approach failures127694/127702/127704 remain unresolved; this successful40001 route does not clear them."
+  ],
+  "next": "40002 A Familiar Fate: Dravax97982, jailer shard and Vethir prison release/credit97981, retry/re-entry and next40003. Code/data only."
+}
