@@ -1,4 +1,4 @@
-"""Native40003 evidence; keep the failed approach and missing client checks."""
+"""Native40003 evidence; retain the exhausted query and missing client checks."""
 import hashlib,json,re,sys
 from pathlib import Path
 sys.dont_write_bytecode=True
@@ -52,16 +52,30 @@ out=ROOT/'build-extractors/runtime-test/stormheim-stem-tide'
 catalog=(out/'native-lines.txt').read_text(encoding='utf-8-sig').splitlines()
 assert 'quest40003 line=138 order=1' in catalog and 'horn cast0ms range20 native nearby-entry/conditions; explicit mask0' in catalog
 geometry=(out/'geometry.txt').read_text(encoding='utf-8-sig').splitlines()
-assert sum(s.startswith('PASS:') for s in geometry)==3 and sum(s.startswith('FAIL:') for s in geometry)==1
+assert sum(s.startswith('PASS:') for s in geometry)==4 and not any(s.startswith(('FAIL:','INCOMPLETE:')) for s in geometry)
+assert '83 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners' in geometry[1]
+reproduction=(out/'geometry-original-budget.txt').read_text(encoding='utf-8-sig').splitlines()
+assert reproduction==['INCOMPLETE: budget=1024 status=0x40000060 polygons=51 out_of_nodes=1 partial=1','EXHAUSTED: approaches (1,1).']
+# Hash the actual loaded map header and existing tiles, retaining the old 3x3 endpoint bounds.
+tiles=set()
+for s in geometry:
+    if not s.startswith('route'):continue
+    for point in s.split(' ',1)[1].split(' -> '):
+        x,y,z=map(float,point.split());tx=int(32-x/533.33333);ty=int(32-y/533.33333)
+        tiles.update((tx+dx,ty+dy) for dx in range(-1,2) for dy in range(-1,2))
+meshroot=ROOT/'build-extractors/bin/Release/mmaps'
+meshfiles=[meshroot/'1220.mmap']+[meshroot/f'1220{x:02d}{y:02d}.mmtile' for x,y in sorted(tiles)]
+meshhashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in meshfiles if p.exists()}
 migration=ROOT/'sql/updates/world/2026_10_16_07_stormheim_stem_tide.sql'
 smoke=sorted(out.glob('startup-*'))[-1]
 assert (smoke/'DBErrors.log').stat().st_size==0 and (smoke/'stderr.log').stat().st_size==0
 assert re.search(r'World initialized|World server is ready|Worldserver is ready',(smoke/'Server.log').read_text(encoding='utf8',errors='replace'))
 record={
- 'quest':40003,'title':'Stem the Tide','status':'scoped code/data repair passed; one ground-navmesh approach unresolved; client verification pending',
+ 'quest':40003,'title':'Stem the Tide','status':'scoped code/data repair and all four ground-navmesh routes passed; client verification pending',
  'original_archive_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'original':original,
  'world_live':(out/'world-live.tsv').read_text(encoding='utf-8-sig').splitlines(),'hotfix':(out/'hotfix.tsv').read_text(encoding='utf-8-sig').splitlines(),
  'native':native,'native_hashes':d.hashes,'native_cpp_catalog':catalog,'catalog_hashes':json.loads((out/'native-inputs.json').read_text(encoding='utf-8-sig')),'geometry':geometry,
+ 'navmesh_followup':{'original_query':reproduction,'installed_inputs_sha256':meshhashes,'resolution':'The former FAIL (one approach each) was an inconclusive search: native MMapManager initializes a 1024-node query. Detour returned SUCCESS|OUT_OF_NODES|PARTIAL_RESULT (0x40000060), which the old helper ignored. An independent audit query with8192 nodes on the same loaded tiles, ground-only filter and exact5yd endpoints returns a complete83-polygon corridor,16 corners and479.895yd route.4096 nodes also succeeded during diagnosis;2048 still exhausted. All four routes now require full status, exact end polygon and untruncated straight path ending at the target. The original query is reproduced and partial/exhausted/truncated status rejection is tested. No runtime query budget, navmesh data, NPC position or teleport behavior was changed.'},
  'findings':[
   'Original40003 asks for three Felbound Portals using Stormforged Horn129161. Native use193327 is an instant nearby-entry dummy with20yd range and10s recovery. It also requires spell focus1887; the actual portal type8 has Data0=1887/Data1=10, and native GameObjectFocusCheck checks that type/ID/radius plus object sizes before casting. The20yd script bound does not bypass this focus requirement. Installed source13 conditions retain all three97983/97984/97985 alternatives. Native WorldObjectSpellTargetCheck evaluates these conditions before its fallback rejection; no global immunity/selection flag fix is introduced. The actual implicit search precedes the target-selection hook; no claim is made that a hook can repair an absent native search result.',
   'Original World markers291595/291537/291523 responded through shared SmartAI timed lists: wait5000ms, optional196084, then action33. Those lists did not hide any GO, isolate each player acceptance, or drive a Vethir flyby; action33 distributed progress to the group. Repeated callers shared the same marker action list. Native193328/193329/193330 are SEND_EVENT61 to46837/46839/46840, not scene playback; installed event_scripts has none and no matching source handler was found. Adjacent193331/193332 actually summon Dreadstalker98035 and must not be used as guessed Vethir spells.',
@@ -77,7 +91,7 @@ record={
  ],
  'release':{'migration':migration.name,'migration_sha1':hashlib.sha1(migration.read_bytes()).hexdigest().upper(),'worldserver_sha256':hashlib.sha256((ROOT/'build-extractors/bin/Release/worldserver.exe').read_bytes()).hexdigest().upper(),'smoke_directory':smoke.relative_to(ROOT).as_posix(),'DBErrors_bytes':0,'stderr_bytes':0},
  'limits':[
-  'Installed ground navmesh could not connect the exact5yd approaches from starting Vethir2875.26,1208.98,188.763 to the north marker2713.4,970.118,205.88 (one approach each). Keep this unresolved result. North->east23 polygons, east->south29 and south->turn-in37 pass. This diagnostic does not establish that client movement/collision cannot traverse the first route, nor verify the authored flight clearance. No navmesh regeneration or speculative actor relocation was done.',
+  'The starting ground route is resolved as an audit-query budget failure, with the original exhausted result preserved in navmesh_followup. Native ground corridors pass83/23/29/37 polygons. This establishes installed navmesh connectivity, not client traversal/collision or authored flight clearance. The server retains its1024-node query budget: a single long NPC path request can still exhaust it; this player walking route does not issue that request. No general pathfinding-performance or NPC routing change is claimed.',
   'Client pending: accepting from Vethir and receiving/using the horn, actual native implicit-target search/cast, both factions and two players, all three approaches, flyby arrival/departure/height/animation, sound/impact, portal disappearance only for its owner, abandon/retry/relog and actual turn-in at97986. Motion tests record requested spline endpoints, not execution of the native motion/renderer. No whole quest or visual client verification is claimed.',
   'Previous38347/39848/39857/39849/39850/39851/39853/39855/40078/40001/40002 client checks remain pending. Earlier bone navmesh failures127694/127702/127704 remain unresolved.40003 RewardNextQuest0 and the later40005 prerequisite/menu flow are recorded, not repaired in this scope.'
  ],
@@ -86,4 +100,4 @@ record={
 path=ROOT/'docs/audits/stormheim-stem-tide-2026-10-16.json'
 if '--write-evidence' in sys.argv:path.write_text(json.dumps(record,indent=2,ensure_ascii=False)+'\n',encoding='utf8')
 else:assert record==json.loads(path.read_text(encoding='utf8'))
-print('PASS: native40003 item/target/visual/model and live/deployed repair evidence; preserves the failed first navmesh approach and pending client checks.')
+print('PASS: native40003 repair evidence and four complete ground routes; original node exhaustion and pending client checks preserved.')
