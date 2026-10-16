@@ -320,5 +320,11 @@
     "quest": 38347,
     "title": "Stealth by Seaweed",
     "prerequisite": "Reward-next handoff repaired; next content audit is the disguise/Guarm passage."
+  },
+  "geometry_followup_2026_10_16": {
+    "audit": "helheim-bone-approaches-2026-10-16.json",
+    "status": "All16 native walking/swimming GameObject interaction approaches now pass; previous three native audit failures resolved. Client verification remains pending.",
+    "evidence": "Original13/16 ground-only results and all three failure records above are preserved. Ordinary-water corridors plus the actual production rotated display-bound range predicate admit valid surface/LOS endpoints for127694/127702/127704. The conservative center-distance survey alone reaches14/16. No spawn, runtime node-budget, loot or extracted-data change.",
+    "client": "Actual swimming/gathering, cursor/visuals, collision loading and all original client checks remain pending."
   }
 }

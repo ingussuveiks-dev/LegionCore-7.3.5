@@ -12,7 +12,7 @@ SELECT 'next-giver',COUNT(*) FROM creature_queststarter WHERE id=91531 AND quest
 SELECT 'colborn',COUNT(*) FROM creature c JOIN creature_template t ON t.entry=c.id WHERE c.id=91531 AND c.guid=11546819 AND c.map=1463 AND c.PhaseId='5577' AND t.npcflag=2 AND t.ScriptName='';
 SELECT 'pile',entry,type,displayId,flags,size,Data0,Data8,Data15,Data30,Data31,AIName,ScriptName FROM gameobject_template WHERE entry=240586;
 SELECT 'piles',COUNT(*),SUM(map=1463 AND zoneId=7588 AND phaseMask=1 AND PhaseId='' AND spawntimesecs=60) FROM gameobject WHERE id=240586;
-SELECT 'position',guid,id,position_x,position_y,position_z FROM gameobject WHERE id=240586 ORDER BY guid;
+SELECT 'position',guid,id,position_x,position_y,position_z,orientation FROM gameobject WHERE id=240586 ORDER BY guid;
 SELECT 'drops',Entry,Item,Currency,Reference,Chance,QuestRequired,LootMode,GroupId,MinCount,MaxCount,Shared FROM creature_loot_template WHERE Item=122619 ORDER BY Entry;
 SELECT 'sources',COUNT(*) FROM creature_template WHERE entry IN(91575,93377) AND lootid=entry AND faction=16 AND (unit_flags & 33555200)=0 AND ScriptName='';
 SELECT 'kvaldir',id,COUNT(*),SUM(map=1463 AND phaseMask=1 AND modelid=0),SUM(PhaseId='8306') FROM creature WHERE id IN(91575,93377) GROUP BY id ORDER BY id;

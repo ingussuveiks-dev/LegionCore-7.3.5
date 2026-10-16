@@ -1,0 +1,752 @@
+{
+  "quests": [
+    38324,
+    38339
+  ],
+  "date": "2026-10-16",
+  "status": "all16 native interaction approaches pass; former three audit failures resolved; client verification pending",
+  "original_failed_spawns": [
+    127694,
+    127702,
+    127704
+  ],
+  "resolution": [
+    "The old survey required a complete NAV_GROUND corridor and a spherical5yd target-center approach. Those are conservative audit assumptions, not the actual player and GameObject admission rules. Keep its13/16 observation as historical evidence. A65535-node ground-only replay still returns partial corridors without node exhaustion for127694/127702/127704; raising the runtime node budget does not solve this.",
+    "Native player PathGenerator::CreateFilter admits ground and liquids. The new explicit walk-swim audit permits ground plus ordinary water, excludes magma/slime, and counts the actual corridor flags. Every route requires complete Detour status, the exact target polygon and an untruncated straight path with its end flag. Default ground-only mode and1220 map remain unchanged.",
+    "A mixed-navmesh path alone initially appeared to clear all three, but raw endpoint127694 atZ1.39606 lies under terrain4.32933 and127704 atZ-2.33727 under terrain0.0453949. Neither has usable local liquid there. The strengthened check rejects these points: native GridMap/VMap floor/liquid evidence and static LOS must agree. Merely admitting NAV_WATER would have produced false positives.",
+    "The conservative center-distance survey then passes14/16, including127702. For127694/127704, execute the actual production GameObject::IsInRange body against native display6328 bounds/file190437 and each installed orientation. GameObject::_IsWithinDist delegates to that rotated axis-bound test; the radius expands each native bound, rather than imposing a5yd center sphere. Do not rescale the bounds by template size1.75: production does not. The new valid shore endpoints pass this native test, supporting surface and static LOS even though their center distances exceed5yd.",
+    "All16 existing Cursed Bones240586 spawns pass the native interaction survey from freed Colborn. Positions, orientations, model, scale, flags, quest/loot selectors, all loot rows, server query budgets and extracted runtime data remain unchanged. This resolves the geometry audit assumptions, not a demonstrated in-game spawn defect."
+  ],
+  "native_model": {
+    "ID": 6328,
+    "FileDataID": 190437,
+    "GeoBoxMinX": -0.09907999634742737,
+    "GeoBoxMinY": -0.5617460012435913,
+    "GeoBoxMinZ": -0.13333700597286224,
+    "GeoBoxMaxX": 0.772629976272583,
+    "GeoBoxMaxY": 0.5907080173492432,
+    "GeoBoxMaxZ": 0.421891987323761,
+    "OverrideLootEffectScale": 0.0,
+    "OverrideNameScale": 0.0,
+    "ObjectEffectPackageID": 0
+  },
+  "gameobject_display_hotfix_rows": 0,
+  "routes": [
+    {
+      "spawn": 127672,
+      "position": [
+        443.217,
+        416.009,
+        9.61258
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 443.217,416.009,9.96912 through 26 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 6 corners, length=92.6569yd.",
+        "terrain polygons ground=26 water=0 magma/slime=0",
+        "endpoint centerDistance=0.356542",
+        "endpoint surfaceZ=9.96912 floor=9.58759 terrain=9.58759 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.381529 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 378.667 375.733 24.5961",
+        "corner 2 397.6 384.267 15.7961",
+        "corner 3 398.133 384.533 15.7961",
+        "corner 4 402.667 385.867 14.9961",
+        "corner 5 443.217 416.009 9.96912"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 443.217,416.009,9.96912 through 26 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=92.6569yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 443.217,416.009,9.96912 through 26 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 6 corners, length=92.6569yd."
+      ]
+    },
+    {
+      "spawn": 127676,
+      "position": [
+        470.568,
+        366.78,
+        2.35279
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 470.568,366.78,2.68498 through 46 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 12 corners, length=122.521yd.",
+        "terrain polygons ground=39 water=7 magma/slime=0",
+        "endpoint centerDistance=0.332186",
+        "endpoint surfaceZ=2.68498 floor=2.35172 terrain=2.35172 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.333253 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 378.933 371.733 27.2627",
+        "corner 2 388 362.667 27.7961",
+        "corner 3 389.333 362.667 23.7961",
+        "corner 4 398.4 367.733 13.1294",
+        "corner 5 409.333 371.2 9.66273",
+        "corner 6 418.667 372.8 4.3294",
+        "corner 7 448 371.2 1.39606",
+        "corner 8 458.133 370.667 1.39606",
+        "corner 9 462.133 370.4 5.12939",
+        "corner 10 469.333 368.267 2.46273",
+        "corner 11 470.568 366.78 2.68498"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 470.568,366.78,2.68498 through 46 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 14 corners, length=160.886yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 470.568,366.78,2.68498 through 46 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 12 corners, length=122.521yd."
+      ]
+    },
+    {
+      "spawn": 127680,
+      "position": [
+        531.215,
+        383.642,
+        0.0335421
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 531.215,383.642,0.37507 through 41 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 10 corners, length=174.382yd.",
+        "terrain polygons ground=34 water=7 magma/slime=0",
+        "endpoint centerDistance=0.341528",
+        "endpoint surfaceZ=0.37507 floor=0.0341568 terrain=0.0341568 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.340913 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 378.933 371.733 27.2627",
+        "corner 2 382.4 370.933 26.9961",
+        "corner 3 383.2 370.933 25.6627",
+        "corner 4 390.933 372.533 18.7294",
+        "corner 5 418.667 373.6 3.79606",
+        "corner 6 458.4 375.2 1.39606",
+        "corner 7 519.466 376.8 1.12939",
+        "corner 8 520.533 377.333 0.862728",
+        "corner 9 531.215 383.642 0.37507"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 531.215,383.642,0.37507 through 55 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=188.059yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 531.215,383.642,0.37507 through 41 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 10 corners, length=174.382yd."
+      ]
+    },
+    {
+      "spawn": 127681,
+      "position": [
+        551.05,
+        363.931,
+        0.561058
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 551.05,363.931,0.753822 through 56 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 12 corners, length=200.502yd.",
+        "terrain polygons ground=49 water=7 magma/slime=0",
+        "endpoint centerDistance=0.192764",
+        "endpoint surfaceZ=0.753822 floor=0.561005 terrain=0.561005 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.192817 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 378.933 371.733 27.2627",
+        "corner 2 388 362.667 27.7961",
+        "corner 3 389.333 362.667 23.7961",
+        "corner 4 398.4 367.733 13.1294",
+        "corner 5 409.333 371.2 9.66273",
+        "corner 6 418.667 372.8 4.3294",
+        "corner 7 448 371.2 1.39606",
+        "corner 8 460 371.2 1.66273",
+        "corner 9 470.667 371.733 2.19606",
+        "corner 10 529.6 365.333 2.19606",
+        "corner 11 551.05 363.931 0.753822"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 551.05,363.931,0.753822 through 59 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 17 corners, length=213.755yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 551.05,363.931,0.753822 through 56 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 12 corners, length=200.502yd."
+      ]
+    },
+    {
+      "spawn": 127682,
+      "position": [
+        482.276,
+        313.134,
+        2.73789
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 482.276,313.134,2.72939 through 31 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 10 corners, length=141.133yd.",
+        "terrain polygons ground=28 water=3 magma/slime=0",
+        "endpoint centerDistance=0.008497",
+        "endpoint surfaceZ=2.72939 floor=2.73862 terrain=2.73862 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.00923157 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 384 362.667 29.3961",
+        "corner 3 389.333 360.8 24.3294",
+        "corner 4 398.667 352.267 16.3294",
+        "corner 5 400.267 346.933 10.9961",
+        "corner 6 405.333 341.333 6.46273",
+        "corner 7 437.333 325.067 1.39606",
+        "corner 8 445.867 321.333 1.39606",
+        "corner 9 482.276 313.134 2.72939"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 482.276,313.134,2.72939 through 31 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 8 corners, length=140.254yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 482.276,313.134,2.72939 through 31 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 10 corners, length=141.133yd."
+      ]
+    },
+    {
+      "spawn": 127689,
+      "position": [
+        534.043,
+        286.422,
+        -1.76765
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 534.043,286.422,0.0627289 through 57 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 20 corners, length=211.47yd.",
+        "terrain polygons ground=53 water=4 magma/slime=0",
+        "endpoint centerDistance=1.83038",
+        "endpoint surfaceZ=0.0627289 floor=-1.76756 terrain=-1.76756 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0627289 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 384 362.667 29.3961",
+        "corner 3 389.333 360.8 24.3294",
+        "corner 4 398.667 352.267 16.3294",
+        "corner 5 400.267 346.933 10.9961",
+        "corner 6 405.333 341.333 6.46273",
+        "corner 7 437.333 325.067 1.39606",
+        "corner 8 445.867 321.333 1.39606",
+        "corner 9 450.133 320 1.39606",
+        "corner 10 454.4 316.533 1.39606",
+        "corner 11 473.067 299.467 2.46273",
+        "corner 12 473.867 299.2 4.06273",
+        "corner 13 503.733 299.2 2.99606",
+        "corner 14 513.6 298.933 0.329395",
+        "corner 15 518.4 299.467 0.329395",
+        "corner 16 521.067 301.6 0.329395",
+        "corner 17 522.667 302.133 0.329395",
+        "corner 18 525.6 301.867 0.329395",
+        "corner 19 534.043 286.422 0.0627289"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 533.333,286.422,0.0627289 through 56 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 17 corners, length=211.576yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 534.043,286.422,0.0627289 through 57 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 20 corners, length=211.47yd."
+      ]
+    },
+    {
+      "spawn": 127690,
+      "position": [
+        562.503,
+        336.672,
+        12.367
+      ],
+      "orientation": 3.57087,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 562.503,336.672,12.6803 through 66 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 18 corners, length=247.32yd.",
+        "terrain polygons ground=60 water=6 magma/slime=0",
+        "endpoint centerDistance=0.313309",
+        "endpoint surfaceZ=12.6803 floor=12.4724 terrain=-12.1276 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.207927 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 378.933 371.733 27.2627",
+        "corner 2 389.333 360.8 24.3294",
+        "corner 3 400.267 346.933 10.9961",
+        "corner 4 401.6 346.933 7.79606",
+        "corner 5 416.8 349.067 5.39606",
+        "corner 6 441.867 346.133 1.39606",
+        "corner 7 451.2 340 2.46273",
+        "corner 8 452 340 4.3294",
+        "corner 9 457.333 342.933 5.92939",
+        "corner 10 458.933 342.933 4.86273",
+        "corner 11 522.133 338.4 6.99606",
+        "corner 12 523.466 338.133 6.46273",
+        "corner 13 538.667 316.8 10.1961",
+        "corner 14 544 312 10.9961",
+        "corner 15 546.133 312 12.8627",
+        "corner 16 549.067 314.667 12.5961",
+        "corner 17 562.503 336.672 12.6803"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 562.503,336.672,12.6803 through 51 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 15 corners, length=245.951yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 562.503,336.672,12.6803 through 66 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 18 corners, length=247.32yd."
+      ]
+    },
+    {
+      "spawn": 127693,
+      "position": [
+        524.472,
+        260.7,
+        -2.44268
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 523.733,263.2,-1.53727 through 51 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 17 corners, length=205.435yd.",
+        "terrain polygons ground=46 water=5 magma/slime=0",
+        "endpoint centerDistance=2.75955",
+        "endpoint surfaceZ=-1.53727 floor=-2.19799 terrain=-2.19799 terrainLiquid=-1.66324 vmapLiquid=-100000 surfaceError=0.125969 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 384 362.667 29.3961",
+        "corner 3 389.333 360.8 24.3294",
+        "corner 4 398.667 352.267 16.3294",
+        "corner 5 400.267 346.933 10.9961",
+        "corner 6 405.333 341.333 6.46273",
+        "corner 7 437.333 325.067 1.39606",
+        "corner 8 445.867 321.333 1.39606",
+        "corner 9 450.133 320 1.39606",
+        "corner 10 454.4 316.533 1.39606",
+        "corner 11 473.067 299.467 2.46273",
+        "corner 12 473.867 299.2 4.06273",
+        "corner 13 479.2 297.867 5.66273",
+        "corner 14 490.667 280.267 1.39606",
+        "corner 15 516.267 266.933 0.0627289",
+        "corner 16 523.733 263.2 -1.53727"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 523.733,263.2,-1.53727 through 48 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 14 corners, length=205.364yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 523.733,263.2,-1.53727 through 51 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 17 corners, length=205.435yd."
+      ]
+    },
+    {
+      "spawn": 127694,
+      "position": [
+        481.293,
+        243.425,
+        4.32903
+      ],
+      "orientation": 0.0,
+      "ground_connected": false,
+      "center_connected": false,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 486.683,246.65,1.39606 through 45 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 14 corners, length=196.44yd.",
+        "terrain polygons ground=32 water=13 magma/slime=0",
+        "endpoint centerDistance=6.93222",
+        "endpoint surfaceZ=1.39606 floor=0.838463 terrain=0.838463 terrainLiquid=1.27254 vmapLiquid=-100000 surfaceError=0.12352 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 389.333 360.8 24.3294",
+        "corner 3 398.667 352.267 16.3294",
+        "corner 4 405.333 320 4.06273",
+        "corner 5 424.267 298.667 4.59606",
+        "corner 6 437.6 277.867 1.39606",
+        "corner 7 466.933 277.333 1.39606",
+        "corner 8 469.333 264.267 1.39606",
+        "corner 9 476 259.2 1.39606",
+        "corner 10 477.333 256 1.39606",
+        "corner 11 479.2 254.133 1.39606",
+        "corner 12 486.4 246.933 1.39606",
+        "corner 13 486.683 246.65 1.39606"
+      ],
+      "original_ground_diagnostic": [
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=57 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=58 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=58 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=62 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=65 out_of_nodes=0 partial=1",
+        "FAIL: approaches (5,1)."
+      ],
+      "conservative_center_diagnostic": [
+        "Rejected nearest ground diagnostic: endpoint surfaceZ=1.39606 floor=-100000 terrain=4.32933 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=100001 staticLOS=1 FAIL",
+        "FAIL: approaches (5,0)."
+      ]
+    },
+    {
+      "spawn": 127695,
+      "position": [
+        527.778,
+        248.16,
+        -2.51252
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 527.894,246.359,-1.53727 through 50 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 15 corners, length=222.921yd.",
+        "terrain polygons ground=36 water=14 magma/slime=0",
+        "endpoint centerDistance=2.05166",
+        "endpoint surfaceZ=-1.53727 floor=-2.45919 terrain=-2.45919 terrainLiquid=-1.66324 vmapLiquid=-100000 surfaceError=0.125973 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 384 362.667 29.3961",
+        "corner 3 389.333 360.8 24.3294",
+        "corner 4 398.667 352.267 16.3294",
+        "corner 5 400.267 346.933 10.9961",
+        "corner 6 436.267 298.667 1.39606",
+        "corner 7 445.867 283.2 1.39606",
+        "corner 8 448 279.2 1.39606",
+        "corner 9 466.933 277.333 1.39606",
+        "corner 10 475.2 275.2 1.39606",
+        "corner 11 489.067 270.667 1.39606",
+        "corner 12 491.733 269.067 1.39606",
+        "corner 13 520.267 245.867 -1.53727",
+        "corner 14 527.894 246.359 -1.53727"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 527.894,246.359,-1.53727 through 59 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 18 corners, length=227.508yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 527.894,246.359,-1.53727 through 50 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 15 corners, length=222.921yd."
+      ]
+    },
+    {
+      "spawn": 127696,
+      "position": [
+        501.842,
+        221.773,
+        2.14552
+      ],
+      "orientation": 1.88166,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 503.69,222.538,3.32955 through 53 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 14 corners, length=225.433yd.",
+        "terrain polygons ground=38 water=15 magma/slime=0",
+        "endpoint centerDistance=2.3242",
+        "endpoint surfaceZ=3.32955 floor=2.60855 terrain=2.26189 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.721001 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 389.333 360.8 24.3294",
+        "corner 3 398.667 352.267 16.3294",
+        "corner 4 405.333 320 4.06273",
+        "corner 5 424.267 298.667 4.59606",
+        "corner 6 437.6 277.867 1.39606",
+        "corner 7 466.933 277.333 1.39606",
+        "corner 8 469.333 275.2 1.39606",
+        "corner 9 487.467 250.133 1.39606",
+        "corner 10 490.667 242.667 1.39606",
+        "corner 11 491.467 241.067 1.39606",
+        "corner 12 500.267 233.6 1.39606",
+        "corner 13 503.69 222.538 3.32955"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 501.842,221.773,3.71538 through 53 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=241.27yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 503.69,222.538,3.32955 through 53 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 14 corners, length=225.433yd."
+      ]
+    },
+    {
+      "spawn": 127698,
+      "position": [
+        454.174,
+        215.503,
+        1.9989
+      ],
+      "orientation": 5.71419,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 454.174,215.503,1.70946 through 46 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 11 corners, length=193.15yd.",
+        "terrain polygons ground=46 water=0 magma/slime=0",
+        "endpoint centerDistance=0.289437",
+        "endpoint surfaceZ=1.70946 floor=1.99924 terrain=1.99924 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.289781 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.267 360.8 28.3294",
+        "corner 2 376.8 359.733 30.1961",
+        "corner 3 381.6 347.467 32.5961",
+        "corner 4 384 345.867 29.6627",
+        "corner 5 388 341.333 22.1961",
+        "corner 6 405.333 320 4.06273",
+        "corner 7 424.267 298.667 4.59606",
+        "corner 8 433.067 268 1.39606",
+        "corner 9 444.8 243.733 4.3294",
+        "corner 10 454.174 215.503 1.70946"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 454.174,215.503,1.70946 through 46 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=193.15yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 454.174,215.503,1.70946 through 46 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 11 corners, length=193.15yd."
+      ]
+    },
+    {
+      "spawn": 127699,
+      "position": [
+        493.885,
+        213.221,
+        2.24208
+      ],
+      "orientation": 4.15717,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 493.885,213.221,2.41434 through 54 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners, length=219.381yd.",
+        "terrain polygons ground=37 water=17 magma/slime=0",
+        "endpoint centerDistance=0.172256",
+        "endpoint surfaceZ=2.41434 floor=2.24164 terrain=2.24164 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.172698 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 389.333 360.8 24.3294",
+        "corner 3 398.4 342.133 7.5294",
+        "corner 4 405.333 320 4.06273",
+        "corner 5 424.267 298.667 4.59606",
+        "corner 6 432.8 279.2 1.39606",
+        "corner 7 434.4 277.333 2.19606",
+        "corner 8 448 260 1.39606",
+        "corner 9 449.6 258.667 1.39606",
+        "corner 10 458.4 256 1.39606",
+        "corner 11 466.933 236.533 1.39606",
+        "corner 12 469.333 229.867 1.39606",
+        "corner 13 473.067 226.4 1.39606",
+        "corner 14 475.2 224.8 1.39606",
+        "corner 15 493.885 213.221 2.41434"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 493.885,213.221,2.41434 through 61 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=269.271yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 493.885,213.221,2.41434 through 54 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners, length=219.381yd."
+      ]
+    },
+    {
+      "spawn": 127701,
+      "position": [
+        525.672,
+        206.832,
+        6.84672
+      ],
+      "orientation": 0.0,
+      "ground_connected": true,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 525.672,206.832,7.02547 through 56 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 18 corners, length=255.593yd.",
+        "terrain polygons ground=43 water=13 magma/slime=0",
+        "endpoint centerDistance=0.178745",
+        "endpoint surfaceZ=7.02547 floor=6.84716 terrain=6.84716 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=0.178305 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 376.533 364.8 28.0627",
+        "corner 2 389.333 360.8 24.3294",
+        "corner 3 399.467 345.6 10.7294",
+        "corner 4 400 344.533 7.79606",
+        "corner 5 405.333 320 4.06273",
+        "corner 6 424.267 298.667 4.59606",
+        "corner 7 437.6 277.867 1.39606",
+        "corner 8 466.933 277.333 1.39606",
+        "corner 9 469.333 275.2 1.39606",
+        "corner 10 501.333 234.667 1.39606",
+        "corner 11 510.667 222.133 3.26273",
+        "corner 12 510.933 219.733 2.46273",
+        "corner 13 510.933 215.733 6.19606",
+        "corner 14 512 215.2 6.72939",
+        "corner 15 516 213.333 8.06273",
+        "corner 16 517.6 212.8 7.79606",
+        "corner 17 525.672 206.832 7.02547"
+      ],
+      "original_ground_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 525.672,206.832,7.02547 through 62 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 21 corners, length=267.161yd."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 525.672,206.832,7.02547 through 56 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 18 corners, length=255.593yd."
+      ]
+    },
+    {
+      "spawn": 127702,
+      "position": [
+        427.42,
+        194.024,
+        -3.0863
+      ],
+      "orientation": 0.0,
+      "ground_connected": false,
+      "center_connected": true,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 426.667,194.024,-2.33727 through 69 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners, length=210.34yd.",
+        "terrain polygons ground=65 water=4 magma/slime=0",
+        "endpoint centerDistance=1.06244",
+        "endpoint surfaceZ=-2.33727 floor=-3.05511 terrain=-3.05511 terrainLiquid=-2.41629 vmapLiquid=-100000 surfaceError=0.0790176 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 373.867 352.533 30.1961",
+        "corner 2 378.933 350.133 33.9294",
+        "corner 3 381.6 347.467 32.5961",
+        "corner 4 384 345.867 29.6627",
+        "corner 5 388 341.333 22.1961",
+        "corner 6 399.733 321.333 5.66273",
+        "corner 7 402.933 305.067 9.66273",
+        "corner 8 402.933 304.8 10.1961",
+        "corner 9 405.333 298.667 9.39606",
+        "corner 10 424.533 273.067 3.5294",
+        "corner 11 425.333 267.467 4.3294",
+        "corner 12 430.4 256 3.26273",
+        "corner 13 433.333 224.533 -2.33727",
+        "corner 14 426.667 194.933 -2.33727",
+        "corner 15 426.667 194.024 -2.33727"
+      ],
+      "original_ground_diagnostic": [
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=65 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=65 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=65 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=57 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=65 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=58 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=58 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=66 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=70 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=70 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=70 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=62 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=70 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=67 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=67 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=67 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=59 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=67 out_of_nodes=0 partial=1",
+        "FAIL: approaches (5,5)."
+      ],
+      "conservative_center_diagnostic": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 426.667,194.024,-2.33727 through 69 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners, length=210.34yd."
+      ]
+    },
+    {
+      "spawn": 127704,
+      "position": [
+        392.632,
+        219.474,
+        0.0459121
+      ],
+      "orientation": 0.0,
+      "ground_connected": false,
+      "center_connected": false,
+      "native_connected": true,
+      "native_evidence": [
+        "PASS: Source approach 366.422,369.746,27.5065 -> target approach 388.071,225.138,-2.33727 through 63 native ground/water navmesh polygons; budget=8192, complete corridor and endpoint, 16 corners, length=188.379yd.",
+        "terrain polygons ground=59 water=4 magma/slime=0",
+        "endpoint centerDistance=7.65249",
+        "endpoint surfaceZ=-2.33727 floor=-2.94221 terrain=-2.94221 terrainLiquid=-2.41629 vmapLiquid=-100000 surfaceError=0.0790215 staticLOS=1 PASS",
+        "corner 0 366.422 369.746 27.5065",
+        "corner 1 373.867 352.533 30.1961",
+        "corner 2 378.933 350.133 33.9294",
+        "corner 3 381.6 347.467 32.5961",
+        "corner 4 384 345.867 29.6627",
+        "corner 5 388 341.333 22.1961",
+        "corner 6 399.733 321.333 5.66273",
+        "corner 7 402.933 305.067 9.66273",
+        "corner 8 402.933 304.8 10.1961",
+        "corner 9 405.333 298.667 9.39606",
+        "corner 10 412.8 280.8 12.5961",
+        "corner 11 413.333 279.467 14.4627",
+        "corner 12 413.333 266.133 4.3294",
+        "corner 13 415.733 260.533 4.3294",
+        "corner 14 416.8 256 2.72939",
+        "corner 15 388.071 225.138 -2.33727"
+      ],
+      "original_ground_diagnostic": [
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=100 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=100 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=97 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=101 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=101 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=98 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=101 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=101 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=98 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=105 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=105 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=102 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=102 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=102 out_of_nodes=0 partial=1",
+        "INCOMPLETE: budget=65535 status=0x40000040 polygons=99 out_of_nodes=0 partial=1",
+        "FAIL: approaches (5,3)."
+      ],
+      "conservative_center_diagnostic": [
+        "Rejected nearest ground diagnostic: endpoint surfaceZ=-2.33727 floor=-100000 terrain=0.0453949 terrainLiquid=-2000 vmapLiquid=-100000 surfaceError=99997.7 staticLOS=1 FAIL",
+        "FAIL: approaches (5,0)."
+      ]
+    }
+  ],
+  "runtime_geometry_sha256": {
+    "mmaps/1463.mmap": "4237d833d9d55dad2f65aa3a2c814fbfe15458ac3bd848589db1d1bb02ccb326",
+    "mmaps/14633029.mmtile": "71eb8dd6c6532594f0ce29900ae569e5945cfc16e4d135335ba918c0730c7592",
+    "mmaps/14633030.mmtile": "2e044a3b371da6e43462341445078fa9921b2b49f7855f7c91adf6aeec4cd4f0",
+    "mmaps/14633031.mmtile": "f9ec88d690d711fc8e52bad90e76755ac8370328b878e05cc98b196f689b6d75",
+    "mmaps/14633129.mmtile": "7e71dc4dcbe48951653a3255cc9b4fd29e9ed17e2a2b3b891a26f8d70204333a",
+    "mmaps/14633130.mmtile": "0ea10f9f947079b13da9675a310b8346405ce50dea2f458c7abe323fc9d7a5a2",
+    "mmaps/14633131.mmtile": "b3fedb193d29ad7c3aea3ff702a549a6150cd854879c8c2387cdd740955738eb",
+    "mmaps/14633132.mmtile": "3c7e608091bb6446c40e935544bda0864c6dac60e09ca5ae3513b8a76af8e1c2",
+    "mmaps/14633229.mmtile": "9f5817f42bc0b9ee529bb5491281cb02cf8d8d2d900a4df96deeb4b7ca5d86dd",
+    "mmaps/14633230.mmtile": "c7bc982b5c3fc454863b082fb5880cd75073904594fdd62ed50160ff70042a12",
+    "mmaps/14633231.mmtile": "db62f5e58aeccede3b8ddc2a8daf9e99cd29e9b9ec62645d9d79390297084847",
+    "maps/1463_30_29.map": "ee6ab7a42337e8f3305a162e9705ed0e4dd4286bbb07f8a1bde3376334eb7c9f",
+    "maps/1463_30_30.map": "c6d05d852b426cf45a37e66de9de834d77fbd0fd1a2fd661b9ed6f1ddd155b83",
+    "maps/1463_30_31.map": "e754d0a45a227716b12d5ad902f7a9d11f627d895f2a8c1c9f6e53e351c3f584",
+    "maps/1463_30_32.map": "79ac0eeff0cf6b55161669f5ce896011f959457f373fa89ed4c5d2d615a8bab5",
+    "maps/1463_31_29.map": "efa3c4428ca9f90ef83faf124b2f39adb730b920568c82a11f3e9a0788761625",
+    "maps/1463_31_30.map": "2d05ef775a0268073653c8da235182adfa2d0599d1d6c2009a428adcad6025f1",
+    "maps/1463_31_31.map": "a8e086304f294334781e196c2e10fd8a2abc795455d3373bedc111c94ef5fc5e",
+    "maps/1463_31_32.map": "ebeef2b04c31312f55b94683a80acbd34367d0974d7f18eff1f8a5f1485ed62b",
+    "maps/1463_32_29.map": "03a37c1b91a60ad0a3aff6e8a83d29af65c8d0a72f7544a4fdb4054db72b8350",
+    "maps/1463_32_30.map": "e260db8fbaa919253e75bb0a6e00c62fc54bc6f9f5b18ae0b5b018d6ead17f8f",
+    "maps/1463_32_31.map": "393dff1aca4536ff3f843c0756881cadeb9812a4273f8059767709b596cb9f96",
+    "maps/1463_32_32.map": "75a68a8de44ce083c802b19241f22209357e9cbc0f1f39de9c1529bafa752a49",
+    "vmaps/1463.vmtree": "117225e24ad8df488d660cc8267d92f3324bef2e33859aa8380115eaac546952",
+    "vmaps/1463_29_31.vmtile": "c7790c087376a15322b7e39b5e1d0de4fb795c543c0dbffdc365a2350e93e532",
+    "vmaps/1463_30_30.vmtile": "32f9f12363cc5ffadea8a2b77ff372dde7f37f7218294bc33792d8ae6b9a9779",
+    "vmaps/1463_30_31.vmtile": "0fb105deddc680c0370d8de085b1bc5a67061727be6831d236bccb3070400334",
+    "vmaps/1463_30_32.vmtile": "d56906917291a5d6471613935cbbaa34c1963542df3cbc587aeaf5a4338752d5",
+    "vmaps/1463_31_30.vmtile": "4e1ebe95e5b9768bd6b95f756d1ceb08d9f634e0aca82cd1331e86373f7b7bfd",
+    "vmaps/1463_31_31.vmtile": "83438cd5c7e62aa7b81513aa442b8dd7aeee5181afdaf153a4817aa9cec63818",
+    "vmaps/1463_32_31.vmtile": "a44d44f79d10b1f560cecf54df2930c564ec8be937ce4b25a74d8d13d0589257"
+  },
+  "GameObjectDisplayInfo_sha256": "23b4e725c73048de7da7d765be0410f7d9cba2ae07447c0765c8ebeb0586c4d8",
+  "checks": [
+    "Audit-StormheimHelheimSuppliesGeometry.ps1 exports live positions/orientations and confirms no model Hotfix override. It compiles the native Release-linked readers, extracts the current IsInRange handler, retains13/16 ground and14/16 center baselines, then requires16/16 native-bound walking/swimming approaches with endpoint surface and static LOS checks.",
+    "Test-StormheimHelheimSupplies.ps1 passes the actual Gathering6478/lock2160, chest loot selector, native loot processing,8 bones/20 seaweed lifecycle, both factions and both reward orders. Data replay and live assertions pass with orientation export added.",
+    "Shared-helper regressions: Test-StormheimBreakSpineCatalog.ps1, Test-HallsAegisCatalog.ps1 and Test-AegisReturnCatalog.ps1 pass with unchanged default ground behavior. The40003 initial1024-node exhausted route and all four8192-node complete routes are checked separately.",
+    "No production server source or migration changed. No new worldserver build/startup/deployment is claimed. Canonical executable and runtime data hashes remain recorded; private generator output was not deployed."
+  ],
+  "release": {
+    "worldserver_sha256": "a1b9f8ab69ddac8bf49796cc6e4070e5bb656880a22716ef03339efd6f0bacb0",
+    "runtime_data_changed": false,
+    "migration": null
+  },
+  "limits": [
+    "This is an executable native distance predicate plus installed navmesh/terrain/static-collision survey, not an integrated client movement/loot session. It establishes complete mixed-terrain corridors and valid interaction endpoints; it does not sample every corridor point against collision, run native movement splines or client swimming/jumping physics, or include phase-dependent dynamic GameObject collisions.",
+    "Static LOS uses the native+2 height convention to the object center and retains M2 collisions. Full WorldObject::IsWithinLOSInMap hit-sphere/phase/dynamic-tree dispatch is not executed. Native range uses display bounds and real orientations, with no extra reach from template scale or player hitbox.",
+    "Client pending: cursor/model visibility, actual land/water traversal and Gathering/loot at all three former failures, cast interruption, bag-space errors, both factions, concurrent players and retry/relog. No whole quest, client collision, model or collection interaction is described as client-verified.",
+    "Original supply/seaweed and subsequent quest client requirements remain. The previous observed ground-only failures remain in the original audit with this linked resolution; they must no longer be described as unresolved native interaction approaches."
+  ],
+  "next": "Continue with the next unaudited quest branch from native quest-line records; all previous client checks remain separate.",
+  "isolated_regeneration": {
+    "command": "mmaps_generator.exe 1463 --tile 31,31 --silent (private working directory)",
+    "source_maps_vmaps_dbc": "junctions to canonical extracted inputs; private mmaps copies only",
+    "original_tile_sha256": "b3fedb193d29ad7c3aea3ff702a549a6150cd854879c8c2387cdd740955738eb",
+    "private_tile_sha256": "0eee35ffdc5e4e6c027ede8aa2132feb95fc64bcf8422763a749e7a24faa3037",
+    "same_map_header": true,
+    "result": "Private one-tile rebuild reproduced the same conservative endpoint-height failures; it did not repair the audit criterion and was not deployed."
+  }
+}
