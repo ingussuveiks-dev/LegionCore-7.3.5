@@ -1,0 +1,166 @@
+{
+  "creature_questender": [
+    {
+      "id": "97480",
+      "quest": "39849"
+    },
+    {
+      "id": "97480",
+      "quest": "39850"
+    }
+  ],
+  "creature_template": [
+    {
+      "entry": "97480",
+      "name": "'Ashildir'",
+      "modelid1": "68635",
+      "faction": "35",
+      "npcflag": "2",
+      "lootid": "0",
+      "AIName": "''",
+      "ScriptName": "''"
+    },
+    {
+      "entry": "91657",
+      "name": "'Bloodbeard'",
+      "modelid1": "62703",
+      "faction": "35",
+      "npcflag": "0",
+      "lootid": "0",
+      "AIName": "''",
+      "ScriptName": "''"
+    }
+  ],
+  "quest_objectives": [
+    {
+      "ID": "280025",
+      "QuestID": "39850",
+      "Type": "0",
+      "Order": "2",
+      "StorageIndex": "3",
+      "ObjectID": "97484",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Fragment of Valor'",
+      "VerifiedBuild": "25549"
+    },
+    {
+      "ID": "280024",
+      "QuestID": "39850",
+      "Type": "0",
+      "Order": "1",
+      "StorageIndex": "2",
+      "ObjectID": "97483",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Fragment of Might'",
+      "VerifiedBuild": "25549"
+    },
+    {
+      "ID": "280023",
+      "QuestID": "39850",
+      "Type": "0",
+      "Order": "0",
+      "StorageIndex": "1",
+      "ObjectID": "97482",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "0",
+      "ProgressBarWeight": "0",
+      "Description": "'Fragment of Will'",
+      "VerifiedBuild": "25549"
+    },
+    {
+      "ID": "280021",
+      "QuestID": "39849",
+      "Type": "1",
+      "Order": "0",
+      "StorageIndex": "0",
+      "ObjectID": "128854",
+      "Amount": "1",
+      "Flags": "0",
+      "Flags2": "1",
+      "ProgressBarWeight": "0",
+      "Description": "''",
+      "VerifiedBuild": "25549"
+    }
+  ],
+  "quest_template": [
+    {
+      "ID": "39850",
+      "LogTitle": "'Sundered'",
+      "LogDescription": "'Find and release the Fragment of Will, Fragment of Might, and Fragment of Valor in Helheim.'",
+      "QuestDescription": "'I imagine the power of your weapon will be what allows us to defeat Geir, but right now you are too weak for the confrontation. We must reclaim the missing pieces of your spirit.\\n\\nHelya must have scattered them throughout her realm to keep them from you. If you can find them, shine the lantern and they should be set free.\\n\\nBe careful, though. It is unlikely that Helya left your spirit fragments unguarded.'",
+      "Flags": "33554440",
+      "FlagsEx": "0",
+      "RewardNextQuest": "39853"
+    },
+    {
+      "ID": "39849",
+      "LogTitle": "'To Light the Way'",
+      "LogDescription": "'Collect a Helheim Waylight from Bloodbeard in Helheim.'",
+      "QuestDescription": "'Helya must think her challenge unwinnable. We will show her different.\\n\\nI am unsure what she did, but Helya has weakened you somehow. I have seen similar effects on my shieldmaidens, and now they are trapped by Helya\\'s minions.\\n\\nI may know a way, however. The Kvaldir ships carry special lanterns bound to this place to navigate through the fog. It is said that the light of these lanterns can release bonds of the spirit.\\n\\nThere is a kvaldir ship nearby. See if you can find one there.'",
+      "Flags": "33554440",
+      "FlagsEx": "0",
+      "RewardNextQuest": "39850"
+    }
+  ],
+  "original_39849_starter_present": false,
+  "archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "native_catalog": [
+    "item128854 name=Helheim Waylight max=0 stack=1 bonding=4 flags=67584,8192,0 classes=-1 races=-1",
+    "item128854 useEffects=0",
+    "package746 row=4160 item=129239 name=Bloodbeard's Seal display=class quantity=1 nativeClassMask=0 flags2=8192",
+    "package746 row=4244 item=129339 name=Drape of the Undying Raider display=class quantity=1 nativeClassMask=4095 flags2=8192",
+    "Bloodbeard62703 model=8529 file=1260044",
+    "spell186529 name=Briny Swell",
+    "spell188271 name=Soul of Mist",
+    "spell186409 name=Severing Blow",
+    "PASS: native Waylight delivery item/no use effects, two package746 class-filtered rewards cover all12 classes/both factions using the production mask builder, Bloodbeard model/three combat spells and Ashildir voice53001. Client combat/loot/reward UI remain unverified."
+  ],
+  "runtime_hashes": {
+    "Item": "67B3B9B5C33DFA226910B3C62FDAEC674E6198C54B39A6CD07D622A90374B010",
+    "QuestPackageItem": "A6BB441011003860FFF002D39795B0201642266778B60988D86766ECB4144AF6",
+    "ChrSpecialization": "43678A1A9763EBAA08662FE305B7CEAA92B4B81F5D8E1A18B68BD0810FA14934",
+    "ItemSpec": "733A6CF309BF10E112059D284B218343E0AF5D974A20298E24A049E303B22DB7",
+    "ItemEffect": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931",
+    "SoundKit": "2643655DDBBC10B9F58CC6BCFB15CF2B2C588F0F13571C980F3AB2B7154547CE",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "ItemSpecOverride": "86243D95A3906CE1AED14D706B2B0D24F8123B4430A2E1C6DF8EE6D18F8A19F6",
+    "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+  },
+  "live_world": [
+    "quest\t39849\t33554440\t0\t746\t0\t0\t0\t39850\t18446744073709551615\t39857\t39850\t0",
+    "objective\t280021\t1\t0\t128854\t1\t0",
+    "relations\t1",
+    "next\t1",
+    "source\t1",
+    "spawn\t1",
+    "all-source-spawns\t1",
+    "drop\t91657\t91657\t128854\t0\t0\t99.155\t1\t0\t0\t1\t1\t0",
+    "all-item-drops\t1",
+    "extra-loot-conditions\t0",
+    "difficulty\t5",
+    "combat\t3",
+    "ashildir\t1",
+    "reward-speech\t1",
+    "model-info\t1"
+  ],
+  "live_hotfix": [
+    "item-overrides\t0",
+    "effect-overrides\t0",
+    "display-overrides\t0",
+    "voice\t1",
+    "spec-overrides\t0",
+    "reward-spec-overrides\t0",
+    "specialization-overrides\t0",
+    "package-overrides\t0"
+  ],
+  "limits": "No confirmed code/data defect in installed39849. Preserve installed hostile Bloodbeard/loot91657/quest drop128854/chance99.155/mode0 and Ashildir starter relation even where the original TDB is incomplete. Native sparse delivery item has no use effect; objective completes on item pickup and consumes one at reward. Loot/owner/item/native reward-next fragments and actual native item class-mask builder are executed, but full combat, inventory serialization, tap distribution, package reward creation and client UI are not."
+}
