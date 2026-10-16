@@ -1,0 +1,57 @@
+{
+  "quest": 42125,
+  "scenario": 1097,
+  "map": 1498,
+  "client_verified": false,
+  "reported_failures": [
+    "Thal'kiel appears on the floor below the floating green binding.",
+    "Mephistroth does not visibly carry the skull; skull and binding disappear.",
+    "User recalls the first spoken line, but not the later lines.",
+    "Summon/departure visuals are missing or too quick; summoned Overfiend stands still.",
+    "Doomweavers should stop their own ritual beam and retaliate when attacked, including by a pet; unengaged casters should continue."
+  ],
+  "evidence": {
+    "skull": "Both native DB spawns of 106693 already have elevated Z (376367:61.3745, 376354:38.2676), but no movement override. Ground0/Flight1 disables gravity; existing coordinates, models, scale, binding and final pickup are preserved. Client alignment remains pending.",
+    "missing_handlers": "211703 effect0 is SCRIPT_EFFECT with value 211702 and nearby-entry target38. No handler or implicit-entry condition existed. 211702 is CONTROL_VEHICLE. 211704 is another unhandled SCRIPT_EFFECT. Old SmartAI linked a SetData that immediately despawned the skull after the reverse-cast attempt.",
+    "vehicle": "Native Mephistroth template VehicleId4746; seat0 is 16586, AttachmentID4, PassengerAttachmentID19, offsets0. Preserve those native values rather than inventing hand coordinates. Actual hand attachment/orientation remains a client check.",
+    "audio": "Hotfix BroadcastText110315/110316/110317 maps to sound kits62314/62317/62319. Native SoundKitEntry maps to FileDataIDs1384890/1384893/1384895, all present in read-only client CASC. ffprobe durations16.005896/7.260499/6.880590 seconds exceed old8/4/4-second SmartAI timers. CreatureTextMgr already resolves BroadcastText sound IDs, so Sound=0 alone is not missing audio evidence.",
+    "summon": "Native211701 lasts2000ms and periodically triggers211700 every2000ms. 211700 sends event50917, whose existing event_scripts row summons106644. Keep this single spawn route. NPC-cast send-event does not credit players, so player criteria remain a separate SmartAI action.",
+    "overfiend": "Old JUST_SUMMONED attack was attempted only once. A missing/out-of-range player could be missed. Native TempSummon::InitSummon also skips the callback with no live summoner; this is tested as an additional failure boundary, not asserted as the observed summon source (the normal source is Mephistroth).",
+    "beam": "212497 is an infinite periodic-dummy aura with visual56069. Native SmartAI::EnterCombat interrupts current casts. The old UPDATE60 action was not restricted to OOC. A scoped aura lifetime check additionally removes only the engaged/dead caster's application."
+  },
+  "changes": [
+    "Bind scoped reverse-ride and passenger-cleanup spell scripts. Nearby-entry condition selects106693 only.",
+    "Retry pickup in SmartAI phase1; actual PassengerBoarded removes211683 and changes phase2. No despawn on a failed pickup attempt.",
+    "Set text-over delays16500/7750/7250ms. Begin the summon after the third line, allow the2000ms native tick, credit players at2300ms, then remove only the skull passenger and play native teleport211705; wait200ms before invisible transform211706 and another2200ms before despawn.",
+    "Retry Overfiend attack OOC every1000ms, gated by base-actor scenario1097 step1. A separate step0 OOC event recovers missed introduction credit when an absent player returns to the already spawned demon; it never summons another actor. Active combat never restarts from this event.",
+    "Maintain Doomweaver ritual only OOC, retry after evade; explicitly interrupt212497 on aggro and remove only that caster's stale beam application."
+  ],
+  "visual_trace": {
+    "binding": "211683 -> visual55714 -> kit67620 -> model attaches322888/322889 -> effect names304/3169 -> M2 FileDataIDs165564 AntiMagic_State_Base and166071 Fel_Fire_Precast_Hand. Native offsets are0,0,-1.4 and0,0,0; scales1.25/4.0. No shared visual data changed.",
+    "summon": "211701 -> visual46672 -> kits54677/65181 -> model attaches307236/307237/307238 and319255/319256/319268 -> effect names20573/12453 -> FileDataIDs967569/617802. Hand attachment IDs21/22 and root19 are native.",
+    "departure": "211705 -> visual55723 -> kit67628 -> model attach330789 -> effect name24086 -> FileDataID579273. Native100ms transform previously followed immediately by invisibility and despawn; now preserved with delays.",
+    "models": "Native display74997 -> model9648 ->1498976 DreadLordFel2; display69686 -> model8995 ->1346340 doodad_Offhand_1h_ArtifactSkullofEredar_D_01. Read-only CASC exports and M2 animation/attachment arrays inspected; no client asset edits. Rendered attachment, beam and effect timing are unverified."
+  },
+  "automated_checks": [
+    "Test-DarkWhispersIntro.ps1 -VerifyReleaseBinary: extracted production helpers, native Unit channel interruption, SmartAI combat entry and chase retain player/pet attacker; per-caster beam lifetime; failed boarding retry;10000 duplicate attempts; foreign actors/maps/phases; no player ejection.",
+    "The same test executes extracted TempSummon initialization, native OOC event, closest-player target selector and ATTACK_START dispatcher: delayed/no player, lost summoner, active combat exclusion and evade reacquisition.",
+    "Temporary-table SQL replay twice: stable result, bindings, source13 target, actor-stage gate, pickup phase/callback, voice delays, timed action ordering and preservation of finale action types.",
+    "DarkWhispersIntroCatalog.cpp through Read-LegionLegendaryCatalog.ps1: production DB2 reader validates effects, target38, control-vehicle aura, event50917 tick, native durations, vehicle seat, display and model references.",
+    "Test-DarkWhispersArrival.ps1 -VerifyReleaseBinary and Test-DarkWhispersFinale.ps1 -VerifyReleaseBinary passed; existing stage3 gateway recovery and scaled killing-blow finale protection retained.",
+    "Test-DreadscarPlans.ps1 exercises the extracted native Ground0/Flight1 movement branch. Test-CharmCreateSpells.ps1 passes ownerless/owned/guardian/map/level branches.",
+    "Full worldserver Release build to build-extractors/bin/Release; production lib link inputs retained; three registered script names found in deployed executable.",
+    "Fresh startup automatically applied2026_10_16_08_dark_whispers_intro.sql. Test-WorldShutdown.ps1 -ProbeConnections reached ready, exit0, no new server dumps; DBErrors.log stayed empty."
+  ],
+  "pending_client_checks": [
+    "Fresh scenario start: skull centered inside binding, three continuing beams; attack exactly one caster with player and then pet, verify only its beam ends and it retaliates. Evade and verify channel resumes.",
+    "Kill last Doomweaver: one Mephistroth, all three complete spoken lines, skull visibly in his hand, no disappearing skull before boarding.",
+    "After final line: summon hand/ground effect, exactly one Overfiend, visible Mephistroth departure and prompt Overfiend attack, including player temporarily outside50yards.",
+    "Finish Overfiend/barrier and stage3 gateway transition; continue finale, pickup, quest completion, abandonment/retry and re-entry. Previous stage3/5 client failures remain historical evidence; native tests do not mark these interactions client-verified."
+  ],
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "CE001D102D99E72C70127E83A73ECC0FB93A59283ECB71D35248A731FA0FDBC0",
+    "final_state": "worldserver and bnetserver stopped",
+    "configuration_and_data": "No runtime configuration, certificate, DLL, log or extracted client-data directories replaced; no character progress reset."
+  }
+}

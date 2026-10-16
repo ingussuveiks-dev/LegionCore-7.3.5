@@ -3,6 +3,9 @@
 #include "ScriptedCreature.h"
 #include "ScenarioMgr.h"
 #include "Player.h"
+#include "SpellScript.h"
+#include "SpellAuraEffects.h"
+#include "Vehicle.h"
 
 namespace DarkWhispersArtifact
 {
@@ -83,4 +86,75 @@ public:
     InstanceScript* GetInstanceScript(InstanceMap* map) const override { return new Instance(map); }
 };
 
-void AddSC_dark_whispers_artifact() { new instance_dark_whispers_artifact(); }
+namespace DarkWhispersIntro
+{
+bool IsPair(Unit* carrier, Unit* skull)
+{
+    return carrier && skull && carrier->GetEntry() == 106692 && skull->GetEntry() == 106693 &&
+        carrier->GetMapId() == 1498 && skull->GetMap() == carrier->GetMap() && carrier->InSamePhase(skull);
+}
+
+void RideSkull(Unit* carrier, Unit* skull)
+{
+    if (!IsPair(carrier, skull) || !carrier->IsAlive() || !skull->IsAlive() ||
+        !carrier->GetVehicleKit() || carrier->GetVehicleKit()->GetPassenger(0) || skull->GetVehicle())
+        return;
+
+    // Native 211703's effect value is 211702. The skull, not Mephistroth,
+    // must cast the control-vehicle aura; seat 16586 supplies the hand attachment.
+    skull->CastSpell(carrier, 211702, true);
+}
+
+void DespawnSkull(Unit* carrier)
+{
+    if (!carrier || carrier->GetEntry() != 106692 || carrier->GetMapId() != 1498 || !carrier->GetVehicleKit())
+        return;
+    Unit* passenger = carrier->GetVehicleKit()->GetPassenger(0);
+    if (!IsPair(carrier, passenger) || !passenger->ToCreature())
+        return;
+    passenger->ExitVehicle();
+    passenger->ToCreature()->DespawnOrUnsummon();
+}
+
+bool StopBeam(Unit* caster, Unit* skull)
+{
+    // Removing this AuraScript removes only this doomweaver's application.
+    // The two unengaged doomweavers must keep their own beams.
+    return skull && skull->GetEntry() == 106693 && skull->GetMapId() == 1498 &&
+        (!caster || (caster->GetEntry() == 106698 &&
+            (!caster->IsAlive() || caster->isInCombat() || skull->GetVehicle())));
+}
+}
+
+class spell_dark_whispers_ride_skull : public SpellScript
+{
+    PrepareSpellScript(spell_dark_whispers_ride_skull);
+    void Handle(SpellEffIndex) { DarkWhispersIntro::RideSkull(GetCaster(), GetHitUnit()); }
+    void Register() override { OnEffectHitTarget += SpellEffectFn(spell_dark_whispers_ride_skull::Handle, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT); }
+};
+
+class spell_dark_whispers_despawn_skull : public SpellScript
+{
+    PrepareSpellScript(spell_dark_whispers_despawn_skull);
+    void Handle(SpellEffIndex) { DarkWhispersIntro::DespawnSkull(GetCaster()); }
+    void Register() override { OnEffectHitTarget += SpellEffectFn(spell_dark_whispers_despawn_skull::Handle, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT); }
+};
+
+class aura_dark_whispers_ritual_beam : public AuraScript
+{
+    PrepareAuraScript(aura_dark_whispers_ritual_beam);
+    void Update(uint32)
+    {
+        if (DarkWhispersIntro::StopBeam(GetCaster(), GetTarget()))
+            Remove();
+    }
+    void Register() override { OnAuraUpdate += AuraUpdateFn(aura_dark_whispers_ritual_beam::Update); }
+};
+
+void AddSC_dark_whispers_artifact()
+{
+    new instance_dark_whispers_artifact();
+    RegisterSpellScript(spell_dark_whispers_ride_skull);
+    RegisterSpellScript(spell_dark_whispers_despawn_skull);
+    RegisterAuraScript(aura_dark_whispers_ritual_beam);
+}
