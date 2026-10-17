@@ -31,6 +31,6 @@ int main(int argc,char**argv){
  bool visual=false;for(auto v:visuals)if(v->SpellID==186982&&v->SpellVisualID==41037)visual=true;if(!visual)return 9;
  for(auto id:{26892,27227,35263,35264}){auto d=objects.LookupEntry(id);if(!d||!d->FileDataID)return 10;std::cout<<"shrine display="<<id<<" file="<<d->FileDataID<<'\n';}
  auto d=displays.LookupEntry(70980);if(!d)return 11;auto m=models.LookupEntry(d->ModelID);if(!m||!m->FileDataID)return 11;std::cout<<"statue model="<<m->ID<<" file="<<m->FileDataID<<'\n';
- bool chapter=false;for(auto q:lines)if(q->QuestID==39092){if(q->QuestLineID!=136||q->OrderIndex!=5)return 12;chapter=true;}if(!chapter)return 12;
- std::cout<<"PASS: native Lock43/open6478, four self blessings/ten-minute durations, two-second self communion134/94477 and visual41037, actual shrine/statue models and chapter136/order5. Visual playback remains client pending.\n";
+ std::set<unsigned> chapters;for(auto q:lines)if(q->QuestID==39092||q->QuestID==39155){if(q->QuestLineID!=(q->QuestID==39092?136:137)||q->OrderIndex!=5)return 12;chapters.insert(q->QuestID);}if(chapters.size()!=2)return 12;
+ std::cout<<"PASS: native Lock43/open6478, four self blessings/ten-minute durations, two-second self communion134/94477 and visual41037, actual shrine/statue models and both faction chapters136/137 order5. Visual playback remains client pending.\n";
 }

@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    39092,
+    39155
+  ],
+  "client_verified": false,
+  "status": "Shared statue faction regression repaired and deployed; both faction/native progression tests pass, client checks remain pending.",
+  "regression_origin": "05c5f300 repaired Alliance39092 but overlooked that Horde39155 uses the same four shrines, statue94393/DB293383, menu18543/option0 and spell186982. Its five Alliance-only source15 conditions hid the option from Horde; hardcoded39092 in the production helper/lifetime also rejected an otherwise valid Horde player. This is our earlier regression, not a missing original Havi/NPC or a new guessed quest step.",
+  "reproduced_failure": "The regression reads the actual old namespace from pinned commit05c5f300 and executes its Communion helper plus the previous five menu conditions through native ConditionMgr OR/AND handling. A Horde player with all four39155 objectives fails both. The same loaded records pass the corrected helper/menu.",
+  "changes": [
+    "CommunionQuest selects39155 for Horde and39092 for Alliance. All shrine/objective admission, premature-credit login repair and captured quest lifetime now follow that selected quest. The same exact statue/world/map/phase/range guards and native two-second186982 remain.",
+    "Spell captures quest identity together with statue GUID and ScriptLifetime. Rechecks reject a faction change, abandonment/reacceptance, stale actor, bad hit target and range/phase/world/death changes. Four objectives from different quest records cannot combine into a completed rite.",
+    "Native effect134 remains suppressed. Final credit now uses the selected quest objective setter/update/native completion directly, rather than a generic94477 monster credit that could also touch a stale opposite-faction quest. It is personal and once per cast. A deliberately loaded player with both quests only advances the selected one.",
+    "Migration12 preserves the existing five Alliance AND conditions in ElseGroup0 and appends a five-condition Horde AND branch in ElseGroup1. Native condition handling ORs the complete branches. Active quest9 and four objective41 checks use actual GO ObjectIDs. Repeated migration is idempotent and custom menu conditions decline the append.",
+    "The original39092 audit/source hashes and first migration remain historical evidence. No original migration was rewritten, no character SQL reset was executed, and native shrine buffs/models/spawns/spell/visual definitions remain unchanged.",
+    "Legacy premature final credit repair now scopes to the selected faction quest only, preserving completed/rewarded/all-four-shrine records and the opposite-faction history. Native setter saves still require actual client/login persistence confirmation."
+  ],
+  "horde_contract": {
+    "quest": 39155,
+    "previous": 38878,
+    "next": 38882,
+    "starter": 95611,
+    "ender": 94228,
+    "shared_statue": 94393,
+    "spawn": 293383,
+    "menu": 18543,
+    "spell": 186982,
+    "final": 94477,
+    "shrines": [
+      242994,
+      242995,
+      242996,
+      242998
+    ],
+    "objective_ids": [
+      279018,
+      279019,
+      279020,
+      279021,
+      279022
+    ],
+    "chapter": 137,
+    "order": 5
+  },
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimHordeCommunion.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Alliance24 shrine orders plus Horde24 orders using the extracted production AI/spell/recovery and native quest/goober/lock/condition/group handlers. Old helper/menu rejection reproduced; split-faction partial goals, mid-cast faction change and stale opposite-faction records checked. Early/repeat/group/interrupt/wrong-hit/range/phase/death/map/logout/reaccept, expired buffs and legacy repair pass. Actual selected-quest lifetime and final-link freshness verified."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAscendantData.ps1 -BothFactions and -Live -BothFactions",
+      "result": "PASS",
+      "coverage": "Both actual quest definitions/goals/prerequisites/relations, ten native menu conditions in two OR branches, guarded migration twice and custom condition decline. Existing Alliance/script/native GO/spell data remain intact."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAscendantCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native C++ DB2 reader now checks both chapter136/137 order5 entries, existing self blessings/ten-minute durations, Lock43/open6478, two-second self186982/effect134/94477 and visual41037, real models. Existing six static supported complete ground corridors/endpoint LOS remain valid; no spawn/navmesh changes."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUndeath.ps1 -VerifyReleaseBinary after shared statue change",
+      "result": "PASS",
+      "coverage": "Both faction movies/quest transfers and upstream statue/shield/movie regressions remain passing in the final Release."
+    },
+    {
+      "command": "Final generated Horde C++ replay against refreshed both-faction World export",
+      "result": "PASS",
+      "coverage": "Recompiled native test after the final data-export relation assertion; old rejection/mixed/faction-change/stale-opposite assertions and all24 Horde orders remain passing."
+    },
+    {
+      "command": "Release worldserver+bnetserver and canonical startup/shutdown0",
+      "result": "PASS",
+      "coverage": "Original scripts final-link path, no global OutDir override; final executables in canonical runtime, new faction/lifetime marker present. Ready, exit0, DBErrors/stderr0 bytes."
+    }
+  ],
+  "limits": [
+    "Tests compile selected actual production/native handlers; world/phasing/range lookup, cast dispatch/scheduling, packet delivery, setter persistence and loaded login records are fixture services. No complete WoW client/session/database integration is claimed.",
+    "The pinned baseline helper is read from repository commit05c5f300; test reproduction requires that commit available in local Git history.",
+    "Native catalog and unchanged static collision routes establish references/feasible endpoints, not actual Horde starter visibility, full live walking routes, renderer load, animation/sound timing or body-clearance.",
+    "Earlier audit client checks, story-placement assumption and failures remain historical evidence. This fix does not certify either whole quest or exact-stage persistence."
+  ],
+  "pending_client_checks": [
+    "Horde: accept39155 from95611, use all four native shrines, see statue option only when complete, perform visible two-second communion and turn in to phased94228 before38882. Repeat the existing Alliance39092 flow.",
+    "Verify failed/interrupted casts, party isolation, opposite-faction/partial state boundaries, abandonment/reacceptance, relog and actual saved counters. Complete/rewarded history must remain intact.",
+    "Check actual native buffs/models/communion animation/audio, tracking, phase refresh and both faction finale offers. No client gameplay was performed."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-horde-communion\\20261017-135837",
+    "sha1": "1813EBE04ACE91FE800155BC666DB353E1CB4400",
+    "migration": "2026_10_17_12_stormheim_horde_communion.sql"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "4fef6cdb71cf64f95007635fbd1311f65e8880fa3425b2c8d74f2401392f6a41",
+    "bnetserver_sha256": "9cc4d28aa93ccbd0b4c24fd31fb70b0e3a9fb0a774772e3332ca37e28200fb06",
+    "scripts_lib_sha256": "50e2f9e2661705ac461aac33f8aeba1c7fca02b9efcb655b9d8877c6b248b778",
+    "startup": "build-extractors/runtime-test/stormheim-horde-communion/startup-20261017-140008",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_skold_ashil.cpp": "ca070e1ad1ef0b205962126e25c8a744e3c659f705e4340941efa693fe775c61",
+    "sql/updates/world/2026_10_17_12_stormheim_horde_communion.sql": "1d0918a1878453c6b7edc792b176002574fba752713000749bf4c9c6f68b542c",
+    "tools/tests/Test-StormheimAscendantData.ps1": "644991da1333339dedd6f602526c9aaf0ed81d28da613966aee3193996f0875a",
+    "tools/tests/StormheimAscendantCatalog.cpp": "84e559c9925ab40330d68db1d471eaf0622c259066fdf8ed71cbf613e2078962",
+    "tools/tests/Test-StormheimHordeCommunion.ps1": "25a81cfeb2fd8e39431965fb51d290c75ec12c4995962387aa4622174b8f795b"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-horde-communion/world.tsv": "02f0e0403180b4e1bb90091e50d822a622e51c8ee78fb06bc9cf732a79070009",
+    "build-extractors/runtime-test/stormheim-ascendant/world-live.tsv": "d9800b32c43b853696da293ebb1a9391035320b48e06e7d2c3b54b3a6135d849",
+    "build-extractors/runtime-test/stormheim-ascendant/native-lines.txt": "6686a8343048d9d27734b975028574f7dc51dd8e3549ae95d6c59a9ef32da782"
+  },
+  "logs_sha256": {
+    ".codex/horde-communion-test.log": "34a4a9b8cb6fc46d6d0fc6bc82a33ecc1587379da4990e750dacf43c4f19e342",
+    ".codex/horde-communion-final-cpp.log": "d78dfe3502c0e992ee5bbf66e40ab15d2fe20f6487538c86d02a883be5f6660b",
+    ".codex/horde-communion-catalog.log": "853adab3e79503ba50bf1d607292595c3fc580eb8889c23458f96f52392cae36",
+    ".codex/final-faction-movies.log": "8d7a0905f5255a61ac8bde7bd6d18186700d264a129b7d0d5f4594a79f128c2d"
+  }
+}

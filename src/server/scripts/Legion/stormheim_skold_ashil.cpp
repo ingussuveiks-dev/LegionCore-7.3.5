@@ -13,9 +13,10 @@ namespace StormheimSkoldAshil
 {
 struct Shield {uint32 entry;ObjectGuid::LowType spawn;};
 Shield const Shields[]={{242673,115401},{251557,115389},{251558,115385},{251559,115377},{251560,115394},{251561,115380}};
+uint32 CommunionQuest(Player* p) {return p && p->GetTeam()==HORDE?39155:39092;}
 bool Shrines(Player* p)
 {
-    for(auto entry:{242994u,242995u,242996u,242998u})if(!p->GetQuestObjectiveData(39092,entry))return false;
+    for(auto entry:{242994u,242995u,242996u,242998u})if(!p->GetQuestObjectiveData(CommunionQuest(p),entry))return false;
     return true;
 }
 bool Communion(Player* p,Creature* c)
@@ -23,7 +24,7 @@ bool Communion(Player* p,Creature* c)
     return p && c && p->IsInWorld() && p->IsAlive() && c->IsInWorld() && c->IsAlive() && p->GetMapId()==1220 &&
         p->GetZoneId()==7541 && !p->GetInstanceId() && c->GetMapId()==1220 && !c->GetInstanceId() &&
         c->GetEntry()==94393 && c->GetDBTableGUIDLow()==293383 && p->InSamePhase(c) && p->IsWithinDistInMap(c,INTERACTION_DISTANCE) &&
-        p->GetQuestStatus(39092)==QUEST_STATUS_INCOMPLETE && Shrines(p) && !p->GetQuestObjectiveData(39092,94477);
+        p->GetQuestStatus(CommunionQuest(p))==QUEST_STATUS_INCOMPLETE && Shrines(p) && !p->GetQuestObjectiveData(CommunionQuest(p),94477);
 }
 Creature* Statue(Player* p)
 {
@@ -37,8 +38,8 @@ void RepairPrematureCommunion(Player* p)
     // The old group/click action could save final credit before any rites.
     // That state is provably out of order. Preserve finished/rewarded history
     // and an otherwise valid four-shrine run; never reset shrine progress.
-    if(!p || p->GetQuestStatus(39092)!=QUEST_STATUS_INCOMPLETE || !p->GetQuestObjectiveData(39092,94477) || Shrines(p))return;
-    auto q=sQuestDataStore->GetQuestTemplate(39092);if(!q)return;
+    if(!p || p->GetQuestStatus(CommunionQuest(p))!=QUEST_STATUS_INCOMPLETE || !p->GetQuestObjectiveData(CommunionQuest(p),94477) || Shrines(p))return;
+    auto q=sQuestDataStore->GetQuestTemplate(CommunionQuest(p));if(!q)return;
     for(auto const& o:q->GetObjectives())if(o.Type==QUEST_OBJECTIVE_MONSTER && o.ObjectID==94477 && o.StorageIndex==4)
     {
         p->SetQuestObjectiveData(q,&o,0);p->SendQuestUpdateAddCredit(q,ObjectGuid::Empty,o,0);
@@ -94,6 +95,7 @@ class spell_stormheim_communing : public SpellScript
 {
     PrepareSpellScript(spell_stormheim_communing);
     ObjectGuid statue;
+    uint32 quest=0;
     std::weak_ptr<uint8> lifetime;
     bool captured=false,credited=false;
     bool Load() override {return GetCaster()->IsPlayer() && GetCaster()->GetMapId()==1220 && GetCaster()->GetZoneId()==7541;}
@@ -101,8 +103,8 @@ class spell_stormheim_communing : public SpellScript
     {
         auto p=GetCaster()->ToPlayer();
         return captured && !lifetime.expired() && p && p->IsInWorld() && p->GetMapId()==1220 && !p->GetInstanceId() &&
-            StormheimSkoldAshil::Communion(p,ObjectAccessor::GetCreature(*p,statue)) &&
-            lifetime.lock()==p->getQuestStatus(39092)->ScriptLifetime;
+            quest==StormheimSkoldAshil::CommunionQuest(p) && StormheimSkoldAshil::Communion(p,ObjectAccessor::GetCreature(*p,statue)) &&
+            lifetime.lock()==p->getQuestStatus(quest)->ScriptLifetime;
     }
     SpellCastResult Check()
     {
@@ -110,8 +112,8 @@ class spell_stormheim_communing : public SpellScript
         if(!captured)
         {
             auto actor=StormheimSkoldAshil::Statue(p);if(!actor)return SPELL_FAILED_BAD_TARGETS;
-            statue=actor->GetGUID();p->AddQuestDelayedEvent(39092,0,[]{});
-            lifetime=p->getQuestStatus(39092)->ScriptLifetime;captured=true;
+            quest=StormheimSkoldAshil::CommunionQuest(p);statue=actor->GetGUID();p->AddQuestDelayedEvent(quest,0,[]{});
+            lifetime=p->getQuestStatus(quest)->ScriptLifetime;captured=true;
         }
         return Valid()?SPELL_CAST_OK:SPELL_FAILED_BAD_TARGETS;
     }
@@ -121,7 +123,13 @@ class spell_stormheim_communing : public SpellScript
         // interaction, so retain its cast/visual but award the valid caster only.
         PreventHitDefaultEffect(index);
         auto p=GetCaster()->ToPlayer();if(credited || GetHitPlayer()!=p || !Valid())return;
-        credited=true;p->KilledMonsterCredit(94477);
+        auto q=sQuestDataStore->GetQuestTemplate(quest);if(!q)return;
+        for(auto const& o:q->GetObjectives())if(o.Type==QUEST_OBJECTIVE_MONSTER && o.ObjectID==94477 && o.StorageIndex==4 && o.Amount==1)
+        {
+            credited=true;p->SetQuestObjectiveData(q,&o,1);p->SendQuestUpdateAddCredit(q,statue,o,1);
+            if(p->CanCompleteQuest(quest))p->CompleteQuest(quest);
+            break; // Do not credit a stale opposite-faction quest with the same bunny.
+        }
     }
     void Register() override
     {
@@ -142,6 +150,7 @@ void AddSC_stormheim_skold_ashil()
     TC_LOG_INFO("server.loading","Skold-Ashil: distinct shield readings");
     new go_stormheim_engraved_shield();
     TC_LOG_INFO("server.loading","Skold-Ashil: ordered native communion");
+    TC_LOG_INFO("server.loading","Skold-Ashil: faction-specific communion quest lifetime");
     RegisterCreatureAI(npc_stormheim_ascendant_statue);
     RegisterSpellScript(spell_stormheim_communing);
     new player_stormheim_communion_recovery();

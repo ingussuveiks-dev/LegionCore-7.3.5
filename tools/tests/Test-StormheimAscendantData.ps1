@@ -1,4 +1,4 @@
-param([switch]$Live)
+param([switch]$Live,[switch]$BothFactions)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stormheim-ascendant"
@@ -18,6 +18,10 @@ INSERT INTO spell_script_names VALUES(186982,'custom_communion'),(999,'unrelated
 '@
  $sql+=$migration+"`n"+$migration+"`n"
 }
+if($BothFactions -and !$Live){
+ $hordeMigration=Get-Content "$repo/sql/updates/world/2026_10_17_12_stormheim_horde_communion.sql" -Raw
+ $sql+="SELECT 'old-condition',ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ElseGroup FROM conditions WHERE SourceTypeOrReferenceId=15 AND SourceGroup=18543 AND SourceEntry=0;`n"+$hordeMigration+"`n"+$hordeMigration+"`n"
+}
 $sql+=@'
 SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(39092,39122) ORDER BY q.ID;
 SELECT 'objective',QuestID,ID,Type,ObjectID,Amount,StorageIndex,Flags FROM quest_objectives WHERE QuestID=39092 ORDER BY StorageIndex;
@@ -34,6 +38,15 @@ SELECT 'menu',MenuID,TextID FROM gossip_menu WHERE MenuID=18543;
 SELECT 'option',MenuID,OptionID,OptionNpc,OptionBroadcastTextID FROM gossip_menu_option WHERE MenuID=18543;
 SELECT 'spellarea',spell,area,quest_start,quest_start_status FROM spell_area WHERE quest_start=39092;
 '@
+if($BothFactions){
+ $sql=$sql.Replace('q.ID IN(39092,39122)','q.ID IN(39092,39122,39155,38882)').Replace('WHERE QuestID=39092 ORDER BY','WHERE QuestID IN(39092,39155) ORDER BY').Replace('quest IN(39092,39122)','quest IN(39092,39122,39155,38882)').Replace('quest=39092;','quest IN(39092,39155);').Replace('id IN(94393,95804,95921)','id IN(94393,95804,95921,95611,94228)')
+}
+if($BothFactions -and !$Live){$sql+=@"
+DELETE FROM conditions WHERE SourceTypeOrReferenceId=15 AND SourceGroup=18543 AND SourceEntry=0 AND ElseGroup=1;
+INSERT INTO conditions(SourceTypeOrReferenceId,SourceGroup,SourceEntry,ElseGroup,ConditionTypeOrReference,ConditionValue1,Comment) VALUES(15,18543,0,2,9,39155,'custom');
+$hordeMigration
+SELECT 'horde-custom-guard',COUNT(*) FROM conditions WHERE SourceTypeOrReferenceId=15 AND SourceGroup=18543 AND SourceEntry=0 AND ElseGroup=1;
+"@}
 if(!$Live){$sql+=@"
 SELECT 'preserved-binding',COUNT(*) FROM spell_script_names WHERE ScriptName IN('custom_communion','unrelated');
 SELECT 'unrelated',COUNT(*) FROM creature_template c JOIN saved_creature_template s ON s.entry=c.entry WHERE c.entry=95804 AND c.ScriptName=s.ScriptName;
@@ -58,7 +71,14 @@ foreach($r in @(
  "statue`t94393`t18543`t1`tSmartAI`tnpc_stormheim_ascendant_statue`t70980",
  "spellarea`t100044`t7736`t39092`t74"
 )){if($rows -notcontains $r){throw "Native shrine/statue contract changed: $r"}}
-if(@($rows | Where-Object {$_ -like "condition`t*"}).Count -ne 5){throw 'Unexpected communion option conditions'}
+$conditionCount=@($rows | Where-Object {$_ -like "condition`t*"}).Count
+if($conditionCount -ne 5 -and $conditionCount -ne 10){throw 'Unexpected communion option conditions'}
+if($BothFactions -and $conditionCount -ne 10){throw 'Shared statue missing Horde conditions'}
+if($BothFactions){foreach($r in @("quest`t39155`t35651592`t262144`t234881970`t0`t38882`t38878`t38882`t0`t0`t0","objective`t39155`t279018`t2`t242994`t1`t0`t0","objective`t39155`t279019`t2`t242995`t1`t1`t0","objective`t39155`t279020`t2`t242996`t1`t2`t0","objective`t39155`t279021`t2`t242998`t1`t3`t0","objective`t39155`t279022`t0`t94477`t1`t4`t2","starter`t95611`t39155","starter`t94228`t38882","ender`t94228`t39155")){if($rows -notcontains $r){throw "Horde communion contract changed: $r"}}}
+if($conditionCount -eq 10){
+ foreach($r in @("condition`t9`t0`t39155`t0`t0`t0`t1")+(@(242994,242995,242996,242998) | ForEach-Object {"condition`t41`t0`t39155`t$_`t1`t0`t1"})){if($rows -notcontains $r){throw "Invalid Horde OR branch: $r"}}
+}
+if($BothFactions -and !$Live -and $rows -notcontains "horde-custom-guard`t0"){throw 'Horde conditions replaced custom menu logic'}
 if(!$Live){foreach($r in @("preserved-binding`t2","unrelated`t1","custom-script`t1","custom-legacy`t2","custom-conditions`t0")){if($rows -notcontains $r){throw 'Communion migration overwrote custom/unrelated data'}}}
 $sql="SELECT 'spell',COUNT(*) FROM spell_effect WHERE SpellID IN(186982,186965,187780,186964,186972); SELECT 'misc',COUNT(*) FROM spell_misc WHERE SpellID IN(186982,186965,187780,186964,186972); SELECT 'visual',COUNT(*) FROM spell_x_spell_visual WHERE SpellID IN(186982,186965,187780,186964,186972); SELECT 'lock',COUNT(*) FROM ``lock`` WHERE ID=43; SELECT 'text',ID,LENGTH(Text)+LENGTH(Text1) FROM broadcast_text WHERE ID IN(96206,96207,96136);"
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^HotfixDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
