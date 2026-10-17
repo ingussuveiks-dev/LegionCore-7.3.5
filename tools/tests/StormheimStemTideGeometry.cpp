@@ -26,6 +26,12 @@ static float Distance(float const* a, float const* b)
 #define NAV_INTERACTION_RADIUS 6
 #define NAV_INTERACTION_ANGLES 16
 #endif
+#ifndef NAV_INTERACTION_VERTICAL_EXTENT
+#define NAV_INTERACTION_VERTICAL_EXTENT 4
+#endif
+#ifndef NAV_SOURCE_INTERACTION
+#define NAV_SOURCE_INTERACTION(root,center,point) (Distance(center,point)<=5)
+#endif
 
 int main(int argc, char** argv)
 {
@@ -75,14 +81,14 @@ int main(int argc, char** argv)
         {
             float a=angle*6.283185307f/NAV_INTERACTION_ANGLES;
             float probe[3]={points[i][0]+radius*std::sin(a),points[i][1],points[i][2]+radius*std::cos(a)};
-            float search[3]={1.5f,4,1.5f}, nearest[3]={};
+            float search[3]={1.5f,NAV_INTERACTION_VERTICAL_EXTENT,1.5f}, nearest[3]={};
             dtPolyRef ref=0;
             // Probe layers separately. An invalid liquid polygon below land
             // must not hide a valid ground approach at the same XY position.
             dtQueryFilter nearestFilter=filter;
             nearestFilter.setIncludeFlags(terrain?NAV_WATER:NAV_GROUND);
             auto status=query.findNearestPoly(probe,search,&nearestFilter,&ref,nearest);
-            if (Complete(status) && ref && (i==0?Distance(nearest,points[i])<=5:NAV_TARGET_INTERACTION(root,points[i],nearest)) &&
+            if (Complete(status) && ref && (i==0?NAV_SOURCE_INTERACTION(root,points[i],nearest):NAV_TARGET_INTERACTION(root,points[i],nearest)) &&
                 (!swim || i==0 || surfaces.Check(nearest,points[i],false)) && seen.insert(ref).second)
             {
                 Approach approach;

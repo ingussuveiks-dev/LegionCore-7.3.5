@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    39385,
+    39154,
+    38878
+  ],
+  "client_verified": false,
+  "status": "39385 stationary detonator refresh and deterministic native summon destination repaired; native39385 ->39154 ->38878 prerequisite/reward handoff checked. Client gameplay and visual confirmation remain pending.",
+  "findings": [
+    "Native KillCreditGO updates243455/amount3 but does not reevaluate partial spell_area conditions. Native Player::Update only refreshes area spells on actual area change or a separately forced update. The regression executes the original unbound GO path: three uses save3/3, no128287 appears, and manual SetQuestUpdate creates it. This is an executable code regression, not a reported client reproduction.",
+    "189152 is a CREATE_ITEM spell, not an aura or extra-action button: it creates128287. Its source17 conditions are conjunctive group0: condition41 checks quest39385/GO243455 >=3, and negative condition2 prevents creation while128287 is already in carried inventory. Existing spell_area7773/quest39385/autocast/incomplete status is retained.",
+    "The item uses189134, effect28 SUMMON95409/properties719, target46. There is no Source13 entry filter or fixed spell_target_position. The complete native target46 selector fails on an empty search and can choose an unrelated unit when no Unit referer is supplied. A supplied referer becomes its destination before grid search. The repair pins that referer and initial destination to the caster.",
+    "Native target46 is OBJ_AND_DEST/referenceDEST/checkENTRY and its explicit mask is35394, including Unit/destination flags. The initial investigation assumption that this mask was0 and self targets were stripped was rejected by the native C++ catalog. SpellTargetRestrictions has no nonzero target mask for189134; this does not erase the mask derived from the effect. No core mask change was made.",
+    "The actual controller95409 SmartAI JUST_SUMMONED54 -> action33/credit95412 -> owner-or-summoner23 is preserved. Unit::GetAnyOwner selects a TempSummon summoner; WorldObject::SummonCreature passes the original player into Map::SummonCreature. Native action33 retains group credit. The final credit is not awarded from the cast check or a summon attempt.",
+    "39385 has mandatory GO279315/243455/amount3/storage0 and monster279319/95412/amount1/storage1/flags2.39154 has no objectives and may complete on native acceptance, but requires rewarded39385 and gates38878 until rewarded. Source93603, end94227 and next source94227/ender95611 remain unchanged.",
+    "243455 type10 Data0=1691, Data1=0, Data2=0, Data10=0, Data14=51667: Data14 is BroadcastText openTextID, not an explosion spell. Native GO credit,3-second public busy/autoclose behavior and the aggregate3-use semantics are preserved. The quest has no per-spawn persistence and no new distinct-GO requirement was invented.",
+    "Alternate starter243454 is type2. Its Data1=19413 is the questGiver field, not a PlayerCondition or gossip menu: native questgiver.gossipID isData3=0 and conditionID1 isData10=0. The existing gameobject_queststarter39385 and prop243456 remain unchanged. Outdoor Nathanos93603 already uses npc_stormheim_fleet_actor, which delegates its non-map1475 behavior; it was not replaced."
+  ],
+  "implementation": [
+    "Exact three outdoor DB127738/127739/127740 GO243455 uses enqueue a1ms quest-lifetime callback before returningfalse to native goober Use. Refresh runs after native GO credit, requires a living in-world Horde player on1220/zone7541/area7773 with3/3 and no final credit, checks carried+bank128287, then calls native SetQuestUpdate. No direct item or credit grant is scripted.",
+    "A1-second quest-lifetime login callback retries saved3/3 state after world/inventory entry. Callbacks capture GUIDs; abandonment/reacceptance cancels the old lifetime. The detonator cast also captures and checks its quest lifetime across the1.5-second cast, validates actual cast item128287 and current quest/area/goals, and replaces unrelated selected Unit/destination data with the player.",
+    "Migration13 guards the original GO/objectives/spell_area, existing script ownership and absence of custom targeting. It binds only GO243455 and spell189134. It does not edit native item/effect/visual data, controller AI, actor positions, phase rows, inventory or character saves."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimGift.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Actual new GO/spell/login code plus extracted native goober, quest update, source17 conditions2/41, complete target46 selector, SAI owner23/action33, group credit and quest prerequisite/next/completion methods. Old stationary failure, all six planting orders, inventory/bank suppression, full-bag retry, late/invalid states, abandon/reaccept lifetime cancellation, failed-summon/no-credit, duplicate-credit cap, native group behavior and39385->39154->38878 handoffs. Canonical registrations and actual scripts.lib final-link freshness pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGiftData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Actual World quests/goals/links/givers/spawns, source17 conjunction including negative item condition, untouched native controller and targets, scoped repeated SQL replay/custom-script preservation. Live bindings after backed-up migration pass. Effect/misc/item/item-effect/target-restriction Hotfix overrides absent."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGiftCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Typed native C++ DB2 reader validates128287 on-use189134, create-item189152, effect28/target46/95409/719,1500ms cast,500yd range,60000ms summon duration, stack10/maxCount0, visual link48812, GO model8586/file126022 and chapter137 orders2/3. Five complete supported walking/water surface interaction corridors pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHordeShieldsCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Default geometry helper retains its4yd vertical probe and5yd source behavior. Existing both-faction DB2/model/floor and seven Horde shield/delivery corridors pass; prior NPC-origin1.1404yd offset remains explicitly retained in that audit."
+    },
+    {
+      "command": "Release worldserver+bnetserver, canonical startup/shutdown0",
+      "result": "PASS",
+      "coverage": "No global OutDir override; deployed to build-extractors/bin/Release, fresh actual scripts.lib input, all Gift registrations, ready, exit0 and empty DBErrors/stderr. No server left running."
+    }
+  ],
+  "geometry": {
+    "original_probe": [
+      "route 2370.99 1838.8 30.6481 -> 2427.45 1653.27 -2.90057",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2430.47,1652.28,0.0251312 through 40 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=217.641yd.",
+      "terrain polygons ground=28 water=12 magma/slime=0",
+      "endpoint centerDistance=4.32248",
+      "endpoint surfaceZ=0.0251312 floor=-65.3069 terrain=-65.3069 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0251312 staticLOS=0 requireLOS=0 PASS",
+      "corner 0 2370.99 1838.8 30.6918",
+      "corner 1 2380 1833.33 30.6918",
+      "corner 2 2406.13 1786.13 10.1585",
+      "corner 3 2406.93 1784.27 9.89179",
+      "corner 4 2409.33 1696.8 0.0251312",
+      "corner 5 2410.67 1685.33 0.0251312",
+      "corner 6 2432 1664 0.0251312",
+      "corner 7 2435.73 1662.67 0.0251312",
+      "corner 8 2436.8 1661.07 0.0251312",
+      "corner 9 2437.07 1658.4 0.0251312",
+      "corner 10 2430.47 1652.28 0.0251312",
+      "exit=0",
+      "route 2427.45 1653.27 -2.90057 -> 2396.54 1637.76 -5.11749",
+      "FAIL: approaches (3,0).",
+      "exit=6",
+      "route 2396.54 1637.76 -5.11749 -> 2402.16 1659.65 -4.54072",
+      "FAIL: approaches (0,0).",
+      "exit=6",
+      "route 2402.16 1659.65 -4.54072 -> 2370.99 1838.8 30.6481",
+      "FAIL: approaches (0,25).",
+      "exit=6",
+      "route 2370.99 1838.8 30.6481 -> 2612.2 1740.14 16.6921",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2612.2,1740.14,15.904 through 63 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 15 corners, length=295.199yd.",
+      "terrain polygons ground=49 water=14 magma/slime=0",
+      "endpoint centerDistance=0.788054",
+      "endpoint surfaceZ=15.904 floor=15.5517 terrain=14.2938 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.352351 staticLOS=1 requireLOS=0 PASS",
+      "corner 0 2370.99 1838.8 30.6918",
+      "corner 1 2397.33 1826.93 37.6251",
+      "corner 2 2432 1826.4 14.4251",
+      "corner 3 2436 1826.13 13.6251",
+      "corner 4 2442.13 1823.2 13.3585",
+      "corner 5 2460.53 1805.07 3.75846",
+      "corner 6 2479.2 1796 0.0251312",
+      "corner 7 2496 1792 0.0251312",
+      "corner 8 2538.67 1770.67 0.0251312",
+      "corner 9 2581.33 1749.33 18.9585",
+      "corner 10 2598.67 1729.6 14.4251",
+      "corner 11 2602.67 1729.07 14.4251",
+      "corner 12 2607.47 1728.8 14.4251",
+      "corner 13 2608.8 1730.93 14.4251",
+      "corner 14 2612.2 1740.14 15.904",
+      "exit=0"
+    ],
+    "origin_floors": [
+      "npc 293893 Z=30.6481 floor=30.5649 terrain_area=7698 PASS",
+      "object 127738 Z=-2.90057 floor=-2.1583 terrain_area=7541 PASS",
+      "object 127739 Z=-5.11749 floor=-5.22409 terrain_area=7773 PASS",
+      "object 127740 Z=-4.54072 floor=-4.19322 terrain_area=7541 PASS",
+      "object 115409 Z=1.66926 floor=1.28719 terrain_area=7773 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "surface_routes": [
+      "route 2370.99 1838.8 30.6481 -> 2427.45 1653.27 -2.90057",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2430.47,1652.28,0.0251312 through 40 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=217.641yd.",
+      "terrain polygons ground=28 water=12 magma/slime=0",
+      "endpoint centerDistance=4.32248",
+      "endpoint surfaceZ=0.0251312 floor=-65.3069 terrain=-65.3069 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0251312 staticLOS=0 requireLOS=0 PASS",
+      "route 2427.45 1653.27 -2.90057 -> 2396.54 1637.76 -5.11749",
+      "PASS: Source approach 2430.47,1652.28,0.0251312 -> target approach 2395.85,1634.03,0.0251312 through 5 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=39.8459yd.",
+      "terrain polygons ground=0 water=5 magma/slime=0",
+      "endpoint centerDistance=6.3898",
+      "endpoint surfaceZ=0.0251312 floor=-62.3351 terrain=-62.3351 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0251312 staticLOS=0 requireLOS=0 PASS",
+      "route 2396.54 1637.76 -5.11749 -> 2402.16 1659.65 -4.54072",
+      "PASS: Source approach 2396.54,1637.76,0.0251312 -> target approach 2402.16,1659.65,0.0251312 through 3 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 2 corners, length=22.5999yd.",
+      "terrain polygons ground=0 water=3 magma/slime=0",
+      "endpoint centerDistance=4.56585",
+      "endpoint surfaceZ=0.0251312 floor=-4.19322 terrain=-43.6665 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0251312 staticLOS=1 requireLOS=0 PASS",
+      "route 2402.16 1659.65 -4.54072 -> 2370.99 1838.8 30.6481",
+      "PASS: Source approach 2403.12,1663.22,0.0251312 -> target approach 2370.99,1838.8,30.6918 through 36 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=189.78yd.",
+      "terrain polygons ground=33 water=3 magma/slime=0",
+      "endpoint centerDistance=0.0436878",
+      "endpoint surfaceZ=30.6918 floor=30.5649 terrain=29.9094 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126841 staticLOS=1 requireLOS=0 PASS",
+      "route 2370.99 1838.8 30.6481 -> 2612.2 1740.14 16.6921",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2612.2,1740.14,15.904 through 63 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 15 corners, length=295.199yd.",
+      "terrain polygons ground=49 water=14 magma/slime=0",
+      "endpoint centerDistance=0.788054",
+      "endpoint surfaceZ=15.904 floor=15.5517 terrain=14.2938 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.352351 staticLOS=1 requireLOS=0 PASS"
+    ],
+    "diagnostic_resolution": "The stock helper searched only +/-4yd vertically and required the source center within5yd. Two native GO origins are4.54/5.12yd underwater, so that probe returned approaches(3,0)/(0,0)/(0,25); these raw failures are retained. GiftApproach searches +/-8yd and applies the extracted native 3D interaction distance and physical supported surface test to both endpoints. This expands candidate discovery, not the permitted interaction distance. Existing default probes are unchanged.",
+    "limits": "Complete surface corridors contain40/5/3/36/63 ground/water polygons. All endpoints are supported at water or native floor height and within conservative native interaction range (the largest selected center distance6.3898yd includes native player/object reach). Some GO-origin static rays are blocked; native GO interaction does not add that book/model-origin ray gate. This does not prove rendered clicking, body clearance, vessel traversal or a fully submerged3D swimming path, and it does not change/rebuild runtime navmesh or move objects. Live area7773 inside the wreck remains a client check."
+  },
+  "boundaries": [
+    "Casting, bag capacity/storage, ObjectAccessor/grid lookup, world map/phase, SAI event selection and summon creation/ownership are fixtures in the extracted regression. Actual script/native branches and typed data are exercised; the whole live spell engine/packet/client path is not.",
+    "Caster-centered controller placement makes a targetless or unrelated-selected item use deterministic. No retail capture establishes extra ship-wide explosion choreography; native visual48812 is retained and only its reference is checked. Do not call the visual client-verified.",
+    "A full bag can still reject the native CreateItem. Freeing space plus another completed native planting use or area/relog refresh retries; no continuous inventory polling was introduced. Actual clickability/sparkles after3/3 and bag-full messaging remain client checks.",
+    "Native group sharing of95412 remains intentional preservation. Group members still need their own GO3/3 for completion; an existing shared final credit can allow native completion when their third GO is credited. No new per-spawn use cap or personal-credit rewrite was introduced.",
+    "Actual zone/area transitions, logout/save/load, controller lifetime, template/client condition admission and UI inventory update are not established by startup. Existing shield/statue/movie and prior quest audit client checks remain pending."
+  ],
+  "pending_client_checks": [
+    "Horde39385: accept from Nathanos and alternate explosive starter, swim/reach all three native planting GOs, verify3/3 and immediate128287 inventory update without leaving the area.",
+    "Use detonator with no selected target and an unrelated selected unit, stay in area through the1.5s cast, confirm native visual/controller/95412 exactly once and quest turn-in. Check failed/cancelled cast, pet/group presence, repeat use, bag full/free retry, bank-held item and abandon/reaccept/relog.",
+    "Reward39385 at93603, accept39154, reach actual phase-visible94227, reward and accept38878; retain the separate six shield readings/recovery, communion and finale client checklist. Inspect actual underwater area7773 and live interaction/visibility; surface nav diagnostics are not that test."
+  ],
+  "migration": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-gift\\20261017-145440",
+    "state": "RELEASED",
+    "migration": "2026_10_17_13_stormheim_gift.sql",
+    "sha1": "657F9127EE66B09C2BA667EE6E763631FC03DFEE"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "de39fbca499d777e9a21012a2ecc10b184b9ac6d12e3ec9f5271b6ef5f7476a0",
+    "bnetserver_sha256": "6ec5d5aabc994645ee14798b9467b110d1b0ade0e51a335710e30b12ba1251dc",
+    "scripts_lib_sha256": "e49d84d4c3e18c75b1bded5af3dcc0b78a6457e13107042a7424ac5477f11b17",
+    "startup": "build-extractors/runtime-test/stormheim-gift/startup-20261017-145734",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_gift.cpp": "c2bf9c1113dbc61a1dc55da295d9044a6a2b0aa993b2bb9adb1a115572d84b8a",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "b716ff451957fdfc6d25cb42512fe105acffc414cc98cd3b8c6d074f94221c86",
+    "sql/updates/world/2026_10_17_13_stormheim_gift.sql": "019f497a2f2fb668d755bae17fa77027aea3a4071c1c832b02dc04e8d829f964",
+    "tools/tests/Test-StormheimGift.ps1": "00bf81387d4a2df3fb1ed40643dff9ce116eff4e03c673b46322e039c505bbee",
+    "tools/tests/StormheimGiftTest.cpp": "faf1c8028d352e2207286f9b8118b4e93497631525b810e7bd47117720fe894c",
+    "tools/tests/Test-StormheimGiftData.ps1": "d17761b97c867708c96091c7bec69dc4ecd5e5ce76ab17c791d55c351c1a8167",
+    "tools/tests/Test-StormheimGiftCatalog.ps1": "043a229e341f149aa2750a69a233d8a7949548d8914412d332df98905b5bbf74",
+    "tools/tests/StormheimGiftCatalog.cpp": "869dd8fa7703af9969d2b1381cbc724b348131ec03e3536bbda1e6e49e6d439c",
+    "tools/tests/StormheimGiftApproach.cpp": "417d715895d19490da6b6843c15edd185951fda01ff64255db7ad2d4b5384687",
+    "tools/tests/StormheimStemTideGeometry.cpp": "61376d61665306243de351172e96788a9c70f323cc99ae4a3207c5675b86276d"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-gift/world.tsv": "bf4ed1552a18c0de9625b684dc96ddba79643dadda796f3591d18744c734decf",
+    "build-extractors/runtime-test/stormheim-gift/world-live.tsv": "af5f0d71ce3954de9b4bccacbd711e8d7d16c6662cda62035d4b89a5e83fb09a",
+    "build-extractors/runtime-test/stormheim-gift/hotfix.tsv": "bb7804578e1596475f7d06caecffaa5a81c182c6af1417c5775c7bbed0cb4d1a",
+    "build-extractors/runtime-test/stormheim-gift/native-lines.txt": "a4717766159fdc1dc90913973a3823fc82d3246a94c1e10f201907d4dd0f4345",
+    "build-extractors/runtime-test/stormheim-gift/geometry.txt": "f004ee51f5d4d3c90bb9da689885b5970bc452e608eeef12270f906928f4d2c6",
+    "build-extractors/runtime-test/stormheim-gift/origin-floors.txt": "d85202667df635d23b22c6f4f94ea0b392b5ccb825281ac232e3de0082f0664f",
+    "build-extractors/runtime-test/stormheim-gift/surface-geometry.txt": "e90ddb30fa238895e62badb3b883403eb688ce83efa02aa8fd505dd422d37d90"
+  },
+  "logs_sha256": {
+    ".codex/gift-test-final.log": "7c06729e6901e9532f93f731f7a14872d72478069a26700cda96a299c902defc",
+    ".codex/gift-catalog.log": "45cabfa28c9471ce4d863aa8b4197240d365f9e11b62d38a352bda5a53a7363a",
+    ".codex/gift-live.log": "5cd412e7f70f724a44972fe6dab0c5cfd8b9773e6c6abed1c14a3fdd8871a7df",
+    ".codex/gift-default-geometry-regression.log": "c44acf0db73d854c14e733d329f93f4fdcdb97c0c2ad8faf676f773661170b7e",
+    ".codex/gift-build-final.log": "4bb0a0f10ae84ca6855c82ead40ccbf77d1a5fc61e2f04354f1e6bbc5e4318fb",
+    ".codex/gift-startup.log": "01daa160dec1c5c6776706c9b442bfad91f8c0d29974fdcc057c7b18d621215d"
+  }
+}
