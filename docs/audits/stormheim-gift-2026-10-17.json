@@ -1,5 +1,6 @@
 {
   "date": "2026-10-17",
+  "prerequisite_followup_39153": "stormheim-dilemma-2026-10-17.json completes the predecessor set: rewarded38873 OR39153 OR39385 admits39154. Earlier prose and the two-branch followup below reflect narrower fixtures; original evidence is retained. Current GiftData asserts the exact three incoming IDs and GiftTest executes each alternative.",
   "prerequisite_followup": "stormheim-dreadwake-2026-10-17.json expands the original scoped quest fixture: native NextQuestID38873 also feeds39154. Rewarded38873 OR39385 admits39154;39385 is not universally mandatory. Original evidence/hashes below describe commit45e53f9f's restricted fixture and are retained. GiftData/GiftTest now load38873 and regress both alternatives.",
   "quests": [
     39385,

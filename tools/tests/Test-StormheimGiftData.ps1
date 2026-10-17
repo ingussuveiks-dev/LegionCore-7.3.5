@@ -15,7 +15,8 @@ CREATE TEMPORARY TABLE saved_spell_script_names LIKE spell_script_names;
 CREATE TEMPORARY TABLE spell_script_names LIKE saved_spell_script_names;
 '@;$sql+=$migration+"`n"+$migration+"`n"}
 $sql+=@'
-SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,38873,39385,39154,38878) ORDER BY q.ID;
+SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,38873,39153,39385,39154,38878) ORDER BY q.ID;
+SELECT 'incoming',ID FROM quest_template_addon WHERE NextQuestID=39154 ORDER BY ID;
 SELECT 'objective',QuestID,ID,Type,ObjectID,Amount,StorageIndex,Flags FROM quest_objectives WHERE QuestID IN(39385,39154) ORDER BY QuestID,StorageIndex;
 SELECT 'starter',id,quest FROM creature_queststarter WHERE quest IN(39385,39154,38878);
 SELECT 'ender',id,quest FROM creature_questender WHERE quest IN(39385,39154,38878);
@@ -45,6 +46,7 @@ try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mys
 $rows=@($rows | ForEach-Object {$_.ToString().TrimEnd([char[]]"`r`n")});$rows | Set-Content "$out/world$(if($Live){'-live'}).tsv"
 foreach($r in @("quest`t39385`t38928392`t8192`t234881970`t0`t39154`t38872`t39154`t0`t0`t743","quest`t39154`t33554440`t0`t234881970`t0`t38878`t39385`t38878`t0`t0`t0","objective`t39385`t279315`t2`t243455`t3`t0`t0","objective`t39385`t279319`t0`t95412`t1`t1`t2","starter`t93603`t39385","starter`t93603`t39154","ender`t93603`t39385","ender`t94227`t39154","starter`t94227`t38878","ender`t95611`t38878","go-starter`t243454`t39385","spellarea`t189152`t7773`t39385`t1`t8","condition`t41`t39385`t243455`t3","binding`t1","summon-credit`t54`t33`t95412`t23","controller`t95409`tSmartAI`t","custom-targets`t0","target-position`t0")){if($rows -notcontains $r){throw "Gift chain contract changed: $r"}}
 foreach($r in @("condition-full`t0`t2`t0`t128287`t1`t0`t1","condition-full`t0`t41`t0`t39385`t243455`t3`t0")){if($rows -notcontains $r){throw 'Gift creator source17 conjunction changed'}}
+if((@($rows | Where-Object {$_ -like "incoming`t*"}) -join ',') -ne "incoming`t38873,incoming`t39153,incoming`t39385"){throw '39154 predecessor set changed'}
 if(!$Live){foreach($r in @("protected`t2","custom-preserved`t1","custom-bindings`t2")){if($rows -notcontains $r){throw 'Gift migration overwrote custom/protected data'}}}
 $sql="SELECT 'effect',COUNT(*) FROM spell_effect WHERE SpellID IN(189134,189152); SELECT 'misc',COUNT(*) FROM spell_misc WHERE SpellID IN(189134,189152); SELECT 'item',COUNT(*) FROM item_sparse WHERE ID=128287; SELECT 'item-effect',COUNT(*) FROM item_effect WHERE ItemID=128287; SELECT 'targets',COUNT(*) FROM spell_target_restrictions WHERE SpellID=189134;"
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^HotfixDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')

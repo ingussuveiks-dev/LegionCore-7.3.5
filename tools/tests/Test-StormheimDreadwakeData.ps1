@@ -22,7 +22,7 @@ CREATE TEMPORARY TABLE conditions LIKE saved_conditions;
 INSERT INTO conditions SELECT * FROM saved_conditions;
 '@;$sql+=$migration+"`n"+$migration+"`n"}
 $sql+=@'
-SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,38873,39385,39154,38878) ORDER BY q.ID;
+SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,38873,39153,39385,39154,38878) ORDER BY q.ID;
 SELECT 'objective',QuestID,ID,Type,ObjectID,Amount,StorageIndex,Flags FROM quest_objectives WHERE QuestID IN(38872,38873,39154) ORDER BY QuestID,StorageIndex;
 SELECT 'starter',id,quest FROM creature_queststarter WHERE quest IN(38872,38873,39385,39154,38878) ORDER BY quest,id;
 SELECT 'ender',id,quest FROM creature_questender WHERE quest IN(38872,38873,39154) ORDER BY quest,id;
@@ -48,7 +48,8 @@ SELECT 'custom-conditions',COUNT(*) FROM conditions WHERE SourceTypeOrReferenceI
 $rows=Read-Data World $sql "world$(if($Live){'-live'})"
 foreach($r in @("quest`t38872`t33554440`t0`t234881970`t0`t38873`t0`t38873`t0`t0`t0","quest`t38873`t33554440`t0`t234881970`t0`t39154`t38872`t39154`t0`t0`t0","objective`t38872`t279665`t0`t93624`t1`t0`t28","objective`t38873`t278644`t0`t95391`t4`t0`t0","incoming`t38873","incoming`t39385","starter`t93624`t38872","ender`t93603`t38872","starter`t93603`t38873","ender`t93603`t38873","starter`t93603`t39154","ender`t94227`t39154","menu`t18657`t0`t0`t97471`t0","condition`t0`t9`t0`t38872`t0`t0`t0","condition`t1`t28`t0`t38872`t0`t0`t0","mount`t87442`t60307","mount`t109680`t60307","click`t95212`t189100`t1`t0`t1","smart`t95212`t0`t0`t8`t100`t0`t189100`t11`t189176`t11`t95436`t200`t","cullen-smart`t0","extra-conditions`t0")){if($rows -notcontains $r){throw "Dreadwake contract changed: $r"}}
 if(!($rows | Where-Object {$_ -like "actor`t93624`t18657`t3`t0`t68`t131458`t2048`t`tnpc_stormheim_dreadwake_cullen`t65132`t0`t0"})){throw 'Cullen binding or flags changed'}
+if((@($rows | Where-Object {$_ -like "incoming`t*"}) -join ',') -ne "incoming`t38873,incoming`t39153,incoming`t39385"){throw '39154 predecessor set changed'}
 if(!$Live){foreach($r in @("protected`t2","custom-preserved`t1","custom-conditions`t3")){if($rows -notcontains $r){throw 'Dreadwake migration damaged custom/protected data'}}}
 $h=Read-Data Hotfix "SELECT 'effects',COUNT(*) FROM spell_effect WHERE SpellID IN(189100,189176); SELECT 'taxi',COUNT(*) FROM taxi_path WHERE ID=5262; SELECT 'taxinodes',COUNT(*) FROM taxi_nodes WHERE ID=1722; SELECT 'taxipoints',COUNT(*) FROM taxi_path_node WHERE PathID=5262;" 'hotfix'
 foreach($r in @("effects`t0","taxi`t0","taxinodes`t0","taxipoints`t0")){if($h -notcontains $r){throw 'Unexpected native Dreadwake Hotfix overlay'}}
-'PASS:38872/38873 goals/givers, both39154 incoming alternatives, native catapult click/SmartAI, scoped Cullen migration repeat/custom preservation and Hotfix absence.'
+'PASS:38872/38873 goals/givers, all three39154 incoming alternatives, native catapult click/SmartAI, scoped Cullen migration repeat/custom preservation and Hotfix absence.'
