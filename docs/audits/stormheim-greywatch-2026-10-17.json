@@ -1,0 +1,609 @@
+{
+  "date": "2026-10-17",
+  "area": "Alliance Greywatch / Stormheim",
+  "quests": [
+    39060,
+    39061,
+    39472
+  ],
+  "handoff": 39062,
+  "client_verified": false,
+  "status": "Code/data audit and scoped39060 visual repair complete; client interaction/rendering pending.",
+  "confirmed_failure": {
+    "39060": "Live SmartAI for94340/94341/94342 only awarded33 credit on186745. Native186745 is destination-area-entry8 dummy3, radius5, no visual link or trigger. No spell script/dummy/condition supplied186746/186747, so successful credit did not execute the authored torch/fire presentation.",
+    "evidence": "Native C++ DB2 reader confirms186746 DUMMY/nearby-entry38, speed7, visual48032, and186747 DUMMY aura4/nearby-entry38, duration6=600000ms, visual48033. Raw WDC1 relationships and read-only CASC models establish the actual torch/fire assets, not only matching spell names."
+  },
+  "implementation": [
+    "186745 effect-hit handler launches186746 only for active39060 players and the three exact outdoor map1220/zone7541 DB credit actors. Existing SmartAI33 credit and shared10000ms repeat timer remain unchanged and independent of cosmetic cast failure.",
+    "186746 captures the exact explicit actor and quest ScriptLifetime. Its native nearby-entry38 selector is replaced with that same validated actor; a closer player/pet/bystander cannot steal the projectile. Impact adds186747 to the exact actor, with final quest COMPLETE allowed because745 credit may finish before missile arrival.",
+    "Abandon/reaccept, expired lifetime, wrong map/instance/phase, dead/missing actor and copied DB identity suppress cosmetic impact. A currently burning public actor is not stacked/refreshed by another caster. Native600000ms aura expiration is retained; no actor/GO despawn, movement or quest progress depends on it.",
+    "Migration07 appends two script bindings, preserving other bindings. Isolated temporary-table replay twice retains custom/unrelated bindings and exactly four resulting rows. Live migration registered RELEASED after scoped private backup."
+  ],
+  "unchanged_verified_contracts": {
+    "39060": {
+      "starter_ender": 94318,
+      "predecessor_rewarded": 39059,
+      "torch": 127295,
+      "provided_count": 1,
+      "native_acceptance_call": "Player::AddQuest calls GiveQuestSourceItem then AdjustQuestReqItemCount; inspected. Full quest acceptance/inventory allocation is not executed by the fixtures.",
+      "objectives": [
+        [
+          94340,
+          292386,
+          0
+        ],
+        [
+          94341,
+          292849,
+          1
+        ],
+        [
+          94342,
+          292844,
+          2
+        ]
+      ],
+      "cache_objects": [
+        [
+          243339,
+          115298
+        ],
+        [
+          243344,
+          115357
+        ],
+        [
+          243343,
+          115355
+        ]
+      ],
+      "flags": "Generic type5 caches are scenery. The provided item is ground-targeted; ordinary GO Use is not the credit trigger. Three mandatory distinct monster objectives, each amount1."
+    },
+    "39061": {
+      "starter_ender": 94318,
+      "predecessor_rewarded": 39059,
+      "item": 127285,
+      "amount": 1,
+      "loot": [
+        {
+          "entry": 94337,
+          "chance": 13.0615
+        },
+        {
+          "entry": 94338,
+          "chance": 7.0059
+        },
+        {
+          "entry": 109639,
+          "chance": 27.4488
+        },
+        {
+          "entry": 109640,
+          "chance": 17.8233
+        }
+      ],
+      "quest_required": true,
+      "loot_mode": 0,
+      "finding": "All four template loot IDs point to their actual loot entries. This native ordinary loot processor accepts0 without a difficulty filter. No chance/loot-mode change warranted."
+    },
+    "39472": {
+      "starter_go": 243700,
+      "starter_spawn": 115356,
+      "starter_type": 2,
+      "gossip_menu": 19431,
+      "boss": 93987,
+      "boss_spawn": 292797,
+      "objective": 279631,
+      "ender": 94318,
+      "finding": "Native KillRewarder dispatches template Entry93987 plus its secondary94338 credit. Only93987 fulfills this objective, including player-controlled pet kills. No repair warranted."
+    },
+    "handoff": "Native positive incoming NextQuestID links admit39062 after rewarded39060 OR39061 OR39472; explicit Prev39472 does not invent an AND requirement. Genn94318 starts39062; Lorna93779 ends it. Preserve native Alliance mask824181837, unrestricted39472 predecessor and all current links."
+  },
+  "automated_checks": [
+    {
+      "command": "tools/tests/Test-StormheimGreywatchData.ps1 -Live",
+      "result": "PASS",
+      "coverage": "World links/objectives/canonical actor identities, four quest-only drops, native override absence, applied bindings; isolated idempotence/custom-binding preservation."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGreywatch.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Extracted native CheckTarget/explicit target/dead/creature/area predicates with real745 attributes, SmartAI SpellHit/action33/group credit and actual quest handlers; six cache permutations, wrong spell, caps, cooldown retry, group range and pet-invoker rejection. Four native loot Process/Roll/AllowedForPlayer paths, misses, pickup/removal/bank/consumption/reaccept and race/previous/39062 handoff. Native player/pet killer resolution, delayed KillRewarder/template credit, repeated victim, stale callbacks and Genn reward request. Extracted new visual handlers cover exact-target retargeting, final-credit timing, stale lifetime and optional failures; public aura does not stack."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGreywatchCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native packed item/spell/effect/attribute/target/radius/duration/visual-link/model/QuestLine136 reader, five supporting floors and six complete ground navmesh corridors with valid endpoint support/LOS. No partial/exhausted corridor is counted as success."
+    },
+    {
+      "command": "python tools/research/audit_greywatch_torch_visual.py --model-directory .codex/dalaran-wmo --output build-extractors/runtime-test/stormheim-greywatch/visual-chain.json",
+      "result": "PASS",
+      "coverage": "Checked-layout WDC1 parent relationships through visual/events/kits/model attachments/missile/effect names; actual read-only CASC model names, animation records and helper attachment19 at origin."
+    },
+    {
+      "command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver --parallel4",
+      "result": "PASS",
+      "coverage": "Freshly configured new source included, both executables built directly in canonical Release; no global OutDir override. Unique implementation diagnostic/bindings and actual scripts.lib link-input freshness pass."
+    },
+    {
+      "command": "canonical Release startup with isolated logs, then server shutdown0",
+      "result": "PASS",
+      "coverage": "Ready, graceful exit0, DBErrors and stderr0 bytes; script registration diagnostic present. This loads scripts but does not execute a quest cast."
+    }
+  ],
+  "visual_evidence": {
+    "links": [
+      {
+        "ID": 84963,
+        "visual": 48032,
+        "parent": 186746
+      },
+      {
+        "ID": 84964,
+        "visual": 48033,
+        "parent": 186747
+      }
+    ],
+    "visuals": [
+      {
+        "ID": 48032,
+        "missile_set": 4662,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      },
+      {
+        "ID": 48033,
+        "missile_set": 0,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      }
+    ],
+    "events": [
+      {
+        "ID": 110333,
+        "start": 1,
+        "end": 2,
+        "target": 1,
+        "kit": 25527,
+        "parent": 48032
+      },
+      {
+        "ID": 110334,
+        "start": 3,
+        "end": 13,
+        "target": 1,
+        "kit": 16824,
+        "parent": 48032
+      },
+      {
+        "ID": 110336,
+        "start": 7,
+        "end": 8,
+        "target": 2,
+        "kit": 56486,
+        "parent": 48033
+      }
+    ],
+    "kit_effects": [
+      {
+        "ID": 26635,
+        "type": 6,
+        "effect": 5109,
+        "parent": 16824
+      },
+      {
+        "ID": 26636,
+        "type": 5,
+        "effect": 18188,
+        "parent": 16824
+      },
+      {
+        "ID": 26637,
+        "type": 1,
+        "effect": 2109,
+        "parent": 16824
+      },
+      {
+        "ID": 47273,
+        "type": 6,
+        "effect": 8416,
+        "parent": 25527
+      },
+      {
+        "ID": 115607,
+        "type": 2,
+        "effect": 42958,
+        "parent": 56486
+      },
+      {
+        "ID": 115608,
+        "type": 2,
+        "effect": 197940,
+        "parent": 56486
+      }
+    ],
+    "attachments": [
+      {
+        "ID": 42958,
+        "name": 20562,
+        "attachment": 19,
+        "low": 0,
+        "parent": 56486
+      },
+      {
+        "ID": 197940,
+        "name": 20614,
+        "attachment": 19,
+        "low": 0,
+        "parent": 56486
+      }
+    ],
+    "missiles": [
+      {
+        "ID": 4661,
+        "name": 3032,
+        "parent": 4662
+      }
+    ],
+    "effect_names": [
+      {
+        "ID": 20562,
+        "model": 947142,
+        "texture": 0
+      },
+      {
+        "ID": 20614,
+        "model": 983714,
+        "texture": 0
+      },
+      {
+        "ID": 3032,
+        "model": 167130,
+        "texture": 0
+      }
+    ],
+    "models": [
+      {
+        "file": 167130,
+        "name": "TorchSpell",
+        "sha256": "61dc438a61f9bdf9b7c8f989e8d3a11f8d068451ccfc4c2ac9e237de23a9ce41",
+        "animations": [
+          [
+            0,
+            0,
+            333
+          ]
+        ],
+        "attachments": [
+          [
+            1,
+            3,
+            0,
+            0.4467703104019165,
+            0.0,
+            0.001925598829984665
+          ],
+          [
+            2,
+            4,
+            0,
+            0.35081276297569275,
+            0.0,
+            0.003820260288193822
+          ],
+          [
+            3,
+            5,
+            0,
+            0.5361321568489075,
+            0.0,
+            0.0018215355230495334
+          ],
+          [
+            4,
+            6,
+            0,
+            0.6411147713661194,
+            0.0,
+            0.0023754164576530457
+          ]
+        ]
+      },
+      {
+        "file": 947142,
+        "name": "6FX_Fire_SmolderingObject_Doodad",
+        "sha256": "4af624e2df11f06e5ca698d8580f91e4885a4025be1d7ac7ecfbab4ab2e63ded",
+        "animations": [
+          [
+            0,
+            0,
+            3333
+          ]
+        ],
+        "attachments": []
+      },
+      {
+        "file": 983714,
+        "name": "6FX_TorchFire_Doodad",
+        "sha256": "b906b7b9de5d4f7f12a647b1788444582517faf593cb74b880bf8c8a7d82f397",
+        "animations": [
+          [
+            0,
+            0,
+            767
+          ]
+        ],
+        "attachments": []
+      },
+      {
+        "file": 1112735,
+        "name": "Rabbit2",
+        "sha256": "08f0a987f2176e23c06d388040cdd32ab6d0677990de1f10c5c0e9982be4871e",
+        "animations": [
+          [
+            4,
+            0,
+            600
+          ],
+          [
+            5,
+            0,
+            1066
+          ],
+          [
+            0,
+            0,
+            667
+          ],
+          [
+            9,
+            0,
+            1000
+          ],
+          [
+            1,
+            0,
+            1300
+          ],
+          [
+            0,
+            1,
+            1667
+          ],
+          [
+            0,
+            2,
+            1834
+          ],
+          [
+            37,
+            0,
+            800
+          ],
+          [
+            39,
+            0,
+            967
+          ],
+          [
+            38,
+            0,
+            800
+          ],
+          [
+            40,
+            0,
+            800
+          ],
+          [
+            42,
+            0,
+            1000
+          ],
+          [
+            43,
+            0,
+            1000
+          ],
+          [
+            44,
+            0,
+            1000
+          ],
+          [
+            41,
+            0,
+            1667
+          ],
+          [
+            45,
+            0,
+            1000
+          ],
+          [
+            13,
+            0,
+            600
+          ],
+          [
+            16,
+            0,
+            867
+          ]
+        ],
+        "attachments": [
+          [
+            15,
+            35,
+            0,
+            0.00905073992908001,
+            -0.007445316296070814,
+            0.27628111839294434
+          ],
+          [
+            16,
+            36,
+            0,
+            -0.324053019285202,
+            -0.014125368557870388,
+            0.2277410328388214
+          ],
+          [
+            18,
+            20,
+            0,
+            0.0690794587135315,
+            0.0,
+            0.661270797252655
+          ],
+          [
+            19,
+            21,
+            0,
+            -0.0,
+            0.0,
+            0.0
+          ],
+          [
+            20,
+            22,
+            0,
+            0.17895172536373138,
+            0.0,
+            0.5683081746101379
+          ],
+          [
+            21,
+            43,
+            0,
+            0.16976845264434814,
+            0.0757446214556694,
+            0.00010982155799865723
+          ],
+          [
+            22,
+            44,
+            0,
+            0.17577145993709564,
+            -0.08178430050611496,
+            0.030013853684067726
+          ],
+          [
+            34,
+            38,
+            0,
+            -0.007632838562130928,
+            -0.006066320929676294,
+            0.17627787590026855
+          ]
+        ]
+      }
+    ],
+    "db2_sha256": {
+      "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+      "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+      "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+      "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+      "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+      "SpellVisualMissile": "8b935e8de1561fef28e2c952d5e4b5536412601d7eec8a75f9e1cfb28bf733b1",
+      "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+    }
+  },
+  "geometry": {
+    "start": "Genn94318 at2862.65,882.932,79.6042",
+    "results": [
+      "target 2778.67 680.672 103.628",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2778.67,680.672,103.335 through 51 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 10 corners, length=232.836yd.",
+      "endpoint centerDistance=0.293152",
+      "endpoint surfaceZ=103.335 floor=103.545 terrain=103.545 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.210533 staticLOS=1 PASS",
+      "target 2921.11 712.945 85.3764",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2921.11,712.945,85.3432 through 44 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=197.638yd.",
+      "endpoint centerDistance=0.0332184",
+      "endpoint surfaceZ=85.3432 floor=85.2967 terrain=85.2967 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0464478 staticLOS=1 PASS",
+      "target 2732.83 768.535 104.51",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2732.83,768.535,105.207 through 33 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 7 corners, length=189.713yd.",
+      "endpoint centerDistance=0.697113",
+      "endpoint surfaceZ=105.207 floor=105.05 terrain=104.426 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.156731 staticLOS=1 PASS",
+      "target 2826.72 818.351 115.888",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2826.72,818.351,115.646 through 22 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=95.3361yd.",
+      "endpoint centerDistance=0.24157",
+      "endpoint surfaceZ=115.646 floor=115.806 terrain=115.806 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.159203 staticLOS=1 PASS",
+      "target 2816.59 832.215 116.101",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2816.59,832.215,116.15 through 23 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=101.352yd.",
+      "endpoint centerDistance=0.0486832",
+      "endpoint surfaceZ=116.15 floor=116.078 terrain=115.607 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0720825 staticLOS=1 PASS",
+      "target 2788.86 1345.5 67.6698",
+      "PASS: Source approach 2862.65,882.932,80.0117 -> target approach 2788.86,1345.5,67.8654 through 105 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 20 corners, length=495.532yd.",
+      "endpoint centerDistance=0.195595",
+      "endpoint surfaceZ=67.8654 floor=67.5957 terrain=67.5957 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.269669 staticLOS=1 PASS"
+    ],
+    "boundary": "Offline native static VMAP/terrain and Detour evidence, not recorded client locomotion, dynamic obstruction or spawn/combat verification. Every corridor ended within0.70yd of its original center with supporting floor and static LOS. No positions/navmesh were changed."
+  },
+  "test_boundaries": [
+    "World registries, phasing/near/far predicates, packet delivery, cast scheduling/missile movement, aura allocation/expiry, loot ownership/RNG/inventory writes and reconstructed saved quest state are fixtures. Extracted handlers are not an in-game playthrough or a real logout/login database test.",
+    "Native745 explicitly allows dead area targets and CAN_TARGET_NOT_IN_LOS; tests preserve those real attributes rather than asserting invented rejection. Actual search candidate visibility/phasing and SpellHit dispatch remain client/server-engine integration boundaries.",
+    "Native event cooldown recalculation and spell target selection outer dispatch are represented at the extracted boundary, not a fully running SmartAI map. Startup confirms loader admission, not active gameplay.",
+    "Existing native public burn aura lasts600000ms, is cosmetic, and is not removed solely because one player abandons/rewards. Model/animation/socket references are verified, but flame scale, height, missile attachment and timing need client observation."
+  ],
+  "retained_diagnostics": [
+    "Initial native SpellVisual.db2 load crashed the standalone catalog with0xC0000005; DB2Stores.cpp already comments out LOAD_DB2(sSpellVisualStore). The catalog now uses native SpellXSpellVisual, and the checked WDC1 reader separately traces downstream raw layouts/parent relationships. The disabled production loader was not changed or represented as passing.",
+    "Initial check incorrectly expected a direct745 visual. Native reader disproved that expectation and identified the missing746/747 bridge; this became the production repair above.",
+    "A first redirected upstream Built-to-Scale exact-string check reported38337 mismatch although independent SQL and saved TSV matched expected values. The same unmodified upstream checks passed subsequent invocations. No unrelated data/assertions were changed.",
+    "Initial final link could not resolve the new registration before CMake regeneration included the new source. Regeneration and both completed Release builds pass; no incomplete executable was handed off."
+  ],
+  "pending_client_checks": [
+    "Alliance: accept39060/39061 after rewarding39059, receive one Blazing Torch and use its ground-target cursor at each of the three real caches; verify distinct1/1 goals and3/3 completion.",
+    "Observe the actual torch projectile, impact, smolder/fire placement and sustained native burn; confirm no player/pet catches the effect when nearer than the cache, and that shared fire does not prevent another player receiving their own progress.",
+    "Interrupt/retarget a throw, abandon/reaccept during flight, re-enter/relog and retry after cooldown; verify actual source-item replacement/cleanup and saved progress without claiming exact-stage recovery.",
+    "Loot127285 from an actual eligible corpse with quest active, hand it to Genn, and confirm inventory/reward UI. Kill Curseheart directly and by pet, accept39472 from the actual battle plans, then verify Genn handoff39062 and Lorna turn-in. Unsupported Horde acceptance should remain rejected."
+  ],
+  "deployment": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-greywatch\\20261017-124220",
+    "sha1": "DF567216D6C182473EEED04F59D5F02082CF2F44",
+    "state": "RELEASED",
+    "migration": "2026_10_17_07_stormheim_greywatch_torch.sql"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "a179790b941da11343ba884260f458879a9c87c5d6886dfbae0e5d6b8193496b",
+    "bnetserver_sha256": "5abc25a8def1f78b6ef4d08481c24a02a90e2ab7f9caed4c5107c41f0bf0e461",
+    "scripts_lib_sha256": "2e2f7479a3041c2dd521ada57466d320ffe13bb630d29aef486093f721664d92",
+    "startup_logs": "build-extractors/runtime-test/stormheim-greywatch/startup-20261017-124615",
+    "ready": true,
+    "graceful_exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "server_left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_greywatch.cpp": "4c02c21a8d1bddb456c779dfcecfa68043ec921dcb079c7486c7111dce9c10ea",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "ac10d784bfec10a673dd59f5218768eea015f2ace52fc8003f61da2f57c371a7",
+    "sql/updates/world/2026_10_17_07_stormheim_greywatch_torch.sql": "b759d083527c1c16a8cefde405de1a5324f4b52a153bcbcc98175c45f889372b",
+    "tools/tests/StormheimGreywatchCatalog.cpp": "2f2801c091f02fd7341dabe8557535c3f001bb076acd94008165590aaa153a9c",
+    "tools/tests/StormheimGreywatchTest.cpp": "bc5e59309873105ddb4d462aa22a2356fa132951bea2cab42b65edd3a9d17a3d",
+    "tools/tests/StormheimGreywatchVisualTest.cpp": "66b8f323ed506268ea6f99705d0f9f80d142e409e9a645c60e2d58f24b5647db",
+    "tools/tests/Test-StormheimGreywatch.ps1": "a71273c6728c014649828d8f1144943ab8ee3f1ca37381ce82ef863465aa73a2",
+    "tools/tests/Test-StormheimGreywatchCatalog.ps1": "693206be4e8638b3e60faa8540f743a398812c71e57ffcd2976610514ead2604",
+    "tools/tests/Test-StormheimGreywatchData.ps1": "b373c74756f2d6b80c39aa7efa5b4bae390f9d387de2a678c55d27ef2085fec0",
+    "tools/tests/StormheimCurseheartTest.cpp": "0b19cc1113995dd8fd2f399da02994de4548e520cd376ffaa5170faccd46ff87",
+    "tools/tests/StormheimTorchTargets.h": "2e521a78e778e546211f0f94fb73b7e86debe6140f490036a63594433bc13958",
+    "tools/research/audit_greywatch_torch_visual.py": "c571af26dc4b66ccf5f6175ea21ca24b8e448b7cfb0e20f8b024b7ad7b70eae1",
+    "src/server/game/Spells/Spell.cpp": "670d0cc3657ceb6cc4e78d111ef4377a884aefe632290921c8bfdd3dc9567093",
+    "src/server/game/Spells/SpellInfo.cpp": "34938e832279d61675f5eb88f2886888593bdbc567dd6fd122810d455b799c0b",
+    "src/server/game/Entities/Player/Player.cpp": "7967dbbb32b6860d0cf8dd67dde62ccf1a05bd7f527ba1e07a6c40770f99b312",
+    "src/server/game/Entities/Player/KillRewarder.cpp": "e115dcac503e3bb0b9cecf0dd27f5ada6d43428924c72a54fdf04681831c300d",
+    "src/server/game/Entities/Unit/Unit.cpp": "e22f9be94fc5570b969cffe39ce51667bd5672504ef5135ee2278672120057ff",
+    "src/server/game/AI/SmartScripts/SmartScript.cpp": "5418b3d11201a59dd5f3edd0ad05d3504c092c95873f020eb8e136a324a7f1e6",
+    "src/server/game/Globals/QuestData.cpp": "0542879889a7069bf96b3a71bb45aaa560b5ccbe4de5d0b949b17115318c79cb"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-greywatch/world.tsv": "4a9e824dce0ddcd88f0ec0cfd7535a3addd9fece064114c9ac1f9a07dc6791c7",
+    "build-extractors/runtime-test/stormheim-greywatch/hotfix.tsv": "f249947ae51f2799e2d4dbd2c09a370a5c3feb3569d6d998b67ffc10b471ded6",
+    "build-extractors/runtime-test/stormheim-greywatch/migration.tsv": "08614a72ab5b0e02197cb44dd07c0877178d02148e18117239ee32942eeda625",
+    "build-extractors/runtime-test/stormheim-greywatch/native-lines.txt": "e831b81889a0cdebb59125cf53b75c71fd950e79c0b9d821608dd940108741d3",
+    "build-extractors/runtime-test/stormheim-greywatch/floors.txt": "5e1a530520668c0b68898fdb4c6144fbc51e5cb3d59d1ccae74b6c14573acac3",
+    "build-extractors/runtime-test/stormheim-greywatch/geometry.txt": "c24e2b1409c94ceb56b08e6d17481a245c0bd7d6509ce55d9fa0ce69b61357e6",
+    "build-extractors/runtime-test/stormheim-greywatch/visual-chain.json": "cd84eefb7baabf8b73e5295a720d4bbd7a44093dc53536abc4b4100434ce5206"
+  },
+  "next": "Continue native chapter136 with39062 To Skold-Ashil,39063 Shielded Secrets and39092 Becoming the Ascendant; separate code/data audit, preserving these client-pending findings."
+}
