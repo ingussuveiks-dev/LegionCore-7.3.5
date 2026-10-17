@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-17",
+  "quest": 39122,
+  "name": "Ending the New Beginning",
+  "client_verified": false,
+  "status": "Movie/camp order and personal progression repaired in code/data; client playback, transfer and turn-in remain pending.",
+  "previous": "05c5f300 repaired39092. Previous audits retain their historical source/runtime hashes, client boundaries and observed failures; this follow-up changes the shared loader and runtime snapshot only.",
+  "original_failures": [
+    "Genn95804/DB338653 used action85 on QUEST_ACCEPT39122 followed by LINK33/95269, LINK33/94431 and LINK62/teleport1220/2851.9,863.39,77.8. Actual SmartScript action85 schedules its cast200ms later and returns immediately. The linked credits and transfer therefore run before native190073/PLAY_MOVIE494 has established watching/delayed-teleport state. The native extracted regression reproduces transfer and both complete quests before invoking the deferred movie callback. It does not claim the movie can never play afterward.",
+    "Native SmartAI33 uses RewardPlayerAndGroupAtEvent; a nearby group member with39122 also received both goals without their own cinematic. Both original objective flags are mandatory; SEQUENCED2 on94431 is not an optional4 flag.",
+    "The same actor also had an unrelated menu18843 teleport row at duplicate id0. Real menu18843 says Vetir and is conditioned on40005, while Genn has menu0/npcflag2. The scoped replacement removes that misplaced row only from Genn, retaining the actual Vetir menu and other actors."
+  ],
+  "implementation": [
+    "New registered npc_stormheim_new_beginning_genn preserves SmartAI delegation for other quests and normal gossip. On39122 acceptance, or subsequent hello at the same live Genn, it validates Alliance, live player/actor, outdoor1220/zone7541, exact entry95804/DB338653, phase/native interaction distance and quest incomplete/complete (not none/rewarded). It excludes an active movie, teleport, vehicle, transport or flight.",
+    "It casts existing190073 synchronously with triggered=true. Native instant effect45 starts movie494; native effects199 and trigger229076 are retained. Only after isWatchingMovie becomes true does it give direct personal95269 then94431 and request the original normal camp teleport. A failed cast or missing native movie record yields no credit/transfer and can retry by talking to Genn.",
+    "Native SendMovieStart establishes the movement hold and delayed state before TeleportTo. The actual near-transfer delay branch queues the original destination. Player::Update also checks watching state after its temporary delay flag clears. Native completion/skip or the existing10-minute missing-completion timeout releases it; no custom timer teleports ahead of playback.",
+    "Credits intentionally occur at successful movie start, not at playback completion. The native client may skip the movie. There is no character SQL reset: old partial or complete quest progress can replay at source Genn to recover a lost volatile transfer after logout. Rewarded history is excluded and ordinary objective caps preserve existing progress.",
+    "Once movie/transfer begins, native queued camp travel remains committed even if the quest is later abandoned. No delayed quest credit callback is retained that could credit a newly accepted run. Relog is represented by loaded data in tests; real save/load and client behavior remain pending.",
+    "Migration10 binds only the captured Genn template and removes only its admitted original five rows. It declines unexpected SmartAI rows/script names, repeats safely and preserves Horde94228/38882, actual menu18843/40005, models, positions, quests/reward package754 and spell_area100044. It does not alter native spell data or generic movie/teleport code.",
+    "The earlier Ascendant data regression now compares unrelated Genn ScriptName against its captured starting value instead of assuming it must stay empty. Its existing24-order production regression and shield720-order regression still pass after the new binding."
+  ],
+  "data_contract": {
+    "previous": 39092,
+    "starter": {
+      "entry": 95804,
+      "spawn": 338653,
+      "position": [
+        2542.8,
+        1418.17,
+        32.59
+      ],
+      "display": 62093,
+      "npcflag": 2,
+      "menu": 0
+    },
+    "objectives": [
+      {
+        "id": 278952,
+        "type": 0,
+        "object": 95269,
+        "storage": 1,
+        "amount": 1,
+        "flags": 0
+      },
+      {
+        "id": 278954,
+        "type": 0,
+        "object": 94431,
+        "storage": 2,
+        "amount": 1,
+        "flags": 2
+      }
+    ],
+    "ender": {
+      "entry": 95932,
+      "spawn": 338654,
+      "position": [
+        2833.46,
+        887.21,
+        78.5931
+      ],
+      "display": 34520
+    },
+    "camp_destination": [
+      1220,
+      2851.9,
+      863.39,
+      77.8,
+      0.3
+    ],
+    "movie": {
+      "spell": 190073,
+      "cast_ms": 0,
+      "effect0": 45,
+      "target0": 1,
+      "movie": 494,
+      "audio_file": 1487146,
+      "subtitle_file": 1488499,
+      "effect1": 199,
+      "effect2": 64,
+      "trigger2": 229076,
+      "trigger_effect": 77
+    },
+    "reward_package": 754,
+    "reward_items": [
+      129258,
+      129259,
+      129260,
+      129346,
+      129347,
+      129348,
+      129349
+    ],
+    "chapter": 136,
+    "order": 6,
+    "next_addon_quest": null,
+    "native_lines": [
+      "spell190073 index=0 effect=45 target=1 misc=494 trigger=0",
+      "spell190073 index=1 effect=199 target=1 misc=0 trigger=0",
+      "spell190073 index=2 effect=64 target=0 misc=0 trigger=229076",
+      "movie494 audio=1487146 subtitles=1488499",
+      "actor display=62093 model=8456 file=1246857",
+      "actor display=34520 model=50 file=119563",
+      "quest39122 chapter=136 order=6",
+      "reward754 item=129258 quantity=1 displayType=1",
+      "reward754 item=129259 quantity=1 displayType=1",
+      "reward754 item=129260 quantity=1 displayType=1",
+      "reward754 item=129346 quantity=1 displayType=1",
+      "reward754 item=129347 quantity=1 displayType=1",
+      "reward754 item=129348 quantity=1 displayType=1",
+      "reward754 item=129349 quantity=1 displayType=1",
+      "PASS: native instant190073/PLAY_MOVIE494 and retained effects199/trigger229076, movie audio/subtitle references, Genn/Lorna models, chapter136/order6 and reward754 item links. Playback/reward selection remain client checks."
+    ],
+    "text_evidence": "Repository original TDB quest locale snapshot39122: Ending the New Beginning; Confront Sylvanas in the Vault of Eyir. Native movie494 is selected by the existing quest-accept190073, not by a guessed similarly named spell. No new vault combat or transform sequence is invented."
+  },
+  "automated_checks": [
+    {
+      "command": "tools/tests/Test-StormheimNewBeginning.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Extracted actual quest AI, SmartAI85 deferred cast branch, Spell::EffectPlayMovie, Player movie start/end/update, native completion handler, near-transfer delay/update branches, native quest/group handlers. Original race/group completion reproduced; normal/skip/duplicate complete/timeout, movie hold after temporary delay clears, failed cast/missing Movie record, personal goals, replay/partial/complete/login recovery, abandonment after start and16 admission boundaries. Verifies canonical marker/name and actual scripts.lib final-link freshness."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNewBeginningData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Guarded migration replay twice, unexpected SmartAI preservation, exact live binding/removed original chain, mandatory goals, reward754, starter/ender, unchanged Horde/Vetir paths and spell_area; zero Hotfix spell/misc/movie replacements."
+    },
+    {
+      "command": "tools/tests/Test-StormheimNewBeginningCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native C++ DB2 reader verifies actual190073 effects/instant cast/Movie494 audio-subtitle links, retained229076 script effect, Genn/Lorna model-file references, chapter136/order6 and reward754 Item.db2 links. Static Genn/camp/Lorna collision floors plus a complete8-polygon ground corridor from camp arrival to Lorna, supported LOS endpoint; no partial route is accepted."
+    },
+    {
+      "command": "tools/tests/Test-MovieMovement.ps1 (called by quest test)",
+      "result": "PASS",
+      "coverage": "Existing extracted movie movement/control behavior, completion, timeout, roots/gravity and excluded movers. No generic movement/movie core code changed."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAscendant.ps1 (called by quest test)",
+      "result": "PASS",
+      "coverage": "Earlier statue24-order and shield720-order regressions remain passing; unrelated actor preservation follows the actual captured script binding."
+    },
+    {
+      "command": "cmake configure; Release worldserver+bnetserver; canonical startup and shutdown0",
+      "result": "PASS",
+      "coverage": "New source included through CMake regeneration. Both final executables in build-extractors/bin/Release without OutDir override; startup accepts actor/script migration, DBErrors/stderr0 bytes. Ready/startup is loader evidence only."
+    }
+  ],
+  "geometry": {
+    "floor_results": [
+      "npc 338653 Z=32.59 floor=32.5107 terrain_area=7694 PASS",
+      "npc 338654 Z=78.5931 floor=78.5203 terrain_area=7699 PASS",
+      "npc 0 Z=77.8 floor=77.8112 terrain_area=7699 PASS",
+      "npc 338653 Z=32.59 floor=32.5107 terrain_area=7694 PASS",
+      "npc 338654 Z=78.5931 floor=78.5203 terrain_area=7699 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "route_results": [
+      "target 2833.46 887.21 78.5931",
+      "PASS: Source approach 2851.9,863.39,78.4853 -> target approach 2833.46,887.21,78.7214 through 8 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 4 corners, length=31.0745yd.",
+      "terrain polygons ground=8 water=0 magma/slime=0",
+      "endpoint centerDistance=0.128296",
+      "endpoint surfaceZ=78.7214 floor=78.5203 terrain=78.1794 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.201111 staticLOS=1 requireLOS=1 PASS",
+      "corner 0 2851.9 863.39 78.4853",
+      "corner 1 2842.67 881.067 78.1881",
+      "corner 2 2839.73 882.667 78.7214",
+      "corner 3 2833.46 887.21 78.7214"
+    ],
+    "distinct_anchors": 3,
+    "note": "The existing five-anchor helper repeats Genn/Lorna in its five-row batch; these are three distinct positions, not five. Original camp Z77.8 has collision floor77.8112 (0.0112yd difference), unchanged. Camp->Lorna ground corridor has8 polygons and ~31.0745yd length. Static collision/navmesh and endpoint LOS are not a live client traversal/body-clearance proof."
+  },
+  "boundaries": [
+    "Tests compile extracted production handlers/branches, with cast dispatch, world lookup/range/phasing, packet delivery and stored login state supplied by fixtures. Native movie transport/decoder, complete spell engine scheduling and full character session integration are not exercised.",
+    "Movie494 audio/subtitle and actor model references are checked in native DB2; actual client video/audio files, playback timing, skipped playback and decoder behavior remain unverified. No new M2/visual/animation assets were fabricated.",
+    "Reward package item links are checked, but live class/spec reward selection, quest turn-in packets and inventory capacity remain client checks.",
+    "The fallback movie hold timeout is existing bounded recovery; it is not evidence of a completed video. A recovery replay intentionally preserves old completed objectives instead of proving the old movie historically played.",
+    "Repeated completion packets release the same queued transfer once in the extracted native driver. A new deliberate hello after playback but before the next actual player update is not a persistent transaction lock; native quest counters remain capped and the destination unchanged."
+  ],
+  "pending_client_checks": [
+    "Alliance: accept39122 at real Genn; confirm native Sylvanas/Genn movie494 opens before the camp transfer. Watch fully, then repeat on another run using skip; verify input/movement resumes at camp.",
+    "Keep a nearby group member with39122: they must not receive95269/94431 or move until their own interaction. Inspect both quest counters and completion UI.",
+    "Check permanent pet, portrait, camera and movement before/after movie and native camp transfer; cold-client collision arrival and natural walk to Lorna95932 remain unverified.",
+    "Relog during playback and retry Genn from the retained source position, including old partial/complete states; confirm real saved data and lost-transfer recovery. No characters were modified for test setup.",
+    "Confirm quest turn-in and native reward754 choice at Lorna. No direct next-addon quest was found; this is chapter136/order6, and any subsequent chapter selection needs its own audit."
+  ],
+  "deployment": {
+    "migration": "2026_10_17_10_stormheim_new_beginning.sql",
+    "sha1": "E56AF47C162B3B3F4C275AED70C067CF5A725EDF",
+    "state": "RELEASED",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-new-beginning\\20261017-134218"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "3d4b20f54629a2c93637045082fe447a213d83796d6a52cf61c9ff2f6fbfdc70",
+    "bnetserver_sha256": "b7d4259cfe366b815e049edf31743035d9655ed7fb65ae43881f1433eca0e9f8",
+    "scripts_lib_sha256": "7d0c255417433cc295ec65023c817036b8298011a6fcfa8f2138b652f1491ee6",
+    "startup": "build-extractors/runtime-test/stormheim-new-beginning/startup-20261017-134245",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_new_beginning.cpp": "531b68cd6a7aa609f20050b5fa428e162e93ba6ff560f9df6db4ec7f5fc159b1",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "189b108c21fc839ee3f98db00469520dadce6169bb805d6e79fbe1465b30700f",
+    "sql/updates/world/2026_10_17_10_stormheim_new_beginning.sql": "38f1494dd5fbff4bbf69dfe6e44c0634c902320d756d1e84d948ba9d5b18c637",
+    "tools/tests/Test-StormheimAscendantData.ps1": "864ba8eb2deb7ea6f0fc4e023dc749f4ec3db972506fa56c415537726d6271ad",
+    "tools/tests/StormheimNewBeginningCatalog.cpp": "7e6bebe1238fbba3cc5abcf600490baa0bacdd47299405dc79b09485f9b361de",
+    "tools/tests/StormheimNewBeginningPlayer.inc": "c1fb55e71c041b8bda93dcf3a5b268d610c4ad26205a20ff5065dd10d11f5792",
+    "tools/tests/StormheimNewBeginningTest.cpp": "92e91b241387c0d62b939b86e4b312a593d421431494560cd26a6e93ed002932",
+    "tools/tests/Test-StormheimNewBeginning.ps1": "12eb799e39b04693c2a78eb985a797d90cc0834cb4a088fc5385194fa2d064c3",
+    "tools/tests/Test-StormheimNewBeginningCatalog.ps1": "db5b21beaf015726972a37add877e70afcf454c0714b90ab8f4f2993834034b1",
+    "tools/tests/Test-StormheimNewBeginningData.ps1": "908daadf0f880e6ed4604c3ee0cc5d70b5bba7b1663b498a333e58b6f38d86de"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-new-beginning/world.tsv": "4fd76d5db5590f02f2fa44aea285924016591145270dd70f06a1fe9d0720e7cf",
+    "build-extractors/runtime-test/stormheim-new-beginning/world-live.tsv": "a3ac9c8b8ade8436b1159c0eaa0737ceae38f7bba1a475a7739f8ff64df52e6f",
+    "build-extractors/runtime-test/stormheim-new-beginning/hotfix.tsv": "468b6cbadcc18902da2720abc74997924421214b8b31b7009880fcacebd15908",
+    "build-extractors/runtime-test/stormheim-new-beginning/native-lines.txt": "1ebb5c90aa0099882d8a4a8caf973d5ffdb003a4b6af03a5da8a42731000866a",
+    "build-extractors/runtime-test/stormheim-new-beginning/geometry.txt": "944a962f8716b3d5c72837bb387e11857f2df350bc9c0c30e92a62ac6db8ab7f",
+    "build-extractors/runtime-test/stormheim-new-beginning/floors.txt": "3e13f88c998cb336eed969954bdb22c74e4b03b747fec6fbe993822b8c99a586"
+  }
+}

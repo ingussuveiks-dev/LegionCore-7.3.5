@@ -36,7 +36,7 @@ SELECT 'spellarea',spell,area,quest_start,quest_start_status FROM spell_area WHE
 '@
 if(!$Live){$sql+=@"
 SELECT 'preserved-binding',COUNT(*) FROM spell_script_names WHERE ScriptName IN('custom_communion','unrelated');
-SELECT 'unrelated',COUNT(*) FROM creature_template WHERE entry=95804 AND ScriptName='';
+SELECT 'unrelated',COUNT(*) FROM creature_template c JOIN saved_creature_template s ON s.entry=c.entry WHERE c.entry=95804 AND c.ScriptName=s.ScriptName;
 DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_creature_template;
 DELETE FROM smart_scripts; INSERT INTO smart_scripts(entryorguid,source_type,id,event_type,event_param1,action_type,action_param1,target_type,comment) VALUES(94393,0,0,62,18543,33,94477,7,'original'),(94393,0,7,1,0,72,0,1,'custom');
 DELETE FROM conditions;
