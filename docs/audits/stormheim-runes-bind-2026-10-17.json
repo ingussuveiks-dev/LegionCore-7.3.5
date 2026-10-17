@@ -1,0 +1,259 @@
+{
+  "date": "2026-10-17",
+  "source_base_revision": "f3eff5b708baeb135e303c32f652c6e995516d1b",
+  "scope": "Code/data only; no WoW client operation.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "quest": 38823,
+  "title": "The Runes that Bind",
+  "status": "Selected native lock/activation/goober credit, mandatory-objective and next-quest checks pass; all selected static approaches pass. No confirmed production defect; client verification pending.",
+  "original": {
+    "quest": {
+      "ID": "38823",
+      "LogTitle": "'The Runes that Bind'",
+      "LogDescription": "'Destroy the Ritual Stones to stop the rituals binding Ashildir\\'s spirit in Haustvald.'",
+      "QuestDescription": "'The stone tablet here describes a ritual where a powerful spirit can be broken into weaker pieces by binding them to special runestones. It looks like the Bonespeakers may be using this very ritual to weaken the spirit of Ashildir.\\n\\nIt may be impossible to summon her with her spirit so weakened. The rituals must be stopped.'",
+      "Flags": "33554440",
+      "RewardNextQuest": "38815"
+    },
+    "objectives": [
+      {
+        "ID": "284811",
+        "QuestID": "38823",
+        "Type": "2",
+        "Order": "3",
+        "StorageIndex": "3",
+        "ObjectID": "251413",
+        "Amount": "1",
+        "Flags": "24",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "284810",
+        "QuestID": "38823",
+        "Type": "2",
+        "Order": "2",
+        "StorageIndex": "2",
+        "ObjectID": "251412",
+        "Amount": "1",
+        "Flags": "24",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "284809",
+        "QuestID": "38823",
+        "Type": "2",
+        "Order": "1",
+        "StorageIndex": "1",
+        "ObjectID": "241849",
+        "Amount": "1",
+        "Flags": "24",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "278478",
+        "QuestID": "38823",
+        "Type": "0",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "109061",
+        "Amount": "3",
+        "Flags": "0",
+        "Flags2": "0",
+        "ProgressBarWeight": "0",
+        "Description": "'Ritual Stone destroyed'",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "objects": [
+      {
+        "entry": "251412",
+        "type": "10",
+        "displayId": "28714",
+        "size": "0.75",
+        "Data0": "1691",
+        "Data1": "38823",
+        "Data2": "0",
+        "Data3": "3000",
+        "Data10": "0",
+        "Data14": "20138",
+        "Data19": "0",
+        "Data20": "1",
+        "Data26": "0"
+      },
+      {
+        "entry": "241849",
+        "type": "10",
+        "displayId": "28714",
+        "size": "0.75",
+        "Data0": "1691",
+        "Data1": "38823",
+        "Data2": "0",
+        "Data3": "3000",
+        "Data10": "0",
+        "Data14": "20138",
+        "Data19": "0",
+        "Data20": "1",
+        "Data26": "0"
+      },
+      {
+        "entry": "241840",
+        "type": "2",
+        "displayId": "7356",
+        "size": "0.5",
+        "Data0": "0",
+        "Data1": "19257",
+        "Data2": "0",
+        "Data3": "0",
+        "Data10": "0",
+        "Data14": "0",
+        "Data19": "0",
+        "Data20": "0",
+        "Data26": "0"
+      },
+      {
+        "entry": "251413",
+        "type": "10",
+        "displayId": "28714",
+        "size": "0.75",
+        "Data0": "1691",
+        "Data1": "38823",
+        "Data2": "0",
+        "Data3": "3000",
+        "Data10": "0",
+        "Data14": "20138",
+        "Data19": "0",
+        "Data20": "1",
+        "Data26": "0"
+      }
+    ]
+  },
+  "installed_contract": [
+    "Rune-Carved Tablet241840/guid115167 is an existing type2 questgiver with menu19257 -> npc_text28290 -> actual Hotfix broadcast104957. It already starts38823; no invented starter, item or gossip action is needed.",
+    "Mandatory goals are three different gameobject objectives:241849,251412,251413, each1 with distinct storage0/1/2. Optional hidden109061 amount3 at storage3 hasFlags28, including OPTIONAL4. It does not replace the three required GO goals. The original archive layout is retained separately; current installed definitions are captured by the read-only data test.",
+    "All three stones already use native goober10, ordinary lock1691, quest38823, autoClose3000ms, personal/conditional flags262148, model28714 at scale0.75 and animation kits8859/11129. Data14=20138 is openTextID, not an event or spell: Data2/eventID and Data10/spell are0. No missing event script is inferred from the text ID.",
+    "Native HasQuestForGO and full ActivateToQuest enable the incomplete quest objects. The production goober switch gives actual GO credit, native KillCreditGO caps each distinct objective and native CanCompleteQuest ignores the optional aggregate counter. All6 orders pass for each faction; the aggregate counter alone does not complete the quest.",
+    "Actual Ashildir97270 ends38823 and starts38815. Native loader incoming38823.NextQuestID admits the next quest after reward despite its separate explicit38816 predecessor; preserve those existing positive alternatives. Native GetNextQuest resolves the actual giver relation.",
+    "Two existing unphased Ashildir spawns338670 and341219 share3416.96/977.193/101.426. Their duplicate placement is recorded, not treated as proof of a client failure or silently deleted; actual NPC selection/appearance remains a client check."
+  ],
+  "checks": {
+    "data_runner": "tools/tests/Test-StormheimRunesBindData.ps1",
+    "world_contract": [
+      "quest\t38815\t33554440\t0\t18446744073709551615\t0\t38818\t38816\t38818\t0\t0\t0",
+      "quest\t38823\t33554440\t0\t18446744073709551615\t0\t38815\t0\t38815\t0\t0\t0",
+      "objective\t38823\t284809\t2\t241849\t1\t0\t0",
+      "objective\t38823\t284810\t2\t251412\t1\t1\t0",
+      "objective\t38823\t284811\t2\t251413\t1\t2\t0",
+      "objective\t38823\t278478\t0\t109061\t3\t3\t28",
+      "starter\t241840\t38823",
+      "next-starter\t97270\t38815",
+      "ender\t97270\t38823",
+      "go\t241840\t2\t7356\t0\t0.5\t0\t19257\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t",
+      "go\t241849\t10\t28714\t262148\t0.75\t1691\t38823\t0\t3000\t0\t0\t20138\t0\t0\t0\t0\t8859\t",
+      "go\t251412\t10\t28714\t262148\t0.75\t1691\t38823\t0\t3000\t0\t0\t20138\t0\t0\t0\t0\t11129\t",
+      "go\t251413\t10\t28714\t262148\t0.75\t1691\t38823\t0\t3000\t0\t0\t20138\t0\t0\t0\t0\t11129\t",
+      "spawn\t115143\t241849\t1220\t3555.14\t1001.38\t103.702\t\t1",
+      "spawn\t115167\t241840\t1220\t3407.49\t982.872\t101.165\t\t1",
+      "spawn\t115176\t251413\t1220\t3427.26\t887.076\t88.9982\t\t1",
+      "spawn\t115191\t251412\t1220\t3473.61\t797.974\t78.8167\t\t1",
+      "gossip\t19257\t28290\t104957",
+      "ashildir\t338670\t97270\t1220\t3416.96\t977.193\t101.426\t",
+      "ashildir\t341219\t97270\t1220\t3416.96\t977.193\t101.426\t",
+      "conditions\t0",
+      "go-scripts\t0",
+      "start-scripts\t0"
+    ],
+    "hotfix": [
+      "display\t0",
+      "lock\t0",
+      "anim\t0",
+      "text\t20138\t8\t8",
+      "text\t104957\t158\t0"
+    ],
+    "native_runner": "tools/tests/Test-StormheimRunesBind.ps1",
+    "native_result": [
+      "PASS: original three distinct ritual GO objectives, optional counter28, tablet starter/text and Ashildir ender/38815 relation; native lock/model/animation template settings preserved.",
+      "StormheimRunesBindTest.cpp",
+      "PASS: both factions and all6 orders; native HasQuestForGO/ActivateToQuest, lock1691 and full goober branch, three distinct credits exactly once, busy/failed-lock/pet/no-quest/abandon/retry/partial-history boundaries, optional109061 counter and Ashildir38815 handoff. Cast scheduling, world/quest menu services and personal GO lifecycle/rendering remain fixtures; client pending."
+    ],
+    "catalog_runner": "tools/tests/Test-StormheimRunesBindCatalog.ps1",
+    "catalog": [
+      "lock1691 slot=0 type=0 index=0 skill=0",
+      "lock1691 slot=1 type=2 index=5 skill=0",
+      "lock1691 slot=2 type=0 index=0 skill=0",
+      "lock1691 slot=3 type=0 index=0 skill=0",
+      "lock1691 slot=4 type=0 index=0 skill=0",
+      "lock1691 slot=5 type=0 index=0 skill=0",
+      "lock1691 slot=6 type=0 index=0 skill=0",
+      "lock1691 slot=7 type=0 index=0 skill=0",
+      "display7356 file=194086 bounds=-0.765516,-1.65267,-0.301773..0.052263,1.62819,4.43293",
+      "display28714 file=1139506 bounds=-6.37861,-5.98175,-0.890604..6.60306,5.19445,16.3397",
+      "animkit8859 oneShotDuration=0 stop=0",
+      "animkit11129 oneShotDuration=0 stop=0",
+      "PASS: native Lock1691 ordinary Open/type5, no profession/item key; tablet/stone display and native animation-kit records exist. Playback remains client-unverified."
+    ],
+    "floors": [
+      "object 115167 Z=101.165 floor=100.97 terrain_area=7653 PASS",
+      "object 115143 Z=103.702 floor=103.652 terrain_area=7653 PASS",
+      "object 115176 Z=88.9982 floor=88.9481 terrain_area=7860 PASS",
+      "object 115191 Z=78.8167 floor=78.7666 terrain_area=7860 PASS",
+      "npc 338670 Z=101.426 floor=101.343 terrain_area=7653 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "routes": [
+      "target 3555.14 1001.38 103.702",
+      "PASS: Source approach 3407.49,982.872,100.745 -> target approach 3555.14,1001.38,103.827 through 46 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=169.411yd.",
+      "terrain polygons ground=46 water=0 magma/slime=0",
+      "endpoint centerDistance=0.124718",
+      "endpoint surfaceZ=103.827 floor=103.652 terrain=157.328 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.174911 staticLOS=1 PASS",
+      "target 3427.26 887.076 88.9982",
+      "PASS: Source approach 3407.49,982.872,100.745 -> target approach 3427.26,887.076,89.0914 through 34 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 7 corners, length=127.258yd.",
+      "terrain polygons ground=34 water=0 magma/slime=0",
+      "endpoint centerDistance=0.0931702",
+      "endpoint surfaceZ=89.0914 floor=88.9481 terrain=156.947 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.143311 staticLOS=1 PASS",
+      "target 3473.61 797.974 78.8167",
+      "PASS: Source approach 3407.49,982.872,100.745 -> target approach 3476.61,797.974,79.2712 through 62 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 14 corners, length=227.124yd.",
+      "terrain polygons ground=62 water=0 magma/slime=0",
+      "endpoint centerDistance=3.03423",
+      "endpoint surfaceZ=79.2712 floor=78.7666 terrain=154.523 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.504601 staticLOS=1 PASS",
+      "target 3416.96 977.193 101.426",
+      "PASS: Source approach 3407.49,982.872,100.745 -> target approach 3416.96,977.193,100.4 through 5 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 2 corners, length=11.0476yd.",
+      "terrain polygons ground=5 water=0 magma/slime=0",
+      "endpoint centerDistance=1.02639",
+      "endpoint surfaceZ=100.4 floor=101.343 terrain=96.7036 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.943108 staticLOS=1 PASS"
+    ]
+  },
+  "boundaries_and_limits": [
+    "No WoW client was used. No whole quest or visual is described as client-verified.",
+    "The regression compiles current production HasQuestForGO (const qualifier adapted to the existing fixture), full ActivateToQuest, full goober switch branch, native lock admission, objective/credit/completion/reward/previous/GetNextQuest handlers. The upstream Unworthy Task regression runs first.",
+    "The wrapper dispatches Use after a simulated successful cast. Target visibility/range, real spell scheduling/interruption, personal GO per-player lifecycle, world lookups/phase/group services and packets are fixtures. HasQuestForItem, non-ritual quest-object membership and unrelated chest/battleground activation services are fixture boundaries; they do not prove the full client click pipeline.",
+    "Re-entry cases reconstruct quest maps/counters in memory; no character SQL save/load is executed. The test does not run full RewardQuest or network quest-menu acceptance.",
+    "Native Lock1691 records verify ordinary Open with no key/profession. Template autoClose3000ms is not asserted to be a three-second cast. Display/AnimKit records are existence evidence; actual break animation, glow/bonds, timing and personal disappearance remain client checks.",
+    "Static evidence covers original tablet, three stones and one shared Ashildir position. Complete native ground corridors, floor proximity and endpoint LOS do not prove dynamic collision, renderer loading or model hit testing.",
+    "Client pending for both factions: tablet quest icon/text, reach and select all three stone models, actual opening/interruption, breaking visual/personal cleanup and another player, distinct progress and abandon/retry/relog, Ashildir appearance/selection/reward and38815 details."
+  ],
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "note": "Tests and audit only. No production implementation/data changes, SQL migration, rebuild or server restart required."
+  },
+  "native_input_sha256": {
+    "Lock.db2": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+    "GameObjectDisplayInfo.db2": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+    "AnimKit.db2": "B3B895F30BEE3CED65A107C638EEAD9931FDF5C4F1EFE1DA73D328FC99FAA5F1"
+  },
+  "production_source_sha256": {
+    "src/server/game/Entities/GameObject/GameObject.cpp": "8AC018AF96CE69C6A475A67AF80639990DC8EAA27E76CAF35A6E5E067C461538",
+    "src/server/game/Entities/Player/Player.cpp": "7967DBBB32B6860D0CF8DD67DDE62CCF1A05BD7F527BA1E07A6C40770F99B312",
+    "src/server/game/Spells/Spell.cpp": "670D0CC3657CEB6CC4E78D111EF4377A884AEFE632290921C8BFDD3DC9567093",
+    "src/server/game/Globals/QuestData.cpp": "0542879889A7069BF96B3A71BB45AAA560B5CCBE4DE5D0B949B17115318C79CB"
+  }
+}
