@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    40072,
+    43349
+  ],
+  "client_verified": false,
+  "status": "Existing Aegis claim and return implementation rechecked against current code/data/Release; no new production defect confirmed in exercised paths.",
+  "correction": "40072 was recommended as unreviewed because the search initially used stormheim-prefixed audit names. It was already repaired in8a5729b2 and reviewed in docs/audits/halls-aegis-2026-10-16.json;43349 has8d15546c/docs/audits/aegis-return-2026-10-16.json. This is a recheck, not a second implementation.",
+  "confirmed": [
+    "110425 is Aegis claim credit, not an unspawned Havi interaction. Native questgiver pedestal251991/DB25178659 has the existing production script. Preserve phase3554, both mandatory goals and the normal43349 offer.",
+    "Claim requires this acceptance to hold Odyn95676 credit plus Skovald and Odyn instance states DONE. A completed saved instance does not mint boss credit after abandon/reaccept. Both factions,28 guard cases, independent party claims, repeat/re-entry and reward admission pass.",
+    "Odyn final-damage surrender still handles a first lethal/scaled spell and player/pet blows, surviving to complete his encounter/credit instead of dying. Achievement/party and normal boundary paths pass. No encounter handler was changed.",
+    "43349 existing EventObject510 -> action33 ->110409 credit and native outdoor Aegis251992 turn-in remain valid in the tested branches; phase4592/4591 reward conditions and no direct successor are retained.",
+    "Native catalogs still resolve Aegis/boss models, dungeon1477 difficulties1/2/8/23 and phase3554. Full static arena-to-pedestal corridor4 polygons/~39.0666yd and Dalaran-entry-to-Aegis corridor17 polygons/~81.703yd pass without partial paths."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-AegisReturn.ps1",
+      "result": "PASS",
+      "includes": "Test-HallsAegis.ps1 and upstream Salvation/Break the Spine paths; native data/prerequisite/questgiver/claim/EventObject/phase/reward handlers, both factions and lifecycle boundaries."
+    },
+    {
+      "command": "tools/tests/Test-HallsAegisData.ps1 -Live",
+      "result": "PASS",
+      "includes": "Deployed migration15 binding/goals, original phase/model/source/relations and protected data."
+    },
+    {
+      "command": "tools/tests/Test-HallsAegisCatalog.ps1",
+      "result": "PASS",
+      "includes": "Native DB2 and linked map/vmap/Detour arena/pedestal geometry."
+    },
+    {
+      "command": "tools/tests/Test-AegisReturnCatalog.ps1",
+      "result": "PASS",
+      "includes": "Native Dalaran model/spell/phase evidence, floors and complete ground corridor."
+    },
+    {
+      "command": "tools/tests/Test-HallsOdynSurrender.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "includes": "Extracted native final-damage dispatch and target-relative health/max/multiplier, real Odyn hooks, first-hit/bootstrap/player/pet/repeat/achievement/party branches and canonical binary marker/final-link input."
+    },
+    {
+      "command": "Canonical Aegis registration and actual scripts.lib source/library/exe freshness",
+      "result": "PASS",
+      "includes": "Read-only current Release check; no new build or startup performed for this recheck."
+    }
+  ],
+  "production_change": false,
+  "migration": null,
+  "runtime": {
+    "actual_link_freshness": true,
+    "worldserver_sha256": "8F1AD81A10FC6CC7F37FCE5172692907F3F3CC571E479861EC1831656C1AC4F3",
+    "scripts_lib_sha256": "731F45FCC5D8838CC2AC85BD57B8AC67016CB46DCEE935021BC02E6E4F6A5D0C",
+    "marker": true
+  },
+  "boundaries": [
+    "Prior audits remain historical evidence and retain their exact production/client limitations. This recheck executes selected extracted handlers with world/phasing/visibility/range/encounter-map enumeration, packets, scheduler, inventory and persistence services supplied by fixtures.",
+    "No actual dungeon, movie, loot/reward UI, renderer collision load, pet portrait, camera or full session/database round trip was exercised. Static complete navmesh paths are not live traversal or continuous body-clearance proofs.",
+    "Abandon/reaccept after a completed Odyn encounter requires a new qualifying boss credit. Ordinary saved counter re-entry is covered; no scenario-stage persistence or new character-state recovery is claimed.",
+    "43349 group credit remains existing behavior. A player already inside EventObject radius when accepting/reaccepting may need to leave/re-enter; no automatic stationary recovery was added."
+  ],
+  "pending_client_checks": [
+    "Both factions: actual Havi offer, dungeon difficulty/phase object visibility, Skovald/Odyn combat and high-damage/pet hits, boss survival/achievement/loot behavior, independent pedestal claim,40072 reward and43349 offer.",
+    "Dalaran travel/entry/group credit, Aegis visibility and turn-in, reward phase refresh, bag-full/reward selection, abandonment/retry/relog, cold-client movement/camera and pet portrait."
+  ],
+  "log_sha256": {
+    ".codex/aegis-chain-recheck.log": "43442fb03b38715a5736044b9a3491fd222804fbab5d2b11ca6fd5dcca9c85c6",
+    ".codex/aegis-chain-live.log": "2c4c2140857584f12e0903dc04615c6fdccd620c369d262a6efb469a00ce57c4",
+    ".codex/aegis-chain-catalog.log": "80268f5849f45bdd6251bc295774471f752639efd410de16f402f0f2e2dd3c8d",
+    ".codex/aegis-return-catalog.log": "47fbc70d02578d84a1d83a2871cb441ac59fa26ab6f0f9ffae96e522af27b3c7",
+    ".codex/aegis-odyn-recheck.log": "e90e6dc68115dd145483ead3661d2ec1b48523efc2a975400ea60506c1804554",
+    ".codex/aegis-return-upstream.log": "34f3a0988624186f176a9645a0d0ed5cde54c429ba71b27934d9ad59ea38a727"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/halls-aegis/world.tsv": "832bd0eed0e624d00e674e2a5cf1016eb47e43327e49c77489a6572d9a01deae",
+    "build-extractors/runtime-test/halls-aegis/world-live.tsv": "fe247cd6837f689f6c64e6730f87401dcf12803913cf85bc550d62d0706dc6d4",
+    "build-extractors/runtime-test/halls-aegis/hotfix.tsv": "edd9e44b624671bbb6bcab50ac0b8e7cd2f636d930a46b77935956ac60974db0",
+    "build-extractors/runtime-test/aegis-return/world.tsv": "2c4cec1ab65f01996280d78843d6ccfa4669ea87d6708008ae7487bc5a5ac1ce"
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/HallsofValor/halls_of_valor_aegis.cpp": "f418364f7bc4b6c11fcab987e5400a40ed13e1d03d20914153e252e27e3eebf7",
+    "src/server/scripts/Legion/HallsofValor/boss_odyn.cpp": "2a6599999a4abc57fbeac32fd52a94d287cebdda14c124ad2e7d5df932c17df6",
+    "tools/tests/Test-HallsAegis.ps1": "08d43a9d3ae5a7a92a1d5044ba1e47e26f0ddabe12579c82b82c3124ad90bc95",
+    "tools/tests/Test-AegisReturn.ps1": "4fceeda7bee4d12ae9566f806a076e7c6435a379fc6daf49e63991b6b0caba4f"
+  }
+}
