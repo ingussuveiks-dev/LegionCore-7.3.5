@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-17",
+  "quest": 38413,
+  "title": "Wings of Liberty",
+  "source_base_revision": "0476bdb80038f3ec7ba8541a44250f5abb79b178",
+  "scope": "Code/data only. No WoW client operation.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "original_quest_metadata": [
+    {
+      "ID": "39652",
+      "LogTitle": "'Where Dragons Rule'",
+      "AllowableRaces": "4294967295",
+      "RewardNextQuest": "38624"
+    },
+    {
+      "ID": "38618",
+      "LogTitle": "'Above the Winter Moonlight'",
+      "AllowableRaces": "33555378",
+      "RewardNextQuest": "38414"
+    },
+    {
+      "ID": "38413",
+      "LogTitle": "'Wings of Liberty'",
+      "AllowableRaces": "4294967295",
+      "RewardNextQuest": "39652"
+    },
+    {
+      "ID": "38412",
+      "LogTitle": "'Above the Winter Moonlight'",
+      "AllowableRaces": "18875469",
+      "RewardNextQuest": "38414"
+    }
+  ],
+  "status": "Horde acceptance defect reproduced and repaired with native condition data; migration deployed, native regression passes. Client UI verification pending.",
+  "problem": "Shared38413 allows both factions but its only previous link was Alliance38412. No incoming Horde NextQuestID link existed. A Horde player who legitimately rewarded38618 failed native CanTakeQuest solely at SatisfyQuestPreviousQuest.",
+  "evidence": [
+    "Installed native QuestLineXQuest records1793/1804 put38413 in both Thorignir chapters132/133. Their matching earlier quests are38412/38618, followed by the shared38414/38413. See retained stormheim-thorignir-native-2026-10-14.json; line membership alone does not define a server prerequisite.",
+    "Preserve live expanded race masks824181837/234881970 on the faction predecessors and the unrestricted38413 mask. Do not import original2018 race masks. The two rewarded predecessors are inferred as matching alternatives from the native parallel chapters and existing Alliance gate."
+  ],
+  "repair": "Guarded migration removes only the captured38412 single predecessor and adds four ordinary condition rows: Source19 acceptance and Source20 markers each require rewarded38412 OR38618 in separate ElseGroups. Preserve all rewards/next39652/flags/races and custom predicates/links; no character progress reset.",
+  "migration": {
+    "state": "RELEASED",
+    "backup": "Private row-scoped pre-deployment SQL snapshots; excluded from Git.",
+    "sha1": "4E93FE723314377AC4DB4CC3385BC5EE9D9F77ED",
+    "migration": "2026_10_17_05_stormheim_wings_prerequisite.sql"
+  },
+  "checks": {
+    "runner": "tools/tests/Test-StormheimWingsGate.ps1",
+    "native": [
+      "PASS: two rewarded faction alternatives for quest acceptance/markers; repeat migration and unrelated/custom addon/condition preservation.",
+      "StormheimWingsGateTest.cpp",
+      "PASS: native CanTakeQuest/status/race/previous/condition dispatch and ConditionMgr ElseGroup OR with actual reward predicate; original Horde rejection reproduced, both correct rewarded predecessors admit acceptance/markers, merely complete/active/rewarded boundaries preserved. World registries and other class/level gates are fixtures."
+    ],
+    "data_runner": "Test-StormheimWingsGateData.ps1 and -Live",
+    "data": "Temporary snapshots apply migration twice, compare full addon rows and unrelated38414, and preserve custom previous/next/condition rows. Both live conditions groups validated.",
+    "native_logic": "Actual CanTakeQuest, status/race/previous checks, SatisfyQuestConditions, ConditionMgr ElseGroup evaluator and Condition::Meets rewarded predicate are extracted. Other class/level/log services and world registries are fixtures."
+  },
+  "runtime": {
+    "note": "SQL-only gate repair; same final Release startup also loads the separate rescue repair.",
+    "startup": "build-extractors/runtime-test/stormheim-wings/startup-20261017-110745",
+    "ready": true,
+    "exit_code": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "pending_client": [
+    "Both faction quest icons/menus at actual Vethir91249, rejection before predecessor reward, actual acceptance and persisted reward history."
+  ],
+  "followup": "The separate stormheim-wings-release-2026-10-17.json covers the four rescues, personal visibility and authored departures."
+}
