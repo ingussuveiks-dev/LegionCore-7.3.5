@@ -1,0 +1,659 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    40044
+  ],
+  "title": "Shadows in the Mists: four native enemy credits and Havi return audit",
+  "source_base_revision": "43294bccf337760aeb4604ad0d87ff8d8bb40b00",
+  "scope": "Code/data audit only, as requested. Regression tests and audit added; no production SQL/C++ or runtime configuration changes and no WoW client operation.",
+  "status": "No confirmed progression or static approach defect found in the audited paths. Native quest/kill regression, default AI scheduling fragments, DB2 catalog and20 directed walking/swimming corridors pass. Client verification remains pending.",
+  "client_verified": false,
+  "implementation_change_required": false,
+  "findings": [
+    "40044 has four distinct monster objectives:280195/98014 Captain Sten,280196/98015 Sigrid,280197/98016 Kjell,280198/98018 Halvir, each amount1 at storage slots0..3. No KillCredit aliases, SmartAI or custom script is required for ordinary death credit. Template and GUID-specific SmartAI/conditions and spawn-addon overrides were checked and absent.",
+    "The original single spawns are Sten DB291143 at3362.66/1808.77/0.512912; Sigrid DB291041 at3819.35/1873.03/3.84251; Kjell DB291052 at3827.46/1730.77/-0.736813; Halvir DB291013 at3547.27/1911.01/0.247632. All are map1220, phaseMask1/empty PhaseId/spawnMask1, model override0 and stationary. They retain native respawn180 and unprotected flags32768/2048; flags_extra0, npcflag0, VehicleId0 and humanoid type7 do not select special pet/vehicle/spellclick/trigger/guard AI paths.",
+    "All four existing creature_template_scaling rows are98..110. Native displays65144/25668/23553 resolve model8529/file1260044; Sigrid70529 resolves model8891/file1339502. Actual World model metadata exists. Native FactionTemplate2817 has a nonzero faction, is not neutral to all, and is hostile to both Horde2 and Alliance1. Havi35 is nonhostile to both.",
+    "Empty AIName/ScriptName is not an absent AI: native FactorySelector::selectAI falls back to registered factory permission. Extracted selector plus actual AggressorAI::Permissible/ReactorAI::Permissible selects AggressorAI for the four ordinary hostile actor adapters. The test registry supplies these two relevant candidate factories; it is not the complete running registry or actor initialization. Native data checks establish the special-case flags are absent.",
+    "Existing creature_template_spell has21 rows (Sten7, Sigrid5, Kjell5, Halvir4),13 unique spells, with empty Difficulties. Native CreatureSpell::CanUseInDifficulty admits outdoor0; deprecated difficultyMask0 is not treated as a restriction. Native DB2 spell/effect/misc/duration/cooldown inputs were read and scoped Hotfix effect/misc overrides were absent.",
+    "Production UnitAI::FillAISpellInfo condition-classification fragment puts213738 Taste of Blood and215377 The Maw Must Feed in AICOND_DIE because of native CASTABLE_WHILE_DEAD0x800000. Across four actors these are8 death rows; the remaining13 rows are combat schedules. Extracted AggressorAI::Reset/EnterCombat/JustDied and the UpdateAI spell-dispatch tail execute with those profiles. Failed CanAutoCast uses the native500ms retry; success reaches DoCast and reschedules. DoCast target selection, CanAutoCast itself, actual spell effects, text/world services and timer values are adapters; no exact live cooldown or full combat simulation is claimed.",
+    "Native first-hop trigger references from the selected spells resolve220400/220401/220402,220411,220431,220638 with effect rows. Captain Call summons110806 through its three native summon spells; existing Cursed Crewman110806 has faction2817/flags32768 and native display70163/model2940/file233367. This catalog does not prove the complete recursive triggered spell/casting/visual sequence in the client.",
+    "Havi97973/DB369621 at3521.58/1615.26/11.3535 is both original starter and ender, npcflag3/faction35/SmartAI. Quest is all-races with no configured PrevQuestID/NextQuestID or source19/20 conditions; narrative references Remnants39984 but no new prerequisite was invented. Existing reward package9687 has five valid native item records (129350,132773,132772,132771,132770), each quantity1. Actual reward UI/storage remains unverified.",
+    "Native quest regression executes owner/pet killer resolution, KillRewarder::_RewardPlayer, delayed50ms creature credit, native KilledMonster credit routes, native objective getters/setter/save marks, CanCompleteQuest/CanRewardQuest, race/status admission and RequestReward. All24 enemy orders x2 factions x2 killer types=96 runs pass. Repeated reward for one victim is suppressed and each objective caps1; no completion before all four. Reconstructed saved3/4 plus pet kill, abandonment/reacceptance, no-quest/deferred-abandon/missing-victim cases and group range/life/contact gates pass. Saved-state reconstruction is not a DB login test; packet/world/storage/questgiver access services remain fixtures.",
+    "Geometry compiles the existing native DB2/Detour/GridMap/VMap approach helpers using runtime maps, vmaps and mmaps. All20 directed pairs among Havi and the four enemies pass with node budget65535, full untruncated corridor and endpoint, ground/water only and explicit static endpoint LOS. Physical source/target surface checks are applied; this is a player walk/swim survey, not a flying shortcut or magma/slime admission. Endpoint center distances and native diagnostics are recorded below. It does not sweep the complete moving body, dynamic objects, combat chase, swimming depth or rendered client collision along every corner.",
+    "No confirmed defect was found, so production quest, combat, spawn, reward and navigation data were preserved. Only tests/audit are committed. The canonical executables/configuration/data were not replaced; no new Release build, server restart, gameplay or new startup verification is claimed for this audit."
+  ],
+  "quest_contract": [
+    [
+      "40044",
+      "33554440",
+      "0",
+      "18446744073709551615",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "9687"
+    ]
+  ],
+  "objectives": [
+    [
+      "40044",
+      "280195",
+      "0",
+      "98014",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "40044",
+      "280196",
+      "0",
+      "98015",
+      "1",
+      "1",
+      "0"
+    ],
+    [
+      "40044",
+      "280197",
+      "0",
+      "98016",
+      "1",
+      "2",
+      "0"
+    ],
+    [
+      "40044",
+      "280198",
+      "0",
+      "98018",
+      "1",
+      "3",
+      "0"
+    ]
+  ],
+  "actors": [
+    [
+      "98014",
+      "0",
+      "0",
+      "2817",
+      "0",
+      "32768",
+      "2048",
+      "",
+      "",
+      "65144",
+      "0",
+      "0",
+      "7",
+      "0"
+    ],
+    [
+      "98015",
+      "0",
+      "0",
+      "2817",
+      "0",
+      "32768",
+      "2048",
+      "",
+      "",
+      "70529",
+      "0",
+      "0",
+      "7",
+      "0"
+    ],
+    [
+      "98016",
+      "0",
+      "0",
+      "2817",
+      "0",
+      "32768",
+      "2048",
+      "",
+      "",
+      "25668",
+      "0",
+      "0",
+      "7",
+      "0"
+    ],
+    [
+      "98018",
+      "0",
+      "0",
+      "2817",
+      "0",
+      "32768",
+      "2048",
+      "",
+      "",
+      "23553",
+      "0",
+      "0",
+      "7",
+      "0"
+    ]
+  ],
+  "spawn_columns": [
+    "guid",
+    "entry",
+    "map",
+    "x",
+    "y",
+    "z",
+    "model_override",
+    "phaseMask",
+    "PhaseId",
+    "spawnMask",
+    "respawn_seconds",
+    "movement_type",
+    "unit_flags_override",
+    "npcflag_override",
+    "unit_flags3_override"
+  ],
+  "spawns": [
+    [
+      "369621",
+      "97973",
+      "1220",
+      "3521.58",
+      "1615.26",
+      "11.3535",
+      "0",
+      "1",
+      "",
+      "1",
+      "300",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "291143",
+      "98014",
+      "1220",
+      "3362.66",
+      "1808.77",
+      "0.512912",
+      "0",
+      "1",
+      "",
+      "1",
+      "180",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "291041",
+      "98015",
+      "1220",
+      "3819.35",
+      "1873.03",
+      "3.84251",
+      "0",
+      "1",
+      "",
+      "1",
+      "180",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "291052",
+      "98016",
+      "1220",
+      "3827.46",
+      "1730.77",
+      "-0.736813",
+      "0",
+      "1",
+      "",
+      "1",
+      "180",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "291013",
+      "98018",
+      "1220",
+      "3547.27",
+      "1911.01",
+      "0.247632",
+      "0",
+      "1",
+      "",
+      "1",
+      "180",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  ],
+  "spell_columns": [
+    "entry",
+    "spell",
+    "deprecated_difficultyMask",
+    "Difficulties"
+  ],
+  "spells": [
+    [
+      "98014",
+      "186553",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "213738",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "215377",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "220399",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "220428",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "220431",
+      "0",
+      ""
+    ],
+    [
+      "98014",
+      "220570",
+      "0",
+      ""
+    ],
+    [
+      "98015",
+      "213738",
+      "0",
+      ""
+    ],
+    [
+      "98015",
+      "215377",
+      "0",
+      ""
+    ],
+    [
+      "98015",
+      "220622",
+      "0",
+      ""
+    ],
+    [
+      "98015",
+      "220636",
+      "0",
+      ""
+    ],
+    [
+      "98015",
+      "220638",
+      "0",
+      ""
+    ],
+    [
+      "98016",
+      "186553",
+      "0",
+      ""
+    ],
+    [
+      "98016",
+      "213738",
+      "0",
+      ""
+    ],
+    [
+      "98016",
+      "215377",
+      "0",
+      ""
+    ],
+    [
+      "98016",
+      "220570",
+      "0",
+      ""
+    ],
+    [
+      "98016",
+      "220585",
+      "0",
+      ""
+    ],
+    [
+      "98018",
+      "213738",
+      "0",
+      ""
+    ],
+    [
+      "98018",
+      "215377",
+      "0",
+      ""
+    ],
+    [
+      "98018",
+      "220409",
+      "0",
+      ""
+    ],
+    [
+      "98018",
+      "220436",
+      "0",
+      ""
+    ]
+  ],
+  "crew": [
+    [
+      "110806",
+      "70163",
+      "2817",
+      "32768",
+      "",
+      ""
+    ]
+  ],
+  "native_catalog_lines": [
+    "display 65144 model 8529 file 1260044",
+    "display 70529 model 8891 file 1339502",
+    "display 25668 model 8529 file 1260044",
+    "display 23553 model 8529 file 1260044",
+    "display 70163 model 2940 file 233367",
+    "faction2817 hostile to both player factions; Havi35 nonhostile to both",
+    "spell 186553 Soul of Mist",
+    " effect 6 aura 87 trigger 0 target 1,0",
+    " effect 6 aura 77 trigger 0 target 1,0",
+    " effect 6 aura 77 trigger 0 target 1,0",
+    " effect 6 aura 56 trigger 0 target 1,0",
+    "profile 186553 0 6000 0",
+    "spell 213738 Taste of Blood",
+    " effect 6 aura 129 trigger 0 target 25,0",
+    "profile 213738 8388608 30000 0",
+    "spell 215377 The Maw Must Feed",
+    " effect 6 aura 79 trigger 0 target 25,0",
+    "profile 215377 8388608 30000 0",
+    "spell 220399 Captain's Call",
+    " effect 64 aura 0 trigger 220400 target 1,0",
+    " effect 64 aura 0 trigger 220401 target 1,0",
+    " effect 64 aura 0 trigger 220402 target 1,0",
+    "profile 220399 0 0 0",
+    "spell 220409 Helya's Boon",
+    " effect 64 aura 0 trigger 220411 target 47,138",
+    "profile 220409 0 0 0",
+    "spell 220428 Inspire Crew",
+    " effect 6 aura 23 trigger 220431 target 1,0",
+    "profile 220428 0 15000 0",
+    "spell 220431 Inspire Crew",
+    " effect 6 aura 79 trigger 0 target 22,7",
+    " effect 6 aura 61 trigger 0 target 22,7",
+    "profile 220431 0 1500 0",
+    "spell 220436 Skullcracking Wallop",
+    " effect 31 aura 0 trigger 0 target 6,0",
+    " effect 98 aura 0 trigger 0 target 6,0",
+    "profile 220436 262144 0 0",
+    "spell 220570 Curse of the Depths",
+    " effect 6 aura 23 trigger 0 target 6,0",
+    "profile 220570 0 5000 0",
+    "spell 220585 Stagnant Blast",
+    " effect 31 aura 0 trigger 0 target 6,0",
+    "profile 220585 524288 0 0",
+    "spell 220622 Decaying Strike",
+    " effect 31 aura 0 trigger 0 target 54,0",
+    " effect 6 aura 70 trigger 0 target 54,0",
+    "profile 220622 262144 9000 0",
+    "spell 220636 Tidal Force",
+    " effect 31 aura 0 trigger 0 target 129,0",
+    " effect 149 aura 0 trigger 220638 target 47,0",
+    " effect 6 aura 4 trigger 0 target 1,0",
+    "profile 220636 262144 1000 0",
+    "spell 220638 Tidal Force",
+    " effect 31 aura 0 trigger 0 target 18,16",
+    "profile 220638 262144 0 0",
+    "trigger-spell 220400 Captain's Call",
+    " trigger-effect 28 misc 110806 target 47,0",
+    "trigger-spell 220401 Captain's Call",
+    " trigger-effect 28 misc 110806 target 41,0",
+    "trigger-spell 220402 Captain's Call",
+    " trigger-effect 28 misc 110806 target 44,0",
+    "trigger-spell 220411 Helya's Boon",
+    " trigger-effect 32 misc 0 target 91,138",
+    "trigger-spell 220431 Inspire Crew",
+    " trigger-effect 6 misc 127 target 22,7",
+    " trigger-effect 6 misc 0 target 22,7",
+    "trigger-spell 220638 Tidal Force",
+    " trigger-effect 31 misc 0 target 18,16",
+    "package9687 item 129350 display 1 Sigrid's Phantom Shroud",
+    "package9687 item 132773 display 1 Dreadsworn Waistguard",
+    "package9687 item 132772 display 1 Stormborn Cinch",
+    "package9687 item 132771 display 1 Runesworn Waistguard",
+    "package9687 item 132770 display 1 Runespeaker's Waistcord",
+    "PASS: four target and summoned crew displays/models, hostile factions,13 unique spells/native effect and AI-condition input fields, first-hop triggers, quest package9687. This does not prove spell execution or client visuals."
+  ],
+  "routes": [
+    {
+      "route": "route 369621 -> 291143",
+      "native_corridor": "PASS: Source approach 3521.58,1615.26,11.4804 -> target approach 3362.66,1808.77,0.547066 through 83 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 28 corners, length=308.227yd.",
+      "terrain": "terrain polygons ground=51 water=32 magma/slime=0",
+      "endpoint_center_distance": 0.0341538,
+      "native_endpoint_surface": "endpoint surfaceZ=0.547066 floor=0.431114 terrain=0.431114 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.115952 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 369621 -> 291041",
+      "native_corridor": "PASS: Source approach 3521.58,1615.26,11.4804 -> target approach 3819.35,1873.03,3.59977 through 102 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 33 corners, length=472.181yd.",
+      "terrain": "terrain polygons ground=66 water=36 magma/slime=0",
+      "endpoint_center_distance": 0.242736,
+      "native_endpoint_surface": "endpoint surfaceZ=3.59977 floor=3.76075 terrain=3.76075 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.160976 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 369621 -> 291052",
+      "native_corridor": "PASS: Source approach 3521.58,1615.26,11.4804 -> target approach 3827.74,1732.16,0.245224 through 94 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 21 corners, length=397.764yd.",
+      "terrain": "terrain polygons ground=76 water=18 magma/slime=0",
+      "endpoint_center_distance": 1.72366,
+      "native_endpoint_surface": "endpoint surfaceZ=0.245224 floor=-0.564536 terrain=-0.857788 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.245224 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 369621 -> 291013",
+      "native_corridor": "PASS: Source approach 3521.58,1615.26,11.4804 -> target approach 3547.27,1911.01,0.202826 through 67 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 18 corners, length=361.03yd.",
+      "terrain": "terrain polygons ground=43 water=24 magma/slime=0",
+      "endpoint_center_distance": 0.0448062,
+      "native_endpoint_surface": "endpoint surfaceZ=0.202826 floor=0.16354 terrain=0.16354 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0392859 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291143 -> 369621",
+      "native_corridor": "PASS: Source approach 3362.66,1808.77,0.547066 -> target approach 3521.58,1615.26,11.4804 through 76 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 30 corners, length=325.411yd.",
+      "terrain": "terrain polygons ground=40 water=36 magma/slime=0",
+      "endpoint_center_distance": 0.126896,
+      "native_endpoint_surface": "endpoint surfaceZ=11.4804 floor=11.3537 terrain=9.78388 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126694 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291143 -> 291041",
+      "native_corridor": "PASS: Source approach 3362.66,1808.77,0.547066 -> target approach 3819.35,1873.03,3.59977 through 88 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 22 corners, length=480.355yd.",
+      "terrain": "terrain polygons ground=59 water=29 magma/slime=0",
+      "endpoint_center_distance": 0.242736,
+      "native_endpoint_surface": "endpoint surfaceZ=3.59977 floor=3.76075 terrain=3.76075 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.160976 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291143 -> 291052",
+      "native_corridor": "PASS: Source approach 3362.66,1808.77,0.547066 -> target approach 3827.74,1732.16,0.245224 through 100 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 21 corners, length=485.392yd.",
+      "terrain": "terrain polygons ground=68 water=32 magma/slime=0",
+      "endpoint_center_distance": 1.72366,
+      "native_endpoint_surface": "endpoint surfaceZ=0.245224 floor=-0.564536 terrain=-0.857788 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.245224 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291143 -> 291013",
+      "native_corridor": "PASS: Source approach 3362.66,1808.77,0.547066 -> target approach 3547.27,1911.01,0.202826 through 44 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=215.931yd.",
+      "terrain": "terrain polygons ground=23 water=21 magma/slime=0",
+      "endpoint_center_distance": 0.0448062,
+      "native_endpoint_surface": "endpoint surfaceZ=0.202826 floor=0.16354 terrain=0.16354 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0392859 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291041 -> 369621",
+      "native_corridor": "PASS: Source approach 3819.35,1873.03,3.59977 -> target approach 3521.58,1615.26,11.4804 through 103 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 33 corners, length=473.001yd.",
+      "terrain": "terrain polygons ground=64 water=39 magma/slime=0",
+      "endpoint_center_distance": 0.126896,
+      "native_endpoint_surface": "endpoint surfaceZ=11.4804 floor=11.3537 terrain=9.78388 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126694 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291041 -> 291143",
+      "native_corridor": "PASS: Source approach 3819.35,1873.03,3.59977 -> target approach 3362.66,1808.77,0.547066 through 70 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 17 corners, length=474.775yd.",
+      "terrain": "terrain polygons ground=33 water=37 magma/slime=0",
+      "endpoint_center_distance": 0.0341538,
+      "native_endpoint_surface": "endpoint surfaceZ=0.547066 floor=0.431114 terrain=0.431114 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.115952 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291041 -> 291052",
+      "native_corridor": "PASS: Source approach 3819.35,1873.03,3.59977 -> target approach 3827.74,1732.16,0.245224 through 38 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 7 corners, length=144.971yd.",
+      "terrain": "terrain polygons ground=26 water=12 magma/slime=0",
+      "endpoint_center_distance": 1.72366,
+      "native_endpoint_surface": "endpoint surfaceZ=0.245224 floor=-0.564536 terrain=-0.857788 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.245224 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291041 -> 291013",
+      "native_corridor": "PASS: Source approach 3819.35,1873.03,3.59977 -> target approach 3547.27,1911.01,0.202826 through 43 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=289.002yd.",
+      "terrain": "terrain polygons ground=16 water=27 magma/slime=0",
+      "endpoint_center_distance": 0.0448062,
+      "native_endpoint_surface": "endpoint surfaceZ=0.202826 floor=0.16354 terrain=0.16354 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0392859 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291052 -> 369621",
+      "native_corridor": "PASS: Source approach 3827.74,1732.16,0.245224 -> target approach 3521.58,1615.26,11.4804 through 90 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 20 corners, length=389.564yd.",
+      "terrain": "terrain polygons ground=73 water=17 magma/slime=0",
+      "endpoint_center_distance": 0.126896,
+      "native_endpoint_surface": "endpoint surfaceZ=11.4804 floor=11.3537 terrain=9.78388 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126694 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291052 -> 291143",
+      "native_corridor": "PASS: Source approach 3827.74,1732.16,0.245224 -> target approach 3362.66,1808.77,0.547066 through 103 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 25 corners, length=487.517yd.",
+      "terrain": "terrain polygons ground=49 water=54 magma/slime=0",
+      "endpoint_center_distance": 0.0341538,
+      "native_endpoint_surface": "endpoint surfaceZ=0.547066 floor=0.431114 terrain=0.431114 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.115952 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291052 -> 291041",
+      "native_corridor": "PASS: Source approach 3827.74,1732.16,0.245224 -> target approach 3819.35,1873.03,3.59977 through 32 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=143.301yd.",
+      "terrain": "terrain polygons ground=26 water=6 magma/slime=0",
+      "endpoint_center_distance": 0.242736,
+      "native_endpoint_surface": "endpoint surfaceZ=3.59977 floor=3.76075 terrain=3.76075 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.160976 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291052 -> 291013",
+      "native_corridor": "PASS: Source approach 3827.74,1732.16,0.245224 -> target approach 3547.27,1911.01,0.202826 through 105 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 34 corners, length=348.022yd.",
+      "terrain": "terrain polygons ground=66 water=39 magma/slime=0",
+      "endpoint_center_distance": 0.0448062,
+      "native_endpoint_surface": "endpoint surfaceZ=0.202826 floor=0.16354 terrain=0.16354 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0392859 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291013 -> 369621",
+      "native_corridor": "PASS: Source approach 3547.27,1911.01,0.202826 -> target approach 3521.58,1615.26,11.4804 through 86 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 22 corners, length=364.134yd.",
+      "terrain": "terrain polygons ground=67 water=19 magma/slime=0",
+      "endpoint_center_distance": 0.126896,
+      "native_endpoint_surface": "endpoint surfaceZ=11.4804 floor=11.3537 terrain=9.78388 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126694 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291013 -> 291143",
+      "native_corridor": "PASS: Source approach 3547.27,1911.01,0.202826 -> target approach 3362.66,1808.77,0.547066 through 46 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 13 corners, length=217.561yd.",
+      "terrain": "terrain polygons ground=31 water=15 magma/slime=0",
+      "endpoint_center_distance": 0.0341538,
+      "native_endpoint_surface": "endpoint surfaceZ=0.547066 floor=0.431114 terrain=0.431114 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.115952 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291013 -> 291041",
+      "native_corridor": "PASS: Source approach 3547.27,1911.01,0.202826 -> target approach 3819.35,1873.03,3.59977 through 50 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=279.609yd.",
+      "terrain": "terrain polygons ground=27 water=23 magma/slime=0",
+      "endpoint_center_distance": 0.242736,
+      "native_endpoint_surface": "endpoint surfaceZ=3.59977 floor=3.76075 terrain=3.76075 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.160976 staticLOS=1 requireLOS=0 PASS"
+    },
+    {
+      "route": "route 291013 -> 291052",
+      "native_corridor": "PASS: Source approach 3547.27,1911.01,0.202826 -> target approach 3827.74,1732.16,0.245224 through 112 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 29 corners, length=348.204yd.",
+      "terrain": "terrain polygons ground=75 water=37 magma/slime=0",
+      "endpoint_center_distance": 1.72366,
+      "native_endpoint_surface": "endpoint surfaceZ=0.245224 floor=-0.564536 terrain=-0.857788 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.245224 staticLOS=1 requireLOS=0 PASS"
+    }
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimMists.ps1",
+      "result": "PASS; includes catalog/data,20 routes, quest and combat-fragment tests",
+      "log": ".codex/mists-test.log",
+      "upstream_log": ".codex/mists-upstream.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimMistsCatalog.ps1",
+      "result": "PASS after adding the native crew model dependency check",
+      "log": ".codex/mists-catalog.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimMistsData.ps1",
+      "result": "PASS; also run by catalog",
+      "log": ".codex/mists-data.log"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "PASS at final staging review"
+    }
+  ],
+  "runtime": {
+    "canonical_directory": "build-extractors/bin/Release",
+    "compiled_for_this_audit": false,
+    "server_started_for_this_audit": false,
+    "worldserver_sha256": "39ABC08B3AFD9C5F1EF6F39412737C3F8EAD5FF5E854723BF5534B8410C80007",
+    "bnetserver_sha256": "BC010541F0928DC1DCCB935FD93B461C20F6D349CBB4E2DA81DA71FD85A6F04C"
+  },
+  "client_pending": [
+    "Confirm Havi40044 availability in the actual story/Remnants39984 flow; existing database prerequisites were preserved, not asserted to match a canonical retail unlock sequence.",
+    "Verify all four enemies visible at their original positions, walking/swimming approach, melee/ranged/pet engagement and chase/leash behavior including shallow-water Kjell.",
+    "Observe actual native combat casts and target selection, Captain Call crew summons, death buffs, mist/ghost/area visuals and timings. Scheduler fragment tests do not verify full combat or visual playback.",
+    "Defeat all four with player/pet killing blows, verify one credit each and4/4, group behavior, abandonment/reacceptance and logout/restart with partial progress.",
+    "Return to Havi and verify turn-in, actual reward choices/package9687 and inventory-full handling."
+  ],
+  "file_sha256": {
+    "tools/tests/Test-StormheimMistsData.ps1": "E2219E1E02640D7E4EB63F663CB0BEFC9CB908640C0E3319864F10DD79CA6605",
+    "tools/tests/StormheimMistsCatalog.cpp": "5F7657B660CBF8B8B718227171D28CC7A697A350964F9DCDDBE3D65861F1928B",
+    "tools/tests/Test-StormheimMistsCatalog.ps1": "D9E14A6FD322E6B5957DDBC005B9045CA295BA3DE88DA1A1DBCC4DFD944F98EA",
+    "tools/tests/Test-StormheimMists.ps1": "8AC57C1915E958147F93FDCC1063F60E5EAFD2A1664D6BF6442E137054980CDA",
+    "tools/tests/StormheimMistsTest.cpp": "1577DAA6B8490131F6DCCE27FA3C86D96D8D3DFFB06CF62DFEC1E23DA9FCD6A9",
+    "tools/tests/StormheimMistsCombatTest.cpp": "A3ED5C29B86BB9E996117CE74191B2ED6213032F8982B97C34C5C71572F9E584"
+  },
+  "generated_evidence_sha256": {
+    "world.tsv": "C427A3BCA366C09F40C2C3612AE1B856258D6B9C510451D3D82D247C8B7CA1D3",
+    "native.tsv": "3B2F20A1044D53ADF4003E75ED4DBD9F347AA32C7DD88CB0AE62E7000069A89C",
+    "geometry.txt": "A5BC4559FD47E3129FA447FD1782B6813D40F88433E870FF084F1EA051168321"
+  }
+}
