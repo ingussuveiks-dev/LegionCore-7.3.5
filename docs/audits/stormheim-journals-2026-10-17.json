@@ -9,7 +9,7 @@
     "Remnants of the Past"
   ],
   "source_base_revision": "c10f685bd69233eec7bba9138c46f026d88012b9",
-  "status": "Kjell captured placement and objective marker repaired; complete static route passes. Original evidence retained. Halvir static approach followup remains pending. Client verification pending for both quests.",
+  "status": "Both originally unresolved static book approaches now have followup evidence: Kjell placement repaired; Halvir has a complete corridor plus collision-floor walking route without moving its spawn. Quest/client verification remains pending.",
   "scope": "Code/data only, as requested. Both factions, actual GO quest starters, eight-verse source/loot/auto-submit path, four book clicks and Havi marker/reward. No Warlock work or WoW client operation.",
   "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
   "original": {
@@ -483,6 +483,6 @@
   "open_issues_note": "Historical findings from the original audit are retained verbatim below; followup audits record subsequent repairs and remaining client checks. Original runtime and limitations describe that earlier audit run.",
   "followup": {
     "kjell": "stormheim-kjell-access-2026-10-17.json",
-    "halvir": "Still pending followup validation"
+    "halvir": "stormheim-halvir-access-2026-10-17.json"
   }
 }

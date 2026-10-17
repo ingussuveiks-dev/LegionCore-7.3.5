@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-17",
+  "quest": 39984,
+  "object": 244720,
+  "guid": 114975,
+  "source_base_revision": "592c1a2d3227fc23557be9bfdae7c41144bd10d1",
+  "previous_audit": "stormheim-journals-2026-10-17.json",
+  "status": "Static access gap resolved by validating a connected collision-floor walk beyond the navmesh boundary. Halvir production spawn, template and quest logic unchanged. Client movement/interaction pending.",
+  "problem": "The earlier direct navmesh diagnostic found acceptable endpoint candidates but only partial corridors. Larger budgets and tile loading did not connect the isolated endpoint polygons. This was incomplete access evidence, not proof that the object needed relocation.",
+  "route": {
+    "source_xyz": [
+      3296.72,
+      1377.97,
+      97.9798
+    ],
+    "join_xyz": [
+      3529.8999,
+      1517.32996,
+      7.2405777
+    ],
+    "end_xyz": [
+      3520.6499,
+      1525.32996,
+      8.37726784
+    ],
+    "unchanged_object_xyz": [
+      3515.9,
+      1526.83,
+      8.7028
+    ],
+    "native_corridor_polygons": 76,
+    "collision_walk_samples": 74,
+    "collision_walk_length_yards": 23.8693,
+    "jumps": 0,
+    "fixture": "tools/tests/data/stormheim-halvir-walk.txt",
+    "fixture_sha256": "B752C0EF69F0855F9DCEB752193DB5FF6779999EB2EBF8D1968A0444BC2C824E",
+    "construction": "Selected from a0.25yd native VMAP floor survey within35yd of the roster. Not a scripted movement path and not added to runtime navmesh."
+  },
+  "checks": {
+    "runner": "tools/tests/Test-StormheimJournalAccess.ps1",
+    "native": "Builds against Release libraries; loads installed GameObjectDisplayInfo.db2, VMAP and MMAP; extracts current production GameObject::IsInRange.",
+    "admission": [
+      "Complete Detour status, exact destination poly and fullXYZ straight-path END; no partial/out-of-nodes/truncated result.",
+      "Source within5yd of Watcher Journal, only native ground/water corridor flags; native floor/body-clear join to the first physical sample.",
+      "Each sample has matching VMAP support and standing clearance1.8yd. Each segment has <=0.35yd rise/drop, <=0.36yd horizontal gap and15 body rays at3 heights and5 lateral offsets.",
+      "Actual native display25948 model-box interaction radius5 and model-top static LOS from final player eye position.",
+      "Negative fixture containing only valid first/last endpoints is rejected by physical segment checks; an accessible endpoint cannot hide a missing path."
+    ],
+    "result": [
+      "PASS: Kjell native floor=6.43929 model-bottom clearance=0.0200043; nine support/vertical rays and six footprint diagonals clear.",
+      "PASS: complete native corridor 76 polygons to exact Halvir walk join; 74 collision-floor samples, 23.8693yd, fifteen body rays per segment, no jumps; native model-box range5 and model-top LOS pass.",
+      "Endpoint 3520.65,1525.33,8.37727; static collision evidence only, client movement/rendering still pending."
+    ],
+    "integration": "Test-StormheimJournalsGeometry.ps1 now requires this replay for Halvir and retains full direct corridor/surface/LOS checks for Sigrid, Skovald, repaired Kjell, Havi and the priestess. All pass.",
+    "progression": "Test-StormheimJournals.ps1 passes both factions,24 book orders, early/late/repeated Havi, native objective/reward checks. Service boundaries and live AI/network remain fixtures."
+  },
+  "evidence_preservation": "Original failed direct Halvir and old Kjell route output remains in the original audit. The complete Halvir corridor ends at a different physically joined point; the old partial route is never admitted as success.",
+  "runtime": {
+    "production_changes": "None for Halvir. Kjell data deployment/restart is recorded in its separate audit. No navmesh generation, generic movement changes or Release rebuild.",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367"
+  },
+  "limitations": [
+    "Static collision/navmesh evidence does not execute client movement, dynamic GO collisions, model rendering, hit testing, network packet delivery or live interaction.",
+    "Client pending for both factions: follow this approach, see/click all books, read actual localized/gendered text, exactly-once objective credit, Havi dialogue/reward and save/relogin.",
+    "No WoW client was used. The entire quest chain is not marked client-verified."
+  ]
+}
