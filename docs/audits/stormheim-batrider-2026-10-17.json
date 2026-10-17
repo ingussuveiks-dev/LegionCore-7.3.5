@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-17",
+  "entry": 97250,
+  "source_guid": 340420,
+  "quests_unchanged": [
+    38308,
+    38317
+  ],
+  "title": "Forsaken Bat-Rider: restore optional return to Forsaken Foothold",
+  "client_verified": false,
+  "status": "Optional menu18762/0 now creates a personal return vehicle, waits for finished boarding, flies a reconstructed four-segment route and exits at Forsaken Foothold. World migration applied; selected production regression, native catalog/collision, deployed-code calls and ready startup pass. In-client flight, camera and pet portrait remain pending.",
+  "findings": [
+    "Earlier Overlook audits intentionally left optional gossip unimplemented and the return interaction unverified. Public97250/DB340420 had flags3/menu18762/vehicle4387, no script, no SmartAI row, no spellclick/creature spell/waypoint route and no menu15 conditions. Gossip OptionNpc0 is admitted by the native primary GOSSIP flag1 (checked by the actual linked helper); generic OnGossipSelect supplies no flight for ActionMenuID0/ActionPoiID0. Script binding supplies that missing action while retaining the quest ender.",
+    "The fallback OptionText was unrelated catapult wording: Can you throw me at a stronghold? The actual BroadcastTextID98963 is supplied by the existing Hotfix row: Can you give me a lift back to the Foothold? This ID is absent from the native runtime BroadcastText.db2. Both existing Hotfix Text/Text1 and ConditionID0 are queried, rather than claiming a native DBC row. Migration17 aligns only that old/default fallback and retains the broadcast reference; no Hotfix row is changed.",
+    "Typed native Vehicle4387 has only seat0=15956. Seat flags32783/flagsB34078721 are usable through native IsUsableByOverride and lack CAN_CONTROL0x800. The script preserves those data and both template displays62917/62918 (native model57/file121768). It does not change a shared vehicle seat, model or pet code. Vehicle4387 lacks FIXED_POSITION0x200000; native InitMovementInfoForBase therefore does not root this vehicle for that flag. Native vehicle join/seat attachment/cast behavior remains a client/engine boundary of the regression.",
+    "The actual source is DB340420 at3764.07/2918.25/431.166. A matching authored TaxiPath was not found in the checked nearby native path points; node1741 identifies Forsaken Foothold at3987.54/2914.29/241.257. The new route is explicitly reconstructed server scripting, not an official/sniffed taxi or a claimed Blizzard flight. It climbs to456, crosses above the ridge, descends over the landing to260, then reaches the exact native landing position. Motion is four linear non-navmesh point segments at24yd/s, not a smooth spline that could curve through unchecked terrain.",
+    "An initial proposed diagonal final descent from4000/2918.25/255 crossed terrain: sample3993.77/2916.27/248.629 had ground249.245. That failed candidate is retained in .codex/batrider-geometry-initial.log and was replaced by descent over the landing. The final route passes four native VMap static centerline LOS checks and164 sampled ground/VMap floor checks on runtime tile1220_24_26; landing terrain241.154 is0.102646 below the native node. This is not full wing/body clearance, dynamic/phased collision or rendered motion verification.",
+    "The public source stays at its quest location with gossip/questgiver flags. A separate TempSummon of the same entry receives viewerGuid before Map::AddToMap; native Map::SummonCreature uses AddPlayerInPersonnalVisibilityList for that GUID. One per-player pending vehicle is tracked, allowing concurrent private runs without moving or consuming the public quest ender. The copy has no DB GUID, removes gossip/quest/spellclick flags, becomes passive/protected/active and retains native vehicle4387. It grants no quest/item/kill credit and adds no invented quest prerequisite.",
+    "The source accepts only current menu18762/option0 on public DB340420, live nearby Horde player/map1220/zone7541/instance0/same map and phase, present prepared menu item, no teleport/vehicle/transport/taxi/combat/charmer. Other menus delegate to SmartAI. Native gossip option filtering was source-reviewed; the linked GetRequiredNpcFlagForOption(None0) returns primary1 and admits flags3, while questgiver2 alone fails. Full PrepareGossipMenu/RPC and live phase visibility are not executed in the new harness.",
+    "A failed summon/vehicle kit or10-second boarding timeout leaves no flight progress. EnterVehicle seat0 uses the native full-trigger ride route. Takeoff waits for actual vehicle base, matching seat0 passenger and finalized player boarding spline. It relocates passengers, sends movement flags and performs SetClientControl(vehicle,false) before the first point. Seat15956 is non-control, so exit restores SetClientControl(player,true), with a viewpoint-only fallback when appropriate. Client camera follows and pet-frame behavior cannot be inferred from these calls.",
+    "MovementInform accepts only the expected POINT_MOTION_TYPE/point100..103, finalized vehicle spline and actual endpoint within2yd. A missing callback may be retried from that finished endpoint. A60-second timeout or early exit never counts as arrival. Native PassengerBoarded(false) occurs inside RemovePassenger before m_vehicle clears; the callback restores control and records exit without recursively calling ExitVehicle. Normal exit waits for the transport-exit spline before delayed despawn. A stalled detached spline is bounded at5 seconds before same-map source recovery; a new vehicle/transport or external map transfer is not teleported back.",
+    "Native Unit::ExitVehicle removes the control aura first, whose unapply calls _ExitVehicle without forwarding the optional exitPosition. The implementation therefore calls ExitVehicle() only after the vehicle reaches the actual landing origin. The initial source/test assumption that ExitVehicle(&Landing) controls placement was corrected before final build; no shared Unit exit change is made. Native exit handles root/transport-exit and pet resummon; actual vehicleHidesPet reset still needs client confirmation.",
+    "Forced vehicle death restores the mover synchronously and uses the player event queue for a bounded exit-spline recovery, capturing a GUID rather than the dead AI. Logout, player death, missing owner, teleport/map mismatch and per-player despawn cleanup are checked with adapters. The copy has a90-second outer summon lifetime; no server restart/crash persistence or exact in-flight re-entry is promised.",
+    "Migration17 binds only template97250 when its original menu18762/vehicle4387 and empty/same ScriptName match, preserves custom bindings and other templates, and changes only the old/default option text. Temporary-table tests replay the unbound/old-text state and apply twice; custom script/text/vehicle survive. Live backed-up transaction registers the final SHA1 as RELEASED. Existing38317 ender, flags, vehicle, model and sole public source remain unchanged. Existing native38308/38317 progression regression passes after binding."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimBatRider.ps1",
+      "result": "PASS",
+      "log": ".codex/batrider-test.log",
+      "scope": "Actual extracted production AI/recovery/path code;21 invalid admissions, private multi-player/dedup, failed summons/kit/boarding, boarding before handoff, four endpoints, wrong/missing callbacks, normal exit wait, early exit/timeout/source recovery, logout/map/other vehicle isolation, forced-death event and bounded stalled exit."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBatRiderData.ps1 / -Live",
+      "result": "PASS",
+      "log": ".codex/batrider-data.log / .codex/batrider-live-data.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimBatRiderCatalog.ps1",
+      "result": "PASS",
+      "log": ".codex/batrider-catalog.log",
+      "scope": "Linked native gossip flag helper; typed DB2 vehicle/seat/model/taxi node; separate actual Hotfix text; four static flight segments/164 floor samples/supporting landing."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBatRiderRelease.ps1",
+      "result": "PASS",
+      "log": ".codex/batrider-release-check.log",
+      "scope": "Fresh link map and canonical PE, resolve jump thunks/tail calls; SetGUID->EnterVehicle, UpdateAI->SetClientControl/MoveNext->MovePoint, BeginExit->ExitVehicle, gossip->correct personal-summon overload. Bounded call-transfer scan, not a full instruction/control-flow proof."
+    },
+    {
+      "command": "tools/tests/Test-WarlockRegression.ps1",
+      "result": "PASS",
+      "log": ".codex/batrider-mover-regression.log",
+      "scope": "Required existing scripted-mover regression and unchanged Warlock handlers. No Warlock code modified."
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlook.ps1",
+      "result": "PASS",
+      "log": ".codex/batrider-overlook-regression.log"
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_17_17_stormheim_batrider.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-batrider\\20261017-175529",
+    "sha1": "86DCD4C4406F00A2D46C5A7F4F50606FD5B57139",
+    "state": "RELEASED",
+    "initially_applied_sha1": "8A19A73B3D5F8F2CD6643E6898604F3019322675",
+    "comment_followup": "Clarified Hotfix provenance in SQL comment; executable SQL unchanged; final updates SHA1 refreshed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "targets": [
+      "worldserver",
+      "bnetserver"
+    ],
+    "builds": [
+      ".codex/batrider-release-final.log",
+      ".codex/batrider-release-map.log"
+    ],
+    "normal_final_link_inputs": [
+      "build-extractors/src/server/scripts/Release/scripts.lib",
+      "build-extractors/src/server/game/Release/game.lib"
+    ],
+    "OutDir_override": false,
+    "fresh_map": "worldserver generated Release Link metadata enabled GenerateMapFile/MapFileName in the untracked build project; no production CMake/output path change. Previous canonical map was stale and was not trusted.",
+    "startup": "build-extractors/runtime-test/stormheim-batrider/startup-20261017-175746/",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "worldserver_left_running": false,
+    "runtime_sha256": {
+      "worldserver.exe": "39abc08b3afd9c5f1ef6f39412737c3f8ead5ff5e854723bf5534b8410c80007",
+      "bnetserver.exe": "bc010541f0928dc1dccb935fd93b461c20f6d349cbb4e2da81da71fd85a6f04c"
+    },
+    "limitation": "Startup confirms registration/data loading, not spawn AI activation or client interactions."
+  },
+  "fixture_limits": [
+    "Spell casting, actual vehicle join/exit spline and event scheduler, world lookup/phase/range, viewer visibility, movement progression, packets and pet frame are adapters in the production-code test.",
+    "The source uses native vehicle/pet lifecycle; the new test does not simulate or verify bag/save/scenario/client state. Existing quest test limitations are retained.",
+    "No actual client flight, camera, attachment, pet portrait, cold renderer loading or dynamic collision check was performed."
+  ],
+  "client_pending": [
+    "Menu display/fallback/localized Hotfix text and normal38317 hand-in on the public rider.",
+    "Actual boarding/seat attachment, personal visibility for two players, native models/animations and all four flight segments.",
+    "Camera follows the flight and returns to player; controls/movement work after normal/early exit, logout, map change and fallback.",
+    "Permanent pet and portrait before/after boarding/exit; UNIT_EXITING_VEHICLE clears PlayerFrame.vehicleHidesPet.",
+    "Ground landing without clipping/falling, actual renderer/dynamic geometry and repeated optional trips."
+  ],
+  "file_sha256": {
+    "src/server/scripts/Legion/stormheim_batrider.cpp": "83667a005982aa46e7dffba1452594fb71b729241285c18ec2c894093045703e",
+    "src/server/scripts/Legion/stormheim_batrider_path.h": "682ff95ab0ef3325ae7b4e476d68b59f2ae4d3bc794c44515abc4614dadfcbb4",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "b81a9ce6e7ecf98400005eabd90b03f6e6adae62ae328679c3a6ea2b01d64a16",
+    "sql/updates/world/2026_10_17_17_stormheim_batrider.sql": "75d1b6763d69c1fff0f3b5ffd9aaf5cb3c153b422bf23a43438894b27852882b",
+    "tools/tests/Test-StormheimBatRider.ps1": "88189498c8670a5463eceab4530b3152c33889d4ffd58e424d31fe2e1b00106a",
+    "tools/tests/StormheimBatRiderTest.cpp": "92330e0a717896f82ca815fc90e4510f8b53c3a161bf26adcdbc2f1eaade66f5",
+    "tools/tests/Test-StormheimBatRiderData.ps1": "855bca13989fa50daf5a42a082f85dded13eae58f14cc32206dff39bffaa48ca",
+    "tools/tests/Test-StormheimBatRiderCatalog.ps1": "4bdbfc0834ee5d31c9f06c1525f15760ed360e183a7a5a26c0d281ab365e378b",
+    "tools/tests/StormheimBatRiderCatalog.cpp": "a42556481cf4af0614c249f2ed6ed181cb7c5dfc4edb03543e52726a82feff5f",
+    "tools/tests/Test-StormheimBatRiderRelease.ps1": "3f6f38748f108d6342b3ee4fa57d128b2c87f749984e33369db8b3c5bf88d3bb"
+  }
+}

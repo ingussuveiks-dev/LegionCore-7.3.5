@@ -68,5 +68,11 @@
     "tools/tests/Test-StormheimOverlookRiderData.ps1": "b947803eb217fa5972b3bbcb21ee3f6d73666d093aee7ae8ea97a302d830277c",
     "tools/tests/Test-StormheimOverlookData.ps1": "b666bdbd92998f3a0df5576a4f01d199da93cee49f68aa747fd5256bd53639a8",
     "tools/tests/StormheimOverlookTest.cpp": "8e423281fafb94637568c5c68986cbd12207765b3e7f386bf79229dcc0f82842"
+  },
+  "batrider_return_followup_2026_10_17": {
+    "audit": "docs/audits/stormheim-batrider-2026-10-17.json",
+    "status": "Optional menu18762/0 now implemented as a reconstructed personal return flight to Forsaken Foothold; selected code/data/deployed-call/startup checks pass. Earlier text/optional-gossip observations and check hashes remain historical snapshots.",
+    "text_correction": "Hotfix BroadcastText98963 says lift back to the Foothold; earlier throw/stronghold label was the stale fallback, now aligned. Native BroadcastText.db2 lacks98963.",
+    "client_verified": false
   }
 }

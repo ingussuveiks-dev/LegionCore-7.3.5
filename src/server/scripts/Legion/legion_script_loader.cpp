@@ -34,6 +34,7 @@ void AddSC_stormheim_greywatch();
 void AddSC_stormheim_skold_ashil();
 void AddSC_stormheim_gift();
 void AddSC_stormheim_dreadwake();
+void AddSC_stormheim_batrider();
 void AddSC_stormheim_new_beginning();
 void AddSC_stormheim_another_way();
 void AddSC_stormheim_winter();
@@ -295,6 +296,7 @@ void AddLegionScripts()
     AddSC_stormheim_skold_ashil();
     AddSC_stormheim_gift();
     AddSC_stormheim_dreadwake();
+    AddSC_stormheim_batrider();
     AddSC_stormheim_new_beginning();
     AddSC_stormheim_another_way();
     AddSC_stormheim_winter();
