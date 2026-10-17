@@ -2,11 +2,50 @@
 #include "GameObjectAI.h"
 #include "GameObject.h"
 #include "Player.h"
+#include "Creature.h"
+#include "SmartAI.h"
+#include "SpellScript.h"
+#include "ObjectAccessor.h"
+#include "QuestData.h"
+#include <memory>
 
 namespace StormheimSkoldAshil
 {
 struct Shield {uint32 entry;ObjectGuid::LowType spawn;};
 Shield const Shields[]={{242673,115401},{251557,115389},{251558,115385},{251559,115377},{251560,115394},{251561,115380}};
+bool Shrines(Player* p)
+{
+    for(auto entry:{242994u,242995u,242996u,242998u})if(!p->GetQuestObjectiveData(39092,entry))return false;
+    return true;
+}
+bool Communion(Player* p,Creature* c)
+{
+    return p && c && p->IsInWorld() && p->IsAlive() && c->IsInWorld() && c->IsAlive() && p->GetMapId()==1220 &&
+        p->GetZoneId()==7541 && !p->GetInstanceId() && c->GetMapId()==1220 && !c->GetInstanceId() &&
+        c->GetEntry()==94393 && c->GetDBTableGUIDLow()==293383 && p->InSamePhase(c) && p->IsWithinDistInMap(c,INTERACTION_DISTANCE) &&
+        p->GetQuestStatus(39092)==QUEST_STATUS_INCOMPLETE && Shrines(p) && !p->GetQuestObjectiveData(39092,94477);
+}
+Creature* Statue(Player* p)
+{
+    if(!p)return nullptr;
+    std::list<Creature*> actors;GetCreatureListWithEntryInGrid(actors,p,94393,15);
+    for(auto c:actors)if(Communion(p,c))return c;
+    return nullptr;
+}
+void RepairPrematureCommunion(Player* p)
+{
+    // The old group/click action could save final credit before any rites.
+    // That state is provably out of order. Preserve finished/rewarded history
+    // and an otherwise valid four-shrine run; never reset shrine progress.
+    if(!p || p->GetQuestStatus(39092)!=QUEST_STATUS_INCOMPLETE || !p->GetQuestObjectiveData(39092,94477) || Shrines(p))return;
+    auto q=sQuestDataStore->GetQuestTemplate(39092);if(!q)return;
+    for(auto const& o:q->GetObjectives())if(o.Type==QUEST_OBJECTIVE_MONSTER && o.ObjectID==94477 && o.StorageIndex==4)
+    {
+        p->SetQuestObjectiveData(q,&o,0);p->SendQuestUpdateAddCredit(q,ObjectGuid::Empty,o,0);
+        TC_LOG_INFO("scripts","Skold-Ashil: cleared premature communion credit");
+        break;
+    }
+}
 bool NativeShield(GameObject* go)
 {
     if(go->GetMapId()!=1220 || go->GetZoneId()!=7541 || go->GetInstanceId())return false;
@@ -39,8 +78,71 @@ public:
     GameObjectAI* GetAI(GameObject* go) const override {return new AI(go);}
 };
 
+struct npc_stormheim_ascendant_statue : SmartAI
+{
+    explicit npc_stormheim_ascendant_statue(Creature* c):SmartAI(c){}
+    void sGossipSelect(Player* p,uint32 menu,uint32 option) override
+    {
+        if(menu!=18543 || option!=0){SmartAI::sGossipSelect(p,menu,option);return;}
+        if(!StormheimSkoldAshil::Communion(p,me))return;
+        p->PlayerTalkClass->SendCloseGossip();
+        p->CastSpell(p,186982,false); // Native Communing: two seconds, not an instant trigger.
+    }
+};
+
+class spell_stormheim_communing : public SpellScript
+{
+    PrepareSpellScript(spell_stormheim_communing);
+    ObjectGuid statue;
+    std::weak_ptr<uint8> lifetime;
+    bool captured=false,credited=false;
+    bool Load() override {return GetCaster()->IsPlayer() && GetCaster()->GetMapId()==1220 && GetCaster()->GetZoneId()==7541;}
+    bool Valid()
+    {
+        auto p=GetCaster()->ToPlayer();
+        return captured && !lifetime.expired() && p && p->IsInWorld() && p->GetMapId()==1220 && !p->GetInstanceId() &&
+            StormheimSkoldAshil::Communion(p,ObjectAccessor::GetCreature(*p,statue)) &&
+            lifetime.lock()==p->getQuestStatus(39092)->ScriptLifetime;
+    }
+    SpellCastResult Check()
+    {
+        auto p=GetCaster()->ToPlayer();
+        if(!captured)
+        {
+            auto actor=StormheimSkoldAshil::Statue(p);if(!actor)return SPELL_FAILED_BAD_TARGETS;
+            statue=actor->GetGUID();p->AddQuestDelayedEvent(39092,0,[]{});
+            lifetime=p->getQuestStatus(39092)->ScriptLifetime;captured=true;
+        }
+        return Valid()?SPELL_CAST_OK:SPELL_FAILED_BAD_TARGETS;
+    }
+    void Credit(SpellEffIndex index)
+    {
+        // Native effect134 shares group credit. Communion is a personal final
+        // interaction, so retain its cast/visual but award the valid caster only.
+        PreventHitDefaultEffect(index);
+        auto p=GetCaster()->ToPlayer();if(credited || GetHitPlayer()!=p || !Valid())return;
+        credited=true;p->KilledMonsterCredit(94477);
+    }
+    void Register() override
+    {
+        OnCheckCast+=SpellCheckCastFn(spell_stormheim_communing::Check);
+        OnEffectHitTarget+=SpellEffectFn(spell_stormheim_communing::Credit,EFFECT_0,SPELL_EFFECT_KILL_CREDIT2);
+    }
+};
+
+class player_stormheim_communion_recovery : public PlayerScript
+{
+public:
+    player_stormheim_communion_recovery():PlayerScript("player_stormheim_communion_recovery"){}
+    void OnLogin(Player* p) override {StormheimSkoldAshil::RepairPrematureCommunion(p);}
+};
+
 void AddSC_stormheim_skold_ashil()
 {
     TC_LOG_INFO("server.loading","Skold-Ashil: distinct shield readings");
     new go_stormheim_engraved_shield();
+    TC_LOG_INFO("server.loading","Skold-Ashil: ordered native communion");
+    RegisterCreatureAI(npc_stormheim_ascendant_statue);
+    RegisterSpellScript(spell_stormheim_communing);
+    new player_stormheim_communion_recovery();
 }

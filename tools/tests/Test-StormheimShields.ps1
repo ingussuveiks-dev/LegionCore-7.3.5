@@ -19,8 +19,10 @@ $prefix=$prefix.Replace('FakeMap* GameObject::GetMap(){static FakeMap map;return
 $prefix=$prefix.Replace('uint32 spellId=0;Unit* spellCaster=user;','if(auto p=user->ToPlayer())if(AI()&&AI()->GossipUse(p))return;uint32 spellId=0;Unit* spellCaster=user;')
 [IO.File]::WriteAllText("$out/ShieldsFixture.inc",$prefix)
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_skold_ashil.cpp" -Raw
-$source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
-[IO.File]::WriteAllText("$out/ShieldsProduction.inc",$source.Substring(0,$source.IndexOf('void AddSC_stormheim_skold_ashil()')))
+$a=$source.IndexOf('struct Shield ');$b=$source.IndexOf('bool Shrines(')
+$c=$source.IndexOf('bool NativeShield(');$d=$source.IndexOf('class go_stormheim_engraved_shield')
+$e=$source.IndexOf('struct npc_stormheim_ascendant_statue');if($e -lt 0){$e=$source.IndexOf('void AddSC_stormheim_skold_ashil()')}
+[IO.File]::WriteAllText("$out/ShieldsProduction.inc","namespace StormheimSkoldAshil {`n"+$source.Substring($a,$b-$a)+$source.Substring($c,$d-$c)+$source.Substring($d,$e-$d))
 $native=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 $a=$native.IndexOf('uint32 Player::GetGossipTextId(uint32');$b=$native.IndexOf('uint32 Player::GetDefaultGossipMenuForSource(',$a)
 [IO.File]::WriteAllText("$out/ShieldsText.inc",$native.Substring($a,$b-$a))

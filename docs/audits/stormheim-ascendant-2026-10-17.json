@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-17",
+  "quest": 39092,
+  "name": "Becoming the Ascendant",
+  "client_verified": false,
+  "status": "Code/data order, native cast and personal credit repaired; in-client rites and communion remain pending.",
+  "previous": "bb0c67f9 completed39062/39063. docs/audits/stormheim-shields-2026-10-17.json retains its historical binary/source hashes, failed center/LOS survey, discarded manual witness and text-location assumption; this follow-up supersedes the shared script/runtime snapshot without erasing that evidence.",
+  "original_failures": [
+    "Statue94393 at DB293383/menu18543 option0 had SmartAI33/94477 plus72/close and no shrine conditions. It could award final credit before any shrine; native event reward also shared it to nearby group members.",
+    "Final objective278973 Flags2 means SEQUENCED, not OPTIONAL (flag4). Native KilledMonsterCredit/RewardPlayerAndGroupAtEvent do not enforce the client sequence, so four mandatory GO goals alone did not enforce the final interaction order.",
+    "Native Communing186982 existed with a two-second self cast and effect134/94477 but was not used by the original statue. Effect134 itself also shares group credit; simply adding that spell would retain the group defect."
+  ],
+  "implementation": [
+    "Scoped statue AI retains SmartAI delegation outside menu18543/option0. Its expected interaction requires a live player/statue, outdoor1220/zone7541, actual DB293383, same phase, native range, active incomplete39092, all four GO objective records and no final credit. It closes gossip and starts normal non-triggered186982.",
+    "Spell script captures the actual statue GUID and native quest ScriptLifetime at initial CheckCast. Every later check and hit revalidates identity, live quest lifetime, world/map/phase/range and all four objectives. Abandon/reaccept cannot reuse an in-flight cast. Interrupted/failed casts never dispatch the effect.",
+    "At the native effect134 hit the script suppresses default group credit and awards direct KilledMonsterCredit94477 to the valid caster only, once. It retains native cast timing/visual data; it neither fabricates a transformation nor requires still-active ten-minute shrine buffs.",
+    "PlayerScript OnLogin clears only provably premature final94477 for an incomplete39092 missing one or more shrine goals. It preserves all shrine counters, completed/rewarded history and all-four-shrine states. No character SQL/history reset was run.",
+    "Migration09 replaces only the two captured SmartAI click/close rows, binds the actor/spell and adds five AND conditions to source15/menu18543/option0: active quest9 and four native quest-objective41 checks by GO ObjectID. Exact shrine templates, models, positions, buffs, spell_area100044 and later39122 remain unchanged. Custom AI/conditions prevent takeover; independent spell bindings survive repeated migration."
+  ],
+  "native_data": {
+    "shrine_goals": [
+      242994,
+      242995,
+      242996,
+      242998
+    ],
+    "blessings": [
+      186965,
+      187780,
+      186964,
+      186972
+    ],
+    "duration_ms": 600000,
+    "opening": {
+      "lock": 43,
+      "slot": 1,
+      "type": 2,
+      "index": 13,
+      "spell": 6478,
+      "effect": 33,
+      "target": 23,
+      "note": "Actual CanOpenLock accepts Misc13 and rejects ordinary Misc5; spell3365 is not substituted."
+    },
+    "communing": {
+      "spell": 186982,
+      "cast_ms": 2000,
+      "self_target": 1,
+      "effect": 134,
+      "credit": 94477,
+      "visual": 41037
+    },
+    "catalog_lines": [
+      "blessing186964 aura=87 trigger=0",
+      "blessing186965 aura=52 trigger=0",
+      "blessing186972 aura=42 trigger=186973",
+      "communion effect0 type=134 target=1 misc=94477",
+      "blessing187780 aura=8 trigger=0",
+      "Communing castMs=2000 range=7",
+      "shrine display=26892 file=243081",
+      "shrine display=27227 file=658109",
+      "shrine display=35263 file=1326699",
+      "shrine display=35264 file=1327089",
+      "statue model=9116 file=1339502",
+      "PASS: native Lock43/open6478, four self blessings/ten-minute durations, two-second self communion134/94477 and visual41037, actual shrine/statue models and chapter136/order5. Visual playback remains client pending."
+    ],
+    "visual_trace": {
+      "spell": 186982,
+      "links": [
+        {
+          "ID": 85106,
+          "visual": 41037,
+          "parent": 186982
+        }
+      ],
+      "visuals": [
+        {
+          "ID": 41037,
+          "missile_set": 0,
+          "destination_attachment": 20,
+          "cast_attachment": 255
+        }
+      ],
+      "events": [
+        {
+          "ID": 85710,
+          "start": 1,
+          "end": 2,
+          "target": 1,
+          "kit": 10753,
+          "parent": 41037
+        }
+      ],
+      "kits": [
+        {
+          "ID": 10753,
+          "flags": 0,
+          "fallback": 0
+        }
+      ],
+      "kit_effects": [
+        {
+          "ID": 12670,
+          "type": 6,
+          "effect": 2592,
+          "parent": 10753
+        },
+        {
+          "ID": 12671,
+          "type": 5,
+          "effect": 7518,
+          "parent": 10753
+        }
+      ],
+      "attachments": [],
+      "effect_names": [],
+      "sha256": {
+        "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+        "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+        "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+        "SpellVisualKit": "f132307415150dd8ba923066aa4fb8054ad815fc621179e947480e7fa2b1035d",
+        "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+        "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+        "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+      },
+      "boundary": "Checked native WDC1 layouts/relationships, kit fallbacks and attachment references. Non-model kit effects retain their numeric types/IDs; no interpretation or playback claim. Animation, sound and timing require the 7.3.5 client; no invented Ascendant transformation."
+    },
+    "text_source": "Original TDB quest text instructs four shrine blessings then statue communion. Native records establish usable186982/94477; actual original client interaction was not recovered from a sniff."
+  },
+  "automated_checks": [
+    {
+      "command": "tools/tests/Test-StormheimAscendant.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Extracted production statue/spell/recovery, native quest/goober/group/CanOpenLock and condition41/9 + AND dispatcher. All24 shrine orders, early/repeat/group/interrupt/wrong-hit/phase/range/death/map/logout/reaccept, expired buffs, partial legacy repair and39063->39092->39122 reward gates. It reruns shield720-order regression and actual final-link library freshness; registration/diagnostic markers checked in canonical Release."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAscendantData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Isolated migration twice, custom SmartAI and unrelated spell preservation; live actor/binding/menu conditions/goals/unchanged shrine templates and spell_area. Hotfix has no replacement native spells/misc/visual/lock records."
+    },
+    {
+      "command": "tools/tests/Test-StormheimAscendantCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native DB2 reader loads actual lock/effects/cast times/durations/visual links/GO/statue model records and chapter136/order5. Static collision floors and six complete Detour ground corridors, supported endpoints and conservative5-yard center range/LOS; no partial paths accepted."
+    },
+    {
+      "command": "python tools/research/audit_ascendant_communion_visual.py --output <private visual.json>",
+      "result": "PASS",
+      "coverage": "Checked WDC1 layout/relationship chain186982->41037->event85710->kit10753. Kit fallback0; effects type6/2592 and5/7518 have no model attachments. Their numeric references are retained without invented semantic/rendering claims."
+    },
+    {
+      "command": "cmake --build build-extractors --config Release --target worldserver bnetserver --parallel4; canonical startup and shutdown0",
+      "result": "PASS",
+      "coverage": "No global OutDir override. Both final executables in canonical runtime; startup accepts migrations/scripts, DBErrors/stderr0 bytes, graceful exit0. Startup does not exercise actual player casts."
+    }
+  ],
+  "retained_deployment_failure": "First guarded migration attempt declined because inspection initially missed the existing second SmartAI72 gossip-close row. No actor/condition/credit rewrite occurred on that attempt; live validation caught legacy credit still present. Migration guard/replay were extended to capture both existing rows, then reapplied and validated live. Initial private backup132838 and final132859 retained.",
+  "geometry": {
+    "results": [
+      "target 2485.97 1473.63 25.3854",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2485.97,1473.63,21.7087 through 33 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=183.154yd.",
+      "endpoint centerDistance=3.6767",
+      "endpoint surfaceZ=21.7087 floor=21.452 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.256742 staticLOS=1 requireLOS=1 PASS",
+      "target 2485.95 1525.8 25.8883",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2485.95,1525.8,21.2171 through 33 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=180.567yd.",
+      "endpoint centerDistance=4.67119",
+      "endpoint surfaceZ=21.2171 floor=21.452 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.234852 staticLOS=1 requireLOS=1 PASS",
+      "target 2597.62 1525.91 26.2346",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2597.62,1525.91,22.2821 through 12 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 3 corners, length=66.4204yd.",
+      "endpoint centerDistance=3.95246",
+      "endpoint surfaceZ=22.2821 floor=21.452 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.830177 staticLOS=1 requireLOS=1 PASS",
+      "target 2597.94 1474.28 25.422",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2597.94,1474.28,21.7087 through 17 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 7 corners, length=83.6427yd.",
+      "endpoint centerDistance=3.7133",
+      "endpoint surfaceZ=21.7087 floor=21.452 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.256744 staticLOS=1 requireLOS=1 PASS",
+      "target 2541.85 1445.71 26.9562",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2541.85,1445.71,27.6111 through 30 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=155.088yd.",
+      "endpoint centerDistance=0.654881",
+      "endpoint surfaceZ=27.6111 floor=26.8592 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.751863 staticLOS=1 requireLOS=1 PASS",
+      "target 2542.8 1418.17 32.59",
+      "PASS: Source approach 2659.46,1517.76,30.0771 -> target approach 2542.8,1418.17,32.642 through 32 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 8 corners, length=180.188yd.",
+      "endpoint centerDistance=0.0520363",
+      "endpoint surfaceZ=32.642 floor=32.5107 terrain=18.4136 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.131374 staticLOS=1 requireLOS=1 PASS"
+    ],
+    "floors": [
+      "npc 338652 Z=30.3969 floor=30.3131 terrain_area=7694 PASS",
+      "object 115369 Z=25.3854 floor=21.452 terrain_area=7694 PASS",
+      "object 115368 Z=25.8883 floor=21.452 terrain_area=7694 PASS",
+      "object 115374 Z=26.2346 floor=21.452 terrain_area=7694 PASS",
+      "object 115371 Z=25.422 floor=21.452 terrain_area=7694 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified.",
+      "object 115369 Z=25.3854 floor=21.452 terrain_area=7694 PASS",
+      "object 115368 Z=25.8883 floor=21.452 terrain_area=7694 PASS",
+      "object 115374 Z=26.2346 floor=21.452 terrain_area=7694 PASS",
+      "npc 293383 Z=26.9562 floor=26.8592 terrain_area=7694 PASS",
+      "npc 338653 Z=32.59 floor=32.5107 terrain_area=7694 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "boundary": "Static map/vmap/navmesh evidence, not live traversal or continuous body-clearance proof. Elevated shrine origins remain within conservative center range; no spawn/navmesh changes."
+  },
+  "boundaries": [
+    "C++ tests compile extracted production handlers; grids/phasing/range lookups, packet delivery, cast dispatch and loaded saved state use fixture services. Native DB2/data and static collision tests are separate. No full map/session integration or rendered client verification is claimed.",
+    "Interrupted cast coverage verifies no effect credit if hit is not dispatched and that invalidated hits are rejected; native spell scheduling/cancel packets themselves are not replaced by the fixture.",
+    "Login repair was tested against loaded quest records, not an actual character login/database save cycle. All-four-shrine old final states remain preserved even if their historical click order cannot be recovered.",
+    "Only endpoint static LOS is surveyed, not uninterrupted player movement around dynamic blockers. Visual/sound kit numeric dependencies do not prove animation/audio playback."
+  ],
+  "pending_client_checks": [
+    "Alliance: accept39092 from Lorna95921, use all four actual shrines in varying orders, confirm each blessing/animation/model and native click reach. Confirm single reads/relog/abandon/retry and nearby group members progress independently.",
+    "Statue94393 must hide the commune option until all four personal GO goals; direct/replayed early selection must not advance it. Complete the visible two-second cast; interrupt/move away and retry. A nearby player, even with four rites, must perform their own communion.",
+    "Confirm native communion visual/sound/animation timing and completion UI, without claiming a new Ascendant transformation.",
+    "For a pre-existing incomplete quest with premature final credit and missing shrines, relog and inspect final counter cleanup/persistence while shrine goals stay intact.",
+    "Turn in to Genn95804 and verify39122 offer and its later behavior separately. No WoW client actions were performed in this batch."
+  ],
+  "deployment": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-ascendant\\20261017-132859",
+    "sha1": "10AFC31250E15EE25E3DBECF4FB801C1A6A64761",
+    "state": "RELEASED",
+    "migration": "2026_10_17_09_stormheim_ascendant_communion.sql"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "c94755c6db05a15da878ff91ef225e61df61ea4bb79a4ca5e8b1481a8f29427e",
+    "bnetserver_sha256": "bb540ac9df8f78f0632f50446fda0afbf30e4499d3e483025286bfb9c49d230a",
+    "scripts_lib_sha256": "b036458743e6613dcd809fba7d2847ce3e2fcdbbb1e7f81ac85d3cfab10502bb",
+    "startup": "build-extractors/runtime-test/stormheim-ascendant/startup-20261017-132931",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_skold_ashil.cpp": "c7e83fa96aa59b35bd59b66309257529572e349eaebe32df55953cc869a9e94f",
+    "sql/updates/world/2026_10_17_09_stormheim_ascendant_communion.sql": "621ea8fdecaf19ffcb9c5fd69da76ff21abce85d591768265bd002519bd184a7",
+    "tools/tests/Test-StormheimShields.ps1": "fddd8c97eaa86988fddc11746e303cbc46f173aec9b2de213dd2efb17c131969",
+    "tools/research/audit_ascendant_communion_visual.py": "2fcda18c36c03a3341a16ebb23ed3c4b3f48b7322547a9b7667015fd4a386bbf",
+    "tools/tests/StormheimAscendantCatalog.cpp": "1287d54e16b11cea6fd40e7a56e3e7b8c52a459e61b1e6a60111322cee7e03b3",
+    "tools/tests/StormheimAscendantTest.cpp": "14feb5f37f6a91344ba6dde4d42ce0a0f63c927c6f50bde069cae0fbf3a2781e",
+    "tools/tests/Test-StormheimAscendant.ps1": "91da9644dcef9c8de835f81f1996a5f1ab5c3b653b486e992bb2d2b15cfe1b3d",
+    "tools/tests/Test-StormheimAscendantCatalog.ps1": "4347046a6659f850534cd1016006c7082135c7ff31656b3752cd063d499f1943",
+    "tools/tests/Test-StormheimAscendantData.ps1": "3ba493c4ce21e7ccf9afaffab98ad9e049e58d7b13b8b7d9a65e5cee2a9efc32"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-ascendant/world.tsv": "8126f8cfbfb65d9bb787bbd44e9d12eb9473dd555694b2993096ce8aa2c4d7bb",
+    "build-extractors/runtime-test/stormheim-ascendant/world-live.tsv": "756a1a52622daaa89c392d6a31fcf54c698752a284d4cd9824aa24adb1cd9808",
+    "build-extractors/runtime-test/stormheim-ascendant/hotfix.tsv": "e398ced6af222e3ab557fffcd166540abd5c76b7e4d5e206dc7b570af7c5005b",
+    "build-extractors/runtime-test/stormheim-ascendant/native-lines.txt": "bfe5b51bb685e334239b16e5bb92e434e166a3a9da256ec051e8b354071ca046",
+    "build-extractors/runtime-test/stormheim-ascendant/geometry.txt": "79a0a506250df8263f93914bdf524075eb3c2d2dc385335d8e82cbe293507ddc",
+    "build-extractors/runtime-test/stormheim-ascendant/floors.txt": "e17508ff1a00d898de5b0fe066f05a25631dd106805c330b59248119cec2364b",
+    "build-extractors/runtime-test/stormheim-ascendant/visual.json": "2ea4d283c617daaaabf27c94b63f88c7ee511798af67614b102ba3f0930e279f"
+  },
+  "next": 39122
+}
