@@ -17,7 +17,7 @@ class NavInteractionSurface
     std::map<std::pair<int,int>,std::unique_ptr<GridMap>> grids;
 public:
     NavInteractionSurface(uint32 id,std::string path):map(id),root(std::move(path)){vm.InitializeThreadUnsafe({{map,{}}});}
-    bool Check(float const* p,float const* object,bool report)
+    bool Check(float const* p,float const* object,bool report,bool requireLineOfSight=true)
     {
         int tx=int(32-p[2]/533.33333f),ty=int(32-p[0]/533.33333f);auto& grid=grids[{tx,ty}];
         if(!grid){grid=std::make_unique<GridMap>();
@@ -34,9 +34,9 @@ public:
         if(std::isfinite(water)&&water>-1000&&water>=terrain&&p[1]>=terrain-2)error=std::min(error,std::abs(water-p[1]));
         if(vLiquid&&vWater>vFloor&&p[1]>vFloor-2)error=std::min(error,std::abs(vWater-p[1]));
         bool los=vm.isInLineOfSight(map,p[2],p[0],p[1]+2,object[2],object[0],object[1]+2,VMAP::ModelIgnoreFlags::Nothing);
-        bool pass=error<=1&&los;
+        bool pass=error<=1&&(!requireLineOfSight||los);
         if(report)std::cout<<"endpoint surfaceZ="<<p[1]<<" floor="<<floor<<" terrain="<<terrain<<" terrainLiquid="<<water<<" vmapLiquid="<<(vLiquid?vWater:-100000)
-            <<" surfaceError="<<error<<" staticLOS="<<los<<" "<<(pass?"PASS":"FAIL")<<'\n';
+            <<" surfaceError="<<error<<" staticLOS="<<los<<" requireLOS="<<requireLineOfSight<<" "<<(pass?"PASS":"FAIL")<<'\n';
         return pass;
     }
 };

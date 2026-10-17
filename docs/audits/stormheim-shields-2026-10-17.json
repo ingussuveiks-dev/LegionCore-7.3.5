@@ -1,0 +1,209 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    39062,
+    39063
+  ],
+  "client_verified": false,
+  "status": "Code/data delivery review and distinct shield-reading repair complete; native client interaction still pending.",
+  "original_failures": [
+    "All six shields used menu18581 with six unconditional text rows. Extracted Player::GetGossipTextId selected the last text26935 for every object; this is reproduced before applying the new conditions.",
+    "Every GossipHello event awarded SmartAI33/109346, including repeated use of the same shield. Native RewardPlayerAndGroupAtEvent also gave that reading to nearby group members. The aggregate6/6 could fill without six personal readings, although six mandatory GO objectives still prevented whole-quest completion. The native event-reward test reproduces both repeat and group sharing."
+  ],
+  "change": [
+    "A scoped GameObject AI awards direct personal109346 credit only before the first native use of each exact DB shield. Native GameObject::Use then retains gossip, the distinct GO credit, animation and cooldown. Repeated readings can reopen the text without progress. Busy/hidden/out-of-range/phase/dead-player boundaries are checked. Other map/DB identities delegate without the scoped counter.",
+    "Migration08 binds the six scripts and removes only their captured SmartAI33 rows. It appends source14 text conditions: ConditionType31, target1 (actual GO), TypeID5 and the corresponding entry. It preserves flags, models, positions, objective records, other gossip menus and unrelated data. Custom scripts/AI/events/conditions cause the migration to decline the repair rather than replace custom behavior.",
+    "No character history or existing counter is reset. A previously inflated aggregate can remain capped6, but all six native GO objectives are still required and can be completed normally."
+  ],
+  "story_assignment": {
+    "mapping": [
+      [
+        242673,
+        26930,
+        96736
+      ],
+      [
+        251557,
+        26931,
+        96737
+      ],
+      [
+        251558,
+        26932,
+        96738
+      ],
+      [
+        251559,
+        26933,
+        96739
+      ],
+      [
+        251560,
+        26934,
+        96740
+      ],
+      [
+        251561,
+        26935,
+        96741
+      ]
+    ],
+    "evidence": "All six existing authored Hotfix BroadcastTexts are populated. Text ordering is assigned to the six native objective storage indices1..6 as an explicit repair choice; original sniffed text-to-location association was not recovered. Do not describe that placement as client/native verified."
+  },
+  "delivery39062": {
+    "source": 94318,
+    "ender": 93779,
+    "location": [
+      2788.86,
+      1345.5,
+      67.6698
+    ],
+    "objectives": 0,
+    "behavior": "Native zero-objective delivery quest can be complete after acceptance; it is turned in at Lorna, not by an invented area-trigger objective. Rewarded39062 unlocks39063. Prior Greywatch audit12a067e3 establishes the Genn-to-overlook corridor and predecessor OR admission."
+  },
+  "shields": {
+    "quest": 39063,
+    "starter": 93779,
+    "ender": 95921,
+    "next": 39092,
+    "mandatory_objectives": "109346 amount6/storage0 plus six separate GO objectives amount1/storage1..6. Preserve all seven.",
+    "entries_and_spawns": [
+      [
+        242673,
+        115401
+      ],
+      [
+        251557,
+        115389
+      ],
+      [
+        251558,
+        115385
+      ],
+      [
+        251559,
+        115377
+      ],
+      [
+        251560,
+        115394
+      ],
+      [
+        251561,
+        115380
+      ]
+    ],
+    "in_game": "Read via the existing spell-free goober interaction. Report-use notification alone is not a reading. No new lock/cast, vehicle, camera or pet handler is introduced."
+  },
+  "automated_checks": [
+    {
+      "command": "Test-StormheimShieldsData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Native source identities/World contracts, six model/text rows and override absence; isolated migration applied twice, unrelated shrine preserved, custom SmartAI guard prevents partial replacement; actual live bindings/conditions installed."
+    },
+    {
+      "command": "Test-StormheimShields.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Extracted production GO AI; native goober, quest credit/completion/reward/previous/race, group event reward and text/condition evaluators. Original faults reproduced; all720 orders, repeat/busy/group/partial/abandon/range/phase boundaries; native no-origin-LOS behavior;39062 delivery and39092 Lorna handoff. Unique deployed diagnostic/registration and actual scripts.lib input freshness."
+    },
+    {
+      "command": "Test-StormheimShieldsCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native packed models/chapter136 ordering, all six shield/giver floors, seven full Detour ground/water corridors and endpoint support, actual extracted WorldObject::_IsWithinDist at the endpoint. Standard player reach1.5 and native GO size0.306 are read from production defines, with strict inside/outside boundary assertions."
+    },
+    {
+      "command": "Test-StormheimGreywatchCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Shared NavInteractionSurface default remains LOS-required; all six existing Greywatch endpoints still pass with requireLOS=1. Only the shield survey explicitly selects native no-origin-LOS behavior."
+    },
+    {
+      "command": "Release worldserver+bnetserver build, canonical startup and shutdown0",
+      "result": "PASS",
+      "coverage": "Both executables in build-extractors/bin/Release, no OutDir override. Ready and graceful exit0, DBErrors/stderr0 bytes; startup is loader evidence, not an interaction playthrough."
+    }
+  ],
+  "geometry": {
+    "results": [
+      "target 2712.52 1641.37 18.7454",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2715.55,1640.12,16.9883 through 98 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 22 corners, length=379.77yd.",
+      "endpoint centerDistance=3.71863",
+      "endpoint surfaceZ=16.9883 floor=16.0461 terrain=13.294 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.942154 staticLOS=0 requireLOS=0 PASS",
+      "target 2784.25 1476.16 24.8708",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2784.35,1476.99,23.9229 through 65 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=267.671yd.",
+      "endpoint centerDistance=1.26361",
+      "endpoint surfaceZ=23.9229 floor=23.2669 terrain=23.2669 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.655994 staticLOS=1 requireLOS=0 PASS",
+      "target 2675.02 1356.35 47.5821",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2675.02,1354.35,42.6553 through 32 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 11 corners, length=148.894yd.",
+      "endpoint centerDistance=5.31729",
+      "endpoint surfaceZ=42.6553 floor=42.3801 terrain=40.5625 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.275166 staticLOS=0 requireLOS=0 PASS",
+      "target 2658.06 1427.62 32.433",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2658.28,1426.08,28.2742 through 33 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 8 corners, length=179.472yd.",
+      "endpoint centerDistance=4.44086",
+      "endpoint surfaceZ=28.2742 floor=28.0585 terrain=27.577 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.215721 staticLOS=0 requireLOS=0 PASS",
+      "target 2853.91 1523.14 13.0343",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2854.16,1524.37,8.97546 through 81 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 18 corners, length=352.329yd.",
+      "endpoint centerDistance=4.24792",
+      "endpoint surfaceZ=8.97546 floor=8.70899 terrain=7.56172 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.266466 staticLOS=0 requireLOS=0 PASS",
+      "target 2728.16 1465.83 26.0828",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2727.69,1466.74,23.4577 through 48 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 13 corners, length=201.266yd.",
+      "endpoint centerDistance=2.81645",
+      "endpoint surfaceZ=23.4577 floor=23.2558 terrain=23.2558 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.201878 staticLOS=0 requireLOS=0 PASS",
+      "target 2659.46 1517.76 30.3969",
+      "PASS: Source approach 2788.86,1345.5,67.8654 -> target approach 2659.46,1517.76,30.0771 through 72 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=260.498yd.",
+      "endpoint centerDistance=0.319836",
+      "endpoint surfaceZ=30.0771 floor=30.3131 terrain=30.3131 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.236069 staticLOS=1 requireLOS=0 PASS"
+    ],
+    "retained_failure": "target 2712.52 1641.37 18.7454\nRejected nearest ground diagnostic: endpoint surfaceZ=16.6553 floor=14.5699 terrain=13.3032 terrainLiquid=0 vmapLiquid=-100000 surfaceError=2.08533 staticLOS=0 FAIL\nFAIL: approaches (7,0).\n",
+    "resolution": "The first generic survey imposed a ray to GO origin+2 and found no valid target approach. Native GameObject::Use/report-use does not impose that ray for a wall-mounted reading. The added speculative LOS gate was removed from the new script before handoff. The final survey checks the actual native range (5 plus object/player sizes), full corridor and supporting collision floor, without changing any spawn or navmesh. Origin rays remain logged as0 where obstructed. This does not prove client model visibility or a continuous recorded body/movement path; those stay pending.",
+    "discarded_manual_witness": "A candidate13-sample manual walk failed the fifteen body-ray checks. It was not counted as passing or checked in as an access route. No partial/exhausted/truncated corridor is accepted."
+  },
+  "boundaries": [
+    "World lookup, actual phasing/range services, packets/gossip UI, event scheduling and saved login state remain fixture services. Production handlers and native control/credit branches are extracted, not the complete map/session engine.",
+    "All seven access corridors are static navmesh/collision evidence, not a live client traversal or full body-clear trajectory. The geometry uses ordinary standard player reach; transformed/vehicle interaction remains a client boundary.",
+    "The original menu was one shared last text. Exact authored text-to-object geography remains unverified; the repair deliberately uses native objective order and preserves all texts."
+  ],
+  "pending_client_checks": [
+    "Alliance: accept/deliver39062 at Crowleys Overlook; verify actual quest menu and39063 offer.",
+    "Read all six real shields in any order; inspect all six story panels and visible counter. Reopening one shield must not advance the counter. A nearby group member must perform their own readings.",
+    "Confirm model placement, normal client click and natural walking access, particularly the wall-mounted242673. Offline no-origin-LOS acceptance does not verify visible client geometry.",
+    "Verify saved partial progress after relog, abandonment/reacceptance, full turn-in to95921 and39092 offer."
+  ],
+  "deployment": {
+    "migration": "2026_10_17_08_stormheim_shielded_secrets.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-shields\\20261017-130743",
+    "state": "RELEASED",
+    "sha1": "83A75CEB12AB5FA07B94AA9A6A67D12331DCCE6D"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "fcfa3c6411e0fb48a2d0608a25ae3862a7402164793fdb80753b34ab98e68b43",
+    "scripts_lib_sha256": "4598ff4f5c45cf7da2bc44ef789f832b50f6568a013c750dee3d339fdc0dfa86",
+    "startup": "build-extractors/runtime-test/stormheim-shields/startup-20261017-131526",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_skold_ashil.cpp": "6c603d5742900ce1dbdb14187deb551c2b9f9f0d04fb8deb998c7baec03d6acd",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "24047136cb21ba672b27090e82a42d713171d8f1542d4ae33b980c1c6eb9471c",
+    "sql/updates/world/2026_10_17_08_stormheim_shielded_secrets.sql": "4c3486cf82b736f9854db92dae757c748237d97395a70eaa88fb3ead0ea9ad49",
+    "tools/tests/NavInteractionSurface.h": "c8f85fe9659b3c3cb2184a7fddd01f8cf29ee3dd18301470f04e1cf88857a72c",
+    "tools/tests/StormheimShieldApproach.cpp": "bc12e15ee82c73d759f03e8fced2069938c373841dc29fb7362dd10c71b9b1c9",
+    "tools/tests/StormheimShieldsCatalog.cpp": "1adeb489a3b0a3dcdd7858aa6a6e7d3d1ef0e5ed507f675b6aed03057ff9c4ea",
+    "tools/tests/StormheimShieldsTest.cpp": "d971c6580d52243282ff1709c05a13f89f0fc67b4e8a4eeb730e29aa905f3391",
+    "tools/tests/Test-StormheimShields.ps1": "de8227847a901e8009196b32faf9c52744ea52c8b36811d40918e35c61caa195",
+    "tools/tests/Test-StormheimShieldsCatalog.ps1": "b1fba54d938fcc4bdb8b2909438016becce138400068600c590377e91a5b4d4f",
+    "tools/tests/Test-StormheimShieldsData.ps1": "2b93a777bbba225dd0763e208d6fad84aec6a781deb83c5e5164b908a8a07b6a"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-shields/world.tsv": "531ee04a1a48d3163d6f0cf8a14381225383b9b8478cc395e57538e484bfd13f",
+    "build-extractors/runtime-test/stormheim-shields/world-live.tsv": "f2ffde92c44bb22e32d0936c738a9854b521e9ae00bffcdcd9374383bccef163",
+    "build-extractors/runtime-test/stormheim-shields/hotfix.tsv": "56e70721f6efd0bd5806ec8301e0bdee3e9ab0ab83931d59e79f159f2782f7ec",
+    "build-extractors/runtime-test/stormheim-shields/native-lines.txt": "6d87320c2df5246c81642e5dffdcc26b8e43c5b7754541f9cc0b8ce73228e16c",
+    "build-extractors/runtime-test/stormheim-shields/geometry.txt": "98a06462635caec04da59b8ea4e8681a7488795cab50d0a6686e07de2f123b99",
+    "build-extractors/runtime-test/stormheim-shields/floors.txt": "bc042af33f717e9c00162d477cb4c6b1e5c65478851b866de04ddac1409cfaba"
+  },
+  "next": "39092 statue communion must be gated after four real shrine objectives and must grant the invoking player only; addressed in a separate focused fix."
+}
