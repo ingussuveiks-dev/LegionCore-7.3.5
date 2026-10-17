@@ -15,7 +15,7 @@ CREATE TEMPORARY TABLE saved_spell_script_names LIKE spell_script_names;
 CREATE TEMPORARY TABLE spell_script_names LIKE saved_spell_script_names;
 '@;$sql+=$migration+"`n"+$migration+"`n"}
 $sql+=@'
-SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,39385,39154,38878) ORDER BY q.ID;
+SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.ExclusiveGroup,a.SpecialFlags,q.QuestPackageID FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38872,38873,39385,39154,38878) ORDER BY q.ID;
 SELECT 'objective',QuestID,ID,Type,ObjectID,Amount,StorageIndex,Flags FROM quest_objectives WHERE QuestID IN(39385,39154) ORDER BY QuestID,StorageIndex;
 SELECT 'starter',id,quest FROM creature_queststarter WHERE quest IN(39385,39154,38878);
 SELECT 'ender',id,quest FROM creature_questender WHERE quest IN(39385,39154,38878);

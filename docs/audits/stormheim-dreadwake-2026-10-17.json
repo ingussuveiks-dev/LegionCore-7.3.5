@@ -1,0 +1,248 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38872,
+    38873,
+    39385,
+    39154
+  ],
+  "client_verified": false,
+  "status": "Cullen38872 flight interaction repaired using the existing free native taxi5262. Required38873 firing credit and both39154 prerequisite alternatives execute in selected native regressions. Actual client flight, click/visual timing and saved-state behavior remain pending.",
+  "confirmed_failure": {
+    "actor": "Dread-Rider Cullen93624, DB291298, map1220 at3190.11,1553.79,183.101; existing menu18657/option0/broadcast97471.",
+    "original": "Template had empty AIName/ScriptName and no SmartAI rows; its existing Take me to Dredwijk camp option has ActionMenuID0 and no Source15 conditions. The default unbound/SmartAI select path executes no flight action. The native gossip flag check admits option0 under primary flags3, so a populated and visible menu was insufficient.",
+    "reproduction": "The extracted test calls the original empty SmartAI selector and observes no ActivateTaxiPathTo call or flight. The new production selector invokes the real native taxi overload/vector activation with route5262 and checks native success/failure. This is code evidence, not a client reproduction."
+  },
+  "native_data": {
+    "38872": {
+      "title": "The Dark Lady's Bidding",
+      "starter": 93624,
+      "ender": 93603,
+      "next": 38873,
+      "races": 234881970,
+      "objective": {
+        "id": 279665,
+        "type": 0,
+        "object": 93624,
+        "amount": 1,
+        "slot": 0,
+        "flags": 28
+      },
+      "meaning": "The only objective is optional/hidden. Native CanCompleteQuest skips it, so the delivery can already be COMPLETE before the flight is selected. The repair does not invent mandatory flight credit or reset that objective."
+    },
+    "38873": {
+      "title": "Clear the Deck!",
+      "starter_ender": 93603,
+      "previous": 38872,
+      "next": 39154,
+      "objective": {
+        "id": 278644,
+        "type": 0,
+        "object": 95391,
+        "amount": 4,
+        "slot": 0,
+        "flags": 0
+      },
+      "catapults": {
+        "entry": 95212,
+        "db_spawns": [
+          293862,
+          293864,
+          293886,
+          293887
+        ],
+        "npcflag": 16777216,
+        "spellclick": [
+          189100,
+          1,
+          0,
+          1
+        ]
+      },
+      "native_credit": "HandleSpellClick castFlags1 selects player as caster and catapult as target;189100 effect1 is134/self1/95391. Native EffectKillCredit rewards the caster and nearby group via RewardPlayerAndGroupAtEvent. There is no SAI33 credit requirement for this path. Four successful hits complete the mandatory aggregate; repeats cap at4. No per-catapult persistent objective exists, so no new distinct-spawn cap or personal-credit rule was invented.",
+      "presentation": "Existing catapult SmartAI event8/189100 casts189176 at nearby95436/200yd. Native189176 is DUMMY3 with destination106 and area8; it is not a server damage or kill-credit spell. Its actual firing/barrel/cannoneer presentation remains a client check. This audit does not claim that its visual is verified or change it merely because progression passes."
+    },
+    "taxi5262": {
+      "native_source_destination": 1722,
+      "cost": 0,
+      "mount_entry": 87442,
+      "display": 60307,
+      "duchess_entry": 109680,
+      "duchess_display": 60307,
+      "points": [
+        [
+          3181.99,
+          1556,
+          189.244
+        ],
+        [
+          3063.9,
+          1589.94,
+          218.42
+        ],
+        [
+          2991.54,
+          1628.67,
+          218.42
+        ],
+        [
+          2899.28,
+          1663.88,
+          149.01
+        ],
+        [
+          2700.61,
+          1777.08,
+          89.3618
+        ],
+        [
+          2561.86,
+          1988.47,
+          49.2201
+        ],
+        [
+          2495.3,
+          2009.37,
+          11.203
+        ]
+      ],
+      "maps": 1220,
+      "events": 0,
+      "runtime_InstantFlightPaths": 0,
+      "provenance": "Typed TaxiPath/TaxiNodes/TaxiPathNode DB2. Quest node explicitly names Valdisdall -> Dreadwake (Spell Taxi). Riding Bat87442 and world Duchess109680 both display60307. Public taxi5316 has a different route, mount and fare and is not used; no flight coordinates are invented."
+    },
+    "39154_prerequisites": {
+      "own_PrevQuestID": 39385,
+      "incoming_NextQuestID": [
+        38873,
+        39385
+      ],
+      "exclusive_groups": [
+        0,
+        0
+      ],
+      "native_rule": "LoadQuests appends incoming NextQuestID predecessors as well as the own PrevQuestID. SatisfyQuestPreviousQuest accepts ANY rewarded positive predecessor with nonnegative ExclusiveGroup, therefore38873 OR39385 admits39154. Rewarded38872 alone does not. Acceptance/active/completed-but-unrewarded predecessors do not satisfy the positive gate.",
+      "correction": "Gift commit45e53f9f tested the39385 branch in a fixture that omitted38873; its audit wording that39385 is required universally was incomplete. GiftData now includes38873, GiftTest checks neither/38872/38873/39385 histories, and the prior audit has an explicit followup pointer while retaining original evidence/hashes."
+    }
+  },
+  "implementation": [
+    "New npc_stormheim_dreadwake_cullen derives SmartAI and handles only menu18657/option0. It validates active incomplete OR complete38872, Horde, outdoor1220/7541, exact93624/DB291298, live player/NPC, primary gossip flag, same map/phase, native interaction range, actual prepared menu/option and no transfer/vehicle/transport/current flight. Other selections delegate to SmartAI.",
+    "The selector calls Player::ActivateTaxiPathTo(5262) and closes gossip only on native successful activation. The native path handles busy/root/stun/logout/control restrictions, mount, cost, taxi state and normal movement cleanup; failed attempts retain the option for retry. The script awards no quest credit, teleports no character and changes no shared movement/pet/camera code.",
+    "Migration14 binds only the original Cullen template and adds two native Source15 OR groups: type9/QUESTTAKEN for incomplete38872 and type28/QUEST_COMPLETE for complete/unrewarded38872. No/finished quest no longer presents a dead travel option. Type47 is TerrainSwap in this core and is not used as a quest-state condition.",
+    "Migration guards original menu/template/objective/starter, absence of unexpected Cullen SmartAI and custom menu conditions. Repeated replay preserves Nathanos93603, catapults95212, original gossip text, native path/model data and all positions. A synthetic custom condition blocks installation instead of being overwritten."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimDreadwake.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Actual Cullen selector; extracted full native taxi path-ID overload/vector activation; native gossip option flag requirement/admission and quest9/28 ElseGroup evaluator; native spellclick caster/target/original-caster selection, effect134/group/quest/prerequisite/reward-next handlers. Old no-op reproduction, incomplete/complete delivery, repeat flight prevention, wrong source/faction/world/phase/range/menu/instance/quest guards, native combat retry/root/stun/logout/control/missing-node/path/mount/short-route/cost failure, free successful60307/5262 launch,4/4/cap/failed-hit/pet target behavior and both39154 alternatives pass. Canonical marker/registration and actual scripts.lib final-link freshness pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDreadwakeData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Real quests/objectives/givers/branch predecessors, Cullen/model/source rows, four catapults and existing click/SAI contract; no unexpected quest/spell/spellclick conditions. Scoped repeat migration/custom preservation and live deployed binding/OR rows pass. Relevant effect/taxi/path-node Hotfix overrides absent."
+    },
+    {
+      "command": "tools/tests/Test-StormheimDreadwakeCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Typed native C++ DB2 route5262/node1722/zero fare/seven points/map/model and189100 effect134/self/95391; native chapter137 orders1/2/3. Five complete supported static corridors from taxi landing to Nathanos and from Nathanos to four catapults,53/32/42/39/26 ground/water polygons. No runtime navigation edits."
+    },
+    {
+      "command": "tools/tests/Test-StormheimGift.ps1 -VerifyReleaseBinary with expanded38873 metadata",
+      "result": "PASS",
+      "coverage": "Existing Gift item/target/credit/lifetime checks retain their behavior while the actual sibling predecessor participates in native load/gating. Earlier automatic source39385 test is no longer the only incoming branch represented."
+    },
+    {
+      "command": "Release worldserver+bnetserver; canonical startup/shutdown0",
+      "result": "PASS",
+      "coverage": "Compiled to build-extractors/bin/Release with original final-link scripts library/no OutDir override; new diagnostic present, ready, graceful exit0, DBErrors/stderr0 bytes and server left stopped."
+    }
+  ],
+  "geometry": {
+    "routes": [
+      "route 2495.3 2009.37 11.203 -> 2370.99 1838.8 30.6481",
+      "PASS: Source approach 2494.47,2009.93,8.84822 -> target approach 2370.99,1838.8,30.6918 through 53 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 13 corners, length=214.657yd.",
+      "terrain polygons ground=53 water=0 magma/slime=0",
+      "endpoint centerDistance=0.0436878",
+      "endpoint surfaceZ=30.6918 floor=30.5649 terrain=29.9094 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.126841 staticLOS=1 requireLOS=0 PASS",
+      "route 2370.99 1838.8 30.6481 -> 2352.6 1749.44 13.3585",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2352.6,1749.44,13.5332 through 32 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 10 corners, length=98.8921yd.",
+      "terrain polygons ground=32 water=0 magma/slime=0",
+      "endpoint centerDistance=0.17466",
+      "endpoint surfaceZ=13.5332 floor=13.2759 terrain=13.2759 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.257265 staticLOS=1 requireLOS=0 PASS",
+      "route 2370.99 1838.8 30.6481 -> 2335.07 1704.57 11.4438",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2335.07,1704.57,11.5447 through 42 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 13 corners, length=149.446yd.",
+      "terrain polygons ground=42 water=0 magma/slime=0",
+      "endpoint centerDistance=0.100908",
+      "endpoint surfaceZ=11.5447 floor=11.3607 terrain=11.3607 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.184006 staticLOS=1 requireLOS=0 PASS",
+      "route 2370.99 1838.8 30.6481 -> 2376 1723.79 7.44284",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2376,1723.79,7.75355 through 39 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=121.086yd.",
+      "terrain polygons ground=39 water=0 magma/slime=0",
+      "endpoint centerDistance=0.31071",
+      "endpoint surfaceZ=7.75355 floor=7.35906 terrain=7.35906 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.394488 staticLOS=1 requireLOS=0 PASS",
+      "route 2370.99 1838.8 30.6481 -> 2398.55 1767.84 10.144",
+      "PASS: Source approach 2370.99,1838.8,30.6918 -> target approach 2398.55,1767.84,9.89511 through 26 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 6 corners, length=87.0362yd.",
+      "terrain polygons ground=26 water=0 magma/slime=0",
+      "endpoint centerDistance=0.248885",
+      "endpoint surfaceZ=9.89511 floor=10.0625 terrain=10.0625 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.1674 staticLOS=1 requireLOS=0 PASS"
+    ],
+    "limits": "Surface queries find a grounded player approach near authored taxi last point2495.3,2009.37,11.203 at2494.47,2009.93,8.84822, not a claim that the authored end coordinate is exactly on the ground. Actual dismount/drop/body clearance and continuous flight collision are client checks. All four catapult and Nathanos endpoints have supported floors/native conservative reach and reported staticLOS1. Static navmesh access is not rendered click/phase availability. No actor or taxi coordinate was changed."
+  },
+  "boundaries": [
+    "The full taxi activation functions execute, but taxi DB/object manager lookup, session packets, movement dispatch, actual aura/vehicle cleanup effects and world state are observable fixtures. The test does not execute a complete FlightPathMovementGenerator flight, dismount, client camera or pet portrait lifecycle.",
+    "Native gossip condition and primary flag admission execute; the entire PrepareGossipMenu packet/quest-menu pipeline is not instantiated. Spellclick actor selection and native effect134 execute with fixture hit dispatch; full spell target checks, cast/channel timing and all SmartAI CAST execution are not emulated.",
+    "Native group credit for189100 is retained. No rewrite to personal credit or four distinct catapults was justified by the actual single aggregate quest objective.",
+    "No character persistence, quest reset, live client gameplay, invented mount/waypoint/teleport or forced camera handoff was used. All existing Stormheim client observations and pending Gift/shield/communion/finale checks remain retained in their audits."
+  ],
+  "pending_client_checks": [
+    "Accept38872 at actual Cullen; confirm option on both incomplete and native-complete delivery, no option after reward/no quest, and launch the Duchess60307 taxi without a fare or requiring a learned public node. Check native combat/root retry and repeated clicks.",
+    "Watch the seven-point flight through normal dismount. Check landing at Dreadwake, movement, camera, permanent pet/portrait, logout/re-entry and abandonment during flight, then walk to Nathanos and turn in38872.",
+    "For38873 click actual protected/friendly catapults, wait for successful firing casts, check0..4 count/group behavior and barrel/cannoneer visuals. Confirm failure/interruption does not count and real repeated-use behavior matches native aggregate semantics.",
+    "Use separate histories rewarded38873-only,39385-only, neither and both; verify39154 offer/turn-in and38878 handoff in the real client. Positive predecessor completion without turn-in should not unlock the next quest."
+  ],
+  "migration": {
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-dreadwake\\20261017-160649",
+    "state": "RELEASED",
+    "migration": "2026_10_17_14_stormheim_dreadwake.sql",
+    "sha1": "ECBF8701272D0AD5076C7F7D63BBAC2E403E7729"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "f10fac1c909ba929f6661526cb34f900d96db3532004a4bbaca1e99c5c0e47e2",
+    "bnetserver_sha256": "9a8adcf6860e3263fb37ff33738a52b6b0eb54585894cbdd9912de44818cb425",
+    "scripts_lib_sha256": "cfd149a6a6d11a2d9140b8a83195ec7ec98cff73733c0f8d192a1671d34c3850",
+    "startup": "build-extractors/runtime-test/stormheim-dreadwake/startup-20261017-160649",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_dreadwake.cpp": "996c5c696f7fb126951d0b55587338ec0e85c43831f15a18f097d916da2da535",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "51e93498da2a5e7540e855702093e3338cb30ec3817188e71f489369e3a57d1d",
+    "sql/updates/world/2026_10_17_14_stormheim_dreadwake.sql": "5c79319f14c1449d5df16e568ac01dfaca625be168ed05032d47f67e70a9e882",
+    "tools/tests/Test-StormheimDreadwake.ps1": "499b36a1152e78d93f3436eb1434966b73f6d0613337fcebb174fc267a17aac1",
+    "tools/tests/StormheimDreadwakeTest.cpp": "bef239603c6a572fe98079b256237c9b249852500964b02d2e9ed12f27f8a021",
+    "tools/tests/Test-StormheimDreadwakeData.ps1": "bd50eef0713fadc8356ed2c0e31eeae7d1637d6c840488c3de6dea1cbc9622a8",
+    "tools/tests/Test-StormheimDreadwakeCatalog.ps1": "9dfe9931b565529354b537e04e3188fd22fd8b2805f3d6dff7967db00d35b690",
+    "tools/tests/StormheimDreadwakeCatalog.cpp": "df2711a39d9ee36c20eed7a96b7d950e395c5709b5ea2dfad529d9b68c9a1385",
+    "tools/tests/StormheimGiftTest.cpp": "28ac772076f8bfdce82853133e8cac297a0e97a9f358cc46eaf23e8eb410aeb0",
+    "tools/tests/Test-StormheimGiftData.ps1": "8101625a4a3e0f60f7d1ce842f82e9e2fe962be292e5a996075700310f504c95"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-dreadwake/world.tsv": "4e644aa06f01efa3a05869b3af6ce191e5d0426ff233d722984f33463b6b6c31",
+    "build-extractors/runtime-test/stormheim-dreadwake/world-live.tsv": "0a4d7d2e768f39cb4f760ffdac8c6b1c7c590a6a82f4dde1bb13e15fcc6973f5",
+    "build-extractors/runtime-test/stormheim-dreadwake/hotfix.tsv": "a8fa3325e09d15985e455f1caa582c227a8b2b826bc35ff794aca8c3223b3180",
+    "build-extractors/runtime-test/stormheim-dreadwake/native.tsv": "311426286bbd62621e6705b81c4bf97a305ad2d5cee910542134fcd13bc16c1f",
+    "build-extractors/runtime-test/stormheim-dreadwake/geometry.txt": "cf7ecbec2d09295d177dc47441bc6875cf21dc1a4f7a6df3e6e6a75c5bfb3871"
+  },
+  "logs_sha256": {
+    ".codex/dreadwake-test.log": "174ff2139c774980591825247bc56ff624f63003fff9b401690b1e20ffc641ed",
+    ".codex/dreadwake-catalog.log": "ccc5a0827fa9aa9c9458cc78e519d8c18ae1fbef377957db040522a2620b592f",
+    ".codex/dreadwake-live.log": "8f2e7394f48bd75acd5eed1aff04cd4e4d6bf313811e07b510567986f4dec442",
+    ".codex/dreadwake-gift-regression.log": "7c06729e6901e9532f93f731f7a14872d72478069a26700cda96a299c902defc",
+    ".codex/dreadwake-build.log": "5f16f514d93f16705937e325e34e95a3b754732be87974e2cb40f1440342ee2e",
+    ".codex/dreadwake-startup.log": "4612f8e6558387fbe9ddf46b8401950101ed90402e49025a8efdb946c1f87575"
+  }
+}
