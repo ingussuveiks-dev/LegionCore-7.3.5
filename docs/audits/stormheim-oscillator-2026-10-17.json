@@ -1,0 +1,189 @@
+{
+  "quest": 38558,
+  "title": "See Ya Later, Oscillator",
+  "date": "2026-10-17",
+  "status": "blocking loot selector repaired/deployed; automated checks passed; client verification pending",
+  "original_archive_sha256": "786d8b7f84fe1daf765b770483721ae529f3d758da2271f812c261d914f1e99e",
+  "original": {
+    "gameobject_template": [
+      {
+        "entry": "240286",
+        "name": "'Crystal Oscillator'",
+        "type": "3",
+        "displayId": "8644",
+        "size": "0.05",
+        "Data0": "1690",
+        "Data1": "0",
+        "Data8": "0",
+        "Data15": "0",
+        "Data30": "60251",
+        "Data31": "1",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "278005",
+        "QuestID": "38558",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "123887",
+        "Amount": "1",
+        "Flags": "0",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "38558",
+        "LogTitle": "'See Ya Later, Oscillator'",
+        "LogDescription": "'Collect the Crystal Oscillator.'",
+        "QuestDescription": "'Those jawless mooks are actually trying to salvage parts from our ship! They can\\'t possibly appreciate superior gnomish technology... Perhaps its shiny nature is appealing to their simple inclinations.$B$BIn any case, I need a crystal oscillator for our new transponder. It\\'s the shiniest part of the whole system, they\\'re bound to have it set aside somewhere!'",
+        "Flags": "33554440",
+        "FlagsEx": "65536",
+        "AllowableRaces": "4294967295",
+        "StartItem": "0",
+        "RewardNextQuest": "38058"
+      }
+    ]
+  },
+  "observed_failure": "Installed Crystal Oscillator240286/DB114753 had Data1=0 despite its existing100% quest loot240286->123887. Native GetLootId returned0, so the native SendLoot outer guard skipped even the personal FillLoot branch. questItem1 and personal marker60251 do not supply that selector. The regression reproduces this empty personal chest before the repair.",
+  "repair": "Migration2026_10_17_01 sets only240286.Data1=240286 for the recognized type3/lock1690/item123887 chest when its exact existing100% quest row is present. Custom nonzero selectors and missing/wrong loot are refused. Preserve personal marker60251,flags2113540,size0.05,restock/LOS/quest/group/security fields, lock, all spawn/orientation/respawn data and every loot/quest row.",
+  "world_live": [
+    "quest\t38058\t168886272\t73728\t18446744073709551615\t0\t38060\t38558\t38060\t0",
+    "quest\t38558\t33554440\t65536\t18446744073709551615\t0\t38058\t39800\t38058\t0",
+    "objective\t278005\t1\t123887\t1\t0\t0",
+    "loot\t240286\t240286\t123887\t100\t1\t1\t0\t1\t1",
+    "chest\t240286\t3\t8644\t2113540\t0.05\t1690\t0\t0\t60251\t0\t\t",
+    "spawn\t114753\t240286\t1220\t2962.24\t3081.73\t420.672\t",
+    "starter\t90866\t38058",
+    "starter\t90866\t38558",
+    "ender\t90866\t38558",
+    "giver\t290453\t90866\t1220\t3211\t3083.52\t440.295\t\t4226\t875\t\t7028",
+    "giver\t338588\t90866\t1220\t3395.59\t3077.83\t526.411\t4589\t4226\t875\t\t7028",
+    "conditions\t0",
+    "personal-metadata\t0"
+  ],
+  "hotfix": [
+    "sparse\t0",
+    "item\t0",
+    "lock\t0",
+    "effects\t0",
+    "object\t0",
+    "display\t0",
+    "model\t0",
+    "item-effects\t0"
+  ],
+  "native_catalog": [
+    "item123887 Crystal Oscillator max=0 stack=1 bonding=4 class=12",
+    "item123887 use effects 0",
+    "native lock1690 type5 and Open3365 effect33 target23",
+    "object8644 file 255125 minZ -6.65746 maxZ 6.65744",
+    "Overspark7028 model 182 file 119159",
+    "quest38558 line128 order3"
+  ],
+  "native_db2_sha256": {
+    "Item": "67b3b9b5c33dfa226910b3c62fdaec674e6198c54b39a6cd07d622a90374b010",
+    "ItemSparse": "8eecbf592e1706e07c28409547eaecdc0c51c325ef3e952fb7028098dcdfec17",
+    "ItemEffect": "3241f0d3565928931a6b890643458f8b5cf775f2133ab8c103e1992f88815931",
+    "Lock": "3223460df70cd1e5b5d2dbe63b4c63214e6a2627110c7ada8ba0f979f26ac43d",
+    "SpellEffect": "dfcb7076421e3b99fb23e769acddb9215d051069fe5e7488fc33b67770c194db",
+    "GameObjectDisplayInfo": "23b4e725c73048de7da7d765be0410f7d9cba2ae07447c0765c8ebeb0586c4d8",
+    "CreatureDisplayInfo": "1494eb6d4705848c4dd8ca2e463b99365d913155829e53914671da3302168e23",
+    "CreatureModelData": "615e170a0fb416ff79b4b00881f521f244787221d82bc3bf547039f22b637357",
+    "QuestLineXQuest": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff"
+  },
+  "floors": [
+    "npc 290453 Z=440.295 floor=440.215 terrain_area=7555 PASS",
+    "object 114753 Z=420.672 floor=420.184 terrain_area=7542 PASS",
+    "2 Oscillator giver/chest anchors; 0 failures. Client collision loading and teleport visuals remain unverified."
+  ],
+  "ground_route": [
+    "PASS: Source approach 3211,3083.52,440.377 -> target approach 2962.24,3081.73,419.765 through 81 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 23 corners, length=443.902yd.",
+    "corner 0 3211 3083.52 440.377",
+    "corner 1 3200 3093.33 439.797",
+    "corner 2 3190.13 3105.6 438.197",
+    "corner 3 3189.6 3106.4 437.397",
+    "corner 4 3178.67 3157.33 457.131",
+    "corner 5 3114.67 3200 480.587",
+    "corner 6 3062.4 3222.93 487.52",
+    "corner 7 3059.73 3223.2 486.187",
+    "corner 8 3046.93 3221.33 480.054",
+    "corner 9 3034.93 3218.93 474.987",
+    "corner 10 3027.73 3208.8 471.52",
+    "corner 11 3016.53 3187.2 476.064",
+    "corner 12 3008 3157.33 477.397",
+    "corner 13 2993.33 3147.2 462.997",
+    "corner 14 2986.67 3142.4 463.797",
+    "corner 15 2985.33 3140.27 462.997",
+    "corner 16 2983.2 3128.53 451.531",
+    "corner 17 2982.67 3125.6 447.797",
+    "corner 18 2981.33 3106.13 436.331",
+    "corner 19 2982.67 3097.33 434.997",
+    "corner 20 2970.93 3086.93 432.331",
+    "corner 21 2968.8 3085.33 426.464",
+    "corner 22 2962.24 3081.73 419.765"
+  ],
+  "selected_geometry_sha256": {
+    "mmaps/1220.mmap": "3fa4f4f7ec55df73dbf81642f7542419d36cb11e5dfc50284a883f1d9b63489f",
+    "vmaps/1220.vmtree": "b160c8a9d7bac51e4030b3bfb4d0e7d46710b639bfb0bce655f78e199d15b8b0",
+    "mmaps/12202425.mmtile": "35e3b474f7628a0977f2ad75713e3f2e5f6f9350bc2870e9bf274161565f2c7e",
+    "mmaps/12202426.mmtile": "6c95b44b0a931cb16a7d53a8ec577104e4a4e77bf04398ea66ba08c78e9cd1bd",
+    "mmaps/12202427.mmtile": "b314bada4eba9c2f58a618e498e6412b193239a4986582827df02a4742f3eb57",
+    "mmaps/12202525.mmtile": "e74cfe74dc99a74fd2a0cd765c8148060f175f41ac84ccc22aa42b3944adec39",
+    "mmaps/12202526.mmtile": "a5f385e6b699df397353dcb57d30dd24c1592131c0e80ed244a38a40c3764566",
+    "mmaps/12202527.mmtile": "ab49246bca5eb9faffb955d1730fde897770b3cefb638408eae925f4ed323e6b",
+    "mmaps/12202625.mmtile": "e54bb658da9a4177304f2a79ddfed2f02a05ee5ace0d3a29d35928a96748d9c7",
+    "mmaps/12202626.mmtile": "9642c024ec2c67dffed41734a4ba24256184fd4e582b3a81b09e80fa1f548b2e",
+    "mmaps/12202627.mmtile": "b0ff9af9f750f925602a3e031d9111e46ead08603c24be24b3e44aa48cc14077",
+    "mmaps/12202725.mmtile": "8f1e5e91e9afb515520e01ba82d2950ee8a9539087ea5289b48b74560f938e5b",
+    "mmaps/12202726.mmtile": "3a8c3b88f35a0ec710b14edc612455421c95873c26f0319412f8bfca93955d6a",
+    "mmaps/12202727.mmtile": "f409f44704028ad100d9a9acfbd0c2716d238b0e597b7da1a2a455bfcc8b8b81",
+    "maps/1220_25_25.map": "ce46364062d2b41749397199da84cc911d9b2e7a4628601aaa108afea60d6500",
+    "maps/1220_25_26.map": "79103030b2cf36d3a2a6f722a32cd9a9405ab01647183a3fa6ed3e37ee65fdbf",
+    "maps/1220_26_25.map": "9edf7d826c7a0a5465bc4e681142be01e6ab67aba7df0a9663c412e7d6fb2ad0",
+    "maps/1220_26_26.map": "86fb4779fb6ae80b6dc55ebda7a127775332c8b0c03459b07438ba865ec34ab8",
+    "vmaps/1220_25_25.vmtile": "5cd5b92e9fbf8eafd372e4a9804d0f1a5b77e282928664f07da2fe446af8f3b6",
+    "vmaps/1220_26_25.vmtile": "7c3af5ad817be65f666aa8b82e4e52c4f1c7036ef23c4e6e4cca5bcab68fc1a4",
+    "vmaps/1220_25_26.vmtile": "43b04bc0a30da28bb4eb97cb1c55fa7b36747a018207603698c77d630ecd0afc",
+    "vmaps/1220_26_26.vmtile": "028beb1dafffd7de4f3792da1d338090a38874fedee30d990b8f9821522d4208"
+  },
+  "findings": [
+    "Keep original objective278005 ITEM123887 amount1/storage0/Flags0. Crystal Oscillator is a quest-bound,class12 item,stack1,maxCount0, no use spell. Native GetLootId, SendLoot selector/personal-generation guard, IsPersonal, FillLoot processor-selection branch and actual ProcessRareOrGoLoot execute. No kill/GO-open credit can substitute for taking the item.",
+    "This chest is personal because Data30=60251 is nonzero. No personal_loot_template metadata row changes its nonboss path, and DungeonEncounter is0. The existing rare/GO personal processor is therefore the actual route; testing only ordinary LootTemplate::Process would miss that distinction. Its ungrouped,nonreference,quest-required mode1/chance100/count1 row stays unchanged. A second player uses separate loot storage on the same public object.",
+    "Native lock1690 uses type2/index5/skill0, matched by Open3365 effect33/misc5/target23. Gathering6478/type13 is rejected by the real CanOpenLock. No profession, guessed cast, extra click script or item-use spell is added.",
+    "Actual item-added/removed/count-reconstruction/completion and RewardQuest item-consumption handlers execute. Opening without taking grants no item objective; taking completes, bank-only ownership cannot reward, consumption removes the item, and only rewarded38558 admits the existing38058 next quest. Native NPC reward-next dispatch preserves its normal details window and independent reward callback.",
+    "Overspark90866 already starts/ends38558 and starts38058. Preserve PrevQuestID39800 for38558 and PrevQuestID38558 for38058, both native next links and live unrestricted race masks. The test deliberately exercises both faction values with forced39800 rewarded history; this does not add an ordinary Horde route or alter faction-specific story admission. Native quest-line128/order3 is confirmed.",
+    "Keep chest DB114753 at2962.24,3081.73,420.672 on map1220, display8644/file255125, scale0.05. Native boundsZ[-6.65746,6.65744] exist; no size/art correction is inferred from the tiny scale. Overspark7028 resolves to model182/file119159. Checked sparse/item/lock/effect/display/model overlays are absent.",
+    "Native floor checks: shore Overspark DB290453 floor440.215 versus440.295, chest-side floor420.184 versus420.672. Complete ground route from shore giver to conservative5yd chest approach passes81 polygons,23 corners,443.902yd. The phased upper Overspark copy remains at3395.59,3077.83,526.411/phase4589; its actual visibility and later quest behavior are retained, not client-verified.",
+    "Opening this outdoor personal quest chest calls native AddPlayerLootCooldown with TYPE_GUID and difficulty0. The actual method writes the spawn GUID114753 and a600-second expiry; native lookup stops blocking after expiry. An earlier empty click can therefore hide the chest temporarily even after data repair. Preserve that bounded existing behavior; no character inventory, quest history or personal cooldown rows are reset."
+  ],
+  "checks": [
+    "Test-StormheimOscillatorData.ps1 executes the real migration twice in connection-local copies and compares complete protected rows, including the unrelated bones chest, loot, spawn, objectives and handoff settings. Custom selector/settings and absent/wrong loot cases pass; -Live confirms offline deployment and native-reference overlay absence.",
+    "Test-StormheimOscillator.ps1 compiles selected production selector/personal/open/dispatch/RareOrGo/lock/item/reward-next/cooldown handlers. Empty chest baseline, actual item-only completion, separate players, wrong lock, conditions/difficulty, bag/bank/retry, consumption and38058 details pass. Full FillLoot setup, world lookup, inventory storage and packet/UI services remain fixtures.",
+    "Test-StormheimOscillatorCatalog.ps1 uses native C++ sparse DB2Storage plus Release GridMap/VMap/MMap/Detour libraries. Native item/lock/Open effect/model/quest-line, two floor anchors and complete ground route pass. Existing Helheim supplies/item lifecycle regression and -VerifyReleaseBinary reward-next marker/actual final-link checks pass.",
+    "Canonical Release worldserver build succeeds with original game/scripts library paths and no global OutDir override. The data-only migration was deployed transactionally with a private scoped backup and updates SHA1 record. A fresh canonical startup reached ready, shut down with exit0 and produced empty DBErrors/stderr. Runtime configuration/certificates/DLLs/extracted data remain preserved."
+  ],
+  "release": {
+    "migration": "2026_10_17_01_stormheim_crystal_oscillator.sql",
+    "migration_sha1": "A888DB166FA06DB5B2C968DC8992F1F88F91EF10",
+    "worldserver_sha256": "7820F007AB44F9E3C67F33063F408098796A6D634A221D315F7F50F80CF853E2",
+    "smoke_directory": "build-extractors/runtime-test/stormheim-oscillator/startup-20261017-032443",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "limits": [
+    "Selected native handlers execute, including the actual personal-loot branch and processor selection. The full FillLoot/session/opcode/loot-permission pipeline, item-template runtime loading, real inventory writes/space/stack handling, conditions/world services, clock, persistence and packets are fixture boundaries. The sparse native catalog independently confirms item limits/class, but the loot fixture does not reproduce the full item subsystem.",
+    "The production personal SendLoot fragment substitutes the test player reference for its enclosing this pointer. Its selector and personal-generation guard/fields are retained; the full nonpersonal/battleground/group branch is outside the wrapper. Unexecuted rare/GO grouped branches are fixtures because this real row is ungrouped.",
+    "The600-second retry test executes the native cooldown methods against a fixture clock/map and checks the actual GUID key/expiry. It does not exercise the complete visibility dispatcher or persisted character cooldown load/save. Existing affected players may need the ordinary cooldown to expire; no exact client recovery was verified.",
+    "Client pending: actual Overspark menu and prerequisites, chest cursor/visibility/tiny model, native Open cast/interruption, loot window and pickup, bag-full behavior, personal cooldown/retry, two players, relog and38558 reward/38058 details. The existing38058 charging/bar behavior retains its separate client checks. No whole quest, visual or client sequence is certified.",
+    "Earlier quest/client requirements remain. Helheim bone native interaction audit failures were separately resolved in539e94ca; their client collection checks remain pending."
+  ],
+  "next": "38405/38614 To Weather the Storm: faction prerequisites, three real item sources and next-stage handoff; code/data only."
+}
