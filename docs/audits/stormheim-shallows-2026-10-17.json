@@ -1,0 +1,435 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    40046
+  ],
+  "title": "Scavenging the Shallows: restore Shipwreck Debris loot selection",
+  "source_base_revision": "f133a1f8628196aaac56eb261696829129f30f7e",
+  "scope": "Code/data only. No WoW client operation, quest actor movement, Warlock or shared core changes.",
+  "status": "Confirmed missing chest loot selector repaired in World; SQL migration, extracted native loot/quest regression, native DB2 catalog and canonical Release startup pass. Client verification pending.",
+  "client_verified": false,
+  "findings": [
+    "Observed gameobject_template252239 type3 had Data1=0 while gameobject_loot_template252239 already contained Corroded Maritime Plaque129174 and four other items. Native GameObjectTemplate::GetLootId returns chest.chestLoot; Player::SendLoot skips FillLoot at zero. Therefore the existing plaque row could never be selected by normal chest loot. questItem1=0 does not supply a substitute grant.",
+    "Migration18 changes only Data1 from0 to252239 for entry252239/type3. Repeat application is harmless; a nonzero custom loot selector and a different GO type are preserved. Existing flags2113540, size0.5, native model35915, Lock1691, questID40046, text19680, spell227818, chestPersonalLoot0, group-loot0, restock, AI/script and all19 original spawn positions/phases remain unchanged.",
+    "The five existing ungrouped loot rows are retained without probability changes: plaque129174 at29.6569% (QuestRequired1), item139542 at15.8502%, item139543 at28.2908%, item139544 at19.0264%, item139545 at19.5843%; each LootMode1 and count1. These are independent chances, not an exclusive random-choice group. Repeated searches can miss the plaque; no guaranteed-first-search claim.",
+    "Native SpellEffect227818 has exactly effect90 KILL_CREDIT, MiscValue114487, self target1, no item or triggered spell. The actual extracted effect executes player/group kill credit;114487 is not either40046 objective. It cannot create the required plaque, so keeping that chest spell is compatible with fixing the separate loot selector.",
+    "Objective280209 requires one item129174. Objective285515 is GO252239 amount99 with Flags28 (OPTIONAL4|HIDDEN8|HIDE_ITEM_GAINS16); native completion skips it.99 searches or114487 credit do not replace the item; one actual plaque suffices without99 clicks. No objective rows were changed.",
+    "Havi97973/DB369621 is both original starter and ender, map1220 at3521.58/1615.26/11.3535 with npcflag3/faction35/SmartAI. Existing LOS dialogue is shared with Remnants39984; upstream Journals regression passed and no Havi data was changed. Quest40046 has all-races admission and no configured prerequisite/next quest; tests use both factions while other level/class/world admission services remain adapters.",
+    "Native26972 DB2 reader verifies129174 Corroded Maritime Plaque, stack1/max0/bonding4/flags2048 and12288, no use/start quest; display35915 file1103594 with actual bounds; native Lock1691 skill-key type2/index5/skill0 and Opening3365 effect33/misc5/target23. Scoped Hotfix/item-template/addon/spell scripts/dummy/linked/loot conditions were queried and absent.",
+    "Native replay compiles the production GetLootId selector, exact SendLoot if(lootid) fill block, ordinary LootTemplate::Process and LootStoreItem::Roll/admission, AllowedForPlayer, CanOpenLock, EffectKillCredit, item quest handlers, quest menu/relations and RequestReward. It reproduces zero FillLoot calls before the repair and actual loot processing after it. The fill adapter supplies the real SQL table to native Process; it is not the full Loot::FillLoot implementation or whole Player::SendLoot.",
+    "Tests cover both factions, misses just above the plaque chance and successful roll just below it, five original independent rows, no completion from opening/99 clicks/unrelated spell credit, one plaque completion, no extra plaque after objective completion, second player, bank-only reward refusal, item removal/reacquisition, retained-item reload/retry, no-quest quest-loot admission, junk admission, correct/wrong reward NPC and native item-consumption case. Packet output, world lookup, RNG, inventory storage/deletion and session services are fixtures; no real character was modified.",
+    "Live migration followed stopped-server scoped backup of gameobject_template252239 and RELEASED update registration. Post-deploy -Live data check and a fresh canonical Release startup passed; DBErrors/stderr are empty and server was stopped cleanly. This is a SQL-only implementation: existing canonical executables were used; no new full server build or changed executable implementation is claimed."
+  ],
+  "original_missing_selector": 0,
+  "repaired_selector": 252239,
+  "quest_contract": [
+    [
+      "40046",
+      "37748744",
+      "0",
+      "18446744073709551615",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  ],
+  "objectives": [
+    [
+      "40046",
+      "280209",
+      "1",
+      "129174",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "40046",
+      "285515",
+      "2",
+      "252239",
+      "99",
+      "1",
+      "28"
+    ]
+  ],
+  "chest_after": [
+    [
+      "252239",
+      "3",
+      "35915",
+      "2113540",
+      "0.5",
+      "1691",
+      "252239",
+      "40046",
+      "0",
+      "0",
+      "227818",
+      "0",
+      "",
+      ""
+    ]
+  ],
+  "loot_unchanged": [
+    [
+      "252239",
+      "129174",
+      "29.6569",
+      "1",
+      "1",
+      "0",
+      "1",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "252239",
+      "139542",
+      "15.8502",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "252239",
+      "139543",
+      "28.2908",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "252239",
+      "139544",
+      "19.0264",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "252239",
+      "139545",
+      "19.5843",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "0",
+      "0"
+    ]
+  ],
+  "spawn_columns": [
+    "guid",
+    "entry",
+    "map",
+    "x",
+    "y",
+    "z",
+    "orientation",
+    "phaseMask",
+    "PhaseId",
+    "spawnMask"
+  ],
+  "spawns_unchanged": [
+    [
+      "114950",
+      "252239",
+      "1220",
+      "3577.8",
+      "1883.05",
+      "-2.64919",
+      "4.52142",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114952",
+      "252239",
+      "1220",
+      "3567.63",
+      "1901.82",
+      "0.715796",
+      "1.79121",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114953",
+      "252239",
+      "1220",
+      "3522.59",
+      "1788.18",
+      "0.14584",
+      "0.792452",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114954",
+      "252239",
+      "1220",
+      "3507.9",
+      "1784.35",
+      "0.689741",
+      "5.70768",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114955",
+      "252239",
+      "1220",
+      "3606.13",
+      "1792.44",
+      "2.18703",
+      "0.338787",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114956",
+      "252239",
+      "1220",
+      "3658.74",
+      "1850.42",
+      "0.917684",
+      "3.32639",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114960",
+      "252239",
+      "1220",
+      "3668.1",
+      "1802.17",
+      "0.266252",
+      "0.397089",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114961",
+      "252239",
+      "1220",
+      "3813.9",
+      "1891.12",
+      "4.4587",
+      "3.61517",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114962",
+      "252239",
+      "1220",
+      "3797.07",
+      "1790.13",
+      "-0.479084",
+      "0.727113",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114965",
+      "252239",
+      "1220",
+      "3785.1",
+      "1759.97",
+      "-0.411763",
+      "1.62221",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114968",
+      "252239",
+      "1220",
+      "3655.76",
+      "1741.76",
+      "1.04067",
+      "2.22239",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114969",
+      "252239",
+      "1220",
+      "3618.75",
+      "1697.32",
+      "-0.7896",
+      "4.89547",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114970",
+      "252239",
+      "1220",
+      "3612.61",
+      "1688.88",
+      "-4.9199",
+      "2.95289",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114971",
+      "252239",
+      "1220",
+      "3603.98",
+      "1655.73",
+      "-2.97248",
+      "1.41572",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114986",
+      "252239",
+      "1220",
+      "3489.77",
+      "1677.46",
+      "-0.286228",
+      "4.27094",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114988",
+      "252239",
+      "1220",
+      "3489.63",
+      "1720.26",
+      "0.195211",
+      "5.69146",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114989",
+      "252239",
+      "1220",
+      "3371.85",
+      "1820.93",
+      "0.324735",
+      "4.78749",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114992",
+      "252239",
+      "1220",
+      "3429.22",
+      "1694.15",
+      "-0.286228",
+      "4.71347",
+      "1",
+      "",
+      "1"
+    ],
+    [
+      "114994",
+      "252239",
+      "1220",
+      "3420.71",
+      "1685.14",
+      "1.38636",
+      "5.73927",
+      "1",
+      "",
+      "1"
+    ]
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimShallows.ps1",
+      "result": "PASS",
+      "log": ".codex/shallows-test.log",
+      "upstream": ".codex/shallows-upstream.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimShallowsData.ps1 -Live",
+      "result": "PASS",
+      "log": ".codex/shallows-live-data.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimShallowsCatalog.ps1",
+      "result": "PASS",
+      "log": ".codex/shallows-catalog.log"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "PASS"
+    }
+  ],
+  "deployment": {
+    "migration": "2026_10_17_18_stormheim_shallows.sql",
+    "sha1": "72404BFA7576C640BDED467BB6BD145D0291734C",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-shallows\\20261017-181326",
+    "state": "RELEASED"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "compiled_for_this_fix": false,
+    "startup": "build-extractors/runtime-test/stormheim-shallows/startup-20261017-181331",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "worldserver_left_running": false,
+    "worldserver_sha256": "39ABC08B3AFD9C5F1EF6F39412737C3F8EAD5FF5E854723BF5534B8410C80007",
+    "bnetserver_sha256": "BC010541F0928DC1DCCB935FD93B461C20F6D349CBB4E2DA81DA71FD85A6F04C"
+  },
+  "client_pending": [
+    "Accept40046 from Havi with either faction and verify quest/object highlighting and actual search cast on shore/underwater debris.",
+    "Confirm reachable interaction, LOS and rendered model placement at the19 unchanged spawns; no new navmesh/full-body/dynamic collision survey is claimed.",
+    "Search through misses, loot the actual plaque, check inventory and quest UI, then hand it in to Havi; confirm reward/item consumption and no99-search completion gate.",
+    "Check full-inventory loot refusal/retry, shared chest/restock/multiplayer behavior, abandonment/reacceptance and logout/restart with the plaque using the real client/session/inventory systems."
+  ],
+  "file_sha256": {
+    "sql/updates/world/2026_10_17_18_stormheim_shallows.sql": "787D876A1EAB6B46A4E374C04BFC104788531B5A549005AA5A475A52AFA7C30F",
+    "tools/tests/StormheimShallowsTest.cpp": "C2E997F188CC7071268CCB560F716A9C687860F550367C15E4310BE7A2045D29",
+    "tools/tests/Test-StormheimShallows.ps1": "E31C78AFAAFEA4925E13BC7010E49D3425F3F200E941B844333DEBDF11621BF0",
+    "tools/tests/Test-StormheimShallowsData.ps1": "B7D5E4FDA11739735110DB6696FA90B45F18AB6E621477C5B80F5DFE4698AD65",
+    "tools/tests/StormheimShallowsCatalog.cpp": "AA8E4E79F8876FD3C48CAC853191A7D024C0DD68C3B3C9BB2519F801727EF5FF",
+    "tools/tests/Test-StormheimShallowsCatalog.ps1": "6416F709D911B955246A019A380A2509D1C9188F113A322DE0747EF3D43C79C8"
+  }
+}
