@@ -108,5 +108,8 @@
     ],
     "title": "Another Way",
     "scope": "Champion kill credit, tower/climbing/grapple criteria and next38342->38412 /38617->38618 handoff; audit legacy Horde placeholders."
-  }
+  },
+  "followup_audits": [
+    "docs/audits/stormheim-impalement-lifecycle-2026-10-17.json"
+  ]
 }

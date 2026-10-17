@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38410,
+    38615
+  ],
+  "title": "Impalement Insurance: native launcher deactivation and respawn follow-up",
+  "status": "Existing implementation rechecked; no new production defect found. Added native lifecycle regression; code/data checks pass; client verification remains pending.",
+  "prior_audit": "docs/audits/stormheim-impalement-2026-10-14.json",
+  "scope": "Close the prior fixture-only GameObject Update/timer gap without changing quest counters, world/character data, scripts, source positions or shared respawn behavior.",
+  "findings": [
+    "Existing production launcher script, lock43 completion route, direct/report-use rejection,7/7 cap, both faction phase branches and actual next/reward relations pass current regressions. The earlier repairs already exist; this follow-up does not present them as new changes.",
+    "Live251257 is goober10,flags262144,Data5 consumable1,Data10 spell0,Data20 cooldown0. All17 map1220 spawns retain180-second base respawn and animprogress255. No live linked_respawn or pool_gameobject row affects them. The new runner refuses to execute its fixture if these source assumptions drift.",
+    "Actual GameObjectTemplate::IsDespawnAtAction, GameObject::isSpawned, complete GO_JUST_DEACTIVATED block and complete GO_READY timer block execute alongside the actual launcher AI and native lock-completion gate. Other type-specific Update processing and scheduler preamble remain outside the wrapper.",
+    "On the first native update, the consumed launcher becomes GO_READY, sends the despawn-animation operation, clears loot, resets flags to262144, records now+180 and requests visibility/persistence. Clearing IN_USE does not make it usable: native isSpawned remains false while the default spawn has a nonzero respawn timestamp.",
+    "Same-player and second-player successful opening callbacks are both rejected throughout the cooldown. At the exact deadline, clock advancement alone still leaves the launcher unavailable; native GO_READY processing must clear its timestamp and insert it into the map. Only then can the second player receive one credit. Repeated callbacks on that newly consumed spawn still grant only once.",
+    "Saved-timestamp reconstruction uses the actual isSpawned/timer code, with persistence loading simulated explicitly. Both factions pass the same shared-object lifecycle. The test never uses the previous manual Respawn helper to reset flags/state or permit a new hit.",
+    "Native adaptive respawn calculation also executes with controlled configuration and RNG: no players retains180s;10 players yields18s;20 players takes the10..15s lower-bound branch and fixture RNG chooses12s. Instance maps retain180s. Save-on and save-off paths call the expected persistence service. These are branch tests, not claims that adaptive respawn is enabled on the live server.",
+    "All17 existing static VMap/terrain floor anchors pass again. This establishes local supporting floors, not navigability between wall levels, carried-grapple spline completion or client model orientation.",
+    "The newer weather prerequisite repair remains separate in663155e6: both infiltration and equipment must be rewarded before accepting38410/38615. Native WeatherChain tests already cover both orders. Impalement handoff to38342/38617 remains unchanged."
+  ],
+  "live_source_contract": [
+    "template\t10\t262144\t1\t0\t0",
+    "spawns\t17\t17",
+    "linked\t0",
+    "pool\t0",
+    "spawn\t115492\t180\t255",
+    "spawn\t115495\t180\t255",
+    "spawn\t115498\t180\t255",
+    "spawn\t115502\t180\t255",
+    "spawn\t115503\t180\t255",
+    "spawn\t115504\t180\t255",
+    "spawn\t115506\t180\t255",
+    "spawn\t115507\t180\t255",
+    "spawn\t115509\t180\t255",
+    "spawn\t115511\t180\t255",
+    "spawn\t115512\t180\t255",
+    "spawn\t115515\t180\t255",
+    "spawn\t115523\t180\t255",
+    "spawn\t115524\t180\t255",
+    "spawn\t115525\t180\t255",
+    "spawn\t115535\t180\t255",
+    "spawn\t115536\t180\t255"
+  ],
+  "validation": [
+    {
+      "command": "tools/tests/Test-StormheimImpalementLifecycle.ps1",
+      "result": "PASS",
+      "output": [
+        "PASS: migration replay, two mandatory seven-launcher quests, protected object metadata, both phase branches/exclusion,17 spawns, no Horde start completion, next prerequisites and custom preservation.",
+        "StormheimImpalementLifecycleTest.cpp",
+        "PASS: actual GO_JUST_DEACTIVATED, IsDespawnAtAction, isSpawned and GO_READY timer branches preserve180s shared launcher respawn; post-reset duplicate/second-player hits blocked until native timer update, saved-timestamp reconstruction and adaptive18s/12s floor/instance/save settings pass. World/storage/clock/RNG/packets remain fixtures; client animation pending."
+      ]
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalement.ps1",
+      "result": "PASS",
+      "details": "Actual production launcher/opening checks, both factions, seven credits, invalid/interrupted-path boundaries, same-spawn duplicate/retry and unrelated-map/custom delegation; upstream also runs from the lifecycle regression."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementData.ps1 and -Live",
+      "result": "PASS",
+      "details": "Existing migration repeated in temporary copies; current objective/template/phase/17 spawn/next-link/fallback-recipient contract and custom preservation remain valid."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementHandoff.ps1",
+      "result": "PASS",
+      "details": "Actual completion/reward/previous/race/GetNextQuest handlers; native enders and installed Horde92566 fallback. NPC registry, history and packets remain fixtures."
+    },
+    {
+      "command": "tools/tests/Test-StormheimImpalementGeometry.ps1",
+      "result": "PASS:17 anchors,0 failures",
+      "output": [
+        "StormheimImpalementGeometry.cpp",
+        "object 115492 Z=275.346 floor=275.347 terrain_area=7608 PASS",
+        "object 115495 Z=273.392 floor=273.299 terrain_area=7608 PASS",
+        "object 115498 Z=270.521 floor=270.466 terrain_area=7608 PASS",
+        "object 115502 Z=331.127 floor=331.127 terrain_area=7608 PASS",
+        "object 115503 Z=283.18 floor=283.112 terrain_area=7608 PASS",
+        "object 115504 Z=263.463 floor=263.464 terrain_area=7608 PASS",
+        "object 115506 Z=289.291 floor=289.175 terrain_area=7608 PASS",
+        "object 115507 Z=254.765 floor=254.766 terrain_area=7608 PASS",
+        "object 115509 Z=262.062 floor=262.063 terrain_area=7608 PASS",
+        "object 115511 Z=254.852 floor=254.853 terrain_area=7608 PASS",
+        "object 115512 Z=263.045 floor=262.96 terrain_area=7608 PASS",
+        "object 115515 Z=292.304 floor=292.231 terrain_area=7608 PASS",
+        "object 115523 Z=331.858 floor=331.856 terrain_area=7608 PASS",
+        "object 115524 Z=309.494 floor=309.408 terrain_area=7608 PASS",
+        "object 115525 Z=309.519 floor=309.442 terrain_area=7608 PASS",
+        "object 115535 Z=237.273 floor=237.261 terrain_area=7608 PASS",
+        "object 115536 Z=236.1 floor=236.078 terrain_area=7608 PASS",
+        "17 Impalement launcher anchors; 0 failures. Client collision, dismantling and visuals remain unverified."
+      ]
+    }
+  ],
+  "production_source_sha256": {
+    "src/server/scripts/Legion/stormheim_impalement.cpp": "820CE27B8FC75A79D932A570A34327F8F26239851E3D86C052A46F73ED53921C",
+    "src/server/game/Entities/GameObject/GameObject.cpp": "8AC018AF96CE69C6A475A67AF80639990DC8EAA27E76CAF35A6E5E067C461538",
+    "src/server/game/Entities/GameObject/GameObjectData.cpp": "85BB7EFB355E0BD75722E138D6F61E0DD9B936B5897229603634E09F82B64823"
+  },
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "note": "No production implementation or data changed in this follow-up; no migration/deployment/restart was needed. The prior canonical Release startup record remains in the weather audit and is not presented as a new gameplay check."
+  },
+  "observed_test_failures": [
+    "Initial compilation of the new extracted deactivation block required a Player::CastSpell fixture declaration even though live Data10 spell0 never takes that branch. Added an assert-failing unused-path fixture; native control flow and production code were not altered. Regression then compiled and passed."
+  ],
+  "limits": [
+    "This executes selected actual native Update branches and actual launcher handlers, not a running worldserver interaction. Map insertion/visibility, save callbacks, packets/animation, object registry, live conditions, clock, RNG and player count/configuration are fixture services. Complete update scheduling/AI callbacks, pool/link services and world/inventory persistence are not executed; live absence of applicable pool/link rows is checked independently.",
+    "Saved timestamp reconstruction is not a real server restart or SQL respawn load/save test. The fixture does not establish packet order, client disappearance/reappearance, shared-world concurrency, effective live respawn duration under server load or collision loading.",
+    "Retain every earlier client requirement: actual1s Dismantling cast and cancellation,7/7 progression, visual destruction/despawn and respawn, two real players, logout/abandon/retry, phase exclusion41451, grapple access to all17 launchers, Alliance91553 and installed Horde92566 hand-in and next details. Native92573 still has no installed spawn/summon route; no placement was invented."
+  ],
+  "next": "Another Way38342/38617 and later main-chain stages already have focused audits. Continue with an unaudited Hrydshal side branch, Built to Scale38616, instead of presenting those earlier main-chain fixes as new work."
+}
