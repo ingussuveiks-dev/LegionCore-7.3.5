@@ -100,5 +100,15 @@
     "src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp": "c23a51108f425eb0a90b25f87b02be48bcd723da4a3a00ce743ba522e0780c66",
     "src/server/game/Entities/Creature/Creature.cpp": "4ca2cfe1aadc476784aa7a89925c81dfc7ea800f9db27e6e0068d5938770aa57",
     "src/server/game/Globals/ObjectMgr.cpp": "a433c8b47486411c128d8db4575706f58903dc90cb7c64391803bedbf3007af2"
+  },
+  "rider_duplicate_followup_2026_10_17": {
+    "status": "Resolved by migration16 in the separate rider cleanup. The preceding findings/checks/hash set retain the first patrol-repair snapshot.",
+    "audit": "docs/audits/stormheim-overlook-rider-2026-10-17.json",
+    "canonical_guid": 340420,
+    "removed_guid": 341178,
+    "final_actor_spawn_count": 4,
+    "updated_data_test_sha256": "b666bdbd92998f3a0df5576a4f01d199da93cee49f68aa747fd5256bd53639a8",
+    "native_post_removal_regression": ".codex/overlook-test-after-rider.log",
+    "client_verified": false
   }
 }

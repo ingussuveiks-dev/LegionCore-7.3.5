@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38317
+  ],
+  "title": "Masters of Disguise: remove exact overlapping rider copy without removing the quest ender",
+  "client_verified": false,
+  "status": "Duplicate341178 removed; canonical97250/DB340420 and quest38317 hand-in retained. SQL/native regression and ready startup pass; actual client turn-in/visibility remain pending.",
+  "findings": [
+    "Overlook audit found Forsaken Bat-Rider97250 at DB340420 and341178 on map1220, both at3764.07/2918.25/431.166. Every spawn field other than guid matched, including phaseMask1/empty PhaseId/spawnMask1/model override0/all movement, NPC/unit and personal fields. These are overlapping copies, not phase variants. The raw pre-removal World export is .codex/overlook-actors.tsv; the deployment backup contains the actual deleted row.",
+    "Read-only World inspection found neither row in pool_creature, game_event_creature, linked_respawn, creature_formations or creature_addon; no negative spawn SmartAI for either was found. No explicit SmartAI target10 GUID reference or ConditionValue3 reference to341178 was found. The migration also checks those dependencies before deletion, with source22 negative SourceEntry conditions covered.",
+    "Migration16 retains DB340420 and removes only DB341178 when original97250/map1220 exists and all other spawn fields match exactly (null-safe PhaseId). It preserves a different phase, coordinate, flags or pose and checks addon, negative SmartAI or explicit CREATURE_GUID10 target, condition, pool, event, respawn and formation dependencies. An event/pool/formation/respawn/addon on the canonical actor also blocks replacement. No template, quest relation, vehicle or optional gossip is changed.",
+    "97250 is the38317 ender, not a starter. Its template keeps npcflag3/faction83/VehicleId4387/menu18762. 38317 is native auto-accept following journal-submit38308, then requires a nearby rider to turn in. Native Overlook regression already uses retained DB340420 and now reruns against the post-removal four-actor export: self reward request is rejected, nearby rider request accepted and out-of-range rider rejected.",
+    "SQL tests snapshot real schema and the canonical World actor, reconstruct the exact duplicate in temporary tables and apply migration twice. They retain canonical actor, quest ender, template and unrelated leader; changed phase/position/unit_flags3, each of seven dependency table classes, explicit SmartAI target10 reference, canonical event membership and missing original each preserve the duplicate. Temporary read-only alias uses saved_creature to avoid MySQL temporary-table self-reopen; the live migration uses the actual creature self join.",
+    "Live World removal followed stopped-server scoped mysqldump backup and RELEASED migration registration. The explicit SmartAI target guard was added during final review, retested and reapplied idempotently; initial backup retained, final SHA1 refreshed. The World actor state is unchanged by that guard followup.",
+    "Canonical Release worldserver startup after removal reached ready and shut down with exit0; DBErrors/stderr are empty and no server is left running. No production C++ changed and no Release build is claimed; both canonical executable hashes match the first audit. Startup does not activate every grid or verify rendered rider visibility.",
+    "All prior interaction/geometry evidence and limitations are retained in the original Overlook audit. Its two-rider observation and file hashes describe the first repair snapshot; a dated followup there resolves the overlap and records the updated Data test hash. The24 earlier native routes retain relevance because the surviving rider has the same position; geometry was not rerun for this deletion."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimOverlookRiderData.ps1",
+      "result": "PASS",
+      "log": ".codex/overlook-rider-data.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlookRiderData.ps1 -Live",
+      "result": "PASS",
+      "log": ".codex/overlook-rider-live-data.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlook.ps1",
+      "result": "PASS after removal",
+      "log": ".codex/overlook-test-after-rider.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlookData.ps1 -Live",
+      "result": "PASS",
+      "log": ".codex/overlook-live-data.log"
+    }
+  ],
+  "deployment": {
+    "sha1": "2435D6A69B77BAD1B4526D4DF3D01A7510C63F14",
+    "migration": "2026_10_17_16_stormheim_overlook_rider.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-overlook-rider\\20261017-173025",
+    "state": "RELEASED",
+    "initial_applied_sha1": "7D610B10C9CACCC94620DD404427FA7CBC91E3EF",
+    "guard_followup": "Added explicit SmartAI target10 GUID guard, reran isolated migration checks, reapplied idempotently and refreshed updates SHA1; original removal backup retained."
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "compiled_for_this_fix": false,
+    "startup": "build-extractors/runtime-test/stormheim-overlook-rider/startup-20261017-173040/",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "worldserver_left_running": false,
+    "unchanged_executable_hashes_reference": "docs/audits/stormheim-overlook-2026-10-17.json"
+  },
+  "prior_audit": "docs/audits/stormheim-overlook-2026-10-17.json",
+  "client_pending": [
+    "Confirm one visible Forsaken Bat-Rider at the preserved location.",
+    "Hand in38317 after both actual leader kills, including pet kills, and confirm reward129093 and UI.",
+    "Other original Overlook audit client limitations remain; optional throw gossip has not been tested."
+  ],
+  "file_sha256": {
+    "sql/updates/world/2026_10_17_16_stormheim_overlook_rider.sql": "4287a56bc15fb64ea9d5e182c6c34b539dabe4afdd65541401980098d1416ba3",
+    "tools/tests/Test-StormheimOverlookRiderData.ps1": "b947803eb217fa5972b3bbcb21ee3f6d73666d093aee7ae8ea97a302d830277c",
+    "tools/tests/Test-StormheimOverlookData.ps1": "b666bdbd92998f3a0df5576a4f01d199da93cee49f68aa747fd5256bd53639a8",
+    "tools/tests/StormheimOverlookTest.cpp": "8e423281fafb94637568c5c68986cbd12207765b3e7f386bf79229dcc0f82842"
+  }
+}

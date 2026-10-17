@@ -48,7 +48,7 @@ foreach($r in @("actor`t91460`t0`t0`t84`t0`t32768`t2048`t`t`t62465`t0`t91460","a
 if(@($rows | Where-Object {$_ -like "starter`t*"}).Count -or @($rows | Where-Object {$_ -like "click`t*"}).Count -ne 1){throw 'Unexpected quest/click source'}
 if(@($rows | Where-Object {$_ -like "patrol`t288637`t*"}).Count -ne 5 -or @($rows | Where-Object {$_ -like "patrol`t2887300`t*"}).Count -ne 16){throw 'Native patrol changed'}
 foreach($r in ($rows | Where-Object {$_ -like "spawn`t*"})){$p=$r.Split("`t");if($p[3] -ne '1220' -or $p[7] -ne '0' -or $p[8] -ne '1' -or $p[9]){throw 'Unexpected spawn map/model/phase'}}
-if(@($rows | Where-Object {$_ -like "spawn`t*"}).Count -ne 5){throw 'Unexpected actor spawn set'}
+if(@($rows | Where-Object {$_ -like "spawn`t*"}).Count -ne 4 -or @($rows | Where-Object {$_ -like "spawn`t341178`t*"}).Count){throw 'Unexpected actor spawn set (rider migration16 required)'}
 if(!$Live){
  $guard=@"
 UPDATE creature_addon SET path_id=777,auras='custom' WHERE guid=288637;
