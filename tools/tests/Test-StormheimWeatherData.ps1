@@ -1,0 +1,43 @@
+param([switch]$Live)
+$ErrorActionPreference='Stop'
+$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$out="$repo/build-extractors/runtime-test/stormheim-weather"
+New-Item -ItemType Directory -Force -Path $out | Out-Null
+$migration=Get-Content "$repo/sql/updates/world/2026_10_17_02_stormheim_weather_loot.sql" -Raw
+$sql=''
+if(!$Live){
+ $tables=@{gameobject_template='entry IN(240677,240681,241460,241462,240286)';gameobject='id IN(240677,240681,241460,241462)';gameobject_loot_template='Entry IN(240677,240681,241460,241462)';creature_loot_template='Entry=91517';quest_objectives='QuestID IN(38405,38614)';quest_template_addon='ID IN(38405,38614)';quest_template='ID IN(38405,38614)';quest_start_scripts='id=38614 OR datalong=38614'}
+ foreach($table in $tables.Keys){$sql+="CREATE TEMPORARY TABLE saved_$table LIKE $table; INSERT INTO saved_$table SELECT * FROM $table WHERE $($tables[$table]); CREATE TEMPORARY TABLE $table LIKE saved_$table; INSERT INTO $table SELECT * FROM saved_$table;`n"}
+ $sql+="UPDATE gameobject_template SET Data1=0 WHERE entry IN(240677,240681,241460,241462); UPDATE quest_template SET StartScript=38614 WHERE ID=38614; UPDATE quest_template_addon SET SpecialFlags=2 WHERE ID=38614; DELETE FROM quest_start_scripts; INSERT INTO quest_start_scripts VALUES(38614,0,7,38614,0,0,0,0,0,0),(38614,0,7,38614,0,0,0,0,0,0),(38614,0,7,38614,0,0,0,0,0,0),(38614,0,7,38614,0,0,0,0,0,0);`n$migration`n$migration`nUPDATE saved_gameobject_template SET Data1=entry WHERE entry IN(240677,240681,241460,241462); UPDATE saved_quest_template SET StartScript=0 WHERE ID=38614; UPDATE saved_quest_template_addon SET SpecialFlags=0 WHERE ID=38614; DELETE FROM saved_quest_start_scripts WHERE id=38614 AND delay=0 AND command=7 AND datalong=38614 AND datalong2=0 AND dataint=0 AND x=0 AND y=0 AND z=0 AND o=0;`n"
+ foreach($table in $tables.Keys){$sql+="SELECT 'actual-$table',t.* FROM $table t; SELECT 'expected-$table',t.* FROM saved_$table t;`n"}
+}
+$sql+=@"
+SELECT 'quest',q.ID,q.Flags,q.FlagsEx,q.AllowableRaces,q.StartItem,q.RewardNextQuest,a.PrevQuestID,a.NextQuestID,a.SpecialFlags FROM quest_template q JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN(38312,38318,38405,38410,38612,38613,38614,38615) ORDER BY q.ID;
+SELECT 'objective',QuestID,ID,Type,ObjectID,Amount,StorageIndex,Flags FROM quest_objectives WHERE QuestID IN(38405,38614) ORDER BY QuestID,StorageIndex;
+SELECT 'loot',g.entry,g.Data1,l.Item,l.Chance,l.QuestRequired,l.LootMode,l.GroupId,l.MinCount,l.MaxCount FROM gameobject_template g JOIN gameobject_loot_template l ON l.Entry=g.Data1 WHERE g.entry IN(240677,240681,241460,241462) ORDER BY g.entry;
+SELECT 'stone',t.entry,t.lootid,l.Item,l.Chance,l.QuestRequired,l.LootMode,l.GroupId,l.MinCount,l.MaxCount,w.FlagQuest FROM creature_template t JOIN creature_loot_template l ON l.Entry=t.lootid JOIN creature_template_wdb w ON w.Entry=t.entry WHERE t.entry=91517 AND l.Item=124038;
+SELECT 'chest',entry,type,displayId,flags,size,Data0,Data8,Data15,Data30,Data31,AIName,ScriptName FROM gameobject_template WHERE entry IN(240677,240681,241460,241462) ORDER BY entry;
+SELECT 'spawn',guid,id,map,position_x,position_y,position_z,PhaseId FROM gameobject WHERE id IN(240677,240681,241460,241462) ORDER BY guid;
+SELECT 'starter',id,quest FROM creature_queststarter WHERE quest IN(38405,38614,38410,38615) ORDER BY quest,id;
+SELECT 'ender',id,quest FROM creature_questender WHERE quest IN(38405,38614) ORDER BY quest,id;
+SELECT 'shortcuts',COUNT(*) FROM quest_start_scripts WHERE id=38614 AND command=7 AND datalong=38614;
+SELECT 'event-lock',SpecialFlags&2 FROM quest_template_addon WHERE ID=38614;
+SELECT 'conditions',COUNT(*) FROM conditions WHERE SourceTypeOrReferenceId IN(1,4) AND SourceEntry IN(124038,122685,122686);
+SELECT 'personal-metadata',COUNT(*) FROM personal_loot_template WHERE entry IN(60122,60124,240677,240681,241460,241462) OR goEntry IN(240677,240681,241460,241462);
+"@
+if(!$Live){$sql+="UPDATE gameobject_template SET Data1=999,Data30=444,flags=123 WHERE entry=241460;`n$migration`nSELECT 'custom',Data1,Data30,flags FROM gameobject_template WHERE entry=241460; UPDATE gameobject_template SET Data1=0 WHERE entry=241460; DELETE FROM gameobject_loot_template WHERE Entry=241460;`n$migration`nSELECT 'missing',Data1 FROM gameobject_template WHERE entry=241460; INSERT INTO gameobject_loot_template SELECT * FROM saved_gameobject_loot_template WHERE Entry=241460; UPDATE gameobject_loot_template SET Item=999999 WHERE Entry=241460;`n$migration`nSELECT 'wrong-item',Data1 FROM gameobject_template WHERE entry=241460; INSERT INTO quest_start_scripts VALUES(38614,1,7,38614,0,0,0,0,0,0); UPDATE quest_template SET StartScript=38614 WHERE ID=38614; UPDATE quest_template_addon SET SpecialFlags=2 WHERE ID=38614;`n$migration`nSELECT 'custom-script',StartScript FROM quest_template WHERE ID=38614; SELECT 'custom-event',SpecialFlags FROM quest_template_addon WHERE ID=38614; UPDATE quest_template_addon SET SpecialFlags=9 WHERE ID=38614; DELETE FROM quest_start_scripts;`n$migration`nSELECT 'other-bits',SpecialFlags FROM quest_template_addon WHERE ID=38614;"}
+$c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';');$previous=$env:MYSQL_PWD
+try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Weather World query failed'}}finally{$env:MYSQL_PWD=$previous}
+$rows | Set-Content "$out/world$(if($Live){'-live'}).tsv"
+foreach($entry in @(240677,240681,241460,241462)){$item=if($entry -in @(240677,241460)){122685}else{122686};if($rows -notcontains "loot`t$entry`t$entry`t$item`t100`t1`t1`t0`t1`t1"){throw "Missing Weather selector $entry"}}
+foreach($line in @("stone`t91517`t91517`t124038`t100`t1`t0`t0`t1`t1`t0","shortcuts`t0","event-lock`t0","conditions`t0","personal-metadata`t0","objective`t38405`t277814`t1`t124038`t1`t0`t0","objective`t38405`t277815`t1`t122685`t1`t1`t0","objective`t38405`t277816`t1`t122686`t1`t2`t0","objective`t38614`t278222`t1`t124038`t1`t0`t0","objective`t38614`t278223`t1`t122685`t1`t1`t0","objective`t38614`t278224`t1`t122686`t1`t2`t0")){if($rows -notcontains $line){throw "Missing Weather contract: $line"}}
+if(!$Live){
+ foreach($table in $tables.Keys){$a="actual-$table`t";$e="expected-$table`t";$actual=@($rows | Where-Object {$_.StartsWith($a)} | ForEach-Object {$_.Substring($a.Length)} | Sort-Object);$expected=@($rows | Where-Object {$_.StartsWith($e)} | ForEach-Object {$_.Substring($e.Length)} | Sort-Object);if($actual.Count -ne $expected.Count -or ($actual.Count -and (Compare-Object $actual $expected))){throw "Full-row preservation failed: $table"}}
+ foreach($line in @("custom`t999`t444`t123","missing`t0","wrong-item`t0","custom-script`t38614","custom-event`t2","other-bits`t9")){if($rows -notcontains $line){throw "Weather migration guard failed: $line"}}
+}
+$sql='SELECT ''item'',COUNT(*) FROM item WHERE ID IN(124038,122685,122686); SELECT ''sparse'',COUNT(*) FROM item_sparse WHERE ID IN(124038,122685,122686); SELECT ''effects'',COUNT(*) FROM item_effect WHERE ItemID IN(124038,122685,122686); SELECT ''objects'',COUNT(*) FROM gameobject_display_info WHERE ID IN(25701,25704); SELECT ''actors'',COUNT(*) FROM creature_display_info WHERE ID IN(62485,34520,65132); SELECT ''package'',COUNT(*) FROM quest_package_item WHERE PackageID=647; SELECT ''lock'',COUNT(*) FROM `lock` WHERE ID=1690; SELECT ''models'',COUNT(*) FROM creature_model_data WHERE ID IN(2594,50,58); SELECT ''open-effect'',COUNT(*) FROM spell_effect WHERE SpellID=3365; SELECT ''quest-lines'',COUNT(*) FROM quest_line_x_quest WHERE QuestID IN(38405,38614);'
+$c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^HotfixDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
+try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Weather native-reference overlay query failed'}}finally{$env:MYSQL_PWD=$previous}
+foreach($kind in @('item','sparse','effects','objects','actors','package','lock','models','open-effect','quest-lines')){if($rows -notcontains "$kind`t0"){throw "Unexpected Weather native-reference overlay: $kind"}}
+$rows | Set-Content "$out/hotfix.tsv"
+'PASS: Weather loot/event migration twice; complete rows, personal markers, creature loot, objectives and custom scripts/settings preserved.'

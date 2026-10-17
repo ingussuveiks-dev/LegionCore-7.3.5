@@ -1,0 +1,315 @@
+{
+  "quests": [
+    38405,
+    38614
+  ],
+  "title": "To Weather the Storm: actual item acquisition",
+  "date": "2026-10-17",
+  "status": "loot selectors and Horde event lock repaired and deployed; native automated checks passed; client pending",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "original": {
+    "creature_template": [
+      {
+        "entry": "91517",
+        "lootid": "0",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "gameobject_template": [
+      {
+        "entry": "241462",
+        "name": "'Oiled Cloak'",
+        "type": "3",
+        "displayId": "25704",
+        "size": "3",
+        "Data0": "1690",
+        "Data1": "0",
+        "Data8": "38614",
+        "Data30": "60124",
+        "Data31": "0"
+      },
+      {
+        "entry": "241460",
+        "name": "'Climbing Treads'",
+        "type": "3",
+        "displayId": "25701",
+        "size": "2",
+        "Data0": "1690",
+        "Data1": "0",
+        "Data8": "38614",
+        "Data30": "60122",
+        "Data31": "0"
+      },
+      {
+        "entry": "240681",
+        "name": "'Oiled Cloak'",
+        "type": "3",
+        "displayId": "25704",
+        "size": "3",
+        "Data0": "1690",
+        "Data1": "0",
+        "Data8": "38405",
+        "Data30": "60124",
+        "Data31": "0"
+      },
+      {
+        "entry": "240677",
+        "name": "'Climbing Treads'",
+        "type": "3",
+        "displayId": "25701",
+        "size": "2",
+        "Data0": "1690",
+        "Data1": "0",
+        "Data8": "38405",
+        "Data30": "60122",
+        "Data31": "0"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "38615",
+        "LogTitle": "'Impalement Insurance'",
+        "LogDescription": "'Grapple on top of the walls and dismantle 7 Tideskorn Harpoon Launchers atop in Hrydshal.'",
+        "RewardNextQuest": "38617",
+        "Flags": "33685512",
+        "FlagsEx": "0",
+        "AllowableRaces": "33555378"
+      },
+      {
+        "ID": "38614",
+        "LogTitle": "'To Weather the Storm'",
+        "LogDescription": "'Collect Climbing Treads, an Oiled Cloak, and an Enchanted Lodestone from Hrydshal.'",
+        "RewardNextQuest": "38615",
+        "Flags": "37748744",
+        "FlagsEx": "0",
+        "AllowableRaces": "33555378"
+      },
+      {
+        "ID": "38613",
+        "LogTitle": "'No Wings Required'",
+        "LogDescription": "'Use the Stormforged Grapple Launcher to launch over the wall at Hrydshal.'",
+        "RewardNextQuest": "38615",
+        "Flags": "37748744",
+        "FlagsEx": "4",
+        "AllowableRaces": "33555378"
+      },
+      {
+        "ID": "38612",
+        "LogTitle": "'A Grapple a Day'",
+        "LogDescription": "'Pick up a Stormforged Grapple Launcher and meet Dread-Rider Cullen outside the wall of Hrydshal.'",
+        "RewardNextQuest": "38613",
+        "Flags": "35651592",
+        "FlagsEx": "8192",
+        "AllowableRaces": "33555378"
+      },
+      {
+        "ID": "38410",
+        "LogTitle": "'Impalement Insurance'",
+        "LogDescription": "'Grapple on top of the walls in Hrydshal and dismantle 7 Tideskorn Harpoon Launchers.'",
+        "RewardNextQuest": "38342",
+        "Flags": "33685512",
+        "FlagsEx": "0",
+        "AllowableRaces": "18875469"
+      },
+      {
+        "ID": "38405",
+        "LogTitle": "'To Weather the Storm'",
+        "LogDescription": "'Collect Climbing Treads, an Oiled Cloak, and an Enchanted Lodestone from Hrydshal.'",
+        "RewardNextQuest": "38410",
+        "Flags": "37748744",
+        "FlagsEx": "0",
+        "AllowableRaces": "18875469"
+      },
+      {
+        "ID": "38318",
+        "LogTitle": "'No Wings Required'",
+        "LogDescription": "'Go to the top of the ridge and use the Stormforged Grapple Launcher to launch over the wall at Hrydshal.'",
+        "RewardNextQuest": "38410",
+        "Flags": "37748744",
+        "FlagsEx": "4",
+        "AllowableRaces": "18875469"
+      },
+      {
+        "ID": "38312",
+        "LogTitle": "'A Grapple a Day'",
+        "LogDescription": "'Pick up a Stormforged Grapple Launcher and meet Lorna Crowley outside the wall of Hrydshal.'",
+        "RewardNextQuest": "38318",
+        "Flags": "37748744",
+        "FlagsEx": "8192",
+        "AllowableRaces": "18875469"
+      }
+    ]
+  },
+  "observed_failures": [
+    "All four personal chest templates240677/240681/241460/241462 had Data1=0 despite existing100% quest rows for122685/122686. Native GetLootId and SendLoot skipped FillLoot, including its personal branch. The old2018 archive also has zero selectors; restoring it verbatim would retain the defect.",
+    "Horde38614 had SpecialFlags2 and four zero-delay command7 self-exploration placeholders. Actual StartScript=0 means these lists were NOT being run on acceptance. Nevertheless ScriptsData loads unused lists and restores the exploration requirement even if only the SQL bit is cleared; native CanCompleteQuest rejects an incomplete status despite all three collected items. Native regression reproduces both stages of this failure."
+  ],
+  "repair": "Migration2026_10_17_02 sets only recognized empty chest selectors to their existing entry after validating the exact100% quest row; removes only the four empty self-exploration placeholders; detaches StartScript38614 only if its list is empty and removes only the exact orphan SpecialFlags2. Custom selectors, missing/wrong loot, delayed scripts and other flags survive.",
+  "world_live": [
+    "quest\t38312\t37748744\t8192\t824181837\t0\t38318\t38473\t38318\t0",
+    "quest\t38318\t37748744\t4\t824181837\t0\t38410\t38312\t38410\t0",
+    "quest\t38405\t37748744\t0\t824181837\t0\t38410\t38312\t38410\t0",
+    "quest\t38410\t33685512\t0\t824181837\t0\t38342\t38318\t38342\t0",
+    "quest\t38612\t35651592\t8192\t234881970\t0\t38613\t38611\t38613\t0",
+    "quest\t38613\t37748744\t4\t234881970\t0\t38615\t38612\t38615\t0",
+    "quest\t38614\t37748744\t0\t234881970\t0\t38615\t38612\t38615\t0",
+    "quest\t38615\t33685512\t0\t234881970\t0\t38617\t38613\t38617\t0",
+    "objective\t38405\t277814\t1\t124038\t1\t0\t0",
+    "objective\t38405\t277815\t1\t122685\t1\t1\t0",
+    "objective\t38405\t277816\t1\t122686\t1\t2\t0",
+    "objective\t38614\t278222\t1\t124038\t1\t0\t0",
+    "objective\t38614\t278223\t1\t122685\t1\t1\t0",
+    "objective\t38614\t278224\t1\t122686\t1\t2\t0",
+    "loot\t240677\t240677\t122685\t100\t1\t1\t0\t1\t1",
+    "loot\t240681\t240681\t122686\t100\t1\t1\t0\t1\t1",
+    "loot\t241460\t241460\t122685\t100\t1\t1\t0\t1\t1",
+    "loot\t241462\t241462\t122686\t100\t1\t1\t0\t1\t1",
+    "stone\t91517\t91517\t124038\t100\t1\t0\t0\t1\t1\t0",
+    "chest\t240677\t3\t25701\t0\t2\t1690\t38405\t0\t60122\t0\t\t",
+    "chest\t240681\t3\t25704\t0\t3\t1690\t38405\t0\t60124\t0\t\t",
+    "chest\t241460\t3\t25701\t0\t2\t1690\t0\t0\t60122\t0\t\t",
+    "chest\t241462\t3\t25704\t0\t3\t1690\t0\t0\t60124\t0\t\t",
+    "spawn\t115519\t241460\t1220\t2529.33\t2605.13\t239.01\t",
+    "spawn\t115532\t241462\t1220\t2599.27\t2382.06\t235.494\t",
+    "starter\t91481\t38405",
+    "starter\t91519\t38410",
+    "starter\t92566\t38614",
+    "starter\t92566\t38615",
+    "starter\t92567\t38615",
+    "ender\t91519\t38405",
+    "ender\t92566\t38614",
+    "ender\t92567\t38614",
+    "shortcuts\t0",
+    "event-lock\t0",
+    "conditions\t0",
+    "personal-metadata\t0"
+  ],
+  "hotfix_overlays": [
+    "item\t0",
+    "sparse\t0",
+    "effects\t0",
+    "objects\t0",
+    "actors\t0",
+    "package\t0",
+    "lock\t0",
+    "models\t0",
+    "open-effect\t0",
+    "quest-lines\t0"
+  ],
+  "native_catalog": [
+    "item124038 Enchanted Lodestone max=0 stack=1 bonding=4 class=12 use=0",
+    "item122685 Climbing Treads max=0 stack=1 bonding=4 class=12 use=0",
+    "item122686 Oiled Cloak max=0 stack=1 bonding=4 class=12 use=0",
+    "native lock1690/Open3365 effect33 type5 target23",
+    "object25701 file1005465 minZ=-2.79722e-05 maxZ=0.609479",
+    "object25704 file198148 minZ=-0.07654 maxZ=1.585",
+    "actor62485 model2594 file122815",
+    "actor34520 model50 file119563",
+    "actor65132 model58 file121608",
+    "quest38405 line132 order3",
+    "quest38614 line133 order3",
+    "package647 item121567 displayType1 quantity1",
+    "package647 item129317 displayType1 quantity1",
+    "package647 item129318 displayType1 quantity1",
+    "package647 item129319 displayType1 quantity1"
+  ],
+  "native_floors": [
+    "npc 371029 Z=248.25 floor=248.245 terrain_area=7608 PASS",
+    "npc 294222 Z=223.576 floor=223.606 terrain_area=7608 PASS",
+    "object 115519 Z=239.01 floor=238.999 terrain_area=7608 PASS",
+    "object 115532 Z=235.494 floor=234.383 terrain_area=7608 PASS",
+    "4 Weather actor/chest anchors; 0 failures. Client collision loading and teleport visuals remain unverified."
+  ],
+  "ground_approaches": [
+    "target 2587.47 2482.27 223.576",
+    "PASS: Source approach 2552.27,2485.96,248.182 -> target approach 2587.47,2482.27,223.63 through 22 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 11 corners, length=85.0254yd.",
+    "corner 0 2552.27 2485.96 248.182",
+    "corner 1 2566.13 2487.73 232.963",
+    "corner 2 2567.2 2487.73 231.097",
+    "corner 3 2570.13 2487.47 224.963",
+    "corner 4 2571.2 2487.73 222.563",
+    "corner 5 2594.13 2500.8 222.563",
+    "corner 6 2595.73 2500.53 222.563",
+    "corner 7 2598.4 2496 222.563",
+    "corner 8 2598.93 2491.73 222.297",
+    "corner 9 2596 2489.07 223.897",
+    "corner 10 2587.47 2482.27 223.63",
+    "target 2529.33 2605.13 239.01",
+    "PASS: Source approach 2552.27,2485.96,248.182 -> target approach 2529.33,2605.13,238.943 through 30 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 11 corners, length=131.389yd.",
+    "corner 0 2552.27 2485.96 248.182",
+    "corner 1 2556.8 2502.67 246.563",
+    "corner 2 2557.07 2504.27 247.097",
+    "corner 3 2553.6 2508.27 247.097",
+    "corner 4 2551.47 2512 247.363",
+    "corner 5 2551.2 2512.8 247.363",
+    "corner 6 2538.67 2581.33 241.497",
+    "corner 7 2525.6 2593.07 239.897",
+    "corner 8 2524.8 2595.47 239.097",
+    "corner 9 2526.13 2602.67 237.763",
+    "corner 10 2529.33 2605.13 238.943",
+    "target 2599.27 2382.06 235.494",
+    "PASS: Source approach 2552.27,2485.96,248.182 -> target approach 2599.17,2382.78,234.563 through 24 native ground navmesh polygons; budget=8192, complete corridor and endpoint, 6 corners, length=119.452yd.",
+    "corner 0 2552.27 2485.96 248.182",
+    "corner 1 2551.2 2483.73 248.697",
+    "corner 2 2552 2481.6 248.43",
+    "corner 3 2581.33 2410.67 234.297",
+    "corner 4 2593.33 2405.6 234.297",
+    "corner 5 2599.17 2382.78 234.563"
+  ],
+  "native_db2_sha256": {
+    "Item": "67B3B9B5C33DFA226910B3C62FDAEC674E6198C54B39A6CD07D622A90374B010",
+    "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17",
+    "ItemEffect": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931",
+    "Lock": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "GameObjectDisplayInfo": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "QuestLineXQuest": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
+    "QuestPackageItem": "A6BB441011003860FFF002D39795B0201642266778B60988D86766ECB4144AF6"
+  },
+  "geometry_sha256": {
+    "maps/1220_27_27.map": "472F09AD0B66DEBB11D00B9BFEA5AAC6737D41C155FEA629905494745227EFF6",
+    "vmaps/1220.vmtree": "B160C8A9D7BAC51E4030B3BFB4D0E7D46710B639BFB0BCE655F78E199D15B8B0",
+    "vmaps/1220_27_27.vmtile": "A108B8476B065F03A2DF1534C8D65723891177423AD3CED663FE99D09F28F617",
+    "mmaps/1220.mmap": "3FA4F4F7EC55DF73DBF81642F7542419D36CB11E5DFC50284A883F1D9B63489F",
+    "mmaps/12202727.mmtile": "F409F44704028AD100D9A9ACFBD0C2716D238B0E597B7DA1A2A455BFCC8B8B81"
+  },
+  "findings": [
+    "Each quest retains three mandatory ITEM objectives:124038 Enchanted Lodestone/storage0,122685 Climbing Treads/storage1,122686 Oiled Cloak/storage2; amount1 and flags0. All are native quest-bound class12 items with stack1,maxCount0 and no item-use effects. The fixture uses these actual limits.",
+    "Both live spawns use shared templates241460/241462 with Data8=0. Alliance-specific240677/240681 keep Data8=38405 and have no static spawn. Preserve the shared availability, personal markers60122/60124, display25701/25704, sizes2/3, locks1690, flags0, coordinates/orientations and respawn data. No duplicate Alliance spawns are added.",
+    "Native IsPersonal selects personal handling from nonzero Data30; the actual SendLoot guard, personal-generation branch, FillLoot dispatch fragment and full ProcessRareOrGoLoot execute. No personal_loot_template metadata adds a boss encounter to these objects. Native1690/Open3365 effect33/misc5/target23 succeeds; Gathering6478/misc13 is rejected.",
+    "Stormbreaker Reykir91517/DB294222 already has lootid91517 and100% quest-required124038/count1. Tracking quest FlagQuest0 keeps the ordinary processor path, where LootMode0 is valid. Native Process/Roll and quest-item filtering execute; keep the existing creature and every other loot row. Its template0 original archive lootid is not restored.",
+    "Only taking each real item advances its objective; chest opening and creature/GO kill credit do not replace acquisition. Both factions pass all six item orders, no completion before the third, bank-only reward rejection, inventory count reconstruction, removal/retry and reward item consumption. Separate players receive independent personal loot.",
+    "Native GUID cooldown methods use actual spawn IDs115519/115532 and600-second outdoor personal quest expiry. Empty clicks before repair can temporarily suppress a source until ordinary expiry. No character inventory, cooldown, quest history or personal data is reset.",
+    "Native model chains exist:25701->1005465,25704->198148,Reykir62485->2594->122815,Lorna34520->50->119563,Cullen65132->58->121608. All selected live creature modelid overrides are0. Checked Hotfix item/sparse/effect/lock/display/model/package/quest-line overlays are absent.",
+    "Native QuestLine132/133 places38405/38614 at order3. QuestPackage647 has four quantity1 entries121567/129317/129318/129319. Existing reward package, expanded faction race masks824181837/234881970 and quest-giver relations are preserved.",
+    "Static terrain/VMap checks pass for the two chests, Reykir and upper Cullen371029. From upper Cullen, all three conservative5yd source approaches have full ground corridors:Reykir22 polygons/85.0254yd,treads30/131.389yd,cloak24/119.452yd. No navmesh or spawn relocation is needed."
+  ],
+  "checks": [
+    "Test-StormheimWeatherData.ps1 and -Live: real migration twice in connection-local copies, whole-row comparison including every affected source/loot/objective and unrelated Oscillator; custom/missing/wrong loot and custom scripts/flags preserved; deployed rows and overlays checked.",
+    "Test-StormheimWeather.ps1: extracted production selectors, personal dispatch/RareOrGo and ordinary Process/Roll, actual exploration loader, lock, item lifecycle/reward consumption and600s cooldown. Existing Oscillator/Helheim regressions also pass.",
+    "Test-StormheimWeatherCatalog.ps1: native C++ sparse DB2Storage, full model chains/package/quest-line, native GridMap/VMap floors and Detour ground corridors pass.",
+    "Successful canonical Release build and fresh ready/shutdown smoke with no DBErrors/stderr. Offline migrations deployed transactionally with private scoped backup and matching updates SHA1 records."
+  ],
+  "limits": [
+    "No client quest or visual is certified. Pending: phase-visible Lorna/Cullen menus, both faction acceptance, actual Open casts/loot windows, collecting all items, Reykir combat/player or pet killing blows, bag-full behavior, personal retry/two players/relog and reward package selection.",
+    "Production handler fragments execute against fixture world/conditions/clock/inventory/packet services. Full FillLoot setup, corpse death and loot permissions, saved inventory/cooldown persistence, real packet/UI delivery and complete CanTakeQuest checks are outside the harness. Fixed native catalog independently checks item limits and source metadata.",
+    "Geometry proves static navigable approaches from an interior anchor, not full wall infiltration/grapple movement, live client collision loading, enemy aggro or phase transitions. The separate earlier quest audits and pending client checks remain applicable.",
+    "One combined test invocation returned a missing-selector assertion on its final -Live query. Immediate independent SQL showed all four correct selectors and unchanged loot; standalone and repeated combined tests then passed without any redeployment. The failing query output was not captured, so its cause is unproven. The data test now saves its World rows before asserting, preserving diagnostics for any recurrence. No server/database regression was established."
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "smoke_directory": "build-extractors/runtime-test/stormheim-weather/startup-20261017-081606",
+    "build": "cmake --build build-extractors --config Release --target worldserver --parallel 4; original game/scripts Release final-link inputs; no OutDir override",
+    "migration": "2026_10_17_02_stormheim_weather_loot.sql",
+    "migration_sha1": "40CCF8315330784F91B9361899CCFE9024C59850"
+  },
+  "followup": "Separate faction prerequisite/parallel reward gate repair; then38410/38615 Impalement Insurance launcher interactions."
+}
