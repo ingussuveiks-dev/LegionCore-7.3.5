@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-17",
+  "quest": 39984,
+  "object": 244719,
+  "guid": 114999,
+  "source_base_revision": "a1f21aca2d400df42f61d4d5d6d748fa5620c3ab",
+  "previous_audit": "stormheim-journals-2026-10-17.json",
+  "status": "Captured inaccessible Kjell placement repaired and deployed; native static approach and quest regression checks pass. Client interaction and rendering pending.",
+  "problem": "The original paper position selects an upper-floor endpoint with blocked LOS. Local polygon, larger-budget/tile and collision-floor surveys did not establish an accepted connected approach. The original failed probes remain in the previous audit; this does not claim a mathematical proof that no possible client maneuver exists.",
+  "repair": {
+    "old_xyz": [
+      3432.79,
+      1564.77,
+      9.06416
+    ],
+    "new_xyz": [
+      3438.79,
+      1560.27,
+      7.01219
+    ],
+    "distance_yards": 7.78,
+    "placement_origin": "Authored clear nearby placement measured against installed native collision and display bounds; not asserted to be original retail coordinates.",
+    "vmap_floor": 6.43929434,
+    "native_display": 15405,
+    "model_min_z": -0.552891,
+    "model_bottom_clearance": 0.0200043,
+    "footprint": "Nine native support/standing-clearance probes and six diagonal rays across a conservative0.8x0.9yd footprint pass.",
+    "poi": {
+      "QuestID": 39984,
+      "Idx1": 3,
+      "Idx2": 0,
+      "old_xy": [
+        3433,
+        1565
+      ],
+      "new_xy": [
+        3439,
+        1560
+      ]
+    },
+    "preserved": "Entry, model, orientation/quaternion, phase, template/gossip/credit, respawn and all other spawn fields; all other book/source/Havi records. No starter, loot or quest-sequencing rewrite."
+  },
+  "migration": {
+    "file": "2026_10_17_04_stormheim_kjell_access.sql",
+    "sha1": "88103C3D4FBA853DF4D3888C15412A7470D4C71B",
+    "state": "RELEASED",
+    "backup": "Private scoped gameobject114999 and39984 POI dumps taken before deployment; excluded from Git.",
+    "guards": "Only the captured old XYZ, map, phase and canonical template type/display/size/script are eligible. A custom marker or an unrepaired/custom spawn is preserved. Idempotent replay."
+  },
+  "checks": {
+    "migration_replay": "Test-StormheimKjellData.ps1: twice on temporary tables; exact complete-row preservation; custom position/marker/script, wrong-map and wrong-model guards pass.",
+    "live": "Test-StormheimKjellData.ps1 -Live and Test-StormheimJournalsData.ps1 pass.",
+    "native_route": "Test-StormheimJournalsGeometry.ps1: Watcher Journal -> new Kjell; complete96 ground polygons,32 corners,327.145yd; no partial/out-of-nodes result, center distance0.685996, surface error0.113101, staticLOS1.",
+    "progression": [
+      "PASS: existing original journal starter relations, mandatory8 verses/source item,16 priestesses/loot, four book menus/objectives and Havi final credit/ender. Kjell placement repair is checked separately.",
+      "StormheimJournalsTest.cpp",
+      "PASS: native GO hasQuest/hasInvolvedQuest and PrepareQuestMenu for both original starters, GiveQuestSourceItem first verse plus7 real loot drops, failure/cap/bank/removal/consumption, native auto-submit RequestReward without invented ender. Remnants:24 book orders, both factions, repeated clicks, early/late Havi native condition and group credit, no completion before all5 objectives, correct NPC reward admission. World/session acceptance, inventory storage, AI LOS and packet services remain fixtures; client pending."
+    ],
+    "catalog": "Native DB2 display15405 and model lower bound; original starters, texts, source item, four objectives and Havi admission preserved."
+  },
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "build": "No production C++ change; existing Release executable retained. Validation executables use installed Release libraries/data.",
+    "startup": "build-extractors/runtime-test/stormheim-journals/startup-20261017-101608",
+    "ready": true,
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "db_errors_bytes": 0,
+    "state": "Gracefully stopped after validation, as before this work."
+  },
+  "pending_client": [
+    "Both factions: document first appearance and sustained placement, physical approach, hitbox/click, text and exactly-once objective credit.",
+    "Four-book progression, Havi dialogue/final hand-in and saved reward state remain client checks."
+  ],
+  "other_gap": "Halvir spawn is unchanged; its original partial direct navmesh routes are retained in the prior audit and handled in a separate followup."
+}

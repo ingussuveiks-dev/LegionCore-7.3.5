@@ -9,7 +9,7 @@
     "Remnants of the Past"
   ],
   "source_base_revision": "c10f685bd69233eec7bba9138c46f026d88012b9",
-  "status": "Selected native quest-menu, source-item, loot, objective and reward checks pass. No production defect confirmed. Two Remnants book approaches remain UNVERIFIED by static navigation/collision checks; do not call the whole quest verified. Client verification pending.",
+  "status": "Kjell captured placement and objective marker repaired; complete static route passes. Original evidence retained. Halvir static approach followup remains pending. Client verification pending for both quests.",
   "scope": "Code/data only, as requested. Both factions, actual GO quest starters, eight-verse source/loot/auto-submit path, four book clicks and Havi marker/reward. No Warlock work or WoW client operation.",
   "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
   "original": {
@@ -479,5 +479,10 @@
     "src/server/game/AI/SmartScripts/SmartScript.cpp": "5418B3D11201A59DD5F3EDD0AD05D3504C092C95873F020EB8E136A324A7F1E6",
     "src/server/game/Conditions/ConditionMgr.cpp": "6E09DADE50401CDA62EEDB9D326F6A11F845E013E8CFEC2936845BEB34EC0D96",
     "src/server/game/Loot/LootMgr.cpp": "C450BD235522B5048F83AAD6F42C88782A942A1AE20D11549BB7091E27F5CE68"
+  },
+  "open_issues_note": "Historical findings from the original audit are retained verbatim below; followup audits record subsequent repairs and remaining client checks. Original runtime and limitations describe that earlier audit run.",
+  "followup": {
+    "kjell": "stormheim-kjell-access-2026-10-17.json",
+    "halvir": "Still pending followup validation"
   }
 }

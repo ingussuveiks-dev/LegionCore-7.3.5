@@ -31,7 +31,7 @@ try{
  $rows=@(& "$out/StormheimHuntingFloor.exe" $runtime "$out/anchors.txt");$code=$LASTEXITCODE
  $rows | Set-Content "$out/floors.txt";$rows
  if($code){throw 'Journals native source/giver floor check failed'}
- @('object 115001 3393.29 1508.63 60.9625','object 114995 3357.12 1648.86 7.55221','object 114999 3432.79 1564.77 9.06416','object 114975 3515.9 1526.83 8.7028','npc 369621 3521.58 1615.26 11.3535') | Set-Content "$out/book-anchors.txt"
+ @('object 115001 3393.29 1508.63 60.9625','object 114995 3357.12 1648.86 7.55221','object 114999 3438.79 1560.27 7.01219','object 114975 3515.9 1526.83 8.7028','npc 369621 3521.58 1615.26 11.3535') | Set-Content "$out/book-anchors.txt"
  $rows=@(& "$out/StormheimHuntingFloor.exe" $runtime "$out/book-anchors.txt");$code=$LASTEXITCODE
  $rows | Set-Content "$out/book-floors.txt";$rows
  if($code){throw 'Journal book floor check failed'}
