@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38337,
+    38616
+  ],
+  "title": "Built to Scale",
+  "status": "Code/data audit and extracted native regressions passed; no new production defect identified; client gameplay not performed.",
+  "scope": "Faction-specific item starters, three real drake scale sources, mandatory50-item lifecycle, existing recipients and standalone reward behavior.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "original": {
+    "quest_objectives": [
+      {
+        "ID": "278226",
+        "QuestID": "38616",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "122609",
+        "Amount": "50",
+        "Flags": "0",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "277714",
+        "QuestID": "38337",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "122609",
+        "Amount": "50",
+        "Flags": "0",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "38616",
+        "LogTitle": "'Built to Scale'",
+        "LogDescription": "'Collect Storm Drake Scales from the Stormwing drakes in Hrydhsal.'",
+        "QuestDescription": "'The vrykul around here seem to use scales from these drakes to fashion their armor. $B$BIf you were able to gather enough material from the local drakes, you may be able to make something useful out of it.'",
+        "Flags": "33554432",
+        "AllowableRaces": "33555378",
+        "RewardNextQuest": "0",
+        "QuestPackageID": "651",
+        "StartItem": "0"
+      },
+      {
+        "ID": "38337",
+        "LogTitle": "'Built to Scale'",
+        "LogDescription": "'Collect Storm Drake Scales from the Stormwing drakes in Hrydhsal.'",
+        "QuestDescription": "'The vrykul around here seem to use scales from these drakes to fashion their armor. $B$BIf you were able to gather enough material from the local drakes, you may be able to make something useful out of it.'",
+        "Flags": "33554432",
+        "AllowableRaces": "18875469",
+        "RewardNextQuest": "0",
+        "QuestPackageID": "651",
+        "StartItem": "0"
+      }
+    ]
+  },
+  "world": [
+    "quest\t38337\t34078720\t0\t824181837\t651\t0\t0\t0\t0\t0\t0\t0",
+    "quest\t38616\t34078720\t0\t234881970\t651\t0\t0\t0\t0\t0\t0\t0",
+    "objective\t38337\t277714\t1\t122609\t50\t0\t0",
+    "objective\t38616\t278226\t1\t122609\t50\t0\t0",
+    "loot\t91202\t122609\t35.9458\t1\t0\t0\t5\t15",
+    "loot\t91202\t122610\t5.3206\t0\t0\t0\t1\t1",
+    "loot\t91202\t124037\t2.9352\t0\t0\t0\t1\t1",
+    "loot\t91486\t122609\t26.613\t1\t0\t0\t5\t15",
+    "loot\t91486\t122610\t1.484\t0\t0\t0\t1\t1",
+    "loot\t91486\t124037\t1.6328\t0\t0\t0\t1\t1",
+    "loot\t91799\t122609\t8.0226\t1\t0\t0\t5\t15",
+    "actor\t91202\t91202\t14\t67141632\t2048\t\t\t70608\t0",
+    "actor\t91486\t91486\t16\t32768\t2048\tSmartAI\t\t70589\t0",
+    "actor\t91799\t91799\t14\t32768\t2048\t\t\t70590\t0",
+    "spawns\t91202\t27\t0",
+    "spawns\t91486\t3\t0",
+    "spawns\t91799\t6\t0",
+    "ender\t91222\t38337",
+    "ender\t91481\t38337",
+    "ender\t91482\t38337",
+    "ender\t91519\t38337",
+    "ender\t91553\t38337",
+    "ender\t91558\t38337",
+    "ender\t91771\t38337",
+    "ender\t92561\t38616",
+    "ender\t92566\t38616",
+    "ender\t92567\t38616",
+    "ender\t92568\t38616",
+    "ender\t92569\t38616",
+    "ender\t92573\t38616",
+    "recipient\t294395\t91222\t1220\t2706.91\t2864.66\t309.565\t",
+    "recipient\t338529\t91481\t1220\t2682.46\t2595.35\t231.037\t6656",
+    "recipient\t338530\t91519\t1220\t2538.32\t2492.15\t246.427\t6456",
+    "recipient\t338583\t91553\t1220\t2454.36\t2350.45\t256.197\t6458",
+    "recipient\t290793\t92561\t1220\t2881.42\t2432.47\t242.064\t",
+    "recipient\t340415\t92566\t1220\t2554.84\t2332.18\t241.398\t",
+    "recipient\t341175\t92566\t1220\t2554.84\t2332.18\t241.398\t",
+    "recipient\t371029\t92567\t1220\t2552.27\t2485.96\t248.25\t",
+    "npc-starters\t0",
+    "go-starters\t0",
+    "scripts\t0",
+    "conditions\t0",
+    "custom-items\t0",
+    "custom-item-flags\t0"
+  ],
+  "hotfix": [
+    "items\t0",
+    "effects\t0",
+    "models\t0",
+    "rewards\t0",
+    "base-items\t0",
+    "model-data\t0"
+  ],
+  "native_catalog": [
+    "item 122609 Storm Drake Scale quest=0 max=0 stack=50 bonding=4 race=-1 flags=67584,8192,0,0 use=0",
+    "item 122610 Storm Drake Scale quest=38337 max=0 stack=1 bonding=1 race=-1 flags=67584,8192,0,0 use=0",
+    "item 124037 Storm Drake Scale quest=38616 max=0 stack=1 bonding=1 race=-1 flags=67584,8192,0,0 use=0",
+    "package651 121520 quantity=1 display=1",
+    "package651 121522 quantity=1 display=1",
+    "package651 121521 quantity=1 display=1",
+    "package651 121519 quantity=1 display=1",
+    "package651 129320 quantity=1 display=1",
+    "package651 129321 quantity=1 display=1",
+    "package651 129322 quantity=1 display=1",
+    "package651 129323 quantity=1 display=1",
+    "display 70608 model=8755 file=1313657",
+    "display 70589 model=8755 file=1313657",
+    "display 70590 model=8673 file=1280971"
+  ],
+  "native_db2_sha256": {
+    "ItemSparse": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17",
+    "ItemEffect": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931",
+    "QuestPackageItem": "A6BB441011003860FFF002D39795B0201642266778B60988D86766ECB4144AF6",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357"
+  },
+  "findings": [
+    "Native original quests38337 Alliance and38616 Horde both require50 of item122609 in mandatory ITEM objectives277714/278226, storage0,Flags0. They have no prerequisite/next-chain links and no NPC/GO starter relation. They are optional item-started quests; absence of an NPC starter is not a defect.",
+    "Native sparse DB2 distinguishes three identically named Storm Drake Scale items.122609 is the collectable objective,stack50,bonding4,StartQuest0.122610 is a bind-on-pickup,stack1 starter for38337;124037 is the corresponding38616 starter. All have MaxCount0,AllowableRace-1,Flags[0]=67584 and Flags[1]=8192, no item-use effects. Do not substitute the starter item for the50 scales or add a guessed use spell.",
+    "Actual Player::SendNewItem pickup fragment starts the native item quest and sends details when CanAddQuest and CanTakeQuest pass; its IsAutoAccept check is commented in production. Native Item::hasQuest separately validates an explicit quest against the item. Preserve the installed quest Flags34078720, which include AUTO_ACCEPT, rather than restoring only the older33554432 flags from2018.",
+    "Neither starter item has a faction-only item flag. A wrong-faction starter can therefore appear in native loot, but native quest race admission rejects its automatic quest start and Item::hasQuest rejects substitution for the other quest. The test preserves and exercises this actual native behavior. No speculative faction flags, global pickup change or NPC start relation was added.",
+    "The actual pickup fragment, complete CanTakeQuest dispatcher, native SatisfyQuestStatus/GetQuestStatus/SatisfyQuestRace/SatisfyQuestPreviousQuest and Item::hasQuest execute. Wrong item/faction, quest-log capacity refusal, active quest, rewarded quest and reconstructed rewarded history do not restart the quest. Other admission services remain explicit fixtures; this is not the full world/session protocol.",
+    "Native ordinary loot Process/Roll and full Loot::AllowedForPlayer execute. Three installed scale rows are91202 chance35.9458%,91486 chance26.613%,91799 chance8.0226%, all quest-required,mode0,ungrouped,count5..15. Mode0 is a valid unrestricted difficulty mask here. Quest-required scales remain hidden before acceptance and after the50/50 objective; opening a corpse or killing a drake alone does not grant item credit.",
+    "Two primary drake sources also have both starter rows:91202 gives122610 at5.3206% and124037 at2.9352%;91486 gives122610 at1.484% and124037 at1.6328%. These rows are not quest-required, allowing the quest to start before any active quest exists. Juvenile91799 supplies scales only among these selected rows. Existing additional starter drops elsewhere are unchanged; the native chance values were not replaced with guaranteed drops.",
+    "Both factions exercise deterministic failed/successful production rolls,10 successful minimum5-item drops and a maximum-endpoint sequence15+15+15+5. Actual ItemAddedQuestCheck completes only at50; native removal/reconstruction/HasQuestForItem and CanRewardQuest reject incomplete or bank-only delivery. The actual RewardQuest item case consumes50. Inventory writes, stack splitting/space, count RNG and the final saved reward transaction remain fixtures.",
+    "Live source templates already select their matching loot IDs. There are27 Stormwing Drake91202,3 Stormwing Drake91486 and6 Juvenile Stormwing91799 static spawns; all36 model overrides are0. Native displays70608/70589 resolve to model8755/file1313657;70590 resolves to8673/file1280971. Native model records exist and checked model/display/item/effect/package overlays are absent. No model metadata, coordinates, gravity or AI was changed.",
+    "Existing enders cover the Lorna and Cullen story copies; actual static recipients include91222/91481/91519/91553/91771 and92561/92566/92567. Their phase transitions and special/personal copies retain the prior quest audits. Do not describe missing static92568/92569/92573 bodies as confirmed reachable turn-ins merely because their template relations exist.",
+    "Native reward package651 contains eight quantity1 choices121519/121520/121521/121522 and129320/129321/129322/129323. Existing race masks824181837/234881970, quest package, optional status and zero next links remain unchanged. This is a side reward and does not add a main-chain gate.",
+    "Extra gameobject_loot_template rows referencing122609 are not proof of usable loot sources. In particular,251257 is the previously audited goober launcher, not a chest selector. The documented drake route already supplies all50 scales; no unrelated GO template was relinked from those rows."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimBuiltScaleData.ps1",
+      "result": "PASS",
+      "details": "Read-only live quest/objective/loot/spawn/recipient contract; no NPC or GO starter and no custom quest/item/Hotfix overrides. Existing Helheim regression also replays its own migration in connection-local temporary copies."
+    },
+    {
+      "command": "tools/tests/Test-StormheimBuiltScale.ps1",
+      "result": "PASS",
+      "output": [
+        "PASS: native item-started faction pair, mandatory50 scales, live drake loot/spawns/enders and absent custom/Hotfix overrides.",
+        "StormheimBuiltScaleTest.cpp",
+        "PASS: native item pickup/start, Item::hasQuest, full CanTakeQuest dispatcher with native status/race/previous checks, AllowedForPlayer and ordinary loot Process/Roll; both factions, wrong starter, log-full/active/rewarded refusal, actual50 scale item lifecycle, misses/min/max drops, bank/retry/history and reward consumption. Other admission/world/inventory/packet services are fixtures; client pending."
+      ]
+    },
+    {
+      "command": "tools/tests/Test-StormheimBuiltScaleCatalog.ps1",
+      "result": "PASS",
+      "details": "Native C++ DB2Storage reads packed sparse starter IDs/limits/flags and validates all eight package items and three display/model chains."
+    },
+    {
+      "command": "Original TDB native objective comparison",
+      "result": "PASS",
+      "details": "Exact original objectives277714/278226 remain mandatory item122609 amount50/storage0/Flags0. Archive hash and original quest text/flags/rewards retained here."
+    }
+  ],
+  "observed_failures_and_corrections": [
+    "Initial discovery treated the absent NPC starter relation as suspicious. Native ItemSparse and the actual SendNewItem path established the intentional item-started route before any implementation change was proposed.",
+    "One exploratory SQL query assumed an InhabitType creature_template column absent from this schema; the query failed without mutation. No movement/flight repair was inferred from it.",
+    "The first new harness compile lacked the standard array header; added the explicit include. The first execution then admitted loot before the new strict three-item fixture store was populated, so native IsValid correctly rejected it. Moved verified item metadata initialization ahead of native loader admission; did not weaken IsValid or alter production data.",
+    "A private next-quest inventory probe initially assumed the old archive QuestSortID column position and returned no rows. Switched it to the parsed schema field index; this did not affect the independently checked quest IDs/objectives or World data."
+  ],
+  "limits": [
+    "No client verification is claimed. Pending: actual starter drop/toast/auto-accept window for each faction, wrong-faction item UI, full quest log/retry, scales dropping from real player/pet kills and group/personal loot ownership, corpse permissions, bag-full/stack boundaries,50/50 counter, bank handling, abandonment/relog and the actual Lorna/Cullen reward choices.",
+    "Native method bodies/fragments execute against fixture object lookup, history, inventory storage, quest log capacity, world conditions/configuration, packet delivery and unrelated class/level/skill/reputation/daily/seasonal/disabled checks. Full SendNewItem packet creation, AddQuestAndCheckCompletion, session accept opcode/security checks, corpse death/FillLoot setup, quest turn-in opcode/package eligibility and SQL save/load are not executed.",
+    "The retry case explicitly reconstructs whatever inventory the fixture retains; it does not prove native abandonment removes or preserves all quest items. The rewarded-history case reconstructs a saved set in memory, not a real server restart. Forced drop-roll and count endpoints prove boundaries without measuring live random frequencies.",
+    "Only native display/model availability and zero live overrides were established for the drakes. Their combat AI, flying pose, terrain/LOS access, shared-world spawns and client animations remain unverified. Existing Stormheim main-chain audits and client limitations remain in force."
+  ],
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "note": "Tests/audit only: production code and live data were unchanged, so no migration, Release rebuild or server restart was required."
+  },
+  "production_source_sha256": {
+    "src/server/game/Entities/Player/Player.cpp": "7967DBBB32B6860D0CF8DD67DDE62CCF1A05BD7F527BA1E07A6C40770F99B312",
+    "src/server/game/Entities/Item/Item.cpp": "F561462C402D1F6EF011CD09C7CC247EBA04F152C3F9AE56363F2791A555327E",
+    "src/server/game/Entities/Item/ItemTemplate.h": "00A74452C690EE5C3C9298C2F52D6DDEFFA6352E6248BBBB6331F9BCFD1C1A3E",
+    "src/server/game/Loot/LootMgr.cpp": "C450BD235522B5048F83AAD6F42C88782A942A1AE20D11549BB7091E27F5CE68"
+  },
+  "next": "Select the next unaudited Stormheim side quest from native quest/source data; avoid re-presenting already completed main-chain fixes as new implementation."
+}
