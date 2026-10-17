@@ -1,0 +1,271 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    39787,
+    39786,
+    39792
+  ],
+  "titles": [
+    "Rigging the Wager",
+    "A Stone Cold Gamble",
+    "A Stack of Racks"
+  ],
+  "source_base_revision": "7b924ebe5721cb0deefb2eeb617dc1f8bfdd67e1",
+  "status": "No production defect confirmed in the exercised code/data paths. Added reproducible native loot, prerequisite, event summon, lifetime, catalog and geometry checks. Client verification pending.",
+  "scope": "Snaggle Sixtrigger107674 wager branch after39789: Spitefeather beak, Stonefang jaw, then Rax107675 musken ribs. Code/data only, as requested; no Warlock work or client gameplay.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "original": {
+    "gameobject_template": [
+      {
+        "entry": "244457",
+        "type": "10",
+        "displayId": "28738",
+        "size": "1",
+        "Data0": "2160",
+        "Data3": "8000",
+        "Data10": "192045",
+        "Data14": "35196",
+        "Data22": "35824",
+        "AIName": "''",
+        "ScriptName": "''"
+      }
+    ],
+    "quest_objectives": [
+      {
+        "ID": "279959",
+        "QuestID": "39792",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "138020",
+        "Amount": "8",
+        "Flags": "0",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "279946",
+        "QuestID": "39787",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "138022",
+        "Amount": "1",
+        "Flags": "1",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      },
+      {
+        "ID": "279945",
+        "QuestID": "39786",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "138023",
+        "Amount": "1",
+        "Flags": "1",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "quest_template": [
+      {
+        "ID": "39792",
+        "LogTitle": "'A Stack of Racks'",
+        "QuestDescription": "'So while we\\'re waiting here, maybe you could fetch us up some grub. Them tauren were runnin low on meats, so I\\'m sure they\\'d be thankful to have more.\\n\\nI hear that musken ribs are the specialty here.  The wild musken here are too lean for any good meat, but across the river there are some nice fat ones. Maybe you should check those out!\\n\\nDon\\'t worry, I\\'m pretty sure there aren\\'t any dragons over there...'",
+        "QuestPackageID": "17908",
+        "Flags": "33554440",
+        "FlagsEx": "0",
+        "RewardNextQuest": "0",
+        "AllowableRaces": "4294967295"
+      },
+      {
+        "ID": "39787",
+        "LogTitle": "'Rigging the Wager'",
+        "QuestDescription": "'Care to help settle a bet, chum?\\n\\nThose tauren are Skyhorn, and they fancy themselves big-time hunters. I bet them a pretty penny that they wouldn\\'t be able to take out some of the biggest beasts in Stormheim.\\n\\nIf you take em out before they do, I\\'ll split the wager. Deal?\\n\\nThe first is a big eagle nesting in the foothills. They call him Spitefeather. You can bait him with some meat, but he\\'s up pretty high, so you\\'ll need a grapple gun to get there. I think there\\'s one of them layin around here...'",
+        "QuestPackageID": "0",
+        "Flags": "171966472",
+        "FlagsEx": "0",
+        "RewardNextQuest": "0",
+        "AllowableRaces": "4294967295"
+      },
+      {
+        "ID": "39786",
+        "LogTitle": "'A Stone Cold Gamble'",
+        "QuestDescription": "'The second target is a basilisk called Stonefang that lives off the bank of the nearby river. \\n\\nI put a bigger wager on him, so if you can take him out I\\'ll make sure you get a cut.\\n\\nI\\'ll need his jaw to verify the kill. Hurry, before those tauren get him first!'",
+        "QuestPackageID": "0",
+        "Flags": "167772168",
+        "FlagsEx": "0",
+        "RewardNextQuest": "0",
+        "AllowableRaces": "4294967295"
+      }
+    ]
+  },
+  "world": [
+    "quest\t39786\t33554440\t0\t18446744073709551615\t0\t0\t39787\t0\t0\t0\t0",
+    "quest\t39787\t171966472\t0\t18446744073709551615\t0\t0\t39789\t0\t0\t0\t0",
+    "quest\t39789\t37748744\t2\t18446744073709551615\t0\t39793\t0\t39793\t0\t0\t17907",
+    "quest\t39792\t33554440\t0\t18446744073709551615\t0\t0\t39786\t0\t0\t0\t17908",
+    "objective\t39786\t279945\t1\t138023\t1\t0\t1\t0",
+    "objective\t39787\t279946\t1\t138022\t1\t0\t1\t0",
+    "objective\t39792\t279959\t1\t138020\t8\t0\t0\t0",
+    "starter\t107674\t39786",
+    "starter\t107674\t39787",
+    "starter\t107675\t39792",
+    "ender\t107674\t39786",
+    "ender\t107674\t39787",
+    "ender\t107675\t39792",
+    "loot\t97124\t138022\t69.8967\t1\t0\t0\t1\t1\t0\t0",
+    "loot\t107852\t138020\t36.6502\t1\t0\t0\t1\t1\t0\t0",
+    "loot\t107914\t138023\t94.1998\t1\t0\t0\t1\t1\t0\t0",
+    "actor\t97124\t97124\t14\t0\t0\t0\t0\t70334",
+    "actor\t107674\t0\t190\t2\t0\t0\t0\t70226",
+    "actor\t107675\t0\t190\t643\t0\t0\t0\t70227",
+    "actor\t107852\t107852\t2575\t0\t0\t0\t0\t70336",
+    "actor\t107914\t107914\t1712\t0\t0\t0\t0\t70340",
+    "spawns\t107674\t1\t0\t0\t0",
+    "spawns\t107675\t1\t0\t0\t0",
+    "spawns\t107852\t35\t0\t0\t0",
+    "spawns\t107914\t1\t0\t0\t0",
+    "scaling\t97124\t98\t110",
+    "scaling\t107852\t98\t110",
+    "scaling\t107914\t98\t110",
+    "rock\t244457\t10\t28738\t0\t2160\t0\t192045\t",
+    "rock-spawn\t25167470\t1220\t5600\t3905.85\t2223.91\t322.099",
+    "phase\t7541\t400\t5600\t16",
+    "phase-condition\t9\t0\t39787\t0",
+    "summon\t46479\t0\t10\t97124\t30000\t0\t3907.56\t2230.56\t324.377\t4.5006",
+    "sleep\t107914\t214691 145953",
+    "wake\t4\t28\t145953\t1",
+    "conditions\t0",
+    "item-overrides\t0",
+    "item-flags\t0",
+    "model-metadata\t5",
+    "admission\t3",
+    "questgiver-flags\t2",
+    "static-spitefeather\t0",
+    "event-count\t1",
+    "phase-condition-count\t1",
+    "extra-handlers\t0",
+    "anchors\t4"
+  ],
+  "native_catalog": [
+    "item138020 Meaty Rack of Musken Ribs class=12 max=0 stack=10 bonding=4 flags=67584,8192 uses=0",
+    "item138022 Spitefeather's Beak class=12 max=0 stack=10 bonding=4 flags=67584,8192 uses=0",
+    "item138023 Stonefang's Jaw class=12 max=0 stack=10 bonding=4 flags=67584,8192 uses=0",
+    "package17908 item=138125 quantity=1 display=1",
+    "package17908 item=138133 quantity=1 display=1",
+    "display70334 model=9038 file=1375465",
+    "display70336 model=8508 file=1254792",
+    "display70340 model=8435 file=1245247",
+    "display70226 model=831 file=119376",
+    "display70227 model=831 file=119376",
+    "spell192045 Spawn Sabletalon",
+    "effect192045 index=0 type=61 aura=0 misc=46479 targets=0,0",
+    "spell6478 Opening",
+    "effect6478 index=0 type=33 aura=0 misc=13 targets=23,0",
+    "spell3365 Opening",
+    "effect3365 index=0 type=33 aura=0 misc=5 targets=23,0",
+    "spell145953 Cosmetic - Sleep Zzz",
+    "effect145953 index=0 type=6 aura=4 misc=0 targets=1,0",
+    "spell214691 Brittle Plating",
+    "effect214691 index=0 type=6 aura=87 misc=127 targets=1,0",
+    "spell214146 Pack Musken",
+    "effect214146 index=0 type=6 aura=4 misc=0 targets=1,0",
+    "spell123169 Mod Scale 105-110%",
+    "effect123169 index=0 type=6 aura=239 misc=0 targets=120,0",
+    "effect123169 index=1 type=46 aura=0 misc=0 targets=1,0",
+    "rock model-file=1121351",
+    "lock2160 gathering13 no-skill"
+  ],
+  "findings": [
+    "Actual givers are Snaggle Sixtrigger107674/guid371030 for39787 and39786, then Rax Sixtrigger107675/guid338664 for39792. Earlier shorthand Teeto denotes entry107674; installed name is Snaggle. Both expose the questgiver flag; both faction race masks are admitted. Preserve the independent39793 Only the Finest branch:39793 is not a prerequisite for the wager.",
+    "Native previous-quest loading and CanTakeQuest require rewarded39789->39787->39786->39792. Completed but not rewarded is insufficient. All three wager RewardNextQuest/NextQuestID fields are0: the next quest becomes available through its real starter, not an invented automatic details packet or automatic acceptance.",
+    "Objectives279946/279945/279959 are actual item138022 amount1,138023 amount1 and138020 amount8. Flags1 on the first two are TRACKED_ON_MINIMAP, not OPTIONAL4. Native item completion and CanRewardQuest reject kill-only, click-only, insufficient carried items and bank-only substitutes. Removing an item reopens completion; actual reward consumption removes the required amount.",
+    "Native Item/ItemSparse loader confirms Spitefeather's Beak138022, Stonefang's Jaw138023 and Meaty Rack of Musken Ribs138020, class12, max0, stack10, bonding4, flags67584/8192, no start quest or item-use effect. No separate bait item grant/use is defined by these quest rows. Wager text describes placing meat at the rock; the installed native interaction casts192045.",
+    "Creature loot:97124->138022 at69.8967%,107914->138023 at94.1998%,107852->138020 at36.6502%, quest-required, mode0 wildcard, ungrouped, count1. All three have own loot selectors, flags_extra0, FlagQuest0 and VignetteID0; native FillLoot therefore selects ordinary Process rather than the tracking-quest rare branch. Do not silently replace probabilistic drops with guaranteed loot.",
+    "Rock244457/guid25167470 is GOOBER10, not a chest. Its separate gameobject_loot_template row138022 is not the active chest-loot route; relinking a Data1 chest selector would corrupt its goober fields. Preserve lock2160 and native6478 Opening/type13;3365/type5 does not match this lock. Upstream native Helheim supplies tests exercise CanOpenLock for this same lock; the new native catalog verifies the actual runtime lock and spell effect fields.",
+    "Rock phase5600 is definition7541/400 flags16 and a single source23 QUESTTAKEN9 condition39787. Native ConditionMgr accepts only INCOMPLETE for this condition. PhaseMgr supports this type and includes it in quest updates (source inspected); full live phase recalculation and client visibility are not exercised by the new harness. The rock should cease to be available once its item objective completes; reacceptance needs actual client confirmation.",
+    "Native goober Use sets IN_USE/GO_ACTIVATED, then casts Data10=192045. GameObject::CastSpell uses a world trigger when no caster target is present; native192045 has SEND_EVENT61, misc46479, no implicit unit/GO targets. EffectSendEvent HIT starts event_scripts46479, whose command10 summons97124 at3907.56,2230.56,324.377,o4.5006. The production event function and command case execute in the new test; GO lock completion/Use/CastSpell/source allocation are inspected, not executed there. Do not treat the spell name Spawn Sabletalon as proof of a different creature.",
+    "MapScripts uses TEMPSUMMON_TIMED_OR_DEAD_DESPAWN for command10. Native TempSummon::Update proves the30000ms timer runs only while alive and out of combat, resets in combat, retains CORPSE and removes DEAD. A30s fight does not delete this boss and its corpse does not disappear on that timer. Summon failure can retry without consuming item progress. Native event scheduling is single-route; repeated separate uses can summon again and no personal allocation guarantee is added.",
+    "No static97124 spawn is installed; the event is its source. Stonefang has one unphased spawn290799 with actual98..110 scaling, sleep145953 and Brittle Plating214691. Its admitted SmartAI aggro action removes145953 from self. Native145953 is cosmetic aura4, not feign death;214691 is aura87. Native musken123169 is scale aura239 plus effect46;214146 Pack Musken is dummy4. Preserve these poses and combat auras.",
+    "All35 musken, one Stonefang and both questgivers have mask1, no phase restriction and model override0. Native five display/model records exist and live creature_model_info has positive radius/reach for all. This does not validate every moving spawn, combat collision or the deployed AI spell cadence.",
+    "Native package17908 contains138125 and138133, quantity1/display1. Catalog existence does not execute full reward-choice selection or reward packet display.",
+    "Original objectives match item/count/type/storage/Flags. Original Flags2=1 versus installed0 is retained: it is loaded and sent to the client but not used by the exercised item-count handlers. Original39786 Flags167772168 includes the portrait bit absent from installed33554440; no progression defect is established by that cosmetic difference. Original rock size1/autoClose8000/openText35196/condition35824 versus installed0.5/4000/0/0 are recorded, not speculatively overwritten. Installed explicit phase condition gates the wager. Actual tooltip/portrait/rock animation timing still needs the client."
+  ],
+  "geometry": {
+    "floors": [
+      "npc 371030 Z=202.631 floor=202.63 terrain_area=7851 PASS",
+      "npc 338664 Z=201.939 floor=201.857 terrain_area=7851 PASS",
+      "npc 290799 Z=144.987 floor=144.901 terrain_area=8337 PASS",
+      "npc 293764 Z=170.825 floor=170.736 terrain_area=8217 PASS",
+      "object 25167470 Z=322.099 floor=323.078 terrain_area=8095 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "routes": [
+      "target 2827.81 2341.43 144.987",
+      "PASS: Source approach 2969.44,2047.61,202.029 -> target approach 2827.81,2341.43,145.946 through 66 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 16 corners, length=361.802yd.",
+      "target 2339.84 2043.03 170.825",
+      "PASS: Source approach 2969.44,2047.61,202.029 -> target approach 2339.84,2043.03,170.731 through 211 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 47 corners, length=1278.56yd.",
+      "terrain polygons ground=204 water=7 magma/slime=0",
+      "endpoint centerDistance=0.0937042",
+      "endpoint surfaceZ=170.731 floor=170.736 terrain=170.736 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.00473022 staticLOS=1 PASS",
+      "target 3905.85 2223.91 322.099",
+      "PASS: Source approach 2969.44,2047.61,202.029 -> target approach 3905.85,2223.91,323.847 through 196 native ground navmesh polygons; budget=65535, complete corridor and endpoint, 45 corners, length=1253.81yd."
+    ],
+    "diagnostics": [
+      "Initial ground-only musken query at8192 nodes returned partial/out-of-nodes. At65535 it remained partial without exhaustion. This was not classified as disconnected or fixed terrain: the source is across the river, as original quest text states.",
+      "Allowing native ground/water produces a complete211-poly route,204 ground/7 water/0 magma or slime, length1278.56yd, endpoint0.0937042yd from center, staticLOS and supporting floor pass. Final test uses walk-swim for this source only.",
+      "Stonefang ground approach completes66 polys/361.802yd. Rock ground corridor completes196 polys/1253.81yd. All reject partial/exhausted/truncated paths and use an audit65535 node budget; this is not an engine path-budget change.",
+      "Five selected centers have valid native terrain/VMAP floors. Rock center322.099 is0.979yd below the sampled323.078 floor and within the conservative5yd object interaction range. Corridor endpoint323.847 is also within5yd. These are static geometry facts, not proof of client path walking, jumping, grapple trajectories or model hitboxes. The quest text still suggests a grapple; its actual route is client pending."
+    ]
+  },
+  "checks": [
+    {
+      "runner": "tools/tests/Test-StormheimWagerData.ps1",
+      "result": "PASS"
+    },
+    {
+      "runner": "tools/tests/Test-StormheimWagerLoot.ps1",
+      "result": "PASS",
+      "coverage": "Real previous loader, status/race/admission, ordinary loot IsValid/Process/Roll/AllowedForPlayer, HasQuestForItem, item added/removed/reconstruction, CanComplete/CanReward, reward item deletion case and no invented next details. Both factions,1/1/8, failed rolls, kills/clicks without loot, bank/removal/retry and reward history. Runs upstream BuiltScale/Helheim lock checks."
+    },
+    {
+      "runner": "tools/tests/Test-StormheimWagerSummon.ps1",
+      "result": "PASS",
+      "coverage": "Real EffectSendEvent, MapScripts summon command and entire TempSummon::Update, actual live event row, dispatch rejection, failed summon/retry, OOC/combat/corpse/dead/expired lifecycle."
+    },
+    {
+      "runner": "tools/tests/Test-StormheimWagerCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native packed/sparse DB2, item/effect/reward/model/lock records, five native floors and three complete navmesh approaches, including the cross-river route."
+    }
+  ],
+  "limitations": [
+    "No WoW client was used. No whole quest or visual is called client-verified.",
+    "Loot harness inventory/bank/stack allocation, random draws, SQL persistence, world lookups, menus/packets and non-quest class/level/reputation gates are fixtures. It does not test live corpse permissions, party distribution, pet killing blows, full save/load or full RewardQuest rewards. It sets DELIVER as the native loader derives from item objectives.",
+    "Summon harness world allocation, map scheduler, source lookup, phase inheritance, player visibility, Creature::Update, AI and combat are fixtures. It tests production command/lifetime logic, not the full GO click/lock/cast pipeline. Cancellation, double-click, multi-player use, retry after abandon, re-entry, combat skills and phase removal need client/runtime integration checks.",
+    "Client pending for both factions: Snaggle/Rax menus, rock visibility and placing cast/grapple access, Spitefeather spawn/pose/aggro/death/actual beak loot, Stonefang wake/plating/jaw loot, live35-musken hunt and8 ribs, inventory/bank/abandon/relog, item tracker/portraits/tooltips, giver hand-ins and reward choices. Ground/water corridors are selected static approaches, not every actor or client streaming."
+  ],
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "note": "Tests and audit only. No production implementation/data repair, migration, Release rebuild or server restart was needed."
+  },
+  "production_source_sha256": {
+    "src/server/game/Entities/Player/Player.cpp": "7967DBBB32B6860D0CF8DD67DDE62CCF1A05BD7F527BA1E07A6C40770F99B312",
+    "src/server/game/Loot/LootMgr.cpp": "C450BD235522B5048F83AAD6F42C88782A942A1AE20D11549BB7091E27F5CE68",
+    "src/server/game/Entities/GameObject/GameObject.cpp": "8AC018AF96CE69C6A475A67AF80639990DC8EAA27E76CAF35A6E5E067C461538",
+    "src/server/game/Spells/SpellEffects.cpp": "1A747D17D17F2F64D69D82659D23F97F08D41B592BB797018B2740071642F00D",
+    "src/server/game/Scripting/MapScripts.cpp": "64B2922EFAD2AC739EB3FC7BFC8159B6DE2CD0B3B13DC5C7040F79B82B52629D",
+    "src/server/game/Entities/Creature/TemporarySummon.cpp": "B5CCF93145984180A2FABB14100B934CEC79F587210F171B15EE5763D2E7B82B",
+    "src/server/game/Conditions/ConditionMgr.cpp": "6E09DADE50401CDA62EEDB9D326F6A11F845E013E8CFEC2936845BEB34EC0D96",
+    "src/server/game/Maps/PhaseMgr.cpp": "249F1D806662E75653AE2EB584F4E07F1C63C8C585A9C59270689961096B117D"
+  }
+}
