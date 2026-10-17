@@ -1,0 +1,180 @@
+{
+  "date": "2026-10-17",
+  "quest": 38882,
+  "name": "A New Life for Undeath",
+  "client_verified": false,
+  "status": "Horde movie order and personal credits repaired/deployed; client cinematic/transfer and real saved-state checks remain pending.",
+  "previous": "3039e333 repaired Alliance39122. Its audit retains the historical source/runtime snapshot, native scheduling evidence and client boundaries. Shared finale implementation now accepts explicit immutable faction-specific identities; this audit supersedes its runtime/source snapshot without erasing it.",
+  "original_failure": "Sylvanas94228/DB340424 used native SmartAI85/205551 on acceptance, followed by linked SmartAI33/94915,33/94431 and62 camp transfer. Actual action85 queues its cast200ms later, so both credits and transfer preceded native PLAY_MOVIE495. Group-event credits also completed a nearby eligible player without their own movie. The same extracted native dispatcher/group/movie/quest/teleport fixture reproduces the original ordering for this actual Horde spell and goals.",
+  "changes": [
+    "The already tested synchronous movie-first helper now takes a Finale record. Alliance constants remain unchanged; Horde uses38882/HORDE,94228/DB340424,205551/first94915 and original1220/2370.01,1849.31,29.17,4.78 destination. The common final credit remains94431. Both native faction movies and all their native effects are retained.",
+    "New npc_stormheim_undeath_sylvanas starts on38882 acceptance or a later hello at the same source. It checks active incomplete or complete (not rewarded/none), faction, living world actors, outdoor map1220/zone7541, actual DB identity, native distance/phase and no existing movie/teleport/vehicle/transport/flight. Other quests still delegate to SmartAI.",
+    "205551 is cast triggered and synchronously. Only a successful native movie start (isWatchingMovie true) permits personal94915 then94431 and the native queued camp transfer. A failed cast/missing Movie entry gives no credit/travel and can retry by hello. Credits intentionally occur at movie start, not after decoder playback; skip is a normal native completion.",
+    "Native movie movement hold, completion/skip, ten-minute missing-completion timeout and delayed near-transfer/update handling are unchanged. The watching flag continues holding transfer when Player::Update clears its temporary delay flag. Existing normal teleport pet/mover lifecycle is reused.",
+    "Old partial/complete records at source can replay to recover a lost volatile transfer after logout. No character SQL resets were executed. Once movie/transfer begins, abandonment does not cancel native camp travel and no delayed quest-credit callback can leak into a newly accepted quest.",
+    "Guarded migration11 binds94228 only and removes its four captured SmartAI rows. Unexpected custom rows/script binding decline replacement; repeat application is safe. Alliance95804, unrelated quests/menus, phase6773, native models/positions/reward751 and spell data are preserved.",
+    "Alliance data regression now checks captured unrelated Horde row-count preservation rather than assuming its old four-row implementation must remain forever. Existing full Alliance/movie/statue/shield regressions still pass with both actor bindings."
+  ],
+  "native_contract": {
+    "previous": 39155,
+    "chapter": 137,
+    "order": 6,
+    "starter": {
+      "entry": 94228,
+      "spawn": 340424,
+      "map": 1220,
+      "phase": 6773,
+      "position": [
+        2543.52,
+        1403.62,
+        32.59
+      ],
+      "display": 30776
+    },
+    "ender": {
+      "entry": 95755,
+      "spawns": [
+        340425,
+        341183
+      ],
+      "position": [
+        2365.92,
+        1836.93,
+        30.6483
+      ],
+      "note": "Two existing same-position ender rows were retained; actual client visibility/phase selection is not verified."
+    },
+    "goals": [
+      {
+        "id": 279420,
+        "object": 94915,
+        "storage": 2,
+        "flags": 0
+      },
+      {
+        "id": 278826,
+        "object": 94431,
+        "storage": 0,
+        "flags": 2
+      }
+    ],
+    "movie": {
+      "spell": 205551,
+      "cast_ms": 0,
+      "effect0": 45,
+      "target0": 1,
+      "movie": 495,
+      "effect1": 6,
+      "aura1": 4,
+      "audio_file": 1487146,
+      "subtitle_file": 1488499
+    },
+    "reward_package": 751,
+    "native_lines": [
+      "spell205551 index=0 effect=45 target=1 misc=495 trigger=0",
+      "spell205551 index=1 effect=6 target=1 misc=0 trigger=0",
+      "movie495 audio=1487146 subtitles=1488499",
+      "actor display=30776 model=8454 file=1245874",
+      "quest38882 chapter=137 order=6",
+      "reward751 item=121572 quantity=1 displayType=1",
+      "reward751 item=121568 quantity=1 displayType=1",
+      "reward751 item=121570 quantity=1 displayType=1",
+      "reward751 item=129342 quantity=1 displayType=1",
+      "reward751 item=129343 quantity=1 displayType=1",
+      "reward751 item=129344 quantity=1 displayType=1",
+      "reward751 item=129345 quantity=1 displayType=1",
+      "PASS: native instant205551/PLAY_MOVIE495 and retained dummy aura, movie audio/subtitle references, Sylvanas models, chapter137/order6 and reward751 item links. Playback/reward selection remain client checks."
+    ]
+  },
+  "automated_checks": [
+    {
+      "command": "tools/tests/Test-StormheimUndeath.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Reuses the native quest/movie/deferred-SmartAI/group/near-delay regression with explicit Horde spell, identities, faction/race, goals and destination. Original race/group completion, normal/skip/duplicate completion/timeout, watching hold after temporary delay clears, failed/missing movie, personal credit, repeated hello, partial/complete loaded-state recovery, abandonment after start and16 admission failures. Runs Alliance39122 plus earlier statue/shield/movie regressions; actual canonical scripts final-link freshness and both faction registration markers pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUndeathData.ps1 and -Live",
+      "result": "PASS",
+      "coverage": "Actual guarded migration twice in connection-local tables, custom-row decline, live actor binding and removed legacy rows, native goals/prerequisite/reward/relations, unchanged Alliance binding. No spell/misc/movie Hotfix overlays or World spell scripts/links replace205551."
+    },
+    {
+      "command": "tools/tests/Test-StormheimUndeathCatalog.ps1",
+      "result": "PASS",
+      "coverage": "Native C++ DB2 verifies205551 instant/self PLAY_MOVIE495 plus retained dummy aura, movie audio/subtitle links, Sylvanas model30776, chapter137/order6 and reward751 Item.db2 links. Three distinct floor anchors (five-row helper repeats actor anchors) and complete5-polygon ground corridor from original landing to turn-in Sylvanas; supported LOS endpoint, no partial path accepted."
+    },
+    {
+      "command": "Release worldserver+bnetserver build; canonical startup and shutdown0",
+      "result": "PASS",
+      "coverage": "Final executables in build-extractors/bin/Release, actual original final-link input and no OutDir override. Startup accepts new actor binding, ready and graceful exit0; DBErrors/stderr empty."
+    }
+  ],
+  "geometry": {
+    "floor_results": [
+      "npc 340424 Z=32.59 floor=32.5105 terrain_area=7694 PASS",
+      "npc 340425 Z=30.6483 floor=30.5649 terrain_area=7698 PASS",
+      "npc 0 Z=29.17 floor=29.1797 terrain_area=7698 PASS",
+      "npc 340424 Z=32.59 floor=32.5105 terrain_area=7694 PASS",
+      "npc 340425 Z=30.6483 floor=30.5649 terrain_area=7698 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "route_results": [
+      "target 2365.92 1836.93 30.6483",
+      "PASS: Source approach 2370.01,1849.31,29.4207 -> target approach 2365.92,1836.93,30.5781 through 5 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 2 corners, length=13.0894yd.",
+      "terrain polygons ground=5 water=0 magma/slime=0",
+      "endpoint centerDistance=0.070179",
+      "endpoint surfaceZ=30.5781 floor=30.5649 terrain=29.9094 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0131741 staticLOS=1 requireLOS=1 PASS",
+      "corner 0 2370.01 1849.31 29.4207",
+      "corner 1 2365.92 1836.93 30.5781"
+    ],
+    "note": "Landing Z29.17 has collision floor29.1797 (0.0097yd difference), unchanged. Ground corridor5 polygons/~13.0894yd. Static geometry/endpoint LOS are not full body-clearance or live movement proof."
+  },
+  "limits": [
+    "Extracted native branches execute with cast dispatch, world/phasing/range lookup, packets and loaded saved state supplied by fixtures. This is not the complete map/session/spell scheduler or actual login persistence.",
+    "Movie495/205551, audio/subtitle and model references are native catalog evidence. Decoder playback/video files, dummy aura lifecycle, visibility, timing and audio remain client checks; no new animation/visual choreography was invented.",
+    "Source phase6773 is retained and same-phase admission is tested through a fixture predicate; actual quest-phase visibility and the two existing turn-in actor rows require the client.",
+    "Reward item references are checked; full reward selection, inventory capacity and persistence are not executed. No whole quest or cinematic is called client-verified.",
+    "As in Alliance, a deliberate new hello after playback but before the next player update is not locked by a persistent transaction. Objective caps and original destination remain unchanged."
+  ],
+  "pending_client_checks": [
+    "Horde: accept38882 at real phased Sylvanas, confirm movie495 opens before transfer, watch and skip on separate runs, then check movement and camera at camp.",
+    "Nearby group members must perform their own interaction; verify counters, movie, movement and destination are personal.",
+    "Failed start/retry, repeat hello, abandonment/reacceptance and relog during movie with old partial/complete state; verify actual source visibility, saved records and camp recovery.",
+    "Permanent pet and portrait before/after native transfer, cold-client landing, walking to95755 and reward751 selection. Confirm actual visibility of the retained same-position Sylvanas rows."
+  ],
+  "deployment": {
+    "sha1": "2C51BF6815B020F620DFF479307D06288C9BC1C9",
+    "migration": "2026_10_17_11_stormheim_undeath.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-undeath\\20261017-135118",
+    "state": "RELEASED"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "8f1ad81a10fc6cc7f37fce5172692907f3f3cc571e479861ec1831656c1ac4f3",
+    "bnetserver_sha256": "80f499dae8a6fd17963e7903386b06e866209da6f5fbcc600b860659d4267d20",
+    "scripts_lib_sha256": "731f45fcc5d8838cc2ac85bd57b8ac67016cb46dcee935021bc02e6e4f6a5d0c",
+    "startup": "build-extractors/runtime-test/stormheim-undeath/startup-20261017-135145",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_new_beginning.cpp": "a195f20354d8a04c36c40cebe29a742ee195a3a4004a361b0c35d4793170b696",
+    "sql/updates/world/2026_10_17_11_stormheim_undeath.sql": "833e13836aad16557017078200ca997f18e38d9b18ed16134bbf13a2b0b3df46",
+    "tools/tests/Test-StormheimNewBeginningData.ps1": "e7a562df651d8bffafb26be83690bd3ce38860c24fe8566a8a28953ec0623df6",
+    "tools/tests/StormheimUndeathCatalog.cpp": "55591f0d974fa96fe0cb27d05b3454214a92816d2480301021752f35654c4b4c",
+    "tools/tests/Test-StormheimUndeath.ps1": "b017aa586df5e350fa984c5cbf555a658f282c602f75ddb437a8aac349f7b05a",
+    "tools/tests/Test-StormheimUndeathCatalog.ps1": "637bb8c8940c055ca8bede20b350e0c3a2c8812cb6e77dc6a4ac004c39883f30",
+    "tools/tests/Test-StormheimUndeathData.ps1": "57a949bfa6c397859a3eac9b5c890248e96a88fd726f5bd794e0849eb315ea39"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-undeath/world.tsv": "64d4868486e63e14a16b9c85d270750aaf15be3cb756e10482d37f09fd1ecc97",
+    "build-extractors/runtime-test/stormheim-undeath/world-live.tsv": "a8ef701ce80e1aee20f23c8b7c866f0a460fa950713e05b753f75f60183a1f4f",
+    "build-extractors/runtime-test/stormheim-undeath/hotfix.tsv": "468b6cbadcc18902da2720abc74997924421214b8b31b7009880fcacebd15908",
+    "build-extractors/runtime-test/stormheim-undeath/native-lines.txt": "3b0013b13cc70bf64068caed685e9f0613649a5e9e95c5c3ed5a0b6dd4b45b08",
+    "build-extractors/runtime-test/stormheim-undeath/geometry.txt": "a7000158e9c70b302010be6a96261fde3a3e3581746c887b777937645e263845",
+    "build-extractors/runtime-test/stormheim-undeath/floors.txt": "5abc4965a99ea18c0acdff2d53a43aa4d58c5bb770bceabc6b24234f330b8eb7"
+  },
+  "next": "40072 already has8a5729b2/halls-aegis audit and43349 handoff8d15546c; recheck existing paths instead of inventing Havi110425 NPC or duplicating a repair."
+}
