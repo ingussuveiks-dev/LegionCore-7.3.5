@@ -3640,6 +3640,17 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
         gameObjTarget->AI()->GossipHello(player, true))
         return;
 
+    // Wings of Liberty consumes a private rescue only after the ordinary
+    // Opening hit and native lock check. Direct/report-use is not completion.
+    if (gameObjTarget && m_spellInfo->Id == 3365 && gameObjTarget->GetMapId() == 1220 &&
+        gameObjTarget->GetZoneId() == 7541 &&
+        sObjectMgr->GetScriptName(gameObjTarget->GetScriptId()) == "go_stormheim_wings" &&
+        gameObjTarget->AI()->GossipHello(player, true))
+    {
+        TC_LOG_DEBUG("scripts", "Wings of Liberty: native Opening dispatch");
+        return;
+    }
+
     if (gameObjTarget)
         SendLoot(guid, LOOT_SKINNING);
     else if (itemTarget)

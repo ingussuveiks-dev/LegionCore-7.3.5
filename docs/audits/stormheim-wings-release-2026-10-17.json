@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-17",
+  "quest": 38413,
+  "title": "Wings of Liberty",
+  "source_base_revision": "d1d0f49e9f5ae66e2e0d41ec39f4d6a08c792122",
+  "scope": "Code/data only. No WoW client operation.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "original_quest_metadata": [
+    {
+      "ID": "39652",
+      "LogTitle": "'Where Dragons Rule'",
+      "AllowableRaces": "4294967295",
+      "RewardNextQuest": "38624"
+    },
+    {
+      "ID": "38618",
+      "LogTitle": "'Above the Winter Moonlight'",
+      "AllowableRaces": "33555378",
+      "RewardNextQuest": "38414"
+    },
+    {
+      "ID": "38413",
+      "LogTitle": "'Wings of Liberty'",
+      "AllowableRaces": "4294967295",
+      "RewardNextQuest": "39652"
+    },
+    {
+      "ID": "38412",
+      "LogTitle": "'Above the Winter Moonlight'",
+      "AllowableRaces": "18875469",
+      "RewardNextQuest": "38414"
+    }
+  ],
+  "status": "Four private rescues implemented, tested, deployed and built in canonical Release. Native opening/logic and selected collision feasibility checks pass; client gameplay/visual verification remains pending.",
+  "previous_gate_audit": "stormheim-wings-gate-2026-10-17.json",
+  "original_failure": [
+    "Each Ritual Circle already gave native GO objective credit, then attempted193637 Destroy Bindings. Its native effect is dummy3/target38 with no trigger and no193637 script binding, SmartAI or GO timed script. The four static actors have template stand byte3 and no release AI, so objective SQL alone did not implement the rescue.",
+    "The native catalogue and live Hotfix counts verify the installed spell/model/lock records; no Hotfix overrides are silently ignored. Data14=20138 is openTextID; it is not an event or progression spell."
+  ],
+  "implementation": [
+    "Bind only the four captured circles240650/244335/244336/244337 and exact DB GUIDs. A dedicated ordinary Opening3365 script captures the original target and acceptance lifetime, then rechecks the actual hit. The EffectOpenLock hook runs only after native lock1690 validation and delegates unrelated scripts/maps/spawns. Direct GO Use and report-use cannot consume a rescue.",
+    "Require alive/current/in-world quest, phase/visibility/LOS/range, original circle position, no combat/flight/vehicle/transport and a distinct unfinished objective. Require the matching exact existing captive actor and clear surveyed departure legs. Construct its private same-entry/display clone with viewer GUID before consuming the site; failed allocation or initial collision check leaves a real retry.",
+    "Bind the clone to the current quest-object scope, stand it up, make it passive/protected, then hide only the original actor and circle for this owner. Original DB actors, stand poses, positions and other players remain unchanged. Record the actual matching GO objective once and call native completion; spawning/timers/pets do not give credit.",
+    "After an authored2s wake pause, launch a native linear flight path at8yd/s through the shared departure header, then40yd above the original actor. Aleifir first leaves his cave80yd east at+5yd before rising; the other three rise in place. Recheck phase/visibility/expiry and collision before launch, remove on spline completion and use a30s watchdog. A changed obstacle after successful release cancels only the visual clone without undoing earned progress.",
+    "Track at most four originals/circles/clones per player in the original outdoor map. Abandon/reaccept/lifetime/death/map/logout cleanup despawns clones and restores hidden originals; durable completed objectives and reward history rehydrate visibility only, never new credit or a replayed departure. Grid lookups are limited to a500ms visibility poll.",
+    "Retain four mandatory GO objectives in storage slots1..4 and actual Vethir96465 turn-in/39652 starter. Native quest counters use a StorageIndex map, so an unused slot0 does not justify rewriting saved progress. The generic reward/next quest handlers and the existing39652 flight implementation are preserved."
+  ],
+  "migration": {
+    "state": "RELEASED",
+    "backup": "Private scoped templates/Opening bindings captured before deployment; excluded from Git.",
+    "sha1": "6E5BF0D7D271AB8516E95A3C52B1A8AB920D1D1E",
+    "migration": "2026_10_17_06_stormheim_wings_release.sql"
+  },
+  "preservation": "Migration requires all four original templates, expected objective layout, empty actor scripts/AI and exact captured GO/NPC map/phase/positions. Repeat application is idempotent, full template rows/other3365 bindings are compared, custom scripts skip the repair as a whole. No data position, character item/progress, pet, vehicle or player mover change.",
+  "checks": {
+    "release_runner": "tools/tests/Test-StormheimWings.ps1 -VerifyReleaseBinary",
+    "result": [
+      "PASS: native four sites/objectives, release binding twice, complete template/other Opening binding preservation and custom-script guard.",
+      "StormheimWingsTest.cpp",
+      "PASS: extracted opening/lock dispatch and actual rescue handlers, both factions/all24 orders, four private awake departures, original actors unchanged, per-owner hiding, native objective/completion/reward/GetNextQuest; interrupted/stale/retargeted casts, failed summon/collision retry, phase/death/map/vehicle gates, concurrent owners, abandon/reaccept/re-entry visibility and flight timeout. World construction, spline execution and client rendering remain fixtures.",
+      "PASS: deployed Release registration/dispatch marker and actual game/scripts final-link libraries."
+    ],
+    "coverage": "Both factions/all24 orders, native lock/post-lock dispatch, lifetime capture and real production handlers, exactly-once four goals and native completion/reward/GetNextQuest; shared originals/concurrent owners, initial and late failed collision, failed summon retry, death/phase/map/vehicle/teleport rejection, stale/retargeted/moved casts, abandon/reaccept, visibility re-entry, other-map delegation and timeout.",
+    "data_runner": "Test-StormheimWingsData.ps1 and -Live",
+    "catalog_runner": "Test-StormheimWingsCatalog.ps1",
+    "native_catalog": [
+      "native lock1690 ordinary Open/type5; circle16973 file=986958;193637 Destroy Bindings",
+      "effect193637 type=3 target=38 trigger=0",
+      "actor67198 model=8673 file=1280971",
+      "actor68213 model=8673 file=1280971",
+      "PASS: departure 1 both native collision legs and <=1yd terrain/cave samples via 2113.7,2186.07,470.226",
+      "PASS: departure 2 both native collision legs and <=1yd terrain/cave samples via 2132.36,2372.49,492.706",
+      "PASS: departure 3 both native collision legs and <=1yd terrain/cave samples via 2057.1,2473.28,485.957",
+      "PASS: departure 4 both native collision legs and <=1yd terrain/cave samples via 1998.81,2385.1,484.035"
+    ],
+    "floor_proximity": [
+      "object 115480 Z=465.141 floor=465.193 terrain_area=7612 PASS",
+      "object 115466 Z=490.76 floor=490.715 terrain_area=7611 PASS",
+      "object 115473 Z=484.165 floor=484.092 terrain_area=7612 PASS",
+      "object 115476 Z=482.131 floor=482.029 terrain_area=7612 PASS",
+      "npc 294030 Z=485.375 floor=485.294 terrain_area=7611 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "aleifir_approach": [
+      "PASS: complete 253-polygon native corridor to cave approach join; 863 supported samples, 306.066yd, 20 bounded jump/fall arcs with native gravity,15 body rays/40 samples, no terrain tunneling; final circle range5/LOS.",
+      "Manual locomotion feasibility only: not a scripted player path or a client movement/animation verification."
+    ],
+    "other_approaches": [
+      "target hrafsir 2133.51 2373.01 490.76",
+      "PASS: complete 9-polygon native corridor to cave approach join; 395 supported samples, 116.421yd, 4 bounded jump/fall arcs with native gravity,15 body rays/40 samples, no terrain tunneling; final circle range5/LOS.",
+      "Manual locomotion feasibility only: not a scripted player path or a client movement/animation verification.",
+      "target erilar 2058.21 2475.53 484.165",
+      "PASS: complete 7-polygon native corridor to cave approach join; 338 supported samples, 132.658yd, 15 bounded jump/fall arcs with native gravity,15 body rays/40 samples, no terrain tunneling; final circle range5/LOS.",
+      "Manual locomotion feasibility only: not a scripted player path or a client movement/animation verification.",
+      "target hridmogir 1998 2383.88 482.131",
+      "PASS: complete 9-polygon native corridor to cave approach join; 711 supported samples, 200.567yd, 5 bounded jump/fall arcs with native gravity,15 body rays/40 samples, no terrain tunneling; final circle range5/LOS.",
+      "Manual locomotion feasibility only: not a scripted player path or a client movement/animation verification.",
+      "target vethir 1977.46 2551.44 489.014",
+      "PASS: complete 7-polygon native corridor to cave approach join; 942 supported samples, 279.681yd, 14 bounded jump/fall arcs with native gravity,15 body rays/40 samples, no terrain tunneling; final circle range5/LOS.",
+      "Manual locomotion feasibility only: not a scripted player path or a client movement/animation verification."
+    ],
+    "regressions": {
+      "JudgmentDay": "PASS: extracted native lock1691 opening gate, exact three bowls, 7.5s ritual, protected dialogue then owned fights/deaths/pet credit, each objective once, no generic/group/talk shortcut, concurrent owners, cancel/lifetime/map/death/phase/distance/timeout/evade/retry and visual failures; both factions and Iounn38817 handoff. World/cast/network/geometry are fixtures here.",
+      "Impalement": "PASS: production native lock43 completion gate and launcher AI; wrong lock type, direct/report use, seven counts, same-spawn duplicate, shared respawn, both factions, failures, re-entry/retry and unrelated-map delegation."
+    }
+  },
+  "retained_failures_and_assumptions": [
+    "The first build passed a Creature pointer to a Unit-reference spline constructor; corrected before deployment. Initial migration replay exposed floating size equality and was corrected to a bounded comparison. Neither was treated as live gameplay evidence.",
+    "A direct upward Aleifir flight intersects the cave roof. A first eastward low route also intersected rising ground. The final shared route rises5yd on the eastward leg and passes both native VMAP ray legs and <=1yd terrain/cave samples. These are authored waypoints, not recovered retail choreography.",
+    "Direct continuous navmesh queries from the starter to mountain sites produced partial results without node exhaustion. They are not admitted as success. The replacement feasibility checks require a complete native corridor to each real physical join, then replay supporting floors/body clearance and bounded manual walk/jump/fall samples to interaction range/LOS. No navmesh data or runtime player movement is generated or altered.",
+    "Physical locomotion fixtures use native gravity19.291105, a selected standard jump impulse7.95555, <=7yd/s horizontal speed, <=1yd rise and <=12yd fall per arc. The impulse/body proxy and manual input are assumptions, not a capture of every race/client. There are20/4/15/5/14 arc edges for Aleifir/Hrafsir/Erilar/Hridmogir/Vethir respectively. This is a feasibility witness, not a recommended natural route or proof of actual player movement.",
+    "Initial local surveys/arc samples/Erilar join checks were rejected; the final fixtures enlarge the search, check40 arc samples with15 body rays and terrain protection, and include a validated real Erilar join hop. Removing intermediate locomotion is rejected; a nearby floor or partial corridor cannot replace the route."
+  ],
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "build_command": "cmake -S . -B build-extractors; cmake --build build-extractors --config Release --target worldserver bnetserver -j6",
+    "outdir": "No global OutDir override; actual final-link game/Release/game.lib and scripts/Release/scripts.lib paths checked against the deployed executable.",
+    "sha256": {
+      "build-extractors/bin/Release/worldserver.exe": "428509C26FB81A8E2745176DA73D867BE9B4E130CCC31E9D1E128A1F3A8E276B",
+      "build-extractors/bin/Release/bnetserver.exe": "31F8F1F5AEBC21202544418E491698C806C0E9A7DD224C57FD551AC59536EAF3",
+      "build-extractors/src/server/game/Release/game.lib": "D113B7131D3AA1DC7A7120EC9E6CEA5FB0A1AE8E899CC49DE0F0824FBA39C7CA",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "7A162DCD7EBD663695E343AAF9F5D71CC799413550075E90BC97D87CD7F26C65"
+    },
+    "startup": "build-extractors/runtime-test/stormheim-wings/startup-20261017-111224",
+    "ready": true,
+    "exit_code": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "state": "Gracefully stopped after validation; runtime configuration, certificates, DLLs and extracted data retained."
+  },
+  "production_source_sha256": {
+    "src/server/scripts/Legion/stormheim_wings.cpp": "86DBEB684A5D0F1B53C77A3B677E1E6F89DBE728A82217E09866237D2AB6C2C3",
+    "src/server/scripts/Legion/stormheim_wings_departure.h": "4E53D2B671DE3FBE23F9B3C264624D78D8E32B8DD7541E12D6FFB7EEAAD4281E",
+    "src/server/scripts/Legion/legion_script_loader.cpp": "7CFBD592A294B248745B8B7F6A48ACCF26E706EA949D87685FA0CC15482AB9B2",
+    "src/server/game/Spells/SpellEffects.cpp": "C9FB8BDD57A86F31195B76D9D8A2118862E413854E042F0FB5BB62E96DFC0CC7"
+  },
+  "fixture_sha256": {
+    "stormheim-wings-cave.txt": "2C8D3E7C92CFE06CAF7A7C861B0B9E6E770EAE62F574FEFF4AE6534D0A6A31BE",
+    "stormheim-wings-erilar.txt": "A8D7501065A4AB91E3916F4B4BD27DA5D949002DF3A36207042DF535B2CF6CA8",
+    "stormheim-wings-hrafsir.txt": "833E81D0A07D3106425D45E448C16D3A87107599909DBC44EC2ADE6A78F32B93",
+    "stormheim-wings-hridmogir.txt": "39C02F8913A5DF3102A5E970A593154954D65A689AD1CDD4AAA9D61CC8AB446D",
+    "stormheim-wings-vethir.txt": "F5C8DA861C8C5DD3DC80E4CF9446195C29B9285974880F76088F7AE92CF8A4D8"
+  },
+  "native_input_sha256": {
+    "Lock.db2": "3223460DF70CD1E5B5D2DBE63B4C63214E6A2627110C7ADA8BA0F979F26AC43D",
+    "SpellEffect.db2": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "Spell.db2": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "CreatureDisplayInfo.db2": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "CreatureModelData.db2": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "GameObjectDisplayInfo.db2": "23B4E725C73048DE7DA7D765BE0410F7D9CBA2AE07447C0765C8EBEB0586C4D8"
+  },
+  "limits_and_pending_client": [
+    "No WoW client was used. No whole quest or visual is called client-verified.",
+    "Regression world construction, map/grid services, private visibility delivery, spline execution, packet delivery, quest data persistence and full AddQuest/RewardQuest are fixtures. Native service boundaries are tested by extraction; the full network/server/client pipeline is not exercised.",
+    "Expected ordinary Opening3365 comes from the installed Lock1690 Open/type5 data. Actual click/cast packet delivery, cast interruption and all target checks need client confirmation.193637 native binding-break VFX is not replayed by this authored rescue; native model existence does not certify its animations.",
+    "Client pending for both factions: acceptance/markers, each captive and circle appearance, physical approach and real completed/interrupted opening, personal stand/binding disappearance/flight/cleanup with another player, all24 order logic represented by actual normal play, pet/group/non-player rejection, full quest abandon/reaccept/relog, actual Vethir hand-in/reward and39652 offer.",
+    "Verify the cave departure and all four model animations in sustained client playback. Static rays/terrain samples and server spline calls do not prove client rendering, hitboxes, movement or camera/pet presentation."
+  ]
+}

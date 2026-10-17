@@ -29,6 +29,7 @@ void AddSC_stormheim_blessing();
 void AddSC_stormheim_grapple();
 void AddSC_stormheim_no_wings();
 void AddSC_stormheim_impalement();
+void AddSC_stormheim_wings();
 void AddSC_stormheim_another_way();
 void AddSC_stormheim_winter();
 void AddSC_stormheim_heart();
@@ -284,6 +285,7 @@ void AddLegionScripts()
     AddSC_stormheim_grapple();
     AddSC_stormheim_no_wings();
     AddSC_stormheim_impalement();
+    AddSC_stormheim_wings();
     AddSC_stormheim_another_way();
     AddSC_stormheim_winter();
     AddSC_stormheim_heart();
