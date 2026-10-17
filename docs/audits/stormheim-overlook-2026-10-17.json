@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38308,
+    38317
+  ],
+  "title": "Eyes in the Overlook / Masters of Disguise: native intel, auto-accept, leaders and restored Shwayder patrol",
+  "client_verified": false,
+  "status": "Scoped World repair restores existing Shwayder patrol288637 while retaining template auras. Selected native interaction/quest/reward and data/geometry checks pass. Client checks remain pending.",
+  "findings": [
+    "38308 is Horde Eyes in the Overlook, previous38362, GO starter244453 Cullen's Scouting Report at DB114524/map1220. Native quest flags37814280 (0x02410008) include journal auto-submit0x10000. Objective277692 is ITEM1/122581/amount1/storage3/flags0, not a kill or a corpse-loot objective. No creature starter/ender or GO ender is required for its journal submit.",
+    "Knockwhistle91470/DB288742 has lootid0 and no intel loot rows, intentionally. npc_spellclick_spells91470->181532 has castFlags1/userType0/add_npc_flag1. ObjectMgr loader adds the spellclick NPC flag to the loaded template; spawn npcflag0 uses template defaults. The native Unit::HandleSpellClick non-vehicle path calls SmartAI::OnSpellClick after its spell loop; SmartAI event73 action56 ADD_ITEM122581/1 targets invoker7. No source18/source22 condition restricts that click. Protected/feign-death pose145363 and template bytes1=262144 are retained, not made attackable.",
+    "Native181532 Investigating has one effect157/kit60012/implicit target1 SELF/no trigger. It is a clicker-self cosmetic; it neither loots the NPC nor creates the item. The independent SmartAI ADD_ITEM executes even when the optional cast fails. The exact Unit::HandleSpellClick, OnSpellClick, event73 branch, action56 branch, Player::AddItem, ItemAddedQuestCheck and ItemRemovedQuestCheck execute in the fixture. Full inventory and failed StoreNewItem do not grant quest progress and can be retried. StoreNewItem slot allocation and its production ItemAddedQuestCheck call site are adapted, not a live inventory test.",
+    "Native intel item122581 is SI:7 Intel, MaxCount0, Stackable1, StartQuestID0, flags67584/8192. Existing repeat clicks can give additional inventory copies; the quest counter caps at1 and completes once. No new unique limit or quest click condition is invented. Test covers item removal/recollection, abandon/reaccept after fixture cleanup, bank-only reward rejection, non-player invoker ignored by ADD_ITEM, and no-active-quest click without credit. A true loaded-bag/login replay is not covered.",
+    "38308 reward-next and NextQuestID point to38317. 38317 flags38273024 (0x02480000) include AUTO_ACCEPT0x80000, not journal auto-submit. Typed World IDs and native Quest::IsAutoAccept/post-reward next-quest switch execute: rewarding38308 via player GUID auto-accepts38317 at configured Quests.IgnoreAutoAccept=0. When ignored, native code supplies popup38317 instead. Reward SQL persistence and item removal are a fixture before this post-reward switch, not the complete ChooseReward RPC.",
+    "38317 Masters of Disguise has previous38308 and two distinct MONSTER goals:277694/91468 Illandris/storage0 and277695/91460 Shwayder/storage1, each amount1/flags0. Both templates use faction84, unit_flags32768, flags2=2048, no credit aliases and no custom script/SmartAI progression rows, with active98..110 scaling. Native model29084 is Illandris;62465 is Shwayder. Their installed auras207420 and182517/154795 are preserved; catalog/aura presence does not verify disguises or combat spell playback.",
+    "Native owner/player/pet resolver, per-player kill reward admission, delayed reward, KilledMonster and KilledMonsterCredit, sparse objective getters/setter/save marking, group eligibility, CanComplete/CanReward, previous-quest/race admission and request-reward handlers execute. Both kill orders and player/pet kills require both leaders, cap repeats, support reconstructed saved progress and reject missing/unrewarded prerequisites; all nine allowed Horde race bits pass. Group range, released spirit and offline boundaries are fixtures around native group selection. No persistent DB save/restart or live combat claim is made.",
+    "38317 is handed to Forsaken Bat-Rider97250, which is an ender, not its starter. Native request-reward rejects self GUID and accepts a nearby flags3 rider, then rejects out-of-range rider. There is no next quest. Two existing rider rows340420/341178 share the exact coordinate; no pool/event/formation/linked-respawn/addon/negative-SmartAI membership was found in read-only inspection. This overlap is retained in this focused patrol repair and tracked for a separate data fix. Optional gossip18762 throw/vehicle functionality is not exercised by these hand-in checks.",
+    "Shwayder DB288637/91460 had MovementType2 but no spawn addon; its template addon had path_id0. Native Creature::GetCreatureAddon uses spawn addon or template fallback; LoadCreaturesAddon sets m_path_id only for a nonzero addon path. Native WaypointMovementGenerator::LoadPath then cannot resolve route0. Existing waypoint_data288637 already contains five authored points0..4. Migration15 creates a spawn addon copied from the template and binds288637, preserving182517/154795 and all pose/mount/emote fields. An existing zero-path spawn addon gets only path_id repaired; an explicit nonzero/custom path is preserved. No NPC coordinate or new waypoint is invented.",
+    "Native waypoint loader is compiled with manager/creature/spline adapters: unbound path0 does not start, repaired288637 resolves five points and starts after the native3000ms timer. SQL temporary-table tests reproduce the missing binding, apply migration twice, preserve template auras, keep existing customized nonzero path, preserve custom auras while repairing zero path, refuse absent waypoint data and preserve unrelated Illandris288730/route2887300. Live migration applied after scoped backup and registered RELEASED with matching SHA1."
+  ],
+  "geometry": {
+    "routes": 24,
+    "complete_corridor_budget": 65535,
+    "mode": "walk-swim",
+    "result": "All four report->Knockwhistle->Illandris->Shwayder->rider approaches and20 nonzero patrol edges passed complete native ground/water corridors, physical endpoints and staticLOS1. Reach is the native interaction-range diagnostic; this does not simulate combat/path following or dynamic players/obstacles.",
+    "stationary_point": "Shwayder authored points2 and3 are identical. Initial generic route-tool call for that zero-distance pair returned nonzero without a corridor result; it is not recorded as a navmesh defect or PASS. The final survey explicitly skips that stationary edge, retaining all five authored points and testing the native loader. No movement is required between those duplicate points.",
+    "evidence": "build-extractors/runtime-test/stormheim-overlook/geometry.txt",
+    "sha256": "1aeb16ccba258d380a190f363413140f3f7edb8e3147165506568f3ef53f2777"
+  },
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimOverlook.ps1",
+      "result": "PASS",
+      "log": ".codex/overlook-test.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlookCatalog.ps1",
+      "result": "PASS",
+      "log": ".codex/overlook-catalog.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimOverlookData.ps1 -Live",
+      "result": "PASS",
+      "log": ".codex/overlook-live-data.log"
+    }
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-overlook\\20261017-172452",
+    "sha1": "D01441083613261FF128654D96BEB7F43670FFB7",
+    "migration": "2026_10_17_15_stormheim_overlook.sql"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "compiled_for_this_fix": false,
+    "reason": "World SQL plus tests/audit only; no production C++ changed. Existing canonical Release executables retained and SHA256 checked unchanged.",
+    "executables": {
+      "worldserver.exe": "F10FAC1C909BA929F6661526CB34F900D96DB3532004A4BBACA1E99C5C0E47E2",
+      "bnetserver.exe": "9A8ADCF6860E3263FB37FF33738A52B6B0EB54585894CBDD9912DE44818CB425"
+    },
+    "startup": "build-extractors/runtime-test/stormheim-overlook/startup-20261017-172500/",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "worldserver_left_running": false,
+    "limitation": "Ready startup proves data loader acceptance, not grid activation, patrol execution or client interactions."
+  },
+  "client_pending": [
+    "Report quest offer after38362 reward and phase/interaction accessibility.",
+    "Knockwhistle initial pose, click indicator, investigating kit60012, actual inventory/bag-full retry and journal38308 completion.",
+    "38317 automatic acceptance after journal reward and quest UI state.",
+    "Both disguises/combat, restored Shwayder five-point patrol and both player/pet killing blows.",
+    "Rider visibility and final38317 turn-in/reward129093. Optional throw gossip is not verified."
+  ],
+  "fixture_limits": [
+    "World lookup, phases/LOS/life/spellclick requirements, condition source lists, spell/aura engine, script event admission/target selection and native item slot allocation use adapters.",
+    "The complete Unit spellclick handler and selected SmartAI branches execute, but not full SmartScriptMgr loader/runtime or native cast engine. Data pins event73/flags0/chance100 and userType0/no conditions.",
+    "Generic quest class/level/reputation/skill and most day gates are fixtures. Native race/status/previous gates execute with live quest fields.",
+    "Reward persistence/inventory destruction, opcode-level acceptance/ChooseReward validation, UI/packets and actual quest-log field writes are not exercised.",
+    "A native StoreNewItem call to ItemAddedQuestCheck is mirrored by the inventory adapter after successful storage; complete native inventory/container accounting is not tested."
+  ],
+  "file_sha256": {
+    "sql/updates/world/2026_10_17_15_stormheim_overlook.sql": "0caa7c893bbbfc4dda3516bac4ab7591c48325666413090dd786897b20008361",
+    "tools/tests/Test-StormheimOverlookData.ps1": "e15eea3ca168df76723e228f15277eb4c6372e2594056a05ad72c8a31147cbbd",
+    "tools/tests/Test-StormheimOverlook.ps1": "270ab746350898eb6908fd0950cf12cd106edef896647768ab687193d61ef568",
+    "tools/tests/StormheimOverlookTest.cpp": "8e423281fafb94637568c5c68986cbd12207765b3e7f386bf79229dcc0f82842",
+    "tools/tests/Test-StormheimOverlookCatalog.ps1": "fddae30927de78a89c37ff18415133014d5ed15b9d994e62252fdfb249a90ec1",
+    "tools/tests/StormheimOverlookCatalog.cpp": "dafccdc2fcd8eac342c6a429bb38def22b85e72e286592f64b80f52cfa1ee7b4"
+  },
+  "production_source_sha256": {
+    "src/server/game/Entities/Unit/Unit.cpp": "e22f9be94fc5570b969cffe39ce51667bd5672504ef5135ee2278672120057ff",
+    "src/server/game/AI/SmartScripts/SmartAI.cpp": "ed43fff1ffbc0a78971997d4eb19cde2dceb34e48f06ab4c512f4735c5a6251c",
+    "src/server/game/AI/SmartScripts/SmartScript.cpp": "5418b3d11201a59dd5f3edd0ad05d3504c092c95873f020eb8e136a324a7f1e6",
+    "src/server/game/Entities/Player/Player.cpp": "7967dbbb32b6860d0cf8dd67dde62ccf1a05bd7f527ba1e07a6c40770f99b312",
+    "src/server/game/Entities/Player/KillRewarder.cpp": "e115dcac503e3bb0b9cecf0dd27f5ada6d43428924c72a54fdf04681831c300d",
+    "src/server/game/Handlers/QuestHandler.cpp": "a12c55eff711b86aac85300c45946be18167a835ea15ad5f1ecd708f72a340f1",
+    "src/server/game/Quests/QuestDef.cpp": "aba776dcecf90e59019b703cbcdbed963e076e95385bc9adddbd06bcf18552c6",
+    "src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp": "c23a51108f425eb0a90b25f87b02be48bcd723da4a3a00ce743ba522e0780c66",
+    "src/server/game/Entities/Creature/Creature.cpp": "4ca2cfe1aadc476784aa7a89925c81dfc7ea800f9db27e6e0068d5938770aa57",
+    "src/server/game/Globals/ObjectMgr.cpp": "a433c8b47486411c128d8db4575706f58903dc90cb7c64391803bedbf3007af2"
+  }
+}
