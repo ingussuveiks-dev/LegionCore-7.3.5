@@ -1,0 +1,74 @@
+{
+  "quests": [
+    38318,
+    38405,
+    38613,
+    38614,
+    38410,
+    38615
+  ],
+  "date": "2026-10-17",
+  "title": "To Weather the Storm: faction and parallel prerequisites",
+  "status": "repaired/deployed; native automated checks passed; client pending",
+  "observed_failures": [
+    "Alliance38405 had PrevQuestID0 and no other prerequisite relation/condition; native race+previous admission allowed it before38312. Horde38614 already required rewarded38612.",
+    "Both members of each parallel pair had NextQuestID pointing to38410/38615 with ExclusiveGroup0. QuestData appends both predecessors, but native SatisfyQuestPreviousQuest treats them as OR alternatives. Either rewarded member alone therefore admitted Impalement Insurance. A completed but unreported sibling could be skipped."
+  ],
+  "evidence_and_inference": [
+    "Installed native QuestLineXQuest132/133 lists A Grapple a Day, No Wings Required, To Weather the Storm and Impalement Insurance in corresponding order. Both pairs already share the same next destination, rewards and race-restricted quest givers. Native quest text describes infiltration and collecting the climbing equipment; QuestLine order alone does not encode prerequisite semantics.",
+    "Inference for the restored gate: No Wings Required and To Weather the Storm are the parallel tasks after A Grapple a Day, and their common successor requires both. The existing Horde predecessor and both faction layouts support this interpretation. Public documented progression independently corroborates the parallel stage; its current scaled-level text is not substituted for native7.3.5 quest data."
+  ],
+  "corroborating_sources": [
+    "https://warcraft.wiki.gg/wiki/A_Grapple_a_Day",
+    "https://warcraft.wiki.gg/wiki/To_Weather_the_Storm_(Alliance)",
+    "https://warcraft.wiki.gg/wiki/To_Weather_the_Storm_(Horde)"
+  ],
+  "repair": "Migration2026_10_17_03 sets only missing38405.PrevQuestID=38312; groups38318/38405 as-38318 and38613/38614 as-38613 when their groups are0 and existing NextQuestID agrees. Native negative-group semantics require every same-race member to be rewarded. Preserve individual Prev/Next/RewardNext links and custom nonzero groups/prerequisites.",
+  "world_live": [
+    "chain\t38312\t37748744\t8192\t824181837\t0\t38318\t38473\t38318\t0\t0",
+    "chain\t38318\t37748744\t4\t824181837\t0\t38410\t38312\t38410\t0\t-38318",
+    "chain\t38405\t37748744\t0\t824181837\t0\t38410\t38312\t38410\t0\t-38318",
+    "chain\t38410\t33685512\t0\t824181837\t0\t38342\t38318\t38342\t0\t0",
+    "chain\t38612\t35651592\t8192\t234881970\t0\t38613\t38611\t38613\t0\t0",
+    "chain\t38613\t37748744\t4\t234881970\t0\t38615\t38612\t38615\t0\t-38613",
+    "chain\t38614\t37748744\t0\t234881970\t0\t38615\t38612\t38615\t0\t-38613",
+    "chain\t38615\t33685512\t0\t234881970\t0\t38617\t38613\t38617\t0\t0",
+    "starter\t91481\t38405",
+    "starter\t91519\t38410",
+    "starter\t92566\t38614",
+    "starter\t92566\t38615",
+    "starter\t92567\t38615",
+    "quest-givers\t4",
+    "condition-gates\t0"
+  ],
+  "native_quest_line": [
+    "38405 line132 order3",
+    "38614 line133 order3"
+  ],
+  "checks": [
+    "Test-StormheimWeatherChainData.ps1 repeats the real migration in temporary copies and compares complete addon rows, including unrelated38558. Custom predecessor99999/group123 and group456 survive; live NPC questgiver flags and existing relations agree.",
+    "Test-StormheimWeatherChain.ps1 -VerifyReleaseBinary compiles the real Prev/Next and exclusive-group loading, SatisfyQuestPreviousQuest/SatisfyQuestRace, GetNextQuest and NPC reward-next fragment. Reproduces original early Alliance availability and all four either-member bypasses, then checks both factions and both reward orders.",
+    "Before A Grapple a Day is rewarded, weather acceptance fails even if the prerequisite is completed. After reward both parallel tasks are admitted. Wrong-race admission fails; all64 race-mask bits use native checks.",
+    "After only one parallel reward, the next quest and details window stay unavailable while its independent NPC reward callback still runs. Completed-but-unrewarded sibling is insufficient. Rewarding the second member opens the existing next details through the actual starter relation; rebuilt history preserves the gate.",
+    "Existing Helheim supplies/item/reward-next regression passes. Canonical Release contains the reward-next admission diagnostic, uses its original actual game Release final-link input, and passed the ready/shutdown smoke with both data migrations loaded."
+  ],
+  "limits": [
+    "The CanTakeQuest fixture combines native race and previous-quest checks; full native quest level/class/daily/condition/session/menu admission is outside this harness. World lookup, history reconstruction and packets are fixtures. No database character rows are changed.",
+    "Client pending: both faction menus and phase transitions, accepting the parallel quests together, completing/turning them in in either order, correct successor details/reward callbacks after relog. Existing item/quest/visual and earlier audit client requirements remain.",
+    "Native QuestLine order and modern public documentation corroborate content sequencing, not live7.3.5 client verification."
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "smoke_directory": "build-extractors/runtime-test/stormheim-weather/startup-20261017-081606",
+    "build": "cmake --build build-extractors --config Release --target worldserver --parallel 4; original game/scripts Release final-link inputs; no OutDir override",
+    "migration": "2026_10_17_03_stormheim_weather_chain.sql",
+    "migration_sha1": "AF4C236E094BFFF22A19641F761BCC186CBE774C"
+  },
+  "related_audit": "docs/audits/stormheim-weather-2026-10-17.json",
+  "next": "38410/38615 Impalement Insurance: seven launcher interactions, grapple approach, retry/pet/faction boundaries and next-stage handoff; code/data only."
+}
