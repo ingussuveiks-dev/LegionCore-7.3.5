@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    38878,
+    39063
+  ],
+  "client_verified": false,
+  "status": "Shared shield faction regression and provable saved-goal recovery repaired; client reading/visibility/persistence checks remain pending.",
+  "regression_origin": "bb0c67f9 replaced the six shared GO SmartAI credit rows with a script that checked only Alliance39063. Horde38878 uses the same six shields and109346 aggregate; native goober use still saved its individual GO goals, but the script never increased its aggregate. The actual old AI from pinned0d9b4fc5 is executed with native goober/quest handlers: all six Horde GO goals become1 while aggregate stays0 and the quest stays incomplete.",
+  "implementation": [
+    "ShieldQuest chooses38878 for Horde and39063 for Alliance. Valid exact outdoor shield use raises only the selected quest109346 objective once before that shield native GO goal is credited. It preserves original gossip/text conditions, native GO credit/open-close and interaction flags; no origin-LOS requirement was invented.",
+    "Aggregate writes now use the exact selected monster objective/storage0/amount6 and native setter/update/completion. They do not credit another player or a stale opposite-faction aggregate with the same bunny.",
+    "RepairReadings counts only existing positive selected-quest GO records for the known six shield entries. It raises the aggregate to this proven count when lower, never decreases a capped/inflated existing count, and retains all mandatory distinct GO goals. Six saved readings can therefore recover a stuck incomplete Horde quest without requiring a GM reset or pretending unread shields were read.",
+    "Recovery runs on a valid shield interaction and in the existing PlayerScript OnLogin callback, alongside communion recovery. No character SQL was edited. Completed/rewarded/no-quest history is preserved; real login save/load and packets remain a client boundary.",
+    "No SQL migration or new native model/position/text edit is required: the shared GO binding already exists. Original text-to-shield assignment by objective order remains a repair assumption from the earlier audit, not recovered client sniff evidence."
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimHordeShields.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Extracted old/new GO AI and native goober/quest/group/text/condition handlers,720 Alliance and720 Horde orders, repeat/busy/partial/abandon/range/phase/native-no-origin-LOS, source/reward-next gates, old0/6 defect, saved counts0..6, idempotence/nondecrease, opposite aggregate isolation and complete/rewarded/none history. Canonical diagnostic and actual final-link library freshness pass."
+    },
+    {
+      "command": "tools/tests/Test-StormheimShieldsData.ps1 -BothFactions and -Live -BothFactions",
+      "result": "PASS",
+      "coverage": "Both real quest definitions, all fourteen goals, actual faction prerequisite/starter/ender links, six existing GO bindings/texts/source anchors and isolated repeat/custom-preserving original migration. No new data mutation."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHordeShieldsCatalog.ps1",
+      "result": "Native catalog, grounded player floors and seven complete access routes PASS; raw NPC-origin floor probe retained separately",
+      "coverage": "C++ native model reader now checks both faction models/chapters136/137 order3/4. Static player approach2612.2,1740.14,15.904 is supported at floor15.5517 and within native interaction range of Sylvanas. Seven complete Detour ground corridors and supported native-range endpoints pass. Original no-GO-origin-LOS semantics retained."
+    },
+    {
+      "command": "tools/tests/Test-StormheimHordeCommunion.ps1 -VerifyReleaseBinary",
+      "result": "PASS",
+      "coverage": "Shared script/login callback changes retain both faction communion regressions, old Horde menu failure reproduction and faction/lifetime/mixed-state boundaries."
+    },
+    {
+      "command": "Release worldserver+bnetserver; canonical startup/shutdown0",
+      "result": "PASS",
+      "coverage": "Final executables in build-extractors/bin/Release, original scripts final-link input/no OutDir override; new diagnostic, ready, exit0 and DBErrors/stderr0 bytes."
+    }
+  ],
+  "geometry": {
+    "raw_origin_probe": [
+      "npc 340421 Z=16.6921 floor=15.5517 terrain_area=7700 FAIL",
+      "npc 341182 Z=19.0228 floor=18.9397 terrain_area=7694 PASS",
+      "object 115401 Z=18.7454 floor=17.3021 terrain_area=7694 PASS",
+      "object 115389 Z=24.8708 floor=25.5836 terrain_area=7694 PASS",
+      "object 115385 Z=47.5821 floor=47.1173 terrain_area=7694 PASS",
+      "5 Hunting source/questgiver anchors; 1 failures. Live client movement and interaction remain unverified."
+    ],
+    "grounded_floors": [
+      "player 0 Z=15.904 floor=15.5517 terrain_area=7700 PASS",
+      "npc 341182 Z=19.0228 floor=18.9397 terrain_area=7694 PASS",
+      "object 115401 Z=18.7454 floor=17.3021 terrain_area=7694 PASS",
+      "object 115389 Z=24.8708 floor=25.5836 terrain_area=7694 PASS",
+      "object 115385 Z=47.5821 floor=47.1173 terrain_area=7694 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified.",
+      "object 115377 Z=32.433 floor=29.8026 terrain_area=7694 PASS",
+      "object 115394 Z=13.0343 floor=9.42357 terrain_area=7694 PASS",
+      "object 115380 Z=26.0828 floor=27.6726 terrain_area=7694 PASS",
+      "player 0 Z=15.904 floor=15.5517 terrain_area=7700 PASS",
+      "npc 341182 Z=19.0228 floor=18.9397 terrain_area=7694 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "routes": [
+      "target 2712.52 1641.37 18.7454",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2715.55,1640.12,16.9883 through 53 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 24 corners, length=219.947yd.",
+      "endpoint centerDistance=3.71863",
+      "endpoint surfaceZ=16.9883 floor=16.0461 terrain=13.294 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.942154 staticLOS=0 requireLOS=0 PASS",
+      "target 2784.25 1476.16 24.8708",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2784.35,1476.99,23.9229 through 54 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 7 corners, length=328.341yd.",
+      "endpoint centerDistance=1.26361",
+      "endpoint surfaceZ=23.9229 floor=23.2669 terrain=23.2669 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.655994 staticLOS=1 requireLOS=0 PASS",
+      "target 2675.02 1356.35 47.5821",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2675.02,1354.35,42.6553 through 88 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 18 corners, length=473.865yd.",
+      "endpoint centerDistance=5.31729",
+      "endpoint surfaceZ=42.6553 floor=42.3801 terrain=40.5625 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.275166 staticLOS=0 requireLOS=0 PASS",
+      "target 2658.06 1427.62 32.433",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2658.28,1426.08,28.2742 through 51 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 12 corners, length=334.778yd.",
+      "endpoint centerDistance=4.44086",
+      "endpoint surfaceZ=28.2742 floor=28.0585 terrain=27.577 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.215721 staticLOS=0 requireLOS=0 PASS",
+      "target 2853.91 1523.14 13.0343",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2854.16,1524.37,8.97546 through 75 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 13 corners, length=362.646yd.",
+      "endpoint centerDistance=4.24792",
+      "endpoint surfaceZ=8.97546 floor=8.70899 terrain=7.56172 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.266466 staticLOS=0 requireLOS=0 PASS",
+      "target 2728.16 1465.83 26.0828",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2727.69,1466.74,23.4577 through 59 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 15 corners, length=321.971yd.",
+      "endpoint centerDistance=2.81645",
+      "endpoint surfaceZ=23.4577 floor=23.2558 terrain=23.2558 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.201878 staticLOS=0 requireLOS=0 PASS",
+      "target 2650.9 1499 19.0228",
+      "PASS: Source approach 2612.2,1740.14,15.904 -> target approach 2650.9,1499,19.0182 through 40 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 9 corners, length=248.63yd.",
+      "endpoint centerDistance=0.00464249",
+      "endpoint surfaceZ=19.0182 floor=18.9397 terrain=18.9397 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.0784836 staticLOS=1 requireLOS=0 PASS"
+    ],
+    "retained_observation": "Generic NPC-origin probe failed: DB340421 Z16.6921 vs floor15.5517,1.1404yd offset, exceeding its arbitrary1yd diagnostic threshold. No claim of a corrected NPC height or verified client foot placement is made. The separate native navmesh/player access query finds supported Z15.904 within interaction reach; all source/target routes pass. The helper reports raw origin failure separately instead of widening its tolerance or moving the NPC."
+  },
+  "boundaries": [
+    "Extracted production/native handlers execute with world/phase/range lookup, packets, loaded state and actual persistence supplied by fixtures. Saved-goal helper recovery is executed; the full character login/storage round trip and rendered UI are not.",
+    "GO credit is still the native generic per-object path. The custom aggregate is scoped to the chosen faction, but a deliberately invalid character retaining both active faction quests can still receive the native GO objective on both records. No cross-faction history reset was introduced.",
+    "Static model/ground/interaction corridors are not continuous body-clearance or client traversal proof. Source NPC vertical placement, actual phase6772 turn-in visibility and duplicate same-position94227 spawn rows remain client checks.",
+    "Earlier shield audit retains the failed center/LOS survey, discarded manual walk witness and authored-text assignment assumption. Those are not overwritten or presented as client-verified."
+  ],
+  "pending_client_checks": [
+    "Both factions: read all six real shields, distinct authored story panels/counters, repeat reading, nearby group member independence and actual access/model visibility.",
+    "Horde with saved partial/all GO readings and low aggregate: relog or reread a shield, inspect restored counter and real saved completion; preserve higher legacy aggregate/finished history.",
+    "Inspect actual Sylvanas94227 height/visibility and95611 phase6772 turn-in/39155 offer, then verify native communion/finale. Camera/pet and all earlier client checks remain pending."
+  ],
+  "migration": null,
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "c30f758a741e663e8901cc2477842c997054d52c22fdb211da33a9517db361a0",
+    "bnetserver_sha256": "dd330b193414a04f98130b9f9cbf976f95ae7c8c2eb1ec2a9119fcab16cde355",
+    "scripts_lib_sha256": "a2a9ad122ae7fa623386c40844b5e4030486c867ea9b0433ea345402bf0874da",
+    "startup": "build-extractors/runtime-test/stormheim-horde-shields/startup-20261017-143757",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "left_running": false
+  },
+  "source_sha256": {
+    "src/server/scripts/Legion/stormheim_skold_ashil.cpp": "6a45c6411df99979b1a8250b2c7610027fabed3009241a4998d08325ded0de3a",
+    "tools/tests/Test-StormheimShieldsData.ps1": "b05a4c7091fd3d1d983c89fcaf00da36e477a090da058d6d83bb3dd8a33fd613",
+    "tools/tests/Test-StormheimHordeShields.ps1": "5cc06181d82f9904850a8f435f60bd7bf514010cbd86b22add80adba17e7fc26",
+    "tools/tests/StormheimShieldsCatalog.cpp": "3789d431c9bb9398cd1fc1fd6600fba4ea33ed97afc60d46572d1990715cdef6",
+    "tools/tests/Test-StormheimHordeShieldsCatalog.ps1": "541788bd76be9825af15950211b8b3e72938045ec66ba3a6fa74644c4369a56c"
+  },
+  "evidence_sha256": {
+    "build-extractors/runtime-test/stormheim-horde-shields/world.tsv": "3e7caf39caf09f27d3a440313d0defc63b393ec03b8bfee428162fbb48226507",
+    "build-extractors/runtime-test/stormheim-horde-shields/native-lines.txt": "2ffb5e9f7cb7ed136f6c94be098fa7849c0648c14a33a397ae382c196091b21a",
+    "build-extractors/runtime-test/stormheim-horde-shields/origin-floors.txt": "d197c85bb9cde2c2d0df49d7c3dd89cbadc03868088e0429fc0abe0d5eb16a47",
+    "build-extractors/runtime-test/stormheim-horde-shields/floors.txt": "de62dcdae90940ea78bb84af403d8de361b51a59ffffdd91e65a3f64bf58c2e2",
+    "build-extractors/runtime-test/stormheim-horde-shields/geometry.txt": "9bd358e6e8ea2fcff8aace92da6acdaae2db2b7f23b3696dbfae290605a370da"
+  },
+  "next": "39385 A Gift for Greymane native item128287/189152->189134/controller95409/95412 lifecycle, then39154 delivery gate."
+}

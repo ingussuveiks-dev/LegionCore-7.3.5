@@ -13,6 +13,26 @@ namespace StormheimSkoldAshil
 {
 struct Shield {uint32 entry;ObjectGuid::LowType spawn;};
 Shield const Shields[]={{242673,115401},{251557,115389},{251558,115385},{251559,115377},{251560,115394},{251561,115380}};
+uint32 ShieldQuest(Player* p) {return p && p->GetTeam()==HORDE?38878:39063;}
+void RaiseReadings(Player* p,Quest const* q,uint32 count)
+{
+    if(!q || count>6 || p->GetQuestStatus(q->GetQuestId())!=QUEST_STATUS_INCOMPLETE ||
+        p->GetQuestObjectiveData(q->GetQuestId(),109346)>=int32(count))return;
+    for(auto const& o:q->GetObjectives())if(o.Type==QUEST_OBJECTIVE_MONSTER && o.ObjectID==109346 && o.StorageIndex==0 && o.Amount==6)
+    {
+        p->SetQuestObjectiveData(q,&o,count);p->SendQuestUpdateAddCredit(q,ObjectGuid::Empty,o,count);
+        if(p->CanCompleteQuest(q->GetQuestId()))p->CompleteQuest(q->GetQuestId());
+        break;
+    }
+}
+void RepairReadings(Player* p)
+{
+    if(!p || p->GetQuestStatus(ShieldQuest(p))!=QUEST_STATUS_INCOMPLETE)return;
+    uint32 read=0;for(auto const& s:Shields)if(p->GetQuestObjectiveData(ShieldQuest(p),s.entry)>0)++read;
+    // The former Alliance-only script saved Horde GO goals but no aggregate.
+    // Recover only proven personal readings, never lower an existing counter.
+    RaiseReadings(p,sQuestDataStore->GetQuestTemplate(ShieldQuest(p)),read);
+}
 uint32 CommunionQuest(Player* p) {return p && p->GetTeam()==HORDE?39155:39092;}
 bool Shrines(Player* p)
 {
@@ -71,8 +91,10 @@ public:
             // Native goober Use immediately follows this and credits this GO.
             // Its distinct objective is the per-player repeat gate; the old
             // group event credited every click and nearby non-reading players.
-            if(p->GetQuestStatus(39063)==QUEST_STATUS_INCOMPLETE && !p->GetQuestObjectiveData(39063,go->GetEntry()))
-                p->KilledMonsterCredit(109346);
+            StormheimSkoldAshil::RepairReadings(p);
+            auto quest=StormheimSkoldAshil::ShieldQuest(p);
+            if(p->GetQuestStatus(quest)==QUEST_STATUS_INCOMPLETE && !p->GetQuestObjectiveData(quest,go->GetEntry()))
+                StormheimSkoldAshil::RaiseReadings(p,sQuestDataStore->GetQuestTemplate(quest),p->GetQuestObjectiveData(quest,109346)+1);
             return false; // Preserve native gossip, GO credit and open/close.
         }
     };
@@ -142,12 +164,13 @@ class player_stormheim_communion_recovery : public PlayerScript
 {
 public:
     player_stormheim_communion_recovery():PlayerScript("player_stormheim_communion_recovery"){}
-    void OnLogin(Player* p) override {StormheimSkoldAshil::RepairPrematureCommunion(p);}
+    void OnLogin(Player* p) override {StormheimSkoldAshil::RepairPrematureCommunion(p);StormheimSkoldAshil::RepairReadings(p);}
 };
 
 void AddSC_stormheim_skold_ashil()
 {
     TC_LOG_INFO("server.loading","Skold-Ashil: distinct shield readings");
+    TC_LOG_INFO("server.loading","Skold-Ashil: faction shield readings and saved-goal recovery");
     new go_stormheim_engraved_shield();
     TC_LOG_INFO("server.loading","Skold-Ashil: ordered native communion");
     TC_LOG_INFO("server.loading","Skold-Ashil: faction-specific communion quest lifetime");

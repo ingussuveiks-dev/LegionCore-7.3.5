@@ -1,4 +1,4 @@
-param([switch]$Live)
+param([switch]$Live,[switch]$BothFactions)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/stormheim-shields"
@@ -31,6 +31,9 @@ SELECT 'story',g.MenuID,g.TextID,n.BroadcastTextID0 FROM gossip_menu g JOIN npc_
 SELECT 'condition',SourceEntry,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ElseGroup FROM conditions WHERE SourceTypeOrReferenceId=14 AND SourceGroup=18581 ORDER BY SourceEntry;
 SELECT 'legacy-smart',COUNT(*) FROM smart_scripts WHERE source_type=1 AND entryorguid IN(242673,251557,251558,251559,251560,251561) AND action_type=33 AND action_param1=109346;
 '@
+if($BothFactions){
+ $sql=$sql.Replace('q.ID IN(39062,39063,39092)','q.ID IN(39062,39063,39092,39154,38878,39155)').Replace('WHERE QuestID=39063 ORDER BY','WHERE QuestID IN(39063,38878) ORDER BY').Replace('quest IN(39062,39063,39092)','quest IN(39062,39063,39092,39154,38878,39155)').Replace('quest IN(39062,39063)','quest IN(39062,39063,39154,38878)').Replace('id IN(93779,95921)','id IN(93779,95921,94227,95611)')
+}
 if(!$Live){$sql+=@"
 SELECT 'unrelated',COUNT(*) FROM gameobject_template WHERE entry=242994 AND ScriptName='';
 DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_gameobject_template;
@@ -52,6 +55,10 @@ for($i=0;$i -lt 6;$i++){
  foreach($line in @("story`t18581`t$text`t$broadcast","condition`t$text`t31`t1`t5`t$entry`t0`t0`t0","objective`t39063`t$obj`t2`t$entry`t1`t$storage`t0","go`t$entry`t10`t$display`t262144`t1.5`t0`t0`t0`t500`t0`t0`t18581`tgo_stormheim_engraved_shield")){if($rows -notcontains $line){throw "Missing distinct shield contract: $line"}}
 }
 if(!$Live){foreach($line in @("unrelated`t1","custom-preserved`t6","custom-condition-count`t0","custom-smart-count`t7")){if($rows -notcontains $line){throw 'Shield migration changed unrelated/custom data'}}}
+if($BothFactions){
+ foreach($line in @("quest`t38878`t33554440`t0`t234881970`t0`t39155`t39154`t39155`t0`t0`t0","quest`t39154`t33554440`t0`t234881970`t0`t38878`t39385`t38878`t0`t0`t0","objective`t38878`t278686`t0`t109346`t6`t0`t0","starter`t93603`t39154","starter`t94227`t38878","starter`t95611`t39155","ender`t94227`t39154","ender`t95611`t38878")){if($rows -notcontains $line){throw "Horde shield contract changed: $line"}}
+ for($i=0;$i -lt 6;$i++){$entry=$entries[$i];$objective=284931+$i;$storage=$i+1;if($rows -notcontains "objective`t38878`t$objective`t2`t$entry`t1`t$storage`t0"){throw 'Missing distinct Horde shield goal'}}
+}
 foreach($line in @("scope`t6`t6","spawn`t115401`t242673`t1220`t2712.52`t1641.37`t18.7454`t","spawn`t115389`t251557`t1220`t2784.25`t1476.16`t24.8708`t","spawn`t115385`t251558`t1220`t2675.02`t1356.35`t47.5821`t","spawn`t115377`t251559`t1220`t2658.06`t1427.62`t32.433`t","spawn`t115394`t251560`t1220`t2853.91`t1523.14`t13.0343`t","spawn`t115380`t251561`t1220`t2728.16`t1465.83`t26.0828`t")){if($rows -notcontains $line){throw "Shield source anchor changed: $line"}}
 $sql="SELECT 'display',COUNT(*) FROM gameobject_display_info WHERE ID IN(27378,35192); SELECT 'actor',COUNT(*) FROM creature_display_info WHERE ID=34520; SELECT 'model',COUNT(*) FROM creature_model_data WHERE ID=50; SELECT 'text',ID,LENGTH(Text)+LENGTH(Text1) FROM broadcast_text WHERE ID BETWEEN 96736 AND 96741 ORDER BY ID;"
 $c=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^HotfixDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
