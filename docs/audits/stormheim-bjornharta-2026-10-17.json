@@ -1,0 +1,119 @@
+{
+  "date": "2026-10-17",
+  "source_base_revision": "0a71cbfc98240eb5df9d5b5438602058d6f2810e",
+  "scope": "Code/data only; no WoW client operation.",
+  "original_archive_sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+  "quest": 38808,
+  "title": "Bjornharta",
+  "status": "Selected native admission, four-heart loot/progression and static access checks pass. No production defect confirmed; client verification pending.",
+  "original": {
+    "quest": {
+      "ID": "38808",
+      "LogTitle": "'Bjornharta'",
+      "LogDescription": "'Collect 4 Engorged Bear Hearts from Voracious Bears in the Runewood.'",
+      "QuestDescription": "'The afterlife leaves the dead hungry for the delicacies of their former lives. For the vrykul kings, none such offering is prized more than Bjornharta - a celebratory feast of an engorged bear heart. \\n\\nThe bears of the Runewood eat well, and have long been prized for their tender meat. Hunt them and find a suitable heart of offer to the ancient rulers. They will not be able to resist such an offering.'",
+      "Flags": "33554440",
+      "RewardNextQuest": "38811"
+    },
+    "objectives": [
+      {
+        "ID": "278456",
+        "QuestID": "38808",
+        "Type": "1",
+        "Order": "0",
+        "StorageIndex": "0",
+        "ObjectID": "124503",
+        "Amount": "4",
+        "Flags": "0",
+        "Flags2": "1",
+        "ProgressBarWeight": "0",
+        "Description": "''",
+        "VerifiedBuild": "25549"
+      }
+    ],
+    "loot": []
+  },
+  "findings": [
+    "Vydhar93231/guid292106 starts and ends38808 after rewarded39796. One mandatory item124503 objective requires4. The actual bear template93095 links loot93095,31.193% QuestRequired1,mode0,count1; a kill alone gives no item progress.",
+    "All42 bear spawns are map1220, ordinary spawn mask, no model overrides or extra phases. Preserve four feign-death props29266 with512 flags and eight145953 pose auras; they are not42 proved live combat targets. Bear scaling98..110 is valid.",
+    "Native heart124503 has stack10,max0,bonding4,flags67584/8192,no starter/use spell. Package650 contains five existing reward entries; native bear display33920/model8575 and Vydhar65138/model8447 exist; relevant live Hotfix override counts are0.",
+    "Native QuestData loader adds38808.NextQuestID=38811 as a positive prerequisite alternative alongside38811.PrevQuestID=38810. Rewarding Bjornharta OR Dreaming Fungus admits Judgment Day; completing without reward does not. Preserve this actual native/original link rather than imposing an invented all-quests gate."
+  ],
+  "checks": {
+    "data_runner": "tools/tests/Test-StormheimBjornhartaData.ps1",
+    "native_runner": "tools/tests/Test-StormheimBjornharta.ps1",
+    "result": [
+      "PASS: Bjornharta collect4, native bear loot selector/31.193% quest loot,42 spawns and prop states,98..110 scaling, Vydhar relations and38811 links; no data repair required.",
+      "StormheimBjornhartaTest.cpp",
+      "PASS: both factions, rewarded39796 prerequisite, actual4-heart loot lifecycle, native loot validation/Process/Roll/AllowedForPlayer, missed rolls and kills without loot, bank/removal/retry/reconstructed history/consumption; native loader preserves Bjornharta OR Dreaming Fungus admission and Vydhar38811 details after reward. Inventory storage, corpse ownership, non-quest admission and packets remain fixtures; client pending."
+    ],
+    "catalog_runner": "tools/tests/Test-StormheimBjornhartaCatalog.ps1",
+    "native_catalog": [
+      "item124503 Engorged Bear Heart max=0 stack=10 bonding=4 flags=67584,8192",
+      "package650 item=129335 quantity=1 display=1",
+      "package650 item=129336 quantity=1 display=1",
+      "package650 item=129337 quantity=1 display=1",
+      "package650 item=129338 quantity=1 display=1",
+      "package650 item=129353 quantity=1 display=1",
+      "display33920 model=8575 file=1266661",
+      "display65138 model=8447 file=1122123",
+      "PASS: native quest heart supports four items and has no use spell; reward package and bear/Vydhar model records exist."
+    ],
+    "floors": [
+      "npc 292160 Z=134.25 floor=134.198 terrain_area=7652 PASS",
+      "npc 292126 Z=113.752 floor=113.668 terrain_area=7652 PASS",
+      "npc 292076 Z=114.055 floor=113.971 terrain_area=7652 PASS",
+      "npc 292119 Z=113.133 floor=113.052 terrain_area=7652 PASS",
+      "npc 292081 Z=114.01 floor=113.926 terrain_area=7652 PASS",
+      "5 Hunting source/questgiver anchors; 0 failures. Live client movement and interaction remain unverified."
+    ],
+    "routes": [
+      "target 3063.41 989.272 134.25",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=5 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=5 out_of_nodes=0 partial=1",
+      "PASS: Source approach 3073.8,1057.59,129.459 -> target approach 3063.41,989.272,133.888 through 11 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 8 corners, length=82.1025yd.",
+      "terrain polygons ground=11 water=0 magma/slime=0",
+      "endpoint centerDistance=0.362076",
+      "endpoint surfaceZ=133.888 floor=134.198 terrain=134.198 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.310242 staticLOS=1 PASS",
+      "target 3124.09 952.031 113.752",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "PASS: Source approach 3073.8,1057.59,129.459 -> target approach 3124.09,952.031,114.026 through 24 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 5 corners, length=127.647yd.",
+      "terrain polygons ground=24 water=0 magma/slime=0",
+      "endpoint centerDistance=0.274155",
+      "endpoint surfaceZ=114.026 floor=113.668 terrain=113.668 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.358521 staticLOS=1 PASS",
+      "target 3218.59 900.555 114.055",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "INCOMPLETE: budget=65535 status=0x40000040 polygons=2 out_of_nodes=0 partial=1",
+      "PASS: Source approach 3073.8,1057.59,129.459 -> target approach 3218.59,900.555,114.186 through 31 native ground/water navmesh polygons; budget=65535, complete corridor and endpoint, 8 corners, length=221.898yd.",
+      "terrain polygons ground=31 water=0 magma/slime=0",
+      "endpoint centerDistance=0.130547",
+      "endpoint surfaceZ=114.186 floor=113.971 terrain=113.971 terrainLiquid=0 vmapLiquid=-100000 surfaceError=0.214798 staticLOS=1 PASS"
+    ]
+  },
+  "retained_diagnostics": [
+    "Initial reuse of the floor helper rejected Vydhar origin127.021 against ground123.342 and rejected an input count4 because the helper requires5. This was a probe mismatch: the large stationary tree origin is not an ordinary NPC foot. No spawn was moved or tolerance relaxed. Five ordinary bear floors now pass; three complete routes start at the actual nearby Vydhar approach3073.8/1057.59/129.459, within conservative5yd of his origin. The original failure is retained here."
+  ],
+  "limitations": [
+    "No client was used; the whole quest is not client-verified.",
+    "Inventory/bank writes and stack allocation, corpse ownership/party loot, roll RNG, save/load storage, non-quest class/level/reputation checks and packet delivery are fixtures. Full RewardQuest and real network menu acceptance are not executed.",
+    "Static checks cover five selected bear floors and three complete ground corridors with endpoint support/LOS, not all42 actor movement/AI/combat or a model animation/visual test. The four feign-death props are not presented as ordinary loot kills.",
+    "Client pending for both factions: Vydhar menus and tree hitbox/visibility, awake/sleeping bear aggro and pet/group killing blows, actual heart loot/full bags/abandon/relog, four-item consumption and Judgment Day reward details."
+  ],
+  "runtime": {
+    "path": "build-extractors/bin/Release",
+    "worldserver_sha256": "EF30F7AE2C93683C3829696B5434DE11960285E55FD2D8CCA9920E7BCF422367",
+    "note": "Tests and audit only. No production C++/SQL changes, migration, rebuild or server restart required."
+  },
+  "native_input_sha256": {
+    "ItemSparse.db2": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17",
+    "ItemEffect.db2": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931",
+    "QuestPackageItem.db2": "A6BB441011003860FFF002D39795B0201642266778B60988D86766ECB4144AF6",
+    "CreatureDisplayInfo.db2": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "CreatureModelData.db2": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357"
+  }
+}
