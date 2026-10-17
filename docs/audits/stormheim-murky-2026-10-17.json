@@ -1,0 +1,530 @@
+{
+  "date": "2026-10-17",
+  "quests": [
+    40120
+  ],
+  "title": "A Murky Fate: one torch credit per corpse burn, followed by cleanup and normal respawn",
+  "source_base_revision": "896d126fcc971a9cf550f3fecaa08440178166c1",
+  "scope": "Code/data only. No WoW client operation or character edits. SQL-only production change; no shared core or Warlock implementation changes.",
+  "status": "Repeatable single-corpse completion reproduced through extracted native handlers and repaired. SQL replay, native interaction/quest regression, native DB2 catalog, live World check and canonical Release startup pass; client verification pending.",
+  "client_verified": false,
+  "findings": [
+    "Original98577 SmartAI had two independent SPELLHIT8 rows for194067: row0 action33 credit98577 to invoker7; row1 action75 aura194069 to self1. Both event_flags0, zero cooldown, no LINK or conditions and no despawn. Native194067 has no SpellAuraRestrictions row and is an unlimited-charge torch use. Replaying eight hits on one original actor completed the eight-credit objective; this is a reproduced code/data exploit, not an observed WoW client run.",
+    "Migration19 marks row0 nonrepeatable1 and links it to row1. Row1 becomes LINK61, applies the existing194069 aura and links row2, whose action41 schedules native SmartAI despawn after10000ms. The original action33 credit, target7/group semantics, original fire aura and self target are retained. LINK cleanup still runs when the eighth credit changes the quest to COMPLETE; it has no late incomplete-quest condition.",
+    "Source22 group1 gates event0 before runOnce is consumed: target0 must be a Player (type31/value4), have40120 INCOMPLETE (type9), and target1/base corpse must lack194069 effect0 (negative aura1). Null/pet/no-quest/wrong-spell inputs leave the valid hit retriable. Source13 effect mask1 limits the native area spell to entry98577 and excludes already-burning candidates. Native destination targeting,5-yard area and15-yard range are retained; this is not changed to a single clicked target.",
+    "Native SmartScript::ProcessEventsFor skips LINK events in ordinary dispatch; ProcessEvent checks active/phase/nonrepeatable/conditions before SpellHit matching; ProcessAction sets runOnce before action33 and executes native LINK continuation. SetAuraStack failure does not prevent the linked despawn action. The test executes these actual production fragments, not only a SQL graph model.",
+    "Native194069 uses Duration1=10000ms. Action41 adds1ms and starts SmartAI state2; native UpdateDespawn hides on its next elapsed update, waits another5000ms, then calls DespawnOrUnsummon. DB spawn respawn180 remains unchanged. Creature::DespawnOrUnsummon calls ForcedDespawn for these DB creatures, which invokes native death/corpse removal. This audit reads that path but does not simulate the full Creature/Map respawn scheduler.",
+    "Nonrepeatable is deliberately not combined with DONT_RESET0x100: Creature respawn reuses its AI and calls Reset/JustRespawned, whose OnReset must rearm the event. The native base-aura condition rejects a reset-while-burning hit. Tests run real SmartScript::OnReset and SmartAI::JustRespawned/UpdateDespawn fragments. They do not claim persistence across arbitrary script reloads, forced GM resets or server restart; actor-local burn state is transient.",
+    "All16 original corpse spawns on map1220, phaseMask1/empty PhaseId/spawnMask1, spawn override0/dynamicflags32, protected template flags and feign-death addon159474/bytes1=262144 are unchanged. Native displays25240/25241/25242 resolve model2805/file126577; Morheim Ancestor98587/DB292435 display63102 resolves model2594/file122815. Existing scaling98..110 is active and unchanged.",
+    "Native Smoldering Torch129725 has one on-use effect194067, TriggerType0, Charges0 (unlimited), stack1/max0, bonding4, flags67648/8192, no StartQuestID. Quest40120 supplies one torch as StartItem and has ItemDrop1=129725/count1 for cleanup. Native GiveQuestSourceItem and TakeQuestSourceItem were executed for grant/removal/reacceptance, a loaded-bank item adapter, and unequip-failure refusal. Underlying inventory deletion/storage and live login bags remain adapters.",
+    "Morheim Ancestor98587 is both original starter and ender, npcflag2/faction190, map1220 at2907.36/493.566/16.4856. Objective280336 requires eight98577 monster credits at storage index2. Both factions are admitted by the existing all-races mask. No prerequisite, objective, source-item, reward, quest relations, model, pose or spawn rows are changed.",
+    "Tests reconstruct the old repeatable state, apply migration twice and preserve unrelated Havi SmartAI/conditions. Native replay covers both factions, eight distinct actor objects, repeated hit suppression, exact eighth-credit visual/cleanup, bad/null/pet/no-quest invokers, wrong spell, reset while burning, optional aura failure with cleanup, group credit and far-member exclusion, source-item cleanup, abandonment/reacceptance and respawn retry. World grid/casting scheduler, target enumeration, packet transport and inventory services remain fixtures.",
+    "Stopped-server deployment backed up the scoped original SmartAI and conditions, applied migration19, and registered its SHA1 as RELEASED. Live data assertions and a fresh canonical Release startup passed with empty DBErrors/stderr and clean exit0. No production C++ changed; existing canonical executables were used, with no new full server build claimed."
+  ],
+  "quest_contract": [
+    [
+      "40120",
+      "302120968",
+      "65536",
+      "18446744073709551615",
+      "129725",
+      "1",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  ],
+  "objectives": [
+    [
+      "40120",
+      "280336",
+      "0",
+      "98577",
+      "8",
+      "2",
+      "0"
+    ]
+  ],
+  "smart_columns": [
+    "id",
+    "link",
+    "event",
+    "flags",
+    "param1",
+    "param2",
+    "param3",
+    "param4",
+    "chance",
+    "action",
+    "action_param1",
+    "target",
+    "Difficulties"
+  ],
+  "smart_after": [
+    [
+      "0",
+      "1",
+      "8",
+      "1",
+      "194067",
+      "0",
+      "0",
+      "0",
+      "100",
+      "33",
+      "98577",
+      "7",
+      ""
+    ],
+    [
+      "1",
+      "2",
+      "61",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "100",
+      "75",
+      "194069",
+      "1",
+      ""
+    ],
+    [
+      "2",
+      "0",
+      "61",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "100",
+      "41",
+      "10000",
+      "1",
+      ""
+    ]
+  ],
+  "condition_columns": [
+    "source",
+    "group",
+    "entry",
+    "type",
+    "target",
+    "value1",
+    "value2",
+    "value3",
+    "negative",
+    "else_group"
+  ],
+  "conditions_after": [
+    [
+      "13",
+      "1",
+      "194067",
+      "1",
+      "0",
+      "194069",
+      "0",
+      "0",
+      "1",
+      "0"
+    ],
+    [
+      "13",
+      "1",
+      "194067",
+      "31",
+      "0",
+      "3",
+      "98577",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "22",
+      "1",
+      "98577",
+      "1",
+      "1",
+      "194069",
+      "0",
+      "0",
+      "1",
+      "0"
+    ],
+    [
+      "22",
+      "1",
+      "98577",
+      "9",
+      "0",
+      "40120",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "22",
+      "1",
+      "98577",
+      "31",
+      "0",
+      "4",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  ],
+  "actor_templates_unchanged": [
+    [
+      "98577",
+      "0",
+      "14",
+      "536904448",
+      "2049",
+      "8192",
+      "SmartAI",
+      ""
+    ],
+    [
+      "98587",
+      "2",
+      "190",
+      "33536",
+      "2048",
+      "0",
+      "",
+      ""
+    ]
+  ],
+  "poses_unchanged": [
+    [
+      "98577",
+      "262144",
+      "159474"
+    ],
+    [
+      "98587",
+      "0",
+      "211179"
+    ]
+  ],
+  "spawn_columns": [
+    "guid",
+    "entry",
+    "map",
+    "x",
+    "y",
+    "z",
+    "respawn_seconds",
+    "phaseMask",
+    "PhaseId",
+    "spawnMask",
+    "model_override",
+    "dynamicflags"
+  ],
+  "spawns_unchanged": [
+    [
+      "292450",
+      "98577",
+      "1220",
+      "2920.7",
+      "419.979",
+      "9.97639",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292453",
+      "98577",
+      "1220",
+      "2875.6",
+      "462.74",
+      "16.6996",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292456",
+      "98577",
+      "1220",
+      "2882.38",
+      "416.46",
+      "15.8968",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292466",
+      "98577",
+      "1220",
+      "2885.43",
+      "383.241",
+      "7.38132",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292467",
+      "98577",
+      "1220",
+      "2848.97",
+      "431.425",
+      "17.7513",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292470",
+      "98577",
+      "1220",
+      "2836.04",
+      "459.964",
+      "24.053",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292485",
+      "98577",
+      "1220",
+      "2846.39",
+      "387.102",
+      "12.3938",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292497",
+      "98577",
+      "1220",
+      "2804.33",
+      "401.328",
+      "15.3345",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292506",
+      "98577",
+      "1220",
+      "2787.15",
+      "464.931",
+      "20.28",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292510",
+      "98577",
+      "1220",
+      "2779.75",
+      "432.854",
+      "20.9784",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292521",
+      "98577",
+      "1220",
+      "2745.57",
+      "396.811",
+      "19.7859",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292522",
+      "98577",
+      "1220",
+      "2710.7",
+      "410.634",
+      "24.4149",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292526",
+      "98577",
+      "1220",
+      "2714.4",
+      "379.719",
+      "18.9121",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292552",
+      "98577",
+      "1220",
+      "2739.44",
+      "307.031",
+      "7.37402",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292555",
+      "98577",
+      "1220",
+      "2804.86",
+      "313.064",
+      "0.853115",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292570",
+      "98577",
+      "1220",
+      "2746.34",
+      "287.281",
+      "0.931776",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "32"
+    ],
+    [
+      "292435",
+      "98587",
+      "1220",
+      "2907.36",
+      "493.566",
+      "16.4856",
+      "180",
+      "1",
+      "",
+      "1",
+      "0",
+      "0"
+    ]
+  ],
+  "checks": [
+    {
+      "command": "tools/tests/Test-StormheimMurky.ps1",
+      "result": "PASS",
+      "log": ".codex/murky-test.log",
+      "upstream_log": ".codex/murky-upstream.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimMurkyData.ps1 -Live",
+      "result": "PASS",
+      "log": ".codex/murky-live-data.log"
+    },
+    {
+      "command": "tools/tests/Test-StormheimMurkyCatalog.ps1",
+      "result": "PASS for native item/spell/target/radius/duration/model tables",
+      "log": ".codex/murky-catalog.log"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "PASS at final staging review"
+    }
+  ],
+  "test_development_limitations": [
+    "An experimental catalog extension loading additional SpellXSpellVisual and SpellVisual typed stores exited with0xC0000005 before normal catalog output. Removing those optional stores restored the passing item/spell/model catalog. This was a test-program failure, not a worldserver crash. The two stores were not individually diagnosed here and the complete visual-kit/attachment/animation chain is not verified; no production visual IDs/data were changed. Initial probe log .codex/murky-catalog-initial.log is retained; its old native-lines artifact was stale research output and was not accepted as evidence."
+  ],
+  "deployment": {
+    "migration": "2026_10_17_19_stormheim_murky.sql",
+    "state": "RELEASED",
+    "sha1": "C752D15B749D75D572E3089A06019CD8F8DD1843",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\stormheim-murky\\20261017-190314"
+  },
+  "runtime": {
+    "directory": "build-extractors/bin/Release",
+    "compiled_for_this_fix": false,
+    "startup": "build-extractors/runtime-test/stormheim-murky/startup-20261017-190321",
+    "ready": true,
+    "exit_code": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "worldserver_left_running": false,
+    "worldserver_sha256": "39ABC08B3AFD9C5F1EF6F39412737C3F8EAD5FF5E854723BF5534B8410C80007",
+    "bnetserver_sha256": "BC010541F0928DC1DCCB935FD93B461C20F6D349CBB4E2DA81DA71FD85A6F04C"
+  },
+  "client_pending": [
+    "Accept40120 and confirm Smoldering Torch appears and opens the native ground-targeting UI; verify valid corpse selection and the unchanged5-yard area/15-yard range in the client.",
+    "Burn eight distinct corpses, confirm each gives one credit including repeated casts, full10-second fire playback, then hidden/despawn state and later normal respawn. The full kit/attachment/animation chain remains unverified.",
+    "Check corpse pose/model/visibility and reachable interaction at all16 unchanged original spawns; no new navmesh/dynamic/body collision survey is claimed.",
+    "Complete and turn in to Morheim Ancestor; verify source torch cleanup, full-inventory refusal/retry, abandonment/reacceptance, bank/log-out persistence and actual multiplayer/group behavior."
+  ],
+  "file_sha256": {
+    "sql/updates/world/2026_10_17_19_stormheim_murky.sql": "444918EB08E96D2EF93663DB91551906AE3D885280AF2B26A8D286B31C6D9F39",
+    "tools/tests/StormheimMurkyTest.cpp": "7FA97FB0275DEB06C3A6BD3641F9F275A4F3BBE01555845D15D73B584FE09135",
+    "tools/tests/Test-StormheimMurky.ps1": "88281C3858D29C98B7B506C653B30315BB9296ACA6A48677534458E2DEB16643",
+    "tools/tests/Test-StormheimMurkyData.ps1": "6491D3186B7C161F7D318F4CB5D09150A96C208BB80516DCBAAAF681E76E5B90",
+    "tools/tests/StormheimMurkyCatalog.cpp": "237EC09DE74537747E953E1689FE8885862000B40929AD944742F1D47C9B63D8",
+    "tools/tests/Test-StormheimMurkyCatalog.ps1": "017F901B02930E21680CC5B5EC047015D47CA46601A5BC4E102068DFE761358D"
+  }
+}
