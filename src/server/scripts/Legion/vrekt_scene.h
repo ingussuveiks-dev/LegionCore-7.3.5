@@ -144,8 +144,9 @@ struct npc_vrekt_captured_drake : PassiveAI
         {
             movement = VrektScene::Escape;
             // Reconstructed outward/upward escape, not a recovered retail spline.
+            // The negative-Y route intersects static collision just after lift.
             auto const& home = me->GetHomePosition();
-            Position destination(home.GetPositionX() - 45.0f, home.GetPositionY() - 60.0f,
+            Position destination(home.GetPositionX() - 45.0f, home.GetPositionY() + 60.0f,
                 home.GetPositionZ() + 60.0f, home.GetOrientation());
             me->GetMotionMaster()->MoveSmoothFlyPath(VrektScene::Escape, destination, 9.0f);
         }

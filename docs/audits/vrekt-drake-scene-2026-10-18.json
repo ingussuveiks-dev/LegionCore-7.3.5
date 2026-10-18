@@ -72,6 +72,7 @@
     "dbErrorsBytes": 0,
     "stderrBytes": 0
   },
+  "followUp": "vrekt-geometry-2026-10-18.json reproduces static collision in the original reconstructed home(-45,-60,+60) escape and repairs Y to+60. The flight description above records the original65611ab0 implementation; use the follow-up for current geometry, Release and deployment evidence. Retail reconstruction and client boundaries remain open.",
   "remaining": [
     "Client appearance, chain endpoints, pose during combat, player/pet kills, flight trajectory and duplicate-free respawn/rotation changes. No client verification or full retail reconstruction claim.",
     "Earlier activation/combat/POI audits retain client objective/task rendering, full spell execution, original timing/placement and terrain/navmesh limitations. This cosmetic scene supplies no extra completion credit."

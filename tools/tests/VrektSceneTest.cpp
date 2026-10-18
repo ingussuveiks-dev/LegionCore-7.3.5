@@ -79,7 +79,7 @@ int main(){
   flight.DoAction(1);flight.MovementInform(EFFECT_MOTION_TYPE,1);assert(drake->moves.empty());flight.UpdateLifecycle(999);assert(drake->moves.empty());flight.UpdateLifecycle(1);
   assert(drake->moves.size()==1&&drake->fly&&drake->noGravity&&drake->moves[0].animation==int(AnimTier::Hover)&&drake->moves[0].destination.GetPositionZ()==mgr.anchor.posZ+8);
   flight.MovementInform(POINT_MOTION_TYPE,1);assert(drake->moves.size()==1);Finish(*drake);assert(drake->moves.size()==2);
-  auto move=drake->moves.back();assert(move.fly&&move.smooth&&move.uncompressed&&!move.generate&&move.speed==9&&move.destination.GetPositionZ()==mgr.anchor.posZ+60);
+  auto move=drake->moves.back();assert(move.fly&&move.smooth&&move.uncompressed&&!move.generate&&move.speed==9&&move.destination.GetPositionX()==mgr.anchor.posX-45&&move.destination.GetPositionY()==mgr.anchor.posY+60&&move.destination.GetPositionZ()==mgr.anchor.posZ+60);
   flight.MovementInform(EFFECT_MOTION_TYPE,1);assert(drake->moves.size()==2);Finish(*drake);assert(drake->despawn&&drake->despawns==1);flight.MovementInform(EFFECT_MOTION_TYPE,2);assert(drake->despawns==1);
   boss.alive=true;ai.JustRespawned();ai.UpdateLifecycle(1000);auto next=ObjectAccessor::GetCreature(boss,ai.drake);assert(next&&next!=drake);GameTime::now=200;ai.UpdateLifecycle(1);assert(next->despawn&&!ai.drake);summons.clear();
  }
