@@ -1,6 +1,8 @@
+param([ValidateSet(44923,44746)][int]$QuestID=44923)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
-$output=Join-Path $repo "build-extractors/runtime-test/vrekt-outro"
+$variantName=if($QuestID -eq 44746){'rockaway'}else{'vrekt'}
+$output=Join-Path $repo "build-extractors/runtime-test/$variantName-outro"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
@@ -29,7 +31,7 @@ $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$output.Replace('\','/')+'"'))
 [IO.File]::WriteAllText("$output/worldserver.conf",$config)
 Push-Location "$repo/build-extractors/bin/Release"
-try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/VrektOutro.exe" "$output/worldserver.conf" "$repo/build-extractors/bin/Release/";$result=$LASTEXITCODE;$rows | Set-Content "$output/native-lines.txt";$rows | Where-Object {$_ -match '^(OUTRO|PASS:)'};if($result){throw 'Vrekt native outro failed'}}finally{$env:PATH=$previousPath;Pop-Location}
+try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/VrektOutro.exe" "$output/worldserver.conf" "$repo/build-extractors/bin/Release/" $QuestID;$result=$LASTEXITCODE;$rows | Set-Content "$output/native-lines.txt";$rows | Where-Object {$_ -match '^(OUTRO|PASS:)'};if($result){throw 'Native outro failed'}}finally{$env:PATH=$previousPath;Pop-Location}
 $hashes=@{}
 $inputs=@(Get-ChildItem "$runtime/dbc/enUS/Spell*.db2")
 $inputs+=@('Map','Difficulty','CreatureDisplayInfo','CreatureModelData','ChrClasses','Faction','FactionTemplate','SummonProperties','ConversationLine','BroadcastText','SoundKit','SoundKitEntry') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}

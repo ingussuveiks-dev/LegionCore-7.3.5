@@ -23,7 +23,7 @@ namespace WorldPackets{namespace Spells{
 struct Position {
  float x=0,y=0,z=0,o=0; float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}
 };
-struct Player;struct Creature;struct ScriptedAI;struct Group{bool raid=false;bool isRaidGroup()const{return raid;}};
+struct Player;struct Creature;struct ScriptedAI;struct Quest;struct Group{bool raid=false;bool isRaidGroup()const{return raid;}};
 struct Unit;
 using WorldObject=Unit;
 using GameObject=Unit;
@@ -109,6 +109,7 @@ std::map<ObjectGuid,std::unique_ptr<Unit>> units;
 struct Player:Unit {
  uint32 status=1,credits=0,fragments=0,errors=0;bool lostArmy=true,fullBags=false;Group*group=nullptr;
  uint32 GetQuestStatus(uint32)const{return status;}Group*GetGroup()const{return group;}
+ bool CanRewardWorldQuest(Quest const*)const{return true;} // Actual guard runs in RockawayCompletionTest.
  bool HasQuestForItem(uint32)const{return lostArmy&&fragments<1000;}
  void AutoStoreLoot(uint32 id,int){assert(id==229113);if(fullBags)++errors;else fragments+=15;}
  void KilledMonsterCredit(uint32 id){assert(id==115168);++credits;status=2;}

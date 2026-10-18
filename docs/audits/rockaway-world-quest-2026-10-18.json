@@ -62,5 +62,7 @@
     "Existing original ritualist position/orientation/green-beam actor binding, reconstructed combat timing and fragment10..15 bounds remain unproven retail details; this activation fix does not close those historical authenticity gaps.",
     "Retain full-bag fragment AutoStoreLoot error/skip limitation and all earlier visual/audio/party/expiry checks from the encounter audit. Do not describe the whole quest as client-verified."
   ],
-  "prior_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json"
+  "prior_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json",
+  "completion_followup": "docs/audits/rockaway-completion-2026-10-19.json",
+  "current_completion_admission": "Rockaway::Eligible now requires native CanRewardWorldQuest before secondary fragment loot; pinned65c7ac0a reproduced stale-personal-completion/template-null fragment leakage. Full production completion/reward/status functions and linked230020/3963 conversation pass bounded regressions. Full-bag fragments retain native error/skip; actual Player/client/persistence and prior authenticity limitations remain."
 }

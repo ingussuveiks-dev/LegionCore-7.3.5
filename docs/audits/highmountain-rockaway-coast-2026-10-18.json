@@ -303,5 +303,7 @@
   "channel_reconstruction_followup": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json",
   "current_channel_implementation": "Reconstructed231433 now targets each admitted ritualist's exact image with per-caster cleanup/retry. 231328/333 are no longer applied. Native/Release checks pass; original binding and client visuals remain unverified. Earlier statements about those auras describe historical implementation, retained as evidence.",
   "rotation_activation_followup": "docs/audits/rockaway-world-quest-2026-10-18.json",
-  "current_rotation_activation": "Migration15 adds missing44746 candidate12678=2 and explicit area7833; native generation/area registration/player arrival and all-three rotation tests pass. Duration inherits existing259200-second server policy; actual client arrival/completion and prior authenticity gaps remain pending."
+  "current_rotation_activation": "Migration15 adds missing44746 candidate12678=2 and explicit area7833; native generation/area registration/player arrival and all-three rotation tests pass. Duration inherits existing259200-second server policy; actual client arrival/completion and prior authenticity gaps remain pending.",
+  "completion_followup": "docs/audits/rockaway-completion-2026-10-19.json",
+  "current_completion_admission": "Rockaway::Eligible now requires native CanRewardWorldQuest before secondary fragment loot; pinned65c7ac0a reproduced stale-personal-completion/template-null fragment leakage. Full production completion/reward/status functions and linked230020/3963 conversation pass bounded regressions. Full-bag fragments retain native error/skip; actual Player/client/persistence and prior authenticity limitations remain."
 }

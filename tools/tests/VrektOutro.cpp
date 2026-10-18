@@ -58,7 +58,12 @@ struct Actor:Creature
 
 int Run(int argc,char**argv)
 {
-    Require(argc==3,"Expected private configuration and runtime directory");
+    Require(argc==3||argc==4,"Expected private configuration, runtime directory and optional quest ID");
+    uint32 questId=argc==4?uint32(std::stoul(argv[3])):44923;
+    Require(questId==44923||questId==44746,"Unexpected outro quest");
+    uint32 conversationId=questId==44746?3963:3982;
+    uint32 lineId=questId==44746?9050:9085;
+    uint32 spellId=questId==44746?230020:230157;
     std::string error;
     Require(sConfigMgr->LoadInitial(argv[1],{},error),"Private configuration failed");
     sLog->Initialize(nullptr);MySQL::Library_Init();
@@ -83,12 +88,14 @@ int Run(int argc,char**argv)
     MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1220,{}}});
     HashMapHolder<Creature>::SetSize(20000);HashMapHolder<Conversation>::SetSize(20000);
 
-    auto lines=sConversationDataStore->GetConversationData(uint32(3982));
-    auto actors=sConversationDataStore->GetConversationActor(3982);
-    Require(lines&&lines->size()==1&&actors&&actors->size()==1,"Vrekt outro SQL data missing");
+    auto quest=WorldDatabase.PQuery("SELECT RewardSpell FROM quest_template WHERE ID=%u",questId);
+    Require(quest&&quest->Fetch()[0].GetUInt32()==spellId,"Live quest reward spell changed");
+    auto lines=sConversationDataStore->GetConversationData(conversationId);
+    auto actors=sConversationDataStore->GetConversationActor(conversationId);
+    Require(lines&&lines->size()==1&&actors&&actors->size()==1,"Outro SQL data missing");
     auto line=sConversationLineStore.LookupEntry(lines->front().id);
     auto text=line?sBroadcastTextStore.LookupEntry(line->BroadcastTextID):nullptr;
-    Require(line&&line->ID==9085&&text&&text->Text&&text->Text->Str[0][0],"Native outro line/text missing");
+    Require(line&&line->ID==lineId&&text&&text->Text&&text->Text->Str[0][0],"Native outro line/text missing");
     Require(!line->NextConversationLineID,"Native outro gained another line; audit timing");
     auto display=sCreatureDisplayInfoStore.LookupEntry(actors->front().displayId);
     Require(display&&sCreatureModelDataStore.LookupEntry(display->ModelID),"Outro actor display missing");
@@ -131,23 +138,23 @@ int Run(int argc,char**argv)
         map.LoadGrid(caster.GetPositionX(),caster.GetPositionY());
         Require(map.AddToMap(static_cast<Creature*>(&caster)),"Caster map admission failed");
         auto first=sObjectMgr->GetGenerator<HighGuid::Conversation>()->GetNextAfterMaxUsed();
-        Require(caster.CastSpell(&caster,230157,true)==SPELL_CAST_OK,"Native outro cast rejected");
+        Require(caster.CastSpell(&caster,spellId,true)==SPELL_CAST_OK,"Native outro cast rejected");
         for(uint32 elapsed=0;elapsed<1000;elapsed+=10)caster.Unit::Update(10);
         auto next=sObjectMgr->GetGenerator<HighGuid::Conversation>()->GetNextAfterMaxUsed();
         Require(next==first+1,"Native spell did not create exactly one conversation");
-        auto conversation=ObjectAccessor::GetConversation(caster,ObjectGuid::Create<HighGuid::Conversation>(1220,3982,first));
+        auto conversation=ObjectAccessor::GetConversation(caster,ObjectGuid::Create<HighGuid::Conversation>(1220,conversationId,first));
         Require(conversation&&conversation->IsInWorld()&&conversation->GetCaster()==&caster,"Native conversation was not admitted/bound");
         auto actualLine=conversation->GetLine(0);auto actualActor=conversation->GetActor(0);
-        Require(actualLine&&actualLine->id==9085&&actualLine->textId==lines->front().textId&&
+        Require(actualLine&&actualLine->id==lineId&&actualLine->textId==lines->front().textId&&
             actualLine->unk1==lines->front().unk1&&actualActor&&actualActor->actorId==actors->front().actorId&&
             actualActor->creatureId==actors->front().creatureId&&actualActor->displayId==actors->front().displayId,
             "Native dynamic conversation payload differs from live SQL");
         Require(conversation->GetDuration()==int32(actors->front().duration+5000)&&
             conversation->GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME)==uint32(conversation->GetDuration()),
             "Native outro duration changed");
-        std::cout<<"OUTRO native spell230157 -> conversation3982, duration="<<conversation->GetDuration()<<"ms\n";
+        std::cout<<"OUTRO native spell"<<spellId<<" -> conversation"<<conversationId<<", duration="<<conversation->GetDuration()<<"ms\n";
         conversation->Remove();map.RemoveAllObjectsInRemoveList();
-        Require(!ObjectAccessor::GetConversation(caster,ObjectGuid::Create<HighGuid::Conversation>(1220,3982,first)),"Conversation cleanup failed");
+        Require(!ObjectAccessor::GetConversation(caster,ObjectGuid::Create<HighGuid::Conversation>(1220,conversationId,first)),"Conversation cleanup failed");
     }
     HotfixDatabase.Close();WorldDatabase.Close();
     std::cout<<"PASS: linked native effect219, conversation creation, live actors/lines, typed DB2 text/sound-kit/model, map binding and cleanup. No Player/client or physical audio playback claim.\n";

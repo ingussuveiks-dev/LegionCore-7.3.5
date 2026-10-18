@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-19",
+  "quest": 44746,
+  "baseline": "65c7ac0a",
+  "title": "Rockaway finale credit, full reward dispatch and fragment admission",
+  "status": "Fixed pre-credit fragment admission for unrewardable rotations; production-function and linked native outro checks pass. Client/integrated persistence verification remains pending.",
+  "finding": {
+    "before": "Rockaway::Eligible checked an incomplete accepted task and native outdoor eligibility but did not call CanRewardWorldQuest. A stale accepted/incomplete44746 with an unexpired personal completion, or an active rotation with a null reward template, could pass Finish and receive142487 fragments. The existing CompleteQuest guard then correctly rejected the WQ reward. Subsequent encounter completions could grant more fragments while that stale task remained incomplete.",
+    "reproduction": "Pinned65c7ac0a Eligible + actual current Finish/AutoStoreLoot/KilledMonsterCredit/CompleteQuest/RewardQuest reproduce both states. Two controlled completed-run Finish invocations grant20 fragments from a10-fragment loot fixture, with one objective credit, no WQ reward and no completion transaction. This is a bounded executable regression, not an observed client exploit."
+  },
+  "implementation": {
+    "file": "src/server/scripts/Legion/rockaway_coast.h",
+    "change": "Rockaway::Eligible now requires Player::CanRewardWorldQuest before combat target/finish recipient admission. The shared native gate checks the live rotation, reward template, strict expiry and personal completion before any optional fragment loot. Existing faction/phase/range/group/contributor and incomplete-state gates remain.",
+    "scope": "No generic Player, inventory, mail, SQL reward, rotation duration, encounter placement, spell or personal-state change. No forced rotation or client action."
+  },
+  "checks": [
+    "Test-RockawayCompletion.ps1 compiles actual complete Finish, Rockaway::Active/Eligible, Player::AutoStoreLoot, KilledMonsterCredit, HasQuestObjectiveComplete, CanCompleteQuest, CompleteQuest, CanRewardWorldQuest, WorldQuestCompleted, full RewardQuest, _SaveWorldQuestStatus and _LoadWorldQuestStatus functions. RewardQuest is not truncated to its admission prefix.",
+    "Read-only live snapshot confirms task44746/type3/info135/zone7503/reward230020, objective286897 marker115168 x1, marker template, spell-loot229113 item142487 range10..15 QuestRequired, and zero static/package/choice/currency/drop/display/mail branches used as dormant fixture fields. Native LoadQuests sets kill/cast flags for the monster objective; that loader assignment is mirrored as a fixture field.",
+    "Both faction selections x normal/full bags x each count10..15: one credit, one reward notification, one money/currency/reputation dispatch, one230020 cast, completion checkpoint2000 and one shared quest/world-status transaction sink. Repeated Finish/credit/direct completion/direct reward produce no duplicate; native status reload blocks recompletion.",
+    "Missing active row, past/exact expiry, already rewarded personal rotation and null reward template: fixed actual Finish grants neither fragments nor credit. Direct native completion/reward guards also produce no reward transaction. Pinned old Eligible reproduces the separate fragment leak for the latter two cases.",
+    "Unrelated marker, absent quest, dead/phase/range/contributor/raid refusal, no Lost Army quest, completed1000 fragments and expired prior personal checkpoint boundaries pass.",
+    "Actual native AutoStoreLoot refuses inventory-full and ignores a partial destination plan, emits an equip error, performs no storage, yet returns true because loot slots existed. Empty eligible loot returns false. Its bool is not proof of item delivery; Finish does not treat it as such.",
+    "Test-RockawayEncounter.ps1 PASS with24 death orders, player/pet lethal handling, native death/channel dispatcher, exact-owner targeting, retries/cleanup, scaled health clamp and existing recipient/reset boundaries. Its CanRewardWorldQuest is an explicit true fixture leaf; actual guard is exercised by the new completion regression.",
+    "Test-WorldQuestDelivery.ps1 PASS: separate actual dynamic-item helper, native CreateItem/uniqueness/queue/mail add/send/ownership with transaction sinks, faction/class/recipe/quantity/bonus metadata and pinned full-bag baseline. This covers the helper kept as a controlled leaf in the full RewardQuest fixture.",
+    "Test-WorldQuestRewardState.ps1 PASS: existing native admission/status/save/load/reset and real prepared SQL round-trip in empty connection-local shadow tables. No live personal row touched.",
+    "Test-RockawayData.ps1 and Test-RockawayCatalog.ps1 PASS: native loot/item-objective/conditions/count reconstruction and typed DB2 area/task/unlock/spell/model checks.",
+    "Test-VrektOutro.ps1 -QuestID44746 PASS: actual generated final-link game.lib, canonical DB2/GT and read-only live conversation data. Real Creature caster surrogate executes triggered230020 -> native effect219 -> one3963 conversation, actual line/actor payload, map admission/binding,11933ms duration and cleanup. No precreated conversation is supplied. Default44923 Vrekt regression also passes.",
+    "Test-RockawayRelease.ps1 PASS: canonical actual scripts final-link input/source freshness; deployed Eligible calls native CanRewardWorldQuest and Finish uses guarded admission, then credit/loot calls. Existing deployed channel/cleanup/clamp checks pass. Test-WorldQuestDeliveryRelease.ps1 PASS for shared actual reward/helper implementation.",
+    "Standard CMake Release worldserver and bnetserver build PASS into build-extractors/bin/Release; zone_highmountain.cpp/scripts.lib actually rebuilt and worldserver linked. Canonical startup ready=True, graceful exit0, DBErrors.log0 bytes and stderr.log0 bytes; validation server stopped."
+  ],
+  "native_outro": {
+    "spell": 230020,
+    "conversation": 3963,
+    "line": 9050,
+    "broadcastText": 123644,
+    "soundKit": 77641,
+    "soundKitEntry": 194116,
+    "fileDataId": 1519108,
+    "actorCreature": 96469,
+    "actorDisplay": 67230,
+    "durationMs": 11933,
+    "physicalAudioExported": false,
+    "clientVerified": false
+  },
+  "full_bags_assessment": {
+    "result": "Optional142487 fragment delivery still emits the native full-inventory error and skips storage;44746 WQ completion proceeds. This differs from the dynamic WQ main/recipe helper, which already supports inventory-full mail.",
+    "decision": "No new fragment mail or deferred quest completion was introduced. Native behavior is now executed and documented, but original7.3.5 Rockaway full-bag behavior remains unverified.",
+    "external_reference": {
+      "url": "https://us.support.blizzard.com/ru/article/16387",
+      "title": "Blizzard Support: Didn't Receive Loot Due to Full Inventory",
+      "evidence": "Official search-index excerpt explicitly excludes quest items from Postmaster delivery. Full-page fetch redirects/fails; this is contemporary general corroboration for avoiding an invented quest-fragment mail route, not proof of the original7.3.5 encounter behavior."
+    }
+  },
+  "fixture_boundaries": [
+    "The completion regression uses controlled Player/object/map/loot/inventory/database services, with full extracted production functions. It is not a linked real Player/session. Loot RNG and allowed-item decision, inventory placement, dynamic RewardWorldQuestItem delivery sink, currency/reputation effects, packets, spell playback and transaction commit are controlled leaves.",
+    "The separate linked outro test uses a real Creature surrogate at the existing map1220 test location, not a player at Rockaway. It verifies engine creation/payload/lifetime, not player visibility, subtitles, voice, visual timing or cleanup in the client.",
+    "Native save/load statement sinks and the existing separate temporary-table SQL round-trip do not establish successful real character/item/mail persistence, rollback or crash recovery. Earlier dynamic-item delivery and encounter authenticity limitations remain.",
+    "Full bags, null reward template and stale accepted/personal-completed states are injected in local fixtures. No actual inventory filled, quest state changed, retrieval mail sent or live rotation forced."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "6fecfb952650e3aea8895a5264784cd46fd30ba73467b906e4ccaa61f821d2bb",
+    "bnetserver_sha256": "4d7e65b8e0b5237b329164615ac5fc2d9737a2fd2cd2d93a97dc4cf1552f9bfa",
+    "actual_final_link_scripts_sha256": "1af9f145f55cec96433926aa32665c5d93b3808cb81def06dd066cc69f4a6968",
+    "actual_final_link_game_sha256": "4f8fc14ffc9ca972b3baf0d87a4f3cbed58d6b569dda5ff5e2fe4fc863dc7d95",
+    "startup": "build-extractors/runtime-test/rockaway-completion/startup-20261019-010723",
+    "worldserver_left_running": false,
+    "manifests": [
+      "build-extractors/runtime-test/rockaway-completion/inputs.json",
+      "build-extractors/runtime-test/rockaway-outro/native-inputs.json"
+    ]
+  },
+  "remaining": [
+    "Actual client44746 arrival, four ritualist encounter, party/pet/both-faction credit, full bag error/normal rewards, no duplicate after relog/re-entry and actual mail withdrawal still require client/session verification.",
+    "Actual230020 subtitle/audio/visual delivery and physical1519108 payload are not verified by this follow-up. Keep all previous original beam/placement/timing/count-range authenticity gaps; reconstructed fragment10..15 is not an exact recovered retail range."
+  ],
+  "prior_audits": [
+    "docs/audits/highmountain-rockaway-coast-2026-10-18.json",
+    "docs/audits/rockaway-world-quest-2026-10-18.json",
+    "docs/audits/world-quest-item-delivery-2026-10-18.json"
+  ]
+}

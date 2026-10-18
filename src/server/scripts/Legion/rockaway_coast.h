@@ -32,7 +32,8 @@ inline bool Active()
 inline bool Eligible(Creature* source, Player* player)
 {
     auto quest = sQuestDataStore->GetQuestTemplate(QuestId);
-    return quest && player && player->IsAlive() && source->InSamePhase(player) &&
+    return quest && player && player->CanRewardWorldQuest(quest) &&
+        player->IsAlive() && source->InSamePhase(player) &&
         source->IsWithinDistInMap(player, Radius, true, true) &&
         player->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE &&
         (!player->GetGroup() || !player->GetGroup()->isRaidGroup() ||

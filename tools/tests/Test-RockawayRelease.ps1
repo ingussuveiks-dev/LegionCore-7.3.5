@@ -42,6 +42,10 @@ $exe="$repo/build-extractors/bin/Release/worldserver.exe"
  }
 
 $finish=@(Calls '?Finish@npc_rockaway_vision@@')
+$eligible=@(Calls '?Eligible@Rockaway@@')
+if($eligible -notcontains (Resolve (Symbol '?CanRewardWorldQuest@Player@@'))){throw 'Deployed Rockaway recipient eligibility lacks native reward admission'}
+if($finish -notcontains (Resolve (Symbol '?Eligible@Rockaway@@')) -and
+   $finish -notcontains (Resolve (Symbol '?CanRewardWorldQuest@Player@@'))){throw 'Deployed Finish bypasses guarded recipient eligibility'}
 foreach($name in @('?KilledMonsterCredit@Player@@QEAAXIVObjectGuid@@@Z','?AutoStoreLoot@Player@@QEAA_NEEIAEBVLootStore@@_NI@Z')){
  if($finish -notcontains (Resolve (Symbol $name))){throw "Deployed Rockaway Finish lacks $name"}
 }
@@ -67,4 +71,4 @@ $target=@(Calls '?Select@spell_rockaway_channel@@')
 if($target -notcontains (Resolve (Symbol '?ChannelVision@Rockaway@@'))){throw 'Deployed target selector lacks exact controller admission'}
 $damage=@(Calls '?DamageTakenAfterScaling@npc_rockaway_vision@@')
 if($damage -notcontains (Resolve (Symbol '?GetHealth@Unit@@QEBA_KPEAV1@@Z'))){throw 'Deployed Vision lacks target-relative scaled damage clamp'}
-'PASS: canonical Release final-link scripts library, exact-owner channel hook, retry/death cleanup, no Vision Mage Tower aura, completion/credit/loot calls and scaled health clamp.'
+'PASS: canonical Release final-link scripts library, native recipient reward admission, exact-owner channel hook, retry/death cleanup, no Vision Mage Tower aura, completion/credit/loot calls and scaled health clamp.'
