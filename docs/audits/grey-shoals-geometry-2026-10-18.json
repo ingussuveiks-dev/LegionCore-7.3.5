@@ -1,0 +1,45 @@
+{
+  "quest": 44737,
+  "date": "2026-10-18",
+  "status": "Read-only native terrain/collision/navmesh survey passed for all20 actors and4 racks. No missing start polygon or incomplete ground/water corridor found. No coordinate or extracted-data changes justified by this survey; no client verification.",
+  "scope": {"map": 1220, "zone": 7334, "area": 8297, "actors": [115025, 115026, 115031, 115751], "rack": 266170, "rackGuids": [147040012, 147040013, 147040014, 147040015]},
+  "nativeEvidence": {
+    "test": "tools/tests/Test-GreyShoalsGeometry.ps1 and GreyShoalsGeometry.cpp",
+    "libraries": "Compiled against actual canonical Release final-link libraries, using native GridMap, VMapManager2, MMapManager and Detour. Read current live DB positions; no invented geometry fixtures.",
+    "terrain": "Both actual1220_30_17.map and1220_31_17.map loaded; static VMAP tree/tiles loaded through VMapManager2. Area8297 and Map::GetHeight-style terrain/collision selection checked at every point. No supporting VMAP model was found at these anchors; supporting height comes from terrain.",
+    "movement": "No creature_template_movement rows for the four templates and no creature_movement_override rows for any20 spawn GUIDs. Source-checked CreatureMovementData defaults Run, FlightNone, Swim(true); Creature::GetMovementTemplate and PathGenerator::CreateFilter admit ground and water. The survey excludes magma/slime, though the generic swim filter also admits those types. No movement permissions were changed.",
+    "query": "Actual MMapManager per-instance1024-node query; native PathGenerator.h limits74 polygons/74 corners extracted at test time; native low nearest-poly extents3/5/3. No enlarged budget, forced destination or straight-line fallback.",
+    "validation": "Every ordered distinct pair requires successful findPath with no status detail flags and the actual destination polygon. findStraightPath must also be complete with END at the projected destination. Every polygon must be ground/water only. Partial, exhausted, truncated and failed queries are rejected by the test; the status helper's negative cases execute separately."
+  },
+  "results": {
+    "positions": 24,
+    "npcMaximumAbsoluteTerrainDelta": 0.00252914,
+    "maximumNavProjectionDistance": 1.10824,
+    "horizontalProjectionTolerance": 0.01,
+    "completeDirectedGroundWaterRoutes": 552,
+    "maximumPolygons": 46,
+    "maximumCorners": 15,
+    "routesUsingWater": 367,
+    "groundOnlyDiagnosticCompleteRoutes": 386,
+    "groundOnlyDiagnosticNodeExhaustions": 60,
+    "groundOnlyDiagnosticTruncations": 0,
+    "groundOnlyBoundary": "A ground-only failed search is not proof of a missing tile or disconnected topology:60 diagnostic searches exhaust the ordinary node budget. One shoreline Seirdr1563321 has no ground-only start within the low search box but has a valid nearby water start. All552 ground/water searches finish without exhaustion/truncation/partial status. Some successful water routes can have a longer ground-only alternative;367 is not a count of routes requiring water."
+  },
+  "racks": {
+    "storedMinusTerrainZ": {"147040012": 0.266992, "147040013": 0.658969, "147040014": 0.553195, "147040015": 0.447639},
+    "nativeModel": "Display35575/FileDataID1103414 has GeoBoxMin.Z=-0.356245 and GeoBoxMax.Z=7.96158, confirmed by typed DB2 reader in the combat catalog. Its origin is not its lowest model point.",
+    "interaction": "Every rack has a projected nearby ground/water approach within conservative exact5-yard distance and clear static VMAP line of sight. This does not execute full dynamic GO collision or client click admission.",
+    "placementDecision": "Keep the existing reconstructed coordinates. A broad1m origin-height diagnostic bound and a bounding box do not prove model-foot contact on sloped terrain. The positive offsets are retained as open visual observations, not silently declared correct or blindly snapped to terrain."
+  },
+  "artifacts": {
+    "output": "build-extractors/runtime-test/grey-shoals-geometry/native-lines.txt",
+    "positions": "build-extractors/runtime-test/grey-shoals-geometry/points.txt",
+    "inputSHA256": "build-extractors/runtime-test/grey-shoals-geometry/native-inputs.json",
+    "hashBoundary": "The runner hashes live point input, both terrain tiles, VMAP tree/tile indexes, mmap header and all available neighbouring mmap tiles loaded by the survey. It does not hash every VMAP model referenced by those indexes."
+  },
+  "remaining": [
+    "Full PathGenerator smoothing, chase/evade movement, combat range/LOS, player movement and runtime dynamic collision are not executed by a static Detour corridor survey.",
+    "Rack visual contact, orientation, click accessibility with actual models and exact original coordinates still require primary placement evidence/client confirmation. Four Seirdr placements remain unproven retail data.",
+    "Prior combat/rotation/control/supply audits retain their client limitations: actual cast/hit and area-trigger ticks, ordinary coast fauna, expiration visuals, control bar/camera/pet portrait, outro and full quest completion remain unverified. This is not whole-quest client verification."
+  ]
+}
