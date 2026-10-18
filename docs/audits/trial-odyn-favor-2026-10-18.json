@@ -1,0 +1,64 @@
+{
+  "quest": 44729,
+  "title": "Trial of Valor: Odyn's Favor",
+  "date": "2026-10-18",
+  "status": "Completion threshold repair deployed; native data and extracted production checks passed; client verification pending",
+  "baseline": "a6cd07b5",
+  "scope": "Quest44729 encounter completion, defender transitions and existing turn-in/next offer. This is not verification of every Trial of Valor combat ability or quest44868.",
+  "findings": [
+    "Native7.3.5 CriteriaTree55330 is an ALL root with quest flag4096. Its child55331 references Criteria34579, type165 COMPLETE_DUNGEON_ENCOUNTER, asset1958, no modifier. Native DungeonEncounter1958 belongs to raid map1648. Dungeon Odyn1809 belongs to map1477 and cannot satisfy this objective. Live Hotfix has no overlays for these tree/criterion/encounter records.",
+    "Live World objective286836 is type14, tree55330, amount1, storage0. Havi92539 starts44729 after44721; raid Odyn114263 ends it and offers44868. Reward142533x1 is native Titan's Boon. Preserve these existing data, raid classification and next-quest links; no SQL migration was required.",
+    "Odyn114263 has the actual boss_tov_odyn script, template gossip/questgiver flags3, menu20502 and one map1648 spawn505062 with no model override. Spawn mask245760 includes raid difficulties14/15/16/17. The instance script is instance_trial_of_valor. Gossip option20502/0 and native Sky Jump231166 are retained.",
+    "Old DamageTaken compared raw damage to template health, canceled lethal hits and inspected health before applying damage. Extracted baseline handlers reproduce a fresh lethal-hit stall for Odyn, Hymdall and Hyrja. The same native target-scaling fixture also reproduces all three actors dying from a small raw hit against normalized billion-point health before the old transition could run.",
+    "All three callbacks now run through DamageTakenAfterScaling. A scoped shared helper compares final damage with native GetHealth(attacker)/GetMaxHealth(attacker), cancels a threshold-crossing hit and clamps the surviving actor's base health to the corresponding percentage, at least1HP. Normal and scaled overkills therefore execute the original transition instead of killing the actor or requiring an extra hit.",
+    "Odyn's10% surrender requires the active encounter and phase2/3. It retains the original _JustDied persistence/instance path, neutral faction, cleanup, defeat text, immune flags, gossip/questgiver flags and both1958 criteria notifications. encounterComplete prevents repeated completion. The55% phase also sees the current final hit, including equality; a surrender returns before scheduling phase3 events after completion.",
+    "Hymdall/Hyrja reach their original25% Revivify transition on the crossing hit, retain their per-defender DONE keys and owner ACTION_1 handoff, and reject further damage during event1. Native SpellFinishCast handlers are executed in tests: a completed Revivify rearms an unmatched defender, while both DONE keys are preserved when the counterpart is also defeated. Spell admission, its actual10-second cast, healing and interruption remain outside the fixture.",
+    "Heroic/mythic defenders retain their85% neutral-faction teleport/disengage transition. event2 protects against queued repeat damage after retreat. ACTION_2 now clears event2 when returning to the arena; the old code never rearmed it after the first retreat. The actual extracted return action is executed for both defenders and a second scaled retreat is checked.",
+    "Existing AchievementMgr routing was inspected: type165 asset admission requires the exact encounter, progress accumulates, the native ALL tree evaluates its child, and completed quest trees dispatch AchieveCriteriaCredit. The dedicated regression executes the native asset gate and real Player::AchieveCriteriaCredit/CanCompleteQuest/quest-lifetime code using the typed DB2 reader's IDs. The intervening AchievementMgr progress/tree notification remains an explicit fixture bridge, not a live end-to-end raid test.",
+    "The instance already restores Odyn to the arena for a saved DONE encounter. His Reset skips the pre-fight flag removal for DONE, retaining template questgiver/gossip flags. This turn-in recovery is code/data inspection only; saved-instance entry and the actual quest menu still require client verification. No new teleport or synthetic quest credit was introduced.",
+    "The native quest fixture covers Alliance/Horde, wrong encounter1809/1962/2008, wrong criteria type, duplicate notifications, no quest, rewarded quest, abandonment and immediate reacceptance. The boss fixture covers player and guardian-like Unit attackers through the real scaling/target-health functions; actual client pet targeting and full group achievement dispatch are not executed.",
+    "Earlier44721/44771 audits and their pending client checks remain unchanged.44868's Helya objective is next context only and remains the next separate audit. No claim is made that this code/data pass verifies the complete raid or quest in the7.3.5 client."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/guide/odyn-trial-of-valor-raid-strategy-guide-4803",
+      "author": "FatbossTV",
+      "updated": "2018-07-05",
+      "finding": "Primary raid-guide authors'7.3.5 page specifies defender25%, Odyn55% phase/10% victory, simultaneous Revivify and heroic/mythic85% departures. These agree with the original script's intended thresholds; modern scaled quest levels were not imported."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44729/trial-of-valor-odyns-favor",
+      "finding": "Quest and historical player reports distinguish the Trial of Valor raid from Halls of Valor dungeon.2016 reports place turn-in and the next offer on raid Odyn after the fight, with gossip continuing toward Haustvald. These are corroboration, not a client test of this server."
+    },
+    {
+      "url": "https://news.blizzard.com/es-es/article/20303039/parche-7-0-3-correcciones-en-vivo-19-de-diciembre",
+      "finding": "Blizzard's2016-12-19 hotfix notes explicitly restore heroic phase2 Hymdall/Hyrja departure at85%; the local85% threshold is retained."
+    }
+  ],
+  "automated_checks": [
+    "Test-TrialOdynSurrender.ps1 -VerifyReleaseBinary: PASS; extracted old/new handlers, native final scaling and target health/max/multiplier functions, defender return/finish callbacks and deployed PE callbacks",
+    "Test-TrialOdynData.ps1: PASS; read-only live World/Hotfix assertions, native C++ DB2 catalog and quest-specific Player criteria checks",
+    "Test-QuestCriteriaCredit.ps1: PASS as a dependency of the data regression",
+    "Test-HallsOdynSurrender.ps1 -VerifyReleaseBinary: PASS; existing dungeon Odyn repair retained",
+    "Standard incremental Release worldserver and bnetserver build: PASS; no global OutDir override",
+    "Actual final-link scripts/Release/scripts.lib checked; canonical PE has all three new callbacks calling target-relative Unit::GetHealth, with incremental-link thunks resolved",
+    "Fresh canonical worldserver startup: ready=true, graceful exit0, DBErrors.log0 bytes and stderr.log0 bytes; no encounter was played during startup",
+    "git diff --check: PASS"
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "a18f40bde003843cbd7b5928aafdd669822530fb8a2fd36870aed80a3048a496",
+    "bnetserver_sha256": "d35ef76d88bda0a18fc2163d92ffb381946a6cfc63936aac6e4dd56ee33ba7db",
+    "startup_logs": "build-extractors/runtime-test/trial-odyn/startup-20261018-123338",
+    "worldserver_left_running": false,
+    "database_changes": false
+  },
+  "pending_client_checks": [
+    "Accept44729 after44721, enter Trial of Valor map1648 and confirm the displayed raid objective.",
+    "Fight Hymdall/Hyrja in both orders, including a scaled lethal spell and pet hits. Confirm25% Revivify casting, protection, actual heal/retry if the counterpart is late, and the paired transition to Odyn.",
+    "Confirm normal Odyn55% phase transition and10% surrender, including a hit crossing both thresholds, with no death/corpse or restarted phase3 after completion.",
+    "On heroic/mythic, confirm both defenders' repeated joins and85% retreats, actual casts, animations and combat cleanup.",
+    "Confirm each eligible group member's44729 progress exactly once, actual Odyn questgiver menu, Titan's Boon reward and44868 offer; dungeon Odyn must give no44729 credit.",
+    "Reenter a saved completed raid and verify Odyn's position, quest turn-in and gossip travel. Check full raid visuals, speech and movement in the7.3.5 client separately."
+  ]
+}
