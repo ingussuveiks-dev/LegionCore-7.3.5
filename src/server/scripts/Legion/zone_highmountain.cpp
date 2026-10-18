@@ -1,6 +1,13 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "AreaTriggerAI.h"
+#include "QuestData.h"
+#include "GameTime.h"
+#include "Group.h"
+#include "ObjectAccessor.h"
+#include "Player.h"
+#include "SpellScript.h"
+#include "rockaway_coast.h"
 
 enum eSpells
 {
@@ -345,6 +352,11 @@ struct at_highmountain_shredding_cyclone : AreaTriggerAI
 
 void AddSC_highmountain()
 {
+    RegisterCreatureAI(npc_rockaway_vision);
+    RegisterCreatureAI(npc_rockaway_ritualist);
+    RegisterCreatureAI(npc_rockaway_tentacle);
+    RegisterCreatureAI(npc_rockaway_slime);
+    RegisterAuraScript(spell_rockaway_taint);
     new boss_flotsam();
     new npc_jetsam_stalker();
     new boss_drugon_the_frostblood();

@@ -22,7 +22,7 @@
   ],
   "open_evidence": [
     "The exact7.3.5 boss fragment ranges remain unverified. Current Helya30..60 differs from later player reports of100+; those reports identify later expansion characters and do not establish a dated7.3.5 minimum/maximum. No range was invented from a few samples. Local2018 TDB735 contains no matching fragment loot rows to settle this. This audit does not certify the existing range as original.",
-    "Rockaway44746 follow-up confirms an unimplemented encounter (no principal spawns/groups/AI or credit caller), native229113 credit plus bonus loot, and a2016-11-13 observation of15 fragments. Original count bounds and four placements remain unresolved; no unconditional15-item reward or guessed encounter was deployed. See the linked follow-up audit."
+    "Rockaway44746 now has a reconstructed, tested/deployed server encounter and scoped15-fragment completion loot, based on a2016-11-13 observation. Exact original placement, aura/green-beam binding, fragment chance/min/max and client play remain open. See the follow-up audit; this is not a verified retail distribution."
   ],
   "sources": [
     {

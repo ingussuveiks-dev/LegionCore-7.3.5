@@ -3,14 +3,8 @@
   "title": "Helarjar Landing: Rockaway Coast",
   "date": "2026-10-18",
   "baseline": "9006ac87",
-  "status": "Audit complete; encounter unimplemented and NOT playable. No quest fix deployed.",
-  "scope": "Read-only code/data/native DB2 and historical primary reports; no WoW client operation",
-  "confirmed_gaps": [
-    "Zero creature placements and creature_summon_groups members for115132 Helarjar Ritualist and115133 Vision of Helya. Both templates have empty AIName and ScriptName. Their SmartAI rows are absent.",
-    "No SmartAI credit115168 or229113 cast found; literal server-script searches find no principal actor IDs, marker or credit spell. This search is discovery evidence, not proof against every dynamically selected ID. Missing configured actors independently blocks the encounter.",
-    "Helpers116187 Striking Tentacle and116195 Bilewater Slime also have no configured AI. Native spells alone do not implement target selection, activation, delayed damage, movement or cleanup.",
-    "No spell_loot_template229113/70762, world_quest_item44746 or explicit quest item reward. No encounter fragment-delivery route identified."
-  ],
+  "status": "Reconstructed server encounter implemented, tested and deployed; exact retail placement/rates and client playback remain unverified",
+  "scope": "Authorized code/data implementation and automated checks; no WoW client operation",
   "native_evidence": [
     "Quest objective286897: type0 monster, ObjectID115168, Amount1, StorageIndex0. It is a Summoners Dead marker, not a request to kill the Vision.",
     "QuestV2CliTask44746 condition47902 requires rewarded41694 AND44721 (PrevQuestLogic1). No live task/condition Hotfix overrides.",
@@ -46,36 +40,257 @@
     },
     {
       "url": "https://www.wowhead.com/npc=115133/vision-of-helya",
-      "finding": "Current mapper38.6/15.4 and38.8/15.6 locates the encounter generally; abilities include231329/231340/231351/231459. Coarse pins do not establish exact placement."
+      "finding": "Current mapper38.6/15.4 and38.8/15.6 locates the encounter generally; abilities include231329/231340/231351/231459. Coarse pins do not establish exact placement.",
+      "dated_comment": "MrStabbems2016-10-29:38.73/15.56 for the Vision; main anchor uses that map coordinate and native water level0."
     },
     {
       "url": "https://raw.githubusercontent.com/AshamaneProject/AshamaneCore/master/src/server/scripts/BrokenIsles/zone_highmountain.cpp",
       "finding": "Inspected file has unrelated94973 gossip, no Rockaway implementation. GitHub issue search for Helarjar Rockaway returned0 results; this does not establish absence of all public implementations."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=BepAFuautrc",
+      "author": "WoW JNasty",
+      "date": "2016-11-13",
+      "finding": "Original Legion recording confirms four channeling actors around the lagoon. Final yell near82s and objective credit near88s support a6-second outro. Video is evidence of retail behavior, not a client test of this implementation."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=JNSenVIQANM",
+      "date": "2016-11-29",
+      "finding": "Additional contemporary guide found. Publication metadata/storyboards inspected; it was not represented as a full second-video timing analysis."
     }
   ],
-  "remaining_work": [
+  "runtime_changed": true,
+  "release_rebuild_required_for_this_audit": true,
+  "client_verified": false,
+  "related_audit": "docs/audits/trial-lost-army-2026-10-18.json",
+  "db2_sha256": {
+    "PlayerCondition": "6FFA3BBB78BF27ADBE52C89C2EEBACC5E2DF4F6374A127438B9FEE38C172C139",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "SpellRadius": "99BC0ECA9C22AA922A1E74586F8E91661A889DB2C1888BB77278F59A6BAA2EA6",
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "FactionTemplate": "09CB3CC83A73C74F6737B69F601002FAD091F74B646534175B3BFDACEF67FF9E",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "QuestV2CliTask": "CE96BAECF04669B7EDA79A452085FB04F9890E6F3599A821DC50880BB82A530C",
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357"
+  },
+  "baseline_audit_status": "Audit complete; encounter unimplemented and NOT playable. No quest fix deployed.",
+  "confirmed_gaps_at_baseline": [
+    "Zero creature placements and creature_summon_groups members for115132 Helarjar Ritualist and115133 Vision of Helya. Both templates have empty AIName and ScriptName. Their SmartAI rows are absent.",
+    "No SmartAI credit115168 or229113 cast found; literal server-script searches find no principal actor IDs, marker or credit spell. This search is discovery evidence, not proof against every dynamically selected ID. Missing configured actors independently blocks the encounter.",
+    "Helpers116187 Striking Tentacle and116195 Bilewater Slime also have no configured AI. Native spells alone do not implement target selection, activation, delayed damage, movement or cleanup.",
+    "No spell_loot_template229113/70762, world_quest_item44746 or explicit quest item reward. No encounter fragment-delivery route identified."
+  ],
+  "original_work_list": [
     "Find dated encounter placement/timing evidence for all four ritualists, Vision, exact terrain heights/orientations and ritual presentation. Do not invent a mirrored fourth coarse pin.",
     "Implement WQ admission, channeling, unique four-death tracking, player/pet/shared contribution, factions/range, native credit target selection, early Vision death, wipe/leash reset, missing summons, retries, expiry and stale callbacks.",
     "Implement the native breath/slime and delayed tentacle chains and cleanup. Finish final dialogue/visual before credit; optional cast failure must not consume progression.",
     "Resolve original fragment count/chance and use the actual native selector with scoped45088/rotation eligibility. Test full bags,999/1000, no/completed/rewarded quest, abandonment, duplicates and repeat runs.",
     "Run executable encounter regressions, migration replay, Release and deployed-handler checks, fresh startup; then client checks for four deaths, channels, visuals/audio, WQ completion and fragments."
   ],
-  "checks": [
+  "baseline_checks": [
     "Test-RockawayCatalog.ps1: PASS typed native DB2 semantic assertions; not an encounter simulation.",
     "Audit-RockawayCoast.ps1: report generated, Playability=incomplete and four explicit missing routes.",
     "Audit-RockawayCoast.ps1 -RequirePlayable: expected rejection, not a passing quest test.",
     "PowerShell parsing, JSON validation and git diff --check passed."
   ],
-  "runtime_changed": false,
-  "release_rebuild_required_for_this_audit": false,
-  "client_verified": false,
-  "related_audit": "docs/audits/trial-lost-army-2026-10-18.json",
-  "db2_sha256": {
-    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
-    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
-    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
-    "PlayerCondition": "6FFA3BBB78BF27ADBE52C89C2EEBACC5E2DF4F6374A127438B9FEE38C172C139",
-    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
-    "QuestV2CliTask": "CE96BAECF04669B7EDA79A452085FB04F9890E6F3599A821DC50880BB82A530C"
+  "implementation_baseline": "6cbc3ee4",
+  "implementation": [
+    "A single persistent115133 anchor at the water surface owns the run. Rotation lookup AND ResetTime admission controls visibility and cleanup; it stays active after its grid first loads. Four separately recorded115132 summon GUIDs must die; unrelated actors and duplicate callbacks cannot advance it. Failed summons retry without making a three-actor run ready.",
+    "Helya is passive/stationary but attackable. Its final scaled damage hook compares GetHealth(attacker) and clamps a lethal hit at1HP, preserving the four-ritualist requirement. Ritualists stay rooted and retain casting presentation rather than chasing. Existing text groups1/2 are used for their attack/death quotes.",
+    "Player contribution is recorded on damage, including the first lethal pet hit. Native Unit::Kill still dispatches SummonedCreatureDies when a ritualist AI is unavailable. Nearby party members can share credit; observers, wrong phase, dead/out-of-range players and absent/already-completed WQs are excluded. No faction restriction is added; native factions2817/16/14 pass IsHostileToPlayers. Native IsAllowedInRaid admission also applies before rewarding; a raid-ineligible player cannot repeatedly farm fragments while the core refuses WQ credit.",
+    "Native229113 radius41 is150 yards on both effects; completion uses150-yard center distance, excluding the giant model combat radius. After the fourth distinct death, group4 dialogue starts and6000ms elapse before credit. Optional attack/conversation visual failure cannot consume or block this independent timer.",
+    "Per-recipient dispatch calls KilledMonsterCredit115168 (the native effect90 operation) and AutoStoreLoot229113 against LootTemplates_Spell (the non-boss effect189 selector). The transition is consumed before these calls. This avoids a second unfiltered enemy-area cast or rewarding the same player twice. Existing RewardQuest runs230020/conversation3963.",
+    "Spell loot229113 has a conditional, quest-required15-fragment row. Source12 condition60 additionally checks active44746, while HasQuestForItem142487 enforces45088 and its item objective. No ritualist drop or world_quest_item recipe was added.15 is a provisional observed value, not a verified original distribution.",
+    "Native helpers116187/116195 retain their native models. Their invalid0..0 scaling becomes110..110 (tentacle delta2); the slime loses only NOT_SELECTABLE. Tentacles use231296 summon,231386 activation and delayed231298 directional damage/stun, remain immune through their lifetime and despawn. Five231354 missiles dispatch native231353/231359 damage/slime effects; slimes chase and melee, then expire.",
+    "231329 retains native direct/periodic damage. Its actual aura-removal callback emits native232681 ->232679 essence on expiration/enemy dispel only while its controller is active. Source13 limits the area-entry effect to players. Reset/outro removals do not create fresh pools.",
+    "Wipes/leaving all eligible participants for10 seconds clear the run; a10-second reset hold drains late effects. Helper summons arriving outside an active run are rejected. Expiry, failed/missing actors and repeat runs clean state. After completion Helya hides for30 seconds; dead ritualists retain normal loot for60 seconds and are detached from the next run slots.",
+    "The production AI, native EventMap methods, native creature-death/summoner dispatcher and real taint-removal callback execute in the encounter test. World objects, packets, casting, movement and inventory services remain fixtures; native spell/loot and actual terrain/PE checks are separate."
+  ],
+  "placement": {
+    "provenance": "Three current coarse NPC pins plus fourth eastern shore reconstructed from the dated video; native terrain/WMO sampled, no sniff-precision claim",
+    "ritualists": [
+      [
+        6217.925,
+        5016.806,
+        0.888313,
+        4.866
+      ],
+      [
+        6255.625,
+        4974.381,
+        -0.976295,
+        3.866
+      ],
+      [
+        6265.05,
+        4917.815,
+        0.697197,
+        2.393
+      ],
+      [
+        6220.0,
+        4900.0,
+        -0.416786,
+        1.392
+      ]
+    ],
+    "vision": [
+      6229.235,
+      4951.045,
+      0,
+      3.14
+    ],
+    "area": 7833,
+    "map": 1220,
+    "boundary": "Exact retail XYZ/orientations remain unknown. Fourth point/orientations are explicit reconstruction, not new packet evidence."
+  },
+  "visual_evidence": {
+    "tool": "tools/research/audit_rockaway_visuals.py",
+    "links": [
+      {
+        "ID": 111770,
+        "visual": 62804,
+        "parent": 231298
+      },
+      {
+        "ID": 111791,
+        "visual": 62809,
+        "parent": 231328
+      },
+      {
+        "ID": 111794,
+        "visual": 62810,
+        "parent": 231333
+      },
+      {
+        "ID": 111815,
+        "visual": 62823,
+        "parent": 231354
+      }
+    ],
+    "db2_sha256": {
+      "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+      "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+      "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+      "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+      "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+      "SpellVisualMissile": "8b935e8de1561fef28e2c952d5e4b5536412601d7eec8a75f9e1cfb28bf733b1",
+      "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+    },
+    "models": [
+      {
+        "file": 166806,
+        "name": "Shadow_Precast_High_Hand",
+        "sha256": "e6db3e4c63d806ed72205771b3101d6e7cc6e1f7cbd443ea8250c487676232cb"
+      },
+      {
+        "file": 166811,
+        "name": "Shadow_Precast_Uber_Hand",
+        "sha256": "6cdb32ba6e8db7c08ad7c82c8a3c4a833eced0787f66677401964cd8b66ca45a"
+      },
+      {
+        "file": 201106,
+        "name": "G_RuneGroundPurple01",
+        "sha256": "4ca61cbc16f90c2c36fa76471dd477a91953f02cfbbbfc4d42b17fca1b94b9a0"
+      },
+      {
+        "file": 390813,
+        "name": "GreaterSlime",
+        "sha256": "8f860865d3ca506cae76570c53a320721e4839f611737428284a9da5ba217228"
+      },
+      {
+        "file": 953296,
+        "name": "Void_Form_Med_Base",
+        "sha256": "acfe179a0dabc0dbabb44319dcfc57611280974d51359de45a8180154d51d45b"
+      },
+      {
+        "file": 1036812,
+        "name": "Shaman_LavaBurst_Fel",
+        "sha256": "c7a3e456863818f83df21cc5f3b0ab2af073c36427df942bd6fcf38f1379b4f8"
+      },
+      {
+        "file": 1260044,
+        "name": "Kvaldir",
+        "sha256": "ffcb994ebe37fedf29bf3fb039a2b83b323c61f5101ca2cd8700d6a032db4510"
+      },
+      {
+        "file": 1266228,
+        "name": "Helyra",
+        "sha256": "7d7ddfee29d04c0d1a58a25fa98db549cf051a7449886f501eb0531e1238cf6b"
+      },
+      {
+        "file": 1267366,
+        "name": "Helyra_Tentacle_Tail",
+        "sha256": "1ee562e55b9f1a4e438692dc2b22d693a70db96ac9afb4b7c0a0d6a4fff3243c"
+      },
+      {
+        "file": 1302948,
+        "name": "7FX_Kvaldir_Brackish_Nova_Impact",
+        "sha256": "5c0770c1f2c73207e2194e7ed588dff796d6d50f91bbfea925f7eede609ac9b8"
+      }
+    ],
+    "boundary": "Native aura/impact kit, attachment, animation and model records only. Ritual auras include Shadow hand/rune assets; their actor assignment and the observed green channel beam are NOT established by matching spell names. Kit-effect types other than model attachment2 remain opaque here. First appearance, beam target, projection, slam direction, missiles and timing require the client; no whole visual is marked verified.",
+    "notes": "Ritual-aura assignments are candidates, not proved actor spell bindings. Native hand slots21/22 exist on Kvaldir/Helyra, but matching names/assets do not prove the observed green beam. This limitation is retained rather than labeling the entire visual original or verified.",
+    "visuals": [
+      {
+        "ID": 62823,
+        "missile_set": 8367,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      },
+      {
+        "ID": 62809,
+        "missile_set": 0,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      },
+      {
+        "ID": 62810,
+        "missile_set": 0,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      },
+      {
+        "ID": 62804,
+        "missile_set": 0,
+        "destination_attachment": 34,
+        "cast_attachment": 255
+      }
+    ],
+    "missiles": [
+      {
+        "ID": 9743,
+        "name": 24416,
+        "parent": 8367
+      }
+    ]
+  },
+  "remaining_work": [
+    "Confirm/correct original four spawn positions, orientations and ritual-aura/green-beam binding with a sniff or client comparison; current placement and presentation are reconstruction.",
+    "Resolve original fragment chance/min/max. Fixed15 is a conservative2016 observation, not a proven7.3.5 range; do not call the whole45088 source audit closed.",
+    "Initial attack cadences,3-second slam delay, reset/respawn holds and effect spread are engineering reconstruction; only the6-second final delay is timed against the inspected video.",
+    "In-game check: WQ unlock/arrival, stationary channels/beam targeting, projection at the water surface, all four death orders, pet/party/both-faction credit, slam direction/stun, five slimes, taint pool timing, audio,6-second outro, repeat/reset and rotation expiry.",
+    "Check real bags/full bags, fragment toast/progress, quest reward UI and re-entry. AutoStoreLoot retains its native full-bag error/skip behavior; no new recovery mail is invented. Whole quest/client completion remains unverified."
+  ],
+  "checks": [
+    "Test-RockawayEncounter.ps1 PASS: actual controller/ritualist/helper AI,24 death orders, native EventMap and Unit death dispatcher, unavailable ritualist AI, pet lethal hit, scaled Vision clamp, recipients/party/raid/phase/range, missing summon retry, wipe/expiry/abandon/repeat, optional failures,5 slimes, delayed slam immunity, actual taint removal and corpse lifetime.",
+    "Test-RockawayData.ps1 PASS: migration twice in temporary tables with native indexes preserved, one anchor, bindings/scaling/movement/conditions, untouched other spawns/loot; native LootTemplate Process/Roll and Player item-objective handlers against the actual row. Both factions, inactive/unrelated rotation,999->1014, excess/no quest/reacceptance pass. Inventory services are fixtures.",
+    "Test-LostArmy.ps1 and its native item/ordinary-loot dependencies PASS as the data-test dependency.",
+    "Test-RockawayGeometry.ps1 PASS: all four production Z values within0.02 of actual terrain/WMO height in7833; no claim of exact retail placement.",
+    "Test-RockawayCatalog.ps1 PASS: typed DB2, native150-yard radius, four models, hostile factions, unlock and18-spell semantics.",
+    "audit_rockaway_visuals.py PASS: checked WDC1 layout/compression/relationships, visual kits/attachments and ten read-only26972 CASC M2 exports; original actor binding/green beam/client playback pending.",
+    "Test-RockawayRelease.ps1 PASS: actual scripts final-link input/source freshness, canonical PE UpdateAI -> Finish -> Player credit/loot calls, retained corpse scheduling and target-relative GetHealth clamp.",
+    "Audit-RockawayCoast.ps1 -RequirePlayable: no baseline missing routes remain; report deliberately retains separate executable/client verification wording.",
+    "Final standard Release build PASS; final canonical startup ready=True, graceful exit0, DBErrors.log and stderr.log empty. Worldserver stopped."
+  ],
+  "deployment": {
+    "migration": "2026_10_18_03_rockaway_coast.sql",
+    "migration_sha1": "ac8d7592cb0bbd36b7ec5bd106152f054e59bff8",
+    "backup": ".codex/backups/rockaway/20261018-142112",
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway/startup-20261018-143411",
+    "worldserver_left_running": false,
+    "worldserver_sha256": "18802ecbf762dd8104d8ab09a78cb4279e68e5fd7520742ddf2919870adc51a3",
+    "bnetserver_sha256": "d9ba1a9c43edd0b865b1f2bdb088c8b99b08f389e3ecd44162508c8bf933176c"
   }
 }

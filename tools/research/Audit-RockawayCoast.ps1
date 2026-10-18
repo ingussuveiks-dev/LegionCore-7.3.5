@@ -37,7 +37,7 @@ if ($values.objective -ne 1 -or $values.rewardConversation -ne 1) {
 $counts | Set-Content "$out/world-counts.tsv"
 
 $overlays = @(Query @'
-SELECT 'spellEffects',COUNT(*) FROM spell_effect WHERE SpellID IN(229113,230020,231295,231296,231298,231328,231329,231333,231340,231351,231353,231354,231356,231359,231386,231459);
+SELECT 'spellEffects',COUNT(*) FROM spell_effect WHERE SpellID IN(229113,230020,231295,231296,231298,231328,231329,231333,231340,231351,231353,231354,231356,231359,231386,231459,232681,232679);
 SELECT 'task',COUNT(*) FROM quest_v2_cli_task WHERE ID=44746;
 SELECT 'condition',COUNT(*) FROM player_condition WHERE ID=47902;
 SELECT 'broadcast',ID,SoundEntriesID2 FROM broadcast_text WHERE ID IN(123587,123609) ORDER BY ID;

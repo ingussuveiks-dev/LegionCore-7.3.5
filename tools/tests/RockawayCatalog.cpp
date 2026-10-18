@@ -17,11 +17,13 @@ int main(int argc, char** argv)
         return 1;
 #define STORE(T, N, F, I) DB2Storage<T> N(F ".db2", I::Instance()); if (!N.Load(argv[1], 0)) return 2
     STORE(SpellEffectEntry, effects, "SpellEffect", SpellEffectLoadInfo);
+    STORE(SpellRadiusEntry, radii, "SpellRadius", SpellRadiusLoadInfo);
     STORE(SpellEntry, spells, "Spell", SpellLoadInfo);
     STORE(QuestV2CliTaskEntry, tasks, "QuestV2CliTask", QuestV2CliTaskLoadInfo);
     STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
     STORE(CreatureDisplayInfoEntry, displays, "CreatureDisplayInfo", CreatureDisplayInfoLoadInfo);
     STORE(CreatureModelDataEntry, models, "CreatureModelData", CreatureModelDataLoadInfo);
+    STORE(FactionTemplateEntry, factions, "FactionTemplate", FactionTemplateLoadInfo);
 #undef STORE
 
     auto effect = [&](uint32 spell, int32 index) -> SpellEffectEntry const*
@@ -44,6 +46,10 @@ int main(int argc, char** argv)
     auto loot = effect(229113, 1);
     Require(loot->Effect == 189 && loot->EffectMiscValue[0] == 70762 && loot->EffectMiscValue[1] == 420,
         "Rockaway bonus-loot effect changed");
+    auto radius = radii.LookupEntry(41);
+    Require(credit->EffectRadiusIndex[1] == 41 && loot->EffectRadiusIndex[1] == 41 &&
+        radius && radius->Radius == 150.0f && radius->RadiusMax == 150.0f,
+        "Native Rockaway completion radius changed");
     std::cout << "credit229113: effect90 marker115168; effect189 misc70762/420 (not an item count)\n";
 
     auto outro = effect(230020, 0);
@@ -59,8 +65,11 @@ int main(int argc, char** argv)
     Require(task && task->ConditionID == 47902 && condition &&
         condition->PrevQuestID[0] == 41694 && condition->PrevQuestID[1] == 44721 &&
         condition->PrevQuestLogic == 1, "Native landing unlock changed");
+    for (uint32 id : {2817u, 16u, 14u})
+        Require(factions.LookupEntry(id) && factions.LookupEntry(id)->IsHostileToPlayers(),
+            "Encounter faction is not hostile to players");
 
-    for (uint32 id : {70526u, 66238u})
+    for (uint32 id : {70526u, 66238u, 73956u, 33108u})
     {
         auto display = displays.LookupEntry(id);
         auto model = display ? models.LookupEntry(display->ModelID) : nullptr;
@@ -76,8 +85,10 @@ int main(int argc, char** argv)
     Require(effect(231354, 1)->EffectTriggerSpell == 231359 &&
         effect(231356, 1)->EffectTriggerSpell == 231359, "Breath missile summon changed");
     Require(effect(231459, 0)->EffectBasePoints == 231329, "Taint dummy changed");
+    Require(effect(232681, 0)->EffectTriggerSpell == 232679 &&
+        effect(232679, 0)->Effect == 2, "Outdoor tainted essence missile changed");
     for (uint32 id : {229113u, 230020u, 231295u, 231296u, 231298u, 231328u, 231329u,
-        231333u, 231340u, 231351u, 231353u, 231354u, 231356u, 231359u, 231386u, 231459u})
+        231333u, 231340u, 231351u, 231353u, 231354u, 231356u, 231359u, 231386u, 231459u, 232681u, 232679u})
     {
         Require(spells.LookupEntry(id) != nullptr, "Missing native encounter spell");
         for (auto row : effects)
