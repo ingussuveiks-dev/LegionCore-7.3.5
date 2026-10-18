@@ -12,6 +12,8 @@ int Run(int argc,char**argv){if(argc!=2)return 1;
  S(PlayerConditionEntry,conditions,"PlayerCondition",PlayerConditionLoadInfo);
  S(WorldStateExpressionEntry,expressions,"WorldStateExpression",WorldStateExpressionLoadInfo);
  S(AreaTableEntry,areas,"AreaTable",AreaTableLoadInfo);
+ S(MapEntry,maps,"Map",MapLoadInfo);
+ S(WorldMapAreaEntry,mapAreas,"WorldMapArea",WorldMapAreaLoadInfo);
  S(SpellEffectEntry,effects,"SpellEffect",SpellEffectLoadInfo);
  S(CreatureDisplayInfoEntry,displays,"CreatureDisplayInfo",CreatureDisplayInfoLoadInfo);
  S(CreatureModelDataEntry,models,"CreatureModelData",CreatureModelDataLoadInfo);
@@ -34,6 +36,9 @@ int Run(int argc,char**argv){if(argc!=2)return 1;
     (o->ID==287309&&o->ObjectID==115846&&o->Amount==1&&o->StorageIndex==1)),"Native Vrekt objective changed");
   ++count;std::cout<<"objective "<<o->ID<<" object "<<o->ObjectID<<" amount "<<o->Amount<<" slot "<<int(o->StorageIndex)<<'\n';}
  Require(count==2,"Expected both mandatory objectives");
+ Require(maps.LookupEntry(1220)&&!maps.LookupEntry(uint32(-117440508))&&
+  !objectives.LookupEntry(uint32(-2063596446)),"Reinspect corrupt POI native identifiers");
+ for(uint32 id:{1015u,1017u})Require(mapAreas.LookupEntry(id)&&mapAreas.LookupEntry(id)->MapID==1220,"Valid shared-counter world-map area changed");
  auto a=areas.LookupEntry(8362);Require(a&&a->ContinentID==1220&&a->ParentAreaID==7541,"Native Vrekt map/zone changed");
  for(uint32 id:{66181u,64200u,64208u,28072u,29504u,69422u}){auto d=displays.LookupEntry(id);auto m=d?models.LookupEntry(d->ModelID):nullptr;
   Require(m&&m->FileDataID,"Missing Vrekt actor model");std::cout<<"display "<<id<<" file "<<m->FileDataID<<'\n';}

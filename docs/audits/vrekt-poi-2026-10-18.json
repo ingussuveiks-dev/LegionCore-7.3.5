@@ -1,0 +1,45 @@
+{
+  "quest": 44923,
+  "date": "2026-10-18",
+  "status": "Removed one corrupt imported POI row while preserving all four valid blobs and21 polygon/pin points. Native loader/response construction, native DB2 and live data checks passed; client map display remains unverified.",
+  "finding": {
+    "key": {"QuestID": 44923, "BlobIndex": 0, "Idx1": 1},
+    "corruptFields": {"ObjectiveIndex": 1191182336, "QuestObjectiveID": -2063596446, "QuestObjectID": -1006632508, "MapID": -117440508, "WorldMapAreaId": 3, "WoDUnk1": 167772160},
+    "nativeContradiction": "Typed native DB2 reader confirms map1220 and objective IDs287303/287309 for Vrekt. The negative imported map/objective IDs do not resolve in native Map/QuestObjective. Both retained WorldMapArea1015/1017 records resolve to map1220.",
+    "historicalImport": "The identical malformed tuple is also present in the locally pinned2020 LegionCore SQL dump. Its presence in an old emulator import does not establish valid retail data.",
+    "executablePath": "LoadQuestPOI validates point-array availability but does not validate map or objective identifiers. The corrupt Idx1=1 row borrows the same10 points as the valid BlobIndex1/Idx1=1 Vrekt polygon, so the loader accepts it without a DB error. The actual HandleQuestPOIQuery response-construction block copies its negative map/objective fields into QuestPOIBlobData.",
+    "boundary": "This was reproduced with extracted production loading and response construction, not observed in a live client. A clean startup log did not detect the malformed row."
+  },
+  "implementation": {
+    "migration": "2026_10_18_11_vrekt_corrupt_poi.sql",
+    "scope": "Delete only44923/Blob0/Idx1=1 with the exact malformed objective/object/map/world-map fingerprint. A corrected or externally edited row at that key is preserved. No generic loader suppression or global POI deletion.",
+    "preserved": [
+      "Blob0/Idx1=0: shared counter287303/115845, map1220/world-map1015, nine points.",
+      "Blob1/Idx1=1: shared counter287303/115845, map1220/world-map1017, ten points.",
+      "Blob0/Idx1=2: Vaettfang287309/115846, map1220/world-map1017, one pin.",
+      "Blob0/Idx1=3: tracking objective-index32, map1220/world-map1017, one pin."
+    ],
+    "noInvention": "Keep both existing counter polygons and all coordinates. Do not replace the bad row with guessed geometry or remove the other valid Idx1=1 row. No quest counters, actor spawns, rotation data, rewards, loot or character data changed."
+  },
+  "automatedChecks": [
+    "Test-VrektPoi.ps1 -Live: reconstruct corrupt input in indexed temporary quest_poi and quest_poi_points shadow tables; apply migration twice; compare every field of retained rows, neighbour44737 and all point rows; preserve an externally corrected row. The four live repaired POIs and21 live coordinates match the tested result.",
+    "VrektPoiTest.cpp executes actual QuestPOI types/constructors, QuestDataStoreMgr::LoadQuestPOI and GetQuestPOIVector, and the actual HandleQuestPOIQuery response-construction block. Before repair, five blobs include the invalid map/objective and its10 copied points without a loader error; after repair, four valid blobs remain and every retained coordinate matches.",
+    "Fixture boundary: SQL result/Field/config/logging/map lookup/request admission and response container services are doubles. A higher quest row supplies the real database context around the unchanged maximum-quest point-loader boundary. Full handler request admission, QueryPackets binary serialization, network delivery and client rendering are not executed.",
+    "Test-VrektCatalog.ps1 passes typed native objective/map/world-map identifiers, unlocks/shared-state expressions/models/outro. Map.db2 and WorldMapArea.db2 added to its runtime input SHA256 inventory.",
+    "No production C++ changed after the preceding successful Release build. The canonical executable and tested Vrekt activation implementation were retained; this is a database-only repair."
+  ],
+  "deployment": {
+    "migrationState": "RELEASED",
+    "sha1": "C94CD04759A32E675744A5413F4A9CDEB266AD1A",
+    "backup": ".codex/backups/vrekt-poi/20261018-182927",
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "4E6EDB647466419B2979AE7456ABCFE7E6F7E3FC06E12A45D257357187134C41",
+    "startup": {"path": "build-extractors/runtime-test/vrekt-poi/startup-20261018-182949", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
+    "boundary": "Server restarted for a fresh native POI load and stopped gracefully. Canonical configuration, certificates, DLLs and extracted data preserved. The response regression, rather than startup alone, supplies evidence for removal of the corrupt record."
+  },
+  "remaining": [
+    "Client map/task polygons, pins and quest tracking need confirmation. Existing cross-zone counter geometry is preserved; this fix does not prove its exact retail shape.",
+    "The activation audit's NPC combat, rotation visibility/control, drake/chain scene, terrain/navmesh, exact placement/respawn and actual player/pet/group completion checks remain open.",
+    "No whole-quest or client verification claim; the automatic activation fix is recorded separately in vrekt-activation-2026-10-18.json."
+  ]
+}

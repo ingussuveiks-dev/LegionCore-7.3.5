@@ -3,6 +3,7 @@
   "title": "Helarjar Landing: Vrekt",
   "date": "2026-10-18",
   "baseline": "e9d85586",
+  "followUp": "The separately recorded corrupt-POI finding below is repaired in vrekt-poi-2026-10-18.json. All other original evidence boundaries remain.",
   "status": "Missing rotation candidate restored and automatic shared-state overwrite prevented. Native code/data checks and canonical Release startup passed; no client verification or claim that the whole encounter is complete.",
   "findings": {
     "missingCandidate": "Live world_quest_update had44737 but no44923. The native GetWorldQuestUpdate returns null, GenerateNewWorldQuest returns before generation, and the loader cannot insert44923 into the automatic candidate set. Personal Lost Army conditions alone did not make this world quest activatable.",
