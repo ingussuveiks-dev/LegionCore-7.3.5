@@ -11,7 +11,7 @@ static void Require(bool value, char const* message)
 }
 
 // Content evidence only: this reader does not run the outdoor encounter.
-int main(int argc, char** argv)
+int Run(int argc, char** argv)
 {
     if (argc != 2)
         return 1;
@@ -25,7 +25,9 @@ int main(int argc, char** argv)
     STORE(SpellTargetRestrictionsEntry, targetRestrictions, "SpellTargetRestrictions", SpellTargetRestrictionsLoadInfo);
     STORE(SpellAuraRestrictionsEntry, auraRestrictions, "SpellAuraRestrictions", SpellAuraRestrictionsLoadInfo);
     STORE(QuestV2CliTaskEntry, tasks, "QuestV2CliTask", QuestV2CliTaskLoadInfo);
+    STORE(QuestObjectiveEntry, objectives, "QuestObjective", QuestObjectiveLoadInfo);
     STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
+    STORE(AreaTableEntry, areas, "AreaTable", AreaTableLoadInfo);
     STORE(CreatureDisplayInfoEntry, displays, "CreatureDisplayInfo", CreatureDisplayInfoLoadInfo);
     STORE(CreatureModelDataEntry, models, "CreatureModelData", CreatureModelDataLoadInfo);
     STORE(FactionTemplateEntry, factions, "FactionTemplate", FactionTemplateLoadInfo);
@@ -66,10 +68,25 @@ int main(int argc, char** argv)
                 "Reinspect outro reward acquisition");
 
     auto task = tasks.LookupEntry(44746);
+    auto coast = areas.LookupEntry(7833);
+    Require(coast && coast->ContinentID == 1220 && coast->ParentAreaID == 7503,
+        "Native Rockaway Coast map/zone changed");
     auto condition = conditions.LookupEntry(47902);
-    Require(task && task->ConditionID == 47902 && condition &&
+    Require(task, "Missing native Rockaway task");
+    std::cout << "task filters: min " << int(task->FiltMinLevel) << " max " << int(task->FiltMaxLevel)
+        << " skill " << task->FiltMinSkillID << " races " << task->FiltRaces << " classes " << task->FiltClasses << std::endl;
+    Require(task && task->ConditionID == 47902 && task->WorldStateExpressionID == 20875 && condition &&
+        task->FiltMinLevel == 110 && task->FiltMaxLevel == -1 && !task->FiltMinSkillID &&
+        task->FiltRaces == -1 && task->FiltClasses == 65535 &&
         condition->PrevQuestID[0] == 41694 && condition->PrevQuestID[1] == 44721 &&
         condition->PrevQuestLogic == 1, "Native landing unlock changed");
+    for (auto id : task->FiltCompletedQuest)
+        Require(!id, "Reinspect additional native arrival prerequisites");
+    auto objective = objectives.LookupEntry(286897);
+    Require(objective && objective->QuestID == 44746 && objective->Type == 0 &&
+        objective->ObjectID == 115168 && objective->Amount == 1,
+        "Native Rockaway objective marker changed");
+    std::cout << "arrival44746: area7833/map1220/zone7503; level110, both factions; condition47902 requires41694 AND44721; marker115168 x1\n";
     for (uint32 id : {2817u, 16u, 14u})
         Require(factions.LookupEntry(id) && factions.LookupEntry(id)->IsHostileToPlayers(),
             "Encounter faction is not hostile to players");
@@ -145,4 +162,11 @@ int main(int argc, char** argv)
                     << ',' << row->ImplicitTarget[1] << '\n';
     }
     std::cout << "PASS: typed native catalog. Encounter implementation and reward count are NOT verified.\n";
+    return 0;
+}
+
+int main(int argc, char** argv)
+{
+    try { return Run(argc, argv); }
+    catch (std::exception const& e) { std::cerr << e.what() << '\n'; return 1; }
 }

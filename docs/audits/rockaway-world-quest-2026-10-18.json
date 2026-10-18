@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-18",
+  "quest": 44746,
+  "title": "Helarjar Landing: Rockaway Coast rotation and area arrival",
+  "status": "Code/data activation fix deployed and automated checks passed; client verification pending.",
+  "problem": [
+    "world_quest_update had Grey Shoals44737/value1 and Vrekt44923/value3 but no Rockaway44746/value2. The scheduler could not select Rockaway.",
+    "Quest44746 has AreaGroupID0. Objective286897 requires marker115168 x1, but that marker has no static creature spawns. Native AddWorldQuestTask therefore had neither configured areas nor a fallback spawn area."
+  ],
+  "evidence": {
+    "native_catalog": "Typed 7.3.5 DB2: task44746 -> expression20875 -> state12678=2 (native WorldStateExpression::Eval); condition47902 requires rewarded41694 AND44721; min110/max-1, no skill, race mask-1 and class mask65535, no extra completed-quest task filters.",
+    "area": "Native AreaTable7833 belongs to map1220 and parent7503. Live Vision115133 anchor900901018 is at map1220/zone7503/area7833.",
+    "reward_policy": "Existing world_quest_template135/7503 supplies the ordinary rare world-quest rewards; no new reward policy added."
+  },
+  "implementation": {
+    "migration": "sql/updates/world/2026_10_18_15_rockaway_world_quest.sql",
+    "row": {
+      "QuestID": 44746,
+      "Timer": 259200,
+      "VariableID": 12678,
+      "VariableID1": 0,
+      "Value": 2,
+      "Value1": 0,
+      "AreaID": "7833",
+      "EventID": 0,
+      "VerifiedBuild": 0
+    },
+    "duration": "259200 seconds inherited from this server's Grey Shoals Helarjar policy. This is not a recovered retail Rockaway duration.",
+    "scope": "Insert only when44746 is absent and valid44737 state12678=1 source exists. Preserve any operator44746 row, unrelated data, active quests and personal progress. No forced rotation selection or character reset.",
+    "shared_rotation": "Existing native CanBeActivate cross-zone shared-state guard admits one live Helarjar variant; no additional production C++ change needed.",
+    "arrival": "Explicit AreaID makes the existing native AddWorldQuestTask register44746 under7833. Native Player::UpdateAreaQuestTasks world-task branch can then add an eligible active quest on arrival."
+  },
+  "checks": [
+    "Test-VrektWorldQuest.ps1 -QuestID44746 -Live PASS: indexed temporary-table migration missing/first/repeated cases; preserved all other rows and operator override; absent source policy inserts nothing; deployed row exactly equals fixture.",
+    "Test-VrektWorldQuest.ps1 -Live PASS: existing Vrekt restoration/arrival regression preserved.",
+    "Both variants compile actual native template/update lookup, GenerateNewWorldQuest, GenerateWorldQuest, CanBeActivate, automatic candidate while-loop, AddWorldQuestTask, GetWorldQuest and Player arrival/departure blocks.",
+    "Six all-three candidate orders: exactly one live variant, exact-expiry next selection and unrelated-state admission. Pinned pre-fix admission e9d85586 reproduces all three simultaneous variants and last-write shared visibility overwrite.",
+    "Actual native area registration reproduces empty missing-marker fallback before restoration, then exact area7833 registration with no fallback query. Player arrival covers both faction race masks, both unlock requirements, level109 refusal, active/expired/completed, CanAddQuest refusal, raid/invasion refusal, repeat arrival, departure and re-entry.",
+    "Fixture limits: condition evaluation, quest/inventory/group services, database responses, DB2 store services, reward calculation, persistence and random selection are fixture leaves. Typed catalog separately checks actual task/condition/expression/area/objective values.",
+    "Test-RockawayCatalog.ps1 PASS: typed native AreaTable, task filters, condition and objective plus existing encounter spells/models.",
+    "Test-VrektCatalog.ps1 PASS: native typed expressions20860/20875/20988 map12678 to1/2/3 and actual unlocks.",
+    "Test-RockawayEncounter.ps1 PASS: production AI/hooks/native channel resolver/dispatch,24 death orders, owner targeting, retries/cleanup, pet/scaled lethal cases and existing encounter boundaries; pinned old channel lock reproduced.",
+    "Test-RockawayData.ps1 PASS: repeated scoped encounter/loot/channel migrations, native loot and Player fragment objective handling, both factions and rotation conditions; reconstructed counts remain identified as such.",
+    "Test-RockawayRelease.ps1 PASS: canonical executable actual scripts final-link library/source freshness and deployed channel/completion/credit/loot implementation.",
+    "Audit-RockawayCoast.ps1 -RequirePlayable PASS: Missing=[]; report still explicitly requires executable encounter/client checks.",
+    "Canonical Release startup ready=True, graceful exit0, DBErrors.log0 bytes and stderr.log0 bytes. Loaded712 world_quest_update rows. Worldserver stopped."
+  ],
+  "deployment": {
+    "migration": "2026_10_18_15_rockaway_world_quest.sql",
+    "sha1": "E67A61A5DEDDF81E8AAD3A5CFA7A9F393591FD5E",
+    "backup": ".codex/backups/rockaway-world-quest/20261018-225513",
+    "metadata_state": "RELEASED",
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway-world-quest/startup-20261018-225514",
+    "worldserver_left_running": false,
+    "worldserver_sha256": "6cefe65ddb5f950a9d8b233a9dbab5d7a374eb4d098fc7d5438d410231e5d532",
+    "bnetserver_sha256": "4ecc299c907a52c57a1616ab56dd0fe80fcd19de1a2e40bc0c01a58501e719c9",
+    "build": "Canonical Release built for the preceding SoundKitEntry descriptor fix ce3eb94d; this follow-up changes SQL/tests/audit only and does not require another C++ rebuild."
+  },
+  "remaining_client_checks": [
+    "Observe natural Rockaway rotation selection/map availability, arrive after both unlock quests at110, receive task, finish encounter, verify one credit/rewards and departure/re-entry. No client session was run.",
+    "Existing original ritualist position/orientation/green-beam actor binding, reconstructed combat timing and fragment10..15 bounds remain unproven retail details; this activation fix does not close those historical authenticity gaps.",
+    "Retain full-bag fragment AutoStoreLoot error/skip limitation and all earlier visual/audio/party/expiry checks from the encounter audit. Do not describe the whole quest as client-verified."
+  ],
+  "prior_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json"
+}
