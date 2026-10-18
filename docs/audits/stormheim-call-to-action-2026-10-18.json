@@ -1,0 +1,286 @@
+{
+  "date": "2026-10-18",
+  "quests": [
+    44720
+  ],
+  "title": "A Call to Action: Muninn to Havi travel, existing eligibility and44771 handoff",
+  "source_base_revision": "c08235fe",
+  "scope": "Code/data only. No WoW client operation. No production C++ or database repair found necessary for this travel step.",
+  "status": "Configured native eligibility, empty-objective completion, correct NPC reward request and next-quest offer pass automated checks. Existing40072 prerequisite retained; its exact retail requirement is not independently verified. Client verification remains pending.",
+  "client_verified": false,
+  "implementation_change_required": false,
+  "selection_correction": "39998 Drive Back the Tideskorn was mistakenly proposed as new work, but docs/audits/stormheim-tideskorn-2026-10-17.json already covers its full code/data audit and six-template interaction repair. Selected a genuinely new detailed audit for44720 instead; do not count a reference to a quest ID in another audit as full coverage.",
+  "findings": [
+    "World44720 is an ordinary type2/QuestInfo0 quest at level110/min110, MaxLevel0, all-race maskuint64(-1), no source item, no objectives and SpecialFlags0. It is not an area bonus task. Preserve the objective-free travel: native CanCompleteQuest can complete it immediately after accepting, while submission still requires its Havi ender. Do not invent a talk credit or require killing anything.",
+    "Existing addon PrevQuestID40072 requires that previous quest REWARDED, not merely complete. Native loader populates prevQuests and prevChainQuests. RewardNextQuest/NextQuestID44771 and its Prev44720 preserve the next offer at Havi after reward. The native next-chain gate also rejects44720 if44771 is already active, complete or rewarded.",
+    "Native QuestLineXQuest confirms44720 at line280/order0 and44771 at line280/order1. Typed runtime CreatureDisplayInfo59729->model7846/FileData1047407 and76630->model8323/FileData1132140 exist. Native AreaTable7505 is Krasus Landing and7803 is Valdisdall on map1220. These are metadata/existence checks, not full Creature::InitEntry or visual playback.",
+    "Original local queststarter is Muninn114946/DB14208136 in Dalaran7505 at(-811.549,4265.17,749.062). Ender is Havi92539/DB291280 in Valdisdall7803 at(3214.38,1543.61,180.715). Both NPC templates have the questgiver bit2 and neutral faction35. Original model overrides0, phaseMask1, empty PhaseId and spawnMask1 are retained; both chosen displays have World creature_model_info. No spawn, AI, phase or position was changed.",
+    "No source19/20 condition or quest disable row for44720. Existing class/skill/reputation/exclusive gates and SourceSpellID are0. No GO starter/ender was added. Hotfix has no inspected quest-line/display/model/area override. Other dormant native CanTakeQuest gates remain fixture adapters, with their scoped data checked; this is not a complete live session/login test.",
+    "Native CanTakeQuest, GetQuestStatus, SatisfyQuestStatus/Race/Level/PreviousQuest/NextChain/PrevChain, PrepareQuestMenu, CanCompleteQuest, CanRewardQuest and GetNextQuest execute in the regression. The actual AddQuestAndCheckCompletion completion block executes, replacing the inherited acceptance adapter that initially only accepted and did not run the empty-objective completion step. Native QuestData previous/next-chain loader blocks execute. This initial fixture assertion failure was not a production defect and caused no gameplay repair.",
+    "Native HandleQuestGiverRequestReward rejects Muninn as the ender and accepts Havi. The outer handler executes but object lookup and CanInteractWithQuestGiver/world/phase services are adapters. Player::AddQuest storage, CompleteQuest state write, abandonment, RewardQuest money/inventory/database transaction and subsequent AI acceptance callbacks are adapters or outside scope. No claim of tested saved rewards, actual range/LOS/map traversal, startup or full NPC AI initialization.",
+    "Next44771 has a mandatory114962 listening marker; the regression asserts it stays incomplete after ordinary acceptance. It does not execute that quest's grog, escort, narration or credit chain. Those are the next detailed audit, not covered by44720 completion."
+  ],
+  "validation": {
+    "command": "tools/tests/Test-StormheimCall.ps1",
+    "result": "PASS",
+    "coverage": "Both factions; level109/110 x previousNONE/COMPLETE/INCOMPLETE/REWARDED; Muninn visible quest menu only for configured eligible state; before-accept/reward gating; native empty-objective acceptance completion; wrong ender and phase-adapter denial; correct Havi reward request; cannot replay rewarded44720; native Havi-only44771 offer; next quest remains incomplete; abandonment/retry; independent active/complete/rewarded next-chain rejection.",
+    "upstream": "Test-StormheimJournals.ps1 passed while regenerating the shared native fixture; related fixture/data checks are logged in the runtime-test upstream.log.",
+    "evidence": [
+      "build-extractors/runtime-test/stormheim-call/world.tsv",
+      "build-extractors/runtime-test/stormheim-call/hotfix.tsv",
+      "build-extractors/runtime-test/stormheim-call/native.txt",
+      ".codex/stormheim-call-test.log"
+    ],
+    "production_mutations": "None. No SQL migration, server restart or new Release build needed for this audit.",
+    "canonical_worldserver_sha256": "74B14F3E73982CC6EC8DA6CFF28E7EBE85CB53A5D0FF9007720A9982D49E398B",
+    "server_left_stopped": true
+  },
+  "historical_sources": [
+    {
+      "url": "https://web.archive.org/web/20161119102203/http://www.wowhead.com:80/quest=44720/a-call-to-action",
+      "retrieved": "HTTP200 full archived HTML on2026-10-18",
+      "finding": "Contemporaneous database page identifies level110/min110, both factions, starter114946 Muninn at Krasus Landing, ender92539 Havi around60.2/50.8 and next44771. Base reward displayed1g94s, agreeing with raw local RewardMoney19400; actual payout/XP conversion was not executed. It provides no retrieved40072 prerequisite statement. Later modern reward changes were not imported.",
+      "sha256": "f6c8de952686cccf0e74e46d9c387d40c1f7cb64744f16de66b90df2b190b8e9"
+    },
+    {
+      "source": ".codex/TDB735/TDB_full_735.00_2018_02_19/TDB_world_735.00_2018_02_19.sql",
+      "finding": "Original TDB735 quest_template44720 agrees on type2, min110/level110, Flags34603016/FlagsEx0, source item0 and next44771. Original32-bit all-race mask4294967295 differs in storage width from this core's uint64(-1), retained. This snapshot supplied no matching addon/starter/ender rows in the inspected tables, so it does not independently establish the existing40072 gate or NPC relations.",
+      "selected_rows": [
+        {
+          "table": "quest_template",
+          "ID": "44720",
+          "QuestType": "2",
+          "MinLevel": "110",
+          "QuestLevel": "110",
+          "Flags": "34603016",
+          "FlagsEx": "0",
+          "AllowableRaces": "4294967295",
+          "RewardNextQuest": "44771",
+          "StartItem": "0"
+        }
+      ]
+    }
+  ],
+  "world_contract": [
+    [
+      "quest",
+      "40072",
+      "33554440",
+      "8192",
+      "18446744073709551615",
+      "0",
+      "0",
+      "0",
+      "40005",
+      "0",
+      "0",
+      "98",
+      "0",
+      "2",
+      "81"
+    ],
+    [
+      "quest",
+      "44720",
+      "34603016",
+      "0",
+      "18446744073709551615",
+      "0",
+      "0",
+      "44771",
+      "40072",
+      "44771",
+      "0",
+      "110",
+      "0",
+      "2",
+      "0"
+    ],
+    [
+      "quest",
+      "44771",
+      "39845896",
+      "8192",
+      "18446744073709551615",
+      "0",
+      "0",
+      "44721",
+      "44720",
+      "44721",
+      "0",
+      "110",
+      "0",
+      "2",
+      "0"
+    ],
+    [
+      "objective",
+      "44771",
+      "286968",
+      "0",
+      "114962",
+      "1",
+      "0",
+      "0"
+    ],
+    [
+      "starter",
+      "92539",
+      "44771"
+    ],
+    [
+      "starter",
+      "114946",
+      "44720"
+    ],
+    [
+      "ender",
+      "92539",
+      "44720"
+    ],
+    [
+      "ender",
+      "92539",
+      "44771"
+    ],
+    [
+      "44720-relations",
+      "1",
+      "1"
+    ],
+    [
+      "actor",
+      "92539",
+      "76630",
+      "0",
+      "0",
+      "0",
+      "35",
+      "3",
+      "32768"
+    ],
+    [
+      "actor",
+      "114946",
+      "59729",
+      "0",
+      "0",
+      "0",
+      "35",
+      "2",
+      "0"
+    ],
+    [
+      "spawn",
+      "291280",
+      "92539",
+      "1220",
+      "7541",
+      "7803",
+      "1",
+      "",
+      "1",
+      "0",
+      "3214.38",
+      "1543.61",
+      "180.715"
+    ],
+    [
+      "spawn",
+      "14208136",
+      "114946",
+      "1220",
+      "7502",
+      "7505",
+      "1",
+      "",
+      "1",
+      "0",
+      "-811.549",
+      "4265.17",
+      "749.062"
+    ],
+    [
+      "extra-gates",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    [
+      "conditions",
+      "0"
+    ],
+    [
+      "disables",
+      "0"
+    ],
+    [
+      "go-relations",
+      "0"
+    ],
+    [
+      "model-metadata",
+      "2"
+    ]
+  ],
+  "hotfix_counts": [
+    [
+      "line",
+      "0"
+    ],
+    [
+      "display",
+      "0"
+    ],
+    [
+      "model",
+      "0"
+    ],
+    [
+      "area",
+      "0"
+    ]
+  ],
+  "native_output": [
+    "line 44720 280 0",
+    "line 44771 280 1",
+    "display 59729 model 7846 file 1047407",
+    "display 76630 model 8323 file 1132140",
+    "area 7505 Krasus' Landing",
+    "area 7803 Valdisdall",
+    "PASS: native quest-line order, both NPC display/model records and destination areas. Client pending."
+  ],
+  "native_file_hashes": [
+    {
+      "file": "QuestLineXQuest.db2",
+      "sha256": "c2d7266900a43fad156fd19c0d06f2278c48b327fbc9c7d00162b084c69ddbff"
+    },
+    {
+      "file": "CreatureDisplayInfo.db2",
+      "sha256": "1494eb6d4705848c4dd8ca2e463b99365d913155829e53914671da3302168e23"
+    },
+    {
+      "file": "CreatureModelData.db2",
+      "sha256": "615e170a0fb416ff79b4b00881f521f244787221d82bc3bf547039f22b637357"
+    },
+    {
+      "file": "AreaTable.db2",
+      "sha256": "e076490be3f9bea2f0e3ef161e86699a79aabb53ac560b63ec330fb6730fb40f"
+    }
+  ],
+  "pending_client": [
+    "At110 with the configured40072 reward state, see Muninn's offer at Krasus Landing; accept with both factions and see the objective-free quest ready for Havi.",
+    "Travel normally to Valdisdall; confirm actual Havi visibility/interaction, reward UI and saved reward state after relog/restart; observe speech/portraits/audio separately.",
+    "Confirm44771 is offered after actual44720 reward and that its grog/listening gameplay proceeds. This audit does not verify that next quest.",
+    "Independently establish whether retail7.3.5 required40072 before changing that existing prerequisite. No reputation or other new gate was invented."
+  ],
+  "next_task": {
+    "quest": 44771,
+    "title": "A Threat Rises",
+    "scope": "Grog interaction, Havi movement/narration, exactly-once listening credit, retry/abandonment and44721 handoff."
+  }
+}
