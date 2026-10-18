@@ -189,6 +189,7 @@ struct boss_helya_tov : BossAI
     uint32 berserk;
     uint8 trashDiedCount;
     uint8 trashPhase2Count;
+    std::set<ObjectGuid> defeatedGrippingTentacles;
     uint8 eventPhase;
     uint32 power;
     uint32 count;
@@ -220,6 +221,7 @@ struct boss_helya_tov : BossAI
         eventPhase          = 0;
         trashDiedCount      = 0;
         trashPhase2Count    = 0;
+        defeatedGrippingTentacles.clear();
         count               = 0;
         AOEdmg              = 0;
         _checkEvadeTimer    = 0;
@@ -320,7 +322,17 @@ struct boss_helya_tov : BossAI
                 }
                 break;
             case Data::Creatures::GrippingTentacle:
+                if (eventPhase != PHASE_2 || !defeatedGrippingTentacles.insert(summon->GetGUID()).second)
+                    return;
+
                 trashPhase2Count++;
+                // Each of the nine tentacles wounds Helya for 2% maximum health.
+                // This bypasses her phase-two damage immunity without a killing blow.
+                {
+                    uint64 const wound = me->CountPctFromMaxHealth(2);
+                    uint64 const health = me->GetHealth();
+                    me->SetHealth(health > wound ? health - wound : 1);
+                }
                 break;
         }
 
@@ -435,12 +447,12 @@ struct boss_helya_tov : BossAI
         case PHASE_2:
             events.RescheduleEvent(EVENT_TELEPORT_OUTSIDE, 1000);
             checkrephase = true;
+            me->CastStop();
             DoCast(SpellRemoveDebuffs);
             DoCast(SpellHelyaImmunityDamage);
             DoCast(SpellHelyaAltPower);
             DoCast(SpellHelyaReuse);
 
-            me->CastStop();
             me->AttackStop();
             me->SetReactState(REACT_PASSIVE);
             me->SetPower(POWER_ENERGY, 0);
@@ -449,6 +461,9 @@ struct boss_helya_tov : BossAI
             me->SummonCreatureGroup(3);
             me->AddDelayedEvent(5000, [=]() -> void
             {
+                if (eventPhase != PHASE_2)
+                    return;
+
                 DoCast(SpellHelyaReuse);
                 Talk(SAY_PHASE_2);
                 events.RescheduleEvent(EVENT_TORRENT, 9000);
@@ -472,6 +487,9 @@ struct boss_helya_tov : BossAI
             me->RemoveAura(SpellTorrent);
             me->AddDelayedCombat(5000, [=]() -> void
             {
+                if (eventPhase != PHASE_3)
+                    return;
+
                 Talk(SAY_PHASE_3);
                 me->SetPower(POWER_ENERGY, 61);
                 me->SetPower(POWER_ALTERNATE, 42);
@@ -497,10 +515,44 @@ struct boss_helya_tov : BossAI
         }
     }
 
-    void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType /*dmgType*/) override
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
     {
-        if (!phase2 && me->HealthBelowPct(65))
+        if (eventPhase == PHASE_2)
         {
+            damage = 0;
+            return;
+        }
+
+        if (!damage || phase2)
+            return;
+
+        // The first spell's damage can precede Spell::CombatStart.
+        if (instance->GetBossState(Data::BossIDs::HelyaID) != IN_PROGRESS)
+        {
+            if (!attacker || eventPhase != 0 || me->getFaction() != 16 ||
+                instance->GetBossState(Data::BossIDs::HelyaID) == DONE ||
+                me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1))
+                return;
+
+            me->SetInCombatWith(attacker);
+            if (instance->GetBossState(Data::BossIDs::HelyaID) != IN_PROGRESS)
+                return;
+        }
+
+        if (eventPhase != PHASE_1)
+            return;
+
+        uint64 const maximum = me->GetMaxHealth(attacker);
+        if (!maximum)
+            return;
+
+        uint64 const health = me->GetHealth(attacker);
+        uint64 const threshold = CalculatePct(maximum, 65);
+        if (health <= threshold || damage >= health - threshold)
+        {
+            damage = 0;
+            me->SetHealth(std::max<uint64>(1, me->CountPctFromMaxHealth(65)));
+            TC_LOG_DEBUG("scripts", "Trial of Valor Helya: phase two after final scaled damage");
             phase2 = true;
             StartEvents(PHASE_2);
         }

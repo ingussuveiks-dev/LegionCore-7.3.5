@@ -1,0 +1,68 @@
+{
+  "quest": 44868,
+  "title": "Trial of Valor: Odyn's Judgment",
+  "date": "2026-10-18",
+  "baseline": "219ae491",
+  "status": "Helya phase progression repaired and deployed; code/data checks passed; client verification pending",
+  "scope": "Quest44868, Helya's65%/nine-tentacle transition, actual death credit and post-victory questgiver creation. This does not verify every raid ability or complete client playthrough.",
+  "findings": [
+    "Native7.3.5 CriteriaTree55482 is an ALL root with quest flag4096. Child55483 references Criteria34647, type165 COMPLETE_DUNGEON_ENCOUNTER, asset2008, no modifier. DungeonEncounter2008 is Helya in raid map1648. There are no live Hotfix overlays for these tree/criterion/encounter records. Existing SQL objective287205 correctly references root55482 with type14, amount1 and storage0.",
+    "Existing chain and reward data are correct: raid Odyn114263 starts44868 after44729; post-Helya Odyn116760 ends it; RewardItem142534x1 is native Plume of the Fallen Val'kyr. NextQuest0 ends this main chain. The modern Wowhead page also lists Cache of Infinite Treasure; this later reward was not imported into7.3.5. No SQL migration was needed.",
+    "Helya114537 has boss_helya_tov, native display66238 and one map1648 spawn505276 with mask245760 and model override0. Odyn116760 has npc_odyn_after_kill_helya, display67230, gossip/questgiver flags3 and menu20849. The instance uses instance_trial_of_valor. Both native display records exist; this is not Creature::InitEntry or render verification.",
+    "Old Helya DamageTaken only checked health before the current hit. Extracted baseline tests reproduce ordinary and scaled lethal phase1 hits killing her and awarding2008 immediately, bypassing the intended tentacle phase. This was premature encounter completion, not proof that quest44868 was impossible to finish.",
+    "DamageTakenAfterScaling now compares final damage with GetHealth(attacker)/GetMaxHealth(attacker), detects the65% crossing, consumes that hit and preserves Helya alive at65% base health before executing the existing phase2 events. The clamp is an authored server guard for the documented phase boundary, not a recovered retail damage packet. Large raw damage with small final target-relative damage does not trigger it early.",
+    "The first spell's damage can precede Spell::CombatStart. As in the previously repaired dungeon Odyn path, an attackable hostile Helya may enter combat through SetInCombatWith before evaluating the crossing. Intro immunity, absent attacker, completed encounter and incorrect phase/faction cannot bootstrap a fight. Existing intro trash admission and arena geometry are retained.",
+    "During phase2 the post-scaling guard rejects direct damage even if the immunity spell fails, preserving the required tentacle stage. Phase3 permits ordinary damage as soon as that stage starts; no additional damage-immunity grace period was added. The existing return, casting and presentation timers remain.",
+    "Live summon group114537/3 already contains nine actual Gripping Tentacles114900 and nine visual helpers114901/114905. Native Unit::SummonCreatureGroup DEFAULT action spawns each row once; its count0 is not a zero-spawn loop. Native Unit::Kill notifies the summoning creature independently of whether the killer is a Player. The regression executes this actual summon-death dispatcher with player and guardian-like Unit killers.",
+    "The old SummonedCreatureDies counted tentacles but never wounded Helya. Each unique actual114900 death during phase2 now removes2% maximum base health directly, bounded above zero. Nine kills take the tested65% health to47%, matching the7.3.5 guide. Helpers, repeated GUID notifications and out-of-phase callbacks cannot wound her or advance the counter. Reset clears the GUID set and counter for a fresh attempt. This is a scoped scripted health change; no speculative retail spell ID was invented.",
+    "The original ninth-death StartEvents(PHASE_3) remains. Spell interruption now precedes phase2 setup casts. Delayed phase2/phase3 introduction callbacks check their current phase, preventing a fast nine-tentacle clear from playing the old phase2 speech and scheduling its events after phase3 has begun. The test executes the real StartEvents method and its delayed callbacks, including simulated cast failures; actual spell-engine admission and visual playback are not executed.",
+    "Helya's real JustDied still awards criterion165/2008, removes encounter effects and calls _JustDied. The extracted production death callback runs after the real native AI death dispatch in the fixture. Instance persistence/_JustDied and map spawning are fixture services, while the actual instance Helya-DONE branch is executed and creates Odyn116760 plus eight companions. The actual OnCreatureCreate saved-DONE branch is also executed; both create the existing questgiver without synthetic quest credit.",
+    "Odyn's initial Z86.31976 is intentional arrival context: native232580 is a trigger missile to232581, whose effect98 is a jump. Existing spell_target_position232580 lands at498.595/640.212/1.8432 in map1648. Preserve that route and the constructor cast instead of moving his initial spawn by guesswork. Native232581 also removes232580. Actual landing, camera and model animation remain client checks.",
+    "Odyn's SpellHit232581 retains conversation4180. Its three World lines9528/9529/9530 and native ConversationLine entries exist, with the existing116760 actor. Conversation::LoadCreatures resolves that actor by nearby entry, not the old stored DB GUID. Gossip20849/1 keeps the original exit to native WorldSafeLocs5779/map1220. Turn-in flags and quest relations do not depend on the conversation succeeding.",
+    "The typed DB2 catalog supplies the quest fixture's root/type/encounter IDs. Native achievement asset admission and Player::AchieveCriteriaCredit/CanCompleteQuest/quest-lifetime code execute for both factions, wrong encounter1809/1958/1962, wrong criteria type, duplicate credit, no quest, rewarded quest, abandonment and immediate reacceptance. The intervening AchievementMgr progress/tree notification is explicitly a fixture bridge; full live group dispatch and saved reward inventory are not covered.",
+    "Earlier44729/44721/44771 audits and their pending client checks are retained. No full raid, quest or visual is described as client-verified. The server was left stopped after startup validation."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "updated": "2018-07-05",
+      "finding": "The authors'7.3.5 guide establishes phase2 at65%, nine Gripping Tentacles,2% maximum-health loss per death and phase3 at47%. It also places Helya after Guarm. Exact packet handling and the local clamp implementation are not supplied by the guide."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44868/trial-of-valor-odyns-judgment",
+      "finding": "Confirms the raid Helya objective and in-raid turn-in after victory. Historical player reports corroborate LFR completion. Modern scaled levels and the later Cache reward were not copied."
+    },
+    {
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/news/20328828/schlachtzugsvorschau-besteht-die-pr%C3%BCfung-der-tapferkeit",
+      "published": "2016-11-08",
+      "finding": "Blizzard's original raid preview distinguishes the Trial of Valor raid story from the earlier5-player dungeon encounters."
+    }
+  ],
+  "automated_checks": [
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS; baseline premature kills, actual final scaling/target-health functions,65% transition, first-hit admission, phase2 protection, native summon-death routing, nine unique wounds/47%, duplicate/failed-cast/player/guardian cases, reset and retry, real phase/death callbacks and instance victory/reentry creation branches",
+    "Test-HelyaData.ps1: PASS; read-only live World/Hotfix assertions, native DB2 catalog, arrival/exit/conversation records and quest-specific Player criteria regression",
+    "Test-QuestCriteriaCredit.ps1: PASS as the data regression's dependency",
+    "Test-TrialOdynSurrender.ps1 -VerifyReleaseBinary: PASS; previous encounter repair retained",
+    "Standard Release worldserver and bnetserver build: PASS; canonical runtime and original final-link library paths used",
+    "Canonical PE verification: new Helya damage callback calls target-relative Unit::GetHealth; tentacle-death callback calls Unit::SetHealth; incremental-link thunks resolved; actual scripts/Release/scripts.lib freshness checked",
+    "Final canonical startup: ready=true, graceful exit0; fresh DBErrors.log and stderr.log empty; no encounter played during startup",
+    "Staged diff whitespace/JSON validation: PASS"
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "b001aacb5f9dd63e4f9060cd8b3a82a42284d30c81588d2def798029e4c2a607",
+    "bnetserver_sha256": "d9f55faee719a5701531c20bf5fe72f284866a83336630beb578848ea1c0aac3",
+    "startup_logs": "build-extractors/runtime-test/helya-judgment/startup-20261018-130559",
+    "worldserver_left_running": false,
+    "database_changes": false
+  },
+  "pending_client_checks": [
+    "Accept44868 from raid Odyn after44729 and confirm the displayed Helya objective and entry through Guarm's area.",
+    "Complete the actual intro trash, then cross65% with normal damage, a fresh lethal spell and a pet attack; verify Helya survives and begins her native retreat.",
+    "Kill all nine visible tentacles in different orders, with pet kills and fast cleave; verify2% wounds,47% return, helpers, boats, waves, speech and immunity visuals. The fixture does not spawn or render the native group.",
+    "Wipe/evade and retry; verify fresh tentacles and counters. Test LFR, normal, heroic and mythic separately; complete ability tuning is outside this audit.",
+    "Kill Helya in phase3, verify all eligible group members receive44868 credit once, and confirm loot and other quests sharing Helya are preserved.",
+    "Watch Odyn's missile/jump arrival and conversation, turn in44868 for Plume of the Fallen Val'kyr, then use the exit gossip. Verify saved-DONE reentry and actual questgiver interaction separately."
+  ]
+}
