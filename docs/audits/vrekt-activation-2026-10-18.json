@@ -1,0 +1,50 @@
+{
+  "quest": 44923,
+  "title": "Helarjar Landing: Vrekt",
+  "date": "2026-10-18",
+  "baseline": "e9d85586",
+  "status": "Missing rotation candidate restored and automatic shared-state overwrite prevented. Native code/data checks and canonical Release startup passed; no client verification or claim that the whole encounter is complete.",
+  "findings": {
+    "missingCandidate": "Live world_quest_update had44737 but no44923. The native GetWorldQuestUpdate returns null, GenerateNewWorldQuest returns before generation, and the loader cannot insert44923 into the automatic candidate set. Personal Lost Army conditions alone did not make this world quest activatable.",
+    "sharedState": "Native QuestV2CliTask44737/44746/44923 reference WorldStateExpression20860/20875/20988. Executing native Eval(nullptr,&state) harvests the same variable12678 with values1/2/3. The old automatic candidate admission did not exclude a second landing in another zone; generation publishes the last variant's value and overwrites the earlier task's client visibility expression.",
+    "baselineProof": "The pinned pre-fix CanBeActivate, executed with the unchanged native automatic candidate loop and generation functions, permits all three variants in each of the six zone orders. This is a native-function fixture reproduction, not a live-client observation.",
+    "nativeVrekt": "Two mandatory objectives:287303 -> marker115845, amount10, storage0;287309 -> Vaettfang115846, amount1, storage1. Native unlock condition45693 requires rewarded41694 AND44721 and task min level110. Native area8362 is Vrekt in Stormheim7541/map1220. Reward230157 effect219 starts conversation3982.",
+    "existingActors": "Live DB has33 spawns: one115846, six116180, ten116600, sixteen116601; map1220/zone7541/area8362, no model overrides, respawn180. WDB116180/116600/116601 already map KillCredit1 to115845; Vaettfang has no shared counter credit. All six configured displays resolve to native model files. Exact original placement, respawn durations and combat behavior are not established by these checks."
+  },
+  "implementation": {
+    "migration": "2026_10_18_10_vrekt_world_quest.sql",
+    "candidate": "Add44923 with native12678=3, area8362, EventID0, no secondary state. Inherit Timer from this server's existing Grey Shoals12678=1 policy, currently259200 seconds. Do not overwrite an existing Vrekt configuration, force a live rotation, reset personal progress or change rewards/loot.",
+    "durationBoundary": "259200 is the existing server Helarjar scheduling policy, not a recovered retail Vrekt duration. New row VerifiedBuild0 deliberately avoids a false sniff claim. No row is invented when the source policy is absent.",
+    "admission": "In QuestDataStoreMgr::CanBeActivate, only candidates whose primary variable is12678 inspect active quests across all zones. Reject another nonzero12678 value while its ResetTime is strictly later than the current clock. Exact expiry permits the next variant. Same value, zero/unrelated state and other candidate variables retain previous admission, including the existing event and emissary restrictions.",
+    "scopeBoundary": "This protects automatic scheduling through CanBeActivate. Explicit administrative GenerateNewWorldQuest still retains its native bypass of automatic admission. Existing conflicting saved rotations are not forcibly deleted or rewritten; this prevents new automatic conflicts."
+  },
+  "automatedChecks": [
+    "Test-VrektCatalog.ps1: typed native DB2Storage/LoadInfo plus linked WorldStateExpressionEntry::Eval validate all three shared-state expressions, native unlocks, both objective mappings, area, all configured model files and outro. Eval's bool with null player is not interpreted as live visibility. Input SHA256 inventory saved in runtime-test/vrekt-catalog/native-inputs.json.",
+    "Test-VrektWorldQuest.ps1 -Live: indexed temporary shadow tables reproduce a missing candidate, run migration twice, compare complete unrelated rows and preserve operator-edited existing Vrekt data. Missing Grey Shoals duration policy does not invent a candidate. Deployed row matches the tested native state and inherited timer.",
+    "Native fixture executes actual GetWorldQuestTemplate, GetWorldQuestUpdate, GenerateNewWorldQuest, GenerateWorldQuest, automatic candidate-loop body and CanBeActivate. Native WorldQuestState uint16/int16 typedef and QuestInfo/WorldQuestResetType enums are extracted rather than remodeled with guessed widths/IDs. Six activation orders, exact expiry, same/zero/secondary states, unrelated variables, null template, event and emissary gates pass; pinned e9d85586 admission reproduces all six overwrite cases.",
+    "Fixture boundary: scheduler quota/RNG selection, surrounding candidate iteration, clock, reward calculation, task/world-state services, database persistence and DB2 stores used by the generator are controlled leaves. The typed native DB2 test is separate. No full running scheduler selection, player packets or client visibility claim.",
+    "Test-LostArmyLanding.ps1 passes actual condition9/41/58/60, negative ten-kill quota, source1 loader/attachment and LootItem visibility for both factions, party/raid and quest-status boundaries. Earlier loot-fixture/client limitations remain.",
+    "Test-GreyShoalsRotation.ps1 passes production expiry/lifecycle, visibility, scaled damage and scope cases. No Grey Shoals actor/control code changed.",
+    "Standard CMake Release worldserver/bnetserver build passes into build-extractors/bin/Release. Test-VrektRelease.ps1 checks the actual final-link game.lib source freshness and deployed PE function ranges, resolving incremental thunks; admission contains candidate uint32 and native state-key uint16 comparisons to12678 and the native clock call, and the automatic scheduler calls that admission. MSVC hoists the shared constant into one register; bounded native disassembly validates both uses rather than incorrectly requiring two literal copies."
+  ],
+  "deployment": {
+    "migrationState": "RELEASED",
+    "sha1": "D4340B9FAFF343853753A51D24ADE35806CC0A2E",
+    "backup": ".codex/backups/vrekt-world-quest/20261018-181911",
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "4E6EDB647466419B2979AE7456ABCFE7E6F7E3FC06E12A45D257357187134C41",
+    "startup": {"path": "build-extractors/runtime-test/vrekt-world-quest/startup-20261018-182020", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
+    "boundary": "Canonical configs, certificates, DLLs and extracted maps/vmaps/mmaps/dbc preserved. Validation server stopped gracefully. Startup confirms load admission, not Vrekt encounter execution or a forced change to the existing rotation."
+  },
+  "sources": [
+    {"url": "https://www.wowhead.com/ptr-2/quest=44923/helarjar-landing-vrekt", "evidence": "Player comments corroborate the Vrekt location, separate Vaettfang requirement and Helya's Conquest unlock. A comment's14-enemy count differs from native7.3.5 amount10; native data was retained. Current/PTR presentation is not a7.3.5 timing sniff."},
+    {"url": "https://www.wowhead.com/quest=44923/helarjar-landing-vrekt", "evidence": "Canonical quest reference; direct web fetch denied, indexed localized/PTR copies supplied comments. No claim of a newly recovered historical timer."}
+  ],
+  "remaining": [
+    "Live observation of automatic rotation selection, map/task appearance and both mandatory counters through player/pet/group kills still needs client verification. Eligibility does not mean the scheduler must select Vrekt immediately.",
+    "The existing NPCs have no explicit combat AI/script bindings or SmartAI rows. Audit native fallback combat and original abilities, outdoor rotation visibility/control, ordinary village fauna and Vaettfang's drake/chain scene separately.",
+    "Existing quest_poi includes a corrupt row with nonsensical map/objective values (Idx1=1) alongside valid Vrekt and shared-counter polygons. This activation change does not silently rewrite those historical map records; POI cleanup/native map display is a separate follow-up.",
+    "Terrain/navmesh, exact placements/respawns, all combat/visual actions, outro playback, actual quest completion and inherited duration authenticity remain open. Earlier Lost Army and Grey Shoals audits retain all recorded client limitations.",
+    "Rockaway44746 also lacks a world_quest_update candidate in this database. Its native12678=2 mapping is confirmed, but restoring that separate landing's scheduling row is not bundled into the Vrekt fix."
+  ]
+}

@@ -3146,6 +3146,25 @@ bool QuestDataStoreMgr::CanBeActivate(WorldQuestTemplate const* qTemplate, World
     if (questUpdate->EventID)
         return false;
 
+    // The native Helarjar tasks share world state12678: Grey Shoals=1,
+    // Rockaway Coast=2, Vrekt=3. A second zone must not overwrite the
+    // still-active landing's client visibility expression.
+    if (questUpdate->VariableID == 12678)
+    {
+        auto now = GameTime::GetGameTime();
+        for (auto const& zone : _worldQuest)
+            for (auto const& entry : zone.second)
+            {
+                WorldQuest const& active = entry.second;
+                if (active.ResetTime <= now)
+                    continue;
+
+                for (auto const& state : active.State)
+                    if (state.first == 12678 && state.second && state.second != questUpdate->Value)
+                        return false;
+            }
+    }
+
     switch (qTemplate->QuestInfoID)
     {
         case QUEST_INFO_EMISSARY_QUEST:
