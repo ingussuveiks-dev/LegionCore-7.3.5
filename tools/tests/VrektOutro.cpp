@@ -23,6 +23,7 @@
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 
 static void Require(bool value,char const*reason){if(!value)throw std::runtime_error(reason);}
@@ -97,16 +98,32 @@ int Run(int argc,char**argv)
     DB2Storage<SoundKitEntryEntry> files("SoundKitEntry.db2",SoundKitEntryLoadInfo::Instance());
     auto dbc=std::string(argv[2])+"dbc/enUS/";
     Require(sounds.Load(dbc.c_str(),0),"Native SoundKit catalog failed");
+    auto info=SoundKitEntryLoadInfo::Instance();
+    Require(info->Meta==SoundKitEntryMeta::Instance(),"SoundKitEntry uses another table's metadata");
+    DB2Header header{};std::ifstream raw(dbc+"SoundKitEntry.db2",std::ios::binary);
+    Require(bool(raw.read(reinterpret_cast<char*>(&header),sizeof(header)))&&
+        header.LayoutHash==info->Meta->LayoutHash,"Native header/layout mismatch");
+    // Reproduce the exact pre-fix metadata substitution without inventing a
+    // packed row decoder or changing the canonical file.
+    DB2LoadInfo wrong(info->Fields,info->FieldCount,SoundKitMeta::Instance(),info->Statement);
+    DB2Storage<SoundKitEntryEntry> broken("SoundKitEntry.db2",&wrong);
+    Require(!broken.Load(dbc.c_str(),0),"Old SoundKit metadata no longer reproduces rejection");
     bool filesLoaded=files.Load(dbc.c_str(),0);
+    Require(filesLoaded,"Native SoundKitEntry reader rejected the canonical file");
     bool soundFound=false,fileFound=false;
     for(auto sound:text->SoundEntriesID)if(sound&&sounds.LookupEntry(sound))
     {
         soundFound=true;
-        if(filesLoaded)for(auto file:files)if(file->SoundKitID==sound&&file->FileDataID)fileFound=true;
+        for(auto file:files)if(file->SoundKitID==sound&&file->FileDataID)
+        {
+            fileFound=true;
+            std::cout<<"OUTROFILE "<<file->ID<<" kit="<<file->SoundKitID<<" file="<<file->FileDataID
+                <<" frequency="<<uint32(file->Frequency)<<" volume="<<file->Volume<<'\n';
+        }
     }
-    Require(soundFound,"Outro broadcast has no native sound kit");
+    Require(soundFound&&fileFound,"Outro broadcast has no native sound kit/file link");
     std::cout<<"OUTRO SoundKitEntry reader accepted="<<filesLoaded<<" linked-file="<<fileFound
-        <<"; physical audio remains unverified when this optional catalog cannot load\n";
+        <<"; physical audio payload and client playback are separate checks\n";
     std::cout<<"OUTRO line="<<line->ID<<" broadcast="<<text->ID<<" sound="<<text->SoundEntriesID[0]
         <<" actor="<<actors->front().creatureId<<" display="<<actors->front().displayId<<'\n';
     {

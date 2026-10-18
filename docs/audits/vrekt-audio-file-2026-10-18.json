@@ -1,0 +1,52 @@
+{
+  "quest": 44923,
+  "title": "Vrekt outro audio reference and native payload",
+  "date": "2026-10-18",
+  "baseline": "8594d3c5",
+  "status": "Resolved the previously recorded SoundKitEntry reader rejection and traced the existing outro to a fully read/decoded native client audio file. This fixes the server-side catalog descriptor, not an observed in-game audio failure. Client playback remains separate.",
+  "finding": "SoundKitEntryLoadInfo declared the correct five logical fields but passed SoundKitMeta::Instance instead of SoundKitEntryMeta::Instance. The latter already exists with layout0x6ED6E26F and parent field0. Native DB2Storage rejected the canonical SoundKitEntry file under the wrong table layout; no packed-offset fallback was needed.",
+  "implementation": "Change only that metadata association. Keep all fields, parent/record semantics, SQL hotfix statement and unrelated sound descriptors unchanged. Make VrektOutro's SoundKitEntry load and direct file link mandatory. It reads the native DB2Header, checks the actual layout and reproduces rejection using the exact old metadata substitution with the same current field descriptors.",
+  "chain": {
+    "spell": 230157,
+    "effect": 219,
+    "conversation": 3982,
+    "line": 9085,
+    "broadcastText": 123646,
+    "soundKit": 77643,
+    "soundKitEntry": 194118,
+    "fileDataID": 1519112,
+    "frequency": 1,
+    "volume": 1,
+    "actorDurationMs": 6117,
+    "nativeConversationDurationMs": 11117
+  },
+  "payload": {
+    "clientBuild": "7.3.5.26972",
+    "bytes": 37585,
+    "SHA256": "7F3FBFAA1F39D9B2C9AA8E58F4309FD34A7D162CB6571CD655404EBC09960C43",
+    "container": "ogg",
+    "codec": "vorbis",
+    "sampleRate": 22050,
+    "channels": 1,
+    "durationSeconds": 5.592744,
+    "clientPlaybackVerified": false
+  },
+  "automatedChecks": [
+    "Test-VrektOutro.ps1: typed native DB2Storage accepts the correct SoundKitEntry descriptor and rejects the old SoundKit descriptor against the same unmodified runtime file. Existing native spell -> conversation creation, exact actor/line payload, map/caster binding,11117ms duration and cleanup checks pass against the actual final-link library.",
+    "Test-VrektAudio.ps1: follows native OUTROFILE output to CASC File00172E08. Private read-only CascLib source copies add only write-sharing compatibility. Fully reads all37585 bytes, exports only to ignored runtime-test output, and verifies32 client CASC index hashes remain unchanged. No client UI or playback operated.",
+    "ffprobe identifies mono22050Hz Ogg/Vorbis; ffmpeg decodes the full payload without errors to a null sink. Duration5.592744s fits the existing6117ms actor hold and11117ms conversation lifetime. Decoding is not evidence that the line is heard by a Player in game.",
+    "Standard CMake Release worldserver/bnetserver build passes into canonical build-extractors/bin/Release, including DB2Stores.cpp rebuild. Native probe links that generated actual game.lib. Startup ready=true, graceful exit0, empty DBErrors/stderr. No SQL/data/config/personal-state changes."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "6CEFE65DDB5F950A9D8B233A9DBAB5D7A374EB4D098FC7D5438D410231E5D532",
+    "bnetserverSHA256": "4ECC299C907A52C57A1616AB56DD0FE80FCD19DE1A2E40BC0C01A58501E719C9",
+    "startup": "build-extractors/runtime-test/vrekt-audio/startup-20261018-224759",
+    "audioEvidence": "build-extractors/runtime-test/vrekt-audio/summary.json",
+    "inputManifest": "build-extractors/runtime-test/vrekt-outro/native-inputs.json"
+  },
+  "remaining": [
+    "Actual Player visibility, subtitle/audio delivery, client mixing and perceived full-clip timing remain client checks. No new whole-quest/client verification claim.",
+    "Earlier Vrekt reward, mail, scene, geometry and reconstructed retail-detail limitations are retained. The old optional SoundKitEntry-reader limitation is resolved by this follow-up, not erased from historical audits."
+  ]
+}

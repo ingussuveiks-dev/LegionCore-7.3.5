@@ -3,6 +3,7 @@
   "title": "Vrekt follow-up: world-quest item delivery with full inventory",
   "date": "2026-10-18",
   "baseline": "ccb40e91",
+  "audioFollowUp": "vrekt-audio-file-2026-10-18.json resolves the historical SoundKitEntry catalog limitation mentioned below. Client audio/mail verification remains separate.",
   "status": "Fixed both dynamic world-quest item branches losing their selected reward on inventory-full admission. Production-function regressions, canonical Release binary checks and clean startup pass. Actual mailbox receipt/withdrawal and persisted item metadata still need an integrated Player/client check.",
   "finding": "Both RewardQuest recipe and main-item branches only called StoreNewItem when CanStoreNewItem returned EQUIP_ERR_OK. An inventory-full result skipped the item while the surrounding completion path continued. The pinned baseline selection functions reproduce zero delivered/stored items with a full inventory for both factions and with/without the extra recipe.",
   "implementation": {
