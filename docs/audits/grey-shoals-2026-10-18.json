@@ -1,0 +1,61 @@
+{
+  "quest": 44737,
+  "title": "Helarjar Landing: Grey Shoals",
+  "date": "2026-10-18",
+  "status": "Supply admission repaired; native progress/catalog and live data audited. Original supply restoration and rotation spawning remain follow-ups; no client verification.",
+  "location": {"map": 1220, "zone": 7334, "area": 8297, "name": "Grey Shoals, Azsuna"},
+  "correction": "Grey Shoals is in Azsuna. Earlier Lost Army prose calling both outdoor landings Stormheim was inaccurate.",
+  "nativeEvidence": {
+    "reader": "tools/tests/GreyShoalsCatalog.cpp uses the core's typed C++ DB2Storage/LoadInfo against canonical runtime dbc/enUS",
+    "objectives": [
+      {"id": 287220, "type": 15, "meaning": "Computed progress bar, complete at >=100; native slot0, server nonstored slot-1"},
+      {"id": 287221, "entry": 115025, "amount": 17, "slot": 1, "flags": 92, "serverWeight": 6},
+      {"id": 287222, "entry": 115031, "amount": 20, "slot": 2, "flags": 92, "serverWeight": 5},
+      {"id": 287223, "entry": 115026, "amount": 50, "slot": 3, "flags": 92, "serverWeight": 2},
+      {"id": 287226, "entry": 115739, "amount": 20, "slot": 0, "flags": 92, "serverWeight": 5},
+      {"id": 287238, "entry": 115751, "amount": 4, "slot": 4, "flags": 92, "serverWeight": 25}
+    ],
+    "weightBoundary": "TaskStep is server SQL, not a QuestObjective.db2 field. Native amounts/flags corroborate weighted optional counters; a guide's combined6% description does not justify changing Rigger5%.",
+    "unlock": {"QuestV2CliTaskCondition": 47903, "previousQuests": [41694, 44721], "PrevQuestLogic": 1},
+    "models": [29504, 69422, 64467, 28072, 64464],
+    "modelResult": "All configured template displays resolve to native CreatureModelData/FileDataID. All20 world spawns use modelid0; no override bypasses selection.",
+    "factions": [2817, 16],
+    "flags": "32768 is UNIT_FLAG_UNK_15 in this core, not PACIFIED (131072). No speculative flag clearing.",
+    "completionSpell": "229049 effect219 conversation3895, plus self dummy aura; actual outro playback not tested.",
+    "supplySpell": "229972 effect134 targets caster and awards marker115739. Native effect134 calls RewardPlayerAndGroupAtEvent, so manual personal KilledMonsterCredit is not equivalent. Retain as restoration evidence."
+  },
+  "liveData": {
+    "actors": {"115025": 7, "115026": 5, "115031": 4, "115751": 4},
+    "scope": "All20 actors on1220/7334/8297, phaseMask1/emptyPhaseId, respawn180s; exact original coordinates and four Seirdr placements are unverified.",
+    "combat": "SmartAI retained; all eight cast rows admit outdoor difficulty0 (empty Difficulties, no deprecated difficulty flags) and have ordered initial/repeat timers. Configured spells exist in native DB2. Full cast/target execution, ranged combat and leash reset are not verified by these data checks.",
+    "supplies": "Four GUIDs147040012..147040015 are the September reconstruction using241741/244704. Their native spells184397/193190 award unrelated markers93067/97947. Do not call these original Grey Shoals supplies.",
+    "rotation": "world_quest_update uses timer259200, world state12678, area8297, EventID0. No source60 spawn conditions or phase gates were found for these actors/objects. Existing fragment conditions are separate and do not control spawn visibility."
+  },
+  "fix": {
+    "file": "src/server/scripts/Legion/zone_azsuna.cpp",
+    "behavior": "Inside Grey Shoals the reconstructed supply handler consumes every rejected interaction, preventing fallback to unrelated template spells. Credit now requires a present unexpired rotation, living player, same phase, incomplete quest, allowed group, native interaction range, spawned/ready object. Successful interaction still gives one credit and deactivates the object.",
+    "outsideScope": "Other areas/maps retain ordinary native template use. Existing reconstruction coordinates/models were not silently relabeled authentic."
+  },
+  "sources": [
+    {"url": "https://www.wowhead.com/quest=44737/helarjar-landing-grey-shoals#comments:id=2450883", "author": "JNasty", "date": "2016-12-04", "evidence": "100% bar, optional activities, hounds2%, supplies5%, Seirdr25%; combined nonelite6% statement has the Rigger discrepancy noted above."},
+    {"url": "https://www.youtube.com/watch?v=il9pmNrDeGU", "date": "2016-12-04", "evidence": "Guide linked by the dated comment. Publication metadata checked; footage has not yet been inspected for exact placement/animations."},
+    {"url": "https://www.wowhead.com/quest=44737/helarjar-landing-grey-shoals#comments:id=2448756", "date": "2016-11-26", "evidence": "Contemporary report of fragment drops requiring an available Helarjar WQ; existing Lost Army loot regressions cover that separate path."},
+    {"url": "https://www.wowhead.com/npc=115025/helarjar-raider#comments:id=3187438", "date": "2020-01-31", "evidence": "Later report of WQ-only raiders and ordinary coast fauna otherwise. Supporting rotation lead, not a7.3.5 sniff."},
+    {"url": "https://github.com/TrinityCore/TrinityCore/blob/cd29c358ac6647b9ffeeae3a3cfc9da5829868c9/sql/old/9.x/world/20101_2021_07_04/2020_12_25_01_world.sql", "evidence": "Public Kvaldir Weapon Rack266170 template: display35575, spell229972, build27843. Later-build template corroborates a7.3.5-native credit spell; exact7.3.5 placement remains unknown."}
+  ],
+  "automatedChecks": [
+    "Test-GreyShoals.ps1: extracted production supply class, actual QuestDef enums, native HasQuestObjectiveComplete/CanCompleteQuest and generic kill-objective mutation; rejected interactions, no fallthrough, expiry/new rotation, repeat clicks, mixed97->102%, supplies-only and boss-only completion, raid rejection.",
+    "Fixture boundary: world services, quest slots/counters, object state and group services are controlled doubles. Unit::Kill, full GO::Use, packets, spell hits and client are not executed.",
+    "Test-GreyShoalsCatalog.ps1: typed native objective/unlock/models/factions/configured spells and original supply spell candidate.",
+    "Test-GreyShoalsData.ps1: read-only live objective/weight, spawn, override, SmartAI timer/difficulty, AI binding and reconstructed supply inventory checks.",
+    "Test-GreyShoalsRelease.ps1: actual final-link scripts.lib and source freshness, canonical PE supply handler calls rotation lookup, clock, quest status and credit; incremental thunks resolved.",
+    "Release worldserver/bnetserver compiled using standard CMake output; canonical startup readyTrue/gracefulExit0, DBErrors/stderr empty at runtime-test/rockaway/startup-20261018-163124."
+  ],
+  "petAndGroupBoundary": "Source trace: Unit::Kill resolves GetCharmerOrOwnerPlayerOrPlayerItself (or loot recipient); KillRewarder::_RewardKillCredit schedules native KilledMonster -> generic objective mutation. No44737-specific pet-kill bypass was found. Pet ownership, tapping, group distance, delayed corpse lookup and duplicate reward dispatch were not exercised end-to-end; do not report pet kills client-verified.",
+  "remaining": [
+    "Restore confirmed Kvaldir rack266170/native229972 interaction and remove the four foreign-template substitutes; test actual GO use, group credit and failure/retry before claiming native completion.",
+    "Gate encounter actors and supplies to active rotation, including already-loaded actors, expiry while fighting, corpses, respawn/grid reload and next activation. Do not use EventID to start an event: CanBeActivate currently rejects nonzeroEventID.",
+    "Check actual combat target execution and terrain/VMAP/navmesh, exact retail spawn placement and baseline fauna replacement.",
+    "Client: 100% completion/reward/outro, pet/group kills, supply cast/visual/despawn/respawn, repeated rotation, actor visibility and combat."
+  ]
+}

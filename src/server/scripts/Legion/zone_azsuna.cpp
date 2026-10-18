@@ -1,6 +1,9 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "Player.h"
+#include "QuestData.h"
+#include "GameTime.h"
+#include "Group.h"
 
 enum eSpells
 {
@@ -452,11 +455,19 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* go) override
     {
-        if (go->GetMapId() != 1220 || go->GetAreaId() != 8297 ||
-            player->GetQuestStatus(44737) != QUEST_STATUS_INCOMPLETE)
+        if (go->GetMapId() != 1220 || go->GetAreaId() != 8297)
             return false;
 
-        if (!go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
+        // These reconstructed objects reuse templates from other quests. Once
+        // in Grey Shoals, never fall through to their unrelated native spells.
+        auto quest = sQuestDataStore->GetQuestTemplate(44737);
+        auto rotation = quest ? sQuestDataStore->GetWorldQuest(quest) : nullptr;
+        if (!rotation || rotation->ResetTime <= GameTime::GetGameTime() ||
+            !player->IsAlive() || !go->InSamePhase(player) ||
+            player->GetQuestStatus(44737) != QUEST_STATUS_INCOMPLETE ||
+            (player->GetGroup() && player->GetGroup()->isRaidGroup() &&
+                !quest->IsAllowedInRaid(player->GetMap()->GetDifficultyID())) ||
+            !go->IsWithinDistInMap(player, go->GetInteractionDistance()) ||
             !go->isSpawned() || go->getLootState() != GO_READY)
             return true;
 
