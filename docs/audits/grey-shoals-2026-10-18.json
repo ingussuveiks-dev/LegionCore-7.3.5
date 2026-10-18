@@ -52,6 +52,7 @@
     "Release worldserver/bnetserver compiled using standard CMake output; canonical startup readyTrue/gracefulExit0, DBErrors/stderr empty at runtime-test/rockaway/startup-20261018-163124."
   ],
   "petAndGroupBoundary": "Source trace: Unit::Kill resolves GetCharmerOrOwnerPlayerOrPlayerItself (or loot recipient); KillRewarder::_RewardKillCredit schedules native KilledMonster -> generic objective mutation. No44737-specific pet-kill bypass was found. Pet ownership, tapping, group distance, delayed corpse lookup and duplicate reward dispatch were not exercised end-to-end; do not report pet kills client-verified.",
+  "followUp": "Native rack266170/spell229972 restoration and expanded native branch/group/timer checks are recorded in grey-shoals-native-supplies-2026-10-18.json. The historical reconstructed inventory above describes the state before that migration; retain other open findings.",
   "remaining": [
     "Restore confirmed Kvaldir rack266170/native229972 interaction and remove the four foreign-template substitutes; test actual GO use, group credit and failure/retry before claiming native completion.",
     "Gate encounter actors and supplies to active rotation, including already-loaded actors, expiry while fighting, corpses, respawn/grid reload and next activation. Do not use EventID to start an event: CanBeActivate currently rejects nonzeroEventID.",

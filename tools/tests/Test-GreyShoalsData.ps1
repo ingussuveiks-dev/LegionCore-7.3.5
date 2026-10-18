@@ -1,3 +1,4 @@
+param([switch]$MigrationOnly)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/grey-shoals"
@@ -8,6 +9,33 @@ function Query([string]$sql){
  try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Grey Shoals SQL check failed'}}finally{$env:MYSQL_PWD=$previous}
  $rows
 }
+$migration=Get-Content "$repo/sql/updates/world/2026_10_18_07_grey_shoals_native_supplies.sql" -Raw
+$migrationRows=@(Query @"
+CREATE TEMPORARY TABLE saved_go LIKE gameobject;
+INSERT INTO saved_go SELECT * FROM gameobject WHERE guid BETWEEN 147040012 AND 147040015 OR guid IN(113990,115036);
+CREATE TEMPORARY TABLE gameobject LIKE saved_go;
+INSERT INTO gameobject SELECT * FROM saved_go;
+CREATE TEMPORARY TABLE saved_template LIKE gameobject_template;
+INSERT INTO saved_template SELECT * FROM gameobject_template WHERE entry IN(241741,244704,266170,245924);
+CREATE TEMPORARY TABLE gameobject_template LIKE saved_template;
+INSERT INTO gameobject_template SELECT * FROM saved_template;
+UPDATE gameobject SET id=IF(guid IN(147040012,147040014),241741,244704) WHERE guid BETWEEN 147040012 AND 147040015;
+UPDATE gameobject_template SET ScriptName='go_grey_shoals_supplies' WHERE entry IN(241741,244704);
+UPDATE gameobject_template SET Data3=1,ScriptName='' WHERE entry=266170;
+$migration
+$migration
+SELECT 'native-spawns',COUNT(*) FROM gameobject WHERE guid BETWEEN 147040012 AND 147040015 AND id=266170;
+SELECT 'native-template',COUNT(*) FROM gameobject_template WHERE entry=266170 AND type=10 AND displayId=35575 AND Data10=229972 AND Data3=1000 AND ScriptName='go_grey_shoals_supplies';
+SELECT 'old-hooks',COUNT(*) FROM gameobject_template WHERE entry IN(241741,244704) AND ScriptName<>'';
+SELECT 'unrelated-spawns',COUNT(*) FROM gameobject g JOIN saved_go s ON g.guid=s.guid WHERE g.guid IN(113990,115036) AND g.id=s.id AND g.position_x=s.position_x AND g.position_y=s.position_y AND g.position_z=s.position_z;
+SELECT 'positions',COUNT(*) FROM gameobject g JOIN saved_go s ON g.guid=s.guid WHERE g.guid BETWEEN 147040012 AND 147040015 AND g.position_x=s.position_x AND g.position_y=s.position_y AND g.position_z=s.position_z AND g.spawntimesecs=s.spawntimesecs;
+SELECT 'unrelated-template',COUNT(*) FROM gameobject_template g JOIN saved_template s ON g.entry=s.entry WHERE g.entry=245924 AND g.ScriptName=s.ScriptName AND g.Data3=s.Data3 AND g.Data10=s.Data10;
+"@)
+foreach($expected in @("native-spawns`t4","native-template`t1","old-hooks`t0","unrelated-spawns`t2","positions`t4","unrelated-template`t1")){
+ if($migrationRows -notcontains $expected){throw "Native supply repeated migration failed: $expected"}
+}
+'PASS: repeated native rack migration in temporary shadow tables; original positions, foreign spawns and unrelated template preserved.'
+if($MigrationOnly){return}
 $objectives=@(Query 'SELECT ID,Type,StorageIndex,ObjectID,Amount,Flags,TaskStep FROM quest_objectives WHERE QuestID=44737 ORDER BY ID;')
 $expected=@("287220`t15`t-1`t0`t1`t0`t0","287221`t0`t1`t115025`t17`t92`t6","287222`t0`t2`t115031`t20`t92`t5","287223`t0`t3`t115026`t50`t92`t2","287226`t0`t0`t115739`t20`t92`t5","287238`t0`t4`t115751`t4`t92`t25")
 if(($objectives -join ',') -ne ($expected -join ',')){throw 'Server objective mapping/weights differ from the native behavioral fixture'}
@@ -20,8 +48,8 @@ $sai=@(Query "SELECT entryorguid,id FROM smart_scripts WHERE entryorguid IN(1150
 if($sai.Count){throw 'Combat timers/difficulty admission changed'}
 Query 'SELECT entryorguid,id,action_param1,target_type FROM smart_scripts WHERE entryorguid IN(115025,115026,115031,115751) AND source_type=0 ORDER BY entryorguid,id;' | Set-Content "$out/smart-spells.tsv"
 $supplies=@(Query 'SELECT guid,id FROM gameobject WHERE guid BETWEEN 147040012 AND 147040015 AND map=1220 AND areaId=8297 ORDER BY guid;')
-if(($supplies -join ',') -ne "147040012`t241741,147040013`t244704,147040014`t241741,147040015`t244704"){throw 'Reconstructed supply inventory changed; re-audit original-template restoration'}
+if(($supplies -join ',') -ne "147040012`t266170,147040013`t266170,147040014`t266170,147040015`t266170"){throw 'Native supply template binding changed'}
 $supplies | Set-Content "$out/supplies.tsv"
 Query 'SELECT entry,name,displayId,Data10,VerifiedBuild FROM gameobject_template WHERE entry IN(241741,244704,266170);' | Set-Content "$out/supply-evidence.tsv"
 if(@(Query "SELECT entry FROM creature_template WHERE entry IN(115025,115026,115031,115751) AND AIName<>'SmartAI';").Count){throw 'Combat AI binding changed'}
-'PASS: live objective weights, 20 actor spawns, no model overrides, combat timer/difficulty data, four reconstructed supply objects. Spawn authenticity/rotation and full native casts are separate audit findings.'
+'PASS: live objective weights, 20 actor spawns, no model overrides, combat timer/difficulty data, four native racks at reconstructed positions. Spawn authenticity/rotation and full native casts are separate audit findings.'

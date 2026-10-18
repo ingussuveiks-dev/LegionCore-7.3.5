@@ -18,3 +18,8 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($compi
 if($LASTEXITCODE){throw 'GreyShoals native catalog build failed'}
 $previousPath=$env:PATH
 try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/GreyShoalsCatalog.exe" "$repo/build-extractors/bin/Release/dbc/enUS/";if($LASTEXITCODE){throw 'GreyShoals native DB2 reader failed'};$rows | Set-Content "$output/native-lines.txt";$rows}finally{$env:PATH=$previousPath}
+$hashes=@{}
+foreach($name in @('QuestObjective','QuestV2CliTask','PlayerCondition','Spell','SpellEffect','CreatureDisplayInfo','CreatureModelData','GameObjectDisplayInfo','FactionTemplate')){
+ $hashes[$name]=(Get-FileHash "$repo/build-extractors/bin/Release/dbc/enUS/$name.db2" -Algorithm SHA256).Hash
+}
+$hashes | ConvertTo-Json | Set-Content "$output/native-inputs.json"

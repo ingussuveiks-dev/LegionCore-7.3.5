@@ -14,6 +14,7 @@ int Run(int argc,char** argv){
  STORE(SpellEffectEntry,effects,"SpellEffect",SpellEffectLoadInfo);
  STORE(CreatureDisplayInfoEntry,displays,"CreatureDisplayInfo",CreatureDisplayInfoLoadInfo);
  STORE(CreatureModelDataEntry,models,"CreatureModelData",CreatureModelDataLoadInfo);
+ STORE(GameObjectDisplayInfoEntry,objects,"GameObjectDisplayInfo",GameobjectDisplayInfoLoadInfo);
  STORE(FactionTemplateEntry,factions,"FactionTemplate",FactionTemplateLoadInfo);
 #undef STORE
  uint32 ids[]={287220,287221,287222,287223,287226,287238};
@@ -36,7 +37,10 @@ int Run(int argc,char** argv){
   for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID)
    std::cout<<"spell "<<id<<" effect "<<e->EffectIndex<<" type "<<e->Effect<<" aura "<<e->EffectAura<<" misc "<<e->EffectMiscValue[0]<<" target "<<e->ImplicitTarget[0]<<','<<e->ImplicitTarget[1]<<'\n';}
  for(auto e:effects)if(e->EffectMiscValue[0]==115739||e->EffectMiscValue[1]==115739)
-  std::cout<<"supply candidate "<<e->SpellID<<" effect "<<e->EffectIndex<<" type "<<e->Effect<<'\n';
+  {Require(e->SpellID==229972&&e->Effect==134&&e->ImplicitTarget[0]==1,"Reinspect supply native credit routing");
+   std::cout<<"supply "<<e->SpellID<<" effect "<<e->EffectIndex<<" type "<<e->Effect<<'\n';}
+ auto rack=objects.LookupEntry(35575);Require(rack&&rack->FileDataID,"Missing native Kvaldir rack model");
+ std::cout<<"rack display35575 file "<<rack->FileDataID<<'\n';
  std::cout<<"PASS: typed native objective/unlock/model/faction/spell catalog; TaskStep weights are server SQL, not QuestObjective.db2 fields\n";
  return 0;
 }

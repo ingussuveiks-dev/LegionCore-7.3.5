@@ -447,7 +447,7 @@ public:
     }
 };
 
-// Grey Shoals' weapon racks and banners award the optional 5% world quest credit.
+// Grey Shoals' native Kvaldir racks award optional 5% progress through229972.
 class go_grey_shoals_supplies : public GameObjectScript
 {
 public:
@@ -458,11 +458,10 @@ public:
         if (go->GetMapId() != 1220 || go->GetAreaId() != 8297)
             return false;
 
-        // These reconstructed objects reuse templates from other quests. Once
-        // in Grey Shoals, never fall through to their unrelated native spells.
+        // Reject stale/ineligible uses before the native goober opens and casts.
         auto quest = sQuestDataStore->GetQuestTemplate(44737);
         auto rotation = quest ? sQuestDataStore->GetWorldQuest(quest) : nullptr;
-        if (!rotation || rotation->ResetTime <= GameTime::GetGameTime() ||
+        if (go->GetEntry() != 266170 || !rotation || rotation->ResetTime <= GameTime::GetGameTime() ||
             !player->IsAlive() || !go->InSamePhase(player) ||
             player->GetQuestStatus(44737) != QUEST_STATUS_INCOMPLETE ||
             (player->GetGroup() && player->GetGroup()->isRaidGroup() &&
@@ -471,9 +470,9 @@ public:
             !go->isSpawned() || go->getLootState() != GO_READY)
             return true;
 
-        player->KilledMonsterCredit(115739);
-        go->SetLootState(GO_JUST_DEACTIVATED);
-        return true;
+        // Keep the template's animation, consumption and native spell134 group
+        // credit. Returning true here would bypass GameObject::Use entirely.
+        return false;
     }
 };
 

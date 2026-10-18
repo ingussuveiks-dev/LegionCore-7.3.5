@@ -42,7 +42,8 @@ $exe="$repo/build-extractors/bin/Release/worldserver.exe"
  }
 
 $calls=@(Calls '?OnGossipHello@go_grey_shoals_supplies@@')
-foreach($name in @('?GetWorldQuest@QuestDataStoreMgr@@','?GetGameTime@GameTime@@','?KilledMonsterCredit@Player@@','?GetQuestStatus@Player@@')){
+foreach($name in @('?GetWorldQuest@QuestDataStoreMgr@@','?GetGameTime@GameTime@@','?GetQuestStatus@Player@@')){
  if($calls -notcontains (Resolve (Symbol $name))){throw "Canonical supply handler lacks $name"}
 }
-'PASS: actual final-link scripts library/source freshness and deployed supply handler rotation, time, quest-status and credit calls. Client remains pending.'
+if($calls -contains (Resolve (Symbol '?KilledMonsterCredit@Player@@'))){throw 'Canonical supply handler retains personal shortcut instead of native229972 group credit'}
+'PASS: actual final-link scripts library/source freshness and deployed supply handler rotation, time, quest status and removal of personal credit shortcut. Client remains pending.'

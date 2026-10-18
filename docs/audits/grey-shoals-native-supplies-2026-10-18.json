@@ -1,0 +1,43 @@
+{
+  "quest": 44737,
+  "date": "2026-10-18",
+  "status": "Native rack template/spell restored and automated native-branch tests passed; exact retail positions, rotation spawning and client behavior remain unverified.",
+  "supersedes": "The supply restoration follow-up in grey-shoals-2026-10-18.json; retain that audit's historical evidence and other open findings.",
+  "evidence": [
+    {"source": "canonical7.3.5 SpellEffect.db2 through typed C++ DB2Storage", "result": "229972 effect0 is134, misc115739, target1(caster). The actual EffectKillCredit dispatcher awards RewardPlayerAndGroupAtEvent, rather than personal-only credit."},
+    {"source": "canonical7.3.5 GameObjectDisplayInfo.db2", "result": "Display35575 resolves to FileDataID1103414."},
+    {"source": "existing server gameobject_template266170", "result": "Already had type10, display35575, spell229972, consumable1, native template properties and VerifiedBuild23222; previously no world spawns."},
+    {"url": "https://github.com/TrinityCore/TrinityCore/blob/cd29c358ac6647b9ffeeae3a3cfc9da5829868c9/sql/old/9.x/world/20101_2021_07_04/2020_12_25_01_world.sql", "result": "Primary repository template identifies Kvaldir Weapon Rack266170/display35575/spell229972. Its capture build27843 is later than7.3.5; compatibility comes from native runtime data, not assuming unchanged later-build behavior."},
+    {"url": "https://github.com/zixsen/ZygorGuidesViewer/blob/b37a7317bf297a426ff29697559668b75cb6fc11/Guides/Dailies/ZygorDailiesHordeLEGIONTrial.lua", "result": "Guide explicitly associates clicking Kvaldir Weapon Rack266170 with Grey Shoals44737. Unofficial guide corroborates entry binding, not an authoritative retail coordinate sniff."}
+  ],
+  "implementation": {
+    "migration": "2026_10_18_07_grey_shoals_native_supplies.sql",
+    "templates": "Remove this script's hooks from foreign templates241741/244704; bind existing266170. Restore English name/cast caption. Retain native model, flags, properties, condition and spell.",
+    "spawns": "Replace only GUID147040012..147040015 on1220/8297 with266170; retain all four reconstructed positions, orientations and180s respawn. These are not recovered retail spawn coordinates.",
+    "handler": "Keep the committed expiry/player/phase/group/range/ready admission. Reject foreign entries if stale bindings remain. An eligible native rack returns false so GameObject::Use executes its own activation/animation and229972; remove direct personal credit and immediate deactivation.",
+    "timerAdaptation": "Existing and public template Data3=1ms truncates to0 in this core's GetAutoCloseTime. The native goober then chooses its60-second fallback. Normalize only this template's1ms value to1000ms, the smallest whole-second delay this core represents; other positive/custom delays are preserved. This is an explicit server timing adaptation, not proof of retail animation duration.",
+    "group": "Native134/event reward admits near, alive-or-not-released group members; each member's real quest status/objective/raid gating still applies. The progress remains5% per credited interaction."
+  },
+  "checks": [
+    "Test-GreyShoals.ps1 compiles the actual supply class, actual native QuestDef enums, actual GO goober-use case and activated-state update, actual GetAutoCloseTime, Spell::EffectKillCredit, Player::RewardPlayerAndGroupAtEvent, generic kill-objective mutation and native completion methods.",
+    "Cases: all invalid admission branches, rejected foreign entry, opening/in-use state, duplicate click, native timer strict boundary/deactivation, expiry and next rotation, mixed/supplies-only/boss-only completion, normal-party sharing, distant/completed-member exclusion, failed cast with no credit and retry after simulated respawn.",
+    "Fixture limits: the surrounding GO::Use dispatcher, world lookup/group distance/inventory/state services, spell preparation/targeting/hit invocation and actual world respawn are controlled doubles. Unit::Kill, full GO::Update, packet serialization, animation playback and client are not executed.",
+    "Test-GreyShoalsData.ps1 applies migration twice in connection-local temporary shadow tables, starting from broken foreign entries even after deployment; validates four replacements, native template binding, old-hook removal, original positions and unrelated template/spawns. Read-only live data audit then passes.",
+    "Test-GreyShoalsCatalog.ps1 validates7.3.5 native objectives/unlock/models/factions/spells, exact229972 effect and rack display. Native input hashes saved in runtime-test/grey-shoals-catalog/native-inputs.json.",
+    "Test-GreyShoalsRelease.ps1 checks actual final-link scripts.lib and canonical deployed PE calls; native supply guard retains rotation/time/status checks and no longer calls personal KilledMonsterCredit."
+  ],
+  "deployment": {
+    "originalBackup": ".codex/backups/grey-shoals-native/20261018-163840",
+    "finalMigrationBackup": ".codex/backups/grey-shoals-native/20261018-164025",
+    "state": "RELEASED",
+    "migrationSHA1": "987BE3C45B6C99048D78493F7BCEDBA0E6063518",
+    "canonicalWorldserverSHA256": "684692217A64D676E7D07419E9DE7FDCBADDA4AB3B9D2D2AFFC81D0B1E53E183",
+    "startup": {"path": "build-extractors/runtime-test/rockaway/startup-20261018-164132", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
+    "note": "Worldserver stopped before template migration; canonical server restart required and checked after Release build. Runtime data/configuration preserved."
+  },
+  "remaining": [
+    "Actor/supply rotation spawning, loaded/grid state, expiry during combat, respawn and next activation; baseline coast fauna replacement.",
+    "Exact retail rack/NPC positions and original animation timing, combat target execution and terrain/navmesh.",
+    "Client: rack name/cast/animation/despawn/respawn,5% progress, normal-party and pet combat credits,100% reward/outro, and another rotation. No client verification performed."
+  ]
+}
