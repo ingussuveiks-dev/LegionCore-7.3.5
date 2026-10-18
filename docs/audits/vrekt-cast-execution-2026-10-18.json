@@ -1,0 +1,228 @@
+{
+  "quest": 44923,
+  "date": "2026-10-18",
+  "status": "Native cast/hit/trigger and automatic Aggressor execution now covered for all nine retained rows. Corrected self-buff admission and native caster requirements. No client or whole-quest completion claim.",
+  "previousAudit": "vrekt-combat-2026-10-18.json",
+  "finding": {
+    "baseline": "83381a11; canonical worldserver SHA256543E1F40C71A2D96F162364FC45695034A17C95EBCA6CF9AE202C5A70749C346. Actual linked native execution reproduced successful direct spells but a missing automatic Battle Rage hit in a65-second stationary combat window. Starting with Rage instead could starve Flurry. Calls/rows/startup alone had not exposed this behavior.",
+    "selfTarget": "AggressorAI::UpdateAI checked CanAutoCast(me,victim), although UnitAI::DoCast sends SELF/ALLY/BUFF to me. CanAutoCast's existing duplicate/stack checks therefore inspected the enemy instead of an existing self aura, permitting repeated self-buff refreshes.",
+    "casterRequirements": "Native SpellAuraRestrictions exclude186480 from186476, exclude186553 from186480, and exclude186480 from186553. Full CheckCast correctly rejected these states with SPELL_FAILED_CASTER_AURASTATE25, but CanAutoCast ignored all four native caster aura/state requirements. Aggressor treated the rejected attempt as dispatched and scheduled a normal interval instead of its existing500ms admission retry.",
+    "correction": "Match the actual SELF/ALLY/BUFF destination during Aggressor admission, and enforce required/excluded caster aura IDs and states in SpellInfo::CanAutoCast using the same Unit predicates as ordinary CheckCast. Keep the native exclusions and let eligible phases execute without continuously refreshing the same self aura."
+  },
+  "scope": {
+    "production": [
+      "src/server/game/AI/CoreAI/CombatAI.cpp: Aggressor combat preflight target selection only.",
+      "src/server/game/Spells/SpellInfo.cpp: shared CanAutoCast caster aura/state admission."
+    ],
+    "sharedImpact": "Aggressor self/ally/buff preflight now examines the destination used by DoCast. Shared CanAutoCast callers, including pets and ReactorAI, also respect the existing native caster requirements. Direct/triggered casting rules are unchanged. This is not a claim of full regression coverage for every other NPC, pet or class.",
+    "unchanged": "All nine live Vrekt spell rows, spell IDs/effects, native exclusion data, initial/repeat cooldown ranges,500ms admission retry, assistance/melee path, difficulty filters, text, credits, factions, spawns, scene and rotation policy. No SQL migration or spell-data override."
+  },
+  "nativeSpellData": {
+    "186476": {
+      "name": "Flurry of Steel",
+      "target": "SELF; native caster-centred enemy area",
+      "castMs": 2000,
+      "aiCooldownMs": 15000,
+      "excludesCasterAura": 186480
+    },
+    "186480": {
+      "name": "Battle Rage",
+      "target": "SELF",
+      "durationMs": 8000,
+      "aiCooldownMs": 5000,
+      "excludesCasterAura": 186553
+    },
+    "186553": {
+      "name": "Soul of Mist",
+      "target": "SELF",
+      "castMs": 2000,
+      "durationMs": 6000,
+      "aiCooldownMs": 5000,
+      "excludesCasterAura": 186480
+    },
+    "186327": {
+      "name": "Brackish Bolt",
+      "target": "VICTIM",
+      "castMs": 1500,
+      "range": 25,
+      "aiCooldownMs": 5000
+    },
+    "195585": {
+      "name": "Call of the Dead",
+      "target": "SELF",
+      "castMs": 4000,
+      "aiCooldownMs": 5000,
+      "nativeTriggers": [
+        195587,
+        195589,
+        195589
+      ],
+      "result": "Three initialized native summons99484/99485 owned by the exact caster, not a pre-populated boss/summon fixture."
+    },
+    "222484": {
+      "name": "Foul Slash",
+      "target": "VICTIM",
+      "castMs": 666,
+      "range": 5,
+      "durationMs": 12000,
+      "periodMs": 1500,
+      "aiCooldownMs": 5000
+    }
+  },
+  "automatedChecks": {
+    "runner": "tools/tests/Test-VrektCombatExecution.ps1",
+    "nativeLoad": "Link the actual game/common/database dependencies from the generated Release final-link project. Run native DB2Manager.LoadStores with live hotfix reads, GT tables, SpellInfo construction, custom attributes, spell-specific states, models before creature-template validation, WDB/templates, scaling/class/difficulty stats, AI registry and FillAISpellInfo. These are actual native objects/methods, not copied AI or SpellInfo bodies.",
+    "castPipeline": "Native Creature::Create, Map admission/loaded grid/ObjectAccessor, Unit::CastSpell(false), Spell preparation/CheckCast/target selection/cast/hit/effect/trigger execution, Unit/Aura/FunctionProcessor/EventProcessor updates. Direct casts cover every retained row across all four entries. Flurry/Bolt/Slash must reduce actual target health; Slash must apply its aura and deal further periodic damage; both self buffs must appear only on the caster; Call of the Dead must add exactly three valid summons.",
+    "casterRequirements": "Actual DB2 Rage/Mist/Flurry exclusions must agree between CanAutoCast and full CheckCast. Separately vary metadata only in the private process to exercise required/excluded aura IDs and aura states, using native Unit aura storage and state flags; restore the original metadata afterwards. No database mutation.",
+    "automatic": "Attach linked AggressorAI with a hit-observer subclass and run native EnterCombat, event scheduling, UpdateAI, UnitAI::DoCast and hit callbacks. Native attack/combat/threat state, a valid home and loaded grid are prerequisites. Fixed C rand seed1; initial schedules must remain within the existing cooldown..2*cooldown interval. All nine rows reach a hit; self auras appear, and Reset empties their queued events.",
+    "observedAutomaticHits": {
+      "115846": {
+        "186476": 3,
+        "186480": 4,
+        "186553": 4
+      },
+      "116180": {
+        "186327": 6,
+        "195585": 8
+      },
+      "116600": {
+        "186553": 7,
+        "222484": 5
+      },
+      "116601": {
+        "186476": 2,
+        "186480": 7
+      }
+    },
+    "retainedChecks": "Test-VrektPerks.ps1 -Live, Test-VrektScene.ps1 and Test-VrektNpcs.ps1 pass, including existing control/charm regression and pinned old-core reproduction. These fixtures retain their documented boundaries.",
+    "release": "Standard CMake Release worldserver/bnetserver build. Test-VrektCombatRelease.ps1 includes the existing scene/NPC/control Release checks, then verifies exception-bounded deployed Aggressor policy0/3/4 self-pointer dataflow and SpellInfo caster field loads from native offsetof evidence plus both HasAuraState calls. Native execution evidence must match the actual game.lib and canonical executable hashes.",
+    "startup": "Canonical startup readyTrue, graceful exit0; DBErrors and stderr empty. This confirms loader admission, not a player encounter."
+  },
+  "fixtureBoundary": [
+    "The map contains only process-local test actors/native summons. No persistent creature spawn load, real character/session, forced44923 activation or world map update thread is used. The fixture binds native idle AI before the explicit Aggressor test; rotation/charm wrappers are covered separately.",
+    "Actors use native Create/template/model/scaling initialization, then controlled survival health/weapon values. The hostile surrogate is a creature with faction1. Damage, aura and summon execution is real; exact retail balance, player/pet killing blows, assistance, live chase/pathing, respawn and world-loop timing are not established by this test.",
+    "Unit/event/AI time advances in10ms steps over65 simulated seconds per actor. The separate automatic case clears the direct case's native cooldown entries on its private actor. GameTime wall-clock cooldown expiry is not accelerated or claimed verified.",
+    "Earlier diagnostic false negatives came from incomplete fixture initialization (registry/grid/home/model order/idle AI), missing periodic/function updates and cleanup after detaching a map. The final fixture initializes these dependencies, removes auras before map detach and despawns/drains exact owned summons before destroying their caster. These were test setup issues, not production fixes.",
+    "The private World pool sets both synchronous and its single FIFO asynchronous connection to READ ONLY. The synchronous setting is asserted. This also blocks unrelated CheckCreatureTemplate database repair attempts. Hotfix loading uses native reads; no updater or character/login pool is opened. Private logs/config stay under runtime-test."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "6C22BF96893E035F9B046D864410B4F300B47F93BBD76486B1CAF8511491B62B",
+    "startup": "build-extractors/runtime-test/vrekt-autocast/startup-20261018-213830",
+    "ready": true,
+    "exitCode": 0,
+    "dbErrorsBytes": 0,
+    "stderrBytes": 0
+  },
+  "evidence": "build-extractors/runtime-test/vrekt-combat-execution: native-lines.txt, native-inputs.json, admission-disassembly.txt and aggressor-disassembly.txt. Hashes cover relevant Spell DB2 tables, map/model/faction/summon data, all GT files, the actual final-link game library and canonical executable.",
+  "remaining": [
+    "Client animations, sound, telegraphs, full player/pet combat and visible buff/form transitions. All earlier scene, geometry, task/POI and whole-quest completion boundaries remain explicit.",
+    "Original retail per-NPC spell completeness and exact encounter timings are not recovered from a sniff. The existing generic AI cooldowns are preserved, not presented as recovered retail timing.",
+    "ReactorAI's separate victim-based self-buff destination preflight is outside this Aggressor change; shared caster gates apply, but its destination-selection issue is not claimed fixed."
+  ],
+  "inputSHA256": {
+    "dbc/enUS/SpellReagents.db2": "2083EBB496C81C084A45C553316CECBDF326B63C5DC40D59C4A3ED0FF50F6A71",
+    "dbc/enUS/SpellTotems.db2": "030E28F64CF46B8ED127F634610E3D3581D5F7FD58B87F2224EC4A9CC0500EF8",
+    "gt/xp.txt": "738203FD2C302BB4D9F603F2F6953120826F08364207DFC7EA6E33DCFBC41A6B",
+    "gt/ArmorMitigationByLvl.txt": "B3242C3E118A811C0D9A5C807C735CE7001613C62C9272A73818135C4ADE3C5A",
+    "gt/NpcDamageByClassExp2.txt": "39C93D567AB12B12E6A72FE8F6616F39184D9E18D0D0A536719514EBA2FC2D46",
+    "gt/CombatRatingsMultByILvl.txt": "4596B9125B05BF953E0064B48362CC4182121B224729A5A1C60890BECF8418FF",
+    "gt/ChallengeModeDamage.txt": "0D18E28A7289984D88405A381A56EA5B02CF605E4C278606C5AE372B847FA826",
+    "gt/NpcTotalHpExp4.txt": "A8220144F82DA3669FCA9003D35E2A2C90E58FFEB993A87B769560C0C7A10821",
+    "dbc/enUS/CreatureModelData.db2": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "gt/NpcDamageByClassExp4.txt": "C0B6D8B254498C186BA11FB791C7C52ADCD612AE0E6F3AB62071C8B141B94841",
+    "dbc/enUS/SpellVisualEffectName.db2": "EA85AE32FE2A04B308B05A4DBC45BB36D846BC17BBD5E217F8AD239E8D5F6AC2",
+    "gt/ChallengeModeHealth.txt": "0D18E28A7289984D88405A381A56EA5B02CF605E4C278606C5AE372B847FA826",
+    "dbc/enUS/SpellEquippedItems.db2": "EE98AE7EDB6601AA7EF0277287EB073D004450AACF2BA52C569EB98A86C60FDA",
+    "dbc/enUS/SpellPower.db2": "E201615A957E4D8C79B377495BA98E47DFBCBC8B17C51CDA3CFEC796CA29E99E",
+    "dbc/enUS/SpellAuraVisXChrSpec.db2": "69883D0C11101035639C9E366FA88FBCB1DB327603C41F19D0E82DEC5D17CAFF",
+    "dbc/enUS/SpellKeyboundOverride.db2": "735E876DB2A7BD6CEF01FC98D8E5F72143BD5CA843C29EAD2C4E3596940DF28B",
+    "gt/BattlePetXP.txt": "20D128F6EB21E5A5BE268E051F187F3762AA2E5B88B742139FDC5A370C62739C",
+    "dbc/enUS/SpellAuraOptions.db2": "D799051D1D6578ED665A43A12778089B67AD7A53D5ACEB9163E809EF8B3F69A2",
+    "dbc/enUS/Faction.db2": "BA63ECFA9BAB1435A9A680D0565B3A3DBCA83861AAC2F91E8B86A0924D640A0A",
+    "dbc/enUS/SpellActivationOverlay.db2": "32EE19CEC35EAFAE46B9E7EC2E770730225324DA77E774367FD871D8F5DAF056",
+    "dbc/enUS/SpellCategory.db2": "CA824EBF7D604B335F8FACCBC6CE2104C76F25884D9CB681F6E728825904EB1F",
+    "gt/CombatRatings.txt": "1D913F2BCFD29B26ADE15CF171D943BA3895F77240BA3CEC70F72B8AC6E24C17",
+    "gt/NpcDamageByClassExp5.txt": "81388D3503A843501B324F03EC22B4BFA7744A79AF25AEA25FFD23095BD20CB3",
+    "dbc/enUS/SpellAuraRestrictions.db2": "5C9D5C2685B73E4EF7C62E3A558458B2FD45833751EFA062777FEB996D0E0D82",
+    "dbc/enUS/SpellChainEffects.db2": "8904AEDCB857FA89B3E4C40DB8E665FA1830FCB8826709233F79BD28A141F160",
+    "dbc/enUS/SpellSpecialUnitEffect.db2": "E1CEA4B96C36C9E0DADC4C450102D92F22E7B9FDB4C37F07AA164F3F277EA8D4",
+    "gt/ItemSocketCostPerLevel.txt": "8CB8CC59D68599D89AC7E69F3204709168E6B057EA4D5E618B0F449C2E65C3D1",
+    "dbc/enUS/SpellXSpellVisual.db2": "426186996A698E96EC7AE1A21282C5AE06D545B8F5912AD28B6BE08D7F854E8A",
+    "dbc/enUS/SpellFocusObject.db2": "043EEB8AE1F5FE5E18FA27124135C2DF423AD85549E8BC0D020CE900D956F94D",
+    "dbc/enUS/SpellEffect.db2": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "dbc/enUS/Spell.db2": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "gt/BattlePetTypeDamageMod.txt": "FD37E851F9EBDD819848BE1CC409805E7BAD9191CF1A5AB9FE672A6DD99462F6",
+    "gt/HonorLevel.txt": "95550CF1EC11296AA12146F766827603D128DF483B84C4B6FF4C10B8E1A8E609",
+    "dbc/enUS/SpellDispelType.db2": "9499AAAE61DECAD6C0C78658043297D8BA5E42A023B87D40596E7A6F22E3DCEC",
+    "dbc/enUS/SpellCategories.db2": "D28173BC305BFD4730352ACC58A8145AF9A1C70FEDEFE08FDE0112F291B2FA6C",
+    "gt/NpcDamageByClass.txt": "5DE1A0F2796FB2F2EEEE805A7490B82E236B6D71968A7C8C5F4EA968718383C4",
+    "gt/NpcTotalHpExp1.txt": "170B81B8B50269F8F8DE7805E3EFEE80F5CA3A8A0EBC7A1D622D3795FB61156A",
+    "dbc/enUS/SpellCastingRequirements.db2": "B878E72255E34146F3C0DEBA9D67443F1BAC3119682C56E78B5B69AC9F63DBB0",
+    "dbc/enUS/SpellMissileMotion.db2": "F6766B93E753A88226BEC7885C8F0897780DAB220D73B27868004609B6316A7B",
+    "dbc/enUS/SpellMisc.db2": "2C2C50A36C91FC53ACA60D202FFD606E4547ABB8DAA75392D6BD65D345C1821B",
+    "canonical-worldserver.exe": "6C22BF96893E035F9B046D864410B4F300B47F93BBD76486B1CAF8511491B62B",
+    "dbc/enUS/SpellReagentsCurrency.db2": "6BC6A4E825C99F4E4F2862AD998635843D82201F3D3CDA87F0CE30E0C3183881",
+    "dbc/enUS/SpellItemEnchantmentCondition.db2": "3164161196D233B8570F5A3A9882BE83B65110C17758114A1E84AF9B84322D51",
+    "gt/BaseMp.txt": "CA342E954EEC09AB11B7746919058F9B7E73F82339199D83E94FD143D093E300",
+    "dbc/enUS/SpellVisualKitAreaModel.db2": "DA0CFD6F4BED041F39AE060C385E4AD655CDACEED0D1CF346837B45048799DD4",
+    "dbc/enUS/SpellShapeshift.db2": "8911DC6CDB5DFDEF768929FA050443404968B38DB589CC3AE5973F40DA4A5695",
+    "dbc/enUS/SpellItemEnchantment.db2": "6BEDC8003D3D2F2B754948EDBD32D8E5CA6619A38BED44C787E1A51C0D163740",
+    "dbc/enUS/SpellDescriptionVariables.db2": "C50BB202D733E577C1953AF79925DD3920FD8B8F98028D460A72FCDB3785997A",
+    "gt/NPCManaCostScaler.txt": "3B2D8D3472647F4667767B4F5F15237CB2E0550093B969691ECDF6A7AA5C1D67",
+    "gt/SpellScaling.txt": "A368405814D2DB9152CCE5A5CE67A05B01B8EA7C1BDB716231A8FDD23BDE7129",
+    "gt/SandboxScaling.txt": "2F696673B21EFE9CB32D71382383968125969B182FF1551417A7863E449C1900",
+    "gt/NpcTotalHpExp5.txt": "7680F24BF0E57A97AACCA3ED2E3D15C16F85EDB6562078C06FCB77E4AEE77CF9",
+    "dbc/enUS/SpellXDescriptionVariables.db2": "3C358C3626E267A5A675E0F4BA238DAC024951A41E78554617319D6D2CF3D969",
+    "dbc/enUS/SpellInterrupts.db2": "CFA9BFFA2C42A27C01C4DCD2F015E9FBFA238212889E9645011C9051BF974CBC",
+    "gt/NpcTotalHpExp2.txt": "DDFD9EF959E8E261D43B42F2DA055C1B4C06FFB23421F3AD48726B380B622C2D",
+    "dbc/enUS/SpellProcsPerMinuteMod.db2": "8A83A732BED6EE0ADAD0503FE0594E03D9D9E9CCCE44C9ADA98C13D36F50E20C",
+    "dbc/enUS/CreatureDisplayInfo.db2": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "dbc/enUS/SpellRange.db2": "DCA195AD6122B764DCA217CE67D8401277C4F778C5B4B3945446D3D08F98A0CA",
+    "gt/HpPerSta.txt": "E3BD0F9D91FFE39B23D28464F430686525449A68D909E908E3E9D33B11CC0A6F",
+    "gt/NpcDamageByClassExp6.txt": "7B579B86B9EC58B7002656D5ECFCF4819F73E0464FED7EDD411CB018BEE9882C",
+    "dbc/enUS/SpellScaling.db2": "608257EDE7BD0133AE0A5AA8B97BCCEDB2E4A8EB9505E071D4D7EB5D7A4F7E51",
+    "dbc/enUS/SpellProceduralEffect.db2": "429A07D6C28C536DD26DADA3A575C55C2CA948C4E519C6C473D124573EC01F34",
+    "dbc/enUS/SpellEffectEmission.db2": "5A910C44FF7836ED7A8250CC7BF1BD53FC14B5D27CDB53AA2A7EE28AF10A26AF",
+    "dbc/enUS/SpellCastTimes.db2": "0165DFA786959BFB76A123432B49BB464DBDB23BCA0FACC810603A88F38C0B6C",
+    "dbc/enUS/SpellDuration.db2": "FD01E79E46A57D270E536CDB7D86F78F4F2B086C388BF43E51ADC4BBFDE4D446",
+    "dbc/enUS/ChrClasses.db2": "A901298A81C751C08E7A8620132F1C1240BFAE7D95D53A896BA7B027A448AF15",
+    "actual-final-link-game.lib": "AB3F1B5AE54E1421700710CDE29029A6528C6E0D5E25A0B496C0063CBD0D54BD",
+    "dbc/enUS/SpellVisual.db2": "84006F590941B62B1E4EF68F521DF4037308387723097356B29699C361EEAAFA",
+    "dbc/enUS/SpellTargetRestrictions.db2": "ABEC83C32EA756ABB62CB354BE05405C072C72EB37F47C786C8482C0F5ECD3A2",
+    "dbc/enUS/SpellShapeshiftForm.db2": "B4E7CA2B69CEB3A0D61FD0897E84702708B6DF9D35686AC701C4B10A082E423F",
+    "dbc/enUS/SpellVisualKit.db2": "F132307415150DD8BA923066AA4FB8054AD815FC621179E947480E7FA2B1035D",
+    "gt/NpcTotalHp.txt": "EB5813CDB7426F532301F08F2EC875D84B493D165BE994162858EE4D1C84247A",
+    "dbc/enUS/SpellLevels.db2": "E681E91E925E3E403FB6AD706F41184468E37F2422C51241E8571E45439B4369",
+    "dbc/enUS/SpellVisualKitEffect.db2": "599C9AC6943C427359C81975D4EE0F124F482651962AA3F5F969F3C1F394EF43",
+    "dbc/enUS/SpellLearnSpell.db2": "55123B7CF8D99D461CCD8D547EBBDBCA1F98F988665DACE7B8F902DC46CB3246",
+    "gt/NpcTotalHpExp3.txt": "6E5BE661205F4EB7FA45B7F9667F8939F0DFFFF39EC697EE36846259BE490E04",
+    "dbc/enUS/SpellMechanic.db2": "36AF35FE847E07FD677798808818A9E010698AB7839480A41F3726AD6B383718",
+    "dbc/enUS/SpellFlyout.db2": "C15D92C22E37565AADE98E521B75EC61BFE348D2469FA507FF28B9E968A59E94",
+    "dbc/enUS/SpellMissile.db2": "160866742593F1EEDA4A345EF2020E3A11D7430A68BACB474F966FDE1FEF3A14",
+    "dbc/enUS/SpellRadius.db2": "99BC0ECA9C22AA922A1E74586F8E91661A889DB2C1888BB77278F59A6BAA2EA6",
+    "dbc/enUS/SpellVisualKitModelAttach.db2": "B0FBC41E0BD8F29A12B454D7A589313E12A479916E1EB284CDCB5A5A531D2F81",
+    "dbc/enUS/SpellVisualAnim.db2": "1AED9698E86A4847799A8FB82DE51E03749DD7ACF02BEF79A0C5689F8D4AC1FF",
+    "dbc/enUS/SpellFlyoutItem.db2": "C9FFCAC2583237BE5585E2BC3A9C1006436B06FA3BEDCD56D58A7F9208D4FD50",
+    "dbc/enUS/SpellVisualEvent.db2": "FDF1DFE34F676E859D1F0288EE95BFF4000B5F0B7102F3824E05440FDF84F54D",
+    "dbc/enUS/Difficulty.db2": "173DBF790A6EA55AFA02BD639214C8795003623159F6F8F993ABCCAD43F9F2BC",
+    "gt/NpcDamageByClassExp1.txt": "39C93D567AB12B12E6A72FE8F6616F39184D9E18D0D0A536719514EBA2FC2D46",
+    "dbc/enUS/SpellPowerDifficulty.db2": "202B5555752493282531B522AE767B79F7F28CBFC36499A71106BE3E7D9CEF90",
+    "gt/ArtifactKnowledgeMultiplier.txt": "78D34C761F26694CA74F08464AFAAA8A2084F5A212D6ECBCEDECC6AD019FAC80",
+    "gt/NpcTotalHpExp6.txt": "721C95DA6C1CD25BB90DF761E5E6B8A9F6AC3BC6CA1996278D904EF0F4CEC400",
+    "dbc/enUS/SpellClassOptions.db2": "F32E619788ACFCDE2498A6D48309BE6AA44431F65E4946A9E4029831A3568D0A",
+    "dbc/enUS/SummonProperties.db2": "3AFFA4211A00AF7C3611DBBB15C3FED13FFCCB1ECEE5441CE4B38A78C38BADE6",
+    "dbc/enUS/SpellVisualMissile.db2": "8B935E8DE1561FEF28E2C952D5E4B5536412601D7EEC8A75F9E1CFB28BF733B1",
+    "dbc/enUS/SpellVisualColorEffect.db2": "88F019DADBDC3F6EBE8B67D7CBA45A255A12F231B9287748221E4F11E3104FD7",
+    "dbc/enUS/SpellAuraVisibility.db2": "51B8200078F18CB9C3419C18526C04CF912B110ABA43C467EF0F45ABF6F649D9",
+    "dbc/enUS/SpellLabel.db2": "96265D812651D0647BC51823D1EFFC6A35598BDC142C67CCC5AC1B5994FB502B",
+    "dbc/enUS/FactionTemplate.db2": "09CB3CC83A73C74F6737B69F601002FAD091F74B646534175B3BFDACEF67FF9E",
+    "dbc/enUS/SpellCooldowns.db2": "C06348E7160AF05D5D5D8933AA365B531F8B9FA0FC335C450ACB47391118194B",
+    "dbc/enUS/SpellProcsPerMinute.db2": "3603003ABA6D4300F2C4B1F7CE0D05FF4EEC12F6E494F4F05C64CE4ADF5432E4",
+    "gt/NpcDamageByClassExp3.txt": "39C93D567AB12B12E6A72FE8F6616F39184D9E18D0D0A536719514EBA2FC2D46",
+    "gt/ArtifactLevelXP.txt": "7A359BD54939D89559885D87C88CE6A27C5BBF1E6D42A986F6510279C9C91908",
+    "dbc/enUS/Map.db2": "08ADC433F6726B784211ACA5E80B0B54FB791A6D702CE35195AEAE136A16D2D4",
+    "dbc/enUS/SpellActionBarPref.db2": "D5FC03D85C1A28583080E8987C2876E339ECA1FA41447405CD58BB00156CEC18",
+    "gt/BarberShopCostBase.txt": "B57960E3B78B84748060C08144F133306BDEFFFF56099ED3EA7E4352ABEBCC5F"
+  }
+}

@@ -4260,6 +4260,18 @@ bool SpellInfo::CanAutoCast(Unit* m_caster, Unit* target) const
     if (!m_caster || !target || m_caster->HasAuraType(SPELL_AURA_DISABLE_ATTACK_AND_CAST))
         return false;
 
+    // Use the same native caster requirements as non-triggered CheckCast.
+    // Otherwise AI treats a rejected cast as dispatched and delays its retry;
+    // mutually exclusive NPC forms/buffs can then starve each other.
+    if (AuraRestrictions.CasterAuraState && !m_caster->HasAuraState(AuraStateType(AuraRestrictions.CasterAuraState), this, m_caster))
+        return false;
+    if (AuraRestrictions.ExcludeCasterAuraState && m_caster->HasAuraState(AuraStateType(AuraRestrictions.ExcludeCasterAuraState), this, m_caster))
+        return false;
+    if (AuraRestrictions.CasterAuraSpell && !m_caster->HasAura(AuraRestrictions.CasterAuraSpell))
+        return false;
+    if (AuraRestrictions.ExcludeCasterAuraSpell && m_caster->HasAura(AuraRestrictions.ExcludeCasterAuraSpell))
+        return false;
+
     if (!m_caster->isPet())
     {
         if (GetDuration() == -1 && target != m_caster)

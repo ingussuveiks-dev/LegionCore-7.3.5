@@ -163,7 +163,13 @@ void AggressorAI::UpdateAI(uint32 diff)
         bool isCasted = false;
         if (SpellInfo const* sInfo = sSpellMgr->GetSpellInfo(spellId))
         {
-            if (sInfo->CanAutoCast(me, me->getVictim()))
+            // Match UnitAI::DoCast's self/ally/buff destination. Checking the
+            // victim misses an existing self aura and keeps refreshing it.
+            Unit* autoCastTarget = me->getVictim();
+            auto targetPolicy = AISpellInfo[spellId].target;
+            if (targetPolicy == AITARGET_SELF || targetPolicy == AITARGET_ALLY || targetPolicy == AITARGET_BUFF)
+                autoCastTarget = me;
+            if (sInfo->CanAutoCast(me, autoCastTarget))
             {
                 if (CreatureSpell const* spellData = me->GetCreatureSpell(spellId))
                     if (spellData->Text)

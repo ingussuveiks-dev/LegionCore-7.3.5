@@ -34,6 +34,7 @@
     "startup": "build-extractors/runtime-test/vrekt-perks/startup-20261018-191515"
   },
   "researchBoundary": "Primary native DB2 and production source identify the artifacts. Current Wowhead requests for both spells hit a robot challenge; no new external sniff or ability timing was recovered. Numeric GitHub search returned unrelated GUID/coordinate matches, which were not accepted as NPC behavior evidence.",
+  "followUp": "vrekt-cast-execution-2026-10-18.json executes all nine retained rows through linked native casting/hit/effect/trigger paths and the Aggressor scheduler. It corrects self-buff admission and native caster aura/state preflight; client, retail timing and other explicit boundaries remain open.",
   "remaining": [
     "Rotation visibility/control gating is a separate implementation; preserve AggressorAI and its temporary native charm AI replacement.",
     "Full retained-spell target selection, cast/hit/trigger completion, damage, assistance, melee and death/reset behavior still require further native execution/client checks.",
