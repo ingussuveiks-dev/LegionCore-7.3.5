@@ -19,7 +19,7 @@ if($LASTEXITCODE){throw 'Vrekt native catalog build failed'}
 $previousPath=$env:PATH
 try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/VrektCatalog.exe" "$repo/build-extractors/bin/Release/dbc/enUS/";if($LASTEXITCODE){throw 'Vrekt native DB2 reader failed'};$rows | Set-Content "$output/native-lines.txt";$rows}finally{$env:PATH=$previousPath}
 $hashes=@{}
-foreach($name in @('QuestObjective','QuestV2CliTask','PlayerCondition','WorldStateExpression','AreaTable','Map','WorldMapArea','SpellEffect','CreatureDisplayInfo','CreatureModelData')){
+foreach($name in @('QuestObjective','QuestV2CliTask','PlayerCondition','WorldStateExpression','AreaTable','Map','WorldMapArea','SpellEffect','Spell','SpellMisc','CreatureDisplayInfo','CreatureModelData')){
  $hashes[$name]=(Get-FileHash "$repo/build-extractors/bin/Release/dbc/enUS/$name.db2" -Algorithm SHA256).Hash
 }
 $hashes | ConvertTo-Json | Set-Content "$output/native-inputs.json"

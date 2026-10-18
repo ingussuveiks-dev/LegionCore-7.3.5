@@ -15,6 +15,8 @@ int Run(int argc,char**argv){if(argc!=2)return 1;
  S(MapEntry,maps,"Map",MapLoadInfo);
  S(WorldMapAreaEntry,mapAreas,"WorldMapArea",WorldMapAreaLoadInfo);
  S(SpellEffectEntry,effects,"SpellEffect",SpellEffectLoadInfo);
+ S(SpellEntry,spells,"Spell",SpellLoadInfo);
+ S(SpellMiscEntry,misc,"SpellMisc",SpellMiscLoadInfo);
  S(CreatureDisplayInfoEntry,displays,"CreatureDisplayInfo",CreatureDisplayInfoLoadInfo);
  S(CreatureModelDataEntry,models,"CreatureModelData",CreatureModelDataLoadInfo);
 #undef S
@@ -45,6 +47,17 @@ int Run(int argc,char**argv){if(argc!=2)return 1;
  bool outro=false;
  for(auto e:effects)if(e->SpellID==230157&&e->Effect==219&&e->EffectMiscValue[0]==3982&&e->ImplicitTarget[0]==18)outro=true;
  Require(outro,"Missing native Vrekt outro conversation");
+ for(uint32 id:{186476u,186480u,186553u,186327u,195585u,222484u,213738u,215377u}){
+  Require(spells.LookupEntry(id),"Missing Vrekt combat spell");
+  for(auto m:misc)if(m->SpellID==id&&!m->DifficultyID)
+   for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID&&!e->EffectIndex){
+    if(id==213738||id==215377){Require((m->Attributes[0]&0x800000)&&e->Effect==6&&
+     e->EffectAura==(id==213738?129:79),"Artifact perk classification changed");
+     auto description=std::string(spells.LookupEntry(id)->Description->Str[0]);
+     Require(description.find(id==213738?"Fate and Fortune":"Maw of the Damned")!=std::string::npos,"Artifact perk identity changed");}
+    std::cout<<"combat "<<id<<" attributes0 "<<m->Attributes[0]<<" aura "<<e->EffectAura<<" target "<<e->ImplicitTarget[0]<<" trigger "<<e->EffectTriggerSpell<<'\n';
+   }
+ }
  std::cout<<"PASS: typed native shared-state expressions, unlocks, mandatory objectives, Vrekt area, actor models and outro. No native retail duration or client verification claim.\n";
  return 0;
 }

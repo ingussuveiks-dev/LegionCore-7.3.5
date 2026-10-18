@@ -1,0 +1,42 @@
+{
+  "quest": 44923,
+  "date": "2026-10-18",
+  "status": "Removed7 unrelated artifact-perk rows; native AggressorAI and all9 other combat pool rows preserved. Code/data checks passed, no client verification.",
+  "correction": "Empty AIName/ScriptName and absent SmartAI rows do not imply missing combat behavior. FactorySelector selects AggressorAI for these hostile, noncivilian, nonneutral creatures. ObjectMgr separately loads creature_template_spell into CreatureSpells; the template spell1..8 fields are not this automatic spell pool.",
+  "nativePool": {
+    "115846": [186476, 186480, 186553],
+    "116180": [186327, 195585],
+    "116600": [186553, 222484],
+    "116601": [186476, 186480],
+    "meaning": "Retained existing Flurry of Steel, Battle Rage, Soul of Mist, Brackish Bolt, Call of the Dead and Foul Slash data. Their existence and targets are confirmed in typed native DB2. This is not a recovered retail sniff establishing each actor's complete spell set or exact timings."
+  },
+  "finding": {
+    "removed": "213738 on all4 entries, plus215377 on116180/116600/116601. Native Spell descriptions identify the Dreadblades and the Maw of the Damned, and effects identify speed aura129 and damage-percent aura79. These player artifact perks are unrelated imported NPC spell-pool rows.",
+    "executionBoundary": "Unlike Grey Shoals' old explicit SmartAI cast rows, this pool passes native automatic admission. Both perks have CASTABLE_WHILE_DEAD (attributes0=8388608), so FillAISpellInfo selects AICOND_DIE. AggressorAI::JustDied calls CanAutoCast, whose speed/damage aura branch rejects these attributes. Tests execute the actual classification and aura-rejection branches. No claim that Vrekt NPCs previously gained these artifact bonuses in ordinary combat.",
+    "otherData": "Existing Cursed Sea Dog creature_action target111011/type0 and all creature_text rows remain. Combat stays on the native AggressorAI scheduling/casting/assistance/melee path; no SmartAI conversion or guessed replacement spells/timers."
+  },
+  "implementation": {
+    "migration": "2026_10_18_12_vrekt_combat_perks.sql",
+    "scope": "Only creature_template_spell for entries115846/116180/116600/116601 and spells213738/215377. No player spell scripts or global automatic-cast rules changed."
+  },
+  "automatedChecks": [
+    "Test-VrektCatalog.ps1: typed native Spell/SpellMisc/SpellEffect confirms all retained spell IDs, artifact descriptions, attributes, aura types and implicit targets; input hashes recorded.",
+    "Test-VrektPerks.ps1 -Live: indexed temporary shadow-table replay reconstructs7 invalid rows, applies migration twice and compares every retained field including difficulty/comment metadata and neighbour115025. All9 deployed retained rows match.",
+    "VrektPerksTest.cpp executes actual UnitAI::FillAISpellInfo condition and SpellInfo::CanAutoCast artifact-aura branches with native SpellAttr0/AuraType/AICondition enums. Ordinary, passive and out-of-combat classifications remain covered. SpellInfo services are fixture leaves; complete casting/death dispatch is not executed.",
+    "Database-only repair: preceding canonical Release executable retained. Fresh server startup after migration readyTrue, gracefulExit0; DBErrors/stderr empty. This reloads creature spell data but does not exercise encounter casts."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "sha1": "55577E78F7AA8EA89C6FD47E084FF3763CE6A2A1",
+    "backup": ".codex/backups/vrekt-perks/20261018-191512",
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "4E6EDB647466419B2979AE7456ABCFE7E6F7E3FC06E12A45D257357187134C41",
+    "startup": "build-extractors/runtime-test/vrekt-perks/startup-20261018-191515"
+  },
+  "researchBoundary": "Primary native DB2 and production source identify the artifacts. Current Wowhead requests for both spells hit a robot challenge; no new external sniff or ability timing was recovered. Numeric GitHub search returned unrelated GUID/coordinate matches, which were not accepted as NPC behavior evidence.",
+  "remaining": [
+    "Rotation visibility/control gating is a separate implementation; preserve AggressorAI and its temporary native charm AI replacement.",
+    "Full retained-spell target selection, cast/hit/trigger completion, damage, assistance, melee and death/reset behavior still require further native execution/client checks.",
+    "Earlier audits' drake/chain scene, original placement/respawn, terrain/navmesh, task/POI rendering and whole-quest completion remain unverified."
+  ]
+}
