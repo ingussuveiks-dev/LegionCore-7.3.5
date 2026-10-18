@@ -4,6 +4,9 @@
 #include "QuestData.h"
 #include "GameTime.h"
 #include "Group.h"
+#include "SmartAI.h"
+#include "GameObjectAI.h"
+#include "grey_shoals.h"
 
 enum eSpells
 {
@@ -453,6 +456,11 @@ class go_grey_shoals_supplies : public GameObjectScript
 public:
     go_grey_shoals_supplies() : GameObjectScript("go_grey_shoals_supplies") { }
 
+    GameObjectAI* GetAI(GameObject* object) const override
+    {
+        return GreyShoals::Scoped(object) ? new go_grey_shoals_rotation(object) : nullptr;
+    }
+
     bool OnGossipHello(Player* player, GameObject* go) override
     {
         if (go->GetMapId() != 1220 || go->GetAreaId() != 8297)
@@ -484,4 +492,5 @@ void AddSC_azsuna()
     new boss_withered_jim();
     new spell_resonance();
     new go_grey_shoals_supplies();
+    new npc_grey_shoals();
 }

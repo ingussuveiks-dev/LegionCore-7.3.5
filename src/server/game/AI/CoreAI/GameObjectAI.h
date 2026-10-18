@@ -32,6 +32,7 @@ class GameObjectAI
         virtual ~GameObjectAI() = default;
 
         virtual void UpdateAI(uint32 /*diff*/) {}
+        virtual bool CanBeVisibleFor(WorldObject const* /*seer*/) const { return true; }
 
         virtual void InitializeAI() { Reset(); }
 

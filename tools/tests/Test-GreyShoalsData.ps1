@@ -35,6 +35,28 @@ foreach($expected in @("native-spawns`t4","native-template`t1","old-hooks`t0","u
  if($migrationRows -notcontains $expected){throw "Native supply repeated migration failed: $expected"}
 }
 'PASS: repeated native rack migration in temporary shadow tables; original positions, foreign spawns and unrelated template preserved.'
+$rotationMigration=Get-Content "$repo/sql/updates/world/2026_10_18_08_grey_shoals_rotation.sql" -Raw
+$rotationRows=@(Query @"
+CREATE TEMPORARY TABLE saved_ct LIKE creature_template;
+INSERT INTO saved_ct SELECT * FROM creature_template WHERE entry IN(115025,115026,115031,115751,115739);
+CREATE TEMPORARY TABLE creature_template LIKE saved_ct;
+INSERT INTO creature_template SELECT * FROM saved_ct;
+UPDATE creature_template SET ScriptName='' WHERE entry IN(115025,115026,115031,115751);
+$rotationMigration
+$rotationMigration
+SELECT 'rotation-bindings',COUNT(*) FROM creature_template WHERE entry IN(115025,115026,115031,115751) AND AIName='SmartAI' AND ScriptName='npc_grey_shoals';
+SELECT 'credit-preserved',COUNT(*) FROM creature_template c JOIN saved_ct s ON c.entry=s.entry WHERE c.entry=115739 AND c.AIName=s.AIName AND c.ScriptName=s.ScriptName;
+SELECT 'flags-preserved',COUNT(*) FROM creature_template c JOIN saved_ct s ON c.entry=s.entry WHERE c.entry IN(115025,115026,115031,115751) AND c.unit_flags=s.unit_flags AND c.unit_flags2=s.unit_flags2 AND c.faction=s.faction AND c.lootid=s.lootid;
+UPDATE creature_template SET ScriptName='external_sentinel' WHERE entry=115025;
+UPDATE creature_template SET AIName='EventAI',ScriptName='' WHERE entry=115026;
+$rotationMigration
+SELECT 'foreign-hook',COUNT(*) FROM creature_template WHERE entry=115025 AND ScriptName='external_sentinel';
+SELECT 'other-ai',COUNT(*) FROM creature_template WHERE entry=115026 AND AIName='EventAI' AND ScriptName='';
+"@)
+foreach($expected in @("rotation-bindings`t4","credit-preserved`t1","flags-preserved`t4","foreign-hook`t1","other-ai`t1")){
+ if($rotationRows -notcontains $expected){throw "Rotation migration failed: $expected"}
+}
+'PASS: repeated rotation binding migration retains SmartAI, faction/flags/loot and unrelated or externally bound templates.'
 if($MigrationOnly){return}
 $objectives=@(Query 'SELECT ID,Type,StorageIndex,ObjectID,Amount,Flags,TaskStep FROM quest_objectives WHERE QuestID=44737 ORDER BY ID;')
 $expected=@("287220`t15`t-1`t0`t1`t0`t0","287221`t0`t1`t115025`t17`t92`t6","287222`t0`t2`t115031`t20`t92`t5","287223`t0`t3`t115026`t50`t92`t2","287226`t0`t0`t115739`t20`t92`t5","287238`t0`t4`t115751`t4`t92`t25")
@@ -52,4 +74,5 @@ if(($supplies -join ',') -ne "147040012`t266170,147040013`t266170,147040014`t266
 $supplies | Set-Content "$out/supplies.tsv"
 Query 'SELECT entry,name,displayId,Data10,VerifiedBuild FROM gameobject_template WHERE entry IN(241741,244704,266170);' | Set-Content "$out/supply-evidence.tsv"
 if(@(Query "SELECT entry FROM creature_template WHERE entry IN(115025,115026,115031,115751) AND AIName<>'SmartAI';").Count){throw 'Combat AI binding changed'}
+if(@(Query "SELECT entry FROM creature_template WHERE entry IN(115025,115026,115031,115751) AND ScriptName<>'npc_grey_shoals';").Count){throw 'Missing live rotation AI script binding'}
 'PASS: live objective weights, 20 actor spawns, no model overrides, combat timer/difficulty data, four native racks at reconstructed positions. Spawn authenticity/rotation and full native casts are separate audit findings.'

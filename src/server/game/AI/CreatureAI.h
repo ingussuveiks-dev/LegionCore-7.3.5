@@ -110,6 +110,10 @@ public:
     // Called in Creature::Update when deathstate = DEAD. Inherited classes may maniuplate the ability to respawn based on scripted events.
     virtual bool CanRespawn() { return true; }
 
+    // Runs before alive/corpse/respawn and evade/throttling branches.
+    virtual void UpdateLifecycle(uint32 /*diff*/) { }
+    virtual bool CanBeVisibleFor(WorldObject const* /*seer*/) const { return true; }
+
     // Called for reaction at stopping attack at no attackers or targets
     virtual void EnterEvadeMode();
 

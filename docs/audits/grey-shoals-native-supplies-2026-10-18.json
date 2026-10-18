@@ -35,6 +35,7 @@
     "startup": {"path": "build-extractors/runtime-test/rockaway/startup-20261018-164132", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
     "note": "Worldserver stopped before template migration; canonical server restart required and checked after Release build. Runtime data/configuration preserved."
   },
+  "rotationFollowUp": "Ordinary DB actor/rack rotation visibility and lifecycle work is recorded in grey-shoals-rotation-2026-10-18.json. Preserve the historical state and all other limits in this audit.",
   "remaining": [
     "Actor/supply rotation spawning, loaded/grid state, expiry during combat, respawn and next activation; baseline coast fauna replacement.",
     "Exact retail rack/NPC positions and original animation timing, combat target execution and terrain/navmesh.",

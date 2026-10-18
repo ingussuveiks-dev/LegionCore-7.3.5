@@ -1,0 +1,57 @@
+{
+  "quest": 44737,
+  "date": "2026-10-18",
+  "status": "Ordinary DB-spawn rotation gate implemented; automated tests, canonical Release binary verification and startup passed. Client and the stated exceptional/control/placement boundaries remain unverified.",
+  "scope": "Grey Shoals outdoor DB actors115025/115026/115031/115751 and Kvaldir rack266170 on map1220 with DB home area8297. Existing20 actor/four rack positions retained.",
+  "behavior": {
+    "active": "World quest template and live rotation must exist and ResetTime must exceed the current game clock. This is server rotation availability, independent of any one player's progress.",
+    "visibility": "The actual Creature/GameObject IsNeverVisible paths consult a default-true AI hook before ordinary visibility. Scoped AI checks the live rotation on every visibility query, including a first grid load and corpses. Object visibility is dirtied on rotation transitions, so an already loaded actor/rack is removed/reintroduced without player movement.",
+    "creatureLifecycle": "A default-empty CreatureAI::UpdateLifecycle hook runs in the actual Creature::Update before its throttling, death-state and evade branches. On expiry the scoped SmartAI wrapper stops casting, enters the normal evade path if fighting, stops combat, clears threat, becomes passive and applies nonattackable/not-selectable bits. React state and the original values of these gate bits are restored on activation; unrelated flag bits survive.",
+    "combat": "AIName remains SmartAI. Its existing InitializeAI/JustRespawned, active UpdateAI and LOS dispatch are inherited/delegated; SQL combat spells/timers, faction, loot and template flags are unchanged. DamageTakenAfterScaling rejects damage exactly at expiry, including before the lifecycle tick, to prevent a late player/pet/periodic blow.",
+    "respawn": "Normal corpse/respawn/grid timers keep running. The native visibility filter hides an inactive respawn even if ordinary SmartAI visibility bookkeeping runs; JustRespawned reapplies the passive/flag gate. Activation does not forcibly resurrect a dead actor or reset a consumed rack's respawn/loot state.",
+    "rack": "Existing supply admission and native229972/goober/group-credit path remain. The new GameObjectAI only gates visibility and requests refresh on transitions; native activated/deactivated/respawn state is preserved.",
+    "isolation": "The factories return null for summons without DB spawn data, other maps, other DB home areas and unrelated entries. Native factory fallback supplies ordinary AI there. The DB home area is used so a chase outside the current area does not escape the gate.",
+    "representation": "Inactive actors remain loaded server objects when their grid is loaded; this is a scoped visibility/combat gate, not removal/recreation of DB spawns. The exact retail mechanism and baseline fauna replacement are not claimed recovered."
+  },
+  "nativeIntegrationEvidence": [
+    "Creature::AddToWorld initializes the AI before Map's normal object visibility update; GameObject::Create initializes its AI before AddToWorld.",
+    "WorldObject::canSeeOrDetect calls IsNeverVisible before the always-visible shortcuts. Both native functions and this dispatcher fragment are compiled in the regression.",
+    "Creature::Update's new dispatch prefix is extracted and executed; source-order checks require the hook before throttling, TriggerJustRespawned, death-state switch and evade-only UpdateAI branch.",
+    "The real Unit::DealDamage post-scaling dispatcher is compiled in the regression, including its zero-damage early return. Full damage calculation/Unit::Kill are not executed.",
+    "FactorySelector::selectAI prefers the registered CreatureScript AI before the AIName factory. SmartScript::IsSmart requires AIName=SmartAI; this admission function is executed, and the migration preserves that name."
+  ],
+  "dataMigration": {
+    "file": "2026_10_18_08_grey_shoals_rotation.sql",
+    "change": "Bind npc_grey_shoals only to the four existing SmartAI templates with empty/already-owned ScriptName. Do not overwrite other AI names or external scripts.",
+    "test": "Apply twice to temporary shadow templates; assert four bindings and preserved faction/unit flags/loot/credit template, then verify external-script and different-AI sentinels remain unchanged. Read-only live binding/spawn/objective checks pass.",
+    "backup": ".codex/backups/grey-shoals-rotation/20261018-170052",
+    "state": "RELEASED"
+  },
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "2F10E74CFAD7047D1508A903D0E9335AB4C1DE7E4066B7A1CDC9D3052EE3C293",
+    "migrationSHA1": "D5CC1213827FE546E660A9D37743022692EE8509",
+    "build": "Standard CMake Release worldserver/bnetserver, no global OutDir override. Initial compile exposed i_AI's UnitAI static type; final code dispatches through Creature::AI and the subsequent full build passed.",
+    "binaryTest": "Test-GreyShoalsRelease.ps1 verifies actual game.lib/scripts.lib final-link inputs and source freshness; resolves PE/MAP vtables to prove Creature::Update and both IsNeverVisible functions call the deployed lifecycle/visibility slots. Both deployed filter bodies call the world-quest lookup and game clock. Personal supply credit shortcut remains absent.",
+    "startup": {"path": "build-extractors/runtime-test/grey-shoals-rotation/startup-20261018-170342", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
+    "boundary": "Startup validates script/data loading, not an active client encounter or visual playback. Configuration, certificates, DLLs and extracted runtime data preserved."
+  },
+  "automated": [
+    "Test-GreyShoalsRotation.ps1: actual production header/factories, actual default core hook definitions, Creature/GameObject visibility functions, world visibility dispatcher fragment, Creature update prefix, native scaled-damage dispatcher and SmartAI-name admission.",
+    "All four actor entries: active combat delegation, exact expiry before tick, player-equivalent/direct and periodic damage rejection, cast/combat/threat cleanup, corpse callback, inactive respawn, reactivation, unchanged unrelated flag and restoration of an originally nonattackable actor.",
+    "Missing rotation/template, initial inactive grid actor before InitializeAI, factory scope exclusions, stable inactive ticks without redundant visibility refresh, rack expiry and activation without resetting consumed state, retained per-user/challenge invisibility.",
+    "Test-GreyShoals.ps1: native goober activation/timer,134/group event/objective/completion chain still passes. Its factory-only stubs are explicitly separated from the rotation factory tests.",
+    "Test-GreyShoalsData.ps1: repeated scoped migrations and live state checks. No character/quest progress was edited."
+  ],
+  "fixtureBoundary": "Map/grid/object lookup and visibility packets, SmartAI combat/evade services and native respawn internals are controlled doubles. The tests exercise extracted native dispatch plus production scoped AI; they do not replace a live client/cold-grid test or prove movement/animation playback.",
+  "retainedEvidence": [
+    "grey-shoals-2026-10-18.json retains native objective/unlock/models, weighted progress and historical reconstructed inventory.",
+    "grey-shoals-native-supplies-2026-10-18.json retains original rack/spell evidence, timing adaptation and remaining placement/combat/client limits.",
+    "Earlier source: Wowhead Raider comment3187438 dated2020-01-31 reports WQ-only appearance; supporting later observation, not a recovered7.3.5 phasing sniff. No new retail phase ID was invented."
+  ],
+  "remaining": [
+    "Client: first inactive grid load, stationary expiry during combat, corpse disappearance, next activation, pets/group credits and full100% reward/outro.",
+    "Exact original positions, baseline coast fauna replacement, native combat target execution, terrain/navmesh and visual timing remain separate findings.",
+    "Controlled/charmed actors whose AI is replaced, GM-forced kills and manually disabled/unavailable AI are outside this ordinary DB-spawn lifecycle fixture; no charm/pet behavior was changed or called verified."
+  ]
+}

@@ -1348,6 +1348,8 @@ bool GameObject::IsAlwaysVisibleFor(WorldObject const* seer) const
 
 bool GameObject::IsNeverVisible(WorldObject const* obj) const
 {
+    if (AI() && !AI()->CanBeVisibleFor(obj))
+        return true;
     auto last = m_lastUser.find(obj->GetGUID());
     if (last != m_lastUser.end() && GameTime::GetGameTime() < last->second)
         return true;

@@ -942,6 +942,13 @@ void Creature::Update(uint32 diff)
 
     m_isUpdate = true;
 
+    if (IsAIEnabled && i_AI)
+    {
+        m_AI_locked = true;
+        AI()->UpdateLifecycle(diff);
+        m_AI_locked = false;
+    }
+
     volatile uint32 creatureEntry = GetEntry();
 
     if (!isInCombat()) // Update creature if need
@@ -2440,8 +2447,10 @@ bool Creature::CanAlwaysSee(WorldObject const* obj) const
     return IsAIEnabled && AI() && AI()->CanSeeAlways(obj);
 }
 
-bool Creature::IsNeverVisible(WorldObject const* /*seer*/) const
+bool Creature::IsNeverVisible(WorldObject const* seer) const
 {
+    if (IsAIEnabled && AI() && !AI()->CanBeVisibleFor(seer))
+        return true;
     return WorldObject::IsNeverVisible();
 }
 

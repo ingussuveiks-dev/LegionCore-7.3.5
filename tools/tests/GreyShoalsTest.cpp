@@ -84,7 +84,12 @@ struct GameObject:WorldObject {uint32 map=1220,area=8297;bool phase=true,near=tr
  }}
  void SendCustomAnim(int){}int GetGoAnimProgress(){return 255;}void Use(Player*);
 };
-struct GameObjectScript {explicit GameObjectScript(char const*){}virtual bool OnGossipHello(Player*,GameObject*)=0;};
+// Factory selection/lifecycle are exercised by Test-GreyShoalsRotation, not
+// this native credit/goober fixture.
+struct GameObjectAI {virtual ~GameObjectAI()=default;};
+struct go_grey_shoals_rotation:GameObjectAI {explicit go_grey_shoals_rotation(GameObject*){}};
+namespace GreyShoals {bool Scoped(GameObject*){return true;}}
+struct GameObjectScript {explicit GameObjectScript(char const*){}virtual bool OnGossipHello(Player*,GameObject*)=0;virtual GameObjectAI* GetAI(GameObject*)const{return nullptr;}};
 #include "GreySupplies.inc"
 void GameObject::Use(Player* player){go_grey_shoals_supplies handler;if(handler.OnGossipHello(player,this))return;
  Unit* user=player;Unit* spellCaster=user;uint32 spellId=0;
