@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-18",
+  "title": "Preserve native descriptive quest unlock rewards without executing learn0",
+  "trigger": "44721 Helya's Conquest detailed audit; its original TDB735.00 RewardDisplaySpell1=230408 had been missing locally.",
+  "client_verified": false,
+  "findings": [
+    "Restoring the original database field exposed an actual startup failure: SpellMgr::IsSpellValid rejected230408's LEARN_SPELL with TriggerSpell0, then QuestData::LoadQuests cleared the display reward. The first new startup log contains both messages; this observed failure is retained in stormheim-conquest/startup-20261018-113507 and was not treated as a successful restoration.",
+    "Typed runtime SpellEffect230408 contains only targetless LEARN_SPELL36/child0 and DUMMY3/child0. The spell describes access to Helarjar Landing World Quests. Native task conditions independently require rewarded quest bits41694 AND44721; casting an invented child spell is unnecessary and unsupported.",
+    "New IsQuestRewardDisplayOnly classifies only an existing spell with a targetless, childless LEARN_SPELL and no other active effects besides targetless, childless DUMMY. A plain dummy, targeted effect, nonzero child, create-item effect or aura is not admitted. This structurally recognizes previously non-executable client labels without an ID whitelist.",
+    "Only RewardDisplaySpell validation uses this classification. Nonexistent IDs still get removed; ordinary executable display rewards and actual RewardSpell validation remain unchanged. RewardQuest's display fallback skips these descriptive labels so it never attempts learn0. Explicit real reward spells continue to use native IsSpellValid and remain rejected when invalid.",
+    "The existing GossipDef/QuestDef packet writers continue to transmit the preserved display ID. No spell is taught, quest bit forged, world-quest prerequisite removed or native SpellEffect modified. Actual client reward-panel rendering remains pending."
+  ],
+  "validation": {
+    "test": "tools/tests/Test-QuestRewardDisplay.ps1",
+    "result": "PASS",
+    "coverage": "Extracted production classifier, full native SpellMgr::IsSpellValid, display/real reward loader blocks and Player::RewardQuest spell-award branch.230408-shaped label survives loading and is not cast; a valid executable learn reward retains casting; real invalid learn rewards and nonexistent IDs remain rejected; targeted/child/item/aura/plain-dummy exclusions checked.",
+    "boundaries": "Spell/item lookup services, quest field storage and spell-cast dispatch are fixture adapters. Native shape is separately read by StormheimConquestCatalog from7.3.5 DB2; Hotfix has no230408 effect overlay. Full reward transaction and client packet presentation are not executed.",
+    "release": "Canonical build-extractors/bin/Release rebuilt from actual game/scripts library paths, without OutDir override. Fresh worldserver.map contains IsQuestRewardDisplayOnly from game:QuestData.obj. Test-ScepterLogin.ps1 -VerifyReleaseBinary also passed after Player.cpp rebuild.",
+    "startup_after_fix": "stormheim-conquest/startup-20261018-113845: ready=True, graceful exit0, DBErrors.log0 bytes, stderr.log0 bytes; same restored230408 database field retained.",
+    "evidence": [
+      ".codex/conquest-reward-tests.log",
+      ".codex/conquest-reward-release-build.log",
+      ".codex/conquest-label-overlay.tsv",
+      ".codex/conquest-scepter-login.log",
+      ".codex/conquest-startup-final.log"
+    ],
+    "deployment": {
+      "migration": "2026_10_18_01_stormheim_conquest.sql",
+      "sha1": "f44102df475454f216821f7b112c233ac43d1ba6",
+      "backup": ".codex/backups/stormheim-conquest/20261018-113506",
+      "runtime": "build-extractors/bin/Release",
+      "build": "cmake --build build-extractors --config Release --target worldserver bnetserver -- /m:2 /v:minimal",
+      "build_logs": [
+        ".codex/conquest-release-build.log",
+        ".codex/conquest-reward-release-build.log"
+      ],
+      "worldserver_sha256": "ca4bf72ecdaf07d3dd3d86c1e1e26ac2e1b946fd0ec5fbff5308e39f3de859be",
+      "bnetserver_sha256": "02f7ed5d0bbfbd6bbeb5f7915f86f0c06f23c79496335ba0abf3f9c5e948b0aa",
+      "startup": "build-extractors/runtime-test/stormheim-conquest/startup-20261018-113845",
+      "startup_ready": true,
+      "exit_code": 0,
+      "DBErrors_bytes": 0,
+      "stderr_bytes": 0,
+      "server_left_stopped": true,
+      "binary_evidence": "Actual final-link scripts/game paths and timestamps checked; canonical map includes new classifier and registrations. PE relative calls with resolved incremental thunks verify new arrival OnTrigger reaches personal KilledMonsterCredit and Havi sGossipSelect reaches AddQuestDelayedEvent."
+    }
+  }
+}

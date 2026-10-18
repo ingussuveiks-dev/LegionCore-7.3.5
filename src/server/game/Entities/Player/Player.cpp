@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "QuestRewardDisplay.h"
 #include "AccountMgr.h"
 #include "AchievementMgr.h"
 #include "Anticheat.h"
@@ -19837,7 +19838,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
             if (quest->RewardDisplaySpell[i] > 0)
             {
                 SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(quest->RewardDisplaySpell[i]);
-                if (spellInfo && questGiver)
+                if (spellInfo && !IsQuestRewardDisplayOnly(spellInfo) && questGiver)
                 {
                     if (questGiver->IsUnit() && !spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL) && !spellInfo->HasEffect(SPELL_EFFECT_CREATE_ITEM))
                     {

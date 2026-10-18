@@ -17,6 +17,7 @@
  */
 
 #include "QuestData.h"
+#include "QuestRewardDisplay.h"
 #include "DatabaseEnv.h"
 #include "GameEventMgr.h"
 #include "ObjectMgr.h"
@@ -1012,7 +1013,7 @@ void QuestDataStoreMgr::LoadQuests()
                     qinfo->RewardDisplaySpell[i] = 0;
                     //WorldDatabase.PExecute("UPDATE `quest_template` SET `RewardDisplaySpell1` = %u, `RewardDisplaySpell2` = %u, `RewardDisplaySpell3` = %u WHERE `id` = %u", qinfo->RewardDisplaySpell[0], qinfo->RewardDisplaySpell[1], qinfo->RewardDisplaySpell[2], qinfo->GetQuestId());
                 }
-                else if (!SpellMgr::IsSpellValid(spellInfo))
+                else if (!IsQuestRewardDisplayOnly(spellInfo) && !SpellMgr::IsSpellValid(spellInfo))
                 {
                     TC_LOG_ERROR("sql.sql", "LoadQuests() >> Quest %u has `RewardDisplaySpell%u` = %u but spell %u is broken, quest will not have a spell reward.", qinfo->GetQuestId(), i, qinfo->RewardDisplaySpell[i], qinfo->RewardDisplaySpell[i]);
                     qinfo->RewardDisplaySpell[i] = 0;
