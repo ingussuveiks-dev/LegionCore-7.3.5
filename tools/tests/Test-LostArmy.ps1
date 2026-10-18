@@ -19,7 +19,7 @@ SELECT 'END';
 SELECT 'other-changes',COUNT(*) FROM saved_conditions a LEFT JOIN conditions b ON a.SourceTypeOrReferenceId=b.SourceTypeOrReferenceId AND a.SourceGroup=b.SourceGroup AND a.SourceEntry=b.SourceEntry AND a.SourceId=b.SourceId AND a.ElseGroup=b.ElseGroup AND a.ConditionTypeOrReference=b.ConditionTypeOrReference AND a.ConditionTarget=b.ConditionTarget AND a.ConditionValue1=b.ConditionValue1 AND a.ConditionValue2=b.ConditionValue2 AND a.ConditionValue3=b.ConditionValue3 AND a.NegativeCondition=b.NegativeCondition WHERE a.SourceEntry<>142487 AND b.SourceEntry IS NULL;
 "@)
 $a=[Array]::IndexOf($rows,'FIRST');$b=[Array]::IndexOf($rows,'SECOND');$e=[Array]::IndexOf($rows,'END')
-if($a -lt 0 -or $b -le $a -or $e -le $b -or ($rows[($a+1)..($b-1)] -join "`n") -ne ($rows[($b+1)..($e-1)] -join "`n")){throw 'Lost Army migration is not stable on repeat'}
+if($a -lt 0 -or $b -le $a -or $e -le $b -or ($rows[($a+1)..($b-1)] -join "`n") -ne ($rows[($b+1)..($e-1)] -join "`n")){$rows | Set-Content "$out/replay-failure.tsv";throw 'Lost Army migration is not stable on repeat'}
 if($rows -notcontains "other-changes`t0" -or $b-$a -ne 8){throw 'Unexpected Lost Army condition scope'}
 foreach($entry in @(115025,115031,115751,115846,116180,116600,116601)){
  $quest=if($entry -in @(115025,115031,115751)){44737}else{44923}

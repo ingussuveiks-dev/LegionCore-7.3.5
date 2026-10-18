@@ -295,5 +295,7 @@
   },
   "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json",
   "followup_correction": "Original2016 reports12/14 now contradict fixed15. Ritual231328/231333 are channeled native self dummy auras; kit5/6 are sound/animation, not beams. Exact count bounds/actor binding/placements remain open; prior implementation/client limitations retained.",
-  "channel_state_followup": "docs/audits/rockaway-channel-state-2026-10-18.json"
+  "channel_state_followup": "docs/audits/rockaway-channel-state-2026-10-18.json",
+  "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
 }

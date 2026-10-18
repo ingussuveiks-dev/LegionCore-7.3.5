@@ -67,5 +67,7 @@
   "related_audits": [
     "docs/audits/trial-lost-army-2026-10-18.json",
     "docs/audits/helarjar-authenticity-2026-10-18.json"
-  ]
+  ],
+  "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
 }

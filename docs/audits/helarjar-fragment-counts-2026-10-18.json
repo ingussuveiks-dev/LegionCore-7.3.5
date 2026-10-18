@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-18",
+  "baseline": "394e7825",
+  "quests": [
+    44746,
+    45088
+  ],
+  "status": "Reconstructed reward ranges applied and tested; exact Blizzard loot distribution remains unverified",
+  "client_verified": false,
+  "implementation": [
+    "Migration05 replaces fixed15 Rockaway spell-loot229113/142487 with10..15, and Helya creature-loot114537/14248730..60 with100..150.",
+    "Keep chance100, QuestRequired1, LootMode0, Group0 and existing conditions. Guarm114323 and Odyn chest70585 remain30..60. No direct AddItem script, new recipe or additional source."
+  ],
+  "reconstruction_rationale": [
+    "Original2016 Rockaway observations12,14,15 refute a fixed15 reward. The lower bound10 and uniform10..15 distribution are engineering choices consistent with those samples, NOT recovered retail bounds or a documented minimum.",
+    "Original2016 approximate150 and2017 exact150 Helya reports refute30..60. The proposed100..150 range also accommodates later100/128/143/148 observations. The100 lower bound is informed by2022 legacy observations and is NOT proof of a7.3.5 minimum or unchanged historical distribution.",
+    "This changes a known mismatch into an explicit approximation under the closest-original implementation goal. Previous audit counterexamples, uncertainty and client limitations remain retained; neither range is certified as exact."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2443822",
+      "date": "2016-11-13",
+      "finding": "Ezekeil12; Beemine14 reply2016-11-14; another12 reply2016-11-17."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44746#comments:id=2443690",
+      "date": "2016-11-13",
+      "finding": "Seferus15 for Rockaway completion."
+    },
+    {
+      "url": "https://www.wowhead.com/item=142487#comments:id=2445627:reply=1082283",
+      "date": "2017-10-30",
+      "finding": "fatoumata150 Helya LFR; supports quantity above60, not full bounds."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=5327075",
+      "date": "2022-02-19",
+      "finding": "aliens legacy samples100/128/143/148 by difficulty; used only for reconstruction, not as original-Legion evidence."
+    }
+  ],
+  "checks": [
+    "Test-RockawayData.ps1 PASS twice after final fixture changes: migrations03+05 replay twice in indexed temporary tables, including a shadow creature_loot_template so Helya updates cannot touch live data during tests.",
+    "Scope checks retain other creature/spell loot counts, chances, modes, quest requirements and groups; Helya settings remain unchanged apart from min/max. Constructor input TSV is derived from actual migrated SQL output.",
+    "HelarjarFragmentCountTest.cpp executes the full production LootItem constructor from LootMgr.cpp. Deterministic urand verifies both bounds and all57 returned quantities, copied quest/condition fields and count propagation. RNG/init remain fixtures; the test does not establish historical accuracy.",
+    "RockawayLootTest.cpp runs native loot Process/Roll, condition attachment and Player item-objective routines for both factions and both endpoints10/15, inactive/unrelated rotation,999->1000, retained excess, turn-in consumption, missing quest and reacceptance.",
+    "Test-LostArmy.ps1 and its catalog/ordinary item-loot dependencies PASS. Test-BossQuestLoot.ps1 -VerifyReleaseBinary PASS: actual boss processor still preserves quest loot on a failed gear roll and the deployed implementation is present.",
+    "Final canonical startup PASS: ready=True, exit0, DBErrors.log/stderr.log0 bytes. No new C++ server build required for this SQL follow-up; canonical Release is the preceding channel fix."
+  ],
+  "validation_history": [
+    "Two earlier nested LostArmy dependency invocations reported a repeat-comparison failure without saved SQL output. A failure-output diagnostic was added; the standalone run and two subsequent full data runs passed without reproducing it. The earlier comparison failure cause is not established; retain this observation rather than claiming it was diagnosed."
+  ],
+  "deployment": {
+    "migration": "2026_10_18_05_helarjar_fragment_counts.sql",
+    "sha1": "67C7114BFA9F5BCEB576AB6EB91D2E68C73F2392",
+    "backup": ".codex/backups/helarjar-counts/20261018-152308",
+    "state": "RELEASED",
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway/startup-20261018-152309",
+    "worldserver_left_running": false,
+    "worldserver.exe_sha256": "1eaeaf4e2b184d2fe6cf6d4a5949b70338fd3aeeecd4ae5567d9f741f6187223",
+    "bnetserver.exe_sha256": "2c583dc7232bc34fffccca3745f9e6469f2707b705ede8f2f794360cb2f5f06f"
+  },
+  "pending": [
+    "Actual client loot amounts, personal/shared boss loot, tenth-kill ordering, per-difficulty lockouts and inventory persistence are still client checks.",
+    "Exact original min/max/chance/distribution needs a retail loot dataset or sufficiently explicit dated specification. No sample-derived bound is presented as proven.",
+    "Original green-beam spell/actor/target binding and four exact placements remain unresolved. Further native visual searches and World/Hotfix checks did not establish a safe binding; no unrelated Fel spell was substituted."
+  ],
+  "related_audits": [
+    "docs/audits/helarjar-authenticity-2026-10-18.json",
+    "docs/audits/rockaway-channel-state-2026-10-18.json"
+  ]
+}
