@@ -116,7 +116,8 @@
   "pending": [
     "Find a retail packet/loot dataset or explicit dated range specification for44746 and Helya45088 before claiming exact counts. Current fixed15 and30..60 remain known provisional mismatches, not verified behavior.",
     "Find actual green-beam spell/caster/target binding and exact four retail placements. Do not substitute a visually similar spell solely from its name.",
-    "Repair per-player outdoor completion/quota gating in a separate focused migration and native condition/loot regression.",
+    "Per-player outdoor completion/quota/raid gating repaired in migration04 and its separate native regression/audit; client checks remain pending.",
     "All actual 7.3.5 client visual, combat and loot/UI checks remain pending."
-  ]
+  ],
+  "player_progress_followup": "docs/audits/lost-army-player-progress-2026-10-18.json"
 }

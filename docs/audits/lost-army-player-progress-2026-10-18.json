@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-18",
+  "quest": 45088,
+  "landings": [
+    44737,
+    44923
+  ],
+  "baseline": "ac3c0cd7",
+  "status": "Per-player outdoor fragment eligibility repaired and deployed; automated checks pass; client verification remains pending",
+  "client_verified": false,
+  "scope": "Code/data only; SQL condition change, no server implementation or client-data change",
+  "problem": "Migration02 checked only the server rotation. A character with45088 could still see outdoor fragments without an unfinished personal landing, after its completion or after the ten-Helarjar Vrekt quota, and raid membership could suppress WQ credit while leaving drops eligible.",
+  "implementation": [
+    "Preserve existing source1 condition60 on all seven outdoor rows. Add condition9 requiring the matching personal landing to remain QUEST_STATUS_INCOMPLETE, and condition58 values0/1/0 admitting solo/ordinary parties while rejecting raid groups.",
+    "For115846/116180/116600/116601 add negative condition41 (44923,115845,10). The native getter looks up objective ObjectID115845, not objective-row ID287303 or storage index0. Zero through nine Helarjar kills qualify; ten or more do not, regardless of the separate Vaettfang objective.",
+    "Keep native QuestRequired/HasQuestForItem eligibility for45088. Do not change rates, item counts, ordinary loot, boss/chest eligibility, world rotation or quest objectives.",
+    "All new conditions are source1, target0, ElseGroup0 and combine with rotation60. No new core condition type or entry/map whitelist."
+  ],
+  "evidence": [
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2442655",
+      "date": "2016-11-10",
+      "finding": "Brizag; November12/19 replies explicitly end the three ordinary Vrekt entries at the ten-kill quota."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2447057",
+      "date": "2016-11-21",
+      "finding": "Nimbonya farms Vaettfang while avoiding the ten ordinary kills, corroborating the separate quota boundary."
+    },
+    {
+      "url": "https://www.wowhead.com/ru/item=142487#comments:id=2442669",
+      "date": "2016-11-10",
+      "finding": "NIFIGATOR suggests raid farming; elvisp07 reply1007510 dated2016-11-11 reports that raid grouping produced no drops."
+    }
+  ],
+  "automated_checks": [
+    "Test-LostArmyLanding.ps1 PASS: migration applied twice in indexed temporary tables;25 final source1 rows; unrelated condition count/content checksum unchanged; native live44923 objectives115845/10/storage0 and115846/1/storage1.",
+    "C++ executes the actual condition9/41/58/60 cases and negative-condition block, actual Player::GetQuestObjectiveData(questID,ObjectID), actual condition-to-loot loader/attachment, LootItem::AllowedForPlayer and ordinary loot Process/Roll from the existing dependency.",
+    "Regression reproduces the prior rotation-only admission with no personal WQ and the missing-quota admission at10/10 before asserting the new rejection. Covers both factions; solo/party/raid;0/9/10/11 kills; Vaettfang first; separate players; already-generated loot; inactive/unrelated rotation; complete/rewarded/absent/abandoned/reaccepted landing; missing fragment quest.",
+    "Test-LostArmy.ps1 and its catalog/HelheimSupplies dependencies PASS. Its original migration02 replay now selects only its own condition60 rows so it remains compatible with this additive follow-up.",
+    "Final canonical server startup PASS: ready=True, exit0, DBErrors.log and stderr.log0 bytes. This proves loader admission/startup, not client looting or quest completion.",
+    "PowerShell parse, audit JSON parse and staged diff review completed before commit."
+  ],
+  "test_boundaries": [
+    "Controlled world rotation, inventory writes/count RNG, group objects and condition-list AND aggregation are fixtures. This does not execute the entire live Unit::Kill, group loot distribution, client packets or character persistence.",
+    "Native source58 evaluator executes for solo, ordinary group and raid. Native source41 uses actual objective lookup; storage remains fixture data. No client interaction was performed."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "backup": ".codex/backups/lost-army-landing/20261018-150352",
+    "sha1": "B0FB64D15EC81B9BE239475EA8E22DAFC7A2E254",
+    "migration": "2026_10_18_04_lost_army_player_progress.sql",
+    "original_backup": ".codex/backups/lost-army-landing/20261018-150129",
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway/startup-20261018-150353",
+    "worldserver_left_running": false,
+    "release_rebuild_required": false,
+    "worldserver.exe_sha256": "18802ecbf762dd8104d8ab09a78cb4279e68e5fd7520742ddf2919870adc51a3",
+    "bnetserver.exe_sha256": "d9ba1a9c43edd0b865b1f2bdb088c8b99b08f389e3ecd44162508c8bf933176c"
+  },
+  "pending_client_checks": [
+    "Outdoor WQ auto-accept and fragments before completion, including player/pet/shared kills and solo/party/raid membership.",
+    "Observe the tenth-kill loot boundary during actual Unit::Kill/quest-update ordering, then kill more ordinary enemies and Vaettfang with the elite objective still outstanding. Confirm no further fragments.",
+    "Finish or abandon the landing, attempt existing corpse loot, re-enter/relog and wait for a new rotation. An independent unfinished player must retain their own eligibility.",
+    "Exact Rockaway/Helya fragment bounds, green beam and placements remain unresolved in the authenticity audit. Existing fixed15 and Helya30..60 are known provisional mismatches; this fix does not certify them."
+  ],
+  "related_audits": [
+    "docs/audits/trial-lost-army-2026-10-18.json",
+    "docs/audits/helarjar-authenticity-2026-10-18.json"
+  ]
+}

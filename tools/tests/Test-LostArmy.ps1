@@ -7,7 +7,7 @@ function Query([string]$sql,[string]$database='World'){
  try{$env:MYSQL_PWD=$c[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($c[0]) --port=$($c[1]) --user=$($c[2]) --database=$($c[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Lost Army SQL failed'}}finally{$env:MYSQL_PWD=$previous};$rows
 }
 $migration=Get-Content "$repo/sql/updates/world/2026_10_18_02_lost_army_world_quests.sql" -Raw
-$select="SELECT SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE SourceTypeOrReferenceId=1 AND SourceEntry=142487 ORDER BY SourceGroup;"
+$select="SELECT SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE SourceTypeOrReferenceId=1 AND SourceEntry=142487 AND ConditionTypeOrReference=60 ORDER BY SourceGroup;"
 $rows=@(Query @"
 CREATE TEMPORARY TABLE saved_conditions AS SELECT * FROM conditions WHERE SourceTypeOrReferenceId=1;
 CREATE TEMPORARY TABLE conditions LIKE saved_conditions; INSERT INTO conditions SELECT * FROM saved_conditions;

@@ -69,5 +69,6 @@
     "Resolve the two historical source/range questions above before describing all fragment acquisition as original7.3.5 behavior."
   ],
   "rockaway_followup_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json",
-  "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json"
+  "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json",
+  "player_progress_followup": "docs/audits/lost-army-player-progress-2026-10-18.json"
 }
