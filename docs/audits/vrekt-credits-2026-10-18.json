@@ -1,0 +1,36 @@
+{
+  "quest": 44923,
+  "title": "Helarjar Landing: Vrekt",
+  "date": "2026-10-18",
+  "baseline": "80f2b639",
+  "status": "No production defect found in alternate kill credit, the two objective thresholds or task completion dispatch. Added executable regression coverage and retained the unverified reward/client boundaries.",
+  "findings": {
+    "liveData": "quest_template44923 has QuestType3 (TASK), flags37290240 and RewardSpell230157. Mandatory monster objectives287303/287309 are115845 x10 in storage0 and115846 x1 in storage1. Both have Flags0/Flags2=0. These match the separately executed typed7.3.5 QuestObjective.db2 reader.",
+    "mapping": "Live creature_template_wdb116180/116600/116601 each have KillCredit1=115845 and KillCredit2=0. Vaettfang115846 has neither alternate marker. Player::KilledMonster calls its own entry with the victim GUID, then alternate markers without that GUID; this omission is necessary here because KilledMonsterCredit resolves a nonempty GUID back to the actual creature entry. No extra scripted credit is needed.",
+    "markerTemplate": "115845 exists in creature_template_wdb, although it has no creature_template row. ObjectMgr::LoadWDBCreatureTemplates creates its in-memory CreatureTemplate before the secondary template loader. Absence from the secondary table alone is not a missing-marker defect; no invented template or display was added.",
+    "recipient": "Unit::Kill selects GetCharmerOrOwnerPlayerOrPlayerItself, then a valid loot recipient when present. Its initial dead/reentrant guard prevents another dispatch from the same in-progress death. KillRewarder::_RewardKillCredit schedules the native50ms callback; it resolves the target and calls Player::KilledMonster with that template before recording the recipient.",
+    "completion": "KilledMonsterCredit only advances an incomplete quest, checks the objective amount before adding one, then calls CanCompleteQuest. The latter iterates both mandatory objectives. CompleteQuest dispatches RewardQuest for TASK automatically and calls the completion hook. This preserves both possible kill orders and does not require an NPC turn-in.",
+    "rewardBoundary": "The full RewardQuest implementation, reviewed separately, saves quest/world-quest status and dispatches RewardSpell after marking the quest rewarded. Its actual inventory/currency/mail writes, persistence, task removal packets and230157 conversation execution were not exercised by this fixture. A call to the reward leaf is not proof those operations succeeded."
+  },
+  "automatedChecks": [
+    "Test-VrektCredits.ps1: read-only live SELECT snapshot; compiles actual extracted Unit owner resolver and Kill recipient prefix, full KillRewarder::_RewardKillCredit, Player::KilledMonster/KilledMonsterCredit, HasQuestObjectiveComplete, CanCompleteQuest and CompleteQuest. Native QuestObjective structure and relevant enums are extracted too.",
+    "Both objective orders pass for player and directly player-owned pet recipients. Each of the three alternate-credit creature types contributes one shared kill; Vaettfang contributes only its separate objective. Completion dispatch occurs at10+1, is announced, and calls the completion hook once per completed fixture run. Further kills after the reward leaf removes the quest do not repeat it.",
+    "Trash-only15 kills saturate at10 without completing. Unrelated markers, absent quests, failed/complete/rewarded statuses, the fixture-denied raid admission, party credit, grouped released/unreleased death states, the50ms delay and missing delayed target pass. The native initial Kill prefix rejects reentrant dispatch and insufficient-damage reward, clears invalid loot recipient and preserves an existing valid tap recipient.",
+    "Test-VrektCatalog.ps1: native DB2Storage/LoadInfo confirms both mandatory objective rows, unlocks, area/model records and230157 effect219 -> conversation3982. Current DB2 hashes recorded in runtime-test/vrekt-catalog/native-inputs.json. Current credit source/data hashes recorded in runtime-test/vrekt-credits/inputs.json."
+  ],
+  "fixtureBoundaries": [
+    "This is an extracted-production-function fixture, not a linked full Unit::Kill, real Player session, combat simulation or live quest completion. Only the initial Unit::Kill guard/recipient prefix executes; later loot, death, corpse timing and the RewardPlayer/RewardGroup caller chain remain outside this test.",
+    "Object lookup, quest storage/status, achievements, group/raid admission, timer service, script hook and RewardQuest are controlled leaves. The fixture assumes the loader-computed KILL|CAST special flags and a current accepted task. It neither forces an active rotation nor tests eligibility/auto-accept or range/contact selection for every group member; prior activation/lifecycle audits remain applicable.",
+    "The missing-target callback case intentionally yields no credit, matching current native behavior. Normal corpse lifetime, map changes or disconnect during that50ms window were not simulated in a running map. No general delayed-reward or duplicate-callback guarantee is claimed.",
+    "No production C++ or database rows changed. No new Release build/startup was necessary for this test-and-audit commit; the canonical binary remains the80f2b639 build with SHA2566C22BF96893E035F9B046D864410B4F300B47F93BBD76486B1CAF8511491B62B. Runtime configuration, extracted data and personal progress were untouched."
+  ],
+  "externalSource": {
+    "url": "https://www.wowhead.com/quest=44923/helarjar-landing-vrekt",
+    "result": "Fetch returned a JavaScript/robot challenge. No additional historical objective count or timing evidence was recovered. Local native7.3.5 DB2 remains the objective authority."
+  },
+  "remaining": [
+    "Next server-side audit: actual world-quest reward selection/delivery, personal completion persistence and native230157/3982 outro execution, including missing/expired active rotation boundaries.",
+    "Client confirmation remains required for both counters from player/pet/group kills, task disappearance, actual reward delivery and outro audio/visual playback. No whole-quest or client-verified claim.",
+    "All prior Vrekt activation, POI, actor/control, geometry, scene, perk and combat audits retain their observed failures, reconstruction and client limitations. This follow-up does not erase them."
+  ]
+}

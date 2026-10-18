@@ -4,6 +4,7 @@
   "date": "2026-10-18",
   "baseline": "e9d85586",
   "followUp": "The separately recorded corrupt-POI finding below is repaired in vrekt-poi-2026-10-18.json. All other original evidence boundaries remain.",
+  "creditFollowUp": "vrekt-credits-2026-10-18.json executes native recipient, alternate-credit, two-objective and automatic task-reward dispatch functions. No defect found there; actual reward/persistence/outro execution and client confirmation remain separate. Historical remaining items below are retained with their original evidence boundaries.",
   "status": "Missing rotation candidate restored and automatic shared-state overwrite prevented. Native code/data checks and canonical Release startup passed; no client verification or claim that the whole encounter is complete.",
   "findings": {
     "missingCandidate": "Live world_quest_update had44737 but no44923. The native GetWorldQuestUpdate returns null, GenerateNewWorldQuest returns before generation, and the loader cannot insert44923 into the automatic candidate set. Personal Lost Army conditions alone did not make this world quest activatable.",
