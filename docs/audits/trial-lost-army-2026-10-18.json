@@ -1,0 +1,71 @@
+{
+  "quest": 45088,
+  "title": "Trial of Valor: The Lost Army",
+  "date": "2026-10-18",
+  "baseline": "7653a4ec",
+  "core_fix_commit": "57982d98",
+  "status": "Existing outdoor source gating repaired; native reward/loot/item-progress checks passed; exact retail source coverage/ranges and client verification remain open",
+  "findings": [
+    "The native quest uses objective287539, type1 ITEM, entry142487, amount1000, storage0 and Flags2=1. Preserve the existing raid classification and package18559. Raid Odyn114263 starts it; both114263 and post-Helya116760 end it. There is no prerequisite in the addon: the existing pre-fight removal/post-fight restoration of Odyn's questgiver flag already controls the offer. No artificial main-chain prerequisite was added.",
+    "Native ItemSparse142487 is Valarjar Soul Fragment, MaxCount0, stack1000, quest bonding4, flags2048/8192/0 and unrestricted class/race. Stack1000 is not a unique-item maximum of1000. Native HasQuestForItem and item-objective logic stop further eligible quest drops once the objective is satisfied; excess from the final stack can remain in inventory.",
+    "Live fragment loot exists on Guarm114323 and Helya114537 and on Odyn's chest loot70585, linked from chest260526. These raid rows are QuestRequired1, chance100, LootMode0 wildcard, count30..60. The creature templates link their actual loot IDs and the chest's Data1 points to70585. Preserve these links and boss-difficulty eligibility; no direct script AddItem reward was added.",
+    "The personal LFR equipment roll previously suppressed independent quest rows for non-winners. The separate boss-quest-loot audit records the focused core fix and binary checks. Other raid difficulties retain their existing shared quest-container route; the dedicated tests do not execute full live Unit/group loot generation.",
+    "Seven existing outdoor rows142487 had no source1 conditions. Grey Shoals entries115025 Helarjar Raider,115031 Cursed Rigger and115751 Seirdr are objectives/spawns for44737. Vrekt entries115846 Vaettfang,116180 Mist Seer,116600 Cursed Sea Dog and116601 Helarjar Marauder occupy the same Stormheim landing; the latter three share44923's kill credit115845. The existing counts1..2 and individual probabilities36.4702..58.6728 are preserved.",
+    "Migration2026_10_18_02 binds each outdoor row to native condition60 WORLD_QUEST for its specific landing44737 or44923. This checks the server's active rotation, rather than requiring a transient player quest-log entry or allowing an unrelated landing. Native QuestDataStoreMgr::GetWorldQuest uses the quest sort and ID. Existing QuestRequired/HasQuestForItem independently requires the fragment quest. Raid/chest rows receive no outdoor condition.",
+    "The regression executes ConditionMgr::addToLootTemplate, LootTemplate::addConditionItem, the native condition60 case, actual active-world-quest lookup and LootItem::AllowedForPlayer. The controlled rotation is inactive, unrelated-active, matching-active and expired during looting. It also runs native ordinary LootTemplate::Process/Roll. Condition-list aggregation for the single attached condition, generated storage/count RNG and the active-rotation data are fixture services.",
+    "Native Player HasQuestForItem, ItemAddedQuestCheck, ItemRemovedQuestCheck, AdjustQuestReqItemCount, CanCompleteQuest/CanRewardQuest and the actual RewardQuest item-consumption case execute through the existing inventory fixture. Both factions,999-to1000 progress, exact1000 consumption, retained excess, no quest/rewarded state, abandonment/reacceptance and bank-only turn-in refusal pass. Actual bag persistence, item packets and full reward transaction are not executed.",
+    "Native QuestPackageItem18559 has four class-filtered quantity1 rewards:143518 plate mask35,143514 mail68,143510 leather3592 and143506 cloth400. The real ObjectMgr item-specialization mask builder runs against native Item/ItemSparse/ItemSpec/ItemSpecOverride/ChrSpecialization stores. Their union is4095 and each of the12 Legion classes matches exactly one reward. They have no faction restriction; no Evoker or modern Remix reward was imported.",
+    "Each reward has exactly one native on-use ItemEffect:231683/231678/231674/231638 respectively. Each spell has effect255 COLLECT_ITEM_APPEARANCES_SET for sets183/179/175/171. All four TransmogSet records and their nine ItemModifiedAppearance references exist. Production Spell::EffectCollectItemAppearancesSet and CollectionMgr::AddTransmogSet were inspected; actual collection saving and in-client learning are pending.",
+    "No live Hotfix rows override package18559, the five relevant ItemSparse records, four item uses or their SpellEffects. No World item_template or spell_script_names overrides were found for these items/uses. The typed catalog records SHA256 inputs; no synthetic explicit SQL reward was substituted for the native class package.",
+    "Migration replay is idempotent and preserves other condition rows and all loot chances/counts. It was backed up, applied and registered in updates before the fresh startup. Source1 conditions are attached during normal loading; fresh DBErrors.log is empty. Startup alone does not verify an actual corpse or quest turn-in.",
+    "Historical sources corroborate outdoor fragments during active Helarjar WQs and the class-dependent normal-color ensemble. Modern Wowhead contains Remix and later-expansion additions; those reports were not treated as7.3.5 drop-rate specifications. Earlier raid/quest audits and pending client checks remain unchanged."
+  ],
+  "open_evidence": [
+    "The exact7.3.5 boss fragment ranges remain unverified. Current Helya30..60 differs from later player reports of100+; those reports identify later expansion characters and do not establish a dated7.3.5 minimum/maximum. No range was invented from a few samples. Local2018 TDB735 contains no matching fragment loot rows to settle this. This audit does not certify the existing range as original.",
+    "Rockaway Coast44746 is an additional historical source lead: a report describes15 fragments on WQ completion. Its native objective is a Summoners Dead marker, not an ordinary loot creature. Current world_quest_item has no matching entry. Its ritualist/completion reward path needs a separate dated-source and executable WQ audit; no guessed ritualist drops or unconditional15-item reward were added here."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/item=142487/valarjar-soul-fragment",
+      "finding": "Historical players describe1..2 outdoor fragments while Helarjar WQs are active, including a specifically dated January2017 Vrekt farming report. Reported boss quantities from later expansion characters are retained as an unresolved lead, not imported as7.3.5 bounds."
+    },
+    {
+      "url": "https://www.wowhead.com/ptr/quest=44737/helarjar-landing-grey-shoals",
+      "finding": "Corroborates Grey Shoals raider/rigger/Seirdr objectives and the active-WQ fragment restriction."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44746/helarjar-landing-rockaway-coast",
+      "finding": "Primary player reports describe a ritualist-completion encounter and a15-fragment reward; retained for the separate Rockaway source audit."
+    },
+    {
+      "url": "https://www.mmo-champion.com/threads/2118881-Trial-of-Valor-transmog-set-%28The-Lost-Army%29-questions",
+      "published": "2016-11-23",
+      "finding": "Contemporaneous players discuss the post-Odyn quest, Guarm/Helya and outdoor sources and ask how the difficulty recolors relate to its ensemble. This discussion does not establish exact drop-count bounds."
+    }
+  ],
+  "checks": [
+    "Test-LostArmy.ps1: PASS; repeat migration replay, source binding, native loot/condition/item lifecycle, live World/Hotfix data",
+    "Test-LostArmyCatalog.ps1: PASS; typed7.3.5 stores, actual item class-mask builder, all12 class rewards and appearance chains",
+    "Test-StormheimHelheimSupplies.ps1: PASS as the item/ordinary-loot regression dependency",
+    "Test-BossQuestLoot.ps1 -VerifyReleaseBinary: PASS; separate core fix and actual deployed processor reference",
+    "Release build and final canonical startup: PASS; ready=true, exit0, DBErrors.log/stderr.log empty",
+    "Staged diff and audit JSON validation: PASS"
+  ],
+  "deployment": {
+    "migration": "2026_10_18_02_lost_army_world_quests.sql",
+    "migration_sha1": "955391a253c3330e2e4f3326afb22b2bf5420394",
+    "backup": ".codex/backups/lost-army/20261018-132826",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "29d40418130243126af23d99e1b891a4f57756c6132da376b7fa31b9b2d97db5",
+    "bnetserver_sha256": "742fc17b89d89631e6a329e4c4accea7e567e86052d51484c04444de6a437ce1",
+    "startup_logs": "build-extractors/runtime-test/lost-army/startup-20261018-133124",
+    "worldserver_left_running": false
+  },
+  "pending_client_checks": [
+    "Accept45088 from defeated raid Odyn; confirm1000-item progress and retained fragments on logout, abandonment and reacceptance.",
+    "Loot the Odyn chest, Guarm and Helya on each difficulty, in a group and solo; verify quest eligibility, count bounds, per-difficulty weekly cooldown and LFR non-equipment recipients.",
+    "Test Grey Shoals/Vrekt while each WQ is active and inactive, including pet kills, shared kills, looting after expiry and unrelated active landings.",
+    "Reach1000, turn in to both valid Odyn locations with real bags/bank and inventory-space boundaries, receive the appropriate class ensemble and learn/reload all appearances.",
+    "Resolve the two historical source/range questions above before describing all fragment acquisition as original7.3.5 behavior."
+  ]
+}
