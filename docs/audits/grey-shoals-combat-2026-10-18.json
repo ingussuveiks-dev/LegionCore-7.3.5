@@ -1,0 +1,45 @@
+{
+  "quest": 44737,
+  "date": "2026-10-18",
+  "status": "Removed two unrelated player-artifact buffs from Raider combat; retained native target routing. Automated code/data checks passed; no client verification.",
+  "finding": {
+    "actor": 115025,
+    "rows": [2, 3],
+    "problem": "Imported SmartAI combat timers repeatedly self-cast213738 and215377. These spells are the Dreadblades' Taste of Blood and the Maw of the Damned's The Maw Must Feed, not supported Raider abilities.",
+    "nativeEvidence": "Typed runtime Spell.db2 descriptions identify Fate and Fortune and the Maw of the Damned; SpellEffect.db2 identifies stacking run-speed aura129 and damage-percent aura79. The actual Rogue214862 and DK214837 proc scripts cast these buffs following humanoid or nonelite humanoid/demon events.",
+    "sourceTrace": ["src/server/scripts/Spells/spell_rogue.cpp::spell_rog_curse_of_the_dreadblades_proc", "src/server/scripts/Spells/spell_dk.cpp::spell_dk_consumption_proc"],
+    "inferenceBoundary": "This is an evidence-based rejection of unrelated artifact perks, not a recovered retail sniff proving the Raider's complete original spell list or exact cast timers. Battle Rage186480 and Flurry of Steel186476 remain."
+  },
+  "implementation": {
+    "migration": "2026_10_18_09_grey_shoals_raider_combat.sql",
+    "scope": "Only entry115025/source0/event0/action11/self1 with row2/spell213738 or row3/spell215377. Preserve other entries/source types, edited spells/targets and every field in retained rows.",
+    "otherActors": "Helhound186302 and Rigger222484 retain victim targets. Seirdr186327 and186338 retain random hostile targets, including pets on the native threat selector; no unsupported player-only restriction was added.",
+    "mist": "Native SpellTargetRestrictions186338 mask64 plus effect179/destination87 produces a destination spell. Spell::InitExplicitTargets removes the redundant unit target but uses the original supplied object's position for SetDst, so the random hostile position is preserved. No change to this working route.",
+    "mistData": "Live area-trigger4325/custom0/spell186338 has radius6, enter action casts186339 on hostiles and exit/removal action removes it. Custom9070 is separate and remains unchanged. Full trigger ticking and damage were not executed."
+  },
+  "automatedChecks": [
+    "Test-GreyShoalsCatalog.ps1: typed native Spell, SpellEffect, SpellMisc, SpellRange and SpellTargetRestrictions, linked native SpellImplicitTargetInfo::GetExplicitTargetMask; self/centered0, hostile-unit128, destination64 and artifact-perk unit2 masks. Native input SHA256 inventory saved under runtime-test/grey-shoals-catalog.",
+    "Test-GreyShoalsCombat.ps1 -Live: reconstructs both old bad rows in temporary shadow tables, executes migration twice, compares every retained field, preserves neighbouring entry/source9 and external spell/target edits, and checks the six deployed casts.",
+    "Combat native-function fixture executes actual SmartAI self/victim/random case bodies and Spell::InitExplicitTargets. Tests hostile destination survives redundant unit-target removal, enemy unit preservation, caster-centered target stripping, missing targets and native no-object fallback. Object lookup, threat selection, setters, admission and world/packet services are fixture leaves; full Spell::prepare/CheckCast/hit is not executed.",
+    "Test-GreyShoalsData.ps1, Test-GreyShoals.ps1 and Test-GreyShoalsRotation.ps1 pass: objectives, supply/native group credit, repeated earlier migrations, lifecycle/expiry and scope isolation remain intact.",
+    "Test-GreyShoalsRelease.ps1 passes actual final-link library freshness, deployed lifecycle/visibility hooks, native control cleanup and supply filter. No production C++ changed, so the already built canonical executable was retained."
+  ],
+  "deployment": {
+    "migrationState": "RELEASED",
+    "sha1": "EE24570B9FBFD45A0D67A19EFC12BD03BD1CBD33",
+    "backup": ".codex/backups/grey-shoals-combat/20261018-174725",
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "3C6B051F446C8B616F4746D53A92B9B3323803ED175B4C584BB6838DDFE7DDD4",
+    "startup": {"path": "build-extractors/runtime-test/grey-shoals-rotation/startup-20261018-174741", "ready": true, "exit": 0},
+    "boundary": "Startup confirms SQL admission, not encounter execution. Canonical configuration, certificates, DLLs and extracted data preserved; validation server stopped gracefully."
+  },
+  "sources": [
+    {"url": "https://www.wowhead.com/spell=213738/taste-of-blood", "evidence": "Dreadblades perk identity and stacking movement-speed effect corroborate native7.3.5 data. Current page is not a historical NPC combat sniff."},
+    {"url": "https://www.wowhead.com/spell=215377/the-maw-must-feed", "evidence": "Blood DK artifact perk identity and stacking damage increase corroborate native7.3.5 data. Current page is not a historical NPC combat sniff."}
+  ],
+  "remaining": [
+    "Full in-world cast/CheckCast/hit, range/LOS, damage, threat switching, leash/reset and native area-trigger ticks still need encounter/client verification.",
+    "Exact retail actor/rack placements, original spell timers, four Seirdr placements, ordinary fauna, visuals and full quest completion remain unverified. Earlier audit limitations survive this fix.",
+    "Terrain/navmesh survey is being recorded separately; do not infer geometry or whole-quest verification from this combat change."
+  ]
+}

@@ -1,6 +1,9 @@
 #include "DB2Store.h"
 #include "DB2Structure.h"
 #include "DB2LoadInfo.h"
+#include "SpellAuraDefines.h"
+#include "MovementPackets.h"
+#include "SpellInfo.h"
 #include <iostream>
 #include <stdexcept>
 static void Require(bool ok,char const* reason){if(!ok)throw std::runtime_error(reason);}
@@ -12,6 +15,9 @@ int Run(int argc,char** argv){
  STORE(PlayerConditionEntry,conditions,"PlayerCondition",PlayerConditionLoadInfo);
  STORE(SpellEntry,spells,"Spell",SpellLoadInfo);
  STORE(SpellEffectEntry,effects,"SpellEffect",SpellEffectLoadInfo);
+ STORE(SpellMiscEntry,misc,"SpellMisc",SpellMiscLoadInfo);
+ STORE(SpellRangeEntry,ranges,"SpellRange",SpellRangeLoadInfo);
+ STORE(SpellTargetRestrictionsEntry,restrictions,"SpellTargetRestrictions",SpellTargetRestrictionsLoadInfo);
  STORE(CreatureDisplayInfoEntry,displays,"CreatureDisplayInfo",CreatureDisplayInfoLoadInfo);
  STORE(CreatureModelDataEntry,models,"CreatureModelData",CreatureModelDataLoadInfo);
  STORE(GameObjectDisplayInfoEntry,objects,"GameObjectDisplayInfo",GameobjectDisplayInfoLoadInfo);
@@ -36,11 +42,32 @@ int Run(int argc,char** argv){
   Require(spells.LookupEntry(id),"Missing configured spell");
   for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID)
    std::cout<<"spell "<<id<<" effect "<<e->EffectIndex<<" type "<<e->Effect<<" aura "<<e->EffectAura<<" misc "<<e->EffectMiscValue[0]<<" target "<<e->ImplicitTarget[0]<<','<<e->ImplicitTarget[1]<<'\n';}
+ for(uint32 id:{186480u,186476u,186302u,222484u,186327u,186338u,213738u,215377u}){
+  bool src=false,dst=false;uint32 mask=0;
+  for(auto t:restrictions)if(t->SpellID==id&&!t->DifficultyID)mask|=t->Targets;
+  for(auto e:effects)if(e->SpellID==id&&!e->DifficultyID){
+   mask|=SpellImplicitTargetInfo(e->ImplicitTarget[0]).GetExplicitTargetMask(src,dst);
+   mask|=SpellImplicitTargetInfo(e->ImplicitTarget[1]).GetExplicitTargetMask(src,dst);
+  }
+  // Execute native implicit-target mask admission, rather than treating
+  // destination87 as a unit target or moving the mist to the caster.
+  uint32 expected=id==186338?TARGET_FLAG_DEST_LOCATION:
+   (id==186302||id==222484||id==186327)?TARGET_FLAG_UNIT_ENEMY:
+   (id==213738||id==215377)?TARGET_FLAG_UNIT:0;
+  Require(mask==expected,"Combat explicit target mask changed");
+  for(auto m:misc)if(m->SpellID==id&&!m->DifficultyID){auto r=ranges.LookupEntry(m->RangeIndex);
+   Require(r,"Missing combat range");std::cout<<"combat "<<id<<" mask "<<mask<<" range "<<r->RangeMin[0]<<','<<r->RangeMax[0]<<'\n';}
+ }
+ auto rogue=spells.LookupEntry(213738),dk=spells.LookupEntry(215377);
+ Require(std::string(rogue->Description->Str[0]).find("Fate and Fortune")!=std::string::npos&&
+  std::string(dk->Description->Str[0]).find("Maw of the Damned")!=std::string::npos,"Reinspect artifact perk identity");
+ std::cout<<"artifact-perks 213738 Dreadblades; 215377 Maw of the Damned (not Raider abilities)\n";
  for(auto e:effects)if(e->EffectMiscValue[0]==115739||e->EffectMiscValue[1]==115739)
   {Require(e->SpellID==229972&&e->Effect==134&&e->ImplicitTarget[0]==1,"Reinspect supply native credit routing");
    std::cout<<"supply "<<e->SpellID<<" effect "<<e->EffectIndex<<" type "<<e->Effect<<'\n';}
  auto rack=objects.LookupEntry(35575);Require(rack&&rack->FileDataID,"Missing native Kvaldir rack model");
  std::cout<<"rack display35575 file "<<rack->FileDataID<<'\n';
+ std::cout<<"rack-bounds Z "<<rack->GeoBoxMin.Z<<','<<rack->GeoBoxMax.Z<<'\n';
  std::cout<<"PASS: typed native objective/unlock/model/faction/spell catalog; TaskStep weights are server SQL, not QuestObjective.db2 fields\n";
  return 0;
 }
