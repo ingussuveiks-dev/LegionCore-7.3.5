@@ -3,6 +3,7 @@
   "title": "Helarjar Landing: Vrekt",
   "date": "2026-10-18",
   "baseline": "80f2b639",
+  "rewardFollowUp": "vrekt-reward-state-2026-10-18.json repairs missing/expired/already rewarded rotation execution, checks native status save/load and temporary SQL round-trip, and executes the native230157/3982 outro with a Creature surrogate. Original delivery/session/client boundaries remain; full-inventory item delivery is a separate next fix.",
   "status": "No production defect found in alternate kill credit, the two objective thresholds or task completion dispatch. Added executable regression coverage and retained the unverified reward/client boundaries.",
   "findings": {
     "liveData": "quest_template44923 has QuestType3 (TASK), flags37290240 and RewardSpell230157. Mandatory monster objectives287303/287309 are115845 x10 in storage0 and115846 x1 in storage1. Both have Flags0/Flags2=0. These match the separately executed typed7.3.5 QuestObjective.db2 reader.",

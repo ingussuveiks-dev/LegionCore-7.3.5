@@ -105,6 +105,7 @@ struct Player:Unit{
  void SetQuestStatus(uint32,QuestStatus s){status.Status=s;}
  bool IsQuestWeekRewarded(uint32)const{return false;}bool IsQuestSeasonalRewarded(uint32)const{return false;}
  bool CanTakeQuest(Quest const*,bool)const{return accepted;}
+ bool CanRewardWorldQuest(Quest const*)const{return true;} // Rotation admission has its own production-function regression.
  Reputation GetReputationMgr()const{return {};}
  bool HasEnoughMoney(uint64)const{return false;}bool HasSpell(int32)const{return false;}bool HasCurrency(int32,int32)const{return false;}
  uint16 FindQuestSlot(uint32)const{return accepted?0:MAX_QUEST_LOG_SIZE;}

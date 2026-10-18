@@ -1,0 +1,38 @@
+{
+  "quest": 44923,
+  "title": "Helarjar Landing: Vrekt",
+  "date": "2026-10-18",
+  "baseline": "caddeec5",
+  "status": "Repaired completion/direct-reward admission when a world-quest rotation is missing, expired or already personally rewarded. Native completion-state persistence and native Vrekt outro execution pass the bounded checks below. Actual item delivery and Player/client playback are not claimed verified.",
+  "finding": "RewardQuest formerly removed the task and dispatched its reward spell even when GetWorldQuest returned null. The dynamic reward and m_worldquests completion record are inside that lookup's conditional block and were skipped. GetWorldQuest itself does not check ResetTime. CompleteQuest also marked complete before any rotation check. This is a source/function-fixture finding, not a reported client observation.",
+  "implementation": {
+    "admission": "Player::CanRewardWorldQuest permits ordinary quests unchanged. World/emissary quests require an active record, its reward template, ResetTime strictly after GameTime and no unexpired personal completion. Exact expiry is rejected; an expired old personal completion does not block a later active rotation.",
+    "entryPoints": "CompleteQuest checks before writing quest status/slot state or invoking completion scripts. RewardQuest checks again at its direct entry before consuming objectives, giving static/dynamic rewards, removing the task, writing completion or casting the outro. This covers automatic tasks and direct callers. Existing CanCompleteQuest/CanRewardQuest objective/turn-in predicates remain unchanged; their positive result is not a promise the rotation will still be available at execution time.",
+    "scope": "Shared world/emissary reward safety, not a Vrekt entry whitelist. No changes to scheduler selection, its inherited five-minute reset policy, rewards, timers, unlocks, personal character state or database schema. No fabricated missing rotation or completion record."
+  },
+  "automatedChecks": [
+    "Test-WorldQuestRewardState.ps1 executes extracted production CanRewardWorldQuest, CompleteQuest, the initial RewardQuest admission prefix, existing objective/turn-in predicates, WorldQuestCompleted, _SaveWorldQuestStatus, _LoadWorldQuestStatus and ResetWorldQuest. Pinned caddeec5 CompleteQuest/reward-prefix reproduce destructive-remainder entry for five unavailable/already rewarded cases; current code enters neither state writes nor the reward sentinel in those cases.",
+    "Missing active row, null reward template, past/exact expiry, existing personal completion, one second before expiry, old expired personal completion, ordinary quest, missing emissary and null quest boundaries pass. Full RewardQuest delivery is outside the prefix fixture; the sentinel records entry into the remainder, not simulated reward success.",
+    "Native status methods preserve save order, unsigned GUID4045620583, account77, quest44923, resetTime2000, dirty-state clearing, login completion bit, duplicate/unknown loaded rows and reset behavior. Actual native prepared REPLACE/SELECT strings then round-trip the emitted fields twice in an empty connection-local shadow table with the live schema; repeat save yields one row and account78 cannot read account77's row. No personal rows are copied or changed. The live schema uses an unsigned32-bit GUID column; this is not proof of support beyond that range.",
+    "Test-VrektCredits.ps1 passes the prior10+1, both order, player/pet and credit-boundary cases. Its rotation admission is explicitly a true fixture leaf; real rotation admission is exercised by the separate reward-state regression.",
+    "Test-VrektOutro.ps1 links the actual final-link game.lib, loads live conversation data through a private read-only World pool and the canonical native DB2/GT stores, then executes a real triggered230157 cast on a real Creature caster surrogate in a private map1220. Native effect219 creates exactly one3982 conversation, binds its caster, populates actor/line dynamic fields, admits it to the map and cleans it up through native removal. No precreated conversation is supplied.",
+    "Native outro: line9085 -> BroadcastText123646 -> SoundKit77643; actor53609/creature96469/display67230 resolves through CreatureDisplayInfo/CreatureModelData. Live SQL actor duration6117 plus the native5000ms tail produces11117ms. This verifies existing data/engine timing, not historical sniff authenticity or a complete physical audio file.",
+    "Standard CMake Release worldserver/bnetserver build passes into build-extractors/bin/Release. Test-WorldQuestRewardRelease.ps1 reads the generated actual final-link input, checks Player.cpp/h freshness, resolves incremental thunks and bounds deployed functions by PE exception records. CompleteQuest and RewardQuest call the guard before status mutation/removal/item storage; the guard calls native GetWorldQuest, clock and WorldQuestCompleted.",
+    "Canonical startup ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes. Configs, certificates, DLLs and extracted data preserved. Startup is only load validation."
+  ],
+  "outroBoundary": "The surrogate is a Creature, not a Player session. Personal/group visibility, task packets, subtitle/bubble/audio playback, physical sound data and client cleanup still require verification. The optional native SoundKitEntry reader rejects this runtime file; SoundKit77643 exists, but no physical sound-file mapping is claimed. This parser/data-layout limitation is retained rather than replaced with guessed offsets.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "ED62093D857460A4212000810E1E78E0F948FD8732E4C0882661FDE7D0C9B0DD",
+    "bnetserverSHA256": "10E9FC5D9938B7D248BDF26ECED129A4D63020FEDCD6DAC9F6EC57A5B24A7C39",
+    "actualFinalLinkGameSHA256": "9ED721A2820338AFBAE48069094D78EA4AFA726D1EACA0AAF317547E7E7A932E",
+    "startup": "build-extractors/runtime-test/vrekt-rewards/startup-20261018-222504",
+    "inputManifests": ["build-extractors/runtime-test/world-quest-reward-state/inputs.json", "build-extractors/runtime-test/vrekt-outro/native-inputs.json"],
+    "boundary": "Validation server stopped gracefully. No SQL migration or live rotation/character edit."
+  },
+  "remaining": [
+    "Next separate reward-delivery fix: both world-quest item branches currently skip storage when CanStoreNewItem fails, but continue completion. Reproduce inventory-full behavior and preserve the selected item/count/bonuses through a suitable delivery fallback; do not bypass uniqueness/other admission errors.",
+    "Full RewardQuest inventory/currency/mail delivery, its asynchronous transaction outcome and actual Player login/recompletion still need an integrated session/client check. Native methods plus temporary-table SQL round-trip do not prove a real character's end-to-end reward.",
+    "All earlier Vrekt audits retain their original observations, reconstructed scene/movement details and client limitations. No whole-quest/client-verified claim."
+  ]
+}

@@ -1929,6 +1929,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool HasQuestObjectiveComplete(Quest const* qInfo, QuestObjective const& obj);
         bool CanCompleteQuest(uint32 quest_id);
         bool CanCompleteRepeatableQuest(Quest const* quest);
+        bool CanRewardWorldQuest(Quest const* quest) const;
         bool CanRewardQuest(Quest const* quest, bool msg);
         bool CanRewardQuest(Quest const* quest, uint32 reward, bool msg);
         void AddQuestAndCheckCompletion(Quest const* quest, Object* questGiver);
