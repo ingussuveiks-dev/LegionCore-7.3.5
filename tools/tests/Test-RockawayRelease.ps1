@@ -48,6 +48,11 @@ foreach($name in @('?KilledMonsterCredit@Player@@QEAAXIVObjectGuid@@@Z','?AutoSt
 if($finish -notcontains (Resolve (Symbol '?DespawnOrUnsummon@Creature@@'))){throw 'Deployed Finish lacks retained corpse lifetime scheduling'}
 $update=@(Calls '?UpdateAI@npc_rockaway_vision@@')
 if($update -notcontains (Resolve (Symbol '?Finish@npc_rockaway_vision@@'))){throw 'Deployed UpdateAI lacks final completion callback'}
+if($update -notcontains (Resolve (Symbol '?AddAura@Unit@@QEAAPEAVAura@@I'))){throw 'Deployed Vision still lacks direct decorative aura application'}
+$death=@(Calls '?JustDied@npc_rockaway_ritualist@@')
+foreach($name in @('?CastStop@Unit@@','?RemoveAurasDueToSpell@Unit@@')){
+ if($death -notcontains (Resolve (Symbol $name))){throw "Deployed ritual death lacks $name"}
+}
 $damage=@(Calls '?DamageTakenAfterScaling@npc_rockaway_vision@@')
 if($damage -notcontains (Resolve (Symbol '?GetHealth@Unit@@QEBA_KPEAV1@@Z'))){throw 'Deployed Vision lacks target-relative scaled damage clamp'}
-'PASS: canonical Release final-link scripts library and actual UpdateAI -> Finish -> native Player credit/loot calls; scaled health clamp present.'
+'PASS: canonical Release final-link scripts library, actual decorative AddAura/death cleanup and completion/credit/loot calls; scaled health clamp present.'

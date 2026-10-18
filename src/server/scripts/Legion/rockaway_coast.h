@@ -60,6 +60,7 @@ struct npc_rockaway_vision : ScriptedAI
         started = ready = outro = false;
         events.Reset();
         me->CastStop();
+        me->RemoveAurasDueToSpell(231328, me->GetGUID());
         // Removal during reset must not create new essence pools.
         std::list<Player*> players;
         me->GetPlayerListInGrid(players, 200.0f);
@@ -248,7 +249,10 @@ struct npc_rockaway_vision : ScriptedAI
             enabled = true;
             ClearRun();
             me->SetVisible(true);
-            me->CastSpell(me, 231328, true);
+            // A real cast of this infinite channel sets UNIT_STATE_CASTING
+            // and permanently blocks the attack scheduler below. Apply only
+            // its decorative self aura; ritualists keep their real channels.
+            me->AddAura(231328, me);
         }
         if (outro)
         {
@@ -325,7 +329,12 @@ struct npc_rockaway_ritualist : ScriptedAI
                 if (!spoken) { spoken = true; Talk(1); }
             }
     }
-    void JustDied(Unit*) override { Talk(2); }
+    void JustDied(Unit*) override
+    {
+        me->CastStop();
+        me->RemoveAurasDueToSpell(231333, me->GetGUID());
+        Talk(2);
+    }
     void UpdateAI(uint32 diff) override
     {
         if (poll > diff) { poll -= diff; return; }

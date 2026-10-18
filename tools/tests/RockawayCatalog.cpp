@@ -20,6 +20,7 @@ int main(int argc, char** argv)
     STORE(SpellRadiusEntry, radii, "SpellRadius", SpellRadiusLoadInfo);
     STORE(SpellEntry, spells, "Spell", SpellLoadInfo);
     STORE(SpellMiscEntry, misc, "SpellMisc", SpellMiscLoadInfo);
+    STORE(SpellDurationEntry, durations, "SpellDuration", SpellDurationLoadInfo);
     STORE(QuestV2CliTaskEntry, tasks, "QuestV2CliTask", QuestV2CliTaskLoadInfo);
     STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
     STORE(CreatureDisplayInfoEntry, displays, "CreatureDisplayInfo", CreatureDisplayInfoLoadInfo);
@@ -98,6 +99,8 @@ int main(int argc, char** argv)
                 ritual = row;
             }
         Require(ritual && (ritual->Attributes[1] & 0x44) &&
+            durations.LookupEntry(ritual->DurationIndex) &&
+            durations.LookupEntry(ritual->DurationIndex)->Duration == -1 &&
             effect(id, 0)->Effect == 6 && effect(id, 0)->EffectAura == 4 &&
             effect(id, 0)->ImplicitTarget[0] == 1,
             "Ritual channel/self-dummy data changed");

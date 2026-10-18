@@ -19,5 +19,5 @@ if($LASTEXITCODE){throw 'Rockaway native catalog build failed'}
 $previousPath=$env:PATH
 try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/RockawayCatalog.exe" "$repo/build-extractors/bin/Release/dbc/enUS/";if($LASTEXITCODE){throw 'Rockaway native DB2 reader failed'};$rows | Set-Content "$output/native-lines.txt";$rows}finally{$env:PATH=$previousPath}
 $hashes=@{}
-foreach($name in @('Spell','SpellMisc','SpellEffect','SpellRadius','QuestV2CliTask','PlayerCondition','CreatureDisplayInfo','CreatureModelData','FactionTemplate')){$hashes[$name]=(Get-FileHash "$repo/build-extractors/bin/Release/dbc/enUS/$name.db2" -Algorithm SHA256).Hash}
+foreach($name in @('Spell','SpellMisc','SpellDuration','SpellEffect','SpellRadius','QuestV2CliTask','PlayerCondition','CreatureDisplayInfo','CreatureModelData','FactionTemplate')){$hashes[$name]=(Get-FileHash "$repo/build-extractors/bin/Release/dbc/enUS/$name.db2" -Algorithm SHA256).Hash}
 $hashes | ConvertTo-Json | Set-Content "$output/native-inputs.json"

@@ -17,6 +17,19 @@ struct Position {
  float x=0,y=0,z=0,o=0; float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}
 };
 struct Player;struct Creature;struct ScriptedAI;struct Group{bool raid=false;bool isRaidGroup()const{return raid;}};
+struct Unit;
+enum CurrentSpellTypes{CURRENT_GENERIC_SPELL,CURRENT_CHANNELED_SPELL,CURRENT_AUTOREPEAT_SPELL,CURRENT_MAX_SPELL};
+enum {SPELL_ATTR4_TRIGGERED=4,SPELL_INTERRUPT_FLAG_MOVEMENT=1,CHANNEL_INTERRUPT_FLAG_MOVE=1,UNIT_STATE_MOVE_IN_CASTING=2,SPELL_AURA_FIXATE=1};
+struct ChannelInfo {
+ uint32 Id=0,InterruptFlags=0;bool HasAttribute(int)const{return false;}
+ bool CanInterruptChannel(ChannelInfo*)const{return true;}uint32 CalcCastTime(Unit*)const{return 0;}
+ bool HasChannelInterruptFlag(int)const{return false;}bool HasAura(int)const{return false;}
+};
+struct Spell {
+ ChannelInfo info;ChannelInfo*m_spellInfo=&info;Unit*caster=nullptr;Spell**m_selfContainer=nullptr;
+ CurrentSpellTypes GetCurrentContainer()const{return CURRENT_CHANNELED_SPELL;}
+ Unit*GetCaster()const{return caster;}void SetReferencedFromCurrent(bool){}
+};
 struct Map {uint32 GetDifficultyID()const{return 0;}} worldMap;
 using DamageEffectType=int;
 constexpr int REACT_PASSIVE=0,UNIT_STATE_CASTING=1,TEMPSUMMON_MANUAL_DESPAWN=0,QUEST_STATUS_INCOMPLETE=1;
@@ -26,6 +39,10 @@ std::set<uint32> failedSpells;
 struct Unit:Position {
  ObjectGuid guid{nextGuid++}; uint32 entry=0,map=1220,phase=1,hp=100,healthRelative=100;bool alive=true,inWorld=true,visible=true,IsAIEnabled=true;
  Unit* owner=nullptr;std::set<uint32> auras;std::vector<uint32> casts;
+ Spell channel;Spell*m_currentSpells[CURRENT_MAX_SPELL]{};bool m_AutoRepeatFirstCast=false;uint32 states=0;
+ void SetCurrentCastedSpell(Spell*);
+ void AddUnitState(uint32 s){states|=s;}
+ void InterruptSpell(CurrentSpellTypes type,bool=true,bool=true,uint32=0){if(auto s=m_currentSpells[type]){auras.erase(s->info.Id);m_currentSpells[type]=nullptr;}states=0;}
  virtual ~Unit()=default;void Dispatch(Creature*creature);
  ObjectGuid GetGUID()const{return guid;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return map;}
  Map*GetMap(){return &worldMap;}
@@ -36,8 +53,9 @@ struct Unit:Position {
  uint32 GetHealth(Unit*)const{return healthRelative;}
  void SetFullHealth(){hp=healthRelative=100;alive=true;}
  void SetVisible(bool v){visible=v;}void setActive(bool){}void SetReactState(int){}void SetDisableGravity(bool){}
- void SetFacingToObject(Unit*){}void CombatStop(bool){}void CastStop(){}
- bool HasUnitState(int)const{return false;}bool HasAura(uint32 s)const{return auras.count(s);}
+ void SetFacingToObject(Unit*){}void CombatStop(bool){}void CastStop(){for(uint32 i=0;i<CURRENT_MAX_SPELL;++i)InterruptSpell(CurrentSpellTypes(i));}
+ bool HasUnitState(int state)const{return states&state;}bool HasAura(uint32 s)const{return auras.count(s);}
+ void AddAura(uint32 id,Unit*target){if(!failedSpells.count(id))target->auras.insert(id);}
  void RemoveAurasDueToSpell(uint32 id,ObjectGuid){auras.erase(id);}
  void CastSpell(Unit*target,uint32 id,bool);void CastSpell(float x,float y,float z,uint32 id,bool);
  Position GetNearPosition(float d,float a){return {x+d*std::cos(a),y+d*std::sin(a),z,0};}
@@ -78,16 +96,22 @@ struct Quest{bool IsAllowedInRaid(uint32)const{return false;}};struct Rotation{u
 struct QuestStore {bool active=true;Quest quest;Quest*GetQuestTemplate(uint32){return &quest;}Rotation*GetWorldQuest(Quest*){return active?&rotation:nullptr;}}store;
 auto sQuestDataStore=&store;
 namespace GameTime{uint32 GetGameTime(){return clockMs/1000;}}
+#define ASSERT assert
+#include "RockawayCurrentSpell.inc"
 bool Unit::IsCreature()const{return dynamic_cast<Creature const*>(this)!=nullptr;}Creature*Unit::ToCreature(){return dynamic_cast<Creature*>(this);}
 Player*Unit::GetCharmerOrOwnerPlayerOrPlayerItself(){if(auto p=dynamic_cast<Player*>(this))return p;return owner?owner->GetCharmerOrOwnerPlayerOrPlayerItself():nullptr;}
 
+#ifdef ROCKAWAY_BASELINE
+#include "RockawayOldActors.inc"
+#else
 #include "RockawayActors.inc"
+#endif
 
 ScriptedAI*MakeAI(Creature*c){switch(c->entry){case 115133:return new npc_rockaway_vision(c);case 115132:return new npc_rockaway_ritualist(c);case 116187:return new npc_rockaway_tentacle(c);default:return new npc_rockaway_slime(c);}}
 Creature*Spawn(uint32 entry,Unit*owner,Position pos={}){auto c=std::make_unique<Creature>();c->entry=entry;c->owner=owner;static_cast<Position&>(*c)=pos;auto ptr=c.get();units.emplace(c->guid,std::move(c));MakeAI(ptr);if(owner){ptr->AI()->IsSummonedBy(owner);owner->ToCreature()->AI()->JustSummoned(ptr);}return ptr;}
 Creature*Creature::SummonCreature(uint32 e,Position const&p,int){if(failSummons){--failSummons;return nullptr;}return Spawn(e,this,p);}
 void Creature::DespawnOrUnsummon(uint32 delay){if(delay){despawnTime=clockMs+delay;return;}if(!inWorld)return;inWorld=false;if(owner&&owner->IsCreature())owner->ToCreature()->AI()->SummonedCreatureDespawn(this);}
-void Unit::CastSpell(Unit*target,uint32 id,bool){casts.push_back(id);if(failedSpells.count(id))return;if(id==231328||id==231333)auras.insert(id);if(id==231329)target->auras.insert(id);if(id==231296)Spawn(116187,this,*target);}
+void Unit::CastSpell(Unit*target,uint32 id,bool){casts.push_back(id);if(failedSpells.count(id))return;if(id==231328||id==231333){channel.info.Id=id;channel.caster=this;SetCurrentCastedSpell(&channel);auras.insert(id);}if(id==231329)target->auras.insert(id);if(id==231296)Spawn(116187,this,*target);}
 void Unit::CastSpell(float px,float py,float pz,uint32 id,bool){casts.push_back(id);if(!failedSpells.count(id)&&id==231354)Spawn(116195,this,{px,py,pz,0});}
 void Unit::Dispatch(Creature*creature){
 #include "RockawayDeath.inc"
@@ -107,7 +131,23 @@ struct TaintContext{
  Unit*caster;Unit*target;App app;Unit*GetCaster(){return caster;}Unit*GetTarget(){return target;}App*GetTargetApplication(){return &app;}
 #include "RockawayTaint.inc"
 };
+#ifdef ROCKAWAY_BASELINE
 int main(){
+ Run r;assert(r.vision->HasUnitState(UNIT_STATE_CASTING));r.Hit(0);Tick(25000);
+ for(uint32 id:{231296u,231351u,231329u})assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),id)==0);
+ std::cout<<"PASS: pinned old AI reproduces the infinite decorative-channel attack lock through native SetCurrentCastedSpell.\n";
+}
+#else
+int main(){
+ {Run r;assert(r.vision->HasAura(231328)&&!r.vision->HasUnitState(UNIT_STATE_CASTING));
+  auto ritualist=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);assert(ritualist->HasAura(231333)&&ritualist->HasUnitState(UNIT_STATE_CASTING));
+  r.Hit(0,&r.pet,true);assert(!ritualist->HasAura(231333)&&!ritualist->HasUnitState(UNIT_STATE_CASTING));
+  Tick(16000);for(uint32 id:{231296u,231351u,231329u})assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),id)>0);
+  r.ai->ClearRun();assert(!r.vision->HasAura(231328));}
+ {Run r;r.vision->CastSpell(r.vision,231328,true);r.Hit(0);Tick(11000);
+  assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),231296)==0);
+  r.vision->CastStop();r.vision->AddAura(231328,r.vision);Tick(200);
+  assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),231296)==1&&std::count(r.vision->casts.begin(),r.vision->casts.end(),231351)==1);}
  // Every death order, including a pet's first-hit killing blow; no premature or duplicate credit.
  std::array<uint32,4>order{0,1,2,3};uint32 orders=0;
  do{Run r;for(uint32 j=0;j<4;++j){r.Hit(order[j],&r.pet,true);assert(r.player->credits==0);if(j<3)assert(!r.ai->outro);}assert(r.ai->outro);Tick(5900);assert(!r.player->credits);Tick(100);assert(r.player->credits==1&&r.player->fragments==15&&!r.vision->visible);r.ai->Finish();Tick(1000);assert(r.player->credits==1);++orders;}while(std::next_permutation(order.begin(),order.end()));assert(orders==24);
@@ -131,5 +171,6 @@ int main(){
  {Run r;auto rogue=Spawn(115132,r.vision,*r.player);r.ai->SummonedCreatureDies(rogue,&r.pet);assert(!r.ai->dead[0]&&!r.ai->outro);r.Hit(0);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);r.player->status=0;Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
  {Run r;auto corpse=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[3]);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(corpse->inWorld&&!corpse->alive);Tick(60100);assert(!corpse->inWorld&&r.ai->ready&&!r.ai->outro);}
  {Run r;Group raid;raid.raid=true;r.player->group=&raid;for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
- std::cout<<"PASS: actual encounter AI and native EventMap;24 death orders, pet scaled blow, rotation/phase/party/recipient gates, missing actors/retry, wipe, expiry, optional cast failures, slam/breath, repeats and one credit. World/packet/inventory/native spell-dispatch services are fixtures; client remains pending.\n";
+ std::cout<<"PASS: actual encounter AI, native EventMap and SetCurrentCastedSpell; cosmetic aura cannot lock attacks, real channels still defer attacks, ritual death/reset cleanup;24 death orders, pet blows, recipient gates, retries, wipe, expiry, optional failures, slam/breath and one credit. Spell preparation/aura application/world services are fixtures; client remains pending.\n";
 }
+#endif

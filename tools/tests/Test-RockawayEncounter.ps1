@@ -18,6 +18,9 @@ $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 $a=$unit.IndexOf('        // Call creature just died function');$b=$unit.IndexOf('        // Call instance script.', $a)
 if($a -lt 0 -or $b -le $a){throw 'Missing native death/summoner dispatcher'}
 [IO.File]::WriteAllText("$output/RockawayDeath.inc",$unit.Substring($a,$b-$a))
+$a=$unit.IndexOf('void Unit::SetCurrentCastedSpell(');$b=$unit.IndexOf('void Unit::InterruptSpell(', $a)
+if($a -lt 0 -or $b -le $a){throw 'Missing native spell-container/casting-state dispatcher'}
+[IO.File]::WriteAllText("$output/RockawayCurrentSpell.inc",$unit.Substring($a,$b-$a))
 $event=Get-Content "$repo/src/server/game/AI/EventMap.cpp" -Raw
 $functions=@(@('void EventMap::Reset()','void EventMap::SetPhase('),@('void EventMap::ScheduleEvent(uint32 eventId, uint32 time','void EventMap::RescheduleEvent('),@('uint32 EventMap::ExecuteEvent()','void EventMap::DelayEvent('))
 $export=''
@@ -34,3 +37,15 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($compi
 if($LASTEXITCODE){throw 'Rockaway native catalog build failed'}
 & "$output/RockawayEncounterTest.exe"
 if($LASTEXITCODE){throw 'Production Rockaway encounter regression failed'}
+$old=(& git -C $repo show 'ec4f7a3b:src/server/scripts/Legion/rockaway_coast.h') -join "`n"
+if($LASTEXITCODE){throw 'Missing pinned pre-fix Rockaway AI'}
+$boundary=$old.IndexOf('class spell_rockaway_taint')
+if($boundary -lt 0){throw 'Missing pinned old actor boundary'}
+[IO.File]::WriteAllText("$output/RockawayOldActors.inc",$old.Substring(0,$boundary)+"`n#endif`n")
+$oldArgs=@('/DROCKAWAY_BASELINE')+@($compilerArgs | ForEach-Object {$_.Replace('RockawayEncounterTest.exe','RockawayOldEncounterTest.exe').Replace('RockawayEncounterTest.obj','RockawayOldEncounterTest.obj')})
+$cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($oldArgs -join ' ')+"`nexit /b %errorlevel%`n"
+[IO.File]::WriteAllText("$output/build-old.cmd",$cmd)
+& "$output/build-old.cmd"
+if($LASTEXITCODE){throw 'Pinned channel regression build failed'}
+& "$output/RockawayOldEncounterTest.exe"
+if($LASTEXITCODE){throw 'Pinned channel failure was not reproduced'}

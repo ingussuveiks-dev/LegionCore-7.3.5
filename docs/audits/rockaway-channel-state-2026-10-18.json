@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "quest": 44746,
+  "baseline": "ec4f7a3b",
+  "status": "Infinite cosmetic-channel attack lock repaired; native regression and deployed Release checks pass; client visuals remain unverified",
+  "client_verified": false,
+  "cause": "231328/231333 are native infinite channels. A real231328 self cast puts Vision in UNIT_STATE_CASTING via Unit::SetCurrentCastedSpell. Its own UpdateAI then returns before executing all three offensive events. The former fixture always returned false from HasUnitState and missed this failure.",
+  "change": [
+    "Apply Vision cosmetic231328 through Unit::AddAura, retaining its self aura without occupying a spell container. Keep the general casting-state guard for actual casts.",
+    "Clear only Vision231328 during ClearRun. Ritualists retain actual231333 channels while alive; JustDied stops casting and removes their scoped aura before corpse retention. No guessed green-beam spell or client-data override."
+  ],
+  "evidence": [
+    "Native typed catalog confirms231328/333 channel flags and duration21. Unit::SetCurrentCastedSpell CURRENT_CHANNELED_SPELL branch adds UNIT_STATE_CASTING. Spell::prepare routes a triggered nonzero-duration channel through SetCurrentCastedSpell; triggered does not bypass it.",
+    "Unit::AddAura applies the actual aura through Aura::TryRefreshStackOrCreate without setting a current spell. Its visual playback/actor binding remains a separate client question."
+  ],
+  "checks": [
+    "Test-RockawayEncounter.ps1 PASS: executes full production AI, native EventMap, native death/summoner dispatcher and now full native Unit::SetCurrentCastedSpell. Pinned ec4f7a3b AI reproduces25 seconds of no offensive casts; repaired AI produces slam, breath and taint while its cosmetic aura exists.",
+    "Real cast state still defers attacks; after interruption queued events resume. Ritualist death removes aura/casting state; ClearRun removes Vision aura. Existing24 death orders, pet/party/raid/range/failure/retry/corpse checks pass.",
+    "Fixture boundaries: Spell preparation and aura application are modeled services; native spell-container dispatch executes, but full live Spell/Aura packet/render paths do not.",
+    "Standard worldserver/bnetserver Release build PASS to canonical directory. Test-RockawayRelease.ps1 resolves PE calls/thunks and actual final-link library: UpdateAI calls AddAura, ritualist JustDied calls CastStop/RemoveAurasDueToSpell, existing completion/health calls remain.",
+    "Canonical startup ready=True, exit0; DBErrors.log/stderr.log0 bytes."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway/startup-20261018-151539",
+    "worldserver_left_running": false,
+    "worldserver.exe_sha256": "1eaeaf4e2b184d2fe6cf6d4a5949b70338fd3aeeecd4ae5567d9f741f6187223",
+    "bnetserver.exe_sha256": "2c583dc7232bc34fffccca3745f9e6469f2707b705ede8f2f794360cb2f5f06f"
+  },
+  "pending_client_checks": [
+    "Verify projection/aura appearance, all three hazards, ritual death visuals and full four-ritualist completion in7.3.5.",
+    "Green beam binding and exact retail placements remain unresolved; this focused fix does not claim to restore them.",
+    "Fragment-count correction is a separate migration and audit."
+  ]
+}
