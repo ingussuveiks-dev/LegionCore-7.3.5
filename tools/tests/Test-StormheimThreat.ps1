@@ -52,7 +52,7 @@ SELECT 'conversation',entry,id FROM conversation_data WHERE entry=3931;
 SELECT 'havi-ai',AIName,ScriptName FROM creature_template WHERE entry=92539;
 '@
 $live | Set-Content "$out/world.tsv"
-foreach($expected in @("keg`t266054`t10`t15458`t0`t2617`t229539`t45843`t1`t","keg-spawn`t25210031`t266054`t1220`t7541`t7803`t7510`t3186.02`t1521.32`t181.769","objective`t44771`t0`t114962`t1`t0","chain`t44771`t44720`t44721","chain`t44721`t44771`t44729","conversation`t3931`t8966","havi-ai`tSmartAI`t")){
+foreach($expected in @("keg`t266054`t10`t15458`t0`t2617`t229539`t45843`t1`t","keg-spawn`t25210031`t266054`t1220`t7541`t7803`t7510`t3186.02`t1521.32`t181.769","objective`t44771`t0`t114962`t1`t0","chain`t44771`t44720`t44721","chain`t44721`t44771`t44729","conversation`t3931`t8966","havi-ai`tSmartAI`tnpc_havi_conquest")){
  if($live -notcontains $expected.TrimEnd([char[]]"`r`n")){throw "Original content contract changed: $expected"}
 }
 $hotfix=Query Hotfix "SELECT ID,Text FROM broadcast_text WHERE ID=123956; SELECT 'overlay',COUNT(*) FROM player_condition WHERE ID=45843; SELECT 'lock-overlay',COUNT(*) FROM ``lock`` WHERE ID=2617;"

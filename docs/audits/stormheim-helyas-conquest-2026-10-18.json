@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-18",
+  "quests": [
+    44721
+  ],
+  "title": "Helya's Conquest: harbor investigation, Soulthieves, Vagnhild and Havi's completed reaction",
+  "source_base_revision": "bc5f0d79",
+  "scope": "Code/data only; no WoW client operation or character edits. Preserve original actors/spawns, native spells/texts, quest objectives and44729 handoff.",
+  "client_verified": false,
+  "status": "Implementation and automated checks complete; final deployment details recorded below. Actual7.3.5 client sequence remains pending.",
+  "findings": [
+    "44721 has four mandatory monster objectives:114964 x1/storage0,115291 x4/storage1,114957 x1/storage2 and114972 x1/storage3. Flags2 on the second/fourth mean SEQUENCED client presentation, not OPTIONAL4. Native CanCompleteQuest still requires all1/4/1/1. Keep Prev44771/Next44729, Havi92539 starter/ender and existing reward item142535 x1.",
+    "Harbor EventObject373/DB410124 is at3452.99/1748.27/0.09295, map1220, radius100. Its original source13 SmartAI rows had source22 conditions bound to SourceId10; those conditions never gated that actor. Generic EventObject::Update also records affectedPlayers after a trigger even when SmartAI conditions reject it, potentially consuming entry before quest acceptance.",
+    "Scoped eventobject_stormheim_conquest replaces that obsolete branch. Actual IsTriggerMeets admission runs before affectedPlayers insertion and requires the exact native DB event, alive/same-phase/in-radius Stormheim player, incomplete44721, native raid eligibility and no previous harbor credit. Arrival uses native personal-credit228873/114964, with direct equivalent credit fallback if the pure credit cast fails. Independent conversation3880 follows successful progress; its failure cannot block the objective.",
+    "Native EventObject::Update executes in the regression. No-quest/dead/wrong-map/wrong-phase/raid-ineligible entry does not become affected, allowing stationary first acceptance/retry. After a successful credited run is abandoned while still inside the100-yard radius, native affected-player caching still requires leaving/reentering; this is explicitly tested. The actual Havi questgiver is outside this radius. No generic EventObject cache behavior was changed or exact-stage persistence claimed.",
+    "The existing7511 phase definition7541/169 already correctly requires active44721. Preserve the one Vagnhild114957 spawn, one captive Stormforged115254 and ten Soulthieves115291 in that phase. All have model overrides0 and spawnMask1. Native displays73303/70110/66121/64200, their model/file records and World model metadata exist. This is not a live Creature::InitEntry/render test.",
+    "Vagnhild's last-words group0/BroadcastText123492 was incorrectly an AGGRO4 event; move it to DEATH6. Preserve his separate death->SetData(0,1) handoff to nearby115254. This handoff does not depend on a player invoker, so a pet/null death invoker does not suppress the visual chain. Actual pet-owner kill routing is not executed by the fixture and still needs client confirmation.",
+    "Old115254 LINK1 CAST229225 could return early and skip summon/cleanup. It also replaced the actor immediately and despawned it after500ms although the native dissolve lasts1500ms. Replace only this conversion branch with a one-shot SetData timed list: native refusal, triggered229225,1500ms wait, summon115263 for20 seconds, remove old actor. Independent timed rows continue after optional-cast failure. Preserve Fallen115263's original arrival text and228343 dissolve-in, whose native duration is2000ms.",
+    "Havi's old gossip condition checked only that Vagnhild had any credit. Menu20539/1 now requires active44721 plus harbor1, all four Soulthieves, boss1 and no final credit. The scoped SmartAI subclass repeats these gates for direct/stale selection packets, delegates all other SmartAI behavior, closes the menu and preserves the original three dialogue groups8/9/10 and native230410 transform. The original source9 action-list credit row is removed.",
+    "Native230410 transforms to114982 for6000ms. Existing8/8-second line spacing remains. A player-owned AddQuestDelayedEvent awards114972 after19000ms:16 seconds of existing dialogue plus an authored3-second final-line pause, consistent with sampled retail footage. This is not a recovered exact retail timer. The authored100-yard callback leash, phase/visibility and alive/quest checks prevent remote-map/stale awards; its exact retail distance is not independently established.",
+    "The finale keeps a weak speech lifetime and native quest lifetime. Reset/despawn, abandonment/reaccept, missing actor, death, wrong map/phase or leaving the callback leash cancels credit. No stored raw player target list or mutable SmartAI last-invoker selects the award. Havi serializes this shared narrative with a22-second busy window; a competing player retries after it, rather than replacing the first player's run. No offline/actor persistence is claimed.",
+    "Native228897 is personal90/114972 credit with explicit-unit target25. Final credit is granted only to the initiating player and only once; failed pure-credit casting has an equivalent direct fallback. Actual native KilledMonsterCredit/CanCompleteQuest tests both factions, boss-before/after Soulthieves and1/4/1/1 completion. Nearby party members do not receive the final talk credit. Saved rewards and pet-owner dispatch remain outside that fixture.",
+    "The2018 TDB735.00 original44721 row has RewardDisplaySpell1=230408 and RewardSpell0; local display had been0. Restore only that display ID. Initial startup exposed the core rejecting this descriptive LEARN_SPELL0 label; the separate quest-display-rewards audit records that observed failure and structural loader/award repair. Native QuestV2CliTask44737/44746/44923 reference conditions47903/47902/45693. Each has PrevQuest[0]=41694, PrevQuest[1]=44721 and PrevQuestLogic1 (AND). Preserve these native rewarded-quest gates; no synthetic unlock spell is learned.",
+    "Existing grog narration9253900,44771 acquisition/delivery, Havi's earlier39804 dialogue and other SmartAI events remain delegated. Test-StormheimThreat.ps1's expected Havi ScriptName is updated for the deliberate SmartAI subclass and the full prior regression reruns.44729 is only the next offer/chain context; its raid objectives are the next separate audit.",
+    "Transform114982 is a valid WDB-only Odyn template with display64975; it needs no invented creature_template row. ObjectMgr loads WDB rows into the shared template store before the separate behavior table. Native transform handling selects its existing model without changing entry or resetting AI. Native arrival ghost display64593 and Odyn64975/model/file records and World model metadata are also present; both are added to the catalog check. Actual render/transform playback remains pending."
+  ],
+  "sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=g5IeYiQMZbE",
+      "title": "World of Warcraft Quest - Helya's Conquest",
+      "uploader": "Game Guides Channel",
+      "published": "2016-11-11",
+      "duration_seconds": 214,
+      "local_sha256": "ead45ceeff57b224413d9103745d53b34bdfc5904f672aa845ab691bf91ce999",
+      "finding": "Contemporaneous retail gameplay shows harbor entry, four Soulthieves, Vagnhild death and captive conversion, then Havi gossip and his three-line reaction/temporary Odyn form. Full-resolution sampled189s and198s frames still show Speak with Havi0/1 during the reaction; later frames show the ready-to-turn-in quest and44729 offer. Sampled frames are not continuous verification or exact timing/radius proof."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44721/helyas-conquest",
+      "finding": "Quest objectives and historical player reports supplied the primary-video lead. Modern scaled levels/rewards were not imported."
+    },
+    {
+      "source": ".codex/TDB735/TDB_full_735.00_2018_02_19/TDB_world_735.00_2018_02_19.sql",
+      "selected_rows": ".codex/stormheim-conquest-tdb.json",
+      "finding": "Original7.3.5 quest row confirms min/quest level110, flags33554440/FlagsEx0, next44729, RewardDisplaySpell1=230408 and RewardSpell0. Current uint64 all-race storage is retained."
+    },
+    {
+      "source": "Canonical7.3.5 DB2 and build26124 Hotfix broadcast_text",
+      "finding": "Typed SpellEffect/SpellMisc/SpellDuration, CreatureDisplayInfo/CreatureModelData, ConversationLine, ItemSparse, QuestV2CliTask and signed/array PlayerCondition records. Arrival conversation8817->Broadcast123452/sound78322; death123492; captive123493; Havi123454/123497/123498 with existing voice IDs. No inspected task/condition/display or230408 effect overlay masks these native records."
+    }
+  ],
+  "validation": {
+    "result": "PASS",
+    "commands": [
+      "tools/tests/Test-StormheimConquest.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-QuestRewardDisplay.ps1",
+      "tools/tests/Test-StormheimThreat.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-ScepterLogin.ps1 -VerifyReleaseBinary"
+    ],
+    "native_execution": "Extracted new production arrival/finale code; actual EventObject::Update, Player::AddQuestDelayedEvent, KilledMonsterCredit/CanCompleteQuest and SmartAI CAST failure/timed-list advance blocks. Repeated temporary-table migration checks mandatory gossip counts, death event6,1500ms independent summon and preservation of unrelated/earlier SmartAI rows. Typed native catalog confirms spells/models/conditions/reward.",
+    "boundaries": "Grid/world lookups, visibility/LOS results, object spawning, most storage/state writes, spell dispatch/conversation playback, reward transactions and complete live-session behavior are adapters. The SmartAI test proves failed-cast LINK behavior and next-row admission, not a complete real-time actor simulation. No real client or pet killing blow was exercised.",
+    "evidence": [
+      "build-extractors/runtime-test/stormheim-conquest/replay.tsv",
+      "build-extractors/runtime-test/stormheim-conquest/world.tsv",
+      "build-extractors/runtime-test/stormheim-conquest/hotfix.tsv",
+      ".codex/conquest-tests-final.log",
+      ".codex/conquest-threat-regression.log",
+      ".codex/conquest-model-overrides.tsv",
+      ".codex/conquest-model-metadata.tsv",
+      ".codex/conquest-release-calls-final.log",
+      ".codex/conquest-postdeploy.tsv"
+    ],
+    "deployment": {
+      "migration": "2026_10_18_01_stormheim_conquest.sql",
+      "sha1": "f44102df475454f216821f7b112c233ac43d1ba6",
+      "backup": ".codex/backups/stormheim-conquest/20261018-113506",
+      "runtime": "build-extractors/bin/Release",
+      "build": "cmake --build build-extractors --config Release --target worldserver bnetserver -- /m:2 /v:minimal",
+      "build_logs": [
+        ".codex/conquest-release-build.log",
+        ".codex/conquest-reward-release-build.log"
+      ],
+      "worldserver_sha256": "ca4bf72ecdaf07d3dd3d86c1e1e26ac2e1b946fd0ec5fbff5308e39f3de859be",
+      "bnetserver_sha256": "02f7ed5d0bbfbd6bbeb5f7915f86f0c06f23c79496335ba0abf3f9c5e948b0aa",
+      "startup": "build-extractors/runtime-test/stormheim-conquest/startup-20261018-113845",
+      "startup_ready": true,
+      "exit_code": 0,
+      "DBErrors_bytes": 0,
+      "stderr_bytes": 0,
+      "server_left_stopped": true,
+      "binary_evidence": "Actual final-link scripts/game paths and timestamps checked; canonical map includes new classifier and registrations. PE relative calls with resolved incremental thunks verify new arrival OnTrigger reaches personal KilledMonsterCredit and Havi sGossipSelect reaches AddQuestDelayedEvent."
+    }
+  },
+  "client_checks_pending": [
+    "Fresh acceptance, harbor arrival audio/ghost actor, phase7511 actors, no credit before arrival and exactly one investigation credit.",
+    "Four Soulthieves and Vagnhild with player and pet killing blows, either order; verify his last words only on death, captive refusal, full dissolve and Fallen appearance/text.",
+    "Havi menu after all three prerequisites, complete voice clips and Odyn transform/revert; no talk credit before the final line. Two players should retry the shared busy narrative without stealing credit.",
+    "Abandon/reaccept, relog, range/map changes and reset during the finale; verify retries. Repeated harbor runs require native radius exit/reentry after a previously credited run.",
+    "Reward item and descriptive Helarjar unlock label in the client, actual availability of native Helarjar tasks after both prerequisite bits, saved quest reward and44729 offer."
+  ],
+  "supporting_core_commit": "66f3d6ec"
+}
