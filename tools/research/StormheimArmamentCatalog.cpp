@@ -22,6 +22,8 @@ int main(int argc, char** argv)
     STORE(SpellReagentsEntry, reagents, "SpellReagents", SpellReagentsLoadInfo);
     STORE(SpellCastingRequirementsEntry, requirements, "SpellCastingRequirements", SpellCastingRequirementsLoadInfo);
     STORE(GameObjectsEntry, objects, "GameObjects", GameobjectsLoadInfo);
+    STORE(VignetteEntry, vignettes, "Vignette", VignetteLoadInfo);
+    STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
 #undef STORE
     auto item = items.LookupEntry(122612), key = items.LookupEntry(114054);
     if (!item || !key || item->Stackable != 20) return 3;
@@ -92,5 +94,13 @@ int main(int argc, char** argv)
     for (auto object : objects)
         if (std::string(object->Name->Str[0]) == "Smoldering Forge") ++forgeNames;
     std::cout << "native-item-type-references " << itemEffects << " native-exact-forge-names " << forgeNames << '\n';
-    std::cout << "PASS: typed item, use, timed cast, reagent and credit links. Availability/spawn/loot/client remain separate evidence.\n";
+    auto forge = vignettes.LookupEntry(739);
+    if (!forge || std::string(forge->Name->Str[0]) != "Smoldering Forge" || forge->PlayerConditionID != 32861) return 11;
+    std::cout << "vignette " << forge->ID << " " << forge->Name->Str[0]
+        << " condition " << forge->PlayerConditionID << " tracking-quest " << forge->VisibleTrackingQuestID
+        << " feedback " << forge->QuestFeedbackEffectID << " flags " << forge->Flags
+        << " min-height " << forge->MinHeight << " max-height " << forge->MaxHeight << '\n';
+    // Report a missing foreign key; do not invent its item/quest requirements.
+    std::cout << "native-forge-condition-present " << (conditions.LookupEntry(forge->PlayerConditionID) ? 1 : 0) << '\n';
+    std::cout << "PASS: typed item, use, timed cast, reagent, credit and vignette links. Availability/spawn/loot/client remain separate evidence.\n";
 }

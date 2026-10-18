@@ -25,6 +25,6 @@ try{
  $rows=@(& "$out/StormheimArmamentCatalog.exe" "$runtime/dbc/enUS/");$code=$LASTEXITCODE
  $rows | Set-Content "$out/native.txt";$rows
  if($code){throw "Native armament catalog failed ($code)"}
- Get-FileHash (@('ItemSparse','ItemEffect','Spell','SpellEffect','SpellMisc','SpellCastTimes','SpellRange','SpellReagents','SpellCastingRequirements','GameObjects') | ForEach-Object {"$runtime/dbc/enUS/$_.db2"}) |
+ Get-FileHash (@('ItemSparse','ItemEffect','Spell','SpellEffect','SpellMisc','SpellCastTimes','SpellRange','SpellReagents','SpellCastingRequirements','GameObjects','Vignette','PlayerCondition') | ForEach-Object {"$runtime/dbc/enUS/$_.db2"}) |
    Select-Object @{Name='File';Expression={Split-Path $_.Path -Leaf}},Hash | ConvertTo-Json | Set-Content "$out/native-hashes.json"
 }finally{$env:PATH=$previous}

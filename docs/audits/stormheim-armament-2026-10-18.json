@@ -3,10 +3,10 @@
   "quests": [
     38374
   ],
-  "title": "Vrykul Armament: native timed reagent cast confirmed, retail forge and acquisition still unproven",
+  "title": "Vrykul Armament: native timed reagent cast and Smoldering Forge vignette confirmed; original acquisition and placement unresolved",
   "source_base_revision": "e4314fc8b2786f8aedcd73b3d3350efbe1c52081",
   "scope": "Code/data research only. User requested comparison against DBC/DB2, Wowhead and other GitHub sources, prioritizing original behavior over an authored restoration. No WoW client operation.",
-  "status": "Research complete for the sources listed below. The speculative restoration was withdrawn. No new gameplay implementation or World migration is delivered; original availability, acquisition and forge placement remain unresolved.",
+  "status": "Expanded public-source research remains unresolved for original acquisition, forge entry/position and retail availability. The speculative restoration remains withdrawn; no gameplay implementation or World migration is delivered.",
   "client_verified": false,
   "previous_audit": "docs/audits/stormheim-drekirjar-2026-10-17.json",
   "previous_evidence_preserved": "The previous audit's brew repair, weighted objectives and client limitations remain unchanged. This follow-up expands its unresolved armament note; it does not declare the armament route retail-verified, unused or removed.",
@@ -29,7 +29,19 @@
     "native_dispatch_inspection": "Spell::EffectTriggerSpell in SpellEffects.cpp switches to TRIGGERED_NONE when the child CalcCastTime is nonzero, and effect160 forwards the child's cast time. Preserve the native cast/cost path if a future restoration is justified. Effect134 uses group event credit; personal-only credit is an authored change, not an established original requirement.",
     "other_named_spells": "193965/193971 are self dummy auras, not item-creation effects. World creature_template_addon applies them to98516/98517 Stolen Vrykul Armament, which are separate content and were left unchanged.",
     "negative_catalog_results": "No SpellEffect.EffectItemType reference creates122612. No exact Smoldering Forge name occurs in the native GameObjects store. These scans do not rule out server scripts or server-side spawns: GameObjects.db2 is not the full World object catalog.",
-    "hotfix_checks": "No Hotfix spell_reagents/spell_misc rows for181858/181859/183149, no item_effect row for122612, and no spell_effect rows for181858/181859/183149/193965/193971 override the inspected native records. Other Hotfix stores and retail builds are not asserted identical."
+    "hotfix_checks": "No Hotfix spell_reagents/spell_misc rows for181858/181859/183149, no item_effect row for122612, and no spell_effect rows for181858/181859/183149/193965/193971 override the inspected native records. Other Hotfix stores and retail builds are not asserted identical.",
+    "forge_vignette": {
+      "id": 739,
+      "name": "Smoldering Forge",
+      "player_condition_id": 32861,
+      "visible_tracking_quest_id": 0,
+      "quest_feedback_effect_id": 108,
+      "flags": 0,
+      "min_height": 0,
+      "max_height": 0,
+      "native_condition_present": false,
+      "limit": "A named client map marker is positive evidence that the forge concept existed. It does not identify a server creature/gameobject entry, coordinates, item acquisition source or actual retail use. Do not invent the missing condition requirements."
+    }
   },
   "live_world_evidence": {
     "loot_tables_checked": [
@@ -109,7 +121,7 @@
     "not_a_conclusion": "Missing bindings plus an inconsistent item spell can suggest an unfinished or obsolete design, but these sources do not prove it was removed from retail. Keep availability unresolved rather than labelling the whole route repaired or deprecated."
   },
   "validation": {
-    "native_catalog": "PASS: Read-StormheimArmament.ps1 compiles/runs the typed reader and pins item/use,1500ms, reagent1 and credit links.",
+    "native_catalog": "PASS: expanded Read-StormheimArmament.ps1 compiles/runs the actual typed reader; item/use, 1500ms cast, reagent1, credit and vignette739 links checked. It reports native condition32861 absent instead of inventing its contents.",
     "existing_quest_regression": "PASS: Test-StormheimDrekirjar.ps1, including upstream checks;64 source/faction/player-pet death-credit runs and existing weighted/counter/interaction boundaries. Harness limitations remain as recorded in the previous audit.",
     "release_cleanup": "Draft had compiled into canonical Release before the user changed the priority. Removed its source, loader registration and unapplied SQL. First incremental relink still exposed old object/unwind entries in its map, so it was not accepted. Deleted only generated scripts.lib and draft.obj, rebuilt archive, then linked with explicit MSBuild LinkIncremental=false. Fresh canonical map contains no draft symbols/object; actual final inputs retain original src/server/*/Release/*.lib paths. No OutDir override.",
     "canonical_worldserver_sha256": "74B14F3E73982CC6EC8DA6CFF28E7EBE85CB53A5D0FF9007720A9982D49E398B",
@@ -162,6 +174,14 @@
     {
       "File": "GameObjects.db2",
       "Hash": "56AEC80A3B0B0306B7F1216A33C2754BA1BE395659AF915372462CA8E1A5D75C"
+    },
+    {
+      "File": "Vignette.db2",
+      "Hash": "9CF5B22CD4E6D097E61707DAB1AF39B26FB3D4387A5500E479652B86A16B39BF"
+    },
+    {
+      "File": "PlayerCondition.db2",
+      "Hash": "6FFA3BBB78BF27ADBE52C89C2EEBACC5E2DF4F6374A127438B9FEE38C172C139"
     }
   ],
   "external_world_file_hashes": [
@@ -190,5 +210,277 @@
       "bytes": 48999553,
       "sha256": "2fcfd484dde46b0836823005d3d8b6a0aedc099e8348dca585419a3b084925f7"
     }
-  ]
+  ],
+  "expanded_public_search": {
+    "request": "User requested a broader Internet search until the original route is found. This ledger records actual new evidence and limits; it does not claim exhaustive coverage of the Internet or a completed restoration.",
+    "new_positive_finding": "Vignette739 Smoldering Forge -> PlayerCondition32861. First located in a public CSV, then independently reproduced through this core's native7.3.5 DB2 reader.",
+    "client_data_sources": [
+      {
+        "url": "https://github.com/mynew3/ClientDB-Diff/commit/ac1d02cba59374c5d599f78ede0cd3984f4312a1",
+        "build": "7.1.0.22996 live, identified by the source commit message dated2016-11-15",
+        "files": [
+          "Vignette.csv",
+          "PlayerCondition.csv",
+          "GameObjects.csv"
+        ],
+        "finding": "CSV row739 names Smoldering Forge and includes32861. No exact ID32861 or item122612 in PlayerCondition.csv; no exact named forge in GameObjects.csv. CSV columns are unnamed Unknown fields: field meaning comes from the independent typed7.3.5 read, not guessed offsets in this older CSV."
+      },
+      {
+        "url": "https://github.com/Leomelati/wow-csv-from-db2s/blob/4aa6dda211d93d7e20afbe7701dcc3ee43ac2b52/versions/10.0.2.46741/csv/vignette.csv",
+        "finding": "Later client export retains vignette739/32861; that version's playercondition.csv also lacks32861. Later data alone cannot establish7.3.5 availability."
+      },
+      {
+        "url": "https://wago.tools/db2/Vignette/csv?build=7.3.5.26972&filter%5BID%5D=739",
+        "finding": "Public7.3.5 CSV corroborates the marker. Filter matches substrings, so ID1739 is not evidence about739; inspect exact IDs. PlayerCondition32861 export was empty for26972 and25600. Older6.x/7.0/7.1/7.2 build requests returned HTTP400; those failures are not absence evidence."
+      }
+    ],
+    "additional_live_queries": {
+      "finding": "No Hotfix player_condition32861 or vignette739 rows. No creature_template_wdb.VignetteID739. No GO template with739 in any of Data17/Data22/Data24/Data29, covering native gathering-node, capture-point, goober and chest vignette fields; no gameobject_action binding for181858/181859/183149. Empty matches do not prove retail removal.",
+      "private_evidence": [
+        ".codex/armament-sources/live-forge-hotfix.tsv",
+        ".codex/armament-sources/live-forge-all-types.tsv",
+        ".codex/armament-sources/live-forge-creatures.tsv"
+      ]
+    },
+    "additional_world_sources": [
+      {
+        "revision": "2cd080e7973388a2f07a3ef02d347af2159bce59",
+        "repository": "https://github.com/Eliminationzx/LegionWorld",
+        "files": [
+          "sql/world_legion/old/world_legion_2016.rar",
+          "sql/world_legion/old/world_legion_2017.rar",
+          "sql/world_legion/old/old_world.rar"
+        ],
+        "finding": "Downloaded, listed and path-checked before extraction. Searched extracted SQL for exact numeric IDs and names. No relevant item122612 acquisition or forge spell/name binding found; incidental older NPC/GO/POI IDs were excluded."
+      },
+      {
+        "revision": "34eca8ae13d0734d3a0fe9c1b5dd3d1e9a2b68e2",
+        "repository": "https://github.com/fluxurion/Legioncore_uwow",
+        "files": [
+          "sql/world_legion/world_upd_2.rar",
+          "sql/world_legion/world_upd_6.rar",
+          "sql/world_legion/world_upd_8.rar",
+          "sql/world_legion/world_upd_9.rar"
+        ],
+        "finding": "Same read-only archive procedure.122612 in upd8 is a quest_poi field for38336, not an ItemDrop or loot source.183149 in older GO data is an Anvil object entry, not a spell binding.32861 also appears as unrelated quest/broadcast IDs. No relevant acquisition/forge binding identified."
+      },
+      {
+        "revision": "f33c5abb6dac2e9c2fef5acb3d2bafa09e831cf6",
+        "repository": "https://github.com/qqwqqwe/LegionCore",
+        "files": [
+          "contrib/world_updates.sql",
+          "contrib/hotfixes_updates.sql",
+          "src/server/scripts/BrokenIsles/Zones/zone_legion_stormheim.cpp"
+        ],
+        "finding": "Downloaded full files. No exact122612/181858/181859/183149 or forge/armament name matches;32861 matches are unrelated quest/NPC fields."
+      }
+    ],
+    "other_repository_inspection": "Inspected available file trees/scripts from SoulBasementGc, Legion-Pandaria-Preservation-Project/V2, cooler-SAI and SoulSeekkor. Empty Stormheim skeletons or inherited database archives are not independent retail observations. Did not claim to scan every file/branch. bahajan95 tree requests failed and provide no negative evidence.",
+    "web_database_sources": [
+      {
+        "url": "https://legion-shoot.tauri.hu/?item=122612",
+        "finding": "Public TauriShoot item page confirms the same tooltip/reagent relation, with no retrieved drop-source tab or comments. Search for Smoldering Forge returns no results; spell181858 page shows timed cast/reagent and group credit. Private-server data is not independent retail verification."
+      },
+      {
+        "url": "https://www.wowhead.com/search?q=Smoldering+Forge&opensearch",
+        "finding": "Retrieved full current search HTML; object results contain only modern616707 Smoldering Energy Forge, a different object. Does not locate the original forge or prove it was absent in2016."
+      },
+      {
+        "url": "https://www.wowhead.com/search?q=Vrykul+Armament&opensearch",
+        "finding": "Retrieved full current search HTML; item122612 has no source list. Named193965/193971/193974 spells must not be conflated with an item acquisition route. German/Chinese/Russian localized tooltip searches yielded no acquisition evidence."
+      }
+    ],
+    "archive_attempts": {
+      "url": "https://web.archive.org/web/20180916125546/https://www.wowhead.com/item=122612/vrykul-armament",
+      "finding": "Initial id_ replay failed503, but subsequent normal and if_ replays succeeded HTTP200 and their HTML was inspected. Item snapshot has empty comments/screenshots/videos and no dropped-by or object acquisition relation; it lists the same four quests as reward-from with itemrewards122612x99. This is an archived database relationship, not a witnessed item grant. Other queried URL forms returned no snapshots; CDX retries timed out. WoW-Freakz now redirects to a project announcement; legiondb.com is unrelated and was excluded."
+    },
+    "search_limits": "Exact names, numeric IDs, GitHub code searches with and without fork qualifiers, repository trees, historical SQL archives, public client CSVs, current database pages and original-era gameplay video leads were examined. Search indexes are incomplete, numeric matches can be incidental, fork copies are not independent evidence, and sampled video frames cannot prove that an optional route never existed. No source supports the withdrawn35% drop rate or invented900383 forge/spawn.",
+    "decision": "Keep the route unresolved rather than add a guessed restoration. Need positive original evidence identifying acquisition, actual forge entry/position and cast route. Existing other credit paths and prior regression evidence remain unchanged; this research does not declare the whole quest/client verified.",
+    "expanded_file_hashes": [
+      {
+        "File": "clientdiff-GameObjects.csv",
+        "Hash": "4298C0D4B61FC38D4A2F895D207D042CBCE3D5D1616BA287F7CE20C864DE2994"
+      },
+      {
+        "File": "clientdiff-PlayerCondition.csv",
+        "Hash": "E2BF212D7B212793E7F45FA5280CC6EFDF9C9D635B3C2699797FDE82C392C932"
+      },
+      {
+        "File": "clientdiff-Vignette.csv",
+        "Hash": "E36FAFA7C97F5D65FF8C44098E82BFD00E3F1EB44FD0F71BEA76E1AC2451AEDF"
+      },
+      {
+        "File": "legion-2016.rar",
+        "Hash": "6C7FB1396FB9B1AD606849577D483375E69BDC57F390EFB3B8D37B238BD3F9D1"
+      },
+      {
+        "File": "legion-2017.rar",
+        "Hash": "C92246A903599C9F2736F68643E37F34E45C9FD8F94AF7ACD84C85BC668F465E"
+      },
+      {
+        "File": "old-world.rar",
+        "Hash": "B4AAE27A04C37D7D03E715E466DC05E3493458237F0517AE472E6D16D56D98AE"
+      },
+      {
+        "File": "uwow-upd2.rar",
+        "Hash": "0B63163989B7703AD1D9E32BC84BC50B2793AE5AAC7819A080419100ECFC8B63"
+      },
+      {
+        "File": "uwow-upd6.rar",
+        "Hash": "616971DEE2759130D84BAE16FFAA387D882AFF18CBF43210709616ACE41DAF17"
+      },
+      {
+        "File": "uwow-upd8.rar",
+        "Hash": "95E58C9585BF1AB0154284B9BBB95D63AF81F082ABC28736F5F43679377B4346"
+      },
+      {
+        "File": "uwow-upd9.rar",
+        "Hash": "D80391D43BC12D7D6EC7191A3E5735B0608E035DB4A28E9ACBE38A1CFAD5F133"
+      },
+      {
+        "File": "qqw-hotfix.sql",
+        "Hash": "0AF24F6C9A114C2275C132C62DB1B0B71E7D14AEFC3C731B4B457C92E305A85D"
+      },
+      {
+        "File": "qqw-stormheim.cpp",
+        "Hash": "7DCBBCF622252311C7B3BEC625D53D44FD3BAF9B368BCF50E825B422ADDA16E2"
+      },
+      {
+        "File": "qqw-world.sql",
+        "Hash": "141BA2C6F4799EF9FD1F5E18D5388190A7E9CFBD6553F70106B87AA6ED866FCE"
+      },
+      {
+        "File": "wayback-item-retry-1.html",
+        "Hash": "f9aa026c38b6157caf48f2af081fd45331e05060fff07b8d704e467cb004bb61"
+      },
+      {
+        "File": "wayback-spell-181858.html",
+        "Hash": "3ebb8b769ada09cc90f9a841d036d1a52f52dde1d1ef698ceb38c5394c494c76"
+      },
+      {
+        "File": "wayback-spell-181859.html",
+        "Hash": "74283765297c9276a4dcc1e12d67445ce7f5162a57fdef8d23c3c5f41b411c46"
+      },
+      {
+        "File": "wayback-spell-183149.html",
+        "Hash": "a4bab9503f594548f784318fb379ca75169bd48b4453932735a005142f71dde5"
+      }
+    ],
+    "runtime": "No production source or SQL mutation in this research round. Canonical worldserver SHA256 remains74B14F3E73982CC6EC8DA6CFF28E7EBE85CB53A5D0FF9007720A9982D49E398B; process remains stopped. Prior smoke/regression results above are historical, not newly rerun.",
+    "base_revision": "f03b633031fa9cd280dbb48504253e890e7d5c26",
+    "historical_gameplay": {
+      "method": "Nine public original-era gameplay uploads covering all four quests whose local ItemDrop metadata retains122612. Selected video-only streams at height<=720. Upload dates are source metadata; captions naming beta/7.1.5 are not an independently authenticated client build. No user WoW client was operated.",
+      "finding": "Sampled frames show combat, Whelp Cage/Bluffwalker Goat interactions in the bonus-objective leads, and Harpoon Launcher destruction in Hrydshal. The inspected samples show no identifiable122612 acquisition or Smoldering Forge interaction. This cannot rule out an optional route between samples or elsewhere. No drop rate, forge coordinates or implementation was inferred.",
+      "videos": [
+        {
+          "url": "https://www.youtube.com/watch?v=IKdYunqU2s8",
+          "title": "CataQuests.com - Bonus Objective: Assault the Drekirjar (Legion Beta)",
+          "uploader": "Game Guides",
+          "upload_date": "20160808",
+          "duration_seconds": 179,
+          "quest_lead": 38374,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/beta-contact.png, generated using ffmpeg fps=1/10, scale640; not continuous viewing.",
+          "download_sha256": "431543115002e56b66a922f7afb6cd59323457a99ddaee57bb54484cef727148"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=poicDqvafbk",
+          "title": "Stormheim Bonus Objective: Assault the Drekirjar (WoW, Legion,human, Paladin)",
+          "uploader": "Micha S",
+          "upload_date": "20161019",
+          "duration_seconds": 439,
+          "quest_lead": 38374,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/retail2016-contact.png, generated using ffmpeg fps=1/20, scale640; not continuous viewing.",
+          "download_sha256": "482f7caea8bb98fbc3cb23af2c51a785192ff4c9b621fe7ac6790be2a70b9f7e"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=6Ca3IshBDL0",
+          "title": "Нападение на Дрекиньяров(Assault the Drekirjar)(id=38374)",
+          "uploader": "allOfWoW",
+          "upload_date": "20170324",
+          "duration_seconds": 530,
+          "quest_lead": 38374,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/retail2017-contact.png, generated using ffmpeg fps=1/25, scale640; not continuous viewing.",
+          "download_sha256": "c3b552dd16e96cf9e9b425c4aa7b23cc13eff3bdd1b9a3577a9c31c97f8aa7a9"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=DfI-91V5_5Y",
+          "title": "Legion World Quest 36: Assault on Hrydshal (WoW, human, Paladin)",
+          "uploader": "Micha S",
+          "upload_date": "20161113",
+          "duration_seconds": 411,
+          "quest_lead": 41451,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/hrydshal2016-contact.png, generated using ffmpeg fps=1/20, scale640; not continuous viewing.",
+          "download_sha256": "28c5af42c5155a66e929a3f5234929b08e0201498baf1e645ba79ae44f55c0c0"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=53iS85jiyYI",
+          "title": "World of Warcraft Assault on Hrydshal Stormheim Legion World Quest Guide",
+          "uploader": "WoW JNasty",
+          "upload_date": "20161019",
+          "duration_seconds": 210,
+          "quest_lead": 41451,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/hrydshal-guide-contact.png, generated using ffmpeg fps=1/15, scale640; not continuous viewing.",
+          "download_sha256": "6a40dd922e7f1d50b17c8629ff8700965ae7abd2e3ca03ce7eca5cb7bf6fbc43"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=OLxvIJ0Xtcs",
+          "title": "CataQuests.com - Bonus Objective: Drive Back the Tideskorn (Legion Beta)",
+          "uploader": "Game Guides",
+          "upload_date": "20160813",
+          "duration_seconds": 207,
+          "quest_lead": 39998,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/tideskorn-beta-contact.png, generated using ffmpeg fps=1/10, scale640; not continuous viewing.",
+          "download_sha256": "e80eb5045a95ae585a09e8e9ec451b7bf22694ccaa446ec81471f10bbc814a99"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=14Rl62WgGOg",
+          "title": "World of Warcraft Quest Guide: Drive Back the Tideskorn  ID: 39998",
+          "uploader": "GitGudGuides",
+          "upload_date": "20160519",
+          "duration_seconds": 467,
+          "quest_lead": 39998,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/tideskorn-may2016-contact.png, generated using ffmpeg fps=1/20, scale640; not continuous viewing.",
+          "download_sha256": "e0cadbd43f9ec51dca992bf69063b50ffc6b2623e9f44a01f1229b24e4f67d87"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=l2whJAJ5oPM",
+          "title": "WoW Legion: Valor Calls Stormheim world quest playthrough (Beta 7.0.3)",
+          "uploader": "zetzek",
+          "upload_date": "20160622",
+          "duration_seconds": 142,
+          "quest_lead": 41930,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/valor-beta-contact.png, generated using ffmpeg fps=1/10, scale640; not continuous viewing.",
+          "download_sha256": "d4ddf76d04f61cb5af3f4cda9efee344577884e9f1bbbcac4dc8573d50a4309d"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=Bbe36u-IHBg",
+          "title": "WoW Legion World Quest - Valor Calls",
+          "uploader": "Game Guides Channel",
+          "upload_date": "20161112",
+          "duration_seconds": 102,
+          "quest_lead": 41930,
+          "inspection": "Viewed regular frame contact sheet .codex/armament-sources/valor-nov2016-contact.png, generated using ffmpeg fps=1/10, scale640; not continuous viewing.",
+          "download_sha256": "10717de781ec6d55535e301bec46f384dbb186def1b64b6575a130a3b3518097"
+        }
+      ]
+    },
+    "archived_spell_pages": [
+      {
+        "url": "https://web.archive.org/web/20180917064111/https://www.wowhead.com/spell=181858/destroying-armament",
+        "finding": "Retrieved200 HTML:1.5-second reagent cast, credit and dummy20-yard radius corroborate native data. Related tables have no forge object binding or comments."
+      },
+      {
+        "url": "https://web.archive.org/web/20180917064623/https://www.wowhead.com/spell=181859/destroying-armament",
+        "finding": "Retrieved200 HTML: instant effect160 parent and related181858; no retrieved world object/loot binding or comments."
+      },
+      {
+        "url": "https://web.archive.org/web/20180917063430/https://www.wowhead.com/spell=183149/use-forge",
+        "finding": "Retrieved200 HTML explicitly identifies Goldtoe's Key as the destroyed item and lists122612 as used-by. Thus the conflicting key reference also existed in an external2018 record; it is not solely a local reader/data error. Still no actual forge entry or position."
+      }
+    ],
+    "quest_reward_ambiguity": {
+      "finding": "The archived Wowhead item page labels four122612x99 relations reward-from. Live World rows for38374/39998/41451/41930 instead have all four RewardItem/RewardAmount pairs zero and ItemDrop1=122612,quantity99. Player.cpp consumes ItemDrop in quest cleanup; reward serialization uses RewardItemId. This conflict is retained explicitly: do not turn the archived list label into a new99-item reward, assume an observed retail grant, or claim the original acquisition source is solved.",
+      "private_evidence": ".codex/armament-sources/armament-reward-vs-drop.tsv"
+    }
+  }
 }
