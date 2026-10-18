@@ -1,0 +1,194 @@
+{
+  "date": "2026-10-18",
+  "quests": [
+    38374
+  ],
+  "title": "Vrykul Armament: native timed reagent cast confirmed, retail forge and acquisition still unproven",
+  "source_base_revision": "e4314fc8b2786f8aedcd73b3d3350efbe1c52081",
+  "scope": "Code/data research only. User requested comparison against DBC/DB2, Wowhead and other GitHub sources, prioritizing original behavior over an authored restoration. No WoW client operation.",
+  "status": "Research complete for the sources listed below. The speculative restoration was withdrawn. No new gameplay implementation or World migration is delivered; original availability, acquisition and forge placement remain unresolved.",
+  "client_verified": false,
+  "previous_audit": "docs/audits/stormheim-drekirjar-2026-10-17.json",
+  "previous_evidence_preserved": "The previous audit's brew repair, weighted objectives and client limitations remain unchanged. This follow-up expands its unresolved armament note; it does not declare the armament route retail-verified, unused or removed.",
+  "confirmed_native_data": {
+    "reader": "tools/research/StormheimArmamentCatalog.cpp",
+    "run": "tools/research/Read-StormheimArmament.ps1",
+    "output": "build-extractors/runtime-test/stormheim-armament/native.txt",
+    "method": "Actual DB2Storage, DB2Structure and DB2LoadInfo from this core; typed packed runtime records, not guessed Python field offsets.",
+    "item": {
+      "id": 122612,
+      "name": "Vrykul Armament",
+      "stack": 20,
+      "item_effect": 25139,
+      "use_spell": 183149,
+      "use_trigger_type": 0
+    },
+    "item_use_problem": "183149 effect0 is OPEN_LOCK33, target23 GAMEOBJECT_TARGET, misc10; effect1 is DESTROY_ITEM169, self target1, ItemType114054. Native ItemSparse identifies114054 as Goldtoe's Key. This is conflicting client data, not proof that retail players could obtain/use122612 or that deleting the key actually occurred in a client run.",
+    "destruction_chain": "181859 is an instant self-targeted effect160 triggering181858.181858 has base cast time1500ms (SpellCastTimes16),20-yard range (SpellRange3), and one122612 reagent in SpellReagents. Its effect0 is native134 KILL_CREDIT2 for92240, self target1; effect1 is DUMMY3, target38 nearby-entry, misc0. World objective278001 gives92240 weight3, cap34, storage19.",
+    "important_correction": "Inspecting only181859's instant parent and its trigger effect missed181858's1.5-second cast and native reagent cost. An immediate custom item deletion/credit implementation does not reproduce this chain and was rejected.",
+    "native_dispatch_inspection": "Spell::EffectTriggerSpell in SpellEffects.cpp switches to TRIGGERED_NONE when the child CalcCastTime is nonzero, and effect160 forwards the child's cast time. Preserve the native cast/cost path if a future restoration is justified. Effect134 uses group event credit; personal-only credit is an authored change, not an established original requirement.",
+    "other_named_spells": "193965/193971 are self dummy auras, not item-creation effects. World creature_template_addon applies them to98516/98517 Stolen Vrykul Armament, which are separate content and were left unchanged.",
+    "negative_catalog_results": "No SpellEffect.EffectItemType reference creates122612. No exact Smoldering Forge name occurs in the native GameObjects store. These scans do not rule out server scripts or server-side spawns: GameObjects.db2 is not the full World object catalog.",
+    "hotfix_checks": "No Hotfix spell_reagents/spell_misc rows for181858/181859/183149, no item_effect row for122612, and no spell_effect rows for181858/181859/183149/193965/193971 override the inspected native records. Other Hotfix stores and retail builds are not asserted identical."
+  },
+  "live_world_evidence": {
+    "loot_tables_checked": [
+      "creature_loot_template",
+      "gameobject_loot_template",
+      "item_loot_template",
+      "reference_loot_template",
+      "spell_loot_template",
+      "world_loot_template",
+      "zone_loot_template"
+    ],
+    "item122612_rows_in_each": 0,
+    "bindings_checked": "No item_script_names122612, spell_script_names for181858/181859/183149/193965/193971, goober Data10 for181858/181859/183149, npc_spellclick_spells or spell_area for those three spells. No exact Smoldering Forge template name. Current source search also finds no implementation of this route.",
+    "metadata_only": "38374,39998,41451 and41930 each retain ItemDrop1=122612/quantity99. This metadata supports quest-source item filtering/cleanup; it does not create loot or locate a forge. It is also visible in external data and was preserved.",
+    "private_evidence": [
+      ".codex/armament-sources/live-counts.tsv",
+      ".codex/armament-sources/world-evidence.tsv",
+      ".codex/armament-sources/hotfix-evidence.tsv"
+    ]
+  },
+  "external_sources": [
+    {
+      "url": "https://www.wowhead.com/item=122612/vrykul-armament",
+      "retrieval": "Current XML endpoint and nether.wowhead.com tooltip endpoint on2026-10-18; ordinary HTML sometimes returned empty HTTP202.",
+      "finding": "Item name, stack20, forge-oriented description and use183149 agree with the local client. This is datamined current information, not observed7.3.5 acquisition, drop rate or forge coordinates.",
+      "snapshot": ".codex/armament-sources/wowhead-tooltip-122612.json"
+    },
+    {
+      "url": "https://www.wowhead.com/spell=181858/destroying-armament",
+      "retrieval": "Current tooltip endpoint on2026-10-18.",
+      "finding": "Confirms20-yard range,1.5-second cast and Vrykul Armament reagent. Local typed7.3.5 DB2 independently confirms these fields.",
+      "snapshot": ".codex/armament-sources/wowhead-tooltip-181858.json"
+    },
+    {
+      "url": "https://www.wowdb.com/items/122612-vrykul-armament",
+      "finding": "Current datamined tooltip corroborates item/use text and a reagent relationship. It supplies no retrieved acquisition source or usable forge position. It does not establish retail availability."
+    },
+    {
+      "url": "https://github.com/dufernst/LegionCore-7.3.5/blob/9222216e0dda0708ae53e6e6f6b07db7d65ba46f/sql/base/LegionCore_world_2020_04_25.zip",
+      "zip_sha256": "21DAEE426C05A176DC829363A8BDEC8FEDEC00428637A6AE00DB2D5D8E34AA36",
+      "sql_sha256": "0CF4A35BB7A27120FD5A4D8350271B424DDC8C5ACC6CF3E9638D2E5AD9B840F5",
+      "finding": "Downloaded and inspected full243126672-byte2020 World dump. Parsed matching tuples against their actual table column names: no122612 rows in the seven inspected loot tables, no goober spell/name or binding establishing the forge route. Positive matches preserve the four quest ItemDrop metadata rows and the separate98516/98517 auras. Incidental numeric GUIDs/object IDs were not treated as spell/item links.",
+      "limit": "This is emulator data in our core's lineage, not independent retail sniff proof or an exhaustive search of all possible acquisition mechanisms.",
+      "snapshot": ".codex/armament-sources/dufernst-scan.json"
+    },
+    {
+      "url": "https://github.com/Titans-Project/LegionCore-Reforged/tree/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world",
+      "finding": "Downloaded all five World SQL parts and inspected schema-aware matching extended-INSERT tuples. Same armament result: quest metadata and separate Stolen Vrykul Armament auras, no recovered loot/forge route in the inspected fields. File hashes retained below.",
+      "limit": "Related LegionCore lineage; agreement is not independent confirmation of retail behavior.",
+      "snapshot": ".codex/armament-sources/titans-scan.json"
+    },
+    {
+      "url": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/blob/fed58f79c498521836612acd12009e9fa9e60e31/src/server/scripts/Legion/zone_stormheim.cpp",
+      "finding": "Retrieved Stormheim script has no armament/forge implementation. Scoped GitHub code searches did not recover the route; absence from indexed results is not proof about every branch/file."
+    },
+    {
+      "url": "https://github.com/AshamaneProject/AshamaneCore/blob/b3ec0305caba2ab84596da501e9213ec4707d026/src/server/scripts/BrokenIsles/zone_stormheim.cpp",
+      "finding": "Pinned legion-branch Stormheim loader is empty. Modern master Stormheim script and indexed historical quest SQL provide no retrieved implementation of this route. This source cannot fill the missing retail spawn/drop evidence."
+    },
+    {
+      "url": "https://github.com/Ludovicus-Maior/WoW-Pro-Guides/blob/ad96e5e3eb551a5093448b5ebeaf7638dff0d1bd/WoWPro_Leveling/Retail/Alliance/LEGION_Stormheim.lua",
+      "finding": "Guide describes38374 as an area-accepted bonus objective advanced alongside normal quests; corresponding Horde guide agrees. It does not document a forge route. Modern guide text is contextual, not a7.3.5 server implementation specification."
+    }
+  ],
+  "decision": {
+    "withdrawn": "Do not introduce invented35% drops on91204/91205/91417/100446, custom forge900383/DB202610181 at2478.5,2410,256.488, instant manual consumption, or personal-only credit as an original reconstruction. Those were authored choices, not recovered facts.",
+    "migration_applied": false,
+    "world_changed": false,
+    "implementation_committed": false,
+    "preserved": "Existing task/quest metadata, proven weighted kill/brew/cage paths and previous brew flag repair.",
+    "remaining_evidence_needed": [
+      "Dated retail/sniff evidence that122612 was obtainable in7.3.5",
+      "Actual acquisition sources and rates",
+      "Original forge entry, model, location and interaction binding",
+      "Intended nearby-entry dummy target/visual and cast failure, interruption and group behavior"
+    ],
+    "not_a_conclusion": "Missing bindings plus an inconsistent item spell can suggest an unfinished or obsolete design, but these sources do not prove it was removed from retail. Keep availability unresolved rather than labelling the whole route repaired or deprecated."
+  },
+  "validation": {
+    "native_catalog": "PASS: Read-StormheimArmament.ps1 compiles/runs the typed reader and pins item/use,1500ms, reagent1 and credit links.",
+    "existing_quest_regression": "PASS: Test-StormheimDrekirjar.ps1, including upstream checks;64 source/faction/player-pet death-credit runs and existing weighted/counter/interaction boundaries. Harness limitations remain as recorded in the previous audit.",
+    "release_cleanup": "Draft had compiled into canonical Release before the user changed the priority. Removed its source, loader registration and unapplied SQL. First incremental relink still exposed old object/unwind entries in its map, so it was not accepted. Deleted only generated scripts.lib and draft.obj, rebuilt archive, then linked with explicit MSBuild LinkIncremental=false. Fresh canonical map contains no draft symbols/object; actual final inputs retain original src/server/*/Release/*.lib paths. No OutDir override.",
+    "canonical_worldserver_sha256": "74B14F3E73982CC6EC8DA6CFF28E7EBE85CB53A5D0FF9007720A9982D49E398B",
+    "existing_release_calls": "PASS: Test-StormheimBatRiderRelease.ps1 against fresh canonical map/PE; boarding, mover handoff, movement, exit and personal summon call targets still resolve.",
+    "startup": "build-extractors/runtime-test/stormheim-drekirjar/startup-20261018-091523",
+    "startup_ready": true,
+    "startup_exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0,
+    "server_left_stopped": true,
+    "client": "Not run. Native catalog and successful startup do not verify visual timing, interactions, acquisition, the full quest, rewards in saved character state or retail availability."
+  },
+  "native_file_hashes": [
+    {
+      "File": "ItemSparse.db2",
+      "Hash": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+    },
+    {
+      "File": "ItemEffect.db2",
+      "Hash": "3241F0D3565928931A6B890643458F8B5CF775F2133AB8C103E1992F88815931"
+    },
+    {
+      "File": "Spell.db2",
+      "Hash": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF"
+    },
+    {
+      "File": "SpellEffect.db2",
+      "Hash": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB"
+    },
+    {
+      "File": "SpellMisc.db2",
+      "Hash": "2C2C50A36C91FC53ACA60D202FFD606E4547ABB8DAA75392D6BD65D345C1821B"
+    },
+    {
+      "File": "SpellCastTimes.db2",
+      "Hash": "0165DFA786959BFB76A123432B49BB464DBDB23BCA0FACC810603A88F38C0B6C"
+    },
+    {
+      "File": "SpellRange.db2",
+      "Hash": "DCA195AD6122B764DCA217CE67D8401277C4F778C5B4B3945446D3D08F98A0CA"
+    },
+    {
+      "File": "SpellReagents.db2",
+      "Hash": "2083EBB496C81C084A45C553316CECBDF326B63C5DC40D59C4A3ED0FF50F6A71"
+    },
+    {
+      "File": "SpellCastingRequirements.db2",
+      "Hash": "B878E72255E34146F3C0DEBA9D67443F1BAC3119682C56E78B5B69AC9F63DBB0"
+    },
+    {
+      "File": "GameObjects.db2",
+      "Hash": "56AEC80A3B0B0306B7F1216A33C2754BA1BE395659AF915372462CA8E1A5D75C"
+    }
+  ],
+  "external_world_file_hashes": [
+    {
+      "name": "titans-world_database_01.sql",
+      "bytes": 50684537,
+      "sha256": "d707dab63e7c61b9f24d6a1962b189a656efdaa6696ee04eafe45736d42000f3"
+    },
+    {
+      "name": "titans-world_database_02.sql",
+      "bytes": 50951773,
+      "sha256": "15330db0220a5822dce4a50e3c4bc18337656211a05ce0a61e7fd2f7cc428db9"
+    },
+    {
+      "name": "titans-world_database_03.sql",
+      "bytes": 50912860,
+      "sha256": "700cff5cce83422c999735f09a685a9bf304b70caa8055f02214d99d4002a31e"
+    },
+    {
+      "name": "titans-world_database_04.sql",
+      "bytes": 51186773,
+      "sha256": "22065825a5fb08d6c996285916088b6f8266b217aa0c6f715a242f8546d57ed5"
+    },
+    {
+      "name": "titans-world_database_05.sql",
+      "bytes": 48999553,
+      "sha256": "2fcfd484dde46b0836823005d3d8b6a0aedc099e8348dca585419a3b084925f7"
+    }
+  ]
+}
