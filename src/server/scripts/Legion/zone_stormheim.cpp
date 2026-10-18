@@ -10,6 +10,9 @@
 #include "vrekt.h"
 #include "EventObject.h"
 #include "ObjectAccessor.h"
+#include "PassiveAI.h"
+#include "TemporarySummon.h"
+#include "vrekt_scene.h"
 
 enum eSpells
 {
@@ -655,6 +658,7 @@ public:
 void AddSC_stormheim()
 {
     new npc_vrekt();
+    new npc_vrekt_scene();
     new eventobject_stormheim_conquest();
     RegisterCreatureAI(npc_havi_conquest);
     new player_stormheim_threat();

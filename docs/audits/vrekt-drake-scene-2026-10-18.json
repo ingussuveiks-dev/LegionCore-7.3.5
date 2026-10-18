@@ -1,0 +1,79 @@
+{
+  "quest": 44923,
+  "date": "2026-10-18",
+  "baseline": "56d6c2fc",
+  "status": "Captured-drake scene reconstructed and deployed. Automated checks passed; no client rendering or whole-quest verification.",
+  "evidence": [
+    {
+      "url": "https://www.youtube.com/watch?v=UeWrJyoU9zQ",
+      "author": "Game Guides Channel / Boxofbeer",
+      "published": "2016-11-12",
+      "observed": "Locally inspected original142-second footage. Near116s the drake remains beside the hut during Vaettfang combat; around129-134s it changes pose, rises and flies away after the kill. Near111-114s an earlier dead Vaettfang is visible before the next encounter. This confirms sequence/model appearance, not numeric NPC/spell IDs or world coordinates."
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=LQUEaC72V4c",
+      "author": "JNasty",
+      "published": "2016-11-08",
+      "observed": "Locally inspected152-second Legion footage, including the upper-village boss encounter and post-kill flight. Independent contemporary corroboration of captivity and death release."
+    },
+    {
+      "url": "https://www.wowhead.com/ptr-2/quest=44923/helarjar-landing-vrekt",
+      "observed": "JNasty describes Vaettfang chaining a neutral Young Storm Drake in upper Vrekt. The current page aggregates historical comments; it is not a7.3.5 sniff."
+    },
+    {
+      "url": "https://www.wowhead.com/ptr-2/npc=107830/young-storm-drake",
+      "observed": "A player report describes the ordinary drake outside a ruined hut and a feeding mariner. Preserve its ordinary non-WQ identity instead of globally replacing the template."
+    }
+  ],
+  "finding": {
+    "liveBefore": "Vaettfang DB spawn146706022 had no captured helper. Template115885 exists (Young Storm Drake, neutral faction190, native displays67198/67199, WDB VerifiedBuild23420) but has no permanent spawn/addon/spells/script. Ordinary107830 spawn293175 is nearby and had one nonrepeatable OOC SmartAI cast211409 targeting nearest Vaettfang; no captured pose or release/flight lifecycle existed.",
+    "correction": "The existing211409 is a real iron-chain visual and is retained for the captured helper. A kit type1 effect references SpellProceduralEffect; its type26/Value1 selects the actual SpellChainEffects ID. Do not mistake an unrelated same-number chain/visual-model row for that reference.",
+    "nativeTrace": "211409 effect6/aura4/explicit ANY unit25, infinite duration, range50000; visual55619 -> event119515 -> kit18459 -> procedural2384 -> type26/458 -> SpellChainEffects458 -> texture167097 Beam_ChainIron.blp. Cosmetic Chains230352 uses procedural1216 with the same type26/458. Captured Drake230506 self-target1 -> visual62640 -> event141301 -> kit77615 -> animation30728 -> AnimKit12209. Its two segments use Stand0/forced variation2 and configs346/348. Displays67198/67199 use model8673/File1280971 stormdragon; its actual M2 has Stand variation2, duration5333ms.",
+    "hotfixBoundary": "Read-only current hotfix queries found zero overrides for scene SpellMisc/SpellEffect/SpellXSpellVisual, AnimKit12209 and its segments, both displays and model8673. Client-only visual references come from canonical26972 DB2."
+  },
+  "implementation": {
+    "boss": "Only map1220/area8362 DB Vaettfang146706022 gets the scene subclass of npc_vrekt_rotation/AggressorAI. One exact boss-owned TempSummon115885 is created; failed summon/binding attempts retry. No quest credit or personal acceptance starts the scene.",
+    "anchor": "Reuse ordinary drake home293175 (1816.98,734.469,85.5647,o1.18135), without changing its DB row. A scoped SmartAI subclass hides/stops only that ordinary copy while44923 is active, restores saved react/gate flags outside the rotation and reapplies gates after respawn. Other copies fall back to native AI.",
+    "captivity": "Initialize the returned helper immediately with self pose230506 and helper-cast211409 on the exact boss. Retry rejected casts independently; captivity persists in combat. Helper damage is suppressed and neutral template models/flags retained. No conversation/cast success controls quest completion.",
+    "release": "JustDied signals the helper; its lifecycle also detects the actual dead owner when native charm suspends the original boss AI. Killer identity does not control release. Remove only this helper caster chain and its pose, preserving unrelated auras. Repeated actions/callbacks are idempotent.",
+    "flight": "After a reconstructed1000ms pause enable flying/disabled gravity. Native MoveTakeoff rises8 yards; its EffectMovementGenerator callback starts MoveSmoothFlyPath to home(-45,-60,+60) at9 yards/second. Matching escape arrival despawns; a20000ms bound handles missing callbacks. Rotation expiry cleans captured/flying state and chain. Boss respawn starts a fresh helper; missing summons do not leave a stale caster chain.",
+    "migration": "2026_10_18_14_vrekt_drake_scene.sql changes only three compatible script bindings and deletes the exact old107830 OOC chain row. All three bindings must be compatible before any update/delete. No coordinates, spell pools, factions, models, loot, objectives, timers or permanent captured spawn are changed."
+  },
+  "reconstructionBoundary": [
+    "Neutral115885 is selected from existing local WDB/template data and matches the role/model. Neither inspected video exposes its numeric entry; this is not a recovered summon packet.",
+    "Using ordinary293175 as the captured replacement home and hiding that copy during the WQ is inferred from the existing imported relationship and village layout. Exact retail replacement phasing/coordinates are not sniff-confirmed.",
+    "Pause, ascent, flight direction, speed and timeout are reconstruction values. Videos establish death-triggered flight, not a native server spline. Client checks must establish placement, chain endpoints, pose, clearance and timing."
+  ],
+  "automatedChecks": [
+    "Test-VrektScene.ps1 executes production scene/rotation headers: failed summon/foreign binding, independent failed chain/pose retries, initial pose attempt, exact helper ownership, retained Aggressor delegation, combat without release, death release including missing original JustDied, other-caster/unrelated aura preservation, repeated callbacks/actions, stale-chain cleanup, respawn, missing owner, expiry in flight, timeout, village scope and SmartAI/react/flags restoration including respawn.",
+    "The fixture also executes extracted native MotionMaster::MoveTakeoff, MoveSmoothFlyPath(Position) and EffectMovementGenerator::Finalize/MovementInform with native motion/AnimTier enums. Flying/smooth/uncompressed/no-generated-ground-path escape setup and actual callback types are checked. Spline travel/path generation, packets, world lookup and actual spell application remain fixture services.",
+    "Test-VrektSceneData.ps1 -Live replays twice in full temporary template/SmartAI tables and compares every retained field/row and neighbour. Six foreign-script/AI cases preserve every binding and the old chain row. Original live anchors are unchanged; all three bindings match and no permanent115885 spawn exists.",
+    "Test-VrektSceneCatalog.ps1 uses native DB2Storage/LoadInfo and linked SpellImplicitTargetInfo for effects, infinite durations/ranges, ANY-unit admission, visual IDs, native AnimKit segments and models. This does not execute full Spell::CheckCast/cast-hit behavior.",
+    "audit_vrekt_scene.py follows client-only WDC1 events/procedural links and the read-only CASC stormdragon Stand variation2. The server loader rejects client-only SpellVisualEvent fields, so those tables are not claimed as native C++ loader validation. Input/model hashes are in runtime-test/vrekt-scene-catalog.",
+    "Test-VrektNpcs.ps1 still passes four actor policies,32 native control/AI-swap cycles plus four pending-swap expiry cases and pinned old-core reproduction. Its Grey Shoals control prerequisite also passes.",
+    "Test-VrektNpcData.ps1 -Live and Test-VrektPerks.ps1 -Live confirm all33 enemy spawns and nine retained combat rows. The former now expects the new Vaettfang script; migration13 preservation checks remain intact.",
+    "Standard CMake Release worldserver/bnetserver build passes with canonical runtime/original final-link dependencies. Test-VrektSceneRelease.ps1 verifies source/library freshness, native summon/takeoff/escape calls, Aggressor death, village SmartAI delegation and native charm vtables, plus existing Grey/Vrekt Release checks.",
+    "PE verification follows adjacent x64 UNW_FLAG_CHAININFO fragments with the same root. MSVC split the escape method before the fly call; reading only its first runtime-function entry falsely reported a missing call. Bounds remain tied to unwind records, not arbitrary bytes up to another public symbol.",
+    "Post-migration canonical startup readyTrue, graceful exit0, empty DBErrors/stderr. No forced44923 activation or personal progress changes. Startup is loader admission, not live scene execution."
+  ],
+  "sourcesForBinaryInspection": [
+    "https://learn.microsoft.com/en-us/cpp/build/exception-handling-x64",
+    "https://raw.githubusercontent.com/rusfield/HotfixModsLegacy/master/Core/HotfixMods.Core/Enums/Db2/SpellVisualKitEffect_EffectType.cs"
+  ],
+  "deployment": {
+    "migrationSHA1": "138602660AE56C60203694965E95A33C5628FC88",
+    "state": "RELEASED",
+    "backup": ".codex/backups/vrekt-scene/20261018-200242",
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "1F940256427C3A43D37E54FD62A82F643E22160EFFE677CB4DB2A1223A53E9CE",
+    "startup": "build-extractors/runtime-test/vrekt-scene/startup-20261018-200252",
+    "ready": true,
+    "exitCode": 0,
+    "dbErrorsBytes": 0,
+    "stderrBytes": 0
+  },
+  "remaining": [
+    "Client appearance, chain endpoints, pose during combat, player/pet kills, flight trajectory and duplicate-free respawn/rotation changes. No client verification or full retail reconstruction claim.",
+    "Earlier activation/combat/POI audits retain client objective/task rendering, full spell execution, original timing/placement and terrain/navmesh limitations. This cosmetic scene supplies no extra completion credit."
+  ]
+}

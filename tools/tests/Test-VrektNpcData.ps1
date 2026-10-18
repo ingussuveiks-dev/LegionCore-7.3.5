@@ -28,7 +28,7 @@ function Tagged($tag){@($rows | Where-Object {$_ -like "$tag`t*"} | ForEach-Obje
 if(((Tagged 'expected') -join '|') -ne ((Tagged 'first') -join '|') -or ((Tagged 'first') -join '|') -ne ((Tagged 'repeat') -join '|') -or "foreign-script`t1" -notin $rows -or "foreign-ai`t1" -notin $rows){throw 'NPC migration changed other template fields/neighbour or external binding'}
 if($Live){
  $liveRows=@(Query "SELECT entry,IF(AIName='','-',AIName),ScriptName FROM creature_template WHERE entry IN(115846,116180,116600,116601) ORDER BY entry;")
- $expected=@("115846`t-`tnpc_vrekt","116180`t-`tnpc_vrekt","116600`t-`tnpc_vrekt","116601`t-`tnpc_vrekt")
+ $expected=@("115846`t-`tnpc_vrekt_scene","116180`t-`tnpc_vrekt","116600`t-`tnpc_vrekt","116601`t-`tnpc_vrekt")
  if(($liveRows -join '|') -ne ($expected -join '|')){throw 'Live actor binding differs from retained Aggressor selection'}
 }
 $spawns=@(Query 'SELECT id,COUNT(*) FROM creature WHERE id IN(115846,116180,116600,116601) AND map=1220 AND zoneId=7541 AND areaId=8362 GROUP BY id ORDER BY id;')

@@ -49,5 +49,6 @@
     "Client checks of active/inactive visibility, normal combat, charm/possess expiration and control/pet/camera recovery; both mandatory native objective counters and whole-quest completion.",
     "Full retained-spell selection/cast/hit/trigger completion, assistance, damage, melee and reset/death execution; original retail spell sets/timers are not recovered from a sniff.",
     "Earlier audits retain unresolved drake/chain scene, original placement/respawn, terrain/navmesh and task/POI rendering checks. They are not resolved by this NPC rotation fix."
-  ]
+  ],
+  "followUp": "Captured-drake reconstruction is implemented separately in vrekt-drake-scene-2026-10-18.json. Its client/retail placement and spline limitations remain explicit; other original boundaries are unchanged."
 }

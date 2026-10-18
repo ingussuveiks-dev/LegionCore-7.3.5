@@ -9,7 +9,10 @@ $lib=[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worlds
 if((Get-Item "$repo/src/server/game/Globals/QuestData.cpp").LastWriteTimeUtc -gt (Get-Item $lib).LastWriteTimeUtc -or (Get-Item $lib).LastWriteTimeUtc -gt (Get-Item $exe).LastWriteTimeUtc){throw 'Canonical executable/core library predates quest activation source'}
 $map=Get-Content "$repo/build-extractors/bin/Release/worldserver.map" -Raw
 function Symbol([string]$name){
- $m=[regex]::Match($map,('(?m)^\s+\S+\s+'+[regex]::Escape($name)+'\S*\s+([0-9A-Fa-f]{16})\s+f'))
+ $index=$map.IndexOf(' '+$name)
+ if($index -lt 0){throw "Missing canonical symbol $name"}
+ $line=$map.Substring($index,$map.IndexOf("`n",$index)-$index)
+ $m=[regex]::Match($line,'\s+([0-9A-Fa-f]{16})\s+f')
  if(!$m.Success){throw "Missing canonical symbol $name"};[Convert]::ToInt64($m.Groups[1].Value,16)
 }
 $binary=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($binary,0x3c);$optional=$pe+24
@@ -30,11 +33,31 @@ function Resolve([long]$address){
 # including when the public MAP symbol resolves through an incremental thunk.
 $pdata=Offset ($imageBase+[BitConverter]::ToUInt32($binary,$optional+112+3*8))
 $entries=[BitConverter]::ToUInt32($binary,$optional+112+3*8+4)/12
+function UnwindRoot([long]$begin,[long]$unwind){
+ for($depth=0;$depth -lt 16;$depth++){
+  $at=Offset ($imageBase+$unwind)
+  if(!($binary[$at] -band 0x20)){return $begin} # UNW_FLAG_CHAININFO (flags occupy the high5 bits).
+  $chain=$at+4+4*[int][Math]::Ceiling($binary[$at+2]/2.0)
+  $begin=[BitConverter]::ToUInt32($binary,$chain)
+  $unwind=[BitConverter]::ToUInt32($binary,$chain+8)
+ };throw 'Unexpected chained unwind cycle'
+}
 function Bounds([string]$name){
  $address=Resolve (Symbol $name);$rva=$address-$imageBase;$low=0;$high=[int]$entries-1
  while($low -le $high){$mid=[int][Math]::Floor(($low+$high)/2);$at=$pdata+12*$mid
   $start=[BitConverter]::ToUInt32($binary,$at);$end=[BitConverter]::ToUInt32($binary,$at+4)
-  if($rva -lt $start){$high=$mid-1}elseif($rva -ge $end){$low=$mid+1}else{return @($address,[long]($imageBase+$end))}
+  if($rva -lt $start){$high=$mid-1}elseif($rva -ge $end){$low=$mid+1}else{
+   $rootBegin=UnwindRoot $start ([BitConverter]::ToUInt32($binary,$at+8))
+   # MSVC shrink wrapping splits one contiguous body into several runtime
+   # function records. Include only adjacent fragments chained to this root,
+   # never arbitrary bytes up to the next public MAP symbol.
+   for($next=$mid+1;$next -lt $entries;$next++){
+    $tail=$pdata+12*$next;$tailBegin=[BitConverter]::ToUInt32($binary,$tail)
+    if($tailBegin -ne $end -or (UnwindRoot $tailBegin ([BitConverter]::ToUInt32($binary,$tail+8))) -ne $rootBegin){break}
+    $end=[BitConverter]::ToUInt32($binary,$tail+4)
+   }
+   return @($address,[long]($imageBase+$end))
+  }
  };throw "Missing x64 function range $name"
 }
 function Calls([string]$name){
