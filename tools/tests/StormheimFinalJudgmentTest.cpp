@@ -1,6 +1,7 @@
 #include <mutex>
 constexpr int QUEST_SPECIAL_FLAGS_SPEAKTO=128;
 #include "FinalJudgmentFixture.inc"
+using CreatureAI=SmartAI;
 #include "Talked.inc"
 struct Templates {
  CreatureTemplate data,rune;Templates(){rune.ScriptID=3;}

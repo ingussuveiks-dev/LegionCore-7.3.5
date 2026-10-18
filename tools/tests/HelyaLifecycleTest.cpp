@@ -30,6 +30,7 @@ struct Unit:WorldObject{
 };
 struct Player:Unit{};
 struct AI{virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}virtual void EnterCombat(Unit*){}virtual void JustDied(Unit*){}virtual void SummonedCreatureDies(Creature*,Unit*){}virtual void Reset(){}};
+using CreatureAI=AI;
 struct GameObject{unsigned respawn=0;void SetRespawnTime(uint32 n){respawn=n;}};
 struct MapFixture{std::vector<std::pair<uint32,Position>> spawned;void SummonCreature(uint32 id,Position p){spawned.push_back({id,p});}GameObject* GetGameObject(ObjectGuid){return nullptr;}};
 struct InstanceScript{
@@ -45,6 +46,7 @@ struct InstanceScript{
 };
 struct CreatureLevelStat{uint64 healthMax=1000;};
 struct Creature:Unit{
+ ::AI* i_disabledAI=nullptr;
  bool scalable=false,alive=true,casting=false;CreatureLevelStat stat;::AI* ai=nullptr;InstanceScript* instance=nullptr;uint32 entry=114537,faction=16,flags=0,groups=0,stops=0,react=REACT_AGGRESSIVE;ObjectGuid guid;
  uint64 now=0;std::multimap<uint64,std::function<void()>> callbacks;std::set<uint32> auras;
  Creature* ToCreature()override{return this;}Creature const* ToCreature()const override{return this;}virtual TempSummon* ToTempSummon(){return nullptr;}

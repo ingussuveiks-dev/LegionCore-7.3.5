@@ -1,0 +1,53 @@
+{
+  "quest": 44923,
+  "date": "2026-10-18",
+  "status": "Vrekt outdoor actors now follow the live world-quest rotation, including native temporary charm AI. Automated code/data/Release checks passed; client verification remains pending.",
+  "previousFix": "1ad46ca1 separately removed seven unrelated artifact-perk pool rows. Its audit explains why this was catalog cleanup, not evidence that the old native NPC AI cast those buffs.",
+  "inventory": {
+    "115846": 1,
+    "116180": 6,
+    "116600": 10,
+    "116601": 16,
+    "scope": "Actual DB creature data, map1220 and home area8362. Shared summons, other areas/maps and other entries are outside the factory policy."
+  },
+  "behavior": {
+    "activation": "Quest44923 must have a native WorldQuest record with ResetTime strictly greater than GameTime. No personal quest acceptance shortcut or forced rotation. Existing scheduler/shared-state policy is retained.",
+    "combat": "Derived AggressorAI delegates native initialization, respawn, UpdateAI, LOS, attack, combat and death. All nine retained creature_template_spell rows, creature_action, text, faction, loot and spawn data remain. This does not establish retail spell completeness or exact timing.",
+    "expiry": "Visibility and final post-scaling damage check the current clock immediately. The lifecycle policy stops casts/combat, clears threat, evades an alive combat actor and applies passive/nonattackable/nonselectable state. No credit is awarded. Reactivation restores saved react state and only the saved gate bits, preserving unrelated flags. Corpses are not force-respawned.",
+    "nativeCharm": "CreatureAI::OnCharmed remains inherited. Unit::UpdateCharmAI still installs native PetAI/PossessedAI and suspends the original content AI. Expiry removes native charm auras or direct charm, clears LastCharmerGUID and lets the native alive update restore the original AI without attacking the former charmer.",
+    "coreDispatch": "Creature lifecycle and visibility and Unit final damage now also invoke the suspended original AI, deduplicated against the current pointer. Policies remain callable while AI replacement is pending/disabled. Existing no-op default hooks preserve ordinary NPC behavior. No charm application, mover handoff or global spell rules were changed."
+  },
+  "migration": {
+    "file": "2026_10_18_13_vrekt_rotation.sql",
+    "state": "RELEASED",
+    "sha1": "21285D7E179D1107ED5D72E4777F171B612A0707",
+    "backup": ".codex/backups/vrekt-rotation/20261018-193157",
+    "change": "Only ScriptName for the four otherwise unbound/native-Aggressor templates. Foreign script/AI bindings are preserved."
+  },
+  "automatedChecks": [
+    "Test-VrektNpcs.ps1: all four actors retain active Aggressor delegates; exact expiry, absent rotation, disabled/pending AI, corpse/reactivation/respawn, unrelated flags, scope and no-op ordinary AI checks pass.",
+    "VrektNpcTest.cpp executes actual native control application/removal, aura hooks, UpdateCharmAI, original OnCharmed, later Creature AI replacement/restoration blocks and current/suspended content dispatch. All32 combinations of four entries, charm/possess/convert/direct control and present/missing aura caster pass; primary pet relations/control bar/mover/faction and exact-once temporary AI deletion are checked. Four additional expiry-before-first-AI-swap cases pass.",
+    "Pinned1ad46ca1 core with the new Vrekt policy reproduces visible expired actors, accepted damage and retained control in all32 swapped-AI cases. The policy alone is insufficient without suspended-content dispatch.",
+    "Test-VrektNpcData.ps1 -Live: temporary full-template replay applies migration twice, compares every other field and a neighbour, preserves foreign script/AI, and verifies deployed bindings and all33 actual DB spawns.",
+    "Test-VrektPerks.ps1 -Live after binding confirms all nine retained spell rows and the preceding artifact cleanup remain intact.",
+    "GreyShoalsRotation, GreyShoalsControl, CharmCreateSpells, PetLoadSelection, DarkWhispersFinale -VerifyReleaseBinary, UlthaleshDamage, HallsOdynSurrender, HelyaLifecycle, TrialOdynSurrender and StormheimFinalJudgment regressions pass. Existing extraction fixtures only gained nullable backup-AI declarations/type aliases; assertions were not weakened.",
+    "Standard CMake Release worldserver and bnetserver build succeeds with original final-link library paths and no global OutDir override.",
+    "Test-VrektNpcRelease.ps1 checks actual canonical game/scripts library freshness, PE exception-bounded current/suspended lifecycle/visibility/damage dispatch, native OnCharmed vtable inheritance, Aggressor wrapper calls and Sync rotation/clock/native-control cleanup. Existing Grey and Vrekt scheduler Release checks also pass.",
+    "Fresh canonical startup after migration reaches ready, exits gracefully with code0, and has empty DBErrors and stderr logs. No Vrekt rotation or personal progress was forced."
+  ],
+  "testBoundary": "Extracted native control/dispatch methods execute in C++ fixtures. World services, packet delivery, aura storage, CharmInfo initialization, movement, temporary AI combat and Aggressor combat services are doubles. PE checks confirm retained base calls, not a complete live cast/hit/death encounter. Client camera/pet portrait and visibility timing are not verified by these tests.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "73EAD27E0067343E5015E1D42FA2B327941E832818410FCCABEC0514E96F1954",
+    "startup": "build-extractors/runtime-test/vrekt-rotation/startup-20261018-193200",
+    "ready": true,
+    "exitCode": 0,
+    "dbErrorsBytes": 0,
+    "stderrBytes": 0
+  },
+  "remaining": [
+    "Client checks of active/inactive visibility, normal combat, charm/possess expiration and control/pet/camera recovery; both mandatory native objective counters and whole-quest completion.",
+    "Full retained-spell selection/cast/hit/trigger completion, assistance, damage, melee and reset/death execution; original retail spell sets/timers are not recovered from a sniff.",
+    "Earlier audits retain unresolved drake/chain scene, original placement/respawn, terrain/navmesh and task/POI rendering checks. They are not resolved by this NPC rotation fix."
+  ]
+}

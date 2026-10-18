@@ -40,7 +40,7 @@ function Bounds([string]$name){
 function Calls([string]$name){
  $range=Bounds $name;$at=Offset $range[0]
  for($i=0;$i -lt $range[1]-$range[0]-4;$i++){
-  if($binary[$at+$i] -eq 0xe8){try{Resolve ($range[0]+$i+5+[BitConverter]::ToInt32($binary,$at+$i+1))}catch{}}
+  if($binary[$at+$i] -in @(0xe8,0xe9)){try{Resolve ($range[0]+$i+5+[BitConverter]::ToInt32($binary,$at+$i+1))}catch{}}
  }
 }
 $admission='?CanBeActivate@QuestDataStoreMgr@@';$range=Bounds $admission;$at=Offset $range[0];$markers=0

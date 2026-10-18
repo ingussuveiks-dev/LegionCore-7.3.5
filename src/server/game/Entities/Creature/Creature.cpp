@@ -942,10 +942,15 @@ void Creature::Update(uint32 diff)
 
     m_isUpdate = true;
 
-    if (IsAIEnabled && i_AI)
+    if (i_AI || i_disabledAI)
     {
         m_AI_locked = true;
-        AI()->UpdateLifecycle(diff);
+        // Content policies must still run while native charm temporarily uses
+        // PetAI/PossessedAI, or while that AI swap is awaiting this update.
+        if (i_disabledAI && i_disabledAI != i_AI)
+            reinterpret_cast<CreatureAI*>(i_disabledAI)->UpdateLifecycle(diff);
+        if (i_AI)
+            AI()->UpdateLifecycle(diff);
         m_AI_locked = false;
     }
 
@@ -2449,7 +2454,10 @@ bool Creature::CanAlwaysSee(WorldObject const* obj) const
 
 bool Creature::IsNeverVisible(WorldObject const* seer) const
 {
-    if (IsAIEnabled && AI() && !AI()->CanBeVisibleFor(seer))
+    if (AI() && !AI()->CanBeVisibleFor(seer))
+        return true;
+    if (i_disabledAI && i_disabledAI != i_AI &&
+        !reinterpret_cast<CreatureAI*>(i_disabledAI)->CanBeVisibleFor(seer))
         return true;
     return WorldObject::IsNeverVisible();
 }

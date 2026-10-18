@@ -1215,9 +1215,17 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
                 return 0;
         }
 
-        if (creature->IsAIEnabled)
+        if (creature->AI())
         {
             creature->AI()->DamageTakenAfterScaling(this, damage, damagetype);
+            if (!damage)
+                return 0;
+        }
+        // The original content AI is suspended, not removed, during native
+        // charm. Apply its final damage policy after the temporary AI's hook.
+        if (creature->i_disabledAI && creature->i_disabledAI != creature->AI())
+        {
+            reinterpret_cast<CreatureAI*>(creature->i_disabledAI)->DamageTakenAfterScaling(this, damage, damagetype);
             if (!damage)
                 return 0;
         }

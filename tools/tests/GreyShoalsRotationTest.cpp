@@ -40,7 +40,7 @@ struct Creature:Unit{
  struct Guid{void Clear(){}}LastCharmerGUID;
  bool isCharmed(){return false;}void RemoveCharmAuras(){}void RemoveCharmedBy(Unit*){}
  std::string aiName="SmartAI";std::string GetAIName(){return aiName;}
- ReactStates react=REACT_AGGRESSIVE;CreatureAI* i_AI=nullptr;int visibleUpdates=0,combatStops=0,threatClears=0,castStops=0;
+ ReactStates react=REACT_AGGRESSIVE;CreatureAI* i_AI=nullptr;CreatureAI* i_disabledAI=nullptr;int visibleUpdates=0,combatStops=0,threatClears=0,castStops=0;
  CreatureData const* GetCreatureData()const{return hasData?&data:nullptr;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return map;}
  uint32 GetUInt32Value(int){return flags;}ReactStates GetReactState(){return react;}void SetReactState(ReactStates r){react=r;}
  bool IsAlive(){return alive;}bool isInCombat(){return combat;}void CastStop(){casting=false;++castStops;}

@@ -11,9 +11,10 @@ constexpr int SMART_EVENT_DAMAGED=9,SMART_EVENT_UPDATE_IC=0,SMART_EVENT_HEALTH_P
 #define TC_LOG_INFO(...) ((void)0)
 struct Creature;struct InstanceScript;
 struct DefaultAI {void DamageTakenAfterScaling(struct Unit*,uint32&,DamageEffectType){}};
+using CreatureAI=DefaultAI;
 struct Unit {bool pet=false;uint32 Deal(Creature*,uint32);};
 struct Creature {
-    bool IsAIEnabled=false;DefaultAI defaultAI;DefaultAI* AI(){return &defaultAI;}
+    bool IsAIEnabled=false;DefaultAI defaultAI;DefaultAI* i_disabledAI=nullptr;DefaultAI* AI(){return &defaultAI;}
     uint32 entry=106652;uint64 hp=100000,maxHp=100000,targetHp=1000;
     float multiplier=1;bool alive=true,combat=true;InstanceScript* instance=nullptr;
     uint32 GetEntry(){return entry;}bool IsAlive(){return alive;}bool isInCombat(){return combat;}

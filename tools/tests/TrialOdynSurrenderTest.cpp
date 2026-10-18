@@ -32,6 +32,7 @@ struct AI {
  virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}
  virtual void SpellFinishCast(SpellInfo const*){}virtual void DoAction(int){}
 };
+using CreatureAI=AI;
 struct InstanceScript {
  int state=IN_PROGRESS;std::map<int,int> data;unsigned achievements=0,counters=0,disengages=0,engages=0;
  int GetBossState(int id){assert(id==Data::BossIDs::OdynID);return state;}
@@ -42,6 +43,7 @@ struct InstanceScript {
 };
 struct CreatureLevelStat {uint64 healthMax=1000;};
 struct Creature:Unit {
+ ::AI* i_disabledAI=nullptr;
  CreatureLevelStat stat;bool scalable=true,IsAIEnabled=true,alive=true;::AI* ai=nullptr;InstanceScript* instance=nullptr;Creature* owner=nullptr;
  unsigned auras=0,home=0,teleports=0,stopped=0,faction=16;std::map<int,uint32> flags;
  Creature* ToCreature()override{return this;}Creature const* ToCreature()const override{return this;}

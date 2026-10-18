@@ -35,7 +35,9 @@ struct InstanceScript {
 };
 struct CreatureLevelStat {uint64 healthMax=1000;};
 struct AI {virtual void EnterCombat(Unit*){}virtual void DamageTaken(Unit*,uint32&,DamageEffectType){}virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType){}};
+using CreatureAI=AI;
 struct Creature:Unit {
+    ::AI* i_disabledAI=nullptr;
     CreatureLevelStat stat;bool scalable=true,IsAIEnabled=true,alive=true,combat=true;AI* ai=nullptr;InstanceScript* instance=nullptr;
     unsigned stopped=0,home=0,despawn=0,flags=0,faction=16;
     Creature* ToCreature()override{return this;}Creature const* ToCreature()const override{return this;}

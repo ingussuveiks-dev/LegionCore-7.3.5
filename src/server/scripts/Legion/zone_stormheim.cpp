@@ -6,6 +6,8 @@
 #include "QuestData.h"
 #include "Group.h"
 #include "SmartAI.h"
+#include "CombatAI.h"
+#include "vrekt.h"
 #include "EventObject.h"
 #include "ObjectAccessor.h"
 
@@ -652,6 +654,7 @@ public:
 
 void AddSC_stormheim()
 {
+    new npc_vrekt();
     new eventobject_stormheim_conquest();
     RegisterCreatureAI(npc_havi_conquest);
     new player_stormheim_threat();
