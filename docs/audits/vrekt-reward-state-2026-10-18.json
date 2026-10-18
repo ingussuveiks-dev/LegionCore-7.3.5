@@ -3,6 +3,7 @@
   "title": "Helarjar Landing: Vrekt",
   "date": "2026-10-18",
   "baseline": "caddeec5",
+  "deliveryFollowUp": "world-quest-item-delivery-2026-10-18.json fixes the full-inventory item loss recorded below, with native selection/mail/queue regression and canonical Release checks. Historical limitations are retained; actual Player/client receipt and persisted item metadata remain separate.",
   "status": "Repaired completion/direct-reward admission when a world-quest rotation is missing, expired or already personally rewarded. Native completion-state persistence and native Vrekt outro execution pass the bounded checks below. Actual item delivery and Player/client playback are not claimed verified.",
   "finding": "RewardQuest formerly removed the task and dispatched its reward spell even when GetWorldQuest returned null. The dynamic reward and m_worldquests completion record are inside that lookup's conditional block and were skipped. GetWorldQuest itself does not check ResetTime. CompleteQuest also marked complete before any rotation check. This is a source/function-fixture finding, not a reported client observation.",
   "implementation": {

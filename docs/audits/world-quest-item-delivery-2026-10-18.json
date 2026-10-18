@@ -1,0 +1,49 @@
+{
+  "quest": 44923,
+  "title": "Vrekt follow-up: world-quest item delivery with full inventory",
+  "date": "2026-10-18",
+  "baseline": "ccb40e91",
+  "status": "Fixed both dynamic world-quest item branches losing their selected reward on inventory-full admission. Production-function regressions, canonical Release binary checks and clean startup pass. Actual mailbox receipt/withdrawal and persisted item metadata still need an integrated Player/client check.",
+  "finding": "Both RewardQuest recipe and main-item branches only called StoreNewItem when CanStoreNewItem returned EQUIP_ERR_OK. An inventory-full result skipped the item while the surrounding completion path continued. The pinned baseline selection functions reproduce zero delivered/stored items with a full inventory for both factions and with/without the extra recipe.",
+  "implementation": {
+    "scope": "Shared RewardWorldQuestItem helper handles the two existing dynamic world-quest item branches. Existing faction/class selection, recipe spell requirements, AP bonus ordering, currency/gold and rotation admission remain unchanged. Static/choice/package quest-item branches are not converted to this fallback.",
+    "admission": "EQUIP_ERR_OK uses the ordinary StoreNewItem path. Only EQUIP_ERR_INV_FULL may use mail, after native CanTakeMoreSimilarItems independently approves the complete quantity. This extra check matters because native CanStoreItem can reduce count for a uniqueness limit and later return inventory-full for the rest. Other errors, absent templates and zero quantity do not generate fallback items.",
+    "metadata": "Compute the existing bonus-tree context, minimum item-level override, bonus list and random property once for each selected reward. The mail path uses native Item::CreateItem with the Player, preserving that creation context, then sets context/new-item flag/random property/upgrade/bonuses/fixed level in the same order as StoreNewItem. BOP/quest binding follows the ordinary inventory storage rule; ordinary BOE items are not forcibly bound.",
+    "quantity": "Mail the entire reward without applying a partial destination plan left by inventory-full admission. Split into legal template stack sizes before Item::CreateItem, whose native implementation otherwise clamps excess count. Create all stacks before queuing mail, then send batches of at most12 attachments. Do not reroll the selected reward.",
+    "ownership": "Owned metadata/script changes can enter the inventory update queue. Remove each item through native RemoveFromUpdateQueueOf while its Player owner still matches, then clear owner before handing it to MailDraft. This prevents both a dangling inventory queue entry when native unloaded-mail cleanup deletes the object and MailDraft::AddItem's standalone owner UPDATE. Never use a mail attachment pointer after SendMailTo, which may delete it immediately when mail is not loaded.",
+    "persistence": "Begin rewardTrans after the existing direct-reward admission. Append retrieval item saves, native mail/mail_item rows, quest-status save and world-quest checkpoint to that same CharacterDatabase transaction, then commit at the existing completion-save point. No separate helper commit or live character repair. This groups these SQL writes; it is not an end-to-end crash/rollback guarantee for every existing callback or in-memory mail mutation.",
+    "sender": "Use existing live creature_template_wdb34337 The Postmaster. English subject/body are local fallback text, not claimed recovered7.3.5 retail mail wording."
+  },
+  "automatedChecks": [
+    "Test-WorldQuestDelivery.ps1 compiles the actual production helper and item-selection blocks, native Item::CreateItem, CanTakeMoreSimilarItems, item SetState/add/remove queue functions and MailDraft::AddItem/SendMailTo/deleteIncludedItems. Constants come from native enums. Pinned ccb40e91 selection reproduces item loss on full bags; current code delivers complete main and optional recipe quantities for both factions.",
+    "Tests include normal bag delivery and its push/toast, null storage result, full inventory with a partial plan, both loaded/unloaded mail ownership,13 stacks totaling63 items across two mails, BOP/quest/BOE binding, random property77, context25, upgrade7, bonus lists, fixed-level ordering and minimum-level override. Existing AP bonus quantity, class fallback and recipe required/excluded spells pass.",
+    "Native uniqueness admission rejects an existing bank-owned max-count item and a HAVE-category limit even when the inventory leaf reports INV_FULL. Other admission failures, zero/missing item and forced allocation failure do not create fallback mail. A forced second-stack creation failure leaves no queued mail, leak or dangling inventory update entry. Failed creation is logged; this path is not a new general reward retry mechanism.",
+    "Actual MailDraft functions emit item/mail attachment statement sinks and handle online loaded/unloaded ownership. Item saves precede mail rows; completion saves are appended to the same transaction sink. Standalone CharacterDatabase.Execute must remain zero, catching AddItem's separate owner write. Final living-item count and inventory-queue checks pass.",
+    "Test-WorldQuestRewardState.ps1 still passes unavailable/expired/already rewarded admission, native status save/load/reset and actual prepared SQL round-trip in temporary shadow tables. Test-VrektCredits.ps1 still passes both10+1 objective orders and player/pet credit boundaries.",
+    "Standard Release worldserver/bnetserver build uses the generated final-link paths and deploys to build-extractors/bin/Release. Test-WorldQuestDeliveryRelease.ps1 checks actual library/source freshness, resolves incremental thunks and bounds deployed functions by native PE exception records. Both recipe/main branches call the helper. It calls native admission, creation, metadata, inventory queue cleanup and mail methods. Item::SaveToDB is virtual: the test resolves its actual Item vtable slot and verifies that indirect dispatch rather than falsely requiring a direct call.",
+    "Canonical startup ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes. Canonical configuration/certificates/DLLs/extracted data preserved; validation server stopped."
+  ],
+  "fixtureBoundaries": [
+    "Extracted production functions execute with controlled Player/item/template/database leaves. Inventory placement, actual item serialization and committed SQL persistence are not exercised by this delivery fixture. Its Item::Create body, script hook, metadata setters and item snapshot sink are controlled leaves; native CreateItem's clamp/factory flow, queue functions, uniqueness logic and mail dispatcher do execute. This is not a linked real Player or full RewardQuest/session test.",
+    "The native uniqueness function executes, but inventory/bank/category counts are supplied by the fixture. Existing native mail expiry/notification behavior is retained; actual mailbox opening, bag-space recheck, item withdrawal, collection handling and client notifications remain integration checks.",
+    "No live rotation forced, personal inventory filled, character quest reset, credential committed, database schema altered or real mail sent. The separate reward-state SQL test uses empty connection-local shadow tables only.",
+    "Existing non-capacity admission failures keep their prior non-mail behavior. This does not introduce retry/compensation for invalid template data, allocation failure, arbitrary database failure, all existing quest callbacks or unrelated static quest rewards."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "853DD49FF29F3F4043207F8F86442ABB0C76F961C393A8FAA8D3787CCEFF5A5E",
+    "bnetserverSHA256": "7624AE10388C5405F0F241F5686E2EC5BB379E54A1135E0BC6761F55FC3454DB",
+    "actualFinalLinkGameSHA256": "576E530AB6609C9AE40162967EE2521402A82990F5C45ACD0BE87025B5C2B212",
+    "PlayerSourceSHA256": "165E7FD0A04BDA1CD5CE14CB578D9E51D892AB5F538F0383DE92736781B44435",
+    "startup": "build-extractors/runtime-test/world-quest-delivery/startup-20261018-223846",
+    "inputManifests": ["build-extractors/runtime-test/world-quest-delivery/inputs.json", "build-extractors/runtime-test/world-quest-delivery/release-inputs.json"]
+  },
+  "source": {
+    "url": "https://master.trinitycore.net/da/dbf/player_8h_source",
+    "evidence": "Current upstream primary documentation identifies34337 as The Postmaster for item-retrieval mail, matching the existing live WDB row. This is implementation corroboration, not a Legion retail packet sniff or original mail-text source."
+  },
+  "remaining": [
+    "Client/session check: complete an active item-reward world quest with full bags, open the Postmaster mail, free space, withdraw every attachment and verify count/context/item level/bonus/knowledge data after relog. Repeat recipe eligibility and a unique-item rejection. Actual completion must not award another copy on relog/re-entry.",
+    "Prior Vrekt scene, geometry, reward-state, physical-audio reader and client limitations remain. In particular SoundKitEntry.db2 was not decoded by the earlier native reader; no new physical-audio or whole-quest verification claim."
+  ]
+}

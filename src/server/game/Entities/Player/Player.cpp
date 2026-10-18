@@ -19476,6 +19476,80 @@ void Player::RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId /*= 0*/
     }
 }
 
+namespace
+{
+    void RewardWorldQuestItem(Player* player, WorldQuest const* wq, uint32 questId, uint32 itemId, uint32 count, CharacterDatabaseTransaction& trans)
+    {
+        ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId);
+        if (!proto || !count)
+            return;
+
+        ItemPosCountVec dest;
+        InventoryResult result = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, count);
+        if (result != EQUIP_ERR_OK && (result != EQUIP_ERR_INV_FULL || player->CanTakeMoreSimilarItems(itemId, count) != EQUIP_ERR_OK))
+            return;
+
+        auto bonusTree = player->GetWorldQuestBonusTreeMod(wq);
+        uint32 context = std::get<0>(bonusTree);
+        uint32 needLevel = wq->worldQuest->MinItemLevel ? wq->worldQuest->MinItemLevel : std::get<1>(bonusTree);
+        auto bonuses = sObjectMgr->GetItemBonusTree(itemId, context, player->getLevel(), 0, 0, needLevel);
+        auto randomProperty = Item::GenerateItemRandomPropertyId(itemId, player->GetLootSpecID());
+        if (result == EQUIP_ERR_OK)
+        {
+            if (Item* item = player->StoreNewItem(dest, itemId, true, randomProperty, GuidSet(), bonuses, context))
+            {
+                player->SendDisplayToast(itemId, ToastType::ITEM, false, count, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, questId, item);
+                player->SendNewItem(item, count, true, false);
+            }
+            return;
+        }
+
+        // CanStoreItem can leave a partial placement plan on INV_FULL. Mail
+        // the entire reward; applying that partial plan as well would duplicate it.
+        std::vector<std::unique_ptr<Item>> attachments;
+        while (count)
+        {
+            uint32 stack = std::min(count, proto->GetMaxStackSize());
+            std::unique_ptr<Item> item(Item::CreateItem(itemId, stack, player));
+            if (!item)
+            {
+                TC_LOG_ERROR("entities.player", "Cannot create world quest %u retrieval item %u for player " UI64FMTD, questId, itemId, player->GetGUIDLow());
+                return;
+            }
+            item->SetUInt32Value(ITEM_FIELD_CONTEXT, context);
+            item->SetFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_NEW_ITEM);
+            item->SetItemRandomProperties(randomProperty);
+            if (uint32 upgrade = sDB2Manager.GetRulesetItemUpgrade(itemId))
+                item->SetModifier(ITEM_MODIFIER_UPGRADE_ID, upgrade);
+            for (uint32 bonus : bonuses)
+                item->AddBonuses(bonus);
+            item->SetFixedLevel(player->getLevel()); // As in StoreNewItem: after bonuses.
+            if (item->GetBonding() == BIND_WHEN_PICKED_UP || item->GetBonding() == BIND_QUEST_ITEM)
+                item->SetBinding(true);
+            // Metadata setters may queue an owned item for inventory saving.
+            // Mail owns it from here; detach before clearing its owner GUID.
+            item->RemoveFromUpdateQueueOf(player);
+            item->SetOwnerGUID(ObjectGuid::Empty);
+            attachments.push_back(std::move(item));
+            count -= stack;
+        }
+
+        // Create every stack before queuing mail. The native mail service takes
+        // ownership and may immediately delete attachments when mail is unloaded.
+        for (size_t first = 0; first < attachments.size(); first += MAX_MAIL_ITEMS)
+        {
+            MailDraft draft("Recovered Item", "Your bags were full. Please find your world quest reward enclosed.");
+            for (size_t i = first; i < std::min(attachments.size(), first + MAX_MAIL_ITEMS); ++i)
+            {
+                // Empty owner also prevents AddItem's standalone owner UPDATE.
+                attachments[i]->SaveToDB(trans);
+                draft.AddItem(attachments[i].release());
+            }
+            draft.SendMailTo(trans, player, MailSender(MAIL_CREATURE, 34337)); // The Postmaster.
+        }
+    }
+}
+
 bool Player::CanRewardWorldQuest(Quest const* quest) const
 {
     if (!quest)
@@ -19502,7 +19576,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     SetCanDelayTeleport(true);
 
     uint32 quest_id = quest->GetQuestId();
-    Item* rewardItem = nullptr;
+    CharacterDatabaseTransaction rewardTrans = CharacterDatabase.BeginTransaction();
 
     for (QuestObjective const& obj : quest->GetObjectives())
     {
@@ -19669,22 +19743,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
             if (wq->Recipe && wq->Recipe->ItemID && (!wq->Recipe->NeedSpell || HasSpell(wq->Recipe->NeedSpell)) && (!wq->Recipe->NotNeedSpell || !HasSpell(wq->Recipe->NotNeedSpell)))
             {
-                if (sObjectMgr->GetItemTemplate(wq->Recipe->ItemID))
-                {
-                    ItemPosCountVec dest;
-                    if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, wq->Recipe->ItemID, wq->Recipe->ItemCount) == EQUIP_ERR_OK)
-                    {
-                        auto bonusTree = GetWorldQuestBonusTreeMod(wq);
-                        uint32 needLevel = std::get<1>(bonusTree);
-                        if (wq->worldQuest->MinItemLevel)
-                            needLevel = wq->worldQuest->MinItemLevel;
-
-                        rewardItem = StoreNewItem(dest, wq->Recipe->ItemID, true, Item::GenerateItemRandomPropertyId(wq->Recipe->ItemID, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(wq->Recipe->ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
-                        // triggers some lua events
-                        SendDisplayToast(wq->Recipe->ItemID, ToastType::ITEM, false, wq->Recipe->ItemCount, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, rewardItem);
-                        SendNewItem(rewardItem, wq->Recipe->ItemCount, true, false);
-                    }
-                }
+                RewardWorldQuestItem(this, wq, quest_id, wq->Recipe->ItemID, wq->Recipe->ItemCount, rewardTrans);
             }
 
             // For Oplote class tallent. For 
@@ -19702,22 +19761,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
             }
             if (ItemID)
             {
-                ItemPosCountVec dest;
-                if (CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ItemID, ItemCount) == EQUIP_ERR_OK)
-                {
-                    if (ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(ItemID))
-                    {
-                        auto bonusTree = GetWorldQuestBonusTreeMod(wq);
-                        uint32 needLevel = std::get<1>(bonusTree);
-                        if (wq->worldQuest->MinItemLevel)
-                            needLevel = wq->worldQuest->MinItemLevel;
-
-                        rewardItem = StoreNewItem(dest, ItemID, true, Item::GenerateItemRandomPropertyId(ItemID, GetLootSpecID()), GuidSet(), sObjectMgr->GetItemBonusTree(ItemID, std::get<0>(bonusTree), getLevel(), 0, 0, needLevel), std::get<0>(bonusTree));
-                        // triggers some lua events
-                        SendDisplayToast(ItemID, ToastType::ITEM, false, ItemCount, DisplayToastMethod::DISPLAY_TOAST_SPECIAL_UNK, quest_id, rewardItem);
-                        SendNewItem(rewardItem, ItemCount, true, false);
-                    }
-                }
+                RewardWorldQuestItem(this, wq, quest_id, ItemID, ItemCount, rewardTrans);
             }
 
             // TC_LOG_DEBUG("worldquest", "RewardQuest IsWorld moneyRew %i ItemID %u ItemCount %u", moneyRew, ItemID, ItemCount);
@@ -19823,13 +19867,11 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     PrepareAreaQuest(newzone);
     PrepareAreaQuest(newarea);
 
-    // StoreNewItem, mail reward, etc. save data directly to the database
-    // to prevent exploitable data desynchronisation we save the quest status to the database too
-    // (to prevent rewarding this quest another time while rewards were already given out)
-    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
-    _SaveQuestStatus(trans);
-    _SaveWorldQuestStatus(trans);
-    CharacterDatabase.CommitTransaction(trans);
+    // Retrieval attachments/mail and the completion checkpoint must commit
+    // together, so neither can survive on its own and permit a repeated reward.
+    _SaveQuestStatus(rewardTrans);
+    _SaveWorldQuestStatus(rewardTrans);
+    CharacterDatabase.CommitTransaction(rewardTrans);
 
     // cast spells after mark quest complete (some spells have quest completed state requirements in spell_area data)
     if (quest->RewardSpell > 0)
