@@ -22,7 +22,7 @@
   ],
   "open_evidence": [
     "The exact7.3.5 boss fragment ranges remain unverified. Current Helya30..60 differs from later player reports of100+; those reports identify later expansion characters and do not establish a dated7.3.5 minimum/maximum. No range was invented from a few samples. Local2018 TDB735 contains no matching fragment loot rows to settle this. This audit does not certify the existing range as original.",
-    "Rockaway Coast44746 is an additional historical source lead: a report describes15 fragments on WQ completion. Its native objective is a Summoners Dead marker, not an ordinary loot creature. Current world_quest_item has no matching entry. Its ritualist/completion reward path needs a separate dated-source and executable WQ audit; no guessed ritualist drops or unconditional15-item reward were added here."
+    "Rockaway44746 follow-up confirms an unimplemented encounter (no principal spawns/groups/AI or credit caller), native229113 credit plus bonus loot, and a2016-11-13 observation of15 fragments. Original count bounds and four placements remain unresolved; no unconditional15-item reward or guessed encounter was deployed. See the linked follow-up audit."
   ],
   "sources": [
     {
@@ -67,5 +67,6 @@
     "Test Grey Shoals/Vrekt while each WQ is active and inactive, including pet kills, shared kills, looting after expiry and unrelated active landings.",
     "Reach1000, turn in to both valid Odyn locations with real bags/bank and inventory-space boundaries, receive the appropriate class ensemble and learn/reload all appearances.",
     "Resolve the two historical source/range questions above before describing all fragment acquisition as original7.3.5 behavior."
-  ]
+  ],
+  "rockaway_followup_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json"
 }

@@ -1,0 +1,81 @@
+{
+  "quest": 44746,
+  "title": "Helarjar Landing: Rockaway Coast",
+  "date": "2026-10-18",
+  "baseline": "9006ac87",
+  "status": "Audit complete; encounter unimplemented and NOT playable. No quest fix deployed.",
+  "scope": "Read-only code/data/native DB2 and historical primary reports; no WoW client operation",
+  "confirmed_gaps": [
+    "Zero creature placements and creature_summon_groups members for115132 Helarjar Ritualist and115133 Vision of Helya. Both templates have empty AIName and ScriptName. Their SmartAI rows are absent.",
+    "No SmartAI credit115168 or229113 cast found; literal server-script searches find no principal actor IDs, marker or credit spell. This search is discovery evidence, not proof against every dynamically selected ID. Missing configured actors independently blocks the encounter.",
+    "Helpers116187 Striking Tentacle and116195 Bilewater Slime also have no configured AI. Native spells alone do not implement target selection, activation, delayed damage, movement or cleanup.",
+    "No spell_loot_template229113/70762, world_quest_item44746 or explicit quest item reward. No encounter fragment-delivery route identified."
+  ],
+  "native_evidence": [
+    "Quest objective286897: type0 monster, ObjectID115168, Amount1, StorageIndex0. It is a Summoners Dead marker, not a request to kill the Vision.",
+    "QuestV2CliTask44746 condition47902 requires rewarded41694 AND44721 (PrevQuestLogic1). No live task/condition Hotfix overrides.",
+    "Spell229113 effect0 is personal credit90 for115168, targets18/16. Effect1 is bonus loot189, misc70762/420, targets18/16. These misc values are not a fragment count.",
+    "RewardSpell230020 supplies conversation3963 through effect219 plus a dummy aura; it does not create142487 or run bonus loot.",
+    "Ritualist display70526 and Vision display66238 resolve to valid native model/FileDataID records.",
+    "231295 dummy has basePoints231296;231296 summons116187.231386 is a dummy activation.231298 supplies damage/stun aura12.231459 dummy points to231329 direct/periodic Frost damage.",
+    "231351 has a dummy destination and force-cast231340;231340 is a dummy aura. Missiles231354/231356 trigger231353 damage and231359 summon116195. These records do not schedule five summons or implement their selection.",
+    "No Hotfix SpellEffect rows override the16 inspected spells. BroadcastText123587/123609 ARE supplied by Hotfix, including female sounds77480/77496; absence in base BroadcastText.db2 alone is not a failure."
+  ],
+  "production_paths_inspected": [
+    "EffectKillCreditPersonal requires HIT_TARGET and Player, then calls KilledMonsterCredit(MiscValue). It does not synthesize encounter completion or fragments.",
+    "EffectBonusLoot initializes lootId from m_spellInfo->Id. Its non-personal-boss path fills LootTemplates_Spell using that ID and AutoStoreItems. A70762 row alone would miss the current229113 selector. Personal-loot mappings also need consideration when adding the caller.",
+    "world_quest_item becomes a WorldQuestRecipe; RewardQuest gates it with NeedSpell/NotNeedSpell. These are spell gates, not45088 item-objective eligibility. An unconditional15-item recipe would not implement the needed eligibility.",
+    "Original local2018 TDB735 has RewardSpell230020 and both model IDs, but no encounter placements/groups/SmartAI to restore. Local2026 TDB also has no matching placements/groups/scripts; modern data was not imported."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/quest=44746/helarjar-landing-rockaway-coast#comments:id=2443895",
+      "author": "Graysmith",
+      "date": "2016-11-13",
+      "finding": "Four elites continue channeling while attacked. Slimes and delayed tentacles intervene; all four deaths trigger Helya dialogue/disappearance without attacking her."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44746/helarjar-landing-rockaway-coast#comments:id=2443690",
+      "author": "Seferus",
+      "date": "2016-11-13",
+      "finding": "Observed15 fragments on completion. A2016-11-28 reply asks for confirmation; a2023-03-19 reply reports13. Neither establishes original min/max or fixed15. The2023 sample is not7.3.5 evidence."
+    },
+    {
+      "url": "https://www.wowhead.com/npc=115132/helarjar-ritualist",
+      "finding": "Current mapper has three coarse positions37.8/15.8,38.4/15.0,39.2/14.8, not a four-position7.3.5 sniff; no exact server Z/orientation."
+    },
+    {
+      "url": "https://www.wowhead.com/npc=115133/vision-of-helya",
+      "finding": "Current mapper38.6/15.4 and38.8/15.6 locates the encounter generally; abilities include231329/231340/231351/231459. Coarse pins do not establish exact placement."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/AshamaneProject/AshamaneCore/master/src/server/scripts/BrokenIsles/zone_highmountain.cpp",
+      "finding": "Inspected file has unrelated94973 gossip, no Rockaway implementation. GitHub issue search for Helarjar Rockaway returned0 results; this does not establish absence of all public implementations."
+    }
+  ],
+  "remaining_work": [
+    "Find dated encounter placement/timing evidence for all four ritualists, Vision, exact terrain heights/orientations and ritual presentation. Do not invent a mirrored fourth coarse pin.",
+    "Implement WQ admission, channeling, unique four-death tracking, player/pet/shared contribution, factions/range, native credit target selection, early Vision death, wipe/leash reset, missing summons, retries, expiry and stale callbacks.",
+    "Implement the native breath/slime and delayed tentacle chains and cleanup. Finish final dialogue/visual before credit; optional cast failure must not consume progression.",
+    "Resolve original fragment count/chance and use the actual native selector with scoped45088/rotation eligibility. Test full bags,999/1000, no/completed/rewarded quest, abandonment, duplicates and repeat runs.",
+    "Run executable encounter regressions, migration replay, Release and deployed-handler checks, fresh startup; then client checks for four deaths, channels, visuals/audio, WQ completion and fragments."
+  ],
+  "checks": [
+    "Test-RockawayCatalog.ps1: PASS typed native DB2 semantic assertions; not an encounter simulation.",
+    "Audit-RockawayCoast.ps1: report generated, Playability=incomplete and four explicit missing routes.",
+    "Audit-RockawayCoast.ps1 -RequirePlayable: expected rejection, not a passing quest test.",
+    "PowerShell parsing, JSON validation and git diff --check passed."
+  ],
+  "runtime_changed": false,
+  "release_rebuild_required_for_this_audit": false,
+  "client_verified": false,
+  "related_audit": "docs/audits/trial-lost-army-2026-10-18.json",
+  "db2_sha256": {
+    "CreatureModelData": "615E170A0FB416FF79B4B00881F521F244787221D82BC3BF547039F22B637357",
+    "CreatureDisplayInfo": "1494EB6D4705848C4DD8CA2E463B99365D913155829E53914671DA3302168E23",
+    "Spell": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+    "PlayerCondition": "6FFA3BBB78BF27ADBE52C89C2EEBACC5E2DF4F6374A127438B9FEE38C172C139",
+    "SpellEffect": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "QuestV2CliTask": "CE96BAECF04669B7EDA79A452085FB04F9890E6F3599A821DC50880BB82A530C"
+  }
+}
