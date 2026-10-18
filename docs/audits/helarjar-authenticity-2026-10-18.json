@@ -121,5 +121,7 @@
   ],
   "player_progress_followup": "docs/audits/lost-army-player-progress-2026-10-18.json",
   "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
-  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified.",
+  "beam_search_followup": "docs/audits/rockaway-beam-search-2026-10-18.json",
+  "beam_search_correction": "231328/333 also occur on Mage Tower actors in pinned build26365 SQL; their Rockaway assignment remains unsupported. New231433/chain5074 candidate has no recovered retail actor binding. Original green beam remains unresolved; no runtime change."
 }

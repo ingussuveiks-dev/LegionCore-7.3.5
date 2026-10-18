@@ -1,0 +1,875 @@
+{
+  "date": "2026-10-18",
+  "quest": 44746,
+  "baseline": "654bd043",
+  "status": "Research only: original green beam spell/caster/target binding remains unresolved",
+  "original_spell_identified": false,
+  "client_verified": false,
+  "runtime_changed": false,
+  "findings": [
+    "Native231328/231333 have no procedural1 or BeamEffect13 kit effects and no missile. Their Shadow hand/rune models do not establish the observed green beam. Current script assignments remain unsupported candidates, not recovered retail bindings.",
+    "New pinned public build26365 SQL records231328 on Raest Magespear116174 and231333 on Nethersworn Cultist116173. This establishes another use in the Mage Tower; it does not prove exclusive use or a Rockaway assignment.",
+    "Native231433 Cosmetic Channel is a new candidate: visual62852, kit77931, procedural11954 type26 -> chain5074. Caster attachment21 and destination34, native channel mask0x4, duration21(-1), range100 and dummy aura4 with nearby-entry target38. It uses Kvaldir Brackish hand/void models1302949/1302951 and chain textures797210/1034854/1302952. No retail Rockaway spell/caster/target binding was found. A visual resemblance or matching theme is not identification.",
+    "Type26 is a SpellProceduralEffect discriminator, not SpellVisualKitEffect type26. Public wow.tools.local conditional foreign keys independently map its FLOAT Value[0] to SpellChainEffects. Decode the four floats; treating their128 bits as one integer produces meaningless IDs. Native IsChanneled checks both0x4 and0x40 (mask0x44), not only0x40.",
+    "Follow child SpellChainEffects recursively.231203 Soul Beam reaches1703/1704 through5050; a top-level-only check misses these components. Its cyan/blue assets and30-yard range do not establish a Rockaway binding.",
+    "229905/229911 Soul Harvest have a green lightning chain4406, but public LittleWigs identifies229905 with Vizaduum in Karazhan; native229905 is damage and229911 is an instant dummy. They are not identified as the persistent Rockaway channel.",
+    "228021 Mist Infusion has a missile model1513527 and world nearby-entry condition114537 (raid Helya), not a procedural chain.228854 triggers raid effects. Do not replace that shared raid condition with115133 to force a candidate.",
+    "195062 is the blue Warswords empowerment chain;211670 describes binding the Skull of the Manari. Neither is established as the Rockaway ritual beam."
+  ],
+  "retail_video": {
+    "url": "https://www.youtube.com/watch?v=JNSenVIQANM",
+    "channel": "Trackline",
+    "published": "2016-11-29",
+    "duration_seconds": 128,
+    "inspected_seconds": [
+      28,
+      50
+    ],
+    "observation": "At28s a narrow green/yellow beam leaves the raised ritualist hand toward the Helya side.50s shows a second ritualist and tentacle. No readable channel spell ID or reliable caster/target GUID is exposed. The visible Breath label is not used as identification evidence.",
+    "download_sha256": "590fba5f8263fc2ca872263fe21cfb51fbaee0178803deaae4777dd1db55e361",
+    "frame28_sha256": "7093789c2150edb7d5438ec84774563b0a7548975cdc57bb9884757d3072201e",
+    "boundary": "Historical retail footage only; not a test of this server or proof of an exact spell ID."
+  },
+  "new_public_sources": [
+    {
+      "url": "https://github.com/welder1976/MagicStorm/blob/e941af4df2f394e7d0e0753ca15c0677271698c1/sql/sql/world/2018_05_03_99_01_quest_47037.sql",
+      "sha256": "8e9b46c938359f53a9cc35d8d5754feaa72ff620defa0d2309f3c4bdf1612def",
+      "result": "Build26365 spawn aura annotations:231328 Raest116174;231333 Nethersworn Cultist116173. Not a Rockaway script."
+    },
+    {
+      "url": "https://github.com/slash0x/DestinyCore/blob/2d631f4e79b1d1dd0bcc674f97436ae4785700e0/sql/updates/world/Highmountain.sql",
+      "sha256": "b3574edb706a570ba157f8d3b26fd25cfca021a5cec7e9d3b23bd3e6c812fa68",
+      "result": "Vision115133 has offensive231340/231459 SAI only; no ritualist channel binding recovered. Third-party implementation is not a retail sniff."
+    },
+    {
+      "url": "https://github.com/aquadeus/as_core/blob/01499fe4e04b62202c8e93d564affa37dae16132/src/server/scripts/BrokenIsles/zone_highmountain.cpp",
+      "sha256": "3f5fee4c71372f98ba320fea6dcb5e20060f45dadbde916126135c0c0df06a9e",
+      "result": "No115132/115133/Rockaway/Helarjar/229113 handler in this file or the inspected615286-byte zone_stormheim.cpp. This is a file-scoped negative result, not proof that all repository history lacks one."
+    },
+    {
+      "url": "https://github.com/BigWigsMods/LittleWigs/blob/0463cc620b4da7c4cd1df155fe082f2dc5589ce2/Legion/Karazhan/Vizaduum.lua",
+      "result": "Primary encounter addon assigns229905 Soul Harvest to Vizaduum."
+    },
+    {
+      "url": "https://www.wowhead.com/spell=211670/wyrd-binding",
+      "result": "Spell description concerns the Skull, not Helya. Modern range/changelog values do not override the native7.3.5 catalog."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/wowdev/wow-listfile/master/parts/spells.csv",
+      "result": "Community aliases:797210 Beam_Disease_01,1034854 Caustic_MedFreq_Half,1302952 Water_Murky_BlendAdd. File IDs come from native DB2; community filenames alone are not native visual playback proof."
+    }
+  ],
+  "search_limits": [
+    "GitHub indexed code and commit searches for the exact NPC IDs/names, Rockaway, candidate spells and relevant scoped repositories did not recover a retail channel packet or binding. Numeric substring noise was discarded. Index results are not an exhaustive search of every public or historical blob.",
+    "The prior Sourcegraph115132 stream was parsed: no relevant WoW hit in the returned result set. Four later scoped searches returned403. WowDB beta NPC/spell pages and wowdev wiki pages also returned403. These are unavailable sources, not negative content evidence.",
+    "Current Wowhead ritualist and cosmetic-soul-stalker pages have no useful beam ability list. Live world source13 conditions/target-position rows do not bind231433 to115133; no source13 entry condition for115132/115133/116353 was found.",
+    "Default read-only candidate report covers10 selected spells. An exploratory tint/name reverse search and a13-spell Empowering/Shared Health control search do not prove the absence of a different spell, direct visual packet, orphan visual, target stalker or historical hotfix."
+  ],
+  "checks": [
+    "audit_rockaway_beam_candidates.py PASS against canonical26972 native tables: checked WDC1 layout/compression/copy/relationship records; floats, chain child IDs, textures, RGBA, hand attachments and missiles.",
+    "Separate known-spell control PASS: native234153 Drain Life procedural6438 FLOAT719 resolves chain719/texture186196. Valid229009 Shared Health visual0 returns an empty visual graph rather than a nonexistent-row lookup.",
+    "Native C++ DB2 reader run confirms231433 channel mask0x4, duration21, range100, aura4 and target38. Read-only local SQL queries found no matching live entry binding.",
+    "No production source/SQL/client data changed. No Release rebuild, server restart or client verification performed for this research-only change."
+  ],
+  "candidate_catalog": {
+    "build": 26972,
+    "db2_sha256": {
+      "Spell": "ad26f2f7db9485ec9a143de6e3949814de61dc5bcfc50792c67beeef0d67dcdf",
+      "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+      "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+      "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+      "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+      "SpellProceduralEffect": "429a07d6c28c536dd26dada3a575c55c2ca948c4e519c6c473d124573ec01f34",
+      "SpellChainEffects": "8904aedcb857fa89b3e4c40db8e665fa1830fcb8826709233f79bd28a141f160",
+      "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+      "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2",
+      "SpellVisualMissile": "8b935e8de1561fef28e2c952d5e4b5536412601d7eec8a75f9e1cfb28bf733b1"
+    },
+    "candidates": [
+      {
+        "spell": 195062,
+        "name": "Cosmetic - Channel - Helya Empowers Warswords",
+        "visuals": [
+          50629
+        ],
+        "visual_attachments": [
+          {
+            "visual": 50629,
+            "caster": 38,
+            "destination": 17
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          5,
+          6
+        ],
+        "beam_effect_ids": [],
+        "procedures": [
+          {
+            "id": 8564,
+            "kit": 60384,
+            "type": 26,
+            "values": [
+              4386.0,
+              0.0,
+              0.0,
+              3.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 4386,
+            "rgba": [
+              0,
+              0,
+              255,
+              127
+            ],
+            "texture_file_ids": [
+              243930,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              4387,
+              4388,
+              4389,
+              4390,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 1.5,
+            "end_width": 0.75
+          },
+          {
+            "id": 4387,
+            "rgba": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "texture_file_ids": [
+              797214,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 1.5,
+            "end_width": 0.75
+          },
+          {
+            "id": 4388,
+            "rgba": [
+              217,
+              217,
+              255,
+              80
+            ],
+            "texture_file_ids": [
+              608285,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 2.0,
+            "end_width": 1.0
+          },
+          {
+            "id": 4389,
+            "rgba": [
+              217,
+              217,
+              255,
+              79
+            ],
+            "texture_file_ids": [
+              608285,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 1.899999976158142,
+            "end_width": 0.8999999761581421
+          },
+          {
+            "id": 4390,
+            "rgba": [
+              217,
+              217,
+              255,
+              137
+            ],
+            "texture_file_ids": [
+              593627,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 2.5,
+            "end_width": 1.5
+          }
+        ],
+        "attached_model_file_ids": [
+          166109,
+          196733,
+          199909,
+          253425
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 211670,
+        "name": "Wyrd Binding",
+        "visuals": [
+          55711
+        ],
+        "visual_attachments": [
+          {
+            "visual": 55711,
+            "caster": 255,
+            "destination": 19
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          5,
+          6
+        ],
+        "beam_effect_ids": [],
+        "procedures": [
+          {
+            "id": 10208,
+            "kit": 67614,
+            "type": 26,
+            "values": [
+              4000.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 3997,
+            "rgba": [
+              30,
+              19,
+              35,
+              255
+            ],
+            "texture_file_ids": [
+              797560,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.32499998807907104,
+            "end_width": 0.32499998807907104
+          },
+          {
+            "id": 3998,
+            "rgba": [
+              1,
+              255,
+              0,
+              255
+            ],
+            "texture_file_ids": [
+              944892,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.30000001192092896,
+            "end_width": 0.30000001192092896
+          },
+          {
+            "id": 4000,
+            "rgba": [
+              1,
+              255,
+              0,
+              255
+            ],
+            "texture_file_ids": [
+              944893,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              3997,
+              3998,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.42957499623298645,
+            "end_width": 0.42957499623298645
+          }
+        ],
+        "attached_model_file_ids": [
+          166490
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 228021,
+        "name": "Mist Infusion",
+        "visuals": [
+          62177
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62177,
+            "caster": 255,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          2,
+          12
+        ],
+        "beam_effect_ids": [],
+        "procedures": [],
+        "chains": [],
+        "attached_model_file_ids": [
+          1302947
+        ],
+        "missile_model_file_ids": [
+          1513527
+        ],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 228854,
+        "name": "Mist Infusion",
+        "visuals": [
+          61910
+        ],
+        "visual_attachments": [
+          {
+            "visual": 61910,
+            "caster": 255,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          2,
+          6,
+          12
+        ],
+        "beam_effect_ids": [],
+        "procedures": [],
+        "chains": [],
+        "attached_model_file_ids": [
+          1302949,
+          1302951
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 229905,
+        "name": "Soul Harvest",
+        "visuals": [
+          62440
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62440,
+            "caster": 19,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          5
+        ],
+        "beam_effect_ids": [],
+        "procedures": [
+          {
+            "id": 11839,
+            "kit": 77337,
+            "type": 26,
+            "values": [
+              4406.0,
+              0.0,
+              0.0,
+              2.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 4406,
+            "rgba": [
+              111,
+              186,
+              73,
+              254
+            ],
+            "texture_file_ids": [
+              944893,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.375,
+            "end_width": 0.375
+          }
+        ],
+        "attached_model_file_ids": [
+          165779,
+          1372959
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 229911,
+        "name": "Soul Harvest Visual",
+        "visuals": [
+          62443
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62443,
+            "caster": 19,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          5,
+          13
+        ],
+        "beam_effect_ids": [
+          220
+        ],
+        "procedures": [
+          {
+            "id": 12745,
+            "kit": 77343,
+            "type": 26,
+            "values": [
+              4406.0,
+              0.0,
+              0.0,
+              2.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 4406,
+            "rgba": [
+              111,
+              186,
+              73,
+              254
+            ],
+            "texture_file_ids": [
+              944893,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.375,
+            "end_width": 0.375
+          }
+        ],
+        "attached_model_file_ids": [
+          166490
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 231203,
+        "name": "Soul Beam",
+        "visuals": [
+          62751
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62751,
+            "caster": 19,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          5
+        ],
+        "beam_effect_ids": [],
+        "procedures": [
+          {
+            "id": 11932,
+            "kit": 77788,
+            "type": 26,
+            "values": [
+              5050.0,
+              0.0,
+              0.0,
+              3.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 1703,
+            "rgba": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "texture_file_ids": [
+              396498,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.27972498536109924,
+            "end_width": 0.27972498536109924
+          },
+          {
+            "id": 1704,
+            "rgba": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "texture_file_ids": [
+              396498,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.20479997992515564,
+            "end_width": 0.20479997992515564
+          },
+          {
+            "id": 5050,
+            "rgba": [
+              0,
+              255,
+              249,
+              140
+            ],
+            "texture_file_ids": [
+              186215,
+              0,
+              0
+            ],
+            "child_chain_ids": [
+              1704,
+              1703,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.375,
+            "end_width": 0.375
+          }
+        ],
+        "attached_model_file_ids": [
+          622770,
+          967567
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 231328,
+        "name": "Ritual Aura",
+        "visuals": [
+          62809
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62809,
+            "caster": 255,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          2,
+          5,
+          6
+        ],
+        "beam_effect_ids": [],
+        "procedures": [],
+        "chains": [],
+        "attached_model_file_ids": [
+          166806,
+          166811,
+          201106,
+          953296
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 231333,
+        "name": "Ritual Aura",
+        "visuals": [
+          62810
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62810,
+            "caster": 255,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          2,
+          5,
+          6
+        ],
+        "beam_effect_ids": [],
+        "procedures": [],
+        "chains": [],
+        "attached_model_file_ids": [
+          166806,
+          166811,
+          201106
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      },
+      {
+        "spell": 231433,
+        "name": "Cosmetic Channel",
+        "visuals": [
+          62852
+        ],
+        "visual_attachments": [
+          {
+            "visual": 62852,
+            "caster": 21,
+            "destination": 34
+          }
+        ],
+        "kit_effect_types": [
+          1,
+          2,
+          6
+        ],
+        "beam_effect_ids": [],
+        "procedures": [
+          {
+            "id": 11954,
+            "kit": 77931,
+            "type": 26,
+            "values": [
+              5074.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          }
+        ],
+        "chains": [
+          {
+            "id": 5074,
+            "rgba": [
+              255,
+              255,
+              255,
+              254
+            ],
+            "texture_file_ids": [
+              797210,
+              1034854,
+              1302952
+            ],
+            "child_chain_ids": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "start_width": 0.5,
+            "end_width": 0.5
+          }
+        ],
+        "attached_model_file_ids": [
+          1302949,
+          1302951
+        ],
+        "missile_model_file_ids": [],
+        "retail_actor_binding_established": false
+      }
+    ],
+    "references": [
+      "https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellVisualKitEffect.dbd",
+      "https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellProceduralEffect.dbd",
+      "https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellChainEffects.dbd",
+      "https://github.com/Marlamin/wow.tools.local/blob/5b2f85db477bd42205fde912ed72b3adadda218a/wwwroot/js/meta.js"
+    ],
+    "boundary": "Read-only native asset graph. No spell/caster/target binding is recovered from a sniff; no client playback, visual match, original spell ID or actor assignment is verified."
+  },
+  "remaining_work": [
+    "Recover a retail cast/channel/aura or spell-visual packet identifying spell/visual ID and both actors; in particular distinguish Vision115133 from invisible cosmetic-soul stalker116353 as the actual target.",
+    "Only then replace unsupported231328/231333 presentation, test per-caster death/reset/wipe cleanup and ensure Vision offensive casts remain unblocked. Keep an explicit reconstruction label if original binding cannot be established.",
+    "Client playback, original placements, hand endpoint, projection, all hazards and full completion remain pending. User authorized code/data work only."
+  ]
+}

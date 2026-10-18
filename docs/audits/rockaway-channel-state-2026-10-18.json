@@ -31,5 +31,7 @@
     "Verify projection/aura appearance, all three hazards, ritual death visuals and full four-ritualist completion in7.3.5.",
     "Green beam binding and exact retail placements remain unresolved; this focused fix does not claim to restore them.",
     "Fragment-count correction is a separate migration and audit."
-  ]
+  ],
+  "beam_search_followup": "docs/audits/rockaway-beam-search-2026-10-18.json",
+  "beam_search_correction": "231328/333 also occur on Mage Tower actors in pinned build26365 SQL; their Rockaway assignment remains unsupported. New231433/chain5074 candidate has no recovered retail actor binding. Original green beam remains unresolved; no runtime change."
 }

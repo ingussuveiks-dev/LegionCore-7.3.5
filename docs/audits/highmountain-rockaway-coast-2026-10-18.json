@@ -297,5 +297,7 @@
   "followup_correction": "Original2016 reports12/14 now contradict fixed15. Ritual231328/231333 are channeled native self dummy auras; kit5/6 are sound/animation, not beams. Exact count bounds/actor binding/placements remain open; prior implementation/client limitations retained.",
   "channel_state_followup": "docs/audits/rockaway-channel-state-2026-10-18.json",
   "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
-  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified.",
+  "beam_search_followup": "docs/audits/rockaway-beam-search-2026-10-18.json",
+  "beam_search_correction": "231328/333 also occur on Mage Tower actors in pinned build26365 SQL; their Rockaway assignment remains unsupported. New231433/chain5074 candidate has no recovered retail actor binding. Original green beam remains unresolved; no runtime change."
 }
