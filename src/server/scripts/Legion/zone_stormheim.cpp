@@ -1,5 +1,10 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Player.h"
+#include "Conversation.h"
+#include "ObjectMgr.h"
+#include "QuestData.h"
+#include "Group.h"
 
 enum eSpells
 {
@@ -488,8 +493,76 @@ public:
     }
 };
 
+// A Threat Rises (44771). The keg's native Lock2617 casts229547 for18s,
+// then applies Holding Grog229539. Listening to Havi alone is not delivery.
+namespace StormheimThreat
+{
+constexpr uint32 QuestId = 44771;
+constexpr uint32 HoldingGrog = 229539;
+
+bool Carrying(Player* player)
+{
+    return player->IsAlive() && player->GetMapId() == 1220 &&
+        player->GetZoneId() == 7541 && player->GetQuestStatus(QuestId) == QUEST_STATUS_INCOMPLETE;
+}
+
+void Update(Player* player)
+{
+    if (!player->HasAura(HoldingGrog))
+        return;
+
+    // Also handles abandonment, stale login auras and dungeon/map transfers.
+    if (!Carrying(player))
+    {
+        player->RemoveAurasDueToSpell(HoldingGrog);
+        return;
+    }
+
+    auto quest = sQuestDataStore->GetQuestTemplate(QuestId);
+    if (!quest || (player->GetGroup() && player->GetGroup()->isRaidGroup() &&
+        !quest->IsAllowedInRaid(player->GetMap()->GetDifficultyID())))
+        return; // Keep the drink until native quest credit is admissible.
+
+    std::list<Creature*> actors;
+    GetCreatureListWithEntryInGrid(actors, player, 92539, 5.0f);
+    for (Creature* havi : actors)
+    {
+        if (havi->GetAreaId() != 7803 || !havi->IsAlive() ||
+            !player->canSeeOrDetect(havi) || !player->IsWithinDistInMap(havi, 5.0f) ||
+            !player->IsWithinLOSInMap(havi))
+            continue;
+
+        // Consume synchronously before credit: two nearby Havis, repeated
+        // updates or an optional conversation failure cannot deliver twice.
+        player->CastSpell(player, 229554, true); // native Give Grog/removal
+        player->RemoveAurasDueToSpell(HoldingGrog);
+        // A Havi GUID would replace this virtual marker with entry92539 in
+        // native KilledMonsterCredit and leave the objective incomplete.
+        player->KilledMonsterCredit(114962);
+
+        //3931/line8966/BroadcastText123956 is "Oh, the grog...". Its old
+        // timed invocation played even when nobody had brought a drink.
+        auto conversation = new Conversation;
+        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),
+            3931, player, nullptr, player->GetPosition()))
+            delete conversation;
+        return;
+    }
+}
+}
+
+class player_stormheim_threat : public PlayerScript
+{
+public:
+    player_stormheim_threat() : PlayerScript("player_stormheim_threat") { }
+    void OnUpdate(Player* player, uint32) override { StormheimThreat::Update(player); }
+    void OnLogin(Player* player) override { StormheimThreat::Update(player); }
+    void OnMapChanged(Player* player) override { StormheimThreat::Update(player); }
+};
+
 void AddSC_stormheim()
 {
+    new player_stormheim_threat();
     new boss_nithogg();
     new npc_static_orb();
     new spell_static_charge();

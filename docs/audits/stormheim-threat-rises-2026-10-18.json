@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-18",
+  "quests": [
+    44771
+  ],
+  "title": "A Threat Rises: native grog acquisition and actual delivery to Havi",
+  "source_base_revision": "8fc55382",
+  "scope": "Code/data only, as requested. No WoW client operation or character edits. Preserve Havi's existing narrative path, older39804 content and later44721 gossip/action list.",
+  "status": "Implemented, deployed and automated checks passed. Full7.3.5 client verification remains pending.",
+  "client_verified": false,
+  "findings": [
+    "Correction to the preceding44720 audit: objective114962 is Brought Havi Grog, not a listening marker.44771 requires fetching a drink and bringing it to Havi. The old9253900 timed list awarded action33/114962 to every player within15 yards after approximately40.5 seconds, regardless of any drink. It also played the delivery thank-you conversation3931 from the same timer.",
+    "Native typed Lock2617 slot0 is type3/spell229547. That spell has an18000ms cast and effect33 OPEN_LOCK targeting a gameobject23. Existing goober266054 then casts229539 Holding Grog: native effect0 aura33/base75 slows movement and effect1 aura312/misc175 supplies the carrying pose. Retain this native sequence and the original template/position/model; do not replace it with unused229542, whose15000ms self-cast includes premature group credit134/114962.",
+    "Native PlayerCondition45843 requires rewarded44720 (native completion bit),44771 in the quest log and absence of aura229539. Its AuraSpellLogic65536 negates slot0. Typed signed fields and arrays are used;45843 is not a quest ID. The keg's Data22 references this PlayerCondition. Goober Use does not itself enforce that field in this core, so source17 caster conditions now enforce rewarded44720, incomplete44771 and no held drink on both acquisition spells229547/229539. Native spell CheckCast consults source17 independently of the client UI.",
+    "Keg DB25210031 is map1220/zone7541/area7803, phase7510, at3186.02/1521.32/181.769. Phase definition7541/168 had quest42004 and44771 in the same ElseGroup0, requiring both. Move the unrelated existing42004 condition to alternative ElseGroup1, preserving it while allowing44771 alone. The original18-second lock, display15458, holding spell229539, PlayerCondition45843 and player-cast field remain unchanged. Draenor keg235916 and Thousand Needles tankard267480 are unrelated and were not reused.",
+    "The scoped PlayerScript delivers only while alive, in Stormheim, with incomplete44771 and Holding Grog. A live, visible, phase-compatible Havi92539 in Valdisdall7803 must be within5 yards and line of sight. The5-yard delivery radius is an authored conservative interaction distance, not a recovered exact retail trigger radius. Native raid eligibility is checked before consuming the drink; a raid that cannot receive this quest credit retains the drink for retry.",
+    "Delivery casts native Give Grog229554, synchronously removes only229539, awards personal KilledMonsterCredit114962 without an actor GUID, then attempts the independent thank-you conversation. Native229554 effect203 removes229539 after a short delayed event; synchronous scoped removal prevents repeated polling or two nearby Havis from delivering twice. Optional cast/conversation failure does not prevent essential progression. Personal credit requires each carrier's own drink; exact retail group-sharing behavior is not independently established.",
+    "A native credit regression caught an implementation mistake before deployment: passing Havi's GUID substitutes real_entry92539 for virtual114962 in Player::KilledMonsterCredit, losing the objective. The final code omits the GUID. The regression executes the actual native handler to reproduce substitution, then proves correct personal1/1 credit and completion for both factions, without granting a party bystander's objective. Native raid admission remains intact.",
+    "Player update/login/map-change callbacks remove stale holding auras after abandonment, completion/reward, death or leaving Stormheim. A valid incomplete quest can retain its drink across login. There is no transient ownership ticket to strand a stationary carrier. Carrying movement and blink behavior remain native; no custom movement, combat or class restriction was added. Interrupted acquisition has no delivery credit; cast-engine interruption itself remains a client/native integration check.",
+    "Conversation3931 uses World conversation_data line8966 and creature92539. Typed ConversationLine8966 maps to BroadcastText123956, whose build26124 Hotfix text is the grog thank-you. It now runs on delivery, rather than the narration timer. Existing groups4..7/BroadcastText123440,123494,123495,123496 and their voice IDs, original path92539, summon lifetime45 seconds, older groups0..3 and44721 list9253901 are preserved. Full path/voice synchronization, clone visibility and concurrent narration behavior are not claimed verified.",
+    "44771 keeps its original114962 monster objective1/1 and Havi starter/ender, Prev44720/Next44721.44721 keeps Prev44771/Next44729. The previous44720 native regression also runs while regenerating shared fixtures. This change does not claim to have audited or completed44721's four objectives."
+  ],
+  "historical_sources": [
+    {
+      "url": "https://www.youtube.com/watch?v=140VB8lKAKo",
+      "title": "World of Warcraft Quest - A Threat Rises",
+      "uploader": "Game Guides Channel",
+      "published": "2016-11-11",
+      "duration_seconds": 70,
+      "finding": "Contemporaneous retail gameplay shows acceptance, Havi walking/narrating, keg interaction with a Pouring Grog cast, the drink carried back to Havi, then a ready-to-turn-in quest. Sampled full-resolution frames42/48/54 seconds still show0/1, while60 seconds shows ready for turn-in beside Havi. This supports delivery over listening or filling alone; sampled frames do not establish every animation or exact trigger time/radius.",
+      "local_video_sha256": "cb86cc005d51cc209140cbc4ab94f3074c69ad75f0e02e184b6b214f7f72eafa"
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44771/a-threat-rises",
+      "finding": "Quest objective Pour Havi some grog / Brought Havi Grog. Retrieved historical player comments describe the keg near the flightmaster, a long filling cast and carrying the drink back; these are supporting reports, not an exact duration/radius specification. Native7.3.5 Lock/SpellCastTimes resolves the18-second cast."
+    },
+    {
+      "url": "https://warcraft.wiki.gg/wiki/A_Threat_Rises",
+      "finding": "Secondary narrative/context lead, checked against the contemporaneous video and native/Hotfix dialogue records. Not sole authority for a production behavior change."
+    }
+  ],
+  "validation": {
+    "command": "tools/tests/Test-StormheimThreat.ps1 -VerifyReleaseBinary",
+    "coverage": "Repeated temporary-table migration; preserved narration/later gossip; exact original keg and quest chain; typed runtime Lock/Spell/PlayerCondition/ConversationLine catalog; extracted production delivery and all three lifecycle callbacks; native condition8/9/1 and packed logic; native ElseGroup admission reproduces old AND then proves OR repair; native KilledMonsterCredit/CanCompleteQuest for both factions and personal1/1 delivery. No timer/no-drink progress, hidden/dead/foreign-area/distant/occluded Havi, stationary retry, duplicate Havi, raid hold, failed optional cast/conversation, independent carriers, abandonment/reaccept, stale login, map/death cleanup.",
+    "boundaries": "World/grid queries, phase/LOS visibility results, cast engine, conversation allocation/playback, storage/state writes and saved rewards are adapters. Acquisition cast timing is native metadata, not a simulated18-second integration proof. The native credit test uses actual quest handlers, but database persistence and live sessions remain outside the fixture. No full client sequence claimed.",
+    "artifacts": [
+      "build-extractors/runtime-test/stormheim-threat/replay.tsv",
+      "build-extractors/runtime-test/stormheim-threat/world.tsv",
+      "build-extractors/runtime-test/stormheim-threat/hotfix.tsv",
+      "build-extractors/runtime-test/stormheim-threat/StormheimThreatCatalog.log",
+      "build-extractors/runtime-test/stormheim-threat/StormheimThreatTest.log",
+      "build-extractors/runtime-test/stormheim-threat/StormheimThreatCreditTest.log",
+      ".codex/threat-tests-final.log"
+    ],
+    "result": "PASS",
+    "deployment": {
+      "migration": "2026_10_18_00_stormheim_threat.sql",
+      "sha1": "d508bf3f8e0bb1204873cf98fafb73552e390e3e",
+      "backup": ".codex/backups/stormheim-threat/20261018-110106",
+      "live_postdeploy": ".codex/threat-live-postdeploy.tsv",
+      "build": "cmake --build build-extractors --config Release --target worldserver bnetserver -- /m:2 /v:minimal",
+      "build_log": ".codex/threat-release-final-build.log",
+      "runtime": "build-extractors/bin/Release",
+      "worldserver_sha256": "74189c564008d944029cc551fc9b2cabde8ac6988363a9adaa74cb9bd103f7d0",
+      "bnetserver_sha256": "d75784305de155282bc1bb8f339ded29ee91b73c59cb44cad8c515100e2dc53b",
+      "binary_verification": "New Release registration plus fresh canonical link map; actual scripts/game final-link library paths/timestamps checked. PE relative branches/calls resolve incremental thunks: OnUpdate/OnLogin/OnMapChanged reach StormheimThreat::Update, which calls native personal KilledMonsterCredit. Generated project Link metadata enabled a fresh map; no global OutDir override.",
+      "startup": "PASS: ready=True, graceful exit0; build-extractors/runtime-test/stormheim-threat/startup-20261018-110106",
+      "new_DBErrors_bytes": 0,
+      "stderr_bytes": 0,
+      "server_left_stopped": true
+    }
+  },
+  "client_checks_pending": [
+    "Fresh44771 acceptance exposes the native keg without42004. Verify click, full18-second fill, interruption/retry and no early credit.",
+    "Verify mug placement/holding pose, actual movement slowdown, walking/blinking back and automatic nearby delivery with exactly1/1 credit.",
+    "Verify all four original narrative voice lines, campfire/return movement and thank-you3931; concurrent players should retain independent objective progress. Existing public narration clones and timing still need observation.",
+    "Abandon during fill/carry, reaccept, relog and queue into another map; confirm stale slow/pose cleanup and successful subsequent acquisition.",
+    "Complete/reward at Havi and accept44721. Later Helya's Conquest interactions are the next separate audit."
+  ]
+}
