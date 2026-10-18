@@ -9,19 +9,45 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <functional>
+#include <optional>
 #include "RockawayEvents.inc"
 
-struct ObjectGuid { uint32 value=0; void Clear(){value=0;} bool operator<(ObjectGuid b)const{return value<b.value;} bool operator==(ObjectGuid b)const{return value==b.value;} };
+struct ObjectGuid { uint32 value=0; void Clear(){value=0;} bool IsEmpty()const{return !value;} bool operator<(ObjectGuid b)const{return value<b.value;} bool operator==(ObjectGuid b)const{return value==b.value;} };
 using GuidSet=std::set<ObjectGuid>;
+namespace WorldPackets{namespace Spells{
+ struct ImmunityData{uint32 SchoolImmunities=0,Immunities=0;};
+ struct SpellChannelStart{ObjectGuid CasterGUID;uint32 SpellID=0,SpellXSpellVisualID=0,ChannelDuration=0;std::optional<ImmunityData>InterruptImmunities;void*Write(){return nullptr;}};
+ struct SpellChannelUpdate{ObjectGuid CasterGUID;uint32 TimeRemaining=0;void*Write(){return nullptr;}};
+}}
 struct Position {
  float x=0,y=0,z=0,o=0; float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;}
 };
 struct Player;struct Creature;struct ScriptedAI;struct Group{bool raid=false;bool isRaidGroup()const{return raid;}};
 struct Unit;
+using WorldObject=Unit;
+using GameObject=Unit;
+struct SpellScript;
+enum SpellEffIndex{EFFECT_0};
+using ConditionList=std::vector<int>;
+enum {TARGET_REFERENCE_TYPE_CASTER,TARGET_REFERENCE_TYPE_DEST};
+enum {TARGET_CHECK_ENEMY,TARGET_CHECK_ALLY,TARGET_CHECK_PARTY,TARGET_CHECK_RAID,TARGET_CHECK_RAID_CLASS,TARGET_CHECK_SUMMON,TARGET_CHECK_ENTRY,TARGET_CHECK_DEFAULT};
+enum {TARGET_OBJECT_TYPE_UNIT,TARGET_OBJECT_TYPE_GOBJ,TARGET_OBJECT_TYPE_DEST,TARGET_OBJECT_TYPE_OBJ_AND_DEST,TARGET_OBJECT_TYPE_CORPSE};
+enum {SPELL_EFFECT_TELEPORT_L,SPELL_EFFECT_TELEPORT,TARGET_UNIT_NEARBY_ENTRY=38,SPELL_SCRIPT_HOOK_OBJECT_TARGET_SELECT};
+enum{SPELL_ATTR1_IS_FISHING,UNIT_DYNAMIC_FIELD_CHANNEL_OBJECTS};
+enum SpellCastResult{SPELL_CAST_OK,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_BAD_IMPLICIT_TARGETS};
+struct SpellImplicitTargetInfo{int GetReferenceType()const{return TARGET_REFERENCE_TYPE_CASTER;}int GetCheckType()const{return TARGET_CHECK_ENTRY;}int GetObjectType()const{return TARGET_OBJECT_TYPE_UNIT;}};
+struct SpellTargetPosition{float target_X=0,target_Y=0,target_Z=0,target_Orientation=0;uint32 target_mapId=0;};
+struct SpellManager{SpellTargetPosition const*GetSpellTargetPosition(uint32){return nullptr;}}spellManager;
+auto sSpellMgr=&spellManager;
+struct NativeEffect{ConditionList*ImplicitTargetConditions=nullptr;};
+struct CastTargets{Unit*unit=nullptr;Unit*GetUnitTarget(){return unit;}void SetUnitTarget(Unit*u){unit=u;}void SetDst(Unit const&){}void SetDst(float,float,float,float,int32=0){}};
 enum CurrentSpellTypes{CURRENT_GENERIC_SPELL,CURRENT_CHANNELED_SPELL,CURRENT_AUTOREPEAT_SPELL,CURRENT_MAX_SPELL};
 enum {SPELL_ATTR4_TRIGGERED=4,SPELL_INTERRUPT_FLAG_MOVEMENT=1,CHANNEL_INTERRUPT_FLAG_MOVE=1,UNIT_STATE_MOVE_IN_CASTING=2,SPELL_AURA_FIXATE=1};
 struct ChannelInfo {
  uint32 Id=0,InterruptFlags=0;bool HasAttribute(int)const{return false;}
+ NativeEffect effect;NativeEffect*Effects[1]{&effect};struct{bool RequiresSpellFocus=false;}CastingReq;
+ float GetMaxRange(bool,Unit*,void*)const{return 100;}bool IsPositive()const{return true;}bool HasEffect(int)const{return false;}
  bool CanInterruptChannel(ChannelInfo*)const{return true;}uint32 CalcCastTime(Unit*)const{return 0;}
  bool HasChannelInterruptFlag(int)const{return false;}bool HasAura(int)const{return false;}
 };
@@ -29,6 +55,17 @@ struct Spell {
  ChannelInfo info;ChannelInfo*m_spellInfo=&info;Unit*caster=nullptr;Spell**m_selfContainer=nullptr;
  CurrentSpellTypes GetCurrentContainer()const{return CURRENT_CHANNELED_SPELL;}
  Unit*GetCaster()const{return caster;}void SetReferencedFromCurrent(bool){}
+ Unit*m_caster=nullptr,*focusObject=nullptr,*selected=nullptr,*searchResult=nullptr;CastTargets m_targets;
+ bool finished=false;uint32 searches=0,hookCalls=0;std::vector<SpellScript*>m_loadedScripts;
+ struct TargetInfo{ObjectGuid targetGUID;};struct GOTargetInfo{ObjectGuid targetGUID;};
+ std::vector<std::unique_ptr<TargetInfo>>m_UniqueTargetInfo;std::vector<GOTargetInfo>m_UniqueGOTargetInfo;
+ uint32 m_timer=0,m_SpellVisual=0;
+ void SendChannelStart(uint32);void SendChannelUpdate(uint32);
+ void SelectImplicitNearbyTargets(SpellEffIndex,SpellImplicitTargetInfo const&,uint32);
+ void CallScriptObjectTargetSelectHandlers(WorldObject*&,SpellEffIndex);
+ WorldObject*SearchNearbyTarget(float,int,int,ConditionList*){++searches;return searchResult;}
+ void AddUnitTarget(Unit*u,uint32,bool=false,bool=false){selected=u;}void AddGOTarget(Unit*,uint32){}
+ void SendCastResult(int){}void finish(bool){finished=true;}void SelectImplicitChainTargets(SpellEffIndex,SpellImplicitTargetInfo const&,WorldObject*,uint32){}
 };
 struct Map {uint32 GetDifficultyID()const{return 0;}} worldMap;
 using DamageEffectType=int;
@@ -38,15 +75,16 @@ uint32 clockMs=0,nextGuid=1,failSummons=0;
 std::set<uint32> failedSpells;
 struct Unit:Position {
  ObjectGuid guid{nextGuid++}; uint32 entry=0,map=1220,phase=1,hp=100,healthRelative=100;bool alive=true,inWorld=true,visible=true,IsAIEnabled=true;
- Unit* owner=nullptr;std::set<uint32> auras;std::vector<uint32> casts;
+ Unit* owner=nullptr;std::set<uint32> auras;std::set<std::pair<uint32,uint32>> casterAuras;std::vector<uint32> casts;std::vector<ObjectGuid>channelObjects;
  Spell channel;Spell*m_currentSpells[CURRENT_MAX_SPELL]{};bool m_AutoRepeatFirstCast=false;uint32 states=0;
  void SetCurrentCastedSpell(Spell*);
  void AddUnitState(uint32 s){states|=s;}
- void InterruptSpell(CurrentSpellTypes type,bool=true,bool=true,uint32=0){if(auto s=m_currentSpells[type]){auras.erase(s->info.Id);m_currentSpells[type]=nullptr;}states=0;}
+ void InterruptSpell(CurrentSpellTypes type,bool=true,bool=true,uint32=0){if(auto s=m_currentSpells[type]){auras.erase(s->info.Id);m_currentSpells[type]=nullptr;if(s->m_caster)s->SendChannelUpdate(0);}states=0;}
  virtual ~Unit()=default;void Dispatch(Creature*creature);
  ObjectGuid GetGUID()const{return guid;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return map;}
  Map*GetMap(){return &worldMap;}
  bool IsAlive()const{return alive;}bool IsCreature()const;Creature* ToCreature();
+ Unit*ToUnit(){return this;}Unit*ToGameObject(){return this;}uint32 GetGUIDLow(){return guid.value;}bool isDead(){return !alive;}
  Player* GetCharmerOrOwnerPlayerOrPlayerItself();
  bool InSamePhase(Unit*p)const{return map==p->map&&phase==p->phase;}
  bool IsWithinDistInMap(Unit*p,float d,bool=true,bool=false)const{return InSamePhase(p)&&std::hypot(x-p->x,y-p->y)<=d;}
@@ -55,8 +93,15 @@ struct Unit:Position {
  void SetVisible(bool v){visible=v;}void setActive(bool){}void SetReactState(int){}void SetDisableGravity(bool){}
  void SetFacingToObject(Unit*){}void CombatStop(bool){}void CastStop(){for(uint32 i=0;i<CURRENT_MAX_SPELL;++i)InterruptSpell(CurrentSpellTypes(i));}
  bool HasUnitState(int state)const{return states&state;}bool HasAura(uint32 s)const{return auras.count(s);}
+ bool HasAura(uint32 s,ObjectGuid c)const{return casterAuras.count({s,c.value});}
+ uint32 channelSpellId=0,channelVisual=0,channelPackets=0;
+ uint32 GetChannelSpellId()const{return channelSpellId;}
+ void SetChannelSpellId(uint32 s){channelSpellId=s;}void SetChannelSpellXSpellVisualId(uint32 s){channelVisual=s;}
+ void AddChannelObject(ObjectGuid g){channelObjects.push_back(g);}void ClearDynamicValue(int){channelObjects.clear();}
+ uint32 GetSchoolImmunityMask(){return 0;}uint32 GetMechanicImmunityMask(){return 0;}void SendMessageToSet(void*,bool){++channelPackets;}
+ std::vector<ObjectGuid>const&GetChannelObjects()const{return channelObjects;}
  void AddAura(uint32 id,Unit*target){if(!failedSpells.count(id))target->auras.insert(id);}
- void RemoveAurasDueToSpell(uint32 id,ObjectGuid){auras.erase(id);}
+ void RemoveAurasDueToSpell(uint32 id,ObjectGuid c){if(!c.value){for(auto i=casterAuras.begin();i!=casterAuras.end();)if(i->first==id)i=casterAuras.erase(i);else ++i;}else casterAuras.erase({id,c.value});auras.erase(id);}
  void CastSpell(Unit*target,uint32 id,bool);void CastSpell(float x,float y,float z,uint32 id,bool);
  Position GetNearPosition(float d,float a){return {x+d*std::cos(a),y+d*std::sin(a),z,0};}
 };
@@ -68,7 +113,7 @@ struct Player:Unit {
  void AutoStoreLoot(uint32 id,int){assert(id==229113);if(fullBags)++errors;else fragments+=15;}
  void KilledMonsterCredit(uint32 id){assert(id==115168);++credits;status=2;}
 };
-struct TempSummon{Unit*owner;Unit*GetSummoner(){return owner;}};
+struct TempSummon{Unit*owner;Unit*GetSummoner(){return owner;}ObjectGuid GetSummonerGUID(){return owner->GetGUID();}};
 struct Creature:Unit {
  TempSummon temp{};TempSummon*ToTempSummon(){temp.owner=owner;return owner?&temp:nullptr;}void KillAllDelayedCombats(){}
  ScriptedAI*ai=nullptr;Unit*victim=nullptr;uint32 despawnTime=0,melees=0;std::vector<uint32>talks;
@@ -97,7 +142,9 @@ struct QuestStore {bool active=true;Quest quest;Quest*GetQuestTemplate(uint32){r
 auto sQuestDataStore=&store;
 namespace GameTime{uint32 GetGameTime(){return clockMs/1000;}}
 #define ASSERT assert
+#define TC_LOG_DEBUG(...)
 #include "RockawayCurrentSpell.inc"
+#include "RockawayChannelFields.inc"
 bool Unit::IsCreature()const{return dynamic_cast<Creature const*>(this)!=nullptr;}Creature*Unit::ToCreature(){return dynamic_cast<Creature*>(this);}
 Player*Unit::GetCharmerOrOwnerPlayerOrPlayerItself(){if(auto p=dynamic_cast<Player*>(this))return p;return owner?owner->GetCharmerOrOwnerPlayerOrPlayerItself():nullptr;}
 
@@ -107,11 +154,40 @@ Player*Unit::GetCharmerOrOwnerPlayerOrPlayerItself(){if(auto p=dynamic_cast<Play
 #include "RockawayActors.inc"
 #endif
 
+#ifndef ROCKAWAY_BASELINE
+struct TargetHook{
+ std::function<void(WorldObject*&)>fn;SpellEffIndex effect;
+ bool IsEffectAffected(ChannelInfo*,SpellEffIndex e){return effect==e;}
+ void Call(SpellScript*,WorldObject*&t){fn(t);}
+};
+template<class T>struct Hooks:std::vector<T>{void operator+=(T t){this->push_back(t);}};
+struct SpellScript{
+ Unit*caster=nullptr;int depth=0;Hooks<std::function<SpellCastResult()>>OnCheckCast;Hooks<TargetHook>OnObjectTargetSelect;
+ virtual bool Load(){return true;}virtual void Register(){}Unit*GetCaster(){return caster;}
+ void _PrepareScriptCall(int){++depth;}void _FinishScriptCall(){--depth;}
+};
+#define PrepareSpellScript(name) public:
+#define SpellCheckCastFn(fn) [this](){return fn();}
+#define SpellObjectTargetSelectFn(fn,eff,target) TargetHook{[this](WorldObject*&t){fn(t);},eff}
+#include "RockawayChannel.inc"
+#include "RockawayTargetHooks.inc"
+#include "RockawayNearby.inc"
+Unit*SelectChannel(Unit*caster,Unit*explicitTarget,Unit*nearest,bool&failed){
+ spell_rockaway_channel script;script.caster=caster;Spell cast;cast.m_caster=caster;cast.info.Id=231433;cast.m_targets.unit=explicitTarget;cast.searchResult=nearest;
+ if(script.Load()){script.Register();cast.m_loadedScripts.push_back(&script);for(auto const&check:script.OnCheckCast)if(check()!=SPELL_CAST_OK){failed=true;return nullptr;}}
+ cast.SelectImplicitNearbyTargets(EFFECT_0,SpellImplicitTargetInfo{},1);assert(script.depth==0);failed=cast.finished;return cast.selected;
+}
+#endif
+
 ScriptedAI*MakeAI(Creature*c){switch(c->entry){case 115133:return new npc_rockaway_vision(c);case 115132:return new npc_rockaway_ritualist(c);case 116187:return new npc_rockaway_tentacle(c);default:return new npc_rockaway_slime(c);}}
 Creature*Spawn(uint32 entry,Unit*owner,Position pos={}){auto c=std::make_unique<Creature>();c->entry=entry;c->owner=owner;static_cast<Position&>(*c)=pos;auto ptr=c.get();units.emplace(c->guid,std::move(c));MakeAI(ptr);if(owner){ptr->AI()->IsSummonedBy(owner);owner->ToCreature()->AI()->JustSummoned(ptr);}return ptr;}
 Creature*Creature::SummonCreature(uint32 e,Position const&p,int){if(failSummons){--failSummons;return nullptr;}return Spawn(e,this,p);}
 void Creature::DespawnOrUnsummon(uint32 delay){if(delay){despawnTime=clockMs+delay;return;}if(!inWorld)return;inWorld=false;if(owner&&owner->IsCreature())owner->ToCreature()->AI()->SummonedCreatureDespawn(this);}
-void Unit::CastSpell(Unit*target,uint32 id,bool){casts.push_back(id);if(failedSpells.count(id))return;if(id==231328||id==231333){channel.info.Id=id;channel.caster=this;SetCurrentCastedSpell(&channel);auras.insert(id);}if(id==231329)target->auras.insert(id);if(id==231296)Spawn(116187,this,*target);}
+void Unit::CastSpell(Unit*target,uint32 id,bool){casts.push_back(id);if(failedSpells.count(id))return;
+#ifndef ROCKAWAY_BASELINE
+ if(id==231433){bool failed=false;target=SelectChannel(this,target,target,failed);if(failed||!target)return;target->casterAuras.insert({id,guid.value});}
+#endif
+ if(id==231328||id==231333||id==231433){channel.info.Id=id;channel.caster=channel.m_caster=this;SetCurrentCastedSpell(&channel);channel.m_UniqueTargetInfo.clear();channel.m_UniqueTargetInfo.push_back(std::make_unique<Spell::TargetInfo>(Spell::TargetInfo{target->GetGUID()}));channel.SendChannelStart(uint32(-1));if(id!=231433)auras.insert(id);}if(id==231329)target->auras.insert(id);if(id==231296)Spawn(116187,this,*target);}
 void Unit::CastSpell(float px,float py,float pz,uint32 id,bool){casts.push_back(id);if(!failedSpells.count(id)&&id==231354)Spawn(116195,this,{px,py,pz,0});}
 void Unit::Dispatch(Creature*creature){
 #include "RockawayDeath.inc"
@@ -139,9 +215,44 @@ int main(){
 }
 #else
 int main(){
- {Run r;assert(r.vision->HasAura(231328)&&!r.vision->HasUnitState(UNIT_STATE_CASTING));
-  auto ritualist=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);assert(ritualist->HasAura(231333)&&ritualist->HasUnitState(UNIT_STATE_CASTING));
-  r.Hit(0,&r.pet,true);assert(!ritualist->HasAura(231333)&&!ritualist->HasUnitState(UNIT_STATE_CASTING));
+ // Execute the complete native target38 resolver and object-target hook
+ // dispatcher, with grid search/target insertion as explicit service fixtures.
+ {Run r;auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);
+  assert(c->casts.empty()); // Summon callback precedes slot admission.
+  Tick(100);assert(r.vision->casterAuras.size()==4);
+  for(auto g:r.ai->slots){auto a=ObjectAccessor::GetCreature(*r.vision,g);assert(a->GetChannelSpellId()==231433&&a->channelObjects.size()==1&&a->channelObjects[0]==r.vision->guid&&r.vision->HasAura(231433,g));}
+  auto n=c->casts.size();Tick(4000);assert(c->casts.size()==n);
+  auto other=Spawn(115133,nullptr,*c);bool failed=false;
+  assert(SelectChannel(c,other,r.player,failed)==r.vision&&!failed); // Closer bystander and wrong explicit image.
+  assert(SelectChannel(c,r.vision,other,failed)==r.vision&&!failed); // Another image wins grid search.
+  assert(!SelectChannel(c,r.vision,nullptr,failed)&&failed); // Native search failure precedes the hook.
+  auto unscoped=Spawn(116353,nullptr,*c);assert(SelectChannel(unscoped,r.vision,r.player,failed)==r.player&&!failed);
+  auto unslotted=Spawn(115132,r.vision,*c);assert(!SelectChannel(unslotted,r.vision,r.vision,failed)&&failed);
+  auto reject=[&](){bool f=false;assert(!SelectChannel(c,r.vision,r.player,f)&&f);};
+  r.ai->ready=false;reject();r.ai->ready=true;r.ai->outro=true;reject();r.ai->outro=false;
+  r.ai->cooldown=1;reject();r.ai->cooldown=0;r.ai->resetting=true;reject();r.ai->resetting=false;
+  c->phase=2;reject();c->phase=1;c->x+=200;reject();c->x-=200;
+  r.vision->alive=false;reject();r.vision->alive=true;c->alive=false;reject();c->alive=true;
+  store.active=false;reject();store.active=true;
+  // Revalidate inside the actual target hook if ownership changes after Check.
+  spell_rockaway_channel script;script.caster=c;script.Register();assert(script.Check()==SPELL_CAST_OK);
+  r.ai->dead[0]=true;Spell race;race.m_caster=c;race.m_targets.unit=r.vision;race.searchResult=r.player;race.m_loadedScripts={&script};
+  race.SelectImplicitNearbyTargets(EFFECT_0,SpellImplicitTargetInfo{},1);assert(race.finished&&!race.selected&&script.depth==0);r.ai->dead[0]=false;
+ }
+ {Run r;Tick(100);auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);auto n=c->casts.size();
+  r.vision->RemoveAurasDueToSpell(231433,c->guid);Tick(1000);assert(c->casts.size()==n+1&&r.vision->HasAura(231433,c->guid));
+  c->channelObjects={r.player->guid};Tick(1000);assert(c->channelObjects[0]==r.vision->guid);
+  c->CastStop();failedSpells.insert(231433);Tick(1000);assert(!c->GetChannelSpellId());failedSpells.erase(231433);Tick(1000);assert(c->GetChannelSpellId()==231433);
+  r.Hit(0,&r.pet,true);assert(r.vision->casterAuras.size()==3&&!c->GetChannelSpellId()&&c->channelObjects.empty());
+  for(uint32 i=1;i<4;++i)assert(r.vision->HasAura(231433,r.ai->slots[i]));
+  ObjectGuid unrelated{99999};r.vision->casterAuras.insert({231433,unrelated.value});r.ai->ClearRun();assert(r.vision->casterAuras.size()==1&&r.vision->HasAura(231433,unrelated));
+  r.ai->ClearRun();assert(r.vision->HasAura(231433,unrelated)); // Empty slots must not remove every caster's aura.
+ }
+ {Run r;Tick(100);auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);c->IsAIEnabled=false;r.Hit(0,&r.pet,true);assert(!r.vision->HasAura(231433,c->guid)&&!c->GetChannelSpellId());}
+ {Run r;Tick(100);auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);r.ai->outro=true;Tick(1000);assert(!c->GetChannelSpellId()&&!r.vision->HasAura(231433,c->guid));}
+ {Run r;Tick(100);assert(!r.vision->HasAura(231328)&&!r.vision->HasUnitState(UNIT_STATE_CASTING));
+  auto ritualist=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);assert(r.vision->HasAura(231433,ritualist->guid)&&ritualist->HasUnitState(UNIT_STATE_CASTING));
+  r.Hit(0,&r.pet,true);assert(!r.vision->HasAura(231433,ritualist->guid)&&!ritualist->HasUnitState(UNIT_STATE_CASTING));
   Tick(16000);for(uint32 id:{231296u,231351u,231329u})assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),id)>0);
   r.ai->ClearRun();assert(!r.vision->HasAura(231328));}
  {Run r;r.vision->CastSpell(r.vision,231328,true);r.Hit(0);Tick(11000);
@@ -150,7 +261,7 @@ int main(){
   assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),231296)==1&&std::count(r.vision->casts.begin(),r.vision->casts.end(),231351)==1);}
  // Every death order, including a pet's first-hit killing blow; no premature or duplicate credit.
  std::array<uint32,4>order{0,1,2,3};uint32 orders=0;
- do{Run r;for(uint32 j=0;j<4;++j){r.Hit(order[j],&r.pet,true);assert(r.player->credits==0);if(j<3)assert(!r.ai->outro);}assert(r.ai->outro);Tick(5900);assert(!r.player->credits);Tick(100);assert(r.player->credits==1&&r.player->fragments==15&&!r.vision->visible);r.ai->Finish();Tick(1000);assert(r.player->credits==1);++orders;}while(std::next_permutation(order.begin(),order.end()));assert(orders==24);
+ do{Run r;Tick(100);assert(r.vision->casterAuras.size()==4);for(uint32 j=0;j<4;++j){r.Hit(order[j],&r.pet,true);assert(r.player->credits==0);if(j<3)assert(!r.ai->outro);}assert(r.ai->outro);Tick(5900);assert(!r.player->credits);Tick(100);assert(r.player->credits==1&&r.player->fragments==15&&!r.vision->visible);r.ai->Finish();Tick(1000);assert(r.player->credits==1);++orders;}while(std::next_permutation(order.begin(),order.end()));assert(orders==24);
  {Run r;uint32 damage=1000000;r.vision->healthRelative=900;r.ai->DamageTakenAfterScaling(&r.pet,damage,0);assert(damage==899&&r.ai->started&&!r.ai->outro);Tick(6000);assert(!r.player->credits);}
  {Run r;store.active=false;Tick(100);assert(!r.ai->enabled&&!r.vision->visible);for(auto g:r.ai->slots)assert(!g.value);store.active=true;Tick(100);assert(r.ai->ready&&r.vision->visible);}
  {Run r;rotation.ResetTime=1;Tick(1000);assert(!r.ai->enabled&&!r.vision->visible);}
@@ -171,6 +282,6 @@ int main(){
  {Run r;auto rogue=Spawn(115132,r.vision,*r.player);r.ai->SummonedCreatureDies(rogue,&r.pet);assert(!r.ai->dead[0]&&!r.ai->outro);r.Hit(0);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);r.player->status=0;Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
  {Run r;auto corpse=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[3]);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(corpse->inWorld&&!corpse->alive);Tick(60100);assert(!corpse->inWorld&&r.ai->ready&&!r.ai->outro);}
  {Run r;Group raid;raid.raid=true;r.player->group=&raid;for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
- std::cout<<"PASS: actual encounter AI, native EventMap and SetCurrentCastedSpell; cosmetic aura cannot lock attacks, real channels still defer attacks, ritual death/reset cleanup;24 death orders, pet blows, recipient gates, retries, wipe, expiry, optional failures, slam/breath and one credit. Spell preparation/aura application/world services are fixtures; client remains pending.\n";
+ std::cout<<"PASS: production AI/hooks; full native target38 resolver, object-hook dispatcher, SendChannelStart/Update, EventMap and spell-container handler. Exact owner vs bystander/other image, scope, readiness/race failures, retry, four per-caster beams, death/reset/empty-slot cleanup,24 death orders and continuing attacks. Grid search, Spell preparation, aura application and packet serialization are fixtures; client playback remains pending.\n";
 }
 #endif

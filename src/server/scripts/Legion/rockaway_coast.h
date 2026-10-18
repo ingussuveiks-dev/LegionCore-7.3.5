@@ -7,6 +7,9 @@ constexpr uint32 QuestId = 44746;
 constexpr uint32 Credit = 115168;
 constexpr uint32 Fragment = 142487;
 constexpr uint32 CreditLoot = 229113;
+// Reconstruction, not a recovered retail cast: native Kvaldir channel visual.
+constexpr uint32 Channel = 231433;
+constexpr float ChannelRange = 100.0f;
 constexpr float Radius = 150.0f; // Native229113 effect radius41, both effects.
 
 // Reconstruction: three published map pins, fourth shore identified in the
@@ -61,6 +64,12 @@ struct npc_rockaway_vision : ScriptedAI
         events.Reset();
         me->CastStop();
         me->RemoveAurasDueToSpell(231328, me->GetGUID());
+        for (auto const& guid : slots)
+        {
+            if (guid.IsEmpty()) continue;
+            if (auto actor = ObjectAccessor::GetCreature(*me, guid)) actor->CastStop();
+            me->RemoveAurasDueToSpell(Rockaway::Channel, guid);
+        }
         // Removal during reset must not create new essence pools.
         std::list<Player*> players;
         me->GetPlayerListInGrid(players, 200.0f);
@@ -164,6 +173,15 @@ struct npc_rockaway_vision : ScriptedAI
 
     void SummonedCreatureDies(Creature* actor, Unit* killer) override
     {
+        // Also clean up when the dying ritualist's AI is unavailable.
+        if (actor->GetEntry() == 115132)
+            for (auto const& guid : slots)
+                if (guid == actor->GetGUID())
+                {
+                    actor->CastStop();
+                    me->RemoveAurasDueToSpell(Rockaway::Channel, guid);
+                    break;
+                }
         if (!enabled || !ready || outro || !Rockaway::Active() || actor->GetEntry() != 115132) return;
         if (killer)
             if (auto player = killer->GetCharmerOrOwnerPlayerOrPlayerItself()) SetGUID(player->GetGUID(), 0);
@@ -249,10 +267,9 @@ struct npc_rockaway_vision : ScriptedAI
             enabled = true;
             ClearRun();
             me->SetVisible(true);
-            // A real cast of this infinite channel sets UNIT_STATE_CASTING
-            // and permanently blocks the attack scheduler below. Apply only
-            // its decorative self aura; ritualists keep their real channels.
-            me->AddAura(231328, me);
+            // The unsupported Mage Tower self aura231328 is not part of the
+            // reconstructed channel. Only the four summoners cast231433;
+            // the image must remain free to execute its offensive events.
         }
         if (outro)
         {
@@ -301,6 +318,24 @@ struct npc_rockaway_vision : ScriptedAI
     }
 };
 
+namespace Rockaway
+{
+inline Creature* ChannelVision(Unit* caster)
+{
+    if (!caster || !caster->IsCreature() || caster->GetEntry() != 115132 ||
+        caster->GetMapId() != 1220 || !caster->IsAlive() || !Active()) return nullptr;
+    auto summon = caster->ToCreature()->ToTempSummon();
+    auto vision = summon ? ObjectAccessor::GetCreature(*caster, summon->GetSummonerGUID()) : nullptr;
+    if (!vision || vision->GetEntry() != 115133 || !vision->IsAlive() ||
+        !caster->InSamePhase(vision) || !caster->IsWithinDistInMap(vision, ChannelRange, true, true)) return nullptr;
+    auto ai = static_cast<npc_rockaway_vision*>(vision->AI());
+    if (!ai || !ai->enabled || !ai->ready || ai->outro || ai->cooldown || ai->resetting) return nullptr;
+    for (uint32 i = 0; i < 4; ++i)
+        if (ai->slots[i] == caster->GetGUID() && !ai->dead[i]) return vision;
+    return nullptr;
+}
+}
+
 struct npc_rockaway_ritualist : ScriptedAI
 {
     explicit npc_rockaway_ritualist(Creature* creature) : ScriptedAI(creature) { }
@@ -315,7 +350,8 @@ struct npc_rockaway_ritualist : ScriptedAI
         owner = summoner->GetGUID();
         me->SetReactState(REACT_PASSIVE);
         me->SetFacingToObject(summoner);
-        me->CastSpell(summoner, 231333, true);
+        // Slot assignment and readiness follow IsSummonedBy. Start only once
+        // the controller has admitted all four actors, on the next AI update.
     }
     void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType) override
     {
@@ -331,16 +367,32 @@ struct npc_rockaway_ritualist : ScriptedAI
     }
     void JustDied(Unit*) override
     {
+        StopChannel();
+        Talk(2);
+    }
+    void StopChannel()
+    {
         me->CastStop();
         me->RemoveAurasDueToSpell(231333, me->GetGUID());
-        Talk(2);
+        if (auto vision = ObjectAccessor::GetCreature(*me, owner))
+            vision->RemoveAurasDueToSpell(Rockaway::Channel, me->GetGUID());
     }
     void UpdateAI(uint32 diff) override
     {
         if (poll > diff) { poll -= diff; return; }
         poll = 1000;
-        if (auto vision = ObjectAccessor::GetCreature(*me, owner))
-            if (!me->HasAura(231333)) me->CastSpell(vision, 231333, true);
+        auto vision = Rockaway::ChannelVision(me);
+        if (!vision) { StopChannel(); return; }
+        bool connected = false;
+        if (me->GetChannelSpellId() == Rockaway::Channel && vision->HasAura(Rockaway::Channel, me->GetGUID()))
+            for (auto const& guid : me->GetChannelObjects())
+                if (guid == vision->GetGUID()) connected = true;
+        if (!connected)
+        {
+            StopChannel();
+            me->SetFacingToObject(vision);
+            me->CastSpell(vision, Rockaway::Channel, true);
+        }
     }
 };
 
@@ -375,6 +427,30 @@ struct npc_rockaway_slime : ScriptedAI
         if (summoner->GetEntry() == 115133) me->DespawnOrUnsummon(45000);
     }
     void UpdateAI(uint32) override { if (UpdateVictim()) DoMeleeAttackIfReady(); }
+};
+
+class spell_rockaway_channel : public SpellScript
+{
+    PrepareSpellScript(spell_rockaway_channel);
+    bool Load() override
+    {
+        return GetCaster()->GetEntry() == 115132 && GetCaster()->GetMapId() == 1220;
+    }
+    SpellCastResult Check()
+    {
+        return Rockaway::ChannelVision(GetCaster()) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+    void Select(WorldObject*& target)
+    {
+        // Native target38 searches nearby even when CastSpell supplied an
+        // explicit unit. Replace its result with this exact admitted owner.
+        target = Rockaway::ChannelVision(GetCaster());
+    }
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_rockaway_channel::Check);
+        OnObjectTargetSelect += SpellObjectTargetSelectFn(spell_rockaway_channel::Select, EFFECT_0, TARGET_UNIT_NEARBY_ENTRY);
+    }
 };
 
 class spell_rockaway_taint : public AuraScript

@@ -21,6 +21,9 @@ int main(int argc, char** argv)
     STORE(SpellEntry, spells, "Spell", SpellLoadInfo);
     STORE(SpellMiscEntry, misc, "SpellMisc", SpellMiscLoadInfo);
     STORE(SpellDurationEntry, durations, "SpellDuration", SpellDurationLoadInfo);
+    STORE(SpellRangeEntry, ranges, "SpellRange", SpellRangeLoadInfo);
+    STORE(SpellTargetRestrictionsEntry, targetRestrictions, "SpellTargetRestrictions", SpellTargetRestrictionsLoadInfo);
+    STORE(SpellAuraRestrictionsEntry, auraRestrictions, "SpellAuraRestrictions", SpellAuraRestrictionsLoadInfo);
     STORE(QuestV2CliTaskEntry, tasks, "QuestV2CliTask", QuestV2CliTaskLoadInfo);
     STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
     STORE(CreatureDisplayInfoEntry, displays, "CreatureDisplayInfo", CreatureDisplayInfoLoadInfo);
@@ -106,6 +109,29 @@ int main(int argc, char** argv)
             "Ritual channel/self-dummy data changed");
         std::cout << "ritual " << id << ": channeled, self dummy aura; actor/beam binding unproven\n";
     }
+    SpellMiscEntry const* channel = nullptr;
+    for (auto row : misc)
+        if (row->SpellID == 231433 && row->DifficultyID == 0)
+        {
+            Require(!channel, "Ambiguous reconstructed channel record");
+            channel = row;
+        }
+    Require(channel && (channel->Attributes[1] & 0x44) &&
+        durations.LookupEntry(channel->DurationIndex) && durations.LookupEntry(channel->DurationIndex)->Duration == -1 &&
+        ranges.LookupEntry(channel->RangeIndex) && ranges.LookupEntry(channel->RangeIndex)->RangeMax[0] == 100.0f &&
+        ranges.LookupEntry(channel->RangeIndex)->RangeMax[1] == 100.0f &&
+        effect(231433, 0)->Effect == 6 && effect(231433, 0)->EffectAura == 4 &&
+        effect(231433, 0)->ImplicitTarget[0] == 38 && effect(231433, 0)->ImplicitTarget[1] == 0,
+        "Reconstructed231433 requires infinite100-yard nearby-entry channel");
+    std::cout << "channel231433: infinite100-yard native target38; exact owner enforced by scoped hook; retail binding unproven\n";
+    for (auto row : targetRestrictions)
+        if (row->SpellID == 231433 && row->DifficultyID == 0)
+            Require(!row->TargetCreatureType && !row->Targets, "Reinspect native channel explicit/creature target restriction");
+    for (auto row : auraRestrictions)
+        if (row->SpellID == 231433 && row->DifficultyID == 0)
+            Require(!row->TargetAuraSpell && !row->ExcludeTargetAuraSpell && !row->TargetAuraState &&
+                !row->ExcludeTargetAuraState && !row->CasterAuraSpell && !row->ExcludeCasterAuraSpell &&
+                !row->CasterAuraState && !row->ExcludeCasterAuraState, "Reinspect native channel aura restrictions");
     for (uint32 id : {229113u, 230020u, 231295u, 231296u, 231298u, 231328u, 231329u,
         231333u, 231340u, 231351u, 231353u, 231354u, 231356u, 231359u, 231386u, 231459u, 232681u, 232679u})
     {

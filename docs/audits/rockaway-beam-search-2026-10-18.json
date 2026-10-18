@@ -871,5 +871,7 @@
     "Recover a retail cast/channel/aura or spell-visual packet identifying spell/visual ID and both actors; in particular distinguish Vision115133 from invisible cosmetic-soul stalker116353 as the actual target.",
     "Only then replace unsupported231328/231333 presentation, test per-caster death/reset/wipe cleanup and ensure Vision offensive casts remain unblocked. Keep an explicit reconstruction label if original binding cannot be established.",
     "Client playback, original placements, hand endpoint, projection, all hazards and full completion remain pending. User authorized code/data work only."
-  ]
+  ],
+  "channel_reconstruction_followup": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json",
+  "current_channel_implementation": "Reconstructed231433 now targets each admitted ritualist's exact image with per-caster cleanup/retry. 231328/333 are no longer applied. Native/Release checks pass; original binding and client visuals remain unverified. Earlier statements about those auras describe historical implementation, retained as evidence."
 }

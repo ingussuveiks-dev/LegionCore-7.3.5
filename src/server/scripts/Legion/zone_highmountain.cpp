@@ -356,6 +356,7 @@ void AddSC_highmountain()
     RegisterCreatureAI(npc_rockaway_ritualist);
     RegisterCreatureAI(npc_rockaway_tentacle);
     RegisterCreatureAI(npc_rockaway_slime);
+    RegisterSpellScript(spell_rockaway_channel);
     RegisterAuraScript(spell_rockaway_taint);
     new boss_flotsam();
     new npc_jetsam_stalker();

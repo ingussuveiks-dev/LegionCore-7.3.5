@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-18",
+  "quest": 44746,
+  "baseline": "77249668",
+  "status": "Reconstructed231433 channels implemented; native dispatch regressions, canonical Release and startup checks pass; client visuals pending",
+  "original_retail_binding_established": false,
+  "client_verified": false,
+  "research": "docs/audits/rockaway-beam-search-2026-10-18.json",
+  "change": [
+    "Use native231433 Cosmetic Channel from each of four admitted ritualists to its own Vision115133. Its100-yard infinite dummy aura, Kvaldir Brackish models and chain5074 are native assets; the assignment to these actors is explicitly an engineering reconstruction, not a recovered original cast.",
+    "Remove unsupported231328/231333 application from the image/ritualists. Retain scoped cleanup of those legacy auras. The image never casts the new channel and can continue all three offensive event types.",
+    "Do not cast from IsSummonedBy before the controller stores the slot GUID. Once all four slots are admitted, validate temporary summoner GUID, map, phase, life,100-yard range, rotation, controller state and membership before starting.",
+    "Register a231433 SpellScript only for caster115132/map1220. OnCheckCast rejects missing/inactive/wrong owners; OnObjectTargetSelect revalidates and replaces native nearby-entry selection with the exact admitted owner, including if a bystander or another image is closer. Preserve native target38 and shared spell conditions; other casters retain native selection.",
+    "Retry once per second only if channel spell ID, target channel-object GUID or per-caster target aura is absent. Stop casting and remove only that ritualist's aura on death, invalid owner or reset. Controller death callback also cleans up when ritualist AI is unavailable. Skip empty slot GUIDs: an empty caster argument would remove all copies of the spell."
+  ],
+  "native_path_inspection": [
+    "Spell::SelectImplicitNearbyTargets(target38) performs SearchNearbyTarget even when an explicit unit was supplied. Missing search results fail before the hook. After the hook, AddUnitTarget inserts the selected unit and m_targets.SetUnitTarget stores it; the script therefore revalidates at selection, not just cast admission.",
+    "Spell::SendChannelStart adds m_UniqueTargetInfo GUIDs to UNIT_DYNAMIC_FIELD_CHANNEL_OBJECTS and writes the spell ID; SendChannelUpdate(0) clears those fields. The target receives the dummy aura through normal spell execution; no manual channel-GUID substitution or AddAura-only beam is used in production.",
+    "Aura::CanStackWith allows different-caster channeled auras before generic same-spell exclusion unless database/type rules forbid stacking. Live spell_group has no231433 row. The native catalog has no explicit target/creature type or caster/target aura restriction for231433. This inspection does not execute the full live Aura creation/stacking path."
+  ],
+  "checks": [
+    "Test-RockawayEncounter.ps1 PASS: extracted complete production actors and registered channel class; complete native SelectImplicitNearbyTargets, CallScriptObjectTargetSelectHandlers, SendChannelStart/Update, Unit::SetCurrentCastedSpell, EventMap and death dispatcher execute.",
+    "Exact owner survives wrong explicit image, nearer bystander and nearer competing image. Null search result fails; unrelated caster keeps native selection. Unslotted, inactive, not-ready, outro, cooldown, reset, wrong phase, outside range, dead caster/owner and state change between check and selection reject without attaching to a bystander.",
+    "Four per-caster channels coexist in the aura service fixture, stable channels do not recast, missing aura/wrong channel GUID/failed cast retry. Death removes only one beam; unavailable-AI fallback cleans up. Repeated reset with empty slots preserves unrelated-caster aura. All24 death orders, pet blows, recipient gates, wipe/expiry/retry, hazards and exactly-once completion pass; image attacks continue while ritualist channels exist.",
+    "Pinned ec4f7a3b production AI still reproduces the old infinite self-channel attack lock. An actual casting state still defers the scheduler until interruption.",
+    "Fixture boundary: grid search, AddUnitTarget insertion, full Spell preparation/hit execution, aura application/stacking, packet serialization and world services are modeled. Native selector/hook/channel-field dispatch runs, but this is not a live player/client encounter or renderer test.",
+    "Test-RockawayCatalog.ps1 PASS: actual typed DB2 loader verifies231433 channel mask0x44 (native0x4 set), duration-1,100-yard hostile/friendly range, effect6/aura4/target38 and no native explicit/creature/aura restrictions. Native-input hashes saved under runtime-test/rockaway-catalog.",
+    "Test-RockawayData.ps1 PASS: new binding migration repeated in indexed temporary tables; existing same-spell and unrelated sentinel hooks preserved with zero missing/extra bindings. Combined Rockaway migrations replay twice; native loot/count tests and Lost Army dependency pass. No reward count changes in this fix.",
+    "Test-RockawayGeometry.ps1 PASS for all four existing reconstructed positions against native terrain/WMO. Exact retail placements remain unknown.",
+    "Standard Release worldserver/bnetserver build PASS to canonical runtime. Test-RockawayRelease.ps1 verifies actual final-link scripts library/source freshness, deployed target-selector admission call, ritualist retry/cleanup calls and231433 immediate, no decorative AddAura in Vision UpdateAI, retained credit/loot/final callback and scaled-health clamp.",
+    "Canonical startup ready=True, graceful exit0, DBErrors.log/stderr.log zero bytes. This verifies loader/startup admission, not live spell playback."
+  ],
+  "deployment": {
+    "state": "RELEASED",
+    "sha1": "237827E92B88041DCF4F7C7A645CDD2C2EB068CD",
+    "migration": "2026_10_18_06_rockaway_channel.sql",
+    "backup": "C:\\wamp64\\www\\LegionCore-7.3.5\\.codex\\backups\\rockaway-channel\\20261018-161309",
+    "runtime": "build-extractors/bin/Release",
+    "startup_logs": "build-extractors/runtime-test/rockaway/startup-20261018-161309",
+    "worldserver_left_running": false,
+    "worldserver.exe_sha256": "05c7967ecc5461e92da7290b8eace219a81cab9c10e754f9e9da847ae9af4be7",
+    "bnetserver.exe_sha256": "dab47063156125d3f8a20d61a719521b317fc4f64a3cc66fd39f0781add2104a"
+  },
+  "pending_client_checks": [
+    "First arrival: four simultaneous beams, raised-hand endpoint, actual target endpoint and projection at the water surface. Confirm231433 shape/color/scale versus the historical video; native asset references do not prove a visual match.",
+    "Attack each ritualist without breaking its channel; confirm hazards continue, each death removes its own beam, final death clears all four and completes after the existing outro.",
+    "Wipe, rotation expiry, departure/re-entry, missing owner and retry must not leave stale beams or Mage Tower purple rune/hand effects. Check both factions and pet/group credit in the client.",
+    "Original retail spell/caster/target binding is still unresolved. Do not mark the green beam or whole quest original/client-verified based on this reconstruction."
+  ]
+}

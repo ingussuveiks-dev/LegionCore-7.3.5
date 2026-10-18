@@ -48,11 +48,23 @@ foreach($name in @('?KilledMonsterCredit@Player@@QEAAXIVObjectGuid@@@Z','?AutoSt
 if($finish -notcontains (Resolve (Symbol '?DespawnOrUnsummon@Creature@@'))){throw 'Deployed Finish lacks retained corpse lifetime scheduling'}
 $update=@(Calls '?UpdateAI@npc_rockaway_vision@@')
 if($update -notcontains (Resolve (Symbol '?Finish@npc_rockaway_vision@@'))){throw 'Deployed UpdateAI lacks final completion callback'}
-if($update -notcontains (Resolve (Symbol '?AddAura@Unit@@QEAAPEAVAura@@I'))){throw 'Deployed Vision still lacks direct decorative aura application'}
+if($update -contains (Resolve (Symbol '?AddAura@Unit@@QEAAPEAVAura@@I'))){throw 'Deployed Vision retains unsupported Mage Tower aura application'}
 $death=@(Calls '?JustDied@npc_rockaway_ritualist@@')
-foreach($name in @('?CastStop@Unit@@','?RemoveAurasDueToSpell@Unit@@')){
- if($death -notcontains (Resolve (Symbol $name))){throw "Deployed ritual death lacks $name"}
-}
+if($death -notcontains (Resolve (Symbol '?StopChannel@npc_rockaway_ritualist@@'))){throw 'Deployed ritual death lacks channel cleanup'}
+$stop=@(Calls '?StopChannel@npc_rockaway_ritualist@@')
+foreach($name in @('?CastStop@Unit@@','?RemoveAurasDueToSpell@Unit@@')){if($stop -notcontains (Resolve (Symbol $name))){throw "Deployed channel cleanup lacks $name"}}
+$ritual=@(Calls '?UpdateAI@npc_rockaway_ritualist@@')
+foreach($name in @('?ChannelVision@Rockaway@@','?StopChannel@npc_rockaway_ritualist@@')){if($ritual -notcontains (Resolve (Symbol $name))){throw "Deployed ritual channel lacks $name"}}
+# GetChannelSpellId is inlined in this Release. Check the selected spell ID
+# in the actual UpdateAI body as well as the non-inlined admission/cleanup calls.
+$address=Symbol '?UpdateAI@npc_rockaway_ritualist@@';$at=Offset $address
+$index=$map.IndexOf(' ?UpdateAI@npc_rockaway_ritualist@@');$after=$map.IndexOf("`n",$index)+1;$end=$address+4096
+foreach($m in [regex]::Matches($map.Substring($after,[Math]::Min(8192,$map.Length-$after)),'\s([0-9A-Fa-f]{16})\s+f')){$v=[Convert]::ToInt64($m.Groups[1].Value,16);if($v -gt $address){$end=[Math]::Min($end,$v)}}
+$channelId=$false
+for($i=0;$i -lt $end-$address-3;$i++){if([BitConverter]::ToUInt32($binary,$at+$i) -eq 231433){$channelId=$true;break}}
+if(!$channelId){throw 'Deployed ritual UpdateAI lacks231433'}
+$target=@(Calls '?Select@spell_rockaway_channel@@')
+if($target -notcontains (Resolve (Symbol '?ChannelVision@Rockaway@@'))){throw 'Deployed target selector lacks exact controller admission'}
 $damage=@(Calls '?DamageTakenAfterScaling@npc_rockaway_vision@@')
 if($damage -notcontains (Resolve (Symbol '?GetHealth@Unit@@QEBA_KPEAV1@@Z'))){throw 'Deployed Vision lacks target-relative scaled damage clamp'}
-'PASS: canonical Release final-link scripts library, actual decorative AddAura/death cleanup and completion/credit/loot calls; scaled health clamp present.'
+'PASS: canonical Release final-link scripts library, exact-owner channel hook, retry/death cleanup, no Vision Mage Tower aura, completion/credit/loot calls and scaled health clamp.'

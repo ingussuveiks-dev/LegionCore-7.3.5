@@ -8,12 +8,20 @@ $includes=$group.ClCompile.AdditionalIncludeDirectories.Split(';') | Where-Objec
 $commonIncludes=@('src/server/scripts/Legion','src/common/Collision/Management','src/common/Collision','dep/g3dlite/include','dep/recastnavigation/Detour/Include') | ForEach-Object {Join-Path $repo $_}
 $libs=$group.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -and $_ -notlike '%*'} | ForEach-Object {if($_ -like '..*'){[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $_))}else{$_}}
 $source=(Get-Content "$repo/src/server/scripts/Legion/rockaway_coast.h" -Raw).Replace("`r",'')
-$boundary=$source.IndexOf('class spell_rockaway_taint')
+$boundary=$source.IndexOf('class spell_rockaway_channel')
 if($boundary -lt 0){throw 'Missing production encounter boundary'}
 [IO.File]::WriteAllText("$output/RockawayActors.inc",$source.Substring(0,$boundary)+"`n#endif`n")
 $a=$source.IndexOf('    void OnRemove(', $boundary);$b=$source.IndexOf('    void Register()', $a)
 if($a -lt 0 -or $b -le $a){throw 'Missing actual taint removal callback'}
 [IO.File]::WriteAllText("$output/RockawayTaint.inc",$source.Substring($a,$b-$a))
+$a=$source.IndexOf('class spell_rockaway_channel');$b=$source.IndexOf('class spell_rockaway_taint',$a)
+[IO.File]::WriteAllText("$output/RockawayChannel.inc",$source.Substring($a,$b-$a))
+$spell=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
+foreach($part in @(@('void Spell::SelectImplicitNearbyTargets(', 'void Spell::SelectImplicitTargetsFromThreadList(', 'RockawayNearby.inc'),@('void Spell::CallScriptObjectTargetSelectHandlers(', 'void Spell::CallScriptObjectJumpTargetHandlers(', 'RockawayTargetHooks.inc'),@('void Spell::SendChannelUpdate(', 'void Spell::SendResurrectRequest(', 'RockawayChannelFields.inc'))){
+ $a=$spell.IndexOf($part[0]);$b=$spell.IndexOf($part[1],$a)
+ if($a -lt 0 -or $b -le $a){throw 'Missing actual native nearby-target path'}
+ [IO.File]::WriteAllText("$output/$($part[2])",$spell.Substring($a,$b-$a))
+}
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 $a=$unit.IndexOf('        // Call creature just died function');$b=$unit.IndexOf('        // Call instance script.', $a)
 if($a -lt 0 -or $b -le $a){throw 'Missing native death/summoner dispatcher'}

@@ -123,5 +123,7 @@
   "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
   "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified.",
   "beam_search_followup": "docs/audits/rockaway-beam-search-2026-10-18.json",
-  "beam_search_correction": "231328/333 also occur on Mage Tower actors in pinned build26365 SQL; their Rockaway assignment remains unsupported. New231433/chain5074 candidate has no recovered retail actor binding. Original green beam remains unresolved; no runtime change."
+  "beam_search_correction": "231328/333 also occur on Mage Tower actors in pinned build26365 SQL; their Rockaway assignment remains unsupported. New231433/chain5074 candidate has no recovered retail actor binding. Original green beam remains unresolved; no runtime change.",
+  "channel_reconstruction_followup": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json",
+  "current_channel_implementation": "Reconstructed231433 now targets each admitted ritualist's exact image with per-caster cleanup/retry. 231328/333 are no longer applied. Native/Release checks pass; original binding and client visuals remain unverified. Earlier statements about those auras describe historical implementation, retained as evidence."
 }
