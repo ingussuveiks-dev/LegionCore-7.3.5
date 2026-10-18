@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-18",
+  "baseline": "7653a4ec",
+  "trigger_quest": 45088,
+  "status": "Ungrouped personal raid quest-item selection repaired; native regression and deployed binary checked; client pending",
+  "findings": [
+    "Unit::GeneratePersonalLoot's LFR branch chooses equipment recipients and passes chance100 or0 to each player's personal Loot. It checks the existing boss/difficulty cooldown before generation, then auto-stores the generated items and marks that cooldown. LFR does not subsequently generate the separate shared quest container used by the other difficulty branch.",
+    "LootTemplate::ProcessBossLoot returned immediately on a failed raid equipment roll, before considering any ungrouped quest entries. Live Guarm/Helya fragment142487 rows have their own100% chance and QuestRequired1. Thus an eligible LFR group member who lost the equipment selection also lost the independent fragment roll. A solo LFR recipient can already win the equipment selection; this was not a claim that all LFR runs always lacked fragments.",
+    "Move the failed-equipment admission to each ungrouped row. Only LOOT_ITEM_TYPE_ITEM rows with needs_quest are exempt. Their own difficulty mask, conditions, item eligibility and LootStoreItem::Roll still run. Ordinary items and all currency rows retain the previous raid equipment gate. Non-raid behavior and equipment AutoGroups are unchanged.",
+    "Bonus-roll handling returns before this loop as before, so bonus rolls do not become another quest-fragment source. Unit's existing weekly/difficulty cooldown and LFR eligibility logic were not changed. Later Loot quest visibility still calls HasQuestForItem; no character or quest IDs were hardcoded into the processor.",
+    "Test-BossQuestLoot.ps1 extracts the whole old/new boss processor and real per-row Roll implementation. Controlled RNG reproduces the old missed-quest case and tests zero/winning equipment chance, all four difficulty bits, wrong masks, failed conditions/item admission, rare row RNG, missing item, equipment groups, ordinary and flagged currency, Legion/older bonus rolls and non-raid behavior. Item storage, quest visibility and weekly cooldown services are outside that fixture.",
+    "The separate Lost Army regression executes native ordinary loot/condition attachment and quest-item lifecycle. Full Unit::GeneratePersonalLoot, shared versus personal container coexistence, live group eligibility, AutoStoreItems and saved cooldown persistence still require integration/client checks.",
+    "The canonical PE's actual LootTemplate::ProcessBossLoot references the changed quest/gear-roll diagnostic, with its map symbol and incremental-link thunk resolved. The actual game/Release/game.lib final-link input was checked. This is stronger than checking a copied file hash or startup alone, but is not a live looting test."
+  ],
+  "checks": [
+    "Test-BossQuestLoot.ps1 -VerifyReleaseBinary: PASS",
+    "Test-LostArmy.ps1 and its existing Helheim Supplies ordinary-loot regression: PASS",
+    "Standard Release worldserver/bnetserver build: PASS; no global OutDir override",
+    "Final canonical startup ready=true, graceful exit0, fresh DBErrors.log/stderr.log empty",
+    "Staged diff whitespace check: PASS"
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "29d40418130243126af23d99e1b891a4f57756c6132da376b7fa31b9b2d97db5",
+    "bnetserver_sha256": "742fc17b89d89631e6a329e4c4accea7e567e86052d51484c04444de6a437ce1",
+    "startup_logs": "build-extractors/runtime-test/lost-army/startup-20261018-133124",
+    "worldserver_left_running": false
+  },
+  "pending_client_checks": [
+    "In an eligible LFR group, confirm quest fragments for players who receive no equipment, and no fragment loot without the quest or after reaching1000.",
+    "Repeat the same difficulty in a saved week, then change difficulty; confirm existing loot cooldown behavior. Check ordinary personal equipment/currency and bonus rolls remain unchanged.",
+    "Check normal/heroic/mythic shared quest loot, personal loot, group methods and actual auto-storage independently."
+  ]
+}

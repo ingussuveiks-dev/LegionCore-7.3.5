@@ -2721,16 +2721,20 @@ void LootTemplate::ProcessBossLoot(Loot& loot) const
         return;
     }
 
-    if (!canGetInstItem && lootOwner->GetMap()->IsRaid())
-        return;
-
     // Rolling non-grouped items
     for (LootStoreItemList::const_iterator i = Entries.begin(); i != Entries.end(); ++i)
     {
+        // A failed equipment roll must not suppress independently rolled quest
+        // drops (for example Valarjar Soul Fragments in LFR). Bonus rolls have
+        // already returned above; ordinary rewards still require the gear roll.
+        if (!canGetInstItem && lootOwner->GetMap()->IsRaid() &&
+            (!i->needs_quest || i->type != LOOT_ITEM_TYPE_ITEM))
+            continue;
+
         if (i->lootmode != 0 && !(i->lootmode & loot._DifficultyMask)) // Do not add if instance mode mismatch
             continue;
 
-        TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot itemid %u chance %f lootmode %u lootmode %u", i->itemid, i->chance, i->lootmode, i->lootmode);
+        TC_LOG_DEBUG("loot", "LootTemplate::ProcessBossLoot itemid %u chance %f lootmode %u quest %u gearRoll %u", i->itemid, i->chance, i->lootmode, i->needs_quest, canGetInstItem);
 
         if (!CheckItemCondition(lootOwner, i->itemid, i->type))
             continue;
