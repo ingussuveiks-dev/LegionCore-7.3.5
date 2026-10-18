@@ -48,6 +48,17 @@ struct npc_grey_shoals_rotation : SmartAI
     void Sync(bool force = false)
     {
         bool enabled = GreyShoals::Active();
+        if (!enabled && me->isCharmed())
+        {
+            // SmartAI retains this script during ordinary charm/possession.
+            // End control before hiding, using the native aura/control cleanup
+            // so the charmer's bar, mover and faction are restored as usual.
+            me->RemoveCharmAuras();
+            if (me->isCharmed())
+                me->RemoveCharmedBy(nullptr); // Direct/scripted charm, no aura.
+            me->LastCharmerGUID.Clear();
+            force = true; // CharmInfo cleanup may restore an aggressive state.
+        }
         if (!force && initialized && active == enabled)
             return;
         initialized = true;

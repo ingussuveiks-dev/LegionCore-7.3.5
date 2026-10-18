@@ -49,6 +49,7 @@
     "grey-shoals-native-supplies-2026-10-18.json retains original rack/spell evidence, timing adaptation and remaining placement/combat/client limits.",
     "Earlier source: Wowhead Raider comment3187438 dated2020-01-31 reports WQ-only appearance; supporting later observation, not a recovered7.3.5 phasing sniff. No new retail phase ID was invented."
   ],
+  "controlFollowUp": "grey-shoals-control-2026-10-18.json corrects the ordinary AI-replacement assumption using actual native charm callbacks and records expiry uncontrol plus native application/removal regressions. Preserve the original audit history and its other boundaries.",
   "remaining": [
     "Client: first inactive grid load, stationary expiry during combat, corpse disappearance, next activation, pets/group credits and full100% reward/outro.",
     "Exact original positions, baseline coast fauna replacement, native combat target execution, terrain/navmesh and visual timing remain separate findings.",

@@ -91,4 +91,9 @@ foreach($method in @('?CanBeVisibleFor@npc_grey_shoals_rotation@@','?CanBeVisibl
  }
 }
 'PASS: actual canonical game/scripts final-link inputs, native lifecycle/visibility virtual slots and both deployed rotation filters.'
+$controlCalls=@(Calls '?Sync@npc_grey_shoals_rotation@@')
+foreach($name in @('?RemoveCharmAuras@Unit@@','?RemoveCharmedBy@Unit@@')){
+ if($controlCalls -notcontains (Resolve (Symbol $name))){throw "Canonical Grey Shoals rotation lacks native control release: $name"}
+}
+'PASS: canonical scoped rotation invokes native aura and direct-charm cleanup.'
 'PASS: actual final-link scripts library/source freshness and deployed supply handler rotation, time, quest status and removal of personal credit shortcut. Client remains pending.'

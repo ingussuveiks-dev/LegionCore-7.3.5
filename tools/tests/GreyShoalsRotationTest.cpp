@@ -37,6 +37,8 @@ struct CreatureAI{Creature* me;explicit CreatureAI(Creature* c):me(c){}virtual ~
 struct Creature:Unit{
  uint32 entry=115025,map=1220,flags=32768;CreatureData data;bool hasData=true,alive=true,combat=false,casting=false,evade=false;
  bool IsAIEnabled=true,m_isUpdate=false,m_AI_locked=false,deleted=false,preDeleted=false;
+ struct Guid{void Clear(){}}LastCharmerGUID;
+ bool isCharmed(){return false;}void RemoveCharmAuras(){}void RemoveCharmedBy(Unit*){}
  std::string aiName="SmartAI";std::string GetAIName(){return aiName;}
  ReactStates react=REACT_AGGRESSIVE;CreatureAI* i_AI=nullptr;int visibleUpdates=0,combatStops=0,threatClears=0,castStops=0;
  CreatureData const* GetCreatureData()const{return hasData?&data:nullptr;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return map;}

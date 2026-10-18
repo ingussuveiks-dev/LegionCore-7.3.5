@@ -1,0 +1,60 @@
+{
+  "quest": 44737,
+  "date": "2026-10-18",
+  "status": "Expired-rotation control release implemented for the existing scoped SmartAI actors. Native-function regressions, canonical Release verification and startup pass; client controls/portrait remain unverified.",
+  "correction": {
+    "previousAssumption": "The previous audit/conversation attributed this normal charm gap to replacement of the actor's AI.",
+    "actualPath": "Unit::SetCharmedBy calls the current AI's OnCharmed(true). CreatureAI::OnCharmed requests an AI change and disables AI, but SmartAI overrides that method and only dispatches SMART_EVENT_CHARMED. These four templates retain SmartAI, and have no charm-event rows. Ordinary charm/possession/conversion therefore retains npc_grey_shoals_rotation; it does not normally invoke the replacement path assumed earlier.",
+    "observedRegression": "Executing the pinned f9bc6062 script with the same native charm functions shows an inactive hidden/passive actor still holding its charm GUID, charmer control relation and aura. The missing operation is native uncontrol, not a required global AI-selection change.",
+    "boundary": "Native-function fixture reproduction, not an observed live-client failure. Full spell target/immunity admission and native aura storage are not executed."
+  },
+  "implementation": {
+    "file": "src/server/scripts/Legion/grey_shoals.h",
+    "scope": "Only the existing Grey Shoals DB-spawn SmartAI wrapper: entries115025/115026/115031/115751 on1220 with DB home area8297. No global charm/AI dispatch changes, SQL migration or character-data changes.",
+    "behavior": "Before Sync's unchanged-state return, an inactive actor removes its native charm/possession/AOE-charm auras. If a direct/scripted charm remains without an aura, RemoveCharmedBy(nullptr) uses the actual charmer relationship to release it. Clear LastCharmerGUID so an expired actor cannot retain a later auto-attack target. Force the passive/nonattackable gate again after control cleanup, which can restore a saved react state.",
+    "nativeCleanup": "Delegate to existing RemoveCharmAuras -> native aura handlers -> RemoveCharmedBy and SetCharm(false). Preserve native faction restoration, control GUID/set cleanup, action-bar removal, possession client-control orders and primary minion relationship. Do not manually rewrite player mover/charm fields or delete the actor/pet.",
+    "nativeCharmInfoBoundary": "The player-uncontrol branch sends RemoveControlBar and can retain CharmInfo; the regression intentionally preserves that native behavior rather than inventing a deletion. Non-player uncontrol exercises its native DeleteCharmInfo branch, followed by reapplying the inactive gate.",
+    "activeRotation": "Control remains while the rotation is active; normal reactivation restores the actor's original react/gate flags without granting progression. Repeated inactive updates are idempotent, and forced control applied while already inactive is released on the next lifecycle update."
+  },
+  "nativeTests": {
+    "runner": "tools/tests/Test-GreyShoalsControl.ps1",
+    "actualFunctions": [
+      "Unit::SetCharmedBy and RemoveCharmedBy",
+      "Unit::SetCharm and GetFirstControlled",
+      "Unit::RemoveCharmAuras",
+      "AuraEffect::HandleModCharm, HandleModPossess and HandleCharmConvert",
+      "SmartAI::OnCharmed and CreatureAI::OnCharmed",
+      "Current production npc_grey_shoals_rotation::Sync and pinned f9bc6062 baseline"
+    ],
+    "bindings": "Native aura dispatcher entries2/6/177 are checked against the actual source table. CharmType and ReactStates enums are extracted from Unit.h.",
+    "cases": [
+      "Active charm remains; exact rotation expiry removes normal charm, possession, conversion and direct scripted charm.",
+      "An unavailable aura caster is resolved through the still-present charmer relationship by native RemoveCharmedBy(nullptr). This is not a test of a corrupted orphan GUID with no charmer object.",
+      "Actual SmartAI charm callback retains the same AI and IsAIEnabled; actual base CreatureAI callback requests a change, proving the distinction behind the corrected assumption.",
+      "Native charm GUIDs and controlled-unit set clear, original faction restores, the former-charmer target clears, and possession restores the player's mover/control flags.",
+      "A separate permanent pet stays owned/registered and remains GetFirstControlled after charm removal; the unrelated aura survives.",
+      "Repeated expiry does not repeat bar/aura cleanup; forced re-control while already inactive is still released; next activation restores react/gate state.",
+      "Non-player conversion and missing rotation exercise native CharmInfo cleanup and reapply the passive gate."
+    ],
+    "baseline": "The runner separately compiles the pinned previous script and confirms retained control for all eight player/aura-caster combinations plus NPC conversion, then manually cleans the fixture. The current implementation releases them.",
+    "fixtureBoundary": "Aura storage/removal scheduling, world/charmer lookup, CharmInfo initialization/state services, spell creation and movement/packet methods are controlled doubles. Actual native application/removal/control-relation functions and production Sync execute. No claim of packet delivery, camera, action-bar rendering or pet portrait verification."
+  },
+  "additionalChecks": [
+    "Test-GreyShoalsRotation.ps1 passes with its no-control fixture; expiry visibility, scaled damage, corpse/respawn/new rotation and ordinary factory isolation remain covered.",
+    "Test-CharmCreateSpells.ps1 passes actual initialization for ownerless, owned, guardian and map/level branches.",
+    "Test-PetLoadSelection.ps1 passes; permanent-pet lookup code was not changed.",
+    "Test-WarlockRegression.ps1 passes, including scripted mover resynchronization and unrelated mover rejection. This is supporting regression coverage, not client confirmation.",
+    "Standard CMake Release worldserver/bnetserver build passes. Test-GreyShoalsRelease.ps1 verifies actual final-link inputs, deployed native visibility/lifecycle slots and scoped Sync calls to both RemoveCharmAuras and RemoveCharmedBy."
+  ],
+  "release": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserverSHA256": "3C6B051F446C8B616F4746D53A92B9B3323803ED175B4C584BB6838DDFE7DDD4",
+    "startup": {"path": "build-extractors/runtime-test/grey-shoals-rotation/startup-20261018-172052", "ready": true, "exit": 0, "DBErrorsBytes": 0, "stderrBytes": 0},
+    "configuration": "Canonical runtime data/configuration/certificates/DLLs preserved. Validation server shut down gracefully."
+  },
+  "remaining": [
+    "Client: stationary expiry while controlling a Grey Shoals NPC, action bar, possession camera/mover restoration, primary pet portrait and next rotation.",
+    "Artificial AI replacement, manually disabled AI, GM-forced kills or corrupted/orphaned control fields are not claimed covered by this ordinary native SmartAI control path.",
+    "Earlier audits' exact placement, baseline fauna, native combat target execution, terrain/navmesh and visual timing findings remain open. This fix does not mark the entire quest client-verified."
+  ]
+}
