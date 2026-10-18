@@ -19,6 +19,7 @@ int main(int argc, char** argv)
     STORE(SpellEffectEntry, effects, "SpellEffect", SpellEffectLoadInfo);
     STORE(SpellRadiusEntry, radii, "SpellRadius", SpellRadiusLoadInfo);
     STORE(SpellEntry, spells, "Spell", SpellLoadInfo);
+    STORE(SpellMiscEntry, misc, "SpellMisc", SpellMiscLoadInfo);
     STORE(QuestV2CliTaskEntry, tasks, "QuestV2CliTask", QuestV2CliTaskLoadInfo);
     STORE(PlayerConditionEntry, conditions, "PlayerCondition", PlayerConditionLoadInfo);
     STORE(CreatureDisplayInfoEntry, displays, "CreatureDisplayInfo", CreatureDisplayInfoLoadInfo);
@@ -87,6 +88,21 @@ int main(int argc, char** argv)
     Require(effect(231459, 0)->EffectBasePoints == 231329, "Taint dummy changed");
     Require(effect(232681, 0)->EffectTriggerSpell == 232679 &&
         effect(232679, 0)->Effect == 2, "Outdoor tainted essence missile changed");
+    for (uint32 id : {231328u, 231333u})
+    {
+        SpellMiscEntry const* ritual = nullptr;
+        for (auto row : misc)
+            if (row->SpellID == id && row->DifficultyID == 0)
+            {
+                Require(!ritual, "Ambiguous ritual miscellaneous record");
+                ritual = row;
+            }
+        Require(ritual && (ritual->Attributes[1] & 0x44) &&
+            effect(id, 0)->Effect == 6 && effect(id, 0)->EffectAura == 4 &&
+            effect(id, 0)->ImplicitTarget[0] == 1,
+            "Ritual channel/self-dummy data changed");
+        std::cout << "ritual " << id << ": channeled, self dummy aura; actor/beam binding unproven\n";
+    }
     for (uint32 id : {229113u, 230020u, 231295u, 231296u, 231298u, 231328u, 231329u,
         231333u, 231340u, 231351u, 231353u, 231354u, 231356u, 231359u, 231386u, 231459u, 232681u, 232679u})
     {

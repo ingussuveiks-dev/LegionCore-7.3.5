@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-18",
+  "baseline": "363beae1",
+  "scope": "Historical source and native data research; no client operation",
+  "status": "Counterexamples found for both current reward reconstructions; exact retail bounds, beam and placements remain unresolved",
+  "client_verified": false,
+  "runtime_changed": false,
+  "findings": [
+    "Rockaway44746 fixed15 is contradicted by original Legion observations12 and14. These are individual samples, not a minimum/maximum specification. No12..15 or10..20 distribution was invented.",
+    "Helya114537 current30..60 is contradicted by original Legion reports around150 in LFR and Normal, and150 in a2017 LFR run. Earlier audits only identified later-expansion100+ leads; this follow-up corrects that evidence gap. A sample150 does not prove100..150 bounds or a fixed150 reward.",
+    "The bySalamandra143 normal-Helya sample is dated2022-01-10. It is excluded from original-Legion bounds despite appearing next to a2016 Russian comment.",
+    "Native SpellMisc marks231328/231333 as channeled; SpellEffect applies self-targeted dummy aura4. Neither matching names nor these attributes establish which actor casts which spell.",
+    "WoWDBDefs maps kit effect5 to SoundKit and6 to SpellVisualAnim, not BeamEffect (type13). Native ritual kits contain only2/5/6; their animation30815/30817 loops124/125 (directed/omni channel). Existing Shadow hand/rune M2 references remain as previously audited. The observed green beam is not established by this chain.",
+    "All five pinned Titans world SQL parts were inspected. They repeat the current30..60 Guarm/Helya rows, but supply no115132/115133 placements, summon groups, SmartAI or229113/70762 spell-loot row. This is corroboration of public emulator data, not retail evidence.",
+    "Native map/VMAP checks settle terrain safety only. The three coarse modern pins and reconstructed fourth actor still do not establish exact retail XYZ/orientation.",
+    "Contemporary Vrekt reports stop outdoor drops at the ten-Helarjar quota even when Vaettfang is still outstanding. Server rotation condition60 alone does not implement this per-player boundary. This is a separate actionable follow-up."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2443822",
+      "author": "Ezekeil",
+      "published": "2016-11-13",
+      "finding": "Observed12 for the four-ritualist Highmountain WQ; Beemine reply1008565 dated2016-11-14 reports14, and reply1009648 dated2016-11-17 reports12."
+    },
+    {
+      "url": "https://www.wowhead.com/ru/item=142487#comments:id=2444144",
+      "author": "Beemine",
+      "published": "2016-11-14",
+      "finding": "Separate Russian-language14 report for killing four Highmountain ritualists; same author as the quest reply, so not counted as an independent player sample."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=44746#comments:id=2443690",
+      "author": "Seferus",
+      "published": "2016-11-13",
+      "finding": "Observed15 on completion. Together with12/14 this rejects fixed15 without settling the full range."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2416333:reply=1009010",
+      "author": "Cilandria",
+      "published": "2016-11-15",
+      "finding": "LFR total201, approximately50 Guarm/150 Helya; subsequent Normal run similar quantities. Approximate split is not an exact Helya count."
+    },
+    {
+      "url": "https://www.wowhead.com/item=142487#comments:id=2445627:reply=1082283",
+      "author": "fatoumata",
+      "published": "2017-10-30",
+      "reply_id": 1082283,
+      "finding": "Reply to ldene reports52 Guarm and150 Helya in LFR."
+    },
+    {
+      "url": "https://www.wowhead.com/quest=45088#comments:id=2442655",
+      "author": "Brizag",
+      "published": "2016-11-10",
+      "finding": "Loot restricted to unfinished Vrekt; Tyrygosa137/jaq1010/Vyola November2016 replies specifically stop116601/116600/116180 drops after ten required kills."
+    },
+    {
+      "url": "https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellVisualKitEffect.dbd",
+      "finding": "Public schema maps types2/5/6/13 and layoutB78084B7 to7.3.5 build26972. Applied to native runtime data, not modern DB rows."
+    }
+  ],
+  "public_database": [
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world/world_database_01.sql",
+      "sha256": "d707dab63e7c61b9f24d6a1962b189a656efdaa6696ee04eafe45736d42000f3",
+      "matches": {}
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world/world_database_02.sql",
+      "sha256": "15330db0220a5822dce4a50e3c4bc18337656211a05ce0a61e7fd2f7cc428db9",
+      "matches": {
+        "creature_loot_template": [
+          "(114323,142487,0,0,100,1,0,0,30,60,0,NULL)",
+          "(114537,142487,0,0,100,1,0,0,30,60,0,NULL)",
+          "(115025,142487,0,0,55.5174,1,0,0,1,2,0,NULL)",
+          "(115031,142487,0,0,52.914,1,0,0,1,2,0,NULL)",
+          "(115751,142487,0,0,55.5689,1,0,0,1,2,0,NULL)",
+          "(115846,142487,0,0,36.4702,1,0,0,1,2,0,NULL)",
+          "(116180,142487,0,0,58.6728,1,0,0,1,2,0,NULL)",
+          "(116600,142487,0,0,45.6384,1,0,0,1,2,0,NULL)",
+          "(116601,142487,0,0,56.8592,1,0,0,1,2,0,NULL)"
+        ]
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world/world_database_03.sql",
+      "sha256": "700cff5cce83422c999735f09a685a9bf304b70caa8055f02214d99d4002a31e",
+      "matches": {}
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world/world_database_04.sql",
+      "sha256": "22065825a5fb08d6c996285916088b6f8266b217aa0c6f715a242f8546d57ed5",
+      "matches": {}
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/8695b4ae1fabb8646a4cc7eaa0ffa84c131a1025/sql/base/world/world_database_05.sql",
+      "sha256": "2fcfd484dde46b0836823005d3d8b6a0aedc099e8348dca585419a3b084925f7",
+      "matches": {}
+    }
+  ],
+  "native_checks": {
+    "Test-RockawayCatalog.ps1": "PASS: native typed SpellMisc channel flags, self dummy effects, existing catalog checks",
+    "audit_rockaway_visuals.py": "PASS: checked WDC1 layouts/compression/parents, native SoundKit/SpellVisualAnim, prior M2 hashes; not playback or actor assignment",
+    "db2_sha256": {
+      "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+      "SpellVisual": "84006f590941b62b1e4ef68f521df4037308387723097356b29699c361eeaafa",
+      "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+      "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+      "SoundKit": "2643655ddbbc10b9f58cc6bcfb15cf2b2c588f0f13571c980f3ab2b7154547ce",
+      "SpellVisualAnim": "1aed9698e86a4847799a8fb82de51e03749dd7acf02bef79a0c5689f8d4ac1ff",
+      "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+      "SpellVisualMissile": "8b935e8de1561fef28e2c952d5e4b5536412601d7eec8a75f9e1cfb28bf733b1",
+      "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+    },
+    "SpellMisc_sha256": "2c2c50a36c91fc53aca60d202ffd606e4547abb8daa75392d6bd65d345c1821b"
+  },
+  "pending": [
+    "Find a retail packet/loot dataset or explicit dated range specification for44746 and Helya45088 before claiming exact counts. Current fixed15 and30..60 remain known provisional mismatches, not verified behavior.",
+    "Find actual green-beam spell/caster/target binding and exact four retail placements. Do not substitute a visually similar spell solely from its name.",
+    "Repair per-player outdoor completion/quota gating in a separate focused migration and native condition/loot regression.",
+    "All actual 7.3.5 client visual, combat and loot/UI checks remain pending."
+  ]
+}

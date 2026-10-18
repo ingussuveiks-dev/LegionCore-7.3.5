@@ -41,6 +41,17 @@ visuals = [r for r in records('SpellVisual', {'missile_set': 3, 'destination_att
 events = [r for r in records('SpellVisualEvent', {'start': 0, 'end': 3, 'target': 6, 'kit': 7}) if r.get('parent') in visual_ids]
 kits = {r['kit'] for r in events}
 effects = [r for r in records('SpellVisualKitEffect', {'type': 0, 'effect': 1}) if r.get('parent') in kits]
+# WoWDBDefs SpellVisualKitEffect.dbd: 5 is SoundKit, 6 is
+# SpellVisualAnim; BeamEffect is 13. Do not interpret a sound ID as a beam.
+sound_ids = {r['effect'] for r in effects if r['type'] == 5}
+sounds = [r for r in records('SoundKit', {}) if r['ID'] in sound_ids]
+animation_ids = {r['effect'] for r in effects if r['type'] == 6}
+animations = [r for r in records('SpellVisualAnim', {'initial': 0, 'loop': 1, 'animkit': 2}) if r['ID'] in animation_ids]
+assert sound_ids == {r['ID'] for r in sounds}
+assert animation_ids == {r['ID'] for r in animations}
+ritual_kits = {r['kit'] for r in events if r['parent'] in (62809, 62810)}
+assert {r['type'] for r in effects if r['parent'] in ritual_kits} == {2, 5, 6}
+assert {(r['ID'], r['loop']) for r in animations if r['ID'] in (30815, 30817)} == {(30815, 124), (30817, 125)}
 attach_ids = {r['effect'] for r in effects if r['type'] == 2}
 attachments = [r for r in records('SpellVisualKitModelAttach', {'name': 3, 'attachment': 4, 'start_anim': 15, 'anim': 16, 'end_anim': 17, 'animkit': 18}) if r['ID'] in attach_ids]
 name_ids = {r['name'] for r in attachments}
@@ -50,7 +61,10 @@ name_ids.update(r['name'] & 0xffff for r in missiles)
 names = [r for r in records('SpellVisualEffectName', {'model': 10}) if r['ID'] in name_ids]
 assert attach_ids == {r['ID'] for r in attachments} and name_ids == {r['ID'] for r in names}
 assert {r['model'] for r in names} == {166811, 201106, 166806, 953296, 1302948, 1036812}
-result = dict(links=links, visuals=visuals, missiles=missiles, events=events, kit_effects=effects, attachments=attachments, effect_names=names, db2_sha256=hashes)
+result = dict(links=links, visuals=visuals, missiles=missiles, events=events, kit_effects=effects,
+              sound_kits=sounds, visual_animations=animations, attachments=attachments, effect_names=names,
+              type_reference='https://github.com/wowdev/WoWDBDefs/blob/master/definitions/SpellVisualKitEffect.dbd',
+              db2_sha256=hashes)
 if args.model_directory:
     models = []
     files = {r['model'] for r in names} | {1260044, 1266228, 1267366, 390813}
@@ -68,7 +82,8 @@ if args.model_directory:
     result['models'] = models
 result['boundary'] = ('Native aura/impact kit, attachment, animation and model records only. Ritual auras include Shadow hand/rune assets; '
                       'their actor assignment and the observed green channel beam are NOT established by matching spell names. '
-                      'Kit-effect types other than model attachment2 remain opaque here. First appearance, beam target, projection, '
+                      'Kit types2/5/6 resolve to model attachment/sound/animation; there is no procedural1 or beam13 row in the ritual kits. '
+                      'Animation124/125 is directed/omni channel casting, not evidence of a beam or an actor assignment. First appearance, beam target, projection, '
                       'slam direction, missiles and timing require the client; no whole visual is marked verified.')
 args.output.write_text(json.dumps(result, indent=2) + '\n')
 print('PASS: checked native visual relationships and optional M2 metadata; actor assignment/beam/client playback remain pending.')

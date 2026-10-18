@@ -21,7 +21,7 @@
     "Historical sources corroborate outdoor fragments during active Helarjar WQs and the class-dependent normal-color ensemble. Modern Wowhead contains Remix and later-expansion additions; those reports were not treated as7.3.5 drop-rate specifications. Earlier raid/quest audits and pending client checks remain unchanged."
   ],
   "open_evidence": [
-    "The exact7.3.5 boss fragment ranges remain unverified. Current Helya30..60 differs from later player reports of100+; those reports identify later expansion characters and do not establish a dated7.3.5 minimum/maximum. No range was invented from a few samples. Local2018 TDB735 contains no matching fragment loot rows to settle this. This audit does not certify the existing range as original.",
+    "Original Legion reports found: Cilandria2016-11-15 about150 Helya (LFR/Normal), fatoumata2017-10-30 exact150 LFR. These contradict current Helya30..60 but do not establish exact original bounds. Public Titans SQL repeats30..60 without retail evidence; no replacement bounds were invented. See authenticity follow-up.",
     "Rockaway44746 now has a reconstructed, tested/deployed server encounter and scoped15-fragment completion loot, based on a2016-11-13 observation. Exact original placement, aura/green-beam binding, fragment chance/min/max and client play remain open. See the follow-up audit; this is not a verified retail distribution."
   ],
   "sources": [
@@ -68,5 +68,6 @@
     "Reach1000, turn in to both valid Odyn locations with real bags/bank and inventory-space boundaries, receive the appropriate class ensemble and learn/reload all appearances.",
     "Resolve the two historical source/range questions above before describing all fragment acquisition as original7.3.5 behavior."
   ],
-  "rockaway_followup_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json"
+  "rockaway_followup_audit": "docs/audits/highmountain-rockaway-coast-2026-10-18.json",
+  "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json"
 }

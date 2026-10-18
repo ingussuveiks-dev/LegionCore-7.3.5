@@ -292,5 +292,7 @@
     "worldserver_left_running": false,
     "worldserver_sha256": "18802ecbf762dd8104d8ab09a78cb4279e68e5fd7520742ddf2919870adc51a3",
     "bnetserver_sha256": "d9ba1a9c43edd0b865b1f2bdb088c8b99b08f389e3ecd44162508c8bf933176c"
-  }
+  },
+  "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json",
+  "followup_correction": "Original2016 reports12/14 now contradict fixed15. Ritual231328/231333 are channeled native self dummy auras; kit5/6 are sound/animation, not beams. Exact count bounds/actor binding/placements remain open; prior implementation/client limitations retained."
 }
