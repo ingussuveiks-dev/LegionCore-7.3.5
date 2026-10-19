@@ -77,6 +77,7 @@
     "Full quest completion, reward, inventory save/load, relog/rotation and ordinary/quest/master-loot UI behavior. Native automation is not client verification."
   ],
   "next_code_followup": "WorldSession::HandleMasterLootItem passes item.type into CurrencyID and shifts later AllowedForPlayer arguments, leaving its optional LootItem pointer null. This separate dispatcher bypasses LootItemInSlot and is not repaired/certified by this focused ordinary-recipient fix. Reproduce and fix in its own commit.",
+  "master_loot_followup": "docs/audits/master-loot-admission-2026-10-19.json repairs the missing-CurrencyID argument in master distribution and all three affected group-roll calls. Pinned native baseline reproduces both false rejection and conditional bypass; real packet/handler/inventory and roll participant tests pass with the fix. Canonical Release argument setup verified; client checks and full roll resolution remain pending. Earlier next_code_followup is retained as the original finding.",
   "related_audits": [
     "docs/audits/lost-army-player-progress-2026-10-18.json",
     "docs/audits/vrekt-credits-2026-10-18.json",

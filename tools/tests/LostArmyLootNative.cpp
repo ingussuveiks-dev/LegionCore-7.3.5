@@ -222,6 +222,7 @@ static void CheckAutoStore(LootPlayer& player, ConditionList const& conditions)
     Require(rolled && player.GetItemCount(142487, true) == before, "Native AutoStore failed to safely skip a rejected physical slot");
     std::cout << "PASS: full native AutoStoreLoot safely handles a physical conditional slot rejected by current admission.\n";
 }
+#ifndef LOST_ARMY_NATIVE_SUPPORT_ONLY
 static int LootRun(int argc, char** argv)
 {
     InitializeNative(argc, argv); opcodeTable.Initialize(); LoadLootInputs();
@@ -339,3 +340,4 @@ int main(int argc, char** argv)
     try { return LootRun(argc, argv); }
     catch (std::exception const& error) { std::cerr << error.what() << '\n'; return 1; }
 }
+#endif

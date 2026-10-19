@@ -1272,7 +1272,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
                 Player* member = itr->getSource();
                 if (!member || !member->CanContact())
                     continue;
-                if (loot->AllowedForPlayer(member, i->item.ItemID, i->type, i->needs_quest, &*i))
+                if (loot->AllowedForPlayer(member, i->item.ItemID, i->item.CurrencyID, i->type, i->needs_quest, &*i))
                 {
                     if (member->IsWithinDistInMap(pLootedObject, sWorld->getFloatConfig(CONFIG_GROUP_XP_DISTANCE), false))
                     {
@@ -1358,7 +1358,7 @@ void Group::GroupLoot(Loot* loot, WorldObject* pLootedObject)
             if (!member || !member->CanContact())
                 continue;
 
-            if (loot->AllowedForPlayer(member, i->item.ItemID, i->type, i->needs_quest, &*i))
+            if (loot->AllowedForPlayer(member, i->item.ItemID, i->item.CurrencyID, i->type, i->needs_quest, &*i))
             {
                 if (member->IsWithinDistInMap(pLootedObject, sWorld->getFloatConfig(CONFIG_GROUP_XP_DISTANCE), false))
                 {
@@ -1443,7 +1443,7 @@ void Group::DoRollForAllMembers(ObjectGuid guid, uint8 slot, uint32 mapid, Loot*
         if (!member || !member->CanContact())
             continue;
 
-        if (loot->AllowedForPlayer(member, item.item.ItemID, item.type, item.needs_quest, &item))
+        if (loot->AllowedForPlayer(member, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item))
         {
             if (member->IsWithinDistInMap(pLootedObject, sWorld->getFloatConfig(CONFIG_GROUP_XP_DISTANCE), false))
             {

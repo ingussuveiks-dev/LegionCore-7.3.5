@@ -604,7 +604,7 @@ void WorldSession::HandleMasterLootItem(WorldPackets::Loot::MasterLootItem& pack
 
         ItemPosCountVec dest;
         InventoryResult msg = target->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item.item.ItemID, item.count);
-        if (item.follow_loot_rules && !loot->AllowedForPlayer(target, item.item.ItemID, item.type, item.needs_quest, &item))
+        if (item.follow_loot_rules && !loot->AllowedForPlayer(target, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, &item))
             msg = EQUIP_ERR_CANT_EQUIP_EVER;
         if (msg != EQUIP_ERR_OK)
         {

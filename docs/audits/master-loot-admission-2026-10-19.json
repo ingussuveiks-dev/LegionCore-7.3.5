@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-19",
+  "baseline": "d7c70c62",
+  "status": "Master Loot distribution and three group-roll admission calls repaired; native execution and canonical Release checks pass; client verification pending",
+  "client_verified": false,
+  "scope": "Code/data verification only; same missing-CurrencyID argument defect at four native calls. No SQL, live item flags, loot chances/counts or character changes.",
+  "problem": [
+    "Loot::AllowedForPlayer takes Player, ItemID, CurrencyID, type, needs_quest, optional LootItem*. HandleMasterLootItem and three Group calls omitted CurrencyID. The compiler converted type into CurrencyID, needs_quest into type, and the nonnull item pointer into true for needs_quest; the actual LootItem pointer defaulted to null.",
+    "For ordinary nonquest items the shifted true flag falsely requires HasQuestForItem. For quest items the shifted type becomes currency and currency0 is rejected. For a conditional nonquest item needed by an active quest, HasQuestForItem can pass while DB conditions are skipped because the real item pointer is null.",
+    "The prior cached-slot fix does not cover these paths: master distribution stores directly through StoreNewItem, while GroupLoot and DoRollForAllMembers build participant lists independently of LootItemInSlot."
+  ],
+  "implementation": [
+    "Supply the actual item.item.CurrencyID before type in HandleMasterLootItem, the ordinary and quest branches of Group::GroupLoot, and Group::DoRollForAllMembers. All later arguments now bind to their intended parameters, including the actual item condition list.",
+    "Preserve the existing follow_loot_rules gate for master distribution, group threshold/range checks, quest versus ordinary slot indexing, roll voting, item bonuses and successful native inventory delivery. No new quest/entry/map rule or loot-policy change."
+  ],
+  "native_regression": {
+    "runner": "tools/tests/Test-MasterLootNative.ps1",
+    "current_run": "build-extractors/runtime-test/master-loot-native/run-20261019-074132",
+    "baseline_run": "build-extractors/runtime-test/master-loot-native-baseline/run-20261019-074132",
+    "baseline_command": "tools/tests/Test-MasterLootNative.ps1 -Baseline",
+    "baseline_library_sha256": "7E326AB74A22E071DEB813FF920BF01ED62506706350A11AEED7F81DA64FD1BA",
+    "baseline_capture": "Full actual final-link game.lib saved from clean pinned d7c70c62 before production edits; repeat runs verify its saved SHA. Baseline mode requires this local ignored capture and intentionally asserts old rejection/bypass behavior.",
+    "execution": [
+      "Decode a constructed native CMSG_MASTER_LOOT_ITEM wire packet through MasterLootItem::Read, then execute the actual linked WorldSession::HandleMasterLootItem, ObjectAccessor/map source lookup, native AllowedForPlayer/conditions, CanStoreNewItem and StoreNewItem into a real in-memory Player inventory.",
+      "Both human and orc recipients: ordinary2589 with FOLLOW_LOOT_RULES, eligible quest142487, eligible conditional142487, target-only10/10 quota, missing target landing, missing item quest, ordinary loot without a matching item quest and the unchanged non-follow-rule ordinary branch.",
+      "Successful assignments consume count and unlootedCount once and grant to the target rather than the master. Rejections preserve count, is_looted, unlootedCount and both inventories. The master remains eligible while the target is denied, exercising recipient-specific conditions.",
+      "Execute actual Group::GroupLoot ordinary and quest loops plus DoRollForAllMembers, with native group references, Roll allocation, LootMgr lookup and native StartLootRoll packet construction. Ordinary over-threshold loot admits two players; conditional and quest variants admit the eligible master and exclude the target at10/10. Roll creation grants no inventory item; list/vote counts and target membership are inspected.",
+      "Pinned baseline reproduces ordinary inventory0->0 and eligible quest0->0, but target-quota conditional inventory1->2. It creates no ordinary/quest participant roll and wrongly includes both players in the conditional roll. Current cases grant valid items and exclude the ineligible recipient."
+    ],
+    "inputs": "Reuse the native7.3.5 DB2/item/addon/quest/condition loader from LostArmyLootNative. Real12 source1 condition rows9/41/58/60 remain attached by the native loader. Source/test/DB2/GT/library/executable hashes are saved per run."
+  },
+  "automated_checks": [
+    "Test-MasterLootNative.ps1 PASS and pinned-library -Baseline PASS (expected old defect reproduced); both DBErrors.log files0 bytes.",
+    "Test-MasterLootRelease.ps1 PASS: actual canonical PE function ranges and resolved incremental-link thunks identify all four recipient calls. At each call disassembly verifies ItemID, CurrencyID, type, needs_quest bit extraction and actual LootItem pointer in the x64 register/stack arguments. Native fixture layout assertions validate the relevant offsets/quest bit.",
+    "The Release check also runs Test-LostArmyRelease and Test-RockawayRelease, retaining deployed shared slot/view/availability/AutoStore and prior quest checks.",
+    "Test-LostArmyNative.ps1 PASS at runtime-test/lost-army-native/run-20261019-074018, including real Player/Pet kills, group credit, cached admission and inventory receipt. DBErrors.log0 bytes.",
+    "Standard CMake Release worldserver/bnetserver build PASS without global OutDir; canonical startup ready=True, graceful shutdown exit0, DBErrors.log/stderr.log0 bytes.",
+    "PowerShell syntax and audit JSON parsing, staged diff whitespace/content review completed before focused commit."
+  ],
+  "test_boundaries": [
+    "Group membership/registry, task slots/status/rotation policy and actor/loot initialization are private in-memory fixtures; sessions have no socket. Native handlers and packet codecs execute, but this is not a client interaction or a network authorization audit.",
+    "142487 is live FFA and does not normally have FOLLOW_LOOT_RULES. Test variants deliberately set follow_loot_rules, quest/nonquest placement and (only for roll fixtures) freeforall=false to reach the affected generic branches. The real live item metadata is unchanged. These variants do not claim that Lost Army fragments are normally master distributed or rolled.",
+    "The first roll fixture retained native FFA metadata and correctly skipped GroupLoot's ordinary loop; the corrected fixture explicitly identifies the non-FFA variation. ProbeParty also guarantees group unlink/unregistration on assertion failure; an early failed assertion exposed test cleanup, not a production Group destructor fix.",
+    "Roll tests stop at participant creation and inspect native playerVote state. NEED/GREED/PASS resolution, timeout/winner delivery, disenchant, inventory-full and duplicate/malformed request handling remain outside this focused argument fix.",
+    "Existing master-distribution follow_loot_rules policy and separate recipient/group/range/request validation are preserved rather than certified. Baseline manual-roll zero-participant allocation lifetime is not fixed here.",
+    "Native World/Hotfix/Login connections use read-only sessions; no CharacterDatabase is opened. Two bounded account0 socketless sessions intentionally survive until process exit to avoid their destructor account UPDATE. No persistent character inventory/progress, SQL catalog or runtime configuration is modified.",
+    "No new external historical retail evidence is asserted. Local native DB2/data and actual engine execution establish the parameter contract and behavior; full client and quest completion remain separate."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "build_log": "build-extractors/runtime-test/master-loot-native-baseline/release-build.log",
+    "actual_final_link_game_library": "build-extractors/src/server/game/Release/game.lib",
+    "game_library_sha256": "BB3EC26E7A97A9E158AD3EAD77D1B38F0CFECBBC4CBA2B4C91933A8829B0458F",
+    "worldserver_sha256": "777BBAA968C69B8D644070FC11D540C6BA469A2F91D3D78B022188CD01798A47",
+    "bnetserver_sha256": "417DFE6D5794C0FA7C49815835431BF889CA0D8F195020CEEABF91E8B7A08A46",
+    "release_manifest": "build-extractors/runtime-test/master-loot-native/release-inputs.json",
+    "startup_logs": "build-extractors/runtime-test/master-loot-native/startup-20261019-074121",
+    "worldserver_left_running": false
+  },
+  "pending_client_checks": [
+    "Master distribution of ordinary and eligible quest loot, rejection of a recipient with failed conditions, unchanged loot after rejection and correct target inventory/UI updates.",
+    "Group roll UI eligibility and actual winner/timeout inventory delivery; full quest/reward/persistence behavior. Native checks do not constitute client verification."
+  ],
+  "next_code_check": "Native roll completion through winner selection and inventory receipt, including ineligible recipients, inventory-full and timeout paths. Current regression verifies participant creation only.",
+  "related_audit": "docs/audits/lost-army-native-loot-2026-10-19.json"
+}
