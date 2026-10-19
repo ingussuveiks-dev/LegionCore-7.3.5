@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "creature": 114709,
+  "status": "Fetid Rot carrier/stack/spread lifecycle and native selector repaired. Anchor Slam/Sludge Nova execution follow in a separate commit in the same authorized task.",
+  "repairs": [
+    "Replace the raw two-Unit threat sample with native228838: its DB2 selector supplies70 yards and two targets, then the SpellScript filters living non-GM Players. Apply three initial stacks; preserve the originating Grimelord on secondary infections. Native stack maximum remains3 on LFR/Normal/Heroic and9 on Mythic.",
+    "Add193367 periodic AuraScript. Each native3000ms period emits232408 carrier damage scaled by current stack count, then decrements one stack. Non-Mythic emits228397 only on the last stack, Mythic each period. Burst is emitted by the carrier with the original Grimelord GUID, filtering out its carrier, pets, NPCs and GMs; the hit reuses the originating Grimelord for the new disease.",
+    "PreventDefaultAction runs before damage/cleanup. It suppresses the inherited live spell_aura_trigger193367->228397 option1 route, which used the dummy effect amount as damage and emitted periodic spreads without carrier damage. The row is intentionally retained and tested; the migration only adds two scoped script bindings.",
+    "Renew the three-second duration from OnAuraUpdate after Aura::Update has decremented it, not inside the periodic hook. Native testing caught premature expiry before tick2 in the first repair attempt. The update hook uses no GetTarget application; all three ticks now execute.",
+    "Use Legion-era first Rot7s and repeat15.8s LFR/Normal,12.2s Heroic/Mythic. Existing Anchor/Sludge timers remain unchanged in this commit. Explicit Helya reset/death cleanup includes193367; no effects are attached to default/cancel/death removal."
+  ],
+  "native_checks": [
+    "Eight current/eight pinned11c9c866 cases across difficulties17/14/15/16 and Human/Orc. Earn actual Odyn/Guarm/trash access, enter actual phase2 via bounded native damage, settle the real introduction, then Helya summons a real Grimelord with its real AI. This controlled summon isolates ability execution; repeated production boat/add spawning is already covered by the Fury audit.",
+    "Native AI first cast uses one eligible Player, two actual GMs and an owner-linked Pet as controlled inputs. Reference after9s selects Player and Pet, giving one stack each. Current after7s uses native228838, gives Player three stacks, and excludes Pet/GMs. No event injection or direct hook invocation.",
+    "For the isolated periodic test, both versions receive a controlled native AddAura with three stacks. Real Grimelord Unit and Player Unit updates, native Aura/Spell dispatch, actual spell-event/target lists and custom base points are observed. Current decays3/2/1/0 and its healing penalty tracks the remaining stack count. Three232408 casts target only the carrier and have3:2:1 base points. Reference emits no232408 and emits the legacy228397 route.",
+    "A nearby Player receives three stacks from the original Grimelord at the last period only on LFR/Normal/Heroic, at every period on Mythic. That recipient is removed/repositioned between observations to prevent a secondary infection bouncing back into the isolated carrier. Ten-yard Player, nearby real Pet and nearby friendly WORLD_TRIGGER receive none. The target lists contain only the nearby Player; both damage/spread retain original Grimelord attribution.",
+    "The runtime area selector includes target object size: an initial six-yard Player probe was admitted by the native five-yard radius. The accepted outside probe is ten yards. DB2 radius and shared distance logic are unchanged; this test does not assert a strict five-yard center-distance cutoff.",
+    "DEFAULT/CANCEL/DEATH removals emit no effects. Actual evade/reset and final native Helya death clear held Rot; existing Grime/Rot survive the real nine-tentacle phase3 transition. The reference also clears the reset/victory boundary probes through its existing runtime paths, so these are retained positive regression checks, not claimed baseline cleanup failures. Actual quest44868 objective55482 completes once and saved mask7 remains correct.",
+    "Scoped migration first/repeat passes using temporary copies of the real schema; it preserves existing228397 and unrelated script rows. Native runs use read-only World/Hotfix pools and schema-only disposable character/auth pools; no personal character/account rows are copied."
+  ],
+  "primary_references": [
+    {
+      "scope": "Three starting stacks, one removed every3s, five-yard spread at depletion; Mythic each-period spread. Native healing values are authoritative: Normal-10 per stack, LFR/Heroic/Mythic-15; the guide generic value is not copied across difficulties.",
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "patch": "7.3.5",
+      "author": "FatbossTV"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+      "scope": "Grimelord spawn Rot7s,228838 success repeat15.8s easy/12.2s others. Native IDs193367/228838/232408/228397 and stack/radius/period records are read through actual SpellMgr/DB2 in the fixture.",
+      "date": "2018-04-28"
+    }
+  ],
+  "test_development": [
+    "Early exploratory actor probes reused an incompletely settled reset and subsequently accessed a removed Grimelord, including a rejected native crash. The accepted fixture waits for native reset completion and the phase2 introduction, verifies map membership, and creates its Pet before combat. No core threat-manager fix is inferred.",
+    "An early immediate death assertion missed the native death/quest update. Accepted coverage pumps actual creature and Player updates before reading quest credit.",
+    "The post-decrement OnAuraUpdate method is a leaf function without an x64 unwind range. Its behavior is executed by native tests; the PE check does not invent a function bound for it. Bounded Tick verifies PreventDefaultAction/stack decrement; bounded spread verifies GetOriginalCaster, plus native selector timer constants and retained Taint/breath/Fury checks."
+  ],
+  "limits": [
+    "No authenticated7.3.5 client, visual, live healer, knockback/camera or full encounter tuning verification. Fixture actors have buffered health; isolated aura tests execute Unit spell/aura updates separately from AI.",
+    "Mythic Fetid Fission158534 is an independent unimplemented behavior in the inherited AI: native data provides a dummy self-aura with stack cap4 and increment1, but an original scheduling/application rule has not been established. This repair preserves native Rot cap9 and does not invent a Fission timer or claim complete Mythic raid fidelity.",
+    "Full-raid selector repetition, Anchor Slam and Sludge Nova execution/geometry remain the next part of the current task."
+  ],
+  "evidence": {
+    "data": "build-extractors/runtime-test/trial-helya-grimelord-data",
+    "runs": {
+      "trial-helya-grimelord-native": "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204038",
+      "trial-helya-grimelord-native-baseline": "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-204038",
+      "trial-helya-taint-native": "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-204038"
+    },
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204038/native-lines.txt": "72CCFFCC06A0362719EA2E91E282E2B669C603C771228964F5298CF20356F72C",
+      "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-204038/native-lines.txt": "65BF69314847A64AFA047E2689D3586E843EC7E47159B4C3C0FBEBD8004DF203",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-204038/native-lines.txt": "C60BAA6A02BECBB1A3EF038EC02729F36F6A330FFC843E7F37E3238C15A0F005",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "9964A64702879A3BFEDE5E2E6900081DA421F66665C8771AFE23A800FE2EF896",
+      "tools/tests/TrialHelyaGrimelordNative.cpp": "9527CF3D921C40EA183322A2BFBE7D93E8B1E09EF7D3D35D538AAEEC42E1AD8B",
+      "tools/tests/Test-TrialHelyaGrimelordRelease.ps1": "12E26B5FA61BB78919FD465D3748CE49DA4CF4A2F2580D7571AE6215F6E7EA47",
+      "tools/tests/Test-TrialHelyaGrimelordData.ps1": "D7513F3C27303F3B2689B78008BA26382EB1353D7482E142DAF6D7B69747854F",
+      "sql/updates/world/2026_10_19_02_helya_fetid_rot.sql": "258C49968750B13BF66F5FD070F6670382ADA514B50E10FBF3F11831D10677D6",
+      "build-extractors/bin/Release/worldserver.exe": "447B4D8EB567E223A2FD6F0215E514E5C7E7DBDD1446D3A6993E6978B262F2BD",
+      "build-extractors/bin/Release/bnetserver.exe": "88A3BDE4DECEA9AF884A5BF44E4EB1191233C3504AB2D6EAFFD8266ED4350A70",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "FE4BB79A224D300CDAA21F28A01467C644566478ED18EC2906565E111D2D8BC6",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-203949"
+  }
+}

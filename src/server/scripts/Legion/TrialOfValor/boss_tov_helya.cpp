@@ -68,6 +68,8 @@ enum Spells
     SpellSludgeNova                     = 228390,
     SpellFetidRotHit                    = 228397,
     SpellFetidRot                       = 193367,
+    SpellFetidRotCast                   = 228838,
+    SpellFetidRotDamage                 = 232408,
     SpellTaintedEssence                 = 228052,
     SpellGiveNoQuarter                  = 228632,
     SpellLanternOfDarkness              = 228619,
@@ -242,6 +244,7 @@ struct boss_helya_tov : BossAI
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellDarkHatred);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellBilewaterRedox);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellTaintOfTheSea);
+        instance->DoRemoveAurasDueToSpellOnPlayers(SpellFetidRot);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellOrbofCorrosionOnPlayer);
     }
 
@@ -1333,7 +1336,7 @@ struct npc_grimelord : ScriptedAI
 
         events.RescheduleEvent(EVENT_1, 14000);
         events.RescheduleEvent(EVENT_2, 16000);
-        events.RescheduleEvent(EVENT_3, 9000);
+        events.RescheduleEvent(EVENT_3, 7000);
     }
 
     void IsSummonedBy(Unit* /*summoner*/) override
@@ -1371,21 +1374,8 @@ struct npc_grimelord : ScriptedAI
                 break;
             case EVENT_3:
             {
-                auto threatlist = me->getThreatManager().getThreatList();
-                for (uint8 i = 0; i < 2; ++i)
-                {
-                    if (threatlist.empty())
-                        break;
-
-                    if (auto itr = Trinity::Containers::SelectRandomContainerElement(threatlist))
-                    {
-                        if (Unit* target = itr->getTarget())
-                            me->AddAura(SpellFetidRot, target);
-
-                        threatlist.remove(itr);
-                    }
-                }
-                events.RescheduleEvent(EVENT_3, 17000);
+                DoCast(me, SpellFetidRotCast, true);
+                events.RescheduleEvent(EVENT_3, me->GetMap()->IsLfrRaid() || me->GetMap()->IsNormalRaid() ? 15800 : 12200);
                 break;
             }
             }
@@ -1794,22 +1784,119 @@ struct npc_kvaldir_longboat : ScriptedAI
     }
 };
 
-//228397
-class spell_fetid_rot : public SpellScript
+static bool FetidRotEncounterActive(Unit* unit)
 {
-    PrepareSpellScript(spell_fetid_rot);
+    if (!unit || !unit->IsInWorld() || unit->GetMapId() != 1648)
+        return false;
+    InstanceScript* instance = unit->GetInstanceScript();
+    return instance && instance->GetBossState(Data::BossIDs::HelyaID) == IN_PROGRESS;
+}
 
-    void HandleDamage(SpellEffIndex /*effectIndex*/)
+static void ApplyFetidRot(Unit* caster, Unit* target)
+{
+    if (!caster || caster->GetEntry() != Data::Creatures::Grimelord || !target || !target->IsPlayer() || !target->IsAlive() || !FetidRotEncounterActive(target))
+        return;
+    if (Aura* aura = target->GetAura(SpellFetidRot, caster->GetGUID()))
     {
-        Unit* target = GetHitUnit();
-        if (!target)
-            return;
+        aura->ModStackAmount(3);
+        aura->RefreshDuration();
+    }
+    else
+        caster->AddAura(SpellFetidRot, target, nullptr, 3);
+}
 
-        target->AddAura(SpellFetidRot, target);
+//228838: use the native70-yard selector and native two-target cap, after Player admission.
+class spell_tov_fetid_rot_targets : public SpellScript
+{
+    PrepareSpellScript(spell_tov_fetid_rot_targets);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([](WorldObject* object) { Player* player = object->ToPlayer(); return !player || !player->IsAlive() || player->isGameMaster(); });
+    }
+
+    void HandleHit(SpellEffIndex /*effectIndex*/)
+    {
+        ApplyFetidRot(GetCaster(), GetHitUnit());
     }
 
     void Register() override
     {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_tov_fetid_rot_targets::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget += SpellEffectFn(spell_tov_fetid_rot_targets::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+//193367: each native three-second period damages the carrier and removes one stack.
+class spell_tov_fetid_rot_aura : public AuraScript
+{
+    PrepareAuraScript(spell_tov_fetid_rot_aura);
+    bool refreshDuration = false;
+
+    void Tick(AuraEffect const* effect)
+    {
+        // Replaces the legacy SQL periodic spread route, including on its last tick.
+        PreventDefaultAction();
+        Unit* target = GetTarget();
+        Unit* caster = GetCaster();
+        if (!target || !target->IsPlayer() || !target->IsAlive() || !caster || caster->GetEntry() != Data::Creatures::Grimelord || !FetidRotEncounterActive(target))
+        {
+            Remove(AURA_REMOVE_BY_DEFAULT);
+            return;
+        }
+
+        uint16 const stacks = GetStackAmount();
+        float damage = sSpellMgr->GetSpellInfo(SpellFetidRotDamage)->GetEffect(EFFECT_0, target->GetSpawnMode())->CalcValue(caster) * stacks;
+        target->CastCustomSpell(target, SpellFetidRotDamage, &damage, nullptr, nullptr, true, nullptr, effect, GetCasterGUID());
+        if (GetAura()->IsRemoved() || !target->IsAlive())
+            return;
+
+        if (stacks == 1 || target->GetMap()->IsMythicRaid())
+            target->CastSpell(target, SpellFetidRotHit, true, nullptr, effect, GetCasterGUID());
+
+        if (!GetAura()->IsRemoved() && !ModStackAmount(-1))
+            refreshDuration = true;
+    }
+
+    void Update(uint32 /*diff*/)
+    {
+        // Aura::Update decrements duration after its periodic effects. Refresh
+        // here so that a three-second stack survives to the next complete tick.
+        if (refreshDuration)
+        {
+            refreshDuration = false;
+            RefreshDuration();
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_tov_fetid_rot_aura::Tick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        OnAuraUpdate += AuraUpdateFn(spell_tov_fetid_rot_aura::Update);
+    }
+};
+
+//228397: the carrier emits the burst, retaining the originating Grimelord for new infections.
+class spell_fetid_rot : public SpellScript
+{
+    PrepareSpellScript(spell_fetid_rot);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* carrier = GetCaster();
+        targets.remove_if([carrier](WorldObject* object) { Player* player = object->ToPlayer(); return !player || player == carrier || !player->IsAlive() || player->isGameMaster(); });
+        if (!FetidRotEncounterActive(carrier))
+            targets.clear();
+    }
+
+    void HandleDamage(SpellEffIndex /*effectIndex*/)
+    {
+        ApplyFetidRot(GetOriginalCaster(), GetHitUnit());
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_fetid_rot::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
         OnEffectHitTarget += SpellEffectFn(spell_fetid_rot::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
     }
 };
@@ -2027,6 +2114,8 @@ void AddSC_boss_tov_helya()
     RegisterAuraScript(spell_corrupted_axion_aura);
     RegisterAuraScript(spell_corrupted_mc);
     RegisterAuraScript(spell_fury_of_the_maw);
+    RegisterAuraScript(spell_tov_fetid_rot_aura);
+    RegisterSpellScript(spell_tov_fetid_rot_targets);
     RegisterSpellScript(spell_fetid_rot);
     RegisterSpellScript(spell_tentacle_strike);
     RegisterSpellScript(spell_corrupted_axion);
