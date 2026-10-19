@@ -61,6 +61,20 @@ static void TaintSelection(GarmPlayer& p,InstanceMap& map,Creature& helya,GarmPl
         Require(!pet.HasAura(228054)&&p.HasAura(228054)&&selected==std::min(cap,eligible),"Native Taint omitted tank, selected pet, or lost player slots");
         for(unsigned i=eligible;i<players.size();++i)Require(!players[i]->HasAura(228054),"Taint selected a Player outside its threat inputs");
 #endif
+        if(full){
+            auto clear=[&](){for(auto player:players)player->RemoveAura(228054);pet.RemoveAura(228054);};
+            std::vector<unsigned> waves{elapsed+10};clear();
+            for(unsigned t=elapsed+20;t<=elapsed+50010;t+=10){PumpHelya(map,10);bool applied=pet.HasAura(228054);for(auto player:players)applied|=player->HasAura(228054);if(applied){waves.push_back(t);clear();}}
+            auto diff=map.GetDifficultyID();
+#ifdef TRIAL_HELYA_TAINT_BASELINE
+            unsigned first=diff==DIFFICULTY_MYTHIC_RAID?15000:diff==DIFFICULTY_HEROIC_RAID?19000:12000,repeat=diff==DIFFICULTY_HEROIC_RAID?14000:12000;
+#else
+            unsigned first=diff==DIFFICULTY_MYTHIC_RAID?15500:diff==DIFFICULTY_HEROIC_RAID?19500:diff==DIFFICULTY_LFR_RAID?21800:12000,repeat=diff==DIFFICULTY_LFR_RAID?17000:12100;
+#endif
+            Require(waves.size()>=3&&waves.front()==first,"Phase-one first Taint/cadence probe failed");
+            for(unsigned i=1;i<waves.size();++i)Require(waves[i]-waves[i-1]>=repeat&&waves[i]-waves[i-1]<=repeat+6500,"Native phase-one repeat Taint timer differs from source");
+            std::cout<<"TAINT_PHASE1 waves=";for(auto t:waves)std::cout<<t<<',';std::cout<<std::endl;
+        }
     }
     ClearCombat(p,helya);PumpHelya(map,2000);
     for(auto player:players)player->SetGameMaster(false);

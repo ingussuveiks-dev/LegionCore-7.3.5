@@ -432,19 +432,19 @@ struct boss_helya_tov : BossAI
 
             if (IsMythicRaid())
             {
-                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 15000);
+                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 15500);
                 events.RescheduleEvent(EVENT_TENTECLE_STRIKE, 35000);
                 events.RescheduleEvent(EVENT_ORB_OF_CURRUPTION, 14000);
             }
             else if (IsHeroicRaid())
             {
-                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 19000);
+                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 19500);
                 events.RescheduleEvent(EVENT_TENTECLE_STRIKE, 36000);
                 events.RescheduleEvent(EVENT_ORB_OF_CURRUPTION, 29000);
             }
             else if (IsNormalRaid() || IsLfrRaid())
             {
-                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 12000);
+                events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, IsLfrRaid() ? 21800 : 12000);
                 events.RescheduleEvent(EVENT_TENTECLE_STRIKE, 53000);
                 events.RescheduleEvent(EVENT_ORB_OF_CURRUPTION, 18000);
             }
@@ -858,12 +858,8 @@ struct boss_helya_tov : BossAI
                         me->AddAura(SpellTaintOfTheSea, target);
                     if (eventPhase == PHASE_3)
                         events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, IsMythicRaid() ? 20000 : 28000);
-                    else if (IsMythicRaid())
-                        events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 12000);
-                    else if (IsHeroicRaid())
-                        events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 14000);
-                    else if (IsNormalRaid() || IsLfrRaid())
-                        events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 12000);
+                    else
+                        events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, IsLfrRaid() ? 17000 : 12100);
                 }
                 break;
             }

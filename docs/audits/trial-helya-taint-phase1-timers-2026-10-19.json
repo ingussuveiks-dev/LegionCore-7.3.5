@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "status": "Closes the phase-one timing followup recorded in the phase-three audit; Taint code/data/Release checks complete, authenticated client checks pending.",
+  "repair": "Align only Taint phase-one first/repeat timers with the pinned2018-04-28 primary encounter source: LFR21.8s/17s; Normal12s/12.1s; Heroic19.5s/12.1s; Mythic15.5s/12.1s. Phase-three20/28s timers, other boss abilities and all native DB2 spell values remain unchanged.",
+  "primary_reference": {
+    "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+    "scope": "OnEngage initial Taint timers; TaintOfTheSea phase-one repeat branch. Primary addon measurements from the Legion7.3.5 period, not an invented DB2 field or a later expansion encounter.",
+    "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+    "date": "2018-04-28"
+  },
+  "native_checks": [
+    "Eight current and eight pinned48b57e05 reference cases (all four raid difficulties, Human/Orc). Existing first-event targeting checks now continue for50seconds of actual native UpdateAI after the first wave, removing each observed aura through DEFAULT so later events remain visible. Boss energy gain is removed to isolate timers; normal orb/tentacle cast contention is retained. No direct event dispatch or event-queue mutation.",
+    "Current observed waves in milliseconds: LFR21800/38800/55800; Normal12000/24100/36200/48300/60400; Heroic19500/31600/43700/56000/68100 (one200ms concurrent cast delay); Mythic15500/27600/39700/51800/63900. Human/Orc agree. Reference reproduces old LFR12s start/repeat, Normal12s repeat, Heroic19s start/14s repeat, Mythic15s start/12s repeat.",
+    "Full native Taint target/lifecycle/Essence/phase2/phase3/evade/pending-return/victory checks pass on final libraries; reset remains silent and objective55482 completes once. Separate full native Phase1 and Phase3 regressions are repeated on this final Release.",
+    "Bounded canonical PE bodies verify first-phase15500/19500/21800ms constants and17000/12100ms repeats in addition to retained third-phase scheduling and removal/Essence call checks. Normal CMake Release final-link inputs deploy directly to build-extractors/bin/Release; startup is ready with exit0 and empty DBErrors/stderr."
+  ],
+  "prior_audits": [
+    "trial-helya-taint-lifecycle-2026-10-19.json",
+    "trial-helya-taint-targets-2026-10-19.json",
+    "trial-helya-taint-phase3-2026-10-19.json"
+  ],
+  "limits": [
+    "No authenticated7.3.5 client or full raid balance/visual verification. Addon timers are historical encounter measurements; native event dispatch can wait for another cast, as recorded in the observations.",
+    "Timing fixture Players are native Warrior actors with buffered health and observed Taint is removed by script cleanup. This does not establish healer dispel behavior, encounter survivability or complete raid tuning."
+  ],
+  "evidence": {
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-201453",
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/native-lines.txt": "8FE6B7C044C05FCA8B4F54148123F639B1F94C33176A3DC607923A6B0C9AEC49",
+      "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-201509/native-lines.txt": "8F776CE735B0ED30D1AC66E6FDB1FA2D4832EA1D387322C4C4D494905CEB5C73",
+      "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-201534/native-lines.txt": "31C8144503A9FC8D6962E01131960148461DAC64603DCE397724F00BA19BFB64",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-201534/native-lines.txt": "D824AD3B1A8B2E5C2D4182F756A7837119634838CBEFCDD8FA454D718AB804B6",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/taint-remove-disassembly.txt": "6366316C781FD82A3725DB5D5F09D6A02043D83F4DA2E8C7939D2FA472F28DA5",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/taint-start-disassembly.txt": "5211ABAA50B8EB9738683C33D1890191D134F6E50BE7128223EAF94FEA6C5BDB",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/taint-update-disassembly.txt": "9BD9CB8918A1FC6F6DC88409403D7D68429B6F19729CFFDEBA0163B270746F55",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/taint-return-disassembly.txt": "3E297E82D20B876D07ACB995B7AE23C9B19FA8AE73BB4F67EC64549DE0E24741",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508/taint-release-inputs.json": "B5C17993F802E9D0F7CD8AFC5C93D5AE01DC6F1B4BD1405DFE30AE05FFC7B7F5",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "DF39F68F395308500B6D12F8DB9F2D7CD1F20D4DF3B18D78EB1116E85962CC69",
+      "tools/tests/TrialHelyaTaintNative.cpp": "8E4613D5311DCBC07F192D94218E5FBD0DA3CF9A6452F47B14883C2DD18160CF",
+      "tools/tests/TrialHelyaPhase3Native.cpp": "C8B2BC7E825C5EA6B1620BF347CDC6FD6D727818C2BAE37DFA2A645F92A7E226",
+      "tools/tests/Test-TrialHelyaTaintRelease.ps1": "0011BD5EF429B8F290E0FDD10F63B6CDFA2773B2D2EB5E7BB4E629A5141E28C2",
+      "build-extractors/bin/Release/worldserver.exe": "601D1293C170E949B3C217D07F52F61102EC96929116FFACC84E83E5779636CD",
+      "build-extractors/bin/Release/bnetserver.exe": "1252950EEEC4CACA73496280FB04691AA1D5F0DB214BF44FAC7A9CFEAB715795",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "ACDE7837D6735D482BAABBA10AAB4A5C243706D6184F2A797D7892D5C08315D0",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E"
+    },
+    "runs": {
+      "trial-helya-taint-native": "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201508",
+      "trial-helya-taint-native-baseline": "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-201509",
+      "trial-helya-phase1-native": "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-201534",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-201534"
+    }
+  }
+}
