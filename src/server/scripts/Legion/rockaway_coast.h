@@ -196,7 +196,7 @@ struct npc_rockaway_vision : ScriptedAI
                     events.Reset();
                     me->CastStop();
                     Talk(4);
-                    finishTime = 6000; // 2016 video: final yell ~82s, credit ~88s.
+                    finishTime = 7000; // Native77496 audio lasts6771ms; finish before credit/narration.
                 }
                 return;
             }

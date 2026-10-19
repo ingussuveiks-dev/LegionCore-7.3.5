@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-19",
+  "quest": 44746,
+  "baseline": "516fc1f1",
+  "title": "Rockaway dialogue, physical audio and final credit timing",
+  "status": "All five selected voice payloads fully read and decoded; repaired final credit pause from6000 to7000ms. Native behavior, deployed Release and startup checks pass; client playback remains pending.",
+  "finding": {
+    "native_selection": "The actual CreatureTextMgr::SendText selector uses a nonzero explicit sound override first, otherwise a nonzero gender-selected BroadcastText sound, otherwise creature_text.Sound. Vision display66238 has female gender1; ritualist70526 has male gender0. The native LoadFromDB overlays are necessary: all five relevant BroadcastText IDs are absent from this base26972 BroadcastText.db2 and supplied by live hotfix data. Base-only absence is not a content failure.",
+    "resolved_bindings": [
+      "115132 group1: BroadcastText98097 selects52490, overriding SQL77480.",
+      "115132 group2: BroadcastText98105 selects52499, matching SQL52499.",
+      "115133 group1: BroadcastText123587 female slot selects77480, overriding SQL51703.",
+      "115133 group4: BroadcastText123609 female slot selects77496, overriding SQL52492.",
+      "Conversation3963 line9050 -> BroadcastText123644 -> SoundKit77641 -> SoundKitEntry194116 -> FileDataID1519108."
+    ],
+    "timing": "Final Helya SoundKit77496/FileDataID1517725 decodes to6.771474s, while the old native final-death callback dispatches completion at6000ms. A separate -40dB/50ms silencedetect diagnostic has its terminal silence start at6.223401s, so the excess is not exclusively container padding. This establishes server-scheduled overlap risk with the quest reward conversation; it does not prove actual audible clipping or client channel interruption.",
+    "outro": "File1519108 decodes to6.456054s and fits the actual6933ms conversation actor hold (native conversation lifetime11933ms including5000ms tail). No conversation timing or SQL repair needed."
+  },
+  "implementation": {
+    "file": "src/server/scripts/Legion/rockaway_coast.h",
+    "change": "Set final-death finishTime to7000ms instead of6000ms. This lets the full6.771474s selected enUS clip finish before optional fragments, objective credit and RewardSpell230020 dispatch. The margin is228.526ms.",
+    "authenticity": "7000ms is an engineering hold derived from this actual7.3.5 voice payload, not a recovered retail timer. Earlier2016-video observations near82s/yell and88s/credit remain historical approximate evidence; they are not erased or relabeled exact.",
+    "scope": "No sound substitutions, BroadcastText/hotfix/SQL changes, new combat pauses, artificial survival, character edits or forced rotations. Ritualist corpses retain the existing60-second post-credit loot hold."
+  },
+  "physical_audio": [
+    {
+      "role": "ritualist engagement",
+      "Key": "115132:1",
+      "SoundKit": 52490,
+      "SoundKitEntry": 126904,
+      "FileDataID": 1242209,
+      "Frequency": 1,
+      "Volume": "1",
+      "DurationSeconds": 2.330476,
+      "Bytes": 17067,
+      "SHA256": "4B1AAB5E24240ACA57996B973A613D93995DDE41747573485C2753B5B7090EC0",
+      "Codec": "vorbis",
+      "SampleRate": "22050",
+      "Channels": 1
+    },
+    {
+      "role": "ritualist death",
+      "Key": "115132:2",
+      "SoundKit": 52499,
+      "SoundKitEntry": 126913,
+      "FileDataID": 1242227,
+      "Frequency": 1,
+      "Volume": "1",
+      "DurationSeconds": 4.528889,
+      "Bytes": 29086,
+      "SHA256": "3AA3224FF1C256997DFBC68AD69C51D1C06FE49586ED351724FE8CF198EFFC76",
+      "Codec": "vorbis",
+      "SampleRate": "22050",
+      "Channels": 1
+    },
+    {
+      "role": "Vision engagement",
+      "Key": "115133:1",
+      "SoundKit": 77480,
+      "SoundKitEntry": 193936,
+      "FileDataID": 1517709,
+      "Frequency": 1,
+      "Volume": "1",
+      "DurationSeconds": 3.637642,
+      "Bytes": 25528,
+      "SHA256": "2E3BA2D3AAF60A86B7FA0263B7541F855D8AF0D4CCA14A1D65E1CBA0112D37B5",
+      "Codec": "vorbis",
+      "SampleRate": "22050",
+      "Channels": 1
+    },
+    {
+      "role": "Vision defeat",
+      "Key": "115133:4",
+      "SoundKit": 77496,
+      "SoundKitEntry": 193952,
+      "FileDataID": 1517725,
+      "Frequency": 1,
+      "Volume": "1",
+      "DurationSeconds": 6.771474,
+      "Bytes": 44825,
+      "SHA256": "0AAC7006B7DB848D3D1F573CF0D66DBF4D602B33760F174F4D4206985554B3B7",
+      "Codec": "vorbis",
+      "SampleRate": "22050",
+      "Channels": 1
+    },
+    {
+      "role": "quest reward conversation",
+      "Key": "outro",
+      "SoundKit": 77641,
+      "SoundKitEntry": 194116,
+      "FileDataID": 1519108,
+      "Frequency": 1,
+      "Volume": "1",
+      "DurationSeconds": 6.456054,
+      "Bytes": 43604,
+      "SHA256": "25542D859AB2A9906FA50AF4F7CBD33E71911987A481D87436D548FF1E76E1B9",
+      "Codec": "vorbis",
+      "SampleRate": "22050",
+      "Channels": 1
+    }
+  ],
+  "checks": [
+    "Test-RockawayAudio.ps1 -ClientPath D:/wow/Legion7.3.5 PASS: native typed BroadcastText/CreatureDisplayInfo with actual read-only Hotfix LoadFromDB overlays, SoundKit/SoundKitEntry and ConversationLine; extracted complete production SendText sound-selector lambda and native GetBroadcastTextValue. Explicit override, missing broadcast and zero-sound fallback paths also execute.",
+    "Read-only SQL snapshot verifies all four speech groups, native type12 ritualist/type14 Vision,100% probability, no emote/spell side effects, one chosen model per template, no alternate-gender model or spawn model override, and actual6933ms conversation actor hold.",
+    "Read-only CASC File-ID export fully reads all five selected payloads and ffmpeg decodes every file to a null sink. All are mono22050Hz Ogg/Vorbis; each voice kit has one eligible file with frequency1/volume1. All32 CASC index SHA256 hashes remain unchanged. Assets stay only in ignored runtime-test output, with no playback or client UI.",
+    "Test-RockawayEncounter.ps1 PASS: actual production actor AI and EventMap; repeated attacks do not duplicate initial Talk calls;0ms and10000ms controlled combat durations; final Talk4 exactly once, no credit at6999ms, one credit at7000ms. All24 death orders and prior owner/pet/cleanup/scaling/loot/rotation boundaries pass after the new hold.",
+    "Pinned516fc1f1 actor implementation compiled in the same harness reproduces credit at6000ms against the separately decoded6771.474ms final clip. Existing pinned pre-channel-fix regression still reproduces its historical attack lock.",
+    "Test-RockawayCompletion.ps1 PASS: native Finish -> AutoStoreLoot/credit -> full RewardQuest -> save/load, both factions, full bags, no duplicate/direct/login bypass and existing unrewardable-fragment guard. This fixture invokes Finish directly and does not establish its elapsed delay; the actor test above supplies that timing coverage.",
+    "Test-VrektOutro.ps1 -QuestID44746 (audio-test dependency) PASS: real Creature surrogate and actual final-link game.lib execute230020 -> one3963 conversation with11933ms lifetime, exact data payload, binding/map admission and cleanup. This remains separate from a Player/session or actual audio playback test.",
+    "Test-RockawayRelease.ps1 PASS: actual generated scripts.lib/source freshness; deployed functions bounded by native PE exception records with incremental-thunk and chained-unwind handling; native MSVC disassembly confirms the7000ms assignment in SummonedCreatureDies. Existing actual recipient guard, Finish, channel and scaled-health paths pass.",
+    "Standard CMake Release worldserver/bnetserver build PASS into build-extractors/bin/Release. zone_highmountain.cpp and scripts.lib rebuilt and final executable linked through generated inputs; no global OutDir override.",
+    "Canonical startup ready=True, graceful exit0, DBErrors.log0 bytes, stderr.log0 bytes. Validation server stopped; canonical configuration/certificates/DLLs/extracted data preserved."
+  ],
+  "combat_dialogue_boundaries": [
+    "Combat speech is reactive rather than a serialized cutscene. The earliest allowed four-ritualist killing sequence can emit Vision opening and final groups at the same timestamp; a one-hit ritualist can emit engagement and death groups together. The timing harness explicitly records this. No unsupported kill delay or speech queue was added to change normal combat.",
+    "Direct CreatureAI::Talk calls SendChat; its return Duration is not consumed as a wait. creature_text MinTimer/MaxTimer75773 for Vision group4 do not become the final speech delay in this direct call path.",
+    "Ritualist SAY and Vision YELL keep their native row types; canonical ListenRange.Say40 and ListenRange.Yell300 apply to sound/text dispatch. A valid asset does not prove reception by every player in the150-yard credit radius, especially a distant pet owner. Actual hearing/overlap/mixing remains a client check."
+  ],
+  "fixture_boundaries": [
+    "The sound selector and localized-text accessor execute real production code against native typed stores. Actor display/gender accessors are controlled leaves, derived from the actual selected model and native model-gender rules. No packet recipient or audio-device emulation.",
+    "The encounter harness executes real AI/EventMap/death/channel handlers with fixture actors, inventory/quest services and Talk timestamp sinks. It proves server dispatch timing, not rendering, subtitles, client cancellation or network/audio latency.",
+    "CASC export and full decode establish file existence, integrity, codec and duration. No proof of English/male/female client subtitle/voice delivery, other client locales, original ritual channel binding/positions, retail count bounds or real-character reward persistence."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "10a3aa13ca06eb2420687482478711f4050b3a5c559a3bba72cd23985ab03f9c",
+    "bnetserver_sha256": "27514b65ba5fee9ac60349e66a556b2cb1e20cdcf417d84752b80904c963c5af",
+    "actual_final_link_scripts_sha256": "daa9008aede6c7fac2cc3e6e5f7f1e24120dae0146afdc43759e54864fd0d729",
+    "actual_final_link_game_sha256": "4f8fc14ffc9ca972b3baf0d87a4f3cbed58d6b569dda5ff5e2fe4fc863dc7d95",
+    "startup": "build-extractors/runtime-test/rockaway-audio/startup-20261019-053414",
+    "worldserver_left_running": false,
+    "manifests": [
+      "build-extractors/runtime-test/rockaway-audio/summary.json",
+      "build-extractors/runtime-test/rockaway-audio/inputs.json",
+      "build-extractors/runtime-test/rockaway-outro/native-inputs.json"
+    ],
+    "disassembly": "build-extractors/runtime-test/rockaway-audio/finale-disassembly.txt",
+    "signal_diagnostic": "build-extractors/runtime-test/rockaway-audio/final-silence-diagnostic.txt"
+  },
+  "remaining": [
+    "Client check: hear all intended lines at normal and fastest kill speeds, verify language/voice selection, last Helya line then narrator, subtitle/bubble/visibility and player/pet/party distance behavior. No actual playback/session was run.",
+    "Earlier original beam/placement/timing/count-range authenticity and full-bag fragment limitations remain. Physical1519108 payload is now verified; prior statements that it was not read describe historical evidence only."
+  ],
+  "prior_audit": "docs/audits/rockaway-completion-2026-10-19.json"
+}

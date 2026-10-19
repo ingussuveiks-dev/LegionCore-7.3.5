@@ -43,7 +43,8 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($compi
 [IO.File]::WriteAllText("$output/build-ground.cmd",$cmd)
 & "$output/build-ground.cmd"
 if($LASTEXITCODE){throw 'Rockaway native catalog build failed'}
-& "$output/RockawayEncounterTest.exe"
+$lines=@(& "$output/RockawayEncounterTest.exe")
+$lines | Set-Content "$output/results.txt";$lines
 if($LASTEXITCODE){throw 'Production Rockaway encounter regression failed'}
 $old=(& git -C $repo show 'ec4f7a3b:src/server/scripts/Legion/rockaway_coast.h') -join "`n"
 if($LASTEXITCODE){throw 'Missing pinned pre-fix Rockaway AI'}
@@ -57,3 +58,14 @@ $cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($oldAr
 if($LASTEXITCODE){throw 'Pinned channel regression build failed'}
 & "$output/RockawayOldEncounterTest.exe"
 if($LASTEXITCODE){throw 'Pinned channel failure was not reproduced'}
+$timing=(& git -C $repo show '516fc1f1:src/server/scripts/Legion/rockaway_coast.h') -join "`n"
+if($LASTEXITCODE){throw 'Missing pinned pre-audio-timing AI'}
+$boundary=$timing.IndexOf('class spell_rockaway_channel')
+if($boundary -lt 0){throw 'Missing pinned timing actor boundary'}
+[IO.File]::WriteAllText("$output/RockawayTimingActors.inc",$timing.Substring(0,$boundary)+"`n#endif`n")
+$timingArgs=@('/DROCKAWAY_TIMING_BASELINE')+@($compilerArgs | ForEach-Object {$_.Replace('RockawayEncounterTest.exe','RockawayTimingTest.exe').Replace('RockawayEncounterTest.obj','RockawayTimingTest.obj')})
+$cmd="@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl "+($timingArgs -join ' ')+"`nexit /b %errorlevel%`n"
+[IO.File]::WriteAllText("$output/build-timing.cmd",$cmd);& "$output/build-timing.cmd"
+if($LASTEXITCODE){throw 'Pinned finale timing build failed'}
+& "$output/RockawayTimingTest.exe"
+if($LASTEXITCODE){throw 'Pinned early-credit timing was not reproduced'}

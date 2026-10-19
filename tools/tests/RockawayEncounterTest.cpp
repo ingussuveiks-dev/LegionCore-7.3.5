@@ -117,7 +117,7 @@ struct Player:Unit {
 struct TempSummon{Unit*owner;Unit*GetSummoner(){return owner;}ObjectGuid GetSummonerGUID(){return owner->GetGUID();}};
 struct Creature:Unit {
  TempSummon temp{};TempSummon*ToTempSummon(){temp.owner=owner;return owner?&temp:nullptr;}void KillAllDelayedCombats(){}
- ScriptedAI*ai=nullptr;Unit*victim=nullptr;uint32 despawnTime=0,melees=0;std::vector<uint32>talks;
+ ScriptedAI*ai=nullptr;Unit*victim=nullptr;uint32 despawnTime=0,melees=0;std::vector<uint32>talks;std::vector<std::pair<uint32,uint32>>talkTimes;
  ScriptedAI*AI(){return ai;}Creature*SummonCreature(uint32,Position const&,int);
  void GetPlayerListInGrid(std::list<Player*>&list,float d){for(auto&v:units)if(auto p=dynamic_cast<Player*>(v.second.get()))if(p->inWorld&&IsWithinDistInMap(p,d))list.push_back(p);}
  void DespawnOrUnsummon(uint32 delay=0);
@@ -128,7 +128,7 @@ struct ScriptedAI {
  virtual void Reset(){}virtual void SetGUID(ObjectGuid const&,int32){}virtual void UpdateAI(uint32){}
  virtual void JustDied(Unit*){}virtual void JustSummoned(Creature*){}virtual void SummonedCreatureDies(Creature*,Unit*){}virtual void SummonedCreatureDespawn(Creature*){}
  virtual void IsSummonedBy(Unit*){}virtual void DamageTaken(Unit*,uint32&,int){}virtual void DamageTakenAfterScaling(Unit*,uint32&,int){}
- void Talk(uint32 group){me->talks.push_back(group);}bool UpdateVictim(){return me->victim&&me->victim->IsAlive();}void DoMeleeAttackIfReady(){++me->melees;}
+ void Talk(uint32 group){me->talks.push_back(group);me->talkTimes.emplace_back(group,clockMs);}bool UpdateVictim(){return me->victim&&me->victim->IsAlive();}void DoMeleeAttackIfReady(){++me->melees;}
 };
 struct SummonList:std::set<ObjectGuid> {
  Creature*me;explicit SummonList(Creature*c):me(c){}void Summon(Creature*c){insert(c->guid);}void Despawn(Creature*c){erase(c->guid);}
@@ -151,6 +151,8 @@ Player*Unit::GetCharmerOrOwnerPlayerOrPlayerItself(){if(auto p=dynamic_cast<Play
 
 #ifdef ROCKAWAY_BASELINE
 #include "RockawayOldActors.inc"
+#elif defined(ROCKAWAY_TIMING_BASELINE)
+#include "RockawayTimingActors.inc"
 #else
 #include "RockawayActors.inc"
 #endif
@@ -214,6 +216,13 @@ int main(){
  for(uint32 id:{231296u,231351u,231329u})assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),id)==0);
  std::cout<<"PASS: pinned old AI reproduces the infinite decorative-channel attack lock through native SetCurrentCastedSpell.\n";
 }
+#elif defined(ROCKAWAY_TIMING_BASELINE)
+int main(){
+ Run r;for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);auto finalAt=clockMs;
+ assert(r.ai->finishTime==6000);Tick(5999);assert(!r.player->credits);Tick(1);
+ assert(r.player->credits==1&&clockMs-finalAt==6000);
+ std::cout<<"PASS: pinned516fc1f1 native finale dispatches credit at6000ms, before77496's decoded6771.474ms clip ends.\n";
+}
 #else
 int main(){
  // Execute the complete native target38 resolver and object-target hook
@@ -261,28 +270,37 @@ int main(){
   r.vision->CastStop();r.vision->AddAura(231328,r.vision);Tick(200);
   assert(std::count(r.vision->casts.begin(),r.vision->casts.end(),231296)==1&&std::count(r.vision->casts.begin(),r.vision->casts.end(),231351)==1);}
  // Every death order, including a pet's first-hit killing blow; no premature or duplicate credit.
+ for(uint32 combatMs:{0u,10000u}){Run r;r.Hit(0);auto ritual=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[0]);
+  assert(r.vision->talkTimes.size()==1&&r.vision->talkTimes[0].first==1&&ritual->talkTimes.size()==1&&ritual->talkTimes[0].first==1);
+  r.Hit(0);assert(r.vision->talkTimes.size()==1&&ritual->talkTimes.size()==1);Tick(combatMs);
+  for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);
+  assert(r.vision->talkTimes.size()==2&&r.vision->talkTimes.back().first==4&&ritual->talkTimes.size()==2&&ritual->talkTimes.back().first==2);
+  auto finalAt=clockMs;Tick(6999);assert(!r.player->credits);Tick(1);assert(r.player->credits==1&&clockMs-finalAt==7000&&!r.vision->visible);
+  std::cout<<"TIMING combat_ms="<<combatMs<<" opening_to_final_ms="<<r.vision->talkTimes[1].second-r.vision->talkTimes[0].second
+   <<" ritual_aggro_to_death_ms="<<ritual->talkTimes[1].second-ritual->talkTimes[0].second<<" final_to_credit_ms="<<clockMs-finalAt<<'\n';
+ }
  std::array<uint32,4>order{0,1,2,3};uint32 orders=0;
- do{Run r;Tick(100);assert(r.vision->casterAuras.size()==4);for(uint32 j=0;j<4;++j){r.Hit(order[j],&r.pet,true);assert(r.player->credits==0);if(j<3)assert(!r.ai->outro);}assert(r.ai->outro);Tick(5900);assert(!r.player->credits);Tick(100);assert(r.player->credits==1&&r.player->fragments==15&&!r.vision->visible);r.ai->Finish();Tick(1000);assert(r.player->credits==1);++orders;}while(std::next_permutation(order.begin(),order.end()));assert(orders==24);
+ do{Run r;Tick(100);assert(r.vision->casterAuras.size()==4);for(uint32 j=0;j<4;++j){r.Hit(order[j],&r.pet,true);assert(r.player->credits==0);if(j<3)assert(!r.ai->outro);}assert(r.ai->outro);Tick(6900);assert(!r.player->credits);Tick(100);assert(r.player->credits==1&&r.player->fragments==15&&!r.vision->visible);r.ai->Finish();Tick(1000);assert(r.player->credits==1);++orders;}while(std::next_permutation(order.begin(),order.end()));assert(orders==24);
  {Run r;uint32 damage=1000000;r.vision->healthRelative=900;r.ai->DamageTakenAfterScaling(&r.pet,damage,0);assert(damage==899&&r.ai->started&&!r.ai->outro);Tick(6000);assert(!r.player->credits);}
  {Run r;store.active=false;Tick(100);assert(!r.ai->enabled&&!r.vision->visible);for(auto g:r.ai->slots)assert(!g.value);store.active=true;Tick(100);assert(r.ai->ready&&r.vision->visible);}
  {Run r;rotation.ResetTime=1;Tick(1000);assert(!r.ai->enabled&&!r.vision->visible);}
- {Run r;Group group;r.player->group=&group;auto ally=NewPlayer(*r.vision);ally->group=&group;auto observer=NewPlayer(*r.vision);auto wrong=NewPlayer(*r.vision);wrong->phase=2;wrong->group=&group;auto done=NewPlayer(*r.vision);done->status=2;done->group=&group;auto dead=NewPlayer(*r.vision);dead->alive=false;dead->group=&group;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(ally->credits==1&&observer->credits==0&&wrong->credits==0&&done->credits==0&&dead->credits==0);}
- {Run r;r.player->lostArmy=false;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(r.player->credits==1&&!r.player->fragments);}
- {Run r;r.player->fragments=1000;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(r.player->credits==1&&r.player->fragments==1000);}
- {Run r;r.player->fragments=999;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(r.player->fragments==1014);}
- {Run r;r.player->fullBags=true;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(r.player->credits==1&&!r.player->fragments&&r.player->errors==1);}
+ {Run r;Group group;r.player->group=&group;auto ally=NewPlayer(*r.vision);ally->group=&group;auto observer=NewPlayer(*r.vision);auto wrong=NewPlayer(*r.vision);wrong->phase=2;wrong->group=&group;auto done=NewPlayer(*r.vision);done->status=2;done->group=&group;auto dead=NewPlayer(*r.vision);dead->alive=false;dead->group=&group;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(ally->credits==1&&observer->credits==0&&wrong->credits==0&&done->credits==0&&dead->credits==0);}
+ {Run r;r.player->lostArmy=false;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(r.player->credits==1&&!r.player->fragments);}
+ {Run r;r.player->fragments=1000;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(r.player->credits==1&&r.player->fragments==1000);}
+ {Run r;r.player->fragments=999;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(r.player->fragments==1014);}
+ {Run r;r.player->fullBags=true;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(r.player->credits==1&&!r.player->fragments&&r.player->errors==1);}
  {Run r;r.Hit(0,nullptr,true);auto old=r.ai->slots[1];ObjectAccessor::GetCreature(*r.vision,old)->DespawnOrUnsummon();assert(!r.ai->started&&r.ai->cooldown);auto stale=Spawn(116195,r.vision,*r.player);assert(!stale->inWorld);Tick(10100);assert(r.ai->ready&&!r.ai->dead[0]&&r.ai->slots[1].value!=old.value);}
  {Run r;r.ai->ClearRun();failSummons=1;r.ai->EnsureRitualists();assert(!r.ai->ready);uint32 d=100;auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[1]);c->AI()->DamageTaken(r.player,d,0);assert(d==0);r.ai->EnsureRitualists();assert(r.ai->ready);}
  {Run r;r.Hit(0);r.player->x+=200;Tick(10100);assert(!r.ai->started&&!r.vision->visible);Tick(10000);assert(r.ai->ready);}
- {Run r;for(uint32 id:{231296u,231351u,231354u,231329u})failedSpells.insert(id);r.Hit(0);Tick(25000);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(r.player->credits==1);}
+ {Run r;for(uint32 id:{231296u,231351u,231354u,231329u})failedSpells.insert(id);r.Hit(0);Tick(25000);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(r.player->credits==1);}
  {Run r;r.Hit(0);Tick(11000);uint32 slimes=0,slams=0;for(auto&v:units)if(auto c=dynamic_cast<Creature*>(v.second.get())){if(c->entry==116195){++slimes;assert(c->victim==r.player);}if(c->entry==116187){slams+=std::count(c->casts.begin(),c->casts.end(),231298);uint32 damage=999;c->AI()->DamageTakenAfterScaling(r.player,damage,0);assert(damage==0);}}assert(slimes==5&&slams==1);}
- {Run r;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);store.active=false;Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
- {Run r;for(uint32 i=0;i<4;++i){r.Hit(i,nullptr,true);auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[i]);r.ai->SummonedCreatureDies(c,nullptr);}Tick(6000);assert(r.player->credits==1);Tick(30100);assert(r.ai->ready&&!r.ai->started&&!r.ai->dead[0]);}
+ {Run r;for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);store.active=false;Tick(7000);assert(!r.player->credits&&!r.player->fragments);}
+ {Run r;for(uint32 i=0;i<4;++i){r.Hit(i,nullptr,true);auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[i]);r.ai->SummonedCreatureDies(c,nullptr);}Tick(7000);assert(r.player->credits==1);Tick(30100);assert(r.ai->ready&&!r.ai->started&&!r.ai->dead[0]);}
  {Run r;r.Hit(0);TaintContext a{r.vision,r.player,{1}};a.OnRemove(nullptr,0);assert(r.vision->casts.back()==232681);auto n=r.vision->casts.size();a.app.mode=0;a.OnRemove(nullptr,0);assert(r.vision->casts.size()==n);a.app.mode=2;a.OnRemove(nullptr,0);assert(r.vision->casts.size()==n+1);r.ai->ClearRun();a.OnRemove(nullptr,0);assert(r.vision->casts.size()==n+1);a.caster=nullptr;a.OnRemove(nullptr,0);}
- {Run r;for(uint32 i=0;i<4;++i){auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[i]);c->IsAIEnabled=false;r.Hit(i,&r.pet,true);}Tick(6000);assert(r.player->credits==1);}
- {Run r;auto rogue=Spawn(115132,r.vision,*r.player);r.ai->SummonedCreatureDies(rogue,&r.pet);assert(!r.ai->dead[0]&&!r.ai->outro);r.Hit(0);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);r.player->status=0;Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
- {Run r;auto corpse=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[3]);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(6000);assert(corpse->inWorld&&!corpse->alive);Tick(60100);assert(!corpse->inWorld&&r.ai->ready&&!r.ai->outro);}
- {Run r;Group raid;raid.raid=true;r.player->group=&raid;for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);Tick(6000);assert(!r.player->credits&&!r.player->fragments);}
+ {Run r;for(uint32 i=0;i<4;++i){auto c=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[i]);c->IsAIEnabled=false;r.Hit(i,&r.pet,true);}Tick(7000);assert(r.player->credits==1);}
+ {Run r;auto rogue=Spawn(115132,r.vision,*r.player);r.ai->SummonedCreatureDies(rogue,&r.pet);assert(!r.ai->dead[0]&&!r.ai->outro);r.Hit(0);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);r.player->status=0;Tick(7000);assert(!r.player->credits&&!r.player->fragments);}
+ {Run r;auto corpse=ObjectAccessor::GetCreature(*r.vision,r.ai->slots[3]);for(uint32 i=0;i<4;++i)r.Hit(i,nullptr,true);Tick(7000);assert(corpse->inWorld&&!corpse->alive);Tick(60100);assert(!corpse->inWorld&&r.ai->ready&&!r.ai->outro);}
+ {Run r;Group raid;raid.raid=true;r.player->group=&raid;for(uint32 i=0;i<4;++i)r.Hit(i,&r.pet,true);Tick(7000);assert(!r.player->credits&&!r.player->fragments);}
  std::cout<<"PASS: production AI/hooks; full native target38 resolver, object-hook dispatcher, SendChannelStart/Update, EventMap and spell-container handler. Exact owner vs bystander/other image, scope, readiness/race failures, retry, four per-caster beams, death/reset/empty-slot cleanup,24 death orders and continuing attacks. Grid search, Spell preparation, aura application and packet serialization are fixtures; client playback remains pending.\n";
 }
 #endif
