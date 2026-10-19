@@ -60,6 +60,11 @@
     "result": "Actual post-Helya gossip admission, selection, native DB2 far teleport/worldport ACK and quest/reward save/prepared reload pass72 cases across both factions/all4 difficulties/fresh and saved instances. Foreign-menu selection previously teleported; the scoped Odyn handler now validates and consumes the prepared native menu.",
     "limits": "No client, authenticated login, durable raid binding or entrance rejoin is claimed. Destination socket workers are stopped for synchronous native execution. Earlier pending combat/scene/voice/UI/arrival/pet/chest checks remain."
   },
+  "native_guarm_progression_followup_2026_10_19": {
+    "audit": "docs/audits/trial-guarm-progression-2026-10-19.json",
+    "result": "Guarm DONE is now earned through actual player/Pet Unit::Kill in eight progression cases, with native door closure/evade/retry, SQL mask3 and saved dead-boss restoration. Actual26-summon Helya entrance dispatch unlocks her only on the final death; Helya combat/evade preserves Guarm progress. Odyn travel menu validation was repaired after eight pinned invalid-menu reproductions.",
+    "limits": "This replaces the Guarm prerequisite seed only in the new dedicated progression probe. Earlier tests retain their documented setup. No full raid combat, automatic walking, authenticated login/restart or client visual verification is claimed."
+  },
   "native_saved_binding_followup_2026_10_19": {
     "audit": "docs/audits/trial-raid-reentry-2026-10-19.json",
     "result": "Actual managed MapManager selection, character_instance/group_instance writes and native prepared player/full group reload now cover Normal/Heroic/Mythic/LFR, both factions and offline leader. Fixed LFR sharing the Normal bind bucket; native calendar now enumerates actual slots once.",

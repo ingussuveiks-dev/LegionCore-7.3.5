@@ -2,6 +2,7 @@
 #include "ScriptUtils.h"
 #include "AreaTriggerAI.h"
 #include "ScriptPCH.h"
+#include "GossipDef.h"
 
 namespace
 {
@@ -572,13 +573,17 @@ struct boss_tov_odyn : BossAI
         }
     }
 
-    void sGossipSelect(Player* player, uint32 /*sender*/, uint32 action) override
+    void sGossipSelect(Player* player, uint32 menuId, uint32 action) override
     {
-        if (action == 0)
-        {
-            player->CastSpell(player, SpellSkyJump, false);
-            player->CLOSE_GOSSIP_MENU();
-        }
+        // This AI hook runs before Player::OnGossipSelect validates the menu.
+        auto& menu = player->PlayerTalkClass->GetGossipMenu();
+        if (instance->GetBossState(Data::BossIDs::OdynID) != DONE ||
+            menuId != me->GetCreatureTemplate()->GossipMenuId || menu.GetMenuId() != menuId || action != 0 || !menu.GetItem(action))
+            return;
+
+        player->PlayerTalkClass->ClearMenus();
+        player->CastSpell(player, SpellSkyJump, false);
+        player->CLOSE_GOSSIP_MENU();
     }
 
     void DoAction(int32 const action) override

@@ -10,20 +10,20 @@
 void AddSC_instance_trial_of_valor();
 void AddSC_trial_of_valor();
 
-static void LoadInstanceInputs()
+static void LoadInstanceInputs(bool guarm=false)
 {
     LoadTurnInInputs();
     sSpellMgr->LoadSpellBonusess();sSpellMgr->LoadSpellThreats();
     sObjectMgr->LoadPageTexts();sObjectMgr->LoadGameObjectTemplate();sObjectMgr->LoadInstanceTemplate();sObjectMgr->LoadTempSummons();sObjectMgr->LoadCreatureTemplateAddons();
     sAreaTriggerDataStore->LoadAreaTriggerTeleports();sLFGMgr->LoadLFGDungeons();sObjectMgr->LoadInstanceEncounters();
     sSpellMgr->LoadSpellTargetPositions();sCreatureTextMgr->LoadCreatureTexts();sConversationDataStore->LoadConversationData();
-    auto rows=WorldDatabase.Query("SELECT guid,id,map,zoneId,areaId,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,MovementType,spawnMask,phaseMask,npcflag,npcflag2,unit_flags,unit_flags3,dynamicflags,isActive,PhaseId,AiID,MovementID,MeleeID,skipClone,personal_size,isTeemingSpawn FROM creature WHERE guid IN(505062,505276)");
+    auto rows=WorldDatabase.Query(Trinity::StringFormat("SELECT guid,id,map,zoneId,areaId,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,MovementType,spawnMask,phaseMask,npcflag,npcflag2,unit_flags,unit_flags3,dynamicflags,isActive,PhaseId,AiID,MovementID,MeleeID,skipClone,personal_size,isTeemingSpawn FROM creature WHERE guid IN(%s)",guarm?"505062,505263,505276":"505062,505276").c_str());
     Require(bool(rows),"Missing native Trial DB spawns");unsigned count=0;
     do
     {
         auto f=rows->Fetch();auto& d=sObjectMgr->NewOrExistCreatureData(f[0].GetUInt64());d.guid=f[0].GetUInt64();d.id=f[1].GetUInt32();d.mapid=f[2].GetUInt16();d.zoneId=f[3].GetUInt16();d.areaId=f[4].GetUInt16();d.displayid=f[5].GetUInt32();d.equipmentId=f[6].GetInt8();d.posX=f[7].GetFloat();d.posY=f[8].GetFloat();d.posZ=f[9].GetFloat();d.orientation=f[10].GetFloat();d.spawntimesecs=f[11].GetUInt32();d.spawndist=f[12].GetFloat();d.currentwaypoint=f[13].GetUInt32();d.curhealth=f[14].GetUInt64();d.curmana=f[15].GetUInt32();d.movementType=f[16].GetUInt8();d.spawnMask=f[17].GetUInt64();d.phaseMask=f[18].GetUInt32();d.npcflag=f[19].GetUInt32();d.npcflag2=f[20].GetUInt32();d.unit_flags=f[21].GetUInt32();d.unit_flags3=f[22].GetUInt32();d.dynamicflags=f[23].GetUInt32();d.isActive=f[24].GetBool();Require(f[25].GetString().empty(),"Load new native phase IDs before testing");d.AiID=f[26].GetUInt32();d.MovementID=f[27].GetUInt32();d.MeleeID=f[28].GetUInt32();d.skipClone=f[29].GetBool();d.personalSize=f[30].GetFloat();d.isTeemingSpawn=f[31].GetBool();++count;
     }while(rows->NextRow());
-    auto addons=WorldDatabase.Query("SELECT COUNT(*) FROM creature_addon WHERE guid IN(505062,505276)");Require(count==2&&addons&&!addons->Fetch()[0].GetUInt32(),"Load new native DB spawn addons before testing");
+    auto addons=WorldDatabase.Query(Trinity::StringFormat("SELECT COUNT(*) FROM creature_addon WHERE guid IN(%s)",guarm?"505062,505263,505276":"505062,505276").c_str());Require(count==(guarm?3:2)&&addons&&!addons->Fetch()[0].GetUInt32(),"Load new native DB spawn addons before testing");
 }
 static std::vector<Creature*> Actors(Map& map,uint32 entry=0)
 {

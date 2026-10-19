@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "quests": [44729, 44868],
+  "status": "Native Odyn travel, Guarm retry/death/door/save and Helya entrance progression pass; Odyn Sky Jump menu validation fixed and Release deployed. Client playthrough remains pending.",
+  "baseline_commit": "70419558",
+  "reproduced_problem": "Odyn's AI ignored the supplied menu ID and cast231166 for option0 before Player::OnGossipSelect performed menu validation. Actual deserialized selection with foreign menu20503 after opening20502 starts the native Sky Jump near teleport on the captured70419558 scripts/game libraries, in all eight cases. This is an invalid-request acceptance bug; ordinary valid travel and Guarm progression already worked. No claim is made that the quest was previously impossible.",
+  "implementation": [
+    "Odyn travel now requires the live Odyn encounter DONE, the template's current gossip menu, the same prepared player menu, and existing option0. Consume the prepared menus before the existing native231166 cast and close action.",
+    "Guarm combat/death, authored doors, Helya trash threshold, original spell231166 target and Helheim trigger/location are retained. No production SQL changes, guessed coordinates, combat shortcuts or synthetic quest credit were added.",
+    "The shared native instance input loader accepts an optional Guarm spawn505263; its default remains the original two boss records. The new isolated probe registers the real Guarm script and executes the full transition against the linked game/scripts libraries."
+  ],
+  "native_evidence": [
+    "Eight cases: LFR17, Normal14, Heroic15 and Mythic16, each with a Human player killing Guarm and an Orc's actual Pet killing Guarm. Normal world-startup GUID registry sizing is included, and actual player/pet owner/tap lookups are asserted. Both outcomes use native Unit::Kill, followed by a repeated kill attempt.",
+    "Actual DB creature initialization loads Odyn505062/114263, Guarm505263/114323 with vehicle4995, and Helya505276/114537. Three actual DB door objects545004/246145,545028/266532 and545027/266533 use native AddDoor/UpdateDoorState. Native DungeonEncounter1962 is map1648/bit1; instance_encounters supplies credit114323 in all four difficulties.",
+    "Initial Guarm passage is closed. Actual Odyn surrender earns DONE/mask1 and retains the closed Guarm passage. Earlier defender prerequisites, Odyn phase actions and final health are setup, not a complete Odyn fight.",
+    "Actual Hello and GossipSelectOption packet parsers/handlers prepare menu20502 and run the linked Odyn AI. Current rejects missing prepared menu, foreign20503 and absent option1, then accepts0 and clears the menu. Native231166 uses the existing World spell_target_position1648/3296.33/5932.27/446.26, and the actual near-teleport ACK handler places the player there.",
+    "Native EventObject template loading and DB spawn410224/entry725 grid loading initialize the actual Helheim trigger. Player relocation to its radius runs EventObject::Update, proximity/phase admission and the actual registered script, then near-teleport ACK reaches native WorldSafeLocs5827: map1648/340.863/355.214/30.4864. Walking between these locations is fixture relocation; navmesh, automatic player movement and client loading are not verified.",
+    "Actual Guarm initialization creates and boards exactly one native head114341/114343/114344 in each vehicle seat0/1/2. Native combat entry closes his room. CreatureAI/BossAI evade, actual home motion and Reset reopen it, preserve the closed passage and rebuild exactly three heads. Retry starts combat again without manually clearing EVADE or setting Guarm's encounter state.",
+    "Native owner/tap/damage eligibility is supplied explicitly; no damage rotation is played. Actual player/Pet Unit::Kill runs KillRewarder, encounter mask credit, Guarm's JustDied and persistence. DONE opens his room and passage; actual group_instance SQL contains native serialized data and mask3. Repeated Unit::Kill retains mask3. Active44868 remains incomplete with zero Helya objective; Guarm does not grant2008 quest completion.",
+    "All26 actual Helya introduction summons are killed through native Unit::Kill and summon-death dispatch. Helya remains protected for the first25 and becomes attackable after the26th. Native Helya combat entry closes the shared passage. Her evade/reset reopens it, preserves Guarm DONE and leaves Helya NOT_STARTED; group_instance retains the actual states/mask3.",
+    "After removing the player and unloading the managed maps, a new native InstanceMap factory/Load receives data and completed mask read from the actual SQL checkpoint. Native LoadRespawnTimes loads the death-written Guarm corpse timer before DB boss initialization. After2500ms updates, Odyn/Guarm remain DONE, Helya NOT_STARTED, mask3, both Guarm doors open, and dead Guarm has no living vehicle heads. This is explicit same-process reconstruction, not authenticated re-entry or process restart."
+  ],
+  "primary_reference_context": [
+    {
+      "url": "https://news.blizzard.com/en-us/article/20328828/raid-preview-taking-on-the-trial-of-valor",
+      "scope": "Blizzard describes the three bosses and Guarm guarding Helheim. Supports the progression context, not this server's exact coordinates or protocol handling."
+    },
+    {
+      "url": "https://www.wowhead.com/guide/guarm-trial-of-valor-raid-strategy-guide-4804",
+      "author": "FatbossTV",
+      "updated": "2018-07-05",
+      "scope": "Primary guide authors' page marked Patch7.3.5 places Guarm second and requires defeating him to reach Helya beyond the bridge. Confirms the retained passage gate; does not verify every combat ability here."
+    }
+  ],
+  "automated_checks": [
+    "Test-TrialGarmNative.ps1: PASS, exit0, DBErrors0 bytes; eight travel/combat/retry/Helya-entrance cases and eight saved reconstructions, all four difficulties and both factions with player/Pet killers.",
+    "Test-TrialGarmNative.ps1 -Baseline: PASS means the captured70419558 libraries reproduce eight foreign-menu Sky Jumps while the valid native Guarm/door/save flow also passes; exit0, DBErrors0 bytes.",
+    "Test-TrialGarmRelease.ps1: PASS; canonical PE/thunks contain actual GossipMenu::GetMenuId/GetItem and PlayerMenu::ClearMenus in Odyn's handler. Included existing quest-lifetime, loot admission, victory actor and separate Raid Finder bucket PE checks pass.",
+    "Test-TrialOdynSurrender.ps1 -VerifyReleaseBinary: PASS; existing three scaled surrender callbacks, defender25%/85%, Revivify retry, player/pet sources, repeat notifications and deployed target-relative health calls retained.",
+    "Test-TrialRaidReentryNative.ps1: PASS after shared loader/runner extension; native individual/group binding SQL reload, offline leader, all difficulties and calendar checks retained, DBErrors0 bytes.",
+    "Standard Release worldserver/bnetserver build: PASS; canonical build-extractors/bin/Release, original CMake final-link library paths, no global OutDir override.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes. Scratch schema/user cleanup verified; no server/native probe left running."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-garm-native/run-20261019-170730",
+    "baseline_logs": "build-extractors/runtime-test/trial-garm-native-baseline/run-20261019-170556",
+    "reentry_regression_logs": "build-extractors/runtime-test/trial-raid-reentry-native/run-20261019-170816",
+    "startup_logs": "build-extractors/runtime-test/trial-garm-native/startup-20261019-170715",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "6F18C6160FDFFAB067503B3E4975233C70730131AD05F7604B9995F04B5CD5A8",
+    "bnetserver_sha256": "3688971F2804705A38602CD185BF884BFD137808FFDAA1439A9AC57409D18CB2",
+    "actual_game_library_sha256": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+    "actual_scripts_library_sha256": "75723CC46E7EFAB3DF503040891828ECEA47ED13768101E496AE7244B1E0AB70",
+    "baseline_game_sha256": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+    "baseline_scripts_sha256": "2A47E90C7CB98C6890074C6EF5CCD6E63E6A443AE50F042DFF097103D743506E",
+    "isolation": "Schema-only disposable character/auth databases167 tables and random limited user; World/Hotfix READ ONLY. No live character/account rows copied or modified. Cleanup is scoped to the wrapper's random databases/user.",
+    "production_sql_changes": false
+  },
+  "test_development_findings": [
+    "Guarm's initial aura runs native proc dispatch. The first incomplete bootstrap omitted SpellMgr proc tables and failed there; native LoadSpellProcEvents/LoadSpellProcs resolve that prerequisite. No production proc crash is inferred.",
+    "Native HashMapHolder registration rejects GUIDs before startup sizes its vectors. Without player registration, direct Player kills worked but Pet owner/tap lookups failed and no mask credit was earned. The final bootstrap sizes Player/Pet/EventObject stores and explicitly asserts native lookup identity before accepting any case. This was a fixture gap, not evidence of a live Pet credit bug.",
+    "EventObject has no exported Map::AddToMap instantiation. The accepted test uses ObjectMgr::AddEventObjectToGrid and actual native grid loading, rather than adding a fabricated event object or substituting its trigger callback."
+  ],
+  "remaining_limits_and_client_checks": [
+    "No WoW client was controlled. Verify actual quest UI, Odyn dialogue/Sky Jump presentation, loading/arrival, walking across the bridge, Guarm heads/breaths/charge, door rendering and Helya's introduction/audio in the7.3.5 client.",
+    "Native server packets are deserialized and handlers/ACKs run without a socket. Player locations between interaction points are set through native relocation. Map1648's worker is stopped/joined for synchronous execution; no automatic movement packet stream, navmesh walk, queue matchmaking, authenticated login or true process restart is claimed.",
+    "Actual group creation/admission and SQL updates execute, but group difficulty is set directly. Cached bindings and full group/character reload are covered by the separate reentry audit. Saved reconstruction here feeds the actual earned SQL data/mask into the native factory explicitly.",
+    "Defender combat, Odyn final phase/health and Guarm tap/damage eligibility are setup. Guarm's abilities and full Helya combat/death are not played here. Both factions are covered with Human player kills and Orc Pet kills; this is not every race/class/pet combination.",
+    "Earlier quest, chest, exit, loot, camera/pet portrait and visual checks remain pending as recorded in their audits. No full quest or raid is marked client-verified."
+  ]
+}
