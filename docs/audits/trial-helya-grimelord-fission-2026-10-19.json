@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "creature": 114709,
+  "spell": 158534,
+  "status": "Reference implementation completed and native/Release verified. The ten-second activation is supported by another emulator implementation, not an original Blizzard combat log. Retail timing and client confirmation remain pending.",
+  "implementation": [
+    "Mythic Grimelord schedules one triggered self-cast of permanent Fetid Fission ten seconds after EnterCombat. It does not schedule a repeating escalation. Reset removes this permanent modifier before the same actor can start another fight.",
+    "The original Grimelord's modifier changes new Fetid Rot applications from three stacks to four on Mythic only. Initial infection and secondary spread share this admission. Activation does not immediately alter an existing carrier aura. Retain native per-stack damage/healing, periodic decay/spread, original caster GUID and the existing reinfection increment/native nine-stack cap; no new SQL binding is required.",
+    "Retain the independently researched seven-second first Rot, difficulty-specific repeat timers, Slam/Nova timing, native selection and geometry. Those timers are not copied from the newly found emulator, whose other timings differ."
+  ],
+  "native_data": [
+    "The core's packed DB2 reader reads native Spell158534: permanent duration/maxDuration -1, self target1, APPLY_AURA6/DUMMY4, base value1, period0, trigger0, aura cap4 and procMask0. Fetid Rot193367 has cap3 by default and cap9 on difficulty16. ProcChance101 is recorded as stored; it is not interpreted as an activation schedule.",
+    "The catalog scans every native SpellEffect row for incoming trigger/base-point/misc-value references to158534 and finds zero, and scans aura restrictions and journal spell links. This is bounded client-table evidence, not proof that an original server never called the spell.",
+    "Live Hotfix Spell/SpellEffect/SpellMisc for158534 and AuraOptions for158534/193367 have no overrides. World has no158534 spell-script, aura-trigger, aura-dummy, dummy-trigger, linked-spell or spell-trigger route. Grimelord template addon only supplies228376. Existing Rot bindings/legacy-route suppression and migration replay checks remain passing."
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/aquadeus/as_core/blob/01499fe4e04b62202c8e93d564affa37dae16132/src/server/scripts/BrokenIsles/TrialOfValor/boss_tov_helya.cpp",
+      "commit_date": "2022-06-16T08:40:09Z",
+      "sha256": "D8EF04722FD33F8CCED4CAE37B392DA8FE7F7E7D4393A3DFF4063304FAEC1F21",
+      "evidence": "DefaultEvents schedules Mythic Fission once at10seconds; its event self-casts158534 without rearming; Fetid Rot AfterApply selects4 rather than3 when its caster has that aura. Independently implement these behaviors in this core. The file header says2017, but the retrieved commit is2022; neither is a retail observation or proof of exact7.3.5 timing."
+    },
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "guide_update": "2018-07-05",
+      "evidence": "The Mythic section describes Fission increasing Rot stacks and Rot spreading each period. It supplies no Fission trigger/timer; comments also identify its incomplete Mythic strategy coverage."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/DeadlyBossMods/DeadlyBossMods/c958ef301ed9aff403ecd8cf30131746feea273c/DBM-TrialofValor/Helya.lua",
+      "commit_date": "2018-06-17T04:39:08Z",
+      "sha256": "BFB3FDBCB7E977DD206A0E74CE3BE6F5F97FBA98F4CCB8CCEE6EA5FBA02E6532",
+      "evidence": "Historical Rot handling warns early on Mythic and reads the player's actual aura expiration. It does not establish Fission timing. Its15-second yell argument is not used as an aura-duration or Fission-timer specification."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+      "commit_date": "2018-04-28",
+      "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+      "evidence": "Retained source for other Grimelord timers; no Fission schedule. Its Mythic TODO remains evidence of uncertainty, not a retail guarantee."
+    },
+    {
+      "url": "https://www.icy-veins.com/wow/helya-mythic-strategy-tactics",
+      "author": "Furty",
+      "evidence": "Original authored Mythic guide describes more frequent Rot spread and positioning; it does not establish Fission activation."
+    }
+  ],
+  "verification": [
+    "At pre-fix74c2950c, the new native test first reproduces retention of an explicitly injected permanent aura on Reset. A separate pre-fix run limits the new Fission probe to Mythic so lower difficulties reach the central failure: no ten-second Fission activation. This is separate from the retained older11c9c866 baseline suite.",
+    "Eight final native cases cover LFR/Normal/Heroic/Mythic and Human/Orc. Observe real SpellEvents and actual AI: first Rot3 before activation, caster-only Fission once, unchanged existing carrier2, subsequent selector3/4 by difficulty, native four-to-three-to-two-to-one-to-zero decay, damage and healing proportional to actual stacks, per-period Mythic secondary infection4 with the original Grimelord, radius exclusion, reinfection cap9, stale aura on non-Mythic unable to empower Rot, reset removal and retry activation. Seventy seconds of full AI retain one permanent Fission rather than repeated stacking.",
+    "Observed Mythic activation is9970ms on the watcher clock because actor admission has already advanced20ms and the observer samples before its next10ms increment. The accepted assertion accounts for at most40ms of this fixture offset; the production timer remains10000ms. An exploratory9980ms lower bound was corrected after recording9970ms; no production timing change was made to satisfy it.",
+    "One exploratory native run killed the test's low-health synthetic Pet while exercising the newly extended AI sequence, entering an incompletely initialized Pet death fixture and crashing. Give that existing Pet the same buffered health already used by the rotation fixture. No shared Pet/core behavior was changed or claimed fixed.",
+    "The pinned11c9c866 reference still passes its eight legacy Rot/Slam/Nova cases and intentionally skips the new Fission assertions. This reference does not independently validate Fission. The final full Helya Fury/boat/add/progression suite and phase-three spell/cleanup suite each pass all eight native cases with the deployed libraries.",
+    "Normal CMake Release build deploys worldserver/bnetserver directly to build-extractors/bin/Release using the actual generated final-link libraries. Exception-bounded PE/thunk checks inspect Fission timer/cast,3/4 application and permanent-aura reset in the final executable, alongside retained Rot checks. Final startup ready, graceful exit0, empty DBErrors/stderr. Scratch character/auth schemas and accounts:0/0."
+  ],
+  "limits": [
+    "No original Blizzard combat log/sniff confirming Fission's exact trigger/ten-second timing has been obtained. Public Warcraft Logs guild listing was searchable, but report retrieval returned403; no event history was inferred from that listing. This is an explicit fidelity limit, not a claim that the original Mythic mechanic is fully verified.",
+    "No authenticated7.3.5 client, raid balance/survival or visual verification. Native fixtures buffer health. Reinfection accumulation is retained from the preceding implementation and native cap, not independently retail-confirmed here.",
+    "Prior quest44868/55482 progression and client limits remain in the earlier audits; this task does not mark the entire raid or quest client-verified."
+  ],
+  "prior_audits": [
+    "trial-helya-grimelord-rot-2026-10-19.json",
+    "trial-helya-grimelord-abilities-2026-10-19.json"
+  ],
+  "evidence": {
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-214752/native-lines.txt": "3CE54DEBD199CAD7C90813542B84CD0BED70A74D4F1670090442BA6B90961A69",
+      "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-214446/native-lines.txt": "0CA8E3CCA868AD271DDED0EF5144782BDA5B4A992AE6F1BAE5F7751A5ACF4355",
+      "build-extractors/runtime-test/trial-helya-native/run-20261019-214714/native-lines.txt": "018858F74EE69025F27D809D4507E98CF3E40A2E2219CD18427D1A6A76147B8F",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-214725/native-lines.txt": "24013180E9220EA18B13A16A949649676C28685AC351C81ECC25564250E2033F",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "20AF42E3FCFB2BD4DF1850C88276E199A8206AAF115FCD4F17BCF01EAFC2F749",
+      "tools/tests/TrialHelyaGrimelordNative.cpp": "64D159ADD4C27D643B3704FC76BEF5653BF6907328C1362FD0F98277AF021679",
+      "tools/tests/Test-TrialHelyaGrimelordRelease.ps1": "E57132AF6961DB37BE8A0E74E1BDCBF4EEC03B640497864402C534CA940D42EF",
+      "tools/research/HelyaFissionCatalog.cpp": "DAB1BCA326280EDA1EE15C6F187998F7C783E9BAC72BF35703374F943F04B0C9",
+      "tools/research/Read-HelyaFissionCatalog.ps1": "775A8CC0B3FDBC4A4251DB2ED1886F70C60278B8506162085C2758954E1A0A43",
+      "build-extractors/bin/Release/worldserver.exe": "940BFCAF416683FA5058A57BB4B9450FEE9055C7A29D6F3EB7401805F4E66635",
+      "build-extractors/bin/Release/bnetserver.exe": "DF623BB03A231346D2DDE1DBA26908304958EF815444D0CC8D0266D02FF42C95",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "034E1F4B3C4F99EA4FAF63E89117107FBD318C151BA9E127C3D6B500F1AFC967",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      ".codex/helya-fission-catalog.txt": "26FEEB8DDADD0920211BFCCFEB480E9585373E1C42FA01F499D7CFB322E436FB",
+      ".codex/helya-fission-world.tsv": "393C24C358C36626CB19D64882D9EDEB9496245082A4BA85DB505DB976593049",
+      ".codex/helya-fission-hotfix.tsv": "3A3DEBD83A313E1C44ABCFF2333494987E3545FE67D304802A69878E0EA8D7AB",
+      ".codex/helya-fission-before.log": "F8833B9C1FB3B8CBE2AAF3DAA019B9438E0203A855D6355A9453A659CEB4106D",
+      ".codex/helya-fission-before-mythic.log": "B79CC57F8ACFEE2B151A41324BD556CB27A14A5F8E1C768C6F351881679CEC26",
+      ".codex/helya-fission-current.log": "5219FDDE16D0E202218A165995E7DDE647F8585BBF4F02DA694E297F0FBFE70A",
+      ".codex/helya-fission-current3.log": "73AF3E229D00CBCE9952E2EF17FD30CFC88EC2A3EA26A389736836D459E8FB66",
+      ".codex/helya-fission-data.log": "9729283433D41033074040E8940B69FFEA3D88A6B67DF8AD75C4F3CF97525EF5",
+      "build-extractors/bin/Release/dbc/enUS/Spell.db2": "AD26F2F7DB9485EC9A143DE6E3949814DE61DC5BCFC50792C67BEEEF0D67DCDF",
+      "build-extractors/bin/Release/dbc/enUS/SpellEffect.db2": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+      "build-extractors/bin/Release/dbc/enUS/SpellAuraOptions.db2": "D799051D1D6578ED665A43A12778089B67AD7A53D5ACEB9163E809EF8B3F69A2",
+      "build-extractors/bin/Release/dbc/enUS/SpellMisc.db2": "2C2C50A36C91FC53ACA60D202FFD606E4547ABB8DAA75392D6BD65D345C1821B",
+      "build-extractors/bin/Release/dbc/enUS/SpellDuration.db2": "FD01E79E46A57D270E536CDB7D86F78F4F2B086C388BF43E51ADC4BBFDE4D446",
+      "build-extractors/bin/Release/dbc/enUS/SpellAuraRestrictions.db2": "5C9D5C2685B73E4EF7C62E3A558458B2FD45833751EFA062777FEB996D0E0D82",
+      "build-extractors/bin/Release/dbc/enUS/JournalEncounterSection.db2": "38393D6C4975955CF0C76D6505E4B5FE4BACF2B476DDAF679B60F1AA59615A12",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/rot-apply-disassembly.txt": "EC6C76650E7DAB8F6CEBE4463110CCBD463ED95AFCA6A2B660230E140CAA8B46",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/grim-reset-disassembly.txt": "CFA5F2629C7457977C37ED59B4BCA5C8AA8A0C1F51212A218F7A5FF482E747E5",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/grim-enter-disassembly.txt": "7A7064F64214F96A3487B9DDC4FCE0DF1DCB8EA9DBEE8AEEEAEC0A6FAF94CCE3",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/grim-update-disassembly.txt": "9BF1B24D0D57A6D261C56268D3E590396BA6A3ABF698957DA76F1361FA27ADB2",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/grimelord-release-inputs.json": "29E378DC431D7D867C46281840B632B5D7673241DA936C4DCE921DDB0AE49AE2"
+    },
+    "runs": {
+      "trial-helya-grimelord-native": "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-214752",
+      "trial-helya-grimelord-native-baseline": "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-214446",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261019-214714",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-214725"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-214553",
+    "pre_fix_commit": "74c2950cdec456881b062d2af6cba922c2253dcf",
+    "scratch_schema_count": 0,
+    "scratch_account_count": 0
+  }
+}

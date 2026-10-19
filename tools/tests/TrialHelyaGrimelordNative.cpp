@@ -17,7 +17,7 @@ struct GrimWatch
     {
         std::vector<Unit*> casters;if(auto g=map.GetCreature(grim))casters.push_back(g);
         for(auto const& ref:map.GetPlayers())casters.push_back(ref.getSource());
-        for(auto caster:casters)for(auto id:{228838u,232408u,228397u,228519u,228390u})for(auto s:NativeSpellEvents(*caster,id)){
+        for(auto caster:casters)for(auto id:{228838u,232408u,228397u,228519u,228390u,158534u})for(auto s:NativeSpellEvents(*caster,id)){
             if(casts[id].insert(s->m_castGuid[0]).second){values[id].push_back((s->*Access(GrimValueTag{}))->EffectBasePoints[0]);times[id].push_back(elapsed);unitTargets[id].insert(s->m_targets.GetUnitTargetGUID());if(auto original=s->GetOriginalCaster())originals[id].insert(original->GetGUID());}
             unsigned effect=id==228519?1:0;for(auto const& target:*s->GetUniqueTargetInfo())if(target->effectMask&(1<<effect)){targets[id].insert(target->targetGUID);perCastTargets[id][s->m_castGuid[0]].insert(target->targetGUID);if(target->processed&&target->damage>0)damaged[id].insert(target->targetGUID);}
             if(id==228390&&s->m_targets.HasDst()&&caster->GetExactDist(s->m_targets.GetDstPos())<0.05f)centeredNovas.insert(s->m_castGuid[0]);
@@ -44,6 +44,10 @@ static void GrimAbilities(GarmPlayer& p,GarmPlayer& closePlayer,GarmPlayer& dist
     auto grim=GrimBegin(p,map,helya);map.PlayerRelocation(&closePlayer,500,640,7.5f,0);map.PlayerRelocation(&distantPlayer,520,640,7.5f,0);
     pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());grim->AddThreat(&p,100000);grim->AddThreat(&closePlayer,1);grim->AddThreat(&distantPlayer,1);grim->AddThreat(&pet,1);
     GrimWatch rotation(map,*grim);rotation.Advance(70000,true);
+#ifndef TRIAL_HELYA_GRIMELORD_BASELINE
+    Require(rotation.casts[158534].size()==(map.IsMythicRaid()?1:0),"Native Fission must activate once on Mythic only");
+    if(map.IsMythicRaid())Require(grim->GetAura(158534)&&grim->GetAura(158534)->GetStackAmount()==1,"Fission repeated or lost its permanent aura");
+#endif
     std::cout<<"GRIM_ROTATION slam=";for(auto t:rotation.times[228519])std::cout<<t<<',';std::cout<<" nova=";for(auto t:rotation.times[228390])std::cout<<t<<',';std::cout<<" rot=";for(auto t:rotation.times[228838])std::cout<<t<<',';std::cout<<" slamVictim="<<(rotation.unitTargets[228519]==std::set<ObjectGuid>{p.GetGUID()})<<" centeredNovas="<<rotation.centeredNovas.size()<<std::endl;
     Require(rotation.casts[228519].size()>=3&&rotation.casts[228390].size()>=2,"Native Grimelord Slam/Nova did not repeat");
     Require(rotation.unitTargets[228519]==std::set<ObjectGuid>{p.GetGUID()}&&rotation.centeredNovas.size()==rotation.casts[228390].size(),"Native AI chose wrong Slam victim/Nova destination");
@@ -69,6 +73,48 @@ static void GrimAbilities(GarmPlayer& p,GarmPlayer& closePlayer,GarmPlayer& dist
     GrimWatch nova(map,*grim);grim->CastSpell(grim,228390,false);nova.Advance(3500);Require(nova.targets[228390]==std::set<ObjectGuid>{p.GetGUID(),closePlayer.GetGUID()}&&nova.damaged[228390]==nova.targets[228390],"Native fifteen-yard Nova missed nearby or hit distant Player");
     grim->CastSpell(grim,228390,false);Require(grim->HasUnitState(UNIT_STATE_CASTING),"Nova interrupt probe did not start an actual cast");GrimWatch interrupted(map,*grim);interrupted.Advance(500);grim->InterruptNonMeleeSpells(true);interrupted.Advance(3500);Require(interrupted.damaged[228390].empty(),"Interrupted Nova still dispatched damage");
     std::cout<<"GRIM_GEOMETRY slamTargets="<<slam.targets[228519].size()<<" novaTargets="<<nova.targets[228390].size()<<" interruptedTargets="<<interrupted.targets[228390].size()<<std::endl;
+}
+// Real AI activation and real selector/periodic/spread dispatch. The ten-second
+// schedule follows the pinned as_core implementation; retail timing is unverified.
+static void GrimFission(GarmPlayer& p,GarmPlayer& closePlayer,GarmPlayer& distantPlayer,InstanceMap& map,Creature& helya)
+{
+    auto info=sSpellMgr->GetSpellInfo(158534);auto effect=info->GetEffect(EFFECT_0,map.GetDifficultyID());
+    Require(info->GetDuration(map.GetDifficultyID())==-1&&info->GetAuraOptions(map.GetDifficultyID())->CumulativeAura==4&&effect->Effect==SPELL_EFFECT_APPLY_AURA&&effect->ApplyAuraName==SPELL_AURA_DUMMY&&effect->BasePoints==1&&effect->TargetA.GetTarget()==TARGET_UNIT_CASTER&&!effect->ApplyAuraPeriod&&!effect->TriggerSpell,"Native Fission data differs from the researched modifier");
+    auto grim=GrimBegin(p,map,helya);auto guid=grim->GetGUID();closePlayer.SetGameMaster(true);distantPlayer.SetGameMaster(true);
+    GrimWatch activation(map,*grim);activation.Advance(9000,true);
+    Require(!grim->HasAura(158534)&&p.GetAura(193367)&&p.GetAura(193367)->GetStackAmount()==3,"First Rot must precede Fission with three stacks");
+    activation.Advance(1200,true);bool mythic=map.IsMythicRaid();
+    Require(grim->HasAura(158534)==mythic&&activation.casts[158534].size()==(mythic?1:0),"Native ten-second Mythic Fission activation missing or leaked difficulty");
+    if(mythic){std::cout<<"GRIM_FISSION_ACTIVATION elapsed="<<activation.times[158534][0]<<std::endl;Require(activation.times[158534][0]+40>=10000&&activation.times[158534][0]<=10040,"Fission activation missed reference schedule");Require(activation.targets[158534]==std::set<ObjectGuid>{guid},"Fission aura applied to a Player instead of the caster");}
+    Require(p.GetAura(193367)&&p.GetAura(193367)->GetStackAmount()==2,"Fission retroactively changed an existing Rot");
+    p.RemoveAura(193367);grim->CastSpell(grim,228838,true);activation.Advance(50);unsigned stacks=mythic?4:3;
+    Require(p.GetAura(193367)&&p.GetAura(193367)->GetStackAmount()==stacks,"Post-Fission selector did not apply native3/4 starting stacks");
+    float healing=sSpellMgr->GetSpellInfo(193367)->GetEffect(EFFECT_1,map.GetDifficultyID())->BasePoints;
+    Require(p.GetAura(193367)->GetEffect(EFFECT_1)->GetAmount()==healing*stacks,"Fission starting stacks did not scale native healing penalty");
+    closePlayer.SetGameMaster(false);distantPlayer.SetGameMaster(false);map.PlayerRelocation(&p,500,640,7.5f,0);map.PlayerRelocation(&distantPlayer,510,640,7.5f,0);
+    GrimWatch decay(map,*grim);
+    for(unsigned tick=1;tick<=stacks;++tick){
+        closePlayer.RemoveAura(193367);map.PlayerRelocation(&closePlayer,504,640,7.5f,0);decay.Advance(3100);
+        auto aura=p.GetAura(193367);Require(tick==stacks?!aura:aura&&aura->GetStackAmount()==stacks-tick,"Empowered Rot failed per-period stack decay");
+        if(aura)Require(aura->GetEffect(EFFECT_1)->GetAmount()==healing*(stacks-tick),"Empowered Rot healing penalty did not decay with stacks");
+        bool spreads=mythic||tick==stacks;Require(closePlayer.HasAura(193367)==spreads,"Empowered Rot lost difficulty-specific spread");
+        if(spreads)Require(closePlayer.GetAura(193367)->GetStackAmount()==stacks&&closePlayer.GetAura(193367)->GetCasterGUID()==guid,"Secondary infection lost Fission or original Grimelord");
+        Require(!distantPlayer.HasAura(193367),"Empowered spread exceeded native radius");closePlayer.RemoveAura(193367);map.PlayerRelocation(&closePlayer,520,640,7.5f,0);
+    }
+    Require(decay.casts[232408].size()==stacks&&decay.casts[228397].size()==(mythic?stacks:1),"Empowered periodic damage/spread duplicated or missing");
+    auto damage=sSpellMgr->GetSpellInfo(232408)->GetEffect(EFFECT_0,map.GetDifficultyID())->CalcValue(grim);
+    for(unsigned i=0;i<stacks;++i)Require(std::fabs(decay.values[232408][i]-damage*(stacks-i))<1,"Empowered carrier damage lost native per-stack value");
+    closePlayer.SetGameMaster(true);distantPlayer.SetGameMaster(true);
+    for(unsigned i=0;i<4;++i){grim->CastSpell(grim,228838,true);activation.Advance(30);}
+    Require(p.GetAura(193367)&&p.GetAura(193367)->GetStackAmount()==(mythic?9:3),"Reinfection exceeded native Rot cap or lost empowered increment");
+    p.RemoveAura(193367);
+    // Even a stale/injected modifier cannot empower another difficulty, and Reset
+    // clears the permanent aura before the same actor's next combat.
+    if(!mythic){grim->CastSpell(grim,158534,true);activation.Advance(30);Require(grim->HasAura(158534),"Stale modifier fixture missing");grim->CastSpell(grim,228838,true);activation.Advance(30);Require(p.GetAura(193367)&&p.GetAura(193367)->GetStackAmount()==3,"Stale Fission empowered non-Mythic Rot");p.RemoveAura(193367);}
+    grim->AI()->Reset();Require(!grim->HasAura(158534),"Grimelord Reset retained permanent Fission");
+    grim->AI()->EnterCombat(&p);GrimWatch retry(map,*grim);retry.Advance(10200,true);
+    Require(retry.casts[158534].size()==(mythic?1:0)&&grim->HasAura(158534)==mythic,"Reset/retry did not rearm one Mythic Fission");
+    std::cout<<"GRIM_FISSION diff="<<uint32(map.GetDifficultyID())<<" first=3 next="<<stacks<<" ticks="<<decay.casts[232408].size()<<" retry="<<retry.casts[158534].size()<<" initialTime="<<(mythic?activation.times[158534][0]:0)<<std::endl;
 }
 static void GrimelordCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
@@ -128,7 +174,12 @@ static void GrimelordCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& 
 #else
     Require(!p.HasAura(193367),"Native Helya reset left Rot");
 #endif
-    PumpHelya(map,2000);GrimAbilities(p,closePlayer,distantPlayer,pet,map,helya);grim=GrimBegin(p,map,helya);grim->AddAura(193367,&p,nullptr,3);
+    PumpHelya(map,2000);
+#ifndef TRIAL_HELYA_GRIMELORD_BASELINE
+    pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());
+    GrimFission(p,closePlayer,distantPlayer,map,helya);
+#endif
+    GrimAbilities(p,closePlayer,distantPlayer,pet,map,helya);grim=GrimBegin(p,map,helya);grim->AddAura(193367,&p,nullptr,3);
     for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);PumpHelya(map,7000);Require(helya.AI()->GetData(2)==3&&grim->IsAlive()&&p.HasAura(193367),"Phase three lost existing Grimelord/Rot");
     p.RemoveAura(193367);Require(p.AddAura(193367,&p,nullptr,3),"Legacy self-owned Rot victory probe failed");
     helya.ResetPlayerDamageReq();helya.LowerPlayerDamageReq(1);helya.SetLootRecipient(&p);for(unsigned i=0;i<16&&helya.IsAlive();++i)p.DealDamage(&helya,UINT32_MAX-4096,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);

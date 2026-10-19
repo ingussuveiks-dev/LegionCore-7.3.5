@@ -70,6 +70,7 @@ enum Spells
     SpellFetidRot                       = 193367,
     SpellFetidRotCast                   = 228838,
     SpellFetidRotDamage                 = 232408,
+    SpellFetidFission                   = 158534,
     SpellTaintedEssence                 = 228052,
     SpellGiveNoQuarter                  = 228632,
     SpellLanternOfDarkness              = 228619,
@@ -1327,6 +1328,7 @@ struct npc_grimelord : ScriptedAI
     void Reset() override
     {
         events.Reset();
+        me->RemoveAura(SpellFetidFission);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
     }
 
@@ -1337,6 +1339,10 @@ struct npc_grimelord : ScriptedAI
         events.RescheduleEvent(EVENT_1, me->GetMap()->IsLfrRaid() ? 14000 : 12000);
         events.RescheduleEvent(EVENT_2, me->GetMap()->IsLfrRaid() || me->GetMap()->IsNormalRaid() ? 17000 : 14000);
         events.RescheduleEvent(EVENT_3, 7000);
+        // One permanent modifier, following the public as_core implementation.
+        // Its ten-second activation still lacks an original retail combat log.
+        if (me->GetMap()->IsMythicRaid())
+            events.RescheduleEvent(EVENT_4, 10000);
     }
 
     void IsSummonedBy(Unit* /*summoner*/) override
@@ -1378,6 +1384,9 @@ struct npc_grimelord : ScriptedAI
                 events.RescheduleEvent(EVENT_3, me->GetMap()->IsLfrRaid() || me->GetMap()->IsNormalRaid() ? 15800 : 12200);
                 break;
             }
+            case EVENT_4:
+                DoCast(me, SpellFetidFission, true);
+                break;
             }
         }
         DoMeleeAttackIfReady();
@@ -1796,13 +1805,14 @@ static void ApplyFetidRot(Unit* caster, Unit* target)
 {
     if (!caster || caster->GetEntry() != Data::Creatures::Grimelord || !target || !target->IsPlayer() || !target->IsAlive() || !FetidRotEncounterActive(target))
         return;
+    uint8 stacks = caster->GetMap()->IsMythicRaid() && caster->HasAura(SpellFetidFission) ? 4 : 3;
     if (Aura* aura = target->GetAura(SpellFetidRot, caster->GetGUID()))
     {
-        aura->ModStackAmount(3);
+        aura->ModStackAmount(stacks);
         aura->RefreshDuration();
     }
     else
-        caster->AddAura(SpellFetidRot, target, nullptr, 3);
+        caster->AddAura(SpellFetidRot, target, nullptr, stacks);
 }
 
 //228838: use the native70-yard selector and native two-target cap, after Player admission.
