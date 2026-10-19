@@ -69,5 +69,6 @@
     "docs/audits/helarjar-authenticity-2026-10-18.json"
   ],
   "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
-  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified.",
+  "native_loot_followup": "docs/audits/lost-army-native-loot-2026-10-19.json: full linked Unit::Kill/Player/Pet/group/packet/inventory execution exposed a stale cached-list bypass missed by the earlier extracted fixture. Revalidate current admission at view/availability/receipt and guard AutoStore's null result. Release rebuilt and binary checked. Client and exact retail pre-rolled-corpse timing remain unverified; historical findings above are retained."
 }

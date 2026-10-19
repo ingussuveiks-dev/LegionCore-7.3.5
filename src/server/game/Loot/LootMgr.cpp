@@ -1429,6 +1429,11 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem* *qite
     if (is_looted)
         return nullptr;
 
+    // Per-player lists remember admission at loot creation. Quest progress,
+    // conditions or professions may have changed before this request arrives.
+    if (item && !AllowedForPlayer(player, item->item.ItemID, item->item.CurrencyID, item->type, item->needs_quest, item))
+        return nullptr;
+
     return item;
 }
 
@@ -1436,6 +1441,18 @@ uint32 Loot::GetMaxSlotInLootFor(Player* player) const
 {
     QuestItemMap::const_iterator itr = PlayerQuestItems.find(player->GetGUIDLow());
     return items.size() + (itr != PlayerQuestItems.end() ?  itr->second->size() : 0);
+}
+
+static bool IsLootItemVisibleTo(Loot const& loot, LootItem const& item, Player* player)
+{
+    // Preserve the group/master-looter display exception used when building
+    // these lists; actual item receipt still needs full recipient admission.
+    if (item.follow_loot_rules)
+        if (Group* group = player->GetGroup())
+            if (group->GetLootMethod() != MASTER_LOOT || group->GetLooterGuid() == player->GetGUID())
+                return item.AllowedForPlayer(player);
+
+    return loot.AllowedForPlayer(player, item.item.ItemID, item.item.CurrencyID, item.type, item.needs_quest, const_cast<LootItem*>(&item));
 }
 
 // return true if there is any FFA, quest or conditional item for the player.
@@ -1449,7 +1466,7 @@ bool Loot::hasItemFor(Player* player) const
         for (QuestItemList::const_iterator qi = q_list->begin(); qi != q_list->end(); ++qi)
         {
             LootItem const& item = quest_items[qi->index];
-            if (!qi->is_looted && !item.is_looted)
+            if (!qi->is_looted && !item.is_looted && IsLootItemVisibleTo(*this, item, player))
                 return true;
         }
     }
@@ -1462,7 +1479,7 @@ bool Loot::hasItemFor(Player* player) const
         for (QuestItemList::const_iterator fi = ffa_list->begin(); fi != ffa_list->end(); ++fi)
         {
             LootItem const& item = items[fi->index];
-            if (!fi->is_looted && !item.is_looted)
+            if (!fi->is_looted && !item.is_looted && IsLootItemVisibleTo(*this, item, player))
                 return true;
         }
     }
@@ -1475,7 +1492,7 @@ bool Loot::hasItemFor(Player* player) const
         for (QuestItemList::const_iterator ci = conditional_list->begin(); ci != conditional_list->end(); ++ci)
         {
             LootItem const& item = items[ci->index];
-            if (!ci->is_looted && !item.is_looted)
+            if (!ci->is_looted && !item.is_looted && IsLootItemVisibleTo(*this, item, player))
                 return true;
         }
     }
@@ -1587,7 +1604,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
             if (personal)
                 canLoot = !item.is_looted;
 
-            if (canLoot)
+            if (canLoot && IsLootItemVisibleTo(*this, item, viewer))
             {
                 WorldPackets::Loot::LootItem lootItem;
                 lootItem.LootListID = item.LootListID ? item.LootListID : fi->index+1;
@@ -1612,7 +1629,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
             if (personal)
                 canLoot = !item.is_looted;
 
-            if (canLoot)
+            if (canLoot && IsLootItemVisibleTo(*this, item, viewer))
             {
                 WorldPackets::Loot::LootItem lootItem;
                 lootItem.LootListID = item.LootListID ? item.LootListID : ci->index+1;
@@ -1661,7 +1678,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
             if (personal)
                 canLoot = !item.is_looted;
 
-            if (canLoot)
+            if (canLoot && IsLootItemVisibleTo(*this, item, viewer))
             {
                 lootCurrency.CurrencyID = item.item.CurrencyID;
                 lootCurrency.Quantity = item.count;
@@ -1691,7 +1708,7 @@ void Loot::BuildLootResponse(WorldPackets::Loot::LootResponse& packet, Player* v
 
             TC_LOG_DEBUG("loot", "Loot::BuildLootResponse canLoot %i personal %u LootListID %i is_looted %u ItemID %u", canLoot, personal, item.LootListID, qi->is_looted, item.item.ItemID);
 
-            if (canLoot)
+            if (canLoot && IsLootItemVisibleTo(*this, item, viewer))
             {
                 WorldPackets::Loot::LootItem lootItem;
                 lootItem.LootListID = item.LootListID ? item.LootListID : (items.size() + (qi - q_list->begin()) + 1);

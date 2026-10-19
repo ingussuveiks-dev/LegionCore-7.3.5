@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-19",
+  "quest": 45088,
+  "landing": 44923,
+  "baseline": "0fbd08e4",
+  "status": "Stale cached loot admission repaired, native regression and canonical Release checks pass; client verification pending",
+  "client_verified": false,
+  "scope": "Code and data verification only. No production SQL, item metadata, drop chances/counts, world rotation or character progress changes.",
+  "problem": [
+    "Full native Unit::Kill generates fragment loot before KillRewarder's 50ms delayed landing credit. A kill at9/10 admits a cached per-player quest list, then native credit advances to10/10.",
+    "BuildLootResponse, hasItemFor and LootItemInSlot trusted those cached lists after conditions or quest status changed. Actual Player::StoreLootItem still granted142487 into native inventory after10/10, landing/fragment quest completion or abandonment-state changes, or switching to a raid.",
+    "At the actual native split, these quest fragments belong to the shared victim.loot. The separate player.personalLoot corpse entry excludes quest items through isOnlyQuest/personal. The probe exercises the real shared quest list rather than substituting personal loot."
+  ],
+  "implementation": [
+    "LootItemInSlot rechecks full native AllowedForPlayer before returning an item. This makes ordinary recipient item receipt authoritative even when a list was built earlier.",
+    "All four cached response branches (FFA, conditional, currency and quest) and all three cached hasItemFor branches recheck current admission. Preserve the existing FOLLOW_LOOT_RULES group/master-looter display exception for recipient compatibility while still checking current DB conditions; actual ordinary receipt uses full admission.",
+    "Rejection does not delete a cached entry, consume its count or mutate unlootedCount. An independent eligible group member and a valid reaccept/retry retain their loot.",
+    "Player::AutoStoreLoot now handles a null slot result before dereferencing it. All other LootItemInSlot callers were inspected and already handle null. No quest, entry or map whitelist was added."
+  ],
+  "native_inputs": {
+    "quest_loader": "Native Quest constructor SELECT extracted from current QuestDataStoreMgr::LoadQuests; native LoadQuestObjective for44923/45088; loader-derived KILL|CAST and DELIVER flags seeded.",
+    "items": "Native7.3.5 Item/ItemSparse and supporting DB2 plus LoadItemTemplates and LoadItemTemplateAddon. Probe rejects newly added item_script_names for142487/2589 until registered.",
+    "loot": "Actual LootStore::LoadLootTable with a read-only scoped SELECT of the three live fragment rows. Restore exact table identity before FillLoot. The three shared column values are asserted zero because scoped table identity skips that optional column in the native loader.",
+    "rows": [
+      { "entry": 116180, "item": 142487, "chance": 58.6728, "count": [1, 2], "quest_required": true },
+      { "entry": 116600, "item": 142487, "chance": 45.6384, "count": [1, 2], "quest_required": true },
+      { "entry": 116601, "item": 142487, "chance": 56.8592, "count": [1, 2], "quest_required": true }
+    ],
+    "conditions": "All12 current source1 rows for these entries/item: native9/41/58/60 validation, source admission and condition attachment. No modeled condition evaluator or cached-list implementation.",
+    "library": "Link against the actual game.lib named by the generated Release worldserver project, not a separate extracted LootMgr copy. Source/library/executable freshness and DB2/GT/test/library hashes recorded per run."
+  },
+  "regression": {
+    "runner": "tools/tests/Test-LostArmyNative.ps1",
+    "current_run": "build-extractors/runtime-test/lost-army-native/run-20261019-072412",
+    "baseline_command": "tools/tests/Test-LostArmyNative.ps1 -Baseline",
+    "baseline_run": "build-extractors/runtime-test/lost-army-native-baseline/run-20261019-072412",
+    "baseline_library_sha256": "7FB342688880335E62AA5E4EF79A2E2FB3B3EFDB28613095B1F1B2589431FE29",
+    "baseline_capture": "Full209005616-byte game.lib saved before source edits from pinned0fbd08e4; subsequent runs verify the saved SHA. Baseline mode requires that local capture and intentionally asserts the old forbidden receipt; PASS in baseline output means the defect reproduced, not corrected behavior.",
+    "baseline_example": "DENY reason=tenth-credit before=1 view=1 slot=1 inventory=0->1. The matching current cases have view0, null slot and no inventory increase.",
+    "coverage": [
+      "Full native Unit::Kill, real Player/session, actual Pet instance and native owner resolution, actual KillRewarder delayed update, loot generation, BuildLootResponse with packet.Write serialization, slot admission and StoreLootItem inventory receipt. Both factions, Player/Pet killers and all three live entries at9->10.",
+      "Landing44923 and fragment quest45088 set to NONE or COMPLETE after loot generation; below-quota8->9 positive receipt; native group references/member slots/registry with nearby delayed member credit; one member9->10 denied while another8->9 receives the shared fragment; party-to-raid rejection.",
+      "Denial preserves cached state and another member's rights; reaccept restores eligibility. Private ordinary2589 item remains receivable after landing abandonment-state change. Controlled FOLLOW_LOOT_RULES/master-looter display exception remains usable.",
+      "Controlled FFA, nonquest conditional and currency1220 variants use actual AddItem, FillNotNormalLootFor, packet serialization and slot functions before/after quota for shared and personal loot. These are private branch fixtures, not the live fragment metadata.",
+      "Full native AutoStoreLoot receives a rolled physical conditional slot that has no admitted cache. A private read-only SELECT changes QuestRequired to0 for this branch fixture only; native condition rejection must safely skip the null slot and grant nothing. Live rows/chances/counts are unchanged."
+    ]
+  },
+  "automated_checks": [
+    "Test-LostArmyNative.ps1 PASS and pinned-library -Baseline PASS (expected old bypass reproduced); both native runs DBErrors.log0 bytes.",
+    "Test-LostArmyRelease.ps1 PASS: deployed slot calls native AllowedForPlayer, all4 cached response branches and all3 availability branches call the new helper. Canonical AutoStore disassembly resolves incremental thunks and confirms a null-result branch before dereference.",
+    "Test-LostArmyLanding.ps1 and its Test-LostArmy dependencies PASS, including repeated migration in temporary tables and native condition/objective admission.",
+    "Test-RockawayCompletion.ps1 PASS, including its pinned baseline; Test-RockawayChannelNative.ps1 -Offensive PASS at runtime-test/rockaway-offensive-native/run-20261019-072621, preserving native hazards/combat and support reuse.",
+    "Standard CMake Release worldserver/bnetserver build PASS, without global OutDir. Canonical runtime startup ready=True and graceful shutdown exit0; DBErrors.log and stderr.log0 bytes.",
+    "PowerShell syntax, JSON parsing, diff whitespace and staged source/test/audit review completed before commit."
+  ],
+  "test_boundaries": [
+    "Initial player/task slots, objective counts, rotation policy, tap/damage-contribution input, group registry/member state and controlled idle actor AI are seeded in memory. Full native Unit::Kill executes, but this is not an actual lethal spell-damage, pet combat-AI, client login or complete content AI test.",
+    "NONE/COMPLETE and reaccept use native SetQuestStatus/SetQuestSlot/objective setters. The real abandonment/reward network handlers and persistence/relogin are not exercised by these state transitions.",
+    "Only three fragment rows are loaded for corpse generation; the entire ordinary/zone loot catalog and all loot methods/roll distribution are not tested. Private variants are identified explicitly above. Packet serialization has no client recipient or client-window refresh confirmation.",
+    "Native World/Hotfix/Login pools use read-only sessions. No CharacterDatabase is opened, no persistent spawn/character is modified. Two bounded socketless account0 sessions are intentionally process-lifetime allocations so their normal destructor account UPDATE cannot execute.",
+    "DB2 and metadata are local native7.3.5 data. This follow-up establishes current engine execution and policy enforcement; it adds no new historical retail evidence."
+  ],
+  "authenticity_boundary": "Migration04 already configures a live count<10 condition. This fix enforces that configured policy when viewing/receiving old loot, including a tenth corpse generated before delayed credit. Existing historical comments support stopping around the quota but do not establish exact retail treatment of pre-rolled corpses. Exact retail tenth-corpse/stale-loot timing remains unverified; no compensation or alternative timing is asserted.",
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "build_log": "build-extractors/runtime-test/lost-army-native-baseline/release-build-final.log",
+    "worldserver_sha256": "9430C46C2DEB66952214C8CD3B4062280E072FA137A7A8895A95DE4C2D6D6E71",
+    "bnetserver_sha256": "B7BD3B24C76CF2640A6A373347C7B2F46B8BC05C595E7571D73CDF41034F5DF7",
+    "actual_final_link_game_library": "build-extractors/src/server/game/Release/game.lib",
+    "game_library_sha256": "7E326AB74A22E071DEB813FF920BF01ED62506706350A11AEED7F81DA64FD1BA",
+    "release_manifest": "build-extractors/runtime-test/lost-army-native/release-inputs.json",
+    "startup_logs": "build-extractors/runtime-test/lost-army-native/startup-20261019-072601",
+    "worldserver_left_running": false
+  },
+  "pending_client_checks": [
+    "Actual player/pet/party kills and tenth-credit loot window, reopening old corpses after completion/abandonment, and an independent eligible party member's receipt.",
+    "Full quest completion, reward, inventory save/load, relog/rotation and ordinary/quest/master-loot UI behavior. Native automation is not client verification."
+  ],
+  "next_code_followup": "WorldSession::HandleMasterLootItem passes item.type into CurrencyID and shifts later AllowedForPlayer arguments, leaving its optional LootItem pointer null. This separate dispatcher bypasses LootItemInSlot and is not repaired/certified by this focused ordinary-recipient fix. Reproduce and fix in its own commit.",
+  "related_audits": [
+    "docs/audits/lost-army-player-progress-2026-10-18.json",
+    "docs/audits/vrekt-credits-2026-10-18.json",
+    "docs/audits/trial-lost-army-2026-10-18.json"
+  ]
+}

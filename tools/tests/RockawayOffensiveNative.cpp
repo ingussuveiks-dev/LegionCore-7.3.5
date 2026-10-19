@@ -137,6 +137,7 @@ static void Advance(Vision& vision, NativePlayer& player, uint32 duration, bool 
     }
 }
 
+#ifndef ROCKAWAY_NATIVE_SUPPORT_ONLY
 static int OffensiveRun(int argc, char** argv)
 {
     InitializeNative(argc, argv);
@@ -365,3 +366,4 @@ int main(int argc, char** argv)
     try { return OffensiveRun(argc, argv); }
     catch (std::exception const& e) { std::cerr << e.what() << '\n'; return 1; }
 }
+#endif

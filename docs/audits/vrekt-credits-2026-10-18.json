@@ -3,6 +3,7 @@
   "title": "Helarjar Landing: Vrekt",
   "date": "2026-10-18",
   "baseline": "80f2b639",
+  "native_loot_followup": "docs/audits/lost-army-native-loot-2026-10-19.json adds full linked Unit::Kill/real Player/Pet/group delayed credit and actual corpse-loot/inventory execution. This closes part of the original fixture boundary without claiming lethal spell damage, content AI, network reward/abandon handlers, persistence or client verification. It also fixes stale loot admission after credit; prior evidence and limits remain historical records.",
   "rewardFollowUp": "vrekt-reward-state-2026-10-18.json repairs missing/expired/already rewarded rotation execution, checks native status save/load and temporary SQL round-trip, and executes the native230157/3982 outro with a Creature surrogate. Original delivery/session/client boundaries remain; full-inventory item delivery is a separate next fix.",
   "status": "No production defect found in alternate kill credit, the two objective thresholds or task completion dispatch. Added executable regression coverage and retained the unverified reward/client boundaries.",
   "findings": {
