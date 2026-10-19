@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-19",
+  "baseline": "77d92ffe",
+  "status": "Native group removal, disband and logout now settle or release active loot rolls; automated checks pass; real client/network verification remains pending.",
+  "findings": [
+    "RemoveMemberQueue erased the departing vote before calling CountRollVote with that same GUID. Admission immediately rejected the missing voter, so remaining completed votes and zero-voter rolls waited for the timer.",
+    "Disband cleared raw Roll pointers without completion, deletion or unblocking items; the native two-member removal path reproduced unrecoverable blocked loot.",
+    "Logout intentionally retains persistent party membership but did not remove vote participation. A pending disconnecting player delayed otherwise complete rolls."
+  ],
+  "implementation": [
+    "RemoveMemberFromRolls subtracts the departing vote/counters, erases participation and calls CountTheRoll directly once remaining votes are complete. Restart iteration after vector compaction to handle simultaneous rolls.",
+    "Disband detaches player group references first, then resolves/cancels every roll while loot exists, preserving the existing eligibility checks and unblocking recovery.",
+    "LogoutPlayer removes participation from current and distinct original groups before native player teardown. Saved party membership remains intact."
+  ],
+  "native_tests": {
+    "runner": "tools/tests/Test-GroupRollLifecycleNative.ps1",
+    "current": "build-extractors/runtime-test/group-roll-lifecycle-native/run-20261019-083932",
+    "baseline": "build-extractors/runtime-test/group-roll-lifecycle-native-baseline/run-20261019-083932",
+    "baseline_game_sha256": "0B43632AFE658AC7E8C45CBFDBD29CDCDFDF65CB4054D945F3E7F9E3361167E5",
+    "result": "Both current and pinned full-game-library baseline exit 0 with empty DBErrors logs. Baseline assertions reproduce delayed completion, blocked disband item and retained logout participation; current assertions require recovery/immediate delivery.",
+    "coverage": [
+      "Actual Group::RemoveMember/RemoveMemberQueue for PASS, NEED, GREED and pending departures, native refs/member slots, actual scratch SQL DELETE, two simultaneous rolls and repeated completion without duplicate delivery.",
+      "Actual two-member RemoveMember invokes native Disband and deletes/unregisters the group. Current loot remains unconsumed/unblocked and native StoreLootItem retry grants once.",
+      "Controlled quest-only roll with one eligible voter releases the item without grant when that voter leaves. Explicit FOLLOW_LOOT_RULES/non-FFA fixture is not live fragment metadata.",
+      "Actual WorldSession::Update invokes full LogoutPlayer(true), native save, map/player deletion and ObjectAccessor cleanup. Current and original-group-only variants retain three persistent member slots and the target SQL membership row, save offline state, and grant the remaining winner once. Human/orc cases use GUID104..107."
+    ],
+    "isolation": "167 schema-only character/auth tables in two unique disposable databases, with a disposable account restricted to those schemas. World/Hotfix bootstrap remains read-only. No personal rows copied or changed; canonical config untouched. Both schemas/user removed after each run; final catalog check found zero scratch schemas/users.",
+    "development_failures": "Configured legion user could not create databases (1044), so wrapper uses admin-managed disposable schemas/user. Oversized fake names triggered native SQL1406 and were shortened; no production schema change. Shared invalid quest allocation bounds caused cleanup crashes/hangs and were corrected/revalidated in the separate fixture-integrity audit. Initial partial assertions were not accepted as passing runs.",
+    "fixture_integrity": "docs/audits/native-quest-fixture-integrity-2026-10-19.json"
+  },
+  "release": {
+    "command": "cmake --build build-extractors --config Release --target worldserver bnetserver --parallel 4",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "7465342C0535F2363A26901CFF00C54DAF0FD434363E06A90C7C6BBE5CFCBB67",
+    "game_lib_sha256": "05B1D6C257144390407829369EFD355BADE40286F040B5676C4D899AF4AC6A47",
+    "bnetserver_sha256": "E9514AD257BF3982C1CE9BC102CD6C79BBAB162F286DA660EFAA2FAD78100819",
+    "binary_check": "Test-GroupRollLifecycleRelease.ps1 verifies actual final-link input freshness and canonical PE bounds/thunks: RemoveMemberQueue calls cleanup, cleanup directly calls CountTheRoll, Disband calls CountTheRoll, LogoutPlayer has two cleanup calls. Prior roll/master-loot/LostArmy/Rockaway binary checks also pass.",
+    "startup": "build-extractors/runtime-test/group-roll-lifecycle-native/startup-20261019-083404",
+    "ready": true,
+    "exit": 0,
+    "db_errors_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "limitations": [
+    "Initial map/player/group/loot state is seeded; sessions are socketless. Native SetCanLogout gate is explicitly set before actual Update/LogoutPlayer. No actual TCP disconnect, authenticated login, World scheduler, battleground transition, LFG/leader-kick flow or saved-group reconstruction was exercised.",
+    "Test sessions are process-lifetime allocations; full Player logout/deletion is exercised, session destructor account updates are not. No real pet/client packets/loot UI or full quest completion is claimed.",
+    "Quest/conditional loot authenticity and historical client gaps from prior audits remain. This closes the controlled RemoveMember/logout lifecycle gap and does not establish complete loot-system correctness."
+  ],
+  "prior_audit": "docs/audits/roll-winner-admission-2026-10-19.json"
+}

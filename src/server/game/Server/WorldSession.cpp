@@ -525,6 +525,15 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->SetDelete();
         _player->SetChangeMap(false); // If not disable crash on clear evecnt function
 
+        // Disconnect keeps persistent party membership, but a departing
+        // session must not keep the other participants' loot rolls waiting.
+        Group* group = _player->GetGroup();
+        Group* originalGroup = _player->GetOriginalGroup();
+        if (group)
+            group->RemoveMemberFromRolls(_player->GetGUID());
+        if (originalGroup && originalGroup != group)
+            originalGroup->RemoveMemberFromRolls(_player->GetGUID());
+
         // finish pending transfers before starting the logout
         if (_player->IsBeingTeleportedFar())
         {

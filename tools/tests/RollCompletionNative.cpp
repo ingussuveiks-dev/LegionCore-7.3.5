@@ -287,6 +287,7 @@ static void CheckRecipients(Map& map, ProbeParty& group, LootPlayer& master, Loo
     master.Accept(0); target.Accept(0);
     std::cout << "PASS: actual resolution handles changed target conditions, valid fallback, absent/departed players, all-ineligible and consumed/missing loot; baseline asserts stale grants/stuck cleanup.\n";
 }
+#ifndef ROLL_COMPLETION_NATIVE_SUPPORT_ONLY
 static int CompletionRun(int argc, char** argv)
 {
     InitializeNative(argc, argv); opcodeTable.Initialize(); LoadLootInputs();
@@ -315,3 +316,4 @@ int main(int argc, char** argv)
     try { return CompletionRun(argc, argv); }
     catch (std::exception const& error) { std::cerr << error.what() << '\n'; return 1; }
 }
+#endif

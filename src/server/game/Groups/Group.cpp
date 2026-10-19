@@ -874,27 +874,7 @@ bool Group::RemoveMemberQueue(ObjectGuid const& guid, RemoveMethod const& method
         if (player && player->GetSkillValue(SKILL_ENCHANTING) || !player)
             ResetMaxEnchantingLevel();
 
-        // Remove player from loot rolls
-        for (auto itr : RollId)
-        {
-            auto itr2 = itr->playerVote.find(guid);
-            if (itr2 == itr->playerVote.end())
-                continue;
-
-            if (itr2->second == GREED || itr2->second == DISENCHANT)
-                --itr->totalGreed;
-            else if (itr2->second == NEED)
-                --itr->totalNeed;
-            else if (itr2->second == PASS)
-                --itr->totalPass;
-
-            if (itr2->second != NOT_VALID)
-                --itr->totalPlayersRolling;
-
-            itr->playerVote.erase(itr2);
-
-            CountRollVote(guid, itr->aoeSlot, MAX_ROLL_TYPE);
-        }
+        RemoveMemberFromRolls(guid);
 
         // Update subgroups
         auto slot = _getMemberWSlot(guid);
@@ -1068,7 +1048,10 @@ void Group::Disband(bool hideDestroy /* = false */)
         if (!isLFGGroup())
             _homebindIfInstance(player);
     }
-    RollId.clear();
+    // Membership is detached above. Finish/cancel every pending roll while
+    // its loot still exists, unblocking items and releasing the Roll objects.
+    while (!RollId.empty())
+        CountTheRoll(RollId.begin());
     m_memberSlots.clear();
 
     RemoveAllInvites();
@@ -1514,6 +1497,39 @@ void Group::CountRollVote(ObjectGuid playerGUID, uint8 AoeSlot, uint8 Choice)
 
     if (roll->TotalEmited() >= roll->totalPlayersRolling)
         CountTheRoll(rollI);
+}
+
+void Group::RemoveMemberFromRolls(ObjectGuid const& guid)
+{
+    for (auto itr = RollId.begin(); itr != RollId.end();)
+    {
+        Roll* roll = *itr;
+        auto vote = roll->playerVote.find(guid);
+        if (vote == roll->playerVote.end())
+        {
+            ++itr;
+            continue;
+        }
+
+        if (vote->second == GREED || vote->second == DISENCHANT)
+            --roll->totalGreed;
+        else if (vote->second == NEED)
+            --roll->totalNeed;
+        else if (vote->second == PASS)
+            --roll->totalPass;
+
+        if (vote->second != NOT_VALID)
+            --roll->totalPlayersRolling;
+        roll->playerVote.erase(vote);
+
+        if (roll->TotalEmited() >= roll->totalPlayersRolling)
+        {
+            CountTheRoll(itr);
+            itr = RollId.begin(); // Resolution erases/compacts the vector.
+        }
+        else
+            ++itr;
+    }
 }
 
 //called when roll timer expires

@@ -65,5 +65,7 @@
     "docs/audits/lost-army-native-loot-2026-10-19.json"
   ],
   "native_fixture_integrity_followup": "docs/audits/native-quest-fixture-integrity-2026-10-19.json",
-  "native_fixture_integrity_note": "Earlier fixture quest bounds were invalid (highest ID rather than exclusive bound). The followup retains this history and records successful corrected current/pinned-baseline revalidation; prior client/authenticity limits remain."
+  "native_fixture_integrity_note": "Earlier fixture quest bounds were invalid (highest ID rather than exclusive bound). The followup retains this history and records successful corrected current/pinned-baseline revalidation; prior client/authenticity limits remain.",
+  "group_roll_lifecycle_followup": "docs/audits/group-roll-lifecycle-2026-10-19.json",
+  "group_roll_lifecycle_note": "The controlled actual RemoveMember, Disband and full native Update/LogoutPlayer save/deletion gap is now covered and repaired. Socket disconnect, authenticated login, world scheduling and client checks remain unverified; historical limitations above are retained."
 }

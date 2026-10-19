@@ -1,13 +1,16 @@
-param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion)
+param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 if($LostArmy -and $Offensive){throw 'Select one native probe'}
 if($MasterLoot -and ($LostArmy -or $Offensive)){throw 'Select one native probe'}
 if($RollCompletion -and ($MasterLoot -or $LostArmy -or $Offensive)){throw 'Select one native probe'}
-$lootProbe=$LostArmy -or $MasterLoot -or $RollCompletion
+if($GroupLifecycle -and ($RollCompletion -or $MasterLoot -or $LostArmy -or $Offensive)){throw 'Select one native probe'}
+if($GroupLifecycle -and $CharacterScratch -notmatch '^codex_roll_lifecycle_[a-f0-9]{16}$'){throw 'Use the lifecycle wrapper with an isolated scratch database'}
+if($GroupLifecycle -and $AuthScratch -notmatch '^codex_roll_auth_[a-f0-9]{16}$'){throw 'Use the lifecycle wrapper with an isolated auth database'}
+$lootProbe=$LostArmy -or $MasterLoot -or $RollCompletion -or $GroupLifecycle
 if($Baseline -and !$Offensive -and !$lootProbe){throw 'Select a supported native baseline'}
-$stem=if($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
-$directory=if($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
+$stem=if($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
+$directory=if($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
 $output=Join-Path $repo "build-extractors/runtime-test/$directory"
 if($Baseline){$output+='-baseline'}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -34,13 +37,13 @@ $runtime=(Resolve-Path "$repo/build-extractors/bin/Release").Path
 $nativeSources=@('AI/CoreAI/CombatAI.cpp','AI/CoreAI/UnitAI.cpp','AI/CreatureAI.cpp','AI/ScriptedAI/ScriptedCreature.cpp','Spells/SpellInfo.cpp','Spells/Spell.cpp','Spells/SpellEffects.cpp','Spells/Auras/SpellAuras.cpp','Spells/Auras/SpellAuraEffects.cpp','Entities/Creature/Creature.cpp','Entities/Creature/TemporarySummon.cpp','Entities/Unit/Unit.cpp','Maps/Map.cpp','Globals/ObjectMgr.cpp','Scripting/ScriptMgr.cpp','Globals/ScriptsData.cpp')
 if($Offensive -or $lootProbe){$nativeSources+=@('Entities/Player/Player.cpp','Entities/Unit/StatSystem.cpp','Conditions/ConditionMgr.cpp','Server/WorldSession.cpp','Server/Protocol/Opcodes.cpp','Globals/QuestData.cpp','Quests/QuestDef.cpp')}
 if($lootProbe){$nativeSources+=@('Loot/LootMgr.cpp','Groups/Group.cpp','Entities/Player/KillRewarder.cpp','Entities/Item/Item.cpp')}
-if($MasterLoot -or $RollCompletion){$nativeSources+=@('Handlers/LootHandler.cpp','Server/Packets/LootPackets.cpp')}
+if($MasterLoot -or $RollCompletion -or $GroupLifecycle){$nativeSources+=@('Handlers/LootHandler.cpp','Server/Packets/LootPackets.cpp')}
 foreach($path in $nativeSources){
  if((Get-Item "$repo/src/server/game/$path").LastWriteTimeUtc -gt (Get-Item $gameLib).LastWriteTimeUtc){throw "Actual game library predates $path; build Release first"}
 }
 if((Get-Item $gameLib).LastWriteTimeUtc -gt (Get-Item "$runtime/worldserver.exe").LastWriteTimeUtc){throw 'Canonical executable predates its game library'}
 if($lootProbe -and $Baseline){
- $baselinePin=if($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
+ $baselinePin=if($GroupLifecycle){'77d92ffe'}elseif($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
  $baselineLibrary="$output/game-baseline.lib"
  if(!(Test-Path $baselineLibrary)){
   if((& git -C $repo rev-parse --short=8 HEAD) -ne $baselinePin -or (& git -C $repo diff -- src/server/game)){throw "Baseline library must be captured from clean pinned$baselinePin game sources"}
@@ -58,6 +61,7 @@ if($Baseline -and $Offensive){$compilerArgs+='/DROCKAWAY_OFFENSIVE_BASELINE'}
 if($Baseline -and $LostArmy){$compilerArgs+='/DLOST_ARMY_NATIVE_BASELINE'}
 if($Baseline -and $MasterLoot){$compilerArgs+='/DMASTER_LOOT_NATIVE_BASELINE'}
 if($Baseline -and $RollCompletion){$compilerArgs+='/DROLL_COMPLETION_NATIVE_BASELINE'}
+if($Baseline -and $GroupLifecycle){$compilerArgs+='/DGROUP_ROLL_LIFECYCLE_BASELINE'}
 $compilerArgs+=($includes+$commonIncludes+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include') | ForEach-Object {'/I"'+$_+'"'})
 $compilerArgs+='/I"'+$output+'"';$compilerArgs+='"'+$repo+'/tools/tests/'+$stem+'.cpp"'
 $compilerArgs+='/Fe"'+$output+'/'+$stem+'.exe"';$compilerArgs+='/Fo"'+$output+'/'+$stem+'.obj"';$compilerArgs+='/link';$compilerArgs+='/DEBUG';$compilerArgs+='/MAP';$compilerArgs+=($libs | ForEach-Object {'"'+$_+'"'})
@@ -70,6 +74,18 @@ $run=Join-Path $output ('run-'+(Get-Date -Format yyyyMMdd-HHmmss))
 New-Item -ItemType Directory -Force $run | Out-Null
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$run.Replace('\','/')+'"'))
+if($GroupLifecycle){
+ $connection=[regex]::Match($config,'(?m)^CharacterDatabaseInfo\s*=\s*"([^"]+)"').Groups[1].Value.Split(';')
+ if($connection.Count -ne 5){throw 'Unexpected character connection format'}
+ if($ScratchUser -notmatch '^codex_roll_[a-f0-9]{16}$' -or $ScratchPassword -notmatch '^[a-f0-9]{32}$'){throw 'Unexpected scratch-only account'}
+ $connection[2]=$ScratchUser;$connection[3]=$ScratchPassword;$connection[4]=$CharacterScratch
+ $config=[regex]::Replace($config,'(?m)^CharacterDatabaseInfo\s*=.*$',('CharacterDatabaseInfo = "'+($connection -join ';')+'"'))
+ $auth=[regex]::Match($config,'(?m)^LoginDatabaseInfo\s*=\s*"([^"]+)"').Groups[1].Value.Split(';')
+ if($auth.Count -ne 5){throw 'Unexpected auth connection format'}
+ $auth[2]=$ScratchUser;$auth[3]=$ScratchPassword;$auth[4]=$AuthScratch
+ $config=[regex]::Replace($config,'(?m)^LoginDatabaseInfo\s*=.*$',('LoginDatabaseInfo = "'+($auth -join ';')+'"'))
+ $config+="`nNativeRollScratchDatabase = `"$CharacterScratch`"`nNativeRollScratchAuth = `"$AuthScratch`"`n"
+}
 [IO.File]::WriteAllText("$run/worldserver.conf",$config)
 Push-Location "$repo/build-extractors/bin/Release"
 try{$env:PATH="$repo/build-extractors/bin/Release;$env:PATH";$rows=& "$output/$stem.exe" "$run/worldserver.conf" "$repo/build-extractors/bin/Release/";$result=$LASTEXITCODE;$rows | Set-Content "$output/native-lines.txt";$rows | Where-Object {$_ -match '^PASS:'};if($result){$rows | Select-Object -Last 16;throw "Native execution failed (exit $result)"}}finally{$env:PATH=$previousPath;Pop-Location}
@@ -84,8 +100,9 @@ $hashes['tools/tests/RockawayChannelNative.cpp']=(Get-FileHash "$repo/tools/test
 $hashes['tools/tests/Test-RockawayChannelNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-RockawayChannelNative.ps1").Hash
 if($Offensive){$hashes['tools/tests/RockawayOffensiveNative.cpp']=(Get-FileHash "$repo/tools/tests/RockawayOffensiveNative.cpp").Hash;$hashes['NativeRockawayQuest.inc']=(Get-FileHash "$output/NativeRockawayQuest.inc").Hash}
 if($lootProbe){$hashes['tools/tests/LostArmyLootNative.cpp']=(Get-FileHash "$repo/tools/tests/LostArmyLootNative.cpp").Hash;$hashes['tools/tests/Test-LostArmyNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-LostArmyNative.ps1").Hash;$hashes['tools/tests/RockawayOffensiveNative.cpp']=(Get-FileHash "$repo/tools/tests/RockawayOffensiveNative.cpp").Hash;$hashes['NativeLostArmyQuest.inc']=(Get-FileHash "$output/NativeLostArmyQuest.inc").Hash}
-if($MasterLoot -or $RollCompletion){$hashes['tools/tests/MasterLootNative.cpp']=(Get-FileHash "$repo/tools/tests/MasterLootNative.cpp").Hash;$hashes['tools/tests/Test-MasterLootNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-MasterLootNative.ps1").Hash}
-if($RollCompletion){$hashes['tools/tests/RollCompletionNative.cpp']=(Get-FileHash "$repo/tools/tests/RollCompletionNative.cpp").Hash;$hashes['tools/tests/Test-RollCompletionNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-RollCompletionNative.ps1").Hash}
+if($MasterLoot -or $RollCompletion -or $GroupLifecycle){$hashes['tools/tests/MasterLootNative.cpp']=(Get-FileHash "$repo/tools/tests/MasterLootNative.cpp").Hash;$hashes['tools/tests/Test-MasterLootNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-MasterLootNative.ps1").Hash}
+if($RollCompletion -or $GroupLifecycle){$hashes['tools/tests/RollCompletionNative.cpp']=(Get-FileHash "$repo/tools/tests/RollCompletionNative.cpp").Hash;$hashes['tools/tests/Test-RollCompletionNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-RollCompletionNative.ps1").Hash}
+if($GroupLifecycle){$hashes['tools/tests/GroupRollLifecycleNative.cpp']=(Get-FileHash "$repo/tools/tests/GroupRollLifecycleNative.cpp").Hash;$hashes['tools/tests/Test-GroupRollLifecycleNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-GroupRollLifecycleNative.ps1").Hash}
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File
 foreach($inputFile in $inputs){$hashes[$inputFile.FullName.Substring($runtime.Length+1).Replace('\','/')]=(Get-FileHash $inputFile.FullName -Algorithm SHA256).Hash}
