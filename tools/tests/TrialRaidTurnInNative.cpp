@@ -165,6 +165,7 @@ static void CheckSavedRetry(InstanceMap& map,uint8 race)
     }
     std::cout<<"PASS: native full-bag pending reload/retry, immediate checkpoint reload before another SaveToDB, saved44729 ->44868 offer/accept and two fixed rewards; race="<<uint32(race)<<" diff="<<uint32(map.GetDifficultyID())<<std::endl;
 }
+#ifndef TRIAL_RAID_TURNIN_SUPPORT_ONLY
 static int RunTurnIn(int argc,char** argv)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();LoadTurnInInputs();OpenScratch();
@@ -182,3 +183,4 @@ int main(int argc,char** argv)
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunTurnIn(argc,argv);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

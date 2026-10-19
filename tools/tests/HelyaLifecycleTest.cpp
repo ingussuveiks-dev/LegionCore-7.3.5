@@ -39,6 +39,10 @@ struct InstanceScript{
  int GetBossState(int id){assert(id==Data::BossIDs::HelyaID);return state;}
  void OnCreatureDamageTaken(Creature*,Unit*,uint32&){}
  void DoUpdateAchievementCriteria(int type,uint32 asset){assert(type==165&&asset==2008);++credits;}
+ // Summon admission/idempotence is covered by the full native instance probe;
+ // this extracted fixture retains the authored scene entries and positions.
+ void EnsureVictoryActor(uint8,uint32 entry,Position const& pos){instance->SummonCreature(entry,pos);}
+#include "HelyaVictoryActors.inc"
  void HelyaDone(){
 #include "HelyaDone.inc"
  }

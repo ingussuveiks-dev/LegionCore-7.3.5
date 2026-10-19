@@ -20,6 +20,7 @@ $baseline=(& git -C $repo show "219ae491:$path") -join "`n"
 if($LASTEXITCODE){throw 'Missing pinned pre-repair Helya baseline219ae491'}
 [IO.File]::WriteAllText("$out/OldHelyaDamage.inc",(Extract $baseline '    void DamageTaken(' '    void SpellHit('))
 $inst=Get-Content "$repo/src/server/scripts/Legion/TrialOfValor/instance_trial_of_valor.cpp" -Raw
+[IO.File]::WriteAllText("$out/HelyaVictoryActors.inc",(Extract $inst '        void RestoreHelyaVictoryActors()' '        void OnCreatureCreate('))
 $done=$inst.Substring($inst.IndexOf('            case DONE:'))
 $done=Extract $done '                case Data::BossIDs::HelyaID:' '                default:'
 $done=$done.Substring($done.IndexOf("`n")+1);$done=$done.Substring(0,$done.LastIndexOf('break;'))

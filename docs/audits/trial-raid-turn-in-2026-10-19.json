@@ -45,5 +45,11 @@
     "Prepared reloads execute the real persistence readers in fresh Players, not a full authenticated Player::LoadFromDB/login. No network client/socket is connected: menu contents and acceptance execute, but visible quest windows and the next-quest popup are not client-verified.",
     "No new Release build/startup is claimed for this test-only change. The probe links the existing canonical5efc6708 implementation and records its executable/library hashes.",
     "No WoW client operated. Verify actual Odyn/Havi menus, victory actor availability/arrival, the reward/next-offer UI, full-bag messages and saved-raid reentry in the7.3.5 client. Preserve all earlier combat, scene, voice, camera and visual pending checks."
-  ]
+  ],
+  "native_instance_followup_2026_10_19": {
+    "date": "2026-10-19",
+    "audit": "docs/audits/trial-raid-instance-recovery-2026-10-19.json",
+    "result": "Actual instance factory, DB boss lifecycle, Odyn surrender/Helya death, native victory summons/arrival and real questgiver turn-ins pass all4 difficulties/both factions. Native save-data reconstruction passes both boss-load orders. Repeated boss creation previously duplicated all14 victory actors; transient per-instance GUID slots now retain existing actors and replace only a missing actor.",
+    "limits": "Final fight prerequisites are setup. Native save-data and respawn SQL are covered; full authenticated restart/rejoin and automatic grid scheduling are not. Client visuals/voice/menus and the other earlier pending checks remain."
+  }
 }

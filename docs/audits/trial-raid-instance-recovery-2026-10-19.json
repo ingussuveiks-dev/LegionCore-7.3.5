@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-19",
+  "quests": [44729, 44868],
+  "status": "Actual instance victory/save-load/questgiver path exercised; duplicate victory actors fixed, Release deployed; client verification remains pending.",
+  "baseline_commit": "69f70aeb",
+  "reproduced_problem": "After DONE, the real DB boss Creature::RemoveFromWorld -> AddToWorld path calls OnCreatureCreate again while earlier victory actors remain. The original instance blindly summons another5 Odyn cosmetics and9 Helya victory actors, including a second116760 questgiver. Pinned native baseline reproduces14 ->28 actors in all4 difficulties and both boss creation orders. Turn-in itself remained usable; this is a duplication repair, not a claim that either quest was previously impossible.",
+  "implementation": [
+    "Both SetBossState(DONE) and OnCreatureCreate(DONE) now call the same per-boss restoration helpers.",
+    "14 transient per-instance GUID slots identify the existing authored scene actors. Each slot resolves through the native instance map before summoning; surviving actors retain their GUIDs, missing actors are replaced, and a failed summon does not record a slot as complete.",
+    "Native entries, multiplicities, positions, initial Odyn Z86.31976,232580 ->232581 arrival, conversations, lighting and chest timing are retained. No SQL, synthetic quest credit or guessed landing coordinates were added to production.",
+    "GUID slots are not serialized. A newly loaded instance rebuilds its scene from saved boss states and actual creature creation; GUIDs are never reused as durable cross-boot identity."
+  ],
+  "native_evidence": [
+    "The probe registers the linked actual instance_trial_of_valor, boss_tov_odyn, boss_helya_tov and npc_odyn_after_kill_helya scripts, then runs InstanceMap::CreateInstanceData through the native factory/Initialize/Load path using a real MapInstanced parent.",
+    "Read-only scoped World spawn rows505062/505276 populate the native CreatureData index. Actual Creature::LoadCreatureFromDB/Create/InitEntry/AddToWorld initialize models, template addons, real AI and the instance callback; victory creatures use the actual Map::SummonCreature/TempSummon flow.",
+    "Live-victory cases seed only Guarm/defender prerequisites, enter Odyn phase2 through native actions/events and invoke the actual final-damage surrender callback at9% health. Actual Helya Unit::Kill/JustDied reaches the same real instance's DONE path. No fixture creates victory actors.",
+    "The native actor update/motion loop runs the existing232580/232581 spells and reaches the expected498.595/640.212/1.8432 landing after15s of simulated updates. Surrendered Odyn returns to the arena and retains questgiver flags. This confirms server motion/position, not client rendering or sound.",
+    "Actual InstanceScript::GetSaveData from the victory run is supplied to a new InstanceMap/InstanceSave after UnloadAll. Map::LoadRespawnTimes reads Helya's actual death-written scratch SQL respawn record before native DB creature initialization, preserving DONE instead of incorrectly running an alive-boss reset.",
+    "Four difficulties17/14/15/16, with both Odyn-first and Helya-first saved-load orders: one5-actor Odyn set and one9-actor Helya set. Repeated native Load and native boss world lifecycle retain all14 existing GUIDs. Removing116760 and recreating the Helya world object restores only that actor and preserves the other13 GUIDs.",
+    "Human and Orc players use actual quest menus/interact admission and deserialized accept/choose-reward handlers against the actual native questgiver creatures after victory and after saved-data reconstruction;44729 gives142533 and enables44868, whose116760 turn-in gives142534. Player quest progress is advanced through the existing native encounter-dispatch helper for this availability test; these players do not play the preceding fight.",
+    "Pinned baseline passes the same native victory/arrival/turn-in paths and explicitly requires duplicated actors after repeated creation. Current passes exact single-copy and missing-actor recovery assertions."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidInstanceNative.ps1: PASS;4 victory cases and8 saved-load/order cases, both factions, actual actor initialization/AI/motion/turn-ins, GUID identity and missing-actor replacement; exit0 and DBErrors0 bytes.",
+    "Test-TrialRaidInstanceNative.ps1 -Baseline: PASS means the captured69f70aeb scripts/game libraries reproduce duplicate actor counts; exit0 and DBErrors0 bytes.",
+    "Test-TrialRaidInstanceRelease.ps1: PASS; actual PE/thunks verify that both callbacks use shared restoration and that admission performs native map lookup before summon; canonical library/source freshness and hashes recorded.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS. Its extracted scene fixture follows the new shared restoration body while retaining authored entries/positions; full native instance test covers actual admission/idempotence.",
+    "Test-TrialRaidTurnInNative.ps1 and Test-TrialRaidCriteriaNative.ps1: PASS after shared runner/include changes, with DBErrors0 bytes; prior full-bag/reward/save-load/player/pet/lifetime regressions retained.",
+    "Standard Release worldserver and bnetserver build: PASS; canonical build-extractors/bin/Release and actual original final-link library paths, no global OutDir override.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes. No server left running."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-raid-instance-native/run-20261019-131947",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-instance-native-baseline/run-20261019-131958",
+    "baseline_scripts_sha256": "B7F8E8F963B37923A49ED6A67B097310D85EB7ECA74FEAE67839C197FB213BAE",
+    "baseline_game_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "5A056FA5064DFDF1AA16C9DF8E65C3320E581AAE1D045D36D47D25A2AB8CA5A9",
+    "bnetserver_sha256": "071E569F82184278EC362E33DF43134735D3F60E1DA2348F949BA9238F3B53E4",
+    "actual_scripts_library_sha256": "E69890E6E838640498D4168E1792AA5EE33170C1552013F9C7CF54DB488E51F6",
+    "actual_game_library_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-instance-native/startup-20261019-131455",
+    "isolation": "Schema-only disposable auth/character databases167 tables with a random limited user; World/Hotfix READ ONLY. No personal rows copied or modified. Final matching scratch schema/user counts both0.",
+    "production_sql_changes": false
+  },
+  "test_development_findings": [
+    "The original simplified Map parent was invalid for actual geometry loading and failed in MapInstanced::AddGridMapReference. Replacing it with the real MapInstanced parent completed that fixture prerequisite; no production collision failure is inferred.",
+    "Full fresh Odyn initialization invokes defenders' native percentage-heal spells. The incomplete bootstrap initially failed in uninitialized spell-bonus lookup; native LoadSpellBonusess/LoadSpellThreats were added. Partial runs were retained in ignored logs and were not accepted as passes.",
+    "Saved Helya must load the real persisted dead-boss respawn timer before AddToWorld. Skipping that input would run alive Reset and invalidate the saved-instance test. The final probe earns the timer through the native kill and loads it from scratch SQL."
+  ],
+  "remaining_limits_and_client_checks": [
+    "Guarm/defender completion and final health/phase inputs are setup; no complete raid combat playthrough, damage rotation, tap eligibility or group lockout is claimed. Odyn's final damage hook is called directly, and Helya is killed through Unit::Kill.",
+    "Native save serializer/factory/loader and respawn SQL are exercised. Authenticated login, durable character_instance binding selection and an actual server restart/rejoin are not executed.",
+    "DB creature loading and repeated world callbacks are invoked explicitly. The automatic grid scheduler's exact unload timing is not reproduced, although full map UnloadAll/reconstruction and normal creature creation/removal methods execute.",
+    "Verify actual client scene, voice, landing animation, visible quest menus and saved-raid reentry. Other raid combat abilities, chest rendering/availability, lighting and exit gossip UI remain separate checks. No whole quest, raid or visual is marked client-verified."
+  ]
+}

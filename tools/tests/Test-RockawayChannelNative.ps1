@@ -1,4 +1,4 @@
-param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [switch]$TrialTurnIn, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
+param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [switch]$TrialTurnIn, [switch]$TrialInstance, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 if($LostArmy -and $Offensive){throw 'Select one native probe'}
@@ -13,9 +13,10 @@ $scratchProbe=$GroupLifecycle -or $QuestTurnIn -or $RaidFragments -or $TrialCrit
 $lootProbe=$LostArmy -or $MasterLoot -or $RollCompletion -or $GroupLifecycle -or $QuestTurnIn -or $RaidFragments -or $TrialCriteria
 if($Baseline -and !$Offensive -and !$lootProbe){throw 'Select a supported native baseline'}
 if($TrialCriteria -and ($RaidFragments -or $QuestTurnIn -or $GroupLifecycle -or $RollCompletion -or $MasterLoot -or $LostArmy -or $Offensive)){throw 'Select one current native probe'}
-if($TrialTurnIn -and (!$TrialCriteria -or $Baseline)){throw 'Select the current Trial turn-in wrapper'}
-$stem=if($TrialTurnIn){'TrialRaidTurnInNative'}elseif($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
-$directory=if($TrialTurnIn){'trial-raid-turnin-native'}elseif($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
+if($TrialTurnIn -and (!$TrialCriteria -or ($Baseline -and !$TrialInstance))){throw 'Select the current Trial turn-in wrapper'}
+if($TrialInstance -and !$TrialTurnIn){throw 'Use the Trial instance wrapper'}
+$stem=if($TrialInstance){'TrialRaidInstanceNative'}elseif($TrialTurnIn){'TrialRaidTurnInNative'}elseif($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
+$directory=if($TrialInstance){'trial-raid-instance-native'}elseif($TrialTurnIn){'trial-raid-turnin-native'}elseif($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
 $output=Join-Path $repo "build-extractors/runtime-test/$directory"
 if($Baseline){$output+='-baseline'}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -58,7 +59,9 @@ if($TrialCriteria){$nativeSources+=@('Achievements/AchievementMgr.cpp','Instance
 if($TrialCriteria){
  $trialScripts=$libs | Where-Object {$_ -match 'scripts[\\/]Release[\\/]scripts.lib$'} | Select-Object -First 1
  if(!$trialScripts){throw 'Actual scripts final-link input missing'}
- foreach($path in @('boss_tov_odyn.cpp','boss_tov_helya.cpp','trial_of_valor.h')){
+ $trialScriptPaths=@('boss_tov_odyn.cpp','boss_tov_helya.cpp','trial_of_valor.h')
+ if($TrialInstance){$trialScriptPaths+=@('instance_trial_of_valor.cpp','trial_of_valor.cpp')}
+ foreach($path in $trialScriptPaths){
   if((Get-Item "$repo/src/server/scripts/Legion/TrialOfValor/$path").LastWriteTimeUtc -gt (Get-Item $trialScripts).LastWriteTimeUtc){throw "Final-link scripts library predates $path"}
  }
  if((Get-Item $trialScripts).LastWriteTimeUtc -gt (Get-Item "$runtime/worldserver.exe").LastWriteTimeUtc){throw 'Canonical executable predates scripts library'}
@@ -68,7 +71,7 @@ foreach($path in $nativeSources){
 }
 if(!$Baseline -and (Get-Item $gameLib).LastWriteTimeUtc -gt (Get-Item "$runtime/worldserver.exe").LastWriteTimeUtc){throw 'Canonical executable predates its game library'}
 if($lootProbe -and $Baseline){
- $baselinePin=if($TrialCriteria){'8b23c3c5'}elseif($RaidFragments){'9b0179a1'}elseif($QuestTurnIn){'197c304f'}elseif($GroupLifecycle){'77d92ffe'}elseif($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
+ $baselinePin=if($TrialInstance){'69f70aeb'}elseif($TrialCriteria){'8b23c3c5'}elseif($RaidFragments){'9b0179a1'}elseif($QuestTurnIn){'197c304f'}elseif($GroupLifecycle){'77d92ffe'}elseif($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
  $baselineLibrary="$output/game-baseline.lib"
  if(!(Test-Path $baselineLibrary)){
   if((& git -C $repo rev-parse --short=8 HEAD) -ne $baselinePin -or (& git -C $repo diff -- src/server/game)){throw "Baseline library must be captured from clean pinned$baselinePin game sources"}
@@ -77,6 +80,11 @@ if($lootProbe -and $Baseline){
  }
  if((Get-FileHash $baselineLibrary).Hash -ne (Get-Content "$output/baseline-library.sha256")){throw 'Pinned baseline library changed'}
  $libs=$libs | ForEach-Object {if($_ -eq $gameLib){$baselineLibrary}else{$_}}
+}
+if($TrialInstance -and $Baseline){
+ $oldScripts="$output/scripts-baseline.lib"
+ if(!(Test-Path $oldScripts) -or (Get-FileHash $oldScripts).Hash -ne (Get-Content "$output/scripts-baseline.sha256")){throw 'Capture the pinned original scripts library before editing'}
+ $libs=$libs | ForEach-Object {if($_ -eq $trialScripts){$oldScripts}else{$_}}
 }
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $language=switch($group.ClCompile.LanguageStandard){'stdcpp14'{'/std:c++14'} 'stdcpp17'{'/std:c++17'} 'stdcpp20'{'/std:c++20'} 'stdcpplatest'{'/std:c++latest'} default{throw 'Unsupported generated native language standard'}}
@@ -90,6 +98,7 @@ if($Baseline -and $GroupLifecycle){$compilerArgs+='/DGROUP_ROLL_LIFECYCLE_BASELI
 if($Baseline -and $QuestTurnIn){$compilerArgs+='/DLOST_ARMY_TURNIN_BASELINE'}
 if($Baseline -and $RaidFragments){$compilerArgs+='/DRAID_FRAGMENTS_BASELINE'}
 if($Baseline -and $TrialCriteria){$compilerArgs+='/DTRIAL_CRITERIA_BASELINE'}
+if($Baseline -and $TrialInstance){$compilerArgs+='/DTRIAL_INSTANCE_BASELINE'}
 $compilerArgs+=($includes+$commonIncludes+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include') | ForEach-Object {'/I"'+$_+'"'})
 $compilerArgs+='/I"'+$output+'"';$compilerArgs+='"'+$repo+'/tools/tests/'+$stem+'.cpp"'
 $compilerArgs+='/Fe"'+$output+'/'+$stem+'.exe"';$compilerArgs+='/Fo"'+$output+'/'+$stem+'.obj"';$compilerArgs+='/link';$compilerArgs+='/DEBUG';$compilerArgs+='/MAP';$compilerArgs+=($libs | ForEach-Object {'"'+$_+'"'})
@@ -136,12 +145,18 @@ if($TrialCriteria){foreach($path in @('TrialRaidCriteriaNative.cpp','LostArmyTur
 if($RaidFragments){foreach($path in @('RaidFragmentsNative.cpp','LostArmyTurnInNative.cpp','Test-RaidFragmentsNative.ps1','Test-GroupRollLifecycleNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash};$inputs+=@('GameObjects','DungeonEncounter') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}}
 if($TrialCriteria){
  $hashes['actual-final-link-scripts.lib']=(Get-FileHash $trialScripts).Hash
- foreach($path in @('boss_tov_odyn.cpp','boss_tov_helya.cpp','trial_of_valor.h')){$hashes["src/server/scripts/Legion/TrialOfValor/$path"]=(Get-FileHash "$repo/src/server/scripts/Legion/TrialOfValor/$path").Hash}
+ $trialScriptPaths=@('boss_tov_odyn.cpp','boss_tov_helya.cpp','trial_of_valor.h')
+ if($TrialInstance){$trialScriptPaths+=@('instance_trial_of_valor.cpp','trial_of_valor.cpp')}
+ foreach($path in $trialScriptPaths){$hashes["src/server/scripts/Legion/TrialOfValor/$path"]=(Get-FileHash "$repo/src/server/scripts/Legion/TrialOfValor/$path").Hash}
 }
 if($TrialTurnIn){
  $hashes['tools/tests/TrialRaidTurnInNative.cpp']=(Get-FileHash "$repo/tools/tests/TrialRaidTurnInNative.cpp").Hash
  $hashes['tools/tests/Test-TrialRaidTurnInNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-TrialRaidTurnInNative.ps1").Hash
  $hashes['NativeTrialQuestLinks.inc']=(Get-FileHash "$output/NativeTrialQuestLinks.inc").Hash
+}
+if($TrialInstance){
+ foreach($path in @('TrialRaidInstanceNative.cpp','Test-TrialRaidInstanceNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}
+ if($Baseline){$hashes['linked-pinned-69f70aeb-scripts.lib']=(Get-FileHash $oldScripts).Hash}
 }
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File

@@ -45,6 +45,7 @@ public:
         ObjectGuid HelyaGUID;
         ObjectGuid OdynTovChest;
         ObjectGuid GoLightRay;
+        ObjectGuid victoryActors[14];
         std::vector<ObjectGuid> GoLightRayGUID{};
         std::map<uint32, ObjectGuid> runicBrandGUIDconteiner;
         uint32 OdynIntroEvent{};
@@ -68,6 +69,42 @@ public:
             LoadObjectData(creatureData, objectData);
         }
 
+        void EnsureVictoryActor(uint8 slot, uint32 entry, Position const& position)
+        {
+            if (instance->GetCreature(victoryActors[slot]))
+                return;
+
+            if (Creature* actor = instance->SummonCreature(entry, position))
+                victoryActors[slot] = actor->GetGUID();
+        }
+
+        void RestoreOdynVictoryActors()
+        {
+            EnsureVictoryActor(0, 116270, NpcCosmeticOnePos);
+            EnsureVictoryActor(1, 116268, NpcCosmeticTwoPos);
+            EnsureVictoryActor(2, 116269, NpcCosmeticThreePos);
+            EnsureVictoryActor(3, 116271, NpcCosmeticFourPos);
+            EnsureVictoryActor(4, 101459, SpoilsPos);
+        }
+
+        void RestoreHelyaVictoryActors()
+        {
+            EnsureVictoryActor(5, 116760, Odyn);
+            EnsureVictoryActor(6, 116761, Hymdall);
+            EnsureVictoryActor(7, 116818, Eyir);
+            EnsureVictoryActor(8, 116830, Hyrja);
+            for (uint8 i = 0; i < 3; ++i)
+                EnsureVictoryActor(9 + i, 116763, StormforgedSentinel[i]);
+            for (uint8 i = 0; i < 2; ++i)
+                EnsureVictoryActor(12 + i, 116762, ChosenofEyir[i]);
+
+            for (auto guid : GoLightRayGUID)
+                if (auto gameobject = instance->GetGameObject(guid))
+                    gameobject->SetRespawnTime(86400);
+            if (auto go = instance->GetGameObject(GoLightRay))
+                go->SetRespawnTime(86400);
+        }
+
         void OnCreatureCreate(Creature* creature) override
         {
             InstanceScript::OnCreatureCreate(creature);
@@ -79,11 +116,7 @@ public:
 
                     if (GetBossState(Data::BossIDs::OdynID) == DONE)
                     {
-                        instance->SummonCreature(116270, NpcCosmeticOnePos);
-                        instance->SummonCreature(116268, NpcCosmeticTwoPos);
-                        instance->SummonCreature(116269, NpcCosmeticThreePos);
-                        instance->SummonCreature(116271, NpcCosmeticFourPos);
-                        instance->SummonCreature(101459, SpoilsPos);
+                        RestoreOdynVictoryActors();
                         creature->NearTeleportTo(2399.73f, 528.816f, 748.997f, 5.48697f);
                     }
                     break;
@@ -104,19 +137,7 @@ public:
 
                     if (GetBossState(Data::BossIDs::HelyaID) == DONE)
                     {
-                        instance->SummonCreature(116760, Odyn);
-                        instance->SummonCreature(116761, Hymdall);
-                        instance->SummonCreature(116818, Eyir);
-                        instance->SummonCreature(116830, Hyrja);
-                        for (uint8 i = 0; i < 3; ++i)
-                            instance->SummonCreature(116763, StormforgedSentinel[i]);
-                        for (uint8 i = 0; i < 2; ++i)
-                            instance->SummonCreature(116762, ChosenofEyir[i]);
-                        for (auto guid : GoLightRayGUID)
-                            if (auto gameobject = instance->GetGameObject(guid))
-                                gameobject->SetRespawnTime(86400);
-                        if (auto go = instance->GetGameObject(GoLightRay))
-                            go->SetRespawnTime(86400);
+                        RestoreHelyaVictoryActors();
                     }
                     break;
                 default:
@@ -197,11 +218,7 @@ public:
                     if (auto chest = instance->GetGameObject(OdynTovChest))
                         chest->SetRespawnTime(86400);
 
-                    instance->SummonCreature(116270, NpcCosmeticOnePos);
-                    instance->SummonCreature(116268, NpcCosmeticTwoPos);
-                    instance->SummonCreature(116269, NpcCosmeticThreePos);
-                    instance->SummonCreature(116271, NpcCosmeticFourPos);
-                    instance->SummonCreature(101459, SpoilsPos);
+                    RestoreOdynVictoryActors();
                     instance->ApplyOnEveryPlayer([&](Player* player)
                     {
                         player->AddDelayedEvent(100, [player]() -> void
@@ -226,19 +243,7 @@ public:
                     });
 					break;
                 case Data::BossIDs::HelyaID:
-                    instance->SummonCreature(116760, Odyn);
-                    instance->SummonCreature(116761, Hymdall);
-                    instance->SummonCreature(116818, Eyir);
-                    instance->SummonCreature(116830, Hyrja);
-                    for (uint8 i = 0; i < 3; ++i)
-                        instance->SummonCreature(116763, StormforgedSentinel[i]);
-                    for (uint8 i = 0; i < 2; ++i)
-                        instance->SummonCreature(116762, ChosenofEyir[i]);
-                    for (auto guid : GoLightRayGUID)
-                        if (auto gameobject = instance->GetGameObject(guid))
-                            gameobject->SetRespawnTime(86400);
-                    if (auto go = instance->GetGameObject(GoLightRay))
-                        go->SetRespawnTime(86400);
+                    RestoreHelyaVictoryActors();
                     break;
                 default:
                     break;
