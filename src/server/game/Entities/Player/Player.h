@@ -2942,6 +2942,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow);
 
         bool IsPlayerLootCooldown(uint32 entry, uint8 type = 0, uint8 diff = 0);
+        bool HasPendingPersonalChestLoot(GameObject const* chest) const;
         void AddPlayerLootCooldown(uint32 entry, uint32 guid, uint8 type = 0, bool respawn = true, uint8 diff = 0);
 
         bool IsLfgCooldown(uint32 dungeonId);

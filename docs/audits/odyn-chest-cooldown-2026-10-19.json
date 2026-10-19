@@ -17,5 +17,10 @@
     "audit": "docs/audits/trial-raid-chest-2026-10-19.json",
     "result": "Actual native DB chest545038, Odyn surrender, early/late/saved-DONE availability and Opening6247 now pass both factions/all4 difficulties. Late/saved hidden chest bug fixed in OnGameObjectCreate; already active timer is retained.",
     "limits": "Client appearance/opening and full-bag retry via actual Opening remain separate; prior SendLoot-only and instance/combat/login limits are retained."
+  },
+  "native_pending_followup_2026_10_19": {
+    "audit": "docs/audits/personal-raid-chest-retry-2026-10-19.json",
+    "result": "Native visibility, actual Opening6247 and DoLootRelease now retain earned personal raid-chest loot after cooldown/full bags, including close-while-full and gold-only close/reopen. Current128 sequences and existing raid-fragment regressions pass; pinned baseline reproduces hidden/blocked pending loot, full-bag deletion and unclaimed money loss.",
+    "limits": "No client autoloot/visibility UI, authenticated login, pending-container serialization or exact-GUID recovery across object replacement is claimed. Earlier limits remain."
   }
 }

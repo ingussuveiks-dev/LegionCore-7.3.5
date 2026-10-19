@@ -3532,7 +3532,8 @@ void Spell::EffectOpenLock(SpellEffIndex effIndex)
 
     if (gameObjTarget)
     {
-        if (player->IsPlayerLootCooldown(gameObjTarget->GetEntry(), TYPE_GO, player->GetMap()->GetDifficultyID()) || player->IsPlayerLootCooldown(gameObjTarget->GetGUIDLow(), TYPE_GUID, player->GetMap()->GetDifficultyID()))
+        if (!player->HasPendingPersonalChestLoot(gameObjTarget) &&
+            (player->IsPlayerLootCooldown(gameObjTarget->GetEntry(), TYPE_GO, player->GetMap()->GetDifficultyID()) || player->IsPlayerLootCooldown(gameObjTarget->GetGUIDLow(), TYPE_GUID, player->GetMap()->GetDifficultyID())))
         {
             gameObjTarget->DestroyForPlayer(player);
             gameObjTarget->UpdateObjectVisibility();

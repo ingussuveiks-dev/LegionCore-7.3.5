@@ -2431,9 +2431,12 @@ bool WorldObject::canSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
     if (GetGUID().IsPlayer() && obj->IsGameObject() && obj->ToGameObject()->IsPersonal())
     {
         Player const* thisPlayer = ToPlayer();
-        if (thisPlayer && const_cast<Player*>(thisPlayer)->IsPlayerLootCooldown(obj->GetEntry(), TYPE_GO, GetMap()->GetDifficultyID()))
+        bool pendingLoot = thisPlayer && thisPlayer->HasPendingPersonalChestLoot(obj->ToGameObject());
+        if (thisPlayer && !pendingLoot &&
+            const_cast<Player*>(thisPlayer)->IsPlayerLootCooldown(obj->GetEntry(), TYPE_GO, GetMap()->GetDifficultyID()))
             return false;
-        if (thisPlayer && const_cast<Player*>(thisPlayer)->IsPlayerLootCooldown(obj->GetGUIDLow(), TYPE_GUID, GetMap()->GetDifficultyID()))
+        if (thisPlayer && !pendingLoot &&
+            const_cast<Player*>(thisPlayer)->IsPlayerLootCooldown(obj->GetGUIDLow(), TYPE_GUID, GetMap()->GetDifficultyID()))
             return false;
     }
 

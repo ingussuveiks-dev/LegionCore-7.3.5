@@ -37,6 +37,61 @@ static void Open(TrialPlayer& p,GameObject& chest)
     Require(p.CastSpell(&chest,6247,false)==SPELL_CAST_OK,"Native Opening6247 prepare failed");
     Tick(p,10000);
 }
+static void CheckPendingOpening(InstanceMap& map,GameObject& chest)
+{
+    for(auto race:{RACE_HUMAN,RACE_ORC})for(bool closeFirst:{false,true})
+    {
+        TrialPlayer p(map,race);p.Relocate(chest.GetPosition());p.Begin(45088);FillBags(p);
+        Require(p.canSeeOrDetect(&chest),"Fresh personal chest not natively visible");Open(p,chest);p.GetGoldFromLoot();
+        auto it=p.personalLoot.find(chest.GetGUID());Require(it!=p.personalLoot.end()&&it->second.dungeonEncounterID,"Opening did not retain earned full-bag container");
+        auto earned=FragmentView(it->second,p);Require(earned>=30&&earned<=60,"Earned pending fragment stack missing");it->second.AutoStoreItems();
+        Require(!p.GetItemCount(142487)&&p.IsPlayerLootCooldown(260526,TYPE_GO,map.GetDifficultyID()),"Full bags lost native cooldown or received fragments");
+#ifdef TRIAL_CHEST_BASELINE
+        Require(!p.canSeeOrDetect(&chest),"Pinned pending chest visibility failure changed");
+#else
+        Require(p.canSeeOrDetect(&chest),"Cooldown hid the earned full-bag chest");
+#endif
+        if(closeFirst)p.GetSession()->DoLootRelease(chest.GetGUID());
+#ifdef TRIAL_CHEST_BASELINE
+        Require(bool(p.personalLoot.count(chest.GetGUID()))==!closeFirst,"Pinned full-bag release deletion changed");
+#else
+        Require(p.personalLoot.count(chest.GetGUID()),"Full-bag close discarded earned personal loot");
+        if(closeFirst)Require(!p.personalLoot.at(chest.GetGUID()).isOpen,"Closed pending chest retained an open money window");
+#endif
+        for(uint8 slot=INVENTORY_SLOT_ITEM_START;slot<INVENTORY_SLOT_ITEM_END;++slot)if(auto item=p.GetItemByPos(INVENTORY_SLOT_BAG_0,slot))if(item->GetEntry()==2589)p.DestroyItem(INVENTORY_SLOT_BAG_0,slot,true);
+        Open(p,chest);
+#ifdef TRIAL_CHEST_BASELINE
+        Require(!p.GetItemCount(142487),"Pinned native Opening receipt failure changed");
+        std::cout<<"BASELINE: earned full-bag chest hidden; closeFirst="<<closeFirst<<" container="<<p.personalLoot.count(chest.GetGUID())<<" fragments=0"<<std::endl;
+#else
+        if(auto pending=p.personalLoot.find(chest.GetGUID());pending!=p.personalLoot.end())pending->second.AutoStoreItems();
+        Require(p.GetItemCount(142487)==earned,"Native Opening failed exact earned-container retry");
+        p.GetSession()->DoLootRelease(chest.GetGUID());Open(p,chest);Require(p.GetItemCount(142487)==earned,"Repeated pending Opening generated a second stack");
+        Require(!p.canSeeOrDetect(&chest),"Fully received chest remains visible after cooldown");
+#endif
+        std::cout<<"PASS: actual full-bag chest Opening/visibility/release/retry; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(race)<<" closeFirst="<<closeFirst<<std::endl;
+    }
+}
+static void CheckPendingMoney(InstanceMap& map,GameObject& chest)
+{
+    for(auto race:{RACE_HUMAN,RACE_ORC})
+    {
+        TrialPlayer p(map,race);p.Relocate(chest.GetPosition());p.Begin(45088);Open(p,chest);
+        auto& loot=p.personalLoot.at(chest.GetGUID());auto gold=loot.gold;auto before=p.GetMoney();
+        Require(gold>0,"Native chest money row did not produce gold");loot.AutoStoreItems();auto fragments=p.GetItemCount(142487);
+        p.GetSession()->DoLootRelease(chest.GetGUID());
+#ifdef TRIAL_CHEST_BASELINE
+        Require(!p.personalLoot.count(chest.GetGUID())&&!p.canSeeOrDetect(&chest)&&p.GetMoney()==before,"Pinned unclaimed chest money loss changed");
+        std::cout<<"BASELINE: closing after item receipt discarded native chest gold="<<gold<<std::endl;
+#else
+        Require(p.personalLoot.count(chest.GetGUID())&&p.canSeeOrDetect(&chest),"Unclaimed chest gold lost container/visibility");
+        Require(!p.personalLoot.at(chest.GetGUID()).isOpen,"Closed gold-only chest kept an open money window");
+        Open(p,chest);Require(p.GetGoldFromLoot()==gold&&p.GetMoney()==before+gold,"Native reopened chest money changed/duplicated");
+        p.GetSession()->DoLootRelease(chest.GetGUID());Open(p,chest);Require(!p.GetGoldFromLoot()&&p.GetMoney()==before+gold&&p.GetItemCount(142487)==fragments&&!p.canSeeOrDetect(&chest),"Completed money/item receipt bypassed cooldown");
+#endif
+        std::cout<<"PASS: native gold-only chest close/reopen/receipt; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(race)<<std::endl;
+    }
+}
 static void CheckOpening(InstanceMap& map,GameObject& chest)
 {
     for(auto race:{RACE_HUMAN,RACE_ORC})
@@ -49,6 +104,8 @@ static void CheckOpening(InstanceMap& map,GameObject& chest)
         p.GetSession()->DoLootRelease(chest.GetGUID());Open(p,chest);Require(p.GetItemCount(142487)==count,"Repeated Opening duplicated earned fragments");
         std::cout<<"PASS: actual DB chest report-use/wrong-lock/complete/repeated Opening; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(race)<<std::endl;
     }
+    CheckPendingOpening(map,chest);
+    CheckPendingMoney(map,chest);
 }
 static CompletedInstance WinChest(Map& parent,Difficulty diff,bool early)
 {

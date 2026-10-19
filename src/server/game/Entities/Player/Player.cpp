@@ -24951,6 +24951,22 @@ void Player::AddPlayerLootCooldown(uint32 entry, uint32 guid, uint8 type/* = 0*/
     lootCooldown.state = true;
 }
 
+bool Player::HasPendingPersonalChestLoot(GameObject const* chest) const
+{
+    if (!chest || chest->GetMap() != GetMap() || chest->GetGoType() != GAMEOBJECT_TYPE_CHEST ||
+        !chest->IsPersonal() || !chest->GetGOInfo()->chest.DungeonEncounter)
+        return false;
+
+    auto itr = personalLoot.find(chest->GetGUID());
+    if (itr == personalLoot.end())
+        return false;
+
+    Loot const& loot = itr->second;
+    return loot.GetLootOwner() == this && loot.personal &&
+        loot.dungeonEncounterID == chest->GetGOInfo()->chest.DungeonEncounter &&
+        (loot.gold || loot.hasItemFor(const_cast<Player*>(this)));
+}
+
 bool Player::IsPlayerLootCooldown(uint32 entry, uint8 type/* = 0*/, uint8 diff/* = 0*/)
 {
     PlayerLootCooldownMap::const_iterator itr = m_playerLootCooldown[type].find(entry);

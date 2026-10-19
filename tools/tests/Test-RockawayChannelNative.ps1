@@ -57,7 +57,7 @@ if($lootProbe){$nativeSources+=@('Loot/LootMgr.cpp','Groups/Group.cpp','Entities
 if($MasterLoot -or $RollCompletion -or $GroupLifecycle){$nativeSources+=@('Handlers/LootHandler.cpp','Server/Packets/LootPackets.cpp')}
 if($QuestTurnIn){$nativeSources+=@('Handlers/QuestHandler.cpp','Entities/Player/CollectionMgr.cpp','Entities/Item/Container/Bag.cpp','Server/Packets/QuestPackets.cpp')}
 if($RaidFragments){$nativeSources+=@('Entities/GameObject/GameObject.cpp','Instances/InstanceScript.cpp','Handlers/LootHandler.cpp')}
-if($TrialChest){$nativeSources+=@('Entities/GameObject/GameObject.cpp','Handlers/SpellHandler.cpp','Server/Packets/GameObjectPackets.cpp')}
+if($TrialChest){$nativeSources+=@('Entities/Player/Player.h','Entities/GameObject/GameObject.cpp','Entities/Object/Object.cpp','Handlers/LootHandler.cpp','Handlers/SpellHandler.cpp','Server/Packets/GameObjectPackets.cpp')}
 if($TrialExit){$nativeSources+=@('Handlers/NPCHandler.cpp','Handlers/MovementHandler.cpp','Server/Packets/NPCPackets.cpp','Globals/GossipData.cpp','Entities/Creature/GossipDef.cpp','Maps/MapManager.cpp')}
 if($TrialCriteria){$nativeSources+=@('Achievements/AchievementMgr.cpp','Instances/InstanceScript.cpp','Handlers/QuestHandler.cpp','Server/Packets/QuestPackets.cpp')}
 if($TrialCriteria){
@@ -167,6 +167,7 @@ if($TrialExit){
  $inputs+=Get-Item "$runtime/dbc/enUS/WorldSafeLocs.db2"
 }
 if($TrialChest){
+ foreach($path in $nativeSources){$hashes["src/server/game/$path"]=(Get-FileHash "$repo/src/server/game/$path").Hash}
  foreach($path in @('TrialRaidChestNative.cpp','Test-TrialRaidChestNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}
  $inputs+=@('Lock','GameObjects','GameObjectDisplayInfo') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}
 }

@@ -33,5 +33,10 @@
     "Full inventory retries through actual Opening/visibility remain a separate path: earlier tests covered SendLoot directly. Review its cooldown gates before claiming full-bag client retry.",
     "DB spawn indexing is scoped fixture setup; automatic grid scheduling, full authenticated login/instance binding selection, party loot eligibility and complete combat are not executed. Saved state uses native serializer/factory loading rather than a real server restart.",
     "No WoW client operated. Chest appearance, highlighting, opening animation/window, bag error messages and reentry still need client verification. Preserve all earlier quest, encounter, scene and visual limits."
-  ]
+  ],
+  "native_pending_followup_2026_10_19": {
+    "audit": "docs/audits/personal-raid-chest-retry-2026-10-19.json",
+    "result": "Native visibility, actual Opening6247 and DoLootRelease now retain earned personal raid-chest loot after cooldown/full bags, including close-while-full and gold-only close/reopen. Current128 sequences and existing raid-fragment regressions pass; pinned baseline reproduces hidden/blocked pending loot, full-bag deletion and unclaimed money loss.",
+    "limits": "No client autoloot/visibility UI, authenticated login, pending-container serialization or exact-GUID recovery across object replacement is claimed. Earlier limits remain."
+  }
 }

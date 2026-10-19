@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-19",
+  "quest": 45088,
+  "status": "Native earned raid-chest items and gold survive close/reopen after cooldown; current and pinned reproduction checks pass. Client remains pending.",
+  "related_availability_fix": "1b676907",
+  "baseline_commit": "f24b5547",
+  "defects": [
+    "WorldObject::canSeeOrDetect hid a personal chest immediately after the first native opening recorded its cooldown, even when full bags left an earned personal container unclaimed.",
+    "EffectOpenLock rejected the same saved cooldown before reaching SendLoot's existing earned-container exception. Direct SendLoot tests could not exercise this earlier gate.",
+    "DoLootRelease tested the shared GO loot, which is empty for this personal chest, then unconditionally removed the player's personal container after an unsuccessful full-bag AutoStoreItems. Closing after item receipt also discarded unclaimed native chest money. DB260526 has MinGold250000/MaxGold350000; the test uses the actual generated amount, not synthetic money."
+  ],
+  "implementation": [
+    "Player::HasPendingPersonalChestLoot recognizes only this player's existing exact-GUID personal container for a personal CHEST with a native DungeonEncounter on the same map. Owner and encounter must match, and actual loot eligibility or remaining gold must exist. It creates no container and grants no new reward.",
+    "Visibility and EffectOpenLock share that pending admission before rejecting entry/GUID cooldowns. Other visibility/phase/distance, lock and player-condition checks still execute; SendLoot retains its separate new-container cooldown guard.",
+    "DoLootRelease handles earned personal encounter chests independently from shared GO loot: mark the window closed, attempt native item receipt, retain the container on inventory failure or unclaimed gold, and remove it only when fully looted. Visibility is updated after the result. Other GO/reward types retain their existing branches.",
+    "No SQL, cooldown reset, entry whitelist, inventory expansion or persisted pending-loot format was added. This is a separate fix from late/saved chest availability."
+  ],
+  "native_evidence": [
+    "The actual DB spawn545038, real instance factory/DB boss/surrender, late chest admission, saved serialization/reconstruction and Opening6247 path from trial-raid-chest-2026-10-19 are retained. Native canSeeOrDetect, Spell::prepare/update/EffectOpenLock, SendLoot, DoLootRelease and inventory receipt execute against actual final-link libraries.",
+    "64 full-bag sequences: four difficulties x four fresh/late/saved load cases x Human/Orc x keeping the window open or closing while still full. The first earned30..60 fragment stack and TYPE_GO cooldown are recorded. Native release retains the closed container; after freeing the filler slots, actual Opening reopens it and AutoStoreItems receives exactly the original earned stack. Repeated opening/release cannot add another stack, and a fully received chest becomes hidden again.",
+    "32 gold-only sequences use the actual native money roll. After all items are received, closing retains gold and visibility while marking isOpen=false. Reopening and native GetGoldFromLoot award exactly that amount once; subsequent opening cannot duplicate gold or fragments and the completed chest becomes hidden.",
+    "32 ordinary native report-use/wrong-lock/complete/repeated opening sequences also pass. Source3365 is rejected by Lock1634;6247 matches native lock type10. Four difficulties17/14/15/16, both factions, and both saved boss/chest loading orders are covered.",
+    "Pinned f24b5547 game/scripts libraries explicitly reproduce16 full-bag failures and8 unclaimed-money losses on their early-loaded chests. The earlier12 late/saved hidden failures are also retained; baseline cannot test opening an unavailable late chest. Baseline PASS means those expected defects were reproduced, not that the old behavior is correct."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidChestNative.ps1 and -Baseline: PASS, exit0, DBErrors0 bytes. Current has128 opening/receipt sequences; baseline retains its smaller reachable matrix and expected failures.",
+    "Test-PersonalRaidChestRelease.ps1: PASS, canonical PE/thunks use the shared native pending admission in visibility and Opening, and the helper calls actual loot eligibility. Existing chest/instance/criteria/loot Release checks also pass. Actual original CMake final-link inputs and changed sources/header are checked.",
+    "Test-RaidFragmentsNative.ps1: PASS, native boss/chest quest/quota admission, mixed saved/fresh recipients, loot methods, full-bag receipts, cooldowns and prepared inventory/cooldown persistence across all4 difficulties; DBErrors0 bytes.",
+    "Standard Release worldserver+bnetserver build: PASS. Final incremental build completes edits made during the full header rebuild. Canonical build-extractors/bin/Release, no global OutDir.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 and stderr0 bytes. No server/probe process remains. Schema-only disposable auth/character databases167 tables and limited users removed; final matching schema/user counts both0. World/Hotfix probes READ ONLY; no personal rows copied or modified."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-raid-chest-native/run-20261019-145106",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-chest-native-baseline/run-20261019-145024",
+    "raid_fragments_logs": "build-extractors/runtime-test/raid-fragments-native/run-20261019-145054",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-chest-native/startup-20261019-145039",
+    "pinned_baseline_game_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "pinned_baseline_scripts_sha256": "4BCE790E278BBED4ACC332F16C5701C16B475029F4D60CCD371FEAA54979BA8C",
+    "actual_game_library_sha256": "F7EBCA13F838C19E1FE31B1BF379C8FC459300CCB34F09FABF30B08B22851C0A",
+    "actual_scripts_library_sha256": "AD015E03EC3E14792DDF38FF344EA8AC512D007B4C0538447EDF27092C6179A4",
+    "worldserver_sha256": "4E0A771298A2EE190D19EE82082AE1228033B1575448B3941F5B137AE2D89EB5",
+    "bnetserver_sha256": "0CD6D6B98AB31E956EF76C194AC35CBE5F7EFE89D1298290A9BE5377C6EA7657"
+  },
+  "test_development_findings": [
+    "The first pending test assumed close retained a full-bag container and failed against baseline because the native release had actually deleted it. The final matrix separately reproduces keeping the window open and closing while full, with the corresponding old-container expectations.",
+    "Opening exposes the loot window; item receipt is exercised explicitly through native AutoStoreItems when needed. No client autoloot opcode delivery is claimed. Money uses the actual GetGoldFromLoot path. Final accepted runs use the same recorded test source and preserve failed development logs privately."
+  ],
+  "remaining_limits_and_client_checks": [
+    "Pending loot is still transient and bound to the exact live object GUID. This does not serialize containers through logout/crash/grid replacement or restore an expired/despawned chest. Prior pending-loot crash/reentry limitations remain.",
+    "No complete raid combat, authenticated socket/login, group kill eligibility or automatic grid scheduler is replayed. Initial combat prerequisites and inventory filler are fixtures; DB spawn initialization, real surrender callback and native chest/spell/loot execution are real.",
+    "No WoW client operated. Verify actual chest highlighting/visibility updates, full-bag messages, closing/reopening/autoloot/manual money collection, saved-instance reentry and no duplicate reward in the7.3.5 client. A whole quest or raid is not marked client-verified."
+  ]
+}

@@ -217,6 +217,22 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
             // locked doors are opened with spelleffect openlock, prevent remove its as looted
             go->UseDoorOrButton();
         }
+        else if (go->GetGoType() == GAMEOBJECT_TYPE_CHEST && go->IsPersonal() &&
+            go->GetGOInfo()->chest.DungeonEncounter && lootPesonal &&
+            lootPesonal->dungeonEncounterID == go->GetGOInfo()->chest.DungeonEncounter)
+        {
+            // Shared chest loot may be empty while this player's earned
+            // container is still full. Keep that container on inventory error.
+            lootPesonal->isOpen = false;
+            if (!lootPesonal->isLooted())
+                lootPesonal->AutoStoreItems(true);
+            if (lootPesonal->isLooted())
+            {
+                player->RemoveLoot(lguid);
+                go->DestroyForPlayer(player);
+            }
+            go->UpdateObjectVisibility();
+        }
         else if (loot->isLooted() || go->GetGoType() == GAMEOBJECT_TYPE_FISHINGNODE)
         {
             // GO is mineral vein? so it is not removed after its looted
