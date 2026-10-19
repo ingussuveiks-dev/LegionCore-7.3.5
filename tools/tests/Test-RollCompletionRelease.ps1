@@ -12,5 +12,20 @@ $listing | Set-Content "$out/vote-disassembly.txt"
 foreach($pattern in @('cmp\s+dword ptr \[[^\]]+\],4\s*\r?\n[^\r\n]*jne','cmp\s+r[a-z0-9]+,4\s*\r?\n[^\r\n]*jae','shl\s+[a-z0-9]+,cl\s*\r?\n[^\r\n]*test\s+byte ptr')){
  if($listing -notmatch $pattern){throw "Canonical roll lacks single/enabled vote admission: $pattern"}
 }
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;ordinary_quest_slot=$true;single_enabled_vote=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
-'PASS: canonical Release votes resolve the actual ordinary/quest slot, reject repeated/disabled votes and call native completion; final-link freshness and hashes recorded.'
+$completion=@(Calls '?CountTheRoll@Group@@')
+foreach($name in @('?GetItemInSlot@Loot@@','?AllowedForPlayer@Loot@@')){
+ if($completion -notcontains (Resolve (Symbol $name))){throw "Canonical completion lacks $name"}
+}
+$range=Bounds '?EndRoll@Group@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$ending=(& $dump.FullName /DISASM:NOBYTES $argument $exe) -join "`n"
+if($LASTEXITCODE){throw 'Canonical timeout disassembly failed'}
+$ending | Set-Content "$out/endroll-disassembly.txt"
+# isValid/getLoot are inlined by this Release. Resolve the real registry call
+# followed by its null branch instead of requiring a non-inlined wrapper.
+$lookup=Resolve (Symbol '?GetLoot@LootMgr@@');$guarded=$false
+foreach($site in [regex]::Matches($ending,'call\s+([0-9A-Fa-f]+)\s*\r?\n[^\r\n]*test\s+rax,rax\s*\r?\n[^\r\n]*je\s+([0-9A-Fa-f]+)')){
+ if((Resolve ([Convert]::ToInt64($site.Groups[1].Value,16))) -eq $lookup){$guarded=$true}
+}
+if(!$guarded -or @(Calls '?EndRoll@Group@@') -notcontains (Resolve (Symbol '?CountTheRoll@Group@@'))){throw 'Canonical timeout lacks native missing-registry cleanup'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;ordinary_quest_slot=$true;single_enabled_vote=$true;winner_current_admission=$true;invalid_registry_cleanup=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
+'PASS: canonical Release validates actual vote/slot/current winner admission and timeout cleanup; final-link freshness and hashes recorded.'

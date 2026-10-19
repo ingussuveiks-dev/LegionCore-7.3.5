@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-19",
+  "baseline": "183d54fb",
+  "vote_fix_predecessor": "02840772",
+  "status": "Native roll completion revalidates recipients, safely resolves stale loot and preserves inventory-full retry; automated checks pass; client verification pending",
+  "client_verified": false,
+  "scope": "Code/data checks only. Separate completion fix after the focused vote-admission commit; no SQL, live item flags, rates/counts or character changes.",
+  "problem": [
+    "CountTheRoll trusted admission/votes from earlier in the roll and called StoreNewItem directly. A voter could reach10/10 or lose the personal landing/item quest before resolution and still receive a conditional/quest item.",
+    "A missing winner prevented another eligible voter from winning and could leave the item permanently blocked. EndRoll did not remove an invalid registry entry because its null getLoot no longer matched the original Loot pointer.",
+    "Completion directly indexed ordinary/quest vectors and did not reject already consumed or replaced slots. The ordinary-slot path remained defective after the separate quest-vote fix: at02840772 the executable probe logged RECIPIENT quota vote=1 timeout=0 target=0->1 master=0->0 blocked=1."
+  ],
+  "implementation": [
+    "Resolve the native slot once through GetItemInSlot; end an invalid roll without granting if its slot is absent, already looted, currency, empty or has a different ItemID from the roll. Reuse the validated item throughout delivery rather than indexing vectors repeatedly.",
+    "Before winner selection, rebuild NEED/GREED/PASS tallies using native current recipient admission: real lookup/contact, current or original party membership and full Loot::AllowedForPlayer including actual CurrencyID/type/quest flag/item condition pointer.",
+    "Treat an ineligible vote as PASS. Preserve the original participant in native completion broadcasts so a still-online client can receive the existing close/result flow; it cannot win. Valid NEED priority and original-party membership remain supported; an eligible GREED voter can win when the only NEED voter is now ineligible.",
+    "Unblock the validated item as the roll ends, including no eligible winner, absent winner and full inventory. Capacity remains a native delivery check, not a reason to select another winner; existing retry behavior is retained.",
+    "EndRoll now cleans invalid registry entries as well as rolls matching its Loot. Existing native winner delivery, bonuses, achievements and disenchant branch remain; this work does not certify disenchant delivery."
+  ],
+  "native_regression": {
+    "runner": "tools/tests/Test-RollCompletionNative.ps1",
+    "current_run": "build-extractors/runtime-test/roll-completion-native/run-20261019-080836",
+    "baseline_run": "build-extractors/runtime-test/roll-completion-native-baseline/run-20261019-080641",
+    "baseline_command": "tools/tests/Test-RollCompletionNative.ps1 -Baseline",
+    "baseline_library_sha256": "BB3EC26E7A97A9E158AD3EAD77D1B38F0CFECBBC4CBA2B4C91933A8829B0458F",
+    "baseline_note": "Same full183d54fb game.lib captured before both fixes. Baseline mode intentionally asserts original vote defects and stale completion grants/stuck state; its canonical-current-library hash describes that run's intermediate build, while linked-pinned-183d54fb-game.lib identifies the actual old implementation under test. Final current manifests name the final Release library below.",
+    "coverage": [
+      "Both human/orc recipients; actual GroupLoot participant creation, CMSG_LOOT_ROLL wire decode, WorldSession handler, CountRollVote/CountTheRoll, native packets and StoreNewItem inventory delivery. Retain ordinary/quest NEED/GREED, duplicate/disabled/invalid vote, full-backpack retry and actual Creature::Update corpse timeout tests from the predecessor.",
+      "A valid NEED or GREED voter becomes10/10 before the last vote or corpse timeout. With an eligible GREED alternative, stale NEED loses and that alternative receives one item; without an alternative no item is granted and loot is unblocked. Baseline gives the expired voter one item instead.",
+      "Missing personal landing, missing fragment item quest, both recipients ineligible, missing ObjectAccessor player and detached current party. Original-party-only membership retains valid NEED priority. A missing winner with no fallback cannot leave loot blocked.",
+      "Already-looted and mismatched-ID slots cannot grant again. Cleared LootMgr registration cannot retain an active roll. Current-only missing-slot EndRoll safely cleans up; the baseline deliberately skips that unsafe direct-index case and the quest-only missing-item-quest case that its earlier vote bug prevents from reaching completion.",
+      "Current quota example: target0->0, master0->1, blocked0. NEED/GREED full-inventory failure preserves the item/unlootedCount and actual StoreLootItem delivers after a real backpack slot is freed. Repeated EndRoll never grants a second item."
+    ]
+  },
+  "automated_checks": [
+    "Final Test-RollCompletionNative.ps1 PASS, including all predecessor and new completion cases; baseline PASS means the original defects reproduced. Both DBErrors.log files0 bytes.",
+    "Test-RollCompletionRelease.ps1 PASS: bounded canonical PE inspection verifies ordinary/quest vote guards, native GetItemInSlot and AllowedForPlayer in completion, all five correctly bound recipient call sites and a real registry-null branch in EndRoll. MSVC inlined isValid/getLoot, so the test resolves the actual LootMgr::GetLoot call rather than requiring the wrapper symbol to be called.",
+    "Final Test-LostArmyNative.ps1 PASS at runtime-test/lost-army-native/run-20261019-080835, preserving actual Player/Pet/group kill credit, cached admission, packet and inventory behavior; DBErrors.log0 bytes.",
+    "Standard CMake Release worldserver/bnetserver build PASS without global OutDir. Final canonical startup ready=True and graceful shutdown exit0; DBErrors.log/stderr.log0 bytes; server not left running.",
+    "PowerShell/audit JSON parse and staged source/test/audit whitespace/content review completed before focused commit."
+  ],
+  "boundaries": [
+    "Initial actor/group/task/rotation/loot state is seeded in private real in-memory objects. Socketless sessions, private100%-generated generic roll rows, FOLLOW_LOOT_RULES and non-FFA142487 variants are fixtures; live Lost Army metadata/rates are unchanged and no normal fragment rolling behavior is asserted.",
+    "Native local7.3.5 DB2, item/addon/quest and actual source1 conditions load through the existing linked harness. World/Hotfix/Login pools are read-only; no CharacterDatabase opens. Account0 sessions intentionally survive to bounded process exit to skip the native account UPDATE destructor. Personal inventory/progress is untouched.",
+    "Missing-player and party/original-party transitions are controlled native lookup/reference states, not a full network disconnect, login, battleground transfer or Group::RemoveMember test. Corpse state is seeded, but its idle-update cadence, timer, GroupMgr lookup and EndRoll dispatch are native.",
+    "Consumed/replaced/missing slots are deliberately controlled Loot mutations. ItemID guards do not version a new loot generation that reuses the same GUID/slot/ItemID. General malformed-request/source-GUID validation, membership removal callbacks and complete loot-generation persistence remain outside scope.",
+    "Native packet serialization executes, but no client receives the packets. Correct completion-window closure, UI delivery and persistence/relog require client checks. Disenchant rewards, mail compensation, winner-only full-inventory reservation and all roll methods are not certified.",
+    "Current native eligibility and available-recipient fallback are enforced consistently; no historical retail proof of offline-winner/mail or pre-rolled-quest timing was recovered or claimed. Previous authenticity/client limitations remain in the linked audits."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "build_log": "build-extractors/runtime-test/roll-completion-native-baseline/release-winners-build.log",
+    "actual_final_link_game_library": "build-extractors/src/server/game/Release/game.lib",
+    "game_library_sha256": "0B43632AFE658AC7E8C45CBFDBD29CDCDFDF65CB4054D945F3E7F9E3361167E5",
+    "worldserver_sha256": "5DF18C510F178B570E70DE782765BE35CBB4815E138F8E3740979695D9B2E72C",
+    "bnetserver_sha256": "43A9480999FEBE33E939EE0DEFA03482BEC59B68563824AFB625DEC7A85C1EFB",
+    "release_manifest": "build-extractors/runtime-test/roll-completion-native/release-inputs.json",
+    "startup_logs": "build-extractors/runtime-test/roll-completion-native/startup-20261019-080823",
+    "worldserver_left_running": false
+  },
+  "pending_client": "Actual NEED/GREED/quest roll UI, recipient state changes during rolling, completion-window closure, inventory-full retry and timeout delivery; full quest reward/save/relogin remain separate.",
+  "related_audits": [
+    "docs/audits/roll-votes-2026-10-19.json",
+    "docs/audits/master-loot-admission-2026-10-19.json",
+    "docs/audits/lost-army-native-loot-2026-10-19.json"
+  ]
+}

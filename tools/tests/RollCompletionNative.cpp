@@ -141,6 +141,152 @@ static void CheckTimeoutInventory(Map& map, ProbeParty& group, LootPlayer& maste
     }
     std::cout << "PASS: actual Creature corpse countdown resolves timeout, nonvoters/all-pass and repeat callbacks; native full inventory preserves loot and later StoreLootItem retry delivers.\n";
 }
+struct HiddenPlayer
+{
+    LootPlayer& player;
+    explicit HiddenPlayer(LootPlayer& value) : player(value) { sObjectAccessor->RemoveObject(static_cast<Player*>(&player)); }
+    ~HiddenPlayer() { sObjectAccessor->AddObject(static_cast<Player*>(&player)); }
+};
+struct OriginalPartyOnly
+{
+    LootPlayer& player; ProbeParty& group;
+    OriginalPartyOnly(LootPlayer& value, ProbeParty& party) : player(value), group(party)
+    { player.SetGroup(nullptr); player.SetOriginalGroup(&group, 0); }
+    ~OriginalPartyOnly() { player.SetOriginalGroup(nullptr); player.SetGroup(&group, 0); }
+};
+static void CheckRecipients(Map& map, ProbeParty& group, LootPlayer& master, LootPlayer& target)
+{
+    master.Accept(0); target.Accept(0);
+    Loot seed; seed.SetLootOwner(&master); seed.isClear = false;
+    for (unsigned i = 0; seed.quest_items.empty() && i < 40; ++i)
+    { seed.clear(); Require(seed.FillLoot(116180, LootTemplates_Creature, &master, true), "Native condition seed failed"); }
+    Require(!seed.quest_items.empty(), "No actual condition seed rolled");
+    auto conditions = seed.quest_items.front().conditions; Require(conditions.size() == 4, "Changed live native conditions");
+    for (uint8 choice : {uint8(ROLL_NEED), uint8(ROLL_GREED)}) for (bool timeout : {false, true})
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(142487, true); auto masterBefore = master.GetItemCount(142487, true);
+        RollSource source(map, group, master, target, 142487, false, conditions);
+        source.VoteFor(target, choice);
+        target.SetQuestObjectiveData(landing, &landing->GetObjectives()[0], 10);
+        if (timeout) source.Timeout();
+        else source.VoteFor(master, choice == ROLL_NEED ? ROLL_GREED : ROLL_PASS);
+        auto item = source.loot.GetItemInSlot(0);
+        std::cout << "RECIPIENT quota vote=" << unsigned(choice) << " timeout=" << timeout << " target=" << before << "->" << target.GetItemCount(142487, true)
+            << " master=" << masterBefore << "->" << master.GetItemCount(142487, true) << " blocked=" << item->is_blocked << std::endl;
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(target.GetItemCount(142487, true) == before + 1 && master.GetItemCount(142487, true) == masterBefore, "Baseline stale winner grant changed");
+#else
+        bool fallback = !timeout && choice == ROLL_NEED;
+        Require(source.Rolls().empty() && target.GetItemCount(142487, true) == before && master.GetItemCount(142487, true) == masterBefore + (fallback ? 1 : 0)
+            && item->is_looted == fallback && !item->is_blocked, "Resolution did not reject stale winner or use eligible fallback");
+#endif
+    }
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(142487, true);
+        RollSource source(map, group, master, target, 142487, false, conditions);
+        source.VoteFor(target, ROLL_NEED); target.SetQuestStatus(44923, QUEST_STATUS_NONE); target.SetQuestSlot(0, 0);
+        source.VoteFor(master, ROLL_PASS);
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(target.GetItemCount(142487, true) == before + 1, "Baseline missing-landing winner grant changed");
+#else
+        Require(target.GetItemCount(142487, true) == before && !source.loot.GetItemInSlot(0)->is_blocked, "Missing landing still won loot");
+#endif
+    }
+#ifndef ROLL_COMPLETION_NATIVE_BASELINE
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(142487, true);
+        RollSource source(map, group, master, target, 142487, true, conditions);
+        source.VoteFor(target, ROLL_NEED); target.SetQuestStatus(45088, QUEST_STATUS_NONE); target.SetQuestSlot(1, 0);
+        source.VoteFor(master, ROLL_PASS);
+        Require(source.Rolls().empty() && target.GetItemCount(142487, true) == before && !source.loot.GetItemInSlot(0)->is_blocked,
+            "Actual quest-only winner ignored current HasQuestForItem");
+    }
+#endif
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(142487, true); auto masterBefore = master.GetItemCount(142487, true);
+        RollSource source(map, group, master, target, 142487, false, conditions);
+        source.VoteFor(target, ROLL_NEED); target.Accept(10); master.Accept(10); source.VoteFor(master, ROLL_PASS);
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(target.GetItemCount(142487, true) == before + 1, "Baseline all-ineligible winner grant changed");
+#else
+        Require(source.Rolls().empty() && target.GetItemCount(142487, true) == before && master.GetItemCount(142487, true) == masterBefore
+            && !source.loot.GetItemInSlot(0)->is_blocked && !source.loot.GetItemInSlot(0)->is_looted, "All-ineligible roll lost/blocked/granted loot");
+#endif
+    }
+    for (bool hidden : {false, true})
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(2589, true); auto masterBefore = master.GetItemCount(2589, true);
+        RollSource source(map, group, master, target);
+        source.VoteFor(target, ROLL_NEED);
+        if (hidden)
+        { HiddenPlayer absent(target); Require(!ObjectAccessor::FindPlayer(target.GetGUID()), "Missing-player fixture failed"); source.VoteFor(master, ROLL_GREED); }
+        else
+        { target.SetGroup(nullptr); source.VoteFor(master, ROLL_GREED); target.SetGroup(&group, 0); }
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(master.GetItemCount(2589, true) == masterBefore && target.GetItemCount(2589, true) == before + (hidden ? 0 : 1)
+            && source.loot.GetItemInSlot(0)->is_blocked, "Baseline missing/departed winner behavior changed");
+#else
+        Require(source.Rolls().empty() && master.GetItemCount(2589, true) == masterBefore + 1 && target.GetItemCount(2589, true) == before
+            && !source.loot.GetItemInSlot(0)->is_blocked, "Missing/departed winner prevented eligible Greed fallback");
+#endif
+    }
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(2589, true);
+        RollSource source(map, group, master, target); source.VoteFor(target, ROLL_NEED);
+        { OriginalPartyOnly original(target, group); source.VoteFor(master, ROLL_GREED); }
+        Require(source.Rolls().empty() && target.GetItemCount(2589, true) == before + 1, "Valid original-party Need priority was lost");
+    }
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(2589, true);
+        RollSource source(map, group, master, target); source.VoteFor(target, ROLL_NEED);
+        { HiddenPlayer absent(target); source.VoteFor(master, ROLL_PASS); }
+        Require(source.Rolls().empty() && target.GetItemCount(2589, true) == before && !source.loot.GetItemInSlot(0)->is_looted,
+            "Absent winner unexpectedly received inventory");
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(source.loot.GetItemInSlot(0)->is_blocked, "Baseline absent-winner stuck loot changed");
+#else
+        Require(!source.loot.GetItemInSlot(0)->is_blocked, "Absent winner with no fallback left loot blocked");
+#endif
+    }
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(2589, true);
+        RollSource source(map, group, master, target); source.VoteFor(target, ROLL_NEED);
+        const_cast<LootItem*>(source.loot.GetItemInSlot(0))->is_looted = true;
+        group.EndRoll(&source.loot);
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(target.GetItemCount(2589, true) == before + 1, "Baseline already-looted timeout grant changed");
+#else
+        Require(source.Rolls().empty() && target.GetItemCount(2589, true) == before, "Already consumed slot granted again");
+#endif
+    }
+    {
+        RollSource source(map, group, master, target); source.loot.clear(); group.EndRoll(&source.loot);
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(source.Rolls().size() == 1, "Baseline invalid-registry roll retention changed");
+#else
+        Require(source.Rolls().empty(), "Missing loot registry left a stale active roll");
+#endif
+    }
+    {
+        master.Accept(0); target.Accept(0); auto before = target.GetItemCount(2589, true);
+        RollSource source(map, group, master, target); source.VoteFor(target, ROLL_NEED);
+        const_cast<LootItem*>(source.loot.GetItemInSlot(0))->item.ItemID = 142487; // Private slot replacement fixture.
+        group.EndRoll(&source.loot);
+#ifdef ROLL_COMPLETION_NATIVE_BASELINE
+        Require(target.GetItemCount(2589, true) == before + 1, "Baseline mismatched-slot winner grant changed");
+#else
+        Require(source.Rolls().empty() && target.GetItemCount(2589, true) == before, "Changed slot identity delivered a stale roll item");
+#endif
+    }
+#ifndef ROLL_COMPLETION_NATIVE_BASELINE
+    {
+        RollSource source(map, group, master, target); source.Current()->itemSlot = 99; group.EndRoll(&source.loot);
+        Require(source.Rolls().empty(), "Missing slot timeout did not clean up safely");
+    }
+#endif
+    master.Accept(0); target.Accept(0);
+    std::cout << "PASS: actual resolution handles changed target conditions, valid fallback, absent/departed players, all-ineligible and consumed/missing loot; baseline asserts stale grants/stuck cleanup.\n";
+}
 static int CompletionRun(int argc, char** argv)
 {
     InitializeNative(argc, argv); opcodeTable.Initialize(); LoadLootInputs();
@@ -158,7 +304,7 @@ static int CompletionRun(int argc, char** argv)
         for (uint8 race : {uint8(RACE_HUMAN), uint8(RACE_ORC)})
         {
             target.SetByteValue(UNIT_FIELD_BYTES_0, 0, race); target.setFactionForRace(race);
-            CheckVotes(map, group, master, target); CheckTimeoutInventory(map, group, master, target);
+            CheckVotes(map, group, master, target); CheckTimeoutInventory(map, group, master, target); CheckRecipients(map, group, master, target);
         }
     }
     LoginDatabase.Close(); HotfixDatabase.Close(); WorldDatabase.Close(); return 0;

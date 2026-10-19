@@ -62,5 +62,6 @@
     "Group roll UI eligibility and actual winner/timeout inventory delivery; full quest/reward/persistence behavior. Native checks do not constitute client verification."
   ],
   "next_code_check": "Native roll completion through winner selection and inventory receipt, including ineligible recipients, inventory-full and timeout paths. Current regression verifies participant creation only.",
-  "related_audit": "docs/audits/lost-army-native-loot-2026-10-19.json"
+  "related_audit": "docs/audits/lost-army-native-loot-2026-10-19.json",
+  "roll_completion_followup": "docs/audits/roll-votes-2026-10-19.json and docs/audits/roll-winner-admission-2026-10-19.json add full native NEED/GREED/quest winner inventory, full-backpack retry, actual corpse timeout and current-recipient/stale-loot checks. Canonical Release now checks a fifth recipient call in CountTheRoll. Earlier four-call findings remain historical; no client or complete loot-security claim."
 }

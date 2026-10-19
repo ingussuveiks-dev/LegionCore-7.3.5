@@ -40,5 +40,6 @@
     "release_manifest": "build-extractors/runtime-test/roll-completion-native/release-inputs.json"
   },
   "pending_client": "Quest/ordinary roll UI, one vote per participant, actual winner inventory, full-inventory retry and timeout display; no WoW client operated.",
-  "related_audit": "docs/audits/master-loot-admission-2026-10-19.json"
+  "related_audit": "docs/audits/master-loot-admission-2026-10-19.json",
+  "winner_followup": "docs/audits/roll-winner-admission-2026-10-19.json closes the recorded current-recipient and stale-slot/registry completion gaps, preserving the original vote fix02840772. Final native checks include all vote/full-inventory/corpse-timeout cases and a canonical startup; earlier hashes/results above identify the separate vote-only checkpoint. Client and other stated limits remain."
 }

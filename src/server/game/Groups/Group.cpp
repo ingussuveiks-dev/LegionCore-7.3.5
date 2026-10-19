@@ -1521,7 +1521,7 @@ void Group::EndRoll(Loot* pLoot)
 {
     for (auto itr = RollId.begin(); itr != RollId.end();)
     {
-        if ((*itr)->getLoot() == pLoot)
+        if (!(*itr)->isValid() || (*itr)->getLoot() == pLoot)
         {
             CountTheRoll(itr);           //i don't have to edit player votes, who didn't vote ... he will pass
             itr = RollId.begin();
@@ -1567,6 +1567,46 @@ void Group::CountTheRoll(Rolls::iterator rollI)
         return;
     }
 
+    LootItem* item = const_cast<LootItem*>(loot->GetItemInSlot(roll->itemSlot));
+    if (!item || item->is_looted || item->currency || !item->count || item->item.ItemID != roll->item.ItemID)
+    {
+        RollId.erase(rollI);
+        delete roll;
+        return;
+    }
+
+    // Admission and votes can outlive quest progress, group membership or a
+    // player's session. Select only current eligible recipients. Inventory
+    // capacity remains a delivery check so a full winner can retry the loot.
+    item->is_blocked = false;
+    roll->totalPlayersRolling = roll->totalNeed = roll->totalGreed = roll->totalPass = 0;
+    for (auto& vote : roll->playerVote)
+    {
+        if (vote.second == NOT_VALID)
+            continue;
+
+        ++roll->totalPlayersRolling;
+        Player* player = ObjectAccessor::FindPlayer(vote.first);
+        if (!player || !player->CanContact() || (player->GetGroup() != this && player->GetOriginalGroup() != this) ||
+            !loot->AllowedForPlayer(player, item->item.ItemID, item->item.CurrencyID, item->type, item->needs_quest, item))
+        {
+            // Keep the original participant in completion broadcasts so a
+            // still-online client can close its roll window normally.
+            vote.second = PASS;
+            ++roll->totalPass;
+            continue;
+        }
+
+        switch (vote.second)
+        {
+            case NEED: ++roll->totalNeed; break;
+            case GREED:
+            case DISENCHANT: ++roll->totalGreed; break;
+            case PASS: ++roll->totalPass; break;
+            default: break;
+        }
+    }
+
     //end of the roll
     if (roll->totalNeed > 0)
     {
@@ -1596,7 +1636,6 @@ void Group::CountTheRoll(Rolls::iterator rollI)
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_ROLL_NEED_ON_LOOT, roll->item.ItemID, maxresul);
 
                 ItemPosCountVec dest;
-                LootItem* item = &(roll->itemSlot >= loot->items.size() ? loot->quest_items[roll->itemSlot - loot->items.size()] : loot->items[roll->itemSlot]);
                 InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, roll->item.ItemID, item->count);
                 if (msg == EQUIP_ERR_OK)
                 {
@@ -1642,8 +1681,6 @@ void Group::CountTheRoll(Rolls::iterator rollI)
             {
                 player->UpdateAchievementCriteria(CRITERIA_TYPE_ROLL_GREED_ON_LOOT, roll->item.ItemID, maxresul);
 
-                LootItem* item = &(roll->itemSlot >= loot->items.size() ? loot->quest_items[roll->itemSlot - loot->items.size()] : loot->items[roll->itemSlot]);
-
                 if (rollvote == GREED)
                 {
                     ItemPosCountVec dest;
@@ -1676,11 +1713,6 @@ void Group::CountTheRoll(Rolls::iterator rollI)
     else
     {
         SendLootAllPassed(*roll);
-
-        // remove is_blocked so that the item is lootable by all players
-        LootItem* item = &(roll->itemSlot >= loot->items.size() ? loot->quest_items[roll->itemSlot - loot->items.size()] : loot->items[roll->itemSlot]);
-        if (item)
-            item->is_blocked = false;
     }
 
     RollId.erase(rollI);

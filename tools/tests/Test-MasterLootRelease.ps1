@@ -6,7 +6,7 @@ foreach($path in @('Groups/Group.cpp','Handlers/LootHandler.cpp')){
 }
 $out=Join-Path $repo 'build-extractors/runtime-test/master-loot-native'
 New-Item -ItemType Directory -Force $out | Out-Null
-$checks=@(@('?HandleMasterLootItem@WorldSession@@','handler',1),@('?GroupLoot@Group@@','group-loot',2),@('?DoRollForAllMembers@Group@@','manual-roll',1))
+$checks=@(@('?HandleMasterLootItem@WorldSession@@','handler',1),@('?GroupLoot@Group@@','group-loot',2),@('?DoRollForAllMembers@Group@@','manual-roll',1),@('?CountTheRoll@Group@@','winner',1))
 $verified=@{}
 foreach($check in $checks){
  $range=Bounds $check[0]; $argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
@@ -33,4 +33,4 @@ foreach($check in $checks){
  $verified[$check[1]]=$sites
 }
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;recipient_call_sites=$verified} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
-'PASS: canonical Release supplies actual CurrencyID/type/quest flag/LootItem pointer at all4 native MasterLoot/GroupLoot recipient calls; final-link freshness and hashes recorded.'
+'PASS: canonical Release supplies actual CurrencyID/type/quest flag/LootItem pointer at all5 native MasterLoot/GroupLoot/winner recipient calls; final-link freshness and hashes recorded.'
