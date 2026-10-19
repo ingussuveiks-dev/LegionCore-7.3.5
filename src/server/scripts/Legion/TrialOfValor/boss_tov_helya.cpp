@@ -511,6 +511,8 @@ struct boss_helya_tov : BossAI
 
                     DoCast(SpellHelyaAltPowerRegen);
                     checkrephase = false;
+                    // Phase three has its own Taint cadence after Helya returns.
+                    events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, IsMythicRaid() ? 1 : 24500);
                 });
                 DoCast(SpellHelyaReuse);
                 DoCast(SpellHelyaPurplePower);
@@ -854,7 +856,9 @@ struct boss_helya_tov : BossAI
                     Trinity::Containers::RandomResizeList(targets, count);
                     for (Player* target : targets)
                         me->AddAura(SpellTaintOfTheSea, target);
-                    if (IsMythicRaid())
+                    if (eventPhase == PHASE_3)
+                        events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, IsMythicRaid() ? 20000 : 28000);
+                    else if (IsMythicRaid())
                         events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 12000);
                     else if (IsHeroicRaid())
                         events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 14000);

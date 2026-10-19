@@ -65,6 +65,35 @@ static void TaintSelection(GarmPlayer& p,InstanceMap& map,Creature& helya,GarmPl
     ClearCombat(p,helya);PumpHelya(map,2000);
     for(auto player:players)player->SetGameMaster(false);
 }
+static void TaintPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya)
+{
+    auto damageIntoPhaseTwo=[&](){for(unsigned i=0;i<16&&helya.AI()->GetData(2)==1;++i)p.DealDamage(&helya,UINT32_MAX-4096,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);Require(helya.AI()->GetData(2)==2,"Taint timer bootstrap missed phase two");};
+    auto hasTaint=[&](){unsigned count=0;for(auto const& ref:map.GetPlayers())count+=ref.getSource()->HasAura(228054);return count;};
+    auto clearTaint=[&](){for(auto const& ref:map.GetPlayers())ref.getSource()->RemoveAura(228054);};
+    TaintRestart(p,map,helya);damageIntoPhaseTwo();
+    for(unsigned t=0;t<25000;t+=10){PumpHelya(map,10);Require(!hasTaint()&&helya.AI()->GetData(2)==2,"Taint continued during phase two");}
+    for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);
+    Require(helya.AI()->GetData(2)==3,"Taint timer bootstrap missed phase three");
+    int marker=-1;std::vector<unsigned> waves;bool mythic=map.GetDifficultyID()==DIFFICULTY_MYTHIC_RAID;
+    for(unsigned t=10;t<=90000;t+=10){PumpHelya(map,10);if(marker<0&&helya.HasAura(228546))marker=int(t);helya.RemoveAura(232230);
+        if(auto count=hasTaint()){Require(count==3,"Phase-three Taint lost eligible Players");waves.push_back(t);clearTaint();}
+        for(auto const& ref:map.GetPlayers())ref.getSource()->Unit::Update(10);
+    }
+    Require(marker>=0&&helya.AI()->GetData(2)==3,"Native return marker/phase missing");
+    std::cout<<"TAINT_PHASE3 marker="<<marker<<" waves=";for(auto t:waves)std::cout<<t<<',';std::cout<<std::endl;
+#ifdef TRIAL_HELYA_TAINT_BASELINE
+    Require(waves.empty(),"Pinned missing phase-three Taint changed");
+#else
+    Require(waves.size()>=(mythic?4u:3u),"Native phase-three Taint did not repeat");
+    unsigned initial=mythic?0:24500,interval=mythic?20000:28000;
+    Require(waves.front()+30>=unsigned(marker)+initial&&waves.front()<=unsigned(marker)+initial+3000,"Phase-three first Taint used wrong return timer");
+    for(unsigned i=1;i<waves.size();++i)Require(waves[i]-waves[i-1]>=interval&&waves[i]-waves[i-1]<=interval+3000,"Phase-three Taint reused phase-one cadence");
+#endif
+    ClearCombat(p,helya);PumpHelya(map,40000);Require(!hasTaint()&&map.GetInstanceScript()->GetBossState(2)==NOT_STARTED,"Taint timer survived reset");
+    TaintRestart(p,map,helya);damageIntoPhaseTwo();for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);PumpHelya(map,500);ClearCombat(p,helya);PumpHelya(map,40000);
+    Require(!hasTaint()&&map.GetInstanceScript()->GetBossState(2)==NOT_STARTED,"Delayed phase-three return scheduled Taint after reset");
+    std::cout<<"TAINT_PHASE3_RESET pendingReturn=0 repeatedTimer=0"<<std::endl;
+}
 static void TaintCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     p.GetOrInitPetStable();LoadTaintConditions();GarmPlayer closePlayer(map,p.getRace()),distantPlayer(map,p.getRace());
@@ -74,6 +103,7 @@ static void TaintCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& grou
         for(unsigned i=0;i<3;++i){auto e=s->GetEffect(SpellEffIndex(i),map.GetDifficultyID());if(e->Effect)std::cout<<" EFFECT index="<<i<<" type="<<e->Effect<<" aura="<<e->ApplyAuraName<<" trigger="<<e->TriggerSpell<<" targets="<<e->TargetA.GetTarget()<<','<<e->TargetB.GetTarget()<<" radius="<<e->CalcRadius(&helya)<<std::endl;}
     }
     TaintSelection(p,map,helya,closePlayer,distantPlayer);
+    TaintPhaseThree(p,map,helya);
     for(auto mode:{AURA_REMOVE_BY_ENEMY_SPELL,AURA_REMOVE_BY_EXPIRE,AURA_REMOVE_BY_DEFAULT,AURA_REMOVE_BY_CANCEL,AURA_REMOVE_BY_DEATH}){
         TaintRestart(p,map,helya);map.PlayerRelocation(&closePlayer,512,670,2,0);map.PlayerRelocation(&distantPlayer,530,670,2,0);
         TaintWatch watch(helya,map);helya.AddAura(228054,&p);Require(p.HasAura(228054),"Native Taint did not apply");Position const original=p.GetPosition();

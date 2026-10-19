@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "status": "Missing third-phase Taint repaired; native lifecycle/targets/phase transitions and canonical Release checks pass. Client verification remains pending.",
+  "repair": [
+    "StartEvents clears the event queue on every phase change; phase3 previously never rearmed Taint although its event handler allowed phase3. Schedule it in the guarded delayed return callback alongside228546: Mythic1ms(next native update), other difficulties24500ms. Phase3 repeats every20000ms Mythic/28000ms others; phase1 existing timers are preserved.",
+    "Keep native spell effects/radii/durations, separate burst/Essence lifecycle, Player/tank eligibility and reset/death cleanup from prior commits68dbfdfa/e6c95d81. No database or personal character changes."
+  ],
+  "native_checks": [
+    "Eight current and eight pinned48b57e05 reference cases across difficulties17/14/15/16 and Human/Orc. Real phase1 damage enters phase2;25seconds of actual updates produce no Taint. Nine real tentacle deaths start phase3. The test observes the actual228546 aura return marker and actual Player aura applications during90seconds of native event execution; it never injects a boss event.",
+    "Three eligible Players; each observed wave applies to all three. The fixture removes their Taint by DEFAULT immediately after observation so indefinite runtime auras cannot conceal a later refresh. It disables only automatic232230 energy gain to isolate Taint timers; orb/Fury competition still runs. Existing full phase3 test separately runs automatic breath energy.",
+    "Current LFR/Normal/Heroic marker6500ms and waves30990/58990/86990ms from tentacle transition:24.49s to first, then28s. Mythic6500/26500/46500/68490/88490ms: immediate first and20s repeats, with one1.99s postponement behind a real concurrent cast. Pinned reference has zero waves in all eight cases.",
+    "A strict first-timer probe originally rejected the10ms difference between the observed aura marker and EventMap scheduling in the same update. The fixture now allows30ms update/dispatch resolution before the nominal first time and up to3s cast contention; no production timer was changed to satisfy the fixture.",
+    "After repeated waves, real evade plus40seconds produces no Taint. A second real phase2->3 transition is reset500ms into the pending return; another40seconds produces no aura or encounter restart. Lifecycle removal/expiry/dispel/Essence/location/targets/reset/victory and initial target-selection cases all remain passing.",
+    "Native Phase1 and Phase3 regression suites each pass eight cases with clean DBErrors/Server diagnostics on these final libraries. Pool data/migration replay passes. Extracted-production HelyaLifecycle and its PE check pass; its mocked service coverage is distinct from native encounter execution.",
+    "Normal CMake Release build of worldserver and bnetserver deploys directly to build-extractors/bin/Release with actual generated final-link libraries. Bounded x64 PE/thunk checks inspect OnRemove, the delayed return callback phase gate/228546/1ms-or24500ms schedule and UpdateAI20/28s constants. Final startup ready, exit0, DBErrors/stderr empty."
+  ],
+  "primary_references": [
+    {
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+      "scope": "Primary Legion-era addon encounter source dated2018-04-28, before8.0:228546 phase3 handler, immediate Mythic/24.5s other initial Taint; application callback20/28s cadence. Identical Taint values also checked in current BigWigs_Legion. Addon observations are timing evidence, not a server executable or complete retail simulation.",
+      "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+      "date": "2018-04-28T17:39:02Z",
+      "commit": "de72d463c2d4ec9aa1099a3645311980620697a4"
+    },
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "patch": "7.3.5",
+      "scope": "Tank targeting, dispel burst/delayed Essence and phase-three Taint reuse."
+    }
+  ],
+  "prior_audits": [
+    "trial-helya-taint-lifecycle-2026-10-19.json",
+    "trial-helya-taint-targets-2026-10-19.json"
+  ],
+  "evidence": {
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134/native-lines.txt": "AD6C275D65591709F00C225CEE9A04534F1FD4E48918B03B94797525CCAA50A3",
+      "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-201135/native-lines.txt": "987C076A49F9F4AF2EB57EB77E85F75DA675E6D51184017BB92D281208D33908",
+      "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-200937/native-lines.txt": "9C8175E8A3FBB05BEEBD575241B5F5A8B4B49399662F70FA47A19A2F3B3B21A9",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-200938/native-lines.txt": "C5C3630450B5486C91D8DD8D0DD46297E7EAACC84AE1B99F6CB4DB6485FF4EA0",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134/taint-remove-disassembly.txt": "6366316C781FD82A3725DB5D5F09D6A02043D83F4DA2E8C7939D2FA472F28DA5",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134/taint-update-disassembly.txt": "933FC45586C1A3D0347817C41E077375271D80869FC0BC56B50C5CB0CB7B52DF",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134/taint-return-disassembly.txt": "3E297E82D20B876D07ACB995B7AE23C9B19FA8AE73BB4F67EC64549DE0E24741",
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134/taint-release-inputs.json": "E689DF2B689C7AD2F5CAE830858DD2DA9F92972326E2150380075C2D935DAE8E",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "D2C2B1DB72F9BB2F3470777336F3FBAC0ECD41CCA8BF017E329715E451371DCF",
+      "tools/tests/TrialHelyaTaintNative.cpp": "512E880D2B7F7BC1C3F120BF5381984781082487FD2660F2F873F98A45FDE9D8",
+      "tools/tests/TrialHelyaPhase3Native.cpp": "C8B2BC7E825C5EA6B1620BF347CDC6FD6D727818C2BAE37DFA2A645F92A7E226",
+      "tools/tests/Test-TrialHelyaTaintRelease.ps1": "47003406B2F4B18A4A679FAB1C88782E5E568A26B0863471D27F9F2C9DB888B9",
+      "build-extractors/bin/Release/worldserver.exe": "2263551C17AF2E29D0563BAB5D0138964E1009065461F459671FBBD0C89A637C",
+      "build-extractors/bin/Release/bnetserver.exe": "FFDE3C05A58644E813E193D85075129F7D0F2BBF4AA2D44D95942DE8E841D992",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "A878C3560897984B03885F5F658286733E10515EB3452109B4CFFE202BA3817A",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E"
+    },
+    "runs": {
+      "trial-helya-taint-native": "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-201134",
+      "trial-helya-taint-native-baseline": "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-201135",
+      "trial-helya-phase1-native": "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-200937",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-200938"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-201119"
+  },
+  "limits": [
+    "No authenticated7.3.5 client. Spell animation, dispel telegraph, combat-log timing with a live raid and full encounter tuning remain unverified. Do not call the whole encounter client-verified.",
+    "First-phase inherited timings differ from the addon reference (notably LFR first/repeat and Heroic repeat). They are retained as an explicit tuning followup, not asserted retail-exact. This commit restores phase3 without broad retiming of phase1.",
+    "The native fixture uses real map/spell/aura/AI/threat/quest code with schema-only scratch auth/characters and read-only World/Hotfix pools; it does not reproduce a full authenticated raid or player movement. Phase-three cadence isolation removes only the boss energy-gain aura and clears observed Taint by ordinary script removal."
+  ]
+}
