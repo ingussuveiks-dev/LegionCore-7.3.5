@@ -1477,12 +1477,13 @@ void Group::CountRollVote(ObjectGuid playerGUID, uint8 AoeSlot, uint8 Choice)
     if (itr == roll->playerVote.end())
         return;
 
-    if (roll->getLoot())
-    {
-        if (roll->getLoot()->items.empty())
-            return;
-    }
-    else
+    Loot* loot = roll->getLoot();
+    LootItem const* item = loot ? loot->GetItemInSlot(roll->itemSlot) : nullptr;
+    if (!item || item->is_looted)
+        return;
+
+    // A participant gets one enabled vote for the actual ordinary/quest slot.
+    if (itr->second != NOT_EMITED_YET || Choice >= MAX_ROLL_TYPE || !(roll->rollVoteMask & (1 << Choice)))
         return;
 
     switch (Choice)

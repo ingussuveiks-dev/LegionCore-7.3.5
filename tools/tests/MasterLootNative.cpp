@@ -123,6 +123,7 @@ static void CheckRoll(Map& map, ProbeParty& group, LootPlayer& master, LootPlaye
     group.ClearRolls(); group.SetLootMethod(MASTER_LOOT);
 }
 
+#ifndef MASTER_LOOT_NATIVE_SUPPORT_ONLY
 static int MasterRun(int argc, char** argv)
 {
     LootItem layout; layout.needs_quest = true;
@@ -193,3 +194,4 @@ int main(int argc, char** argv)
     try { return MasterRun(argc, argv); }
     catch (std::exception const& error) { std::cerr << error.what() << '\n'; return 1; }
 }
+#endif

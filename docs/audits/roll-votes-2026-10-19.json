@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-19",
+  "baseline": "183d54fb",
+  "status": "Native ordinary/quest roll voting repaired; winner inventory, full inventory and corpse timeout regression passes; client verification pending",
+  "client_verified": false,
+  "problem": "CountRollVote rejected any loot with an empty ordinary items vector, including a valid quest-only roll. It also counted repeated or disabled votes, allowing one player to finish a two-member roll before the second member voted.",
+  "implementation": "Resolve the actual roll slot through Loot::GetItemInSlot, admitting ordinary and quest slots and rejecting absent/looted items. Require NOT_EMITED_YET, a bounded choice and its enabled rollVoteMask bit before modifying any vote counter.",
+  "regression": {
+    "runner": "tools/tests/Test-RollCompletionNative.ps1",
+    "current_run": "build-extractors/runtime-test/roll-completion-native/run-20261019-075829",
+    "baseline_command": "tools/tests/Test-RollCompletionNative.ps1 -Baseline",
+    "baseline_run": "build-extractors/runtime-test/roll-completion-native-baseline/run-20261019-075828",
+    "baseline_library_sha256": "BB3EC26E7A97A9E158AD3EAD77D1B38F0CFECBBC4CBA2B4C91933A8829B0458F",
+    "baseline_note": "Full actual183d54fb final-link game.lib captured from clean game sources before edits, ignored local capture verified by saved SHA. Baseline PASS means quest-only refusal, duplicate premature delivery and disabled/absent-slot vote admission reproduced.",
+    "coverage": [
+      "Decode actual constructed CMSG_LOOT_ROLL bytes and execute WorldSession::HandleLootRoll, native CountRollVote/CountTheRoll, packet construction and native Player inventory delivery. Ordinary and quest-only NEED/GREED winners, both human and orc recipients.",
+      "A duplicate NEED cannot impersonate the second member; the valid second PASS completes delivery once. Disabled NEED/DISENCHANT and invalid MAX_ROLL_TYPE leave participation unconsumed; a missing native slot is rejected. Tests of disabled choices do not resolve/disenchant an item.",
+      "Actual Creature::Update corpse timer -> GroupMgr lookup -> EndRoll -> CountTheRoll handles a GREED voter plus nonvoter, no-vote/all-pass release and repeated EndRoll without duplicate receipt. Initial corpse state is seeded; countdown and callbacks are native.",
+      "Native CanStoreNewItem confirms a full backpack made of actual max-size stacks. NEED/GREED completion preserves the item, unlootedCount and unblocks it on inventory failure; after freeing a real slot, actual StoreLootItem retry delivers. No persistent inventory changed."
+    ]
+  },
+  "boundaries": [
+    "Private socketless real Players/session, group registry/references and initial task/actor/loot state. Native DB2/items/addons/quests load read-only; no CharacterDatabase. Account0 sessions intentionally remain alive until bounded process exit to skip their normal account UPDATE destructor.",
+    "Controlled generic142487 variants set FOLLOW_LOOT_RULES and disable FFA, unlike live fragments; private rows have100% generation for branch coverage. No live flags, quest rows or drop chance/count changed. This is not proof that live Lost Army fragments normally roll.",
+    "Idle Creature::Update batches ticks. After59999ms leaves timer1, repeated1ms updates flush the native cadence (bounded5000ms) before asserting cleanup. The first fixture expected an immediate final1ms call and failed because of this real throttle; no production timer was changed.",
+    "Full-inventory retry retains the core's existing general unblock behavior; winner-only reservation, mail/relog persistence and client loot UI are not certified.",
+    "Current conditions at winner resolution, missing/offline participants and slot invalidation during timeout remain a separate follow-up. This focused commit repairs vote admission only; no whole-roll or client-verified claim."
+  ],
+  "checks": [
+    "Current and pinned baseline native runs PASS, each DBErrors.log0 bytes.",
+    "Test-RollCompletionRelease.ps1 PASS: canonical native slot getter, single-vote/enabled-choice branches and completion call inspected within actual PE function bounds; includes prior Master/LostArmy/Rockaway binary checks.",
+    "Standard CMake Release worldserver/bnetserver build PASS without global OutDir; actual generated final-link game.lib and canonical executable used by tests. Final startup is recorded with the subsequent completion follow-up.",
+    "PowerShell/audit JSON parse and staged diff whitespace/content review completed before commit."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "build_log": "build-extractors/runtime-test/roll-completion-native-baseline/release-votes-build.log",
+    "worldserver_sha256": "492B7C88EDB6E5AD40DBB4555609A019BCCD207E8CBBF0811A74F5FC8C1E6872",
+    "game_library_sha256": "253CEFB44C632FF4EBF46E865A4F83ECFD4E7404399B2BD9ABCB4863C55D7C2B",
+    "release_manifest": "build-extractors/runtime-test/roll-completion-native/release-inputs.json"
+  },
+  "pending_client": "Quest/ordinary roll UI, one vote per participant, actual winner inventory, full-inventory retry and timeout display; no WoW client operated.",
+  "related_audit": "docs/audits/master-loot-admission-2026-10-19.json"
+}
