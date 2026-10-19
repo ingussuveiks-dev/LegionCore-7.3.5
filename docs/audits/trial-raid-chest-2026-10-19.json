@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-19",
+  "quest": 45088,
+  "baseline_commit": "f24b5547",
+  "status": "Late/saved-DONE Odyn chest availability repaired; native DB chest opening passes both factions/all4 difficulties. Client remains pending.",
+  "defect": "DB spawn545038/entry260526 uses spawntimesecs=-1 and starts hidden. SetBossState(Odyn,DONE) enables an already loaded chest, but OnGameObjectCreate only remembered its GUID. A chest loaded after victory, including saved-DONE reconstruction in either boss/chest order, stayed hidden. Pinned native baseline reproduces all12 late/saved cases.",
+  "fix": "OnGameObjectCreate enables a hidden Odyn chest for86400 seconds when the saved Odyn state is DONE. An already spawned chest retains its active lifetime. Native DB position/model/flags/loot link/negative-spawn behavior and existing victory path are preserved; no SQL edit.",
+  "native_evidence": [
+    "Read-only DB row545038 populates native GameObjectData, then actual LoadGameObjectFromDB/Create/AddToWorld and instance OnGameObjectCreate execute. The fixture never substitutes a spawned-by-default Create chest. Native spawn is1648/8440,2412.42/528.691/748.995, spawnMask245760, phase1, negative delay-1.",
+    "Actual instance factory and DB Odyn AI execute native phase2 setup and the final DamageTakenAfterScaling surrender hook at9% health. Defender/Guarm prerequisites are setup, no player plays the fight. The chest is hidden before victory and becomes available afterwards. A separate case delays DB chest loading until after this actual victory.",
+    "Actual GetSaveData is supplied to a new InstanceSave/InstanceMap factory after UnloadAll. Both chest-before-boss and boss-before-chest loading restore availability. Native RemoveFromWorld/AddToWorld preserves a deliberately distinct123-second active timer rather than resetting it to24h; this catches resets without depending on wall-clock advancement.",
+    "Native Lock.db2 record1634 has key type2/index10. Native Spell3365 does not match, while6247 has the matching OPEN_LOCK effect. The initial3365 assumption was rejected by the actual catalog and corrected before accepted runs; no spell/lock data was changed.",
+    "Deserialized CMSG_GAME_OBJ_REPORT_USE does not grant loot. Wrong-lock3365 casts fail without cooldown/container creation. Actual non-triggered6247 prepare/Spell update/EffectOpenLock/SendLoot creates the personal loot70585; AutoStoreItems receives30..60 item142487 and native TYPE_GO cooldown. Repeated opening cannot duplicate it.",
+    "Current:16 lifecycle cases x Human/Orc =32 native opening sequences across LFR17/Normal14/Heroic15/Mythic16. Baseline:8 early-loaded opening sequences pass, while4 late and8 saved cases explicitly require the hidden failure. No full-bag opening claim is made in this evidence."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidChestNative.ps1 and -Baseline: PASS, exit0, DBErrors0 bytes; World/Hotfix READ ONLY and disposable schema-only auth/characters167 tables removed with their limited user.",
+    "Test-TrialRaidChestRelease.ps1: PASS, canonical PE/thunks contain OnGameObjectCreate spawn admission and timer restoration; native instance/criteria/loot checks retained.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS.",
+    "Standard Release worldserver+bnetserver build and canonical startup: PASS; ready=true, graceful exit0, DBErrors0 and stderr0. No global OutDir override."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-raid-chest-native/run-20261019-144015",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-chest-native-baseline/run-20261019-144016",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-chest-native/startup-20261019-143918",
+    "baseline_scripts_sha256": "4BCE790E278BBED4ACC332F16C5701C16B475029F4D60CCD371FEAA54979BA8C",
+    "actual_scripts_library_sha256": "7CBAFFDC6295B890CFB192E47C1439F55253D6C1860C3ED87796FA301A781E3C",
+    "actual_game_library_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "worldserver_sha256": "BA293FD127AC9F295D6BA079E4B6BB868098C911AB6BEC2EC1D7B99A45DEBF59",
+    "bnetserver_sha256": "6DCF21DAF733FF9074F8C09913C37436A2BB165796E2F104B6B67AD36D96AF1A"
+  },
+  "remaining_limits": [
+    "Full inventory retries through actual Opening/visibility remain a separate path: earlier tests covered SendLoot directly. Review its cooldown gates before claiming full-bag client retry.",
+    "DB spawn indexing is scoped fixture setup; automatic grid scheduling, full authenticated login/instance binding selection, party loot eligibility and complete combat are not executed. Saved state uses native serializer/factory loading rather than a real server restart.",
+    "No WoW client operated. Chest appearance, highlighting, opening animation/window, bag error messages and reentry still need client verification. Preserve all earlier quest, encounter, scene and visual limits."
+  ]
+}

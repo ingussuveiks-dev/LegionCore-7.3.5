@@ -12,5 +12,10 @@
   ],
   "evidence": "Current and pinned full-library runs at build-extractors/runtime-test/raid-fragments-native/run-20261019-101855 and raid-fragments-native-baseline/run-20261019-101855 both exit0 with empty DBErrors. Shared build, hashes, startup, isolation and regression details are in the raid-fragment-cooldowns audit.",
   "limitations": "Chest availability/unlock is seeded with native Create; actual Odyn surrender, chest respawn scheduling, live instance progress and client interaction/UI remain pending. This tests SendLoot and release rather than the client open-lock input. The existing earned container is transient; no pending-corpse/chest serialization or crash recovery is introduced.",
-  "related": "docs/audits/raid-fragment-cooldowns-2026-10-19.json"
+  "related": "docs/audits/raid-fragment-cooldowns-2026-10-19.json",
+  "native_chest_followup_2026_10_19": {
+    "audit": "docs/audits/trial-raid-chest-2026-10-19.json",
+    "result": "Actual native DB chest545038, Odyn surrender, early/late/saved-DONE availability and Opening6247 now pass both factions/all4 difficulties. Late/saved hidden chest bug fixed in OnGameObjectCreate; already active timer is retained.",
+    "limits": "Client appearance/opening and full-bag retry via actual Opening remain separate; prior SendLoot-only and instance/combat/login limits are retained."
+  }
 }

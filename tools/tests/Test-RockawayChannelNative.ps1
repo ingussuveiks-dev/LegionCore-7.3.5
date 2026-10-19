@@ -1,4 +1,4 @@
-param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [switch]$TrialTurnIn, [switch]$TrialInstance, [switch]$TrialExit, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
+param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [switch]$TrialTurnIn, [switch]$TrialInstance, [switch]$TrialExit, [switch]$TrialChest, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 if($LostArmy -and $Offensive){throw 'Select one native probe'}
@@ -16,8 +16,9 @@ if($TrialCriteria -and ($RaidFragments -or $QuestTurnIn -or $GroupLifecycle -or 
 if($TrialTurnIn -and (!$TrialCriteria -or ($Baseline -and !$TrialInstance))){throw 'Select the current Trial turn-in wrapper'}
 if($TrialInstance -and !$TrialTurnIn){throw 'Use the Trial instance wrapper'}
 if($TrialExit -and (!$TrialInstance)){throw 'Use the Trial exit wrapper'}
-$stem=if($TrialExit){'TrialRaidExitNative'}elseif($TrialInstance){'TrialRaidInstanceNative'}elseif($TrialTurnIn){'TrialRaidTurnInNative'}elseif($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
-$directory=if($TrialExit){'trial-raid-exit-native'}elseif($TrialInstance){'trial-raid-instance-native'}elseif($TrialTurnIn){'trial-raid-turnin-native'}elseif($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
+if($TrialChest -and (!$TrialInstance -or $TrialExit)){throw 'Use the Trial chest wrapper'}
+$stem=if($TrialChest){'TrialRaidChestNative'}elseif($TrialExit){'TrialRaidExitNative'}elseif($TrialInstance){'TrialRaidInstanceNative'}elseif($TrialTurnIn){'TrialRaidTurnInNative'}elseif($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
+$directory=if($TrialChest){'trial-raid-chest-native'}elseif($TrialExit){'trial-raid-exit-native'}elseif($TrialInstance){'trial-raid-instance-native'}elseif($TrialTurnIn){'trial-raid-turnin-native'}elseif($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
 $output=Join-Path $repo "build-extractors/runtime-test/$directory"
 if($Baseline){$output+='-baseline'}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -56,6 +57,7 @@ if($lootProbe){$nativeSources+=@('Loot/LootMgr.cpp','Groups/Group.cpp','Entities
 if($MasterLoot -or $RollCompletion -or $GroupLifecycle){$nativeSources+=@('Handlers/LootHandler.cpp','Server/Packets/LootPackets.cpp')}
 if($QuestTurnIn){$nativeSources+=@('Handlers/QuestHandler.cpp','Entities/Player/CollectionMgr.cpp','Entities/Item/Container/Bag.cpp','Server/Packets/QuestPackets.cpp')}
 if($RaidFragments){$nativeSources+=@('Entities/GameObject/GameObject.cpp','Instances/InstanceScript.cpp','Handlers/LootHandler.cpp')}
+if($TrialChest){$nativeSources+=@('Entities/GameObject/GameObject.cpp','Handlers/SpellHandler.cpp','Server/Packets/GameObjectPackets.cpp')}
 if($TrialExit){$nativeSources+=@('Handlers/NPCHandler.cpp','Handlers/MovementHandler.cpp','Server/Packets/NPCPackets.cpp','Globals/GossipData.cpp','Entities/Creature/GossipDef.cpp','Maps/MapManager.cpp')}
 if($TrialCriteria){$nativeSources+=@('Achievements/AchievementMgr.cpp','Instances/InstanceScript.cpp','Handlers/QuestHandler.cpp','Server/Packets/QuestPackets.cpp')}
 if($TrialCriteria){
@@ -73,7 +75,7 @@ foreach($path in $nativeSources){
 }
 if(!$Baseline -and (Get-Item $gameLib).LastWriteTimeUtc -gt (Get-Item "$runtime/worldserver.exe").LastWriteTimeUtc){throw 'Canonical executable predates its game library'}
 if($lootProbe -and $Baseline){
- $baselinePin=if($TrialExit){'9d0ea556'}elseif($TrialInstance){'69f70aeb'}elseif($TrialCriteria){'8b23c3c5'}elseif($RaidFragments){'9b0179a1'}elseif($QuestTurnIn){'197c304f'}elseif($GroupLifecycle){'77d92ffe'}elseif($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
+ $baselinePin=if($TrialChest){'f24b5547'}elseif($TrialExit){'9d0ea556'}elseif($TrialInstance){'69f70aeb'}elseif($TrialCriteria){'8b23c3c5'}elseif($RaidFragments){'9b0179a1'}elseif($QuestTurnIn){'197c304f'}elseif($GroupLifecycle){'77d92ffe'}elseif($RollCompletion){'183d54fb'}elseif($MasterLoot){'d7c70c62'}else{'0fbd08e4'}
  $baselineLibrary="$output/game-baseline.lib"
  if(!(Test-Path $baselineLibrary)){
   if((& git -C $repo rev-parse --short=8 HEAD) -ne $baselinePin -or (& git -C $repo diff -- src/server/game)){throw "Baseline library must be captured from clean pinned$baselinePin game sources"}
@@ -100,7 +102,7 @@ if($Baseline -and $GroupLifecycle){$compilerArgs+='/DGROUP_ROLL_LIFECYCLE_BASELI
 if($Baseline -and $QuestTurnIn){$compilerArgs+='/DLOST_ARMY_TURNIN_BASELINE'}
 if($Baseline -and $RaidFragments){$compilerArgs+='/DRAID_FRAGMENTS_BASELINE'}
 if($Baseline -and $TrialCriteria){$compilerArgs+='/DTRIAL_CRITERIA_BASELINE'}
-if($Baseline -and $TrialExit){$compilerArgs+='/DTRIAL_EXIT_BASELINE'}elseif($Baseline -and $TrialInstance){$compilerArgs+='/DTRIAL_INSTANCE_BASELINE'}
+if($Baseline -and $TrialChest){$compilerArgs+='/DTRIAL_CHEST_BASELINE'}elseif($Baseline -and $TrialExit){$compilerArgs+='/DTRIAL_EXIT_BASELINE'}elseif($Baseline -and $TrialInstance){$compilerArgs+='/DTRIAL_INSTANCE_BASELINE'}
 $compilerArgs+=($includes+$commonIncludes+@('C:/local/boost_1_85_0','C:/wamp64/bin/mysql/mysql5.7.44/include','C:/Program Files/OpenSSL-Win64/include') | ForEach-Object {'/I"'+$_+'"'})
 $compilerArgs+='/I"'+$output+'"';$compilerArgs+='"'+$repo+'/tools/tests/'+$stem+'.cpp"'
 $compilerArgs+='/Fe"'+$output+'/'+$stem+'.exe"';$compilerArgs+='/Fo"'+$output+'/'+$stem+'.obj"';$compilerArgs+='/link';$compilerArgs+='/DEBUG';$compilerArgs+='/MAP';$compilerArgs+=($libs | ForEach-Object {'"'+$_+'"'})
@@ -163,6 +165,10 @@ if($TrialInstance){
 if($TrialExit){
  foreach($path in @('TrialRaidExitNative.cpp','Test-TrialRaidExitNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}
  $inputs+=Get-Item "$runtime/dbc/enUS/WorldSafeLocs.db2"
+}
+if($TrialChest){
+ foreach($path in @('TrialRaidChestNative.cpp','Test-TrialRaidChestNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}
+ $inputs+=@('Lock','GameObjects','GameObjectDisplayInfo') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}
 }
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File

@@ -152,7 +152,9 @@ public:
             switch (go->GetEntry())
             {
             case Data::GameObjects::GoTovOdynChest:
-            OdynTovChest = go->GetGUID();
+                OdynTovChest = go->GetGUID();
+                if (GetBossState(Data::BossIDs::OdynID) == DONE && !go->isSpawned())
+                    go->SetRespawnTime(86400);
                 break;
             case Data::GameObjects::GoLightRay1:
                 GoLightRayGUID.push_back(go->GetGUID());
