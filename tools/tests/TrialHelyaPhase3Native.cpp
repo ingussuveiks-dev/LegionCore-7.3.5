@@ -20,7 +20,7 @@ static void EnterPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya)
     for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);
     PumpHelya(map,7000);Require(helya.AI()->GetData(2)==3,"Native phase-three entry failed");
 }
-static void OrbBurst(GarmPlayer& p,InstanceMap& map,Creature& helya,uint32 spell,uint32 entry,uint32 marker)
+static std::set<ObjectGuid> OrbBurst(GarmPlayer& p,InstanceMap& map,Creature& helya,uint32 spell,uint32 entry,uint32 marker)
 {
     Require(Actors(map,entry).empty(),"Orb burst must start without previous actors");
     helya.CastSpell(&helya,spell,true);PumpHelya(map,3000);auto orbs=Actors(map,entry);
@@ -40,6 +40,14 @@ static void OrbBurst(GarmPlayer& p,InstanceMap& map,Creature& helya,uint32 spell
     auto first=orbs.front();auto start=first->GetPosition();auto target=ObjectAccessor::GetPlayer(*first,first->GetTargetGUID());map.PlayerRelocation(target,target->GetPositionX()+8,target->GetPositionY(),target->GetPositionZ(),target->GetOrientation());PumpHelya(map,3000);
     Require(first->IsInWorld()&&first->IsAlive(),"Native orb expired before chase check");std::cout<<"CHASE entry="<<entry<<" moved="<<first->GetExactDist(&start)<<" distance="<<first->GetDistance(target)<<std::endl;
     Require(first->GetExactDist(&start)>0.05f,"Native orb did not move towards its moving target");
+    std::set<ObjectGuid> trail;
+    if(entry==114566)for(auto at:HelyaAreas(map))if(at->GetSpellId()==228121){
+#ifndef TRIAL_HELYA_PHASE3_BASELINE
+        Require(at->GetCasterGUID()==helya.GetGUID(),"Duplicate orb-owned Decay escaped Helya's Fury/cleanup ownership");
+#endif
+        if(at->GetCasterGUID()==helya.GetGUID())trail.insert(at->GetGUID());
+    }
+    return trail;
 }
 static void Restart(GarmPlayer& p,InstanceMap& map,Creature& helya)
 {
@@ -53,24 +61,26 @@ static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group
     std::vector<std::unique_ptr<GarmPlayer>> others;
     for(unsigned i=0;i<3;++i){others.emplace_back(new GarmPlayer(map,p.getRace()));map.PlayerRelocation(others.back().get(),500.0f+float(i)*8,660.0f,3.0f,0);}
     map.PlayerRelocation(&p,524,680,5,0);
-    OrbBurst(p,map,helya,227903,114523,229119);Restart(p,map,helya);EnterPhaseThree(p,map,helya);OrbBurst(p,map,helya,228056,114566,230267);
+    OrbBurst(p,map,helya,227903,114523,229119);Restart(p,map,helya);EnterPhaseThree(p,map,helya);auto trail=OrbBurst(p,map,helya,228056,114566,230267);Require(!trail.empty(),"Native corrosion produced no boss-owned Decay");PumpHelya(map,7000);for(auto guid:trail)Require(map.GetAreaTrigger(guid),"Decay vanished with its short-lived orb before Fury");
     std::set<ObjectGuid> orbs,areas;std::map<uint32,unsigned> spells;unsigned breaths=0;bool hatred=false;auto previous=helya.GetPower(POWER_ENERGY);
+    int firstWave=-1;bool washed=false;
     for(unsigned sec=0;sec<100;++sec)
     {
         PumpHelya(map,1000);
         for(auto c:Actors(map,114566))orbs.insert(c->GetGUID());
-        for(auto at:HelyaAreas(map))if(areas.insert(at->GetGUID()).second)++spells[at->GetSpellId()];
+        for(auto at:HelyaAreas(map))if(areas.insert(at->GetGUID()).second){++spells[at->GetSpellId()];if(at->GetSpellId()==228027&&firstWave<0)firstWave=int(sec);}
+        if(firstWave>=0&&int(sec)>=firstWave+5){washed=true;for(auto guid:trail)if(map.GetAreaTrigger(guid))washed=false;}
         auto energy=helya.GetPower(POWER_ENERGY);if(energy<previous)++breaths;previous=energy;hatred|=p.HasAura(232488);
     }
     Require(p.IsAlive()&&helya.AI()->GetData(2)==3,"Phase-three ability probe lost encounter");
-    Require(breaths>=2&&hatred&&spells[228027]>=1&&spells[228121]>0&&orbs.size()>=4,"Native breath/debuff/Fury/Decay/orb repetition missing");
+    Require(breaths>=2&&hatred&&spells[228027]>=1&&spells[228121]>0&&orbs.size()>=4&&washed,"Native breath/debuff/Fury/Decay/orb repetition or wave cleaning missing");
     std::cout<<"ABILITIES breaths="<<breaths<<" orbs="<<orbs.size()<<" decay="<<spells[228121]<<" waves="<<spells[228027]<<std::endl;
     // Interrupt an actually cast orb request before its two-second summon.
     helya.CastSpell(&helya,228056,true);PumpHelya(map,500);ClearCombat(p,helya);PumpHelya(map,3000);
 #ifdef TRIAL_HELYA_PHASE3_BASELINE
     Require(!Actors(map,114566).empty(),"Pinned post-wipe delayed orb behavior changed");
 #else
-    Require(Actors(map,114566).empty(),"Delayed corrosion orbs appeared after native evade");
+    Require(Actors(map,114566).empty()&&HelyaAreas(map,true).empty(),"Delayed corrosion orbs/effects remained after native evade");
 #endif
     std::cout<<"PASS: native phase-three orb targets/chase/repetition and reset; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
     others.clear();ClearCombat(p,helya);

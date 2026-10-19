@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-19",
+  "status": "Removed the duplicate Orb of Corrosion dummy route. Native Decay ownership, persistence past orb despawn, Fury washing and evade cleanup pass all four raid difficulties for both factions. Client verification remains pending.",
+  "prior_commit": "c9309cb9",
+  "cause": "Native228061 periodically triggers228062, whose source13 condition selects Helya. boss_helya_tov::SpellHit already casts228063 from Helya at the orb, and its native effect1 triggers228121. The redundant spell_dummy_trigger228062/option11 also cast228063 from the orb at Helya. That created extra orb-owned damage/Decay at the wrong actor, while the proper boss-owned trail already existed. Orb-owned area effects were removed with the short-lived orb and were outside Helya's own RemoveAreaObject list.",
+  "repair": "Migration2026_10_19_00 removes only the exact old zero-override dummy row. The native periodic trigger, nearby-Helya condition, C++ proxy, damage spell, DB2 missile/area effects, Decay radius/actions and encounter timings are retained. No synthetic spell or shared spell/area-trigger implementation change was needed.",
+  "native_regression": [
+    "Before applying the migration, the extended native test failed at 'Duplicate orb-owned Decay escaped Helya's Fury/cleanup ownership'. This used real source13 condition admission, real aura/Spell::EffectDummy dispatch and actual linked production libraries, not a model of the database row.",
+    "After the repair, each native corrosion burst creates only Helya-owned228121 area triggers. Their actual GUIDs remain registered after the original orb's nine-second lifetime. Subsequent native Fury228027 creation and the authored cleaning event remove those same recorded pools; fresh trails after the wave are allowed.",
+    "All eight difficulty/faction cases still pass distinct orb targets, native moving-target pursuit, repeated abilities and natural breath/energy cycles. Native evade before a pending orb summon leaves no corrosion actors or combat area effects. This check is separate from the later detailed breath/axion/absorb audit.",
+    "The live scoped migration removed one row; immediate repeat removed zero. Test-TrialHelyaCorrosionData.ps1 also executes the exact migration against a connection-local temporary copy shape, verifies first/repeat1/0, and preserves an unrelated row and a customized same-key caster variant. It makes no writes to the production table.",
+    "Data checks retain the one native source13 condition, area8835/custom12904/radius8, all three228127 enter/exit/despawn actions and the original boss/orb scripts. A new native process loads the repaired table; no claim relies on a loot-only or partial in-process reload."
+  ],
+  "evidence": {
+    "native_after": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-183158",
+    "native_before_expected_failure": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-183055",
+    "before_native_exit": 1,
+    "native_after_exit": 0,
+    "data_replay": "build-extractors/runtime-test/trial-helya-corrosion-data",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-183309",
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "A4A95B4FEAD02BFEB9C436B20D3772314CEA4A9798C90414E7A1FA50374EE6F3",
+      "build-extractors/bin/Release/bnetserver.exe": "CB61E296ADF2B0AF14AB6114C0A3B55A54850908B474AA8130A90FBF4575EAEF",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "74E460EEFF2C68F3A19D6DF89A5C853CA717CB22DDE7B594D92F865D6F97D52A",
+      "tools/tests/TrialHelyaPhase3Native.cpp": "D49BE8DCA304A1BA39EAE5B1C2112193E3E629D040031B37D2A43EF239695E95",
+      "tools/tests/Test-TrialHelyaCorrosionData.ps1": "823D80FEA2749B1C9550B28BB6711B4EC400AA178EE9AAB100ED69D054922513",
+      "sql/updates/world/2026_10_19_00_helya_corrosion_decay.sql": "A5C9EA078A2DFA3B2EF15EC1A16A11031060305687F02711998B9AA144EF50E9"
+    },
+    "live_removed_first": 1,
+    "live_removed_repeat": 0,
+    "native_observations": [
+      "ABILITIES breaths=2 orbs=12 decay=84 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=17 race=1",
+      "ABILITIES breaths=2 orbs=12 decay=84 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=17 race=2",
+      "ABILITIES breaths=2 orbs=12 decay=70 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=14 race=1",
+      "ABILITIES breaths=2 orbs=12 decay=70 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=14 race=2",
+      "ABILITIES breaths=2 orbs=18 decay=126 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=15 race=1",
+      "ABILITIES breaths=2 orbs=18 decay=126 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=15 race=2",
+      "ABILITIES breaths=2 orbs=24 decay=162 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=16 race=1",
+      "ABILITIES breaths=2 orbs=24 decay=162 waves=2",
+      "PASS: native phase-three orb targets/chase/repetition and reset; diff=16 race=2"
+    ]
+  },
+  "validation": [
+    "Test-TrialHelyaPhase3Native.ps1: PASS after migration, eight cases, native exit0, empty DBErrors and no Server.log ERROR lines.",
+    "Test-TrialHelyaCorrosionData.ps1: PASS, native data contracts plus exact scoped/idempotent migration replay on temporary tables.",
+    "Canonical Release startup after the SQL repair: ready and graceful exit0, empty DBErrors/stderr. C++ executables remain the already-built and PE-checked orb-target Release from c9309cb9; this SQL/test-only commit requires data reload, not an invented new binary implementation."
+  ],
+  "reference": {
+    "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+    "author": "FatbossTV",
+    "patch": "7.3.5",
+    "scope": "The guide describes corrosion leaving persistent Decay trails and Fury removing those pools. Native DB2 effects228063 ->228121 and existing Helya proxy/cleanup establish the retained implementation."
+  },
+  "limits": [
+    "Controlled native Players have health buffers and do not run a full authenticated client rotation. This verifies actual spell/area ownership, lifetime, movement and cleanup; damage/healing tuning, every overlapping-area case and exact client visual geometry remain separate.",
+    "No client controlled. Verify trail placement, sustained appearance, orb despawn, actual wave washing, aura presentation and full encounter/reward behavior in7.3.5. Earlier pending client checks remain."
+  ]
+}
