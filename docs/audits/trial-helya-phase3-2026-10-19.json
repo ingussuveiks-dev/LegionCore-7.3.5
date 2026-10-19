@@ -1,6 +1,7 @@
 {
   "date": "2026-10-19",
   "map": 1648,
+  "geometry_followup": "docs/audits/trial-helya-breath-geometry-2026-10-19.json resolves the recorded off-platform destination collapse. Further native terrain/VMap inspection found real lower and elevated surfaces; the old walking helper rejected their height differences. The historical exploratory observation below is retained; it was not proof of missing extracted geometry. Client presentation remains pending.",
   "quest": 44868,
   "status": "Completed the authorized native phase-three ability/lifecycle audit. Orb targets and duplicate Decay were repaired in separate preceding commits; this change repairs breath-debuff cleanup and Axion control removal gates. Automated server checks pass; no whole encounter or quest is claimed client-verified.",
   "preceding_fixes": {

@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "boss": 114537,
+  "spells": [
+    228565,
+    232418,
+    232449
+  ],
+  "status": "Repaired Corrupted Axion destination collapse at platform edges. Native reference/current execution, canonical Release inspection and startup pass. Client visual/soak verification remains pending.",
+  "previous_audit": "docs/audits/trial-helya-phase3-2026-10-19.json",
+  "root_cause": [
+    "The production breath used WorldObject::GetNearPosition -> MovePosition. That walking helper rejects height differences above six yards, retreats in ten steps and can return the original caster position if no candidate is accepted. It can also shorten an otherwise valid projectile's horizontal range.",
+    "The exploratory eastward observation was not proof of absent extracted terrain. Native terrain/VMap queries find lower ground at the far points, as well as elevated surfaces in other directions. The old MAX_HEIGHT query with the default250-yard search also misses overhead VMap surfaces; a full vertical search includes them.",
+    "Pinned3f88a859 native execution reproduces eastward collapse: Heroic2/3 missiles and Mythic4/5 missiles target Helya's XY. The baseline uses its actual archived final-link libraries and current World data; it also retains the old orb/cleanup/control bugs asserted by the existing baseline suite."
+  ],
+  "repair": [
+    "Keep the authored forward XY distances43/56/69/82/95 and difficulty counts0/0/3/5. Use GetNearPoint2D with the actual absolute facing and no creature-size offset, then query the native phase-aware terrain/VMap surface from MAX_HEIGHT with MAX_FALL_DISTANCE. Do not use walking slope or backward-step rules for missile destinations.",
+    "Land on the real uppermost supporting surface at each requested XY, including elevated and lower surfaces. If no native surface exists, omit that destination instead of substituting Helya's position or an invented height. All fixture destinations have actual native support and retain their expected difficulty count.",
+    "No shared movement/collision function, map extraction, SQL, damage, duration, missile count, range pattern, timers or phase gates changed. Off-platform aiming is not clamped into the arena or made safely soakable by moving the bolts back to the raid."
+  ],
+  "native_validation": [
+    "Test-TrialHelyaPhase3Native.ps1 -VerifyReleaseBinary: eight complete current cases (LFR17, Normal14, Heroic15, Mythic16; Human/Orc). Every case earns access through the real raid progression and enters phase3 through native damage and nine tentacle deaths.",
+    "Eight facing inputs per case:0, pi/4, pi/2, pi, authored4.29875,3pi/2,5.5 and2pi-0.01. Total64 geometry cases and128 actual Heroic/Mythic missile destinations. Normal/LFR produce no additional missiles. Read-only inspection of real SpellEvent payloads verifies requested XY/range, native supporting Z and no destination at the caster; actual232449 child cast GUIDs verify every missile reaches its impact dispatch.",
+    "The geometry test queries the actual extracted Map/VMap data, never supplies a height result, inserts a spell event or calls a modeled SpellHit callback. Native movement, map, spell dispatch and the production AI run from the actual final-link libraries. Controlled facing and health buffers are fixture inputs; automatic purple-power gains are stopped only after the existing100-second natural-cycle test, to isolate subsequent API casts.",
+    "Test-TrialHelyaPhase3Native.ps1 -Baseline: eight complete explicit old-behavior cases,64 geometry cases; eastward collapse assertions reproduce2 Heroic and4 Mythic destinations on both factions. Actual impact dispatch still runs in the old version, demonstrating why cast/impact counts alone did not detect the placement failure.",
+    "Existing native cone/front-versus-back, one-soak/missed-raid effect, heal/default/expiry absorption, actual charm/transform, orb targeting/chase, Decay persistence/Fury washing, reset, stale-aura rejection and retry/victory/quest/checkpoint assertions pass in the same current run. Historical limitations and other observed failures remain in the preceding audits.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary passes. Its extracted production handlers with modeled services remain distinct from the full native suite.",
+    "Canonical PE/thunk/exception-bounded checks verify SpellHit calls native GetNearPoint2D/GetHeight and no longer calls GetNearPosition. Existing Fury lifecycle, EXPIRE/instance gates and Dark Hatred cleanup checks also pass. Source/library/executable hashes and final-link inputs agree.",
+    "Normal CMake Release build of worldserver/bnetserver completes without global OutDir overrides. Canonical runtime startup reaches ready and exits gracefully0; DBErrors/stderr are empty. Both native runs exit0 with empty DBErrors and no Server.log ERROR lines. Disposable schema-only character/auth databases and limited users are removed."
+  ],
+  "references": [
+    {
+      "url": "https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp",
+      "scope": "Primary upstream implementation retains the inherited forward stepping/GetNearPosition pattern; it is evidence of the old code, not proof that the old geometry or exact spacing matches retail."
+    },
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "patch": "7.3.5",
+      "scope": "The guide's Heroic section describes directional axions, soaking/missed-bolt raid effects and the need to aim landing points onto the lower encounter area. It supports preserving orientation/terrain consequences rather than forcing every aim into the arena. Exact retail XY spacing, count pattern and terrain heights are not established by this guide."
+    }
+  ],
+  "evidence": {
+    "current_run": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-190650",
+    "reference_run": "build-extractors/runtime-test/trial-helya-phase3-native-baseline/run-20261019-190701",
+    "reference_pin": "3f88a859",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-190621",
+    "geometry_inputs_manifest": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-190650/geometry-inputs.json",
+    "geometry_manifest_sha256": "6D94C438EE11AFA4C9748C3928294B8A0E0E5631051D7F529E1C777EAC32841E",
+    "geometry_manifest_scope": "Both relevant raw-map tiles, VMap tree, two VMap tiles and122 referenced model files,127 hashes. Parsed actual native ModelSpawn layout; filenames match the native fopen path, including pre-existing NUL-terminated names. Same geometry manifest accompanies both runs.",
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "FDD1B38E12941BDCA54B7E08E83F9A4CFA95D4775EFCC931F16A51AA5650173F",
+      "build-extractors/bin/Release/bnetserver.exe": "793E572CAF26C44863BA9B3693F77735F9431EC678276004C95B947E0542F7B6",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "B15ADEF1258003DDDD67B60948A0EAACF90A8A54BA2E594DB06654B19DA4857F",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "0E49A0F96E6DB775765F060CC066A9794FCB91A5116BA4A43A4BC71B2EE7B7B6",
+      "src/server/game/Entities/Object/Object.cpp": "1D0A4D1A60B09F157B295B2CAB8C2A64323F3B9F05E6DA931F6EAC5B36BB3D5B",
+      "src/server/game/Maps/Map.cpp": "4473CD42FF82BFDA70F36AD4CFE5F87DC5AE5F5F20BE4DBEEA85CC20B56116B4",
+      "tools/tests/TrialHelyaPhase3Native.cpp": "813611753EF36E01538BC29179ED56CB4C1D76C5B91B8FD1EC12B3DA175C4DCD",
+      "tools/tests/Test-TrialHelyaBreathRelease.ps1": "25520982D47583201DB1F1063300F3780BBEEB929455F15277CF3A265F1064B2"
+    },
+    "current_eastward": [
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=3 collapsed=0 elevated=1 impacts=3",
+      "GEOMETRY angle=0 bolts=3 collapsed=0 elevated=1 impacts=3",
+      "GEOMETRY angle=0 bolts=5 collapsed=0 elevated=1 impacts=5",
+      "GEOMETRY angle=0 bolts=5 collapsed=0 elevated=1 impacts=5"
+    ],
+    "reference_eastward": [
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=0 collapsed=0 elevated=0 impacts=0",
+      "GEOMETRY angle=0 bolts=3 collapsed=2 elevated=1 impacts=3",
+      "GEOMETRY angle=0 bolts=3 collapsed=2 elevated=1 impacts=3",
+      "GEOMETRY angle=0 bolts=5 collapsed=4 elevated=1 impacts=5",
+      "GEOMETRY angle=0 bolts=5 collapsed=4 elevated=1 impacts=5"
+    ],
+    "current_destinations_example": [
+      "GEOMETRY_DEST angle=0 distance=43 actual=567.031,699.055,43.3047 surface=43.3047",
+      "GEOMETRY_DEST angle=0 distance=56 actual=580.031,699.055,-9.5728 surface=-9.5728",
+      "GEOMETRY_DEST angle=0 distance=69 actual=593.031,699.055,-9.5728 surface=-9.5728",
+      "GEOMETRY_DEST angle=0 distance=82 actual=606.031,699.055,-14.3924 surface=-14.3924",
+      "GEOMETRY_DEST angle=0 distance=95 actual=619.031,699.055,-36.4988 surface=-36.4988"
+    ]
+  },
+  "limits": [
+    "No authenticated7.3.5 client was driven. Actual flight/telegraph appearance, collision presentation, upper-platform accessibility, edge soaks, damage/healing in a real raid and full encounter/quest completion remain client checks.",
+    "Eight native facing inputs are sampled, not every possible angle. All recorded points have valid support; the missing-surface skip is a defensive policy and not a tested missing/corrupt-extraction recovery claim. The test does not prove original retail placement from a replay or packet capture.",
+    "The phase-one Bilewater Breath uses a different first-collision helper and was not repaired by this scoped phase-three change. Exact original role selection and unrelated encounter behavior remain outside this fix."
+  ]
+}

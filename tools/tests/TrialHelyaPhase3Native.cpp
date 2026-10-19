@@ -1,4 +1,4 @@
-// Native phase-three abilities after the earned Odyn/Guarm/Helya transition.
+// Native phase-three abilities/edge destinations after the earned raid transition.
 #define TRIAL_HELYA_SUPPORT_ONLY
 #include "TrialHelyaNative.cpp"
 #include "Spell.h"
@@ -71,6 +71,45 @@ static std::vector<Spell*> NativeSpellEvents(Creature& caster,uint32 id)
     for(auto member:{Access(HelyaEventListTag{}),Access(HelyaEventQueueTag{})})for(auto const& pair:caster.m_Events.*member)if(auto event=dynamic_cast<SpellEvent*>(pair.second)){auto spell=event->*Access(HelyaEventSpellTag{});if(spell->GetSpellInfo()->Id==id)result.push_back(spell);}
     return result;
 }
+static void CheckBreathGeometry(InstanceMap& map,Creature& helya)
+{
+    auto diff=map.GetDifficultyID();unsigned expected=diff==DIFFICULTY_MYTHIC_RAID?5:diff==DIFFICULTY_HEROIC_RAID?3:0;
+    for(float angle:{0.0f,float(M_PI/4),float(M_PI/2),float(M_PI),helya.GetHomePosition().GetOrientation(),float(3*M_PI/2),5.5f,float(2*M_PI-0.01)})
+    {
+        helya.InterruptNonMeleeSpells(true);helya.SetFacingTo(angle);
+        auto old=NativeSpellEvents(helya,232418);helya.CastSpell(&helya,228565,true);
+        std::vector<Position> destinations;
+        for(auto spell:NativeSpellEvents(helya,232418))if(std::find(old.begin(),old.end(),spell)==old.end()){
+            Require(spell->m_targets.HasDst(),"Geometry probe lost actual missile destination");destinations.push_back(*spell->m_targets.GetDstPos());
+        }
+        Require(destinations.size()==expected,"Breath geometry changed difficulty-specific missile count");
+        std::sort(destinations.begin(),destinations.end(),[&](Position const& a,Position const& b){return helya.GetExactDist2d(&a)<helya.GetExactDist2d(&b);});
+        unsigned collapsed=0,elevated=0;std::set<ObjectGuid> impacts;
+        for(unsigned i=0;i<destinations.size();++i){auto const& pos=destinations[i];float dist=43.0f+13.0f*i;
+            float x=helya.GetPositionX()+dist*std::cos(angle),y=helya.GetPositionY()+dist*std::sin(angle);
+            // Query real extracted terrain + VMap, without the walking helper's
+            // six-yard slope restriction. The test never writes a destination.
+            float surface=map.GetHeight(helya.GetPhases(),x,y,MAX_HEIGHT,true,MAX_FALL_DISTANCE);
+            Require(std::isfinite(surface)&&surface>INVALID_HEIGHT,"Geometry fixture lacks a native supporting surface");
+            if(helya.GetExactDist2d(&pos)<1.0f)++collapsed;if(surface>helya.GetPositionZ()+6)++elevated;
+#ifndef TRIAL_HELYA_PHASE3_BASELINE
+            Require(std::fabs(pos.GetPositionX()-x)<0.01f&&std::fabs(pos.GetPositionY()-y)<0.01f,"Axion destination slid backwards or returned to Helya");
+            Require(std::fabs(pos.GetPositionZ()-surface)<0.01f,"Axion destination missed the actual top supporting surface");
+#endif
+            std::cout<<"GEOMETRY_DEST angle="<<angle<<" distance="<<dist<<" actual="<<pos.GetPositionX()<<','<<pos.GetPositionY()<<','<<pos.GetPositionZ()<<" surface="<<surface<<std::endl;
+        }
+        for(unsigned t=0;t<8000;t+=10){for(auto spell:NativeSpellEvents(helya,232449))impacts.insert(spell->m_castGuid[0]);PumpHelya(map,10);}
+        Require(impacts.size()==expected,"Native missile did not execute its ground impact at the edge destination");
+#ifdef TRIAL_HELYA_PHASE3_BASELINE
+        if(angle==0&&expected)Require(collapsed>=2,"Pinned off-platform destination collapse no longer reproduced");
+#else
+        Require(collapsed==0,"Native edge missiles still land on Helya");
+#endif
+        std::cout<<"GEOMETRY angle="<<angle<<" bolts="<<destinations.size()<<" collapsed="<<collapsed<<" elevated="<<elevated<<" impacts="<<impacts.size()<<std::endl;
+        for(auto const& ref:map.GetPlayers())if(auto aura=ref.getSource()->GetAura(232450))aura->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+    }
+    helya.InterruptNonMeleeSpells(true);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());
+}
 static void CheckBreath(GarmPlayer& p,std::vector<std::unique_ptr<GarmPlayer>>& others,InstanceMap& map,Creature& helya)
 {
     auto& other=*others.front();auto& soaker=*others[1];
@@ -132,7 +171,7 @@ static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group
     std::cout<<"ABILITIES breaths="<<breaths<<" orbs="<<orbs.size()<<" decay="<<spells[228121]<<" waves="<<spells[228027]<<std::endl;
     // Freeze further automatic energy gains and drain existing missiles before
     // isolated native breath requests, without changing phase or firing AI hooks.
-    helya.RemoveAura(232230);PumpHelya(map,8000);CheckBreath(p,others,map,helya);
+    helya.RemoveAura(232230);PumpHelya(map,8000);CheckBreathGeometry(map,helya);CheckBreath(p,others,map,helya);
     // Interrupt an actually cast orb request before its two-second summon.
     helya.InterruptNonMeleeSpells(true);helya.CastSpell(&helya,228056,true);PumpHelya(map,500);ClearCombat(p,helya);PumpHelya(map,3000);
     std::cout<<"DEBUFF_RESET hatred="<<p.HasAura(232488)<<" absorb="<<others.front()->HasAura(232450)<<" corrupted="<<others.front()->HasAura(232350)<<std::endl;
@@ -157,7 +196,7 @@ static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group
 #else
     Require(!p.HasAura(232488)&&!others.front()->HasAura(232450)&&!others.front()->HasAura(232350)&&!others.front()->HasAura(232358)&&others.front()->GetCharmerGUID().IsEmpty()&&HelyaAreas(map,true).empty(),"Victory left breath debuffs, mind control or combat area effects");
 #endif
-    std::cout<<"PASS: native phase-three targets/chase/Decay/breath/axion/absorb/reset/victory; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
+    std::cout<<"PASS: native phase-three targets/chase/Decay/breath/geometry/axion/absorb/reset/victory; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
     others.clear();
 }
 int main(int argc,char** argv)

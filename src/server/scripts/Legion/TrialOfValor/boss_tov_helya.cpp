@@ -680,14 +680,17 @@ struct boss_helya_tov : BossAI
             else
                 countTarget = 3;
 
-            Position pos;
-            float angle = me->GetAngle(me);
             float dist = 30.0f;
             for (uint8 i = 0; i < countTarget; ++i)
             {
                 dist += 13.0f;
-                pos = me->GetNearPosition(dist, angle);
-                me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SpellCorruptedAxion, true);
+                float x, y;
+                me->GetNearPoint2D(x, y, dist, me->GetOrientation(), false);
+                // A missile can land above/below Helya. Walking-position helpers
+                // reject those height changes and can return the caster instead.
+                float z = me->GetHeight(x, y, MAX_HEIGHT, true, MAX_FALL_DISTANCE);
+                if (z > INVALID_HEIGHT)
+                    me->CastSpell(x, y, z, SpellCorruptedAxion, true);
             }
             break;
         }
