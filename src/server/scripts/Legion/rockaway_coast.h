@@ -402,17 +402,23 @@ struct npc_rockaway_tentacle : ScriptedAI
     explicit npc_rockaway_tentacle(Creature* creature) : ScriptedAI(creature) { }
     bool active = false;
     uint32 timer = 3000;
+    uint32 lifetime = 6000;
     void AttackStart(Unit*) override { }
     void MoveInLineOfSight(Unit*) override { }
     void IsSummonedBy(Unit* summoner) override
     {
         active = summoner->GetEntry() == 115133;
-        if (active) { me->SetReactState(REACT_PASSIVE); me->CastSpell(me, 231386, true); me->DespawnOrUnsummon(6000); }
+        if (active) { me->SetReactState(REACT_PASSIVE); me->CastSpell(me, 231386, true); }
     }
     void DamageTakenAfterScaling(Unit*, uint32& damage, DamageEffectType) override { if (active) damage = 0; }
     void UpdateAI(uint32 diff) override
     {
-        if (!active || !timer) return;
+        if (!active) return;
+        // Delayed DespawnOrUnsummon marks IsDespawn immediately and prevents
+        // the controller from removing a still-live hazard during reset.
+        if (lifetime <= diff) { active = false; me->DespawnOrUnsummon(); return; }
+        lifetime -= diff;
+        if (!timer) return;
         if (timer > diff) { timer -= diff; return; }
         timer = 0;
         auto pos = me->GetNearPosition(8.0f, 0.0f);
@@ -423,11 +429,22 @@ struct npc_rockaway_tentacle : ScriptedAI
 struct npc_rockaway_slime : ScriptedAI
 {
     explicit npc_rockaway_slime(Creature* creature) : ScriptedAI(creature) { }
+    uint32 lifetime = 0;
     void IsSummonedBy(Unit* summoner) override
     {
-        if (summoner->GetEntry() == 115133) me->DespawnOrUnsummon(45000);
+        // Keep IsDespawn false until actual removal: UpdateVictim rejects a
+        // pending delayed despawn, which otherwise makes these slimes inert.
+        if (summoner->GetEntry() == 115133) lifetime = 45000;
     }
-    void UpdateAI(uint32) override { if (UpdateVictim()) DoMeleeAttackIfReady(); }
+    void UpdateAI(uint32 diff) override
+    {
+        if (lifetime)
+        {
+            if (lifetime <= diff) { lifetime = 0; me->DespawnOrUnsummon(); return; }
+            lifetime -= diff;
+        }
+        if (UpdateVictim()) DoMeleeAttackIfReady();
+    }
 };
 
 class spell_rockaway_channel : public SpellScript

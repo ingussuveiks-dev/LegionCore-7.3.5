@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-19",
+  "quest": 44746,
+  "baseline": "a788f5d2",
+  "title": "Rockaway native Player attacks and live helper lifetime",
+  "status": "Fixed inert slime melee and reset hazard leaks. Native Player/Spell/Aura/summon execution passes; client playback and full quest completion remain separate.",
+  "finding": {
+    "root_cause": "Both helper AIs called DespawnOrUnsummon with a delay at spawn. Native Creature::DespawnOrUnsummon and TempSummon::UnSummon immediately set m_despawn even though the actor remains in the map. CreatureAI::UpdateVictim rejects IsDespawn, so all five slimes chased their Player victim with valid damage statistics but never executed melee. SummonList::DespawnAll also used DespawnOrUnsummon, whose m_despawn guard then refused immediate reset removal.",
+    "baseline_reproduction": "Test-RockawayChannelNative.ps1 -Offensive -Baseline compiles the pinned a788f5d2 production header against the same real game.lib. Five native slimes have actual Player victims, are in combat/melee range, and are already IsDespawn; health remains unchanged. Adding a real tentacle gives six hazards, all of which remain in-world after actual ClearRun. The baseline probe removes them using native TempSummon::UnSummon directly only after asserting this failure.",
+    "fix": "Keep scoped AI lifetime countdowns: six seconds for an owned tentacle, 45 seconds for an owned slime. Call immediate DespawnOrUnsummon only when that countdown expires. Live actors remain eligible for native combat and immediate owner cleanup. No shared despawn semantics, creature statistics, spell IDs, channel durations, encounter schedules or reward rules changed."
+  },
+  "native_checks": [
+    "Production contributor start uses native Player::CanRewardWorldQuest, GetQuestStatus, phase/range and ObjectAccessor. The real scheduler creates its first tentacle at about five seconds; queued breath waits for native231296's ten-second channel, and taint waits for the subsequent five-second231351 channel. All four incoming ritualist channels remain intact during repeated offensive casts.",
+    "Actual231296 creates native116187 using its real creature factory AI. No slam before the three-second warning; a forward-lane Player receives native231298 damage and stun after the normal NPC update interval. It slams once, then disappears after its six-second lifetime. Triggered casts retain native data even though231298's ordinary cast time is6000ms.",
+    "The production breath branch launches exactly five actual231354 missiles; their231359 children create five owned116195 summons, each with the native Player victim. Actual motion relocation and slime AI execute, melee reduces Player health, all five remain at44 seconds and all are removed by46 seconds. No invented base damage is assigned; creature damage is calculated from the loaded native GT/scaling statistics.",
+    "Native231329 keeps its Player-only restriction and delivers initial damage, an actual effect1 periodic tick and further periodic damage. Natural expiry dispatches one232681 missile and one232679 Player hit. The real read-only source13 condition for232679 is admitted and attached by ConditionMgr; omitting it incorrectly selected allied NPCs in the preliminary harness, so that omission was repaired in the probe.",
+    "232681 uses native Speed4 as a fixed four-second missile delay. Enemy-removal testing waits4500ms after actual aura removal and receives one essence hit; default/death removal receives none. Reset and outro removal leave no taint or newly emitted essence hit after the delay window. Enemy removal is dispatched through the native Aura removal mode; this does not simulate a client successfully casting a particular dispel spell.",
+    "Actual ClearRun immediately removes five live slimes, one live tentacle and its Player taint. Advancing the real spell/event engine leaves no delayed essence. A separately launched pre-reset breath cannot leave surviving post-reset helpers: the production summon-admission callback removes late arrivals.",
+    "Test-RockawayChannelNative.ps1 still passes four actual channels, closer decoy/unslotted rejection, aura retry, phase/readiness/outro gates,24 real four-death permutations, foreign-aura preservation, exact expiry and owner removal. Test-RockawayEncounter.ps1 and Test-RockawayCompletion.ps1 also pass with their existing documented fixtures. The older encounter assertion now checks immunity only while a tentacle is still in-world, rather than requiring an already removed actor's AI to remain active."
+  ],
+  "implementation": {
+    "production": "src/server/scripts/Legion/rockaway_coast.h",
+    "probe": "tools/tests/RockawayOffensiveNative.cpp",
+    "runner": "tools/tests/Test-RockawayChannelNative.ps1 -Offensive",
+    "shared_bootstrap": "The channel probe's unchanged native bootstrap/Actor helpers are reused. The offensive mode includes the actual production header without the earlier rotation-lookup facade. An observing Vision AI only records native SpellHitTarget/JustSummoned callbacks and forwards production summon handling; attack scheduling and actor/hook classes remain production code.",
+    "controlled_state": "One actual Quest is constructed from the native LoadQuests SELECT, restricted to44746. Only in-memory quest indexes, an active rotation/policy, a native session with no socket/account0, and one accepted-task Player state are seeded. Member-pointer fixture access populates private in-memory indexes and invokes native scoped condition validation/attachment; no class layout is rewritten. The Player is level110, faction1 and given1e9 HP with no equipment to survive the probe.",
+    "safety": "World, Hotfix and Login synchronous sessions verify transaction_read_only=1; their asynchronous sessions are also set read-only. No CharacterDatabase is opened and no quest completion/save occurs. The socketless native WorldSession constructor reads account_rates; its single bounded process-lifetime allocation intentionally skips the native destructor's account UPDATE. Native Player teardown clears the session pointer. Canonical configuration and personal progress are untouched."
+  },
+  "validation": {
+    "release": "Standard cmake --build build-extractors --config Release --target worldserver bnetserver --parallel4, with no OutDir override. Test-RockawayRelease verifies actual final-link scripts freshness and resolves canonical PE function ranges/thunks: neither helper IsSummonedBy calls delayed DespawnOrUnsummon; both UpdateAI bodies contain actual removal. Existing finale7000ms, reward, channel and damage-clamp checks remain.",
+    "deployment": {
+      "runtime": "build-extractors/bin/Release",
+      "worldserver_sha256": "7702020828FEED1B0A3279FED45136603F09DE2684DF3ABCE73A70C676489B70",
+      "bnetserver_sha256": "4F9E720C46B798BEC29979A22378D41AC1D2A245B46B62579CA49DCEDAF7FD87",
+      "game_lib_sha256": "4F8FC14FFC9CA972B3BAF0D87A4F3CBED58D6B569DDA5FF5E2FE4FC863DC7D95",
+      "scripts_lib_sha256": "59F0AAD4FF5CD62320DE6D27C84A66B173B016392E0884BE749824053FA880F0",
+      "ready": true,
+      "exit": 0,
+      "db_errors_bytes": 0,
+      "stderr_bytes": 0
+    },
+    "native_run": "build-extractors/runtime-test/rockaway-offensive-native/run-20261019-065823",
+    "baseline_run": "build-extractors/runtime-test/rockaway-offensive-native-baseline/run-20261019-065823",
+    "startup_run": "build-extractors/runtime-test/rockaway-offensive-native/startup-20261019-065659"
+  },
+  "boundaries": [
+    "This is a private in-process native map, not a logged-in WoW client or complete world/session update loop. Native Unit updates, summon updates, AI and map creature-movement/removal lists run explicitly. Initial Player admission uses the real grid/ObjectAccessor and Unit lifecycle with controlled login/task fields, rather than actual account login.",
+    "The native probe uses the actual generated final-link game.lib and current source actor classes; the canonical Release checks separately verify deployed helper call sites. No packet recipient or renderer exists, and no client visual, audio, animation, latency, normal character survivability or full quest completion is claimed.",
+    "The tested native232681->232679 path is a delayed damage/visual effect, not evidence of a persistent damaging area trigger. A persistent retail pool duration or original retail spell binding has not been recovered. Existing reconstructed ritual beam binding, precise positions and fragment-count authenticity limitations are retained.",
+    "Code inspection additionally noticed that SelectImplicitBetweenTargets keeps a pointer to a Position declared inside its NEAR_DEST switch case, then uses it after that scope ends. The forward native slam currently executes, but does not prove that shared handler's C++ lifetime safety. This is a separate core issue requiring its own focused fix/regression, not a reason to invent a Rockaway target whitelist."
+  ],
+  "prior_audits": [
+    "docs/audits/rockaway-native-channels-2026-10-19.json",
+    "docs/audits/highmountain-rockaway-coast-2026-10-18.json"
+  ]
+}

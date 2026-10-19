@@ -39,6 +39,7 @@ static void Require(bool ok, char const* message) { if (!ok) throw std::runtime_
 
 // The scheduler lookup is the sole controlled service in the production
 // header. No native quest creation/save/reset or live rotation is requested.
+#ifndef ROCKAWAY_OFFENSIVE_NATIVE
 struct RotationFixture
 {
     WorldQuest rotation{};
@@ -48,8 +49,15 @@ struct RotationFixture
 } rotationFixture;
 #undef sQuestDataStore
 #define sQuestDataStore (&rotationFixture)
+#endif
+#ifdef ROCKAWAY_OFFENSIVE_BASELINE
+#include "RockawayBaseline.inc"
+#else
 #include "rockaway_coast.h"
+#endif
+#ifndef ROCKAWAY_OFFENSIVE_NATIVE
 #undef sQuestDataStore
+#endif
 
 struct Actor : Creature
 {
@@ -120,7 +128,7 @@ static void CheckChannels(Actor& vision, unsigned expected, bool allowOffensiveC
         Require(vision.GetChannelSpellId() == 0 && !vision.HasUnitState(UNIT_STATE_CASTING), "Vision retained a pending native cast");
 }
 
-int Run(int argc, char** argv)
+static void InitializeNative(int argc, char** argv)
 {
     Require(argc == 3, "Expected private configuration and runtime directory");
     std::string error;
@@ -164,6 +172,12 @@ int Run(int argc, char** argv)
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1220, {}}});
     MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1220, {}}});
     HashMapHolder<Creature>::SetSize(20000);
+}
+
+#ifndef ROCKAWAY_OFFENSIVE_NATIVE
+int Run(int argc, char** argv)
+{
+    InitializeNative(argc, argv);
     rotationFixture.rotation.ResetTime = GameTime::GetGameTime() + 3600;
     {
         Map map(1220, 300, 9999998, DIFFICULTY_NONE);
@@ -291,3 +305,4 @@ int main(int argc, char** argv)
     try { return Run(argc, argv); }
     catch (std::exception const& e) { std::cerr << e.what() << '\n'; return 1; }
 }
+#endif

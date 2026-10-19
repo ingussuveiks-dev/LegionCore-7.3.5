@@ -64,5 +64,7 @@
     "Original retail spell/caster/target binding, precise positions and reconstructed fragment bounds are still not proven. The native test verifies current reconstruction mechanics, not historical authenticity.",
     "Earlier Player/session, reward persistence, full bags and audio delivery limitations remain. No whole-quest or client-verified claim."
   ],
-  "prior_audit": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json"
+  "prior_audit": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json",
+  "native_offense_followup": "docs/audits/rockaway-native-offense-2026-10-19.json",
+  "followup_result": "The separate offensive mode adds a real native Player and real offensive effects with controlled session/task/rotation setup. It fixes and reproduces inert slime melee/reset leaks caused by early IsDespawn. The earlier no-Player and no-helper-update limits above describe this channel probe and are retained; current offensive evidence and remaining client boundaries are in the follow-up audit."
 }

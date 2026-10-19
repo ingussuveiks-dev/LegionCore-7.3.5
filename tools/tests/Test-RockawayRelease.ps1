@@ -99,6 +99,11 @@ $target=@(Calls '?Select@spell_rockaway_channel@@')
 if($target -notcontains (Resolve (Symbol '?ChannelVision@Rockaway@@'))){throw 'Deployed target selector lacks exact controller admission'}
 $damage=@(Calls '?DamageTakenAfterScaling@npc_rockaway_vision@@')
 if($damage -notcontains (Resolve (Symbol '?GetHealth@Unit@@QEBA_KPEAV1@@Z'))){throw 'Deployed Vision lacks target-relative scaled damage clamp'}
+$despawn=Resolve (Symbol '?DespawnOrUnsummon@Creature@@')
+foreach($actor in @('npc_rockaway_tentacle','npc_rockaway_slime')){
+ if(@(Calls "?IsSummonedBy@$actor@@") -contains $despawn){throw "Deployed $actor still marks delayed lifetime as pending despawn"}
+ if(@(Calls "?UpdateAI@$actor@@") -notcontains $despawn){throw "Deployed $actor lacks actual lifetime removal"}
+}
 $range=Bounds '?SummonedCreatureDies@npc_rockaway_vision@@'
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $dump=Get-ChildItem "$vs/VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe" | Select-Object -Last 1
@@ -111,4 +116,4 @@ if($LASTEXITCODE -or $listing -notmatch '\bmov\s+dword ptr \[[^\]]+\],1B58h'){
 $output="$repo/build-extractors/runtime-test/rockaway-audio"
 New-Item -ItemType Directory -Force $output | Out-Null
 $listing | Set-Content "$output/finale-disassembly.txt"
-'PASS: canonical Release final-link scripts library, exception-bounded7000ms final pause, native recipient reward admission, exact-owner channel hook, retry/death cleanup, no Vision Mage Tower aura, completion/credit/loot calls and scaled health clamp.'
+'PASS: canonical Release final-link scripts library, exception-bounded7000ms final pause, native recipient reward admission, exact-owner channel hook, retry/death cleanup, active helper lifetime removal without pending despawn, completion/credit/loot calls and scaled health clamp.'
