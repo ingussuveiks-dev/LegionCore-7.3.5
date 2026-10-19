@@ -33,7 +33,7 @@ enum {CRITERIA_TYPE_KILL_CREATURE_TYPE,CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD,CR
  CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE,CRITERIA_TYPE_COMPLETE_QUEST_COUNT,CRITERIA_TYPE_COMPLETE_QUEST,CRITERIA_TYPE_COMPLETE_QUESTS_COUNT,
  CONFIG_MAX_PLAYER_LEVEL,CONFIG_DROP_DUNGEON_ONLY_X1,RATE_DROP_MONEY,WORLD_QUEST_TYPE_REWARD_ARTIFACT_POWER,
  MAIL_CHECK_MASK_HAS_BODY,QUEST_DEFAULT_SAVE_TYPE,SPELL_EFFECT_LEARN_SPELL,SPELL_EFFECT_CREATE_ITEM,SPELL_EFFECT_APPLY_AURA,SPELL_EFFECT_TRIGGER_SPELL,
- EFFECT_0,TARGET_UNIT_CASTER,QUEST_SAVE,CHAR_INS_CHARACTER_WORLDQUESTSTATUS};
+ EFFECT_0,TARGET_UNIT_CASTER,QUEST_SAVE,CHAR_INS_CHARACTER_WORLDQUESTSTATUS,INVENTORY_SAVE};
 namespace ToastType {enum {ITEM,CURRENCY,MONEY,HONOR};}
 namespace DisplayToastMethod {constexpr int DISPLAY_TOAST_SPECIAL_UNK=0;}
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -180,6 +180,7 @@ struct Player:Unit {
  PhaseMgr&GetPhaseMgr(){return phaseMgr;}void GetZoneAndAreaId(uint32&z,uint32&a){z=7503;a=7833;}void PrepareAreaQuest(uint32){}
  uint32 GetAreaId()const{return 7833;}void UpdateAreaQuestTasks(uint32,uint32){++areaUpdates;Check(WorldQuestCompleted(44746),"task refresh before completion record");}
  bool IsQuestRewardDisplayOnly(SpellInfo const*)const{return false;}void SetQuestCompletedBit(uint32 id,bool b){if(b)bits.insert(id);else bits.erase(id);}void SendQuestGiverStatusMultiple(){}
+ void SaveInventoryAndGoldToDB(CharacterDatabaseTransaction&t){t->Append(CharacterDatabase.GetPreparedStatement(INVENTORY_SAVE));order.push_back("inventory-save");}
  void _SaveQuestStatus(CharacterDatabaseTransaction&t){t->Append(CharacterDatabase.GetPreparedStatement(QUEST_SAVE));order.push_back("save");}
  bool CanRewardWorldQuest(Quest const*)const;bool WorldQuestCompleted(uint32)const;void _SaveWorldQuestStatus(CharacterDatabaseTransaction&);void _LoadWorldQuestStatus(PreparedQueryResult);
  void KilledMonsterCredit(uint32,ObjectGuid=ObjectGuid::Empty);bool HasQuestObjectiveComplete(Quest const*,QuestObjective const&);bool CanCompleteQuest(uint32);void CompleteQuest(uint32);
@@ -256,8 +257,8 @@ int Run(char const*path){
   Check(p.casts==1&&p.m_worldquests.at(44746).resetTime==2000&&!p.m_worldquests.at(44746).needSave,"outro/checkpoint missing");
   Check(p.fragmentCount==(full?0:count)&&p.errors==(full?1u:0u)&&p.lootRolls==1&&p.lootStores==(full?0u:1u),"native fragment admission changed");
   Check(p.dynamicCount==(full?0u:1u)&&p.mailCount==(full?1u:0u),"dynamic item reward leaf dispatch");
-  Check(CharacterDatabase.committed.size()==1&&CharacterDatabase.committed[0]->rows.size()==2,"completion transaction missing");
-  auto const&row=*CharacterDatabase.committed[0]->rows[1];Check(row.type==CHAR_INS_CHARACTER_WORLDQUESTSTATUS&&row.values.at(1)==44746&&row.values.at(3)==2000,"native checkpoint statement");
+  Check(CharacterDatabase.committed.size()==1&&CharacterDatabase.committed[0]->rows.size()==3&&CharacterDatabase.committed[0]->rows[0]->type==INVENTORY_SAVE,"inventory/completion transaction missing");
+  auto const&row=*CharacterDatabase.committed[0]->rows[2];Check(row.type==CHAR_INS_CHARACTER_WORLDQUESTSTATUS&&row.values.at(1)==44746&&row.values.at(3)==2000,"native checkpoint statement");
   auto saved=std::make_shared<Result>();saved->rows.push_back({Field{44746},Field{uint32(p.GetGUIDLow())},Field{2000}});
   Player login;login._LoadWorldQuestStatus(saved);Check(login.WorldQuestCompleted(44746)&&!login.CanRewardWorldQuest(&store.quest),"login permits duplicate reward");
   login.CompleteQuest(44746);login.RewardQuest(&store.quest,0,&login,true);Check(!login.rewardPackets&&!login.casts&&CharacterDatabase.committed.size()==1,"login/reward bypass duplicated task");

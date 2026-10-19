@@ -22,7 +22,7 @@ using uint8=uint8_t;using int8=int8_t;using uint16=uint16_t;using uint32=uint32_
 #include "MailLimit.inc"
 constexpr uint32 DAY=86400,NULL_BAG=255,NULL_SLOT=255,CLASS_NONE=0,TEAM_HORDE=1;
 enum {ITEM_FIELD_CONTEXT,ITEM_FIELD_DYNAMIC_FLAGS,ITEM_FLAG_NEW_ITEM,ITEM_MODIFIER_UPGRADE_ID,CONFIG_MAIL_DELIVERY_DELAY,
- CHAR_INS_MAIL,CHAR_INS_MAIL_ITEM,CHAR_DEL_ITEM_INSTANCE,CHAR_UPD_ITEM_OWNER,ITEM_SAVE,QUEST_SAVE,WORLD_SAVE};
+ CHAR_INS_MAIL,CHAR_INS_MAIL_ITEM,CHAR_DEL_ITEM_INSTANCE,CHAR_UPD_ITEM_OWNER,ITEM_SAVE,QUEST_SAVE,WORLD_SAVE,INVENTORY_SAVE};
 #define TC_LOG_ERROR(...) ((void)0)
 #define TC_LOG_DEBUG(...) ((void)0)
 #define ASSERT(x) assert(x)
@@ -149,6 +149,7 @@ struct Player{
 #endif
 #include "Selection.inc"
  }
+ void SaveInventoryAndGoldToDB(CharacterDatabaseTransaction&t){t->Append(CharacterDatabase.GetPreparedStatement(INVENTORY_SAVE));}
  void _SaveQuestStatus(CharacterDatabaseTransaction&t){t->Append(CharacterDatabase.GetPreparedStatement(QUEST_SAVE));}
  void _SaveWorldQuestStatus(CharacterDatabaseTransaction&t){t->Append(CharacterDatabase.GetPreparedStatement(WORLD_SAVE));}
  void Commit(CharacterDatabaseTransaction&rewardTrans){
@@ -185,7 +186,7 @@ int Run(){
   for(auto const&i:tx->items){Check(!i.owner,"mail ownership not saved atomically");Check(i.bound==(i.entry==200||horde),"BOP/quest/BOE binding changed");CheckItem(i,i.entry==200?1:(mainCount?2:5));if(i.entry==200)recipeCount+=i.count;else{Check(i.entry==(horde?100:101),"faction item changed");mainCount+=i.count;}}
   Check(mainCount==7&&recipeCount==(isRecipe?1u:0u),"main or recipe quantity lost");
   Check(Rows(*tx,CHAR_INS_MAIL_ITEM)==tx->items.size()&&Rows(*tx,CHAR_INS_MAIL)==size_t(isRecipe?2:1),"mail attachment rows");
-  p.Commit(tx);Check(tx->rows[tx->rows.size()-2]->type==QUEST_SAVE&&tx->rows.back()->type==WORLD_SAVE,"mail and checkpoint use different transaction");
+  p.Commit(tx);Check(Rows(*tx,INVENTORY_SAVE)==1&&tx->rows[tx->rows.size()-3]->type==INVENTORY_SAVE&&tx->rows[tx->rows.size()-2]->type==QUEST_SAVE&&tx->rows.back()->type==WORLD_SAVE,"inventory, mail and checkpoint use different transaction");
 #endif
  }
 #ifndef OLD_DELIVERY

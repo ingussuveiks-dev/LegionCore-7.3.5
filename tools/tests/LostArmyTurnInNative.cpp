@@ -211,6 +211,18 @@ static void CheckPersistence(Map& map, Actor& giver, uint8 cls)
         auto index = std::find(std::begin(Rewards), std::end(Rewards), reward) - std::begin(Rewards); Require(index < 4, "Unknown ensemble"); set = Sets[index];
         p.Put(142487, 1007); p.Begin(); p.SaveToDB(true); FlushWrites();
         Choose(p, giver, reward);
+        auto checkpoint = CharacterDatabase.Query(Trinity::StringFormat("SELECT (SELECT COUNT(*) FROM character_queststatus_rewarded WHERE guid=%u AND quest=45088),COALESCE(SUM(ii.count),0),(SELECT COALESCE(SUM(ii.count),0) FROM character_inventory ci JOIN item_instance ii ON ci.item=ii.guid WHERE ci.guid=%u AND ii.itemEntry=142487) FROM character_inventory ci JOIN item_instance ii ON ci.item=ii.guid WHERE ci.guid=%u AND ii.itemEntry=%u", guid, guid, guid, reward).c_str());
+        Require(checkpoint && checkpoint->Fetch()[0].GetUInt32() == 1, "Native reward checkpoint missing");
+        auto gold = CharacterDatabase.Query(Trinity::StringFormat("SELECT money FROM characters WHERE guid=%u", guid).c_str());
+        Require(bool(gold) && p.GetMoney() > 0, "Missing native gold reward");
+#ifdef LOST_ARMY_TURNIN_BASELINE
+        Require(!checkpoint->Fetch()[1].GetUInt32() && checkpoint->Fetch()[2].GetUInt32() == 1007, "Baseline premature completion checkpoint changed");
+        Require(!gold->Fetch()[0].GetUInt64(), "Baseline premature checkpoint saved gold unexpectedly");
+#else
+        Require(checkpoint->Fetch()[1].GetUInt32() == 1 && checkpoint->Fetch()[2].GetUInt32() == 7, "Reward checkpoint persisted completion without matching inventory");
+        Require(gold->Fetch()[0].GetUInt64() == p.GetMoney(), "Reward checkpoint lost gold");
+#endif
+        std::cout << "CHECKPOINT class=" << uint32(cls) << " rewarded=1 ensemble=" << checkpoint->Fetch()[1].GetUInt32() << " fragments=" << checkpoint->Fetch()[2].GetUInt32() << " gold=" << gold->Fetch()[0].GetUInt64() << '/' << p.GetMoney() << '\n';
         auto item = p.GetItemByEntry(reward); Require(item && item->GetTemplate()->Effects.size() == 1 && item->GetTemplate()->Effects.front()->Charges < 0, "Missing native consumable ensemble use");
         SpellCastTargets targets; targets.SetUnitTarget(&p); int32 misc[2]{};
         p.CastItemUseSpell(item, targets, misc, ObjectGuid::Empty);

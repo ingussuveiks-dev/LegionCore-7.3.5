@@ -19867,8 +19867,10 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     PrepareAreaQuest(newzone);
     PrepareAreaQuest(newarea);
 
-    // Retrieval attachments/mail and the completion checkpoint must commit
-    // together, so neither can survive on its own and permit a repeated reward.
+    // Consumed objectives, inventory/currency/gold rewards and retrieval mail
+    // must commit with completion. An earlier status-only checkpoint could
+    // survive a restart while the chosen reward still awaited the next save.
+    SaveInventoryAndGoldToDB(rewardTrans);
     _SaveQuestStatus(rewardTrans);
     _SaveWorldQuestStatus(rewardTrans);
     CharacterDatabase.CommitTransaction(rewardTrans);

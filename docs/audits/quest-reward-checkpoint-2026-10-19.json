@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-19",
+  "baseline": "197c304f",
+  "status": "Reward completion now saves objective consumption, inventory/currency/gold and the completion checkpoint in one native transaction; automated checks pass; client/restart testing remains separate.",
+  "defect": "Full native handler on an actually saved45088 character commits character_queststatus_rewarded before the next inventory save. Immediately after delivery, the pinned engine's database has rewarded=1,ensemble=0,fragments=1007 although memory has one ensemble and seven fragments. A restart at this persisted state would retain completion without the reward. This is independently reproduced for all four reward classes.",
+  "fix": "Call native SaveInventoryAndGoldToDB(rewardTrans) before _SaveQuestStatus/_SaveWorldQuestStatus and the existing commit. Native _SaveInventory, _SaveCurrency and SaveGoldToDB append to that same transaction as completion and retrieval mail. Keep existing selection, world-quest admission and post-completion reward spells unchanged.",
+  "native_validation": {
+    "runner": "tools/tests/Test-LostArmyTurnInNative.ps1",
+    "current": "build-extractors/runtime-test/lost-army-turnin-native/run-20261019-092756",
+    "baseline": "build-extractors/runtime-test/lost-army-turnin-native-baseline/run-20261019-092756",
+    "result": "Actual SaveToDB creates the initial1007-fragment character; actual packet/handler/RewardQuest runs; async SQL barrier precedes checkpoint reads, before any later full save. Current SQL is rewarded=1,ensemble=1,fragments=7,gold=292700 for warrior/hunter/rogue/mage. Pinned full game library is rewarded=1,ensemble=0,fragments=1007,gold=0 for all four. Both full processes exit0 and DBErrors are empty.",
+    "normal_save_load": "Native item-use consumes each ensemble and learns nine appearances. Actual full save followed by native prepared inventory/rewarded-quest/collection loads retains seven fragments and all appearances, no remaining consumed ensemble, and denies repeated turn-in. Bank/bag saved inventory paths and full-inventory retry are also covered.",
+    "transaction_boundary": "Actual native save functions and SQL execute in schema-only disposable databases. This is not a simulated inventory save. Native _SaveInventory/_SaveCurrency checkpoint calls are verified in the deployed PE; inlined gold saving is verified by SQL money matching memory (292700 copper) before the next full save. SQL checkpoint reads establish the persisted pair; no real process crash, database failure injection, authenticated login or client restart was performed."
+  },
+  "shared_regressions": [
+    "Test-WorldQuestDelivery.ps1 current and pinned ccb40e91 cases pass. Its native-source extraction now starts at the save call rather than a changed comment. Controlled transaction sink asserts inventory-save, quest and world checkpoint order alongside mail. Inventory save remains a fixture leaf there; the full native test above supplies actual persistence evidence.",
+    "Test-RockawayCompletion.ps1 current and pinned65c7ac0a cases pass. Full extracted production RewardQuest still preserves both factions, fragment quantities10..15, full/partial inventory, dynamic currency/money, one completion/outro, expiry and repeat guards. Transaction sink now includes inventory-save before the existing checkpoints; other fixture/client limits are retained.",
+    "Test-LostArmyTurnInRelease.ps1 includes all previous group lifecycle/roll/master-loot/LostArmy/Rockaway canonical binary checks. RewardQuest may inline SaveInventoryAndGoldToDB; verify actual _SaveInventory/_SaveCurrency calls in the wrapper or RewardQuest body rather than assuming a wrapper call survives optimization. SaveGoldToDB is also inlined, so native SQL reads separately verify saved gold."
+  ],
+  "deployment": {
+    "command": "cmake --build build-extractors --config Release --target worldserver bnetserver --parallel 4",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "A2E1F491AB130071AE4BDD7B4DC624764844753089CFCAC1A9DAEEEB0E2152FD",
+    "game_lib_sha256": "F81D984D09BD9417A017FA8C2159C575625B19CC5CB40E9404B823F9870C8D43",
+    "bnetserver_sha256": "105F97E8FAC53EE6F1D30AF89CE0E94DFD3FB453545166277DF23FEC2C0A1182",
+    "build_log": "build-extractors/runtime-test/lost-army-turnin-native-baseline/release-build.log",
+    "manifest": "build-extractors/runtime-test/lost-army-turnin-native/release-inputs.json",
+    "startup": "build-extractors/runtime-test/lost-army-turnin-native/startup-20261019-092815",
+    "ready": true, "exit": 0, "db_errors_bytes": 0, "stderr_bytes": 0
+  },
+  "limitations": "The native checkpoint probe is45088 with item rewards. Gold also has native SQL validation; currency composition and WQ behavior have source/PE plus bounded extracted regressions, not a complete native gameplay test of every quest/reward/currency. Other post-completion spells, reputation and collection changes are outside this inventory checkpoint's crash guarantee. Client turn-in windows, real raid Odyn availability and authenticated relog remain pending.",
+  "related_audit": "docs/audits/lost-army-turn-in-2026-10-19.json"
+}

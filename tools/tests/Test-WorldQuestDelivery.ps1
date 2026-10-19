@@ -30,7 +30,7 @@ function Selection([string]$source,[string]$folder){
  [IO.File]::WriteAllText("$folder/Selection.inc",$source.Substring($start,$end-$start))
 }
 Selection $player $out
-$a=$player.IndexOf('    // Retrieval attachments/mail and the completion checkpoint')
+$a=$player.IndexOf('    SaveInventoryAndGoldToDB(rewardTrans);')
 $b=$player.IndexOf('    // cast spells after mark quest complete',$a)
 if($a -lt 0 -or $b -lt $a){throw 'Missing atomic completion boundary'}
 [IO.File]::WriteAllText("$out/Commit.inc",$player.Substring($a,$b-$a))
