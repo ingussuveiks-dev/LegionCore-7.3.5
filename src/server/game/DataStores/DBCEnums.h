@@ -640,7 +640,7 @@ enum DifficultyFlags
     DIFFICULTY_FLAG_DISPLAY_MYTHIC  = 0x80  // Controls icon displayed on minimap when inside the instance
 };
 
-const uint8 MAX_BOUND = 3;
+const uint8 MAX_BOUND = 4;
 
 enum QuestPackageFilter
 {

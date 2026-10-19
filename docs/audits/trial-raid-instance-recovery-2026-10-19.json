@@ -60,6 +60,11 @@
     "result": "Actual post-Helya gossip admission, selection, native DB2 far teleport/worldport ACK and quest/reward save/prepared reload pass72 cases across both factions/all4 difficulties/fresh and saved instances. Foreign-menu selection previously teleported; the scoped Odyn handler now validates and consumes the prepared native menu.",
     "limits": "No client, authenticated login, durable raid binding or entrance rejoin is claimed. Destination socket workers are stopped for synchronous native execution. Earlier pending combat/scene/voice/UI/arrival/pet/chest checks remain."
   },
+  "native_saved_binding_followup_2026_10_19": {
+    "audit": "docs/audits/trial-raid-reentry-2026-10-19.json",
+    "result": "Actual managed MapManager selection, character_instance/group_instance writes and native prepared player/full group reload now cover Normal/Heroic/Mythic/LFR, both factions and offline leader. Fixed LFR sharing the Normal bind bucket; native calendar now enumerates actual slots once.",
+    "limits": "This extends the earlier binding gap with actual SQL loaders and same-process cold map reconstruction. Authenticated login, real process restart, queue matchmaking and client UI/scene/combat checks remain pending; earlier observations are retained."
+  },
   "native_chest_followup_2026_10_19": {
     "audit": "docs/audits/trial-raid-chest-2026-10-19.json",
     "result": "Actual native DB chest545038, Odyn surrender, early/late/saved-DONE availability and Opening6247 now pass both factions/all4 difficulties. Late/saved hidden chest bug fixed in OnGameObjectCreate; already active timer is retained.",

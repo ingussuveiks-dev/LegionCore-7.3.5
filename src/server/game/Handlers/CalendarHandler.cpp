@@ -62,9 +62,8 @@ void WorldSession::HandleCalendarGetCalendar(WorldPackets::Calendar::CalendarGet
         packet.Events.push_back(eventInfo);
     }
 
-    for (uint8 i = 0; i < MAX_BOUND; ++i)
+    for (auto const& boundInstances : _player->m_boundInstances)
     {
-        Player::BoundInstancesMap boundInstances = _player->GetBoundInstances(Difficulty(i));
         for (auto const& boundInstance : boundInstances)
         {
             if (InstanceSave* save = boundInstance.second.save)

@@ -8979,6 +8979,10 @@ uint8 ObjectMgr::GetboundTypeFromDifficulty(uint8 difficulty)
 {
     switch (difficulty)
     {
+    case DIFFICULTY_LFR:
+    case DIFFICULTY_LFR_RAID:
+        // Raid Finder must not select or replace a Normal raid's saved copy.
+        return 3;
     case DIFFICULTY_MYTHIC_DUNGEON:
     case DIFFICULTY_MYTHIC_RAID:
         return 2;

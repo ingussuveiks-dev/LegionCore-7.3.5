@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "quests": [44729, 44868],
+  "status": "Native saved player/group binding selection, SQL reload and map reconstruction verified; Raid Finder binding collision fixed and Release deployed. Authenticated login and client re-entry remain pending.",
+  "baseline_commit": "79705202",
+  "reproduced_problems": [
+    "Normal14 and Raid Finder17 shared bind bucket0. An existing group's permanent Normal save was selected for a Raid Finder request, returning the Normal instance and difficulty. The pinned native baseline reproduces this initially and after two complete SQL group reloads, for both factions: six wrong selections.",
+    "Calendar enumerated bucket indices as Difficulty values. With three buckets, Difficulty0/1 both mapped to Normal and Difficulty2 mapped to Heroic, repeating Normal and omitting Mythic. Simply adding a fourth bucket would repeat Normal again. Pinned enumeration with actual saved player bindings reproduces the historical counts2/1/0 six times."
+  ],
+  "implementation": [
+    "MAX_BOUND is4; native Raid Finder difficulties7/17 map to independent bucket3. Existing Normal0, Heroic1, Mythic2 bucket mappings and other difficulty mappings remain unchanged. Player and Group use the same native selector and resized arrays.",
+    "Calendar iterates the actual bound-instance maps once, preserving the saved difficulty, instance ID and reset time. It no longer converts a bucket index into a Difficulty enum.",
+    "No production SQL migration, character reset, manual progress grant or instance script persistence change is required. Existing SQL rows already identify their actual difficulty and are separated by native loading. This does not redesign fixed Mythic raid lockout policy."
+  ],
+  "primary_reference_context": [
+    {
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/news/11499600/warlords-of-draenor-dungeons-and-raids",
+      "scope": "Blizzard's raid format announcement describes separate Raid Finder, Normal, Heroic and Mythic loot lockouts. Supports keeping Raid Finder separate from Normal; not evidence of this core's exact implementation."
+    },
+    {
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/13942448/coffee-with-the-devs-raiding-azeroth-part-3-warlords-of-draenor",
+      "scope": "Blizzard distinguishes flexible loot-based modes from fixed-size Mythic boss-based instance locks. No broader lockout-policy equivalence is inferred from this repair."
+    }
+  ],
+  "native_evidence": [
+    "Actual final-link game/scripts libraries, native DB2 catalogs including Map/Difficulty/MapDifficulty, native MapManager::CreateMap and InstanceMap script factory select and construct Trial of Valor. No fixture substitutes the production binding selector or instance save loader.",
+    "Human and Orc characters are saved to schema-only disposable SQL. Each earns three separate Normal/Heroic/Mythic Odyn DONE saves through the linked actual final-damage surrender callback. Defender prerequisites, phase actions and final health are setup; no full combat playthrough is claimed.",
+    "Actual Group::Create(non-LFG) copies the leader's existing binds through Player::ConvertInstancesToGroup. A real second member is added, then the group is converted to Trial LFR using native catalog/state/save functions. Queue matchmaking is not executed.",
+    "Current LFR selects a fresh difficulty17 instance independently of the Normal save. Actual Odyn surrender earns its DONE save. Native character_instance/group_instance SQL is read after flushing the victory's own writes: difficulty, serialized instance data, permanent status and encounter mask1 must agree with the live script. No test SaveToDB call manufactures the victory checkpoint.",
+    "Native LFR does not create an individual permanent player binding. Its persisted group binding is checked separately, while the three personal raid binds and inherited Normal group bind remain intact.",
+    "Old Player/Group objects detach while retaining their SQL. The full production GroupMgr::LoadGroups cleanup, group/roster/LFG/group_instance loaders run. A new member enters using the restored group while its leader has no live Player object. The group has two members and restores difficulty17 from the native LFG checkpoint/catalog.",
+    "A new leader loads CHAR_SEL_CHARACTER_INSTANCE through the actual private Player::_LoadBoundInstances. Native map selection/admission restores the same Normal/Heroic/Mythic instance IDs, DONE states and encounter masks, then the group's separate LFR save. This runs once with cached maps and once after MapInstanced::UnloadAll reconstructs them from SQL.",
+    "Eight actual managed Odyn victories,20 saved re-entry/admission cases and four full group reloads pass across both factions. Six calendar checks run the extracted exact production enumeration against real player bindings and actual CalendarSendCalendar serialization, requiring each Normal/Heroic/Mythic save exactly once. The pinned historical enumeration requires duplicate Normal and missing Mythic instead."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidReentryNative.ps1: PASS, exit0, DBErrors0 bytes, eight victories,20 saved admissions, four group reloads and six calendar enumeration/serialization cases.",
+    "Test-TrialRaidReentryNative.ps1 -Baseline: PASS means the captured79705202 libraries reproduce six LFR-to-Normal selections and six calendar duplicate/missing cases; exit0, DBErrors0 bytes.",
+    "Test-TrialRaidReentryRelease.ps1: PASS; actual canonical PE switch instructions and both lookup/jump tables map7/17 to3,14 to0,15 to1,16 to2 and preserve tested legacy/dungeon mappings. Existing native quest lifetime, loot admission and shared victory restoration PE checks also pass.",
+    "Test-TrialRaidCriteriaNative.ps1 -Baseline: PASS after the shared baseline ABI handling change; existing historical quest-lifetime regression still reproduces with DBErrors0 bytes.",
+    "Test-RaidFragmentsNative.ps1: PASS after the full bind-array ABI rebuild, DBErrors0 bytes; actual native loot, cooldown, party and persistence paths across all four difficulties retained. This run preceded the isolated CalendarHandler rebuild.",
+    "Standard full Release worldserver/bnetserver rebuild after MAX_BOUND change and incremental CalendarHandler rebuild: PASS. Canonical build-extractors/bin/Release executables link the original CMake game/scripts library paths without OutDir override.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes. Final scratch schema/user counts0; no server or native probe left running."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-raid-reentry-native/run-20261019-163342",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-reentry-native-baseline/run-20261019-163343",
+    "criteria_baseline_logs": "build-extractors/runtime-test/trial-raid-criteria-native-baseline/run-20261019-162716",
+    "raid_fragments_logs": "build-extractors/runtime-test/raid-fragments-native/run-20261019-162822",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-reentry-native/startup-20261019-163353",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "8CC98C57716CBEEE96EEBE67AD97AF2ECA4031A9437041CB093074FB667B6EA4",
+    "bnetserver_sha256": "4A1779F77E37489B1C7937A67C8C0C5F8CBDA4163DEE01684B9A9D438D79966E",
+    "actual_game_library_sha256": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+    "actual_scripts_library_sha256": "2A47E90C7CB98C6890074C6EF5CCD6E63E6A443AE50F042DFF097103D743506E",
+    "baseline_game_sha256": "F7EBCA13F838C19E1FE31B1BF379C8FC459300CCB34F09FABF30B08B22851C0A",
+    "baseline_scripts_sha256": "AD015E03EC3E14792DDF38FF344EA8AC512D007B4C0538447EDF27092C6179A4",
+    "isolation": "Random limited disposable user and schema-only character/auth databases167 tables; World/Hotfix READ ONLY. No live character/account rows copied or modified. Wrapper removes its scratch schemas/user in finally.",
+    "production_sql_changes": false
+  },
+  "test_integrity_and_development": [
+    "Changing MAX_BOUND changes Player/Group array layout. Historical native probes must use the pinned three-slot enum array ABI and compatible scripts library together with their original game library. The shared runner forces a generated header retaining current enum definitions but the pinned MAX_BOUND, and records all actual linked baseline hashes. Non-instance historical probes use the archived pre-change79705202 scripts ABI. Mixing current four-slot headers/scripts with old game libraries is rejected rather than accepted as a regression result.",
+    "The optimized difficulty selector is a leaf with no x64 unwind record. The final Release check decodes its exact emitted instructions/tables; an earlier unwind-bound lookup could not inspect that leaf and was not accepted as verification.",
+    "Map1648's native worker is stopped/joined before synchronous socketless fixture execution. Native map entry and persistence run explicitly; no automatic scheduler, socket authentication or real queue matchmaking is claimed."
+  ],
+  "remaining_limits_and_client_checks": [
+    "Authenticated logout/login and a real server process restart are not exercised. Fresh Player/Group objects use actual SQL loaders; cold map reconstruction is cache eviction in the same native process. LFG group checkpoint persists in this test, but no live queue join/match is executed.",
+    "Actual TeleportTo/worldport ACK/client instance-entry packets are not executed here; MapManager selection and Map::AddPlayerToMap execute directly. Prior exit audit covers its separate native worldport path and retains its own limits.",
+    "Native calendar enumeration is extracted from the actual current or pinned handler and serialized using the real packet. The whole session request dispatcher and visible client calendar are not verified.",
+    "Verify client exit/re-entry in each difficulty, group reconstruction/offline leader behavior, raid UI/calendar, and actual login after server restart. Full boss combat, visuals, voice, chest appearance, camera/pet and earlier pending quest checks remain pending. No whole quest or raid is marked client-verified."
+  ]
+}
