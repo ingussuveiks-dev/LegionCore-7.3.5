@@ -138,5 +138,6 @@
     "No client controlled. Orb visuals, marker presentation, role-based target preference, pet portrait/camera, exact original speed/cadence and the complete encounter still require7.3.5 client checks. Earlier audit limitations are retained.",
     "Native exploration found extra orb-owned Decay in addition to the boss-owned trail. The redundant dummy spell route and proper cleanup are the next part of the currently authorized work; this commit does not claim that data issue fixed."
   ],
-  "decay_followup": "docs/audits/trial-helya-decay-2026-10-19.json"
+  "decay_followup": "docs/audits/trial-helya-decay-2026-10-19.json",
+  "phase_three_followup": "docs/audits/trial-helya-phase3-2026-10-19.json"
 }

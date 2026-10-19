@@ -61,5 +61,6 @@
   "limits": [
     "Controlled native Players have health buffers and do not run a full authenticated client rotation. This verifies actual spell/area ownership, lifetime, movement and cleanup; damage/healing tuning, every overlapping-area case and exact client visual geometry remain separate.",
     "No client controlled. Verify trail placement, sustained appearance, orb despawn, actual wave washing, aura presentation and full encounter/reward behavior in7.3.5. Earlier pending client checks remain."
-  ]
+  ],
+  "phase_three_followup": "docs/audits/trial-helya-phase3-2026-10-19.json"
 }

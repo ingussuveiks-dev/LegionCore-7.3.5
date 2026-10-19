@@ -211,7 +211,7 @@ if($TrialReentry){
 }
 if($TrialGarm){$inputs+=Get-Item "$runtime/dbc/enUS/WorldSafeLocs.db2";foreach($path in @('TrialGarmNative.cpp','Test-TrialGarmNative.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
 if($TrialHelya){foreach($path in @('TrialHelyaNative.cpp','Test-TrialHelyaNative.ps1','Test-TrialHelyaFuryRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
-if($TrialHelyaPhase3){foreach($path in @('TrialHelyaPhase3Native.cpp','Test-TrialHelyaPhase3Native.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
+if($TrialHelyaPhase3){foreach($path in @('TrialHelyaPhase3Native.cpp','Test-TrialHelyaPhase3Native.ps1','Test-TrialHelyaBreathRelease.ps1','Test-TrialHelyaCorrosionData.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File
 foreach($inputFile in $inputs){$hashes[$inputFile.FullName.Substring($runtime.Length+1).Replace('\','/')]=(Get-FileHash $inputFile.FullName -Algorithm SHA256).Hash}

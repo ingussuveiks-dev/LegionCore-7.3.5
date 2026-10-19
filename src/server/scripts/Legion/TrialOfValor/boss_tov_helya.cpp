@@ -239,7 +239,7 @@ struct boss_helya_tov : BossAI
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellCorruptedAxionAura);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellCorrupted);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellBleakEruption);
-        instance->DoRemoveAurasDueToSpellOnPlayers(SpellBleakEruption);
+        instance->DoRemoveAurasDueToSpellOnPlayers(SpellDarkHatred);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellTaintOfTheSea);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellOrbofCorrosionOnPlayer);
     }
@@ -1850,17 +1850,25 @@ class spell_corrupted_axion_aura : public AuraScript
 
     void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
+        // Healing consumes the absorb; scripted encounter cleanup must not
+        // mind-control a player. Only an unhealed, naturally expired absorb
+        // in the active Mythic phase may trigger Corrupted.
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
+            return;
+
         Unit* target = GetTarget();
-        if (!target)
+        if (!target || !target->IsAlive())
             return;
 
         Unit* caster = GetCaster();
-        if (!caster || !caster->GetMap())
+        if (!caster || !caster->GetMap() || !caster->IsAlive() || !caster->isInCombat())
             return;
 
-        if (caster->GetMap()->GetSpawnMode() == DIFFICULTY_MYTHIC_RAID)
-            if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_ENEMY_SPELL)
-                caster->CastSpell(target, SpellCorrupted, false);
+        auto boss = caster->ToCreature();
+        auto instance = caster->GetInstanceScript();
+        if (caster->GetMap()->GetSpawnMode() == DIFFICULTY_MYTHIC_RAID && boss && boss->IsAIEnabled &&
+            boss->AI()->GetData(Data::BossIDs::HelyaID) == PHASE_3 && instance && instance->GetBossState(Data::BossIDs::HelyaID) == IN_PROGRESS)
+            caster->CastSpell(target, SpellCorrupted, false);
     }
 
     void Register() override

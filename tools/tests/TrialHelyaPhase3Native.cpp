@@ -51,7 +51,62 @@ static std::set<ObjectGuid> OrbBurst(GarmPlayer& p,InstanceMap& map,Creature& he
 }
 static void Restart(GarmPlayer& p,InstanceMap& map,Creature& helya)
 {
-    ClearCombat(p,helya);PumpHelya(map,12000);map.PlayerRelocation(&p,524,680,5,0);helya.SetInCombatWith(&p);Require(helya.AI()->GetData(2)==1,"Native Helya retry did not enter phase one");
+    ClearCombat(p,helya);PumpHelya(map,12000);
+#ifdef TRIAL_HELYA_PHASE3_BASELINE
+    // Old pending orbs can re-enter combat while the first reset drains.
+    // Use another actual evade, never patch the phase/threat/EVADE flags.
+    if(helya.AI()->GetData(2)!=0||helya.isInCombat()){ClearCombat(p,helya);PumpHelya(map,12000);}
+#endif
+    map.PlayerRelocation(&p,524,680,5,0);helya.SetInCombatWith(&p);Require(helya.AI()->GetData(2)==1,"Native Helya retry did not enter phase one");
+}
+struct HelyaEventListTag{using Type=EventList EventProcessor::*;friend Type Access(HelyaEventListTag);};
+template struct FixtureAccess<HelyaEventListTag,&EventProcessor::m_events>;
+struct HelyaEventQueueTag{using Type=EventList EventProcessor::*;friend Type Access(HelyaEventQueueTag);};
+template struct FixtureAccess<HelyaEventQueueTag,&EventProcessor::m_events_queue>;
+struct HelyaEventSpellTag{using Type=Spell* SpellEvent::*;friend Type Access(HelyaEventSpellTag);};
+template struct FixtureAccess<HelyaEventSpellTag,&SpellEvent::m_Spell>;
+static std::vector<Spell*> NativeSpellEvents(Creature& caster,uint32 id)
+{
+    std::vector<Spell*> result;
+    for(auto member:{Access(HelyaEventListTag{}),Access(HelyaEventQueueTag{})})for(auto const& pair:caster.m_Events.*member)if(auto event=dynamic_cast<SpellEvent*>(pair.second)){auto spell=event->*Access(HelyaEventSpellTag{});if(spell->GetSpellInfo()->Id==id)result.push_back(spell);}
+    return result;
+}
+static void CheckBreath(GarmPlayer& p,std::vector<std::unique_ptr<GarmPlayer>>& others,InstanceMap& map,Creature& helya)
+{
+    auto& other=*others.front();auto& soaker=*others[1];
+    auto diff=map.GetDifficultyID();
+    auto breath=sSpellMgr->GetSpellInfo(228565)->GetEffect(EFFECT_1,diff);auto damage=sSpellMgr->GetSpellInfo(228566)->GetEffect(EFFECT_0,diff);auto missile=sSpellMgr->GetSpellInfo(232418)->GetEffect(EFFECT_0,diff);auto absorb=sSpellMgr->GetSpellInfo(232450)->GetEffect(EFFECT_1,diff);
+    Require(breath->Effect==SPELL_EFFECT_TRIGGER_SPELL&&breath->TriggerSpell==228566&&damage->Effect==SPELL_EFFECT_SCHOOL_DAMAGE&&damage->TargetA.GetTarget()==104&&missile->TriggerSpell==232449&&absorb->ApplyAuraName==SPELL_AURA_SCHOOL_HEAL_ABSORB,"Native breath/axion DB2 contract changed");
+    p.RemoveAura(232488);other.RemoveAura(232488);helya.InterruptNonMeleeSpells(true);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());
+    float dx=10*std::cos(helya.GetOrientation()),dy=10*std::sin(helya.GetOrientation());
+    map.PlayerRelocation(&p,helya.GetPositionX()+dx,helya.GetPositionY()+dy,helya.GetPositionZ(),0);map.PlayerRelocation(&other,helya.GetPositionX()-dx,helya.GetPositionY()-dy,helya.GetPositionZ(),0);
+    auto soak=helya.GetNearPosition(43.0f,0.0f);map.PlayerRelocation(&soaker,soak.GetPositionX(),soak.GetPositionY(),soak.GetPositionZ(),0);map.PlayerRelocation(others[2].get(),helya.GetPositionX()-2*dx,helya.GetPositionY()-2*dy,helya.GetPositionZ(),0);
+    for(auto const& ref:map.GetPlayers())if(auto aura=ref.getSource()->GetAura(232450))aura->Remove(AURA_REMOVE_BY_ENEMY_SPELL);
+    std::map<uint32,std::set<ObjectGuid>> impacts;
+    auto observe=[&](){for(auto id:{232449u,232452u,232450u})for(auto s:NativeSpellEvents(helya,id))impacts[id].insert(s->m_castGuid[0]);};
+    auto advance=[&](uint32 ms){observe();for(unsigned t=0;t<ms;t+=10){PumpHelya(map,10);observe();}};
+    auto old=NativeSpellEvents(helya,232418);helya.CastSpell(&helya,228565,true);auto events=NativeSpellEvents(helya,232418);unsigned bolts=0;for(auto s:events)if(std::find(old.begin(),old.end(),s)==old.end()){++bolts;Require(s->m_targets.HasDst(),"Axion missile has no native destination");std::cout<<"AXION x="<<s->m_targets.GetDstPos()->GetPositionX()<<" y="<<s->m_targets.GetDstPos()->GetPositionY()<<std::endl;}
+    advance(500);std::cout<<"BREATH front="<<p.HasAura(232488)<<" behind="<<other.HasAura(232488)<<" bolts="<<bolts<<" aiTarget="<<UnitAI::AISpellInfo[228565].target<<std::endl;
+    Require(p.HasAura(232488)&&!other.HasAura(232488),"Native Corrupted Breath hit behind or missed front player");
+    Require(bolts==(diff==DIFFICULTY_MYTHIC_RAID?5:diff==DIFFICULTY_HEROIC_RAID?3:0),"Native breath lost difficulty-specific axion count");
+    advance(8000);helya.InterruptNonMeleeSpells(true);std::cout<<"IMPACTS axions="<<impacts[232449].size()<<" fallback="<<impacts[232452].size()<<" absorbCasts="<<impacts[232450].size()<<" soaked="<<soaker.HasAura(232450)<<std::endl;
+    Require(impacts[232449].size()==bolts&&impacts[232452].size()==(bolts?bolts-1:0)&&soaker.HasAura(232450)==bool(bolts),"Native axion missile/soak/missed raid effect chain failed");
+    for(auto mode:{AURA_REMOVE_BY_ENEMY_SPELL,AURA_REMOVE_BY_DEFAULT,AURA_REMOVE_BY_EXPIRE})
+    {
+        other.RemoveAura(232350);helya.CastSpell(&other,232450,true);Require(other.HasAura(232450),"Native Corrupted Axion heal absorb did not apply");
+        if(mode==AURA_REMOVE_BY_ENEMY_SPELL)p.HealBySpell(&other,sSpellMgr->GetSpellInfo(2061),1000000000);
+        else if(mode==AURA_REMOVE_BY_EXPIRE){other.GetAura(232450)->SetDuration(1);Tick(other,30);}
+        else other.GetAura(232450)->Remove(mode);
+        PumpHelya(map,100);Require(!other.HasAura(232450),"Native healing/expiry/removal did not clear Axion absorb");std::cout<<"ABSORB mode="<<uint32(mode)<<" corrupted="<<other.HasAura(232350)<<" extra="<<other.HasAura(232358)<<" charmer="<<other.GetCharmerGUID().GetCounter()<<std::endl;
+#ifdef TRIAL_HELYA_PHASE3_BASELINE
+        bool expected=diff==DIFFICULTY_MYTHIC_RAID&&mode!=AURA_REMOVE_BY_ENEMY_SPELL;
+#else
+        bool expected=diff==DIFFICULTY_MYTHIC_RAID&&mode==AURA_REMOVE_BY_EXPIRE;
+#endif
+        Require(other.HasAura(232350)==expected,"Axion mind control crossed heal/script-removal/expiry or difficulty gate");
+        Require(other.HasAura(232358)==expected&&other.GetCharmerGUID()==(expected?helya.GetGUID():ObjectGuid::Empty),"Actual Axion transform/charm state disagrees with control aura");
+    }
+    other.RemoveAura(232350);Require(!other.HasAura(232358)&&other.GetCharmerGUID().IsEmpty(),"Removing Corrupted left native transform or charmer");helya.CastSpell(&other,232450,true);
 }
 static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
@@ -75,15 +130,35 @@ static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group
     Require(p.IsAlive()&&helya.AI()->GetData(2)==3,"Phase-three ability probe lost encounter");
     Require(breaths>=2&&hatred&&spells[228027]>=1&&spells[228121]>0&&orbs.size()>=4&&washed,"Native breath/debuff/Fury/Decay/orb repetition or wave cleaning missing");
     std::cout<<"ABILITIES breaths="<<breaths<<" orbs="<<orbs.size()<<" decay="<<spells[228121]<<" waves="<<spells[228027]<<std::endl;
+    // Freeze further automatic energy gains and drain existing missiles before
+    // isolated native breath requests, without changing phase or firing AI hooks.
+    helya.RemoveAura(232230);PumpHelya(map,8000);CheckBreath(p,others,map,helya);
     // Interrupt an actually cast orb request before its two-second summon.
-    helya.CastSpell(&helya,228056,true);PumpHelya(map,500);ClearCombat(p,helya);PumpHelya(map,3000);
+    helya.InterruptNonMeleeSpells(true);helya.CastSpell(&helya,228056,true);PumpHelya(map,500);ClearCombat(p,helya);PumpHelya(map,3000);
+    std::cout<<"DEBUFF_RESET hatred="<<p.HasAura(232488)<<" absorb="<<others.front()->HasAura(232450)<<" corrupted="<<others.front()->HasAura(232350)<<std::endl;
 #ifdef TRIAL_HELYA_PHASE3_BASELINE
-    Require(!Actors(map,114566).empty(),"Pinned post-wipe delayed orb behavior changed");
+    Require(p.HasAura(232488),"Pinned stale Dark Hatred reset behavior changed");
+    for(auto c:Actors(map,114566))c->DespawnOrUnsummon();PumpHelya(map,100);
+#else
+    Require(!p.HasAura(232488)&&!others.front()->HasAura(232450)&&!others.front()->HasAura(232350)&&!others.front()->HasAura(232358)&&others.front()->GetCharmerGUID().IsEmpty(),"Native evade retained breath debuffs or mind control");
+    Require(!helya.isInCombat()&&map.GetInstanceScript()->GetBossState(2)==NOT_STARTED,"Stale aura boundary requires an actually reset boss");
+    auto stale=helya.AddAura(232450,others.front().get());Require(stale,"Native stale-absorb application failed");stale->SetDuration(1);Tick(*others.front(),30);PumpHelya(map,100);Require(!others.front()->HasAura(232350)&&!helya.isInCombat(),"Expired stale absorb restarted control/combat after reset");
+#endif
+#ifdef TRIAL_HELYA_PHASE3_BASELINE
+    std::cout<<"REFERENCE_LATE_ORBS count="<<Actors(map,114566).size()<<std::endl;
 #else
     Require(Actors(map,114566).empty()&&HelyaAreas(map,true).empty(),"Delayed corrosion orbs/effects remained after native evade");
 #endif
-    std::cout<<"PASS: native phase-three orb targets/chase/repetition and reset; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
-    others.clear();ClearCombat(p,helya);
+    Restart(p,map,helya);EnterPhaseThree(p,map,helya);helya.CastSpell(&p,232488,true);helya.CastSpell(others.front().get(),232450,true);Require(p.HasAura(232488)&&others.front()->HasAura(232450),"Victory cleanup probe lacks real breath debuffs");
+    helya.ResetPlayerDamageReq();helya.LowerPlayerDamageReq(1);helya.SetLootRecipient(&p);p.DealDamage(&helya,LethalInput(p,helya),nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);Tick(p,2000);PumpHelya(map,15000);
+    Require(helya.isDead(false)&&map.GetInstanceScript()->GetBossState(2)==DONE&&p.GetQuestStatus(44868)==QUEST_STATUS_COMPLETE&&p.GetQuestObjectiveData(44868,55482)==1,"Native phase-three victory lost quest credit");Checkpoint(map,group,7);
+#ifdef TRIAL_HELYA_PHASE3_BASELINE
+    Require(p.HasAura(232488),"Pinned stale Dark Hatred victory behavior changed");
+#else
+    Require(!p.HasAura(232488)&&!others.front()->HasAura(232450)&&!others.front()->HasAura(232350)&&!others.front()->HasAura(232358)&&others.front()->GetCharmerGUID().IsEmpty()&&HelyaAreas(map,true).empty(),"Victory left breath debuffs, mind control or combat area effects");
+#endif
+    std::cout<<"PASS: native phase-three targets/chase/Decay/breath/axion/absorb/reset/victory; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
+    others.clear();
 }
 int main(int argc,char** argv)
 {
