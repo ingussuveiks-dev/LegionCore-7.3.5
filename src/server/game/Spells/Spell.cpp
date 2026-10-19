@@ -864,14 +864,14 @@ void Spell::SelectImplicitBetweenTargets(SpellEffIndex effIndex, SpellImplicitTa
                 break;
         }
 
+        Position nearDestination;
         Position const* center = nullptr;
         switch (targetType.GetReferenceType())
         {
             case TARGET_REFERENCE_TYPE_NEAR_DEST:
             {
-                Position position;
-                m_caster->GetNearPoint2D(position, dist, angle);
-                center = &position;
+                m_caster->GetNearPoint2D(nearDestination, dist, angle);
+                center = &nearDestination;
                 break;
             }
             case TARGET_REFERENCE_TYPE_SRC:

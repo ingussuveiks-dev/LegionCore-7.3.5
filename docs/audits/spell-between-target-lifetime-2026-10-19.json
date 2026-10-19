@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-19",
+  "baseline": "de86651c",
+  "title": "Keep native between-target search position alive",
+  "status": "Fixed the shared C++ object lifetime error. Extracted native scope regression and actual native Rockaway Player combat pass; no client crash reproduction or whole-quest verification is claimed.",
+  "finding": "Spell::SelectImplicitBetweenTargets declared Position position inside its TARGET_REFERENCE_TYPE_NEAR_DEST switch case and stored its address in center. That object died at the end of the case block, before constructing WorldObjectSpellBetweenTargetCheck, visiting targets or reading center in the debug log. Native231298 uses target134, whose reference category reaches this branch. A successful native slam did not prove the dangling pointer was safe.",
+  "fix": "Declare nearDestination in the enclosing target-search scope and use it for GetNearPoint2D and center. Its lifetime now spans the predicate, visitor, search and debug read. Keep the same native coordinate calculation, direction, range, width, target predicates and source/destination/referer branches. No quest-specific target whitelist or spell-data override is introduced.",
+  "regression": {
+    "runner": "tools/tests/Test-SpellBetweenLifetime.ps1",
+    "fixture": "tools/tests/SpellBetweenLifetimeTest.cpp",
+    "scope": "Extract the actual declaration/switch block from SelectImplicitBetweenTargets, with no hand-written replacement selection logic. A controlled Position type records constructor/destructor lifetime; test the selected pointer's recorded lifetime before dereferencing it. This detects expired C++ objects without itself dereferencing a dead object. Caller coordinates, GetNearPoint2D and target services are explicit fixtures, not native geometry proof.",
+    "baseline": "The pinned de86651c native scope selects an expired Position for all16 combinations of four distances and four angles. Its source/destination/referer pointers remain valid. This deterministically reproduces a C++ lifetime violation; it is not a native server crash or sanitizer report.",
+    "fixed": "All16 NEAR_DEST cases retain a live position with unchanged calculated coordinates. Existing source/destination/referer cases retain their original live objects and coordinates.",
+    "native_complement": "Test-RockawayChannelNative.ps1 -Offensive links the rebuilt actual final-link game.lib and executes actual Spell/Map/Player geometry.231298 damages/stuns a Player in front of its real tentacle and excludes a Player behind it. The Player uses native Map::PlayerRelocation for these moves. Scheduled channels, exactly five slime missile chains, native melee, helper lifetimes, taint direct/periodic/expiry/removal effects and six-helper reset cleanup still pass.",
+    "old_hazard_baseline": "The a788f5d2 header baseline still reproduces the earlier five inert slimes and six leaked reset helpers against the newly rebuilt core; it also passes the added rear-target exclusion. That confirms the lifetime correction does not mask the separate content bug already fixed in de86651c."
+  },
+  "release": {
+    "build": "Standard cmake Release worldserver and bnetserver build in build-extractors, without an OutDir override. Build output explicitly recompiles Spell.cpp into build-extractors/src/server/game/Release/game.lib and links canonical build-extractors/bin/Release/worldserver.exe.",
+    "link_evidence": "The native offensive probe MAP resolves SelectImplicitBetweenTargets to game:Spell.obj. The canonical MAP has its caller SelectEffectImplicitTargets from game:Spell.obj but no standalone between-helper symbol, consistent with Release inlining/dead-code elimination. This is an inference from source/canonical MAP, not an independent binary scope check. Actual final-link library freshness/hashes, native engine execution and canonical link/build evidence are retained.",
+    "checks": "Test-RockawayRelease.ps1 passes canonical PE-bounded finale, reward, channel, health clamp and live helper lifecycle checks. Canonical startup reaches ready, shuts down normally and has empty DBErrors/stderr logs. Native probe database pools are read-only and CharacterDatabase is never opened; the live worldserver startup is the normal bounded smoke run.",
+    "deployment": {
+      "runtime": "build-extractors/bin/Release",
+      "worldserver_sha256": "7A945E6722B94F2D3A25DCB8AB059A4D390E8079F97610B48BE0593FFA20377B",
+      "bnetserver_sha256": "5DE01F3412FD1392099460BEE67CD4340906D841F87C212DA0631EB7888D7780",
+      "actual_game_lib_sha256": "7FB342688880335E62AA5E4EF79A2E2FB3B3EFDB28613095B1F1B2589431FE29",
+      "compiled_spell_obj_sha256": "3D11A562E6921C43315366265E7A411B44C04E220799E02C5D354FE713202C63",
+      "ready": true,
+      "exit": 0,
+      "db_errors_bytes": 0,
+      "stderr_bytes": 0
+    },
+    "native_run": "build-extractors/runtime-test/rockaway-offensive-native/run-20261019-070137",
+    "startup_run": "build-extractors/runtime-test/rockaway-offensive-native/startup-20261019-070125"
+  },
+  "boundaries": [
+    "The lifetime fixture establishes exact C++ scope safety, while the linked native probe establishes current forward/rear Player targeting. Neither represents a real connected client, packet receipt, visual/audio playback, normal character balance or full quest completion.",
+    "Prior reconstruction limits for retail ritual beam binding, precise positions and fragment ranges remain in the Rockaway audits. The native essence path is delayed damage/visual execution, not proof of a persistent retail pool. No historical failure or client limitation is removed by this fix."
+  ],
+  "prior_audit": "docs/audits/rockaway-native-offense-2026-10-19.json"
+}

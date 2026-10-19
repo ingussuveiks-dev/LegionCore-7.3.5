@@ -49,6 +49,8 @@
     "The tested native232681->232679 path is a delayed damage/visual effect, not evidence of a persistent damaging area trigger. A persistent retail pool duration or original retail spell binding has not been recovered. Existing reconstructed ritual beam binding, precise positions and fragment-count authenticity limitations are retained.",
     "Code inspection additionally noticed that SelectImplicitBetweenTargets keeps a pointer to a Position declared inside its NEAR_DEST switch case, then uses it after that scope ends. The forward native slam currently executes, but does not prove that shared handler's C++ lifetime safety. This is a separate core issue requiring its own focused fix/regression, not a reason to invent a Rockaway target whitelist."
   ],
+  "shared_target_lifetime_followup": "docs/audits/spell-between-target-lifetime-2026-10-19.json",
+  "shared_target_lifetime_resolution": "The separately noted NEAR_DEST pointer lifetime issue is now repaired in the shared core. The pinned native scope regression catches all16 expired-position cases, and the rebuilt native Player probe confirms forward hits and rear exclusion. The historical finding and client limitations above remain retained.",
   "prior_audits": [
     "docs/audits/rockaway-native-channels-2026-10-19.json",
     "docs/audits/highmountain-rockaway-coast-2026-10-18.json"

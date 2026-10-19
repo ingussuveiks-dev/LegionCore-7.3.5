@@ -196,7 +196,7 @@ static int OffensiveRun(int argc, char** argv)
         auto restart = [&]()
         {
             ai->Reset(); map.RemoveAllObjectsInRemoveList();
-            player.RemoveAllAuras(); player.SetFullHealth(); player.Relocate(6235.0f, 4951.0f, 0.0f, 0.0f);
+            player.RemoveAllAuras(); player.SetFullHealth(); map.PlayerRelocation(&player, 6235.0f, 4951.0f, 0.0f, 0.0f);
             Advance(vision, player, 1500); ai->SetGUID(player.GetGUID(), 0); ai->events.Reset();
             Require(ai->started && ai->ready, "Isolated native run did not restart");
         };
@@ -208,7 +208,7 @@ static int OffensiveRun(int argc, char** argv)
         auto tentacle = ai->summons.GetCreature(116187);
         Require(tentacle && tentacle->AI(), "Native tentacle/factory AI missing");
         auto tentacleGuid = tentacle->GetGUID();
-        player.Relocate(tentacle->GetPositionX() + std::cos(tentacle->GetOrientation()) * 4.0f,
+        map.PlayerRelocation(&player, tentacle->GetPositionX() + std::cos(tentacle->GetOrientation()) * 4.0f,
             tentacle->GetPositionY() + std::sin(tentacle->GetOrientation()) * 4.0f, tentacle->GetPositionZ(), 0.0f);
         auto health = player.GetHealth();
         Advance(vision, player, 2800, false);
@@ -228,6 +228,16 @@ static int OffensiveRun(int argc, char** argv)
         Advance(vision, player, 1500, false);
         Require(!ObjectAccessor::GetCreature(vision, tentacleGuid), "Native tentacle did not expire after six seconds");
         std::cout << "PASS: actual tentacle waits three seconds, damages/stuns a Player in its forward lane once, then expires at six seconds.\n";
+
+        restart(); ai->attackTarget = player.GetGUID();
+        Require(vision.CastSpell(&player, 231296, true) == SPELL_CAST_OK, "Rear-lane native tentacle rejected");
+        Advance(vision, player, 100, false); tentacle = ai->summons.GetCreature(116187);
+        Require(tentacle, "Rear-lane native tentacle missing");
+        map.PlayerRelocation(&player, tentacle->GetPositionX() - std::cos(tentacle->GetOrientation()) * 4.0f,
+            tentacle->GetPositionY() - std::sin(tentacle->GetOrientation()) * 4.0f, tentacle->GetPositionZ(), 0.0f);
+        health = player.GetHealth(); Advance(vision, player, 3400, false);
+        Require(player.GetHealth() == health && !player.HasAura(231298), "Native forward-lane slam hit a Player behind the tentacle");
+        std::cout << "PASS: actual native between-target geometry excludes a Player behind the tentacle.\n";
 
         restart();
         auto slimesBefore = ai->spawned[116195];
