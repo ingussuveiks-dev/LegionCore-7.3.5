@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-19",
+  "status": "Corrected native fixture allocation bounds and revalidated the affected current/baseline probes through normal process cleanup.",
+  "finding": "Native QuestDataStoreMgr::LoadQuests stores highest quest ID plus one in GetMaxQuestID; Player allocates exactly that many status entries. LostArmy seeded 45088 while loading quest 45088, and RockawayOffensive seeded 44746 while loading quest 44746. Native SetQuestStatus therefore wrote outside the fixture allocation. Repeated group-removal/logout probes exposed subsequent FunctionProcessor tree cleanup crashes/hangs in both current and pinned engines. Earlier successful scenario assertions did not establish fixture memory safety.",
+  "fix": [
+    "Seed exclusive bounds 45089 and 44747 respectively. Guard every loaded quest ID before NativePlayer writes status.",
+    "Derive the probe language standard from generated Release ClCompile settings (currently C++20), require the matching /MD runtime, and define NDEBUG. The former runner hardcoded C++17. Language alignment alone did not cure the invalid-bound cleanup failure; the bounds correction did. No production quest loader or allocation was changed."
+  ],
+  "revalidation": [
+    {"probe":"LostArmy", "current":"build-extractors/runtime-test/lost-army-native/run-20261019-083931", "baseline":"build-extractors/runtime-test/lost-army-native-baseline/run-20261019-083930", "pin":"0fbd08e4", "result":"Both exit 0; old cached eligibility grant still reproduced."},
+    {"probe":"MasterLoot", "current":"build-extractors/runtime-test/master-loot-native/run-20261019-084040", "baseline":"build-extractors/runtime-test/master-loot-native-baseline/run-20261019-084040", "pin":"d7c70c62", "result":"Both exit 0; old recipient argument defect still reproduced."},
+    {"probe":"RollCompletion", "current":"build-extractors/runtime-test/roll-completion-native/run-20261019-084039", "baseline":"build-extractors/runtime-test/roll-completion-native-baseline/run-20261019-084040", "pin":"183d54fb", "result":"Both exit 0; old vote/completion failures still reproduced."},
+    {"probe":"RockawayOffensive", "current":"build-extractors/runtime-test/rockaway-offensive-native/run-20261019-084139", "baseline":"build-extractors/runtime-test/rockaway-offensive-native-baseline/run-20261019-084139", "pin":"a788f5d2 encounter header with current game library, not a full old engine", "result":"Both exit 0; old pending-despawn reset failure still reproduced."}
+  ],
+  "evidence": "Per-probe native-lines/native-inputs record actual generated final-link libraries, source and runtime input hashes. All eight revalidation DBErrors logs are empty. The following group lifecycle audit records full native logout/save/deletion checks using the corrected shared fixtures.",
+  "followup": "docs/audits/group-roll-lifecycle-2026-10-19.json",
+  "limitations": "Controlled initial native player/map/quest state remains distinct from authenticated login or client gameplay. Prior audit histories and authenticity/client limitations are retained; the revalidation supersedes their unsafe fixture setup, not their historical record."
+}

@@ -111,6 +111,8 @@ struct NativePlayer : Player
         map.AddToGrid(static_cast<Player*>(this), Cell(Trinity::ComputeCellCoord(pos.GetPositionX(), pos.GetPositionY())));
         Unit::AddToWorld();
         // Controlled accepted-task state; no login, character DB or reward path.
+        for (auto const& quest : sQuestDataStore->GetQuestTemplates())
+            Require(quest.first < sQuestDataStore->GetMaxQuestID(), "Native fixture quest-status allocation omits a loaded quest ID");
         SetQuestStatus(44746, QUEST_STATUS_INCOMPLETE);
     }
     ~NativePlayer()
@@ -153,7 +155,7 @@ static int OffensiveRun(int argc, char** argv)
     const_cast<QuestMap&>(sQuestDataStore->GetQuestTemplates())[44746] = quest;
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{});
     quests.resize(44747); quests[44746] = quest;
-    sQuestDataStore->*Access(QuestMaxTag{}) = 44746;
+    sQuestDataStore->*Access(QuestMaxTag{}) = 44747;
     WorldQuestTemplate policy{};
     auto& rotation = const_cast<WorldQuestMap&>(*sQuestDataStore->GetWorldQuestMap())[quest->QuestSortID][44746];
     rotation.ResetTime = GameTime::GetGameTime() + 3600; rotation.worldQuest = &policy;

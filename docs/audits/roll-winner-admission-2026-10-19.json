@@ -63,5 +63,7 @@
     "docs/audits/roll-votes-2026-10-19.json",
     "docs/audits/master-loot-admission-2026-10-19.json",
     "docs/audits/lost-army-native-loot-2026-10-19.json"
-  ]
+  ],
+  "native_fixture_integrity_followup": "docs/audits/native-quest-fixture-integrity-2026-10-19.json",
+  "native_fixture_integrity_note": "Earlier fixture quest bounds were invalid (highest ID rather than exclusive bound). The followup retains this history and records successful corrected current/pinned-baseline revalidation; prior client/authenticity limits remain."
 }

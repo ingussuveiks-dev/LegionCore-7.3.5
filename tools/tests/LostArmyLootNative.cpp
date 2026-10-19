@@ -29,7 +29,9 @@ static void LoadLootInputs()
     );
     Require(bool(rows), "Missing native quest rows");
     auto& quests = sQuestDataStore->*Access(QuestVectorTag{}); quests.resize(45089);
-    sQuestDataStore->*Access(QuestMaxTag{}) = 45088;
+    // Native LoadQuests stores the exclusive bound (highest ID + 1).
+    // Player allocates its quest-status vector with exactly this size.
+    sQuestDataStore->*Access(QuestMaxTag{}) = 45089;
     do
     {
         auto quest = new Quest(rows->Fetch());

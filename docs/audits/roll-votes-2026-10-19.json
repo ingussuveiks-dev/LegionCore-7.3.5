@@ -41,5 +41,7 @@
   },
   "pending_client": "Quest/ordinary roll UI, one vote per participant, actual winner inventory, full-inventory retry and timeout display; no WoW client operated.",
   "related_audit": "docs/audits/master-loot-admission-2026-10-19.json",
-  "winner_followup": "docs/audits/roll-winner-admission-2026-10-19.json closes the recorded current-recipient and stale-slot/registry completion gaps, preserving the original vote fix02840772. Final native checks include all vote/full-inventory/corpse-timeout cases and a canonical startup; earlier hashes/results above identify the separate vote-only checkpoint. Client and other stated limits remain."
+  "winner_followup": "docs/audits/roll-winner-admission-2026-10-19.json closes the recorded current-recipient and stale-slot/registry completion gaps, preserving the original vote fix02840772. Final native checks include all vote/full-inventory/corpse-timeout cases and a canonical startup; earlier hashes/results above identify the separate vote-only checkpoint. Client and other stated limits remain.",
+  "native_fixture_integrity_followup": "docs/audits/native-quest-fixture-integrity-2026-10-19.json",
+  "native_fixture_integrity_note": "Earlier fixture quest bounds were invalid (highest ID rather than exclusive bound). The followup retains this history and records successful corrected current/pinned-baseline revalidation; prior client/authenticity limits remain."
 }

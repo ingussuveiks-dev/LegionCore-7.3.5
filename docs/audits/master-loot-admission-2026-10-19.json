@@ -63,5 +63,7 @@
   ],
   "next_code_check": "Native roll completion through winner selection and inventory receipt, including ineligible recipients, inventory-full and timeout paths. Current regression verifies participant creation only.",
   "related_audit": "docs/audits/lost-army-native-loot-2026-10-19.json",
-  "roll_completion_followup": "docs/audits/roll-votes-2026-10-19.json and docs/audits/roll-winner-admission-2026-10-19.json add full native NEED/GREED/quest winner inventory, full-backpack retry, actual corpse timeout and current-recipient/stale-loot checks. Canonical Release now checks a fifth recipient call in CountTheRoll. Earlier four-call findings remain historical; no client or complete loot-security claim."
+  "roll_completion_followup": "docs/audits/roll-votes-2026-10-19.json and docs/audits/roll-winner-admission-2026-10-19.json add full native NEED/GREED/quest winner inventory, full-backpack retry, actual corpse timeout and current-recipient/stale-loot checks. Canonical Release now checks a fifth recipient call in CountTheRoll. Earlier four-call findings remain historical; no client or complete loot-security claim.",
+  "native_fixture_integrity_followup": "docs/audits/native-quest-fixture-integrity-2026-10-19.json",
+  "native_fixture_integrity_note": "Earlier fixture quest bounds were invalid (highest ID rather than exclusive bound). The followup retains this history and records successful corrected current/pinned-baseline revalidation; prior client/authenticity limits remain."
 }
