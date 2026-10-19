@@ -12,5 +12,17 @@ $admission=(& $dump.FullName /DISASM:NOBYTES $argument $exe) -join "`n"
 if($LASTEXITCODE -or $admission -notmatch 'test\s+byte ptr \[[^\]]+\+65h\],1'){throw 'Canonical item admission lacks the restricted-looter flag branch'}
 $admission | Set-Content "$out/item-admission-disassembly.txt"
 if(@(Calls '?SendLoot@Player@@') -notcontains (Resolve (Symbol '?IsPlayerLootCooldown@Player@@'))){throw 'Canonical chest generation lacks cooldown admission'}
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;raid_snapshot=$true;restricted_looter_admission=$true;chest_cooldown=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
-'PASS: canonical Release raid recipient snapshot/admission and chest cooldown verified through actual PE/thunks and final-link freshness.'
+$range=Bounds '?GeneratePersonalLoot@Unit@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$generation=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical generation disassembly failed'}
+$generation | Set-Content "$out/generation-disassembly.txt"
+$autostore=Resolve (Symbol '?AutoStoreItems@Loot@@');$guarded=$false
+for($i=0;$i -lt $generation.Count;$i++){
+ $call=[regex]::Match($generation[$i],'call\s+([0-9A-Fa-f]+)\s*$')
+ if(!$call.Success -or (Resolve ([Convert]::ToInt64($call.Groups[1].Value,16))) -ne $autostore){continue}
+ $tail=$generation[$i..([Math]::Min($i+16,$generation.Count-1))] -join "`n"
+ if($tail -match 'cmp\s+dword ptr \[[^\]]+\+30h\],0' -and $tail -match 'cmp\s+byte ptr \[[^\]]+\+34h\],0'){$guarded=$true}
+}
+if(!$guarded){throw 'Canonical LFR auto-store lacks the remaining-loot branch'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;raid_snapshot=$true;restricted_looter_admission=$true;chest_cooldown=$true;lfr_remaining_loot=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
+'PASS: canonical Release raid recipient snapshot/admission, chest cooldown and LFR remaining-loot branch verified through actual PE/thunks and final-link freshness.'

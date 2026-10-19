@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-19",
+  "baseline": "9b0179a1",
+  "quest": 45088,
+  "status": "LFR preserves uncollected personal rewards after failed automatic inventory receipt; automated native and Release checks pass; client pending.",
+  "defect": "Actual LFR Unit::GeneratePersonalLoot calls AutoStoreItems and unconditionally RemoveLoot before marking the boss cooldown. At full inventory StoreLootItem fails, but the pending quest/equipment container is erased. Native Unit::Kill of Guarm/Helya reproduces zero fragments and no pending record after freeing space.",
+  "fix": "Remove the personal record only when native Loot::isLooted is true. Otherwise retain it and add the player to the creature loot list. Keep the boss cooldown so regenerating loot cannot replace the earned reward. This does not introduce a second grant or change gear selection/bonus-roll behavior.",
+  "native_checks": [
+    "Real Player/session, five-member raid, native Unit::Kill, generation, full backpack and failed StoreLootItem, native remaining-item count and loot-list registration. Both bosses on LFR retain their pending container; after freeing space actual AutoStoreItems delivers fragments once, and repeated receipt adds nothing.",
+    "Pinned library requires the old missing-record/no-fragment outcome. Non-LFR full-bag shared loot remains a positive control across Normal/Heroic/Mythic. Fresh LFR five-player runs still give fragments to at least four equipment non-winners and repeated generation remains denied.",
+    "Canonical PE resolves the actual AutoStoreItems call and remaining gold/unlootedCount checks before record removal. Existing item/roll/group/quest native regressions and canonical startup are clean."
+  ],
+  "evidence": "Current and pinned full-library runs at build-extractors/runtime-test/raid-fragments-native/run-20261019-101855 and raid-fragments-native-baseline/run-20261019-101855 both exit0, DBErrors0 bytes. Full deployment hashes, source inputs, schema-only isolation and startup are recorded in the raid-fragment-cooldowns audit.",
+  "limitations": "Pending loot lasts only while its native corpse/container exists. It is not mailed or serialized across a crash, corpse expiration or restart. Native kill setup seeds tap/damage eligibility and idle AI; actual boss combat, client corpse visibility/window and network receipt still require client verification. No full-raid completion claim.",
+  "related": "docs/audits/raid-fragment-cooldowns-2026-10-19.json"
+}

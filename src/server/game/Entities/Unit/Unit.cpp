@@ -26477,7 +26477,10 @@ void Unit::GeneratePersonalLoot(Creature* creature, Player* anyLooter)
                     }
 
                     loot->AutoStoreItems();
-                    player->RemoveLoot(creature->GetGUID());
+                    if (loot->isLooted())
+                        player->RemoveLoot(creature->GetGUID());
+                    else
+                        creature->AddToLootList(player->GetGUID());
 
                     player->AddPlayerLootCooldown(cooldownid, creature->GetGUIDLow(), cooldowntype, true, creature->GetMap()->GetDifficultyID());
                 }
