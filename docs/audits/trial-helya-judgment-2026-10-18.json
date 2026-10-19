@@ -65,6 +65,11 @@
     "Kill Helya in phase3, verify all eligible group members receive44868 credit once, and confirm loot and other quests sharing Helya are preserved.",
     "Watch Odyn's missile/jump arrival and conversation, turn in44868 for Plume of the Fallen Val'kyr, then use the exit gossip. Verify saved-DONE reentry and actual questgiver interaction separately."
   ],
+  "native_phase_chain_followup_2026_10_19": {
+    "audit": "docs/audits/trial-helya-native-progression-2026-10-19.json",
+    "result": "The actual earned Odyn/Guarm/26-trash chain now continues through native Unit::DealDamage65%, real group3 summons, phase-two evade/retry, nine real player/Pet tentacle deaths,47% return, final native damage/death, quest credit and actual landed Odyn reward/SQL. Eight cases pass in both canonical and reference174b0df5 libraries; no further production repair required.",
+    "limits": "This closes the modeled summon/timer/damage-application gap only for the specified phase chain. Fixture combat inputs, health buffers, initial quest acceptance, skipped long waves and client/full-raid limits are explicit in the new audit. Earlier observations and pending client checks remain."
+  },
   "native_followup_2026_10_19": {
     "date": "2026-10-19",
     "audit": "docs/audits/trial-raid-criteria-2026-10-19.json",

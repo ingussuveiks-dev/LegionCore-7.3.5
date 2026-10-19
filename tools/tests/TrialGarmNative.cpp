@@ -11,14 +11,14 @@
 #include "EventObjectData.h"
 void AddSC_boss_garm();
 static uint64 const doorIds[]={545004,545028,545027};
-static void LoadGarmInputs()
+static void LoadGarmInputs(bool helya=false)
 {
     LoadInstanceInputs(true);sObjectMgr->LoadCreatureAIInstance();sSpellMgr->LoadSpellProcEvents();sSpellMgr->LoadSpellProcs();
     sObjectMgr->LoadNPCText();sQuestDataStore->LoadPointsOfInterest();sGossipDataStore->LoadGossipMenu();sGossipDataStore->LoadGossipMenuItems();sEventObjectDataStore->LoadEventObjectTemplates();
     auto conditions=WorldDatabase.Query("SELECT COUNT(*) FROM conditions WHERE (SourceTypeOrReferenceId IN(14,15) AND SourceGroup=20502) OR (SourceTypeOrReferenceId=13 AND SourceEntry=231166) OR (SourceTypeOrReferenceId=13 AND SourceEntry IN(724,725))");Require(conditions&&!conditions->Fetch()[0].GetUInt32(),"Load newly added native travel conditions before testing");
     auto triggers=WorldDatabase.Query("SELECT guid,id,map,zoneId,areaId,position_x,position_y,position_z,orientation,spawnMask,phaseMask,PhaseId FROM eventobject WHERE guid IN(410223,410224)");Require(bool(triggers),"Native Helheim triggers missing");unsigned triggerCount=0;
     do {auto f=triggers->Fetch();auto& d=sEventObjectDataStore->NewOrExistEventObjectData(f[0].GetUInt64());d.guid=f[0].GetUInt64();d.id=f[1].GetUInt32();d.mapid=f[2].GetUInt16();d.zoneId=f[3].GetUInt16();d.areaId=f[4].GetUInt16();d.Pos.Relocate(f[5].GetFloat(),f[6].GetFloat(),f[7].GetFloat(),f[8].GetFloat());d.spawnMask=f[9].GetUInt64();d.phaseMask=f[10].GetUInt32();Require(f[11].GetString().empty()&&d.mapid==1648,"Native Helheim trigger phase/map changed");sObjectMgr->AddEventObjectToGrid(d.guid,&d);++triggerCount;}while(triggers->NextRow());Require(triggerCount==2,"Native Helheim trigger count changed");
-    LoadRandomEnchantmentsTable();sObjectMgr->LoadPersonalLootTemplate();auto& name=LootTemplates_Creature.*Access(LootTableNameTag{});auto original=name;name+=" WHERE Entry=114323";Require((LootTemplates_Creature.*Access(LoadLootTableTag{}))()>0,"Native Guarm loot loader empty");name=original;
+    LoadRandomEnchantmentsTable();sObjectMgr->LoadPersonalLootTemplate();auto& name=LootTemplates_Creature.*Access(LootTableNameTag{});auto original=name;name+=helya?" WHERE Entry IN(114323,114537)":" WHERE Entry=114323";Require((LootTemplates_Creature.*Access(LoadLootTableTag{}))()>0,"Native raid loot loader empty");name=original;
     auto rows=WorldDatabase.Query("SELECT guid,id,map,zoneId,areaId,spawnMask,phaseMask,PhaseId,position_x,position_y,position_z,orientation,rotation0,rotation1,rotation2,rotation3,spawntimesecs,animprogress,AiID,state,isActive,personal_size FROM gameobject WHERE guid IN(545004,545027,545028)");
     Require(bool(rows),"Missing Trial DB doors");unsigned count=0;
     do
@@ -84,7 +84,8 @@ static GarmCheckpoint Checkpoint(InstanceMap& map,Group& group,uint32 mask)
     std::cout<<"CHECKPOINT diff="<<uint32(map.GetDifficultyID())<<" live="<<script->GetSaveData()<<" liveMask="<<script->GetCompletedEncounterMask()<<" row="<<bool(row)<<" sql="<<(row?row->Fetch()[0].GetString():"missing")<<" sqlMask="<<(row?row->Fetch()[1].GetUInt32():0)<<" expected="<<mask<<std::endl;
     Require(row&&row->Fetch()[0].GetString()==script->GetSaveData()&&row->Fetch()[1].GetUInt32()==mask,"Native victory SQL checkpoint/mask mismatch");return {row->Fetch()[0].GetString(),row->Fetch()[1].GetUInt32()};
 }
-static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 race,bool petKill)
+using HelyaProgressionCheck=void (*)(GarmPlayer&,InstanceMap&,Creature&,Group&);
+static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 race,bool petKill,HelyaProgressionCheck check=nullptr)
 {
     GarmPlayer p(staging,race);PlayerLookup(p,"created");p.SaveToDB(true);FlushWrites();GarmGroup group(p,diff);PlayerLookup(p,"group");p.SetRaidDifficultyID(diff);auto map=sMapMgr->CreateMap(1648,&p)->ToInstanceMap();Require(map&&map->GetDifficultyID()==diff,"Fresh native Trial selection failed");
     staging.RemovePlayerFromMap(&p,false);p.ResetMap();p.SetMap(map);p.Relocate(pos);Require(map->AddPlayerToMap(&p,false),"Native Trial player admission failed");
@@ -96,7 +97,7 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
     odyn->AI()->DoAction(ACTION_1);odyn->AI()->UpdateAI(7000);odyn->CastStop();odyn->AI()->UpdateAI(2000);odyn->CastStop();odyn->SetHealth(odyn->CountPctFromMaxHealth(9));uint32 damage=1;odyn->AI()->DamageTakenAfterScaling(&p,damage,DIRECT_DAMAGE);
     Require(script->GetBossState(0)==DONE&&script->GetBossState(1)==NOT_STARTED,"Actual Odyn transition failed");Doors(doors,true,true,false);Checkpoint(*map,group.group,1);PlayerLookup(p,"odyn");
     Travel(p,*odyn);
-    p.Relocate(guarm->GetPosition());guarm->SetInCombatWith(&p);Require(script->GetBossState(1)==IN_PROGRESS,"Native Guarm combat entry failed");Doors(doors,true,false,false);
+    map->PlayerRelocation(&p,guarm->GetPositionX(),guarm->GetPositionY(),guarm->GetPositionZ(),guarm->GetOrientation());guarm->SetInCombatWith(&p);Require(script->GetBossState(1)==IN_PROGRESS,"Native Guarm combat entry failed");Doors(doors,true,false,false);
     ClearCombat(p,*guarm);PlayerLookup(p,"evade");Require(script->GetBossState(1)==NOT_STARTED,"Native Guarm evade failed");Doors(doors,true,true,false);Heads(*map,*guarm);
     Require(!guarm->HasUnitState(UNIT_STATE_EVADE),"Native Guarm home return did not finish");guarm->SetInCombatWith(&p);Require(script->GetBossState(1)==IN_PROGRESS,"Guarm retry cannot enter combat");Doors(doors,true,false,false);p.Begin(44868);
     // Tap/damage eligibility is setup; execute real native reward/death/mask.
@@ -107,7 +108,12 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
     unsigned trash=0;for(auto c:Actors(*map))switch(c->GetEntry())
     {case Data::Creatures::DeepbrineMonstrosity:case Data::Creatures::KvaldirReefcaller:case Data::Creatures::KvaldirTideWitch:case Data::Creatures::DarkSeraph:case Data::Creatures::RotsoulGiant:case Data::Creatures::AncientBonethrall:case Data::Creatures::KvaldirCoralMaiden:p.Kill(c,false);++trash;if(trash<26)Require(helya->HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_IMMUNE_TO_PC|UNIT_FLAG_IMMUNE_TO_NPC|UNIT_FLAG_NOT_ATTACKABLE_1),"Helya unlocked before last entrance enemy");break;}
     Require(trash==26&&!helya->HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_IMMUNE_TO_PC|UNIT_FLAG_IMMUNE_TO_NPC|UNIT_FLAG_NOT_ATTACKABLE_1),"Actual Helya entrance trash did not unlock boss");
-    p.CombatStop(true);p.Relocate(helya->GetPosition());helya->SetInCombatWith(&p);Require(script->GetBossState(2)==IN_PROGRESS,"Helya combat did not start after Guarm/trash");Doors(doors,true,true,false);
+    p.CombatStop(true);map->PlayerRelocation(&p,helya->GetPositionX(),helya->GetPositionY(),helya->GetPositionZ(),helya->GetOrientation());helya->SetInCombatWith(&p);Require(script->GetBossState(2)==IN_PROGRESS,"Helya combat did not start after Guarm/trash");Doors(doors,true,true,false);
+    if(check)
+    {
+        check(p,*map,*helya,group.group);
+        map->RemovePlayerFromMap(&p,false);p.ResetMap();p.SetMap(&staging);p.Relocate(pos);Require(staging.AddPlayerToMap(&p,false),"Staging readmission failed");parent.UnloadAll();return;
+    }
     ClearCombat(p,*helya);Require(script->GetBossState(2)==NOT_STARTED&&script->GetBossState(1)==DONE,"Helya evade lost Guarm progress");Doors(doors,true,true,true);saved=Checkpoint(*map,group.group,3);
     std::cout<<"PASS: actual Odyn surrender -> Guarm combat/evade/retry/death -> passage; diff="<<uint32(diff)<<" race="<<uint32(race)<<" pet="<<petKill<<std::endl;
     // Leave and cold-load the actually written save and corpse respawn data.
@@ -117,9 +123,9 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
     PumpInstance(restored,2500);Require(dead->isDead(false)&&loaded->GetBossState(0)==DONE&&loaded->GetBossState(1)==DONE&&loaded->GetBossState(2)==NOT_STARTED&&loaded->GetCompletedEncounterMask()==3,"Saved Guarm initialization lost progress/dead state");Doors(restoredDoors,true,true,true);for(unsigned seat=0;seat<3;++seat)Require(!dead->GetVehicleKit()->GetPassenger(seat),"Saved dead Guarm recreated living heads");
     std::cout<<"PASS: native saved Guarm corpse/doors and Helya prerequisite restored; diff="<<uint32(diff)<<std::endl;restored.UnloadAll();
 }
-static int RunGarm(int argc,char** argv)
+static int RunGarm(int argc,char** argv,HelyaProgressionCheck check=nullptr)
 {
-    InitializeNative(argc,argv);opcodeTable.Initialize();LoadGarmInputs();OpenScratch();sAchievementMgr->LoadRewards();sAchievementMgr->LoadCompletedAchievements();
+    InitializeNative(argc,argv);opcodeTable.Initialize();LoadGarmInputs(check!=nullptr);OpenScratch();sAchievementMgr->LoadRewards();sAchievementMgr->LoadCompletedAchievements();
     // Normal world startup sizes these before any player/pet is registered.
     // A socketless bootstrap must do the same for native owner/tap lookups.
     sObjectAccessor->SetGuidSize(HighGuid::Player,100000);sObjectAccessor->SetGuidSize(HighGuid::Pet,100000);sObjectAccessor->SetGuidSize(HighGuid::EventObject,100000);
@@ -127,11 +133,13 @@ static int RunGarm(int argc,char** argv)
     sScriptMgr->SetScriptContext(sScriptMgr->GetNameOfStaticContext());AddSC_tov_boss_odyn();AddSC_boss_garm();AddSC_boss_tov_helya();AddSC_trial_of_valor();AddSC_instance_trial_of_valor();sScriptMgr->SwapScriptContext(true);
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1648,{}},{1220,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1648,{}},{1220,{}}});
     sMapMgr->InitInstanceIds();auto parent=static_cast<MapInstanced*>(sMapMgr->CreateBaseMap(1648));parent->SetMapStop();sMapMgr->_mapThreads[1648]->join();
-    {Map staging(1220,300,0,DIFFICULTY_NONE);for(auto diff:{DIFFICULTY_LFR_RAID,DIFFICULTY_NORMAL_RAID,DIFFICULTY_HEROIC_RAID,DIFFICULTY_MYTHIC_RAID})for(auto race:{RACE_HUMAN,RACE_ORC})GarmCase(staging,*parent,diff,race,race==RACE_ORC);}
+    {Map staging(1220,300,0,DIFFICULTY_NONE);for(auto diff:{DIFFICULTY_LFR_RAID,DIFFICULTY_NORMAL_RAID,DIFFICULTY_HEROIC_RAID,DIFFICULTY_MYTHIC_RAID})for(auto race:{RACE_HUMAN,RACE_ORC})GarmCase(staging,*parent,diff,race,race==RACE_ORC,check);}
     FlushWrites();sInstanceSaveMgr->UnloadAll();CharacterDatabase.Close();LoginDatabase.Close();HotfixDatabase.Close();WorldDatabase.Close();return 0;
 }
+#ifndef TRIAL_GARM_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunGarm(argc,argv);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

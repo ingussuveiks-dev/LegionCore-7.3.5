@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "quest": 44868,
+  "status": "Actual native Helya phase/retry/victory/quest/reward chain passes. No additional production C++ or SQL repair was required; this commit adds regression coverage and closes the earlier phase fixture gap. Client verification remains pending.",
+  "reference_commit": "174b0df5",
+  "scope": "Continue the existing actual Odyn surrender, travel, Guarm defeat and26-trash entrance sequence through Helya's65% boundary, phase-two retry, nine actual tentacle deaths,47% return, native lethal damage, quest credit, victory Odyn landing and reward persistence. This is not a full raid damage/ability playthrough.",
+  "changes": [
+    "The shared Guarm native fixture accepts an optional continuation callback after actual Helya combat entry. Existing Guarm/default saved-door cases retain their original branch. Player combat positioning now uses native Map::PlayerRelocation so grid membership, nearest-target admission and threat lookup agree with coordinates.",
+    "The Helya mode loads both actual Guarm/Helya loot templates and continues against the linked production AI, Unit::DealDamage, native summons/death dispatch, delayed event queues and real quest packet handler. Its runner rejects both DBErrors and ordinary Server.log ERROR lines.",
+    "No production file, native encounter timing, spell, position, health tuning, threshold, loot or quest data changed. Reference174b0df5 libraries pass the same assertions as the canonical current libraries."
+  ],
+  "native_evidence": [
+    "Eight complete cases: difficulties17/14/15/16, each with Human player attacks/kills and Orc Pet attacks/kills. The earlier Garm fixture supplies actual boss/door/spawn loading, earned Odyn/Guarm DONE, native travel and the26 actual Helya intro deaths. Earlier defender prerequisites/final Odyn health and44868 acceptance remain explicit setup as in that audit.",
+    "No Helya phase or health is seeded. From fresh phase-one maximum health, an injected native damage input approximately1.5 times her health goes through actual Unit::DealDamage, its final scaling and production DamageTakenAfterScaling. The input is asserted lethal before use. Helya survives at the production65% clamp and enters phase2; native summon group114537/3 creates nine114900 combat tentacles plus four114901/five114905 helpers.",
+    "A second full damage input during phase2 leaves health unchanged. Six seconds of native actor updates execute phase-two delayed introduction and outside movement. Explicitly removing228847 then dealing damage again exercises the independent AI guard. Killing an actual visual helper through Unit::Kill leaves health/phase unchanged.",
+    "Actual CreatureAI/BossAI evade/reset and home updates restore full health/NOT_STARTED and remove all18 group actors. Re-entry to combat starts phase1 without manually clearing EVADE; another lethal input creates exactly one new nine-tentacle/nine-helper set. There are16 earned phase-two groups across the eight cases, not a fixture-created set.",
+    "The nine actual combat tentacles have their real native AI, TempSummon owner Helya and linked model initialization. Each native player/Pet Unit::Kill invokes the actual summon-death callback and removes exactly2% base maximum health. Repeated Unit::Kill on each corpse leaves health unchanged. Phase2 remains through the first eight and phase3 begins only on the ninth; final health is47% within native integer rounding.",
+    "Seven seconds of actual actor/event/motion updates run the return to524.031/699.055/5.17631. Phase3 remains IN_PROGRESS, is aggressive, has no228847 immunity and has native threat. The second attempt clears tentacles before the obsolete phase-two introduction timer; the existing phase check preserves phase3.",
+    "A final native Unit::DealDamage triggers the actual death path and quest AchievementMgr/CriteriaTree/Player credit, with no Emit helper and no direct JustDied invocation. Actual group_instance data has all three boss states DONE and mask7. Active44868 is complete with objective55482=1. A repeated Unit::Kill does not change completion.",
+    "Native Helya victory spawns one Odyn116760. After15 seconds of real motion/spell/event updates, he reaches the authored498.595/640.212/1.8432 landing. Actual quest menu admits44868 and a deserialized choose-reward handler gives exactly one142534. The reward's own SQL transaction is checked for its rewarded quest row, one saved item and matching money, before any additional full save. Replayed reward selection gives no second item."
+  ],
+  "primary_reference": {
+    "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+    "author": "FatbossTV",
+    "updated": "2018-07-05",
+    "scope": "Primary guide authors' Patch7.3.5 page specifies65% departure, nine Gripping Tentacles,2% maximum-health wounds and47% phase-three return. These authored values already existed in the repaired production script and are retained. It does not supply this server's exact cast/protocol handling."
+  },
+  "automated_checks": [
+    "Test-TrialHelyaNative.ps1: PASS; eight complete chains, native phase-two evade/retry, actual player/Pet attacks/deaths, real quest/packet/SQL reward checks; exit0, DBErrors0 bytes and zero Server.log ERROR lines.",
+    "Test-TrialHelyaNative.ps1 -Baseline: PASS with captured174b0df5 game/scripts libraries and its four-slot Player/Group ABI. The same native chain already works in this reference; this is a comparison pass, not reproduction of a new production bug.",
+    "Test-TrialGarmNative.ps1: PASS after shared continuation/grid-position changes; all eight Guarm travel/retry/death/Helya-entrance and saved-door cases retained with DBErrors0 bytes.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS; existing extracted production regression retains non-unit health-scaling, first-hit/pet/null/repeat guards, failed-cast services, nine unique wounds and deployed callback/health-wound checks. Its modeled services remain distinct from the new native chain.",
+    "git diff --check and audit JSON/hash consistency: PASS. Disposable scratch schemas/users removed; no server or native probe left running."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-helya-native/run-20261019-174256",
+    "reference_logs": "build-extractors/runtime-test/trial-helya-native-baseline/run-20261019-174257",
+    "guarm_regression_logs": "build-extractors/runtime-test/trial-garm-native/run-20261019-174510",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "6F18C6160FDFFAB067503B3E4975233C70730131AD05F7604B9995F04B5CD5A8",
+    "bnetserver_sha256": "3688971F2804705A38602CD185BF884BFD137808FFDAA1439A9AC57409D18CB2",
+    "actual_game_library_sha256": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+    "actual_scripts_library_sha256": "75723CC46E7EFAB3DF503040891828ECEA47ED13768101E496AE7244B1E0AB70",
+    "release_status": "Production sources/executables are unchanged from174b0df5; no new server build or startup was required for this test-only change. Existing canonical Release hashes and the current PE callback check match. Prior startup evidence is retained at trial-garm-native/startup-20261019-170715; it was not rerun or presented as a new startup.",
+    "isolation": "Random limited user and schema-only disposable character/auth databases167 tables; native World/Hotfix pools READ ONLY. No personal character/account rows copied or modified.",
+    "production_sql_changes": false
+  },
+  "test_development_findings": [
+    "Coordinate-only relocation left the fixture player indexed in an old grid cell, so native nearest-target/threat admission could miss it and a passive phase would evade. Map::PlayerRelocation fixes this fixture prerequisite; no live Helya evade bug is inferred.",
+    "UINT32_MAX was not a reliable lethal sentinel through the native floating-point scaling conversion. The accepted probe derives a bounded1.5-health input and asserts its lethal value; it does not change or claim verification of generic extreme-integer damage conversion.",
+    "A second SaveToDB(true) attempted a duplicate fixture character INSERT. The final progression updates the existing character with ordinary SaveToDB before reward, then checks the reward transaction itself. The failed scratch runs were not accepted as passes.",
+    "The minimal idle Pet fixture originally had faction0, and a real boss melee could reach an uninitialized owner stable. The accepted Helya bootstrap sets the owner's faction, initializes the native stable, buffers player/Pet health during timed updates and asserts the attacker remains alive. This supplies normal login/combat prerequisites and controlled test survivability; it is not a live Pet/raid tuning repair."
+  ],
+  "remaining_limits_and_client_checks": [
+    "Native level110 cases use the actual observed health multiplier1. Non-unit scaling remains covered by the separate extracted production regression; this is not a native full-map test at every level or multiplier.",
+    "Damage values are injected through native Unit::DealDamage, and tentacles use native Unit::Kill. No authenticated client spell packet, spell damage calculation, class rotation or full raid survival/mechanics test is claimed. Player and Pet have large fixture health buffers; final tap/damage eligibility is supplied explicitly.",
+    "The first attempt waits through the six-second phase-two introduction and then evades; the retry clears all nine tentacles quickly. Long-running Fury of the Maw, boat/add waves, all breath/orb timings and all difficulty-specific abilities remain separate native/client work.",
+    "44868 is added through the native Player quest API after Guarm as setup; preceding NPC acceptance/reward gates and saved quest reload are covered by the existing turn-in audit. This test checks earned Helya credit and immediate reward SQL, not authenticated restart/login or every saved-instance selector.",
+    "No WoW client was controlled. Verify actual tentacle/helper placement and visuals, immunity presentation, dialogue/audio, outside/return animations, pet behavior/portrait, phase transitions, Odyn landing/menu and full quest completion in the7.3.5 client. Earlier pending audit checks remain; no whole quest or raid is marked client-verified."
+  ]
+}
