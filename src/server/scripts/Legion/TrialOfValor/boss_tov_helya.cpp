@@ -1950,6 +1950,26 @@ class spell_tov_torrent : public SpellScript
     }
 };
 
+struct at_bilewater_corrosion : AreaTriggerAI
+{
+    explicit at_bilewater_corrosion(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) {}
+
+    void OnCreate() override
+    {
+        // Helya passes the slime's remaining health in the create effect.
+        // Read it during creation while the originating Spell still exists.
+        if (SpellValue const* value = at->GetSpellValue())
+        {
+            float const healthPct = value->EffectBasePoints[EFFECT_1];
+            if (healthPct > 0.0f)
+            {
+                at->SetSphereScale(std::max(0.05f, std::min(1.0f, healthPct / 100.0f)), 0, true, 0.0f);
+                at->UpdateOverrideScale();
+            }
+        }
+    }
+};
+
 struct at_fury_of_the_maw : AreaTriggerAI
 {
     explicit at_fury_of_the_maw(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) {}
@@ -1992,4 +2012,5 @@ void AddSC_boss_tov_helya()
     RegisterSpellScript(spell_corrupted_axion);
     RegisterSpellScript(spell_tov_torrent);
     RegisterAreaTriggerAI(at_fury_of_the_maw);
+    RegisterAreaTriggerAI(at_bilewater_corrosion);
 }

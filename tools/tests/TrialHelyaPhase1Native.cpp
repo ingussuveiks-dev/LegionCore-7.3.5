@@ -61,7 +61,37 @@ static void CheckPhaseOne(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& 
     std::map<unsigned,float> damageByHealth;std::set<ObjectGuid> explosions;for(unsigned t=0;t<17000;t+=10){for(auto s:NativeSpellEvents(helya,227992))if(explosions.insert(s->m_castGuid[0]).second){auto value=s->*Access(SlimeSpellValueTag{});damageByHealth[unsigned(std::lround(value->EffectBasePoints[1]))]=value->EffectBasePoints[0];std::cout<<"SLIME_EXPLOSION bp0="<<value->EffectBasePoints[0]<<" hp="<<value->EffectBasePoints[1]<<std::endl;}PumpHelya(map,10);}
     Require(damageByHealth.size()==2&&damageByHealth[25]>0&&damageByHealth[25]<0.3f*damageByHealth[100]&&damageByHealth[25]>0.2f*damageByHealth[100],"Native slime damage did not reduce liquefaction to roughly25 percent (allowing native variance)");
     auto pools=SlimePools(map);Require(explosions.size()==2&&pools.size()==2,"Native liquefaction lost or duplicated explosions/pools");for(auto s:slimes)Require(s->isDead(false),"Natural liquefaction did not kill its slime");for(auto at:pools){Require(at->GetCasterGUID()==helya.GetGUID(),"Slime pool is not boss-owned");std::cout<<"SLIME_POOL radius="<<at->GetRadius()<<" duration="<<at->GetDuration()<<std::endl;}
-    SlimeReset(p,map,helya);SlimeBreath(helya);PumpHelya(map,500);SlimeReset(p,map,helya,false);PumpHelya(map,20000);Require(Actors(map,114553).empty()&&SlimePools(map).empty(),"Pending Bilewater projectile survived wipe");
+    auto small=*std::min_element(pools.begin(),pools.end(),[](AreaTrigger* a,AreaTrigger* b){return a->GetRadius()<b->GetRadius();});auto large=*std::max_element(pools.begin(),pools.end(),[](AreaTrigger* a,AreaTrigger* b){return a->GetRadius()<b->GetRadius();});
+#ifdef TRIAL_HELYA_PHASE1_BASELINE
+    Require(std::fabs(small->GetRadius()-5)<0.01f&&std::fabs(large->GetRadius()-5)<0.01f,"Pinned health-independent pool radius changed");
+#else
+    Require(std::fabs(small->GetRadius()-1.25f)<0.01f&&std::fabs(large->GetRadius()-5)<0.01f&&small->GetExactDist2d(wounded)<0.1f,"Wounded slime pool did not retain health-proportional radius");
+    Require(std::fabs(small->GetFloatValue(AREATRIGGER_FIELD_OVERRIDE_SCALE_CURVE+2)-0.25f)<0.001f&&std::fabs(small->GetFloatValue(AREATRIGGER_FIELD_OVERRIDE_SCALE_CURVE+4)-0.25f)<0.001f,"Client pool scale fields disagree with server radius");
+#endif
+    map.PlayerRelocation(&p,small->GetPositionX()+0.5f,small->GetPositionY(),small->GetPositionZ(),0);PumpHelya(map,1500);Require(p.HasAura(227998),"Native pool entry did not apply Corrosion");p.RemoveAura(228054);Require(sSpellMgr->GetSpellInfo(227998)->GetEffect(EFFECT_0,map.GetDifficultyID())->ApplyAuraName==SPELL_AURA_PERIODIC_DAMAGE,"Native Corrosion periodic-damage effect changed");auto health=p.GetHealth();Tick(p,1200);Require(p.GetHealth()<health,"Actual Corrosion periodic tick did not damage its player");
+    map.PlayerRelocation(&p,small->GetPositionX()+3.5f,small->GetPositionY(),small->GetPositionZ(),0);PumpHelya(map,1500);
+#ifdef TRIAL_HELYA_PHASE1_BASELINE
+    Require(p.HasAura(227998),"Pinned oversized pool no longer covers3.5 yards");
+#else
+    Require(!p.HasAura(227998),"Reduced pool still damages outside its actual radius");
+#endif
+    map.PlayerRelocation(&p,small->GetPositionX()+0.5f,small->GetPositionY(),small->GetPositionZ(),0);PumpHelya(map,1500);Require(p.HasAura(227998),"Pool re-entry did not restore Corrosion");
+    SlimeReset(p,map,helya);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());SlimeBreath(helya);PumpHelya(map,7000);slimes=Actors(map,114553);Require(slimes.size()==2,"Killed-slime fixture missing");
+    {LootPet pet(p,map);pet.setFaction(p.getFaction());Unit* killer=p.getRace()==RACE_ORC?static_cast<Unit*>(&pet):static_cast<Unit*>(&p);for(auto slime:slimes){killer->Kill(slime,false);killer->Kill(slime,false);}}
+    explosions.clear();float killedPercent=0;for(unsigned t=0;t<3000;t+=10){for(auto s:NativeSpellEvents(helya,227992))if(explosions.insert(s->m_castGuid[0]).second){auto value=s->*Access(SlimeSpellValueTag{});killedPercent=value->EffectBasePoints[1];Require(std::fabs(killedPercent-5)<0.001f&&value->EffectBasePoints[0]>0&&value->EffectBasePoints[0]<0.1f*damageByHealth[100],"Killed slime lost its native5-percent minimum damage");}PumpHelya(map,10);}
+    pools=SlimePools(map);Require(explosions.size()==2&&pools.size()==2&&std::fabs(killedPercent-5)<0.001f,"Player/pet killing blow lost minimum explosion or duplicated a pool");
+    for(auto at:pools){
+#ifdef TRIAL_HELYA_PHASE1_BASELINE
+        Require(std::fabs(at->GetRadius()-5)<0.01f,"Pinned killed-slime pool changed");
+#else
+        Require(std::fabs(at->GetRadius()-0.25f)<0.01f&&at->GetDuration()>0,"Minimum5-percent pool vanished or retained full radius");
+#endif
+    }
+    std::cout<<"SLIME_KILLED explosions="<<explosions.size()<<" healthPercent="<<killedPercent<<" radius="<<pools.front()->GetRadius()<<std::endl;
+    SlimeReset(p,map,helya);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());float dx=10*std::cos(helya.GetOrientation()),dy=10*std::sin(helya.GetOrientation());
+    GarmPlayer behind(map,p.getRace());map.PlayerRelocation(&p,helya.GetPositionX()+dx,helya.GetPositionY()+dy,helya.GetPositionZ(),0);map.PlayerRelocation(&behind,helya.GetPositionX()-dx,helya.GetPositionY()-dy,helya.GetPositionZ(),0);p.RemoveAura(227982);behind.RemoveAura(227982);
+    SlimeBreath(helya);PumpHelya(map,500);Require(p.HasAura(227982)&&!behind.HasAura(227982),"Actual Bilewater cone missed front or hit behind");SlimeReset(p,map,helya,false);std::cout<<"REDOX_AFTER_WIPE active="<<p.HasAura(227982)<<std::endl;
+    PumpHelya(map,20000);Require(Actors(map,114553).empty()&&SlimePools(map).empty(),"Pending Bilewater projectile survived wipe");
     std::cout<<"PASS: native phase-one counts/geometry/summons/liquefaction/reset; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
 int main(int argc,char** argv)

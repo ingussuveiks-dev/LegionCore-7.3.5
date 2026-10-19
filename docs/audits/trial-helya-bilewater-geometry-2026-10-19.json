@@ -1,6 +1,7 @@
 {
   "date": "2026-10-19",
   "map": 1648,
+  "pool_followup": "docs/audits/trial-helya-bilewater-pools-2026-10-19.json repairs the observed health-independent pool size. Historical observations below are retained.",
   "status": "Bilewater Breath missile contraction repaired; native geometry/count/summon checks pass. The newly observed health-independent pool radius is retained below for a separate lifecycle repair. No client verification claimed.",
   "repair": "Phase-one SpellHit no longer uses GetFirstCollisionPosition's walking collision/six-yard height/backward-step rules. Preserve the existing51..106-yard forward pattern in11-yard steps, actual facing and2..6 raid-size count; query the native phase-aware terrain/VMap surface at each requested XY with MAX_HEIGHT/MAX_FALL_DISTANCE, as for the separately repaired phase-three missiles. No shared collision/movement code, SQL, damage or timing changed. Missing native surfaces are skipped rather than replaced by caster coordinates.",
   "native_checks": [

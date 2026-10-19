@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "preceding_fix": "ed16642d; docs/audits/trial-helya-bilewater-geometry-2026-10-19.json",
+  "status": "Bilewater Corrosion now consumes the already supplied slime-health fraction for server radius and client scale fields. Native baseline/current, player/pet kills, membership/damage/reset, SQL replay and canonical Release checks pass. Redox cleanup is a distinct observed followup, not claimed repaired here.",
+  "root_cause": "Helya already computes native227992 explosion damage and effect1's custom base point from max(5, remaining health percent). Damage scales correctly. CREATE_AREATRIGGER does not consume that base point for geometry; the SQL template fixes radius5, so25-percent and dead slimes still leave full-sized pools.",
+  "repair": [
+    "Add at_bilewater_corrosion, bound only to custom entry12892 (template8823/spell227992). OnCreate reads the live originating SpellValue before the Spell is freed. Its health fraction sets the existing five-yard shape's absolute scale, bounded5..100 percent. Native SetSphereScale updates the server radius and OverrideScale fields; UpdateOverrideScale publishes the fields during creation. A zero/default custom point retains the existing shape. No shared AreaTrigger implementation changed.",
+    "Use scaleMin0 explicitly: the core's default0.1 threshold would despawn a5-percent pool. Minimum-damage killed slimes must retain a0.25-yard pool, not silently disappear.",
+    "Preserve existing native15-second liquefaction,180-second pool duration, health-based damage with native variance, minimum5-percent damage, boss ownership, all three enter/leave/despawn actions and Fury's native spell-based removal. Linear health-to-radius scaling follows the existing health-percent payload; exact retail radius coefficients are not independently established by a sniff."
+  ],
+  "native_validation": [
+    "Eight current and eight pinned1ef0e154 reference cases, four difficulties and Human/Orc. The reference uses current live World data but old scripts without the new AI, reproducing radius5 for25-percent and killed slimes. Its assertions describe old behavior rather than claiming repaired results.",
+    "All prior count boundaries,64 geometry cases/384 actual slime summons and native cast/pose/destination/reset checks still pass. Two actual slimes complete native liquefaction at100 and25 percent health after a native normalized damage hit. Actual227992 payloads contain the different damage/health values; exactly two boss-owned pools result.",
+    "Current native pools measure5 and1.25 yards. The wounded pool's actual OverrideScale curve fields2 and4 are0.25. A Player enters at0.5 yards, receives227998, and its real periodic aura update reduces health. Taint is removed before that health snapshot to isolate the periodic check. Moving to3.5 yards removes Corrosion only in the repaired case; the old full-sized reference still covers that point. Native re-entry and actual reset clear the pool aura.",
+    "Player killing blows on Human cases and owned-pet killing blows on Orc cases invoke the actual death/SpellHit/self-kill chain. Repeated native Kill calls on the corpses do not duplicate effects. Both explosions request5-percent health/damage and create exactly two pools: radius0.25 current versus5 reference. The minimum pools retain positive duration.",
+    "The native fixture initially loaded AreaTrigger actions/templates without the separate startup script-ID loader, producing NullAreaTriggerAI even after the new binding existed. Added the real LoadAreaTriggerScripts prerequisite to shared RunGarm bootstrap; no AI is manually installed and no callback is mocked. This is a test prerequisite repair. Full Helya/Fury and phase-three native suites were rerun with that loader enabled; historical audit evidence is retained.",
+    "Test-TrialHelyaPoolData.ps1 verifies the unique live template/binding and retained enter/leave/despawn/Fury data. Its exact migration replay uses connection-local temporary tables: first insert1, repeat0, wrong-binding repair2, unrelated Fury binding preserved. The migration was applied to live World data separately and a repeated application succeeded.",
+    "Test-TrialHelyaPoolRelease.ps1 inspects exception-bounded canonical PE code and incremental thunks for OnCreate's GetSpellValue, SetSphereScale and UpdateOverrideScale calls, along with earlier breath/Fury/control checks. Release is built to the canonical runtime through normal final-link inputs; startup reaches ready with graceful exit0 and empty DBErrors/stderr."
+  ],
+  "observed_followup": "An actual new227967 request gives227982 Bilewater Redox to the front Player, not the Player behind Helya. Native evade500ms later leaves Redox active after cleanup. This new failure is recorded as REDOX_AFTER_WIPE active=1 and will be repaired separately.",
+  "evidence": {
+    "runs": {
+      "trial-helya-phase1-native": "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-193213",
+      "trial-helya-phase1-native-baseline": "build-extractors/runtime-test/trial-helya-phase1-native-baseline/run-20261019-193223",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261019-193105",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-193115"
+    },
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "B0EC5C3081656A2AC15F9161CF1141D02126180B126A4C9578CB8160F5DEA03B",
+      "build-extractors/bin/Release/bnetserver.exe": "E77D4D3C254CEB92217ABAEA5CE7145F311CC16E1F93B2CF6CA823A66104C275",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "91B044B8B5C6FC2488157B5D60BB80B5BCDCF87E48FE8D6B73550554F083A140",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "8032444516C0BFF8798D392AC87157B53990B2800F5E0AAF82ED6FB1CC54CF5F",
+      "tools/tests/TrialHelyaPhase1Native.cpp": "0D983541DF3FDFF83E9A1C5D5C30A51C75BC852ADC093E277E103A3D8DAA5324",
+      "tools/tests/TrialGarmNative.cpp": "E59BED7248EBA7F03DB39A1C496A1F0906C70169039B22B3AE30A8B28F606C06",
+      "tools/tests/Test-TrialHelyaPoolData.ps1": "9EC07D26E06FE11B2A3119755CF81252CD1E1DE576A5F4CC7496274242AFE4A6",
+      "tools/tests/Test-TrialHelyaPoolRelease.ps1": "236F3311E492A2D69E9BB1642E1FB656F404E8CFDFBD05FC032866394912C840",
+      "sql/updates/world/2026_10_19_01_helya_bilewater_pool_scale.sql": "A43AB5D0C212AC61880A194DE79085235AEB6FD4BE51E8C0C12642BA8EFB5A8C"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-193035",
+    "observations": [
+      "SLIME_POOL radius=1.25 duration=173580",
+      "SLIME_POOL radius=5 duration=173620",
+      "SLIME_KILLED explosions=2 healthPercent=5 radius=0.25",
+      "REDOX_AFTER_WIPE active=1"
+    ]
+  },
+  "limits": [
+    "Client telegraph/model rendering and pool appearance still need a7.3.5 client check. Native replicated fields do not prove visual presentation. Full encounter/quest and raid damage tuning are not claimed client-verified.",
+    "The public FatbossTV7.3.5 guide describes health-dependent damage/pool size, but its20-second/80-percent/45-second numbers differ from native runtime data and the available227990 spell detail. Runtime15-second/95-percent/180-second values are retained, not silently replaced by guide numbers. References and exact-spacing/flex-count limits are in the preceding geometry audit."
+  ]
+}

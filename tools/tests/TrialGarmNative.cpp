@@ -126,7 +126,7 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
 static int RunGarm(int argc,char** argv,HelyaProgressionCheck check=nullptr)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();LoadGarmInputs(check!=nullptr);OpenScratch();sAchievementMgr->LoadRewards();sAchievementMgr->LoadCompletedAchievements();
-    if(check){sObjectAccessor->SetGuidSize(HighGuid::AreaTrigger,100000);sAreaTriggerDataStore->LoadAreaTriggerActionsAndData();sSpellMgr->LoadSpellLinked();sSpellMgr->LoadSpellTriggered();}
+    if(check){sObjectAccessor->SetGuidSize(HighGuid::AreaTrigger,100000);sAreaTriggerDataStore->LoadAreaTriggerScripts();sAreaTriggerDataStore->LoadAreaTriggerActionsAndData();sSpellMgr->LoadSpellLinked();sSpellMgr->LoadSpellTriggered();}
     // Normal world startup sizes these before any player/pet is registered.
     // A socketless bootstrap must do the same for native owner/tap lookups.
     sObjectAccessor->SetGuidSize(HighGuid::Player,100000);sObjectAccessor->SetGuidSize(HighGuid::Pet,100000);sObjectAccessor->SetGuidSize(HighGuid::EventObject,100000);
