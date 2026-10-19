@@ -13,6 +13,8 @@ foreach($name in @('?PreventDefaultAction@AuraScript@@','?ModStackAmount@AuraScr
 if(@(Calls '?HandleDamage@spell_fetid_rot@@') -notcontains (Resolve (Symbol '?GetOriginalCaster@SpellScript@@'))){throw 'Canonical Fetid spread lost original caster'}
 $update=Get-Content "$out/grim-update-disassembly.txt" -Raw
 foreach($constant in @('3DB8h','2FA8h')){if($update -notmatch (',\s*'+$constant)){throw "Canonical Grimelord lacks Rot repeat $constant"}}
+if($update -notmatch ',\s*5EECh'){throw 'Canonical Grimelord lacks24.3-second Nova repeat'}
 if((Get-Content "$out/grim-enter-disassembly.txt" -Raw) -notmatch ',\s*1B58h'){throw 'Canonical Grimelord lacks seven-second Rot start'}
+foreach($constant in @('2EE0h','4268h','36B0h')){if((Get-Content "$out/grim-enter-disassembly.txt" -Raw) -notmatch (',\s*'+$constant)){throw "Canonical Grimelord first ability timer lacks $constant"}}
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;scripts_library=(Get-FileHash $lib).Hash;prevent_default_and_stack_decay=$true;original_caster=$true;native_selector_timing=$true} | ConvertTo-Json | Set-Content "$out/grimelord-release-inputs.json"
 'PASS: canonical Grimelord periodic replaces legacy dispatch, decays stacks, preserves original caster and selector timers.'

@@ -6,17 +6,21 @@ template struct FixtureAccess<GrimValueTag,&Spell::m_spellValue>;
 struct GrimWatch
 {
     InstanceMap& map;ObjectGuid grim;uint32 elapsed=0;
-    std::map<uint32,std::set<ObjectGuid>> casts,targets,originals;
+    std::map<uint32,std::set<ObjectGuid>> casts,targets,originals,damaged;
+    std::map<uint32,std::set<ObjectGuid>> unitTargets;
+    std::map<uint32,std::map<ObjectGuid,std::set<ObjectGuid>>> perCastTargets;
     std::map<uint32,std::vector<float>> values;
     std::map<uint32,std::vector<uint32>> times;
+    std::set<ObjectGuid> centeredNovas;
     GrimWatch(InstanceMap& m,Creature& g):map(m),grim(g.GetGUID()){}
     void Observe()
     {
         std::vector<Unit*> casters;if(auto g=map.GetCreature(grim))casters.push_back(g);
         for(auto const& ref:map.GetPlayers())casters.push_back(ref.getSource());
         for(auto caster:casters)for(auto id:{228838u,232408u,228397u,228519u,228390u})for(auto s:NativeSpellEvents(*caster,id)){
-            if(casts[id].insert(s->m_castGuid[0]).second){values[id].push_back((s->*Access(GrimValueTag{}))->EffectBasePoints[0]);times[id].push_back(elapsed);if(auto original=s->GetOriginalCaster())originals[id].insert(original->GetGUID());}
-            unsigned effect=id==228519?1:0;for(auto const& target:*s->GetUniqueTargetInfo())if(target->effectMask&(1<<effect))targets[id].insert(target->targetGUID);
+            if(casts[id].insert(s->m_castGuid[0]).second){values[id].push_back((s->*Access(GrimValueTag{}))->EffectBasePoints[0]);times[id].push_back(elapsed);unitTargets[id].insert(s->m_targets.GetUnitTargetGUID());if(auto original=s->GetOriginalCaster())originals[id].insert(original->GetGUID());}
+            unsigned effect=id==228519?1:0;for(auto const& target:*s->GetUniqueTargetInfo())if(target->effectMask&(1<<effect)){targets[id].insert(target->targetGUID);perCastTargets[id][s->m_castGuid[0]].insert(target->targetGUID);if(target->processed&&target->damage>0)damaged[id].insert(target->targetGUID);}
+            if(id==228390&&s->m_targets.HasDst()&&caster->GetExactDist(s->m_targets.GetDstPos())<0.05f)centeredNovas.insert(s->m_castGuid[0]);
         }
     }
     void Advance(uint32 ms,bool ai=false)
@@ -34,6 +38,37 @@ static Creature* GrimBegin(GarmPlayer& p,InstanceMap& map,Creature& helya)
     Require(helya.AI()->GetData(2)==2,"Grimelord bootstrap missed phase two");
     PumpHelya(map,7000);Require(helya.AI()->GetData(2)==2,"Grimelord bootstrap lost settled phase two");
     map.PlayerRelocation(&p,458,640,7.5f,0);auto grim=helya.SummonCreature(114709,458,639,7.5f,0,TEMPSUMMON_MANUAL_DESPAWN);Require(grim&&grim->AI(),"Native Grimelord summon missing");auto guid=grim->GetGUID();PumpHelya(map,20);Require(map.GetCreature(guid)==grim&&grim->IsInWorld(),"Grimelord left map during native bootstrap");std::cout<<"GRIM_BEGIN guid="<<guid.GetCounter()<<" combat="<<grim->isInCombat()<<" phase="<<helya.AI()->GetData(2)<<std::endl;return grim;
+}
+static void GrimAbilities(GarmPlayer& p,GarmPlayer& closePlayer,GarmPlayer& distantPlayer,LootPet& pet,InstanceMap& map,Creature& helya)
+{
+    auto grim=GrimBegin(p,map,helya);map.PlayerRelocation(&closePlayer,500,640,7.5f,0);map.PlayerRelocation(&distantPlayer,520,640,7.5f,0);
+    pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());grim->AddThreat(&p,100000);grim->AddThreat(&closePlayer,1);grim->AddThreat(&distantPlayer,1);grim->AddThreat(&pet,1);
+    GrimWatch rotation(map,*grim);rotation.Advance(70000,true);
+    std::cout<<"GRIM_ROTATION slam=";for(auto t:rotation.times[228519])std::cout<<t<<',';std::cout<<" nova=";for(auto t:rotation.times[228390])std::cout<<t<<',';std::cout<<" rot=";for(auto t:rotation.times[228838])std::cout<<t<<',';std::cout<<" slamVictim="<<(rotation.unitTargets[228519]==std::set<ObjectGuid>{p.GetGUID()})<<" centeredNovas="<<rotation.centeredNovas.size()<<std::endl;
+    Require(rotation.casts[228519].size()>=3&&rotation.casts[228390].size()>=2,"Native Grimelord Slam/Nova did not repeat");
+    Require(rotation.unitTargets[228519]==std::set<ObjectGuid>{p.GetGUID()}&&rotation.centeredNovas.size()==rotation.casts[228390].size(),"Native AI chose wrong Slam victim/Nova destination");
+    unsigned firstSlam=map.IsLfrRaid()?14000:12000,firstNova=map.IsLfrRaid()||map.IsNormalRaid()?17000:14000,novaRepeat=24300;
+#ifdef TRIAL_HELYA_GRIMELORD_BASELINE
+    firstSlam=14000;firstNova=16000;novaRepeat=25000;
+#endif
+    Require(rotation.times[228519].front()+40>=firstSlam&&rotation.times[228519].front()<=firstSlam+100,"Native initial Slam timer wrong");
+    Require(rotation.times[228390].front()+40>=firstNova&&rotation.times[228390].front()<=firstNova+100,"Native initial Nova timer wrong");
+    for(unsigned i=1;i<rotation.times[228390].size();++i){auto delta=rotation.times[228390][i]-rotation.times[228390][i-1];Require(delta>=novaRepeat&&delta<=novaRepeat+2000,"Native Nova repeat timer wrong");}
+#ifndef TRIAL_HELYA_GRIMELORD_BASELINE
+    Require(rotation.casts[228838].size()>=3&&!pet.HasAura(193367),"Native full-raid Rot selector did not repeat or selected Pet");
+    for(auto const& cast:rotation.perCastTargets[228838]){Require(cast.second.size()==2,"Native Rot selector lost its two-Player cap");for(auto guid:cast.second)Require(guid.IsPlayer(),"Native full-raid selector admitted a non-Player");}
+    unsigned repeat=map.IsLfrRaid()||map.IsNormalRaid()?15800:12200;auto const& times=rotation.times[228838];for(unsigned i=1;i<times.size();++i)Require(times[i]-times[i-1]>=repeat&&times[i]-times[i-1]<=repeat+5000,"Native repeated Rot used wrong difficulty interval");
+#endif
+    grim=GrimBegin(p,map,helya);map.PlayerRelocation(&p,470,640,7.5f,0);map.PlayerRelocation(&closePlayer,474,640,7.5f,0);map.PlayerRelocation(&distantPlayer,480,640,7.5f,0);
+    GrimWatch slam(map,*grim);grim->CastSpell(&p,228519,false);slam.Advance(2000);
+    Require(slam.targets[228519]==std::set<ObjectGuid>{p.GetGUID(),closePlayer.GetGUID()}&&p.HasAura(228519)&&closePlayer.HasAura(228519)&&!distantPlayer.HasAura(228519),"Native Slam missed tank-centered radius/debuff or hit distant Player");
+    Require(slam.damaged[228519]==slam.targets[228519],"Native Slam selected Players without damaging them");
+    Require(p.GetAura(228519)->GetEffect(EFFECT_2)->GetAmount()==400,"Native Slam lost400-percent vulnerability");
+    for(auto player:{&p,&closePlayer}){player->GetAura(228519)->SetDuration(1);player->Unit::Update(30);player->Unit::Update(30);Require(!player->HasAura(228519),"Slam vulnerability did not expire");}
+    auto pos=grim->GetPosition();map.PlayerRelocation(&p,pos.GetPositionX()+10,pos.GetPositionY(),pos.GetPositionZ(),0);map.PlayerRelocation(&closePlayer,pos.GetPositionX()+14,pos.GetPositionY(),pos.GetPositionZ(),0);map.PlayerRelocation(&distantPlayer,pos.GetPositionX()+25,pos.GetPositionY(),pos.GetPositionZ(),0);
+    GrimWatch nova(map,*grim);grim->CastSpell(grim,228390,false);nova.Advance(3500);Require(nova.targets[228390]==std::set<ObjectGuid>{p.GetGUID(),closePlayer.GetGUID()}&&nova.damaged[228390]==nova.targets[228390],"Native fifteen-yard Nova missed nearby or hit distant Player");
+    grim->CastSpell(grim,228390,false);Require(grim->HasUnitState(UNIT_STATE_CASTING),"Nova interrupt probe did not start an actual cast");GrimWatch interrupted(map,*grim);interrupted.Advance(500);grim->InterruptNonMeleeSpells(true);interrupted.Advance(3500);Require(interrupted.damaged[228390].empty(),"Interrupted Nova still dispatched damage");
+    std::cout<<"GRIM_GEOMETRY slamTargets="<<slam.targets[228519].size()<<" novaTargets="<<nova.targets[228390].size()<<" interruptedTargets="<<interrupted.targets[228390].size()<<std::endl;
 }
 static void GrimelordCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
@@ -93,7 +128,7 @@ static void GrimelordCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& 
 #else
     Require(!p.HasAura(193367),"Native Helya reset left Rot");
 #endif
-    PumpHelya(map,2000);grim=GrimBegin(p,map,helya);grim->AddAura(193367,&p,nullptr,3);
+    PumpHelya(map,2000);GrimAbilities(p,closePlayer,distantPlayer,pet,map,helya);grim=GrimBegin(p,map,helya);grim->AddAura(193367,&p,nullptr,3);
     for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);PumpHelya(map,7000);Require(helya.AI()->GetData(2)==3&&grim->IsAlive()&&p.HasAura(193367),"Phase three lost existing Grimelord/Rot");
     p.RemoveAura(193367);Require(p.AddAura(193367,&p,nullptr,3),"Legacy self-owned Rot victory probe failed");
     helya.ResetPlayerDamageReq();helya.LowerPlayerDamageReq(1);helya.SetLootRecipient(&p);for(unsigned i=0;i<16&&helya.IsAlive();++i)p.DealDamage(&helya,UINT32_MAX-4096,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);

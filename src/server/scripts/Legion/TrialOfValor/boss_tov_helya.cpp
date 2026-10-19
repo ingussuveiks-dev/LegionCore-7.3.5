@@ -1334,8 +1334,8 @@ struct npc_grimelord : ScriptedAI
     {
         instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
 
-        events.RescheduleEvent(EVENT_1, 14000);
-        events.RescheduleEvent(EVENT_2, 16000);
+        events.RescheduleEvent(EVENT_1, me->GetMap()->IsLfrRaid() ? 14000 : 12000);
+        events.RescheduleEvent(EVENT_2, me->GetMap()->IsLfrRaid() || me->GetMap()->IsNormalRaid() ? 17000 : 14000);
         events.RescheduleEvent(EVENT_3, 7000);
     }
 
@@ -1370,7 +1370,7 @@ struct npc_grimelord : ScriptedAI
                 break;
             case EVENT_2:
                 DoCast(SpellSludgeNova);
-                events.RescheduleEvent(EVENT_2, 25000);
+                events.RescheduleEvent(EVENT_2, 24300);
                 break;
             case EVENT_3:
             {

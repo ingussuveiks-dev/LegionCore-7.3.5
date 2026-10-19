@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "creature": 114709,
+  "status": "Completes the requested Anchor Slam/Sludge Nova code/data audit and repeated full-raid Fetid selector checks. Native behavior and final Release checks pass; client and separate Mythic Fission research remain pending.",
+  "repair": "Align non-LFR first Anchor Slam to12s, Sludge Nova first17s LFR/Normal and14s Heroic/Mythic, and Nova repeat24.3s with the pinned Legion-era addon source. Retain Slam12s repeat and inherited LFR first Slam14s; no spell effects/radii/damage/knockback, target selection, SQL or unrelated creature timers are changed.",
+  "native_checks": [
+    "Eight current/eight pinned11c9c866 cases, all four raid difficulties and Human/Orc, using the same earned map/phase2 bootstrap and real NPC AI. Continue70seconds with three native Players and a real owner-linked Pet. Current228838 repeats with exactly two actual Player targets in each observed cast; no Pet is infected. Repeat spacing follows15.8s easy/12.2s others with real cast contention allowed.",
+    "Actual Anchor Slam casts consistently name the current high-threat Player victim. Nova uses a caster-centered native destination. An exploratory assertion incorrectly expected Nova explicit Unit target to be the caster: the generic helper supplies a victim Unit field, but native TARGET_DEST_CASTER resolves the actual explosion center correctly in both versions. The accepted check observes the native destination, not the irrelevant explicit Unit field. No target-dispatch fix is claimed.",
+    "Current observed first Slam near12s except inherited LFR14s; first Nova17s easy/14s others, then24.3s repeats. Reference observes first Slam14s and Nova16s, then25s Nova repeats. All values are compared against actual SpellEvents during AI updates, with the20-30ms already elapsed during actor admission and cast contention recorded.",
+    "Isolated real Spell casts retain actual production handlers: a Grimelord at458/639 targets a tank at470/640, with another Player4yards from that tank and a third10yards away. Native six-yard Slam hits/damages tank and nearby Player, gives both its400-percent vulnerability, and excludes the distant Player. Real aura duration/expiry updates remove the debuff. This geometry distinguishes tank-centered damage from the caster center.",
+    "Native three-second Nova damages Players10 and14yards from the caster, excludes25yards. A second real cast is confirmed in UNIT_STATE_CASTING, cancelled500ms later using InterruptNonMeleeSpells, and produces no processed damage. This validates cancellation through the server API, not whether a particular player class can interrupt this NPC. Player knockback packets/camera still require a client.",
+    "Retained full Rot carrier/stack/spread/removal/phase3/victory tests pass in every case. Final Helya progression/Fury suite and full phase3 orb/Decay/breath/Axion/cleanup suite each pass eight cases on these final libraries; native saved mask7, real quest44868/objective55482, Odyn landing/reward and duplicate-reward boundaries remain passing. Extracted-production HelyaLifecycle/PE tests also pass; its service fixtures remain distinct from native execution.",
+    "Normal CMake Release targets worldserver/bnetserver deploy directly to build-extractors/bin/Release with generated final-link inputs. Bounded PE bodies verify the new first/repeat constants alongside retained Rot/Taint/breath/Fury checks. Final startup ready with exit0 and empty DBErrors/stderr."
+  ],
+  "primary_reference": {
+    "date": "2018-04-28",
+    "scope": "Grimelord KvaldirLongboat handler: non-LFR Anchor12s, Nova17s easy/14s others; SludgeNova callback24.3s repeat. These are historical addon observations, not DB2 AI schedule fields.",
+    "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+    "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua"
+  },
+  "prior_audit": "trial-helya-grimelord-rot-2026-10-19.json",
+  "limits": [
+    "The addon omits the initial Anchor timer in LFR; that alone does not establish that the spell is absent. Native LFR data still has its effects and the guide lists no LFR mechanical change. Preserve the inherited LFR cast/14s first timer pending stronger evidence; do not claim exact LFR retail fidelity.",
+    "Mythic Fetid Fission158534 scheduling/application remains the independent research followup documented in the Rot audit. Current template addon114709 only supplies228376; no Fission behavior was silently supplied by that row. This task does not invent its schedule or claim a completely original Mythic encounter.",
+    "No authenticated7.3.5 client, live raid survival/balance, movement/knockback/camera or visual confirmation. Actors have buffered health. Individual spell tests use native Unit updates separately from AI; the70s repetition test executes full NPC/area/Player services. Native radii include target object size."
+  ],
+  "evidence": {
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/native-lines.txt": "E239285B0588293A83FE4C1932F484C2A65507CC45770D97DCFDEE6D3E6502B5",
+      "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-204607/native-lines.txt": "E4C2AE023FE89440BC42A741B70B264CAA640DF67FE54EB13BFF252475D9D893",
+      "build-extractors/runtime-test/trial-helya-native/run-20261019-204726/native-lines.txt": "4761DEAA1DF48F0984427F4923B9A51C25401334E790B42FD3CE1D7209785BB9",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-204727/native-lines.txt": "A03EE3787215C90E4EF8F57BBA1AEEAFAD45792C29BBDE7D89845A215FB5FA3C",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/rot-tick-disassembly.txt": "3533D797D9632C96580EE66B942646A48FC2320A0E9FE3B9B5B2CD1446F5FF3D",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/rot-spread-disassembly.txt": "2D9A119486159EF20664EC0CEC9963966180BBA120389D1C93C2CAAB2CA79575",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/grim-update-disassembly.txt": "38F9B4B3C3CBC31B6A62B9FA2E6E327BD0767B6233FEA8CBD671AC3580361A6E",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/grim-enter-disassembly.txt": "D305957926F16CAAA60C04D77C8610746734D8D7483BDF5771F1F957D6C02ED7",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607/grimelord-release-inputs.json": "14AF80F094433362165EEEF534487DBA03DED0CDB3CF2B17BDEC414C8476A6EF",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "2CEE895FD5A1C170628A0C299E788BF2DE2EB38AC8132041FAB2D16242670B30",
+      "tools/tests/TrialHelyaGrimelordNative.cpp": "91D03B26039D31D9FCD46F27251943AB9D8AA3B02276AE2D0C9DD5003228B95F",
+      "tools/tests/Test-TrialHelyaGrimelordRelease.ps1": "980A20CA0E13B84A464A64F88D93E55B1F8FF15E96E673513DB87A42F6933C85",
+      "build-extractors/bin/Release/worldserver.exe": "D5C0E13894600DF62A21F0647FD013BF8AF3F7539E560ADA337F006272BEFC2C",
+      "build-extractors/bin/Release/bnetserver.exe": "D1C7B8C1DB7068BFCA8891376EF51FCCB2E20D4CA28E9912A8C53E3B1F9E6F88",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "64A842787E565CEF053FA58CFDAC79F53718C54CF86C3B83ADD742F32A3CB920",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E"
+    },
+    "runs": {
+      "trial-helya-grimelord-native": "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261019-204607",
+      "trial-helya-grimelord-native-baseline": "build-extractors/runtime-test/trial-helya-grimelord-native-baseline/run-20261019-204607",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261019-204726",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-204727"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-204552"
+  }
+}
