@@ -11,5 +11,6 @@ $range=Bounds '?AllowedForPlayer@LootItem@@';$argument='/RANGE:0x{0:X},0x{1:X}' 
 $admission=(& $dump.FullName /DISASM:NOBYTES $argument $exe) -join "`n"
 if($LASTEXITCODE -or $admission -notmatch 'test\s+byte ptr \[[^\]]+\+65h\],1'){throw 'Canonical item admission lacks the restricted-looter flag branch'}
 $admission | Set-Content "$out/item-admission-disassembly.txt"
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;raid_snapshot=$true;restricted_looter_admission=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
-'PASS: canonical Release raid recipient snapshot/admission verified through actual PE/thunks and final-link freshness.'
+if(@(Calls '?SendLoot@Player@@') -notcontains (Resolve (Symbol '?IsPlayerLootCooldown@Player@@'))){throw 'Canonical chest generation lacks cooldown admission'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;actual_game_library=(Get-FileHash $gameInput).Hash;raid_snapshot=$true;restricted_looter_admission=$true;chest_cooldown=$true} | ConvertTo-Json | Set-Content "$out/release-inputs.json"
+'PASS: canonical Release raid recipient snapshot/admission and chest cooldown verified through actual PE/thunks and final-link freshness.'

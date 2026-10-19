@@ -11949,6 +11949,17 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, bool AoeLoot, uint8 p
 
                     if (!lootPesonal->dungeonEncounterID) // This loot generate in Unit::GeneratePersonalLoot
                     {
+                        // Reopening an existing earned container must remain
+                        // possible (for example after freeing inventory space).
+                        // A new raid chest container cannot bypass its saved
+                        // entry/difficulty cooldown just by having a new GUID.
+                        if (go->GetGoType() == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.DungeonEncounter &&
+                            IsPlayerLootCooldown(go->GetEntry(), TYPE_GO, GetMap()->GetDifficultyID()))
+                        {
+                            SendLootRelease(guid);
+                            return;
+                        }
+
                         lootPesonal->clear();
                         lootPesonal->personal = true;
                         lootPesonal->objType = 3;

@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-19",
+  "baseline": "9b0179a1",
+  "quest": 45088,
+  "status": "New personal raid-chest loot honors its saved entry/difficulty cooldown while earned pending loot remains retrievable; automated checks pass; client pending.",
+  "defect": "Actual Player::SendLoot on Odyn chest260526 fills its native loot70585 and records TYPE_GO cooldown, but never checks that cooldown before filling a new personal container. A second object GUID grants fragments again on all four raid difficulties. Reopening the same full-bag chest after freeing space can auto-store the first stack during native release and then regenerate a second one.",
+  "fix": "When generating a new personal chest container with a native DungeonEncounter, reject the existing GO entry/current difficulty cooldown. A cached earned container with dungeonEncounterID already set retains its receipt path. Ordinary/non-encounter chests and data links remain unchanged; no entry/map whitelist.",
+  "native_checks": [
+    "Actual GameObject creation/template, Player::SendLoot, native FillLoot, packet build, AutoStoreItems and WorldSession::DoLootRelease run on map1648 with loot70585. Different chest GUIDs cannot bypass the entry cooldown. Baseline asserts another stack; current denies it in LFR/Normal/Heroic/Mythic.",
+    "No quest, COMPLETE quest and1000-item quota receive no fragments. Full backpack retains the original personal container; freeing space and reopening yields one30..60 stack. Baseline yields two stacks (60..120) through release/regeneration; current yields only the earned stack.",
+    "Actual SaveToDB and native prepared inventory/cooldown reload preserve all four difficulty awards independently and deny repeated Normal. The canonical SendLoot PE contains native IsPlayerLootCooldown admission, with source/final-link freshness checked."
+  ],
+  "evidence": "Current and pinned full-library runs at build-extractors/runtime-test/raid-fragments-native/run-20261019-101855 and raid-fragments-native-baseline/run-20261019-101855 both exit0 with empty DBErrors. Shared build, hashes, startup, isolation and regression details are in the raid-fragment-cooldowns audit.",
+  "limitations": "Chest availability/unlock is seeded with native Create; actual Odyn surrender, chest respawn scheduling, live instance progress and client interaction/UI remain pending. This tests SendLoot and release rather than the client open-lock input. The existing earned container is transient; no pending-corpse/chest serialization or crash recovery is introduced.",
+  "related": "docs/audits/raid-fragment-cooldowns-2026-10-19.json"
+}

@@ -259,12 +259,12 @@ static int RaidRun(int argc, char** argv)
     {
         InstanceMap map(1648,300,990000 + uint32(diff),diff,&parent);
         map.*Access(InstanceDataTag{}) = new InstanceScript(&map);
-        CheckBoss(map,114323); CheckBoss(map,114537);
+        CheckBoss(map,114323); CheckBoss(map,114537); CheckChest(map); CheckChestBoundaries(map);
         CheckEligibility(map,114323); CheckEligibility(map,114537);
         if(!map.IsLfr()){CheckPending(map,114323);CheckPending(map,114537);}
         if(!map.IsLfr()) for(auto entry:{114323u,114537u}) for(auto method:{PERSONAL_LOOT,GROUP_LOOT,MASTER_LOOT}) CheckMixed(map,entry,method);
     }
-    CheckPersisted(parent,114323);CheckPersisted(parent,114537);
+    CheckPersisted(parent,114323);CheckPersisted(parent,114537);CheckPersisted(parent,260526);
     FlushWrites(); CharacterDatabase.Close(); LoginDatabase.Close(); HotfixDatabase.Close(); WorldDatabase.Close(); return 0;
 }
 int main(int argc, char** argv)
