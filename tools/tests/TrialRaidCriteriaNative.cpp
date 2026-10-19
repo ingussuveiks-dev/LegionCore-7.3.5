@@ -156,6 +156,7 @@ static void CheckBossDispatch(InstanceMap& map,bool odyn,bool petKiller)
     for(auto& p:players){Tick(*p,2000);Require(p->GetQuestStatus(id)==QUEST_STATUS_COMPLETE&&p->GetQuestObjectiveData(id,root)==1&&Counter(*p,leaf)==1,"Actual boss callback lost party quest credit");}
     std::cout<<"PASS: final-link boss callback -> actual instance/achievement/tree/party quest completion; quest="<<id<<" pet="<<petKiller<<" diff="<<uint32(map.GetDifficultyID())<<std::endl;
 }
+#ifndef TRIAL_RAID_CRITERIA_SUPPORT_ONLY
 static int Run(int argc,char** argv)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();LoadTrialInputs();OpenScratch();
@@ -182,3 +183,4 @@ int main(int argc,char** argv)
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return Run(argc,argv);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

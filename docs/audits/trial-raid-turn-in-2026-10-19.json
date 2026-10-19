@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-19",
+  "quests": [44729, 44868],
+  "status": "Native turn-in, fixed rewards, next-quest admission and saved inventory checks passed. No production code or data defect found in this scope; client verification remains pending.",
+  "source_state": "5efc6708",
+  "native_data": [
+    "Live World44729: fixed142533 Titan's Boon x1, no selectable reward/package, RewardNextQuest44868. Addon PrevQuestID44721 and NextQuestID44868.",
+    "Live World44868: fixed142534 Plume of the Fallen Val'kyr x1, no selectable reward/package, RewardNextQuest0. Addon PrevQuestID44729 and NextQuestID0.",
+    "Native relations: Havi92539 starts44729, Odyn114263 ends44729 and starts44868, post-Helya Odyn116760 ends44868.",
+    "Native Quest constructor and LoadQuestTemplateAddon read scoped actual SQL rows. Actual extracted LoadQuests link-building blocks populate prevQuests/prevChainQuests, including both PrevQuestID and NextQuestID routes. Native LoadQuestRelationsHelper runs read-only scoped table subqueries; admission and reward handlers themselves are linked from the actual final-link game.lib."
+  ],
+  "coverage": [
+    "16 complete chains: Human/Orc Warrior, ordinary/full inventory, each of LFR17/Normal14/Heroic15/Mythic16. Both quest reward items remain exactly1 each.",
+    "Actual deserialized CMSG_QUEST_GIVER_ACCEPT_QUEST and CMSG_QUEST_GIVER_CHOOSE_REWARD execute WorldSession handlers. The fixed rewards correctly use ItemChoiceID0.",
+    "Native previous-quest gates reject44729/44868 on a fresh player. Fixture seeds only the earlier44721 reward. Native Havi quest menu admits44729, acceptance succeeds, and premature44868 menu/acceptance is rejected before44729 is rewarded.",
+    "Actual InstanceScript/AchievementMgr/CriteriaTree/deferred Player credit completes44729 from1958 and44868 from2008. Native quest menu contains the completed objective at the correct questgiver.",
+    "Native CanInteractWithQuestGiver/CanRewardQuest and actual choose-reward handler reject the wrong Odyn entry, a questgiver100 yards away, incomplete progress and full bags without consuming quest completion or granting the item.",
+    "Freeing one slot permits retry. Repeated packets do not grant another fixed item. Native GetNextQuest, CanTakeQuest, PrepareQuestMenu and acceptance admit44868 after44729 reward;44868 has no next quest.",
+    "Immediate SQL assertions after each reward check rewarded status, joined character_inventory/item_instance count1 and saved money equal to memory BEFORE an additional SaveToDB can conceal a missing reward checkpoint.",
+    "A fresh same-GUID Player loads actual inventory, active quest, objective and rewarded-quest prepared queries after a full save. Both rewards remain1; repeated turn-in is denied and rewarded quests are absent from the active turn-in menu.",
+    "8 additional saved-retry sequences: both factions/all4 difficulties save each completed quest with full bags, retry after prepared reload while still full, free one slot and claim. Further fresh Player reloads occur immediately after the native reward transaction with NO intervening full SaveToDB. Titan's Boon, the44868 next offer/acceptance and Plume all survive; no duplicate reward appears."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidTurnInNative.ps1: PASS,24 chain/retry cases, exit0, DBErrors0 bytes.",
+    "Test-TrialRaidCriteriaNative.ps1: PASS after adding the support-only include guard/shared runner mode; previous boss/player/pet/criteria/lifetime/save-load coverage retained, exit0 and DBErrors0 bytes.",
+    "Test-LostArmyTurnInRelease.ps1: PASS against the unchanged canonical executable; real reward handler/checkpoint PE/thunk checks and final-link/source freshness retained.",
+    "git diff --check: PASS."
+  ],
+  "evidence": {
+    "turnin_logs": "build-extractors/runtime-test/trial-raid-turnin-native/run-20261019-120432",
+    "turnin_input_manifest": "build-extractors/runtime-test/trial-raid-turnin-native/run-20261019-120432/native-inputs.json",
+    "criteria_regression_log": "build-extractors/runtime-test/trial-turnin-criteria-regression.log",
+    "release_check_log": "build-extractors/runtime-test/trial-turnin-release-check.log",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "4D0136C9BA972318BDE952F2794EA8591D83A06563F172F28F450A8C4DB3607D",
+    "actual_game_library_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "actual_scripts_library_sha256": "B7F8E8F963B37923A49ED6A67B097310D85EB7ECA74FEAE67839C197FB213BAE",
+    "production_code_or_sql_changes": false,
+    "server_rebuild_or_restart_needed": false,
+    "isolation": "Schema-only disposable auth/character databases167 tables with a limited random user; World/Hotfix READ ONLY. No personal rows copied or modified. Final matching scratch schema and user counts both0."
+  },
+  "limits_and_remaining_checks": [
+    "Questgiver Actors use native templates/relations and actual interaction/menu/admission/reward code, with fixture placement and NullCreatureAI. No special sQuestAccept/sQuestReward overrides exist for these Odyn scripts; actual raid actor creation/return/arrival and saved-DONE access are still outside this probe.",
+    "The preceding44721 reward is a fixture seed; this does not replay that quest or the earlier story. Quest rows/addons/links are scoped inputs, not the complete World startup loader.",
+    "Prepared reloads execute the real persistence readers in fresh Players, not a full authenticated Player::LoadFromDB/login. No network client/socket is connected: menu contents and acceptance execute, but visible quest windows and the next-quest popup are not client-verified.",
+    "No new Release build/startup is claimed for this test-only change. The probe links the existing canonical5efc6708 implementation and records its executable/library hashes.",
+    "No WoW client operated. Verify actual Odyn/Havi menus, victory actor availability/arrival, the reward/next-offer UI, full-bag messages and saved-raid reentry in the7.3.5 client. Preserve all earlier combat, scene, voice, camera and visual pending checks."
+  ]
+}

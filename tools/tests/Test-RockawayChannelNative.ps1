@@ -1,4 +1,4 @@
-param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
+param([switch]$Offensive, [switch]$Baseline, [switch]$LostArmy, [switch]$MasterLoot, [switch]$RollCompletion, [switch]$GroupLifecycle, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [switch]$TrialTurnIn, [string]$CharacterScratch, [string]$AuthScratch, [string]$ScratchUser, [string]$ScratchPassword)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 if($LostArmy -and $Offensive){throw 'Select one native probe'}
@@ -13,8 +13,9 @@ $scratchProbe=$GroupLifecycle -or $QuestTurnIn -or $RaidFragments -or $TrialCrit
 $lootProbe=$LostArmy -or $MasterLoot -or $RollCompletion -or $GroupLifecycle -or $QuestTurnIn -or $RaidFragments -or $TrialCriteria
 if($Baseline -and !$Offensive -and !$lootProbe){throw 'Select a supported native baseline'}
 if($TrialCriteria -and ($RaidFragments -or $QuestTurnIn -or $GroupLifecycle -or $RollCompletion -or $MasterLoot -or $LostArmy -or $Offensive)){throw 'Select one current native probe'}
-$stem=if($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
-$directory=if($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
+if($TrialTurnIn -and (!$TrialCriteria -or $Baseline)){throw 'Select the current Trial turn-in wrapper'}
+$stem=if($TrialTurnIn){'TrialRaidTurnInNative'}elseif($TrialCriteria){'TrialRaidCriteriaNative'}elseif($RaidFragments){'RaidFragmentsNative'}elseif($QuestTurnIn){'LostArmyTurnInNative'}elseif($GroupLifecycle){'GroupRollLifecycleNative'}elseif($RollCompletion){'RollCompletionNative'}elseif($MasterLoot){'MasterLootNative'}elseif($LostArmy){'LostArmyLootNative'}elseif($Offensive){'RockawayOffensiveNative'}else{'RockawayChannelNative'}
+$directory=if($TrialTurnIn){'trial-raid-turnin-native'}elseif($TrialCriteria){'trial-raid-criteria-native'}elseif($RaidFragments){'raid-fragments-native'}elseif($QuestTurnIn){'lost-army-turnin-native'}elseif($GroupLifecycle){'group-roll-lifecycle-native'}elseif($RollCompletion){'roll-completion-native'}elseif($MasterLoot){'master-loot-native'}elseif($LostArmy){'lost-army-native'}elseif($Offensive){'rockaway-offensive-native'}else{'rockaway-channel-native'}
 $output=Join-Path $repo "build-extractors/runtime-test/$directory"
 if($Baseline){$output+='-baseline'}
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -22,7 +23,8 @@ if($Offensive -or $lootProbe){
  $questSource=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
  $query=[regex]::Match($questSource,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value
  if(!$query){throw 'Native quest loader SELECT could not be extracted'}
- if($TrialCriteria){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44729,44868,44923,45088)"')}
+ if($TrialTurnIn){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44721,44729,44771,44868,44923,45088)"')}
+ elseif($TrialCriteria){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44729,44868,44923,45088)"')}
  elseif($lootProbe){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44923,45088)"')}
  else{[IO.File]::WriteAllText("$output/NativeRockawayQuest.inc",$query+' " WHERE ID=44746"')}
  if($Baseline -and $Offensive){
@@ -30,6 +32,13 @@ if($Offensive -or $lootProbe){
   if($LASTEXITCODE){throw 'Pinned Rockaway baseline unavailable'}
   [IO.File]::WriteAllText("$output/RockawayBaseline.inc",($oldHeader -join "`n"))
  }
+}
+if($TrialTurnIn){
+ $loader=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
+ $a=$loader.IndexOf('        if (qinfo->PrevQuestID)');$b=$loader.IndexOf('        if (qinfo->LimitTime)',$a)
+ $c=$loader.IndexOf('        if (qinfo->NextQuestIdChain)');$d=$loader.IndexOf('        for (uint8 j = 0; j < QUEST_REWARD_CURRENCY_COUNT;',$c)
+ if($a -lt 0 -or $b -le $a -or $c -lt 0 -or $d -le $c){throw 'Native quest link loader boundaries changed'}
+ [IO.File]::WriteAllText("$output/NativeTrialQuestLinks.inc",$loader.Substring($a,$b-$a)+$loader.Substring($c,$d-$c))
 }
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
@@ -128,6 +137,11 @@ if($RaidFragments){foreach($path in @('RaidFragmentsNative.cpp','LostArmyTurnInN
 if($TrialCriteria){
  $hashes['actual-final-link-scripts.lib']=(Get-FileHash $trialScripts).Hash
  foreach($path in @('boss_tov_odyn.cpp','boss_tov_helya.cpp','trial_of_valor.h')){$hashes["src/server/scripts/Legion/TrialOfValor/$path"]=(Get-FileHash "$repo/src/server/scripts/Legion/TrialOfValor/$path").Hash}
+}
+if($TrialTurnIn){
+ $hashes['tools/tests/TrialRaidTurnInNative.cpp']=(Get-FileHash "$repo/tools/tests/TrialRaidTurnInNative.cpp").Hash
+ $hashes['tools/tests/Test-TrialRaidTurnInNative.ps1']=(Get-FileHash "$repo/tools/tests/Test-TrialRaidTurnInNative.ps1").Hash
+ $hashes['NativeTrialQuestLinks.inc']=(Get-FileHash "$output/NativeTrialQuestLinks.inc").Hash
 }
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File

@@ -67,5 +67,11 @@
     "result": "Full native boss callback -> InstanceScript -> AchievementMgr -> CriteriaTree -> delayed Player quest completion now passes all4 raid difficulties, both factions, player/pet sources, repeat/rejection and actual quest/objective/achievement saved loading. Previous fixture-bridge evidence remains historical; new native test closes that middle dispatch gap.",
     "fix": "Stale100ms AchievementMgr credit could complete an abandoned/reaccepted quest. Native abandonment packet reproduces it on pinned8b23c3c5; scoped AddQuestDelayedEvent rejects the old lifetime.",
     "limits": "Final encounter prerequisites and base instance data are seeded; no full raid fight, live questgiver/reward sequence or client verification. All earlier pending client checks remain."
+  },
+  "native_turnin_followup_2026_10_19": {
+    "date": "2026-10-19",
+    "audit": "docs/audits/trial-raid-turn-in-2026-10-19.json",
+    "result": "Native44729/44868 accept/turn-in packets, quest menu/admission, fixed rewards142533/142534, next44868 acceptance, full-bag retries and immediate checkpoint/prepared reloads pass both factions/all4 difficulties. No production code or SQL repair required.",
+    "limits": "Questgiver pose/earlier44721 completion are fixture inputs. Actual client windows, victory actor availability/arrival and saved-DONE reentry remain pending; no full authenticated login or raid playthrough is claimed."
   }
 }
