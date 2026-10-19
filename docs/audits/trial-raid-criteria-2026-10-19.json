@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-19",
+  "quests": [44729, 44868],
+  "status": "Native encounter-to-quest dispatch gap closed; stale deferred achievement credit fixed and deployed. Client verification remains pending.",
+  "problem": {
+    "previous_evidence_gap": "The earlier quest-specific tests bridged AchievementMgr progress/tree notification with a fixture. The new probe links the actual final-link game.lib and scripts.lib and loads the runtime DB2 catalogs.",
+    "reproduced_failure": "Emit encounter credit, abandon through CMSG_QUEST_LOG_REMOVE_QUEST, and accept the same quest before the 100ms achievement notification. The old notification sets the new attempt's objective to1 and completes it despite the native abandon handler clearing its criteria progress.",
+    "fix": "AchievementMgr::SetCriteriaProgress now uses the existing Player::AddQuestDelayedEvent with the quest mapped to the completed tree. Abandoning invalidates that accepted quest's lifetime; a later encounter still completes a new attempt.",
+    "scope": "Shared quest CriteriaTree notification; encounter IDs, native DB2 mechanics, raid scripts and SQL are unchanged."
+  },
+  "native_evidence": {
+    "catalog": [
+      "44729: native tree55330 -> child55331 -> Criteria34579/type165/encounter1958/map1648.",
+      "44868: native tree55482 -> child55483 -> Criteria34647/type165/encounter2008/map1648.",
+      "Actual AchievementGlobalMgr loaders build quest mappings, criteria and parent/child trees from runtime DB2/World data; no fixture invokes AchieveCriteriaCredit on their behalf."
+    ],
+    "dispatch": [
+      "Actual linked boss_tov_odyn AI is registered and created through ScriptMgr. Fixture defender state permits the native ACTION_1/timed phase2 entry; its post-scaling damage callback executes surrender, DONE and1958 dispatch. A repeated lethal callback is rejected.",
+      "Actual linked boss_helya_tov AI executes through native Unit::Kill -> JustDied ->2008 dispatch/DONE, with player and real Pet killers.",
+      "Actual InstanceScript::DoUpdateAchievementCriteria iterates map player references; Player::UpdateAchievementCriteria and full AchievementMgr execute requirements, progress, tree completion, deferred quest credit and delayed Player completion.",
+      "Both quests pass LFR17/Normal14/Heroic15/Mythic16 with two grouped recipients, Human and Orc; each receives objective1 and COMPLETE.",
+      "Wrong assets0/1809/1962/other raid boss give no quest progress. Missing, rewarded, abandoned and outside-map group members receive none. Duplicate emission before completion increments native encounter counters to2 while the quest objective remains1; subsequent emissions after quest completion add no progress.",
+      "Abandon/reaccept is exercised through the actual deserialized packet/handler at0ms and200ms. Current code rejects old callbacks at both boundaries; the pinned old library reproduces the0ms stale-notification failure. New encounter emission remains usable.",
+      "Actual SaveToDB plus native prepared _LoadQuestStatus/_LoadQuestStatusObjectives and AchievementMgr::LoadFromDB in a fresh Player preserve COMPLETE, objective1 and criterion1 and reject repeated encounter credit. This is not a full authenticated login."
+    ],
+    "baseline_commit": "8b23c3c5",
+    "baseline_game_sha256": "DB03DA25F79F1B2BA54D16884F22ED8ACDA6685E8882ECDF65EF3D29BC42F39D",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-criteria-native-baseline/run-20261019-105634",
+    "current_logs": "build-extractors/runtime-test/trial-raid-criteria-native/run-20261019-110032",
+    "baseline_and_current_exit": 0,
+    "baseline_and_current_dberrors_bytes": 0,
+    "test_isolation": "Schema-only disposable auth/character databases (167 tables), dedicated limited user; World/Hotfix connections READ ONLY. No personal rows copied. Final matching scratch schema/user counts both0."
+  },
+  "automated_checks": [
+    "Test-TrialRaidCriteriaNative.ps1: PASS; all4 difficulties, full native achievement/tree/quest dispatch, actual boss callbacks, player/pet sources, rejection/retry and saved progress.",
+    "Test-TrialRaidCriteriaNative.ps1 -Baseline: PASS means pinned8b23c3c5 stale notification reproduced, including actual abandonment packet.",
+    "Test-TrialRaidCriteriaRelease.ps1: PASS; actual canonical PE/thunks call AddQuestDelayedEvent from Player achievement progress and retain Odyn/Helya instance criteria dispatch, with final-link/source freshness checks.",
+    "Test-TrialOdynData.ps1 and Test-HelyaData.ps1: PASS; live read-only chain/objective/actor/reward checks, native DB2 catalogs and previous extracted Player tests retained as complementary evidence.",
+    "Test-TrialOdynSurrender.ps1 -VerifyReleaseBinary and Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS.",
+    "Release worldserver and bnetserver build: PASS, standard generated final-link libraries, no global OutDir override.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 bytes and stderr0 bytes."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "4D0136C9BA972318BDE952F2794EA8591D83A06563F172F28F450A8C4DB3607D",
+    "bnetserver_sha256": "D0395016E285EA27C21A830359AE2C28138F89541D8E61663F5A1D6E19EF3A66",
+    "actual_final_link_game_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "actual_final_link_scripts_sha256": "B7F8E8F963B37923A49ED6A67B097310D85EB7ECA74FEAE67839C197FB213BAE",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-criteria-native/startup-20261019-105656",
+    "server_left_running": false,
+    "database_migrations": false
+  },
+  "test_development_findings": [
+    "Initial incomplete fixture omitted map1648 mmap/vmap registration and achievement additional-data/reward/realm catalogs. Native failures were retained in earlier run logs and repaired by completing bootstrap, not by suppressing errors.",
+    "Initial raw RemoveActiveQuest setup bypassed the packet handler's criteria reset and could legitimately replay retained completion. The final regression executes the native abandonment packet and requires its real reset; old/new assertions distinguish the actual stale100ms notification.",
+    "Native duplicate encounter progress is an accumulating counter. The assertion checks exact-once quest objective separately instead of incorrectly requiring that raw counter to stay1 before completion.",
+    "Release optimizes away the PLAYER_CRITERIA branch in Guild/Scenario template instantiations; the PE assertion checks the actual Player instantiation rather than demanding unreachable calls."
+  ],
+  "remaining_limits_and_client_checks": [
+    "Fixture creates real players/raid membership and seeds final encounter prerequisites. It uses a base InstanceScript subclass with completed defender data, not the full instance_trial_of_valor progression, doors or persistence. Odyn's final post-scaling hook is invoked directly with a lethal final-damage input; Helya uses Unit::Kill. Full encounters and the damage/spell rotation are not played.",
+    "Native actor positions are controlled for credit testing; actual Helya arena/phase transitions, Odyn return, chest scheduling, victory actor summons, voice, visuals and saved-DONE access remain client checks from the earlier audits.",
+    "The saved probe covers actual quest/objective/achievement persistence and prepared loading, not full login/authentication, questgiver UI, actual reward/next-offer interaction or quest reward inventory for these two quests.",
+    "No WoW client was operated. Retain all pending client checks in trial-odyn-favor-2026-10-18.json and trial-helya-judgment-2026-10-18.json; this follow-up does not mark either whole quest client-verified."
+  ]
+}

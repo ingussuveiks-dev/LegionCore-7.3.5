@@ -1,4 +1,4 @@
-param([switch]$Baseline, [switch]$QuestTurnIn, [switch]$RaidFragments, [string]$AdminUser='root')
+param([switch]$Baseline, [switch]$QuestTurnIn, [switch]$RaidFragments, [switch]$TrialCriteria, [string]$AdminUser='root')
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
@@ -34,7 +34,7 @@ try{
   }
   $tableCount+=$tables.Count
  }
- $mode=if($RaidFragments){@{RaidFragments=$true}}elseif($QuestTurnIn){@{QuestTurnIn=$true}}else{@{GroupLifecycle=$true}}
+ $mode=if($TrialCriteria){@{TrialCriteria=$true}}elseif($RaidFragments){@{RaidFragments=$true}}elseif($QuestTurnIn){@{QuestTurnIn=$true}}else{@{GroupLifecycle=$true}}
  & "$PSScriptRoot/Test-RockawayChannelNative.ps1" @mode -CharacterScratch $scratch -AuthScratch $authScratch -ScratchUser $scratchUser -ScratchPassword $scratchPassword -Baseline:$Baseline
 }finally{
  try{

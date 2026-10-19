@@ -2504,7 +2504,10 @@ bool AchievementMgr<T>::SetCriteriaProgress(CriteriaTree const* tree, uint32 cha
         {
             uint32 criteriaID = sAchievementMgr->GetParantTreeId(progress->parent->ID);
             if (player->CanContact())
-                player->AddDelayedEvent(100, [player, criteriaID]() -> void { if (player) player->AchieveCriteriaCredit(criteriaID); });
+            {
+                uint32 questId = sAchievementMgr->_criteriaTreeForQuest[treeParent->ID];
+                player->AddQuestDelayedEvent(questId, 100, [player, criteriaID]() { player->AchieveCriteriaCredit(criteriaID); });
+            }
         }
     }
 

@@ -64,5 +64,12 @@
     "Wipe/evade and retry; verify fresh tentacles and counters. Test LFR, normal, heroic and mythic separately; complete ability tuning is outside this audit.",
     "Kill Helya in phase3, verify all eligible group members receive44868 credit once, and confirm loot and other quests sharing Helya are preserved.",
     "Watch Odyn's missile/jump arrival and conversation, turn in44868 for Plume of the Fallen Val'kyr, then use the exit gossip. Verify saved-DONE reentry and actual questgiver interaction separately."
-  ]
+  ],
+  "native_followup_2026_10_19": {
+    "date": "2026-10-19",
+    "audit": "docs/audits/trial-raid-criteria-2026-10-19.json",
+    "result": "Full native boss callback -> InstanceScript -> AchievementMgr -> CriteriaTree -> delayed Player quest completion now passes all4 raid difficulties, both factions, player/pet sources, repeat/rejection and actual quest/objective/achievement saved loading. Previous fixture-bridge evidence remains historical; new native test closes that middle dispatch gap.",
+    "fix": "Stale100ms AchievementMgr credit could complete an abandoned/reaccepted quest. Native abandonment packet reproduces it on pinned8b23c3c5; scoped AddQuestDelayedEvent rejects the old lifetime.",
+    "limits": "Final encounter prerequisites and base instance data are seeded; no full raid fight, live questgiver/reward sequence or client verification. All earlier pending client checks remain."
+  }
 }
