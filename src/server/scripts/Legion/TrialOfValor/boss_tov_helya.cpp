@@ -240,6 +240,7 @@ struct boss_helya_tov : BossAI
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellCorrupted);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellBleakEruption);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellDarkHatred);
+        instance->DoRemoveAurasDueToSpellOnPlayers(SpellBilewaterRedox);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellTaintOfTheSea);
         instance->DoRemoveAurasDueToSpellOnPlayers(SpellOrbofCorrosionOnPlayer);
     }

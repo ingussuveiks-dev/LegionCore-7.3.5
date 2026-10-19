@@ -91,7 +91,27 @@ static void CheckPhaseOne(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& 
     SlimeReset(p,map,helya);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());float dx=10*std::cos(helya.GetOrientation()),dy=10*std::sin(helya.GetOrientation());
     GarmPlayer behind(map,p.getRace());map.PlayerRelocation(&p,helya.GetPositionX()+dx,helya.GetPositionY()+dy,helya.GetPositionZ(),0);map.PlayerRelocation(&behind,helya.GetPositionX()-dx,helya.GetPositionY()-dy,helya.GetPositionZ(),0);p.RemoveAura(227982);behind.RemoveAura(227982);
     SlimeBreath(helya);PumpHelya(map,500);Require(p.HasAura(227982)&&!behind.HasAura(227982),"Actual Bilewater cone missed front or hit behind");SlimeReset(p,map,helya,false);std::cout<<"REDOX_AFTER_WIPE active="<<p.HasAura(227982)<<std::endl;
+#ifdef TRIAL_HELYA_PHASE1_BASELINE
+    Require(p.HasAura(227982),"Pinned Redox wipe omission changed");
+#else
+    Require(!p.HasAura(227982),"Bilewater Redox survived native reset");
+#endif
     PumpHelya(map,20000);Require(Actors(map,114553).empty()&&SlimePools(map).empty(),"Pending Bilewater projectile survived wipe");
+    SlimeReset(p,map,helya);helya.SetFacingTo(helya.GetHomePosition().GetOrientation());map.PlayerRelocation(&p,helya.GetPositionX()+dx,helya.GetPositionY()+dy,helya.GetPositionZ(),0);p.RemoveAura(227982);SlimeBreath(helya);PumpHelya(map,500);Require(p.HasAura(227982),"Victory probe lacks actual breath-applied Redox");
+    auto redox=sSpellMgr->GetSpellInfo(227982);Require(redox->GetDuration(map.GetDifficultyID())==30000,"Native Redox duration changed");
+    // A former30-player fixture can exceed the four-player helper's uint32
+    // lethal-input conversion. Use bounded real damage calls, never patch HP.
+    std::cout<<"SLIME_PHASE_INPUT health="<<helya.GetHealth()<<" relative="<<helya.GetHealth(&p)<<" multiplier="<<helya.GetHealthMultiplierForTarget(&p)<<std::endl;
+    for(unsigned i=0;i<16&&helya.AI()->GetData(2)==1;++i)p.DealDamage(&helya,UINT32_MAX-4096,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);
+    Require(helya.AI()->GetData(2)==2,"Bounded native damage missed phase two");for(auto tentacle:Actors(map,114900))p.Kill(tentacle,false);PumpHelya(map,7000);Require(helya.AI()->GetData(2)==3&&p.HasAura(227982),"Victory probe did not hold Redox through real phase transitions");
+    helya.ResetPlayerDamageReq();helya.LowerPlayerDamageReq(1);helya.SetLootRecipient(&p);for(unsigned i=0;i<16&&helya.IsAlive();++i)p.DealDamage(&helya,UINT32_MAX-4096,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);Tick(p,2000);PumpHelya(map,15000);
+    Require(helya.isDead(false)&&map.GetInstanceScript()->GetBossState(2)==DONE&&p.GetQuestStatus(44868)==QUEST_STATUS_COMPLETE&&p.GetQuestObjectiveData(44868,55482)==1&&Actors(map,114553).empty()&&SlimePools(map).empty(),"Native Bilewater retry/victory lost quest credit or left slimes/pools");Checkpoint(map,group,7);
+#ifdef TRIAL_HELYA_PHASE1_BASELINE
+    Require(p.HasAura(227982),"Pinned Redox victory omission changed");
+#else
+    Require(!p.HasAura(227982),"Bilewater Redox survived native victory");
+#endif
+    std::cout<<"REDOX_AFTER_VICTORY active="<<p.HasAura(227982)<<std::endl;
     std::cout<<"PASS: native phase-one counts/geometry/summons/liquefaction/reset; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
 int main(int argc,char** argv)

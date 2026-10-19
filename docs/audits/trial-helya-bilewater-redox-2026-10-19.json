@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "preceding_fixes": {
+    "ed16642d": "Bilewater missile landing positions and native count/summon tests",
+    "d5d5bf95": "Health-dependent Bilewater pool geometry, native lifecycle and SQL binding"
+  },
+  "status": "The authorized Bilewater code/data audit is complete: missile placement, inherited raid-size counts, real slimes, health-dependent damage/pools, player/pet kills, reset and victory cleanup have native coverage. Redox omission is repaired. Client presentation and full encounter/quest verification remain pending.",
+  "repair": "Add227982 Bilewater Redox to Helya's existing shared RemoveAllDebaffsOnPlayer list. Reset/evade and JustDied already invoke this list. Native227982 is a30-second debuff; clearing other breath effects without it left reduced armor after a wipe or victory. No duration, armor amount, combat application or between-phase behavior changed.",
+  "native_validation": [
+    "Final Test-TrialHelyaPhase1Native.ps1 -VerifyReleaseBinary: eight complete cases (17/14/15/16, Human/Orc). All prior count boundaries/GM exclusion,64 sampled geometry cases/384 real summons, natural100/25-percent liquefaction, actual periodic damage, enter/leave/re-enter membership and player/pet corpse/minimum-pool checks pass against the final Release libraries and live scoped SQL binding.",
+    "An actual new227967 cast applies227982 to the front Player while a separate native Player behind Helya remains unaffected. After500ms, the real evade/reset removes Redox before its30-second duration ends, cancels pending missiles and leaves no late slimes/pools during20 seconds of native updates. No manual aura injection supplies the tested Redox.",
+    "A fresh retry obtains Redox from another real breath. Actual damage enters phase2, all nine real tentacle deaths enter phase3 and the native delayed return completes while Redox is still present. Real phase-three killing damage/JustDied clears it, removes slimes/pools, completes44868 objective55482 exactly once and saves actual group_instance mask7. No DONE/phase/quest-credit state is directly seeded by this extension.",
+    "Pinned1ef0e154 libraries reproduce both omissions in eight reference cases: REDOX_AFTER_WIPE active=1 and REDOX_AFTER_VICTORY active=1. Current cases report0 for both. The baseline also retains the deliberately asserted old contraction/full-size pools while using current World data; it is a C++ reference comparison.",
+    "The first victory-probe draft reused the four-player uint32 lethal-input helper after synthetic30-player count tests. Native Heroic health3323247872 times1.5 exceeds uint32; narrowing failed to cross65 percent. The rejected fixture attempt was corrected with bounded actual DealDamage calls (at most16), never direct HP/phase edits. This test-input correction is not a new server fix or a claim about class damage tuning.",
+    "Final Test-TrialHelyaPhase3Native.ps1 -VerifyReleaseBinary passes eight cases against the same final libraries with the separate native AreaTrigger script loader enabled. Existing orb/Decay/Fury, cone/axion/absorb/control, geometry, reset/victory/quest assertions remain valid. The full Helya/Fury/quest/reward native suite passed at preceding pool commit d5d5bf95; that historical run is preserved in its audit rather than relabeled as a new final-binary run.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary passes its extracted production handlers with modeled services, distinct from full native execution. Canonical exception-bounded PE checks identify227982 in the shared cleanup, retain native pool scale calls and all earlier breath/Fury/control gates. SQL migration/data tests from d5d5bf95 remain unchanged.",
+    "Both Release targets build through normal CMake final-link paths into build-extractors/bin/Release; runtime assets/configuration are preserved. Final startup reaches ready and exits0 with empty DBErrors/stderr. Native runs exit0 with empty DBErrors and no Server.log ERROR lines. Scratch character/auth schemas and users are removed; no personal rows are copied or repaired."
+  ],
+  "evidence": {
+    "runs": {
+      "trial-helya-phase1-native": "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-193656",
+      "trial-helya-phase1-native-baseline": "build-extractors/runtime-test/trial-helya-phase1-native-baseline/run-20261019-193708",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261019-193537"
+    },
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "B83AC010DD1B9EBA2A99A530BCBDCD1906A835CF0282D4B1777B581BCE9DED98",
+      "build-extractors/bin/Release/bnetserver.exe": "B8552A8F850BDD61C0227FDC12F3B9715A02266BB860D67966EED54BDE31B903",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "0278508B06CD1EC2D4E7020D98E43FC0FA256708303B9A84D2BE4C1606701CAB",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "A427B520BE1895978EF6DBFBC51384D6E9ECD3113EA125F184E647EFC8BAFAF3",
+      "tools/tests/TrialHelyaPhase1Native.cpp": "93997488C2181DACB36FCC5B04F76D6C9E86556EF9F8B6A4ACBAF05C90BC7160",
+      "tools/tests/TrialGarmNative.cpp": "E59BED7248EBA7F03DB39A1C496A1F0906C70169039B22B3AE30A8B28F606C06",
+      "tools/tests/Test-TrialHelyaPoolRelease.ps1": "A25293127DEB97F423EB8E3603FD2DD57788FF705F99EE03CAC0706894BF2C1E",
+      "sql/updates/world/2026_10_19_01_helya_bilewater_pool_scale.sql": "A43AB5D0C212AC61880A194DE79085235AEB6FD4BE51E8C0C12642BA8EFB5A8C"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-193552"
+  },
+  "limits": [
+    "No WoW client control was used. Missile/telegraph/model rendering, scaled pool appearance, actual raid positioning/damage/healing and full encounter/quest completion still require7.3.5 client checks.",
+    "Inherited2..6 flex counts and51..106-yard forward distribution are preserved, not independently proven retail constants. Exact pool-radius coefficients are not established by packet captures. Historical guide/runtime differences, fixture inputs and observed failures remain in the preceding geometry/pool audits."
+  ]
+}

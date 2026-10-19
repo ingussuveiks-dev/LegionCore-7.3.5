@@ -1,6 +1,7 @@
 {
   "date": "2026-10-19",
   "map": 1648,
+  "redox_followup": "docs/audits/trial-helya-bilewater-redox-2026-10-19.json resolves the recorded Redox reset/victory omission and records final Release checks. Historical observations below are retained.",
   "preceding_fix": "ed16642d; docs/audits/trial-helya-bilewater-geometry-2026-10-19.json",
   "status": "Bilewater Corrosion now consumes the already supplied slime-health fraction for server radius and client scale fields. Native baseline/current, player/pet kills, membership/damage/reset, SQL replay and canonical Release checks pass. Redox cleanup is a distinct observed followup, not claimed repaired here.",
   "root_cause": "Helya already computes native227992 explosion damage and effect1's custom base point from max(5, remaining health percent). Damage scales correctly. CREATE_AREATRIGGER does not consume that base point for geometry; the SQL template fixes radius5, so25-percent and dead slimes still leave full-sized pools.",

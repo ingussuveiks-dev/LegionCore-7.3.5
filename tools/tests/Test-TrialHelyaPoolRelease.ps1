@@ -8,5 +8,6 @@ $range=Bounds '?OnCreate@at_bilewater_corrosion@@';$argument='/RANGE:0x{0:X},0x{
 $out=Join-Path $repo 'build-extractors/runtime-test/trial-helya-phase1-native'
 (& $dump.FullName /DISASM:NOBYTES $argument $exe) | Set-Content "$out/pool-create-disassembly.txt"
 if($LASTEXITCODE){throw 'Canonical Bilewater pool disassembly failed'}
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;scripts_library=(Get-FileHash $lib).Hash;native_spell_value=$true;server_radius_and_client_scale=$true} | ConvertTo-Json | Set-Content "$out/pool-release-inputs.json"
-'PASS: canonical Bilewater creation reads native spell value and publishes server radius/client scale.'
+if((Get-Content (Join-Path $repo 'build-extractors/runtime-test/trial-helya-phase3-native/debuff-cleanup-disassembly.txt') -Raw) -notmatch 'mov\s+edx,37A8Eh'){throw 'Canonical shared cleanup lacks Bilewater Redox227982'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;scripts_library=(Get-FileHash $lib).Hash;native_spell_value=$true;server_radius_and_client_scale=$true;redox_cleanup=$true} | ConvertTo-Json | Set-Content "$out/pool-release-inputs.json"
+'PASS: canonical Bilewater creation reads native spell value, publishes server radius/client scale and retains Redox cleanup.'
