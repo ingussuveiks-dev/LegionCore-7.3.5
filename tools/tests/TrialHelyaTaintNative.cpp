@@ -38,6 +38,33 @@ static void TaintRestart(GarmPlayer& p,InstanceMap& map,Creature& helya)
     Require(map.GetInstanceScript()->GetBossState(2)==NOT_STARTED&&!helya.HasUnitState(UNIT_STATE_EVADE),"Native Taint reset did not finish");
     map.PlayerRelocation(&p,510,670,2,0);helya.SetInCombatWith(&p);Require(helya.AI()->GetData(2)==1,"Native Taint retry failed");helya.RemoveAura(232229);
 }
+static void TaintSelection(GarmPlayer& p,InstanceMap& map,Creature& helya,GarmPlayer& closePlayer,GarmPlayer& distantPlayer)
+{
+    GarmPlayer extra1(map,p.getRace()),extra2(map,p.getRace()),extra3(map,p.getRace()),extra4(map,p.getRace());
+    LootPet pet(p,map);pet.setFaction(p.getFaction());pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());
+    std::vector<Player*> players{&p,&closePlayer,&distantPlayer,&extra1,&extra2,&extra3,&extra4};
+    unsigned const cap=map.GetDifficultyID()==DIFFICULTY_MYTHIC_RAID?5:3;
+    for(auto full:{false,true}){
+        TaintRestart(p,map,helya);helya.getThreatManager().clearReferences();
+        unsigned const eligible=full?unsigned(players.size()):cap-1;
+        for(unsigned i=0;i<players.size();++i){players[i]->SetGameMaster(i>=eligible);map.PlayerRelocation(players[i],510+float(i),670,2,0);players[i]->RemoveAura(228054);if(i<eligible)helya.AddThreat(players[i],i?1.0f:100000.0f);}
+        pet.RemoveAura(228054);helya.AddThreat(&pet,1.0f);
+        Require(helya.getThreatManager().getThreatList().size()==eligible+1,"Taint target probe did not admit controlled native threat inputs");
+        unsigned elapsed=0;for(;elapsed<25000;elapsed+=10){PumpHelya(map,10);bool applied=pet.HasAura(228054);for(auto player:players)applied|=player->HasAura(228054);if(applied)break;}
+        unsigned selected=0;for(auto player:players)if(player->HasAura(228054))++selected;
+        std::cout<<"TAINT_SELECTION full="<<full<<" elapsed="<<elapsed<<" eligible="<<eligible<<" selected="<<selected<<" pet="<<pet.HasAura(228054)<<" tank="<<p.HasAura(228054)<<std::endl;
+        Require(elapsed<25000&&helya.getVictim()==&p,"Native first Taint/tank victim missing");
+#ifdef TRIAL_HELYA_TAINT_BASELINE
+        if(!full)Require(pet.HasAura(228054)&&selected==eligible,"Pinned raw-threat pet selection no longer reproduced");
+        Require(selected+unsigned(pet.HasAura(228054))==cap,"Pinned Taint cap changed");
+#else
+        Require(!pet.HasAura(228054)&&p.HasAura(228054)&&selected==std::min(cap,eligible),"Native Taint omitted tank, selected pet, or lost player slots");
+        for(unsigned i=eligible;i<players.size();++i)Require(!players[i]->HasAura(228054),"Taint selected a Player outside its threat inputs");
+#endif
+    }
+    ClearCombat(p,helya);PumpHelya(map,2000);
+    for(auto player:players)player->SetGameMaster(false);
+}
 static void TaintCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     p.GetOrInitPetStable();LoadTaintConditions();GarmPlayer closePlayer(map,p.getRace()),distantPlayer(map,p.getRace());
@@ -46,6 +73,7 @@ static void TaintCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& grou
         std::cout<<"CATALOG spell="<<id<<" duration="<<s->GetDuration(map.GetDifficultyID())<<" speed="<<misc->MiscData.Speed<<" launch="<<misc->MiscData.LaunchDelay<<" description="<<sSpellStore.LookupEntry(id)->Description->Str[0]<<std::endl;
         for(unsigned i=0;i<3;++i){auto e=s->GetEffect(SpellEffIndex(i),map.GetDifficultyID());if(e->Effect)std::cout<<" EFFECT index="<<i<<" type="<<e->Effect<<" aura="<<e->ApplyAuraName<<" trigger="<<e->TriggerSpell<<" targets="<<e->TargetA.GetTarget()<<','<<e->TargetB.GetTarget()<<" radius="<<e->CalcRadius(&helya)<<std::endl;}
     }
+    TaintSelection(p,map,helya,closePlayer,distantPlayer);
     for(auto mode:{AURA_REMOVE_BY_ENEMY_SPELL,AURA_REMOVE_BY_EXPIRE,AURA_REMOVE_BY_DEFAULT,AURA_REMOVE_BY_CANCEL,AURA_REMOVE_BY_DEATH}){
         TaintRestart(p,map,helya);map.PlayerRelocation(&closePlayer,512,670,2,0);map.PlayerRelocation(&distantPlayer,530,670,2,0);
         TaintWatch watch(helya,map);helya.AddAura(228054,&p);Require(p.HasAura(228054),"Native Taint did not apply");Position const original=p.GetPosition();

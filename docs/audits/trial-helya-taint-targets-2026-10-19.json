@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "status": "Taint player selection repaired; phase-three scheduling follows in a separate focused commit.",
+  "repair": "Select living in-world non-GM Players from the native threat list on the same map. Always include the eligible current Player victim, then randomly choose distinct remaining Players up to three total, or five on Mythic. Pets cannot consume a slot. No spell data, first-phase timer or SQL change.",
+  "native_checks": [
+    "Eight cases: LFR/Normal/Heroic/Mythic, Human/Orc. Real earned access and native UpdateAI first Taint event, with actual native threat references and seven fixture Players plus a real owner-linked pet. No event injection or direct callback.",
+    "Reduced raid admits cap-minus-one Players plus pet, with surplus Players in actual GM mode so native zone-combat pulses cannot re-add them. Current chooses all eligible Players and no pet; pinned48b57e05 selects the pet in every case. Full raid chooses exactly three/five distinct Players including current victim in every current case; the accepted reference also omitted its tank in every full-raid case (random observation, not a deterministic negative assertion).",
+    "Initial rejected probe removed threat references but left surplus ordinary Players visible. Native zone-combat re-added them before the event; this was a fixture prerequisite, not an additional server bug. GM mode fixes the controlled input without bypassing the event.",
+    "Existing native dispel/expiry/Essence/reset/victory regressions pass in all eight cases for current and pinned reference. Canonical Release normal final-link build and existing bounded PE checks pass."
+  ],
+  "primary_references": [
+    {
+      "scope": "Patch7.3.5 guide: active tank always receives Taint.",
+      "author": "FatbossTV",
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806"
+    },
+    {
+      "scope": "Encounter source groups Taint applications as three targets, five on Mythic.",
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs_Legion/master/TrialOfValor/Helya.lua"
+    }
+  ],
+  "evidence": {
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-200653/native-lines.txt": "E06307B39C78CDE3CA0821DF27FBC24C298DD3DCB1917787F18453078B1243FA",
+      "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-200654/native-lines.txt": "A605A713C3D0FE305E04EE4F0425FDDC1789D2713F52B94C1D029AAAC657CC06",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "02C370ECF1D4E909036D180C615F6D6E0F5EC495EC99DD515A9C9C3E21524967",
+      "tools/tests/TrialHelyaTaintNative.cpp": "92F134ACBEEC14DC8F8C4F99B5AC662C9A1131F23899CEDB689434BCB5C6C413",
+      "build-extractors/bin/Release/worldserver.exe": "721C9307DCDBAE952AD9B63FD5092709840303E7AA9DE57789397B8C94B82A3F",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "A1E7877E1E37649ACBC9DD38124A479F2CC0BA4ACF80C810A264FEC74B6906EA"
+    },
+    "runs": {
+      "trial-helya-taint-native": "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-200653",
+      "trial-helya-taint-native-baseline": "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-200654"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-200700"
+  },
+  "limits": [
+    "No authenticated client or class/role raid composition verification. The native current-victim guarantee is tested; fixture Players are Warrior instances rather than a full authenticated raid.",
+    "First-phase existing timer differences from boss-mod observations are retained and not claimed retail-exact. Third-phase scheduling is still pending at this commit."
+  ]
+}

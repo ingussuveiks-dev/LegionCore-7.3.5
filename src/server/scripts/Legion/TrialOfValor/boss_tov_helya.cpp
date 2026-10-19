@@ -833,20 +833,27 @@ struct boss_helya_tov : BossAI
             {
                 if (eventPhase == PHASE_1 || eventPhase == PHASE_3)
                 {
-                    auto threatlist = me->getThreatManager().getThreatList();
-                    for (uint8 i = 0; i < (IsMythicRaid() ? 5 : 3); ++i)
-                    {
-                        if (threatlist.empty())
-                            break;
+                    std::list<Player*> targets;
+                    for (auto reference : me->getThreatManager().getThreatList())
+                        if (Unit* unit = reference->getTarget())
+                            if (Player* player = unit->ToPlayer())
+                                if (player->IsAlive() && player->IsInWorld() && !player->isGameMaster() && player->GetMap() == me->GetMap())
+                                    targets.push_back(player);
 
-                        if (auto itr = Trinity::Containers::SelectRandomContainerElement(threatlist))
-                        {
-                            if (Unit* target = itr->getTarget())
-                                me->AddAura(SpellTaintOfTheSea, target);
+                    // The active tank is always one of the targets; pets must not consume a slot.
+                    uint32 count = IsMythicRaid() ? 5 : 3;
+                    if (Unit* victim = me->getVictim())
+                        if (Player* tank = victim->ToPlayer())
+                            if (std::find(targets.begin(), targets.end(), tank) != targets.end())
+                            {
+                                me->AddAura(SpellTaintOfTheSea, tank);
+                                targets.remove(tank);
+                                --count;
+                            }
 
-                            threatlist.remove(itr);
-                        }
-                    }
+                    Trinity::Containers::RandomResizeList(targets, count);
+                    for (Player* target : targets)
+                        me->AddAura(SpellTaintOfTheSea, target);
                     if (IsMythicRaid())
                         events.RescheduleEvent(EVENT_TAINT_OF_THE_SEA, 12000);
                     else if (IsHeroicRaid())
