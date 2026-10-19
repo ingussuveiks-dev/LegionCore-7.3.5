@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "status": "Bilewater Breath missile contraction repaired; native geometry/count/summon checks pass. The newly observed health-independent pool radius is retained below for a separate lifecycle repair. No client verification claimed.",
+  "repair": "Phase-one SpellHit no longer uses GetFirstCollisionPosition's walking collision/six-yard height/backward-step rules. Preserve the existing51..106-yard forward pattern in11-yard steps, actual facing and2..6 raid-size count; query the native phase-aware terrain/VMap surface at each requested XY with MAX_HEIGHT/MAX_FALL_DISTANCE, as for the separately repaired phase-three missiles. No shared collision/movement code, SQL, damage or timing changed. Missing native surfaces are skipped rather than replaced by caster coordinates.",
+  "native_checks": [
+    "New phase-one mode links the actual final-link game/scripts libraries and reuses the existing earned Odyn/Guarm/26-trash native raid fixture. Eight cases: difficulties17/14/15/16 and Human/Orc. Additional native fixture Players supply map references directly; this is not admission of a real30-player Mythic raid.",
+    "Actual GetPlayersCountExceptGMs inputs1/10/11/15/16/20/21/25/26/30 exercise every inherited2/3/4/5/6 count boundary. At26 refs, making one real fixture Player a GM changes the count to25 and the actual queued missiles from6 to5. This verifies existing implementation behavior, not an independently established retail flex-count formula.",
+    "Eight facings per case:0,pi/4,pi/2,pi,authored4.29875,3pi/2,5.5,2pi-0.01. Across64 cases,384 real missile destinations retain their requested XY and native top supporting Z. Actual missile effects summon six114553 creatures per case at their real destination positions; slimes are alive, have154241 and are casting native liquefaction before the real evade/reset.",
+    "Pinned1ef0e154 reference libraries reproduce contraction on both factions and all difficulties: eastward all six destinations are shortened; at authored facing one of six is shortened. Reference assertions require the old behavior and still verify real summon execution, demonstrating why count-only tests missed this failure.",
+    "Runtime Spell/SpellEffect inputs show227967 ->230229 cone damage,230216 ->227972 summon, native15-second227990,227993 nearby-Helya resolution plus self-kill117624, and227992 damage/create-area effects. The live source13/227993 condition is read and admitted through the real ConditionMgr path. No callback model supplies missile/height/spawn/condition results.",
+    "Two real slimes run natural liquefaction. A native normalized damage hit and combat entry leave one at25 percent, preventing the original out-of-combat fixture health edit from regenerating. Real227992 cast payloads request approximately25-percent damage for the wounded slime and full damage for the other, allowing native CalcValue variance. Both die and create exactly one boss-owned pool each.",
+    "Actual evade/reset removes slimes, pools, pool auras and pending230216 events. A wipe500ms into an actual request followed by20 seconds of updates produces no late slimes/pools. Server diagnostics are clean; scratch character/auth schemas contain no copied personal rows and are removed with their limited users.",
+    "Canonical Release PE/thunk checks retain the native XY/height calls and reject both walking placement helpers from Helya SpellHit. Previous Fury/debuff/control PE checks still pass. Both Release server targets build in build-extractors/bin/Release through normal CMake final-link paths."
+  ],
+  "observed_followup": "At25 and100 percent health, both native227992 pools still have radius5. The boss already passes health percent as effect1's custom base point, but the fixed SQL AreaTrigger radius ignores it. This geometry commit does not claim to repair that distinct lifecycle defect.",
+  "references": [
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "patch": "7.3.5",
+      "scope": "Primary guide describes stationary slimes, health-dependent explosion/pool size and elevated-platform consequences when breath is aimed too far. Its20-second/80-percent numbers differ from native7.3.5 inputs; native15-second/95-percent data are retained. Exact retail spacing/flex-count formula is not inferred from this guide."
+    },
+    {
+      "url": "https://www.wowhead.com/spell=227990/bilewater-liquefaction",
+      "scope": "Available spell detail also describes15-second casting and up-to95-percent health-dependent reduction; the local native data and execution are the authority for this check."
+    }
+  ],
+  "evidence": {
+    "runs": [
+      {
+        "native_lines_sha256": "D482B63449826250F20A62F06DBC860F7B6F399A8D03DCFF7114EBE527B3B1D4",
+        "path": "build-extractors/runtime-test/trial-helya-phase1-native/run-20261019-192244",
+        "manifest_sha256": "85C4126E2D719208030CDBECFE6FBB30A9B903C6C27B22954CF4C80F7047759E"
+      },
+      {
+        "native_lines_sha256": "6D8D7B57FEA2AC690DA26498CD0985856EAB64C554E367DCC7FB68157A27D970",
+        "path": "build-extractors/runtime-test/trial-helya-phase1-native-baseline/run-20261019-192255",
+        "manifest_sha256": "9F08D9E9F28F828FCBABDE553C800D39FB86D36A4CEB5895AD929F14A3F1F027"
+      }
+    ],
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "A20DB1F578ABAAF2563B33EDEBF6F45DFC591DC90BE6294F4C7D187857AEEBA2",
+      "build-extractors/bin/Release/bnetserver.exe": "721EFCCEBC83AE6292178C3F12A711A98A9DEC130AE5E1A16B6A89715606F047",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "F526BB655782DE19127339C2F8509EA7393AF76B0BD5074EA11BE739B76B557D",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "AD20107B67CC0D5945112D5F77146BA8234B224F9A325248A8401EDD0EC99C97",
+      "tools/tests/TrialHelyaPhase1Native.cpp": "25451F32769A657DAFEF08550C33DC06084C392025A886C4D67C17439759A17A",
+      "tools/tests/Test-RockawayChannelNative.ps1": "82FB69348D233F0054F88A1169613FAFAF0113A79FF5CEB1355626E7789ABD40",
+      "tools/tests/Test-GroupRollLifecycleNative.ps1": "B4D628681F6F5823E2015246A759FD3540BE233513C840315C5BE276D48CDD33",
+      "tools/tests/Test-TrialHelyaBreathRelease.ps1": "258BC50846F9206AE969EC43DF2F97514BD1B450CA6561089894379B0070BE18"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-192310",
+    "geometry_manifest_sha256": "6D94C438EE11AFA4C9748C3928294B8A0E0E5631051D7F529E1C777EAC32841E"
+  },
+  "limits": [
+    "No authenticated WoW client, visual trajectory/telegraph, real raid damage tuning, grips/knockbacks or full encounter/quest verification. Eight angles are samples, not every possible facing. Existing forward distribution is preserved without claiming retail packet-capture proof.",
+    "Count probes cancel earlier real SpellEvents before subsequent requests; canceled events remain queued until their native update. Read-only observation filters pre-existing event pointers, rather than counting canceled payloads as new missiles."
+  ]
+}

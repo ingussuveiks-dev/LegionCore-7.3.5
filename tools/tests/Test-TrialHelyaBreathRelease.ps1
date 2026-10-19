@@ -16,6 +16,7 @@ foreach($name in @('?GetNearPoint2D@WorldObject@@QEBAXAEAM0MM_N@Z','?GetHeight@W
  if($hit -notcontains (Resolve (Symbol $name))){throw "Canonical Helya breath lacks projectile geometry call $name"}
 }
 if($hit -contains (Resolve (Symbol '?GetNearPosition@WorldObject@@'))){throw 'Canonical Helya breath retains walking-position fallback'}
+if($hit -contains (Resolve (Symbol '?GetFirstCollisionPosition@WorldObject@@'))){throw 'Canonical Bilewater breath retains walking collision/range contraction'}
 $range=Bounds '?SpellHit@boss_helya_tov@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
 (& $dump.FullName /DISASM:NOBYTES $argument $exe) | Set-Content "$out/breath-hit-disassembly.txt"
 if($LASTEXITCODE){throw 'Canonical Helya geometry disassembly failed'}

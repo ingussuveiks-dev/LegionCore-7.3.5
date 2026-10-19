@@ -199,8 +199,10 @@ static void CheckPhaseThree(GarmPlayer& p,InstanceMap& map,Creature& helya,Group
     std::cout<<"PASS: native phase-three targets/chase/Decay/breath/geometry/axion/absorb/reset/victory; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
     others.clear();
 }
+#ifndef TRIAL_HELYA_PHASE3_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunGarm(argc,argv,CheckPhaseThree);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

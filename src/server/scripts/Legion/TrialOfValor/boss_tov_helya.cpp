@@ -657,14 +657,15 @@ struct boss_helya_tov : BossAI
             else
                 count = 6;
 
-            Position pos;
-            float angle = 0.0f;
             float dist = 40.0f;
             for (uint8 i = 0; i < count; ++i)
             {
                 dist += 11.0f;
-                pos = me->GetFirstCollisionPosition(dist, angle);
-                me->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), SpellBilewaterBreathNpc, true);
+                float x, y;
+                me->GetNearPoint2D(x, y, dist, me->GetOrientation(), false);
+                float z = me->GetHeight(x, y, MAX_HEIGHT, true, MAX_FALL_DISTANCE);
+                if (z > INVALID_HEIGHT)
+                    me->CastSpell(x, y, z, SpellBilewaterBreathNpc, true);
             }
             break;
         }
