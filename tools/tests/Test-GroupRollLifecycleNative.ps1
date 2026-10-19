@@ -1,4 +1,4 @@
-param([switch]$Baseline, [string]$AdminUser='root')
+param([switch]$Baseline, [switch]$QuestTurnIn, [string]$AdminUser='root')
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
@@ -34,7 +34,8 @@ try{
   }
   $tableCount+=$tables.Count
  }
- & "$PSScriptRoot/Test-RockawayChannelNative.ps1" -GroupLifecycle -CharacterScratch $scratch -AuthScratch $authScratch -ScratchUser $scratchUser -ScratchPassword $scratchPassword -Baseline:$Baseline
+ $mode=if($QuestTurnIn){@{QuestTurnIn=$true}}else{@{GroupLifecycle=$true}}
+ & "$PSScriptRoot/Test-RockawayChannelNative.ps1" @mode -CharacterScratch $scratch -AuthScratch $authScratch -ScratchUser $scratchUser -ScratchPassword $scratchPassword -Baseline:$Baseline
 }finally{
  try{
   foreach($database in $created){

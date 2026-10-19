@@ -460,6 +460,33 @@ void WorldSession::HandleQuestGiverChooseReward(WorldPackets::Quest::QuestGiverC
         (_player->GetQuestStatus(packet.QuestID) != QUEST_STATUS_COMPLETE && !quest->IsAutoComplete()))
         return;
 
+    // A zero item is valid only when there is no selectable reward. Otherwise
+    // RewardQuest consumes the objectives without granting the missing choice.
+    if (!packet.ItemChoiceID)
+    {
+        bool needsChoice = quest->m_rewChoiceItemsCount != 0;
+        if (quest->PackageID)
+        {
+            bool hasFilteredReward = false;
+            if (auto items = sDB2Manager.GetQuestPackageItems(quest->PackageID))
+                for (auto item : *items)
+                    if (_player->CanSelectQuestPackageItem(item))
+                    {
+                        hasFilteredReward = true;
+                        break;
+                    }
+
+            auto fallback = sDB2Manager.GetQuestPackageItemsFallback(quest->PackageID);
+            needsChoice = needsChoice || hasFilteredReward || (fallback && !fallback->empty());
+        }
+
+        if (needsChoice)
+        {
+            _player->PlayerTalkClass->SendQuestGiverOfferReward(quest, packet.QuestGiverGUID, true);
+            return;
+        }
+    }
+
     if (_player->CanRewardQuest(quest, packet.ItemChoiceID, true))
     {
         _player->RewardQuest(quest, packet.ItemChoiceID, object, true);

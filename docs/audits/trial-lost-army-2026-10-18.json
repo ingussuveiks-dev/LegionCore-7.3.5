@@ -72,5 +72,7 @@
   "authenticity_followup": "docs/audits/helarjar-authenticity-2026-10-18.json",
   "player_progress_followup": "docs/audits/lost-army-player-progress-2026-10-18.json",
   "fragment_counts_followup": "docs/audits/helarjar-fragment-counts-2026-10-18.json",
-  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified."
+  "current_fragment_counts": "Migration05: reconstructed Rockaway10..15, Helya100..150. Earlier fixed15/Helya30..60 statements describe pre-fix data; exact retail bounds remain unverified.",
+  "turn_in_followup": "docs/audits/lost-army-turn-in-2026-10-19.json",
+  "turn_in_followup_note": "Full linked packet/quest/inventory/item-use/native save/load checks now cover both enders, all12 class rewards, bank/bag/full-inventory boundaries and all four ensemble appearance sets. Empty reward choice consumed fragments without an ensemble and is repaired. The separate checkpoint followup repairs persistence before the next full save; original instance/client/authenticity limitations remain retained."
 }

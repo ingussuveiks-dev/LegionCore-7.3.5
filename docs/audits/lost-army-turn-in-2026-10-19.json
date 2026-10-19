@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-19",
+  "quest": 45088,
+  "title": "Trial of Valor: The Lost Army",
+  "baseline": "197c304f",
+  "status": "Empty reward selection repaired; full native turn-in, item use and scoped save/load checks pass; client verification pending.",
+  "defect": "Actual QuestGiverChooseReward packet with ItemChoiceID=0 bypassed item validation. Native CanRewardQuest saw no matching choice to check, then RewardQuest consumed 1000 fragments and marked the quest rewarded without granting its package ensemble. The pinned full game library reproduces the loss at both Odyn entries.",
+  "fix": "After ordinary giver/interaction/status admission, reject zero when explicit choice items or a selectable native class/spec/faction package reward or fallback exist. Reoffer the reward and preserve objectives for retry. Zero remains accepted when there are no selectable items; no quest-specific ID whitelist or synthetic SQL reward was added.",
+  "native_inputs": "Actual scoped Quest constructor SELECT and native LoadQuestObjective; actual Item/ItemSparse, QuestPackageItem18559 and class-mask builder, item-use effects, spell effect255, TransmogSet/ItemModifiedAppearance stores, current World/Hotfix read-only data. Real ender rows114263 and116760 are copied into the private in-memory relation map. No production SQL changes.",
+  "automated_coverage": [
+    "Actual packet byte serialization/Read and WorldSession::HandleQuestGiverChooseReward, interaction checks, full CanRewardQuest/RewardQuest, native inventory and item objective dispatch. Both Odyn templates, all12 classes with human/orc faction inputs: exactly one appropriate ensemble,1000 consumed,7 excess retained, repeated packets refused.",
+    "Under-quota999 rejection; native bank-only1000 refusal; actual21841 bag-contained fragments accepted/consumed; full inventory leaves1007 and the quest intact, freeing one slot permits one reward. Explicit-choice and no-selectable-reward metadata variants are labeled private fixtures, not live45088 data.",
+    "Actual SaveToDB and native prepared _LoadInventory preserve bag and bank slot contents; AddQuest rescans the loaded fragments. Saved bank-only remains ineligible and saved bag-contained fragments remain usable. This is a scoped reacceptance fixture, not authenticated login/quest-log restoration.",
+    "All four native ensemble CastItemUseSpell paths consume the item and learn all nine set appearances. Actual SaveToDB persists excess fragments, completion and collection. A new Player uses native prepared inventory/rewarded-quest and CollectionMgr loaders; all appearances remain and repeated turn-in is refused."
+  ],
+  "runs": {
+    "runner": "tools/tests/Test-LostArmyTurnInNative.ps1",
+    "current": "build-extractors/runtime-test/lost-army-turnin-native/run-20261019-092756",
+    "baseline": "build-extractors/runtime-test/lost-army-turnin-native-baseline/run-20261019-092756",
+    "baseline_game_sha256": "05B1D6C257144390407829369EFD355BADE40286F040B5676C4D899AF4AC6A47",
+    "result": "Both exit0, DBErrors0 bytes. Baseline PASS means the expected empty-choice loss reproduced. The final probe additionally checks the separately repaired reward checkpoint described in the followup audit.",
+    "isolation": "Unique schema-only character/auth clones (167 tables), empty initial characters, disposable restricted SQL user, no personal data copy/write. World/Hotfix pools read-only, canonical config unchanged; clones/user removed in finally. Sessions are socketless process-lifetime allocations.",
+    "development_failures": "The new runner initially failed its scratch guard before opening the character pool, then session construction exposed an unopened auth fixture pool. Both harness setup errors were corrected using isolated auth/character connections. Neither was treated as a production defect or passing run."
+  },
+  "release": "Standard CMake Release worldserver/bnetserver build, no OutDir override, canonical build-extractors/bin/Release. Test-LostArmyTurnInRelease verifies source/final-link freshness and actual PE/thunk call sites. MSVC shares both offer-reward exits in one tail; two CanSelectQuestPackageItem call sites distinguish the new empty-choice path.",
+  "checkpoint_followup": "docs/audits/quest-reward-checkpoint-2026-10-19.json",
+  "limitations": [
+    "Real native handlers run against controlled initial Player/task state and live-template Actors with NullCreatureAI on a private map1220. This does not exercise the Trial of Valor instance, Odyn combat/phase/questgiver-flag transition or scripted instance callbacks. Human/orc class combinations test reward filtering, not legal character creation.",
+    "Native armor skills are seeded for appearance admission. Spell preparation/item consumption and collection saving/loading execute, but there is no socket, client UI, renderer, authenticated relog or normal world scheduler. These results do not establish full quest/client verification or changed retail drop/count/placement evidence.",
+    "Earlier fragment-acquisition, authenticity and client limitations in the original audit remain retained. No historical source/rate or reward metadata was changed."
+  ],
+  "prior_audit": "docs/audits/trial-lost-army-2026-10-18.json"
+}
