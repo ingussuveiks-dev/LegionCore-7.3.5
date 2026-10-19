@@ -53,5 +53,11 @@
     "Native save serializer/factory/loader and respawn SQL are exercised. Authenticated login, durable character_instance binding selection and an actual server restart/rejoin are not executed.",
     "DB creature loading and repeated world callbacks are invoked explicitly. The automatic grid scheduler's exact unload timing is not reproduced, although full map UnloadAll/reconstruction and normal creature creation/removal methods execute.",
     "Verify actual client scene, voice, landing animation, visible quest menus and saved-raid reentry. Other raid combat abilities, chest rendering/availability, lighting and exit gossip UI remain separate checks. No whole quest, raid or visual is marked client-verified."
-  ]
+  ],
+  "native_exit_followup_2026_10_19": {
+    "date": "2026-10-19",
+    "audit": "docs/audits/trial-raid-exit-2026-10-19.json",
+    "result": "Actual post-Helya gossip admission, selection, native DB2 far teleport/worldport ACK and quest/reward save/prepared reload pass72 cases across both factions/all4 difficulties/fresh and saved instances. Foreign-menu selection previously teleported; the scoped Odyn handler now validates and consumes the prepared native menu.",
+    "limits": "No client, authenticated login, durable raid binding or entrance rejoin is claimed. Destination socket workers are stopped for synchronous native execution. Earlier pending combat/scene/voice/UI/arrival/pet/chest checks remain."
+  }
 }

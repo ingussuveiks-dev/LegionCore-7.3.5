@@ -1,5 +1,6 @@
 #include "trial_of_valor.h"
 #include "QuestData.h"
+#include "GossipDef.h"
 
 enum Conversations
 {
@@ -25,17 +26,16 @@ struct npc_odyn_after_kill_helya : ScriptedAI
             me->CreateConversation(CONV_INTRO);
     }
 
-    void sGossipSelect(Player* player, uint32 /*sender*/, uint32 action) override
+    void sGossipSelect(Player* player, uint32 menuId, uint32 action) override
     {
-        uint32 graveyardId = 0;
+        // AI selection runs before Player::OnGossipSelect validates the menu.
+        auto& menu = player->PlayerTalkClass->GetGossipMenu();
+        if (menuId != me->GetCreatureTemplate()->GossipMenuId || menu.GetMenuId() != menuId || action != 1 || !menu.GetItem(action))
+            return;
 
-        if (action == 1)
-            graveyardId = 5779;
-
-        if (graveyardId)
-            if (WorldSafeLocsEntry const* entry = sWorldSafeLocsStore.LookupEntry(graveyardId))
-                player->TeleportTo(entry->MapID, entry->Loc.X, entry->Loc.Y, entry->Loc.Z, entry->Loc.O * M_PI / 180.0f);
-
+        player->PlayerTalkClass->ClearMenus();
+        if (WorldSafeLocsEntry const* entry = sWorldSafeLocsStore.LookupEntry(5779))
+            player->TeleportTo(entry->MapID, entry->Loc.X, entry->Loc.Y, entry->Loc.Z, entry->Loc.O * M_PI / 180.0f);
         player->CLOSE_GOSSIP_MENU();
     }
 };

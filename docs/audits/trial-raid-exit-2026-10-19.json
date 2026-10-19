@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-19",
+  "quests": [44729, 44868],
+  "status": "Native post-Helya exit, destination ACK and quest/reward persistence pass; invalid gossip selection fixed and canonical Release checked. Client confirmation remains pending.",
+  "baseline_commit": "9d0ea556",
+  "reproduced_problem": "WorldSession::HandleGossipSelectOption dispatches creature AI before Player::OnGossipSelect validates the menu. npc_odyn_after_kill_helya checked only option1, so a nearby player's packet with foreign menu20850 still teleported through the exit20849. The pinned pre-fix scripts library reproduces this in72 cases. The ordinary exit already worked; this is selection validation, not evidence that normal quest completion was blocked.",
+  "implementation": [
+    "The scoped Odyn handler now requires its template's native menu ID, the same currently prepared menu and an existing option1. Foreign menus, unopened menus and absent options cannot initiate this teleport.",
+    "Consume the prepared menus before teleporting, preserving the existing native WorldSafeLocs5779 lookup, orientation conversion and gossip close. No added quest gate, invented destination or shared gossip dispatcher change.",
+    "No production SQL or DB2 edits. NPC116760 retains primary flags3, menu20849, native option1 Send me back., confirmation broadcasts125916/106458 and text29996. WorldSafeLocs5779 resolves map1220 at2370.78/895.832/252.924, orientation314.302 degrees (rounded display only; native tests compare the actual DB2 floats)."
+  ],
+  "native_evidence": [
+    "Test-TrialRaidExitNative.ps1 reuses the actual instance factory, native DB boss loading, Odyn surrender/Helya Unit::Kill, victory summoning/landing and saved-instance reconstruction from the preceding instance audit. It adds a callback after fresh victory and after each saved boss-load order; no fixture constructs the exit actor.",
+    "Actual LoadNPCText, LoadPointsOfInterest, LoadGossipMenu and LoadGossipMenuItems feed Player::PrepareGossipMenu/SendPreparedGossip through deserialized CMSG_TALK_TO_GOSSIP. Actual menu admission yields menu20849 and its single option1. A scoped query requires no unhandled source14/15 conditions on this menu.",
+    "Deserialized CMSG_GOSSIP_SELECT_OPTION runs the actual session handler and linked Odyn AI. Current rejects unopened menu, foreign20850, absent0/99 and a50-yard interaction, then accepts the legitimate selection. The prepared menu is empty after use. Replayed selection and worldport ACK after arrival do not restart transfer.",
+    "Actual Player::TeleportTo/SafeTeleport, MapManager map selection, raid removal and WorldSession::HandleWorldPortAck execute synchronously. Assertions cover the native target/session map, pending transfer state, actual destination admission, completed teleport flags and coordinates/orientation from the native WorldSafeLocs DB2 record.",
+    "72 exit cases: four difficulties17/14/15/16 x fresh victory or either saved boss-load order x Human/Orc x no44868, completed/unrewarded44868 or rewarded44868. Earlier44729 reward is a prerequisite seed. Completed44868 is advanced through the native encounter helper; rewarded cases invoke the actual choose-reward packet and receive exactly one142534.",
+    "Actual SaveToDB first inserts each scratch character, then updates it before and after exit. SQL verifies saved map1220 and destination coordinates. Fresh Player objects run native prepared inventory/quest/objective/rewarded loaders, retaining the pending completed quest or rewarded quest and its one fixed item. Exit leaves the live raid's serialized boss data unchanged.",
+    "Pinned9d0ea556 game/scripts libraries run the same native teleport/ACK/persistence cases with a foreign menu packet; all72 explicitly require that the old handler accepts it. Current uses the canonical final-link libraries and rejects that packet."
+  ],
+  "automated_checks": [
+    "Test-TrialRaidExitNative.ps1: PASS,72 exit cases plus the retained native victory/turn-in/instance reconstruction and actor recovery assertions; exit0, DBErrors0 bytes.",
+    "Test-TrialRaidExitNative.ps1 -Baseline: PASS means72 foreign-menu reproductions with the pinned pre-fix libraries; exit0, DBErrors0 bytes.",
+    "Test-TrialRaidExitRelease.ps1: PASS, canonical PE/thunks contain native menu-ID/item lookup, ClearMenus and the exact coordinate TeleportTo overload; prior native instance/criteria/loot Release checks also pass.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS, existing phase/reset/death/instance and deployed scaled-damage regression retained.",
+    "Standard Release worldserver and bnetserver build: PASS; actual original CMake final-link libraries and canonical build-extractors/bin/Release, without global OutDir.",
+    "Canonical startup: ready=true, graceful exit0, DBErrors0 bytes, stderr0 bytes. No server/test process left running. Final scratch schema/user counts both0."
+  ],
+  "evidence": {
+    "current_logs": "build-extractors/runtime-test/trial-raid-exit-native/run-20261019-142526",
+    "baseline_logs": "build-extractors/runtime-test/trial-raid-exit-native-baseline/run-20261019-142528",
+    "startup_logs": "build-extractors/runtime-test/trial-raid-exit-native/startup-20261019-142603",
+    "baseline_scripts_sha256": "E69890E6E838640498D4168E1792AA5EE33170C1552013F9C7CF54DB488E51F6",
+    "baseline_game_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "actual_scripts_library_sha256": "4BCE790E278BBED4ACC332F16C5701C16B475029F4D60CCD371FEAA54979BA8C",
+    "actual_game_library_sha256": "98C1B92AF998EB1F9FAE3938A0DFCD27DA846B039A00952D20D0625EBD0EE566",
+    "worldserver_sha256": "64C4CC750CBFC010BBD3EEFC038F10C895140E9C99DF356847C57ADC783FDF5B",
+    "bnetserver_sha256": "18B89789ADA50858B2A345C6A751E2AFC90B559DFAA1A267B8F9CEEF8FFB88ED",
+    "world_safe_locs_db2_sha256": "233F1DB90A7013BAFC9A15033C965BAA7ED9A7BF662ECFB6EA8A3C4EB3A7B666",
+    "isolation": "Schema-only disposable auth/character databases167 tables and a random limited user. World/Hotfix sessions READ ONLY; no personal rows copied or modified. Runtime configs and private logs remain ignored."
+  },
+  "test_development_findings": [
+    "The first compile used the nonexistent CMSG_GOSSIP_HELLO name; corrected to this core's actual CMSG_TALK_TO_GOSSIP opcode.",
+    "The initial socketless probe left destination map workers running, allowing normal session expiry/logout to race synchronous test operations. It also incorrectly used SaveToDB(true) for updates, causing a duplicate scratch character INSERT. These were fixture errors. Final runs precreate actual destination maps, stop/join their socket workers before session admission, insert once and subsequently call SaveToDB() for updates; no production persistence or socket behavior was changed.",
+    "The initial PE assertion matched the first TeleportTo overload by an ambiguous symbol prefix; corrected to the exact coordinate overload. Final Release check passes. Failed development runs remain in ignored logs and are not counted as passes."
+  ],
+  "remaining_limits_and_client_checks": [
+    "No WoW client operated. Visible gossip text/confirmation, loading screen, arrival rendering, movement, camera and pet portrait still need the7.3.5 client. The server-side confirmation text is loaded, but clicking the confirmation UI cannot be verified here.",
+    "The deterministic probe registers an attached fixture session in the native World lookup and stops destination socket workers before driving ACK synchronously. It does not authenticate a real socket, replay map worker scheduling or prove packet delivery to a client.",
+    "Prepared quest/inventory reload is not full Player::LoadFromDB/login. The saved destination is verified in SQL, while raid boss serialization is compared in memory; durable character_instance binding selection, authenticated restart/rejoin and returning through the raid entrance remain separate checks.",
+    "Earlier44729 reward/fight prerequisites are fixture inputs; no complete raid combat, group eligibility or lockout playthrough is claimed. Retain all pending combat, scene, voice, visual, chest availability and reentry checks in the linked earlier audits."
+  ]
+}

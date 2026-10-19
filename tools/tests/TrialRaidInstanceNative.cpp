@@ -71,7 +71,8 @@ static void CheckActualTurnIns(InstanceMap& map,Creature& odyn,Creature& afterHe
     }
 }
 struct CompletedInstance { uint32 id;std::string data; };
-static CompletedInstance WinCase(Map& parent,Difficulty diff)
+using ExitCheck = void (*)(InstanceMap&, Creature&);
+static CompletedInstance WinCase(Map& parent,Difficulty diff,ExitCheck exitCheck=nullptr)
 {
     auto id=++nextGuid;InstanceMap map(1648,300,id,diff,&parent);
     // Guarm/defender completion is setup; execute the real Odyn surrender and
@@ -91,11 +92,12 @@ static CompletedInstance WinCase(Map& parent,Difficulty diff)
     Require(giver[0]->GetExactDist(498.595f,640.212f,1.8432f)<2,"Native post-Helya Odyn arrival did not land");
     Require(odyn->GetExactDist(2400.65f,529.314f,748.996f)<2,"Actual surrendered Odyn did not return to arena");
     CheckActualTurnIns(map,*odyn,*giver[0]);
+    if(exitCheck)exitCheck(map,*giver[0]);
     auto saved=map.GetInstanceScript()->GetSaveData();FlushWrites();map.UnloadAll();
     std::cout<<"PASS: actual Helya Unit::Kill -> instance DONE -> native victory summons/arrival and both quest turn-ins; diff="<<uint32(diff)<<std::endl;
     return {id,saved};
 }
-static void SavedCase(Map& parent,Difficulty diff,CompletedInstance const& completed,bool helyaFirst)
+static void SavedCase(Map& parent,Difficulty diff,CompletedInstance const& completed,bool helyaFirst,ExitCheck exitCheck=nullptr)
 {
     auto id=completed.id;
     InstanceMap map(1648,300,id,diff,&parent);
@@ -108,6 +110,7 @@ static void SavedCase(Map& parent,Difficulty diff,CompletedInstance const& compl
     Counts(map,1);Require(odyn->HasFlag(UNIT_FIELD_NPC_FLAGS,UNIT_NPC_FLAG_QUESTGIVER)&&instance->GetBossState(2)==DONE,"Saved boss initialization lost DONE or questgiver flags");
     Require(odyn->GetExactDist(2399.73f,528.816f,748.997f)<1,"Saved Odyn not restored to arena");
     PumpInstance(map,15000);auto giver=Actors(map,116760);Require(!giver.empty(),"Saved victory questgiver missing");CheckActualTurnIns(map,*odyn,*giver[0]);
+    if(exitCheck)exitCheck(map,*giver[0]);
     auto original=VictoryGuids(map);instance->Load(completed.data.c_str());Counts(map,1);
     helya->RemoveFromWorld();helya->AddToWorld();odyn->RemoveFromWorld();odyn->AddToWorld();
 #ifdef TRIAL_INSTANCE_BASELINE
@@ -123,6 +126,7 @@ static void SavedCase(Map& parent,Difficulty diff,CompletedInstance const& compl
     std::cout<<"PASS: actual Trial saved factory/Load, native DB spawns, restored Odyn and repeated Creature world lifecycle; diff="<<uint32(diff)<<" helyaFirst="<<helyaFirst<<std::endl;
     map.UnloadAll();
 }
+#ifndef TRIAL_RAID_INSTANCE_SUPPORT_ONLY
 static int RunInstance(int argc,char** argv)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();LoadInstanceInputs();OpenScratch();sAchievementMgr->LoadRewards();sAchievementMgr->LoadCompletedAchievements();
@@ -136,3 +140,4 @@ int main(int argc,char** argv)
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunInstance(argc,argv);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

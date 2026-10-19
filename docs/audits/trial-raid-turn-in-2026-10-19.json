@@ -51,5 +51,11 @@
     "audit": "docs/audits/trial-raid-instance-recovery-2026-10-19.json",
     "result": "Actual instance factory, DB boss lifecycle, Odyn surrender/Helya death, native victory summons/arrival and real questgiver turn-ins pass all4 difficulties/both factions. Native save-data reconstruction passes both boss-load orders. Repeated boss creation previously duplicated all14 victory actors; transient per-instance GUID slots now retain existing actors and replace only a missing actor.",
     "limits": "Final fight prerequisites are setup. Native save-data and respawn SQL are covered; full authenticated restart/rejoin and automatic grid scheduling are not. Client visuals/voice/menus and the other earlier pending checks remain."
+  },
+  "native_exit_followup_2026_10_19": {
+    "date": "2026-10-19",
+    "audit": "docs/audits/trial-raid-exit-2026-10-19.json",
+    "result": "Actual post-Helya gossip admission, selection, native DB2 far teleport/worldport ACK and quest/reward save/prepared reload pass72 cases across both factions/all4 difficulties/fresh and saved instances. Foreign-menu selection previously teleported; the scoped Odyn handler now validates and consumes the prepared native menu.",
+    "limits": "No client, authenticated login, durable raid binding or entrance rejoin is claimed. Destination socket workers are stopped for synchronous native execution. Earlier pending combat/scene/voice/UI/arrival/pet/chest checks remain."
   }
 }
