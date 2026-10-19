@@ -599,12 +599,15 @@ struct boss_helya_tov : BossAI
             {
                 DoCast(player, SpellOrbOfCorruptionVisual, true);
 
-                playerGuid.Clear();
-                playerGuid = player->GetGUID();
+                ObjectGuid const targetGuid = player->GetGUID();
                 Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
-                me->AddDelayedEvent(2000, [=]() -> void { me->SummonCreature(Data::Creatures::OrbOfCorruption, pos, playerGuid, TEMPSUMMON_TIMED_DESPAWN, 9000); });
+                me->AddDelayedCombat(2000, [this, pos, targetGuid]()
+                {
+                    if (eventPhase == PHASE_1 && me->isInCombat() && me->IsAlive())
+                        me->SummonCreature(Data::Creatures::OrbOfCorruption, pos, targetGuid, TEMPSUMMON_TIMED_DESPAWN, 9000);
+                });
             }
             break;
         }
@@ -624,15 +627,18 @@ struct boss_helya_tov : BossAI
 
             for (auto& player : playerList)
             {
-                playerGuid.Clear();
-                playerGuid = player->GetGUID();
+                ObjectGuid const targetGuid = player->GetGUID();
 
                 DoCast(player, SpellOrbOfCorrosionVisual, true);
 
                 Position pos = player->GetPosition();
                 pos.m_positionX -= 6.0f;
                 pos.m_positionY -= 6.0f;
-                me->AddDelayedEvent(2000, [=]() -> void { me->SummonCreature(Data::Creatures::OrbOfCorrosion, pos, playerGuid, TEMPSUMMON_TIMED_DESPAWN, 9000); });
+                me->AddDelayedCombat(2000, [this, pos, targetGuid]()
+                {
+                    if (eventPhase == PHASE_3 && me->isInCombat() && me->IsAlive())
+                        me->SummonCreature(Data::Creatures::OrbOfCorrosion, pos, targetGuid, TEMPSUMMON_TIMED_DESPAWN, 9000);
+                });
             }
             break;
         }

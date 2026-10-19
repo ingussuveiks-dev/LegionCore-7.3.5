@@ -102,8 +102,10 @@ static void CheckHelya(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gro
     Require(p.GetQuestRewardStatus(44868)&&p.GetItemCount(142534)==1,"Actual Helya progression reward failed");Checkpoint(p,44868,142534,true);p.GetSession()->HandleQuestGiverChooseReward(finish);Tick(p,200);FlushWrites();Require(p.GetItemCount(142534)==1,"Repeated Helya reward packet duplicated item");Checkpoint(p,44868,142534,true);
     std::cout<<"PASS: native scaled hit ->65 percent ->nine real tentacle deaths ->47 percent ->phase three/victory/quest/Odyn/reward; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
+#ifndef TRIAL_HELYA_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunGarm(argc,argv,CheckHelya);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif
