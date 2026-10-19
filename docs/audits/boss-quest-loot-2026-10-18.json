@@ -30,5 +30,7 @@
     "In an eligible LFR group, confirm quest fragments for players who receive no equipment, and no fragment loot without the quest or after reaching1000.",
     "Repeat the same difficulty in a saved week, then change difficulty; confirm existing loot cooldown behavior. Check ordinary personal equipment/currency and bonus rolls remain unchanged.",
     "Check normal/heroic/mythic shared quest loot, personal loot, group methods and actual auto-storage independently."
-  ]
+  ],
+  "native_raid_followup": "docs/audits/raid-fragment-cooldowns-2026-10-19.json",
+  "native_raid_followup_note": "Full linked generation, receipt and native cooldown/inventory save/load now cover Guarm/Helya on all four difficulties, LFR equipment non-winners, mixed saved/fresh recipients and real Unit::Kill full-inventory paths. Non-LFR repeat eligibility, personal raid chest cooldown admission and LFR discarded pending loot required separate fixes. Original client/encounter/authenticity limits remain retained."
 }

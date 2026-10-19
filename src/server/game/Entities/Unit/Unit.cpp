@@ -26496,6 +26496,7 @@ void Unit::GeneratePersonalLoot(Creature* creature, Player* anyLooter)
                 if (!player->IsPlayerLootCooldown(cooldownid, cooldowntype, creature->GetMap()->GetDifficultyID()))
                     looterList.push_back(player->GetGUID());
 
+        GuidSet eligibleLooters(looterList.begin(), looterList.end());
         uint8 lootCount = looterList.size() > 5 ? uint8(looterList.size() / 5) : 1;
         Trinity::Containers::RandomResizeList(looterList, lootCount);
 
@@ -26509,6 +26510,9 @@ void Unit::GeneratePersonalLoot(Creature* creature, Player* anyLooter)
                 if(spellForBonusLoot) //Bonus roll
                     if (!player->IsPlayerLootCooldown(spellForBonusLoot, TYPE_SPELL, creature->GetMap()->GetDifficultyID())) //Bonus loot
                         creature->CastSpell(player, spellForBonusLoot, false);
+
+                if (!eligibleLooters.count(player->GetGUID()))
+                    continue;
 
                 if (isPersonalGroup)
                 {
@@ -26549,6 +26553,9 @@ void Unit::GeneratePersonalLoot(Creature* creature, Player* anyLooter)
             }
         }
 
+        if (eligibleLooters.empty())
+            return;
+
         Loot* loot = &(go ? go->loot : creature->loot);
         if (creature->lootForPickPocketed)
             creature->lootForPickPocketed = false;
@@ -26559,13 +26566,17 @@ void Unit::GeneratePersonalLoot(Creature* creature, Player* anyLooter)
         switch(cooldowntype)
         {
             case TYPE_GO:
-                loot->FillLoot(lootid, LootTemplates_Gameobject, anyLooter, false, false, creature);
+                loot->FillLoot(lootid, LootTemplates_Gameobject, anyLooter, false, false, creature, &eligibleLooters);
                 break;
             case TYPE_CREATURE:
             case TYPE_ZONE:
-                loot->FillLoot(lootid, LootTemplates_Creature, anyLooter, false, false, creature);
+                loot->FillLoot(lootid, LootTemplates_Creature, anyLooter, false, false, creature, &eligibleLooters);
                 break;
         }
+        for (auto const& guid : eligibleLooters)
+            if (Player* player = ObjectAccessor::GetPlayer(*creature, guid))
+                if (!player->IsPlayerLootCooldown(cooldownid, cooldowntype, creature->GetMap()->GetDifficultyID()))
+                    player->AddPlayerLootCooldown(cooldownid, creature->GetGUIDLow(), cooldowntype, true, creature->GetMap()->GetDifficultyID());
         // Don`t can take gold
         // loot->generateMoneyLoot(creature->GetCreatureTemplate()->mingold, creature->GetCreatureTemplate()->maxgold);
         return;

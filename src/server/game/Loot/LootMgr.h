@@ -218,6 +218,7 @@ struct TC_GAME_API LootItem
     bool    is_counted        : 1;
     bool    needs_quest       : 1;                          // quest drop
     bool    follow_loot_rules : 1;
+    bool    loot_restricted   : 1;                          // allowedGUIDs is also an entitlement snapshot
     Loot* m_loot = nullptr;
     uint8 LootListID = 0;
 
@@ -410,6 +411,7 @@ struct TC_GAME_API Loot
 
     void generateMoneyLoot(uint32 minAmount, uint32 maxAmount, bool isDungeon = false);
     bool FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bool noGroup, bool noEmptyError = false, WorldObject const* lootFrom = nullptr);
+    bool FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bool noGroup, bool noEmptyError, WorldObject const* lootFrom, GuidSet const* eligibleLooters);
     void AutoStoreItems(bool isGO = false);
 
     // Inserts the item into the loot (called by LootTemplate processors)

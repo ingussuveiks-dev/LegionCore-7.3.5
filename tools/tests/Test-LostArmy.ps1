@@ -52,13 +52,13 @@ if(($overlays -join ',') -ne '0,0,0,0'){throw 'Inspect Lost Army native data ove
 & "$PSScriptRoot/Test-LostArmyCatalog.ps1" *> "$out/catalog.log"
 & "$PSScriptRoot/Test-StormheimHelheimSupplies.ps1" *> "$out/item-loot-base.log"
 Get-ChildItem "$repo/build-extractors/runtime-test/stormheim-helheim-supplies/*.inc" | Copy-Item -Destination $out
-$base=(Get-Content "$out/HelheimSuppliesFixture.inc" -Raw).Replace('GetMaxStackSize()const{return 10;}','GetMaxStackSize()const{return 1000;}')
+$base=(Get-Content "$out/HelheimSuppliesFixture.inc" -Raw).Replace('GetMaxStackSize()const{return 10;}','GetMaxStackSize()const{return 1000;}').Replace('GetGUID(){','GetGUID()const{')
 [IO.File]::WriteAllText("$out/LostArmyBaseFixture.inc",$base)
 $f=Get-Content "$PSScriptRoot/StormheimHelheimSuppliesTest.cpp" -Raw;$f=$f.Substring(0,$f.IndexOf('int main('))
 $f=$f.Replace('"HelheimSuppliesFixture.inc"','"LostArmyBaseFixture.inc"')
 $f="using Condition=Gate::Condition;using ConditionList=std::vector<Condition*>;`n"+$f
 $f=$f.Replace('struct LootStoreItem {','struct LootStoreItem {ConditionList conditions;')
-$f=$f.Replace('struct LootItem {','struct LootItem {ConditionList conditions;bool AllowedForPlayer(Player const*)const;')
+$f=$f.Replace('struct LootItem {','struct LootItem {ConditionList conditions;bool loot_restricted=false;std::set<ObjectGuid> allowedGUIDs;bool AllowedForPlayer(Player const*)const;')
 $f=$f.Replace('if(owner->HasQuestForItem(drop.itemid)){','if(owner->HasQuestForItem(drop.itemid)){LootItem visible;visible.conditions=drop.conditions;if(!visible.AllowedForPlayer(owner))continue;')
 $f=$f.Replace('struct Group {void Process(', 'struct Group {LootStoreItemList explicitItems,equalItems;LootStoreItemList* GetExplicitlyChancedItemList(){return &explicitItems;}LootStoreItemList* GetEqualChancedItemList(){return &equalItems;}void Process(')
 $f=$f.Replace('bool CheckItemCondition(Player const*','bool addConditionItem(Condition*);bool CheckItemCondition(Player const*')

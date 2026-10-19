@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-19",
+  "quest": 45088,
+  "baseline": "9b0179a1",
+  "status": "Native non-LFR boss generation now honors saved recipient cooldowns; shared loot retains an eligibility snapshot. Automated checks pass; client/real encounter checks remain pending.",
+  "defect": "Actual Unit::GeneratePersonalLoot already excluded saved players from the equipment lottery, but its non-LFR per-player generation still ran for them. Shared quest caches also admitted them. Native Guarm114323 and Helya114537 generated more fragments on a repeated Normal/Heroic/Mythic source; a saved member could receive a fresh group's fragments under PERSONAL_LOOT, GROUP_LOOT and MASTER_LOOT. LFR repeated generation already rejected saved recipients.",
+  "fix": [
+    "Copy the native pre-roll eligible GUID list before equipment recipient selection. Skip saved personal recipients while preserving the independent bonus-roll prompt. If none are eligible, preserve existing containers and return before fresh shared generation.",
+    "Pass the snapshot to an additional FillLoot overload; preserve the existing overload/API for ordinary callers. Stamp shared items/quest items with restricted allowedGUIDs before caches are built, filter recipients during cache construction, and enforce the restriction in actual LootItem::AllowedForPlayer. This protects cached view/slot/roll/master admission without denying already-earned loot after its cooldown is marked.",
+    "Record remaining fresh shared recipients' cooldowns as well. LootItem's added bit uses padding before its existing pointer; the MSVC x64 native probe asserts size0x78 and m_loot offset0x68 for the pinned library comparison. The full production game/scripts build is rebuilt with the new header; no old/new runtime library mixing."
+  ],
+  "native_probe": {
+    "runner": "tools/tests/Test-RaidFragmentsNative.ps1",
+    "current": "build-extractors/runtime-test/raid-fragments-native/run-20261019-101855",
+    "baseline": "build-extractors/runtime-test/raid-fragments-native-baseline/run-20261019-101855",
+    "baseline_game_sha256": "F81D984D09BD9417A017FA8C2159C575625B19CC5CB40E9404B823F9870C8D43",
+    "result": "Both processes exit0, DBErrors0 bytes. Pinned-library PASS asserts the old repeated grants; current asserts denial. The final probe additionally covers the two separate chest/LFR fixes linked below.",
+    "coverage": [
+      "Full actual Unit::GeneratePersonalLoot, Loot::FillLoot, row selection, cache admission, packet serialization and actual StoreLootItem/AutoStoreItems inventory receipt for both bosses and LFR17/Normal14/Heroic15/Mythic16. Five real native Player/session objects share an actual Group/raid membership and InstanceMap; LFR's native lottery produces at least four equipment non-winners who still receive fragments.",
+      "Fresh sources for the same saved players cannot grant again. Mixed saved/fresh membership is tested under PERSONAL_LOOT/GROUP_LOOT/MASTER_LOOT; the four fresh participants retain their fragments. Actual admission rejects absent quest, COMPLETE quest and1000-fragment quota while independent unfinished recipients still receive theirs.",
+      "Actual Unit::Kill for both bosses/all four difficulties with a full inventory tests earned shared-container retry after cooldown and duplicate receipt. Initial tap/damage-requirement input is seeded; this is not a boss combat-AI or lethal spell-damage test.",
+      "Actual SaveToDB writes inventory/cooldowns, and a new same-GUID Player loads native prepared inventory/cooldown results. Sequential LFR/Normal/Heroic/Mythic awards remain independent; repeated Normal is denied after reload. Separate characters keep each boss source below the1000 quota. No scheduled weekly reset or authenticated login is simulated."
+    ],
+    "data": "Native7.3.5 DB2/hotfix bootstrap and full configured rows for creature loot114323/114537 and chest loot70585. Existing personal-loot mappings, gameobject templates, instance encounters, page texts, area-trigger teleports, LFG data and random enchantment loaders execute. Scoped raid rows have no references or source1/source4 conditions; the probe refuses changed condition catalogs. Luck/zone/currency catalogs outside these selected rows are not a complete world-loot catalog test.",
+    "isolation": "Read-only World/Hotfix pools; schema-only disposable character/auth databases (167 tables), restricted disposable user, no personal rows copied/written. Initial membership/accepted quest and future weekly reset time are fixtures. Native loaders, selectors, receipt and SQL persistence are real. The two schemas and user are removed in finally.",
+    "development_failures": "Initial harness omitted LFG bootstrap and crashed in its lookup, then omitted teleport/page-text/random-enchantment dependencies and emitted loader errors. These setup failures were corrected with native loader ordering; no error log was suppressed and no partial run was accepted as passing."
+  },
+  "regressions": [
+    "Test-LostArmy.ps1 and Test-BossQuestLoot.ps1 pass. The extracted condition fixture now explicitly defaults unrestricted admission and supplies allowedGUIDs/const GUID lookup; it does not replace the full native snapshot test.",
+    "Full native LostArmy run-20261019-101526, MasterLoot run-20261019-101547, RollCompletion run-20261019-101607, GroupRollLifecycle run-20261019-101554 and LostArmyTurnIn run-20261019-101528 pass with empty DBErrors logs.",
+    "Test-RaidFragmentsRelease.ps1 verifies the canonical snapshot overload call, item restriction bit branch and final-link source/header freshness, alongside the existing loot/roll/group/quest-turn-in binary checks."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "build": "cmake --build build-extractors --config Release --target worldserver bnetserver --parallel 4; no OutDir override; full header rebuild followed by final Unit rebuild",
+    "worldserver_sha256": "DFACD07DDEA7C68A11DCF758DEC9E221D7870ED9ABD3F7E0FBADE97153CCF3FA",
+    "game_lib_sha256": "DB03DA25F79F1B2BA54D16884F22ED8ACDA6685E8882ECDF65EF3D29BC42F39D",
+    "bnetserver_sha256": "9F19B5033C6546310C6D6C50F62CD312F3CD06A86CD6F64F2DAB7FB5F4FC401E",
+    "build_log": "build-extractors/runtime-test/raid-fragments-native-baseline/release-build-final.log",
+    "manifest": "build-extractors/runtime-test/raid-fragments-native/release-inputs.json",
+    "startup": "build-extractors/runtime-test/raid-fragments-native/startup-20261019-101932",
+    "ready": true, "exit": 0, "db_errors_bytes": 0, "stderr_bytes": 0
+  },
+  "limitations": [
+    "Controlled defeated actors use live templates with NullCreatureAI and a base InstanceScript on map1648; the retail encounter script, matchmaking/entry, participation/range policy, legal character creation, other classes/factions and client looting are not exercised. Most cases enter the full loot generator directly; the full-bag cases also execute real Unit::Kill.",
+    "Sessions are socketless process-lifetime allocations. Native prepared loading is not Player::LoadFromDB/authenticated relog or the World scheduler. Weekly reset time is seeded in the future; actual wall-clock rollover/reset scheduling is unverified.",
+    "Drop counts/chances/modes are unchanged. Existing Helya100..150 and Rockaway10..15 remain explicit reconstructions, not newly established retail distributions. No complete raid/client verification is claimed."
+  ],
+  "related": ["docs/audits/odyn-chest-cooldown-2026-10-19.json", "docs/audits/lfr-full-bag-loot-2026-10-19.json", "docs/audits/boss-quest-loot-2026-10-18.json"]
+}

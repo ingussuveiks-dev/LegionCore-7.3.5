@@ -249,6 +249,7 @@ static void CheckPersistence(Map& map, Actor& giver, uint8 cls)
         std::cout << "PASS: native prepared inventory/rewarded-quest/collection reload retains state and denies repeat; class=" << uint32(cls) << '\n';
     }
 }
+#ifndef LOST_ARMY_TURNIN_NATIVE_SUPPORT_ONLY
 static int Run(int argc, char** argv)
 {
     InitializeNative(argc, argv); opcodeTable.Initialize(); LoadLootInputs(); OpenScratch();
@@ -281,3 +282,4 @@ int main(int argc, char** argv)
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX); SetUnhandledExceptionFilter(CrashTrace);
     try { return Run(argc, argv); } catch (std::exception const& e) { std::cerr << e.what() << '\n'; return 1; }
 }
+#endif

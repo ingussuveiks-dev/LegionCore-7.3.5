@@ -416,7 +416,7 @@ CurrencyLoot::CurrencyLoot(uint32 _entry, uint8 _type, uint32 _CurrencyId, uint3
 
 LootItem::LootItem(): type(0), quality(ITEM_QUALITY_POOR), count(0), currency(false),
                       is_looted(false), is_blocked(false), freeforall(false), is_underthreshold(false), is_counted(false), needs_quest(false),
-                      follow_loot_rules(false)
+                      follow_loot_rules(false), loot_restricted(false)
 {
 }// Constructor, copies most fields from LootStoreItem and generates random count
 LootItem::LootItem(LootStoreItem const& li, Loot* loot)
@@ -451,6 +451,7 @@ void LootItem::InitItem(uint32 itemID, uint32 currencyID, uint32 _count, Loot* l
 void LootItem::init(Loot* loot)
 {
     m_loot = loot;
+    loot_restricted = false;
     if (currency)
     {
         freeforall = false;
@@ -483,6 +484,9 @@ void LootItem::init(Loot* loot)
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
 bool LootItem::AllowedForPlayer(Player const* player) const
 {
+    if (loot_restricted && (!player || allowedGUIDs.find(player->GetGUID()) == allowedGUIDs.end()))
+        return false;
+
     // DB conditions check
     if (!sConditionMgr->IsObjectMeetToConditions(const_cast<Player*>(player), conditions))
         return false;
@@ -751,6 +755,11 @@ void Loot::AutoStoreItems(bool isGO)
 // Calls processor of corresponding LootTemplate (which handles everything including references)
 bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bool noGroup, bool noEmptyError, WorldObject const* lootFrom)
 {
+    return FillLoot(lootId, store, lootOwner, noGroup, noEmptyError, lootFrom, nullptr);
+}
+
+bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bool noGroup, bool noEmptyError, WorldObject const* lootFrom, GuidSet const* eligibleLooters)
+{
     // Must be provided
     if (!lootOwner || !lootOwner->CanContact())
         return false;
@@ -892,6 +901,16 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     if (InstanceScript* instance = lootOwner->GetInstanceScript())
         instance->OnLootChestOpen(lootOwner, this, lootFrom ? lootFrom->ToGameObject() : nullptr);
 
+    // Capture admission before the boss cooldown is marked. Existing loot
+    // stays receivable afterward; a fresh roll cannot admit saved members.
+    if (eligibleLooters)
+        for (auto list : {&items, &quest_items})
+            for (auto& item : *list)
+            {
+                item.loot_restricted = true;
+                item.allowedGUIDs = *eligibleLooters;
+            }
+
     // Setting access rights for group loot case
     Group* group = lootOwner->GetGroup();
     if (!noGroup && group && !isOploteChest)
@@ -902,7 +921,8 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
 
         for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
             if (Player* player = itr->getSource())   // should actually be looted object instead of lootOwner but looter has to be really close so doesnt really matter
-                FillNotNormalLootFor(player, player->IsAtGroupRewardDistance(lootOwner));
+                if (!eligibleLooters || eligibleLooters->count(player->GetGUID()))
+                    FillNotNormalLootFor(player, player->IsAtGroupRewardDistance(lootOwner));
 
         for (size_t i = 0; i < items.size(); ++i)
         {
@@ -917,7 +937,7 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
         GuidSet* savethreatlist = creature->GetSaveThreatList();
         TC_LOG_DEBUG("loot", "Loot::FillLoot isOnlyQuest && creature && creature->CanShared size %zu", savethreatlist->size());
 
-        if (savethreatlist->empty())
+        if (savethreatlist->empty() && (!eligibleLooters || eligibleLooters->count(lootOwner->GetGUID())))
             FillNotNormalLootFor(lootOwner, true);
         else
         {
@@ -928,6 +948,9 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
                     if (!creature->isTappedBy(looter))
                         continue;
 
+                    if (eligibleLooters && !eligibleLooters->count(looter->GetGUID()))
+                        continue;
+
                     FillNotNormalLootFor(looter, true);
                 }
             }
@@ -936,7 +959,8 @@ bool Loot::FillLoot(uint32 lootId, LootStore const& store, Player* lootOwner, bo
     else
     {
         TC_LOG_DEBUG("loot", "Loot::FillLoot else");
-        FillNotNormalLootFor(lootOwner, true);
+        if (!eligibleLooters || eligibleLooters->count(lootOwner->GetGUID()))
+            FillNotNormalLootFor(lootOwner, true);
     }
 
     if (!bonusLoot && (noGroup && personal || _challengeLevel && !isOploteChest) && !(_isEmissaryLoot || _isTokenLoot || _isItemLoot || _IsPvPLoot)) // Add looters to personal loot
