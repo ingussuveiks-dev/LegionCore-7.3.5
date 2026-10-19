@@ -46,5 +46,7 @@
     "Attack each ritualist without breaking its channel; confirm hazards continue, each death removes its own beam, final death clears all four and completes after the existing outro.",
     "Wipe, rotation expiry, departure/re-entry, missing owner and retry must not leave stale beams or Mage Tower purple rune/hand effects. Check both factions and pet/group credit in the client.",
     "Original retail spell/caster/target binding is still unresolved. Do not mark the green beam or whole quest original/client-verified based on this reconstruction."
-  ]
+  ],
+  "native_channel_followup": "docs/audits/rockaway-native-channels-2026-10-19.json",
+  "current_native_channel_verification": "Native probe now executes actual Spell preparation/targeting/hit, Aura stacking/removal, four real TempSummons and96 real Unit::Kill callbacks. Four channels, exact owner hook, death/reset/expiry/orphan cleanup and bounded231296 offensive casting pass. Rotation/quest lookup is an explicit in-memory fixture; player-target AI, renderer and original retail visual binding remain unverified. Earlier modeled-aura boundaries describe historical tests and are retained."
 }

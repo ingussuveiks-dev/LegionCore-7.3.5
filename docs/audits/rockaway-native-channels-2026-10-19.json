@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-19",
+  "quest": 44746,
+  "baseline": "137f1af9",
+  "title": "Rockaway native four-caster channel lifecycle",
+  "status": "Native Spell/Aura/map/script-registry and96 real death executions pass. No production fix was required; client visuals and integrated Player combat remain unverified.",
+  "implementation": {
+    "probe": "tools/tests/RockawayChannelNative.cpp",
+    "runner": "tools/tests/Test-RockawayChannelNative.ps1",
+    "production_code_changed": false,
+    "scope": "Compile the current production rockaway_coast.h actor/hook classes into a private native probe and link the actual generated final-link game.lib. Register the production spell/aura/creature scripts using native ScriptMgr context swap and live script IDs/bindings. Execute actual Creature/TempSummon, Spell preparation/targeting/hit, Aura creation/stacking/removal, native channel fields, map ownership and Unit::Kill callbacks.",
+    "controlled_service": "Only Rockaway header quest-store lookups are redirected to a private rotation fixture. GetQuestTemplate deliberately returns null and GetWorldQuest supplies an in-memory active row or absence, allowing native Active/expiry gates without loading/creating/resetting/saving live quests. There are no Players in the map. This does not test Player eligibility, the real scheduler or quest completion.",
+    "safety": "World and Hotfix synchronous sessions verify transaction_read_only=1 and asynchronous sessions are set read-only. No CharacterDatabase pool is opened. Actors are nonpersistent private-map creatures/summons, so SaveRespawnTime exits without writes. Runtime configuration is copied only into ignored timestamped test output."
+  },
+  "native_evidence": [
+    "Four admitted TempSummons115132 cast231433 through actual registered SpellScript checks and native target38 grid search. Owner115133 has four distinct native owned Aura objects, one per caster GUID; each caster has current channel231433 and its native channel-object GUID points to that exact owner.",
+    "Repeated native Unit/TempSummon updates retain all four channels. Native Aura::CanStackWith permits channeled auras from different casters; no synthetic aura map or AddUnitTarget sink is used.",
+    "An explicit closer second115133 target is redirected to the admitted original owner by the actual target hook. A real unslotted115132 summon is rejected by native cast admission and receives no channel fields/aura. The runner verifies the live231433 binding enables exactly one spell_rockaway_channel loader.",
+    "Removing one actual owner aura is repaired by the production caster retry. Not-ready, outro and phase-mismatch states stop real channels; restoring admission recreates them. Readiness testing pauses only controller AI updates while native caster/spell/aura updates continue, since production EnsureRitualists would otherwise restore ready automatically.",
+    "All24 permutations invoke actual Unit::Kill on four real temporary creatures (96 deaths). Each death removes only that caster's channel; every later live caster retains its aura/link, and the native summoner death callback reaches the production outro after the fourth death.",
+    "An additional foreign-caster native AddAura231433 (deliberate direct setup outside the channel hook) coexists as a fifth aura. Production ClearRun removes the four owned ritual channels and preserves the foreign aura. Repeating reset with empty slots still preserves it.",
+    "An absent rotation and exact native GameTime/ResetTime expiry stop all four real channels and clear slots; restored private availability recreates four. No live rotation is forced.",
+    "Native CleanupBeforeRemoveFromMap plus Map::RemoveFromMap removes the owner's actual applied auras. Remaining real TempSummons observe the absent owner and clear current channel spell/object fields. Orphans are then removed using their own map; no stale owner map access is used."
+  ],
+  "offensive_cast_check": {
+    "result": "Four incoming ritual channels do not make the Vision a231433 caster. Its actual231296 offensive cast succeeds and creates a real owned116187 TempSummon while all four incoming aura/channel pairs remain.",
+    "native_duration": "231296 is itself a native10000ms offensive channel. The probe observes channel231296 at500ms and verifies that it naturally finishes after the full duration while all four ritualist channels remain. Its temporary casting state is not a ritual-channel lock and was not removed or shortened.",
+    "player_only_spell": "Native231329 has SPELL_ATTR3_ONLY_TARGET_PLAYERS. A real Creature surrogate returns SPELL_FAILED_TARGET_NOT_PLAYER141; the normal full-trigger mask reports DONT_REPORT30. This was a harness target limitation, not evidence of a production channel failure. The test explicitly preserves and asserts this restriction rather than clearing spell flags.",
+    "boundary": "No actual Player exists, so the native Vision AI player-target selection/scheduler and231329 effects on a real player are not established.231296 summon creation and native casting-state completion execute; this probe does not update the separate tentacle AI as part of its owner/ritualist pump and does not claim native slam damage verification."
+  },
+  "bootstrap_and_data": [
+    "Canonical DB2/GT stores, native spell-info/custom-attribute/rank data and WDB/creature/model/scaling templates load through real core methods. Production channel, taint, ritualist, tentacle and slime script classes register in a private static ScriptMgr context.",
+    "Read-only live data confirms spell_script_names231433 -> spell_rockaway_channel and231329 -> spell_rockaway_taint. There are no conditions rows with SourceEntry231433/231296/231329; the runner fails for newly added rows until it also loads those condition services.",
+    "Initial harness bootstrap omitted LoadSpellRanks and emitted two unrelated negative-rank binding warnings (Moonglade18960 and Legion Skinning8613). Adding native LoadSpellRanks before script binding load resolves this harness issue. The final timestamped run has DBErrors.log0 bytes; no live binding was changed.",
+    "Native MAP evidence locates the current production ritualist UpdateAI and spell target selector in RockawayChannelNative.obj, while Aura::CanStackWith resolves to game:SpellAuras.obj. This avoids treating a copied aura model as native execution."
+  ],
+  "checks": [
+    "Test-RockawayChannelNative.ps1 PASS: all channel/target/admission/retry/phase/death/reset/expiry/orphan and bounded offensive cases above. All actors and Spell/Aura objects are native; stdout/details and input hashes retained in ignored output.",
+    "Test-RockawayRelease.ps1 PASS: existing canonical source/final-link scripts freshness, PE-bounded deployed7000ms final countdown, native reward guard, channel/cleanup/finish and health clamp. No production source or executable was changed by this follow-up.",
+    "Both database pools close normally after the probe; the final private DBErrors.log is empty. No worldserver process was launched or left running. A new Release rebuild/startup is unnecessary for these test/audit-only changes."
+  ],
+  "fixture_boundaries": [
+    "The private rotation facade replaces quest-store lookups inside the included production header; it neither reproduces quest data nor proves real scheduler/Player eligibility. Existing separate arrival/completion/rotation regressions cover those paths.",
+    "The owner and controlled decoy/victim Actors use explicit object-accessor registration and production/idle AI. The pump advances native Unit events/auras and production controller AI plus native TempSummon updates for the four actor slots; it is not the complete server world/session update loop.",
+    "The dummy offensive target uses faction1, high health and cleared nonattackable/NPC-immunity flags as test inputs. Ritualists use actual native Map summons, templates and factory AI. Kill invokers are NPCs, not real players/pets; earlier separate player/pet recipient regressions remain complementary.",
+    "Real packet/field construction can execute, but there are no recipient sessions or client renderer. Four actual aura/channel pairs do not establish original retail green-beam binding, endpoints/color/scale, visual delivery or exact original placements."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "10a3aa13ca06eb2420687482478711f4050b3a5c559a3bba72cd23985ab03f9c",
+    "bnetserver_sha256": "27514b65ba5fee9ac60349e66a556b2cb1e20cdcf417d84752b80904c963c5af",
+    "actual_final_link_game_sha256": "4f8fc14ffc9ca972b3baf0d87a4f3cbed58d6b569dda5ff5e2fe4fc863dc7d95",
+    "actual_final_link_scripts_sha256": "daa9008aede6c7fac2cc3e6e5f7f1e24120dae0146afdc43759e54864fd0d729",
+    "probe_map": "build-extractors/runtime-test/rockaway-channel-native/RockawayChannelNative.map",
+    "native_log": "build-extractors/runtime-test/rockaway-channel-native/native-lines.txt",
+    "input_manifest": "build-extractors/runtime-test/rockaway-channel-native/native-inputs.json",
+    "run": "build-extractors/runtime-test/rockaway-channel-native/run-20261019-062341",
+    "db_errors_bytes": 0,
+    "worldserver_launched": false,
+    "runtime_build_changed": false
+  },
+  "remaining": [
+    "Client validation of four visible beams, correct hand/owner endpoints, death/reset/expiry disappearance and continued combat with actual player/pet targets remains pending.",
+    "Original retail spell/caster/target binding, precise positions and reconstructed fragment bounds are still not proven. The native test verifies current reconstruction mechanics, not historical authenticity.",
+    "Earlier Player/session, reward persistence, full bags and audio delivery limitations remain. No whole-quest or client-verified claim."
+  ],
+  "prior_audit": "docs/audits/rockaway-channel-reconstruction-2026-10-18.json"
+}
