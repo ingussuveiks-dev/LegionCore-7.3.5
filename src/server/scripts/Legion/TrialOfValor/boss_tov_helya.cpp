@@ -1127,21 +1127,33 @@ class spell_helya_alt_power_regen : public AuraScript
     }
 };
 
-//228053
+//228054
 class spell_taint_of_the_sea : public AuraScript
 {
     PrepareAuraScript(spell_taint_of_the_sea);
 
-    void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
         Unit* target = GetTarget();
-        if (!target && !target->isInCombat())
+        Unit* caster = GetCaster();
+        AuraRemoveMode const removeMode = GetTargetApplication()->GetRemoveMode();
+        if (removeMode != AURA_REMOVE_BY_ENEMY_SPELL && removeMode != AURA_REMOVE_BY_EXPIRE)
             return;
 
-        if (GetTargetApplication()->GetRemoveMode() == AURA_REMOVE_BY_ENEMY_SPELL)
-            GetCaster()->CastSpell(target, SpellTaintedEssence, true);
-        else
-            target->CastSpell(target, SpellTaintOfTheSeaDmg, true);
+        if (!target || !target->IsPlayer() || !target->IsAlive() || !target->IsInWorld() ||
+            !caster || caster->GetEntry() != Data::Creatures::Helya || !caster->IsAlive() ||
+            !caster->IsInWorld() || !caster->isInCombat() || caster->GetMap() != target->GetMap())
+            return;
+
+        InstanceScript* instance = caster->GetInstanceScript();
+        if (!instance || instance->GetBossState(Data::BossIDs::HelyaID) != IN_PROGRESS)
+            return;
+
+        // Capture the dispel/expiry location before the raid burst can kill or
+        // move its carrier. Both effects belong to Helya, independently.
+        Position const position = target->GetPosition();
+        caster->CastSpell(target, SpellTaintOfTheSeaDmg, true);
+        caster->CastSpell(position.GetPositionX(), position.GetPositionY(), position.GetPositionZ(), SpellTaintedEssence, true);
     }
 
     void Register() override

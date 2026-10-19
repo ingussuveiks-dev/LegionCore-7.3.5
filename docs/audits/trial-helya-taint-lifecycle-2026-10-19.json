@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "status": "Taint removal/Essence lifecycle repaired. Native targeting/cadence selection is a separate followup in the same authorized audit; no full encounter/client verification claimed.",
+  "repairs": [
+    "Old dispel removal created only228052 Essence and omitted228053 raid damage. Other modes self-cast228053 from the Player, whose friendly raid targets are not enemies; DEFAULT/CANCEL/DEATH and boss cleanup could emit that incorrect cast. Dispel and EXPIRE now independently cast both effects from Helya; ordinary cleanup emits neither.",
+    "Require a living/in-world Player, living/in-world Helya caster, same map, caster combat and live instance IN_PROGRESS. Fix the invalid null-target AND guard and protect missing casters. Capture the removal position before the raid burst, then cast Essence at that position even if the burst kills its carrier. Retain native spell IDs/damage/radii/durations/missile behavior; no SQL change."
+  ],
+  "native_checks": [
+    "Eight current and eight pinned48b57e05 reference cases: difficulties17/14/15/16 and Human/Orc, three real fixture Players after the earned Odyn/Guarm/26-trash progression. Source13/228053 Player-only condition is read from live World and admitted by actual ConditionMgr.",
+    "Real Spell/Aura/DispelInfo dispatch: dispel removal API, native expiry updates, DEFAULT/CANCEL/DEATH modes. Read-only observation includes actual Unit SpellEvents and unique target lists, not modeled callbacks. Current dispel/expiry each create one boss-owned raid burst targeting all three Players, one228052 at the removal location, and one delayed228051 hitting only the nearby Player after the carrier moves20 yards away.",
+    "Actual Spell/SpellEffect data:228054 PERIODIC_DAMAGE;228053 SCHOOL_DAMAGE radius100 with Player-only condition;228052 TRIGGER_MISSILE ->228051 and native4000ms delay;228051 SCHOOL_DAMAGE/knockback radius8. Native Normal Taint duration is10000ms and its full natural expiry is tested. LFR/Heroic/Mythic are indefinite in these runtime inputs; only the fixture aura's maximum/current duration is shortened to exercise native EXPIRE there. Production durations are unchanged.",
+    "Reference dispel produces Essence but zero raid burst; reference expiry produces a Player-owned burst with zero friendly raid targets and no Essence. DEFAULT/CANCEL/DEATH produce the same wrong self-cast burst. Current cleanup modes produce no effects.",
+    "Real evade cancels an already launched Essence500ms into its four-second delay. Separate reset with held Taint produces no new effects current versus a self-cast burst reference. Removing a newly applied stale Taint while NOT_STARTED creates no new effects or combat current; reference still creates an Essence.",
+    "Current-only lethal-burst test puts a separate native carrier at1HP without refilling it before the hit: actual burst sets health0/non-ALIVE and Essence still launches/impacts once. Unit-only fixture updates leave Player death in JUST_DIED, so the assertion uses IsAlive/health rather than Creature-style isDead(false). It does not claim client corpse/repop verification.",
+    "A real temporary caster is despawned; its228054 remains with GetCaster null. Native dispel removal safely clears it with no effects in current code. The unsafe old null-caster callback is not invoked in the reference run; the missing guard is source evidence rather than a claimed baseline crash reproduction.",
+    "Real phase1 damage, nine tentacle deaths and delayed phase3 return precede an actual Helya killing blow with Taint held. Current victory emits no Taint effects; reference emits a Player-owned burst. Actual44868 objective55482 completes once and group_instance saves mask7. Personal character/account rows are never copied into schema-only scratch pools.",
+    "Canonical Release PE/thunk checks verify OnRemove's instance lookup and both native Unit-target and XYZ CastSpell routes, plus retained previous breath/Fury/pool/cleanup checks. Normal CMake Release targets use the canonical runtime and actual final-link libraries. Startup and native diagnostics are clean."
+  ],
+  "primary_references": [
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "patch": "7.3.5",
+      "scope": "Dispel raid burst, delayed eight-yard Essence, tank targeting and phase-three reuse. Exact numeric damage and runtime duration variants are checked locally rather than inferred from the guide."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/dufernst/LegionCore-7.3.5/master/src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp",
+      "scope": "Primary inherited implementation contains the faulty removal branches/guard. It is evidence of inherited code, not retail correctness."
+    }
+  ],
+  "evidence": {
+    "runs": {
+      "trial-helya-taint-native": "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-195828",
+      "trial-helya-taint-native-baseline": "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-195838"
+    },
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-taint-native/run-20261019-195828/native-lines.txt": "9E86BB1EA951C2F1B88AF63CA28F479CABF9CCB6D04BC537F1F4C6828859E588",
+      "build-extractors/runtime-test/trial-helya-taint-native-baseline/run-20261019-195838/native-lines.txt": "60805F048328CF93A9A869E8B328658917D8B3E46997931DA8FEB14642FBBEE5",
+      "build-extractors/bin/Release/worldserver.exe": "105473B8EA1DB5BD1C0CFB543CC6460BDEFF8E45588397DC656EF8C9B24DDFD4",
+      "build-extractors/bin/Release/bnetserver.exe": "C5F4CF5B8D01F095047A4325ED1590898C30F5BFF13B292352980EE27A1214E7",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "7E4EC145B5FAA57AB5B921D9CBA63E327B9AF21EB8DE62565748371823AEE4C1",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "653AEDB2E6B42C95586948FC64A01FC327BA949FC6F8077BBD8CD7744B1B92D5",
+      "tools/tests/TrialHelyaTaintNative.cpp": "CF2A83FD54AB59DE60D0A968FEF5E66B58D84783AE1AA02F89CC9F5738D0F109",
+      "tools/tests/Test-TrialHelyaTaintRelease.ps1": "B708B1017D7969B3B43D9D29DA7AB2E6089A9DFB356D8B63989BDEF96F9732B5"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-195943"
+  },
+  "followups": [
+    "The event currently randomly samples raw threat Units, so pets can receive Taint and the active tank is not guaranteed. Player eligibility/tank selection needs its own native event check.",
+    "StartEvents resets the event queue for phase3 but never schedules Taint again. The primary guide and boss-mod phase3 handler retain it; scheduling/cadence will be repaired separately."
+  ],
+  "limits": [
+    "No authenticated7.3.5 client, telegraph/audio/model display, class dispel rotation or full raid tuning verification. Native target/damage dispatch and replicated effects do not establish client presentation.",
+    "Several rejected fixture probes are not server bugs: Windows near/far macros required different variable names; Player references need Unit::Update rather than the LootPlayer-only Tick helper; expiry observation must run between native updates. Auras with maxDuration=-1 require a fixture-only maximum change to exercise EXPIRE."
+  ]
+}

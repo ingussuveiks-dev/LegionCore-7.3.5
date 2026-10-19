@@ -65,7 +65,7 @@ struct HelyaEventQueueTag{using Type=EventList EventProcessor::*;friend Type Acc
 template struct FixtureAccess<HelyaEventQueueTag,&EventProcessor::m_events_queue>;
 struct HelyaEventSpellTag{using Type=Spell* SpellEvent::*;friend Type Access(HelyaEventSpellTag);};
 template struct FixtureAccess<HelyaEventSpellTag,&SpellEvent::m_Spell>;
-static std::vector<Spell*> NativeSpellEvents(Creature& caster,uint32 id)
+static std::vector<Spell*> NativeSpellEvents(Unit& caster,uint32 id)
 {
     std::vector<Spell*> result;
     for(auto member:{Access(HelyaEventListTag{}),Access(HelyaEventQueueTag{})})for(auto const& pair:caster.m_Events.*member)if(auto event=dynamic_cast<SpellEvent*>(pair.second)){auto spell=event->*Access(HelyaEventSpellTag{});if(spell->GetSpellInfo()->Id==id)result.push_back(spell);}
