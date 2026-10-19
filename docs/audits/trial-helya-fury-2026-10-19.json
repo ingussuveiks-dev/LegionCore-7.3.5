@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-19",
+  "map": 1648,
+  "quest": 44868,
+  "status": "Fixed Helya Fury wave scheduling and phase/reset lifecycle. Actual linked native progression passes all four raid difficulties for both factions; client verification remains pending.",
+  "reference_commit": "174b0df5",
+  "reference_note": "Archived actual game/scripts libraries from174b0df5 have the same production implementation as5966329d before this change. The baseline deliberately asserts the old missing wave and late phase-two barrage; it is a reproduction, not a repaired-behavior pass.",
+  "problems_and_repairs": [
+    "SpellFinishCast scheduled EVENT_SUMMON_SKELETION twice with RescheduleEvent. Native EventMap::RescheduleEvent cancels all matching IDs, so the41-second event removed the31-second wave. Both branches now use independent ScheduleEvent calls at the existing31/41-second offsets; no new timing values, spawn positions, damage or difficulty tuning were invented.",
+    "Heroic/Mythic SetPower queued a five-second ordinary callback without checking the phase when it fired. Killing the ninth tentacle at nine seconds allowed228300 to begin after phase3 had removed it. The callback now uses the combat queue and checks current phase/combat. Phase-two introduction and phase-three delayed regen also use combat callbacks; the latter checks phase3 again.",
+    "Removing228300 for transition/reset could call ACTION_1 and restart phase-two regen/Torrent. Its aura hook now admits natural EXPIRE only, safely checks the caster, and ACTION_1 independently requires phase2 and an active encounter. Native expiration still resumes subsequent waves.",
+    "An active destination cast228027 could remain referenced when the base AI forcibly discarded the spell event queue on evade, producing the native non-deletable-spell memory-leak error. Helya now interrupts non-melee spells including delayed casts before evade/death cleanup. This is scoped to Helya; no generic SpellEvent suppression or shared spell-dispatch change was made."
+  ],
+  "native_coverage": [
+    "The existing real Odyn surrender/travel, Guarm combat/evade/death and26 entrance deaths bootstrap each case. No Helya phase, health, summon group, Fury callback or SpellFinishCast callback is seeded/called directly. The real scaled damage hook enters phase2 and its actual group3 supplies nine combat tentacles and nine helpers.",
+    "Native World loaders supply spell_linked_spell, spell_trigger/spell_aura_trigger and area-trigger templates/actions before any encounter actors exist. This includes228032 ->230356,230356 ->228027, and228300's periodic230356 route. The test runs actual Creature::Update and AreaTrigger::Update, movement/removal queues and production aura periodic/expiry dispatch at10ms steps.",
+    "Each of eight cases holds phase2 for180 seconds without killing tentacles. Unique native wave area triggers228027, both115941 boats, Grimelord114709, Night Watch Mariner114809 and Decaying Minion114568 are observed across repeated cycles. Every difficulty produces at least three waves, six boats and three of each large add. Mythic produces six116335 Mistwatchers; the fixture kills these real casters to prevent unchecked Mist Infusion accumulation. Other difficulties create none.",
+    "At55 seconds the baseline has10 minions and the repaired code has20 in every case, verifying both independent native events rather than SQL/source presence. After180 seconds Normal/LFR have60 minions instead of30; Heroic/Mythic final counts depend on the third barrage's native timing and are not asserted to an invented exact value.",
+    "Actual evade/home/reset removes all combat summons and combat area effects and restores NOT_STARTED/full health. Fifteen seconds of further native updates check late work. Native228104/234199 reanimation area effects are intentional out-of-combat behavior and are excluded from the combat-effect cleanup assertion, while still receiving native updates.",
+    "An additional pull is reset at nine seconds and updated for12 more seconds. The repaired cases retain phase0, no228300 barrage, no228546 regen and no combat area effects. The final baseline did not reproduce a late out-of-combat aura on this input; it is recorded as a negative boundary check, not claimed as a baseline failure.",
+    "Human final attempts kill all nine real tentacles at nine seconds, before the queued Heroic/Mythic barrage. Reference libraries recreate228300 in phase3 for both those difficulties; repaired libraries keep it absent. Orc/Pet cases wait20 seconds, record two actual living phase-two large-add GUIDs, then verify those exact actors remain alive after the phase-three return. Existing adds must survive the transition.",
+    "Nine unique native tentacle deaths still yield47% health, repeat kills do not duplicate wounds, and native final damage earns44868 objective55482 once. Victory removes remaining large adds/minions/boats/combat effects, saves mask7 and actual group_instance data, lands one victory Odyn and rewards one142534 through the real quest packet handler. Replayed reward requests still give no second item."
+  ],
+  "primary_reference": {
+    "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+    "author": "FatbossTV",
+    "updated": "2018-07-05",
+    "patch": "7.3.5",
+    "supports": "The guide authors describe repeating Fury waves, boats bringing a Grimelord and Night Watch Mariner, waves of Decaying Minions and existing adds remaining alive on entering phase3. It supports retaining living phase-two adds; it does not independently establish this core's exact31/41-second scheduling offsets."
+  },
+  "validation": [
+    "Test-TrialHelyaNative.ps1: PASS, eight complete cases, native exit0, DBErrors empty and no Server.log ERROR lines.",
+    "Test-TrialHelyaNative.ps1 -Baseline: PASS for explicitly asserted old behavior, eight complete cases, native exit0, DBErrors empty and no Server.log ERROR lines in the final reference run.",
+    "Test-TrialGarmNative.ps1: PASS, existing eight actual Guarm progression/reset/saved-door cases after fixture bootstrap changes.",
+    "Test-HelyaLifecycle.ps1 -VerifyReleaseBinary: PASS, existing extracted production damage/tentacle/phase/victory regression and canonical PE checks. Its modeled services remain distinct from the native map test.",
+    "Test-TrialHelyaFuryRelease.ps1: PASS against the canonical executable and actual generated scripts.lib input. PE/thunk decoding verifies delayed-spell interruption in both death/evade, an EXPIRE-only aura-removal branch, seven native event schedules with only three cancellation calls (boats and cleaning). A disassembly range is bounded by the executable's own x64 unwind metadata.",
+    "Release worldserver and bnetserver built through the normal CMake target with no global OutDir override. Canonical startup and graceful shutdown, audit hashes and scratch cleanup are recorded in evidence."
+  ],
+  "evidence": {
+    "native_runs": {
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261019-181216",
+      "trial-helya-native-baseline": "build-extractors/runtime-test/trial-helya-native-baseline/run-20261019-181228",
+      "trial-garm-native": "build-extractors/runtime-test/trial-garm-native/run-20261019-181237"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261019-181302",
+    "startup_ready": true,
+    "startup_exit": 0,
+    "startup_dberrors_bytes": 0,
+    "startup_stderr_bytes": 0,
+    "canonical_runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "build-extractors/bin/Release/worldserver.exe": "8A40D1D75A49DB11FEA5CE5D40C91EB63C36CB40F1104AB15C7B56B9071C2048",
+      "build-extractors/bin/Release/bnetserver.exe": "4EC49E346D15B2154124A5F6217A6D64BDF30B7BD56ADE0D7317F1C0712A5D0D",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "4BEDFD076D069803C40DA5139F41098A3750CC26E66B22620A25797C579A6E02",
+      "tools/tests/TrialHelyaNative.cpp": "AE0FBF7CF9CEA9AF69FF7E0F2CA32E6CB0DF2D98F895C329C473D317A2691823",
+      "tools/tests/TrialGarmNative.cpp": "95DEE08E627D68A4967609DD9FCB000CD00CAD731BEC3B0E581B864469A08970",
+      "tools/tests/HelyaLifecycleTest.cpp": "FF2CAECC8252B85C936A1A89BF1B83C6A946D1B45BB2260C80B653CA44EF99CA",
+      "tools/tests/Test-RockawayChannelNative.ps1": "6DDEAF6F9F43E539D6CE063D81531D4154D94F781CF55F0F8FD247407CE5498A",
+      "tools/tests/Test-TrialHelyaFuryRelease.ps1": "CBF9445058142EA435336D9B7E7A3A5E0B22BB518B2DB9DD5668AFF1DAE6BECD",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "A6277635C54752B24336850591B7CCBB61A64F85A22F234198F40F22E4E256E6"
+    },
+    "current_observations": [
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=60 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=60 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=60 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=60 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=25 boats=6 grim=3 marine=3 minions=40 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=27 boats=6 grim=3 marine=3 minions=50 minions55=20 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=21 boats=6 grim=3 marine=3 minions=50 minions55=20 mythicCasters=6",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=21 boats=6 grim=3 marine=3 minions=50 minions55=20 mythicCasters=6",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0"
+    ],
+    "reference_observations": [
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=30 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=30 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=30 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=4 boats=8 grim=4 marine=4 minions=30 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=27 boats=6 grim=3 marine=3 minions=20 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=1",
+      "LONG waves=25 boats=6 grim=3 marine=3 minions=20 minions55=10 mythicCasters=0",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0",
+      "LONG waves=21 boats=6 grim=3 marine=3 minions=20 minions55=10 mythicCasters=6",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=1",
+      "LONG waves=21 boats=6 grim=3 marine=3 minions=20 minions55=10 mythicCasters=6",
+      "EARLY_RESET lateFury=0 phase=0",
+      "RETURN phase=3 state=1 threat=2 playerAlive=1 staleLong=0"
+    ],
+    "isolation": "Native World/Hotfix pools READ ONLY; limited random user and schema-only character/auth scratch167 tables per run; no personal account/character rows copied or changed.",
+    "production_sql_changes": false
+  },
+  "test_development_findings": [
+    "The earlier minimal fixture did not load native linked/aura-trigger spell tables. Without them, some initial boats existed but repeated waves were absent. The accepted fixture loads the actual normal-startup data rather than adding modeled callbacks or treating that missing fixture input as a production bug.",
+    "Extended native damage could kill the minimal idle Pet, which has no current stable record. The accepted fixture sets the owner's faction and continually restores the living player/Pet health buffers during timed updates. It kills Mythic Mistwatchers through real Unit::Kill. No pet death, survival tuning or full raid strategy is claimed.",
+    "A reset assertion initially treated re-created native out-of-combat reanimation effects as stale combat effects. Their spell IDs and native lifecycle were traced; only those two intentional effects are excluded from the cleanup assertion.",
+    "Exploratory reference/partially repaired runs exposed an intermittent228027 non-deletable-spell error. They were rejected by the runner's existing ERROR guard, not accepted as clean passes. Explicit delayed-cast interruption was added; final current/reference runs pass the unchanged error guard."
+  ],
+  "remaining_limits_and_client_checks": [
+    "This is socketless native server execution with real loaded data/AI/spell/aura/area-trigger services, controlled damage inputs, an idle Pet, buffered health and explicit fixture Mythic-caster kills. Player and Pet do not receive a full authenticated client/world update/rotation sequence. It is not a raid survival or damage-tuning verification.",
+    "Wave creation, repetition, event admission, cleanup and add retention are asserted. Exact original wave cadence/count per barrage across all difficulty branches, every boat waypoint, visual/model placement, knockback on a real client, raised-platform avoidance, individual add ability tuning and all phase-three abilities remain separate checks. Existing timing/difficulty differences were retained rather than guessed from a guide.",
+    "No WoW client was controlled. Verify Fury visuals/audio/knockback and platform avoidance, boat arrival and passenger presentation, large/small add combat, natural barrage completion, reset/retry, phase-three handoff and the complete quest/reward sequence in7.3.5. Earlier audit limitations remain in force."
+  ]
+}

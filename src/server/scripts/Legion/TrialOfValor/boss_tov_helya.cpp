@@ -286,6 +286,9 @@ struct boss_helya_tov : BossAI
 
     void JustDied(Unit* /*killer*/) override
     {
+        // Fury's destination cast may still be delayed. Release its current
+        // spell reference before the base AI discards the spell event queue.
+        me->InterruptNonMeleeSpells(true);
         Talk(SAY_DEATH);
         instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_DUNGEON_ENCOUNTER, 2008);
         me->RemoveAllAreaObjects();
@@ -296,6 +299,7 @@ struct boss_helya_tov : BossAI
 
     void EnterEvadeMode() override
     {
+        me->InterruptNonMeleeSpells(true);
         Talk(SAY_INTRO_1);
         me->NearTeleportTo(524.031f, 699.055f, 5.17631f, 4.29875f);
 
@@ -380,8 +384,11 @@ struct boss_helya_tov : BossAI
                     if (IsHeroicPlusRaid() && eventPhase == PHASE_2 && !FuryOfTheMaw)
                     {
                         FuryOfTheMaw = true;
-                        me->AddDelayedEvent(5000, [=]() -> void
+                        me->AddDelayedCombat(5000, [=]() -> void
                         {
+                            if (eventPhase != PHASE_2 || !me->isInCombat())
+                                return;
+
                             FuryOfTheMawTrash = false;
                             DoCast(SpellFureOfTheMawLong);
                             FuryOfTheMaw = false;
@@ -459,7 +466,7 @@ struct boss_helya_tov : BossAI
             me->RemoveAura(SpellHelyaBluePower);
             me->RemoveAura(SpellCorrosiveNova);
             me->SummonCreatureGroup(3);
-            me->AddDelayedEvent(5000, [=]() -> void
+            me->AddDelayedCombat(5000, [=]() -> void
             {
                 if (eventPhase != PHASE_2)
                     return;
@@ -496,8 +503,11 @@ struct boss_helya_tov : BossAI
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveAura(SpellBuildingStorm);
                 me->RemoveAura(SpellCorrosiveNova);
-                me->AddDelayedEvent(1500, [=]() -> void
+                me->AddDelayedCombat(1500, [=]() -> void
                 {
+                    if (eventPhase != PHASE_3)
+                        return;
+
                     DoCast(SpellHelyaAltPowerRegen);
                     checkrephase = false;
                 });
@@ -704,8 +714,8 @@ struct boss_helya_tov : BossAI
                 if (!FuryOfTheMawTrash)
                 {
                     events.RescheduleEvent(EVENT_BOAT, 500);
-                    events.RescheduleEvent(EVENT_SUMMON_SKELETION, 31000);
-                    events.RescheduleEvent(EVENT_SUMMON_SKELETION, 41000);
+                    events.ScheduleEvent(EVENT_SUMMON_SKELETION, 31000);
+                    events.ScheduleEvent(EVENT_SUMMON_SKELETION, 41000);
                     FuryOfTheMawTrash = true;
                 }
                 events.RescheduleEvent(EVENT_FURY_OF_THE_MAW_CLEAN_AT, 3000);
@@ -715,8 +725,8 @@ struct boss_helya_tov : BossAI
                 if (eventPhase == PHASE_3 || eventPhase == PHASE_2)
                 {
                     events.RescheduleEvent(EVENT_BOAT, 500);
-                    events.RescheduleEvent(EVENT_SUMMON_SKELETION, 31000);
-                    events.RescheduleEvent(EVENT_SUMMON_SKELETION, 41000);
+                    events.ScheduleEvent(EVENT_SUMMON_SKELETION, 31000);
+                    events.ScheduleEvent(EVENT_SUMMON_SKELETION, 41000);
                 }
             }
             break;
@@ -728,6 +738,9 @@ struct boss_helya_tov : BossAI
         switch (action)
         {
         case ACTION_1:
+            if (eventPhase != PHASE_2 || !me->isInCombat() || instance->GetBossState(Data::BossIDs::HelyaID) != IN_PROGRESS)
+                break;
+
             DoCast(SpellHelyaAltPowerRegen);
             events.RescheduleEvent(EVENT_TORRENT, 2000);
             break;
@@ -1884,11 +1897,14 @@ class spell_fury_of_the_maw : public AuraScript
 
     void OnRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
     {
-        Unit* caster = GetCaster()->ToCreature();
-        if (!caster)
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
             return;
 
-        caster->GetAI()->DoAction(ACTION_1);
+        Unit* caster = GetCaster();
+        if (!caster || !caster->ToCreature())
+            return;
+
+        caster->ToCreature()->AI()->DoAction(ACTION_1);
     }
 
     void Register() override

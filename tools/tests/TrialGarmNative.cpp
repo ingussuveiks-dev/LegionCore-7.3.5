@@ -102,7 +102,7 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
     Require(!guarm->HasUnitState(UNIT_STATE_EVADE),"Native Guarm home return did not finish");guarm->SetInCombatWith(&p);Require(script->GetBossState(1)==IN_PROGRESS,"Guarm retry cannot enter combat");Doors(doors,true,false,false);p.Begin(44868);
     // Tap/damage eligibility is setup; execute real native reward/death/mask.
     guarm->ResetPlayerDamageReq();guarm->LowerPlayerDamageReq(1);guarm->SetLootRecipient(&p);
-    {LootPet pet(p,*map);Unit* killer=petKill?static_cast<Unit*>(&pet):static_cast<Unit*>(&p);Require(killer->GetCharmerOrOwnerPlayerOrPlayerItself()==&p&&guarm->GetLootRecipient()==&p&&guarm->IsDamageEnoughForLootingAndReward()&&guarm->IsDungeonBoss(),"Native player/pet owner/tap/reward prerequisites failed");killer->Kill(guarm,false);killer->Kill(guarm,false);}Tick(p,2000);
+    {LootPet pet(p,*map);pet.setFaction(p.getFaction());Unit* killer=petKill?static_cast<Unit*>(&pet):static_cast<Unit*>(&p);Require(killer->GetCharmerOrOwnerPlayerOrPlayerItself()==&p&&guarm->GetLootRecipient()==&p&&guarm->IsDamageEnoughForLootingAndReward()&&guarm->IsDungeonBoss(),"Native player/pet owner/tap/reward prerequisites failed");killer->Kill(guarm,false);killer->Kill(guarm,false);}Tick(p,2000);
     Require(guarm->isDead(false)&&script->GetBossState(1)==DONE,"Native Guarm death failed");Doors(doors,true,true,true);auto saved=Checkpoint(*map,group.group,3);auto id=map->GetInstanceId();
     Require(!p.GetQuestObjectiveData(44868,55482)&&p.GetQuestStatus(44868)==QUEST_STATUS_INCOMPLETE,"Guarm completed Helya's quest");
     unsigned trash=0;for(auto c:Actors(*map))switch(c->GetEntry())
@@ -126,6 +126,7 @@ static void GarmCase(Map& staging,MapInstanced& parent,Difficulty diff,uint8 rac
 static int RunGarm(int argc,char** argv,HelyaProgressionCheck check=nullptr)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();LoadGarmInputs(check!=nullptr);OpenScratch();sAchievementMgr->LoadRewards();sAchievementMgr->LoadCompletedAchievements();
+    if(check){sObjectAccessor->SetGuidSize(HighGuid::AreaTrigger,100000);sAreaTriggerDataStore->LoadAreaTriggerActionsAndData();sSpellMgr->LoadSpellLinked();sSpellMgr->LoadSpellTriggered();}
     // Normal world startup sizes these before any player/pet is registered.
     // A socketless bootstrap must do the same for native owner/tap lookups.
     sObjectAccessor->SetGuidSize(HighGuid::Player,100000);sObjectAccessor->SetGuidSize(HighGuid::Pet,100000);sObjectAccessor->SetGuidSize(HighGuid::EventObject,100000);

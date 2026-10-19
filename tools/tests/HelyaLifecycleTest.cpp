@@ -58,7 +58,7 @@ struct Creature:Unit{
  float GetHealthMultiplierForTarget(WorldObject const*)const;InstanceScript* GetInstanceScript(){return instance;}::AI* AI(){return ai;}
  ObjectGuid GetGUID(){return guid;}uint32 GetEntry(){return entry;}void SetHealth(uint64 n){health=n;}
  void SetInCombatWith(Unit* a){ai->EnterCombat(a);}uint32 getFaction(){return faction;}bool HasFlag(int,uint32 n){return flags&n;}void RemoveFlag(int,uint32 n){flags&=~n;}
- void CastStop(){casting=false;++stops;}void AttackStop(){}void SetReactState(int n){react=n;}void SetPower(int,int){}void SetMaxPower(int,int){}void AddUnitState(int){}
+ void CastStop(){casting=false;++stops;}void InterruptNonMeleeSpells(bool){CastStop();}void AttackStop(){}void SetReactState(int n){react=n;}void SetPower(int,int){}void SetMaxPower(int,int){}void AddUnitState(int){}
  void RemoveAllAuras(){auras.clear();}void RemoveAura(uint32 id){auras.erase(id);}void RemoveAllAreaObjects(){}void KillAllDelayedCombats(){callbacks.clear();}
  void SummonCreatureGroup(int n){assert(n==3);++groups;}
  void AddDelayedEvent(uint32 ms,std::function<void()> f){callbacks.emplace(now+ms,std::move(f));}void AddDelayedCombat(uint32 ms,std::function<void()> f){AddDelayedEvent(ms,std::move(f));}

@@ -58,5 +58,9 @@
     "The first attempt waits through the six-second phase-two introduction and then evades; the retry clears all nine tentacles quickly. Long-running Fury of the Maw, boat/add waves, all breath/orb timings and all difficulty-specific abilities remain separate native/client work.",
     "44868 is added through the native Player quest API after Guarm as setup; preceding NPC acceptance/reward gates and saved quest reload are covered by the existing turn-in audit. This test checks earned Helya credit and immediate reward SQL, not authenticated restart/login or every saved-instance selector.",
     "No WoW client was controlled. Verify actual tentacle/helper placement and visuals, immunity presentation, dialogue/audio, outside/return animations, pet behavior/portrait, phase transitions, Odyn landing/menu and full quest completion in the7.3.5 client. Earlier pending audit checks remain; no whole quest or raid is marked client-verified."
-  ]
+  ],
+  "fury_follow_up": {
+    "audit": "docs/audits/trial-helya-fury-2026-10-19.json",
+    "status": "Extended native Fury/boats/add/reset/phase-three retention coverage and repairs; prior run evidence and client limitations retained."
+  }
 }
