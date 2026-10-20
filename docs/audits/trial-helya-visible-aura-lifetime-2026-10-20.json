@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-20",
+  "status": "Removed visible-aura application lifetime repaired separately from Corrupted's health threshold. Evidence below retains both native failures and the completed stress comparison; client verification remains pending.",
+  "reproduction": "Extended real Corrupted release testing exposed a second crash after the earlier charmed-Player loot repair: AuraApplication::ClientUpdate+679 -> Unit::_UpdateSpells. Disassembly places the fault on the application's target pointer after packet construction. Temporary identity-only diagnostics, with no skipping or fake callbacks, confirmed pending raw application addresses absent from the target's live m_appliedAuras map. They occur on24/10-percent self-release and on actual Player/Pet damage release. A16-repeat native run then faults in AuraApplication::ClientUpdate+157 with the diagnostic immediately before it. Both crash logs are retained. The diagnostics are removed from the final implementation.",
+  "repair": [
+    "Unit::_UnapplyAura already removes visible state before effect/linked cleanup. Detach the exact application again after all linked aura-specific cleanup, while the local AuraApplicationPtr still owns it and the target Unit is alive. This prevents a removed application's raw address from surviving into ClientUpdate after Aura releases it. Do not dereference target pointers later from a generic application destructor.",
+    "RemoveVisibleAura erases both containers by pointer identity/iterator. The containers compare slot numbers for their ordering, so erase(key) could instead erase a replacement application already using that same slot. Final detachment must preserve that replacement. No slot renumbering, packet suppression, ID whitelist, shared hook bypass or aura-duration change is introduced."
+  ],
+  "verification": [
+    "Test-VisibleAuraRemoval compiles the extracted production RemoveVisibleAura and actual slot comparator with std::set and Boost flat_set. It checks ordinary removal, unrelated entries, a different live application in the same slot, and a retired queued pointer. The repaired handler makes zero slot reads during removal. Pinned f5f06838 extraction fails on the same-slot replacement case before reaching the retired-pointer test; the original implementation is not executed on deliberately freed storage.",
+    "The native control stress uses the separately pending data-based25-percent Corrupted repair to exercise repeated self-removal. All8 difficulty/faction cases pass; the two Mythic cases each repeat both actual Player and Pet damage release16times, totaling64 releases and128 start/damaged trace markers. Native aura/spell dispatch, charm removal, transform/Bleak cleanup, faction/control restoration and eight-second residual-cast checks execute without errors or a crash. This is a pending-content integration input, not a claim that the Corrupted threshold change is part of this core commit.",
+    "AuraScript reentry regression passes. Normal generated CMake Release paths are used. Bounded PE/thunk inspection confirms the final RemoveVisibleAura call follows HandleAuraSpecificMods in actual deployed Unit::_UnapplyAura. Final related regressions and startup are recorded with the next Corrupted audit."
+  ],
+  "retained_limits": [
+    "This is a native lifetime/identity repair. It does not establish authenticated client aura icons, input, camera, pet portrait, visuals/audio or full raid survivability.",
+    "The first charmed-Player damage crash is a separate preceding fix f5f06838. Corrupted's original11-percent check and post-release cast are separate content defects documented in trial-helya-control-damage-2026-10-20.json and addressed by the subsequent content commit."
+  ],
+  "evidence": {
+    "identity_reference_revision": "f5f06838",
+    "native_stress": "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703",
+    "damage_releases": 64,
+    "start_damage_markers": 128,
+    "hashes": {
+      "src/server/game/Entities/Unit/Unit.cpp": "8C546792F0646CF9F41731890517E95F0FCB0E128EAA0BC69CC631A259744825",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "0683ADBB6B5FDEAA1A82CE1ED5A1019FFCE078C9349CA32D4261DBC92CCC9504",
+      "tools/tests/VisibleAuraRemovalTest.cpp": "1F1288144A3B2E5A852BCB52888B64289E6B71CC6FF7A88338F8907758560C28",
+      "tools/tests/Test-VisibleAuraRemoval.ps1": "CB09C92D07F456865B4601663251335AEAE2E3854BAAD21EA412DF676A30E524",
+      "tools/tests/Test-VisibleAuraRemovalRelease.ps1": "7E9045E73D88A7D8FF9A670AE964DEE24D63281248743464BA435A75B23D0B02",
+      ".codex/helya-control-current-final.log": "9141C48B274354DE632B9058C52E2FEE623D4CA1486BE9AE6CD11CFB42FEA450",
+      ".codex/helya-control-diagnostic-stress.log": "00131AFAE225E82C48C98412370A608D563D5EA98AAB4EA71B6EC0EC68CB7905",
+      ".codex/helya-control-visible-current.log": "A72BA7EC49A2EBC0718518EE065AB51E38C08A03DB3D13C6CEA582E95C5E6ECD",
+      ".codex/helya-control-visible-reference.log": "E7A6450D5383C375B5D2207655712752A641585D52729892FD3BC9252A419A8B",
+      ".codex/helya-control-visible-stress.log": "7C9EEE2E4EB8B59D624A835B845566107D5D52D46879A7743F9E772DB2F3C8CD",
+      ".codex/helya-control-visible-reentry.log": "E2B903CBE22877797023A6626600AB878FB807D2C70845159DAC68BCFD1A7FE0",
+      "build-extractors/runtime-test/visible-aura-removal/visible-aura-release-inputs.json": "33A75D3F998F6896EB06B3525CE8DF2D3BACC16608CF80FE94AF69C15F6289CB",
+      "build-extractors/runtime-test/visible-aura-removal/visible-remove-disassembly.txt": "AB60C92E34309D4905AC6E365FB04C2D3D7F6B88E4821429593F7FE091CBE0C0",
+      "build-extractors/runtime-test/visible-aura-removal/unapply-final-detach-disassembly.txt": "AC9A92177C2D41EA15A127DD96CC768A5FFCD27F3F2FE53BCD20B62ECACD952F",
+      "build-extractors/bin/Release/worldserver.exe": "D62A43D7198E8FEC2378C5BBBB10406F97FD765A9663F69F620432950F0C8A7C",
+      "build-extractors/src/server/game/Release/game.lib": "E319A56793819CDF3237DD1050151C861F379A6ADD57D8B25148E619A91667FC",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-lines.txt": "0DEC720E0D3904284AC29B632671AA73EF40B8B1BE8C59058418868352DE5143",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-inputs.json": "8261D2AB9E465566D3707D78C0EDC102D4ED8B6B7AA1E4FED22C1177A009E515"
+    }
+  }
+}

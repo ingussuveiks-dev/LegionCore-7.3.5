@@ -4824,6 +4824,10 @@ void Unit::_UnapplyAura(AuraApplicationMap::iterator &i, AuraRemoveMode removeMo
         caster->RemoveIdInWHMAList(GetGUID(), spellInfo->Id);
     }
 
+    // Linked cleanup can dirty client aura state again after _Remove(). Detach
+    // this exact application before Aura releases its last shared reference.
+    RemoveVisibleAura(aurApp.get());
+
     // only way correctly remove all auras from list
     //if (removedAuras != m_removedAurasCount) new aura may be added
         i = m_appliedAuras.begin();
@@ -16373,8 +16377,16 @@ void Unit::SetVisibleAura(AuraApplication* aurApp)
 
 void Unit::RemoveVisibleAura(AuraApplication* aurApp)
 {
-    m_visibleAuras.erase(aurApp);
-    m_visibleAurasToUpdate.erase(aurApp);
+    // Slots may already belong to a replacement application after linked
+    // removal effects. Erasing by the slot comparator can remove that new aura
+    // while leaving the old raw pointer queued for ClientUpdate.
+    auto visible = std::find(m_visibleAuras.begin(), m_visibleAuras.end(), aurApp);
+    if (visible != m_visibleAuras.end())
+        m_visibleAuras.erase(visible);
+
+    auto pending = std::find(m_visibleAurasToUpdate.begin(), m_visibleAurasToUpdate.end(), aurApp);
+    if (pending != m_visibleAurasToUpdate.end())
+        m_visibleAurasToUpdate.erase(pending);
     UpdateAuraForGroup();
 }
 
