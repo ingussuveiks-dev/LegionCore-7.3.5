@@ -21,6 +21,51 @@ static void ControlBegin(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,Crea
     helya.CastSpell(&subject,232450,true);Require(subject.HasAura(232450),"Native Axion absorb missing");subject.GetAura(232450)->SetDuration(1);
     Tick(subject,30);Require(subject.HasAura(232350)==map.IsMythicRaid(),"Actual absorb expiry crossed the Mythic gate");
 }
+#ifndef TRIAL_HELYA_CONTROL_BASELINE
+struct ControlTravelSession
+{
+    GarmPlayer& player;
+    ControlTravelSession(GarmPlayer& p,InstanceMap& raid):player(p){
+        // Private fixture-owned workers only: actual transfer/ACK is driven
+        // synchronously, without an authenticated socket or map-session loop.
+        auto base=sMapMgr->CreateBaseMap(1220);base->SetMapStop();auto& thread=sMapMgr->_mapThreads[1220];if(thread&&thread->joinable())thread->join();
+        auto outdoor=static_cast<MapInstanced*>(base);auto target=sMapMgr->CreateMap(1220,&p);target->SetMapStop();for(auto& zone:outdoor->_zoneThreads)if(zone.second->joinable())zone.second->join();
+        auto& sessions=const_cast<SessionMap&>(sWorld->GetAllSessions());Require(!sessions.count(p.GetSession()->GetAccountId()),"Travel fixture would replace another session");
+        sessions[p.GetSession()->GetAccountId()]=WorldSessionPtr(p.GetSession(),[](WorldSession*){});p.GetSession()->SetMap(&raid);
+    }
+    ~ControlTravelSession(){const_cast<SessionMap&>(sWorld->GetAllSessions()).erase(player.GetSession()->GetAccountId());player.GetSession()->SetMap(nullptr);}
+};
+static void ControlRoundTrip(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,Creature& helya,Group& group)
+{
+    sWorld->AddCharacterInfo(subject.GetGUID(),0,subject.GetName(),GENDER_MALE,subject.getRace(),subject.getClass(),subject.getLevel());
+    subject.SaveToDB(true);FlushWrites();group.ConvertToRaid();Require(group.AddMember(&subject),"Native control-travel group admission failed");subject.SetRaidDifficultyID(map.GetDifficultyID());
+    ControlTravelSession session(subject,map);auto faction=subject.getFaction();auto display=subject.GetDisplayId();auto destination=sWorldSafeLocsStore.LookupEntry(5779);Require(destination&&destination->MapID==1220,"Native outdoor destination missing");
+    for(bool controlled:{true,false}){
+        ControlBegin(p,subject,map,helya);subject.RemoveAura(228054);
+        if(!controlled){subject.RemoveAura(232350);helya.CastSpell(&subject,232450,true);Require(subject.HasAura(232450),"Travel pending-Axion input missing");}
+        helya.SetPower(POWER_ALTERNATE,10);ControlWatch travel(map,subject,helya);travel.Advance(1500);
+        Require(subject.HasUnitState(UNIT_STATE_CASTING)==controlled,"Travel missed native controlled cast/pending absorb input");
+        auto instance=map.GetInstanceId();auto saved=map.GetInstanceScript()->GetSaveData();auto mask=map.GetInstanceScript()->GetCompletedEncounterMask();auto bind=group.GetBoundInstance(map.GetDifficultyID(),1648);Require(bind&&bind->save->GetInstanceId()==instance,"Travel lost earned raid bind");
+        Require(subject.SafeTeleport(1220,destination->Loc.X,destination->Loc.Y,destination->Loc.Z,destination->Loc.O*float(M_PI)/180.0f)&&subject.IsBeingTeleportedFar()&&!subject.IsInWorld(),"Native controlled far transfer did not leave raid");
+        std::cout<<"CONTROL_DEPART controlled="<<controlled<<" control="<<subject.HasAura(232350)<<" transform="<<subject.HasAura(232358)<<" bleak="<<subject.HasAura(231862)<<" axion="<<subject.HasAura(232450)<<" casting="<<subject.HasUnitState(UNIT_STATE_CASTING)<<std::endl;
+        Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction&&subject.GetDisplayId()==display&&subject.IsControlledByPlayer(),"Native map departure retained encounter control state");
+        subject.GetSession()->HandleWorldPortAck();Require(subject.IsInWorld()&&subject.GetMapId()==1220&&!subject.IsBeingTeleportedFar(),"Outdoor worldport ACK failed");
+        // Axion has no native change-map interruption flag. Do not invent
+        // immediate removal: its real expiry outside Helya's map must be safe.
+        if(!controlled){auto info=sSpellMgr->GetSpellInfo(232450);std::cout<<"CONTROL_OUTDOOR_AXION flags="<<info->AuraInterruptFlags[0]<<','<<info->AuraInterruptFlags[1]<<" duration="<<(subject.GetAura(232450)?subject.GetAura(232450)->GetDuration():0)<<" caster="<<(subject.GetAura(232450)&&subject.GetAura(232450)->GetCaster()!=nullptr)<<std::endl;}
+        travel.Advance(15000,true);Require(travel.casts[231863].empty()&&helya.GetPower(POWER_ALTERNATE)==10&&!subject.HasAura(232350)&&!subject.HasAura(232450),"Outdoor Player completed/recreated encounter effects or retained expired absorb");
+        Require(map.GetInstanceScript()->GetSaveData()==saved&&map.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Departure changed active raid progress");
+        Position entrance=helya.GetPosition();Require(!subject.SafeTeleport(1648,&entrance)&&subject.GetMapId()==1220&&!subject.IsBeingTeleportedFar(),"Combat re-entry bypassed native raid admission");
+        ClearCombat(p,helya);Require(map.GetInstanceScript()->GetBossState(0)==DONE&&map.GetInstanceScript()->GetBossState(1)==DONE&&map.GetInstanceScript()->GetBossState(2)==NOT_STARTED&&map.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Native wipe lost earned raid progress");
+        Require(sMapMgr->CreateMap(1648,&subject)==&map,"Native map selection lost original instance/difficulty");
+        Require(subject.SafeTeleport(1648,&entrance)&&subject.IsBeingTeleportedFar(),"Native return transfer failed");subject.GetSession()->HandleWorldPortAck();
+        Require(subject.IsInWorld()&&subject.GetMap()==&map&&!subject.IsBeingTeleportedFar()&&subject.GetMap()->GetDifficultyID()==DIFFICULTY_MYTHIC_RAID,"Native return ACK selected wrong map/difficulty");
+        travel.Advance(8000,true);Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&!subject.HasAura(232450)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&travel.casts[231863].empty(),"Raid re-entry restored old control or a residual cast");
+        bind=group.GetBoundInstance(map.GetDifficultyID(),1648);Require(bind&&bind->save->GetInstanceId()==instance&&map.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Round trip changed raid bind/progress");
+        std::cout<<"CONTROL_RETURN controlled="<<controlled<<" instance="<<instance<<" difficulty="<<uint32(map.GetDifficultyID())<<" mask="<<mask<<" bursts="<<travel.casts[231863].size()<<std::endl;
+    }
+}
+#endif
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     LoadPhaseThreeConditions();sSpellMgr->LoadSpellPrcoCheck();GarmPlayer subject(map,p.getRace());auto faction=subject.getFaction();auto display=subject.GetDisplayId();
@@ -102,6 +147,7 @@ static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     }
     ControlBegin(p,subject,map,helya);ControlWatch wiped(map,subject,helya);wiped.Advance(1500);ClearCombat(p,helya);wiped.Advance(8000);
     Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction,"Wipe retained controlled Player state");
+    ControlRoundTrip(p,subject,map,helya,group);
     // Use final scaled damage and native Player death/corpse/resurrection,
     // rather than removing an aura with a simulated death removal mode.
     for(Unit* killer:{static_cast<Unit*>(&helya),static_cast<Unit*>(&p),static_cast<Unit*>(&pet)}){

@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "tested_revision": "82c63251",
+  "status": "Native Corrupted far-transfer/ACK and live raid re-entry checks pass. Added test/research coverage and audit; no production fix established or applied.",
+  "scope": {
+    "control_suite_cases": 8,
+    "mythic_round_trips": 4,
+    "races": [
+      "Human",
+      "Orc"
+    ],
+    "inputs": [
+      "Corrupted Player casting actual Infusion",
+      "Unexpired Corrupted Axion absorb before control"
+    ]
+  },
+  "verification": [
+    "The extended suite retains all8 LFR/Normal/Heroic/Mythic and Human/Orc cases. New round trips execute on the two Mythic cases. Each subject earns actual Corrupted from shortened remaining absorb duration through the existing ControlBegin setup. The controlled case exits during the real aura-started Infusion; the separate pending case removes setup control and receives a fresh naturally timed10000ms Axion, advancing1500ms before departure.",
+    "The subject is saved into the disposable character schema, cached in the native character lookup and added through actual Group::AddMember. The earned group is converted to a raid and uses the original Mythic difficulty. A borrowed socketless fixture session is registered in the actual World session lookup used by SafeTeleport; no socket authentication is claimed. Fixture-owned outdoor map/zone workers are joined for synchronous dispatch.",
+    "Actual Player::SafeTeleport transfers the subject to native WorldSafeLocs5779 on map1220 and removes it from the raid. Immediate pre-ACK checks require no232350,232358,231862, charmer or casting state, plus restored faction/display/control flag. Actual WorldSession::HandleWorldPortAck admits the subject to the outdoor map; neither map assignment nor Unit world removal is substituted for these transfer/ACK calls.",
+    "After15000ms of actual subject Unit updates outdoors, there is no completed231863, no232350 or232450 and Helya alternate energy remains10. Helya scheduling is frozen during this isolation, leaving the encounter IN_PROGRESS and original saved-data representation/completed mask unchanged.",
+    "A normal return request through SafeTeleport during IN_PROGRESS must fail native raid admission and leave the subject outside without a pending transfer. Actual Helya evade then changes only Helya to NOT_STARTED, preserving Odyn/Guarm DONE and encounter mask3. Native MapManager::CreateMap selects the original live instance; SafeTeleport and a real worldport ACK return the subject to that exact map and Mythic16.",
+    "The controlled and pending cases both return to instance7 for Human and instance8 for Orc in this run, with mask3, no restored control/transform/Bleak/Axion/charmer/cast and no Eruption over8000ms of further actual Unit updates. The group bind still references the same original instance save. This is a live group-bind/instance round trip, not a fresh login or cold SQL reload.",
+    "The inherited64 threshold releases,6 death/resurrection cases,2 victory cases, actual Counterspell/recovery and other earlier control assertions still pass. Server.log contains no ERROR/FATAL and DBErrors is empty. Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary also passes current final-link library/source freshness, input hashes and the existing deployed PE checks. No production source changed, so no new production build or worldserver/bnetserver startup was necessary."
+  ],
+  "axion_observation": [
+    "The first probe incorrectly required pending232450 to disappear immediately with Corrupted. It failed after the controlled round trip had already passed: CONTROL_DEPART controlled=0 ... axion=1. This stricter assertion was an unsupported test assumption, not a reproduced production regression. Its original failure output is retained at .codex/helya-control-travel-first.log.",
+    "The packed native DB2 reader now includes SpellInterrupts and reports no232450 interrupt row, which native SpellInfo construction defaults to zero flags. The live loaded spell independently reports AuraInterruptFlags0,0. Mythic duration remains10000ms; immediately after outdoor ACK the pending aura has8500ms remaining and its original Helya caster no longer resolves through the new map.",
+    "The final regression therefore checks the requested Corrupted/cast cleanup immediately, while observing the distinct pending absorb through its real expiry. Both pending cases safely expire outside without control, Eruption or Helya energy gain. It does not force a new change-map flag or invent encounter cleanup absent from the available native data.",
+    "Native data and successful local execution do not establish whether retail removed the pending absorb through an additional server script. Exact retail/client behavior of this separate residual heal-absorb interval remains unverified; no claim that every encounter aura disappears immediately is made."
+  ],
+  "production_trace": [
+    "Player::SafeTeleport stops non-teleport spellcasting before far-map removal. Map::RemovePlayerFromMap calls Player/Unit::RemoveFromWorld, whose RemoveCharmAuras removes the charm-bearing Corrupted aura; native linked cleanup removes transform/Bleak and restores Player state.",
+    "InstanceMap::CanEnter rejects raid entry during an active encounter; MapManager uses the existing raid-group bind for selection after evade. The regression does not bypass these checks with GM status, manual map reassignment or direct boss-state injection.",
+    "Axion expiry uses Aura::GetCaster and the existing active-Mythic-phase3 gate. Creature lookup is relative to the aura owner map; after this actual outdoor transfer Helya does not resolve and no control cast is created."
+  ],
+  "limits": [
+    "No authenticated7.3.5 client loading/geometry, UI/camera/action-bar/pet portrait, cast-bar, control-input handoff, transform/audio or full quest/raid completion verification. Fixture server display restoration does not prove visible model playback.",
+    "These cases exercise real SafeTeleport/WorldPortAck with synchronous library fixtures, not live socket/map-session workers or the full Player::Update loop. Helya AI and other actor scheduling are frozen outdoors; the normal full-map phase bootstrap and later evade are real. Subject health is not buffered, while other fixture actors use health buffers.",
+    "Entry is deliberately denied while combat continues, then tested after actual evade. The test does not assert an entitlement to enter a running raid encounter. It verifies the original live group bind and completed encounter mask, not new permanent personal lock acceptance, pending-bind timeout, logout/relogin, cold save reload, instance reset or a new server boot.",
+    "Only the controlled Warrior fixture and the pending Axion input on the two Mythic races are covered here. Other class resources/talents, personal permanent-pet migration, arbitrary aura sources and previously retained fidelity/client limits remain separate."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-182703",
+    "command": "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+    "native_db2_command": "tools/research/Read-LegionLegendaryCatalog.ps1 -SourceFile HelyaControlCatalog.cpp -ProbeName HelyaControlCatalog -OutputFile .codex/helya-control-travel-catalog.txt",
+    "hashes": {
+      "src/server/game/Entities/Unit/Unit.cpp": "8C546792F0646CF9F41731890517E95F0FCB0E128EAA0BC69CC631A259744825",
+      "src/server/game/Entities/Player/Player.cpp": "C273E998EFD9F6E7B0A085E64E65290BF6E07CFA381B44EF0CD197C39835354F",
+      "src/server/game/Maps/Map.cpp": "4473CD42FF82BFDA70F36AD4CFE5F87DC5AE5F5F20BE4DBEEA85CC20B56116B4",
+      "src/server/game/Maps/MapManager.cpp": "A280C10D114A42AA8630F90DC86B7F7655C517B126B84818528C6BE37FA01CAD",
+      "src/server/game/Handlers/MovementHandler.cpp": "13589D3429F9B9B2D14C1C7B9486C7C8F48D247A8CE1C9A004227AEA44EB6ABD",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "0683ADBB6B5FDEAA1A82CE1ED5A1019FFCE078C9349CA32D4261DBC92CCC9504",
+      "tools/tests/TrialHelyaControlNative.cpp": "CE37512AC024A4A57AB882CEB1C209C148C4EA902E9E595492D17E847F8CF6B5",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "F2A3682821B47AB0BE078C79F6A46E8492566D73308BD558CF9A5AC0B3AC8087",
+      "tools/tests/Test-TrialHelyaControlRelease.ps1": "AD95B45D1575C23634B3EDDA835596EB2EA43D852532E0E9EA5D634CB075587A",
+      "tools/research/HelyaControlCatalog.cpp": "40369FD2D16EC1D08F8F555CB3D99DEB8AAD8B814FBF8F0E00F4EB4552608F92",
+      "build-extractors/bin/Release/worldserver.exe": "600C54C803AAEFF69C598B6C2EBCCE376FBC0FB8A7BC67BCFDD02B03356B4290",
+      "build-extractors/src/server/game/Release/game.lib": "D8E6F20CD80BD95B3BBC792731D6DF64891260BA4BF80FA3A653E26C0FAC6060",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "DF4EDDF3EE9A7F4681E499570C77CA47CB0A49374D79FC8565C751AC1016C91C",
+      ".codex/helya-control-travel-first.log": "6002620700AC745E861EE424CD28FF85C5D54ED2E02D05DF7D0F9E21FDE660CD",
+      ".codex/helya-control-travel-final.log": "531B09628E18221E69A8C381AB559CD60F2B40B6D4144EFD48C2107B3347FDDE",
+      ".codex/helya-control-travel-catalog.txt": "44CF17D31C83E91C9D82CDDB4AD8EC73DC8BF5F72B97DC401E9F25860546152E",
+      "final_run/native-inputs.json": "0D0DADE9F8A59EACFDFAC504240429FE8BB19E6DF960E49750AC087B3B0DEAC6",
+      "final_run/native-lines.txt": "2AD0A95DAD6F6E6394977DFD90C33170324F2BB7407D8C2FA2A2B4A3DBE16434",
+      "final_run/Server.log": "8226C2C586969D70997FE7DE4AD040BBA3869038757974CBCA84B00D21E5A1E3",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  },
+  "scratch_cleanup": {
+    "schemas": 0,
+    "users": 0
+  }
+}
