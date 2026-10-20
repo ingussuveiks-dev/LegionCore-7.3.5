@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-20",
+  "request": "Fix the repeated pet killing-blow credit defect centrally rather than patching each quest's database rows",
+  "scope": "Shared SmartAI progress actions; no blanket replacement of combat event invokers, spell targets or all custom quest scripts",
+  "finding": "Unit::Kill already resolves the killer's controlling player, then preserves the victim's loot recipient and delegates ordinary kill rewards to KillRewarder. The repeated defect is in scripted progress: actions33/205 ignored non-Player targets, and action85 used the pet as caster even for a dedicated player-only credit spell. A dialog can run while the actual player-only spell effect refuses the pet.",
+  "implementation": [
+    "GetScriptCreditPlayer preserves an explicit Player target and otherwise uses the existing Unit::GetCharmerOrOwnerPlayerOrPlayerItself resolver for player-controlled pets, guardians and charmed NPCs. Ownerless/NPC-owned units and non-unit objects do not become arbitrary nearby players.",
+    "Action33 retains its loot-recipient priority, native RewardPlayerAndGroupAtEvent calls and vehicle passengers. Its fallback selection resolves controlled units to players and deduplicates a player's presence as direct target, pet/guardian owner or vehicle passenger. Trigger-only actions keep the original reward source for group distance checks and handle a null invoker safely.",
+    "Action205 resolves selected controlled units to players and deduplicates recipients. UpdateAchievementCriteria still receives the original event Unit as its context; the actual killer is not replaced.",
+    "Action85 resolves the caster only for dedicated credit spells whose nonempty effects are exclusively90(KILL_CREDIT) and134(KILL_CREDIT2). The existing spell metadata, not quest IDs or entry whitelists, determines eligibility. A selected original pet invoker becomes the same player target; explicit other targets such as the dead actor are retained. Converted duplicate targets collapse once per action. Ordinary and mixed damage/aura/summon spells retain their real caster, target selection and duplicate-target behavior.",
+    "The raw death event, conditions, mLastInvoker, ordinary cast action11, loot tagging, KillRewarder, spell credit effects and player quest persistence rules remain intact. No mass SQL rewrite, retroactive quest completion or personal data repair is introduced."
+  ],
+  "live_database_audit": {
+    "action33_invoker_target_rows": 2282,
+    "action205_invoker_target_rows": 278,
+    "action85_total_rows": 1836,
+    "native_dedicated_credit_spell_ids": 1857,
+    "action85_rows_with_native_dedicated_credit_spells": 117,
+    "direct_death_subset_of_those_rows": 4,
+    "interpretation": "Counts describe current SmartAI rows, not distinct quests or proven live failures. ScriptPetCreditCatalog.cpp uses the native C++ SpellEffect.db2 reader and conservatively excludes any spell with another nonempty effect across its records. Runtime eligibility uses loaded SpellInfo including the server's hotfixes. The wider301-row count before excluding mixed-effect spells is intentionally not used as coverage. Snapshot/candidate exports stay in ignored .codex."
+  },
+  "checks": [
+    "Test-ScriptPetCredit.ps1 -BaselineRevision b03f7fa9 compiles the original production action branches against the current test fixture and fails owner.events==1 for a pet-only kill-credit target. This is a behavioral baseline failure, not a compile error.",
+    "Test-ScriptPetCredit.ps1 compiles the actual credit helpers, action33, action205, action85 and native owner-player resolver. Checks direct player, pet, guardian, charmer, missing/offline owner, ownerless/NPC-owned units, non-unit/null inputs, owner/pet/guardian dedup, existing loot recipient, vehicle/passenger overlap, trigger-only source, personal/group credit spell caster resolution, explicit corpse target, mixed/ordinary/unknown spell isolation, repeated ordinary targets and retained event invoker.",
+    "Test-AridenMemoryCredit.ps1 passes both memory death orders and player/pet/null killers through production handlers and native DB2 data. Its historical action85 row now also credits the owner through the global bridge. The targeted last-death condition/summoner patch remains necessary for actor-origin and null-killer handling.",
+    "Test-DarkWhispersLeaders.ps1 passes native stage4/SQL checks, both leader orders, player/pet/null killers and failed optional conversations. Its original action205 invoker target now resolves the pet owner; the earlier content-specific base-actor and optional-visual repairs remain in place.",
+    "Test-WarlockRegression.ps1 passes Burning Rush, Shadow Shield and scripted mover checks. No pet lookup, control, aura dispatcher or mover implementation was changed.",
+    "Test-ScriptPetCredit.ps1 -VerifyReleaseBinary checks the linked canonical ProcessAction calls to both credit resolvers and the caster helper's player/native-owner resolver (MSVC may inline the wrapper), matching PE/map link timestamps and resolving incremental-link thunks. This verifies the shared implementation was linked, not just copied alongside a stale static library."
+  ],
+  "remaining_boundaries": [
+    "An event rejected before its action runs (for example a Player-only condition on the raw pet invoker or a last-enemy check originating at a distant killer) still needs its condition corrected. Globally substituting the owner before all conditions would alter legitimate pet, combat and proximity semantics.",
+    "Mixed-effect spells, scripts granting credit indirectly through dummy/trigger effects, conversation-only actions and custom C++ handlers that directly test killer->ToPlayer are outside this bridge. Their intended player/actor behavior must be inspected if a failure is observed.",
+    "Existing group/raid distance, eligibility, phase, quest and scenario gates still apply. Deduplication is per resolved player within a SmartAI action, not a rewrite of overlapping group reward semantics or persistent event replay.",
+    "The tests use fixture maps, units, spell metadata and captured casts; they do not certify every client quest, native delayed-object lifetime, logout/relog persistence or gameplay visual. Client confirmation is still needed for representative ordinary kills, scripted personal credit, both-group rewards and scenario progression with a pet dealing the final blow."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "2C851B246828C844451630BA1A35A8DD0CC3C6659F7D84ED46C27A75658A5FAB",
+    "startup": "Final canonical server ready at log time10:39:47. Shared credit bridge machine-code check passed; no new DBErrors after the pre-start offset and protected runtime file hashes unchanged. Startup is not a client quest test.",
+    "build": "Release game rebuilt and worldserver linked against src/server/game/Release/game.lib. Final link must be non-incremental for a freshly matching PE/map timestamp. No global OutDir override.",
+    "preservation": "Private executable/map backup and configuration/certificate/DLL hash snapshot saved under ignored .codex. Existing extracted data and logs retained. No database or character changes in this shared fix."
+  },
+  "retained_content_audits": [
+    "docs/audits/disturbing-the-past-2026-10-20.json",
+    "docs/audits/ulthalesh-2026-10-15.json"
+  ]
+}

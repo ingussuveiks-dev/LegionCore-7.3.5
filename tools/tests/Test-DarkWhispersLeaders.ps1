@@ -5,6 +5,7 @@ $out="$repo/build-extractors/runtime-test/dark-whispers-leaders"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 function Extract([string]$s,[string]$start,[string]$end,[string]$name){$a=$s.IndexOf($start);$b=$s.IndexOf($end,$a);if($a -lt 0 -or $b -lt $a){throw "Missing native section $start"};[IO.File]::WriteAllText("$out/$name.inc",$s.Substring($a,$b-$a))}
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
+Extract $s 'Player* GetScriptCreditPlayer(' 'Unit* GetScriptCreditCaster(' 'CreditPlayer'
 Extract $s '        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:' '        case SMART_ACTION_SUMMON_CONVERSATION:' 'CriteriaAction'
 Extract $s '        case SMART_ACTION_CAST:' '        case SMART_ACTION_CAST_CUSTOM:' 'CastAction'
 Extract $s '        case SMART_TARGET_PLAYER_DISTANCE:' '        case SMART_TARGET_STORED:' 'PlayerDistance'

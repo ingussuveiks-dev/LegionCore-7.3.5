@@ -5,11 +5,13 @@
 #include <functional>
 #include <iostream>
 #include <list>
+#include <set>
 #include <vector>
 using uint32 = uint32_t;
 constexpr int SMART_ACTION_CAST=11, SMART_ACTION_INVOKER_CAST=85;
 constexpr int SMART_TARGET_OWNER_OR_SUMMONER=23, SMART_TARGET_SELF=1, SMART_TARGET_POSITION=8;
 constexpr int CONDITION_NEAR_CREATURE=29, SPELL_EFFECT_HANDLE_HIT_TARGET=1;
+constexpr int SPELL_EFFECT_KILL_CREDIT=90, SPELL_EFFECT_KILL_CREDIT2=134;
 constexpr int SPELL_CAST_OK=0, SPELL_FAILED_BAD_TARGETS=1, SPELL_FAILED_SPELL_IN_PROGRESS=2;
 using SpellCastResult=int;
 using SpellEffIndex=int;
@@ -30,6 +32,7 @@ struct Unit {
     std::vector<std::function<void()>> delayed;
     Unit* ToUnit() { return this; }
     Unit* ToPlayer() { return player ? this : nullptr; }
+    Unit* GetCharmerOrOwnerPlayerOrPlayerItself() { return player ? this : (owner && owner->player ? owner : nullptr); }
     bool IsPlayer() { return player; }
     bool IsUnit() { return true; }
     FakeAI* AI() { return &ai; }
@@ -50,6 +53,13 @@ struct Unit {
     int CastSpell(float,float,float,uint32,bool) { return SPELL_FAILED_BAD_TARGETS; }
 };
 #include "AnyOwner.inc"
+using WorldObject=Unit;
+using Player=Unit;
+struct SpellEffectInfo { int Effect=134; bool IsEffect() const { return true; } };
+struct SpellInfo { SpellEffectInfo effect; SpellEffectInfo const* Effects[1]={&effect}; bool HasEffect(int value) const { return value==134; } };
+struct SpellManager { SpellInfo info; SpellInfo const* GetSpellInfo(uint32) { return &info; } } spellManager;
+auto sSpellMgr=&spellManager;
+#include "CreditHelpers.inc"
 struct Effect { int MiscValue=100732; };
 struct Info { Effect effect; Effect* GetEffect(int,int) { return &effect; } };
 struct Spell {
@@ -131,12 +141,13 @@ int main(int argc,char** argv) {
         assert(owner.credits==1 && owner.casts==1 && owner.castTarget==&owner);
         assert(!pet.credits && !outsider.credits && !outsider.casts);
     }
-    // Reproduce old action85: the pet self-target loses native player-only credit.
+    // The global bridge also repairs the original action85 row, retaining its corpse target.
     owner.credits=0; memories[0].alive=false;
     SmartScriptHolder old; old.actionType=85; old.targetType=1; old.action.cast.flags=0;
     SmartScript script{&memories[0]}; script.Run(old,&pet); pet.Flush();
-    assert(!owner.credits && pet.castTarget==&memories[0]);
+    owner.Flush();
+    assert(owner.credits==1 && !pet.casts && owner.castTarget==&memories[0]);
     // No summoner means no accidental fallback to an unrelated killer/bystander.
     memories[0].owner=nullptr; script.Run(fixed,&outsider); assert(!outsider.casts);
-    std::cout << "PASS: native SmartAI owner selection/cast, player-only credit, last-death condition; both orders and player/pet/null killers; old pet defect reproduced\n";
+    std::cout << "PASS: native SmartAI owner selection/cast, player-only credit, last-death condition; both orders and player/pet/null killers; original action85 covered by global credit bridge\n";
 }

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <list>
+#include <set>
 using uint32=uint32_t;using CriteriaTypes=uint32;
 constexpr int SMART_ACTION_CAST=11,SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA=205;
 constexpr int SMART_TARGET_ACTION_INVOKER=7,SMART_TARGET_PLAYER_DISTANCE=18,SMART_TARGET_POSITION=8,CONDITION_NEAR_CREATURE=29;
@@ -15,6 +16,7 @@ struct Player;struct Unit;
 struct AI{void SetCombatMove(bool){}};
 struct Unit {
  virtual ~Unit()=default;virtual Player* ToPlayer(){return nullptr;}Unit* ToUnit(){return this;}
+ Player* creditOwner=nullptr;Player* GetCharmerOrOwnerPlayerOrPlayerItself(){return creditOwner;}
  int entry=0,map=1498,phase=6434;float x=0;bool alive=true,castWorks=true;int casts=0;Unit* castTarget=nullptr;AI ai;
  uint32 GetEntry(){return entry;}bool HasAura(uint32){return false;}AI* AI(){return &ai;}
  bool IsUnit(){return true;}void GetPosition(float& px,float& py,float& pz){px=x;py=pz=0;}
@@ -23,6 +25,8 @@ struct Unit {
 };
 struct Player:Unit{int credits=0;Player* ToPlayer()override{return this;}
  void UpdateAchievementCriteria(CriteriaTypes type,uint32 asset,uint32,uint32,Unit*,bool){assert(type==92&&asset==50959);++credits;}};
+using WorldObject=Unit;
+#include "CreditPlayer.inc"
 using ObjectList=std::list<Unit*>;
 ObjectList world;
 Unit* GetClosestCreatureWithEntry(Unit* object,uint32 entry,float range){for(auto u:world)if(u->entry==int(entry)&&u->alive&&u->map==object->map&&std::abs(u->x-object->x)<=range)return u;return nullptr;}
@@ -52,6 +56,7 @@ struct SmartScript{
 };
 int main(){
  Unit pet;pet.entry=416;Player owner;owner.x=20;
+ pet.creditOwner=&owner;
  Unit leaders[2];leaders[0].entry=106825;leaders[1].entry=106827;leaders[1].x=12;
  SmartScriptHolder credit,conversation;conversation.actionType=11;
  for(int order:{0,1})for(Unit* killer:{static_cast<Unit*>(&owner),&pet,static_cast<Unit*>(nullptr)}){
@@ -62,11 +67,11 @@ int main(){
   SmartScript script{&last};script.Run(credit,killer);assert(owner.credits==1);
   script.Run(conversation,killer);assert(owner.casts==1&&owner.castTarget==&owner);
  }
- // Reproduce the old pet target dropping player credit through native action205.
- SmartScript old{&leaders[0]};world={&owner,&pet};owner.credits=0;credit.targetType=7;old.Run(credit,&pet);assert(!owner.credits);
- credit.targetType=18;old.Run(credit,&pet);assert(owner.credits==1);
+ // The global bridge also credits the owner through the original invoker-target row.
+ SmartScript old{&leaders[0]};world={&owner,&pet};owner.credits=0;credit.targetType=7;old.Run(credit,&pet);assert(owner.credits==1);
+ credit.targetType=18;old.Run(credit,&pet);assert(owner.credits==2);
  // Optional conversation failure cannot undo or block the earlier essential credit.
- owner.castWorks=false;old.Run(conversation,&pet);assert(owner.credits==1);
+ owner.castWorks=false;old.Run(conversation,&pet);assert(owner.credits==2);
  // Corpse origin must gate the last leader, regardless of ranged killer location.
  leaders[1].alive=true;world.push_back(&leaders[1]);pet.x=500;
  assert(!NearOther(&pet,106827,50)&&NearOther(&leaders[0],106827,50));

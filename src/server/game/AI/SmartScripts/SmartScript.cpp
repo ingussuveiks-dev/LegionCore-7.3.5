@@ -40,6 +40,37 @@
 #include "SmartScript.h"
 #include "SpellMgr.h"
 #include "Vehicle.h"
+#include <set>
+
+namespace
+{
+// Progress belongs to the player controlling a pet/guardian, while combat
+// events and ordinary casts must retain the actual unit that caused them.
+Player* GetScriptCreditPlayer(WorldObject* object)
+{
+    Unit* unit = object ? object->ToUnit() : nullptr;
+    if (!unit)
+        return nullptr;
+    if (Player* player = unit->ToPlayer())
+        return player;
+    return unit->GetCharmerOrOwnerPlayerOrPlayerItself();
+}
+
+Unit* GetScriptCreditCaster(Unit* invoker, SpellInfo const* spell)
+{
+    if (spell && (spell->HasEffect(SPELL_EFFECT_KILL_CREDIT) || spell->HasEffect(SPELL_EFFECT_KILL_CREDIT2)))
+    {
+        // A mixed damage/aura/summon spell can depend on its real caster.
+        // Only dedicated credit spells may change who performs the cast.
+        for (SpellEffectInfo const* effect : spell->Effects)
+            if (effect && effect->IsEffect() && effect->Effect != SPELL_EFFECT_KILL_CREDIT && effect->Effect != SPELL_EFFECT_KILL_CREDIT2)
+                return invoker;
+        if (Player* player = GetScriptCreditPlayer(invoker))
+            return player;
+    }
+    return invoker;
+}
+}
 
 SmartScript::SmartScript()
 {
@@ -732,21 +763,30 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             if (!tempLastInvoker)
                 break;
 
+            Unit* originalInvoker = tempLastInvoker;
+            tempLastInvoker = GetScriptCreditCaster(tempLastInvoker, sSpellMgr->GetSpellInfo(e.action.cast.spell));
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
                 break;
 
+            std::set<Unit*> castTargets;
             for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
             {
                 if (IsUnit(*itr))
                 {
+                    Unit* castTarget = (*itr)->ToUnit();
+                    if (tempLastInvoker != originalInvoker && castTarget == originalInvoker)
+                        castTarget = tempLastInvoker;
+                    if (tempLastInvoker != originalInvoker && !castTargets.insert(castTarget).second)
+                        continue;
+
                     if (e.action.cast.flags & SMARTCAST_INTERRUPT_PREVIOUS)
                         tempLastInvoker->InterruptNonMeleeSpells(false);
 
-                    ObjectGuid targetGUID = (*itr)->GetGUID();
+                    ObjectGuid targetGUID = castTarget->GetGUID();
                     uint32 spellID = e.action.cast.spell;
                     bool isTrigger = (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0;
-                    if (!(e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT) || !(*itr)->ToUnit()->HasAura(e.action.cast.spell))
+                    if (!(e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT) || !castTarget->HasAura(e.action.cast.spell))
                     {
                         tempLastInvoker->AddDelayedEvent(200, [tempLastInvoker, targetGUID, spellID, isTrigger]() -> void
                         {
@@ -1146,6 +1186,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 if (!targets)
                     break;
 
+                std::set<Player*> creditedPlayers;
                 for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
                 {
                     // Special handling for vehicles
@@ -1153,23 +1194,28 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                         if (Vehicle* vehicle = (*itr)->ToUnit()->GetVehicleKit())
                             for (auto& Seat : vehicle->Seats)
                                 if (Player* player2 = ObjectAccessor::FindPlayer(Seat.second.Passenger.Guid))
-                                    player2->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, player2);
+                                    if (creditedPlayers.insert(player2).second)
+                                        player2->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, player2);
 
-                    if (!IsPlayer(*itr))
+                    Player* targetPlayer = GetScriptCreditPlayer(*itr);
+                    if (!targetPlayer || !creditedPlayers.insert(targetPlayer).second)
                         continue;
 
-                    (*itr)->ToPlayer()->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, (*itr)->ToPlayer());
+                    targetPlayer->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, targetPlayer);
                     TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction: SMART_ACTION_CALL_KILLEDMONSTER: Player %u, Killcredit: %u",
-                        (*itr)->GetGUIDLow(), e.action.killedMonster.creature);
+                        targetPlayer->GetGUIDLow(), e.action.killedMonster.creature);
                 }
 
                 delete targets;
             }
-            else if (trigger && IsPlayer(unit))
+            else if (trigger)
             {
-                unit->ToPlayer()->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, unit);
-                TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction: SMART_ACTION_CALL_KILLEDMONSTER: (trigger == true) Player %u, Killcredit: %u",
-                    unit->GetGUIDLow(), e.action.killedMonster.creature);
+                if (Player* targetPlayer = GetScriptCreditPlayer(unit))
+                {
+                    targetPlayer->RewardPlayerAndGroupAtEvent(e.action.killedMonster.creature, unit);
+                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction: SMART_ACTION_CALL_KILLEDMONSTER: (trigger == true) Player %u, Killcredit: %u",
+                        targetPlayer->GetGUIDLow(), e.action.killedMonster.creature);
+                }
             }
             break;
         }
@@ -2471,9 +2517,11 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             if (!targets)
                 break;
 
+            std::set<Player*> creditedPlayers;
             for (ObjectList::const_iterator itr = targets->begin(); itr != targets->end(); ++itr)
-                if (Player* player = (*itr)->ToPlayer())
-                    player->UpdateAchievementCriteria(static_cast<CriteriaTypes>(e.action.achievementCriteria.type), e.action.achievementCriteria.misc1, e.action.achievementCriteria.misc2, e.action.achievementCriteria.misc3, unit, true);
+                if (Player* player = GetScriptCreditPlayer(*itr))
+                    if (creditedPlayers.insert(player).second)
+                        player->UpdateAchievementCriteria(static_cast<CriteriaTypes>(e.action.achievementCriteria.type), e.action.achievementCriteria.misc1, e.action.achievementCriteria.misc2, e.action.achievementCriteria.misc3, unit, true);
 
             delete targets;
             break;

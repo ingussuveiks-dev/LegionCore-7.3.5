@@ -8,6 +8,7 @@ function Extract([string]$s,[string]$start,[string]$end,[string]$name){
  [IO.File]::WriteAllText("$out/$name.inc",$s.Substring($a,$b-$a))
 }
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
+Extract $s 'namespace' 'SmartScript::SmartScript()' 'CreditHelpers'
 Extract $s '        case SMART_ACTION_CAST:' '        case SMART_ACTION_CAST_CUSTOM:' 'CastAction'
 Extract $s '        case SMART_ACTION_INVOKER_CAST:' '        case SMART_ACTION_ADD_AURA:' 'InvokerCast'
 Extract $s '        case SMART_TARGET_OWNER_OR_SUMMONER:' '        case SMART_TARGET_THREAT_LIST:' 'OwnerTarget'
