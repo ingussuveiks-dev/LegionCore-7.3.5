@@ -2045,8 +2045,13 @@ class spell_corrupted_mc : public AuraScript
         if (!target || !caster)
             return;
 
-        if (target && target->HealthBelowPct(11))
-            target->RemoveAura(SpellCorrupted);
+        // Effect0 carries the native break percentage (25 in7.3.5). Removing
+        // charm stops the current cast; do not start another one after release.
+        if (target->HealthBelowPct(aurEff->GetAmount()))
+        {
+            Remove();
+            return;
+        }
 
         target->GetMotionMaster()->Clear();
 

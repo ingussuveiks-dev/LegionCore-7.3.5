@@ -40,5 +40,6 @@
       "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-lines.txt": "0DEC720E0D3904284AC29B632671AA73EF40B8B1BE8C59058418868352DE5143",
       "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-inputs.json": "8261D2AB9E465566D3707D78C0EDC102D4ED8B6B7AA1E4FED22C1177A009E515"
     }
-  }
+  },
+  "content_follow_up": "The pending Corrupted content input is finalized in trial-helya-corrupted-2026-10-20.json, including final related regressions/startup. This lifetime audit retains the original failures and stress evidence."
 }

@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "spells": [
+    232450,
+    232350,
+    232358,
+    231862,
+    228854,
+    231863
+  ],
+  "status": "Corrupted health-release and post-release casting repaired. Native reference/current execution, repeated damage release, related regressions, canonical Release inspection and startup pass. Client verification remains pending.",
+  "prerequisites": {
+    "f5f06838": "Actual NPC-charmed Player damage previously entered creature loot tagging and crashed. Native NPC/Player/Pet damage and the ordinary creature-loot regression now pass; see trial-helya-control-damage-2026-10-20.json.",
+    "39196513": "Repeated release exposed a removed AuraApplication pointer in the client-update queue. Final detachment after linked cleanup and pointer-identity removal repair that independent lifetime fault; see trial-helya-visible-aura-lifetime-2026-10-20.json. Original crash/diagnostic evidence is retained there."
+  },
+  "repair": "Read Corrupted effect0's native break percentage through aurEff->GetAmount() rather than hardcoded11. If health is strictly below that amount, remove this aura and return immediately. Native charm removal already cancels the current cast, restores faction/control and removes the linked transform/Bleak auras. The old callback continued after removal, cleared movement and began another Infusion. No additional cast-stop hook, duplicate energy/damage route, timer, SQL or shared charm dispatcher change is introduced by this content repair.",
+  "native_data": [
+    "The packed7.3.5 DB2 reader and live loaded native aura both report effect0 amount25. Corrupted232350 lasts60000ms; effect0 is a1000ms PERIODIC_DUMMY, effect1 MOD_CHARM, effect3 heals100percent, and effect10 triggers231862. Existing linked data apply232358 and remove232358/231862 when232350 ends.",
+    "The actual232450 absorb lasts10000ms on Mythic and30000ms by default. Its existing expiry-only, active-Mythic-phase3 gate remains unchanged. Tests shorten only remaining duration to invoke native expiry; client data and server spell duration are not edited.",
+    "Mist Infusion228854 has the actual7000ms cast, native30 alternate-energy effect and native231863 eruption route established in the preceding Mistwatcher audit. The controlled Player uses that same native spell; this patch does not add a second completion effect."
+  ],
+  "reference": "Pinned3f102023 game/scripts libraries reproduce control at24percent. At10percent the original aura/transform/Bleak/charmer clear, but a new actual Infusion starts in that same callback and later changes Helya alternate power10 ->40. Original-library isolation removes unrelated Taint and skips damage-hit probes to avoid the separately recorded loot crash; it does not claim old damage safety. The original25percent boundary remains controlled. Reference output, exact pin and hashes are retained below.",
+  "verification": [
+    "All8 LFR17/Normal14/Heroic15/Mythic16 and Human/Orc cases earn Odyn/Guarm/trash access and actual Helya phases through scaled damage and nine tentacle deaths. Actual absorb expiry creates no charm/transform on the six non-Mythic cases; the two Mythic cases obtain the real Helya charmer GUID, faction, native transform/Bleak and effect amount25.",
+    "At exactly25percent the native aura remains and completes one Infusion/eruption, alternate power10 ->40. At24percent and10percent the next actual periodic dispatch removes aura/transform/Bleak, clears the charmer, restores the Player control flag/faction and starts no cast. Eight further seconds produce no eruption or energy gain. Health is controlled input in these isolated boundary cases; unrelated Taint is removed so it cannot move the exact boundary.",
+    "Each Mythic case repeats both actual Player and owned-Pet damage release16times:64 releases total. The Player first starts the real seven-second Infusion, then actual DealDamage reduces health below25. The next periodic check releases control and cancels the in-progress cast. Native Player Unit updates for eight further seconds must leave zero completed eruptions and alternate power10. Health is not buffered for these subjects.",
+    "Explicit aura removal and actual aura expiry during a real cast each cancel it and restore charmer/faction/transform/Bleak state. Actual boss evade/wipe also clears the controlled Player. These use native generic charm cleanup rather than a modeled completion or manually invoked aura callback.",
+    "A separate18-second native Warrior fixture invokes the actual Player::UpdateCharmedAI after Unit::Update with Player::Update's real charm/Creature/alive admission. It records3 Infusion attempts,2 native eruptions and alternate power10 ->70. Fixture member access reaches the production private method; it does not replace it. This checks that particular generic-AI interaction, not all classes' resource/weapon/talent configurations or the full login/Player-update/client lifecycle.",
+    "Final full Helya phase3 and Mistwatcher regressions each pass all8 cases. AuraScript reentry passes with the real aura lifecycle/check dispatchers. The visible-aura identity test passes current production extraction and fails the pinned former implementation on replacement preservation. The preceding loot regression covers ordinary native creature loot after the charmed-Player crash repair.",
+    "Normal CMake Release builds use generated final-link game/scripts libraries and canonical build-extractors/bin/Release. Bounded PE/thunk checks confirm live aura-amount loading and the branch from removal past the Infusion path, the creature-only loot guard, final visible-aura detachment after linked cleanup, and the earlier triggered-cooldown exemption. Startup reaches ready, exits gracefully0 and has empty DBErrors/stderr."
+  ],
+  "sources": [
+    {
+      "url": "https://www.icy-veins.com/wow/helya-mythic-strategy-tactics",
+      "scope": "The guide describes the Mythic10-second absorb, controlled-player Infusion/Eruption and release below25percent. Native7.3.5 data and execution establish the actual amount used here."
+    },
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "date": "2018-07-05",
+      "scope": "Fatboss's guide instead states10percent. This conflict is retained; its value is not used to override the actual7.3.5 effect amount25."
+    }
+  ],
+  "retained_limits": [
+    "No authenticated7.3.5 client verification of the control/input handoff, transformed model/animation, aura icons, cast bar, damage/energy presentation, sound, pet portrait, action bars, camera or full encounter/quest completion. No WoW client was controlled.",
+    "This audit does not newly verify every class's generic charmed AI, interrupted-player school-lockout timing, lethal Player damage, map departure/re-entry or saved-character recovery. Do not turn the native Warrior and periodic-dispatch checks into a broader client claim.",
+    "Inherited Mistwatcher scheduling and the other timing/visual fidelity limits in prior audits remain. Native tests use health buffers for other actors, schema-only disposable character/auth databases and read-only private World/Hotfix pools; they do not establish raid survival tuning or use personal character progress."
+  ],
+  "evidence": {
+    "baseline_pin": "3f102023",
+    "runs": {
+      "trial-helya-control-native": "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703",
+      "trial-helya-control-native-baseline": "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-083533",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261020-084900",
+      "trial-helya-mistwatcher-native": "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-084900"
+    },
+    "hashes": {
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "0683ADBB6B5FDEAA1A82CE1ED5A1019FFCE078C9349CA32D4261DBC92CCC9504",
+      "src/server/game/Entities/Unit/Unit.cpp": "8C546792F0646CF9F41731890517E95F0FCB0E128EAA0BC69CC631A259744825",
+      "tools/tests/TrialHelyaControlNative.cpp": "90C428742BF638AF1B7E40EF7599754D0F289E30CEC3F47B981AEE58DB6F6F3E",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "F2A3682821B47AB0BE078C79F6A46E8492566D73308BD558CF9A5AC0B3AC8087",
+      "tools/tests/Test-TrialHelyaControlRelease.ps1": "5CF6ADE73DA8816A02866A1E877CE38DD27869816B8FB0EBBC1A91E38E33B662",
+      "tools/research/HelyaControlCatalog.cpp": "DD4BA9EF8EB87B6F44C40B29A7C22CD25745FAFEECD9405CFB842739B3E0A347",
+      "build-extractors/bin/Release/worldserver.exe": "D62A43D7198E8FEC2378C5BBBB10406F97FD765A9663F69F620432950F0C8A7C",
+      "build-extractors/bin/Release/bnetserver.exe": "4D4032F7148CE4B41B57C9E979EA0A93FE60C62E6131F44DFC9B7973866AB531",
+      "build-extractors/src/server/game/Release/game.lib": "E319A56793819CDF3237DD1050151C861F379A6ADD57D8B25148E619A91667FC",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "13DF23E237F6CA964EC6C42B477F58DA8FB3B8A0E215EC7C8A45AB8C14EE4578",
+      "build-extractors/runtime-test/trial-helya-control-native/control-release-inputs.json": "5E9BCF7237541FF673E14A4AD24F384809ADEAECC4948310ADD9BF89ADB9C1D5",
+      "build-extractors/runtime-test/trial-helya-control-native/control-tick-disassembly.txt": "82E9BEFAD0A9480D9E159195099F571083BDA4CA686415B6AAC6579741F27038",
+      ".codex/helya-control-catalog.txt": "2E3CDEE45DC5E2B1E17F72063BF3F7AD47591947556479AEF66786C6B4F2C93D",
+      ".codex/helya-control-final-release.log": "C76F554FBCC37D2276DC03C32A8FDB5B394B2CF25AC82194A7CE9E3C33E209B7",
+      ".codex/helya-control-final-startup.log": "A5635537359D1C96D0892DAC22EEED45447EFCB8A22A5E01F7C4FA8FDF09365C",
+      ".codex/helya-control-aura-reentry.log": "E2B903CBE22877797023A6626600AB878FB807D2C70845159DAC68BCFD1A7FE0",
+      ".codex/helya-control-visible-reentry.log": "E2B903CBE22877797023A6626600AB878FB807D2C70845159DAC68BCFD1A7FE0",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-lines.txt": "0DEC720E0D3904284AC29B632671AA73EF40B8B1BE8C59058418868352DE5143",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-084703/native-inputs.json": "8261D2AB9E465566D3707D78C0EDC102D4ED8B6B7AA1E4FED22C1177A009E515",
+      "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-083533/native-lines.txt": "93CB0437FACBC655D6FEA3C6DFCE0B0D2C0518AF3941C96653D1569145FF1ECA",
+      "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-083533/native-inputs.json": "65221C3D9E8C008AB370D3AF854BF2B20D08EBF6F97CC6436F8D53D8AE6F12CB",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261020-084900/native-lines.txt": "799EF53B0221A489CAA227236BC3F580441B95842A7F7C6A3283FA9CF833C012",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261020-084900/native-inputs.json": "A91A08EBFFE3F7B322E74C365CADD92D5AC7A4BEC837DC9CBDCCE3AD46BE42D7",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-084900/native-lines.txt": "D6EC7A4D89A615685F07D17C9925835520EC7E7B9D3CF09F6B454FFAA34CD889",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-084900/native-inputs.json": "50F3B88AC4B0514D675EDD488C4F3FAB27EA3CA74D7522FB9AAFD3026D449C44"
+    },
+    "damage_releases": 64,
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-084844",
+    "startup_ready": true,
+    "startup_exit": 0,
+    "startup_DBErrors": 0,
+    "startup_stderr": 0,
+    "scratch_schemas_accounts": [
+      0,
+      0
+    ]
+  }
+}
