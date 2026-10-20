@@ -1,0 +1,25 @@
+{
+  "reported_failure": "Using the first scythe summons mounted Ariden and dialogue but omits the player knockback.",
+  "evidence": [
+    "GO245994 Data10 uses199727. Native7.3.5 effect213 is a caster jump with target1/46, not a generic knockback spell.",
+    "No spell_target_position row199727 existed. Actual target46 emergency resolver uses the explicit self referer, reproducing a jump at the caster position."
+  ],
+  "repair": "Add only missing destination199727 on map1533, using Ariden retreat path100850 point1 (-10964,-1891.98,-48.3921). Native spell still controls jump speeds/timing. Preserve any existing custom destination; no shared core movement or spell data modified.",
+  "checks": [
+    "Test-DarkRidersScytheJump.ps1 compiles real target46 resolution; reproduces old self destination, resolves the repair and rejects destination on unrelated maps. Native C++ DB2 catalog confirms213/1/46.",
+    "Test-DarkRidersContentData.ps1 proves repeat migration, existing native waypoint coordinates and custom destination preservation.",
+    "Canonical startup admits installed destination without new DBErrors."
+  ],
+  "limitations": [
+    "The landing point is grounded existing route data; the exact retail throw distance/timing is not established. Actual client playback/landing and camera need testing."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "992EBE9F239568F43127113F46F4C5903B28043AE4FC168BA09E32EAAE9DA25C",
+    "pe_and_link_map_timestamp": "6ad768ed (2026-10-20 16:13:17 Europe/Riga)",
+    "build": "cmake --build build-extractors --config Release --target worldserver -j 8 -- /p:LinkIncremental=false",
+    "link_inputs": "Canonical src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; no OutDir override.",
+    "startup": "Owned hidden worldserver PID1896 reached World initialized; gracefully stopped at16:18:12. No new DBErrors; runtime configuration/certificate/DLL hashes unchanged. Both servers stopped at handoff.",
+    "client_verification": "Pending. Compilation, extracted handlers, SQL replay and startup do not prove client movement, scenes, final turn-in or the entire scenario."
+  }
+}
