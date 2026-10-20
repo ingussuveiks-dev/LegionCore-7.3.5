@@ -2272,6 +2272,9 @@ void GameObject::Use(Unit* user)
             if (!sConditionMgr->IsPlayerMeetingCondition(user, info->text.conditionID1))
                 return;
 
+            if (info->text.pageID)
+                user->ToPlayer()->SendDirectMessage(WorldPackets::GameObject::PageText(GetGUID()).Write());
+
             return;
         }
         case GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD:

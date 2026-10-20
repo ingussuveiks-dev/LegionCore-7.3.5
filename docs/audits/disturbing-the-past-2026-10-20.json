@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-20",
+  "quest": 40604,
+  "status": "Optional Fur Blanket inspection repaired and deployed; complete quest traversal remains unverified in the client",
+  "observed": "User screenshot in Ariden's Camp: Fur Blanket highlighted, click gives no visible result, Ariden's Camp investigated remains 0/1. Chat shows journal-related Revil/Ariden dialogue, which does not establish combat completion or objective credit.",
+  "defects": [
+    "GameObject::Use GAMEOBJECT_TYPE_TEXT only checked template, player and PlayerCondition, then returned without SMSG_PAGE_TEXT. This also affected other ordinary type-9 inspection objects.",
+    "Live page_text lacked ID5234 referenced by Fur Blanket245788.Data0. Adjacent camp pages5231/5232/5233 existed. Sending the open-page packet alone would still leave the blanket without readable content."
+  ],
+  "repair": [
+    "Send the existing WorldPackets::GameObject::PageText packet with the clicked object's GUID after the native text condition passes and only for a nonzero page ID. Preserve all outer GameObject::Use admission and script hooks.",
+    "Migration2026_10_20_01 inserts missing page5234 only; existing/custom page data and locales remain intact. VerifiedBuild0 records that this is a repair rather than a claimed build26972 sniff."
+  ],
+  "credit_boundary": "The blanket is an optional text inspection. Quest40604's native database objectives reference credit100732, two100736 credits and GO245789 (Battered Journal), not blanket245788. No blanket credit, quest auto-completion, personal quest edits, phase rewrites or combat bypass is introduced.",
+  "source": {
+    "url": "https://warcraft.blizzplanet.com/disturbing-the-past-affliction-warlock-artifact-questline/",
+    "use": "Historical quest transcript identifies the optional blanket description, matching the surrounding live page texts.",
+    "secondary": "https://www.wowhead.com/quest=40604/disturbing-the-past",
+    "secondary_use": "Gameplay directions: use the journal on the crates beside the tent, defeat the memories and turn in at the journal. This is route guidance, not proof of this server's executable sequence."
+  },
+  "automated": [
+    "Test-GameObjectText.ps1 -BaselineRevision HEAD failed at the first page-packet assertion before this repair was committed, demonstrating the old production branch reproduces the no-response defect.",
+    "Test-GameObjectText.ps1 compiles the extracted production TEXT switch branch. Checks clicked GUID, repeat inspection, denied conditions, zero page, missing template and non-player admission. Stubs capture packet requests; this does not render the client page UI.",
+    "The same test uses connection-local temporary page_text tables to restore the observed missing page, apply the migration twice, preserve adjacent page5233 and an existing custom5234 with its condition, and validate live blanket mapping and journal objective boundaries.",
+    "Test-GameObjectText.ps1 -VerifyReleaseBinary verifies the canonical map's PE link timestamp and both GameObject::Use page-writer call sites with incremental-link thunk resolution. The former single GOOBER call is insufficient. This is a scoped machine-code check, not full gameplay execution."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "DEA2044689D1D694A1CA3E0FD8730C9F222C2891934CB06CA4AABD0B839328C4",
+    "startup": "Final canonical server ready at log time10:17:56; no new DBErrors after the recorded pre-start offset. Startup does not exercise a player click.",
+    "migration": "2026_10_20_01_ariden_fur_blanket_page.sql applied to configured live world database",
+    "build": "Release game and worldserver targets built successfully. Actual final-link inputs use src/server/game/Release/game.lib; no global OutDir override. Regenerated worldserver.map with the final link after detecting an older map left by a build without map generation.",
+    "preserved": "Private executable/map backup saved under ignored .codex. Configuration, certificates and DLL hashes checked unchanged; extracted data and logs retained. No character inventory, quest status or credit altered."
+  },
+  "pending_client": [
+    "Click Fur Blanket and verify the readable description appears, without incrementing the quest objective. Repeat and check other camp inspection objects.",
+    "For quest40604 use Battered Journal, verify the intended memories spawn, all required kills count including a pet killing blow, the main objective becomes1/1 and the journal offers turn-in and40606.",
+    "Check abandonment/retry, both factions and the shared DK40835/druid40932 camp routes. No claim is made that their full quest logic has been verified by this scoped repair."
+  ],
+  "retained_context": "The broader Ulthalesh audit docs/audits/ulthalesh-2026-10-15.json retains earlier route, finale and unresolved client findings; this repair does not supersede them."
+}
