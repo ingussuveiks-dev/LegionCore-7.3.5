@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-20",
+  "baseline": "8c4c6d6880896fc65700a86011866d3e19914c9c",
+  "map": 1648,
+  "status": "Ghost raid re-entry repaired: admission no longer resurrects/consumes a corpse before later denial, and pure EventObject portals now discover released ghosts. Eight complete native Trial return cycles and the72-case graveyard/logout suite pass with original instance/progress,50% health and actual corpse SQL deletion. Client/authenticated login remain pending.",
+  "reference": [
+    "Against the original8c4c6d68 final-link library, a real ghost with its saved raid corpse is outdoors after repop/ACK. CanPlayerEnter returns false for the still-active raid, but GHOST_DENIED reports alive1/corpse0/ghost0: it resurrected and consumed the corpse before InstanceMap::CanEnter rejected combat entry. Original library/hash retained in build-extractors/runtime-test/ghost-return-reference.",
+    "After removing only the premature resurrection, GHOST_DENIED reports alive0/corpse1/ghost1. Successful preflight and original map selection pass, but actual DB portal720 reports far0/dead1/affected0/world1. The default AnyPlayerInObjectRangeCheck requires a living Player, so the EventObject never sees the ghost. This second failure is retained in .codex/ghost-portal-reference.log."
+  ],
+  "source_evidence": [
+    {
+      "url": "https://raw.githubusercontent.com/AshamaneProject/AshamaneCore/legion/src/server/game/Maps/MapManager.cpp",
+      "finding": "Legion-branch sibling emulator validates corpse map ancestry and the later raid/group/access gates without resurrecting inside admission. This supports the pure-preflight split, not a claim to Blizzard server or captured retail behavior."
+    },
+    "Existing local WorldPortAck already resurrects at50% and converts the corpse after successful destination AddPlayerToMap. That native implementation is reused unchanged.",
+    "Native DB entrance spawn410220 is EventObject720 on1220/7541/7643,2358.47/908.877/252.925, phaseMask1/no phase IDs; template radius5, SpellID0 and WorldSafeLoc5775. Native5775 is the raid entrance;5779 remains its exterior. There are0 source13 conditions for entrance720. No destination, template, spell or DB2 data is invented or changed."
+  ],
+  "repair": [
+    "MapManager::CanPlayerEnter retains corpse-map ancestry validation and every native difficulty/group/combat/access gate. Remove its ResurrectPlayer/SpawnCorpseBones calls. Denied and successful preflight, including loginCheck, leave the ghost/corpse intact until actual map admission.",
+    "EventObject::Update uses the existing native range checker with requireAlive=false only for a pure WorldSafeLoc portal with no spell. Spell-only and mixed spell/teleport events retain requireAlive=true. A second gate excludes dead Players who have not released spirit, so an unreleased body cannot activate a portal. Phase, script conditions and existing activation bookkeeping remain intact.",
+    "No map/entry whitelist or new resurrection implementation. Actual WorldPortAck performs the existing corpse recovery, once the Player has entered its saved raid. No World/character migration or personal-data repair."
+  ],
+  "verification": [
+    "The existing72-case suite passes all4 difficulties17/14/15/16 and Human/Orc. Its8 mode0 cases now execute full ghost return instead of manual fixture resurrection. They start with real KillPlayer/BuildPlayerRepop, saved corpse and actual exterior repop/WorldPortAck.",
+    "Each full return rejects active-combat admission while preserving the original corpse pointer, ghost flag and death state. Login-check admission also remains non-mutating. After actual Helya evade, successful preflight still leaves the Player dead, and real map selection returns the original raid instance.",
+    "Actual DB event data populates EventObjectData. Native LoadEventObjectFromDB and the same AddToGrid/AddToWorld registration steps used by ObjectGridLoader admit entrance720 into the managed outdoor map. Fixture scheduling directly calls its real Update, which uses native grid/range/phase/condition checks and TeleportTo. No fake portal callback or manually selected transfer replaces that dispatcher.",
+    "A separate native KillPlayer input at the portal, with no spirit release/corpse object/ghost flag, is not activated. Synthetic spell-only and mixed template inputs on the same real dispatcher also do not activate or cast on the released ghost. The unchanged actual DB720 template is restored for the successful transfer. These negative templates are fixture-only and never written to World.",
+    "The actual portal starts a far transfer while the Player remains dead with its original corpse; native destination5775 and selected raid map are asserted. Real WorldPortAck admits the Player, resurrects to50% max health, clears the ghost flag and converts the corpse. A second ACK changes nothing.",
+    "Actual SaveToDB retains raid1648, original instance and recovered health/flags. Native raid binding and earned encounter mask remain unchanged. Actual corpse table has1 matching corpseGuid/owner row before the test and0 afterward; both global corpse lookup and SQL deletion are checked.",
+    "Normal CMake Release builds place both executables in canonical build-extractors/bin/Release using generated final-link libraries, without OutDir overrides. Canonical PE verification resolves thunks and exception-bounds admission/ACK/EventObject bodies: admission retains GetCorpse but no resurrection/conversion call; ACK retains both; actual range-check constructor gets false only from the pure-location branch and true from spell/mixed branches. Native runtime tests additionally exercise the unreleased-body gate.",
+    "Existing Control logout/component-load/regression cases remain passing. ScenarioResume with Release check, ScepterLogin with Release check and NewBloodLogin component tests pass; those retain their previous component/fixture limits.",
+    "Final native Server.log has no ERROR/FATAL and DBErrors is empty. Canonical startup is ready, exits0 with empty DBErrors/stderr. Validation-owned hidden server PID30404 was gracefully shut down by its smoke script. No validation servers remain; scratch schemas/users verified0/0."
+  ],
+  "retained_failures": [
+    "Initial fixture linking attempted Map::AddToMap<EventObject>, which is not instantiated/exported by this core. Correct fixture registration uses the production ObjectGridLoader AddToGrid/AddToWorld steps after native DB initialization; no generic Map template was added.",
+    "Original admission and intermediate portal-filter failures are retained separately as described above.",
+    "The first portal build lacked ObjectVisitors.hpp, which supplies Trinity::VisitNearbyWorldObject. That compile failure is retained in .codex/ghost-return-build.log; the final source includes the normal production visitor header."
+  ],
+  "fixture_limits": [
+    "Socketless, synchronous fixture workers belong to the disposable native process. Boss scheduling is frozen across the admission observations, with actual earned boss states and actual evade. No authenticated socket, aggregate login or cold server corpse reload is claimed.",
+    "This covers the same persistent group/raid instance after an active-encounter denial and wipe. A changed group/save, same-map corpse in another instance, expired/missing corpse, stationary portal retry and admission changing between transfer and ACK are not exercised here.",
+    "Client ghost movement/visibility, loading and ground, corpse/bones visuals, camera/pet/UI, all quest/raid traversal and retail timing remain client checks. The fixture proves native corpse conversion and SQL deletion, not a client reclaim animation."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-210245",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-210233",
+    "reference": "build-extractors/runtime-test/ghost-return-reference",
+    "release": "build-extractors/runtime-test/ghost-return-release",
+    "commands": [
+      "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-ScepterLogin.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-NewBloodLogin.ps1",
+      "tools/tests/Test-ScenarioResume.ps1 -VerifyReleaseBinary"
+    ],
+    "hashes": {
+      "src/server/game/Maps/MapManager.cpp": "F219DFA0609DB2338528BCAA4088BDDFB50F2717FC6301FFBA90CF3589F9E7AF",
+      "src/server/game/Entities/EventObject/EventObject.cpp": "015E2BFC950BE808087AC5D1909D78F9225B6C34901134F6193055A58E638ECD",
+      "tools/tests/TrialGhostReturnNative.inc": "A34C262EFBFBB6013388253A4CB250EC993557377C9A6C02D0BD702B07DF9787",
+      "tools/tests/TrialGraveyardNative.inc": "7C45614DF406A389E4FD1AD7CD8972C36075CFC9656B04F1C2F6A99DEE5CAE35",
+      "tools/tests/Test-GhostReturnRelease.ps1": "B1EA5C4BBEDDD8E4D967B53A5571EB190533872274E0D96ECDCB824A02590F05",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "544EB91BA989C6375CDC1A99345653C005F9FB14B6C4ED5B81847F2A39394760",
+      "tools/tests/Test-RockawayChannelNative.ps1": "683C9D1A75FD547B2256F3B2CBAE83E3EF5E3068E856E1597E81F50DEE2247F8",
+      "build-extractors/bin/Release/worldserver.exe": "A0D2226C825E4D26A45779FA5C0387C1EE254A26E2A10B12C761E85961461249",
+      "build-extractors/bin/Release/bnetserver.exe": "C345D057BF78C66BC5E75E8C1E4F15C82D110540453739EE0C7F1655C2FBB3F4",
+      "build-extractors/src/server/game/Release/game.lib": "C8E4206C4A7FF2388E0EA49ED86AB1650A15B14DCFAAB14BF8E9B43CDF28E24E",
+      ".codex/ghost-return-reference.log": "7AAA872E7CD5D51E3EF5B4816B2D21B972DC4B4C37FBD5ABE83BFA55EEAD3976",
+      ".codex/ghost-return-reference2.log": "845F6D22FBDD517EB420C46E4A12E99003E98A4569C7E4AC53B5DEBEEEFD5EB8",
+      ".codex/ghost-portal-reference.log": "46289B75AAC849AC8E9E526B01F71F6A4F9FCBD90E70F50AFBB5730D43167E35",
+      ".codex/ghost-return-build.log": "CD90812ABD17EFD89646E60933A0748E6C63799563006A78A251B7A645F1F3A3",
+      ".codex/ghost-return-complete-build.log": "1E3B77157924EFE66DA7C2E91A2DAA296E7DDCAFDAB9F0A536C8C8C61A0465B5",
+      ".codex/ghost-return-final.log": "E68365B35907AAE2B0B4CFBDB01EAE64CE4E3044237996C3C8A0CF4FA9A9E16F",
+      ".codex/ghost-return-release.log": "510AB898B176554E6839A9FA09801FC9123EBC19CEDAB44D1C816C911237F68A",
+      ".codex/ghost-return-startup.log": "7CFE0D95CAFE9AA93C9E29B00EE344ED82E848E2D1E9A58819799DE852FDBBCC",
+      ".codex/ghost-return-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/ghost-return-newblood.log": "BF581465B2BF26DEC33EBA9AC38E6FA758EE38B9B423182BCB70610047EDADAA",
+      ".codex/ghost-return-scenario.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      "final_run/native-lines.txt": "35531C522EE30CCD6F82347189E3F2CBE129BB4124A46F10D5BE5FCA62CB4AA5",
+      "final_run/native-inputs.json": "80F277D19EEC775D873E0240EDD72120BA559BBF2789BF063B6B4E96683D6351",
+      "final_run/Server.log": "680755271996010F41C08DEC8420B754BB0D70FBD136E9BA4C99A3DC475E3B8F",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "release/inputs.json": "1E052050A50361D1162CE41A1AA1E3CD80351E5AE847E5EC0B7B84573D2B0DAF"
+    }
+  },
+  "scratch_cleanup": {
+    "schemas": 0,
+    "users": 0
+  }
+}

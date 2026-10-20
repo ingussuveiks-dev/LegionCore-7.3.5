@@ -28,6 +28,7 @@ struct GraveyardSession
     }
     ~GraveyardSession(){const_cast<SessionMap&>(sWorld->GetAllSessions()).erase(session->GetAccountId());session->SetMap(nullptr);}
 };
+#include "TrialGhostReturnNative.inc"
 static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     sObjectMgr->LoadGraveyardZones();auto destination=sWorldSafeLocsStore.LookupEntry(5779);auto home=sWorldSafeLocsStore.LookupEntry(5041);Require(destination&&destination->MapID==1220&&home&&home->MapID==1220,"Native raid exterior/fixture homebind missing");
@@ -92,7 +93,7 @@ static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,G
             Require(target->IsBeingTeleportedFar()&&loc.GetMapId()==1220&&loc.GetExactDist(destination->Loc.X,destination->Loc.Y,destination->Loc.Z+2)<0.01f&&std::abs(loc.GetOrientation()-destination->Loc.O*float(M_PI)/180.0f)<0.001f,"Actual active-encounter repop missed native exterior");
             session->HandleWorldPortAck();StopGraveyardFixtureZones(*static_cast<MapInstanced*>(sMapMgr->FindBaseMap(1220)));Require(target->IsInWorld()&&target->GetMapId()==1220&&!target->IsBeingTeleportedFar()&&target->isDead(),"Ghost exterior worldport ACK failed");
             target->SaveToDB();FlushWrites();auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT map,position_x,position_y,position_z FROM characters WHERE guid=%u",guid.GetCounter()).c_str());Require(row&&row->Fetch()[0].GetUInt32()==1220&&std::abs(row->Fetch()[1].GetFloat()-destination->Loc.X)<0.01f&&std::abs(row->Fetch()[2].GetFloat()-destination->Loc.Y)<0.01f,"Ghost save lost exterior destination");
-            target->ResurrectPlayer(1,false);target->SpawnCorpseBones();Require(!target->GetCorpse(),"Graveyard corpse cleanup failed");
+            TrialGhostReturn(*target,p,map,helya,group);
             target->GetMap()->RemovePlayerFromMap(target,false);
         }
         Require(map.GetInstanceScript()->GetCompletedEncounterMask()==mask,"External repop changed earned raid progress");ClearCombat(p,helya);

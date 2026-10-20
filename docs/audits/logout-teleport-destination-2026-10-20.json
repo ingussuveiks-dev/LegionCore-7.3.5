@@ -92,5 +92,6 @@
   "scratch_cleanup": {
     "schemas": 0,
     "users": 0
-  }
+  },
+  "ghost_return_followup": "trial-ghost-return-2026-10-20.json fixes premature corpse consumption during admission and pure-portal ghost discovery;8 actual same-instance returns now pass with ACK resurrection and SQL corpse cleanup. Authenticated reconnect, cold corpse reload and client traversal remain pending."
 }

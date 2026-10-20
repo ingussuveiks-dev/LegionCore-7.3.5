@@ -1,0 +1,31 @@
+$ErrorActionPreference='Stop'
+. "$PSScriptRoot/Test-RockawayRelease.ps1"
+$out="$repo/build-extractors/runtime-test/ghost-return-release"
+New-Item -ItemType Directory -Force $out | Out-Null
+$relative=$release.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -match 'game\\Release\\game.lib$'} | Select-Object -First 1
+if(!$relative){throw 'Missing actual game final-link input'}
+$gameLib=[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $relative))
+foreach($path in @('Maps/MapManager.cpp','Entities/EventObject/EventObject.cpp','Handlers/MovementHandler.cpp')){if((Get-Item "$repo/src/server/game/$path").LastWriteTimeUtc -gt (Get-Item $gameLib).LastWriteTimeUtc){throw "Game final-link input predates $path"}}
+if((Get-Item $gameLib).LastWriteTimeUtc -gt (Get-Item $exe).LastWriteTimeUtc){throw 'Canonical executable predates actual game library'}
+$bodies=@{}
+foreach($name in @('CanPlayerEnter@MapManager','Update@EventObject','HandleWorldPortAck@WorldSession')){
+ $range=Bounds ('?'+$name+'@@');$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+ $listing=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+ if($LASTEXITCODE){throw "Canonical disassembly failed: $name"}
+ $listing | Set-Content "$out/$($name.Replace('@','-')).txt";$bodies[$name]=$listing
+}
+function NativeCalls($listing){foreach($line in $listing){$m=[regex]::Match($line,'call\s+([0-9A-Fa-f]{16})');if($m.Success){Resolve ([Convert]::ToInt64($m.Groups[1].Value,16))}}}
+$resurrect=Resolve (Symbol '?ResurrectPlayer@Player@@');$bones=Resolve (Symbol '?SpawnCorpseBones@Player@@');$corpse=Resolve (Symbol '?GetCorpse@Player@@')
+$preflight=@(NativeCalls $bodies['CanPlayerEnter@MapManager']);$ack=@(NativeCalls $bodies['HandleWorldPortAck@WorldSession'])
+if($preflight -notcontains $corpse -or $preflight -contains $resurrect -or $preflight -contains $bones){throw 'Canonical admission no longer validates corpse, or still consumes/resurrects it'}
+if($ack -notcontains $resurrect -or $ack -notcontains $bones){throw 'Canonical successful worldport lacks native resurrection/corpse conversion'}
+$constructor=Resolve (Symbol '??0AnyPlayerInObjectRangeCheck@Trinity@@');$listing=$bodies['Update@EventObject']
+$indexes=@(for($i=0;$i -lt $listing.Count;$i++){$m=[regex]::Match($listing[$i],'call\s+([0-9A-Fa-f]{16})');if($m.Success -and (Resolve ([Convert]::ToInt64($m.Groups[1].Value,16))) -eq $constructor){$i}})
+if($indexes.Count -ne 1){throw 'Review canonical EventObject player-range admission'}
+$region=$listing[($indexes[0]-18)..$indexes[0]] -join "`n"
+# MSVC x64 passes reqAlive in r9b. Native EventObjectTemplate has
+# WorldSafeLocID at8 and SpellID at4. Only a pure location portal passes false.
+$gate=[regex]::Match($region,'cmp\s+dword ptr \[(?<template>\w+)\+8\],0\r?\n[^\r\n]*je\s+(?<alive>[0-9A-Fa-f]{16})\r?\n[^\r\n]*cmp\s+dword ptr \[\k<template>\+4\],0\r?\n[^\r\n]*jne\s+\k<alive>\r?\n[^\r\n]*xor\s+r9b,r9b\r?\n[^\r\n]*jmp\s+(?<ready>[0-9A-Fa-f]{16})\r?\n\s*\k<alive>:\s*mov\s+r9b,1\r?\n\s*\k<ready>:')
+if(!$gate.Success){throw 'Canonical pure-portal ghost admission or living spell/mixed gate missing; review codegen/ABI if changed'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;corpse_preflight_without_resurrection=$true;successful_ack_resurrects=$true;native_pure_portal_reqAlive_false=$true;native_spell_and_mixed_reqAlive_true=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
+'PASS: canonical Release corpse admission has no resurrection/conversion calls; successful ACK retains them; native pure-portal versus spell/mixed range-check branches verified.'

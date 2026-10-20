@@ -243,8 +243,9 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
                 return false;
             }
             TC_LOG_DEBUG("maps", "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName(), entry->MapName->Str[sObjectMgr->GetDBCLocaleIndex()]);
-            player->ResurrectPlayer(0.5f, false);
-            player->SpawnCorpseBones();
+            // This is only admission preflight: a later combat, group or
+            // access check can still reject the transfer. WorldPortAck
+            // resurrects and converts the corpse after actual map admission.
         }
         else
             TC_LOG_DEBUG("maps", "Map::CanPlayerEnter - player '%s' is dead but does not have a corpse!", player->GetName());

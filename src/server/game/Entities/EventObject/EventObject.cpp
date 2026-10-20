@@ -17,11 +17,15 @@
  */
 
 #include "Common.h"
+#include "CellImpl.h"
 #include "DatabaseEnv.h"
 #include "EventObject.h"
 #include "EventObjectData.h"
+#include "GridNotifiersImpl.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "ObjectVisitors.hpp"
+#include "PlayerDefines.h"
 #include "ScriptMgr.h"
 #include "World.h"
 
@@ -91,9 +95,19 @@ void EventObject::Update(uint32 /*p_time*/)
     }
 
     std::list<Player*> playerList;
-    GetPlayerListInGrid(playerList, eventTemplate->radius);
+    // Pure location portals also serve ghosts running back to their corpse.
+    // Spell and mixed spell/teleport events retain their living-player gate.
+    bool const requireAlive = !eventTemplate->WorldSafeLocID || eventTemplate->SpellID;
+    Trinity::AnyPlayerInObjectRangeCheck check(this, eventTemplate->radius, requireAlive);
+    Trinity::PlayerListSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(this, playerList, check);
+    Trinity::VisitNearbyWorldObject(this, eventTemplate->radius, searcher);
     for (auto player : playerList)
     {
+        // A dead body has not released spirit yet. Only released ghosts
+        // should use the portal in addition to the ordinary living players.
+        if (!player->IsAlive() && !player->HasFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+            continue;
+
         if (!player->InSamePhase(this))
             continue;
 
