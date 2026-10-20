@@ -45,5 +45,6 @@
     "Fresh scenario traversal: kill Conservator with the pet tanking while the player is40+ yards away; confirm Stage3 completes before continuing to Ariden.",
     "Continue through artifact search, Ariden approach and defeat; confirm the prior pet-speaker repair, chest and return handoff in the client."
   ],
-  "current_run_limit": "The death event already consumed in the failed run is not replayed or forcibly credited. Earlier/later one-shot scenario events can also have been consumed while the wrong stage was active. Restart does not persist transient actor/criteria state; retest from the scenario entrance without inventing a completion checkpoint."
+  "current_run_limit": "The death event already consumed in the failed run is not replayed or forcibly credited. Earlier/later one-shot scenario events can also have been consumed while the wrong stage was active. Restart does not persist transient actor/criteria state; retest from the scenario entrance without inventing a completion checkpoint.",
+  "subsequent_client_failure": "User repeated Stage3 after the radius repair, clarifying a Stage1 scythe click spawned an NPC that disappeared after being hit and advanced1 ->3. That GO summons Ariden100850, not Conservator. The original actor/death identification assumption is not established by that description. Entrance bootstrap and stage-gate repairs are documented in dark-riders-stage-lifecycle-2026-10-20.json; the radius repair alone did not resolve the reported route."
 }

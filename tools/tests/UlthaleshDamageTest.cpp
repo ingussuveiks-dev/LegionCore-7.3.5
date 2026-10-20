@@ -23,7 +23,7 @@ struct InstanceScript{uint32 scenario=988;void OnCreatureDamageTaken(Creature* c
 uint32 Unit::Deal(Creature* victim,uint32 damage)
 {
  DamageEffectType damagetype=0;
- SmartAI ai{victim};ai.DamageTaken(this,damage,0);
+ SmartAI ai{victim};if(victim->entry==100850)ai.mInvincibilityHpLevel=0;ai.DamageTaken(this,damage,0);
  // Native Unit damage scaling and instance hook; actual cached health is
  // captured after AI but before scaling. Unrelated aura/threat logic omitted.
  uint64 health=victim->GetHealth(this);
@@ -33,9 +33,9 @@ uint32 Unit::Deal(Creature* victim,uint32 damage)
 }
 int main()
 {
- for(bool pet:{false,true})for(float scale:{0.001f,0.01f,1.0f,100.0f})
+ for(uint32 entry:{100344u,100850u})for(bool pet:{false,true})for(float scale:{0.001f,0.01f,1.0f,100.0f})
  {
-  Unit attacker;attacker.pet=pet;InstanceScript instance;Creature boss;boss.instance=&instance;boss.multiplier=scale;
+  Unit attacker;attacker.pet=pet;InstanceScript instance;Creature boss;boss.entry=entry;boss.instance=&instance;boss.multiplier=scale;
   auto damage=attacker.Deal(&boss,200000);assert(!damage&&boss.alive&&boss.hp==1);
   damage=attacker.Deal(&boss,200000);assert(!damage&&boss.alive&&boss.hp==1);
  }

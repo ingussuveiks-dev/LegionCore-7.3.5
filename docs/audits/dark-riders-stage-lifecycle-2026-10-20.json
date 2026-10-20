@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-20",
+  "status": "Lifecycle repair installed in canonical Release; extracted native handlers, native DB2 and loader checks passed; complete client traversal pending",
+  "related": ["ulthalesh-2026-10-15.json", "ulthalesh-dialogue-2026-10-20.json", "ulthalesh-conservator-2026-10-20.json"],
+  "observed": "After the100-yard Conservator fix, user again reached final Ariden with Stage3/Conservator0/1. User clarified that clicking the scythe while still at Stage1 spawned an NPC, hitting him made him disappear, and the scenario jumped1 ->3.",
+  "interpretation_correction": "GO245994 summons Ariden100850, not Conservator101257. The newly described disappearing NPC is therefore not evidence of a Conservator death. The earlier radius defect was real and reproduced, but its repair did not resolve this earlier bootstrap/order failure. Do not report that radius change as fixing the complete observed sequence.",
+  "evidence": [
+    "Native scenario988 criteria in order:47983,47984,47985,47987,47988,47989,OWN_ITEM128942. The scythe reveal belongs to zero-based step3/displayed Stage4.",
+    "Entrance Revil101282 DB spawn369378/phase5761 had a2-yard, nonrepeatable LOS event with no Player admission. Native TALK can choose a pet invoker as speaker; TEXT_OVER then reports the pet entry instead of101282 and cannot start the199626 companion route.",
+    "The recorded scenario entrance is correct (-11017.9,-1996.04,24.91), about17 yards from entrance Revil. A2-yard trigger is easy to miss; generic scenario-resume selection was not changed.",
+    "Initial Ariden100850, Conservator101257 and scythe245994 had no enforced instance-stage admission. Scythe interaction at Stage1 could spawn a reveal Ariden outside the conditions that protect and run its Stage4 scene; its ordinary aggro route could then award the earlier barrier criterion.",
+    "The initial Ariden100850 had no post-scaling killing-blow protection while its timed5-second escape/dialogue route was pending.",
+    "Live DBErrors repeatedly logged101286 DataSet event0 -> link15 invalid, including12:47:22/30/32. Row15 is JUST_SUMMONED54, not LINK61.",
+    "Conservator's normal companion spells199626/199627 used INVOKER_CAST on the actual pet killer/victim. They are ordinary summon/removal spells, so the global pure-credit caster bridge intentionally does not normalize them."
+  ],
+  "implementation": {
+    "entrance": "A per-DB-spawn SmartAI override for369378 retains the original talk,5-second timer,200ms invoker-cast delay and despawn. It admits only a Player invoker in scenario988/step0, uses Revil SELF as speaker and a20-yard LOS range. Shared101282 template rows and later summoned guide scripts remain unchanged.",
+    "stage_gates": "The map1533 instance script, only for scenario988, tracks actors and scythe through native create/remove callbacks, step callbacks, player entry and250ms late-construction retry. Static barrier Ariden is available at step1, Conservator at2, reveal Ariden at3, final Ariden at4/5; scythe245994 is selectable only at3. Locked actors are NON_ATTACKABLE and PASSIVE so they cannot initiate a premature aggro event. Release restores the recorded reaction and only the flags added by this gate. Native GameObject::Use rejects the server-side NOT_SELECTABLE bit before consuming a use.",
+    "damage": "Wrong-stage damage is rejected after scaling. Both Ariden100850 and100344 survive a scaled killing blow at1HP until their native timed/scripted transition; the Conservator remains killable during its actual stage. Scripted DIE uses Kill directly, preserving the final death.",
+    "companion": "Conservator's existing summon/unsummon actions use native CROSS_CAST: nearby Players are casters, one SELF base actor is the destination. Native DB2 shows CASTER1 on every effect and explicit target masks0; native InitExplicitTargets removes the redundant actor target and the caster selector resolves each player to himself. This produces one self-cast per player without an N-by-N target cross product.",
+    "follower": "Remove the invalid0 ->15 link and add an independent DataSet1/1 flag action91. Optional conversation failure cannot suppress the intended768 protection.",
+    "credit": "All six existing player-distance scenario events use the same bounded100-yard encounter radius. No criterion is awarded from Sync, actor creation or an early scythe use.",
+    "preserved": "No generic Scenario/Achievement/SmartAI dispatch, quest completion forcing, character/inventory/artifact/scenarioResume reset, unrelated portal or pet-lookup changes. Other scenario IDs1026/1014 retain their existing actor-stage policy; shared companion/link corrections preserve their intended native operations."
+  },
+  "automated_checks": [
+    "Test-DarkRidersStageLifecycle.ps1 -VerifyReleaseBinary: PASS. SQL replay twice; scoped entrance rows/conditions, shared entrance-template preservation, valid independent flags, caster selection and all six radii checked.",
+    "DarkRidersStageLifecycleTest.cpp compiles the complete production instance class and namespace. Exercises every stage, delayed Scenario construction, stationary entry/update, native GameObject Use flag admission, native flags, create/remove/re-entry, initial/final scaled killing blows and shared-scenario exclusions.",
+    "DarkRidersEntranceTest.cpp reproduces the original pet-first LOS/TALK/TextOver stall, then exercises the native Player condition, LOS, TALK, text timer, invoker-cast delayed callback, CROSS_CAST, redundant explicit-target cleanup and CASTER selection with player/pet/null invokers and two nearby players.",
+    "Production C++ DB2 reader verifies all seven988 steps, Summon Revil199626 -> aura428 ->199625/creature101286/properties3730, unsummon199627 and the native caster targets/zero explicit masks.",
+    "Test-UlthaleshDamage.ps1: PASS. Includes both Ariden entries and the actual pre-scaling SmartAI plus post-scaling Unit hook; barrier fixture has no invented SmartAI invincibility.",
+    "Test-UlthaleshDialogue.ps1, Test-ConservatorCredit.ps1 and Test-UlthaleshScenario.ps1: PASS. Prior dialogue/credit/optional-cast/loot-order repairs retained.",
+    "git diff --check: PASS."
+  ],
+  "test_limits": "Fixture maps, scheduler/condition orchestration, movement/achievement/spawn effects, positions and object-size primitives are modeled. The extracted handlers and complete instance class are production code; these checks are not a complete live SmartAI/Scenario/client simulation. Native text/audio, barrier visuals, follower behavior, pet portrait and the entire run remain client checks.",
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_20_05_dark_riders_stage_lifecycle.sql applied to live world DB after private affected-row backups",
+    "build": "Actual CMake scripts Release library built, followed by canonical worldserver Release link with /p:LinkIncremental=false; no global OutDir override.",
+    "worldserver_sha256": "5f0b133d47b0ab1c579b2779534a1261aa264cab133f843787ce354de62d03e2",
+    "manual_binary_evidence": "PE/map timestamps match (0x6ad73f3d). Deployed ActorAvailable at0x140435df0 implements entry100850/step1-or3,101257/step2 and100344/step4-or5. Damage callback at0x140436120 checks scenario988, calls that policy and zeroes rejected damage before ProtectFinale. Sync at0x140436830 contains actor flag/reaction handling and scythe step3/flag0x10 admission. Map-only automated symbol checks are distinguished from this manual disassembly inspection.",
+    "startup": "Final canonical worldserver ready13:17:16 Europe/Riga; no new DBErrors after the migration, including per-GUID SmartAI/condition loader admission. Startup base revision is d93c13c55c5c+ because build preceded this commit.",
+    "shutdown": "Owned hidden validation process stopped gracefully; database shutdown complete13:17:20. User-launched servers were already stopped before deployment; none were stopped by Codex. Both server processes stopped at handoff.",
+    "protected_runtime": "Configuration/certificate/DLL hashes unchanged. Previous executable/map and affected DB rows retained privately; no runtime data, credentials or personal backups are committed."
+  },
+  "client_retest": "Start from the scenario entrance: Revil introduction/companion, stage1 ->2 near the barrier, initial Ariden timed escape even under a one-hit spell, Conservator death ->4, scythe click -> reveal/5, final Ariden aggro ->6, defeat/loot ->7 and return. Include pet-first LOS, pet kills, failed optional casts, retry/reset, both factions, live/fresh re-entry and later scenarios sharing actors. The failed run's consumed one-shot events are not forcibly repaired or credited."
+}
