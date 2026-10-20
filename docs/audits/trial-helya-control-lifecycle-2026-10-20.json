@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "tested_revision": "d278a2083a771814f288a2f7b0dbe46864e0cb26",
+  "status": "Native Corrupted death, resurrection and victory cleanup pass. Added regression coverage and audit; no production defect found and no production code, SQL or runtime-data changes required.",
+  "scope": {
+    "control_suite_cases": 8,
+    "difficulties": [
+      17,
+      14,
+      15,
+      16
+    ],
+    "races": [
+      "Human",
+      "Orc"
+    ],
+    "mythic_death_resurrection_cases": 6,
+    "mythic_victory_cases": 2
+  },
+  "verification": [
+    "All8 native cases still earn the Odyn/Guarm/entrance/phase transitions. The six non-Mythic absorb-expiry gates still reject Corrupted. New lifecycle checks execute on the two Mythic controlled Players, where the real232450 expiry has applied232350,232358 and231862.",
+    "For each Mythic race, Helya, the other Player and an owner-linked Pet each deliver one actual DealDamage killing blow while the native aura-started seven-second Infusion is active. The fixture sets current health to30percent, above the native25percent release threshold, then calculates the lethal raw input from target-relative health and GetHealthMultiplierForTarget. Observed raw input450000000 reaches JUST_DIED through the real damage/death dispatcher. No Kill shortcut or synthetic AURA_REMOVE_BY_DEATH callback is used for these six Player deaths.",
+    "Immediately after each actual death, Corrupted, transform and Bleak auras, charmer and casting state are absent. Faction, server display ID and IsControlledByPlayer restore to fixture baseline. The fixture invokes native Player::KillPlayer to enter CORPSE, advances actual Unit spell/aura dispatch for8000ms, then invokes native ResurrectPlayer(1.0,false) and advances another8000ms, with the existing production charm-AI admission enabled. Every subject is alive, uncontrolled and free of the old effects after resurrection; no231863 completes and Helya alternate power stays10.",
+    "Each Mythic victory starts with a live Corrupted Player actually casting Infusion, plus a different Player holding an unexpired232450 absorb. A Player wins the Human case; its owned Pet wins the Orc case. Tap/damage eligibility is fixture input; actual Unit::Kill and Helya JustDied execute and the real instance state becomes DONE. No direct DONE-state injection is used.",
+    "Victory cleanup is asserted immediately after the killing call, before any delayed update. The controlled Player loses aura/transform/Bleak/charmer/cast and regains baseline faction/display/control; the second Player loses pending Axion immediately. This prevents ordinary ten-second Axion expiry from concealing missing victory cleanup. Further actual Player Unit updates for15000ms leave no Eruption, no recreated Corrupted/Axion and no alternate-power change from the native post-death baseline0.",
+    "The extended control suite also retains the earlier64 Player/Pet threshold releases, exact25/24/10 boundaries, explicit removal, expiry, wipe, Counterspell6-second real-wall-clock lockout/recovery and the narrow Warrior charm-AI assertions. Final native Server.log contains no ERROR/FATAL and DBErrors is empty. Scratch schema/user counts are0/0.",
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passes with the existing current final-link libraries and canonical build-extractors/bin/Release/worldserver.exe. Native input hashes and the deployed PE checks retain verification of the prior loot, aura release and Player/Creature interruption paths. This test-only follow-up requires no new production build or server startup. No worldserver/bnetserver process was launched or stopped."
+  ],
+  "production_trace": [
+    "Unit::setDeathState stops combat/casting and invokes RemoveAllAurasOnDeath; native linked-aura/charm cleanup restores the Player state. Player::KillPlayer performs the CORPSE transition and ResurrectPlayer performs the actual ALIVE/health/zone/visibility path.",
+    "boss_tov_helya::JustDied interrupts its pending cast, invokes RemoveAllDebaffsOnPlayer, clears summons/areas and delegates to _JustDied. The existing removal list includes232450,232350 and231862;232350 linked cleanup removes232358. No added cleanup hook is necessary for the tested boundaries."
+  ],
+  "limits": [
+    "No authenticated7.3.5 client verification of input handoff, transform rendering, cast bar, aura icons, camera, pet portrait, action bars, sounds or complete raid/quest completion. A server display-ID restoration assertion does not verify visible animation/model playback; the fixture does not construct a full character appearance.",
+    "These are direct production-method fixtures, not a full Player::Update/login or resurrection opcode/offer sequence. KillPlayer is the native corpse-state transition; it does not create a world Corpse object. Spirit release, corpse reclaim, resurrection sickness, battle-resurrection charges, personal permanent-pet restoration and logout/relogin are not tested here.",
+    "Boss scheduling is frozen during isolated subject observations. Subject health is not buffered, but other fixture actors use health buffers. The subject is a Warrior fixture, and the new six killing-blow cases use DIRECT_DAMAGE inputs rather than every school/proc/PvP/resource/talent combination.",
+    "Victory uses native Unit::Kill after seeded tap/damage eligibility. This follow-up does not independently revalidate scaled Helya lethal damage, quest/reward distribution, persistence or victory visuals covered with their own limits in earlier audits.",
+    "Map departure/re-entry, saved-character recovery, broader class AI and previously retained source/timer/client limitations remain unresolved by this follow-up."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-171052",
+    "command": "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+    "log": ".codex/helya-control-lifecycle-final.log",
+    "hashes": {
+      "src/server/game/Entities/Unit/Unit.cpp": "8C546792F0646CF9F41731890517E95F0FCB0E128EAA0BC69CC631A259744825",
+      "src/server/game/Entities/Player/Player.cpp": "C273E998EFD9F6E7B0A085E64E65290BF6E07CFA381B44EF0CD197C39835354F",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "0683ADBB6B5FDEAA1A82CE1ED5A1019FFCE078C9349CA32D4261DBC92CCC9504",
+      "tools/tests/TrialHelyaControlNative.cpp": "57ECDB1A69BD0F3C88B1F2FADC3E25A47C82C4F781CA7F04E62BDE48BC21DCB5",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "F2A3682821B47AB0BE078C79F6A46E8492566D73308BD558CF9A5AC0B3AC8087",
+      "tools/tests/Test-TrialHelyaControlRelease.ps1": "AD95B45D1575C23634B3EDDA835596EB2EA43D852532E0E9EA5D634CB075587A",
+      "build-extractors/bin/Release/worldserver.exe": "600C54C803AAEFF69C598B6C2EBCCE376FBC0FB8A7BC67BCFDD02B03356B4290",
+      "build-extractors/bin/Release/bnetserver.exe": "044836B79CF879A8D57B253C5C072C3FBC5E06D1D4C80BB145176B91DB8A070D",
+      "build-extractors/src/server/game/Release/game.lib": "D8E6F20CD80BD95B3BBC792731D6DF64891260BA4BF80FA3A653E26C0FAC6060",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "DF4EDDF3EE9A7F4681E499570C77CA47CB0A49374D79FC8565C751AC1016C91C",
+      ".codex/helya-control-lifecycle-final.log": "531B09628E18221E69A8C381AB559CD60F2B40B6D4144EFD48C2107B3347FDDE",
+      "final_run/native-inputs.json": "7E06A77026EE87B7BD37BD17DAA20B0781BDB271757076DC25D12E9F6D60940A",
+      "final_run/native-lines.txt": "7A526C432761D67A29F88FE91BC6D2167D5056F78BC4C2EB5480C2F3AC1CA167",
+      "final_run/Server.log": "AC07B6D6177CFA87B26C7431BEBB8DFE3A6C2B3286D8BA11EF85B3D02B808AB8",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  }
+}

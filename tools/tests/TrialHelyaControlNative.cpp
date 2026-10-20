@@ -23,7 +23,7 @@ static void ControlBegin(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,Crea
 }
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
-    LoadPhaseThreeConditions();sSpellMgr->LoadSpellPrcoCheck();GarmPlayer subject(map,p.getRace());auto faction=subject.getFaction();
+    LoadPhaseThreeConditions();sSpellMgr->LoadSpellPrcoCheck();GarmPlayer subject(map,p.getRace());auto faction=subject.getFaction();auto display=subject.GetDisplayId();
     p.GetOrInitPetStable();LootPet pet(p,map);pet.setFaction(p.getFaction());pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());
     ControlBegin(p,subject,map,helya);
     if(!map.IsMythicRaid()){Require(subject.GetCharmerGUID().IsEmpty()&&!subject.HasAura(232358),"Non-Mythic absorb charmed/transformed Player");ClearCombat(p,helya);std::cout<<"PASS: native Corrupted difficulty gate diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;return;}
@@ -102,11 +102,41 @@ static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     }
     ControlBegin(p,subject,map,helya);ControlWatch wiped(map,subject,helya);wiped.Advance(1500);ClearCombat(p,helya);wiped.Advance(8000);
     Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction,"Wipe retained controlled Player state");
+    // Use final scaled damage and native Player death/corpse/resurrection,
+    // rather than removing an aura with a simulated death removal mode.
+    for(Unit* killer:{static_cast<Unit*>(&helya),static_cast<Unit*>(&p),static_cast<Unit*>(&pet)}){
+        ControlBegin(p,subject,map,helya);subject.RemoveAura(228054);subject.SetHealth(subject.CountPctFromMaxHealth(30));helya.SetPower(POWER_ALTERNATE,10);
+        ControlWatch death(map,subject,helya);death.Advance(1500);Require(subject.HasUnitState(UNIT_STATE_CASTING),"Lethal hit missed native Infusion");
+        auto raw=uint32(std::ceil(1.5*subject.GetHealth(killer)*subject.GetHealthMultiplierForTarget(killer)));
+        std::cout<<"CONTROL_LETHAL begin killer="<<(killer==&helya?"boss":killer==&p?"player":"pet")<<" raw="<<raw<<std::endl;
+        killer->DealDamage(&subject,raw,nullptr,DIRECT_DAMAGE,SPELL_SCHOOL_MASK_NORMAL,nullptr,false);
+        Require(!subject.IsAlive()&&subject.getDeathState()==JUST_DIED,"Scaled killing blow did not enter real Player death");
+        Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction&&subject.GetDisplayId()==display&&subject.IsControlledByPlayer(),"Actual Player death retained Corrupted control state");
+        subject.KillPlayer();Require(subject.getDeathState()==CORPSE,"Native Player corpse transition failed");death.Advance(8000);
+        Require(death.casts[231863].empty()&&helya.GetPower(POWER_ALTERNATE)==10,"Dead Player completed residual Infusion/Eruption");
+        subject.ResurrectPlayer(1.0f,false);death.Advance(8000,true);
+        Require(subject.IsAlive()&&subject.GetHealth()>0&&!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction&&subject.GetDisplayId()==display&&subject.IsControlledByPlayer()&&death.casts[231863].empty()&&helya.GetPower(POWER_ALTERNATE)==10,"Native resurrection restored stale control/cast/effects");
+        std::cout<<"CONTROL_LETHAL recovered killer="<<(killer==&helya?"boss":killer==&p?"player":"pet")<<" bursts="<<death.casts[231863].size()<<" energy="<<helya.GetPower(POWER_ALTERNATE)<<std::endl;
+    }
 #endif
     ControlBegin(p,subject,map,helya);subject.RemoveAura(228054);helya.SetPower(POWER_ALTERNATE,10);ControlWatch nativeAI(map,subject,helya);nativeAI.Advance(18000,true);
     std::cout<<"CONTROL_NATIVE_AI class="<<uint32(subject.getClass())<<" infusions="<<nativeAI.casts[228854].size()<<" bursts="<<nativeAI.casts[231863].size()<<" energy="<<helya.GetPower(POWER_ALTERNATE)<<" movement="<<uint32(subject.GetMotionMaster()->GetCurrentMovementGeneratorType())<<std::endl;
     Require(nativeAI.casts[231863].size()==2&&helya.GetPower(POWER_ALTERNATE)==70,"Native charmed-Player AI prevented repeated Infusion completion");
     subject.RemoveAura(232350);
-    ClearCombat(p,helya);std::cout<<"PASS: native Corrupted observation diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
+#ifndef TRIAL_HELYA_CONTROL_BASELINE
+    ControlBegin(p,subject,map,helya);subject.RemoveAura(228054);helya.SetPower(POWER_ALTERNATE,10);ControlWatch victory(map,subject,helya);victory.Advance(1500);
+    Require(subject.HasUnitState(UNIT_STATE_CASTING),"Victory missed native Infusion");
+    helya.CastSpell(&p,232450,true);Require(p.HasAura(232450),"Victory pending-absorb input missing");
+    helya.ResetPlayerDamageReq();helya.LowerPlayerDamageReq(1);helya.SetLootRecipient(&p);
+    Unit* winner=p.getRace()==RACE_ORC?static_cast<Unit*>(&pet):static_cast<Unit*>(&p);winner->Kill(&helya,false);
+    Require(helya.isDead(false)&&map.GetInstanceScript()->GetBossState(2)==DONE,"Actual controlled-Player victory failed");
+    // Assert immediately: waiting beyond Axion's ten-second duration would
+    // conceal a missing victory removal behind ordinary aura expiry.
+    Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction&&subject.GetDisplayId()==display&&subject.IsControlledByPlayer()&&!p.HasAura(232450)&&!p.HasAura(232350),"Victory did not immediately clear current control and pending Axion");
+    auto victoryEnergy=helya.GetPower(POWER_ALTERNATE);victory.Advance(15000,true);Tick(p,15000);
+    Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction&&subject.IsControlledByPlayer()&&!p.HasAura(232450)&&!p.HasAura(232350)&&victory.casts[231863].empty()&&helya.GetPower(POWER_ALTERNATE)==victoryEnergy,"Native victory retained/recreated control or completed residual Infusion");
+    std::cout<<"CONTROL_VICTORY pet="<<(winner==&pet)<<" bursts="<<victory.casts[231863].size()<<" energy="<<helya.GetPower(POWER_ALTERNATE)<<" pendingAbsorb="<<p.HasAura(232450)<<std::endl;
+#endif
+    if(helya.IsAlive())ClearCombat(p,helya);std::cout<<"PASS: native Corrupted observation diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
 int main(int argc,char** argv){SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);try{return RunGarm(argc,argv,ControlCase);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}}
