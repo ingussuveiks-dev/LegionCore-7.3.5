@@ -21,16 +21,19 @@ constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1;
 struct InstanceMap;
 struct Player:Unit{
  bool aura=false;ObjectGuid GetGUID(){return 42;}
+ bool controller=false;uint32 followerAttempts=0;std::function<void()> summonFollower;
  InstanceMap* map=nullptr;GuidList followers;InstanceMap* GetMap(){return map;}GuidList* GetSummonList(uint32){return &followers;}
  bool IsInWorld(){return true;}bool IsAlive(){return true;}bool IsBeingTeleported(){return false;}
  uint32 GetMapId(){return 1533;}bool GetQuestRewardStatus(uint32){return false;}int GetQuestStatus(uint32){return QUEST_STATUS_INCOMPLETE;}
  Creature* FindNearestCreature(uint32,float){return nullptr;}bool InSamePhase(Creature*){return true;}uint32 GetGUIDLow(){return 1;}
- float GetExactDist(Creature*){return 100;}bool HasAura(uint32){return aura;}void CastSpell(Player*,uint32,bool){aura=true;}void RemoveAurasDueToSpell(uint32 id){if(id==198654)aura=false;}
+ float GetExactDist(Creature*){return 100;}bool HasAura(uint32 id){return id==199626?controller:aura;}
+ void CastSpell(Player* target,uint32 id,bool triggered){if(id==199626){assert(target==this&&triggered);controller=true;++followerAttempts;if(summonFollower)summonFollower();}else aura=true;}
+ void RemoveAurasDueToSpell(uint32 id){if(id==198654)aura=false;if(id==199626)controller=false;}
 };
 struct Creature{
  uint32 entry=0,flags=0;uint64 guid=0,hp=100000,targetHp=1000;bool summoned=false,alive=true;ReactStates reaction=REACT_AGGRESSIVE;
  uint32 GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}bool isSummon(){return summoned;}bool IsAlive(){return alive;}
- bool IsAIEnabled=true;uint32 GetDBTableGUIDLow(){return db;}CreatureAI* AI(){static CreatureAI ai;return &ai;}
+ bool IsAIEnabled=true,world=true;bool IsInWorld(){return world;}uint32 GetDBTableGUIDLow(){return db;}CreatureAI* AI(){static CreatureAI ai;return &ai;}
  bool IsWithinLOSInMap(Player*){return true;}
  uint32 db=0,createdBy=199625,npcFlags=2,retired=0;ObjectGuid owner=42;std::function<Creature*(Creature*,uint32)> summon;
  Creature* ToTempSummon(){return this;}ObjectGuid GetSummonerGUID(){return owner;}void DespawnOrUnsummon(){++retired;}
@@ -72,10 +75,11 @@ struct InstanceMapScript{
 #include "LifecycleInstance.inc"
 struct WorldObject{InstanceScript* script;InstanceScript* GetInstanceScript(){return script;}};
 constexpr uint32 SMART_ACTION_SET_INST_DATA=34;
-void NativeGuideRequest(InstanceScript* script,bool invokerFallback=false){
+void NativeGuideRequest(InstanceScript* script,bool invokerFallback=false,uint32 field=10085001){
  WorldObject object{script};WorldObject* unit=invokerFallback?&object:nullptr;
  auto GetBaseObject=[&]()->WorldObject*{return invokerFallback?nullptr:&object;};
  struct Row{int entryOrGuid=-369334;uint32 GetEventType(){return 61;}struct{struct{uint32 field=10085001,data=1;}setInstanceData;}action;}e;
+ e.action.setInstanceData.field=field;
  switch(SMART_ACTION_SET_INST_DATA){
 #include "RevilInstanceAction.inc"
  }
@@ -139,6 +143,18 @@ int main(){
  hs.OnCreatureRemove(&guide);hm.creatures.erase(guide.guid);hs.Update(250);assert(attempts==2);
  handoff.step=3;uint32 before=escort.retired;hs.Update(250);assert(escort.retired==before); // Later escort retained.
  otherGuide.owner=initial.guid;hs.OnCreatureCreate(&otherGuide);assert(otherGuide.npcFlags==2); // Native wounded/finale flags retained.
+ // The entrance speaker may already have despawned and lost its invoker.
+ // Completion persists in the instance. Respect200ms, retry a failed summon
+ // or stale controller, and stop recreating the follower at the barrier.
+ Scenario intro;manager.progress=&intro;InstanceMap im;instance_dark_riders_artifact::Instance is(&im);Player ip;ip.map=&im;im.players.push_back(&ip);
+ Creature follower{101286,768,91};follower.summoned=true;follower.world=false;im.creatures[91]=&follower;ip.controller=true;
+ ip.summonFollower=[&]{if(ip.followerAttempts>1){follower.world=true;ip.followers={91};}};
+ is.Update(1000);assert(!ip.followerAttempts&&!is.entranceFollowerRequested);
+ NativeGuideRequest(&is,true,DarkRidersRevil::EntranceFollowerRequest);is.Update(199);assert(!ip.followerAttempts);is.Update(1);assert(ip.followerAttempts==1&&!DarkRidersRevil::HasFollower(&ip));
+ is.Update(999);assert(ip.followerAttempts==1);is.Update(1);assert(ip.followerAttempts==2&&DarkRidersRevil::HasFollower(&ip));
+ for(int i=0;i<8;++i){NativeGuideRequest(&is,false,DarkRidersRevil::EntranceFollowerRequest);is.Update(1000);}assert(ip.followerAttempts==2);
+ follower.world=false;is.Update(1000);assert(ip.followerAttempts==3&&follower.world);
+ intro.step=1;uint32 castBefore=ip.followerAttempts;NativeGuideRequest(&is,false,DarkRidersRevil::EntranceFollowerRequest);is.Update(1000);assert(ip.followerAttempts==castBefore);
  for(uint32 otherScenario:{0u,1026u,1014u}){
   Scenario shared;shared.id=otherScenario;manager.progress=&shared;InstanceMap otherMap;instance_dark_riders_artifact::Instance untouched(&otherMap);
   Creature actor{101257,0x400,6};GameObject object;otherMap.creatures[6]=&actor;otherMap.objects[20]=&object;untouched.OnCreatureCreate(&actor);untouched.OnGameObjectCreate(&object);untouched.Update(250);

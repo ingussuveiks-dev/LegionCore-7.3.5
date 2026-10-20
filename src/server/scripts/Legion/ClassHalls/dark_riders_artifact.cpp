@@ -88,6 +88,17 @@ void UpdateContact(Player* player, uint32 scenario, uint32 step)
 namespace DarkRidersRevil
 {
 constexpr uint32 BarrierGuideRequest = 10085001;
+constexpr uint32 EntranceFollowerRequest = 10085002;
+bool HasFollower(Player* player)
+{
+    for (ObjectGuid const& guid : *player->GetSummonList(101286))
+        if (Creature* follower = player->GetMap()->GetCreature(guid))
+            if (follower->isSummon() && follower->IsInWorld() && follower->IsAlive() &&
+                follower->GetEntry() == 101286 && follower->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 199625 &&
+                follower->ToTempSummon()->GetSummonerGUID() == player->GetGUID())
+                return true;
+    return false;
+}
 void RetireFollower(Player* player)
 {
     // Aura removal runs the native controller cleanup. Also retire a stale
@@ -122,8 +133,29 @@ public:
         ObjectGuid barrierAriden{};
         bool barrierGuideRequested = false;
         bool barrierGuideStarted = false;
+        bool entranceFollowerRequested = false;
+        uint32 entranceFollowerTimer = 0;
         uint32 refresh=0;
         Scenario* Progress() { return sScenarioMgr->GetScenario(instance->GetInstanceId()); }
+        void EnsureEntranceFollowers()
+        {
+            Scenario* scenario = Progress();
+            if (!entranceFollowerRequested || !scenario || scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 0)
+                return;
+            instance->ApplyOnEveryPlayer([](Player* player)
+            {
+                if (!player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() || player->GetQuestRewardStatus(40623) ||
+                    (player->GetQuestStatus(40623) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40623) != QUEST_STATUS_COMPLETE) ||
+                    DarkRidersRevil::HasFollower(player))
+                    return;
+
+                // A saved controller without a living summon must be replaced,
+                // not refreshed. Triggered casting preserves the player's cast.
+                DarkRidersRevil::RetireFollower(player);
+                player->CastSpell(player, 199626, true);
+                TC_LOG_INFO("scripts.ai", "Dark Riders: entrance Revil summon requested for player %u", player->GetGUIDLow());
+            });
+        }
         void EnsureBarrierGuide()
         {
             Scenario* scenario = Progress();
@@ -141,6 +173,18 @@ public:
         }
         void SetData(uint32 type, uint32 value) override
         {
+            if (type == DarkRidersRevil::EntranceFollowerRequest && value == 1)
+            {
+                Scenario* scenario = Progress();
+                if (!scenario || scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 0)
+                    return;
+                if (!entranceFollowerRequested)
+                {
+                    entranceFollowerRequested = true;
+                    entranceFollowerTimer = 200;
+                }
+                return;
+            }
             if (type == DarkRidersRevil::BarrierGuideRequest && value == 1)
             {
                 Scenario* scenario = Progress();
@@ -248,6 +292,16 @@ public:
         void onScenarionNextStep(uint32) override { Sync(); }
         void Update(uint32 diff) override
         {
+            if (entranceFollowerRequested)
+            {
+                if (entranceFollowerTimer > diff)
+                    entranceFollowerTimer -= diff;
+                else
+                {
+                    entranceFollowerTimer = 1000;
+                    EnsureEntranceFollowers();
+                }
+            }
             // Scenario construction can follow initial actor registration.
             if (refresh>diff) { refresh-=diff; return; }
             refresh=250;

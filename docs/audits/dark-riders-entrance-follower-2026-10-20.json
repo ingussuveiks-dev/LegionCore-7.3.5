@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-20",
+  "related": ["dark-riders-revil-handoff-2026-10-20.json", "dark-riders-player-arrival-2026-10-20.json"],
+  "client_observed": "After8a891880 the user heard the stair introduction in displayed Stage1. The static speaker disappeared, but no following Revil appeared; the screenshot shows the player continuing down the stairs. Absence before the introduction is intentional, absence after completion is the new failed client result.",
+  "evidence": [
+    "Entrance369378 TEXT_OVER row1 still used normal INVOKER_CAST85/flags0 ->199626, then immediately linked the speaker's despawn. Native INVOKER_CAST depends on GetLastInvoker and schedules one Player cast200ms later. A missing remembered invoker skips the cast; a failed cast does not cancel the linked despawn or schedule a retry.",
+    "The actual Spell::prepare gate and Unit::IsNonMeleeSpellCast reject this normal cast while a non-instant generic cast is active. The regression executes both real branches and reproduces the rejection. That particular prepare gate skips channeled spells; no channel-specific rejection is asserted. Triggered casting bypasses the generic-cast rejection without interrupting the active cast.",
+    "Native controller428 applies199625 only for AURA_EFFECT_HANDLE_REAL. A reapply-only0x08 hook does not recreate a missing summon. Thus an existing199626 aura is insufficient evidence of a living companion.",
+    "The original client did not log its exact remembered invoker, active cast or aura/index state at speech completion. These are reproduced failure cases and covered recovery boundaries, not a complete reconstruction of that occurrence."
+  ],
+  "implementation": [
+    "Migration09 preserves the scoped Player-only2-yard introduction and full5-second TALK/TextOver, but replaces its one-shot invoker cast with native SET_INST_DATA34 request10085002/1. Completion survives the speaker's despawn and does not need its remembered Player invoker.",
+    "The instance accepts the request only for988/step0, waits200ms, then checks actual live, in-world101286 summons with creation spell199625 and exact Player summoner GUID. No follower is created merely from login/entry before the speech completes.",
+    "If the companion is absent, remove stale controller/owned orphan state and cast199626 triggered on the eligible Player. Retry every1000ms, including failed summons or later companion loss, until the barrier stage. A valid live follower prevents another cast; a controller aura alone does not.",
+    "Barrier/finale policies, exclusive stationary guide, primary demon, unrelated owners/spells, other scenarios, character quests/inventory and generic casting/aura handlers remain unchanged. The later barrier cleanup still prevents an entrance follower from respawning at step1/2."
+  ],
+  "automated_checks": [
+    "Test-DarkRidersStageLifecycle.ps1 -VerifyReleaseBinary: PASS. Migration replay, exact entrance request wiring, full production instance and native SmartAI instance-data action, no pre-introduction spawn,199+1ms delay, failed initial summon/stale aura,999+1ms retry, actual-follower checks, repeated requests without duplication, later companion loss and no respawn after barrier progress.",
+    "DarkRidersEntranceTest.cpp executes native Player/LOS/TALK/TextOver/timer/SET_INST_DATA paths, reproduces missing-invoker and generic-cast failures of the old route, and verifies the new full-speech request survives a null invoker. Actual Spell::prepare and Unit::IsNonMeleeSpellCast include a channel control and confirm the triggered-cast admission leaves the active generic cast intact.",
+    "RevilFollowerCleanupTest.cpp now executes actual controller application, reapply and removal as well as production HasFollower/RetireFollower and the native minion filter. Covers stale controller without actor, missing control index, primary demon, foreign owner, unrelated spell, stale summon GUID and repeated cleanup.",
+    "Native DB2 companion/controller/target/summon-property/scenario catalog and all existing barrier, scaled-actor, cross-cast and scene lifecycle fixtures pass. Test-DarkRidersSpirits.ps1 also passes. git diff --check: PASS."
+  ],
+  "test_limits": "World/map/visibility, spell objects and aura-dispatch scaffolding, guardian creation/follow movement, source condition/event orchestration and object lifetime are fixture models. Selected casting/controller handlers and the complete production instance execute, but this is not a live client or full Spell/Map/SmartAI scheduler simulation. Actual companion appearance/following, dialogue, pet portrait, retry/re-entry and the complete quest still require client confirmation.",
+  "deployment": {
+    "migration": "2026_10_20_09_dark_riders_entrance_follower.sql applied with worldserver stopped after a private affected-row backup",
+    "build": "Actual scripts Release library and canonical worldserver Release final link with LinkIncremental=false, no OutDir override",
+    "worldserver_sha256": "c6af6e1a3bb5b8c9e2a6cf57ad605a67d78a9bccf8a5087bf584192d4b896955",
+    "binary_evidence": "PE/map timestamp6ad759dc. Canonical SetData0x140437b60 compares request10085002,988/step0 and initializes200ms. Inlined EnsureEntranceFollowers lambda0x140435cf0 checks eligible Player and live101286/created-by199625/owner, calls RetireFollower, then casts199626 on that same Player with triggered=true (r9b1). Actual deployed instructions inspected beyond marker/map checks.",
+    "startup": "Ready15:13:47 Europe/Riga; no new DBErrors. Owned hidden PID31244 stopped gracefully, database shutdown complete15:13:51. Runtime configuration/certificate/DLL hashes unchanged.",
+    "ownership": "Initially user worldserver22680 and bnet35492 were running and were not stopped by Codex. User worldserver exited15:01:46 and bnet exited15:11:28; the owned hidden check started15:13:32. Both servers are stopped at handoff."
+  },
+  "client_retest": "Start canonical servers visibly. Reach stair Revil and let the full introduction finish; test standing still and casting a regular cast-time spell as the speech ends. One following Revil should appear after the short handoff delay and follow down the stairs. Continue to the barrier: the follower must retire and exactly one stationary guide remain. Also retry after death/live re-entry and verify the primary demon/portrait; initial spawn/companion absence before speech is expected."
+}

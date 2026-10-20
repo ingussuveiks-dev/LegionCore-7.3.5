@@ -3,14 +3,17 @@
 #include <list>
 #include <map>
 #include <iostream>
+#include <functional>
 using uint32=uint32_t;using uint8=uint8_t;using ObjectGuid=uint32;
 using GuidList=std::list<ObjectGuid>;
-constexpr uint32 UNIT_FIELD_CREATED_BY_SPELL=0,AURA_EFFECT_HANDLE_REAL=1;
+constexpr uint32 UNIT_FIELD_CREATED_BY_SPELL=0,AURA_EFFECT_HANDLE_REAL=1,AURA_EFFECT_HANDLE_REAPPLY=0x08;
 struct Creature;struct AuraApplication;struct Unit {
  using ControlList=std::list<ObjectGuid>;ControlList m_Controlled;uint32 guid=1,created=0;bool world=true;
  virtual ~Unit()=default;virtual Creature* ToCreature(){return nullptr;}virtual Creature* ToTempSummon(){return nullptr;}
  bool IsInWorld(){return world;}uint32 GetUInt32Value(uint32){return created;}void RemoveAllMinionsByFilter(uint32,uint8);
- void RemoveGameObject(uint32 spell,bool){assert(spell==199625);}void CastSpell(Unit*,uint32,bool){assert(false);}
+ std::function<void()> summon;uint32 summonCalls=0;
+ void RemoveGameObject(uint32 spell,bool){assert(spell==199625);}
+ void CastSpell(Unit* target,uint32 id,bool triggered){assert(target==this&&id==199625&&triggered);++summonCalls;if(summon)summon();}
 };
 struct Map{std::map<ObjectGuid,Creature*> creatures;Creature* GetCreature(ObjectGuid g){return creatures.count(g)?creatures.at(g):nullptr;}}map;
 struct ObjectAccessor{static Unit* GetUnit(Unit&,ObjectGuid);static Creature* GetCreature(Unit&,ObjectGuid g){return map.GetCreature(g);}};
@@ -18,6 +21,7 @@ struct Creature:Unit{
  uint32 entry=101286,owner=1,despawns=0;bool summoned=true;
  Creature* ToCreature()override{return this;}Creature* ToTempSummon()override{return this;}bool isSummon(){return summoned;}
  uint32 GetEntry(){return entry;}ObjectGuid GetSummonerGUID(){return owner;}
+ bool IsAlive(){return world;}
  void UnSummon(){if(world){world=false;++despawns;}}void DespawnOrUnsummon(uint32=0){UnSummon();}
 };
 Unit* ObjectAccessor::GetUnit(Unit&,ObjectGuid g){return map.GetCreature(g);}
@@ -36,6 +40,15 @@ std::map<uint32,GuidList> tempSummonList;
 #include "RevilNativeController.inc"
 #include "RevilRetire.inc"
 int main(){
+ // A reapply-only hook cannot repair a saved controller with no live summon.
+ Player intro;intro.controller=true;Creature spawned;spawned.guid=20;spawned.created=199625;spawned.world=false;
+ map.creatures={{20,&spawned}};
+ intro.summon=[&]{spawned.world=true;intro.followers={20};intro.m_Controlled={20};};
+ AuraApplication app{&intro};AuraEffect effect;
+ effect.HandleSummonController(&app,AURA_EFFECT_HANDLE_REAPPLY,true);assert(!intro.summonCalls&&!DarkRidersRevil::HasFollower(&intro));
+ DarkRidersRevil::RetireFollower(&intro);assert(!intro.controller);
+ intro.controller=true;effect.HandleSummonController(&app,1,true);assert(intro.summonCalls==1&&DarkRidersRevil::HasFollower(&intro));
+ DarkRidersRevil::RetireFollower(&intro);assert(!DarkRidersRevil::HasFollower(&intro));
  for(bool controller:{false,true})for(bool indexed:{false,true}){
   Player p;p.controller=controller;Creature follower,primary,foreign,wrongSpell;
   follower.guid=10;follower.created=199625;primary.guid=11;primary.entry=1860;primary.created=697;
@@ -48,5 +61,5 @@ int main(){
   assert(primary.world&&foreign.world&&wrongSpell.world&&!primary.despawns&&!foreign.despawns&&!wrongSpell.despawns);
   for(int i=0;i<10;++i)DarkRidersRevil::RetireFollower(&p);assert(follower.despawns==1);
  }
- std::cout<<"PASS: production controller removal + native minion spell filter + scoped fallback retire owned Revil with present/missing aura/control index; primary demon, foreign/stale/wrong-spell entries and repeated cleanup preserved\n";
+ std::cout<<"PASS: actual controller apply/reapply/remove, production live-follower predicate and native minion filter/fallback; stale aura/index, primary demon, foreign/stale/wrong-spell entries and repeated cleanup preserved\n";
 }
