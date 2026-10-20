@@ -1,5 +1,6 @@
 {
   "date": "2026-10-20",
+  "interruption_followup": "trial-helya-player-interrupt-2026-10-20.json resolves the interrupted-player lockout item below with a reproduced shared Player cooldown defect, repair and actual Counterspell/recovery execution. The original scope and client limits of this audit remain recorded.",
   "map": 1648,
   "spells": [
     232450,

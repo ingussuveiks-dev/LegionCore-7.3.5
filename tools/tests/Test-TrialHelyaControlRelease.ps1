@@ -36,3 +36,17 @@ if([Convert]::ToInt64($exit.Groups[1].Value,16) -le $castAddress){throw 'Canonic
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;unit_source=(Get-FileHash "$repo/src/server/game/Entities/Unit/Unit.cpp").Hash;scripts_library=(Get-FileHash $lib).Hash;helya_source=(Get-FileHash "$repo/src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp").Hash;creature_only_loot_admission=$true;native_break_amount=$true;release_skips_cast=$true} | ConvertTo-Json | Set-Content "$out/control-release-inputs.json"
 'PASS: canonical DealDamage admits loot recipients only after the native creature type/null guard.'
 'PASS: canonical Corrupted reads its native break percentage and exits after removal before starting Infusion.'
+$range=Bounds '?ProhibitSpellSchool@Player@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$prohibit=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical Player school-lockout disassembly failed'}
+$prohibit | Set-Content "$out/player-prohibit-disassembly.txt"
+$code=$prohibit -join "`n"
+# MSVC inlines GetCurrentSpell as the native Unit array load. Both slots1..2
+# must feed the candidate spell-ID set before the existing cooldown loop.
+# Fail for review on ABI/codegen changes rather than trusting a copy hash.
+if($code -notmatch 'mov\s+ebx,1' -or $code -notmatch 'mov\s+rcx,qword ptr \[r15\+rax\*8\+0000000000000B00h\]' -or $code -notmatch 'mov\s+ecx,dword ptr \[rsi\]\s*\r?\n[^\r\n]*mov\s+dword ptr \[rax\+1Ch\],ecx' -or $code -notmatch 'inc\s+ebx\s*\r?\n[^\r\n]*cmp\s+ebx,2\s*\r?\n[^\r\n]*jbe'){
+    throw 'Canonical Player school lockout lacks current generic/channel candidate insertion; review ABI if changed'
+}
+if((Get-Item "$repo/src/server/game/Entities/Player/Player.cpp").LastWriteTimeUtc -gt (Get-Item $gameLib).LastWriteTimeUtc){throw 'Final-link game library predates Player lockout repair'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;player_source=(Get-FileHash "$repo/src/server/game/Entities/Player/Player.cpp").Hash;current_generic_and_channel_candidates=$true} | ConvertTo-Json | Set-Content "$out/player-interrupt-release-inputs.json"
+'PASS: canonical Player school prohibition includes current generic and channel spell IDs before cooldown admission.'

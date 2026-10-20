@@ -28542,13 +28542,24 @@ void Player::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
     GetAuraEffectsByListType(&auratypelist, swaps);
 
     double curTime = getPreciseTime();
+    std::set<uint32> spellIds;
     for (PlayerSpellMap::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
     {
         PlayerSpell* spellPtr_ = &itr->second;
         if (!spellPtr_ || spellPtr_->state == PLAYERSPELL_REMOVED || spellPtr_->disabled)
             continue;
 
-        uint32 unSpellId = itr->first;
+        spellIds.insert(itr->first);
+    }
+
+    // Scripted/charmed casts need not be in the player's spellbook. The
+    // interrupt effect calls this before cancelling the current spell.
+    for (uint32 i = CURRENT_GENERIC_SPELL; i <= CURRENT_CHANNELED_SPELL; ++i)
+        if (Spell* spell = GetCurrentSpell(CurrentSpellTypes(i)))
+            spellIds.insert(spell->m_spellInfo->Id);
+
+    for (uint32 unSpellId : spellIds)
+    {
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(unSpellId);
         if (!spellInfo)
             continue;

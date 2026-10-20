@@ -30,6 +30,30 @@ static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     Require(subject.GetCharmerGUID()==helya.GetGUID()&&subject.HasAura(232358)&&subject.HasAura(231862)&&subject.getFaction()==helya.getFaction(),"Native Corrupted charm/transform/eruption/faction missing");
     std::cout<<"CONTROL_DATA threshold="<<subject.GetAuraEffect(232350,EFFECT_0)->GetAmount()<<" duration="<<subject.GetAura(232350)->GetMaxDuration()<<std::endl;
     Require(!subject.IsControlledByPlayer(),"Native NPC charm did not exercise the old loot-admission branch");
+#ifndef TRIAL_HELYA_CONTROL_BASELINE
+    // Interrupt the real aura-started cast, including EffectInterruptCast's
+    // school prohibition and interrupt-only proc. This spell is not learned.
+    subject.RemoveAura(228054);helya.SetPower(POWER_ALTERNATE,10);
+    ControlWatch interrupted(map,subject,helya);interrupted.Advance(1500);
+    Require(!subject.HasSpell(228854)&&subject.HasUnitState(UNIT_STATE_CASTING),"Interrupt fixture requires an unlearned, actual Infusion cast");
+    subject.learnSpell(116,false,0,false);subject.learnSpell(133,false,0,false);
+    auto interruptHealth=p.GetHealth();p.CastSpell(&subject,2139,true);auto interruptDamage=interruptHealth-p.GetHealth();interrupted.Advance(1000);
+    std::cout<<"CONTROL_INTERRUPT cooldown="<<subject.GetSpellCooldownDelay(228854)<<" casting="<<subject.HasUnitState(UNIT_STATE_CASTING)<<" bursts="<<interrupted.casts[231863].size()<<" immediate="<<interruptDamage<<" energy="<<helya.GetPower(POWER_ALTERNATE)<<std::endl;
+    Require(interrupted.casts[231863].size()==1&&(interruptDamage||interrupted.damaged[231863].count(p.GetGUID()))&&helya.GetPower(POWER_ALTERNATE)==10,"Controlled Player interruption lost its single damaging eruption or energized Helya");
+    Require(!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.HasSpellCooldown(228854),"Unlearned controlled-Player Infusion bypassed Counterspell lockout");
+    Require(subject.HasSpellCooldown(116)&&!subject.HasSpellCooldown(133),"Learned same-school spell or unrelated-school cooldown changed");
+    Require(subject.CastSpell(&helya,228854,false)==SPELL_FAILED_NOT_READY&&subject.CastSpell(&helya,228854,TRIGGERED_IGNORE_CAST_IN_PROGRESS)==SPELL_FAILED_NOT_READY,"Ordinary/partial-trigger Infusion bypassed lockout");
+    p.CastSpell(&subject,2139,true);interrupted.Advance(1000);Require(interrupted.casts[231863].size()==1&&!subject.HasUnitState(UNIT_STATE_CASTING),"Idle Counterspell erupted again or aura retry bypassed lockout");
+    auto lockoutMs=sSpellMgr->GetSpellInfo(2139)->GetDuration(map.GetDifficultyID());
+    Require(lockoutMs>0&&lockoutMs<=10000,"Review native Counterspell lockout duration");
+    // Cooldowns use wall-clock time, unlike the deterministic Unit update
+    // clock. Let the real lockout expire; never alter its stored endpoint.
+    Sleep(lockoutMs+100);Require(!subject.HasSpellCooldown(228854)&&!subject.HasSpellCooldown(116),"Real-time school lockout failed to expire");
+    interrupted.Advance(8500);Require(interrupted.casts[231863].size()==2&&helya.GetPower(POWER_ALTERNATE)==40,"Aura did not retry successfully after real Counterspell expiry");
+    Require(!subject.HasSpell(228854),"Interrupt repair permanently taught scripted Infusion");
+    std::cout<<"CONTROL_INTERRUPT_RECOVERY duration="<<lockoutMs<<" bursts="<<interrupted.casts[231863].size()<<" energy="<<helya.GetPower(POWER_ALTERNATE)<<std::endl;
+    ControlBegin(p,subject,map,helya);
+#endif
 #ifdef TRIAL_HELYA_CONTROL_BASELINE
     // Original run without this isolation crashes in actual Taint damage at
     // Creature::hasLootRecipient. Keep that trace; isolate only to inspect the

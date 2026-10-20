@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "status": "Controlled-Player Mist Infusion interruption and repeated-cast lockout repaired; native checks pass. Client verification pending.",
+  "baseline": "87785490",
+  "reference": [
+    "Actual Corrupted aura starts unlearned228854. Real Player Counterspell2139 interrupts it, emits one231863 and damages the interrupter496695, without changing Helya alternate power10. Original Player::ProhibitSpellSchool iterates only learned spells: cooldown0, casting1 after the next aura tick. The full native regression fails its lockout assertion.",
+    "The original final-link game.lib is retained at build-extractors/runtime-test/helya-player-interrupt-reference/game.lib, SHA256 E319A56793819CDF3237DD1050151C861F379A6ADD57D8B25148E619A91667FC. Failed native execution folder run-20261020-085840 and .codex/helya-control-interrupt-original.log are retained.",
+    "Extracting Player::ProhibitSpellSchool from87785490 separately fails the unlearned generic/channel cooldown assertion. This is an isolated production-method test with service stubs, not a full native/client substitute."
+  ],
+  "repair": "Collect a deduplicated candidate set of active learned spell IDs plus current generic/channel spell IDs before applying the existing override, prevention, school, duration and packet logic. EffectInterruptCast already invokes this method before canceling the current cast. No permanent spell learning, encounter-specific whitelist, extra damage/energy route, school array, global cooldown or SQL change is added.",
+  "verification": [
+    "Control native suite passes all8 LFR/Normal/Heroic/Mythic and Human/Orc cases. The two Mythic cases earn actual phase3 and native absorb expiry, then interrupt the real unlearned aura-started Infusion. Both observe one damaging Eruption, unchanged energy10, no casting and a remaining real cooldown approximately6seconds.",
+    "A learned Frostbolt receives the same Frost lockout; learned Fireball does not. Ordinary Infusion and a triggered call lacking the cooldown exemption both return SPELL_FAILED_NOT_READY. Repeated aura ticks and Counterspell on the idle target do not produce another eruption or restart.",
+    "Counterspell duration is read from the loaded native SpellInfo as6000ms. The fixture waits6100ms of real wall time because Player cooldowns use getPreciseTime; it does not edit cooldown endpoints or synthesize an interrupt callback. After expiry, actual aura updates complete the next Infusion, one additional Eruption and alternate energy10 ->40. Infusion remains absent from the spellbook.",
+    "Existing64 Player/Pet release cases, exact25/24/10 boundaries, explicit removal, actual expiry, wipe and the narrow Warrior charm-AI regression remain passing. The related Mistwatcher suite separately passes all8 cases.",
+    "Extracted production cooldown logic passes unlearned generic/channel casts, deduplication with learned casts, longer existing cooldown preservation, override selection and unrelated/removed/disabled/prevention-filtered spell admission. Its baseline fails as expected.",
+    "Normal CMake Release build writes worldserver.exe and bnetserver.exe to canonical build-extractors/bin/Release through generated final-link libraries. Exception-bounded PE inspection resolves thunks and verifies the new current-spell array loop and spell-ID insertion in the deployed Player::ProhibitSpellSchool, along with preceding Corrupted/loot/triggered-cooldown repairs."
+  ],
+  "limits": [
+    "No7.3.5 client control/input handoff, cast-bar, aura-icon, transformed-model, damage/energy UI, sound, pet portrait, action-bar or full encounter completion verification.",
+    "This uses the existing Player per-spell cooldown model; it adds currently cast unlearned spells, not a new universal school-lockout system for every arbitrary unlearned spell introduced later. Existing multi-school, swap and prevention semantics are retained.",
+    "Native fixture freezes boss scheduling for the isolated interrupt sequence and uses a Warrior Player plus deliberately learned Frostbolt/Fireball as admission inputs. It does not prove every class/talent/resource layout or live raid survivability. Other actors use health buffers.",
+    "Prior audits retain timing/source conflicts and client limits. This follow-up resolves only the interrupted-player lockout item previously left open in trial-helya-corrupted-2026-10-20.json."
+  ],
+  "evidence": {
+    "control_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-090036",
+    "mistwatcher_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-mistwatcher-native\\run-20261020-090115",
+    "hashes": {
+      "src/server/game/Entities/Player/Player.cpp": "ABC68490EAF070B8004A8CFAE885A64D3B624F92A44688C7AA9CBEC2F8B6BF8E",
+      "tools/tests/TrialHelyaControlNative.cpp": "C1AD6A3E212D1C230343DFC9E79BA65261BD81BD06C6E1D201681849FA4DC435",
+      "tools/tests/Test-TrialHelyaControlRelease.ps1": "AD95B45D1575C23634B3EDDA835596EB2EA43D852532E0E9EA5D634CB075587A",
+      "tools/tests/Test-PlayerInterruptCooldown.ps1": "DC8F2327562A5CBC849F75C9BB9488B93E90D06D891B464353964FC2037A2FB6",
+      "tools/tests/PlayerInterruptCooldownTest.cpp": "2B519E88E91138AB7E2453B67EEAFF0E095DF9DC161DB33FAB4E1BCBB538BF18",
+      "build-extractors/bin/Release/worldserver.exe": "1CAD63E1881E8257AC972ECF27DB4EB809436DF00181377F1B595AA494B8D01C",
+      "build-extractors/bin/Release/bnetserver.exe": "044836B79CF879A8D57B253C5C072C3FBC5E06D1D4C80BB145176B91DB8A070D",
+      "build-extractors/src/server/game/Release/game.lib": "0DD4A1CAC13A9A3EFB1905BA80C7EEBC14E78E35F3D006EBF572BFBE02F8047C",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "13DF23E237F6CA964EC6C42B477F58DA8FB3B8A0E215EC7C8A45AB8C14EE4578",
+      ".codex/helya-control-interrupt-original.log": "E786542E833A4E3CA416809F5B9E1698919175B08C5BB00A281895B095147492",
+      ".codex/helya-player-interrupt-extracted-reference.log": "04F9B43A97969668D4AD772051FB240A4A29A5F5BD78120E7048226901D546CA",
+      ".codex/helya-player-interrupt-extracted.log": "4BA7F84D4B4E5A0A771F5D5444D37ECFCC8BDCF6C859371EFFDF04B29E673E4B",
+      ".codex/helya-player-interrupt-release.log": "80BA2F7186E260E59F57AC628570D4DE0CF6E9FC529347488DEB8070C063777E",
+      "control-native-lines": "869B214C9F53A95BC740C9720438275ECB9456575A92982AE44AC5015BFFA420",
+      "control-native-inputs": "F97DB8ACDA6CA93CE5DB68015EDB5EB19F136305BC002A627FD8EEC0E3CBF969",
+      "mistwatcher-native-lines": "18283BC2193EB8C8C10A14DF4EA0FBAC645F674638FA99A88663DED1708B72A2"
+    }
+  },
+  "startup": {
+    "ready": true,
+    "exit": 0,
+    "DBErrors_bytes": 0,
+    "stderr_bytes": 0,
+    "logs": "build-extractors/runtime-test/trial-garm-native/startup-20261020-090150",
+    "log_hash": "21FBED4DB3401D5CE9F6E49CB2303ED35754AD6D152E14D83329A093E3E50A68",
+    "scratch_schemas": 0,
+    "scratch_users": 0
+  }
+}
