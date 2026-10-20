@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-20",
+  "status": "Intermittent handshake failure observed; subsequent client login succeeded without server changes. Initial cause remains unresolved.",
+  "related_audit": "docs/audits/instance-login-retry-2026-10-12.json",
+  "incident": [
+    "Server.log 11:11:17: account 2 requested instance connection serial 17.",
+    "11:11:27: accepted loopback peer port 50486 reached the 10-second handshake deadline with initializer 0, continued auth 0 and buffered bytes 0.",
+    "The server's AbortSocket caused the pending read to finish with Windows connection_aborted; InitializeHandler logged this as an error in addition to the timeout warning.",
+    "11:11:29: serials 35, 53, 71 and 89 were requested and login aborted within the same logged second. No successful continued authentication was observed for that login.",
+    "Client.log: Character Login SEND at 11:11:17.402; login failed at 11:11:29.570 without Active Player Created."
+  ],
+  "read_only_investigation": {
+    "configuration": "Canonical runtime was already running, bound to 127.0.0.1; world port 8085 and instance port 8086 were listening in the same worldserver process.",
+    "transport_probes": [
+      "80 unauthenticated TCP probes, 40 per port, concurrency 8: all received the exact server initializer and an authentication challenge.",
+      "800 additional unauthenticated probes, 400 per port, concurrency 8, fragmented client initializers: all received the exact server initializer and full 55-byte challenge."
+    ],
+    "probe_limit": "These probes exercise accepted TCP sockets, initializer parsing and challenge transmission. They do not authenticate, simulate a character login, reproduce the original silent client, or prove absence of a rare transport/scheduling problem.",
+    "packet_capture": "PktMon status/filter inspection was denied by the driver. No packet capture or filter changes were made.",
+    "source_review": "Reviewed acceptor/network-thread handoff, socket write/read queue, initializer deadline, instance retry deadlines and failure reports. No speculative timing/configuration or retry changes were deployed."
+  },
+  "client_retest": {
+    "user_confirmation": "ielaida",
+    "evidence": "Client.log 11:16:50.609: Character Login SEND; 11:16:51.988: Active Player Created and Loading Screen Disable.",
+    "meaning": "A real login completed against the same running executable and configuration. This confirms recovery on retry, not repair of the intermittent initial handshake failure."
+  },
+  "runtime": {
+    "executable": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "072c77dd9d46baa582b05bc5e17053b48849fa0d7d3f992eddd79d05ead0515a",
+    "changes": "None to production source, executable, configuration, database, character positions, inventories or client files.",
+    "handoff": "worldserver.exe and bnetserver.exe stopped gracefully as requested; world database shutdown completed at 11:17:47. Client process was not controlled."
+  },
+  "open_questions": [
+    "Why the first accepted instance socket received no client initializer: the log alone does not establish whether the server greeting was sent/received or why the client remained silent.",
+    "Why the remaining attempt serials failed immediately after the first deadline; source inspection and synthetic successful handshakes do not establish their actual client failure cause."
+  ],
+  "next_reproduction": "If the failure recurs, correlate actual instance-connection greeting write completion, client initializer receipt and client CONNECT_TO_FAILED reports by local/remote port and attempt serial. Preserve the bounded retry safeguards; do not claim that increasing the timeout or suppressing its warning fixes the cause."
+}
