@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-20",
+  "status": "Confirmed range defect repaired and installed; exact failed-run player distance was not captured; client retest pending",
+  "related_audits": ["docs/audits/ulthalesh-2026-10-15.json", "docs/audits/ulthalesh-dialogue-2026-10-20.json", "docs/audits/script-pet-credit-2026-10-20.json"],
+  "client_evidence": "User reached final Ariden while Stage3 Removal Protocols still showed Conservator Defeated 0/1. User confirmed killing Conservator with the pet fighting nearby. Screenshot does not establish the player-to-Conservator distance at death.",
+  "native_route": {
+    "scenario": 988,
+    "stages": [
+      {"displayed_stage": 3, "step": 2023, "title": "Removal Protocols", "event": 47985, "objective": "Conservator defeated"},
+      {"displayed_stage": 4, "step": 2024, "title": "Reap the Harvester", "event": 47987},
+      {"displayed_stage": 5, "step": 2025, "title": "The Rider's Prize", "event": 47988},
+      {"displayed_stage": 6, "step": 2026, "title": "Ulthalesh Feasts", "event": 47989}
+    ],
+    "verification": "Production C++ DB2 reader loads runtime ScenarioStep, CriteriaTree and Criteria. Expanded the existing Ulthalesh catalog to include zero-based orders2/3 as well as4/5/6."
+  },
+  "confirmed_defect": [
+    "Conservator 101257 source0 row1: DEATH6 -> action205/type92/asset47985 -> PLAYER_DISTANCE18/radius30 -> link2 optional199626.",
+    "The native selector searches around the dying boss and retains Players only. A nearby pet is not a selected Player; its owner beyond30 yards is absent from the action's target list.",
+    "The global pet credit bridge can normalize a selected pet but cannot repair an empty player selection. This range problem also affects a direct ranged player kill, independent of the killing-blow unit.",
+    "The native target/range/phase/criteria pipeline reproduces no owner credit with a pet beside the boss and its owner40 yards away. This is consistent with the user report; the original failed run's exact distance remains unverified."
+  ],
+  "repair": {
+    "migration": "sql/updates/world/2026_10_20_04_conservator_credit_range.sql",
+    "change": "Only Conservator's exact death-credit row radius changes30 ->100 yards. Keep the existing nearby-player selection, criterion, death event, nonrepeatable flag and linked visual action.",
+    "boundaries": "Players outside100 yards, on another map or in another phase remain excluded. No generic SmartAI radius/ownership changes, quest completion bypass, scenario stage forcing or damage-protection removal.",
+    "runtime_cpp_changes": "None; Release recompilation is not required."
+  },
+  "automated_checks": [
+    "Test-ConservatorCredit.ps1: PASS. Temporary SQL replay twice compares every fixture column; exactly one radius changes, including preservation of Conservator's optional linked action and Ariden/reveal actors.",
+    "ConservatorCreditTest.cpp extracts production GetWorldObjectsInDist, PLAYER_DISTANCE selection, AllWorldObjectsInRange predicate and achievement-criteria action. Tests30-yard baseline and100-yard repair at5/29/40/60/95/110 yards with player/pet/null killers, nearby participants, phase/map exclusions and an out-of-range player.",
+    "Fixture limitations: spatial grid traversal, object-size/position primitives, owner helper and Player achievement effects are modeled. Selected targets are already Players, so no owner conversion is involved. This is not a live Scenario instance or full SmartAI death scheduler test.",
+    "Test-UlthaleshDialogue.ps1: PASS after native catalog expansion; prior pet-speaker finale regression remains covered.",
+    "Test-UlthaleshScenario.ps1: PASS; retained optional-cast-independent finale and native criteria/loot order.",
+    "git diff --check: PASS."
+  ],
+  "deployment": {
+    "backup": "Private dump of affected Conservator SmartAI rows retained before applying migration.",
+    "installed": "Exactly one live row changed; read-back confirms id1/event6/flags1/action205/type92/asset47985/target18/radius100/link2.",
+    "ownership": "User servers were already stopped gracefully at12:33:39; no user-launched process was stopped. A separate Codex-owned hidden worldserver was started and stopped for the loader check.",
+    "startup": "Canonical Release ready12:37:58 Europe/Riga with no new DBErrors. Owned server shutdown completed12:38:02; both server processes stopped at handoff.",
+    "worldserver_sha256_unchanged": "072c77dd9d46baa582b05bc5e17053b48849fa0d7d3f992eddd79d05ead0515a",
+    "preserved": "Binary/config/certificate/DLL hashes unchanged; no character position, quest, inventory, artifact or scenario-resume edits."
+  },
+  "pending_client_verification": [
+    "Fresh scenario traversal: kill Conservator with the pet tanking while the player is40+ yards away; confirm Stage3 completes before continuing to Ariden.",
+    "Continue through artifact search, Ariden approach and defeat; confirm the prior pet-speaker repair, chest and return handoff in the client."
+  ],
+  "current_run_limit": "The death event already consumed in the failed run is not replayed or forcibly credited. Earlier/later one-shot scenario events can also have been consumed while the wrong stage was active. Restart does not persist transient actor/criteria state; retest from the scenario entrance without inventing a completion checkpoint."
+}
