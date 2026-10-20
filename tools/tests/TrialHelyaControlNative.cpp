@@ -66,9 +66,13 @@ static void ControlRoundTrip(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,
     }
 }
 #include "TrialHelyaControlLoginNative.inc"
+#include "TrialGraveyardNative.inc"
 #endif
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
+#ifndef TRIAL_HELYA_CONTROL_BASELINE
+    TrialGraveyardCases(p,map,helya,group);
+#endif
     LoadPhaseThreeConditions();sSpellMgr->LoadSpellPrcoCheck();GarmPlayer subject(map,p.getRace());auto faction=subject.getFaction();auto display=subject.GetDisplayId();
     p.GetOrInitPetStable();LootPet pet(p,map);pet.setFaction(p.getFaction());pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());
     ControlBegin(p,subject,map,helya);

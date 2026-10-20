@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-20",
+  "baseline": "eb1d1cf6",
+  "map": 1648,
+  "zone": 8440,
+  "status": "Missing zone8440 external graveyard link repaired and applied. Native selection, active-encounter ghost transfer/ACK/save and attacked logout pass for both factions/all4 raid difficulties; client verification remains pending.",
+  "evidence_for_location": [
+    "Packed native Map.db2 identifies1648 with CorpseMapID=-1, CorpsePos0,0 and ParentMapID=-1. AreaTable identifies8440 as the top-level Trial of Valor zone and8498/8509/8512/8521/8522 as its children.",
+    "Native WorldSafeLocs5779 is explicitly Helheim Raid - Exit Target - MRN: map1220,2370.780029/895.831970/252.923996, orientation314.302002 degrees. The live World table already links5779 neutrally to Stormheim7541.",
+    "Existing Spirit Healer6491 spawn11253145 is on map1220/zone7541/area7643 at2367.7/854.793/252.911 with ordinary phaseMask1 and no PhaseId, approximately41.15 yards from5779. No healer spawn, coordinates or DB2 records are invented or altered.",
+    "The native reader also distinguishes Halls of Valor exit5099, approximately90 yards from5779, and the raid internal5775/5839/5827 checkpoints. Internal links must not enter ObjectMgr exterior selection, whose same-map preference would return into the active encounter.",
+    "This is an evidence-based inference from native naming, the already deployed neutral graveyard link and nearby existing healer. It is not a captured retail death packet. Web searches for Trial of Valor graveyard/Spirit Healer and8440/5779 game_graveyard_zone, plus the public AshamaneCore source tree, did not provide a reliable independent exact raid-to-graveyard mapping. Search results are not treated as proof."
+  ],
+  "repair": "One INSERT IGNORE adds5779/8440/faction0 to game_graveyard_zone. No generic repop/logout code or internal instance checkpoints change. The migration is applied to World; new processes load2455 links instead of2454. Canonical Release startup loaded the repaired data. No production C++ change required a new server build; canonical binaries retain the preceding completed Release implementation and pass their existing implementation checks.",
+  "verification": [
+    "Before applying the migration, the same native selector returned nullptr at checkpoint5775 for Alliance469 and logged missing zone8440. Original prior-task evidence covers both469/67. Retained reference run run-20261020-195548 is an expected failure against the pre-migration live table, not the older Control -Baseline mode.",
+    "After application the real ObjectMgr loader and GetClosestGraveYard select5779 at all3 checkpoint coordinates in8 difficulty/race runs:24 actual selectors, Human469 and Orc67, LFR17/Normal14/Heroic15/Mythic16. The actual instance GetClosestGraveYard retains earned Helheim5827 after Odyn/Guarm.",
+    "Eight active-encounter death/repop cases call actual KillPlayer, BuildPlayerRepop (including real saved raid corpse), RepopAtGraveyard, SafeTeleport and WorldPortAck. Destination must equal native5779 on1220 with native orientation degrees-to-radians and the existing2-yard Z offset. Actual ACK leaves a dead Player outdoors; actual SaveToDB retains exterior map/X/Y. Resurrection and corpse conversion clean up afterward.",
+    "Eight attacked disconnect cases require real Helya.Attack, nonempty attacker set and combat1, then actual WorldSession::SetCanLogout -> Update -> LogoutPlayer(true), death/repop, save and Player deletion. No CombatStop or manual death precedes this logout branch. The saved offline character and real corpse in its original raid instance are checked. Earned encounter mask remains unchanged.",
+    "The socketless session is borrowed into the real World lookup for SafeTeleport. Update uses its actual null-map world-dispatch admission. Fixture-owned outdoor maps/workers are stopped and joined so packet ACK can run synchronously; no authenticated socket or complete live world loop is claimed.",
+    "All16 new death/logout cases and the existing8 Control difficulty/race cases pass, including the preceding8 logout/component-load cases, real Counterspell timing, control release and victory paths. The deployed Release implementation checks pass. Final native Server.log has no ERROR/FATAL and DBErrors is empty.",
+    "Test-TrialGraveyardData checks exact live links/healer, executes the real migration twice in a connection-local temporary table, and verifies unrelated and customized same-key rows survive. Packed DB2 catalog checks and emits the native source records. No personal character/account data is copied or modified.",
+    "Canonical startup ready=True, exit0, DBErrors/stderr empty. Validation-owned hidden worldserver PID31072 was gracefully shut down by the smoke script. No validation servers remain; scratch schemas/users verified0/0."
+  ],
+  "logout_behavior": [
+    "The existing WorldSession logout path turns a pending far graveyard transfer into WorldRelocate(homebind), then saves there. The fixture explicitly initializes a valid distinct homebind from native Valdisdall5041:3154.878418/1533.729126/180.987335 on1220. All8 actual logout saves assert those coordinates, not5779.",
+    "Thus the missing-link error and normal active-encounter ghost transfer are repaired. A disconnect is not claimed to save at the exterior graveyard. The appropriate retail behavior of the shared homebind fallback and a full authenticated reconnect remain a separate follow-up; this data-only fix does not redesign generic logout."
+  ],
+  "retained_fixture_failures": [
+    "An initial current test demanded a personal permanent bind in LFR. Native flexible-raid group admission need not create it. Final fixture checks the actual group instance binding and accepts any native pending lock before testing. No production binding change was made.",
+    "The first ACK created another fixture-owned outdoor zone worker. The next fixture constructor tried to join it without first stopping that map. External thread stacks show GraveyardSession constructor waiting in std::thread::join while a ZoneMap::UpdateLoop was still running. The owned hung test process29116 was terminated; its wrapper cleaned both scratch schemas and user. Final helper stops all of this disposable process outdoor zones before joining. No user server or map-thread core code was changed.",
+    "An early attacked fixture kept session map=raid while invoking Update with its default nullptr map, so native dispatch correctly declined logout. Final fixture sets the session to the actual null-map world dispatcher before calling Update.",
+    "The first otherwise passing diagnostic run printed uninitialized fixture homebind fields, because this synthetic Player constructor bypasses login homebind initialization. Those scratch outputs are retained as fixture failures, not a production corrupt-homebind finding. Final input uses native SetHomebind with5041 before any save, and all logout destination assertions pass."
+  ],
+  "client_pending": [
+    "Ghost renderer, supporting ground/loading, Spirit Healer interaction, run back/raid re-entry and corpse recovery in the7.3.5 client.",
+    "Authenticated combat disconnect/reconnect with a real homebind and the expected retail destination; full raid/quest completion, camera/pet/UI remain unverified by these fixtures."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-200252",
+    "reference": "build-extractors/runtime-test/trial-helya-control-native/run-20261020-195548",
+    "data": "build-extractors/runtime-test/trial-graveyard-data",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-200045",
+    "commands": [
+      "tools/tests/Test-TrialGraveyardData.ps1",
+      "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary"
+    ],
+    "hashes": {
+      "sql/updates/world/2026_10_20_13_trial_of_valor_graveyard.sql": "083C188E524B9FDFF319A0DB6D8FB6D9A9459E77725EC69D09EA26A3C4657398",
+      "tools/research/TrialGraveyardCatalog.cpp": "28ABF87815A07F0F1CC16992E9E573B999CF952D77F30284FF5C79559BBE8B63",
+      "tools/tests/Test-TrialGraveyardData.ps1": "276879B359F2E4B70A198639978265BBBE5A9D890902888429B98C72478BFC39",
+      "tools/tests/TrialGraveyardNative.inc": "DD1BA1E37C4658DBF78F88210125EC39E18C41BCE7C21E04F9D287DED2F1BC47",
+      "tools/tests/TrialHelyaControlNative.cpp": "A9A66F6A8470535AAD32DDF3EC6A3027E0A0E8DC43F9247C29124E81BCB84302",
+      "tools/tests/Test-RockawayChannelNative.ps1": "A6A2D355F9EB997E26D9B694EE22F6C88AAB838F8C5FD34F69786070278D1955",
+      "build-extractors/bin/Release/worldserver.exe": "C04BB051C48038314E17163F692B1582EF10609B34D9D7EB2ECE3B7A0F43F220",
+      ".codex/trial-graveyard-reference.log": "43CE94C19A0AD9271EFE66C47FE3C7D3A5D0DD7B21C8114D63936B79C403BBB6",
+      ".codex/trial-graveyard-current.log": "01C1463D6463B623463EB9D4D622108BD3A5C00865B2ABEC1666079C5DB88B64",
+      ".codex/trial-graveyard-current2.log": "95F5724CBB396B5335FD00DB90EC7CD1CD5C8AF62089617FBDE90292B9E592F4",
+      ".codex/trial-graveyard-hang-stacks.txt": "369AFA6A279AE55B6B25545F28B491FD3454B9312F23B8412E1CBBD27CE14BCA",
+      ".codex/trial-graveyard-current3.log": "691ECCF4957306B08A2E42B23C0039DDE60CDB2BE935571482992EC3545E7329",
+      ".codex/trial-graveyard-current4.log": "25860BAEC2F4CC7228171E58C96875F6D2218D9495E6F9CEF583ADA3D0B0EF9B",
+      ".codex/trial-graveyard-final.log": "25860BAEC2F4CC7228171E58C96875F6D2218D9495E6F9CEF583ADA3D0B0EF9B",
+      ".codex/trial-graveyard-data.log": "069440E58E954741FE6E1A05E143ACBCFBA191140DE57B632F55E628A9A16B25",
+      ".codex/trial-graveyard-startup.log": "0D626F6F9799644BF20C9262DA2C6460D6426A963466C86C68A5E19A36E9CD34",
+      "final_run/native-lines.txt": "AE0B38C1F9B85835C7B2B799DA8169115417A7CE187861064EF785F227C21C31",
+      "final_run/native-inputs.json": "23912392EA4CCAF0B879F4FB39043B7D5ADA50203EAB26E4531C1962EABBC8EF",
+      "final_run/Server.log": "83AFF9411D606D8272D7EF574ED1AE6FA1988319C28CAEB1CAA8B1F74E98A189",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  },
+  "scratch_cleanup": {
+    "schemas": 0,
+    "users": 0
+  }
+}

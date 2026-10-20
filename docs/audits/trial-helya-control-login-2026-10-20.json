@@ -40,7 +40,7 @@
       ".codex/helya-control-login-verified.log",
       ".codex/helya-control-login-grave-evidence.txt"
     ],
-    "status": "Unresolved separate runtime-data/content issue. Do not call all disconnect/death/repopulation paths verified. A later fix needs native location/area data and evidence for the proper external graveyard; do not guess an exit/Spirit Healer location."
+    "status": "The missing-link data issue is resolved by trial-graveyard-2026-10-20.json: native5779/8440 neutral link,24 selectors,8 actual ghost transfers and8 attacked logouts pass. Original failure evidence is retained. Existing logout pending-transfer/homebind fallback remains a distinct documented behavior; client/authenticated reconnect is pending."
   },
   "evidence": {
     "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-193819",
