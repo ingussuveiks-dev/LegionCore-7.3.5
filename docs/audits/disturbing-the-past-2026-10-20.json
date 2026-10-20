@@ -1,7 +1,7 @@
 {
   "date": "2026-10-20",
   "quest": 40604,
-  "status": "Optional Fur Blanket inspection repaired and deployed; complete quest traversal remains unverified in the client",
+  "status": "Optional Fur Blanket inspection and follow-up pet-killer camp credit repaired and deployed; complete quest traversal remains unverified in the client",
   "observed": "User screenshot in Ariden's Camp: Fur Blanket highlighted, click gives no visible result, Ariden's Camp investigated remains 0/1. Chat shows journal-related Revil/Ariden dialogue, which does not establish combat completion or objective credit.",
   "defects": [
     "GameObject::Use GAMEOBJECT_TYPE_TEXT only checked template, player and PlayerCondition, then returned without SMSG_PAGE_TEXT. This also affected other ordinary type-9 inspection objects.",
@@ -37,5 +37,19 @@
     "For quest40604 use Battered Journal, verify the intended memories spawn, all required kills count including a pet killing blow, the main objective becomes1/1 and the journal offers turn-in and40606.",
     "Check abandonment/retry, both factions and the shared DK40835/druid40932 camp routes. No claim is made that their full quest logic has been verified by this scoped repair."
   ],
-  "retained_context": "The broader Ulthalesh audit docs/audits/ulthalesh-2026-10-15.json retains earlier route, finale and unresolved client findings; this repair does not supersede them."
+  "retained_context": "The broader Ulthalesh audit docs/audits/ulthalesh-2026-10-15.json retains earlier route, finale and unresolved client findings; this repair does not supersede them.",
+  "pet_credit_followup": {
+    "observed": "After the blanket repair the user clicked the journal, killed both Wrathful Memories, heard the conversation and remained blocked. Read-only saved progress for Maiko40604 was main camp credit0, optional wraith objective0, optional journal objective1. This confirms the journal click was recorded, not which unit dealt the actual historical killing blow.",
+    "cause": "Wrathful Memory100735 death row0 used action85 INVOKER_CAST198287, making the actual killer cast the spell. Native SpellEffect.db2 gives198287 effect134 personal credit100732 with caster SELF target1. Spell::EffectKillCreditPersonal rejects a pet unitTarget. Linked conversations200234/200235 can still run while the player receives no credit. The progress is lost, not stored on the pet.",
+    "second_defect": "Source22 group1's negative nearby100735 condition used ConditionTarget0 (killer). A distant pet could find no living memory near itself while the second memory remained alive beside the dying actor. Set ConditionTarget1 to inspect the dying base actor, retaining30 yards and the existing negative condition.",
+    "repair": "Migration2026_10_20_02 changes only the death action to CAST11, spell198287, flags18(TRIGGERED|CAST_FORCE_TARGET_SELF), target23(OWNER_OR_SUMMONER). Native Unit::GetAnyOwner resolves a TempSummon's summoner even when GetOwner is null. The original summoning player self-casts credit regardless of player/pet/null killer; no nearby-bystander fallback is added. Existing linked conversations, combat row and three shared class quests remain unchanged.",
+    "optional_objectives": "All three40604/40835/40932 wraith objectives100736 have flags28 including OPTIONAL4. Native Player::CanCompleteQuest skips optional objectives. Their zero count is not the completion blocker; no unnecessary wraith kill-credit rewrite is introduced.",
+    "tests": [
+      "Test-AridenMemoryCredit.ps1 replays the observed action85/target1 and conditionTarget0 baseline in temporary SQL tables, applies migration twice, checks scoped changes and preservation of unrelated event conditions, combat row, existing linked conversations and three journal hand-ins.",
+      "AridenMemoryCreditTest.cpp compiles the actual SmartAI CAST, INVOKER_CAST and OWNER_OR_SUMMONER branches, Unit::GetAnyOwner, nearby condition and Spell::EffectKillCreditPersonal. SQL replay results configure the repaired action. Covers both death orders, first-death blocking, player/pet/null killers, a pet100 yards away, missing summoner and unrelated player isolation. The old pet action is executed and reproduces lost player credit.",
+      "AridenCampCatalog.cpp uses the production C++ DB2 loader to confirm both198276/198278 summon100735 using properties64 and destination target46, and198287 grants personal100732 credit with SELF target1."
+    ],
+    "deployment": "Applied migration to the configured world database after privately saving affected rows. Gracefully restarted canonical Release worldserver so SmartAI and conditions reload; ready at log time10:24:45, no new DBErrors from the recorded startup offset. No C++ runtime change in this follow-up; the previously verified Release executable hash is retained. No personal quest status, objective, inventory or pet data is modified.",
+    "limits": "Native tests execute extracted handlers with fixture units/maps and captured casts. They do not instantiate the live map, deliver real client conversations or exercise native quest persistence/phase refresh. Client retest must click the journal again, kill both memories with the pet, confirm main1/1, readable turn-in journal245793 and next quest40606. Repeated clicks, abandonment/retry and shared DK/druid routes remain client checks."
+  }
 }
