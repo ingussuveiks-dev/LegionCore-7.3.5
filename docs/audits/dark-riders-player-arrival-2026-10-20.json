@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-20",
+  "related": ["dark-riders-stage-lifecycle-2026-10-20.json"],
+  "observed_failures": [
+    "After dd6aa3ae the client reached static Ariden by Demonic Gateway while still at Stage1. Ariden correctly remained protected, but infiltration never advanced.",
+    "The player also stood inside the visible Grasping Spirits without an effect. This hazard is separately investigated; fixing arrival does not prove hazard behavior.",
+    "The user observed Revil following immediately at the entrance rather than appearing after the stair introduction."
+  ],
+  "evidence": [
+    "Static Warlock Ariden DB369334/phase5761 used shared100850 row7 UPDATE -> closest Revil101286 within48 -> SetData2/2. It did not check Player arrival. Revil's nonrepeatable row3 then moved and linked47983 credit. A missing or distant follower leaves Stage1 blocked even with the player beside Ariden.",
+    "Migration05 enlarged entrance Revil's LOS from2 to20 yards. The recorded entrance is17 yards away, so that change prematurely started the introduction. The earlier audit/tests proved the new20-yard behavior, not its correct narrative timing.",
+    "Native scenario988 Stage1 is event47983; Stage2 is47984, Stage3 is47985. Restoring the expected order does not require granting later criteria or weakening actor gates.",
+    "Native stationary guide101282 JUST_SUMMONED row3 requires step1, plays199636 and starts its existing16-second timed list. Its original arrival position is -10962.5,-1970.73,-49.8162."
+  ],
+  "implementation": [
+    "Restore per-spawn entrance369378's native2-yard introduction while retaining the Player condition, SELF speaker and native5-second plus200ms summon delay.",
+    "Per-spawn override -369334 retains initial Ariden's combat, spirit cleanup and timed escape. Replace only its follower-driven UPDATE row7 with a nonrepeatable hostile OOC_LOS48 event requiring a Player invoker and scenario988/step0 on the base actor.",
+    "The ordered chain awards native47983 to that Player, then summons the native stationary Revil at step1, then runs native199627 on the Player to remove any old follower/controller. No follower proximity, movement completion or optional conversation is a prerequisite for credit.",
+    "A250ms instance retry replays native safe LOS for a live, phase-visible Player with quest40623 at the exact static DB marker369334. It supports stationary Gateway arrival and late Scenario construction, retains native distance/LOS/combat/one-shot checks, and excludes other steps/scenarios/shared Aridens."
+  ],
+  "automated_checks": [
+    "Test-DarkRidersStageLifecycle.ps1 -VerifyReleaseBinary: PASS; both migrations replay twice, ordered native criterion/guide/cleanup links, exact positions, Player/base-stage conditions, shared Ariden/entrance preservation and all prior lifecycle assertions.",
+    "DarkRidersArrivalTest.cpp: production CheckArrival and native safe LOS/Player/LOS branches; missing/early/distant follower does not own the trigger, pet-first cannot consume it, stationary Gateway, repeat calls, deferred LOS/combat, optional-cast failure, wrong map/phase/quest/marker/step and shared scenario exclusions.",
+    "DarkRidersEntranceTest.cpp: no premature introduction at17 yards, native2-yard stair introduction, SELF speaker, five-second text timer and200ms Player summon retained.",
+    "Test-UlthaleshDamage.ps1, Test-UlthaleshDialogue.ps1 and Test-ConservatorCredit.ps1: PASS; native DB2 continues to confirm the full scenario criterion order."
+  ],
+  "test_limits": "Map/world/phase/distance primitives and ordered criterion, spawn and aura consequences in fixtures are modeled. Native handlers and production instance are compiled, but a complete live scheduler, movement, client visuals, companion/faction behavior and the full scenario are not client-verified. Existing audits and their earlier failed client results remain applicable.",
+  "deployment": {
+    "migration": "2026_10_20_06_dark_riders_player_arrival.sql installed after private affected-row backups with worldserver stopped",
+    "build": "Actual scripts Release library followed by canonical worldserver Release final link, no OutDir override",
+    "worldserver_sha256": "2c3eb454efcffdc984830a1d997dea962d3e1bcacc2513d9db5d030964e65268",
+    "binary_evidence": "Matching map/PE timestamp6ad74839. Inlined arrival lambda at0x140435cf0 compares scenario988, step0, map1533, quest40623, entry100850 and DB369334, then calls CreatureAI::MoveInLineOfSight_Safe at0x140d41130. Code inspected from canonical executable disassembly, beyond map/string admission.",
+    "startup": "Canonical server ready13:58:48 Europe/Riga; no new DBErrors, including negative-GUID SmartAI/condition admission. Owned hidden process stopped gracefully; database shutdown complete13:58:53, both server processes absent. Config/certificate/DLL hashes unchanged. An earlier smoke harness50-second limit expired just before its52-second startup completed; that owned process also shut down gracefully. Repeated check with a90-second bound passed.",
+    "server_ownership": "User-launched server had already stopped at13:38:53. Codex did not stop it. Only Codex's own temporary hidden startup process may be stopped by validation."
+  },
+  "client_retest": "Fresh entrance: no premature follower, approach stair Revil and wait for full introduction; arrive at spirit-barrier chamber by walking or Gateway with follower left behind, absent or early. Stage1 must advance once to2, native guide speech should play and Ariden become available; crossing/aggro then runs his timed escape and advances only to3. Continue Conservator, reveal and final boss. A fresh restart still begins at the entrance; no saved character, inventory or later criteria are force-completed."
+}

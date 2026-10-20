@@ -48,7 +48,7 @@ struct SmartScriptHolder{
  uint32 type=1,targetType=1;
  struct{struct{uint32 textGroupID=0,duration=5000;}talk;
  struct{uint32 spell=199626,flags=0,targetType=18,targetParam1=100,targetParam2=0,targetParam3=0;}cast;}action;
- struct{struct{uint32 noHostile=1,maxDist=20,cooldownMin=0,cooldownMax=0;}los;struct{uint32 textGroupID=0,creatureEntry=101282;}textOver;}event;
+ struct{struct{uint32 noHostile=1,maxDist=2,cooldownMin=0,cooldownMax=0;}los;struct{uint32 textGroupID=0,creatureEntry=101282;}textOver;}event;
 };
 struct Texts{uint32 speaker=0;void SendChat(Creature* actor,uint8,ObjectGuid){speaker=actor->entry;}}texts;auto sCreatureTextMgr=&texts;
 struct SmartScript{
@@ -87,9 +87,10 @@ int main(){
  script.requirePlayer=false;script.e.targetType=7;script.e.event.los.maxDist=2;pet.distance=1;
  script.Los(&pet);assert(script.consumed&&script.mTalkerEntry==1860);script.Tick(5001);pet.Flush();assert(!pet.casts&&!owner.casts);
  script.Los(&owner);assert(!owner.casts);
- // Scoped repaired spawn: pet-first ignored, normal entrance distance17
- // works, full native five-second line +200ms invoker-cast delay retained.
+ // The20-yard recovery fired prematurely at the recorded entrance. Keep
+ // the native stair-local2-yard introduction, Player gate and SELF speaker.
  SmartScript fixed{&revil};fixed.Los(&pet);assert(!fixed.consumed);owner.distance=17;fixed.Los(&owner);
+ assert(!fixed.consumed);owner.distance=1;fixed.Los(&owner);
  assert(fixed.consumed&&fixed.mTalkerEntry==101282);fixed.Tick(5000);owner.Flush();assert(!owner.casts);
  fixed.Tick(1);assert(!owner.casts);owner.Flush();assert(owner.casts==1&&owner.spell==199626&&owner.actualTarget==&owner&&!pet.casts);
  fixed.Los(&owner);fixed.Tick(6000);owner.Flush();assert(owner.casts==1);
@@ -101,5 +102,5 @@ int main(){
   cross.ProcessAction(row,killer);assert(owner.casts==1&&second.casts==1&&!pet.casts&&!revil.casts);
   assert(owner.actualTarget==&owner&&second.actualTarget==&second&&owner.spell==id);
  }
- std::cout<<"PASS: native pet-first LOS/TALK/TextOver failure reproduced; Player type condition, entrance17-yard LOS, speech/timer/invoker cast and native self-targeted companion cross-casts (player/pet/null, two players)\n";
+ std::cout<<"PASS: native pet-first LOS/TALK/TextOver failure reproduced; stair-local Player introduction (not premature entrance), speech/timer/invoker cast and native self-targeted companion cross-casts (player/pet/null, two players)\n";
 }

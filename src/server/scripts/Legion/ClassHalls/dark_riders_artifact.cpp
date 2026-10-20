@@ -3,6 +3,7 @@
 #include "ScriptedCreature.h"
 #include "ScenarioMgr.h"
 #include "GameObject.h"
+#include "Player.h"
 #include <map>
 
 namespace DarkRidersArtifact
@@ -33,6 +34,26 @@ void ProtectFinale(Creature* creature,Unit* attacker,uint32& damage,uint32 scena
             TC_LOG_INFO("scripts.ai","Ulthalesh: protected Ariden's finale from a scaled killing blow");
         }
     }
+}
+}
+namespace DarkRidersArrival
+{
+bool CheckArrival(Player* player, uint32 scenario, uint32 step)
+{
+    if (!player || scenario != 988 || step != 0 || !player->IsInWorld() || !player->IsAlive() ||
+        player->GetMapId() != 1533 || player->IsBeingTeleported() || player->GetQuestRewardStatus(40623) ||
+        (player->GetQuestStatus(40623) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40623) != QUEST_STATUS_COMPLETE))
+        return false;
+
+    Creature* marker = player->FindNearestCreature(100850, 48.0f);
+    if (!marker || marker->GetDBTableGUIDLow() != 369334 || !marker->IsAIEnabled || !player->InSamePhase(marker))
+        return false;
+
+    // Gateway arrival can leave Revil behind and need not produce another
+    // movement callback. Replay the exact barrier actor's Player-only event;
+    // native LOS, range, conditions and one-shot admission remain authoritative.
+    marker->AI()->MoveInLineOfSight_Safe(player);
+    return true;
 }
 }
 class instance_dark_riders_artifact : public InstanceMapScript
@@ -137,6 +158,14 @@ public:
             if (refresh>diff) { refresh-=diff; return; }
             refresh=250;
             Sync();
+            Scenario* scenario = Progress();
+            if (scenario && scenario->GetScenarioId() == 988 && scenario->GetCurrentStep() == 0)
+                instance->ApplyOnEveryPlayer([scenario](Player* player)
+                {
+                    if (DarkRidersArrival::CheckArrival(player, scenario->GetScenarioId(), scenario->GetCurrentStep()) &&
+                        scenario->GetCurrentStep() == 1)
+                        TC_LOG_INFO("scripts.ai", "Dark Riders: barrier arrival credited player %u; stage 2 active", player->GetGUIDLow());
+                });
         }
         void OnCreatureDamageTaken(Creature* creature,Unit* attacker,uint32& damage) override
         {

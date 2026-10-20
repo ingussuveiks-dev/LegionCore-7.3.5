@@ -4,7 +4,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/ulthalesh"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/dark_riders_artifact.cpp" -Raw
-$a=$s.IndexOf('namespace DarkRidersArtifact');$b=$s.IndexOf('class instance_dark_riders_artifact',$a)
+$a=$s.IndexOf('namespace DarkRidersArtifact');$b=$s.IndexOf('namespace DarkRidersArrival',$a)
 [IO.File]::WriteAllText("$out/ProtectFinale.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 $a=$s.IndexOf('void SmartAI::DamageTaken(');$b=$s.IndexOf('void SmartAI::HealReceived(',$a)

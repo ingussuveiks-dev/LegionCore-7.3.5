@@ -2,14 +2,23 @@
 #include <cstdint>
 #include <iostream>
 #include <map>
+#include <vector>
 using uint32=uint32_t;using uint64=uint64_t;using ObjectGuid=uint64;
 using ReactStates=uint32;constexpr ReactStates REACT_PASSIVE=0,REACT_AGGRESSIVE=2;
 constexpr uint32 UNIT_FIELD_FLAGS=0,GAMEOBJECT_FIELD_FLAGS=0,UNIT_FLAG_NON_ATTACKABLE=2,GO_FLAG_NOT_SELECTABLE=16,GO_FLAG_IN_USE=1;
 #define TC_LOG_INFO(...) ((void)0)
-struct Unit{};struct Player:Unit{};
+struct Creature;struct CreatureAI {void MoveInLineOfSight_Safe(struct Player*){}};
+struct Unit{};
+constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1;
+struct Player:Unit{
+ bool IsInWorld(){return true;}bool IsAlive(){return true;}bool IsBeingTeleported(){return false;}
+ uint32 GetMapId(){return 1533;}bool GetQuestRewardStatus(uint32){return false;}int GetQuestStatus(uint32){return QUEST_STATUS_INCOMPLETE;}
+ Creature* FindNearestCreature(uint32,float){return nullptr;}bool InSamePhase(Creature*){return true;}uint32 GetGUIDLow(){return 1;}
+};
 struct Creature{
  uint32 entry=0,flags=0;uint64 guid=0,hp=100000,targetHp=1000;bool summoned=false,alive=true;ReactStates reaction=REACT_AGGRESSIVE;
  uint32 GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}bool isSummon(){return summoned;}bool IsAlive(){return alive;}
+ bool IsAIEnabled=true;uint32 GetDBTableGUIDLow(){return 0;}CreatureAI* AI(){static CreatureAI ai;return &ai;}
  uint64 GetHealth(Unit*){return targetHp;}uint64 GetHealth(){return hp;}void SetHealth(uint64 value){hp=targetHp=value;}
  uint32 GetUInt32Value(uint32){return flags;}void SetFlag(uint32,uint32 bits){flags|=bits;}void RemoveFlag(uint32,uint32 bits){flags&=~bits;}
  ReactStates GetReactState(){return reaction;}void SetReactState(ReactStates value){reaction=value;}
@@ -28,6 +37,7 @@ struct Scenario{uint32 id=988,step=0;uint32 GetScenarioId(){return id;}uint32 Ge
 struct Manager{Scenario* progress=nullptr;Scenario* GetScenario(uint32){return progress;}}manager;auto sScenarioMgr=&manager;
 struct InstanceMap{
  std::map<uint64,Creature*> creatures;std::map<uint64,GameObject*> objects;
+ std::vector<Player*> players;template<class F>void ApplyOnEveryPlayer(F f){for(auto p:players)f(p);}
  uint32 GetInstanceId(){return 1;}Creature* GetCreature(uint64 guid){return creatures.count(guid)?creatures.at(guid):nullptr;}
  GameObject* GetGameObject(uint64 guid){return objects.count(guid)?objects.at(guid):nullptr;}
 };
