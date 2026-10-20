@@ -1,0 +1,29 @@
+{
+  "reported_failure": "After the final scythe scene, Ulthalesh claimed1/1 but Complete the Dark Riders scenario0/1; Revil has a gray question mark. User already bought an artifact in the shop.",
+  "evidence": [
+    "Server log15:40:19 identifies the actually owned artifact as128942, the correct Affliction Ulthalesh, at final chest246021.",
+    "Read-only saved character data: quest40623 status3, storage0=1, storage3=0. World objectives map ObjectID103473 to storage0 and100813 to storage3. No character SQL was changed.",
+    "Native204819 awards103473 and equips128942; it does not award100813 or create an item. Native232961 contains both distinct credits. The existing shop/bank route already calls the native completed-loot event and OWN_ITEM."
+  ],
+  "repair": "Player login/update recovers only missing100813 after the persisted final claim103473, active incomplete quest40623, Warlock class and actual artifact ownership including bank. Shop ownership alone grants nothing. Uses native KilledMonsterCredit and existing quest completion/persistence rather than resetting quest or artifact ranks.",
+  "checks": [
+    "Test-DarkRidersCompletion.ps1 -VerifyReleaseBinary: extracts production recovery AND real Player::GetQuestObjectiveData(uint32,uint32), whose second argument is ObjectID, not objective row ID. Covers owned-only rejection, final claim recovery, repeated calls and class/quest/world/teleport gates. KilledMonsterCredit and inventory are modeled boundaries.",
+    "Native C++ DB2 catalog confirms204819 and232961 effects.",
+    "Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary and Test-ArtifactAcquisitionData.ps1 pass for ordinary loot and shop/bank paths.",
+    "Ulthalesh scenario/damage/dialogue and Conservator regressions pass."
+  ],
+  "deployed_instructions": "Recover0x1404358d0 checks quest0x9eaf/status3, ObjectIDs0x19431(103473)/0x189cd(100813), HasItemCount0x1f7ae(128942) with bank=true, then KilledMonsterCredit100813. OnLogin/OnUpdate0x1404358c0 tail-jump to Recover. Script registration includes the new PlayerScript.",
+  "client_pending": [
+    "Start servers and log in with the affected character; verify missing scenario credit becomes1/1 and Revil accepts turn-in.",
+    "Fresh normal-loot and pre-owned/bank-copy final chest; abandonment/retry must not complete from ownership alone."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "992EBE9F239568F43127113F46F4C5903B28043AE4FC168BA09E32EAAE9DA25C",
+    "pe_and_link_map_timestamp": "6ad768ed (2026-10-20 16:13:17 Europe/Riga)",
+    "build": "cmake --build build-extractors --config Release --target worldserver -j 8 -- /p:LinkIncremental=false",
+    "link_inputs": "Canonical src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; no OutDir override.",
+    "startup": "Owned hidden worldserver PID1896 reached World initialized; gracefully stopped at16:18:12. No new DBErrors; runtime configuration/certificate/DLL hashes unchanged. Both servers stopped at handoff.",
+    "client_verification": "Pending. Compilation, extracted handlers, SQL replay and startup do not prove client movement, scenes, final turn-in or the entire scenario."
+  }
+}

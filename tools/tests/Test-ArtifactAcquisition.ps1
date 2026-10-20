@@ -4,7 +4,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/artifact-acquisition"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-$a=$s.IndexOf('namespace ArtifactAcquisition');$b=$s.IndexOf('class go_artifact_acquisition',$a)
+$a=$s.IndexOf('namespace ArtifactAcquisition');$b=$s.IndexOf('namespace DarkRidersCompletion',$a)
 [IO.File]::WriteAllText("$out/Acquisition.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
 $a=$s.IndexOf('void GameObject::SetLootState(');$b=$s.IndexOf('    if (m_model)',$a)

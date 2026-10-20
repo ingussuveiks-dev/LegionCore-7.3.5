@@ -44,10 +44,36 @@ bool Use(Player* p,GameObject* go)
     return false;
 }
 }
+namespace DarkRidersCompletion
+{
+void Recover(Player* player)
+{
+    // Shop ownership alone is not a quest completion. The persisted claim
+    // objective is awarded by the final chest's native 204819 spell, after
+    // Ariden has been defeated. Also repairs a claim saved before this fix.
+    if (!player || !player->IsInWorld() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_WARLOCK || player->GetQuestRewardStatus(40623) ||
+        player->GetQuestStatus(40623) != QUEST_STATUS_INCOMPLETE ||
+        player->GetQuestObjectiveData(40623, 103473) < 1 ||
+        player->GetQuestObjectiveData(40623, 100813) >= 1 ||
+        !player->HasItemCount(128942, 1, true))
+        return;
+
+    player->KilledMonsterCredit(100813);
+    TC_LOG_INFO("entities.player", "Dark Riders: restored scenario completion after claimed Ulthalesh for player %u", player->GetGUIDLow());
+}
+}
+class player_dark_riders_completion : public PlayerScript
+{
+public:
+    player_dark_riders_completion() : PlayerScript("player_dark_riders_completion") { }
+    void OnLogin(Player* player) override { DarkRidersCompletion::Recover(player); }
+    void OnUpdate(Player* player, uint32) override { DarkRidersCompletion::Recover(player); }
+};
 class go_artifact_acquisition : public GameObjectScript
 {
 public:
     go_artifact_acquisition():GameObjectScript("go_artifact_acquisition"){}
     bool OnGossipHello(Player* player,GameObject* go) override {return ArtifactAcquisition::Use(player,go);}
 };
-void AddSC_artifact_acquisition(){new go_artifact_acquisition();}
+void AddSC_artifact_acquisition(){new go_artifact_acquisition();new player_dark_riders_completion();}
