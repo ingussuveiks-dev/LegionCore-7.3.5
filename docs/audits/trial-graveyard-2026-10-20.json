@@ -71,5 +71,6 @@
   "scratch_cleanup": {
     "schemas": 0,
     "users": 0
-  }
+  },
+  "logout_followup": "Resolved in logout-teleport-destination-2026-10-20.json: retain valid pending destination during logout, save instance_id0 and native destination zone, retain invalid-instance/destination homebind recovery. Prior observations above describe the e69e38b9 version. Authenticated reconnect/client remains pending."
 }

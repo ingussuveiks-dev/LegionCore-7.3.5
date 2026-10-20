@@ -25510,8 +25510,10 @@ void Player::SaveToDB(bool create /*=false*/)
     // delay auto save at any saves (manual, in code, or autosave)
     m_nextSave = sWorld->getIntConfig(CONFIG_INTERVAL_SAVE);
 
-    //lets allow only players in world to be saved
-    if (IsBeingTeleportedFar())
+    // A live transfer waits for admission/ACK. Logout cannot receive an ACK;
+    // retain its far flag so the existing destination branch below saves the
+    // admitted location with instance_id=0, while cleanup uses the source map.
+    if (IsBeingTeleportedFar() && !GetSession()->PlayerLogout())
     {
         ScheduleDelayedOperation(DELAYED_SAVE_PLAYER);
         return;
@@ -25522,6 +25524,12 @@ void Player::SaveToDB(bool create /*=false*/)
 
     // first save/honor gain after midnight will also update the player's honor fields
     UpdateHonorFields();
+
+    // Keep the source map attached for cleanup, but save the destination's
+    // character-select zone for both character INSERT and UPDATE.
+    uint32 savedZone = m_zoneId ? m_zoneId : m_oldZoneId;
+    if (IsBeingTeleportedFar())
+        savedZone = sMapMgr->GetZoneId(GetTeleportDest().GetMapId(), GetTeleportDest().GetPositionX(), GetTeleportDest().GetPositionY(), GetTeleportDest().GetPositionZ());
 
     TC_LOG_DEBUG("entities.unit", "The value of player %s at save: ", m_name.c_str());
     outDebugValues();
@@ -25610,7 +25618,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, (uint16)m_ExtraFlags);
         stmt->setUInt32(index++, 0); // summonedPetNumber
         stmt->setUInt16(index++, (uint16)m_atLoginFlags);
-        stmt->setUInt16(index++, m_zoneId ? m_zoneId : m_oldZoneId);
+        stmt->setUInt16(index++, savedZone);
         stmt->setUInt32(index++, uint32(m_deathExpireTime));
 
         ss.str("");
@@ -25740,7 +25748,7 @@ void Player::SaveToDB(bool create /*=false*/)
         else
             stmt->setUInt32(index++, 0); // summonedPetNumber
         stmt->setUInt16(index++, (uint16)m_atLoginFlags);
-        stmt->setUInt16(index++, m_zoneId ? m_zoneId : m_oldZoneId);
+        stmt->setUInt16(index++, savedZone);
         stmt->setUInt32(index++, uint32(m_deathExpireTime));
 
         ss.str("");

@@ -534,16 +534,6 @@ void WorldSession::LogoutPlayer(bool Save)
         if (originalGroup && originalGroup != group)
             originalGroup->RemoveMemberFromRolls(_player->GetGUID());
 
-        // finish pending transfers before starting the logout
-        if (_player->IsBeingTeleportedFar())
-        {
-            _player->WorldRelocate(_player->m_homebindMapId, _player->m_homebindX, _player->m_homebindY, _player->m_homebindZ, _player->GetOrientation());
-            _player->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags(AURA_INTERRUPT_FLAG_CHANGE_MAP | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_TURNING));
-            _player->RemoveAurasByType(SPELL_AURA_OVERRIDE_SPELLS);
-            _player->RemoveAurasByType(SPELL_AURA_MOD_NEXT_SPELL);
-            _player->SetSemaphoreTeleportFar(false);
-        }
-
         ObjectGuid lguid = _player->GetLootGUID();
         if (!lguid.IsEmpty())
             DoLootRelease(lguid);
@@ -632,16 +622,6 @@ void WorldSession::LogoutPlayer(bool Save)
             }
         }
 
-        ///- Teleport to home if the player is in an invalid instance
-        if (!_player->m_InstanceValid && !_player->isGameMaster())
-        {
-            _player->WorldRelocate(_player->m_homebindMapId, _player->m_homebindX, _player->m_homebindY, _player->m_homebindZ, _player->GetOrientation());
-            _player->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags(AURA_INTERRUPT_FLAG_CHANGE_MAP | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_TURNING));
-            _player->RemoveAurasByType(SPELL_AURA_OVERRIDE_SPELLS);
-            _player->RemoveAurasByType(SPELL_AURA_MOD_NEXT_SPELL);
-            _player->SetSemaphoreTeleportFar(false);
-        }
-
         for (int i = 0; i < PLAYER_MAX_BATTLEGROUND_QUEUES; ++i)
         {
             if (uint8 bgQueueTypeId = _player->GetBattlegroundQueueTypeId(i))
@@ -655,15 +635,18 @@ void WorldSession::LogoutPlayer(bool Save)
             }
         }
 
-        // Repop at GraveYard or other player far teleport will prevent saving player because of not present map
-        // Teleport player immediately for correct player save
-        if (_player->IsBeingTeleportedFar())
+        // Keep a valid pending destination, including RepopAtGraveyard above.
+        // SaveToDB can persist it during logout without admitting a deleting
+        // Player to another map or waiting for a disconnected client's ACK.
+        // Homebind remains the fallback for invalid instances/destinations.
+        if ((!_player->m_InstanceValid && !_player->isGameMaster()) ||
+            (_player->IsBeingTeleportedFar() && !MapManager::IsValidMapCoord(_player->GetTeleportDest())))
         {
-            _player->WorldRelocate(_player->m_homebindMapId, _player->m_homebindX, _player->m_homebindY, _player->m_homebindZ, _player->GetOrientation());
+            _player->GetTeleportDest().WorldRelocate(_player->m_homebindMapId, _player->m_homebindX, _player->m_homebindY, _player->m_homebindZ, _player->GetOrientation());
+            _player->SetSemaphoreTeleportFar(true);
             _player->RemoveAurasWithInterruptFlags(SpellAuraInterruptFlags(AURA_INTERRUPT_FLAG_CHANGE_MAP | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_TURNING));
             _player->RemoveAurasByType(SPELL_AURA_OVERRIDE_SPELLS);
             _player->RemoveAurasByType(SPELL_AURA_MOD_NEXT_SPELL);
-            _player->SetSemaphoreTeleportFar(false);
         }
 
         ///- If the player is in a guild, update the guild roster and broadcast a logout message to other guild members

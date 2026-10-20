@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-20",
+  "baseline": "e69e38b9bbdd09b003fc0861261724fabaf1402e",
+  "status": "Valid pending far teleport destinations now survive actual logout/save, including Trial of Valor graveyard death. Source map identity remains intact for cleanup. Invalid instance/destination fallback, live save deferral and Save=false are preserved. Final native72-case suite, canonical Release implementation checks and startup pass; authenticated reconnect/client remains pending.",
+  "reference": [
+    "The preceding native run already established8 attacked disconnects saving the distinct Valdisdall5041 homebind instead of the chosen raid exterior5779. The new expectation fails against the untouched e69e38b9 game library: actual LogoutPlayer deletes the Player, then characters stores map1220, instance_id1 and3154.88/1533.73/180.987 instead of5779. That is also an unrelated source raid instance ID attached to an outdoor destination.",
+    "Reference final-link game.lib is retained at build-extractors/runtime-test/logout-teleport-reference/game.lib with its hash in game.sha256. Prior native evidence is retained beside it. The reference expectation run uses the current original library, not the historical Control -Baseline switch."
+  ],
+  "source_review": [
+    {
+      "url": "https://github.com/AshamaneProject/AshamaneCore/blob/b3ec0305caba2ab84596da501e9213ec4707d026/src/server/game/Server/WorldSession.cpp#L465",
+      "finding": "Legion-branch sibling emulator source completes pending transfers both before logout and after graveyard release; homebind is an invalid-instance recovery. This supports preserving the selected destination, not unconditional homebind. It is an emulator reference, not Blizzard server code or a retail packet capture."
+    },
+    {
+      "url": "https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/game/Server/WorldSession.cpp",
+      "finding": "Current3.3.5 also completes the selected transfer before save. This is only an architectural comparison from another client version."
+    },
+    "Native7.3.5 WorldSafeLocs5779 remains the selected exterior;5041 is only the deliberately different fixture homebind. Prior Trial graveyard audit retains its source/inference limits. No DB2 or World SQL changes occur in this fix."
+  ],
+  "repair": [
+    "Player::SaveToDB continues to defer an in-session far transfer. Actual PlayerLogout permits the final save without clearing its far semaphore. The existing teleported-location SQL branch then writes GetTeleportDest map/XYZ/orientation and instance_id0, rather than combining a relocated homebind with the source raid instance.",
+    "WorldSession::LogoutPlayer no longer overwrites every pending far destination with homebind. The Player stays attached to its source map for native deletion and corpse/bind cleanup; no deleting Player is admitted into a new map and no client ACK is simulated to finish an offline transfer.",
+    "Homebind remains the fallback for a non-GM invalid instance and for invalid pending WorldLocation coordinates/map. It is selected in the pending destination and retains the far semaphore, so its final save also gets instance_id0. Existing aura cleanup is retained for this recovery.",
+    "A shared savedZone value resolves the native destination geometry for pending far saves and feeds both CHAR_INS_CHARACTER and CHAR_UPD_CHARACTER. Ordinary saves retain the existing zone fallback. This avoids retaining the source zone/zero in the character-select metadata; native exterior and homebind queries in the final fixture both yield Stormheim7541.",
+    "Save=false does not persist position changes. No map/quest whitelist, forced resurrection, aura-save policy change, personal character repair or client packet protocol change is introduced."
+  ],
+  "verification": [
+    "Final suite passes72 cases:9 modes across LFR17/Normal14/Heroic15/Mythic16 and Human469/Orc67. These consist of8 real ghost release/WorldPortAck cases and64 actual logouts. All24 external selectors still choose native5779; internal earned Helheim checkpoint5827 and completed encounter masks remain unchanged.",
+    "Modes1/2 each run8 actual logout deaths: an alive Player with real Helya attacker/combat and a dead Player with a native death timer. Actual WorldSession dispatcher, corpse creation, repop, final save, cleanup and Player deletion execute. Saved exterior is1220,2370.780029/895.831970/254.923996 with native orientation, instance_id0, zone7541, ghost flag set and online0; corpse remains in the original raid instance until fixture cleanup.",
+    "Mode3 runs8 ordinary pending live exits without ACK. SaveToDB before logout must defer; actual logout saves native5779 at its unoffset Z252.923996 and preserves alive state. Modes4/5 each cover pending invalid-instance and invalid-map fallback to native homebind5041 with instance_id0/zone7541. Mode7 covers an invalid stationary instance, and mode8 preserves the existing GM invalid-instance exception for a valid pending exit.",
+    "Mode6 uses actual LogoutPlayer(false) and checks map/XYZ/orientation/instance remain exactly the original saved staging input, despite a pending exit. Native account-online cleanup still sets online0. No manual save or fake ACK is inserted after logout.",
+    "The existing8 Control difficulty/race cases also pass, including8 actual control/absorb logout and prepared aura/group/bind reload cases. Actors use the established fixture scheduling/health limits. This does not claim aggregate authenticated login, a live socket/session scheduler or a7.3.5 client.",
+    "Related native GroupRollLifecycle passes actual party logout/save/lookup/map cleanup and retained membership against the initial implementation build, before the later destination-zone-only addition. ScenarioResume, its temporary-table data test, ScepterLogin with canonical Release check and NewBloodLogin component regressions also pass. They retain their own fixture/component limits.",
+    "Normal CMake Release builds use actual generated game/scripts final-link inputs and canonical build-extractors/bin/Release for both executables. No global OutDir override. Release verification resolves incremental thunks and exception-bounds actual SaveToDB/LogoutPlayer: native ABI far/session/logout offsets, both shared-body branch targets, deferred live return, native destination validation skip, no clearing far flag, fallback sets it, actual SaveToDB dispatch and native destination-zone lookup all pass.",
+    "Final native Server.log has no ERROR/FATAL; DBErrors is empty. Canonical startup reaches ready and exits0 with empty DBErrors/stderr. Final hidden validation server PID26664 was gracefully shut down by the owning smoke script; earlier validation-owned PIDs12824/21848 also exited0. No validation servers remain. Scratch schemas/users checked0/0."
+  ],
+  "retained_failures": [
+    "The first reference fixture failed to compile because PLAYER_FLAGS_GHOST requires PlayerDefines.h; the include was added. No production enum substitution was made.",
+    "The pre-fix reference expectation fails after the native save: homebind coordinates and source instance_id1 are retained in its log. This is the actual reproduced persistence defect.",
+    "An intermediate destination-zone addition updated only the character INSERT branch. Existing-character UPDATE therefore saved zone0, while a direct native destination lookup returned7541. Both failed runs are retained. The early assumption that geometry returned0 was disproven; this was a production implementation omission in that intermediate patch, not a native DB2/map defect. Final code computes savedZone once for both SQL branches, and all56 final saved-destination zone assertions pass."
+  ],
+  "client_pending": [
+    "Authenticated disconnect/reconnect at the selected graveyard, loading/ground and character-select label refresh.",
+    "Ghost run back, raid admission/corpse recovery, camera/pet/UI and full quest/raid traversal remain separate client/integration checks. No exact retail combat-disconnect timing or7.3.5 retail packet reproduction is claimed."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-204350",
+    "group_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\group-roll-lifecycle-native\\run-20261020-203245",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-204336",
+    "reference": "build-extractors/runtime-test/logout-teleport-reference",
+    "release": "build-extractors/runtime-test/logout-teleport-release",
+    "commands": [
+      "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-GroupRollLifecycleNative.ps1",
+      "tools/tests/Test-ScenarioResume.ps1",
+      "tools/tests/Test-ScenarioResumeData.ps1",
+      "tools/tests/Test-ScepterLogin.ps1 -VerifyReleaseBinary",
+      "tools/tests/Test-NewBloodLogin.ps1"
+    ],
+    "hashes": {
+      "src/server/game/Entities/Player/Player.cpp": "FB3A5453440CA5EB1C0A5D54FF6A526D42BADF8F1AB0137D925865DA16547A8F",
+      "src/server/game/Server/WorldSession.cpp": "9997D623E5E763FDEE8FF22D4C92CDAF41040F24FA5D65D685FC4877F9844A1D",
+      "tools/tests/TrialGraveyardNative.inc": "DB1FAC0F8AC4E4CEFA14F16C5CBE80B716B511B412AAF7279746DB6D9E9C713C",
+      "tools/tests/Test-LogoutTeleportRelease.ps1": "2088F4963F822DDE6932F867750444FF2012D62F90625267E03D25826FCD712A",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "08CDE1C824E7077D3381C5F849A9566A8F1435A9D1D6E0E36050D0400F008935",
+      "tools/tests/Test-RockawayChannelNative.ps1": "6CDDE53CA9A7EB3F4FEE3AC7967DDC908519B4FC390DCB0711D0BCF85995BDC2",
+      "build-extractors/bin/Release/worldserver.exe": "EFD673613873F090A66BCD9D4740803466FB5FD2BECE5741B1B829AA0683F934",
+      "build-extractors/bin/Release/bnetserver.exe": "4B3CF7CC3608172A23FAE4947C8153D9509D959DC1008E36D68024EC1ED45581",
+      "build-extractors/src/server/game/Release/game.lib": "09730BE03E39389972B39B086E315301F4A0E11816273CD6AEE1BCE5F9B33B2C",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "DF4EDDF3EE9A7F4681E499570C77CA47CB0A49374D79FC8565C751AC1016C91C",
+      ".codex/logout-teleport-reference.log": "52275E8D65D4A8B7F790A52ACB8775B713C1BA566004189E1EAB6176170823F0",
+      ".codex/logout-teleport-reference2.log": "3D6699C2092839E375916A6FCAA63185A60660E2566AF8E3BA51D4B4CA5A9265",
+      ".codex/logout-teleport-current.log": "005757A77BA3776DF233C18E8363AC667B7DEFA7EC25A99BFDD889BD15C85067",
+      ".codex/logout-teleport-final.log": "18E7A9051CE539231CBC37A7D188C7AE3D004642E0142E503CD3E70B0B03790C",
+      ".codex/logout-teleport-final-zone.log": "BA48EA4F88F8A41944FE578ED16DEC793B17D533348A36AC20D0F2ED06955587",
+      ".codex/logout-teleport-final-geometry.log": "89A8360A2929D1B41AC300CD7A56359EF7F79BDCE85DCDB8EDA632762B67F67F",
+      ".codex/logout-teleport-complete-build.log": "6FA313C5BDD5236CDEAE29DC178E4D747A184E313AC87085523D071C4558E6E2",
+      ".codex/logout-teleport-complete-release.log": "F8F815050AC19723C5064901F184D9214742DE5B78D8F471AC392DFC063A5E9A",
+      ".codex/logout-teleport-complete-startup.log": "E9A05B50C6F1E7AD23B4A681F6A19AA8617E91BCA8AA31C240D058CE31858379",
+      ".codex/logout-teleport-group.log": "F6914975C2F7B1D54FD6F13320EB532A1A52A978CCBDBC900E36501269187615",
+      ".codex/logout-teleport-scenario.log": "CEEDBCBE4CD6908CBF0F4B34ADF74783395E800AAB1AD8890645730CDAF63E3F",
+      ".codex/logout-teleport-scenario-data.log": "3F9D342B1BF10D74ECD697E5230C99CEA44C7AA5BDB7D661EAD1AC31D55BEDC8",
+      ".codex/logout-teleport-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/logout-teleport-newblood.log": "BF581465B2BF26DEC33EBA9AC38E6FA758EE38B9B423182BCB70610047EDADAA",
+      "final_run/native-lines.txt": "CC8071FA66163E8BF6417D9E2195991F64E5B2DCD42775F87091E73EDA973AEE",
+      "final_run/native-inputs.json": "2DD3B8E189C556BD94B144BAFB96C1CEE1700DD7012A9A25683984DE18FF8470",
+      "final_run/Server.log": "9DBA1C263901DC86173D4A738A3AA98306626E2BC4A759AE0FFEC764C6211CAB",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "release/inputs.json": "B5C2407DB2B85CDAFD6F0B7C6AC1862C1C9933B83BF9E8F8D1136BF67A185B88"
+    }
+  },
+  "scratch_cleanup": {
+    "schemas": 0,
+    "users": 0
+  }
+}
