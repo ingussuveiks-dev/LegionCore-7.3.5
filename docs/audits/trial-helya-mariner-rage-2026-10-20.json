@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "creature": 114809,
+  "status": "Ghostly Rage cadence/reset repair and native effect checks complete. All three requested Mariner ability paths now have native coverage; client and explicitly retained fidelity limits remain.",
+  "repair": "Preserve first Ghostly Rage at10seconds; change repeat16seconds to9.7seconds using the pinned Legion-era BigWigs handler. Cast explicitly on self. Reset removes Ghostly Rage so native melee haste and model scale restore immediately rather than leaking into the next combat.",
+  "native_data": "Native228611 lasts6000ms. Effect0 is MOD_MELEE_HASTE138:30 default,100 Mythic. Effect1 is MOD_SCALE61:30 default,40 Mythic. The description references effect1; do not replace actual haste data using that tooltip number. No damage/haste/scale data is edited.",
+  "verification": [
+    "Eight current LFR/Normal/Heroic/Mythic and Human/Orc cases execute110seconds of real NPC/Player/map updates. First Rage is near9970ms on the observer clock after admission. Subsequent intervals are at least9700ms with actual Give No Quarter/Lantern cast contention allowed. Original8422b836 reference produced seven16-second casts in the same110s window; current execution produces10/11 depending on channel contention.",
+    "Real isolated228611 casts apply both difficulty-specific effects. Observe the actual UNIT_FIELD_ATTACK_ROUND_BASE_TIME combat/client field:2000 ->1538.46ms default and2000 ->1000ms Mythic, plus native scale increase. Actual aura expiry and AI Reset each restore the original round time and scale. The initial exploratory test incorrectly used GetAttackTime, which divides out haste in this core; it failed without proving a production effect bug and was corrected to observe the actual field.",
+    "Retain all selector1/3-cap/fixed-marker/real damage and Lantern owner/resource/profile/interrupted-cast/retry/immediate-plus12-periodic-pulse/reset checks in the same eight-case native run. Final Grimelord Rot/Fission and phase-three spell/geometry/cleanup native regressions each pass all eight cases with final libraries. Final Fury/progression run is separately recorded below.",
+    "Normal CMake Release builds remain in build-extractors/bin/Release with original generated link inputs. Bounded PE/thunk checks inspect final Mariner selector,9.7s Rage constant, primary resource/owner tick and queued Lantern, alongside retained Grimelord methods. Final startup ready, graceful exit0, empty DBErrors/stderr. No client or personal character/account data was used."
+  ],
+  "primary_source": {
+    "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+    "date": "2018-04-28",
+    "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+    "scope": "Mariner spawn initial Ghostly Rage10s and GhostlyRage success handler9.7s. This is a historical addon observation, not a claim that cast contention never shifts actual casts."
+  },
+  "retained_limits": [
+    "No authenticated7.3.5 client verification of attack animation, scale, energy bar/channel, warning image/circle, impact visuals, full survival/strategy or quest completion. Native tests buffer living health.",
+    "Lantern inherited LFR and Mythic/phase3 first-charge profiles remain explicitly uncertain, as documented in the preceding audit. No stronger retail combat-log evidence was obtained here. Ranged-player preference/fallback and earlier Fission timing fidelity limits remain."
+  ],
+  "prior_audits": [
+    "trial-helya-mariner-quarter-2026-10-20.json",
+    "trial-helya-mariner-lantern-2026-10-20.json"
+  ],
+  "evidence": {
+    "runs": {
+      "trial-helya-mariner-native": "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-052121",
+      "trial-helya-grimelord-native": "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261020-052208",
+      "trial-helya-phase3-native": "build-extractors/runtime-test/trial-helya-phase3-native/run-20261020-052219",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261020-052405"
+    },
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-052121/native-lines.txt": "F07143CBE44D9C986F7530487091CF6679EB6B9788DEDF321C0F07C9482BC93A",
+      "build-extractors/runtime-test/trial-helya-grimelord-native/run-20261020-052208/native-lines.txt": "169F3A8E644D4EC92E9035C01932C0C59C44879932FA21B462D717C633F9DD09",
+      "build-extractors/runtime-test/trial-helya-phase3-native/run-20261020-052219/native-lines.txt": "EF9BA8D3B2E4E923A7E5DA8BFE616FB613195D32F2721B010CC28824C41DCE4E",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "F6791DA16B766C0ECC7906B98235EDD759306678DBBDD5FD9B9C526DEBE49E1C",
+      "tools/tests/TrialHelyaMarinerNative.cpp": "C5EFADCFF30E4587590A4D4E837E0AB42A5CCEAF12B649623B9B4663C0D1FD9D",
+      "tools/tests/Test-TrialHelyaMarinerNative.ps1": "9C34807175BC12A9CA9FB058DA03B3C1698214ED23CC1F6F629900CCD092AF54",
+      "tools/tests/Test-TrialHelyaMarinerRelease.ps1": "6649364D90FDA9FDAF6048089DAE233F3C596AB8C0A5C9A2BD8074B209952698",
+      "build-extractors/bin/Release/worldserver.exe": "39B4BDA95DFD49F925AEDDAC6E91199A8338F8CB7E9C736E536C518C44B154CC",
+      "build-extractors/bin/Release/bnetserver.exe": "D74C7602FF31D12C310C13B29F897344722D9A07AF708DF7A18EC58716ADCDE1",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "AD48ED43AF4C851D1963DE9A20F537ED45655D75790ABA274A7A7722FFB0CEF0",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E",
+      "build-extractors/runtime-test/trial-helya-mariner-native/mariner-update-disassembly.txt": "6F080DD69E159A96B06ABE1854EC9D8280D591E3F59BC60C7FD73E240D878275",
+      "build-extractors/runtime-test/trial-helya-mariner-native/mariner-release-inputs.json": "755DF80BBBD8766DA75B6D13B0E1CE9729E77C7F3CA8B5C5B19B90E425608FD4",
+      ".codex/helya-mariner-rage-current.log": "332BE14A563839AAEF45A25FEB4938D1716B30031727FD525BC2B40E01016463",
+      ".codex/helya-mariner-rage-current2.log": "0A7662CCBE4E4F707143FC8EEBA4BF46F17D2ABB37F52F6C9E63BB1D17B352DB",
+      "build-extractors/runtime-test/trial-helya-native/run-20261020-052405/native-lines.txt": "22677260203674B960E2ADF68C47CCE6334B1BF4F705961764B73E46DEE13F37"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-052231",
+    "startup_DBErrors": 0,
+    "startup_stderr": 0,
+    "scratch_schemas_accounts": [
+      0,
+      0
+    ]
+  }
+}

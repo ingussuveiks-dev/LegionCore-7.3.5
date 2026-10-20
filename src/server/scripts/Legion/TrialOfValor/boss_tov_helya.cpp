@@ -1416,6 +1416,7 @@ struct npc_night_watch_mariner : ScriptedAI
         me->RemoveAura(SpellDarkness);
         me->RemoveAura(SpellLanternOfDarkness);
         me->RemoveAura(228621);
+        me->RemoveAura(SpellGhostlyRage);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
         me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
         me->SetPowerType(POWER_ENERGY);
@@ -1481,8 +1482,8 @@ struct npc_night_watch_mariner : ScriptedAI
                 break;
             }
             case EVENT_2:
-                DoCast(SpellGhostlyRage);
-                events.RescheduleEvent(EVENT_2, 16000);
+                DoCast(me, SpellGhostlyRage, false);
+                events.RescheduleEvent(EVENT_2, 9700);
                 break;
             case EVENT_3:
                 lanternPending = false;

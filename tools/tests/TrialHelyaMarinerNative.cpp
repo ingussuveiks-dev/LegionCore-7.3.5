@@ -41,6 +41,19 @@ static void MarinerLantern(GarmPlayer& p,InstanceMap& map,Creature& helya)
     c->SetPower(POWER_ENERGY,100);c->AI()->Reset();MarinerWatch reset(map,*c);reset.Advance(3000);Require(reset.casts[228619].empty()&&reset.casts[228621].empty()&&!c->HasAura(228383)&&!c->HasAura(228619)&&!c->HasAura(228621)&&c->GetPower(POWER_ENERGY)==0,"Reset retained pending Lantern/energy/aura state");
     c->AI()->EnterCombat(&p);reset.Advance(1000);Require(c->HasAura(228383)&&c->GetPower(POWER_ENERGY)==(map.IsLfrRaid()?1:3),"Same Mariner retry did not restart energy profile");
 }
+static void MarinerRage(GarmPlayer& p,InstanceMap& map,Creature& helya)
+{
+    //GetAttackTime divides out haste and returns base time in this core. Read
+    //the actual combat/client round-time field to observe the native modifier.
+    auto c=MarinerBegin(p,map,helya);auto before=c->GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME);auto scale=c->GetObjectScale();
+    auto info=sSpellMgr->GetSpellInfo(228611);Require(info->GetDuration(map.GetDifficultyID())==6000,"Native Ghostly Rage duration changed");
+    c->CastSpell(c,228611,false);MarinerWatch watch(map,*c);watch.Advance(100,false);
+    auto aura=c->GetAura(228611);Require(aura&&aura->GetEffect(EFFECT_0)->GetAmount()==(map.IsMythicRaid()?100:30)&&aura->GetEffect(EFFECT_1)->GetAmount()==(map.IsMythicRaid()?40:30),"Native Rage lost actual haste/scale difficulty values");
+    auto during=c->GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME);Require(during<before&&c->GetObjectScale()>scale,"Rage aura present without native attack-speed/model effect");
+    watch.Advance(6100,false);Require(!c->HasAura(228611)&&std::fabs(c->GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME)-before)<0.01f&&std::fabs(c->GetObjectScale()-scale)<0.001f,"Native Rage expiry did not restore attack time/scale");
+    c->CastSpell(c,228611,false);watch.Advance(100,false);Require(c->HasAura(228611),"Rage reset probe missing aura");c->AI()->Reset();Require(!c->HasAura(228611)&&std::fabs(c->GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME)-before)<0.01f&&std::fabs(c->GetObjectScale()-scale)<0.001f,"Mariner Reset retained Rage or modified stats");
+    std::cout<<"MARINER_RAGE diff="<<uint32(map.GetDifficultyID())<<" attackBefore="<<before<<" attackDuring="<<during<<" restored="<<c->GetFloatValue(UNIT_FIELD_ATTACK_ROUND_BASE_TIME)<<std::endl;
+}
 static void MarinerCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     p.GetOrInitPetStable();GarmPlayer closePlayer(map,p.getRace()),distantPlayer(map,p.getRace());LootPet pet(p,map);pet.setFaction(p.getFaction());pet.SetMaxHealth(p.GetMaxHealth());pet.SetHealth(p.GetMaxHealth());
@@ -60,6 +73,8 @@ static void MarinerCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     Require(w.casts[228633].empty()&&!w.casts[228632].empty(),"Pinned Mariner bypassed-selector defect changed");
 #else
     Require(!w.casts[228619].empty()&&!w.casts[228621].empty(),"Natural energy cycle never produced Lantern damage");
+    auto const& rage=w.times[228611];Require(rage.size()>=6&&rage.front()+40>=10000&&rage.front()<=10040,"Native Rage first cast did not use10-second start");
+    for(unsigned i=1;i<rage.size();++i)Require(rage[i]-rage[i-1]>=9700&&rage[i]-rage[i-1]<=17700,"Rage repeat missed9.7-second schedule plus native cast contention");
     unsigned cap=map.IsMythicRaid()?3:1;Require(w.casts[228633].size()>=3,"Native Give No Quarter selector did not repeat");
     for(auto const& cast:w.perCast[228633]){Require(cast.second.size()==cap,"Native Mariner lost one/three Player cap");for(auto guid:cast.second)Require(guid.IsPlayer(),"Native Mariner selector admitted Pet/NPC");}
     Require(w.times[228633].front()+40>=6000&&w.times[228633].front()<=6040,"Native selector initial cast timer wrong");
@@ -78,6 +93,7 @@ static void MarinerCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     std::cout<<"MARINER_MARKER destinations="<<marker.destinations[228632].size()<<" damageTargets="<<marker.damagedTargets[228631].size()<<std::endl;
 #ifndef TRIAL_HELYA_MARINER_BASELINE
     MarinerLantern(p,map,helya);
+    MarinerRage(p,map,helya);
 #endif
     ClearCombat(p,helya);PumpHelya(map,3000);std::cout<<"PASS: native Mariner observation diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
