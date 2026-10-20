@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set>
 using uint32=uint32_t;using uint64=uint64_t;using ObjectGuid=uint64;
 using ReactStates=uint32;constexpr ReactStates REACT_PASSIVE=0,REACT_AGGRESSIVE=2;
 constexpr uint32 UNIT_FIELD_FLAGS=0,GAMEOBJECT_FIELD_FLAGS=0,UNIT_FLAG_NON_ATTACKABLE=2,GO_FLAG_NOT_SELECTABLE=16,GO_FLAG_IN_USE=1;
@@ -11,14 +12,17 @@ struct Creature;struct CreatureAI {void MoveInLineOfSight_Safe(struct Player*){}
 struct Unit{};
 constexpr int QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1;
 struct Player:Unit{
+ bool aura=false;ObjectGuid GetGUID(){return 42;}
  bool IsInWorld(){return true;}bool IsAlive(){return true;}bool IsBeingTeleported(){return false;}
  uint32 GetMapId(){return 1533;}bool GetQuestRewardStatus(uint32){return false;}int GetQuestStatus(uint32){return QUEST_STATUS_INCOMPLETE;}
  Creature* FindNearestCreature(uint32,float){return nullptr;}bool InSamePhase(Creature*){return true;}uint32 GetGUIDLow(){return 1;}
+ float GetExactDist(Creature*){return 100;}bool HasAura(uint32){return aura;}void CastSpell(Player*,uint32,bool){aura=true;}void RemoveAurasDueToSpell(uint32){aura=false;}
 };
 struct Creature{
  uint32 entry=0,flags=0;uint64 guid=0,hp=100000,targetHp=1000;bool summoned=false,alive=true;ReactStates reaction=REACT_AGGRESSIVE;
  uint32 GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}bool isSummon(){return summoned;}bool IsAlive(){return alive;}
  bool IsAIEnabled=true;uint32 GetDBTableGUIDLow(){return 0;}CreatureAI* AI(){static CreatureAI ai;return &ai;}
+ bool IsWithinLOSInMap(Player*){return true;}
  uint64 GetHealth(Unit*){return targetHp;}uint64 GetHealth(){return hp;}void SetHealth(uint64 value){hp=targetHp=value;}
  uint32 GetUInt32Value(uint32){return flags;}void SetFlag(uint32,uint32 bits){flags|=bits;}void RemoveFlag(uint32,uint32 bits){flags&=~bits;}
  ReactStates GetReactState(){return reaction;}void SetReactState(ReactStates value){reaction=value;}
@@ -45,7 +49,7 @@ struct InstanceScript{
  InstanceMap* instance;explicit InstanceScript(InstanceMap* map):instance(map){}virtual ~InstanceScript()=default;
  virtual void OnCreatureCreate(Creature*){}virtual void OnCreatureRemove(Creature*){}
  virtual void OnGameObjectCreate(GameObject*){}virtual void OnGameObjectRemove(GameObject*){}
- virtual void OnPlayerEnter(Player*){}virtual void onScenarionNextStep(uint32){}virtual void Update(uint32){}
+ virtual void OnPlayerEnter(Player*){}virtual void OnPlayerLeave(Player*){}virtual void onScenarionNextStep(uint32){}virtual void Update(uint32){}
  virtual void OnCreatureDamageTaken(Creature*,Unit*,uint32&){}
 };
 struct InstanceMapScript{
@@ -85,6 +89,11 @@ int main(){
  script.OnCreatureRemove(&guardian);map.creatures.erase(guardian.guid);script.OnGameObjectRemove(&scythe);map.objects.erase(scythe.guid);
  scenario.step=0;script.Sync();map.creatures[guardian.guid]=&guardian;guardian.flags=0x400;script.OnCreatureCreate(&guardian);assert(guardian.flags&2);
  Creature nativeProtected{101257,2,5};nativeProtected.reaction=REACT_PASSIVE;map.creatures[5]=&nativeProtected;script.OnCreatureCreate(&nativeProtected);scenario.step=2;script.Sync();assert(nativeProtected.flags==2&&nativeProtected.reaction==REACT_PASSIVE);
+ Player departing;departing.aura=true;script.OnPlayerLeave(&departing);assert(!departing.aura);
+ // Infinite native contact aura must be removed even if Scenario teardown
+ // precedes the leave callback. Preserve actors from unrelated scenarios.
+ departing.aura=true;script.spiritPlayers.insert(departing.GetGUID());manager.progress=nullptr;
+ script.OnPlayerLeave(&departing);assert(!departing.aura&&script.spiritPlayers.empty());
  for(uint32 otherScenario:{0u,1026u,1014u}){
   Scenario shared;shared.id=otherScenario;manager.progress=&shared;InstanceMap otherMap;instance_dark_riders_artifact::Instance untouched(&otherMap);
   Creature actor{101257,0x400,6};GameObject object;otherMap.creatures[6]=&actor;otherMap.objects[20]=&object;untouched.OnCreatureCreate(&actor);untouched.OnGameObjectCreate(&object);untouched.Update(250);

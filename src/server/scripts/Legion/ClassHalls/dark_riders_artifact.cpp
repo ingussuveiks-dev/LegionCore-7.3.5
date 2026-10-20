@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include <map>
+#include <set>
 
 namespace DarkRidersArtifact
 {
@@ -56,6 +57,33 @@ bool CheckArrival(Player* player, uint32 scenario, uint32 step)
     return true;
 }
 }
+namespace DarkRidersSpirits
+{
+void UpdateContact(Player* player, uint32 scenario, uint32 step)
+{
+    if (!player || scenario != 988)
+        return;
+
+    bool contact = false;
+    if (step <= 1 && player->IsInWorld() && player->IsAlive() && player->GetMapId() == 1533 &&
+        !player->IsBeingTeleported() && !player->GetQuestRewardStatus(40623) &&
+        (player->GetQuestStatus(40623) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40623) == QUEST_STATUS_COMPLETE))
+        if (Creature* spirit = player->FindNearestCreature(100845, 3.0f))
+            contact = spirit->GetDBTableGUIDLow() && player->InSamePhase(spirit) &&
+                player->GetExactDist(spirit) <= 3.0f && spirit->IsWithinLOSInMap(player);
+
+    // 198721 on the NPC is only a visual. Native 198654 supplies the75%
+    // slow, animation and1-second199568 damage ticks on the Player (CASTER1).
+    // Do not refresh a present aura every250ms: that can starve its tick timer.
+    if (contact)
+    {
+        if (!player->HasAura(198654))
+            player->CastSpell(player, 198654, true);
+    }
+    else
+        player->RemoveAurasDueToSpell(198654);
+}
+}
 class instance_dark_riders_artifact : public InstanceMapScript
 {
 public:
@@ -71,6 +99,7 @@ public:
         };
         std::map<ObjectGuid,ActorGate> actors;
         std::map<ObjectGuid,uint32> objects;
+        std::set<ObjectGuid> spiritPlayers;
         uint32 refresh=0;
         Scenario* Progress() { return sScenarioMgr->GetScenario(instance->GetInstanceId()); }
         void Sync()
@@ -151,6 +180,12 @@ public:
             InstanceScript::OnGameObjectRemove(go);
         }
         void OnPlayerEnter(Player*) override { Sync(); }
+        void OnPlayerLeave(Player* player) override
+        {
+            Scenario* scenario = Progress();
+            if (spiritPlayers.erase(player->GetGUID()) || (scenario && scenario->GetScenarioId() == 988))
+                player->RemoveAurasDueToSpell(198654);
+        }
         void onScenarionNextStep(uint32) override { Sync(); }
         void Update(uint32 diff) override
         {
@@ -159,12 +194,17 @@ public:
             refresh=250;
             Sync();
             Scenario* scenario = Progress();
-            if (scenario && scenario->GetScenarioId() == 988 && scenario->GetCurrentStep() == 0)
-                instance->ApplyOnEveryPlayer([scenario](Player* player)
+            if (scenario && scenario->GetScenarioId() == 988)
+                instance->ApplyOnEveryPlayer([this, scenario](Player* player)
                 {
                     if (DarkRidersArrival::CheckArrival(player, scenario->GetScenarioId(), scenario->GetCurrentStep()) &&
                         scenario->GetCurrentStep() == 1)
                         TC_LOG_INFO("scripts.ai", "Dark Riders: barrier arrival credited player %u; stage 2 active", player->GetGUIDLow());
+                    DarkRidersSpirits::UpdateContact(player, scenario->GetScenarioId(), scenario->GetCurrentStep());
+                    if (player->HasAura(198654))
+                        spiritPlayers.insert(player->GetGUID());
+                    else
+                        spiritPlayers.erase(player->GetGUID());
                 });
         }
         void OnCreatureDamageTaken(Creature* creature,Unit* attacker,uint32& damage) override

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-20",
+  "related": ["dark-riders-player-arrival-2026-10-20.json", "dark-riders-stage-lifecycle-2026-10-20.json"],
+  "observed": "The user stood among the visible Grasping Spirits before initial Ariden and observed no effect. This is separate from the Stage1 arrival stall repaired in6a0c5d5d.",
+  "evidence": [
+    "Live100845 template addon applies only198721. Native7.3.5 SpellEffect shows apply-aura6/dummy4, CASTER1: this is a visual, with no slow or periodic damage.",
+    "The live100845 SmartAI only despawns on SetData1/1. No linked spell, map1533 EventObject or area-trigger action applies198654/199568/199576.",
+    "Native198654 applies75% movement slow (aura33), animation replacement175 (aura312), and periodic trigger23 every1000ms ->199568, whose native school-damage effect has25000 base points. All use CASTER1; therefore the Player must cast it on himself. Duration is infinite (-1/-1), requiring explicit departure cleanup."
+  ],
+  "implementation": [
+    "Only scenario988 on map1533: a live Player with active40623 in steps0/1 receives native198654 while within3 center-distance yards and LOS of a phase-visible DB-spawned100845. A250ms instance contact check supports standing still as well as movement.",
+    "Use native spell effects and scaling; no synthetic damage/slow or pet ownership change. Do not refresh a present aura every update, so its one-second tick timer is retained.",
+    "Remove198654 after leaving contact, Gateway/teleport, death, quest abandonment, spirit despawn or later stages. Track affected Player GUIDs and remove on instance leave even if Scenario teardown already removed its object. Stale loaded auras are cleared outside contact in this scenario.",
+    "Other scenario IDs1026/1014 and other maps/actors keep their existing behavior. The native Ariden aggro chain still sends SetData1/1 to despawn the spirits; this repair does not award barrier-crossing credit or force any stage."
+  ],
+  "assumptions": "The3-yard contact radius is a bounded content policy inferred from the existing spirit spawn spacing, not a radius encoded in198654 (it has self targets and no radius). Verify coverage and the exact feel at the edges in the client; do not claim Blizzard-exact geometry.",
+  "automated_checks": [
+    "Test-DarkRidersSpirits.ps1 -VerifyReleaseBinary: PASS. Compiles actual UpdateContact, checks exact-distance/LOS/phase, stationary aura retention, repeated entry, native despawn, Gateway/leave/death/abandon/step cleanup and shared-scenario exclusions.",
+    "Native C++ DB2 reader DarkRidersSpiritsCatalog.cpp verifies the visual aura, slow, animation,1000ms trigger, damage base, CASTER targets and infinite duration from the canonical7.3.5 runtime data.",
+    "Test-DarkRidersStageLifecycle.ps1: PASS with complete production instance, including OnPlayerLeave cleanup both before and after Scenario teardown; all actor/scythe gates, Player arrival, dialogue/caster tests and repeated migrations retained.",
+    "Test-UlthaleshDamage.ps1: PASS; existing initial/final Ariden post-scaling guards retained. git diff --check: PASS."
+  ],
+  "test_limits": "Fixture world, phase, LOS, aura state and tick clock are modeled. The contact decision and complete instance are production code and native DB2 verifies the real effect chain; the fixture does not execute live Spell/Aura damage or client animation. Client slow/damage, tick timing, Demonic Gateway usability/cleanup, edge coverage, pet portrait and complete quest traversal remain pending.",
+  "deployment": {
+    "build": "Actual scripts Release library then canonical worldserver final Release link with LinkIncremental=false; no OutDir override or runtime configuration changes",
+    "worldserver_sha256": "45b6d1524ab2654f3584496239ddd688ab183dd212b49278f500a582b5e3d828",
+    "binary_evidence": "PE/map timestamp6ad74ad1. Inlined contact branch in Update lambda0x140435cf0 compares scenario988, map1533, steps0/1 and quest40623, finds100845, tests distance/LOS, checks198654 and casts only when absent, otherwise removes it. OnPlayerLeave at0x140436d10 retains GUID-tracked cleanup. Canonical disassembly inspected separately from automated map-symbol admission.",
+    "startup": "Canonical executable ready14:06:04 Europe/Riga; no new DBErrors. Codex-owned hidden process shut down gracefully, database shutdown complete14:06:09. Config/certificate/DLL hashes unchanged and neither worldserver nor bnetserver is running at handoff.",
+    "server_ownership": "User servers were already stopped. Only Codex-owned hidden smoke processes were started and may be stopped by validation; handoff must leave them stopped."
+  },
+  "client_retest": "Start canonical servers visibly. Fresh scenario: introduction near stair Revil, Stage2 by player arrival, stand in the visible spirit field and observe slow/Shadow ticks, use Demonic Gateway across and confirm aura/speed cleanup, aggro initial Ariden and verify spirit despawn/Stage3, then continue Conservator and finale. Also leave/re-enter or abandon from contact and confirm no persistent slow/damage."
+}

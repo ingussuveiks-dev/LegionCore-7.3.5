@@ -7,7 +7,7 @@ $s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/dark_riders_artifact.
 $a=$s.IndexOf('namespace DarkRidersArtifact');$b=$s.IndexOf('void AddSC_dark_riders_artifact()',$a)
 if($a -lt 0 -or $b -lt $a){throw 'Missing production instance'}
 [IO.File]::WriteAllText("$out/LifecycleInstance.inc",$s.Substring($a,$b-$a))
-$a=$s.IndexOf('namespace DarkRidersArrival');$b=$s.IndexOf('class instance_dark_riders_artifact',$a)
+$a=$s.IndexOf('namespace DarkRidersArrival');$b=$s.IndexOf('namespace DarkRidersSpirits',$a)
 [IO.File]::WriteAllText("$out/DarkRidersArrival.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
 $a=$s.IndexOf('        // We do not allow players to use the hidden objects.');$b=$s.IndexOf("`n    }",$a)
