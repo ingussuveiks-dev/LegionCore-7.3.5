@@ -48,6 +48,57 @@
 #include "UpdateFieldFlags.h"
 #include "World.h"
 
+namespace
+{
+bool IsAridenCampObject(GameObject const* object)
+{
+    if (object->GetMapId() != 0)
+        return false;
+    switch (object->GetEntry())
+    {
+        case 245785: case 245786: case 245787: case 245788:
+        case 245789: case 245793: case 245794:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool CanUseAridenCampObject(GameObject const* object, Player* player)
+{
+    if (!IsAridenCampObject(object))
+        return true;
+
+    if (object->GetEntry() == 245794)
+        return player->GetQuestStatus(40606) == QUEST_STATUS_INCOMPLETE;
+
+    if (object->GetEntry() == 245793)
+    {
+        // This is the separate turn-in/quest-giving journal. Keep it usable
+        // through the real handoff and while its next quest is in the log.
+        auto involved = sQuestDataStore->GetGOQuestInvolvedRelationBounds(object->GetEntry());
+        for (auto itr = involved.first; itr != involved.second; ++itr)
+            if (player->GetQuestStatus(itr->second) == QUEST_STATUS_COMPLETE)
+                return true;
+
+        auto starts = sQuestDataStore->GetGOQuestRelationBounds(object->GetEntry());
+        for (auto itr = starts.first; itr != starts.second; ++itr)
+            if (Quest const* quest = sQuestDataStore->GetQuestTemplate(itr->second))
+                if (player->GetQuestStatus(itr->second) == QUEST_STATUS_INCOMPLETE ||
+                    player->GetQuestStatus(itr->second) == QUEST_STATUS_COMPLETE || player->CanTakeQuest(quest, false))
+                    return true;
+        return false;
+    }
+
+    // Optional clue pages and the combat-triggering journal belong to the
+    // investigation stage, shared by the three Dark Rider artifact routes.
+    for (uint32 quest : {40604u, 40835u, 40932u})
+        if (player->GetQuestStatus(quest) == QUEST_STATUS_INCOMPLETE)
+            return true;
+    return false;
+}
+}
+
 GameObject::GameObject() : WorldObject(false), m_groupLootTimer(0), m_model(nullptr), m_goValue(), m_spellId(0), m_respawnTime(0), m_respawnDelayTime(300),
 m_lootState(GO_NOT_READY), m_spawnedByDefault(true), m_cooldownTime(0), m_prevGoState(GO_STATE_ACTIVE), m_ritualOwner(nullptr), m_usetimes(0), m_DBTableGuid(0), m_goInfo(nullptr),
 m_goData(nullptr), m_manual_anim(false), m_isDynActive(false), m_onUse(false), m_actionVector(nullptr), m_AI(nullptr)
@@ -1384,6 +1435,9 @@ bool GameObject::IsInvisibleDueToDespawn() const
 
 bool GameObject::ActivateToQuest(Player* target) const
 {
+    if (!CanUseAridenCampObject(this, target))
+        return false;
+
     if (target->isGameMaster())
         return true;
 
@@ -1574,6 +1628,9 @@ void GameObject::Use(Unit* user)
 {
     if (IsQuestObjectExpired())
         return;
+    if (Player* player = user->ToPlayer())
+        if (!CanUseAridenCampObject(this, player))
+            return;
     // by default spell caster is user
     Unit* spellCaster = user;
     uint32 spellId = 0;
@@ -2924,7 +2981,9 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
     if (!target)
         return;
 
-    bool forcedFlags = GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient();
+    bool campObject = IsAridenCampObject(this);
+    bool canUseCampObject = !campObject || CanUseAridenCampObject(this, target);
+    bool forcedFlags = campObject || (GetGoType() == GAMEOBJECT_TYPE_CHEST && GetGOInfo()->chest.usegrouplootrules && HasLootRecipient());
     bool targetIsGM = target->isGameMaster();
 
     std::size_t blockCount = UpdateMask::GetBlockCount(m_valuesCount);
@@ -2941,7 +3000,7 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
 
     for (uint16 index = 0; index < m_valuesCount; ++index)
     {
-        if (_fieldNotifyFlags & flags[index] || (updateType == UPDATETYPE_VALUES ? _changesMask[index] : m_uint32Values[index]) && flags[index] & visibleFlag || index == GAMEOBJECT_FIELD_FLAGS && forcedFlags)
+        if (_fieldNotifyFlags & flags[index] || (updateType == UPDATETYPE_VALUES ? _changesMask[index] : m_uint32Values[index]) && flags[index] & visibleFlag || index == GAMEOBJECT_FIELD_FLAGS && forcedFlags || campObject && index == OBJECT_FIELD_DYNAMIC_FLAGS)
         {
             UpdateMask::SetUpdateBit(data->contents() + maskPos, index);
 
@@ -2993,12 +3052,16 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
                         break;
                 }
 
+                if (!canUseCampObject)
+                    dynFlags &= ~(GO_DYNFLAG_LO_ACTIVATE | GO_DYNFLAG_LO_SPARKLE);
                 *data << uint16(dynFlags);
                 *data << int16(pathProgress);
             }
             else if (index == GAMEOBJECT_FIELD_FLAGS)
             {
                 uint32 goFlags = m_uint32Values[GAMEOBJECT_FIELD_FLAGS];
+                if (!canUseCampObject)
+                    goFlags |= GO_FLAG_NOT_SELECTABLE;
                 if (GetGoType() == GAMEOBJECT_TYPE_CHEST)
                     if (GetGOInfo()->chest.usegrouplootrules && !IsLootAllowedFor(target))
                         goFlags |= GO_FLAG_LOCKED | GO_FLAG_NOT_SELECTABLE;

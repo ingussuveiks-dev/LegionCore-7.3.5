@@ -1,7 +1,7 @@
 {
   "date": "2026-10-20",
   "quest": 40604,
-  "status": "Optional Fur Blanket inspection and follow-up pet-killer camp credit repaired and deployed; complete quest traversal remains unverified in the client",
+  "status": "User progressed past the investigation and compass quests; optional clue inspection, pet credit and per-player camp interaction lifecycle repaired. New interaction cleanup still needs client confirmation",
   "observed": "User screenshot in Ariden's Camp: Fur Blanket highlighted, click gives no visible result, Ariden's Camp investigated remains 0/1. Chat shows journal-related Revil/Ariden dialogue, which does not establish combat completion or objective credit.",
   "defects": [
     "GameObject::Use GAMEOBJECT_TYPE_TEXT only checked template, player and PlayerCondition, then returned without SMSG_PAGE_TEXT. This also affected other ordinary type-9 inspection objects.",
@@ -51,5 +51,27 @@
     ],
     "deployment": "Applied migration to the configured world database after privately saving affected rows. Gracefully restarted canonical Release worldserver so SmartAI and conditions reload; ready at log time10:24:45, no new DBErrors from the recorded startup offset. No C++ runtime change in this follow-up; the previously verified Release executable hash is retained. No personal quest status, objective, inventory or pet data is modified.",
     "limits": "Native tests execute extracted handlers with fixture units/maps and captured casts. They do not instantiate the live map, deliver real client conversations or exercise native quest persistence/phase refresh. Client retest must click the journal again, kill both memories with the pet, confirm main1/1, readable turn-in journal245793 and next quest40606. Repeated clicks, abandonment/retry and shared DK/druid routes remain client checks."
+  },
+  "interaction_cleanup_followup": {
+    "observed": "After completing the quest the user reported the relic box, blanket, boots and journal still active/usable. Read-only saved progress showed40604 and40606 rewarded, with40611 active. This establishes progression beyond both camp tasks; it does not verify every historical client visual or alternate route.",
+    "cause": "Optional text props are in shared phase5566, enabled after the predecessor quest and retained through later story stages. Their text condition is0, and the static quest-giving journal245793 remains in phase5562 after reward. Permanent global flags or disabling shared phase5566 would affect other players and shared guide actors. The combat journal245789 is a separate phase5563 object from the turn-in/quest-giving journal245793.",
+    "behavior": [
+      "On map0, optional inspection entries245785..245788 and combat journal245789 are usable only while one of40604/40835/40932 is INCOMPLETE. After completion they remain visible props but receive per-player GO_FLAG_NOT_SELECTABLE, with activation/sparkle removed; the server also rejects stale use requests before gossip/AI/spell dispatch.",
+      "Journal245793 remains usable for a COMPLETE quest in its actual gameobject_questender relations. Its actual starter relations are used to preserve an available quest or one still INCOMPLETE/COMPLETE in the log. Thus40604 turn-in, taking40606 and reading while40606 is active remain possible. After40606 is rewarded and no journal task remains, it becomes inactive.",
+      "Compass chest245794 remains usable for its own40606 INCOMPLETE stage, rather than being disabled as soon as40604 completes. Its existing loot132377 and template linkage remain intact.",
+      "Client flags are computed in GameObject::BuildValuesUpdate for each recipient, without mutating the shared object's flags. Both static flags and dynamic activation fields are forced into updates for these scoped objects even when no server field is dirty. Other maps and entries retain their existing behavior.",
+      "Native accept/status changes already call UpdateForQuestWorldObjects. RemoveActiveQuest's delayed callback now also requests that refresh for the four relevant camp quests, covering reward and removal/abandonment while preserving its existing phase notification. A reconnect's create update derives flags from the saved quest state."
+    ],
+    "tests": [
+      "Test-AridenCampInteraction.ps1 compiles production camp eligibility, the actual early Use admission block, emitted GAMEOBJECT_FIELD_FLAGS branch, dynamic activation mask, exact update-field selection predicate and RemoveActiveQuest refresh callback.",
+      "Covers NONE/INCOMPLETE/COMPLETE/REWARDED on all three investigation routes, optional clues and combat replay, pending journal turn-ins, available/active/complete/rewarded40606, follow-up compass, two players at different stages using the same prop, unrelated flags, zero dirty fields, unrelated maps/entries and scoped removal refresh. The fixture uses controlled quest-store/CanTakeQuest data; it does not exercise every native quest admission rule.",
+      "Test-AridenCampInteraction.ps1 -VerifyReleaseBinary confirms canonical Use, ActivateToQuest and BuildValuesUpdate call the new gate, using the matching PE/map timestamp and resolving jump thunks.",
+      "Test-GameObjectText.ps1 and Test-AridenMemoryCredit.ps1 pass after this change, retaining readable clue pages during the active stage and the prior pet/last-memory repair."
+    ],
+    "historical_boundary": "The historical walkthrough documents the journal hand-in and follow-up role but does not prove every optional prop's exact post-reward retail cursor state. This repair implements the user's requested inactive cleanup while preserving those executable handoffs; it is not labeled a fully sniff-verified reconstruction.",
+    "deployment": "Release game/worldserver built into build-extractors/bin/Release with a full final link and no OutDir override. Native test and deployed-call checks pass. No SQL, phase, character inventory, quest status or progress mutations are needed. Configuration/certificates/DLLs and extracted data retained. The user explicitly requested both server executables stopped after validation; that standing convention is recorded in AGENTS.md.",
+    "worldserver_sha256": "1EC484384BA058B92543A2E096460301C8EF6D98E0B53534A4169E8091371388",
+    "runtime_check": "Temporary startup ready at log time10:51:19, with no new DBErrors. Graceful shutdown completed10:51:23; worldserver and bnetserver processes confirmed absent. Protected runtime configuration/certificate/DLL hashes unchanged.",
+    "pending_client": "Check immediate flag/cursor/highlight refresh at investigation completion and journal/compass reward, unchanged visible models, no replay from a stale journal click, proper turn-in/next-quest UI and another player's active investigation. Actual client flags/cursor rendering remain separate from extracted native handler tests."
   }
 }
