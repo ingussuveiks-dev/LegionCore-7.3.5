@@ -192,8 +192,10 @@ static void GrimelordCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& 
 #endif
     std::cout<<"PASS: native Grimelord Rot selection/stacks/damage/spread/cleanup/phase-three/victory; diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<std::endl;
 }
+#ifndef TRIAL_HELYA_GRIMELORD_SUPPORT_ONLY
 int main(int argc,char** argv)
 {
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);SetUnhandledExceptionFilter(CrashTrace);
     try{return RunGarm(argc,argv,GrimelordCase);}catch(std::exception const& e){std::cerr<<e.what()<<'\n';return 1;}
 }
+#endif

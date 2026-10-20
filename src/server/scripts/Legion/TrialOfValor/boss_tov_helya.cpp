@@ -73,6 +73,7 @@ enum Spells
     SpellFetidFission                   = 158534,
     SpellTaintedEssence                 = 228052,
     SpellGiveNoQuarter                  = 228632,
+    SpellGiveNoQuarterCast              = 228633,
     SpellLanternOfDarkness              = 228619,
     SpellDarkness                       = 228383,
     SpellGhostlyRage                    = 228611,
@@ -1418,7 +1419,7 @@ struct npc_night_watch_mariner : ScriptedAI
 
         DoCast(SpellDarkness);
 
-        events.RescheduleEvent(EVENT_1, 8000);
+        events.RescheduleEvent(EVENT_1, 6000);
         events.RescheduleEvent(EVENT_2, 10000);
     }
 
@@ -1461,21 +1462,8 @@ struct npc_night_watch_mariner : ScriptedAI
             {
             case EVENT_1:
             {
-                auto threatlist = me->getThreatManager().getThreatList();
-                for (uint8 i = 0; i < (IsMythicRaid() ? 2 : 1); ++i)
-                {
-                    if (threatlist.empty())
-                        break;
-
-                    if (auto itr = Trinity::Containers::SelectRandomContainerElement(threatlist))
-                    {
-                        if (Unit* target = itr->getTarget())
-                            DoCast(target, SpellGiveNoQuarter, false);
-
-                        threatlist.remove(itr);
-                    }
-                }
-                events.RescheduleEvent(EVENT_1, 9000);
+                DoCast(me, SpellGiveNoQuarterCast, false);
+                events.RescheduleEvent(EVENT_1, me->GetMap()->IsLfrRaid() || me->GetMap()->IsNormalRaid() ? 9300 : 6100);
                 break;
             }
             case EVENT_2:
@@ -1815,6 +1803,33 @@ static void ApplyFetidRot(Unit* caster, Unit* target)
         caster->AddAura(SpellFetidRot, target, nullptr, stacks);
 }
 
+//228633: use the native one/three-target selector before destination missiles.
+class spell_tov_give_no_quarter : public SpellScript
+{
+    PrepareSpellScript(spell_tov_give_no_quarter);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        targets.remove_if([](WorldObject* object) { Player* player = object->ToPlayer(); return !player || !player->IsAlive() || player->isGameMaster(); });
+    }
+
+    void HandleHit(SpellEffIndex /*effectIndex*/)
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target || !target->IsPlayer() || !target->IsAlive() || !FetidRotEncounterActive(caster))
+            return;
+        //TARGET_DEST_DEST does not resolve an explicit Unit target's location.
+        caster->CastSpell(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), SpellGiveNoQuarter, true);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_tov_give_no_quarter::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+        OnEffectHitTarget += SpellEffectFn(spell_tov_give_no_quarter::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
 //228838: use the native70-yard selector and native two-target cap, after Player admission.
 class spell_tov_fetid_rot_targets : public SpellScript
 {
@@ -2126,6 +2141,7 @@ void AddSC_boss_tov_helya()
     RegisterAuraScript(spell_fury_of_the_maw);
     RegisterAuraScript(spell_tov_fetid_rot_aura);
     RegisterSpellScript(spell_tov_fetid_rot_targets);
+    RegisterSpellScript(spell_tov_give_no_quarter);
     RegisterSpellScript(spell_fetid_rot);
     RegisterSpellScript(spell_tentacle_strike);
     RegisterSpellScript(spell_corrupted_axion);

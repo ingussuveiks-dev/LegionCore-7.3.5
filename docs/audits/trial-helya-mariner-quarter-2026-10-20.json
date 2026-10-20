@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "creature": 114809,
+  "status": "Give No Quarter code/data/native/Release checks complete. Separate Lantern energy and Ghostly Rage timing followups remain in progress; no client verification claimed.",
+  "repair": "Cast native selector228633 instead of one/two raw-threat228632 missiles. Admit living non-GM Players before the native one-target/default and three-target/Mythic cap. The dummy hit launches228632 at the selected Player's coordinates because its TARGET_DEST_DEST87 does not resolve a Unit target's location. Preserve native missile travel,228631 impact damage/radius and fixed-location avoidance. Schedule first selector at6s (1s cast completes near7s), then9.3s easy/6.1s hard following pinned BigWigs observations.",
+  "native_data": "Native packed DB2 catalog records228633 cap1/default,3/Mythic, DUMMY base228632 and area targets22/15;228632 TRIGGER_MISSILE32 ->228631 at destination87;228631 uses destination-area enemy damage with native eight-yard radius. Actual SpellInfo checks use difficulty-specific data. No preexisting228633 script binding, spell-target filter or source13 condition supplied this missing dispatch.",
+  "verification": [
+    "Capture original8422b836 game/scripts libraries before implementation changes. Eight pinned cases reproduce zero228633 selector casts, one raw missile per9s (two on Mythic), despite native Mythic cap3. Reference execution is actual native AI/SpellEvents, not a SQL-only replay.",
+    "Eight current difficulty/faction cases execute110s of real Mariner/Player/map updates. Every observed selector has exactly one Player target on LFR/Normal/Heroic and three on Mythic; the real owner-linked Pet is excluded. Native first cast starts5970ms on the observer clock after actor admission, followed by9.3/6.1s cadence. Full health is buffered; this does not validate raid survival/balance.",
+    "An isolated real selector admits only one non-GM Player, publishes a missile destination at500/640 rather than the stationary caster at458/639, then the marked Player moves to530. Native impact damages the separate Player at505, excludes the moved Player and distant Player, proving fixed-location geometry and the real damage path. Reference dummy selector has no missile handler. Visual image/white warning circle remain client checks.",
+    "Exact SQL migration replay inserts once, repeats with zero inserts and preserves existing Darkness/unrelated scripts; the scoped binding is applied to World. Normal CMake Release deploys to the canonical runtime. Bounded PE checks inspect real selector/cadence and coordinate-missile handler, and the existing Rot/Fission suite's deployed methods remain present. Startup and native regression evidence are recorded below."
+  ],
+  "primary_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+      "date": "2018-04-28",
+      "supports": "GiveNoQuarter success repeats9.3s easy/6.1s other; initial success timer7s. Historical addon observations, not DB2 AI timers."
+    },
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "author": "FatbossTV",
+      "supports": "Describes an avoidable marked location, ghostly image and native eight-yard hit. Its ranged-player description alone does not establish an exact eligibility/fallback algorithm."
+    }
+  ],
+  "pending": [
+    "The probe observes Darkness aura present but Mariner powerType0/maxEnergy0 and no Lantern during110seconds: Creature::GetPowerIndex only admits its selected primary type. Reset's energy writes alone cannot select that type. The nonadvancing energizer index and failed-cast/reset lifecycle require a separate focused fix next.",
+    "Ghostly Rage currently repeats16s; pinned BigWigs observes9.7s. Native speed/duration and repeat verification are the next separate change.",
+    "Original ranged-player preference/fallback, exact retail scheduling during cast contention and client marker/image/impact presentation remain unverified. The selector repair does not invent a distance or spec whitelist. Earlier Fission timing uncertainty, quest/client and raid audit limits remain."
+  ],
+  "prior_audit": "trial-helya-grimelord-fission-2026-10-19.json",
+  "evidence": {
+    "runs": {
+      "trial-helya-mariner-native": "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-051128",
+      "trial-helya-mariner-native-baseline": "build-extractors/runtime-test/trial-helya-mariner-native-baseline/run-20261020-051246",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261020-051256"
+    },
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-051128/native-lines.txt": "BEFE876B53BFF7D34E33CE467487336995BB483B4545CE1D01AC08BEBFA052D4",
+      "build-extractors/runtime-test/trial-helya-mariner-native-baseline/run-20261020-051246/native-lines.txt": "BD03E44A0213DDEC3DC4A60A47E8F7A6A2FA7B46353C200591D1D17937159DF3",
+      "build-extractors/runtime-test/trial-helya-native/run-20261020-051256/native-lines.txt": "E1C97599D0FC9EC53AB3856A06F100F09166B62C3750F20BD4AEDD8D1632D029",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "6B138D4916B588BC3569AC771C3F4CB63F7BF89EFB1CF3CADE6158F1FFBBF544",
+      "sql/updates/world/2026_10_20_00_helya_give_no_quarter.sql": "6A47F1E92E02D4AC73C198A8C7E14EB9D08D4FCC053DD783B71CABBB8ED0DCB5",
+      "tools/tests/TrialHelyaMarinerNative.cpp": "EEDB556F028F06D94EA27B98396BF88AF1A36AC412CCD9D8FA0D724B10FA4A95",
+      "tools/tests/Test-TrialHelyaMarinerData.ps1": "1E7456C88E7093CA8C6A06B1D55FF598F98F8D78B4833D0409D079BC7132CA25",
+      "tools/tests/Test-TrialHelyaMarinerRelease.ps1": "C4347269153B5BAB2E5F3E6D5F49770C3853C68C8626F94CD1D5A0CA053D5F96",
+      "tools/research/HelyaMarinerCatalog.cpp": "8FFA734B370FBF95CD09ED53D02D9847EE5FE5B024D228D9C6BB577B4879E3BB",
+      ".codex/helya-mariner-catalog.txt": "7AEEE3AEF8E60391FA3B7D666582415CDB1D4B32600E9DF5CDFFF49536FB291C",
+      "build-extractors/bin/Release/worldserver.exe": "55A1B8367839501EC0F8B093B492CCAB15DC3B9099207D458F457F2B8E48C62F",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "DF3FA2FE03C14EDDBED3A0AC2A5D0C1F36CB36F13E06C483B3168EFDE2238060",
+      "build-extractors/src/server/game/Release/game.lib": "6FD0DE78910C96152C8B834DBFA39C6139ED7BA87147B1A2CCB799BC035D906E"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-051251",
+    "startup_DBErrors": 0,
+    "startup_stderr": 0
+  }
+}
