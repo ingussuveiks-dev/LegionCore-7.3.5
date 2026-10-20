@@ -6659,10 +6659,24 @@ void AuraEffect::HandleAuraOverrideSpells(AuraApplication const* aurApp, uint8 m
     if (apply)
     {
         auto const& overrideList = target->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_SPELLS);
-        for (auto const& over : overrideList)
+        for (;;)
         {
-            if (over->GetId() != GetId())
-                over->GetBase()->Remove();
+            Aura* previous = nullptr;
+            for (AuraEffect const* over : overrideList)
+                if (over->GetId() != GetId() && !over->GetBase()->IsRemoved())
+                {
+                    previous = over->GetBase();
+                    break;
+                }
+            if (!previous)
+                break;
+
+            // Removing an aura unregisters its effects and can run linked
+            // removals too. Never keep an iterator or a pointer snapshot
+            // across that call; select the next aura from the live list.
+            previous->Remove();
+            if (aurApp->GetRemoveMode() || GetBase()->IsRemoved() || !target->IsInWorld())
+                return;
         }
         target->SetUInt16Value(PLAYER_FIELD_BYTES_5, PLAYER_BYTES_2_OVERRIDE_SPELLS_UINT16_OFFSET, overrideId);
         if (OverrideSpellDataEntry const* overrideSpells = sOverrideSpellDataStore.LookupEntry(overrideId))

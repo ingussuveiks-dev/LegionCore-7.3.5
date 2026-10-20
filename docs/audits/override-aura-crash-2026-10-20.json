@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-20",
+  "problem": "worldserver access violation while replacing a player's override-spells aura",
+  "incident": {
+    "local_time": "2026-10-20 10:34:50",
+    "report": "build-extractors/bin/Release/Crashes/_worldserver.exe_[20-10_10-34-50].txt",
+    "dump": "build-extractors/bin/Release/Crashes/_worldserver.exe_[20-10_10-34-50].dmp",
+    "dump_sha256": "28d15a82c9e3f1f91e0ebeec6ef500cab84675f27e6cb51b4b364391aaabc4c4",
+    "matching_original_executable_sha256": "dea2044689d1d694a1ca3e0fd8730c9f222c2891934cb06ca4aabd0b839328c4",
+    "module_timestamp": "0x6ad71593",
+    "module_image_size": "0x4111000",
+    "exception": "0xc0000005 read at 0x10",
+    "instruction_rva": "0x19d05a0",
+    "symbol": "AuraEffect::HandleAuraOverrideSpells + 0x90",
+    "evidence": [
+      "The minidump module timestamp and image size match the privately archived original executable; the original map timestamp also matches.",
+      "The old handler calls Aura::Remove through its virtual method and then advances the erased std::list node. RBX is zero at mov r8,[rbx+10h].",
+      "The captured AuraEffect/SpellInfo identify spell 198425; RBP contains override ID 641. The remaining live override list contains the new aura.",
+      "The stack continues through HandleEffect, _HandleEffect, _ApplyAura, UpdateTargetMap, AddAura, SetAuraStack and SmartScript::ProcessAction."
+    ],
+    "reconstruction_tool": "tools/research/audit_override_aura_crash.py",
+    "private_artifacts": "Original executable/map and raw crash files remain local and are excluded from this commit."
+  },
+  "content_identification": {
+    "native_db2": ["effect 198425 0 293 641", "override 641 198424"],
+    "live_database_observation": "Sataiel entry 100388, map 0, spawn 365447: SmartAI source -365447 row 6 adds aura 198425 through action 75 to nearby players; row 7 removes it outside the nearby radius.",
+    "database_changes": "None. The fault is generic override-aura replacement, not a content row or a pet killing-blow handler."
+  },
+  "implementation": [
+    "Select one nonremoved, different-spell base aura from the live override list, release the iterator, remove that aura, and restart from the live list head.",
+    "Do not retain iterators or snapshots of AuraEffect pointers across removal callbacks, which can also remove other auras.",
+    "Stop applying override fields and temporary spells if a callback removes the current application/base aura or takes the player out of the world.",
+    "Preserve existing same-spell-ID behavior, override IDs, temporary spell registration/removal and permanent learned spells."
+  ],
+  "automated_checks": {
+    "baseline": {
+      "command": "tools/tests/Test-OverrideAuraReplacement.ps1 -BaselineRevision e108a1a9",
+      "result": "Compiled successfully, reached the first production-dispatcher replacement case, and reproduced native exit -1073741819 (0xc0000005)."
+    },
+    "patched": [
+      "tools/tests/Test-OverrideAuraReplacement.ps1: PASS, including native runtime DB2 catalog validation.",
+      "tools/tests/Test-AuraScriptReentry.ps1: PASS.",
+      "tools/tests/Test-WarlockRegression.ps1: PASS.",
+      "git diff --check: PASS."
+    ],
+    "fixture_scope": "Extracts the production override handler, effect dispatcher, live std::list registration and Player temporary-spell methods. Tests replacement/cleanup, multiple auras/effects, linked removal, same-ID preservation, reentrant cancellation/replacement, already-removed bases, permanent spells, out-of-world and mode admission. Aura removal scheduling and script callbacks use fixture objects; this is not a live client session."
+  },
+  "release": {
+    "build": [
+      "cmake --build build-extractors --config Release --target game -j 8",
+      "cmake --build build-extractors --config Release --target worldserver -j 8 -- /p:LinkIncremental=false"
+    ],
+    "executable": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "072c77dd9d46baa582b05bc5e17053b48849fa0d7d3f992eddd79d05ead0515a",
+    "manual_binary_verification": "Inspected the actual Release map/disassembly: HandleAuraOverrideSpells begins at 0x14108ba70. After Remove at 0x14108bba4, the application/base/out-of-world guards run and control returns to 0x14108baf0 to reload the live list head. It does not advance the removed iterator. This was manual inspection, not an automated binary regression test.",
+    "startup": "Ready at local 11:06:36, with no new DBErrors lines. The startup reports base revision e108a1a90c0e+ because this build precedes the fix commit.",
+    "shutdown": "Graceful database shutdown completed at local 11:06:41. Both worldserver.exe and bnetserver.exe were confirmed stopped for manual visible launch.",
+    "preservation": "Configuration/certificate/DLL hashes unchanged; original crash files retained and no new runtime crash files appeared. No character or inventory resets."
+  },
+  "pending_client_verification": [
+    "Approach Sataiel while a different override-spells aura is active; confirm replacement and extra button 198424 without a crash.",
+    "Leave and re-enter the radius; check button removal/reappearance and normal quest interaction in the 7.3.5 client."
+  ],
+  "verification_limit": "Native regression tests, deployed-code inspection and startup passed. The actual Sataiel interaction and whole quest are not client-verified by this change."
+}
