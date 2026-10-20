@@ -1,0 +1,27 @@
+{
+  "reported_failure": "Stage4 scythe-room screenshot shows two Revil models together after the previously repaired barrier handoff.",
+  "evidence": [
+    "The reveal is a separate101286 point2 -> TALK1 -> TEXT_OVER1 -> SUMMON101282 -> INVOKER_CAST199627 chain. The barrier repair did not replace this second handoff.",
+    "The old unsummon depends on a transient invoker and native controller membership; an orphaned owned follower can coexist with the new guide. This is a supported failure path, not a packet trace proving which prerequisite failed in this screenshot."
+  ],
+  "repair": "Scenario988 TEXT_OVER requests instance field10085003. Retire the real player controller and owned101286/199625 summons, then create one stationary101282 at the native reveal point. Retry failed summon, latch only success, preserve full speech before request and native DK/druid routes. Clear scene actor NPC flags; never retire permanent demon or foreign summons.",
+  "checks": [
+    "Test-DarkRidersStageLifecycle.ps1 -VerifyReleaseBinary includes migration10 twice, base-actor scenario conditions, native SET_INST_DATA dispatch and production instance retry/latch/follower cleanup. Wrong stage, failed summon, repeated request and unrelated summons checked.",
+    "Test-DarkRidersContentData.ps1 independently replays migrations10-12 in temporary real-schema tables.",
+    "Existing entrance, barrier, Conservator, damage, dialogue and Ulthalesh scenario tests pass."
+  ],
+  "deployed_instructions": "SetData0x1404385a0 admits field0x99e28b(10085003), scenario0x3dc(988), step3; tail-calls EnsureRevealGuide0x140437590. Its lambda0x1404364b0 calls RetireFollower before the success latch and SummonCreature101282 with native reveal coordinates; latch only after non-null summon.",
+  "client_pending": [
+    "Fresh full introduction/barrier/reveal sequence: one Revil at each role, intact voice timing and preserved demon portrait.",
+    "No recreated scene guide after intentional despawn; DK/druid behavior remains client-unverified."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "992EBE9F239568F43127113F46F4C5903B28043AE4FC168BA09E32EAAE9DA25C",
+    "pe_and_link_map_timestamp": "6ad768ed (2026-10-20 16:13:17 Europe/Riga)",
+    "build": "cmake --build build-extractors --config Release --target worldserver -j 8 -- /p:LinkIncremental=false",
+    "link_inputs": "Canonical src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; no OutDir override.",
+    "startup": "Owned hidden worldserver PID1896 reached World initialized; gracefully stopped at16:18:12. No new DBErrors; runtime configuration/certificate/DLL hashes unchanged. Both servers stopped at handoff.",
+    "client_verification": "Pending. Compilation, extracted handlers, SQL replay and startup do not prove client movement, scenes, final turn-in or the entire scenario."
+  }
+}

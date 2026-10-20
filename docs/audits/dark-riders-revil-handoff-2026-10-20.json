@@ -1,6 +1,9 @@
 {
   "date": "2026-10-20",
-  "related": ["dark-riders-player-arrival-2026-10-20.json", "dark-riders-stage-lifecycle-2026-10-20.json"],
+  "related": [
+    "dark-riders-player-arrival-2026-10-20.json",
+    "dark-riders-stage-lifecycle-2026-10-20.json"
+  ],
   "client_observed": "After411fe818 the user reached displayed Stage2, saw the correct barrier instructions, but reported two overlapping Revils at the stationary position plus the follower beside them. The Stage1 arrival repair progressed, while its companion handoff failed client validation.",
   "evidence": [
     "Two independent stationary101282 summon paths existed: migration06's initial Ariden row8 and follower101286's MOVEMENTINFORM point1 row4. The latter had no scenario/stage admission and could execute after its earlier Data2/2 movement was already queued.",
@@ -33,5 +36,8 @@
     "ownership": "User-launched13560/21680 were initially running and were left alone. They had already exited before final deployment; Codex stopped only its own subsequent hidden validation process."
   },
   "client_retest": "Start canonical servers visibly and restart at the scenario entrance. At the Stage2 barrier exactly one stationary Revil should remain, with no quest marker or old follower. Repeat a normal approach and Gateway arrival with follower left behind; confirm scene/timing and no new guide after its intentional departure. Continue Conservator/reveal/finale, including the later escort, and verify the primary demon/portrait.",
-  "follow_up_entrance_follower": "Client next reported the stair speaker disappearing after its introduction without creating the Stage1 follower. The old one-shot normal invoker cast was still used there. Its native cast-admission/missing-invoker failures and stale-controller recovery, the completion-owned retry repair and remaining client checks are retained in dark-riders-entrance-follower-2026-10-20.json. This does not retroactively certify the complete barrier/quest traversal."
+  "follow_up_entrance_follower": "Client next reported the stair speaker disappearing after its introduction without creating the Stage1 follower. The old one-shot normal invoker cast was still used there. Its native cast-admission/missing-invoker failures and stale-controller recovery, the completion-owned retry repair and remaining client checks are retained in dark-riders-entrance-follower-2026-10-20.json. This does not retroactively certify the complete barrier/quest traversal.",
+  "subsequent_reports": [
+    "Stage4 duplicates reported after entrance repair; separate reveal handoff now tracked in dark-riders-reveal-handoff-2026-10-20.json. Full client path remains pending."
+  ]
 }

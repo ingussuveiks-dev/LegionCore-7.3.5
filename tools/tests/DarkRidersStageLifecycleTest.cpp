@@ -22,6 +22,7 @@ struct InstanceMap;
 struct Player:Unit{
  bool aura=false;ObjectGuid GetGUID(){return 42;}
  bool controller=false;uint32 followerAttempts=0;std::function<void()> summonFollower;
+ std::function<Creature*()> summonGuide; Creature* SummonCreature(uint32,Position,uint32);
  InstanceMap* map=nullptr;GuidList followers;InstanceMap* GetMap(){return map;}GuidList* GetSummonList(uint32){return &followers;}
  bool IsInWorld(){return true;}bool IsAlive(){return true;}bool IsBeingTeleported(){return false;}
  uint32 GetMapId(){return 1533;}bool GetQuestRewardStatus(uint32){return false;}int GetQuestStatus(uint32){return QUEST_STATUS_INCOMPLETE;}
@@ -43,6 +44,7 @@ struct Creature{
  uint32 GetUInt32Value(uint32 field){return field==UNIT_FIELD_CREATED_BY_SPELL?createdBy:flags;}void SetFlag(uint32,uint32 bits){flags|=bits;}void RemoveFlag(uint32,uint32 bits){flags&=~bits;}
  ReactStates GetReactState(){return reaction;}void SetReactState(ReactStates value){reaction=value;}
 };
+Creature* Player::SummonCreature(uint32 entry,Position,uint32 type){assert(entry==101282&&type==8);return summonGuide?summonGuide():nullptr;}
 struct GameObject{
  uint32 entry=245994,flags=0,uses=0;uint64 guid=20;
  uint32 GetEntry(){return entry;}ObjectGuid GetGUID(){return guid;}uint32 GetUInt32Value(uint32){return flags;}
@@ -142,7 +144,16 @@ int main(){
  Creature otherGuide{101282,768,87};otherGuide.summoned=true;otherGuide.owner=999;hs.OnCreatureCreate(&otherGuide);assert(otherGuide.npcFlags==2);
  hs.OnCreatureRemove(&guide);hm.creatures.erase(guide.guid);hs.Update(250);assert(attempts==2);
  handoff.step=3;uint32 before=escort.retired;hs.Update(250);assert(escort.retired==before); // Later escort retained.
- otherGuide.owner=initial.guid;hs.OnCreatureCreate(&otherGuide);assert(otherGuide.npcFlags==2); // Native wounded/finale flags retained.
+ otherGuide.owner=initial.guid;hs.OnCreatureCreate(&otherGuide);assert(otherGuide.npcFlags==0); // Reveal guide is also a scene actor.
+ // Reveal TEXT_OVER has no invoker. One successful instance-owned guide,
+ // actual follower retirement, failed summon retry and no duplicate on replay.
+ handoff.step=2;NativeGuideRequest(&hs,false,DarkRidersRevil::RevealGuideRequest);assert(!hs.revealGuideRequested);
+ handoff.step=3;uint32 revealAttempts=0;
+ escortOwner.summonGuide=[&]()->Creature*{++revealAttempts;return revealAttempts==1?nullptr:&otherGuide;};
+ NativeGuideRequest(&hs,false,DarkRidersRevil::RevealGuideRequest);assert(revealAttempts==1&&!hs.revealGuideStarted);
+ hs.Update(250);assert(revealAttempts==2&&hs.revealGuideStarted&&escort.retired>before);
+ for(int i=0;i<10;++i){NativeGuideRequest(&hs,false,DarkRidersRevil::RevealGuideRequest);hs.Update(250);}
+ assert(revealAttempts==2&&!demon.retired&&!foreign.retired&&!wrongSpell.retired);
  // The entrance speaker may already have despawned and lost its invoker.
  // Completion persists in the instance. Respect200ms, retry a failed summon
  // or stale controller, and stop recreating the follower at the barrier.

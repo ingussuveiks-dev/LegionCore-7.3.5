@@ -46,6 +46,7 @@ $migration=Get-Content "$repo/sql/updates/world/2026_10_20_05_dark_riders_stage_
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_20_06_dark_riders_player_arrival.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_20_08_dark_riders_revil_handoff.sql" -Raw)
 $migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_20_09_dark_riders_entrance_follower.sql" -Raw)
+$migration+="`n"+(Get-Content "$repo/sql/updates/world/2026_10_20_10_dark_riders_reveal_handoff.sql" -Raw)
 $sql=@"
 CREATE TEMPORARY TABLE saved_sai LIKE smart_scripts;
 INSERT INTO saved_sai SELECT * FROM smart_scripts WHERE entryorguid IN(-369334,-369378,101282,101286,101257,100850,10085000,100344);
@@ -66,6 +67,8 @@ SELECT * FROM conditions ORDER BY SourceEntry,SourceId,SourceGroup,ElseGroup,Con
 SELECT 'END';
 SELECT 'ENTRANCE',id,event_type,event_param2,target_type,link FROM smart_scripts WHERE entryorguid=-369378 AND source_type=0 ORDER BY id;
 SELECT 'ENTRANCE_REQUEST',action_type,action_param1,action_param2 FROM smart_scripts WHERE entryorguid=-369378 AND source_type=0 AND id=1;
+SELECT 'REVEAL_REQUEST',event_type,event_param1,event_param2,action_type,action_param1,link FROM smart_scripts WHERE entryorguid=101286 AND source_type=0 AND id=92;
+SELECT 'REVEAL_ROUTE',SourceGroup,ConditionTarget,ConditionValue1,ConditionValue2 FROM conditions WHERE SourceEntry=101286 AND SourceGroup IN(14,93) ORDER BY SourceGroup,ElseGroup;
 SELECT 'PLAYER',COUNT(*) FROM conditions WHERE SourceEntry=-369378 AND SourceGroup=1 AND ConditionTypeOrReference=32 AND ConditionTarget=0 AND ConditionValue1=16;
 SELECT 'CROSS',id,action_type,action_param1,action_param2,action_param3,action_param4,target_type,link FROM smart_scripts WHERE entryorguid=101257 AND source_type=0 AND id IN(2,3) ORDER BY id;
 SELECT 'LINK',link FROM smart_scripts WHERE entryorguid=101286 AND source_type=0 AND id=0;
@@ -89,6 +92,7 @@ foreach($expected in @("ENTRANCE`t0`t10`t2`t1`t0","ENTRANCE`t1`t52`t101282`t1`t2
 foreach($asset in @(47983,47984,47985,47987,47988,47989)){if($rows -notcontains "CREDIT`t$asset`t100"){throw "Missing bounded stage credit radius for $asset"}}
 if($rows -notcontains "ENTRANCE_REQUEST`t34`t10085002`t1"){throw 'Entrance request not wired to actual instance field'}
 foreach($expected in @("ARRIVAL`t7`t8`t10`t1`t0`t48`t205`t92`t47983`t7","ARRIVAL`t8`t9`t61`t1`t0`t0`t34`t10085001`t1`t1","ARRIVAL`t9`t0`t61`t1`t0`t0`t85`t199627`t2`t7","ARRIVAL_PLAYER`t1","ARRIVAL_STAGE`t1","LEGACY_WARLOCK`t0","LATE_MOVEMENT`t1026`t1`t1","LATE_MOVEMENT`t1014`t1`t1","SHARED_ARIDEN`t13")){if($rows -notcontains $expected){throw "Player arrival SQL assertion missing: $expected"}}
+foreach($expected in @("REVEAL_REQUEST`t52`t1`t101286`t34`t10085003`t0","REVEAL_ROUTE`t14`t1`t1026`t3","REVEAL_ROUTE`t14`t1`t1014`t3","REVEAL_ROUTE`t93`t1`t988`t3")){if($rows -notcontains $expected){throw "Reveal handoff assertion missing: $expected"}}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/DarkRidersStageLifecycleTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`"`r`n"
 [IO.File]::WriteAllText("$out/run.cmd",$cmd);& "$out/run.cmd"

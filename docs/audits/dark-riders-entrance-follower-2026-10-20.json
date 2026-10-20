@@ -1,6 +1,9 @@
 {
   "date": "2026-10-20",
-  "related": ["dark-riders-revil-handoff-2026-10-20.json", "dark-riders-player-arrival-2026-10-20.json"],
+  "related": [
+    "dark-riders-revil-handoff-2026-10-20.json",
+    "dark-riders-player-arrival-2026-10-20.json"
+  ],
   "client_observed": "After8a891880 the user heard the stair introduction in displayed Stage1. The static speaker disappeared, but no following Revil appeared; the screenshot shows the player continuing down the stairs. Absence before the introduction is intentional, absence after completion is the new failed client result.",
   "evidence": [
     "Entrance369378 TEXT_OVER row1 still used normal INVOKER_CAST85/flags0 ->199626, then immediately linked the speaker's despawn. Native INVOKER_CAST depends on GetLastInvoker and schedules one Player cast200ms later. A missing remembered invoker skips the cast; a failed cast does not cancel the linked despawn or schedule a retry.",
@@ -29,5 +32,8 @@
     "startup": "Ready15:13:47 Europe/Riga; no new DBErrors. Owned hidden PID31244 stopped gracefully, database shutdown complete15:13:51. Runtime configuration/certificate/DLL hashes unchanged.",
     "ownership": "Initially user worldserver22680 and bnet35492 were running and were not stopped by Codex. User worldserver exited15:01:46 and bnet exited15:11:28; the owned hidden check started15:13:32. Both servers are stopped at handoff."
   },
-  "client_retest": "Start canonical servers visibly. Reach stair Revil and let the full introduction finish; test standing still and casting a regular cast-time spell as the speech ends. One following Revil should appear after the short handoff delay and follow down the stairs. Continue to the barrier: the follower must retire and exactly one stationary guide remain. Also retry after death/live re-entry and verify the primary demon/portrait; initial spawn/companion absence before speech is expected."
+  "client_retest": "Start canonical servers visibly. Reach stair Revil and let the full introduction finish; test standing still and casting a regular cast-time spell as the speech ends. One following Revil should appear after the short handoff delay and follow down the stairs. Continue to the barrier: the follower must retire and exactly one stationary guide remain. Also retry after death/live re-entry and verify the primary demon/portrait; initial spawn/companion absence before speech is expected.",
+  "subsequent_reports": [
+    "Subsequent client reached Stage4 and final chest, but reported reveal-room duplicate Revil and missing final quest credit. See separate2026-10-20 reveal/completion audits; do not treat entrance repair as full-scenario client verification."
+  ]
 }

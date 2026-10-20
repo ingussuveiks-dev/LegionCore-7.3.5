@@ -89,6 +89,7 @@ namespace DarkRidersRevil
 {
 constexpr uint32 BarrierGuideRequest = 10085001;
 constexpr uint32 EntranceFollowerRequest = 10085002;
+constexpr uint32 RevealGuideRequest = 10085003;
 bool HasFollower(Player* player)
 {
     for (ObjectGuid const& guid : *player->GetSummonList(101286))
@@ -133,6 +134,8 @@ public:
         ObjectGuid barrierAriden{};
         bool barrierGuideRequested = false;
         bool barrierGuideStarted = false;
+        bool revealGuideRequested = false;
+        bool revealGuideStarted = false;
         bool entranceFollowerRequested = false;
         uint32 entranceFollowerTimer = 0;
         uint32 refresh=0;
@@ -173,6 +176,15 @@ public:
         }
         void SetData(uint32 type, uint32 value) override
         {
+            if (type == DarkRidersRevil::RevealGuideRequest && value == 1)
+            {
+                Scenario* scenario = Progress();
+                if (!scenario || scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 3)
+                    return;
+                revealGuideRequested = true;
+                EnsureRevealGuide();
+                return;
+            }
             if (type == DarkRidersRevil::EntranceFollowerRequest && value == 1)
             {
                 Scenario* scenario = Progress();
@@ -193,6 +205,27 @@ public:
                 barrierGuideRequested = true;
                 EnsureBarrierGuide();
             }
+        }
+        void EnsureRevealGuide()
+        {
+            Scenario* scenario = Progress();
+            if (!revealGuideRequested || revealGuideStarted || !scenario ||
+                scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 3)
+                return;
+
+            // The native TEXT_OVER callback has no reliable Player invoker.
+            // Own the second handoff just as at the barrier: retire the actual
+            // controller/summon, retry failure, and create one stationary guide.
+            instance->ApplyOnEveryPlayer([this](Player* player)
+            {
+                DarkRidersRevil::RetireFollower(player);
+                if (!revealGuideStarted && player->IsInWorld() && player->IsAlive() && !player->IsBeingTeleported())
+                    if (Creature* guide = player->SummonCreature(101282, Position(-10960.8f, -1892.34f, -48.3028f, 1.79681f), TEMPSUMMON_MANUAL_DESPAWN))
+                    {
+                        revealGuideStarted = true;
+                        TC_LOG_INFO("scripts.ai", "Dark Riders: reveal Revil handoff created guide %u", guide->GetGUIDLow());
+                    }
+            });
         }
         void Sync()
         {
@@ -255,6 +288,9 @@ public:
                 creature->GetEntry() == 101282 && creature->isSummon() &&
                 barrierAriden && creature->ToTempSummon()->GetSummonerGUID() == barrierAriden)
                 creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0);
+            if (scenario && scenario->GetScenarioId() == 988 && scenario->GetCurrentStep() == 3 &&
+                creature->GetEntry() == 101282 && creature->isSummon())
+                creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0);
             if (DarkRidersArtifact::IsStageActor(creature->GetEntry()))
             {
                 actors.emplace(creature->GetGUID(),ActorGate{});
@@ -307,6 +343,7 @@ public:
             refresh=250;
             Sync();
             EnsureBarrierGuide();
+            EnsureRevealGuide();
             Scenario* scenario = Progress();
             if (scenario && scenario->GetScenarioId() == 988)
                 instance->ApplyOnEveryPlayer([this, scenario](Player* player)
