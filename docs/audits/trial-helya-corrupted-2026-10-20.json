@@ -3,6 +3,7 @@
   "interruption_followup": "trial-helya-player-interrupt-2026-10-20.json resolves the interrupted-player lockout item below with a reproduced shared Player cooldown defect, repair and actual Counterspell/recovery execution. The original scope and client limits of this audit remain recorded.",
   "death_victory_followup": "trial-helya-control-lifecycle-2026-10-20.json adds actual scaled Player killing blows, native corpse/resurrection and immediate Helya-victory cleanup checks. All pass without a production change; map departure/re-entry, saved-character recovery and client checks remain outside this follow-up.",
   "map_travel_followup": "trial-helya-control-travel-2026-10-20.json adds actual far teleport/worldport ACK, rejected combat entry and return through the original live Mythic group bind after evade. All4 round trips pass without a production change. Distinct pending Axion retains its native duration outside until safe expiry; its exact retail cleanup remains unverified. Logout/cold recovery and client checks remain separate.",
+  "login_followup": "trial-helya-control-login-2026-10-20.json reproduces permanent Bleak231862 surviving actual logout/save and prepared aura load without Corrupted/transform. A scoped no-save flag repairs current saves and rejects legacy rows;8 live-aura logout/component-load cases pass. Full authenticated login/client and cold-server recovery remain separate. The same audit retains a distinct unresolved zone8440 outdoor-graveyard link error observed on disconnect death.",
   "map": 1648,
   "spells": [
     232450,

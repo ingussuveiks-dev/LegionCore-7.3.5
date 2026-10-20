@@ -63,6 +63,7 @@ $gameLib=$libs | Where-Object {$_ -match 'game[\\/]Release[\\/]game.lib$'} | Sel
 if(!$gameLib){throw 'Actual game final-link input is missing'}
 $runtime=(Resolve-Path "$repo/build-extractors/bin/Release").Path
 $nativeSources=@('AI/CoreAI/CombatAI.cpp','AI/CoreAI/UnitAI.cpp','AI/CreatureAI.cpp','AI/ScriptedAI/ScriptedCreature.cpp','Spells/SpellInfo.cpp','Spells/Spell.cpp','Spells/SpellEffects.cpp','Spells/Auras/SpellAuras.cpp','Spells/Auras/SpellAuraEffects.cpp','Entities/Creature/Creature.cpp','Entities/Creature/TemporarySummon.cpp','Entities/Unit/Unit.cpp','Maps/Map.cpp','Globals/ObjectMgr.cpp','Scripting/ScriptMgr.cpp','Globals/ScriptsData.cpp')
+if($TrialHelyaControl){$nativeSources+='Spells/SpellMgr.cpp'}
 if($Offensive -or $lootProbe){$nativeSources+=@('Entities/Player/Player.cpp','Entities/Unit/StatSystem.cpp','Conditions/ConditionMgr.cpp','Server/WorldSession.cpp','Server/Protocol/Opcodes.cpp','Globals/QuestData.cpp','Quests/QuestDef.cpp')}
 if($lootProbe){$nativeSources+=@('Loot/LootMgr.cpp','Groups/Group.cpp','Entities/Player/KillRewarder.cpp','Entities/Item/Item.cpp')}
 if($MasterLoot -or $RollCompletion -or $GroupLifecycle){$nativeSources+=@('Handlers/LootHandler.cpp','Server/Packets/LootPackets.cpp')}
@@ -217,7 +218,7 @@ if($TrialHelyaControl -or $TrialHelyaMistwatcher -or $TrialHelyaMariner -or $Tri
 if($TrialHelyaGrimelord){$hashes['sql/updates/world/2026_10_19_02_helya_fetid_rot.sql']=(Get-FileHash "$repo/sql/updates/world/2026_10_19_02_helya_fetid_rot.sql").Hash;foreach($path in @('TrialHelyaGrimelordNative.cpp','Test-TrialHelyaGrimelordNative.ps1','Test-TrialHelyaGrimelordData.ps1','Test-TrialHelyaGrimelordRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
 if($TrialHelyaMariner){foreach($path in @('TrialHelyaMarinerNative.cpp','Test-TrialHelyaMarinerNative.ps1','TrialHelyaGrimelordNative.cpp')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}}
 if($TrialHelyaMistwatcher){foreach($path in @('TrialHelyaMistwatcherNative.cpp','Test-TrialHelyaMistwatcherNative.ps1','Test-TrialHelyaMistwatcherRelease.ps1','TrialHelyaGrimelordNative.cpp')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}}
-if($TrialHelyaControl){foreach($path in @('TrialHelyaControlNative.cpp','Test-TrialHelyaControlNative.ps1','Test-TrialHelyaControlRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
+if($TrialHelyaControl){foreach($path in @('TrialHelyaControlNative.cpp','TrialHelyaControlLoginNative.inc','Test-TrialHelyaControlNative.ps1','Test-TrialHelyaControlRelease.ps1','Test-TrialHelyaControlLoginRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
 $hashes['native-lines.txt']=(Get-FileHash "$output/native-lines.txt").Hash
 $inputs+=Get-ChildItem "$runtime/gt" -File
 foreach($inputFile in $inputs){$hashes[$inputFile.FullName.Substring($runtime.Length+1).Replace('\','/')]=(Get-FileHash $inputFile.FullName -Algorithm SHA256).Hash}

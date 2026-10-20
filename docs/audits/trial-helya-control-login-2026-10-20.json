@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "baseline": "0c502238909c5b31ed43c94ee9eba2fe07a07317",
+  "status": "Bleak Eruption231862 no longer persists as an orphan after Corrupted logout. Current native saves, prepared component loads, explicit legacy rejection, related regressions, canonical Release implementation inspection and startup pass. Full authenticated login/client and separate disconnect-death graveyard handling are not verified by this fix.",
+  "reference": [
+    "The original live Corrupted subject has232350 CanBeSaved0 duration58480 and232358 CanBeSaved0 duration-1, but231862 CanBeSaved1 duration-1. Actual WorldSession::Update -> LogoutPlayer(true) deletes the Player and saves a permanent character_aura231862 row. Prepared _LoadAuras in a fresh Player restores Bleak without Corrupted, transform, charmer or a current cast. Both the initial and corrected-loading-context reference logs retain this actual orphan restoration.",
+    "The original final-link game library is retained at build-extractors/runtime-test/helya-control-login-reference/game.lib, SHA256 D8E6F20CD80BD95B3BBC792731D6DF64891260BA4BF80FA3A653E26C0FAC6060. Its initial native output is retained beside it. This is the current pre-fix0c502238 library, not the older3f102023 Control -Baseline mode."
+  ],
+  "repair": "Apply only SPELL_ATTR0_CU_CANT_BE_SAVED_IN_DB0x800 to spell231862 through the existing SpellMgr::LoadSpellCustomAttr spell-fix dispatcher. Aura::CanBeSaved already enforces this flag in both Player::_SaveAuras and Player::_LoadAuras. Current saves omit the child aura, historical rows are rejected during load and the next ordinary native save deletes them. No character SQL migration/deletion, generic aura/interrupt/logout hook, spell duration, effect, proc filter, energy amount, native client data or primary pet behavior is changed.",
+  "verification": [
+    "The extended control suite passes all8 difficulty/race cases. Within its two Mythic cases it runs4 logout/load inputs each: active Corrupted with a live actual Infusion, pending Axion at0 offline seconds, pending Axion at20 offline seconds, and an explicit old permanent231862 row. All8 new logout/component-load cases pass for Human and Orc.",
+    "Each disposable heap Player is saved, cached and added through native raid-group membership. Actual instance admission and a deserialized CMSG_INSTANCE_LOCK_RESPONSE accept the permanent Mythic bind before aura setup. The Player social pointer is initialized through the native social loader, as in the existing actual-logout fixture. The controlled inputs obtain232350 through the real absorb-expiry path and begin the actual seven-second Infusion through periodic dispatch.",
+    "WorldSession::SetCanLogout and Update(1) execute the actual LogoutPlayer(true), save, cleanup, map removal and Player deletion. Player lookup and session attachment disappear, online becomes0, and the character remains at the raid location. Actual SQL checks require no232350/232358/231862/232450 rows in current saves. Helya alternate power remains10 immediately after logout and again after component load, before a wipe can reset it.",
+    "The loaded live Axion aura is already not saveable in this core; the first pending-input assumption that it should persist was rejected by actual CanBeSaved0 evidence. The fix does not change232450. Tests pass both0 and20 offline seconds to the native loader and require continued absence of its unsaved row. This does not claim to test a persisted negative-aura countdown or change its native in-session/map-transfer duration.",
+    "Fresh Player components load through real CHAR_SEL_GROUP_MEMBER, CHAR_SEL_CHARACTER_INSTANCE, CHAR_SEL_CHARACTER_AURAS and CHAR_SEL_CHARACTER_AURAS_EFFECTS queries and native _LoadGroup/_LoadBoundInstances/_LoadAuras. Group/binds load before map selection, and the actual selected map is attached before aura loading with a real PlayerLoading GUID and the Player out of world. Login-check admission preserves the original Mythic instance; completed encounter mask remains3. The fixture does not replace these loaders with a state model.",
+    "The legacy case explicitly inserts a fixture row using the native aura prepared statements:231862, effect0/mask1, permanent max/remain-1 and zero native effect amount. This is synthetic old-version input consistent with the observed original row and native spell data, not a claim to have copied a personal character row or every binary field of the former snapshot. The actual aura query must return exactly1 row; _LoadAuras rejects it and a subsequent native SaveToDB removes its SQL row.",
+    "Before native Player map admission, the actual Helya evade resets the active encounter. After admission,15000ms of actual Unit spell/aura updates and ordinary charm-AI admission produce no completed231863 or energy change from the post-reset baseline. The Player retains the permanent bind to its original instance, no charmer/current cast, and no stale Corrupted/transform/Bleak. The normal control suite also retains its existing64 damage releases,6 death/resurrection cases,2 victories,4 far-transfer round trips and real Counterspell timing tests.",
+    "The related Mistwatcher native suite passes all8 cases with the fixed library, preserving active NPC/controlled-player Eruption and native energize behavior. Normal CMake Release builds use generated final-link game/scripts libraries and place both executables in canonical build-extractors/bin/Release. No global OutDir override is used.",
+    "The new Release check exception-bounds LoadSpellCustomAttr, finds its single231862 initializer, checks its4-byte list span and actual ApplySpellFix dispatch, resolves the callback and verifies exact leaf instructions OR AttributesCu[0] with0x800 then return. This proves the scoped implementation in the deployed executable, along with prior Control release checks. Native input manifests now include SpellMgr.cpp and the new helper/release files.",
+    "Final native Server.log has no ERROR/FATAL and DBErrors is empty. Canonical startup reaches ready and exits gracefully0 with empty DBErrors/stderr. The one worldserver process launched for validation was PID2452, hidden, and was shut down by the smoke script; no background validation servers remain. Scratch schemas/users were verified0/0."
+  ],
+  "fixture_limits": [
+    "No authenticated socket, aggregate LoadFromDB execution, full Player::Update loop or7.3.5 client check is claimed. The fixture executes actual logout and the specified native prepared-load components in source order, using disposable character/auth schemas and read-only private World/Hotfix pools. It does not use personal account/character rows.",
+    "The controlled logout cases preserve the actual in-progress Infusion until logout; they do not manually interrupt casting or strip Corrupted before save. Pending-absorb cases use an ordinary ranged raid member and explicitly CombatStop that subject to isolate live-aura persistence from disconnect-death/repop. The native absorb, duration, caster and save filter remain intact. These cases are not an assertion that a melee-attacked disconnect will preserve a living Player.",
+    "Helya/other actor scheduling is frozen during the isolated subject observation. The full native phase bootstrap and later evade are real. Other fixture actors use health buffers. The subject is a Warrior fixture without a fully initialized client appearance/class resource/weapon/talent layout.",
+    "Input handoff, cast bar, aura icons, transform rendering, action bars, pet portrait, camera, sound, full raid/quest completion and a cold server restart remain client/integration checks. Reload after an active pending Axion reaches its native expiry in a continuing live encounter is not exercised here."
+  ],
+  "retained_failures": [
+    "The initial reference used a second stack Map with an existing outdoor identity and logged a collision-tile double-unload diagnostic during fixture teardown. The corrected fixture reuses the managed outdoor zone; the final run does not emit that diagnostic. No collision-core change was made.",
+    "Two diagnostic Frostbolt interruption probes were inconclusive: one observed0 extra bursts with a default class cast-speed setup; after initializing the speed/time fields the next probe did not begin Frostbolt. Their failed logs are retained. No claim of an additional damaging proc exploit or reproduction of arbitrary class-spell interruption follows from them. The established production defect is the independently observed permanent orphan aura save/load. These diagnostics are absent from final acceptance tests.",
+    "An early current probe incorrectly expected pending Axion to be saveable. It failed its fixture assertion after mode0 had passed. That exception left an unowned heap Player/bind during static teardown and an access violation was observed in InstanceSaveManager destructor -> Player::UnbindInstance -> InstanceSave::RemovePlayer -> safe-mutex hash lookup. A later overly strict no-attacker setup assertion reached the same teardown failure. Final fixture ownership uses a unique_ptr until native logout takes ownership. These retained failures are not labeled a repaired production mutex defect.",
+    "Pending fixtures that first passed through artificial charm/release or acquired a phase add entered actual logout death/repop. The new graveyard loader did not remove the resulting zone8440 errors:2454 links load, but the relevant live table has0 rows for8440. Those unsuccessful acceptance runs and the unresolved data issue below are retained. The final live-aura cases explicitly isolate away that separate death/repop branch rather than suppressing its logs."
+  ],
+  "known_unresolved": {
+    "issue": "Missing outdoor graveyard link for Trial of Valor zone8440 on disconnect death while an encounter is active.",
+    "observation": "WorldSession logout saw attackers1/combat1 in pending cases and executed its death/repop branch. Player::RepopAtGraveyard requests an external graveyard while IN_PROGRESS; ObjectMgr logged missing zone8440 links for teams469 and67. The read-only World query SELECT COUNT(*) FROM game_graveyard_zone WHERE ghost_zone=8440 returns0 even after native graveyard data is loaded.",
+    "evidence": [
+      ".codex/helya-control-login-final.log",
+      ".codex/helya-control-login-verified.log",
+      ".codex/helya-control-login-grave-evidence.txt"
+    ],
+    "status": "Unresolved separate runtime-data/content issue. Do not call all disconnect/death/repopulation paths verified. A later fix needs native location/area data and evidence for the proper external graveyard; do not guess an exit/Spirit Healer location."
+  },
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-193819",
+    "mistwatcher_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-mistwatcher-native\\run-20261020-192904",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-192926",
+    "command": "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+    "hashes": {
+      "src/server/game/Spells/SpellMgr.cpp": "7DC439427F941494C062891051A548486EA2D1479C771A468523DED7C001F53E",
+      "tools/tests/TrialHelyaControlNative.cpp": "0364D66FD044CB0D0F0FE7AAD18D37D7F38E46457AA1C10C4AC731A1988592B5",
+      "tools/tests/TrialHelyaControlLoginNative.inc": "7D020AA1B34ACE81753596A5F5402F9A89D80B2F9F0F3DA44DEC07D38101C532",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "5E41833FC372912977491198128F9A96630E8A9FC87C10067E75957E6D689B8F",
+      "tools/tests/Test-TrialHelyaControlLoginRelease.ps1": "80FE0D9341352A1BC875FEEE77314149379B0EAF2AE43621288B9F4A66EDACBA",
+      "tools/tests/Test-RockawayChannelNative.ps1": "7B1C95D8720C70F2F927D4867E8A020B1CE2B91BCD7CFCFCB89653CA43CA573E",
+      "build-extractors/bin/Release/worldserver.exe": "C04BB051C48038314E17163F692B1582EF10609B34D9D7EB2ECE3B7A0F43F220",
+      "build-extractors/bin/Release/bnetserver.exe": "C5810061F42EFA14E8253F4FB37F45DFD8B60A8B1194BF13E19159E196F7C043",
+      "build-extractors/src/server/game/Release/game.lib": "D0733E3049ECDDE8CDA56C0652560F2411FFA9B3061328C8E9F87782868C45BD",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "DF4EDDF3EE9A7F4681E499570C77CA47CB0A49374D79FC8565C751AC1016C91C",
+      ".codex/helya-control-login-first.log": "32C1B4E49B1EA857C84AA5EE003C91341A1FE56C7BB4D9D111BCBF1F5F46EE60",
+      ".codex/helya-control-login-reference.log": "936551874CE9236DE68B9BAAE5276165CCCFBA99A8361E445101C61401441757",
+      ".codex/helya-control-login-reference-final.log": "20E7C6BB42C126504D0A84EB9A09A97475D6BBE90D45232034E93D09B1265F69",
+      ".codex/helya-control-login-current.log": "EF5785A1740D3A44B934704B32E548F5F86AA841D910AC68C3ECC6710CBD7561",
+      ".codex/helya-control-login-final.log": "EC4F084CF8DFDC3F0B1D82A2AD5EBEFC837391BFE05C17654A8504C2C5033B5A",
+      ".codex/helya-control-login-verified.log": "2A828D637B83B4792EF56776A2C6E13A722AAF1D7DF4EC6820DCC5B8ABD63B63",
+      ".codex/helya-control-login-final-clean.log": "7E8EE87B8B943774F513C833B68AC3D9E6B62A8C3797181935FBAEB39DF4EF87",
+      ".codex/helya-control-login-final-verification.log": "514A3143BFF8EE998CF154E0CA80C2530A9AF7E50A509503607DDE8D20A08D5D",
+      ".codex/helya-control-login-build.log": "EED4A687742DF3A1B49DA536BD8C49B00D8E67A79079D094691279A615F7D83F",
+      ".codex/helya-control-login-startup.log": "995E306DABAEA57B0A4F432409CB6AA4FA5F802BFD7DE97C4166FDF7143369FE",
+      ".codex/helya-control-login-grave-evidence.txt": "D34E349B9B6147400812B2B580282AD1665A49A578D48B967CCDB3ECA05BA442",
+      "final_run/native-inputs.json": "F68CF8E45F8135D52D95EA33F4A4C98810573C8BA50AB4C9A5743919D8DB6BEB",
+      "final_run/native-lines.txt": "2044D978E057064B75227DC59B1F9ECBD53FD5D910F6B1726678515C97514D65",
+      "final_run/Server.log": "098DB0921B3166297DDFA5AF04F561D1B604CD080E17A1D3BAFD0F3573D93001",
+      "final_run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "mistwatcher/native-inputs.json": "B4A3DE0586B0EFC10D3E4992C08463A7B11AC5FD2C936B3A15C3975D2AEC37A5",
+      "mistwatcher/native-lines.txt": "AFB41DC2145219F2DB3E0FD9AE799FD497EC5CFCB614BA30AE498942C43418D2"
+    }
+  },
+  "scratch_cleanup": {
+    "schemas": 0,
+    "users": 0
+  }
+}

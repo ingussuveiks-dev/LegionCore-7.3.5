@@ -65,6 +65,7 @@ static void ControlRoundTrip(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,
         std::cout<<"CONTROL_RETURN controlled="<<controlled<<" instance="<<instance<<" difficulty="<<uint32(map.GetDifficultyID())<<" mask="<<mask<<" bursts="<<travel.casts[231863].size()<<std::endl;
     }
 }
+#include "TrialHelyaControlLoginNative.inc"
 #endif
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
@@ -148,6 +149,7 @@ static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& gr
     ControlBegin(p,subject,map,helya);ControlWatch wiped(map,subject,helya);wiped.Advance(1500);ClearCombat(p,helya);wiped.Advance(8000);
     Require(!subject.HasAura(232350)&&!subject.HasAura(232358)&&!subject.HasAura(231862)&&subject.GetCharmerGUID().IsEmpty()&&!subject.HasUnitState(UNIT_STATE_CASTING)&&subject.getFaction()==faction,"Wipe retained controlled Player state");
     ControlRoundTrip(p,subject,map,helya,group);
+    ControlLoginCases(p,map,helya,group);
     // Use final scaled damage and native Player death/corpse/resurrection,
     // rather than removing an aura with a simulated death removal mode.
     for(Unit* killer:{static_cast<Unit*>(&helya),static_cast<Unit*>(&p),static_cast<Unit*>(&pet)}){

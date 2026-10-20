@@ -7386,6 +7386,14 @@ void SpellMgr::LoadSpellCustomAttr()
         spellInfo->Effects[EFFECT_3]->Effect = SPELL_EFFECT_NONE;
     });
 
+    // Corrupted's control/transform cannot be saved, but its linked Bleak
+    // Eruption otherwise survives logout as a permanent, orphaned proc aura.
+    // CanBeSaved also rejects old persisted copies during Player aura load.
+    ApplySpellFix({231862}, [](SpellInfo* spellInfo)
+    {
+        spellInfo->AttributesCu[0] |= SPELL_ATTR0_CU_CANT_BE_SAVED_IN_DB;
+    });
+
     ApplySpellFix({ 241848, 241865 }, [](SpellInfo* spellInfo)
     {
         spellInfo->Effects[EFFECT_1]->Effect = SPELL_EFFECT_TRIGGER_SPELL_4;
