@@ -3,6 +3,8 @@
 #include "MapManager.h"
 #include "ScenarioMgr.h"
 #include "WorldSession.h"
+#include "ObjectMgr.h"
+#include "Creature.h"
 
 namespace
 {
@@ -94,4 +96,31 @@ void Player::RecordScenarioEntrance()
     m_scenarioResume.instance = GetInstanceId();
     m_scenarioResume.boot = uint64(GameTime::GetStartTime());
     if (m_scenarioLoginId == progress->GetScenarioId()) SetScenarioId(0);
+}
+
+bool Player::ExitCompletedDarkRidersLogin()
+{
+    // Completed scenarios intentionally have no restart checkpoint. The final
+    // chest's persisted claim still proves this run reached its end, even if
+    // an older server omitted the second quest credit. Return to the outdoor
+    // quest ender instead of recreating the finale or using the homebind.
+    if (GetMapId() != 1533 || getClass() != CLASS_WARLOCK ||
+        (m_scenarioLoginId && m_scenarioLoginId != 988) || IsQuestRewarded(40623) ||
+        (GetQuestStatus(40623) != QUEST_STATUS_INCOMPLETE && GetQuestStatus(40623) != QUEST_STATUS_COMPLETE) ||
+        GetQuestObjectiveData(40623, 103473) < 1)
+        return false;
+
+    CreatureData const* revil = sObjectMgr->GetCreatureData(373228);
+    if (!revil || revil->id != 100812 || revil->mapid != 0 || !revil->PhaseID.empty() ||
+        !MapManager::IsValidMapCoord(revil->mapid, revil->posX, revil->posY, revil->posZ, revil->orientation))
+        return false;
+
+    if (!TeleportTo(revil->mapid, revil->posX, revil->posY, revil->posZ, revil->orientation))
+        return false;
+
+    m_scenarioResume = {};
+    m_scenarioLoginId = m_scenarioLoginInstance = 0;
+    SetScenarioId(0);
+    TC_LOG_INFO("entities.player", "Dark Riders: completed scenario login returns player %u to outdoor Revil", GetGUIDLow());
+    return true;
 }

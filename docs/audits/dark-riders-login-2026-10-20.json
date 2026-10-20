@@ -1,0 +1,34 @@
+{
+  "reported_failure": "After the prior handoff, client login returned Maiko to Orgrimmar. User supplied Login map rejected: player1 map1533 instance1 added1; using exit/home fallback.",
+  "observed_evidence": [
+    "16:38:44 saved location: map1533, saved instance0, checkpoint0.16:38:48 AddPlayer succeeded but final instance login validation rejected it.16:38:56 the previous completion repair restored missing quest100813.",
+    "Read-only post-logout data confirms40623 status1 and both storage0/3=1. The artifact credit fix worked; the client location transition failed.",
+    "Player save and RecordScenarioEntrance intentionally clear the resume entrance when Scenario::IsCompleted is true. Without a checkpoint, generic scenario login access rejects the fresh instance, then uses homebind because map1533 has no go-back trigger. Keeping the completed quest inside an arbitrary fresh Stage1 instance would not restore its finale actors."
+  ],
+  "implementation": [
+    "Only the failed post-AddPlayer login path invokes Player::ExitCompletedDarkRidersLogin. Accepted live instances remain untouched.",
+    "Require map1533, Warlock, active incomplete/complete but unrewarded40623, persisted claim ObjectID103473 and no explicitly different recorded scenario. Item ownership alone is insufficient.",
+    "Use native unphased DB spawn373228, entry100812/map0. Validate its coordinates and use normal TeleportTo. Clear obsolete selector/checkpoint only after success. Missing/invalid spawn or failed teleport retains the original exit/home fallback.",
+    "Generic scenario admission and unfinished entrance/live-rejoin semantics are unchanged. This is a completed content exit, not saved finale reconstruction."
+  ],
+  "affected_character_recovery": {
+    "action": "While worldserver was stopped and character offline, created a private untracked character-row backup and changed only location/instance/obsolete resume fields to the native outdoor quest ender. Guarded by exact character, previous Orgrimmar location, online0, quest status1 and both saved counters>=1; exactly one row updated.",
+    "result": "Map0, instance0, -11024.6,-2006.07,25.1777 at outdoor Revil; quest counters remain1/1. No quest, artifact, AP/ranks, inventory, pet or homebind reset.",
+    "client_status": "Client login at Revil and actual turn-in remain pending."
+  },
+  "automated_checks": [
+    "Test-DarkRidersLogin.ps1 -VerifyReleaseBinary compiles the actual CharacterHandler post-AddPlayer block, production exit and native GetQuestObjectiveData lookup. Old predicate reproduces home fallback with added1; repaired incomplete-claimed/complete cases return to Revil. Covers consumed/zero selector, accepted live run, wrong map/class/quest/record, missing/phased/wrong spawn, teleport failure and preserved quest state.",
+    "The test reads live world data:373228 is unphased map0 Revil100812, actual quest ender40623, NPC questgiver flag2.",
+    "Test-ScenarioResume.ps1 -VerifyReleaseBinary, Test-ScenarioResumeData.ps1, Test-NewBloodLogin.ps1, Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-BrokenShoreReentry.ps1 pass.",
+    "Test-DarkRidersCompletion.ps1 -VerifyReleaseBinary still passes, including native7.3.5 artifact spell data. Movement/scene/client state and actual networking are outside these extracted fixtures."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "build": "cmake --build build-extractors --config Release --target worldserver -j8 -- /p:LinkIncremental=false",
+    "sha256": "600C54C803AAEFF69C598B6C2EBCCE376FBC0FB8A7BC67BCFDD02B03356B4290",
+    "matching_pe_map_timestamp": "6ad772c2 (2026-10-20 16:55:14 Europe/Riga)",
+    "instructions": "Real login lambda call at0x141298d29 invokes ExitCompletedDarkRidersLogin0x141314f60 only after AddPlayer/CheckInstanceLoginValid rejection. Success branches past error/home fallback. Exit checks map0x5fd/class9/selector0or0x3dc, quest0x9eaf, ObjectID0x19431; looks up DB0x5b1ec, validates entry0x189cc/map0/unphased, calls native TeleportTo0x140cfa170 using spawn coordinates, then clears selector/checkpoint only on success.",
+    "startup": "Owned hidden PID34848 reached World initialized16:56:55 and was gracefully stopped. No new DBErrors; configuration/certificate/DLL hashes preserved. User servers were already stopped and were not stopped by Codex.",
+    "handoff": "Both servers stopped. Full client login/turn-in remains unverified."
+  }
+}

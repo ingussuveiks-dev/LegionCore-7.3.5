@@ -25,5 +25,6 @@
     "link_inputs": "Canonical src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; no OutDir override.",
     "startup": "Owned hidden worldserver PID1896 reached World initialized; gracefully stopped at16:18:12. No new DBErrors; runtime configuration/certificate/DLL hashes unchanged. Both servers stopped at handoff.",
     "client_verification": "Pending. Compilation, extracted handlers, SQL replay and startup do not prove client movement, scenes, final turn-in or the entire scenario."
-  }
+  },
+  "client_follow_up": "Client login16:38 returned to Orgrimmar before the quest recovery ran. Logs and saved counters then confirmed both objectives1/1. Location failure and scoped completed-login exit, including offline return to outdoor Revil, are tracked in dark-riders-login-2026-10-20.json. This is not full client turn-in verification."
 }

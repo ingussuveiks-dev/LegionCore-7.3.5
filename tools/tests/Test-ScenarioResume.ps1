@@ -4,7 +4,8 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $output="$repo/build-extractors/runtime-test/scenario-resume"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $source=Get-Content "$repo/src/server/game/Entities/Player/PlayerScenario.cpp" -Raw
-[IO.File]::WriteAllText("$output/Resume.inc",$source.Substring($source.IndexOf('namespace')))
+$a=$source.IndexOf('namespace');$b=$source.IndexOf('bool Player::ExitCompletedDarkRidersLogin()', $a)
+[IO.File]::WriteAllText("$output/Resume.inc",$source.Substring($a,$b-$a))
 $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 if($player.IndexOf('PrepareScenarioLogin(mapId,instanceId)') -gt $player.IndexOf('else if (transLowGUID)')){throw 'Recovery after transport fallback'}
 if($player.IndexOf('PrepareScenarioLogin(mapId,instanceId)') -gt $player.IndexOf('    Map* map = m_scenarioLoginInstance')){throw 'Recovery after map creation'}
