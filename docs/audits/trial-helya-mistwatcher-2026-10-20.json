@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "creature": 116335,
+  "spells": [
+    228854,
+    231862,
+    231863
+  ],
+  "status": "Bleak Eruption interrupt damage repaired and verified against native final-link execution and the canonical Release executable. Client verification remains pending.",
+  "reproduction": "Pinned da4fdfa8 final-link libraries execute a real Counterspell2139 against an AI-started Mist Infusion228854. The native interrupt-only231862 proc attempts one231863 cast, but it has zero selected/damaged targets and causes zero immediate Player health loss. EffectInterruptCast first prohibits the interrupted Frost school; the unconditional creature school-cooldown branch in Spell::CheckCast then rejects the triggered Frost retaliation. Observing the cast GUID alone concealed this failure.",
+  "repair": "Honor TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD in the existing creature school-lockout admission branch. Automatic reactions carrying that explicit exemption can execute after an interrupt. Ordinary casts and triggered casts carrying only IGNORE_CAST_IN_PROGRESS still return SPELL_FAILED_NOT_READY under the actual Counterspell lockout. Preserve the existing dungeon-boss exemption and all other cast checks. No NPC/spell-ID whitelist, duplicate eruption handler, additional energize, AI timer change or SQL migration is introduced.",
+  "native_data": {
+    "reader": "tools/research/HelyaMistwatcherCatalog.cpp uses the core packed DB2 reader and LoadInfo, including trigger closure. The integration probe separately uses live loaded SpellInfo/proc services and final-link libraries.",
+    "228854": "Native CalcCastTime is7000ms. Effect0 energizes30 alternate power10; effects1/2 trigger228021 and231863. Successful completion already performs both the energy gain and the eruption; do not add either again in AI.",
+    "231862": "Permanent self aura; effect0 PROC_TRIGGER_SPELL42 triggers231863. Native AuraOptions has100% proc chance and mask2148147744. Live spell_proc_event additionally requires procEx4096 (PROC_EX_INTERRUPT), effectmask7, with no override proc flags. This existing filter prevents ordinary damaging hits from erupting.",
+    "231863": "Native SCHOOL_DAMAGE2, base474999, caster-area enemy selector22/15 with radius index88. Actual damage includes the native calculation; the test requires positive damage rather than forcing the displayed base amount.",
+    "hotfix": "Targeted live Hotfix spell_effect, spell_misc and spell_aura_options queries for228854/231862/231863 returned no overrides. No client data is edited."
+  },
+  "verification": [
+    "Eight LFR17/Normal14/Heroic15/Mythic16 and Human/Orc cases use earned Odyn/Guarm/trash/phase-two admission. Actual summon construction supplies Helya ownership, Bleak aura and the first scheduled cast. Isolation updates real actor/Player spell and AI events while freezing Helya's unrelated timers; no manually invoked spell-hit, proc or interrupt callback substitutes for native execution.",
+    "Isolated repeated completion gives alternate power10 ->40 ->70, with one damaging eruption per completed cast. Actual Counterspell stops the cast, keeps alternate power10 and produces one positive-damage eruption after repair. Repeating Counterspell on an idle actor adds none. A real damaging Frostbolt does not erupt. Actual actor evade and Player/Pet killing blows cancel the pending cast without energize/eruption; actual boss wipe removes the caster and does not restart Fury or regeneration.",
+    "Full-map phase-three tests retain a real phase-two summon through all nine tentacle deaths. After normal phase-three initialization, controlled alternate power70 remains below85 before Infusion completes. Completion plus the actual alternate-regeneration tick starts228032 and completes230356's wave. Native EnergizeBySpell uses ModifyPower without AI notification; ordinary regeneration calls SetPower and admits Fury. An exploratory fixture removed this essential aura and falsely expected immediate AI notification, then was corrected. No production change was made to energize routing.",
+    "Full Mythic phase-two comparisons use two newly earned encounters and the actual boat-summoned pair. The control kills each natural Mistwatcher before its first cast; the comparison keeps both alive. No energy input, aura removal or boss callback/state injection is used. Observed next long Fury: control80950/83950ms versus infused32950ms on the observer clock; each infused case records6 completed eruptions. These are simulated encounter observations, not authenticated retail timestamps.",
+    "The original libraries reproduce zero interrupt damage while preserving the already-working completion/ordinary-hit/lifecycle/Fury paths. The repaired libraries require a positive native damage target or immediate health loss in the same Counterspell call. Final per-run hashes and remaining validation results are recorded below.",
+    "Final reference and repaired Mistwatcher runs each pass all8 cases with the appropriate old/new damage assertions. Final Mariner and full Helya progression regressions pass all8 cases, including180-second native phases, difficulty-gated Mistwatcher spawning, nine tentacle deaths, victory, quest credit and reward. AuraScript reentry and Warlock regression tests pass. Normal CMake Release builds use generated game/scripts library paths and deploy worldserver/bnetserver in build-extractors/bin/Release. Bounded PE/thunk inspection confirms the flag gate immediately before the native school-cooldown call and retains the ordinary NOT_READY rejection. Canonical startup is ready with graceful exit0, empty DBErrors/stderr, and zero scratch schemas/accounts remain."
+  ],
+  "fixture_notes": [
+    "The first real interrupt probe crashed because its bootstrap omitted World's LoadSpellPrcoCheck service. Loading the actual service fixes the fixture. The shared getter was not changed or described as a production crash.",
+    "TRIGGERED_FULL_MASK without the cooldown bit still contains DONT_REPORT_CAST_ERROR, so comparing its result literally to NOT_READY was an incorrect boundary assertion. The final test uses IGNORE_CAST_IN_PROGRESS alone to prove that a triggered cast without the cooldown exemption remains rejected.",
+    "Native tests buffer living health and use disposable schema-only character/auth databases and a read-only private World/Hotfix pool. They are not raid survivability, tuning or client tests. Phase-three implicit conditions are loaded through the existing native condition loader before the integration case."
+  ],
+  "sources": [
+    {
+      "url": "https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806",
+      "date": "2018-07-05",
+      "scope": "Fatboss Legion guide describes Mythic Mistwatcher empowerment and raid damage from interrupting Mist Infusion. Native7.3.5 data and execution supply the actual spells/energy amount."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/DeadlyBossMods/DeadlyBossMods/c958ef301ed9aff403ecd8cf30131746feea273c/DBM-TrialofValor/Helya.lua",
+      "date": "2018-06-17",
+      "sha256": "BFB3FDBCB7E977DD206A0E74CE3BE6F5F97FBA98F4CCB8CCEE6EA5FBA02E6532",
+      "scope": "The successful228854 handler advances its Fury warning by11seconds when possible. This historical observation supports acceleration, not a replacement for native+30 energy or proof of every cast interval."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+      "date": "2018-04-28",
+      "sha256": "63F6EE68A08BEA502613EAC172611B01185ADAFF95E71A0C0E657B4671DE1B5B",
+      "scope": "Contains the228854 cast warning but lists Infusion among untested features; it is not sufficient timer evidence."
+    }
+  ],
+  "retained_limits": [
+    "No authenticated7.3.5 client verification of casting/interrupt bars, damage display, Bleak visuals/audio, Mythic platform reachability, strategy/survival or full quest completion. No WoW client was controlled.",
+    "Inherited first-cast3seconds/repeat7seconds scheduling is retained. Another public emulator uses2/10seconds, but no sufficiently strong retail7.3.5 timing evidence establishes that replacement. A native7000ms cast duration does not prove an AI scheduling interval.",
+    "Manually summoning116335 on all four difficulties exercises shared spell/AI behavior; it does not assert the NPC naturally belongs on those difficulties. Natural Mythic summons are tested here; the retained full Helya progression regression checks the non-Mythic spawn gate.",
+    "Prior Mariner/Lantern and other explicitly recorded fidelity/client limits remain in their audits. Corrupted232350's player mind-control reuse of Mist Infusion is not newly client-verified by this repair."
+  ],
+  "evidence": {
+    "baseline_pin": "da4fdfa88b1cb4debaed9036c4c10c7beab36c1a",
+    "runs": {
+      "trial-helya-mistwatcher-native": "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-075313",
+      "trial-helya-mistwatcher-native-baseline": "build-extractors/runtime-test/trial-helya-mistwatcher-native-baseline/run-20261020-075314",
+      "trial-helya-mariner-native": "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-075006",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261020-075005"
+    },
+    "hashes": {
+      "src/server/game/Spells/Spell.cpp": "6D83B37A992C9DCCB7E29651C3D63D4DD612DE27E9D1778CF00F57FD258C9947",
+      "tools/tests/TrialHelyaMistwatcherNative.cpp": "688B9EE9422CB4FFDF952ACD8911E51964AF6CA76D62D169168A58E79DBB7BFB",
+      "tools/tests/Test-TrialHelyaMistwatcherNative.ps1": "F58CA784231DC988CE555BD8858D1B16D9343A6ABEAB1CB282B61A2DA7265DF4",
+      "tools/tests/Test-TrialHelyaMistwatcherRelease.ps1": "7558C86E28641D5125F417B23648745CD74A5353E16576CC3F5E4778AB576277",
+      "tools/research/HelyaMistwatcherCatalog.cpp": "A9091276FD7E52505922C59EB1D14E487183DD5EE417BB2375FCDDB8BA6A8E62",
+      "build-extractors/bin/Release/worldserver.exe": "D08153358F5CD58BF2C79E357BDD9B9CBE36158A35DD31B2DF3D0E159228EEAD",
+      "build-extractors/bin/Release/bnetserver.exe": "A33ED299992AD73C099E534A00929DA9E650241FF1D224C5D14DED45AD02F3D6",
+      "build-extractors/src/server/game/Release/game.lib": "EC4E301F0549A3A9C50024B2633E3CBC77D774AE18C0DF0AEBFF018496662EFB",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "AD48ED43AF4C851D1963DE9A20F537ED45655D75790ABA274A7A7722FFB0CEF0",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/mistwatcher-release-inputs.json": "8EAD51DC33D227EB7F9DCD9E591E7408C419C497AFD74BB522D8FF933A5240F9",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/spell-check-cast-disassembly.txt": "33549CFA669D6FD1A20AF374E668C3F35BF3DE2534284DD9987CD4DA847F81B9",
+      ".codex/helya-mistwatcher-catalog.txt": "7F811E37C2A532CA09D8796F1052C5F309B9627D2D70507CBD159E5C02B1FAD9",
+      ".codex/helya-mistwatcher-live-proc.txt": "4ACC2E679CA0F17E38AB133D8CC867306B0CB7384AC0756495EF6C6594AAE307",
+      ".codex/helya-mistwatcher-aura-reentry.log": "E2B903CBE22877797023A6626600AB878FB807D2C70845159DAC68BCFD1A7FE0",
+      ".codex/helya-mistwatcher-warlock-regression.log": "23AC2CAED9C11DD1BE156A21CC213CFA6AA761B3F7F29232AB475E6A7D2A6542",
+      ".codex/helya-mistwatcher-release-build.log": "F66F3360B7993DDB9117E7F9F7B57D5F9C259A673D186AE4DC7C9172D226D3E5",
+      ".codex/helya-mistwatcher-startup.log": "6A0BA68447339FB3E1B75D813FF49D577CE0490ED5D9707EF160561DEED1E67E",
+      "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-075006/native-lines.txt": "DA216ABCBD6C1BAE33E008594E3462378D0852E407B56E7CCC4A24A98B57E519",
+      "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-075006/native-inputs.json": "7E8B16D3F716357D0BE57A24FCA999AFACC2737F678E773CC51D3DD3B06CCD6B",
+      "build-extractors/runtime-test/trial-helya-native/run-20261020-075005/native-lines.txt": "11EC9FAD72FBB2E96071B379E7AE4511E4EFAEF664472E90672D0A938299E186",
+      "build-extractors/runtime-test/trial-helya-native/run-20261020-075005/native-inputs.json": "6EE2CFD373DED687A990FD5E4B75A8E7BB2F223A226375D5CEF203A3907C46A9",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-075313/native-lines.txt": "61944518955F0F68F0B71E987880A2414A0D05C47F913CFDF590B23D557C7606",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native/run-20261020-075313/native-inputs.json": "244E382B01700AA616F6C4AE21F848CBD8CD440F5CC2C3628EC816884EB204FD",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native-baseline/run-20261020-075314/native-lines.txt": "059933C77CE197623E439DF9A8C3CB3FA0EB9E9F3342BB94FC454AD15781B901",
+      "build-extractors/runtime-test/trial-helya-mistwatcher-native-baseline/run-20261020-075314/native-inputs.json": "A785E0781137E1070D231D2BEFD83C2C630074DB04D76919C817278C990B880A"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-075129",
+    "startup_DBErrors": 0,
+    "startup_stderr": 0,
+    "scratch_schemas_accounts": [
+      0,
+      0
+    ]
+  }
+}

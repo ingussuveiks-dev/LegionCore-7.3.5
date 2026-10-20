@@ -8002,9 +8002,13 @@ SpellCastResult Spell::CheckCast(bool strict)
                     return SPELL_FAILED_TARGET_IS_PLAYER_CONTROLLED;
     }
 
-    if (auto creature = m_caster->ToCreature())
-        if (!creature->IsDungeonBoss() && creature->HasSchoolMaskCooldown(m_spellInfo->GetSchoolMask()))
-            return SPELL_FAILED_NOT_READY;
+    // Automatic reactions (for example Bleak Eruption after interrupting Mist
+    // Infusion) retain the ordinary triggered cooldown exemption. The school
+    // lockout must still reject subsequent non-triggered creature casts.
+    if (!(_triggeredCastFlags & TRIGGERED_IGNORE_SPELL_AND_CATEGORY_CD))
+        if (auto creature = m_caster->ToCreature())
+            if (!creature->IsDungeonBoss() && creature->HasSchoolMaskCooldown(m_spellInfo->GetSchoolMask()))
+                return SPELL_FAILED_NOT_READY;
 
 
     // all ok
