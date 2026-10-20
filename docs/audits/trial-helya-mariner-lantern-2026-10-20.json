@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "creature": 114809,
+  "status": "Lantern resource/cast/retry/reset repair passes actual native and canonical Release checks. Client/retail-profile fidelity limits remain.",
+  "repair": [
+    "Reset selects primary POWER_ENERGY before setting max100/current0; native Creature::GetPowerIndex otherwise rejects energy while the actor is still mana. Disable ordinary power regeneration so Darkness owns the bar. The preceding reference/current selector runs observed powerType0/maxEnergy0, Darkness present and zero Lantern casts over110seconds.",
+    "Darkness reads its unit owner safely, advances/wraps the existing difficulty gain vectors, pauses during Lantern's native aura, and retries a full bar. Remove the old never-advancing index. Retain inherited LFR progression rather than inventing a faster difficulty profile.",
+    "Full energy queues one AI event and waits for active casting. Consume energy only in the real successful SpellFinishCast callback; a rejected/interrupted cast retains100 for the next Darkness retry. Remove the unconditional one-second delayed reset, which consumed energy even if casting failed. Reset cancels pending events/casts and removes Darkness, Lantern and its stacking damage modifier."
+  ],
+  "verification": [
+    "Eight difficulty/faction cases execute real primary power initialization, Darkness updates, AI and spells. First three one-second samples are1/3/6 LFR and3/6/10 otherwise. Natural first Lantern is near59s LFR and30s otherwise; non-LFR continues near66/102s. These values follow the inherited cyclic profiles, not an assertion that all retail difficulty/phase timings match.",
+    "A real one-second Give No Quarter cast blocks full energy. Repeated100 writes create one pending Lantern. Interrupt the first actual Lantern cast before completion: energy remains100, native Darkness/AI retries, successful completion sets0, and energy stays0 during the active aura. The test observes two Lantern attempts including the interrupted attempt, with one successful native pulse sequence.",
+    "Native228619 is duration6000/period500 and has START_PERIODIC_AT_APPLY. Preserve its immediate pulse plus twelve periodic pulses (13 total). The exploratory test's12-only assumption failed and was corrected from the actual attribute/dispatcher evidence; no production pulse count was changed. Observe13 native228621 damage casts and increasing actual damage to the same Player, with existing native cap9 and difficulty-specific50/75-percent mechanic modifier. No new damage/ramp script is added.",
+    "A pending full bar followed by actual AI Reset creates no Lantern/pulse, clears all three auras and energy, and a new EnterCombat on the same actor restarts its fresh profile. All current selector/cap/fixed-marker tests remain passing. Pinned8422b836 results in the prior audit retain the missing-energy evidence; no new baseline is mislabeled.",
+    "Normal CMake Release targets deploy to the canonical runtime using generated final-link inputs. Bounded PE/thunk inspection verifies primary SetPowerType, owner-based Darkness callback and queued Lantern in the deployed executable. Full Fury/progression native regression results are recorded below."
+  ],
+  "sources": [
+    "Native7.3.5 Spell/SpellEffect/SpellMisc/SpellAuraOptions data and actual SpellInfo/native dispatch; tools/research/HelyaMarinerCatalog.cpp.",
+    "https://raw.githubusercontent.com/BigWigsMods/BigWigs/de72d463c2d4ec9aa1099a3645311980620697a4/TrialOfValor/Helya.lua",
+    "https://raw.githubusercontent.com/DeadlyBossMods/DeadlyBossMods/c958ef301ed9aff403ecd8cf30131746feea273c/DBM-TrialofValor/Helya.lua"
+  ],
+  "limits": [
+    "BigWigs supplies30s phase2/35s phase3 for non-easy initial Lantern and explicitly marks Mythic timing untested. DBM supplies26s Mythic phase2/30s others and30/35s phase3. The inherited profiles now execute safely; exact LFR/Mythic and phase3 first-charge fidelity remains unresolved. Do not claim that matching one30s observation proves all profiles.",
+    "No client bar/channel/animation/voice or survival/balance confirmation. Native tests buffer living Player/Pet health. Earlier ranged-target preference, image/marker visual and Fission timing limits remain. Ghostly Rage is the next separate focused change."
+  ],
+  "prior_audit": "trial-helya-mariner-quarter-2026-10-20.json",
+  "evidence": {
+    "runs": {
+      "trial-helya-mariner-native": "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-051803",
+      "trial-helya-native": "build-extractors/runtime-test/trial-helya-native/run-20261020-051849"
+    },
+    "hashes": {
+      "build-extractors/runtime-test/trial-helya-mariner-native/run-20261020-051803/native-lines.txt": "66C4BB79DAB151BDBB6D842CCFDDE840B4F339C1B49FA464412868EF7568F98B",
+      "build-extractors/runtime-test/trial-helya-native/run-20261020-051849/native-lines.txt": "7C0964F0403BA70764B4F7F780AF28B373D48C1FC163220AC3556160F94D3565",
+      "src/server/scripts/Legion/TrialOfValor/boss_tov_helya.cpp": "C30716F28BFBB73C87855FDA19C1FC71562848108FCD03A11422BBE8C88B61AB",
+      "tools/tests/TrialHelyaMarinerNative.cpp": "0DD7CC59F3D5F34D5B0F8D403A9B801FCCA5BFAE7CBBA5020D5265BE9EA38EA5",
+      "tools/tests/Test-TrialHelyaMarinerRelease.ps1": "F1BE2FA7066E9435159C65DB124682FD131590B70A67EF456F8CF3F3CD107B28",
+      "build-extractors/bin/Release/worldserver.exe": "022A1F7E04951ED76438B7F40EEC38A852118B17ED612AF481E5BB103E016755",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "05273218AB3DB97D7996C5669005C9E836DA8CC6A9095AA8977D59CB8ECEF6D3",
+      ".codex/helya-mariner-lantern-current.log": "4D16A40CAEA8EBF86FA9E434BA50C7C4EEDFDEEB94F9812F21308DDE822829C2",
+      ".codex/helya-mariner-lantern-current2.log": "550F4A7160D61C1688F070A599D1E778A01A0376AC43349D3F1DE400B2D073A4",
+      ".codex/helya-mariner-lantern-current3.log": "0A7662CCBE4E4F707143FC8EEBA4BF46F17D2ABB37F52F6C9E63BB1D17B352DB",
+      "build-extractors/runtime-test/trial-helya-mariner-native/darkness-tick-disassembly.txt": "3B428A48ED06146717387C193A049FC6C781D084FACECC35306CEBC6CFA53EAA",
+      "build-extractors/runtime-test/trial-helya-mariner-native/mariner-reset-disassembly.txt": "160583F8CE0A56CA26A0239236FCF56A16FFCC6AFEA18E7944587E2B99A5D7FA",
+      "build-extractors/runtime-test/trial-helya-mariner-native/mariner-release-inputs.json": "C36D68CB57427AAC9CE65150CEE87ED3D0E55DB2AF069ACE938D4979E37B59DA"
+    }
+  }
+}

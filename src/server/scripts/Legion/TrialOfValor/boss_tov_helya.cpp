@@ -1093,16 +1093,18 @@ class spell_tov_darkness : public AuraScript
 
     void Tick(AuraEffect const* aurEff)
     {
-        if (auto npc = GetCaster()->ToCreature())
+        Unit* owner = GetUnitOwner();
+        if (auto npc = owner ? owner->ToCreature() : nullptr)
         {
-            if (!npc->isInCombat())
+            if (!npc->IsAlive() || !npc->isInCombat() || npc->HasAura(SpellLanternOfDarkness))
                 return;
 
             power = npc->GetPower(POWER_ENERGY);
-            if (npc->GetMap() && (npc->GetMap()->GetSpawnMode() == DIFFICULTY_LFR_RAID))
-                npc->SetPower(POWER_ENERGY, power + energyLfr[i]);
-            else
-                npc->SetPower(POWER_ENERGY, power + energy[i]);
+            auto const& gains = npc->GetMap()->IsLfrRaid() ? energyLfr : energy;
+            //Keep the inherited difficulty profiles, advancing and wrapping safely.
+            npc->SetPower(POWER_ENERGY, power < 100 ? power + gains[i] : power);
+            if (power < 100)
+                i = (i + 1) % gains.size();
         }
     }
 
@@ -1404,20 +1406,28 @@ struct npc_night_watch_mariner : ScriptedAI
 
     EventMap events;
     InstanceScript* instance;
+    bool lanternPending = false;
 
     void Reset() override
     {
         events.Reset();
+        lanternPending = false;
+        me->InterruptNonMeleeSpells(true);
+        me->RemoveAura(SpellDarkness);
+        me->RemoveAura(SpellLanternOfDarkness);
+        me->RemoveAura(228621);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_DISENGAGE, me);
-        me->SetPower(POWER_ENERGY, 0);
+        me->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
+        me->SetPowerType(POWER_ENERGY);
         me->SetMaxPower(POWER_ENERGY, 100);
+        me->SetPower(POWER_ENERGY, 0);
     }
 
     void EnterCombat(Unit* /*who*/) override
     {
         instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
 
-        DoCast(SpellDarkness);
+        DoCast(me, SpellDarkness, true);
 
         events.RescheduleEvent(EVENT_1, 6000);
         events.RescheduleEvent(EVENT_2, 10000);
@@ -1436,14 +1446,18 @@ struct npc_night_watch_mariner : ScriptedAI
 
     void SetPower(Powers power, int32 value) override
     {
-        if (power == POWER_ENERGY)
+        if (power == POWER_ENERGY && value >= 100 && me->IsAlive() && me->isInCombat() && !lanternPending)
         {
-            if (value == 100)
-            {
-                DoCast(me, SpellLanternOfDarkness, false);
-                me->AddDelayedEvent(1000, [=]() -> void { me->SetPower(POWER_ENERGY, 0); });
-            }
+            lanternPending = true;
+            events.RescheduleEvent(EVENT_3, 1);
         }
+    }
+
+    void SpellFinishCast(SpellInfo const* spell) override
+    {
+        //A failed or interrupted cast must not consume the full energy bar.
+        if (spell->Id == SpellLanternOfDarkness)
+            me->SetPower(POWER_ENERGY, 0);
     }
 
     void UpdateAI(uint32 diff) override
@@ -1469,6 +1483,11 @@ struct npc_night_watch_mariner : ScriptedAI
             case EVENT_2:
                 DoCast(SpellGhostlyRage);
                 events.RescheduleEvent(EVENT_2, 16000);
+                break;
+            case EVENT_3:
+                lanternPending = false;
+                if (me->isInCombat() && me->GetPower(POWER_ENERGY) >= 100)
+                    DoCast(me, SpellLanternOfDarkness, false);
                 break;
             }
         }
