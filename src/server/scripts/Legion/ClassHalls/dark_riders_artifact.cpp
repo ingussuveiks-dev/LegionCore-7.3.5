@@ -375,4 +375,78 @@ public:
     };
     InstanceScript* GetInstanceScript(InstanceMap* map) const override {return new Instance(map);}
 };
-void AddSC_dark_riders_artifact(){new instance_dark_riders_artifact();}
+void RegisterDarkRidersAmbient();
+void AddSC_dark_riders_artifact(){new instance_dark_riders_artifact();RegisterDarkRidersAmbient();}
+
+namespace DarkRidersAmbient
+{
+struct MotionAI : ScriptedAI
+{
+    explicit MotionAI(Creature* creature) : ScriptedAI(creature) { }
+    uint32 timer = 0;
+    uint32 point = 0;
+    bool moving = false;
+    bool Enabled() const
+    {
+        return me->GetMapId() == 1533 && me->GetDBTableGUIDLow() &&
+            (me->GetEntry() == 100835 || me->GetEntry() == 100932);
+    }
+    void Reset() override
+    {
+        timer = 200 + me->GetDBTableGUIDLow() % 1600;
+        point = 0;
+        moving = false;
+        if (Enabled())
+        {
+            me->SetReactState(REACT_PASSIVE);
+            me->SetDisableGravity(true);
+        }
+    }
+    void MovementInform(uint32 type, uint32 id) override
+    {
+        if (type != POINT_MOTION_TYPE || id != 1 || !moving)
+            return;
+        moving = false;
+        timer = 250;
+        if (me->GetEntry() == 100835)
+        {
+            Position const& home = me->GetHomePosition();
+            // Rise through the native spiral shaft, then restart at its bottom.
+            // Never walk a navmesh path or descend along the staircase.
+            me->NearTeleportTo(home.GetPositionX(), home.GetPositionY(), -50.0f, home.GetOrientation());
+        }
+    }
+    void UpdateAI(uint32 diff) override
+    {
+        if (!Enabled() || moving)
+            return;
+        if (timer > diff) { timer -= diff; return; }
+        timer = 250;
+        Position const& home = me->GetHomePosition();
+        float x = home.GetPositionX(), y = home.GetPositionY(), z;
+        if (me->GetEntry() == 100835)
+        {
+            if (me->GetPositionZ() >= 49.0f)
+                me->NearTeleportTo(x, y, -50.0f, home.GetOrientation());
+            z = 50.0f;
+        }
+        else
+        {
+            // Small airborne circuits stay beside the recorded skull positions
+            // without requiring ground navigation between different stair floors.
+            static float const offset[4][3] = {{0.7f,0,0.5f},{0,0.7f,0.9f},{-0.7f,0,0.5f},{0,-0.7f,0.1f}};
+            auto const& next = offset[point++ % 4];
+            x += next[0]; y += next[1]; z = home.GetPositionZ() + next[2];
+        }
+        moving = true;
+        me->GetMotionMaster()->MovePoint(1, x, y, z, false, me->GetEntry() == 100835 ? 1.5f : 0.7f);
+    }
+};
+}
+class npc_dark_riders_ambient : public CreatureScript
+{
+public:
+    npc_dark_riders_ambient() : CreatureScript("npc_dark_riders_ambient") { }
+    CreatureAI* GetAI(Creature* creature) const override { return new DarkRidersAmbient::MotionAI(creature); }
+};
+void RegisterDarkRidersAmbient() { new npc_dark_riders_ambient(); }

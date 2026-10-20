@@ -19,7 +19,8 @@ foreach($expected in @('effect 198721 0 6 4 0 0 0 1','effect 198654 0 6 33 75 0 
 'PASS: native7.3.5 DB2 confirms visual-only NPC aura,75% slow, animation, one-second damage trigger,25k base hit and CASTER targets'
 if($VerifyReleaseBinary){
  $map=Get-Content "$repo/build-extractors/bin/Release/worldserver.map" -Raw
- foreach($symbol in @('??R<lambda_1>@?6??Update@Instance@instance_dark_riders_artifact@@','?OnPlayerLeave@Instance@instance_dark_riders_artifact@@')){
+ if($map -notmatch '\?\?R<lambda_1>@[^\s]*Update@Instance@instance_dark_riders_artifact@@'){throw 'Canonical map lacks contact update lambda'}
+ foreach($symbol in @('?OnPlayerLeave@Instance@instance_dark_riders_artifact@@')){
   if(!$map.Contains($symbol)){throw "Canonical link map lacks contact caller/cleanup: $symbol"}
  }
  'PASS: canonical map contains contact caller/cleanup (contact is inlined); deployed instruction verification recorded separately'

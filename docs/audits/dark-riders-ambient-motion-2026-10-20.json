@@ -1,0 +1,32 @@
+{
+  "reported_failure": "Imprisoned Phantasms stand at the bottom of purple shafts and cannot be selected; Ghostly Skulls are stationary.",
+  "evidence": [
+    "All42 phantasm and59 skull DB spawns are on map1533 across three native phases. Phantasms have no movement row/path/SmartAI events; skulls mostly have idle MovementType0 and Flight2 (can fly, gravity still active).",
+    "Native spawn coordinates establish shaft bottom around-50 and top around50. Native selection flags include NOT_SELECTABLE; retained for these environmental actors. Visual auras198567/198721 and models remain unchanged.",
+    "Contemporary walkthrough describes banshees constantly rising beside the spiral staircase: https://warcraft.blizzplanet.com/the-dark-riders-legion-unholy-death-knight-artifact-questline/ . This supports ascent, not exact rates or skull path reconstruction."
+  ],
+  "repair": "Ground0/Flight1 prevents falling, including when on the floor. Map1533 DB actors only: phantasm vertical point splines from shaft bottom to50 with bottom reset; skulls follow small airborne four-point circuits around native positions. No ground navmesh path or blanket selectable/attackable flag change.",
+  "checks": [
+    "Test-DarkRidersAmbient.ps1 -VerifyReleaseBinary extracts actual AI and native Creature::UpdateMovementFlags. Tests repeated ascent/restart, upper spawn, movement completion IDs, no relaunch mid-spline, four skull destinations and map/spawn/entry exclusions. MotionMaster transmission/rendering is a modeled boundary.",
+    "Test-DarkRidersContentData.ps1 applies migrations twice and preserves other template/movement rows, selection flags and native quest objective mapping.",
+    "Full Dark Riders stage, spirits, damage/dialogue and final acquisition regressions pass. The spirits Release-symbol check now accepts compiler-generated lexical names instead of hard-coded ordinal6; the contact handler itself is unchanged."
+  ],
+  "deployed_instructions": "UpdateAI0x140438b50 checks map1533, DB GUID and entries100835/100932. Calls MotionMaster::MovePoint0x140d3d670 with generatePath=false; actual PE constants50/49,1.5/0.7 and all12 skull offset floats verified. MovementInform0x140437780 checks POINT8/id1 and restarts phantasm at-50. Registration includes npc_dark_riders_ambient.",
+  "assumptions": [
+    "Ascent1.5yd/s, skull0.7yd/s and sub-yard circuit are chosen motion tuning, not recovered retail splines.",
+    "This repair restores ambient motion, not a complete reconstruction of Phantasmal Breath. Existing198567 area trigger has no action rows and201609 has an unimplemented periodic script path; breath timing/damage remains outside this movement repair."
+  ],
+  "client_pending": [
+    "Phantasm ascent/reset, no falling; ghosts remain environmental and unselectable.",
+    "Skull motion near floors/walls, light beam attachment behavior and all three class phases need visual checks."
+  ],
+  "deployment": {
+    "runtime": "build-extractors/bin/Release/worldserver.exe",
+    "sha256": "992EBE9F239568F43127113F46F4C5903B28043AE4FC168BA09E32EAAE9DA25C",
+    "pe_and_link_map_timestamp": "6ad768ed (2026-10-20 16:13:17 Europe/Riga)",
+    "build": "cmake --build build-extractors --config Release --target worldserver -j 8 -- /p:LinkIncremental=false",
+    "link_inputs": "Canonical src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; no OutDir override.",
+    "startup": "Owned hidden worldserver PID1896 reached World initialized; gracefully stopped at16:18:12. No new DBErrors; runtime configuration/certificate/DLL hashes unchanged. Both servers stopped at handoff.",
+    "client_verification": "Pending. Compilation, extracted handlers, SQL replay and startup do not prove client movement, scenes, final turn-in or the entire scenario."
+  }
+}
