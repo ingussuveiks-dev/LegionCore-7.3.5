@@ -26,5 +26,6 @@
     "Actual native interactions, scenes, visuals, offhand grants, combat, vehicles, camera, pet portrait and final quest rewards for every other artifact route. Eligibility/SQL tests do not certify these.",
     "Legitimately triggered movie stop/resume on finish and skip; the user confirmation covers suppression of the unrelated ritual movie, not playback movement for every movie."
   ],
-  "preservation": "No personal quest/chosen flags, character inventory or class/race data were reset for this audit. Affected world rows and executables are privately backed up; runtime configuration/certificates/DLLs/bnetserver and extracted data retained."
+  "preservation": "No personal quest/chosen flags, character inventory or class/race data were reset for this audit. Affected world rows and executables are privately backed up; runtime configuration/certificates/DLLs/bnetserver and extracted data retained.",
+  "follow_up_revil_link_2026_10_20": "The100812 missing6 entry in the historical unresolved list above is repaired; see revil-quest-accept-link-2026-10-20.json for the scoped two-link correction, native lifecycle regression and pending client check. Other listed actors are not part of this repair."
 }

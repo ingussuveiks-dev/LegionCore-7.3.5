@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-20",
+  "related": ["ulthalesh-2026-10-15.json", "artifact-audit-summary-2026-10-15.json"],
+  "observed": "DBErrors.log11:37:29 reports Entry100812 SourceType0 Event4 Link6 not found or invalid. The live table still contained the invalid references on both quest-accept events4/5 for40623/40934.",
+  "evidence": [
+    "There is no event6 in source100812/type0. Native ProcessAction executes SUMMON_CREATURE12 first, then FindLinkedEvent6 returns an empty holder and logs the missing/invalid link.",
+    "The clone has its own complete route: TempSummon::InitSummon -> SmartAI::IsSummonedBy -> JUST_SUMMONED54 row0 -> WP_START53 path100812 -> LINK1 TALK0/5000ms -> LINK7 SET_NPC_FLAG81/0. Row7's old comment says personal invisibility but native action81 actually clears the clone's NPC interaction flags.",
+    "The existing18-point path reaches the sewer gate. WAYPOINT_REACHED40 row2 requires point18/path100812, activates GO245855, then links row3 delayed despawn2000ms. Static questgiver flags, spawn phases and other accept/reward events remain unchanged."
+  ],
+  "implementation": "Migration2026_10_20_07 removes only link6 from100812 source0 quest-accept rows4/5, guarded by their existing event, quest and summon action. No missing action is invented and no logger is suppressed. Clone startup, speech, movement, interaction flags, gate opening and despawn retain their existing native routes.",
+  "automated_checks": [
+    "Test-RevilQuestAccept.ps1 replays the migration twice in temporary tables, reconstructs the old link6 baseline after installation, and compares every column of every100812 script row. Exactly the two link fields change; all other data is preserved.",
+    "RevilQuestAcceptTest.cpp loads migrated SQL rows and actual18 waypoints. Compiles extracted production quest admission, target-list summon branch, TempSummon initialization, SmartAI summoner callback, WP_START action/StartPath, native FindLinkedEvent/LINK dispatch, waypoint admission, NPC flag action and gate activation.",
+    "Both40623 and40934 reproduce the old missing6 error after a successfully started clone. The repaired cases create one clone, start path100812 at point1, retain one SELF speech/clone-only flag clear, reject point17/wrong-path gate activation and open the gate at18 before delayed despawn. Failed summon and unrelated quest controls produce no new errors.",
+    "git diff --check: PASS."
+  ],
+  "test_limits": "Fixture world/target selection, script event orchestration, path loading/first-waypoint lookup, motion completion, speech and despawn timer are modeled. The selected native handlers execute, but this is not a complete live SmartAI scheduler or client traversal. Native StartPath still rejects combat; that existing condition is not changed by removing the dangling references. Existing missing-action uncertainty is retained: the historical intended contents of deleted row6 cannot be recovered from this table, and no new behavior is asserted for it.",
+  "deployment": {
+    "database": "Applied live world migration with worldserver stopped, after a private backup of the two affected rows; installed links verified0 for both quests",
+    "binary": "SQL-only correction; no recompilation required. Canonical worldserver45b6d1524ab2654f3584496239ddd688ab183dd212b49278f500a582b5e3d828 retained with prior barrier fixes.",
+    "startup": "Canonical server ready14:17:14 Europe/Riga with no new DBErrors. Owned hidden process stopped gracefully; database shutdown complete14:17:18. Historical DBErrors remains2773 bytes, last write12:47:32. Config/certificate/DLL hashes unchanged; both servers stopped at handoff.",
+    "log_preservation": "Historical DBErrors.log retained; old entries do not disappear after a data correction",
+    "ownership": "User servers were already stopped. Only Codex's hidden validation server was started and must be shut down gracefully before handoff. Runtime configs/certificates/DLLs/data and character quests/inventory remain unchanged."
+  },
+  "client_pending": "Accept The Dark Riders40623 or its40934 branch from Revil and follow the summoned clone to the sewer gate. Confirm speech/path/gate/despawn visually and inspect newly appended log lines; startup alone does not exercise quest acceptance."
+}
