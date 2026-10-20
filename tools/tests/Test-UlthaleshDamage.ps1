@@ -12,7 +12,13 @@ $a=$s.IndexOf('void SmartAI::DamageTaken(');$b=$s.IndexOf('void SmartAI::HealRec
 $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 $a=$s.IndexOf('uint32 Unit::DealDamage(');$b=$s.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$a)
 if($s.IndexOf('victim->GetAI()->DamageTaken(this, damage, damagetype);',$a) -gt $b){throw 'Native damage order changed'}
-$end=$s.IndexOf('    if (!victim->IsControlledByPlayer()',$b)
+$hook=$s.IndexOf('    if (Creature* creature = victim->ToCreature())',$b)
+if($b -lt $a -or $hook -lt $b){throw 'Native scaled damage/creature hook missing'}
+# Extract the complete post-scaling hook block. Loot tagging now has its own
+# Creature gate, so its old IsControlledByPlayer spelling is not a boundary.
+$end=$s.IndexOf('{',$hook)+1;$depth=1
+while($depth -and $end -lt $s.Length){if($s[$end] -eq '{'){++$depth};if($s[$end] -eq '}'){--$depth};++$end}
+if($depth){throw 'Unbalanced native post-scaling damage hook'}
 [IO.File]::WriteAllText("$out/NativeScaledHook.inc",$s.Substring($b,$end-$b))
 if($s.IndexOf('    if (health <= damage)',$end) -lt $end){throw 'Native death check missing after hook'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

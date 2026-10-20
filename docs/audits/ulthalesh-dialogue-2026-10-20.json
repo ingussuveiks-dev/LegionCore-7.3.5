@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-20",
+  "status": "Scoped SQL repair installed; production-handler regression and startup checks pass; client finale retest pending",
+  "previous_audit": "docs/audits/ulthalesh-2026-10-15.json",
+  "observed_client_failure": "User screenshot: scenario 988 Stage 6, Ulthalesh Feasts, Ariden defeated 0/1; Ariden alive with nearly empty HP and the warlock pet tanking. User confirmed Ariden remains alive and the stage does not advance.",
+  "root_cause": [
+    "Live SmartAI entry 100344 rows 1,4,11,90 used TALK action 1 with VICTIM target 2.",
+    "Native SMART_ACTION_TALK treats a selected Creature as the speaker. A pet or friendly creature victim replaces Ariden as talker; this is intentional generic behavior, not a quest-credit ownership conversion.",
+    "The native timer captures that talker's entry. TEXT_OVER then emits group 3 with the pet entry, while row 13 explicitly requires group 3 and creature entry 100344.",
+    "The five-second timer therefore expires without running row 13 -> 14 defeat credit -> 15 chest -> 16 Revil -> 17 scripted death. Existing damage protection correctly holds Ariden alive at 1 HP, exposing the lost transition.",
+    "The earlier SQL-link replay verified action order but did not execute native TALK speaker selection or TEXT_OVER entry matching with a pet victim. Its passing result did not establish this interaction."
+  ],
+  "repair": {
+    "migration": "sql/updates/world/2026_10_20_03_ulthalesh_dialogue_speaker.sql",
+    "scope": "Change only target_type 2 -> 1 on Ariden 100344 source 0 TALK rows 1/group1,4/group2,11/group3,90/group3. SELF makes Ariden the speaker regardless of his combat victim.",
+    "preserved": [
+      "Native text groups and 7000/6000/5000ms speech timers",
+      "Optional-cast-independent low-health event and nonrepeatable flags",
+      "Defeat criterion 47989 before chest 246021, Revil 101282 and scripted death",
+      "Post-scaling 1HP protection, native health gates and 50-yard player credit range",
+      "Generic TALK creature-speaker semantics, other NPCs and shared scenario content"
+    ],
+    "production_cpp_changes": "None; no Release rebuild required."
+  },
+  "automated_checks": {
+    "Test-UlthaleshDialogue.ps1": [
+      "Temporary-table SQL replay reconstructs the observed VICTIM rows, applies migration twice, compares every fixture column and confirms exactly four target_type changes with unrelated actors preserved.",
+      "Baseline executes production SELF/VICTIM target selection, TALK, event admission, health/TextOver cases, ProcessEventsFor, text timer and LINK handling: pet/creature victims reproduce the alive-at-1HP stall; player/null victim controls complete.",
+      "Patched rows complete after the retained five-second boundary for player, pet, creature and null victims. Later threat changes, repeated health polls and repeated TextOver callbacks do not duplicate player credit, chest, guide or death.",
+      "Runs the native achievement-criteria action branch. The fixture models nearby-player selection, condition admission and actual spawn/death/achievement effects; it is not a complete live SmartAI scheduler or Scenario instance.",
+      "Checks the introduction group1 -> group2 dialogue before low-health completion and preserves explicit creature-speaker TALK for unrelated use.",
+      "Production C++ DB2 loader confirms ScenarioStep/CriteriaTree/Criteria order 4: type92/47988, 5: type92/47989 (displayed Stage6), 6: type36/128942."
+    ],
+    "Test-UlthaleshScenario.ps1": "PASS: existing optional-cast-failure, loot/criteria and defeat -> chest -> guide -> death SQL replay.",
+    "Test-UlthaleshDamage.ps1 -VerifyReleaseBinary": "PASS: existing post-scaling protection regression and deployed marker check. Updated the extraction boundary to the complete creature damage-hook block after a prior loot-tagging refactor removed its old boundary string; assertions remain intact. Marker presence is not full deployed-code disassembly or client validation.",
+    "diff_check": "git diff --check passes."
+  },
+  "deployment": {
+    "installed_rows": "Four changed rows: id1/group1/7000ms/SELF/link0; id4/group2/6000ms/SELF/link0; id11/group3/5000ms/SELF/link12; id90/group3/5000ms/SELF/link12.",
+    "backup": "Affected live SmartAI rows privately backed up before installation; no credentials or runtime backups are committed.",
+    "server_ownership": "User-launched servers had already stopped gracefully (11:47:49); user also confirmed 'izslēgts'. Only a newly launched Codex-owned hidden worldserver was used and stopped during validation.",
+    "startup": "Canonical worldserver ready at 11:52:10 Europe/Riga, with no new DBErrors lines. Owned process stopped gracefully; final database shutdown at 11:52:15. Both server processes confirmed stopped afterward.",
+    "worldserver_sha256_unchanged": "072c77dd9d46baa582b05bc5e17053b48849fa0d7d3f992eddd79d05ead0515a",
+    "preservation": "Binary/configuration/certificate/DLL hashes unchanged. No quest, inventory, artifact, character position or scenario-resume reset."
+  },
+  "pending_client_checks": [
+    "Re-enter the scenario after restart and reach Ariden with the pet tanking; confirm the boss speaks his defeat line and the stage advances after the dialogue.",
+    "Check chest appearance/loot or already-owned artifact completion, Revil handoff, native visuals/audio and return path.",
+    "Repeat with a player victim and a strong pet/player hit. Encounter reset, abandonment and live/fresh re-entry remain separate route checks from the previous audit."
+  ],
+  "limits": "The observed failure is confirmed in the client; its repair is verified through production-handler fixtures, native data and startup. The fixed fight and whole quest are not yet client-verified. Restart does not persist transient actor/criteria state; this repair does not force or fabricate a completion checkpoint."
+}
