@@ -1231,13 +1231,18 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         }
     }
 
-    if (!victim->IsControlledByPlayer() || victim->IsVehicle())
+    // A player charmed by an NPC is not IsControlledByPlayer(). Loot tagging
+    // still belongs only to creatures, never to that charmed Player object.
+    if (Creature* creature = victim->ToCreature())
     {
-        if (!victim->ToCreature()->hasLootRecipient())
-            victim->ToCreature()->SetLootRecipient(this);
+        if (!creature->IsControlledByPlayer() || creature->IsVehicle())
+        {
+            if (!creature->hasLootRecipient())
+                creature->SetLootRecipient(this);
 
-        if (IsControlledByPlayer())
-            victim->ToCreature()->LowerPlayerDamageReq(health < damage ?  health : damage);
+            if (IsControlledByPlayer())
+                creature->LowerPlayerDamageReq(health < damage ? health : damage);
+        }
     }
 
     if (health <= damage)

@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-20",
+  "map": 1648,
+  "status": "NPC-charmed Player damage crash repaired separately from the remaining Corrupted aura defects. Native and Release evidence recorded below; no client verification claimed.",
+  "reproduction": "Pinned3f102023 final-link libraries earn Helya phase3, expire a real232450 absorb on Mythic and apply actual232350/232358/231862 with the Helya charmer GUID. The next real228054 Taint periodic damage crashes: ObjectGuid::operator bool -> Creature::hasLootRecipient -> Unit::DealDamage -> AuraEffect::HandlePeriodicDamageAurasTick. NPC charm makes Player::IsControlledByPlayer false. The old loot branch treated that as proof of Creature type and dereferenced victim->ToCreature(), which is null for this Player.",
+  "repair": "Guard loot admission with the actual victim->ToCreature result before applying the existing controlled-creature/vehicle tests. Preserve creature loot recipient assignment and player damage-requirement bookkeeping. No NPC/quest whitelist, damage suppression or change to Player charm ownership is introduced.",
+  "verification": [
+    "All8 LFR/Normal/Heroic/Mythic and Human/Orc native cases earn the existing raid access and real phase transitions. Non-Mythic absorb expiry does not charm or transform. Mythic cases assert the real charmer GUID, faction, transform and Bleak aura, including IsControlledByPlayer=false. Actual Helya/Player/Pet DealDamage calls each reduce the charmed Player's health without removing Corrupted or crashing. Actual Taint periodic damage and subsequent native Mist Infusion completion also execute safely.",
+    "The original crash log is retained separately. For the later original-library aura investigation only, remove the unrelated Taint before ticking the charmed Player so the crash does not conceal the independent threshold/cast defects. No original-library damage safety is claimed from that isolated reference run.",
+    "Test-LostArmyNative executes ordinary native Player/Pet kills, all three quest entries, loot ownership, actual inventory receipt, group corpse caches, conditional/FFA/currency branches and rejected physical-slot handling. It passes with the repaired final-link game library, retaining creature loot behavior.",
+    "Normal CMake Release builds use the generated game/scripts final-link paths and canonical build-extractors/bin/Release. PE/thunk inspection bounds DealDamage through the x64 unwind table and checks the creature-type/conditional-null/skip branch immediately before hasLootRecipient. It also retains the earlier triggered-school-lockout repair. Startup and final hashes are recorded below."
+  ],
+  "follow_up_required": [
+    "Native232350 effect0 amount is25 and duration60000ms; inherited code checks HealthBelowPct(11). At24% the current reference still controls, transforms and casts. At10% it removes the auras/charmer but continues the same periodic callback, starts a new Infusion and grants30 alternate power after release. These separate confirmed defects are not fixed by this commit and must be handled next.",
+    "The native Player Unit aura/spell dispatchers execute; this is not authenticated client control, full PlayerAI behavior, visual/audio, pet portrait, action bar or encounter survival verification. Tests use schema-only disposable character/auth databases and read-only private World/Hotfix pools. No personal progress is copied or modified."
+  ],
+  "data_and_sources": [
+    "tools/research/HelyaControlCatalog.cpp reads the actual packed7.3.5 DB2 records and trigger closure. Native232350 describes a health threshold through effect0 amount25; it has MOD_CHARM177, linked transform232358, native Bleak231862 trigger and a60000ms duration. Mythic232450 lasts10000ms; default lasts30000ms. No client data or SQL is changed.",
+    "https://www.icy-veins.com/wow/helya-mythic-strategy-tactics describes below25% release and controlled-player Infusion/Eruption. The2018-07-05 Fatboss guide at https://www.wowhead.com/guide/helya-trial-of-valor-raid-strategy-guide-4806 instead says10%; use the actual7.3.5 data for this unresolved implementation follow-up, not that conflicting guide number."
+  ],
+  "evidence": {
+    "baseline_pin": "3f102023",
+    "runs": {
+      "trial-helya-control-native": "build-extractors/runtime-test/trial-helya-control-native/run-20261020-082625",
+      "trial-helya-control-native-baseline": "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-082625",
+      "lost-army-native": "build-extractors/runtime-test/lost-army-native/run-20261020-082704"
+    },
+    "hashes": {
+      "src/server/game/Entities/Unit/Unit.cpp": "16F1DF89489E00A404E245B85E420C44F6F34B266D8606675322CA4D87CD0392",
+      "tools/tests/TrialHelyaControlNative.cpp": "8930D251D7BF9913E5EB80389654B8ABDD8535F8DE6D01BF8AA4CE96F01AA9AC",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "F2A3682821B47AB0BE078C79F6A46E8492566D73308BD558CF9A5AC0B3AC8087",
+      "tools/tests/Test-TrialHelyaControlRelease.ps1": "7F665788DBA63EA796BC95DE213999E72850A414475081DD3D93557762D43EC4",
+      "tools/research/HelyaControlCatalog.cpp": "DD4BA9EF8EB87B6F44C40B29A7C22CD25745FAFEECD9405CFB842739B3E0A347",
+      "build-extractors/bin/Release/worldserver.exe": "E14785F204EC27208B60D61D7CD5E6CA5A7FD41F6C67775E8E3630B483D61670",
+      "build-extractors/bin/Release/bnetserver.exe": "944B7BF656321EC8BD3F86FA8ABF4EB9261EE3B6639211F4BE1604C842C547C3",
+      "build-extractors/src/server/game/Release/game.lib": "0CAADBD5AA4C115EAA64FA5EB41FB32930A12F7309529B76743F945232A93F11",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "AD48ED43AF4C851D1963DE9A20F537ED45655D75790ABA274A7A7722FFB0CEF0",
+      "build-extractors/runtime-test/trial-helya-control-native/control-release-inputs.json": "E70A227136CCA7C4400469778B1EBBA5999E472DE3788595687541CE802FF8F6",
+      "build-extractors/runtime-test/trial-helya-control-native/deal-damage-disassembly.txt": "B33D379944212DC7014255C0EF8E303F2083E8EF6DF913A69A29DB84474A5032",
+      ".codex/helya-control-reference-probe.log": "6853EF631B538F0D6DC44A0E63F68E20F8FC80BCAF4D29DB4DE08EF0437FA320",
+      ".codex/helya-control-reference-aura-probe.log": "35BD8D0C6D658FCA6189F3056EB13B23CECCBF1EA7F4424878273D100A3D3E9A",
+      ".codex/helya-control-catalog.txt": "2E3CDEE45DC5E2B1E17F72063BF3F7AD47591947556479AEF66786C6B4F2C93D",
+      ".codex/helya-control-damage-build.log": "D4AE9EC8C93332F03116CFEE8A037DFD7C297E2CF297290D3A60828366DDCAAC",
+      ".codex/helya-control-damage-startup.log": "F32F4D94786F4041DE80FF76711856876275C9A982F31DF7E284CCF6A5A79A59",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-082625/native-lines.txt": "3CF893E48DFD4CE6E5E376494F26D8E7CE5F7E69838401F664899F9EB0BD2521",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261020-082625/native-inputs.json": "DFB429B60B4A66918C470C680F2746A455981B3D85507691C1A89B8318393A21",
+      "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-082625/native-lines.txt": "D9A177B4005B3FDF776229E3CAF79DAD7C6941DBA982B4E27FDF82DA9B2C5850",
+      "build-extractors/runtime-test/trial-helya-control-native-baseline/run-20261020-082625/native-inputs.json": "B52A345147E32DD8F39BBC31C5B46621614CC431917B8AFFBEB656BF049C5568",
+      "build-extractors/runtime-test/lost-army-native/run-20261020-082704/native-lines.txt": "84EB818D0589868F0BB37668161E6AC970303B9A897C6E97701776E505AED33A",
+      "build-extractors/runtime-test/lost-army-native/run-20261020-082704/native-inputs.json": "04D9FC15E4F1D4A9D4B93828EF42D5E96EB476154C0471A9DFCFFD005C8E7257"
+    },
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261020-082751",
+    "startup_ready": true,
+    "startup_exit": 0,
+    "startup_DBErrors": 0,
+    "startup_stderr": 0
+  }
+}
