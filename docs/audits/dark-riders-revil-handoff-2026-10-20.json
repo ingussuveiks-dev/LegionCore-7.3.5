@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-20",
+  "related": ["dark-riders-player-arrival-2026-10-20.json", "dark-riders-stage-lifecycle-2026-10-20.json"],
+  "client_observed": "After411fe818 the user reached displayed Stage2, saw the correct barrier instructions, but reported two overlapping Revils at the stationary position plus the follower beside them. The Stage1 arrival repair progressed, while its companion handoff failed client validation.",
+  "evidence": [
+    "Two independent stationary101282 summon paths existed: migration06's initial Ariden row8 and follower101286's MOVEMENTINFORM point1 row4. The latter had no scenario/stage admission and could execute after its earlier Data2/2 movement was already queued.",
+    "The old101286 Data2/2 admission still included scenario988/step0 even though988's Player arrival had replaced that route. This left two owners for the same transition.",
+    "The previous test counted a successful199627 self-cast as cleanup, without executing controller removal or the minion filter. It did not prove the follower disappeared or exclude a pending native movement callback.",
+    "Native SummonProperties3730 has flags8520458/control1/title0/slot0. Flag512 selects a Guardian. Native199626 controller removal invokes RemoveAllMinionsByFilter199625/filter1, which scans m_Controlled; an already lost controller or missing control index does not remove an orphan merely because its summon-index entry remains.",
+    "No actor GUIDs were captured from the original screenshot. The exact live callback order and which control/aura state caused the surviving follower remain unproven. The repair removes the competing paths and explicitly covers missing controller/index states rather than asserting a complete reconstruction."
+  ],
+  "implementation": [
+    "Migration08 removes only988 from follower Data2/2 admission and gates point1 movement completion to native DK1026/druid1014 step1 on the base actor. Their existing route remains available; Warlock late movement cannot summon another barrier guide.",
+    "Replace initial Ariden's raw guide summon with native SmartAI SET_INST_DATA34 request10085001/1. The actual instance handler accepts only988/step1, retires followers before creating the guide, retries missing actors/failed summons, and latches successful creation. Repeated LOS/requests/updates do not create a second guide, including after its intentional16-second despawn.",
+    "Remove199626 synchronously through the native controller hook, then snapshot the101286 summon index and retire only a TempSummon with entry101286, created-by-spell199625 and this Player's exact summoner GUID. Primary demons, foreign owners, stale index entries and unrelated spells are excluded. Repeat during barrier/Conservator stages and on leaving988; later escort stages retain their companions.",
+    "Clear NPC interaction flags on the canonical Ariden-owned barrier guide during OnCreatureCreate, before its first visibility update. Keep the native conversation, position, timed guide and other101282 roles.",
+    "Log successful guide creation with its runtime GUID and initial Ariden GUID for the next client check. No character quest/inventory/phase reset or generic SmartAI/pet-filter change."
+  ],
+  "automated_checks": [
+    "Test-DarkRidersStageLifecycle.ps1 -VerifyReleaseBinary: PASS. Repeated migrations, native SET_INST_DATA bridge into the complete production instance, stage/scenario/value admission, missing actor and failed summon retries, repeated requests, successful single guide, no respawn after intentional removal, canonical-only NPC flag cleanup and later escort preservation.",
+    "RevilFollowerCleanupTest.cpp executes production RetireFollower, native AuraEffect::HandleSummonController and native Unit::RemoveAllMinionsByFilter. Covers present/missing controller and control-index combinations, repeated cleanup, primary demon, foreign owner, wrong spell and stale summon GUID.",
+    "Native C++ DB2 reader verifies SummonProperties3730, companion spell targets/controller/removal and scenario criterion order. Existing entrance/pet-invoker/cross-cast and stationary Gateway arrival regressions pass.",
+    "Test-DarkRidersSpirits.ps1, Test-UlthaleshDamage.ps1 and Test-RevilQuestAccept.ps1: PASS. Previous hazard, scaled-hit guards and quest-accept fix retained.",
+    "git diff --check: PASS."
+  ],
+  "test_limits": "Fixture map/visibility, source-condition orchestration, summon failure/completion, native object lifetime and aura application/removal dispatch scaffolding are modeled. Selected controller/filter/bridge handlers and the complete instance execute production code; they do not constitute a full client SmartAI/movement/scene simulation. Native conversation/audio, visible guide count, pet portrait and the later wounded/finale Revil handoffs still require client verification.",
+  "deployment": {
+    "migration": "2026_10_20_08_dark_riders_revil_handoff.sql installed after private backups of the affected action and conditions, with worldserver stopped",
+    "build": "Actual scripts Release library and canonical worldserver Release final link, LinkIncremental=false; no OutDir override",
+    "worldserver_sha256": "5dd48746df6b8d4cb2996a3cd4c6a444aebe42516cce5bc5384f30d5699642e3",
+    "binary_evidence": "Map/PE timestamp6ad753a0. Canonical SetData0x140437870 checks request10085001/value1/scenario988/step1 and calls EnsureBarrierGuide0x140436670. That handler checks request/success latches and native101282 summon. RetireFollower0x140437540 removes199626 and checks entry101286, spell199625 and owner before despawn. Deployed disassembly inspected beyond symbol/string presence.",
+    "startup": "Ready14:44:39 Europe/Riga; no new DBErrors. Owned hidden process shut down gracefully, database shutdown complete14:44:43. Config/certificate/DLL hashes unchanged; both servers stopped at handoff.",
+    "ownership": "User-launched13560/21680 were initially running and were left alone. They had already exited before final deployment; Codex stopped only its own subsequent hidden validation process."
+  },
+  "client_retest": "Start canonical servers visibly and restart at the scenario entrance. At the Stage2 barrier exactly one stationary Revil should remain, with no quest marker or old follower. Repeat a normal approach and Gateway arrival with follower left behind; confirm scene/timing and no new guide after its intentional departure. Continue Conservator/reveal/finale, including the later escort, and verify the primary demon/portrait."
+}

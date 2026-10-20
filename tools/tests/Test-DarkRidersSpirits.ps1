@@ -4,7 +4,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/dark-riders-spirits"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/dark_riders_artifact.cpp" -Raw
-$a=$source.IndexOf('namespace DarkRidersSpirits');$b=$source.IndexOf('class instance_dark_riders_artifact',$a)
+$a=$source.IndexOf('namespace DarkRidersSpirits');$b=$source.IndexOf('namespace DarkRidersRevil',$a)
 if($a -lt 0 -or $b -lt $a){throw 'Missing production contact handler'}
 [IO.File]::WriteAllText("$out/DarkRidersSpirits.inc",$source.Substring($a,$b-$a))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath

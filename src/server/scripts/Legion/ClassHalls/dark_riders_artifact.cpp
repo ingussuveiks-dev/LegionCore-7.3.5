@@ -4,6 +4,7 @@
 #include "ScenarioMgr.h"
 #include "GameObject.h"
 #include "Player.h"
+#include "TemporarySummon.h"
 #include <map>
 #include <set>
 
@@ -84,6 +85,24 @@ void UpdateContact(Player* player, uint32 scenario, uint32 step)
         player->RemoveAurasDueToSpell(198654);
 }
 }
+namespace DarkRidersRevil
+{
+constexpr uint32 BarrierGuideRequest = 10085001;
+void RetireFollower(Player* player)
+{
+    // Aura removal runs the native controller cleanup. Also retire a stale
+    // owned summon if its controller was already lost or it is no longer in
+    // m_Controlled. The primary demon and other players' summons are excluded.
+    player->RemoveAurasDueToSpell(199626);
+    GuidList followers = *player->GetSummonList(101286);
+    for (ObjectGuid const& guid : followers)
+        if (Creature* follower = player->GetMap()->GetCreature(guid))
+            if (follower->isSummon() && follower->GetEntry() == 101286 &&
+                follower->GetUInt32Value(UNIT_FIELD_CREATED_BY_SPELL) == 199625 &&
+                follower->ToTempSummon()->GetSummonerGUID() == player->GetGUID())
+                follower->DespawnOrUnsummon();
+}
+}
 class instance_dark_riders_artifact : public InstanceMapScript
 {
 public:
@@ -100,8 +119,37 @@ public:
         std::map<ObjectGuid,ActorGate> actors;
         std::map<ObjectGuid,uint32> objects;
         std::set<ObjectGuid> spiritPlayers;
+        ObjectGuid barrierAriden{};
+        bool barrierGuideRequested = false;
+        bool barrierGuideStarted = false;
         uint32 refresh=0;
         Scenario* Progress() { return sScenarioMgr->GetScenario(instance->GetInstanceId()); }
+        void EnsureBarrierGuide()
+        {
+            Scenario* scenario = Progress();
+            if (!barrierGuideRequested || barrierGuideStarted || !scenario ||
+                scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 1)
+                return;
+
+            instance->ApplyOnEveryPlayer([](Player* player) { DarkRidersRevil::RetireFollower(player); });
+            if (Creature* ariden = instance->GetCreature(barrierAriden))
+                if (Creature* guide = ariden->SummonCreature(101282, Position(-10962.5f, -1970.73f, -49.8162f, 1.513f), TEMPSUMMON_MANUAL_DESPAWN))
+                {
+                    barrierGuideStarted = true;
+                    TC_LOG_INFO("scripts.ai", "Dark Riders: barrier Revil handoff created guide %u from Ariden %u", guide->GetGUIDLow(), ariden->GetGUIDLow());
+                }
+        }
+        void SetData(uint32 type, uint32 value) override
+        {
+            if (type == DarkRidersRevil::BarrierGuideRequest && value == 1)
+            {
+                Scenario* scenario = Progress();
+                if (!scenario || scenario->GetScenarioId() != 988 || scenario->GetCurrentStep() != 1)
+                    return;
+                barrierGuideRequested = true;
+                EnsureBarrierGuide();
+            }
+        }
         void Sync()
         {
             Scenario* progress=Progress();
@@ -154,6 +202,15 @@ public:
         void OnCreatureCreate(Creature* creature) override
         {
             InstanceScript::OnCreatureCreate(creature);
+            if (creature->GetEntry() == 100850 && creature->GetDBTableGUIDLow() == 369334)
+                barrierAriden = creature->GetGUID();
+            // The barrier guide is a scene actor, not a questgiver. Clear its
+            // native template flags before the first visibility update.
+            Scenario* scenario = Progress();
+            if (scenario && scenario->GetScenarioId() == 988 && scenario->GetCurrentStep() == 1 &&
+                creature->GetEntry() == 101282 && creature->isSummon() &&
+                barrierAriden && creature->ToTempSummon()->GetSummonerGUID() == barrierAriden)
+                creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0);
             if (DarkRidersArtifact::IsStageActor(creature->GetEntry()))
             {
                 actors.emplace(creature->GetGUID(),ActorGate{});
@@ -185,6 +242,8 @@ public:
             Scenario* scenario = Progress();
             if (spiritPlayers.erase(player->GetGUID()) || (scenario && scenario->GetScenarioId() == 988))
                 player->RemoveAurasDueToSpell(198654);
+            if (scenario && scenario->GetScenarioId() == 988)
+                DarkRidersRevil::RetireFollower(player);
         }
         void onScenarionNextStep(uint32) override { Sync(); }
         void Update(uint32 diff) override
@@ -193,6 +252,7 @@ public:
             if (refresh>diff) { refresh-=diff; return; }
             refresh=250;
             Sync();
+            EnsureBarrierGuide();
             Scenario* scenario = Progress();
             if (scenario && scenario->GetScenarioId() == 988)
                 instance->ApplyOnEveryPlayer([this, scenario](Player* player)
@@ -201,6 +261,8 @@ public:
                         scenario->GetCurrentStep() == 1)
                         TC_LOG_INFO("scripts.ai", "Dark Riders: barrier arrival credited player %u; stage 2 active", player->GetGUIDLow());
                     DarkRidersSpirits::UpdateContact(player, scenario->GetScenarioId(), scenario->GetCurrentStep());
+                    if (scenario->GetCurrentStep() == 1 || scenario->GetCurrentStep() == 2)
+                        DarkRidersRevil::RetireFollower(player);
                     if (player->HasAura(198654))
                         spiritPlayers.insert(player->GetGUID());
                     else

@@ -29,7 +29,9 @@ struct CreatureAI {
  void ProcessAction(Event&,Unit* unit){
   assert(unit->player);runOnce=true;
   // Ordered SQL chain, asserted against the migration by the PowerShell test:
-  // native criterion -> stationary guide at step1 -> optional follower cleanup.
+  // native criterion -> instance guide request at step1 -> optional199627.
+  // Actual idempotence and mandatory retirement execute in the separate full
+  // instance and native-controller tests; these are event action counters.
   ++credits;step=1;assert(step==1);++guides;if(!optionalCastFails)++cleanups;
  }
  void MoveInLineOfSight(Unit* unit){if(step||runOnce||!PlayerCondition(unit))return;switch(SMART_EVENT_OOC_LOS){
