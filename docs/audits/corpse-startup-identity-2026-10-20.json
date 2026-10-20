@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-20",
+  "base_commit": "8762cf1f1af05e31edb2a6a950473165294c5157",
+  "scope": "Startup corpse identity persistence and Trial of Valor ghost logout/login components",
+  "previous_audit": "docs/audits/trial-ghost-return-2026-10-20.json",
+  "finding": {
+    "query": "CHAR_SEL_CORPSES returns corpseGuid at index15 and owner guid at index16",
+    "before": "ObjectMgr::LoadCorpses passed owner field16 as the corpse low GUID to Corpse::LoadCorpseFromDB",
+    "reproduction": "Independent writer saved corpse1 for player10001; independent reader loaded corpse10001 for that owner. Owner cache lookup still worked, masking the identity change.",
+    "fix": "Read UInt64 field15 for corpse identity. Corpse::LoadCorpseFromDB retains owner field16 unchanged. No SQL schema/data migration or personal-character repair."
+  },
+  "automated_checks": [
+    "Test-CorpseRestartNative.ps1 -VerifyReleaseBinary: distinct writer PID33796 and reader PID21580 share schema-only disposable SQL, not objects/cache. Real KillPlayer/BuildPlayerRepop/Corpse::SaveToDB save two PvE/PvP corpses; memory unload does not delete their SQL rows; the writer exits before reader starts.",
+    "Cold reader executes production ObjectMgr::LoadCorpses and Corpse::LoadCorpseFromDB; saved/loaded IDs1/1 and2/2, owners10001/10002, type/time/map/instance/phase/position/orientation/appearance remain equal. A third persisted bone row is excluded by the actual prepared startup query.",
+    "Cold reader constructs new socketless Players with explicit dead/ghost input, invokes native Player::LoadCorpse, repeats Corpse::SaveToDB without identity/row duplication, then checks living LoadCorpse converts and deletes the resurrectable SQL rows. This is a login component test, not persisted-character loading.",
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary: 72 existing graveyard/logout modes across LFR/Normal/Heroic/Mythic and Human/Orc; 24 raid ghost returns now unload/reload actual persisted raid corpse before admission, entrance720, original-instance ACK resurrection at50%, repeat ACK, save and SQL corpse deletion.",
+    "16 of24 returns start after actual LogoutPlayer deletes its Player: attacked logout and death-timer logout. New Player restores actual saved flags/position, executes native prepared group/bind/aura loaders, applies the same final DEAD assignment as LoadFromDB, calls LoadCorpse, enters native outdoor zone and returns through actual portal/ACK. Earned encounter mask3 and saved instance remain intact.",
+    "Canonical PE check resolves incremental thunks and exception-bounded ObjectMgr::LoadCorpses: native Field size24, offset15*24=0x168 passed to Field::GetUInt64, result passed to native hydration. Actual final-link game.lib and canonical executable hashes match cold fixture inputs. Existing logout/ghost admission/ACK Release checks also pass.",
+    "Complete Release worldserver/bnetserver build in canonical build-extractors/bin/Release with original generated final-link libraries; no OutDir override. Hidden validation-owned worldserver PID2556 reached ready and exited gracefully0; DBErrors and stderr empty; no servers left running."
+  ],
+  "retained_failures": [
+    "Initial reference .codex/corpse-restart-reference.log reproduces saved1/loaded10001 with pre-fix game.lib pinned at build-extractors/runtime-test/corpse-restart-reference (hash in game.sha256, source commit in commit.txt). Its separate synthetic bone INSERT also omitted required itemCache and logged1364; the corpse GUID mismatch is independent of that INSERT. Do not count that reference as a successful bones-exclusion test.",
+    ".codex/corpse-restart-native.log passed the fixed identity assertions but was correctly rejected for the same synthetic INSERT error. Corrected fixture supplies itemCache and asserts all3 SQL rows before accepting2 prepared rows; final run has empty DBErrors.",
+    ".codex/corpse-restart-raid.log rejected a fixture assumption that exterior CreateMap must return the earlier staging pointer. Native outdoor zoning selects by restored position, so the fixture now attaches the actual selected map1220 zone before AddPlayerToMap. No production map-selection change."
+  ],
+  "limits": [
+    "The two independent processes prove persisted corpse startup loading. Their character tables remain empty: only corpse state is persisted in that fixture. The full raid map/group/Player is not cold-restored across that process boundary.",
+    "Raid relog tests execute saved-field restoration and actual prepared aura/group/bind/LoadCorpse components after real logout deletion. They do not call aggregate Player::LoadFromDB or authenticate a socket. They retain the live earned raid instance, then reload corpse state within that fixture process.",
+    "Client ghost movement/visibility, network login/relog after a full server restart, corpse/bones appearance, entrance loading, camera/pet/UI and retail traversal/timing remain pending client verification. Compilation/startup/native fixtures do not verify those.",
+    "Changed group/save, corpse in another instance of map1648, expired/missing corpse and admission changing between preflight and ACK remain separate cases. Next candidate: same-map corpse/selected-instance mismatch."
+  ],
+  "source_comparison": {
+    "primary_evidence": "Local native CharacterDatabase prepared SELECT, Corpse::SaveToDB/LoadCorpseFromDB, ObjectMgr::LoadCorpses and two-process SQL regression",
+    "external": "https://335.trinitycore.net/d7/d4d/corpse_8cpp_source",
+    "qualification": "Sibling emulator source distinguishes owner from corpse identity but has a different SELECT layout. Its indices are not copied; this is not retail packet evidence."
+  },
+  "evidence": {
+    "cold_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\corpse-restart-native\\run-20261020-212306",
+    "raid_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261020-212515",
+    "startup": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-garm-native\\startup-20261020-212434",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "src/server/game/Globals/ObjectMgr.cpp": "0789FFEE753FD8EC9C89B0A1E6A159A54602AC11F727C16E8F3F6D1493A991D4",
+      "src/server/game/Entities/Corpse/Corpse.cpp": "6139D4396E815B0B1F7DDB7D1C39E240C3852A8272404B076193C4BE4137AAC4",
+      "src/server/database/Database/Implementation/CharacterDatabase.cpp": "FAC7810AC82494D9F1454865005A74F43C124928F1694A6C41CAA94B78A14E20",
+      "tools/tests/CorpseRestartNative.cpp": "59DEC6D3D67458DA771CC67841D6C8F2D6C4E45A273D8E94195A0557D6F85074",
+      "tools/tests/Test-CorpseRestartNative.ps1": "6186F498E89EF5A96F8B0212701498AF3FB7F31FB774D6B4F0F0BA84308F9BB6",
+      "tools/tests/Test-CorpseRestartRelease.ps1": "873C8B9D6968AC5BE696D0F008B3CD291A8DB79A0C95B0A6C10A9AC837469A6A",
+      "tools/tests/TrialGhostReturnNative.inc": "9B99E13CA75EBF3978D197CE3AFF3F4A337C423F6F78FF05BEA91822F9B3471E",
+      "tools/tests/TrialGraveyardNative.inc": "76EF894858196497FEF61E54D1983BA83660C7A9B10A44A8C37A46CD9D055E59",
+      "tools/tests/Test-GroupRollLifecycleNative.ps1": "66967D0ED4CB9D450EA051587BD4C877DA99A121297A939FD7F12D0D2EB93E40",
+      "tools/tests/Test-RockawayChannelNative.ps1": "A80429483FD436A633A7A96745F9E900E66A0361F96615C7CA8068B241162527",
+      "build-extractors/bin/Release/worldserver.exe": "2F7D497BC003B1434EB1C3C7C2562462ED2BB783A25DE85FA31752693414DADF",
+      "build-extractors/bin/Release/bnetserver.exe": "8B7276C19498DFAD815A945F25E21B0269DB8563203B334D434F6A4A64E24E63",
+      "build-extractors/src/server/game/Release/game.lib": "C9C43FF079680C586A3CE40E904D928E69BF94858DF6F54A4AB6631AD52BAFD2",
+      "build-extractors/src/server/database/Release/database.lib": "38F1A6E96D6580959743D97F58C2A9C6C1660139950BDCCE69D93BC6F2EBB842",
+      ".codex/corpse-restart-reference.log": "1F80D40343A3AF9B7BA43FC8E3FA0C7F7945B903108EB398879664AED5219381",
+      ".codex/corpse-restart-native.log": "F93A273C49F0EBCED023E5FD52DA83DEF640CCD4307A6789A9B9C915CFCB55C3",
+      ".codex/corpse-restart-final.log": "3A18EA94B5BF869B5AF41C1D20DA2DA4D0E149F89FA804F889F75991D965ABE3",
+      ".codex/corpse-restart-raid.log": "F68F31165CDA066380B2E686951D96CDE3C8D050F03D9D717797F36C0B5E73F5",
+      ".codex/corpse-restart-raid-final.log": "6182E25EAABEA4A7CE24BB95AE152EBAFDFA24198870510FBABC1BD16F9A61A4",
+      ".codex/corpse-restart-build.log": "C0CA5BB9F710CBB9AE95DE1F18ED7FC7F7611F1E93573BA2ADD916452C0B0538",
+      ".codex/corpse-restart-startup.log": "A9314534F2A671314D82D32CCFD8439D3CAD4CD0C1415AFC626A4B1DF95CBFBA",
+      "cold/native-lines.txt": "814F618F4BCD91A98A25E994891A3340C1AC8015ED8F5F0FE713D892C296724D",
+      "cold/native-inputs.json": "66D2056F2F6FFAA8CA7CD92A344C8EE9846A89BA0BCF11B28388AC45F2E87FF4",
+      "cold/Server.log": "5BCD117DBD6F404EC9694B99060ECF832139F9C1B65AC9F6C9136F6C912E5B3F",
+      "cold/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "raid/native-lines.txt": "7CA7858B11F46B2DB9FFB6F3449216E8C12E1589A250428373B93858D9457AC5",
+      "raid/native-inputs.json": "016677725A9A7E799257AFE3595D3722B774962597262AAB23CB60C9C2840E59",
+      "raid/Server.log": "DA26ED0EFB594A543BA5FE86601C8D6FFFE88ACC6FAD85D8694B1033B026E7FD",
+      "raid/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "startup/Server.log": "DE05D4AEED31DA73B568648E290B045090C0475BF404FBE35675C11B238B20A8",
+      "startup/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "startup/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  },
+  "cleanup": {
+    "scratch_schemas": 0,
+    "scratch_users": 0,
+    "validation_servers_running": 0,
+    "personal_character_or_account_rows_copied_or_modified": false
+  }
+}

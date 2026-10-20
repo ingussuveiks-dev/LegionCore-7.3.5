@@ -5787,7 +5787,8 @@ void ObjectMgr::LoadCorpses()
     do
     {
         Field* fields = result->Fetch();
-        ObjectGuid::LowType guid = fields[16].GetUInt64();
+        // corpseGuid identifies the corpse; guid (field 16) is its owner.
+        ObjectGuid::LowType guid = fields[15].GetUInt64();
         CorpseType type = CorpseType(fields[12].GetUInt8());
         if (type >= MAX_CORPSE_TYPE)
         {

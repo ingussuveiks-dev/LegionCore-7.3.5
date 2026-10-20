@@ -4,6 +4,12 @@ static void TrialGhostReturn(GarmPlayer& player,GarmPlayer& leader,InstanceMap& 
 {
     auto corpse=player.GetCorpse();Require(corpse&&corpse->GetMapId()==1648&&corpse->GetInstanceId()==raid.GetInstanceId(),"Ghost return lost original raid corpse");
     auto corpseGuid=corpse->GetGUID();auto instance=raid.GetInstanceId();auto mask=raid.GetInstanceScript()->GetCompletedEncounterMask();auto outdoor=player.GetMap();auto session=player.GetSession();
+    // Component reload in the active raid fixture. The separate two-process
+    // CorpseRestart test establishes an actually empty process/cache boundary.
+    FlushWrites();sObjectAccessor->RemoveCorpse(corpse);delete corpse;
+    Require(!player.GetCorpse(),"Unloaded raid corpse remains cached");sObjectMgr->LoadCorpses();corpse=player.GetCorpse();
+    Require(corpse&&corpse->GetGUID()==corpseGuid&&corpse->GetMapId()==1648&&corpse->GetInstanceId()==instance,"Startup reload changed raid corpse identity or instance");
+    player.LoadCorpse();Require(player.isDead()&&player.GetCorpse()==corpse&&!player.HasFlag(PLAYER_FIELD_LOCAL_FLAGS,PLAYER_LOCAL_FLAG_RELEASE_TIMER),"Raid corpse login component resurrected ghost or enabled outdoor release timer");
     FlushWrites();auto before=CharacterDatabase.Query(Trinity::StringFormat("SELECT COUNT(*) FROM corpse WHERE corpseGuid=%u AND guid=%u",corpseGuid.GetCounter(),player.GetGUIDLow()).c_str());Require(before&&before->Fetch()[0].GetUInt32()==1,"Ghost input has no actual saved corpse row");
     Require(!sMapMgr->CanPlayerEnter(1648,&player,false),"Active raid admitted a returning ghost");
     std::cout<<"GHOST_DENIED alive="<<player.IsAlive()<<" corpse="<<(player.GetCorpse()!=nullptr)<<" ghost="<<player.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST)<<std::endl;
