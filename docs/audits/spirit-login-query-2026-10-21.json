@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "fab6df1b",
+  "previous_audit": "docs/audits/spirit-session-login-2026-10-21.json",
+  "scope": "Deferred delivery of native LoginQueryHolder responses before Player construction, cancellation and same-session replacement requests",
+  "finding": "Confirmed production defect: HandleContinuePlayerLogin dispatched its completed SQL holder unconditionally, and HandlePlayerLogin constructed/loaded a Player without checking the current request. AbortLogin followed by the old response still created a Player. A GUID-only guard would also admit an old response while a new request for the same GUID is pending.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-211540",
+    "log": ".codex/spirit-query-baseline.log",
+    "result": "Native accepted login opcode and HandleContinuePlayerLogin query complete; delivery is retained until after native AbortLogin. Original production response constructs/loads the Player, failing: Cancelled query result created a Player or changed session state. DBErrors is empty. No crash is claimed. The subsequent fixture changes add independent handler guards/ABI reporting and move a healthy-session assertion ahead of legitimate logout; the failing cancellation assertion is retained."
+  },
+  "implementation": [
+    "Advance the existing independent m_loginCompletionSerial only after an accepted CMSG_PLAYER_LOGIN passes loading/current-Player and character-eligibility gates. Publish m_playerLoading at that accepted boundary too. Rejected duplicates/flood attempts and ConnectTo retries do not advance the serial.",
+    "HandleContinuePlayerLogin captures that serial with its actual SQL callback. A response for an older accepted request returns before dispatching HandlePlayerLogin, including when a new request has the same character GUID.",
+    "HandlePlayerLogin additionally rejects no-longer-loading sessions, an existing Player, or a holder GUID differing from m_playerLoading before Player construction, LoadFromDB or session replacement. Cancellation with no replacement therefore needs no serial increment.",
+    "Successful construction still advances the serial, consuming duplicate SQL completions and preserving the previously fixed100ms completion lifetime. Accepted requests plus successful creations advance at most20 times under the existing ten-attempt session cap, so the byte does not wrap in the normal admission lifecycle. The flood counter remains separate. No queries or unrelated session callbacks are cancelled wholesale."
+  ],
+  "native_modes": {
+    "0": "AbortLogin before old SQL response; no Player/map/lookup/loading state is recreated and the realm connection remains healthy.",
+    "1": "Ordinary accepted login, real query/callback,99+1ms native map/session completion and logout/save.",
+    "2": "Abort then accept the same GUID again; old response leaves the new request pending, and only the new request's response constructs/completes its Player.",
+    "3": "Abort then accept a different enumerated GUID; old response cannot consume/clear the new loading GUID or create the old Player. The fixture cancels the replacement without querying a nonexistent character.",
+    "4": "Two actual HandleContinuePlayerLogin queries for one pending request; the second response cannot replace the first response's staged Player or advance its completion serial.",
+    "5": "Retain the old response, abort, accept/query/load a new same-GUID request, then deliver the old response; current Player and serial remain unchanged.",
+    "6": "A decoded loading-finished notification clears m_playerLoading before SQL delivery under the existing handler behavior; the old response cannot resurrect that cleared request. This is a server rejection boundary, not proof of a valid client sending this packet order."
+  },
+  "coverage": {
+    "deferred_query_cases": 392,
+    "underlying_recovery_paths": 56,
+    "cases_per_mode": 56,
+    "modes": 7,
+    "prior_session_cases": 280,
+    "prior_aggregate_loads": 168,
+    "near_transfers": 24,
+    "far_transfers": 48,
+    "refusal_or_transport_loss_paths": 56,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "test_method": [
+    "Native tests seed fixture-only allowed-character enumeration entries, construct WorldSession with a real loopback realm socket, and execute actual HandlePlayerLoginOpcode, ConnectTo packet serialization/RSA bootstrap, HandleContinuePlayerLogin and the full LoginQueryHolder prepared-query set against schema-only scratch character/auth databases. Realm endpoint addresses are fixture-only and restored afterward.",
+    "The private callback list is used solely to retain a production SQLQueryHolderCallback after its genuine SQL future becomes ready. Delivery is then queued through AddQueryHolderCallback and actual ProcessQueryCallbacks after the chosen cancellation/replacement boundary. This controls delivery order, not MySQL worker execution/cancellation or a modeled LoadFromDB result.",
+    "Modes0/1/3 also call HandlePlayerLogin directly with an uninitialized holder for the cancelled/occupied/different-GUID cases. No result may be read or Player constructed; pointer and serial remain unchanged. This independently exercises the preconstruction guard rather than only the outer serial check.",
+    "Valid results create ordinary production Players. Native Map::UpdateSessions drives the99+1ms delayed admission and ObjectAccessor lookup. Tests retain alive health321, exact saved recovery map/position, sickness15007 at598000ms, and the original item25 GUID/durability27. Logout saves health321/online0 and leaves no Player/lookup/loading state. The existing280 session and168 aggregate/offline tests remain active."
+  ],
+  "limitations_and_pending_client_checks": [
+    "No WoW client was operated. Real authentication, character enumeration exchange, encrypted network delivery, client ConnectTo handshake and World::ProcessLinkInstanceSocket admission are not proved by the fixture's seeded enumeration and directly associated loopback instance socket.",
+    "Future readiness is awaited before deferred callback delivery; no claim is made that an in-flight MySQL query is cancelled by AbortLogin. Scratch sessions are account0 synthetic level110 Human/Orc Warriors; no personal rows are copied.",
+    "The existing no-Player loading-finished handler clears the loading GUID. Mode6 records safe rejection afterward, without asserting that this out-of-order packet is a supported successful client login or implementing an automatic retry.",
+    "The separate existing realm-EOF session case still records bounded admission by the changing-map callback followed by ordinary disconnect cleanup; this change does not claim that all transport-loss callbacks are skipped before construction.",
+    "Rapid cancel/relogin, login packet presentation, camera, movement, pet portrait and interactive quest traversal still require client confirmation. Full client quest completion is not inferred from these server lifecycle tests."
+  ],
+  "next_candidate": "Authenticated instance-link retry/cancellation boundaries before HandleContinuePlayerLogin, including old socket links after a newer accepted request.",
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed all392 deferred-query cases,280 existing session cases,168 aggregate login/offline cases and configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log contains no ERROR records.",
+    "Native ABI reports loading GUID offset665, current Player offset304 and independent serial offset1249. Canonical callback disassembly compares its captured serial and returns on mismatch before tail-dispatching HandlePlayerLogin. Canonical handler checks loading GUID emptiness, current Player and holder GUID to one rejection branch before allocation, native Player constructor and LoadFromDB. Accepted opcode increments that serial once. Existing100ms completion, health and teleport executable guards remain intact.",
+    "Canonical Release worldserver and bnetserver targets built successfully through the original generated game/scripts library paths into build-extractors/bin/Release; executable and MAP were regenerated together. No OutDir override, runtime data/config replacement or migration was used.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed after the build.",
+    "Owned hidden startup PID13372 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains. Scratch character/auth schemas and users were removed; the world pool was read-only and no personal character/account rows were copied or written."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-212025",
+    "initial_fixed_run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-211724",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-211918",
+    "worldserver": "1491313C9AD69AFADFEC497821C9B659EDE0AA42537CA88A0E6C0824A09F5B97",
+    "worldserver_map": "B9106D263453BA3F62DFDE485EDB089393EFAA4FA9631F7B3F711EED8D189544",
+    "game_library": "1D57CF3EF7617C2538CA2A3ABFFC8671EC3E14209EDF5A4A4EBC90964B38ADAE",
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "058C2C8DB02D5C484753EABE40F9F7BE12B4629F057D70553CE11F544CEF892E",
+      "tools/tests/TrialSpiritQueryNative.inc": "A011B8D80CE7CFC7FEFA3511ACDEC31B36C445CD207D15FBA0A4AC3655E9AC42",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-212025/native-inputs.json": "5FB1EF2B2F0367D42C3959CC3022769FA4CF58781C5E0BE8E48EABF143CF3674",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-212025/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-212025/Server.log": "416857B5FCEF91F6E9B12822EBC084EFC9CFC104AC6D8009ED4A2EB80AD73CF8",
+      "build-extractors/runtime-test/spirit-query-release/inputs.json": "A309FF3194FB6C287B73B67860C2B2035464CD4E939D563A4974C352266EA2CC",
+      "build-extractors/runtime-test/spirit-query-release/query-callback.txt": "D245154B5C05410C534E5696138A537F60DE45423AF58D76088874FA23A6D920",
+      "build-extractors/runtime-test/spirit-query-release/preconstruction-gate.txt": "94F6EF03D06401F11E318040E532E435E5944AAFEA731D19277C634F9B56C3B9",
+      ".codex/spirit-query-baseline.log": "9E6EE86068FB6D6BBC769464FFF58154AB03730F110593CF38A5D00E3AA93B6E",
+      ".codex/spirit-query-build.log": "CB86BBA017795BEF3A9B1AC6B0F4C9F15CC2F8080B4E1A4DD4B0892CC713D786",
+      ".codex/spirit-query-final-verified.log": "3A113EC34CD1FA05870BE411414E65120AD615F6CCCFAB898B24E2FFEC3CF068",
+      ".codex/spirit-query-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-query-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-211918/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-211918/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-211918/Server.log": "E2514E0907055841185F6D260690470BBE5E92AA990C5665430BF9F1B7B6A361"
+    }
+  }
+}

@@ -8,8 +8,10 @@ static void SpiritLoadingScreen(WorldSession* session,uint32 map,bool showing)
     WorldPacket wire(CMSG_LOADING_SCREEN_NOTIFY);wire<<int32(map);wire.WriteBit(showing);wire.FlushBits();
     WorldPackets::Character::LoadingScreenNotify packet(std::move(wire));packet.Read();session->HandleLoadScreenOpcode(packet);
 }
+#include "TrialSpiritQueryNative.inc"
 static void SpiritSessionLogin(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction,unsigned sourceMode)
 {
+    SpiritQueryLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     for(unsigned mode=0;mode<5;++mode)
     {
         auto holder=std::make_shared<LoginQueryHolder>(0,guid);Require(holder->Initialize(),"Session login query holder initialization failed");

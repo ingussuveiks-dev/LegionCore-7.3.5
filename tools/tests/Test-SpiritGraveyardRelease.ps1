@@ -96,3 +96,39 @@ if($handleText -notmatch "inc\s+byte ptr \[r\w+\+0*${serialOffset}h\][\s\S]*movz
 ($completionGate.Value+"`n"+$post) | Set-Content "$sessionOut/completion-gate.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=280;replacement_cases=56;completion_serial_offset=[int]$sessionFields.Groups[1].Value;flood_counter_offset=[int]$sessionFields.Groups[2].Value} | ConvertTo-Json | Set-Content "$sessionOut/inputs.json"
 'PASS: canonical delayed login callback checks its own completion serial and current GUID before initial packets;280 session cases include56 same-GUID replacement logins.'
+
+$queryOut="$repo/build-extractors/runtime-test/spirit-query-release"
+New-Item -ItemType Directory -Force $queryOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit query login '}).Count -ne 392){throw 'Run all392 native deferred login-query cases first'}
+foreach($mode in 0..6){if(@($lines | Where-Object {$_ -match "^PASS: spirit query login .* mode=$mode map="}).Count -ne 56){throw "Missing deferred-query mode $mode"}}
+if($inputs.'tools/tests/TrialSpiritQueryNative.inc' -ne (Get-FileHash "$repo/tools/tests/TrialSpiritQueryNative.inc").Hash){throw 'Deferred-query fixture changed after native run'}
+$queryAbi=@($lines | Where-Object {$_ -match '^SPIRIT_QUERY_ABI '} | Select-Object -Unique)
+if($queryAbi.Count -ne 1){throw 'Missing unique native query admission ABI'}
+$queryFields=[regex]::Match($queryAbi[0],'^SPIRIT_QUERY_ABI loading=(\d+) player=(\d+)$')
+if(!$queryFields.Success){throw 'Native query admission ABI changed'}
+$loadingOffset=([int]$queryFields.Groups[1].Value).ToString('X')
+$playerOffset=([int]$queryFields.Groups[2].Value).ToString('X')
+$range=Bounds '?_Do_call@?$_Func_impl_no_alloc@V<lambda_1>@?1??HandleContinuePlayerLogin@WorldSession@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$queryLines=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical deferred-query callback disassembly failed'}
+$queryText=$queryLines -join "`n";$queryLines | Set-Content "$queryOut/query-callback.txt"
+$queryGate=[regex]::Match($queryText,"(?im)movzx\s+eax,byte ptr \[r\w+\+10h\]\r?\n[^\r\n]*cmp\s+byte ptr \[r\w+\+0*${serialOffset}h\],al\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
+if(!$queryGate.Success){throw 'Canonical query callback lacks captured request serial rejection'}
+$tailJump=[regex]::Match($queryText,'(?im)jmp\s+([0-9a-f]{16})')
+if(!$tailJump.Success -or (Resolve ([Convert]::ToInt64($tailJump.Groups[1].Value,16))) -ne (Resolve (Symbol '?HandlePlayerLogin@WorldSession@@'))){throw 'Canonical current-query callback no longer dispatches native login handler'}
+$reject=[regex]::Match($queryText,'(?im)^\s*'+$queryGate.Groups['reject'].Value+':(?<body>[\s\S]*)')
+if(!$reject.Success -or $reject.Groups['body'].Value -notmatch '\bret\b' -or $reject.Groups['body'].Value -match '\b(call|jmp)\s+'){throw 'Stale query rejection does not return without entering login'}
+
+$admissionGate=[regex]::Match($handleText,"(?im)lea\s+rcx,\[(?<session>r\w+)\+0*${loadingOffset}h\]\r?\n[^\r\n]*call\s+(?<empty>[0-9a-f]{16})\r?\n[^\r\n]*test\s+al,al\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})\r?\n[^\r\n]*cmp\s+qword ptr \[\k<session>\+0*${playerOffset}h\],0\r?\n[^\r\n]*jne\s+\k<reject>\r?\n[^\r\n]*lea\s+rdx,[^\r\n]*\r?\n[^\r\n]*lea\s+rcx,\[\k<session>\+0*${loadingOffset}h\]\r?\n[^\r\n]*call\s+(?<guid>[0-9a-f]{16})\r?\n[^\r\n]*test\s+al,al\r?\n[^\r\n]*jne\s+\k<reject>")
+if(!$admissionGate.Success -or (Resolve ([Convert]::ToInt64($admissionGate.Groups['empty'].Value,16))) -ne (Resolve (Symbol '?IsEmpty@ObjectGuid@@')) -or (Resolve ([Convert]::ToInt64($admissionGate.Groups['guid'].Value,16))) -ne (Resolve (Symbol '??9ObjectGuid@@'))){throw 'Canonical handler lacks loading/current-Player/expected-GUID guards'}
+$construct=$handleText.Substring($admissionGate.Index+$admissionGate.Length,1500)
+$constructCalls=@([regex]::Matches($construct,'call\s+([0-9a-fA-F]{16})') | ForEach-Object {Resolve ([Convert]::ToInt64($_.Groups[1].Value,16))})
+if($constructCalls.Count -lt 3 -or $constructCalls[1] -ne (Resolve (Symbol '??0Player@@')) -or $constructCalls[2] -ne (Resolve (Symbol '?LoadFromDB@Player@@'))){throw 'Native admission guards no longer precede Player construction and LoadFromDB'}
+$range=Bounds '?HandlePlayerLoginOpcode@WorldSession@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$requestLines=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical login request disassembly failed'}
+$requestText=$requestLines -join "`n";$requestLines | Set-Content "$queryOut/login-request.txt"
+if(@([regex]::Matches($requestText,"inc\s+byte ptr \[r\w+\+0*${serialOffset}h\]")).Count -ne 1){throw 'Accepted login request must advance its independent serial once'}
+$admissionGate.Value | Set-Content "$queryOut/preconstruction-gate.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;serial_offset=[int]$sessionFields.Groups[1].Value;loading_guid_offset=[int]$queryFields.Groups[1].Value;current_player_offset=[int]$queryFields.Groups[2].Value;stale_query_returns_before_handler=$true;admission_before_construction=$true} | ConvertTo-Json | Set-Content "$queryOut/inputs.json"
+'PASS: canonical login SQL callback rejects an older request serial, and native handler checks loading/current Player/GUID before construction;392 deferred-query cases match final-link inputs.'

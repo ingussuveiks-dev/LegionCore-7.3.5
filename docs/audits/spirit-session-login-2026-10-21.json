@@ -92,5 +92,6 @@
       "build-extractors/runtime-test/trial-garm-native/startup-20261021-201851/Server.log": "095F28ED0932E267EE949AECF01960AF0EB081CAD9ECD21AE8279893F0ED7B72"
     }
   },
-  "next_candidate": "Late/cancelled LoginQueryHolder responses before Player construction and authenticated instance-link retry, retaining client presentation as separate verification."
+  "next_candidate": "Late/cancelled LoginQueryHolder responses before Player construction and authenticated instance-link retry, retaining client presentation as separate verification.",
+  "query_lifetime_followup": "docs/audits/spirit-login-query-2026-10-21.json"
 }

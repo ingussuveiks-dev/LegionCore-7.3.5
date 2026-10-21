@@ -588,8 +588,6 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
         return;
     }
 
-    m_playerLoading = playerLogin.Guid;
-
     TC_LOG_DEBUG("network", "Character (Guid: %s) logging in", playerLogin.Guid.ToString().c_str());
 
     if (!CharCanLogin(playerLogin.Guid.GetCounter()))
@@ -598,6 +596,11 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
         KickPlayer();
         return;
     }
+
+    m_playerLoading = playerLogin.Guid;
+    // Only an accepted request invalidates older SQL results. Rejected
+    // duplicate/flood packets and instance connection retries do not.
+    ++m_loginCompletionSerial;
 
     SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt1);
 }
@@ -622,6 +625,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 {
     auto playerGuid = holder.GetGuid();
 
+    // A completed query can outlive cancellation, or another Player's login.
+    // Reject it before construction/LoadFromDB can replace session state.
+    if (!PlayerLoading() || GetPlayer() || m_playerLoading != playerGuid)
+        return;
+
     auto pCurrChar = new Player(this);
     // for send server info and strings (config)
     auto chH = ChatHandler(pCurrChar);
@@ -637,7 +645,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     }
 
     // Bind the delayed completion to this Player creation, including a rapid
-    // logout/relogin of the same GUID. Flood attempts must not invalidate it.
+    // logout/relogin of the same GUID, and consume this request's SQL result.
+    // At most ten accepted requests/creations fit within the byte serial.
     uint8 loginCompletionSerial = ++m_loginCompletionSerial;
 
     SendTutorialsData();
@@ -2042,8 +2051,12 @@ void WorldSession::HandleContinuePlayerLogin()
 
     SendPacket(WorldPackets::Auth::ResumeComms(CONNECTION_TYPE_INSTANCE).Write());
 
-    AddQueryHolderCallback(CharacterDatabase.DelayQueryHolder(holder)).AfterComplete([this](SQLQueryHolderBase const& holder)
+    uint8 loginCompletionSerial = m_loginCompletionSerial;
+    AddQueryHolderCallback(CharacterDatabase.DelayQueryHolder(holder)).AfterComplete([this, loginCompletionSerial](SQLQueryHolderBase const& holder)
     {
+        if (m_loginCompletionSerial != loginCompletionSerial)
+            return;
+
         HandlePlayerLogin(dynamic_cast<LoginQueryHolder const&>(holder));
     });
 }
