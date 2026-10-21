@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "8faa607502e51864222ca8fc00a95dddf8dd3975",
+  "scope": "Spirit healer expansion refusal, realm/instance TCP peer EOF and idle timeout before cross-continent worldport ACK",
+  "previous_audit": "docs/audits/spirit-far-2026-10-21.json",
+  "finding": "No new production defect found in these completed failure/recovery paths. This change adds executable native regressions and Release evidence admission; production C++ and SQL are unchanged.",
+  "counts": {
+    "total": 56,
+    "expansion_refusals": 8,
+    "realm_peer_eof": 16,
+    "idle_realm_timeout": 16,
+    "instance_peer_eof": 16,
+    "fresh_player_components": 56,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4,
+    "transport_directions": 2,
+    "existing_near_cases": 24,
+    "existing_far_cases": 48,
+    "existing_near_relog": 16,
+    "existing_far_relog": 32
+  },
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed, including all56 new cases and the configured existing near/far/graveyard/ghost/Helya regressions. Native DBErrors is empty and Server.log has no ERROR records.",
+    "Real graveyard selection, death/repop/corpse conversion, decoded SpiritHealerActivate, TeleportTo and SafeTeleport use the actual final-link game library and native 7.3.5 WorldSafeLocs/Map/Area data. Human/Orc anchors exercise old-world maps0/1 and Broken Isles1220.",
+    "Mode0 sets the fixture session expansion to0 before resurrecting toward map1220. Native SafeTeleport expansion admission rejects departure. The resurrected player remains in-world at the original healer without teleport flags. Restoring expansion6 and repeating both decoded and direct healer requests cannot reapply penalties or start another transfer.",
+    "Modes1/3 connect actual loopback TCP peers, construct native WorldSocket objects and attach both realm/instance sockets to the existing fixture session. AsyncRead receives a real peer EOF. Socket::ReadHandlerInternal invokes CloseSocket and native WorldSocket::OnClose marks the attached session forceExit. Socket Start/authentication and application packet exchange are not invoked.",
+    "Mode2 attaches the same native sockets, advances the native session timeout counter by1000ms and then executes Map::UpdateSessions(40). IsConnectionIdle closes the realm socket and invokes the same native OnClose callback. Each transport case proves forceExit bypasses the remaining60ms of the fixture100ms disconnect grace.",
+    "Native Map::UpdateSessions -> WorldSession::Update returns disconnected, logs out through LogoutPlayer(true), deletes the real Player, closes/resets both sockets and clears the session map. A following World::UpdateSessions tolerates the map-owned logout and removes the global session. No SetCanLogout shortcut is used in the48 transport cases.",
+    "Each case compares health321, sickness duration598000 and actual durable backpack item25 before repeated requests. Native durability falls35->27 once and remains27 in item_instance after logout. Actual character SQL must retain exact recovery map/XYZ/orientation/zone, instance0, alive flags, health321 and online0; no resurrectable corpse remains.",
+    "Refusal saves the original healer position; interrupted pending far transfers save their valid destination. All56 cases construct a fresh same-GUID Player, restore saved health/flags, invoke native prepared aura/effect loaders and LoadCorpse, and attach at the independently verified recovery location. Old-session ACK/healer requests cannot recreate or mutate that Player.",
+    "Test-SpiritGraveyardRelease.ps1 now requires all56 cases, unchanged fixture source hashes and matching native source/final-link library/canonical executable evidence in addition to its native SaveToDB near/far destination-zone instruction guard. No existing binary guard was relaxed.",
+    "Schema-only scratch auth/character databases and scratch SQL users were removed. The world pool stayed read-only. No live character/account rows were copied or modified.",
+    "Canonical Release worldserver PID8068 reached ready and exited gracefully through server shutdown 0 with exit0. Fresh DBErrors.log and stderr.log are zero bytes; fresh Server.log has no ERROR. No worldserver/bnetserver remains. Only test/audit sources changed, so the already matching canonical executable did not need rebuilding."
+  ],
+  "retained_observations": [
+    ".codex/spirit-failure-native.log initially failed compilation because Boost io_service was not included; the fixture now explicitly includes and uses io_context. A later fixture compile needed an explicit filesystem path rather than an undeclared current_path helper.",
+    ".codex/spirit-failure-native2.log failed during WorldSocket construction in ARC4 because the socketless probe had never performed worldserver Main OpenSSL provider bootstrap. The fixture now calls native OpenSSLCrypto::threadsSetup for the canonical Release provider directory, requires RC4 availability before construction and cleans up after sockets. This was a missing fixture prerequisite, not evidence of a production connection crash.",
+    ".codex/spirit-failure-native4.log passed56 initial cases but left WorldSocket::_worldSession unassociated and therefore tested delayed expiry rather than authenticated-session OnClose semantics. It is superseded by the final attached-socket peer-EOF run. A subsequent compile caught shared_ptr member-pointer syntax before execution; the final fixture uses the underlying native pointer."
+  ],
+  "limits": [
+    "No WoW client, authenticated login/realm handshake, instance connect key, encrypted packet routing or real reconnect authentication was exercised. The fixture attaches native socket/session ownership directly and drives real loopback EOF callbacks.",
+    "Expansion denial is the injected admission failure. DisableMgr map-disable changes and a destination becoming unavailable after departure were not injected. Earlier raid rejection/fallback audits retain their separate coverage.",
+    "Fresh-Player recovery uses selected saved fields and native aura/corpse components, not aggregate Player::LoadFromDB or full inventory/pet loading. Durability persistence is checked directly in the actual scratch item_instance row.",
+    "Workers belong to the private fixture and are stopped/joined. Timeout/grace counters advance deterministically; concurrent worker timing, offline duration, client renderer/collision readiness and display behavior remain unverified.",
+    "In-client spirit dialog, sickness/durability UI, camera/pet portrait and cold-client travel/reconnect remain pending."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-184921",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-185050",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "native_log": ".codex/spirit-failure-attached-verified.log",
+    "samples": [
+      "PASS: spirit failure recovery diff=17 race=1 direction=0 mode=0 map=0 zone=40 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=0 mode=1 map=1220 zone=7541 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=0 mode=2 map=1220 zone=7541 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=0 mode=3 map=1220 zone=7541 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=1 mode=1 map=0 zone=40 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=1 mode=2 map=0 zone=40 durability=27",
+      "PASS: spirit failure recovery diff=17 race=1 direction=1 mode=3 map=0 zone=40 durability=27"
+    ],
+    "hashes": {
+      "tools/tests/TrialSpiritFailureNative.inc": "BF39F5BCFF373DE4105037BF979E6CCB4D61ED40CEAAAA0F2D14BE9DDFFC2CEB",
+      "tools/tests/TrialHelyaControlNative.cpp": "8803F93104FFA33BC03A37C0FE15E7128A97A9F11E77688207DDC0A495996653",
+      "tools/tests/Test-RockawayChannelNative.ps1": "C036AD023EEB74EB7E84A7C67F0188B5039FA28B802649E9808F75AEFC1CB055",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "ECDB69E288BAD89450D27D9767E33FB6D8A2BFCB4DB6A46738ABC2E47BF8E977",
+      "src/server/game/Handlers/NPCHandler.cpp": "202A0C6B92B49F72B1D64340A0B5DB7C0D50EB69371F487915A8C16A866E11B9",
+      "src/server/game/Handlers/MovementHandler.cpp": "388B57A6FB8BA27BBF94BE3B32E6D39F2BA0BF895C723430A108EFDEE48C4287",
+      "src/server/game/Entities/Player/Player.cpp": "D5244D838805CA8C28436CDEC15ADBA428215DFF0BB398CFB32728295C8CC991",
+      "src/server/game/Server/WorldSession.cpp": "68ED919653AB68DCD9CA6368E49A6CE28C9D02F8C36C3940400A68F9672866F3",
+      "src/server/game/Server/WorldSocket.cpp": "5F6C414858A86A6AE0C0006BB9453FE9CC371D899766D18285BCE0E3AB0E13E4",
+      "src/server/game/World/World.cpp": "FD838007F3798C8CA8C653183E149DB8DC63377F97769C0D7D7C2F2C1978C98A",
+      "src/server/shared/Networking/Socket.h": "97B14DEACBFE61FBE699205ECE8629231185726C2B4B3C41B059B433595441AE",
+      "build-extractors/src/server/game/Release/game.lib": "30565A8CBE2D3DB2AD87BE12BC65F4CC337521D04DBF9A8C5EE18CFF1E5E2FB1",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "4F033E3CFCDC755D29A150CE7DADD973E961AD399ADB76D7E204C61E98706D79",
+      "build-extractors/bin/Release/worldserver.exe": "075F4260ABDDF6DDA84B694401C48F800EF2EEED3EF945E72F8742DAB66AF834",
+      "build-extractors/bin/Release/worldserver.map": "3228AFC9ABDFA7A37390A324E8CF399CB64DA9D02E302F45144634C583CD0860",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-184921/native-inputs.json": "F465CAF891F71344C0722BD75712973B32A72E341EFFC4686C689BB8C6C4C988",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-184921/native-lines.txt": "64D6485575FC94794B87AA2504F4FADAFB71719FD49E509FA88590569A01C358",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-184921/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-184921/Server.log": "1F1A2F2C376AD5336DB001A70F0EECF1AC5604B3F2B7B8C1D96ABAE9332C2836",
+      "build-extractors/runtime-test/spirit-graveyard-release/inputs.json": "040BACF30D253ED072CAF94F18BAE2B9DFE022DE39CA56137F34A5123CBE1CBB",
+      ".codex/spirit-failure-attached-verified.log": "61799696F54A49DEBA29CE8E3FA92489A854814ACD399F48FC837A9B63E29F2B",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-185050/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-185050/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-185050/Server.log": "13D19AC722766C87A914445E5FFF724C50780813433837036B10865AADF8D7E5"
+    }
+  },
+  "next_candidate": "Authenticated realm/instance reconnect admission and saved-character login, retaining this bounded component/native transport coverage separately."
+}

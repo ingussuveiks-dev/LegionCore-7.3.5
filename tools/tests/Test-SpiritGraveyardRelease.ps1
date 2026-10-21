@@ -9,6 +9,10 @@ $lines=Get-Content "$run/native-lines.txt"
 $abiNear=@($lines | Where-Object {$_ -match '^SPIRIT_GRAVE_ABI near=\d+$'} | Select-Object -Unique)
 if($abiNear.Count -ne 1 -or @($lines | Where-Object {$_ -match '^PASS: spirit graveyard transfer/save/logout '}).Count -ne 24 -or @($lines | Where-Object {$_ -match '^PASS: spirit graveyard logout saved-field/prepared-aura relog '}).Count -ne 16){throw 'Run all24 spirit transfer cases and16 relog components first'}
 if(@($lines | Where-Object {$_ -match '^PASS: spirit far transfer/save/logout '}).Count -ne 48 -or @($lines | Where-Object {$_ -match '^PASS: spirit far saved-field/prepared-aura relog '}).Count -ne 32){throw 'Run all48 cross-continent spirit cases and32 relog components first'}
+if(@($lines | Where-Object {$_ -match '^PASS: spirit failure recovery '}).Count -ne 56){throw 'Run all56 spirit refusal/transport-loss recovery cases first'}
+foreach($path in @('TrialSpiritFailureNative.inc','TrialHelyaControlNative.cpp')){
+    if($inputs."tools/tests/$path" -ne (Get-FileHash "$repo/tools/tests/$path").Hash){throw "Spirit failure fixture changed after native run: $path"}
+}
 $near=([int]($abiNear[0].Split('=')[1])).ToString('X')
 $far=([int]$abi.Groups[1].Value).ToString('X')
 $listing=@(Get-Content "$repo/build-extractors/runtime-test/logout-teleport-release/SaveToDB-Player.txt")
@@ -23,5 +27,5 @@ if([Convert]::ToInt64($gate.Groups['resolve'].Value,16) -ge $callAddress -or [Co
 $zeroReg=$gate.Groups['zero'].Value -replace 'b$','d'
 if(($listing -join "`n") -notmatch "xor\s+${zeroReg},${zeroReg}"){throw 'Teleport comparison register is not zero-initialized'}
 $around | Set-Content "$out/near-far-zone-gate.txt"
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;near_offset=[int]($abiNear[0].Split('=')[1]);far_offset=[int]$abi.Groups[1].Value;cases=24;relog_components=16;far_cases=48;far_relog_components=32;near_and_far_resolve_destination_zone=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
-'PASS: canonical Release resolves saved destination zone for native near OR far transfers;24 near/48 cross-continent spirit cases and16/32 relog components match final-link inputs.'
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;near_offset=[int]($abiNear[0].Split('=')[1]);far_offset=[int]$abi.Groups[1].Value;cases=24;relog_components=16;far_cases=48;far_relog_components=32;failure_cases=56;near_and_far_resolve_destination_zone=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
+'PASS: canonical Release resolves saved destination zone for native near OR far transfers;24 near/48 cross-continent cases,56 refusal/transport-loss cases and16/32 relog components match final-link inputs.'
