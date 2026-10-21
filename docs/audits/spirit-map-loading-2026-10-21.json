@@ -2,6 +2,7 @@
   "date": "2026-10-21",
   "base_commit": "78c44f62",
   "previous_audit": "docs/audits/spirit-early-loading-2026-10-21.json",
+  "follow_up_audit": "docs/audits/spirit-loading-order-2026-10-21.json",
   "scope": "Map admission for decoded loading-screen notifications after Player construction, including pending far transfers, admitted arrivals and same-map teleports",
   "finding": "HandleLoadScreenOpcode checked only Player existence. A finished notification for another map still invoked SendInitialPacketsAfterAddToMap and then cleared m_playerLoading even when Player::NotifyMapObjectArrivalLoaded rejected that map. A showing notification reached NotifyMapObjectArrivalLoading, which unconditionally cleared the loaded-map marker. During a far teleport GetMapId still names the source until WorldPortAck, so accepting both current and destination maps would retain the stale-source problem.",
   "reproduction": {

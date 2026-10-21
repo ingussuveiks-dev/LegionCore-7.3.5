@@ -191,6 +191,7 @@ void WorldSession::HandleWorldPortAck()
     player->ReCreateAreaTriggerObjects();
     player->SetLastWorldStateUpdateTime(time_t(0));
     player->SetChangeMap(false);
+    SendInitialPacketsAfterMapLoading();
 }
 
 void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck& packet)
@@ -243,6 +244,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPackets::Movement::MoveTeleportAck
 
         mover->ClearUnitState(UNIT_STATE_JUMPING);
     }
+    SendInitialPacketsAfterMapLoading();
 }
 
 void WorldSession::HandleMovementOpcodes(WorldPackets::Movement::ClientPlayerMovement& packet)

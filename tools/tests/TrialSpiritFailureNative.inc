@@ -123,6 +123,7 @@ static void TrialSpiritFailureCases(GarmPlayer& leader,InstanceMap& raid)
         Require(fresh.IsAlive()&&fresh.GetHealth()==321&&fresh.HasAura(15007)&&!fresh.GetCorpse()&&!fresh.IsBeingTeleported()&&fresh.GetMapId()==expected.GetMapId()&&fresh.GetExactDist(expected)<0.01f,"Spirit failure fresh-player component recovery failed");
         fresh.GetMap()->RemovePlayerFromMap(&fresh,false);}
         SpiritSessionLogin(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction,mode);
+        SpiritLoadingOrderLogin(guid,expected,itemGuid,durability,session,leader,raid,direction,mode);
         SpiritFullLogin(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction,mode);
         Require(raid.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Spirit failure changed raid progress");
         std::cout<<"PASS: spirit failure recovery diff="<<uint32(raid.GetDifficultyID())<<" race="<<uint32(leader.getRace())<<" direction="<<direction<<" mode="<<mode<<" map="<<expected.GetMapId()<<" zone="<<zone<<" durability="<<durability<<std::endl;

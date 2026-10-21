@@ -213,9 +213,9 @@ if(!$earlyGate.Success){throw 'Canonical loading notification lacks early null-P
 $nullReturn=[regex]::Match($earlyText,'(?im)^\s*'+$earlyGate.Groups['reject'].Value+':(?<body>[\s\S]*?\bret\b)')
 if(!$nullReturn.Success -or $nullReturn.Groups['body'].Value -match '\b(call|jmp)\s+|\bmov\s+(byte|word|dword|qword|xmmword) ptr \['){throw 'Null-Player notification path does not return without calls or state writes'}
 $earlyOps=@([regex]::Matches($earlyText,'(?:call|jmp)\s+([0-9a-fA-F]{16})') | ForEach-Object {[pscustomobject]@{Index=$_.Index;Target=(Resolve ([Convert]::ToInt64($_.Groups[1].Value,16)))}})
-$expectedEarly=@('?NotifyMapObjectArrivalLoading@Player@@','?SendInitialPacketsAfterAddToMap@Player@@','?NotifyMapObjectArrivalLoaded@Player@@','?Clear@ObjectGuid@@')
-if($earlyOps.Count -ne 4){throw 'Review canonical loading notification dispatch'}
-for($i=0;$i -lt 4;++$i){if($earlyOps[$i].Target -ne (Resolve (Symbol $expectedEarly[$i])) -or $earlyOps[$i].Index -le $earlyGate.Index){throw 'Canonical loading notification lost its guarded Player/arrival/loading-state operations'}}
+$expectedEarly=@('?NotifyMapObjectArrivalLoading@Player@@','?NotifyMapObjectArrivalLoaded@Player@@','?Clear@ObjectGuid@@','?IsInWorld@Object@@','?SendInitialPacketsAfterAddToMap@Player@@')
+if($earlyOps.Count -ne 5){throw 'Review canonical loading notification dispatch'}
+for($i=0;$i -lt 5;++$i){if($earlyOps[$i].Target -ne (Resolve (Symbol $expectedEarly[$i])) -or $earlyOps[$i].Index -le $earlyGate.Index){throw 'Canonical loading notification lost its guarded Player/arrival/loading-state operations'}}
 if($earlyText -notmatch "lea\s+rcx,\[r\w+\+0*${loadingOffset}h\]"){throw 'Canonical valid loading completion no longer addresses the pending login GUID'}
 $logoutLoadingClear=[regex]::Match($cancelBodies.LogoutPlayer,"(?im)lea\s+rcx,\[r\w+\+0*${loadingOffset}h\]\r?\n[^\r\n]*call\s+([0-9a-f]{16})")
 if(!$logoutLoadingClear.Success -or (Resolve ([Convert]::ToInt64($logoutLoadingClear.Groups[1].Value,16))) -ne (Resolve (Symbol '?Clear@ObjectGuid@@'))){throw 'Canonical logout does not clear its own pending login GUID'}
@@ -235,9 +235,58 @@ $mapLoadingFields=[regex]::Match($mapLoadingAbi[0],'far=(\d+) destination=(\d+) 
 $mapFar=([int]$mapLoadingFields.Groups[1].Value).ToString('X');$mapDestination=([int]$mapLoadingFields.Groups[2].Value).ToString('X');$mapCurrent=([int]$mapLoadingFields.Groups[3].Value).ToString('X')
 # MSVC selects the map-field offset with CMOVE: source only when far is false.
 # Both wrong-map and null-Player paths must share the harmless epilogue above.
-$mapLoadingGate=[regex]::Match($earlyText,"(?im)cmp\s+byte ptr \[\w+\+0*${mapFar}h\],0\r?\n[^\r\n]*mov\s+eax,0*${mapDestination}h\r?\n[^\r\n]*mov\s+edx,dword ptr \[\w+\+50h\]\r?\n[^\r\n]*mov\s+ecx,0*${mapCurrent}h\r?\n[^\r\n]*cmove\s+eax,ecx\r?\n[^\r\n]*cmp\s+edx,dword ptr \[rax\+\w+\]\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
+$mapLoadingGate=[regex]::Match($earlyText,"(?im)cmp\s+byte ptr \[\w+\+0*${mapFar}h\],0\r?\n[^\r\n]*mov\s+eax,0*${mapDestination}h\r?\n[^\r\n]*mov\s+(?<wire>\w+),dword ptr \[\w+\+50h\]\r?\n[^\r\n]*mov\s+(?<current>\w+),0*${mapCurrent}h\r?\n[^\r\n]*cmove\s+eax,\k<current>\r?\n[^\r\n]*cmp\s+\k<wire>,dword ptr \[rax\+\w+\]\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
 if(!$mapLoadingGate.Success -or $mapLoadingGate.Groups['reject'].Value -ne $earlyGate.Groups['reject'].Value -or $mapLoadingGate.Index -le $earlyGate.Index -or $mapLoadingGate.Index -ge $earlyOps[0].Index){throw 'Review canonical expected-map selection/rejection before loading side effects'}
 $earlyLines | Set-Content "$mapLoadingOut/HandleLoadScreenOpcode.txt"
 $mapLoadingGate.Value | Set-Content "$mapLoadingOut/expected-map-gate.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;far_offset=[int]$mapLoadingFields.Groups[1].Value;destination_map_offset=[int]$mapLoadingFields.Groups[2].Value;current_map_offset=[int]$mapLoadingFields.Groups[3].Value;far_prefers_destination_map=$true;wrong_map_returns_before_packets_and_state_changes=$true;valid_early_far_and_near_acknowledgements_retained=$true} | ConvertTo-Json | Set-Content "$mapLoadingOut/inputs.json"
 'PASS: canonical loading notification admits only the expected current/destination map before packet dispatch or state writes;392 native login, arrival-grace, far-transfer and near-transfer cases match final-link inputs.'
+
+$orderOut="$repo/build-extractors/runtime-test/spirit-loading-order-release"
+New-Item -ItemType Directory -Force $orderOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit loading order '}).Count -ne 280){throw 'Run all280 native loading-order cases first'}
+foreach($mode in 0..4){if(@($lines | Where-Object {$_ -match "^PASS: spirit loading order .* mode=$mode map="}).Count -ne 56){throw "Missing native loading-order mode $mode"}}
+foreach($path in @('tools/tests/TrialSpiritLoadingOrderNative.inc','tools/tests/TrialSpiritFailureNative.inc','tools/tests/TrialSpiritMapLoadingNative.inc','src/server/game/Handlers/CharacterHandler.cpp','src/server/game/Handlers/MovementHandler.cpp','src/server/game/Entities/Player/Player.cpp','src/server/game/Server/WorldSession.h','src/server/game/Server/WorldSession.cpp','src/server/game/Server/Packets/MiscPackets.cpp','src/server/game/Server/Packets/WorldStatePackets.cpp')){
+    if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Loading-order input changed after native run: $path"}
+}
+$orderAbi=@($lines | Where-Object {$_ -match '^SPIRIT_LOADING_ORDER_ABI state=\d+ changing=\d+ world=\d+$'} | Select-Object -Unique)
+if($orderAbi.Count -ne 1){throw 'Missing unique native loading-order ABI'}
+$orderFields=[regex]::Match($orderAbi[0],'state=(\d+) changing=(\d+) world=(\d+)')
+$stateOffset=([int]$orderFields.Groups[1].Value).ToString('X');$changingOffset=([int]$orderFields.Groups[2].Value).ToString('X')
+function CheckInitializationGuard([string]$body,[bool]$allowCleanup=$false){
+    $phase=[regex]::Match($body,"(?im)cmp\s+byte ptr \[\w+\+0*${stateOffset}h\],1\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
+    if(!$phase.Success){throw 'Canonical initialization lacks retained-finish admission'}
+    $reject=$phase.Groups['reject'].Value
+    $tail=$body.Substring($phase.Index)
+    $worldCheck=[regex]::Match($tail,'(?im)call\s+([0-9a-f]{16})\r?\n[^\r\n]*test\s+al,al\r?\n[^\r\n]*je\s+'+$reject)
+    if(!$worldCheck.Success -or (Resolve ([Convert]::ToInt64($worldCheck.Groups[1].Value,16))) -ne (Resolve (Symbol '?IsInWorld@Object@@'))){throw 'Canonical initialization lacks native in-world admission'}
+    foreach($field in @($changingOffset,$near,$mapFar)){
+        if($tail -notmatch "(?im)cmp\s+byte ptr \[\w+\+0*${field}h\],0\r?\n[^\r\n]*jne\s+$reject"){throw "Canonical initialization lacks changing/near/far rejection at $field"}
+    }
+    $claim=[regex]::Match($tail,"(?im)mov\s+byte ptr \[\w+\+0*${stateOffset}h\],2\r?\n[^\r\n]*mov\s+rcx,\w+\r?\n[^\r\n]*call\s+([0-9a-f]{16})")
+    if(!$claim.Success -or (Resolve ([Convert]::ToInt64($claim.Groups[1].Value,16))) -ne (Resolve (Symbol '?SendInitialPacketsAfterAddToMap@Player@@'))){throw 'Canonical initialization does not claim Initialized before native dispatch'}
+    $return=[regex]::Match($tail,'(?im)^\s*'+$reject+':(?<body>[\s\S]*?\bret\b)')
+    if(!$return.Success -or (!$allowCleanup -and $return.Groups['body'].Value -match '\b(call|jmp)\s+|\bmov\s+(byte|word|dword|qword|xmmword) ptr \[')){throw 'Rejected initialization does not return harmlessly'}
+}
+CheckInitializationGuard $earlyText
+if($earlyText -notmatch "(?im)movzx\s+eax,byte ptr \[\w+\+0*${stateOffset}h\]\r?\n[^\r\n]*cmp\s+al,2\r?\n[^\r\n]*je\s+$($earlyGate.Groups['reject'].Value)"){throw 'Canonical completed screen lacks duplicate rejection'}
+$range=Bounds '?SendInitialPacketsAfterMapLoading@WorldSession@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$orderDispatch=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Canonical initialization disassembly failed'}
+$orderDispatch | Set-Content "$orderOut/SendInitialPacketsAfterMapLoading.txt";CheckInitializationGuard ($orderDispatch -join "`n")
+$helper=Resolve (Symbol '?SendInitialPacketsAfterMapLoading@WorldSession@@')
+foreach($entry in @(@('??R<lambda_1>@?1??HandlePlayerLogin@WorldSession@@','login-completion'),@('?HandleWorldPortAck@WorldSession@@','worldport-ack'),@('?HandleMoveTeleportAck@WorldSession@@','near-ack'),@('??R<lambda_1>@?CC@??ZoneTeleport@Player@@','zone-completion'))){
+    $range=Bounds $entry[0];$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+    $body=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw "Canonical completion disassembly failed: $($entry[1])"}
+    $body | Set-Content "$orderOut/$($entry[1]).txt";$text=$body -join "`n"
+    $calls=@([regex]::Matches($text,'(?:call|jmp)\s+([0-9a-fA-F]{16})') | ForEach-Object {Resolve ([Convert]::ToInt64($_.Groups[1].Value,16))})
+    if($calls -notcontains $helper){CheckInitializationGuard $text $true}
+}
+foreach($entry in @(@('?SafeTeleport@Player@@QEAA_NIMMMMI','teleport-reset',2),@('?TeleportToChallenge@Player@@','challenge-reset',1))){
+    $range=Bounds $entry[0];$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+    $body=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Canonical teleport reset disassembly failed'}
+    $body | Set-Content "$orderOut/$($entry[1]).txt"
+    if(@([regex]::Matches(($body -join "`n"),"mov\s+byte ptr \[\w+\+0*${stateOffset}h\],0")).Count -ne $entry[2]){throw "Canonical $($entry[1]) no longer resets at its native departure boundaries"}
+}
+$earlyLines | Set-Content "$orderOut/HandleLoadScreenOpcode.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=280;cases_per_mode=56;state_offset=[int]$orderFields.Groups[1].Value;changing_map_offset=[int]$orderFields.Groups[2].Value;in_world_offset=[int]$orderFields.Groups[3].Value;inline_and_shared_dispatch_guards=$true;claim_before_native_initialization=$true;completion_boundaries=4;native_departure_reset=$true} | ConvertTo-Json | Set-Content "$orderOut/inputs.json"
+'PASS: canonical inline/shared initialization retains early finishes until native map admission, claims once before dispatch, resets at real departures and resumes at login/far/near/zone completion;280 native packet-content/order cases match final-link inputs.'

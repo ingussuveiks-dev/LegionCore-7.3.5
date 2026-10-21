@@ -1,3 +1,5 @@
+struct SpiritLoadingStateTag{using Type=uint8 WorldSession::*;friend Type Access(SpiritLoadingStateTag);};
+template struct FixtureAccess<SpiritLoadingStateTag,&WorldSession::m_mapLoadingState>;
 #include "MovementPackets.h"
 struct SpiritArrivalMapTag{using Type=int32 Player::*;friend Type Access(SpiritArrivalMapTag);};
 template struct FixtureAccess<SpiritArrivalMapTag,&Player::_mapObjectArrivalMap>;
@@ -42,8 +44,9 @@ static void SpiritWrongMap(WorldSession* session,uint32 map,bool showing)
 }
 static void SpiritValidMap(WorldSession* session,uint32 map)
 {
+    auto player=session->GetPlayer();bool dispatch=session->*Access(SpiritLoadingStateTag{})!=2&&player->IsInWorld()&&!player->IsChangeMap()&&!player->IsBeingTeleported();
     SpiritDrainPackets(session);SpiritLoadingScreen(session,map,false);unsigned initial=0;SpiritDrainPackets(session,&initial);
-    Require(initial==1&&!session->PlayerLoading()&&session->GetPlayer()->*Access(SpiritArrivalLoadedTag{})==int32(map),"Valid loading completion lost its native initial packets/acknowledgement");
+    Require(initial==unsigned(dispatch)&&!session->PlayerLoading()&&session->GetPlayer()->*Access(SpiritArrivalLoadedTag{})==int32(map),"Valid loading completion lost its native initial packets/acknowledgement");
 }
 static void SpiritMapLoadingLogin(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction,unsigned sourceMode)
 {
@@ -59,7 +62,7 @@ static void SpiritMapLoadingLogin(ObjectGuid guid,WorldLocation const& expected,
         if(mode==1){SpiritValidMap(session,expected.GetMapId());SpiritWrongMap(session,wrong,true);SpiritWrongMap(session,wrong,false);}
         SpiritCancelComplete(session,guid,expected,itemGuid,durability);
         if(mode==2){
-            player->EndMapObjectArrival();SpiritLoadingScreen(session,expected.GetMapId(),true);player->BeginMapObjectArrival();SpiritValidMap(session,expected.GetMapId());player->UpdateMapObjectArrival(1000);
+            player->EndMapObjectArrival();player->NotifyMapObjectArrivalLoading(int32(expected.GetMapId()));player->BeginMapObjectArrival();Require(player->*Access(SpiritArrivalSettleTag{})==0,"Arrival control did not wait for loading finish");player->NotifyMapObjectArrivalLoaded(int32(expected.GetMapId()));player->UpdateMapObjectArrival(1000);
             Require(player->IsMapObjectArrivalProtected()&&player->*Access(SpiritArrivalSettleTag{})==7000,"Native arrival grace control missing");
             for(unsigned i=0;i<3;++i){SpiritWrongMap(session,wrong,true);SpiritWrongMap(session,wrong,false);SpiritWrongMap(session,uint32(-1),false);}
             player->UpdateMapObjectArrival(6999);Require(player->IsMapObjectArrivalProtected(),"Arrival grace released early");player->UpdateMapObjectArrival(1);Require(!player->IsMapObjectArrivalProtected(),"Arrival grace did not release");

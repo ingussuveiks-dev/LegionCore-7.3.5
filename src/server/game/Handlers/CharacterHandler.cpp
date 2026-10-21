@@ -602,6 +602,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
     // Only an accepted request invalidates older SQL results. Rejected
     // duplicate/flood packets and instance connection retries do not.
     ++m_loginCompletionSerial;
+    ResetMapLoadingScreen();
 
     SendConnectToInstance(WorldPackets::Auth::ConnectToSerial::WorldAttempt1);
 }
@@ -621,14 +622,35 @@ void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreen
     if (loadingScreenNotify.MapID != expectedMap)
         return;
 
+    // A screen cannot initialize the same native arrival twice. A late start
+    // notification must not erase an already retained finish acknowledgement.
+    if (m_mapLoadingState == MAP_LOADING_INITIALIZED)
+        return;
+
     if (loadingScreenNotify.Showing)
-        player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
+    {
+        if (m_mapLoadingState == MAP_LOADING_WAITING)
+            player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
+    }
     else
     {
-        player->SendInitialPacketsAfterAddToMap(true);
+        m_mapLoadingState = MAP_LOADING_FINISHED;
         player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);
         m_playerLoading.Clear();
+        SendInitialPacketsAfterMapLoading();
     }
+}
+
+void WorldSession::SendInitialPacketsAfterMapLoading()
+{
+    Player* player = GetPlayer();
+    if (!player || m_mapLoadingState != MAP_LOADING_FINISHED || !player->IsInWorld()
+        || player->IsChangeMap() || player->IsBeingTeleported())
+        return;
+
+    // Claim before dispatch: zone/scenario hooks may cause another transfer.
+    m_mapLoadingState = MAP_LOADING_INITIALIZED;
+    player->SendInitialPacketsAfterAddToMap(true);
 }
 
 void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
@@ -1041,6 +1063,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
         sScriptMgr->OnPlayerLogin(player, firstLogin);
         player->SetChangeMap(false);
+        SendInitialPacketsAfterMapLoading();
     });
 }
 

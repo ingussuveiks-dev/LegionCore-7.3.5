@@ -1271,6 +1271,8 @@ class TC_GAME_API WorldSession
         void HandleCharCreateOpcode(WorldPackets::Character::CreateChar& charCreate);
         void HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin& playerLogin);
         void HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreenNotify& loadingScreenNotify);
+        void ResetMapLoadingScreen() { m_mapLoadingState = MAP_LOADING_WAITING; }
+        void SendInitialPacketsAfterMapLoading();
         void HandleCharEnum(PreparedQueryResult result, bool isDelete);
         void HandlePlayerLogin(LoginQueryHolder const& holder);
         void HandleCharRaceOrFactionChange(WorldPackets::Character::CharRaceOrFactionChange& packet);
@@ -2135,6 +2137,8 @@ class TC_GAME_API WorldSession
         LockedQueue<WorldPacket*> _recvQueue;
         uint8 playerLoginCounter;
         uint8 m_loginCompletionSerial;
+        enum MapLoadingState : uint8 { MAP_LOADING_WAITING, MAP_LOADING_FINISHED, MAP_LOADING_INITIALIZED };
+        uint8 m_mapLoadingState = MAP_LOADING_WAITING;
         uint32 expireTime;
         bool forceExit;
         std::atomic<bool> m_sUpdate;

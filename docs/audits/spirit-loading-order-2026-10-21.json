@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "09db4ad0",
+  "previous_audit": "docs/audits/spirit-map-loading-2026-10-21.json",
+  "scope": "Destination initialization after an early loading-screen finish, repeated notifications and reset at authoritative native transfer boundaries",
+  "finding": "A valid destination loading-finished notification invoked Player::SendInitialPacketsAfterAddToMap before WorldPortAck. The Player still belonged to the source map, so WorldServerInfo used its difficulty and the remaining initialization consulted source map/zone/scenario state. Every repeated finished notification dispatched initialization again. The same ordering was possible before the100ms login completion and before a same-map movement ACK.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-232728",
+    "log": ".codex/spirit-loading-order-baseline.log",
+    "observed_packet": "LOADING_ORDER_EARLY sourceMap=0 destinationMap=1648 sourceDifficulty=0 destinationDifficulty=17 initialPackets=1 packetDifficulty=0",
+    "result": "Actual accepted login, full SQL Player construction, native group/raid selection and TeleportTo reach a pending far transfer. After draining prior outgoing packets, a decoded destination finish queues an actual SMSG_WORLD_SERVER_INFO containing source difficulty0 instead of destination17. The assertion Early destination finish dispatched source-map initialization before WorldPortAck fires. DBErrors is empty. The fixture then suffered C0000005 while unwinding its newly grouped pending Player; that unwind failure is not claimed as a server defect caused by an ordinary client packet. The fixture now explicitly detaches/disbands its temporary group and logs out before raising that failed-assertion path.",
+    "fixture_prerequisite_failures": [
+      "run-20261021-232259 and run-20261021-232440 stopped at group admission: the original leader's one-member group was not a raid. The new test creates its own native group, without changing the original group.",
+      "run-20261021-232629 incorrectly required the selected raid object to be the original fixture raid. Native group selection legitimately created a different instance; that assertion and its unwind failed. The test now accepts the actual factory-selected map1648 instance, requires the requested native difficulty and verifies original raid progress separately."
+    ]
+  },
+  "implementation": [
+    "Store Waiting/Finished/Initialized in WorldSession. A valid finish retains the native arrival acknowledgement and existing pending-GUID cleanup immediately, then attempts initialization only when the current Player is in world, not changing maps and has neither a near nor far transfer pending.",
+    "The100ms login completion, far WorldPortAck, near movement ACK and final zone-worker handoff retry retained initialization after their native admission work. Claim Initialized before calling Player's existing routine so hooks that start another transfer cannot be followed by an overwrite of that transfer's reset state.",
+    "Reset only at an accepted login request, an actual near/far departure, challenge departure or logout. Rejected requests/transfers and duplicate screen-start packets do not reset an initialized arrival. The internal same-map zone-worker handoff preserves a pending finish; it is part of the existing client arrival and has no separate loading-screen completion.",
+    "Different-map notification admission remains ahead of all state changes. A duplicate finish, or a late start following a retained finish, cannot dispatch initialization twice or erase the completed screen marker. A new authoritative transfer can initialize again, including a second transfer on the same map."
+  ],
+  "native_modes": {
+    "0": "Loading finish after SQL construction queues no packets before map admission. The actual99+1ms login callback sends one initialization in its admitted map; repeated finish/start/finish events send nothing.",
+    "1": "An actual outdoor-to-raid transfer has different map and difficulty values. Repeated early destination finishes and a late same-map start send nothing and retain the early acknowledgement; WorldPortAck initializes once with destination difficulty and serialized destination map/zone/area world states. A real return transfer resets the cycle and initializes once with outdoor difficulty0.",
+    "2": "WorldPortAck arrives before the screen finish and sends no initialization. The later finish sends exactly one destination initialization. Duplicate notifications are harmless, and a subsequent return transfer initializes normally.",
+    "3": "Two consecutive40-yard same-map transfers each retain an early finish until their actual movement ACK. Each sends one initialization after relocation; duplicate notifications between transfers cannot start another cycle.",
+    "4": "A pending far destination is acknowledged, then superseded by another actual far transfer. The old finish cannot initialize the replacement; the replacement requires its own valid finish after its ACK."
+  },
+  "coverage": {
+    "loading_order_cases": 280,
+    "cases_per_mode": 56,
+    "modes": 5,
+    "native_raid_difficulties": [
+      17,
+      14,
+      15,
+      16
+    ],
+    "races": [
+      1,
+      2
+    ],
+    "previous_map_loading_cases": 392,
+    "previous_early_loading_cases": 392,
+    "previous_linked_cancellation_cases": 392,
+    "previous_instance_link_cases": 392,
+    "previous_deferred_query_cases": 392,
+    "previous_session_cases": 280,
+    "previous_aggregate_login_cases": 168
+  },
+  "method_and_limits": [
+    "The new fixture uses the accepted login opcode, native instance socket admission, a complete SQL holder, actual Player construction, native Map::UpdateSessions and actual far/near teleport handlers. WorldServerInfo difficulty and InitWorldStates map/zone/area are decoded from production serialized packets in real socket queues. Native Player delayed callbacks are advanced separately to execute world-state serialization without ticking health regeneration or aura durations.",
+    "Temporary raid groups and their selected instances belong only to the disposable native test. The original fixture raid is not used as an invented destination object. Group/personal bindings are cleaned on return; the parent regression still compares original encounter progress. The saved scratch row returns to its recovery anchor between cases.",
+    "Previous map-loading fixture expectations now distinguish a retained early acknowledgement from actual packet dispatch, and require no duplicate dispatch once initialized. Its grace-timer control uses the native Player arrival helpers directly because a completed screen no longer creates a new screen lifecycle without an authoritative transfer.",
+    "The scenario lookup in Player's existing initialization now runs after destination admission. These new cases use outdoor and raid maps, not an actual Scenario instance, so they do not establish scenario-payload content or client scenario UI behavior.",
+    "No WoW client was operated. Auth/HMAC/encryption exchange, encrypted packet delivery, loading UI, camera, pet portrait, movement/render readiness, actual scenario UI and quest traversal remain client checks. The existing bounded collision grace period is not changed.",
+    "Notifications contain no transfer generation; a stale packet naming the same map as a new native arrival remains indistinguishable. Waiting for native admission and once-per-arrival dispatch bound its side effects without claiming identification of the old packet.",
+    "These are deterministic native lifecycle tests with fixture-owned map workers stopped. They do not prove arbitrary cross-thread interleavings. Character/auth schemas are schema-only scratch databases, personal rows are not copied or changed, and world access is read-only."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed the final280 loading-order cases, including repeated early finish/start notifications and duplicate acknowledgement/timer preservation. Existing392 map-loading,392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session,168 aggregate login and two owner probes also passed, with configured spirit/ghost/graveyard/Helya regressions. DBErrors is empty and Server.log has no ERROR. Schema-only scratch character/auth databases and SQL users were removed.",
+    "Canonical executable checks bind native state1250/changing26658/in-world112 offsets to the final binary. Both the inline screen handler and shared dispatcher require a retained finish, native in-world state and no changing/near/far transfer; Initialized is written before native packet dispatch. Login/far/near/zone completion paths reach that guarded dispatch, actual near/far/challenge departures reset it, and wrong-map/null/duplicate rejection guards remain present. Native inputs match source, fixtures, executable and original final-link libraries.",
+    "Both Release targets built successfully through the original generated library paths into build-extractors/bin/Release. Executable and MAP were regenerated together; no OutDir override or database migration was used. Runtime configuration, certificates, DLLs, logs and extracted data were preserved.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed against this final executable. Test-MapObjectArrival.ps1 passed extracted production geometry/gravity/root/visibility/movement/timeout checks. Test-DalaranPortalLanding.ps1 passed native WMO support/phase/collision checks, nine floor samples and repeatable connection-local portal migration checks.",
+    "Owned hidden startup PID29964 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains and no user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-234109",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-233344",
+    "worldserver": "EF435097533CCECD18FD2A9225273F5C809BC90E7C19E7222DB361A10D2F690A",
+    "worldserver_map": "BE937128841A1BF060921884E3BAE7F67542F6D539B88338915ADE8807E3C54A",
+    "game_library": "0E1CDC76E1EAD981DB9947EB927B54B73502CBF416FBBC02D0EF094AC56E5F44",
+    "scripts_library": "77593D6A58C2EDF3BAC9672AE95DDDAC93C068DC15AAC2F1625FE2020EFB01D3",
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "A128FEBC931C947F688A75561DD8E57F037BBEBE2EB7BE2A4836D4C680B835C7",
+      "src/server/game/Handlers/MovementHandler.cpp": "9D9DF0BBBBEB177234BDC106BD24397575D898AA0ADE98D54B5E2C05EFCADCAE",
+      "src/server/game/Entities/Player/Player.cpp": "E84CBC0B44DF63054F6FC6EF18C962B35C9CC7EE1C1FAB4073A4112CE25E53E9",
+      "src/server/game/Server/WorldSession.h": "3D6431EFE873BA25042F5747059D863D7FB732269E02FFC5A2506C3D178A2D88",
+      "src/server/game/Server/WorldSession.cpp": "DDA206BB3DE95310C7F480FE71CB0667EC5F7027E665CD242095CF2445007DD6",
+      "tools/tests/TrialSpiritLoadingOrderNative.inc": "661029CC41D6AAE6514AC797008DFDE87399CA75A3C6E83F83C5418CED44BC08",
+      "tools/tests/TrialSpiritMapLoadingNative.inc": "324F024B24C241804E291EADC488A37636EEC2DDB7CA998930F3CEA6397A0174",
+      "tools/tests/TrialSpiritFailureNative.inc": "2DD6C3D70FE43E7F27CBBF643F64B3C90EBC904FBA8E615C0829944143DE82D0",
+      "tools/tests/TrialSpiritQueryNative.inc": "A94EB9E664F66D44300629F8BC9100B46A45A7CC948AB813422400A6B710D419",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "DAE2EEEB84D1E9D58C128849EA01067BE3226066E573F99B816796011FDDD4A0",
+      "tools/tests/Test-RockawayChannelNative.ps1": "ED84469C188F39CE64E965186A6C9AF83685310667A89D03B2B24314C2F82256",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-234109/native-inputs.json": "4DB670F6DE1753ABB8708026EA4DCD338D0B3C173A82881E9A39F5B5D1E6791F",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-234109/native-lines.txt": "6DCAF9A1DD31811316BD85794F71DD04B42D7C93211BBC71660F45A4894FC9D8",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-234109/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-234109/Server.log": "C0E81DA692425953ED36304F0545D3C0E1445327949969867EDE8B1FABD1C985",
+      "build-extractors/runtime-test/spirit-loading-order-release/inputs.json": "2328716B002248137BA439753C6F42791DD37247F62BEDB6AF73FEF33F6D9087",
+      "build-extractors/runtime-test/spirit-loading-order-release/HandleLoadScreenOpcode.txt": "53E1125C690EBA91D894E6424B841629E907BA4D030839B8019B7B510CEC2091",
+      "build-extractors/runtime-test/spirit-loading-order-release/SendInitialPacketsAfterMapLoading.txt": "5F23AB14630EB0CA7B74044B61E593340EF1BDC1EDBA257DB7946DDB6AF2EAF7",
+      "build-extractors/runtime-test/spirit-loading-order-release/login-completion.txt": "9532CEAEDA99B726BD6F2AEBEA7CA3AA9A1EDE31C1D778C02F698363266E120F",
+      "build-extractors/runtime-test/spirit-loading-order-release/worldport-ack.txt": "08FC16D09E5F8C8FFAC93683F0B9DDAA4616F365F4DAAD6716F4A9612A3710C4",
+      "build-extractors/runtime-test/spirit-loading-order-release/near-ack.txt": "B1ED0B0249B50F10CF286DC530C34BBBE9A85254593EB755E9D9A05C22731387",
+      "build-extractors/runtime-test/spirit-loading-order-release/zone-completion.txt": "F23C02619DDEEA2BCE067003E1859F9182C4B9B0A7E2F16438C1E316F348D11E",
+      "build-extractors/runtime-test/spirit-loading-order-release/teleport-reset.txt": "CA8C298D2DDCDDEE0432437E7EE900091AB9E4A5B0A6A01E8041EC462D8846C1",
+      "build-extractors/runtime-test/spirit-loading-order-release/challenge-reset.txt": "3A5F941ECD1EFA2775A7C39C66E5238AB13C59ADA89E4DECA43079CE3D442D55",
+      ".codex/spirit-loading-order-baseline.log": "BCD50A37173825E943E54465145E0B0B9E7B61EB2397A6852D08CB9A45AF02D4",
+      ".codex/spirit-loading-order-build.log": "C7B29916B20AB4CDF7690724A3BA6CB15443534EAF06E8DD036568BA651BC2DA",
+      ".codex/spirit-loading-order-fixed-verified.log": "6913299F724F8ED0815AADC49FE592FCE09D0F1A567108D60E030FDF32016F14",
+      ".codex/spirit-loading-order-final-verified.log": "6913299F724F8ED0815AADC49FE592FCE09D0F1A567108D60E030FDF32016F14",
+      ".codex/spirit-loading-order-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-loading-order-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/spirit-loading-order-arrival.log": "BCE90C3B6A56806CC61C7A2E9B1B59ADEB7D981E5BD33127B9A83035AEDDE7AF",
+      ".codex/spirit-loading-order-landing.log": "080DDD56DC0E8FDA6AD1327ADE1FB2226B02B4D3BF7FC81AE90074694AE9F0E6",
+      ".codex/spirit-loading-order-startup.log": "37046ED243F8CAC562CFF4AEF77A0A9667C257AE4F5F9396B46C03D6762A3AC9",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-233344/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-233344/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-233344/Server.log": "559B1CC44FF790C321724D7F33CA8FED7E3E16E20DB8EF13578A7BF77DB5507D"
+    }
+  }
+}

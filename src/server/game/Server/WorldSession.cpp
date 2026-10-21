@@ -738,6 +738,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
     // SetMap(NULL);
     m_playerLoading.Clear(); // Logout ends this request even without a client loading notification.
+    ResetMapLoadingScreen();
     m_playerLogout = false;
     m_playerSave = false;
     m_playerRecentlyLogout = true;

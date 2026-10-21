@@ -2176,6 +2176,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
         {
             Position newPos;
             newPos.Relocate(x, y, z, orientation);
+            GetSession()->ResetMapLoadingScreen();
             NotifyMapObjectArrivalLoading(int32(mapid));
             UpdateData arrivalObjects(mapid);
             GetMap()->BuildPlayerArrivalObjects(this, newPos, arrivalObjects, true);
@@ -2378,6 +2379,7 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
             m_teleport_dest = WorldLocation(mapid, x, y, z, orientation);
             m_teleport_options = options;
             SetFallInformation(0, z);
+            GetSession()->ResetMapLoadingScreen();
             NotifyMapObjectArrivalLoading(int32(mapid));
 
             // move packet sent by client always after far teleport
@@ -2474,6 +2476,7 @@ void Player::TeleportToChallenge(uint32 mapid, float x, float y, float z, float 
     m_teleport_dest = WorldLocation(mapid, x, y, z, orientation);
     m_teleport_options = TELE_TO_SEAMLESS;
 
+    GetSession()->ResetMapLoadingScreen();
     SetSemaphoreTeleportFar(true);
 
     // remove from old map now
@@ -2645,6 +2648,7 @@ void Player::ZoneTeleport(uint32 zoneId)
 
                 sOutdoorPvPMgr->HandlePlayerEnterZone(player->GetGUID(), player->GetZoneId());
                 sBattlefieldMgr->HandlePlayerEnterZone(player->GetGUID(), player->GetZoneId());
+                sess->SendInitialPacketsAfterMapLoading();
             });
         }
     }
