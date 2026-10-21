@@ -286,7 +286,9 @@ void WorldSession::HandleDestroyItemOpcode(WorldPackets::Item::DestroyItem& dest
         return;
     }
 
-    if (item->GetTemplate()->GetFlags() & ITEM_FLAG_NO_USER_DESTROY)
+    // Artifact acquisition quests are not repeatable. Keep the weapon even
+    // if an item-data override accidentally drops its no-destroy flag.
+    if ((item->GetTemplate()->GetFlags() & ITEM_FLAG_NO_USER_DESTROY) || item->GetTemplate()->GetArtifactID())
     {
         _player->SendEquipError(EQUIP_ERR_DROP_BOUND_ITEM);
         return;
