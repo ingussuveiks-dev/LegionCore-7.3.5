@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[switch]$VerifyLiveDatabase)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/darkheart-remaining"
@@ -63,6 +63,8 @@ $sql+="`nSELECT 'ITERATION',1;`n$migration`n$snapshot`nSELECT 'ITERATION',2;`n$m
 $sql+=@'
 SELECT 'ROW',entryorguid,event_type,event_param1,event_param2,target_type FROM smart_scripts WHERE source_type=0 AND ((entryorguid=99358 AND id=2) OR (entryorguid=95779 AND event_type=2) OR (entryorguid=100527 AND event_type=2)) ORDER BY entryorguid,id;
 SELECT 'ASSERT', 'fury_no_dispersion',COUNT(*)=0 FROM smart_scripts WHERE entryorguid=113398 AND event_type=6;
+SELECT 'ASSERT', 'burster_script_binding',COUNT(*)=1 FROM creature_template WHERE entry=100532 AND AIName='' AND ScriptName='npc_darkheart_bloodtainted_burster';
+SELECT 'ASSERT', 'fury_ai_binding',COUNT(*)=1 FROM creature_template WHERE entry=113398 AND AIName='SmartAI' AND ScriptName='';
 SELECT 'ASSERT', 'fury_abilities',COUNT(*)=2 FROM smart_scripts WHERE entryorguid=113398 AND action_param1 IN(201226,201272);
 SELECT 'ASSERT', 'dweller_eye',COUNT(*)=1 FROM smart_scripts WHERE entryorguid=101991 AND action_param1=204243;
 SELECT 'ASSERT', 'dweller_death_removed',COUNT(*)=0 FROM smart_scripts WHERE entryorguid=101991 AND event_type=6;
@@ -75,7 +77,15 @@ $rows=@(Query $sql);$rows | Set-Content "$out/shadow.tsv"
 $first=[Array]::IndexOf($rows,"ITERATION`t1");$second=[Array]::IndexOf($rows,"ITERATION`t2");$tail=@($rows|Where-Object {$_ -match '^ROW\t|^ASSERT\t'})
 $one=@($rows[($first+1)..($second-1)]);$two=@($rows[($second+1)..($rows.Count-$tail.Count-1)])
 if(($one -join "`n") -ne ($two -join "`n")){throw 'Migration repeat changed the Darkheart snapshot'}
-$asserts=@($rows | Where-Object {$_ -match '^ASSERT\t'});if($asserts.Count -ne 8 -or @($asserts | Where-Object {$_ -notmatch '\t1$'}).Count){throw 'Shadow migration contract failed'}
+$asserts=@($rows | Where-Object {$_ -match '^ASSERT\t'});if($asserts.Count -ne 10 -or @($asserts | Where-Object {$_ -notmatch '\t1$'}).Count){throw 'Shadow migration contract failed'}
+if($VerifyLiveDatabase){
+    $bindings=@(Query "SELECT entry,AIName,ScriptName FROM creature_template WHERE entry IN(100532,113398) ORDER BY entry;")
+    if(($bindings -join "`n") -cne "100532`t`tnpc_darkheart_bloodtainted_burster`n113398`tSmartAI`t"){
+        throw 'Live Darkheart script bindings differ from migration 2026_10_21_09; shadow replay alone does not verify deployment'
+    }
+    $bindings | Set-Content "$out/live-bindings.tsv"
+    'PASS: live Burster script and regenerated Fury SmartAI bindings match the migration.'
+}
 @($rows|Where-Object {$_.StartsWith("ROW`t")}|ForEach-Object {$_.Substring(4)}) | Set-Content "$out/smart-rows.tsv"
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 foreach($fixture in @('DarkheartRemainingTrashTest','DarkheartSmartTrashTest','OakheartAwakeningTest')){

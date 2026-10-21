@@ -95,5 +95,19 @@
       "release/near-far-zone-gate.txt": "24B93456703A237F6F86F531505C256C99E75E7DCD01135D0E2A4B39F062C9CD"
     }
   },
+  "startup_issue_resolution": {
+    "date": "2026-10-21",
+    "status": "resolved",
+    "implementation_commit": "cd29502b1cc205bfe8e4adc82d87e5af7d0b4b86",
+    "cause": "The earlier startup loaded the registered Burster handler before its accompanying world migration had been applied. Migration 2026_10_21_09_darkheart_remaining_trash.sql supplies template100532's ScriptName and clears its competing AIName.",
+    "live_database": "Read-only verification confirms 100532 has empty AIName and npc_darkheart_bloodtainted_burster ScriptName; 113398 has SmartAI and empty ScriptName. World updates lists migrations09/10 as RELEASED. No duplicate migration or additional live write was needed in this follow-up.",
+    "regression": "Test-DarkheartRemaining.ps1 now requires both AI bindings after its twice-replayed migration on isolated temporary tables. Optional -VerifyLiveDatabase independently checks the deployed rows so passing shadow replay cannot stand in for deployment evidence.",
+    "checks": "Test-DarkheartRemaining.ps1 -VerifyReleaseBinary -VerifyLiveDatabase passed: ten shadow assertions, native production handler fixtures, 7.3.5 DB2 contracts, live bindings and linked Release instruction checks. The first attempt passed the DB/native fixtures but lacked the capstone Python import; rerun used the existing private .codex/pe-review-deps dependency directory and passed without changing binary guards.",
+    "test_log": ".codex/darkheart-binding-verified.log",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-180101",
+    "startup_result": "Owned hidden worldserver PID25368 reached ready and exited through server shutdown 0 with exit0. Fresh DBErrors.log and stderr.log are both zero bytes, and Server.log has no ERROR entries. No worldserver/bnetserver process remains.",
+    "canonical_executable_sha256": "075f4260abddf6dda84b694401c48f800ef2eeed3ef945e72f8742dab66af834",
+    "limits": "This closes the startup binding error retained above; it does not establish client encounter, transformation or visual playback verification. Historical failure evidence is preserved."
+  },
   "next_candidate": "Spirit healer destination refusal or interrupted live connection and the resulting recovery path, without changing successful open-world resurrection."
 }
