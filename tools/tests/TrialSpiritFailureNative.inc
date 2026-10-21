@@ -124,6 +124,7 @@ static void TrialSpiritFailureCases(GarmPlayer& leader,InstanceMap& raid)
         fresh.GetMap()->RemovePlayerFromMap(&fresh,false);}
         SpiritSessionLogin(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction,mode);
         SpiritLoadingOrderLogin(guid,expected,itemGuid,durability,session,leader,raid,direction,mode);
+        if(mode==1)TrialScenarioInitialization(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction);
         SpiritFullLogin(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction,mode);
         Require(raid.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Spirit failure changed raid progress");
         std::cout<<"PASS: spirit failure recovery diff="<<uint32(raid.GetDifficultyID())<<" race="<<uint32(leader.getRace())<<" direction="<<direction<<" mode="<<mode<<" map="<<expected.GetMapId()<<" zone="<<zone<<" durability="<<durability<<std::endl;

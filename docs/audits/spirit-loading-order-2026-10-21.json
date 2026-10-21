@@ -1,5 +1,6 @@
 {
   "date": "2026-10-21",
+  "followup_audit": "docs/audits/scenario-initialization-2026-10-22.json",
   "base_commit": "09db4ad0",
   "previous_audit": "docs/audits/spirit-map-loading-2026-10-21.json",
   "scope": "Destination initialization after an early loading-screen finish, repeated notifications and reset at authoritative native transfer boundaries",

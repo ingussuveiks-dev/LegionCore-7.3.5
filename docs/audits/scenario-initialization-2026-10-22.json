@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "c1a7ffeb",
+  "previous_audit": "docs/audits/spirit-loading-order-2026-10-21.json",
+  "scope": "Actual Scenario initialization payloads after early/late loading finish and fresh solo re-entry, with native 7.3.5 Broken Shore faction catalogs",
+  "finding": "Scenario::SendStepUpdate(full=true) assigned GameTime minus CriteriaProgress.date to CriteriaTreeProgress.Date. The serializer packs Date as an absolute calendar timestamp; incremental SendCriteriaUpdate already sends the actual update timestamp. Full snapshots therefore replaced valid criterion timestamps with elapsed ages, including on arrival/re-entry.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-235600",
+    "log": ".codex/scenario-initialization-baseline.log",
+    "observed": "SCENARIO_PROGRESS_DATE scenario=786 criterion=27733 quantity=1 packed=3791659136 expected=445980152",
+    "result": "Actual native criteria events advanced to step1 and accumulated7/33. Decoding the queued full snapshot raised Full scenario snapshot replaced the criterion update timestamp with elapsed age. Exit1, no crash; DBErrors empty.",
+    "fixture_correction": "The first fixed run, run-20261022-000052, passed absolute timestamps and initial early/late cases, then rejected a fresh instance because the test incorrectly expected an unbound solo TeleportTo exit/return to reuse the old instance. MapInstanced::CreateInstanceForPlayer legitimately allocates a new instance without a group/personal binding. The corrected case requires a different native instance at stage0 with no copied transient criteria. This failure is not claimed as a server bug.",
+    "release_checker_correction": "The first complete native run passed48 cases and all existing regressions. Its new Release checker initially rejected uppercase hexadecimal disassembly addresses because its static regex was case-sensitive; the matcher was corrected. This was checker code, not another server defect. The final native run also directly inspects duplicate scenario packets instead of using the older helper that drained unrelated packets."
+  },
+  "implementation": [
+    "Copy CriteriaProgress.date directly to the full snapshot Date. Retain TimeFromStart/TimeFromCreate as elapsed ages, and retain existing criterion quantities, scenario IDs, GUID semantics, ActiveSteps and step selection.",
+    "Add native packet regression cases using actual accepted login/socket admission, full SQL Player loading, native map/Scenario construction, actual criteria updates and serialized packets dequeued from real WorldSocket queues. No Scenario stage or progress map is seeded by the fixture.",
+    "Bind the native test to the canonical executable and actual final-link game library. Inspect exception-bounded canonical SendStepUpdate code, resolving incremental-link thunks, and verify the native timestamp copy separately from the two elapsed-time calculations."
+  ],
+  "native_data": {
+    "reader": "tools/research/ScenarioInitializationCatalog.cpp through Read-LegionLegendaryCatalog.ps1",
+    "catalog": ".codex/scenario-initialization-catalog.tsv",
+    "map": 1460,
+    "alliance": {
+      "scenario": 786,
+      "steps": 9,
+      "first_steps": [
+        1504,
+        1522
+      ],
+      "first_event": 44060,
+      "partial_event": 44095,
+      "partial_amount": 33
+    },
+    "horde": {
+      "scenario": 1189,
+      "steps": 9,
+      "first_steps": [
+        2895,
+        2896
+      ],
+      "first_event": 54140,
+      "partial_event": 54116,
+      "partial_amount": 33
+    },
+    "routing": "Native LFG908 map1460 difficulty12 references scenario786. Native world scenario_data routes team469 to786 and team67 to1189. Actual Scenario constructors consume the requested selectors, and native DB2 criteria type92 drives both factions."
+  },
+  "native_modes": {
+    "0": "Finish before WorldPortAck queues no scenario snapshot until native map admission; then exactly one initialization and stage0 snapshot. Native events advance to stage1 and accumulate7/33; incremental and full criteria packets retain their quantities.",
+    "1": "WorldPortAck before finish queues no initialization/snapshot; the later valid finish sends exactly one stage0 snapshot. Native progress and full timestamps are checked as in mode0.",
+    "2": "Early arrival and native stage1 progress as in mode0, followed by actual solo exit/return. The unbound map factory creates a fresh faction Scenario at stage0; early finish sends nothing before ACK, and the admitted snapshot has only the new first active step and no old criteria."
+  },
+  "method_and_limits": [
+    "48 cases: four parent raid-difficulty contexts, two races/factions, two parent travel directions, three scenario arrival modes. Duplicate finish/start/finish does not resend the scenario snapshot. Scenario ID, native current-step record ID, ordered ActiveSteps, completion flag and incremental/full progress IDs/quantities/packed timestamps are decoded and asserted.",
+    "This tests native map/Scenario/criteria/packet behavior with fixture-owned workers stopped; it does not load or traverse Broken Shore actor scripts, operate a WoW client, or prove encrypted packet delivery, scenario UI rendering, quest completion, voice, camera or pet behavior.",
+    "Fresh solo teleport re-entry is covered here. Logout/login rejoining a live checkpoint is a distinct path and is not claimed verified by these48 cases. Native Horde1189 has no direct LFGDungeons row; PrepareScenarioLogin's exact scenario/map lookup is a follow-up candidate requiring an actual full-login regression before a routing change.",
+    "Tests use schema-only disposable character/auth databases, read-only world access and scratch characters. Personal character/account rows and runtime configuration/data are preserved."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed48 final scenario cases (16 per mode,24 per faction), including direct duplicate-packet capture and192 incremental/full packed timestamp checks. Existing280 loading-order,392 map-loading,392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session,168 aggregate-login and two socket-owner cases also passed, alongside configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Schema-only scratch character/auth databases (167 tables) and their SQL user were removed.",
+    "The canonical exception-bounded SendStepUpdate body directly copies the timestamp from the native map value into the progress packet, then separately subtracts it for both elapsed-time fields. Native ABI reports value-relative date32 and packet date40; the emitted map-node value begins at16, so the actual date load is node48. Native input hashes match source, fixtures, executable and original final-link library.",
+    "Both Release targets built into build-extractors/bin/Release through original generated final-link dependencies; no OutDir override or database migration. Executable and MAP were generated together. Runtime configs, certificates, DLLs, logs and extracted data were preserved.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed. Their extracted-handler routing tests do not establish the untested Horde faction-fallback candidate described in method_and_limits.",
+    "Owned hidden startup PID33772 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains; no user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-000638",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261022-000052",
+    "worldserver": "17C3F773D0E61F159BE6F183B134C00B1DA7C57A07751A504F4DFFEBD0FEBC79",
+    "worldserver_map": "02F29C1BE1B7440196FA330705E9098266C581CD36980F57B9D59B72B93E00C5",
+    "game_library": "46EA55B1C1AFF02AE9BA0448FF6567F0BC292AA728D7E4F6766F0815CF31BA65",
+    "scripts_library": "77593D6A58C2EDF3BAC9672AE95DDDAC93C068DC15AAC2F1625FE2020EFB01D3",
+    "native_db2": {
+      "dbc/enUS/Scenario.db2": "E77CC130EE594BCF084C5DD451FFBC7091C27DCDBB7F8CC61C051FB162E58101",
+      "dbc/enUS/ScenarioStep.db2": "4E422B1333A7B1BE8427CCB511017A93C093FA243ADB83DC74E255AD1702B94E",
+      "dbc/enUS/CriteriaTree.db2": "10568E9752F38F16492E94DD569E77293A1E4A6C07EE6C0FE33B60D7A4BDDC05",
+      "dbc/enUS/Criteria.db2": "8EE5F3D19D249D9A4F6A3B6745A0AB2D1A0A3B31C5B277B4942686C08E9C3750",
+      "dbc/enUS/LFGDungeons.db2": "EB05AA80F05F82048BBDA5931C6F34B062984DE64B992E7B195EA5D2B3700D42"
+    },
+    "hashes": {
+      "src/server/game/Scenarios/Scenario.cpp": "0C94712AE067DF59A331815B00F789288E003C157C82039924F1C7F5AF284E1C",
+      "tools/tests/TrialScenarioInitializationNative.inc": "E5FDEDB0A7C4E4B6BD1FE893669A741B136771BAE988A865464086F05160F78B",
+      "tools/tests/Test-ScenarioInitializationRelease.ps1": "1F120D0A86DABE4C8141B1B0448582EEA2FA10EC1BC4D117B1980E311DD59C16",
+      "tools/tests/Test-RockawayChannelNative.ps1": "32008C32189C444A9883A21853AA34D0EAB457E82FCB2F8DFC407E6FF1A580BE",
+      "tools/tests/Test-TrialHelyaControlNative.ps1": "1F9108309CD9FB776CF3C571D3D58E8F6D836A3B1FD6B4511C990CAEB463AAD3",
+      "tools/tests/TrialSpiritQueryNative.inc": "B1C5344CE9B957B4B937495B60B72276FB5B795132488C828EAD641E4170BE91",
+      "tools/tests/TrialSpiritFailureNative.inc": "0EC41240C97C8B04B167FC9F1928FDEB75188F2BD2B92B4DCFE6749E63E5F9F1",
+      "tools/research/ScenarioInitializationCatalog.cpp": "4B48A5723FFD1EC6523F778F95A9E0DC7CACAEAE4CC92B80A058DAFA5728899B",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-000638/native-inputs.json": "26730BC35638A4E11483E64BC62714088B76ED3F8A27F4F721A894A20A5ECF28",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-000638/native-lines.txt": "EAEB92C0FCC6C1ECAFDD99B637A7CDDA5B6D4219BBE09060CCDAFC39FA7EFEBD",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-000638/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-000638/Server.log": "B3A8AE5DF20B8A9417E81656005BC0B26D401F56C1DF28D44E2156238AB7D0E8",
+      "build-extractors/runtime-test/scenario-initialization-release/inputs.json": "81623086F8142A7DD5B33096D72ABDECC857BF2363EDB10D24FDD65353180858",
+      "build-extractors/runtime-test/scenario-initialization-release/SendStepUpdate-Scenario.txt": "237C97A7BEADF1EC7C0982A4AF73E4DFBD0A7601E81808053264774E1FDEB5F0",
+      ".codex/scenario-initialization-baseline.log": "53185A6125492D144DBE818B13BF576DEDBC4644EB94F018D6B34188357021FA",
+      ".codex/scenario-initialization-build.log": "791437889F3E1CFBC0146628EFA3D44E81AA253123ABAAD78527E92E98EED334",
+      ".codex/scenario-initialization-fixed-verified.log": "34B91038E34033BEBDFCC473BBD26BFD1BE4DBB70E9A8DC2CD457E6DBC482831",
+      ".codex/scenario-initialization-final-verified.log": "4F7B2D0800FD7D4A50038751F853B28353F7DCE0933434134718C83535ABC102",
+      ".codex/scenario-initialization-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/scenario-initialization-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/scenario-initialization-startup.log": "4B56EF5929C3658CD578FC36902932B27E4485CE280CD5ED14DD13BEC8E42572",
+      ".codex/scenario-initialization-catalog.tsv": "E90AAB5E9DF739F45C3F92E07D1FDE0D2B6663DC3E03D4A53367E30C243E3A0A",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-000052/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-000052/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-000052/Server.log": "4D94CCC21C4C24C227B6EFDD9D6C0E9DBE24C0CEBD05D8C2F8F1DEDEEF3EA56D"
+    }
+  }
+}
