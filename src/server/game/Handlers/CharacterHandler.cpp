@@ -608,16 +608,18 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPackets::Character::PlayerLogin&
 
 void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreenNotify& loadingScreenNotify)
 {
+    // This notification has no login request identity. A late/early screen
+    // event must not cancel a request whose Player has not been created yet.
+    Player* player = GetPlayer();
+    if (!player)
+        return;
+
     if (loadingScreenNotify.Showing)
-        if (Player* player = GetPlayer())
-            player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
-    if (!loadingScreenNotify.Showing)
+        player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
+    else
     {
-        if (auto player = GetPlayer())
-        {
-            player->SendInitialPacketsAfterAddToMap(true);
-            player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);
-        }
+        player->SendInitialPacketsAfterAddToMap(true);
+        player->NotifyMapObjectArrivalLoaded(loadingScreenNotify.MapID);
         m_playerLoading.Clear();
     }
 }

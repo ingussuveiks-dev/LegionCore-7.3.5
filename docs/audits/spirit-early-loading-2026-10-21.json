@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "ee7b33e9",
+  "previous_audit": "docs/audits/spirit-linked-login-cancel-2026-10-21.json",
+  "scope": "Loading-screen notifications before Player construction, accepted request preservation, explicit cancellation, completion and repeated native login",
+  "finding": "HandleLoadScreenOpcode cleared m_playerLoading for every loading-finished packet, even when no Player existed. After a valid instance link this consumed the accepted request but retained its socket, causing the SQL response to be rejected and leaving retry admission blocked by that socket. Loading notifications contain map/showing fields, not a login request identity; an early or stale notification must not cancel a pending request.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-222159",
+    "log": ".codex/spirit-early-loading-baseline.log",
+    "result": "Actual accepted login, AddInstanceSocket/ProcessLinkInstanceSocket and full LoginQueryHolder SQL complete; callback delivery is held before Player construction. A decoded loading-finished notification changes the saved loading GUID and fails: Premature loading-finished notification consumed the pending login or changed its connection. DBErrors is empty. Original source clears the request without touching the attached socket; this baseline stops at that assertion rather than claiming an observed client hang or executing a later retry."
+  },
+  "partial_fix_regression": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-222558",
+    "log": ".codex/spirit-early-loading-final-verified.log",
+    "result": "Ignoring pre-Player notifications passed all seven new modes on the first recovery path and the updated deferred-query modes. The existing session-disconnect/logout regression then failed its combined assertion Stale post-logout callbacks recreated login Player. Its preceding Player/lookup absence assertion passed; the retained loading GUID, previously cleared by that stale notification, was the failing state. No recreated Player or crash is claimed. LogoutPlayer now owns clearing that request, with a new immediate assertion before late callbacks."
+  },
+  "implementation": [
+    "HandleLoadScreenOpcode obtains the current Player once and returns immediately when none exists. Pre-Player showing/finished notifications cannot clear the accepted GUID, change its generation/key, detach its socket or consume a queued result. Valid SQL can construct and complete the original Player.",
+    "For an existing Player, keep showing -> NotifyMapObjectArrivalLoading and finished -> SendInitialPacketsAfterAddToMap/NotifyMapObjectArrivalLoaded/loading-GUID clear. An acknowledgement between Player construction and the100ms completion remains supported.",
+    "LogoutPlayer clears m_playerLoading itself after instance retirement, including logout/disconnect before a loading acknowledgement. Request cleanup no longer relies on an unrelated later screen notification. Existing explicit AbortLogin retirement and stale SQL/completion serial guards remain active."
+  ],
+  "native_modes": {
+    "0": "A finished notification after instance attachment but before SQL delivery preserves the request/socket and original SQL completes the login.",
+    "1": "A finished notification before the instance socket arrives preserves its accepted key/GUID; native socket admission, SQL and map completion succeed.",
+    "2": "Repeated showing/finished notifications with both the expected and another map ID, before and after socket attachment, preserve the pre-Player request and its successful completion.",
+    "3": "After an early notification, explicit AbortLogin still retires its attached socket/pending read. A new same-GUID request survives further stale screen notifications and the old SQL response; only its own result completes.",
+    "4": "Abort an attached request, accept another for the same GUID, then deliver stale screen notifications before/after replacement socket attachment and the old SQL. The replacement remains pending and completes normally.",
+    "5": "Notifications with no accepted request and after logout are harmless. Two real same-GUID logins in the same realm session, with early notifications during each, both complete and log out successfully.",
+    "6": "After SQL constructs the Player, showing preserves PlayerLoading and finished clears it while the Player is still changing maps. The native100ms callback still admits it, preserving the existing early-acknowledgement behavior."
+  },
+  "coverage": {
+    "early_notification_cases": 392,
+    "underlying_recovery_paths": 56,
+    "cases_per_mode": 56,
+    "modes": 7,
+    "second_successful_logins_in_mode5": 56,
+    "existing_linked_cancellation_cases": 392,
+    "existing_instance_link_cases": 392,
+    "existing_deferred_query_cases": 392,
+    "existing_session_cases": 280,
+    "existing_aggregate_login_cases": 168,
+    "existing_last_owner_probes": 2,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "method": [
+    "Use actual typed CMSG_LOADING_SCREEN_NOTIFY decoding and the production handler, real loopback transports, native accepted login/ConnectTo and World instance admission, complete LoginQueryHolder results, and production query callback delivery. No fixture Player or simulated admission substitutes for valid result construction.",
+    "Pre-Player controls snapshot and compare loading GUID, PlayerLoading, completion serial, instance key, socket identity/ownership/open state, pending query count, Player/map absence and forceExit. Deferred callback delivery makes ordering deterministic; it does not cancel or delay MySQL worker execution.",
+    "Valid completions execute native Map::UpdateSessions at99+1ms and retain health321, exact saved recovery map/position, sickness15007 at598000ms, original item25 GUID/durability27, self mover, no corpse and correct ObjectAccessor lookup. Logout saves health321/online0, no Player/query/lookup and a reusable realm session.",
+    "The older deferred-query mode6 now expects its early loading-finished packet to preserve the request and successfully construct/complete the Player. Its former cleared-request/rejected-result expectation is historical evidence superseded by this fix. Existing session tests now assert PlayerLoading is false immediately after actual logout, before replaying late notifications."
+  ],
+  "limitations_and_pending_client_checks": [
+    "No WoW client was operated. Client loading-screen display, auth/HMAC/encryption exchange, encrypted network delivery, real cancellation UX, camera, movement, pet portrait and quest traversal remain unverified.",
+    "These tests validate ordered server lifecycle boundaries. They do not prove arbitrary concurrent IO/world-thread interleavings or identify which real client screen emitted an unbound pre-Player notification.",
+    "The fix preserves the pending request until valid construction/acknowledgement or actual AbortLogin/logout. It does not synthesize client loading completion, automatically cancel a slow SQL query or prove rendering has finished.",
+    "Post-construction notifications with an unrelated map ID are outside this new fixture's validation scope; the existing Player arrival methods and their normal packet order are retained.",
+    "Fixtures use synthetic Human/Orc level110 Warriors in isolated schema-only character/auth databases. No personal account/character rows are copied or modified; world data remains read-only."
+  ],
+  "next_candidate": "Map-ID validation of loading notifications after Player construction: trace the existing Player arrival checks and test stale-map packets before changing behavior. No such defect is asserted by this pre-Player audit.",
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed all392 early-notification cases plus392 linked-cancellation cases,392 instance-link cases,392 deferred-query cases,280 session cases,168 aggregate login/offline cases, two ownership probes and configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Scratch character/auth schemas and SQL users were removed; the world pool was read-only.",
+    "Canonical Release check matches source/fixture/final-link library/executable inputs. Native Player offset304 and loading-GUID offset665 bind the disassembly checks: null Player branches to an epilogue without calls/state writes, while the four guarded arrival/initial-packet/GUID-clear operations retain their targets/order. Canonical LogoutPlayer directly addresses and clears its own loading GUID. All existing ownership/teardown/query/completion/health/teleport guards remain passing.",
+    "Both Release targets built successfully through the original generated library paths into build-extractors/bin/Release, with executable/MAP regenerated together. Runtime config, certificates, DLLs, logs and extracted data were preserved; no OutDir override or migration was used.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed after the final build. Test-MapObjectArrival.ps1 passed its extracted production supporting-object/geometry/gravity/root/timeout/visibility/lifecycle checks; its tested arrival implementation was not changed.",
+    "Owned hidden startup PID34140 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains and no user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-222953",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-223029",
+    "worldserver": "D57431960178427CEBC3E140289BB3644496A6FE0C5A32F7C331DACF702E0E0F",
+    "worldserver_map": "AF6E4DE6A8AD9D8A14CF41103E6960F7A19068A81319DD9BCA4230B586971140",
+    "game_library": "CE3FB26449E44294659D8B579A9AAF1545723A9002423A321700A85C55C244B7",
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "82D4963B2C8907B18F12E09AB4101675D877C14ED2974A6BB1806775BF47E411",
+      "src/server/game/Server/WorldSession.cpp": "480A0433AAA3429C0C0CC54847E20DBCE38029A84B9FC835D3DFA1143BB7D135",
+      "tools/tests/TrialSpiritEarlyLoadingNative.inc": "474D17346FD4DEBCFFD5E2F3EFD8379D016F9601A6FBB9192E81D317FFF8E21F",
+      "tools/tests/TrialSpiritQueryNative.inc": "803B5C18380FA98AE01C0D7B480D921054915B3B0EDC4BA7F9F4D41096CFAF62",
+      "tools/tests/TrialSpiritSessionNative.inc": "176AD9C8869521747C2698CFB1B174F187B7E989C748DAC42A303F91B76DD106",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-222953/native-inputs.json": "1AE37CAD18471110405517114297D053ECD4CB5D2C47870BC5BAAA54CE3330BF",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-222953/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-222953/Server.log": "2A787EDBA8E2231D0B3E7C7D05EEBAC1CE24D272AEE243756B4BF19C12E000E4",
+      "build-extractors/runtime-test/spirit-early-loading-release/inputs.json": "9300F4C1D050F7E0129113826269FA07001EF2D37B8DF08DD50F362AE921C56A",
+      "build-extractors/runtime-test/spirit-early-loading-release/HandleLoadScreenOpcode.txt": "4B1A5E77ED4F777F2EBA6612EF518B89AE0DADBB3A3C024273C1F4F77E30CB43",
+      ".codex/spirit-early-loading-baseline.log": "B84A174C2E5B49EE168E5DB988BD39639185D9D1585FF05E0B177FDEDD4C0D42",
+      ".codex/spirit-early-loading-final-verified.log": "EF7A174EE4E0D57C423EFDB281AEFFA2A706066FDAE9F5727DD575E66B8C6968",
+      ".codex/spirit-early-loading-final-build.log": "3D3AC5908D2D3C6E57161DFA015F3CF9B574311B670BFFD087641C7FD43EC4DA",
+      ".codex/spirit-early-loading-fixed-verified.log": "C026943D27AE41E8396A1429BA513FEF848253C944748D0EBBC73CF0CC7C2DB9",
+      ".codex/spirit-early-loading-final-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-early-loading-final-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/spirit-early-loading-arrival.log": "BCE90C3B6A56806CC61C7A2E9B1B59ADEB7D981E5BD33127B9A83035AEDDE7AF",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-223029/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-223029/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-223029/Server.log": "C72CC983BD5329D2A1E64EBE81FA1CF580174303A8E42D37361D2ADCA0A9D5AD"
+    }
+  }
+}

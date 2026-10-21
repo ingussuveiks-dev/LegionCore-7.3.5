@@ -62,7 +62,7 @@ static void SpiritSessionLogin(ObjectGuid guid,WorldLocation const& expected,uin
                 session->SetMap(nullptr);session->LogoutPlayer(true);
             }
         }
-        Require(!session->GetPlayer()&&!ObjectAccessor::FindPlayer(guid),"Session login cleanup retained Player");session->SetMap(nullptr);session->m_Functions.Update(1000);
+        Require(!session->GetPlayer()&&!ObjectAccessor::FindPlayer(guid),"Session login cleanup retained Player");Require(!session->PlayerLoading(),"Native logout retained its finished/cancelled login request");session->SetMap(nullptr);session->m_Functions.Update(1000);
         SpiritLoadingScreen(session,expected.GetMapId(),false);session->HandleWorldPortAck();Require(!session->GetPlayer()&&!session->PlayerLoading(),"Stale post-logout callbacks recreated login Player");FlushWrites();
         if(previous)sessions[0]=previous;else sessions.erase(0);
         auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT map,position_x,position_y,position_z,health,playerFlags,online FROM characters WHERE guid=%u",guid.GetCounter()).c_str());Require(bool(row),"Session login save missing");auto f=row->Fetch();

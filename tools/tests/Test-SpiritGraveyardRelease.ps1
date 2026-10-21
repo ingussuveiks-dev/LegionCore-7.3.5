@@ -197,3 +197,27 @@ foreach($name in @('SetWorldSession','OnClose')){
 }
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;owner_probes=2;instance_offset=[int]$cancelFields.Groups[1].Value;auth_offset=[int]$cancelFields.Groups[2].Value;account_offset=[int]$cancelFields.Groups[3].Value;detach_before_abort_and_logout=$true;last_owner_release_after_unlock=$true} | ConvertTo-Json | Set-Content "$cancelOut/inputs.json"
 'PASS: canonical AbortLogin/logout detach their instance before closure, nullable socket ownership clears auth/account state and final owners release after unlocking;392 native linked-cancellation/relogin cases and2 ownership probes match final-link inputs.'
+
+$earlyOut="$repo/build-extractors/runtime-test/spirit-early-loading-release"
+New-Item -ItemType Directory -Force $earlyOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit early loading '}).Count -ne 392){throw 'Run all392 native early-loading cases first'}
+foreach($mode in 0..6){if(@($lines | Where-Object {$_ -match "^PASS: spirit early loading .* mode=$mode map="}).Count -ne 56){throw "Missing native early-loading mode $mode"}}
+foreach($path in @('tools/tests/TrialSpiritEarlyLoadingNative.inc','tools/tests/TrialSpiritQueryNative.inc','src/server/game/Handlers/CharacterHandler.cpp','src/server/game/Server/Packets/CharacterPackets.cpp')){
+    if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Early-loading input changed after native run: $path"}
+}
+$range=Bounds '?HandleLoadScreenOpcode@WorldSession@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$earlyLines=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Canonical loading-notification disassembly failed'}
+$earlyText=$earlyLines -join "`n";$earlyLines | Set-Content "$earlyOut/HandleLoadScreenOpcode.txt"
+$earlyGate=[regex]::Match($earlyText,"(?im)mov\s+(?<player>r\w+),qword ptr \[r\w+\+0*${playerOffset}h\][\s\S]{0,250}?test\s+\k<player>,\k<player>\r?\n[^\r\n]*je\s+(?<reject>[0-9a-f]{16})")
+if(!$earlyGate.Success){throw 'Canonical loading notification lacks early null-Player rejection'}
+$nullReturn=[regex]::Match($earlyText,'(?im)^\s*'+$earlyGate.Groups['reject'].Value+':(?<body>[\s\S]*?\bret\b)')
+if(!$nullReturn.Success -or $nullReturn.Groups['body'].Value -match '\b(call|jmp)\s+|\bmov\s+(byte|word|dword|qword|xmmword) ptr \['){throw 'Null-Player notification path does not return without calls or state writes'}
+$earlyOps=@([regex]::Matches($earlyText,'(?:call|jmp)\s+([0-9a-fA-F]{16})') | ForEach-Object {[pscustomobject]@{Index=$_.Index;Target=(Resolve ([Convert]::ToInt64($_.Groups[1].Value,16)))}})
+$expectedEarly=@('?NotifyMapObjectArrivalLoading@Player@@','?SendInitialPacketsAfterAddToMap@Player@@','?NotifyMapObjectArrivalLoaded@Player@@','?Clear@ObjectGuid@@')
+if($earlyOps.Count -ne 4){throw 'Review canonical loading notification dispatch'}
+for($i=0;$i -lt 4;++$i){if($earlyOps[$i].Target -ne (Resolve (Symbol $expectedEarly[$i])) -or $earlyOps[$i].Index -le $earlyGate.Index){throw 'Canonical loading notification lost its guarded Player/arrival/loading-state operations'}}
+if($earlyText -notmatch "lea\s+rcx,\[r\w+\+0*${loadingOffset}h\]"){throw 'Canonical valid loading completion no longer addresses the pending login GUID'}
+$logoutLoadingClear=[regex]::Match($cancelBodies.LogoutPlayer,"(?im)lea\s+rcx,\[r\w+\+0*${loadingOffset}h\]\r?\n[^\r\n]*call\s+([0-9a-f]{16})")
+if(!$logoutLoadingClear.Success -or (Resolve ([Convert]::ToInt64($logoutLoadingClear.Groups[1].Value,16))) -ne (Resolve (Symbol '?Clear@ObjectGuid@@'))){throw 'Canonical logout does not clear its own pending login GUID'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;player_offset=[int]$queryFields.Groups[2].Value;pending_guid_offset=[int]$queryFields.Groups[1].Value;null_player_returns_without_state_changes=$true;constructed_player_notification_flow_retained=$true;logout_clears_pending_request=$true} | ConvertTo-Json | Set-Content "$earlyOut/inputs.json"
+'PASS: canonical loading notification returns without state changes before Player creation and retains constructed-Player arrival/completion handling;392 native early-notification/login/retry cases match final-link inputs.'

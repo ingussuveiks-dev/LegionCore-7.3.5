@@ -33,10 +33,12 @@ static void SpiritDeliverQuery(WorldSession* session,SQLQueryHolderCallback&& re
 }
 #include "TrialSpiritInstanceLinkNative.inc"
 #include "TrialSpiritLinkedCancelNative.inc"
+#include "TrialSpiritEarlyLoadingNative.inc"
 static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction,unsigned sourceMode)
 {
     static bool rsa=false;if(!rsa){Require(WorldPackets::Auth::ConnectTo::InitializeEncryption(),"Native ConnectTo RSA bootstrap failed");rsa=true;}
     auto addresses=realm.Addresses;realm.Addresses={boost::asio::ip::address_v4::loopback(),boost::asio::ip::address_v4::loopback()};
+    SpiritEarlyLoadingLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritLinkedCancelLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritInstanceLinkLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     for(unsigned mode=0;mode<7;++mode)
@@ -57,7 +59,7 @@ static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint6
         std::unique_ptr<SQLQueryHolderCallback> second;
         if(mode==4||mode==5)second=std::make_unique<SQLQueryHolderCallback>(SpiritQueryResponse(session));
         if(mode==5)SpiritDeliverQuery(session,std::move(*second));
-        if(mode==6)SpiritLoadingScreen(session,expected.GetMapId(),false);
+        if(mode==6){SpiritLoadingScreen(session,expected.GetMapId(),false);Require(session->PlayerLoading()&&!session->GetPlayer()&&session->HasInstanceConnection(),"Early loading notification consumed the pending SQL request");}
         auto current=session->GetPlayer();auto serial=session->*Access(SpiritSessionSerialTag{});
         SpiritDeliverQuery(session,std::move(response));
         Require(realmSocket.socket->IsOpen()&&!session->IsforceExit(),"Stale query result kicked the healthy realm session");
@@ -66,13 +68,13 @@ static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint6
             LoginQueryHolder rejected(0,guid);session->HandlePlayerLogin(rejected);
             Require(session->GetPlayer()==before&&session->*Access(SpiritSessionSerialTag{})==beforeSerial,"Direct cancelled/duplicate/different-GUID handler entered LoadFromDB");
         }
-        if(mode==0||mode==6){Require(!session->GetPlayer()&&!session->PlayerLoading()&&!session->GetMap()&&!ObjectAccessor::FindPlayer(guid)&&session->*Access(SpiritSessionSerialTag{})==serial,"Cancelled query result created a Player or changed session state");}
+        if(mode==0){Require(!session->GetPlayer()&&!session->PlayerLoading()&&!session->GetMap()&&!ObjectAccessor::FindPlayer(guid)&&session->*Access(SpiritSessionSerialTag{})==serial,"Cancelled query result created a Player or changed session state");}
         if(mode==2||mode==3){Require(!session->GetPlayer()&&session->PlayerLoading()&&session->*Access(ControlLoadingTag{})==(mode==3?other:guid)&&!session->GetMap()&&!ObjectAccessor::FindPlayer(guid)&&session->*Access(SpiritSessionSerialTag{})==requestSerial,"Old query result consumed or replaced a newer pending login");}
         if(mode==2){auto fresh=SpiritQueryResponse(session);SpiritDeliverQuery(session,std::move(fresh));}
         if(mode==3)session->AbortLogin(WorldPackets::Character::LoginFailureReason::NoWorld);
         if(mode==4){current=session->GetPlayer();serial=session->*Access(SpiritSessionSerialTag{});SpiritDeliverQuery(session,std::move(*second));Require(session->GetPlayer()==current&&session->*Access(SpiritSessionSerialTag{})==serial,"Duplicate query callback replaced the staged Player");}
         if(mode==5)Require(session->GetPlayer()==current&&session->*Access(SpiritSessionSerialTag{})==serial,"Old query callback replaced a newer same-GUID Player");
-        if(mode==1||mode==2||mode==4||mode==5){
+        if(mode==1||mode==2||mode==4||mode==5||mode==6){
             auto player=session->GetPlayer();Require(player&&player->GetGUID()==guid&&player->IsChangeMap()&&!player->IsInWorld(),"Current query result did not stage its native Player");
             Require(session->*Access(SpiritSessionSerialTag{})!=initialSerial,"Constructed Player did not invalidate other query completions");
             auto map=player->GetMap();SpiritFarFreeze(player->GetMapId());map->UpdateSessions(99);Require(player->IsChangeMap()&&!player->IsInWorld(),"Query login completion ran early");map->UpdateSessions(1);SpiritFarFreeze(expected.GetMapId());

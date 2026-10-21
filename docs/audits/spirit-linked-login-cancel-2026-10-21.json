@@ -55,6 +55,7 @@
     "Fixtures use synthetic account0 characters and account123456789 only for nonzero ownership probes in schema-only scratch auth/character databases. No personal account/character rows are copied or modified; world data is read-only."
   ],
   "next_candidate": "Native retry after a loading-finished notification clears m_playerLoading before Player construction: verify retained socket/request ownership. Existing deferred-query mode6 proves response rejection, not instance retirement or successful retry.",
+  "early_loading_followup": "docs/audits/spirit-early-loading-2026-10-21.json",
   "checks": [
     "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed392 new linked-cancellation/relogin cases, two native ownership-release probes,392 prior instance-link cases,392 deferred-query cases,280 session cases and168 aggregate login/offline cases, plus configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Scratch auth/character schemas and users were removed.",
     "Canonical Release checks match native fixture/source/final-link library/executable inputs. ABI reports instance slot328, socket authentication520 and account412. AbortLogin clears both slot pointers and passes an empty owner before AbortSocket; LogoutPlayer passes an empty owner before CloseSocket. SetWorldSession has nullable account/auth state. Both SetWorldSession and OnClose call native _Mtx_unlock before their first reference-count decrement. Existing teardown/query/completion/health/teleport guards pass.",
