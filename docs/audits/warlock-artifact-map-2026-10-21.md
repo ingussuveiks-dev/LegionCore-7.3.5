@@ -60,3 +60,8 @@ lines contained no ERROR; DBErrors.log and scoped
 stderr were empty. Logs are under ignored runtime-test/warlock-artifact-map.
 No validation worldserver remains running. Client verification of the map
 after the next server start and character login remains pending.
+
+The later user question about skipped stages exposed the separate missing
+44089 starter. The map predicate fix alone did not restore its acceptance;
+[the breadcrumb handoff audit](warlock-arsenal-handoff-2026-10-21.md) records
+the subsequent repair and its remaining client checks.

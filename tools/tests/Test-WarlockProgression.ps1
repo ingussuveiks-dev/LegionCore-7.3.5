@@ -8,13 +8,31 @@ $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 foreach($p in @(@('Level','bool Player::SatisfyQuestLevel('),@('Previous','bool Player::SatisfyQuestPreviousQuest('),@('Class','bool Player::SatisfyQuestClass('),@('Race','bool Player::SatisfyQuestRace('))){Save $p[0] (Block $player $p[1])}
 Save 'Status' ((Block (Get-Content "$repo/src/server/game/Quests/QuestDef.h" -Raw) 'enum QuestStatus')+';')
 $cond=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
-$cases=@('CONDITION_REPUTATION_RANK','CONDITION_QUESTREWARDED','CONDITION_QUESTTAKEN','CONDITION_QUEST_COMPLETE','CONDITION_QUEST_NONE','CONDITION_QUEST_OBJECTIVE_DONE') | ForEach-Object {$a=$cond.IndexOf("        case $_"+':');$b=$cond.IndexOf('        case ',$a+13);$cond.Substring($a,$b-$a)}
+$cases=@('CONDITION_CLASS','CONDITION_REPUTATION_RANK','CONDITION_QUESTREWARDED','CONDITION_QUESTTAKEN','CONDITION_QUEST_COMPLETE','CONDITION_QUEST_NONE','CONDITION_QUEST_OBJECTIVE_DONE') | ForEach-Object {$a=$cond.IndexOf("        case $_"+':');$b=$cond.IndexOf('        case ',$a+13);$cond.Substring($a,$b-$a)}
 Save 'ConditionCases' ($cases -join "`n")
 $a=$cond.IndexOf('    if (NegativeCondition)');$b=$cond.IndexOf("`n}",$a)
 Save 'ConditionTail' $cond.Substring($a,$b-$a)
 Save 'ConditionList' (Block $cond 'bool ConditionMgr::IsObjectMeetToConditionList(')
-$ids='40821,40823,40824,44099,42608,41748,41750,42603,41797,42602,42601,42097,41759,39179,39389,39142,40218,41767,41752,41753,41798,42100,42098,39718,39731,39733,39735,39864,39861,41220,39985,43341'
+$ids='40821,40823,40824,44099,42608,41748,41750,42603,41797,42602,42601,42097,41759,39179,39389,39142,40218,41767,41752,41753,41798,42100,42098,39718,39731,39733,39735,39864,39861,41220,39985,43341,40684,43984,44089'
+$migration=Get-Content "$repo/sql/updates/world/2026_10_21_05_warlock_arsenal_breadcrumb.sql" -Raw
 $sql=@"
+CREATE TEMPORARY TABLE quest_template_addon AS SELECT * FROM quest_template_addon;
+CREATE TEMPORARY TABLE saved_starters LIKE creature_queststarter;
+INSERT INTO saved_starters SELECT * FROM creature_queststarter;
+CREATE TEMPORARY TABLE creature_queststarter LIKE saved_starters;
+INSERT INTO creature_queststarter SELECT * FROM saved_starters;
+CREATE TEMPORARY TABLE saved_scripts LIKE smart_scripts;
+INSERT INTO saved_scripts SELECT * FROM smart_scripts;
+CREATE TEMPORARY TABLE smart_scripts LIKE saved_scripts;
+INSERT INTO smart_scripts SELECT * FROM saved_scripts;
+CREATE TEMPORARY TABLE saved_conditions LIKE conditions;
+INSERT INTO saved_conditions SELECT * FROM conditions;
+CREATE TEMPORARY TABLE conditions LIKE saved_conditions;
+INSERT INTO conditions SELECT * FROM saved_conditions;
+$migration
+$migration
+SELECT 'V','arsenal-starter',COUNT(*) FROM creature_queststarter WHERE id=101097 AND quest=44089;
+SELECT 'V','arsenal-accept',COUNT(*) FROM smart_scripts WHERE entryorguid=101097 AND source_type=0 AND id IN(30,31) AND event_type=19 AND event_param1 IN(43984,44089) AND action_type=85 AND action_param1=199411 AND target_type=7;
 SELECT 'Q',q.ID,q.MinLevel,COALESCE(a.MaxLevel,0),COALESCE(a.AllowableClasses,0),q.AllowableRaces,COALESCE(a.ExclusiveGroup,0),COALESCE(a.PrevQuestID,0),COALESCE(a.NextQuestID,0) FROM quest_template q LEFT JOIN quest_template_addon a ON a.ID=q.ID WHERE q.ID IN($ids) ORDER BY q.ID;
 SELECT 'C',SourceTypeOrReferenceId,IF(SourceTypeOrReferenceId=23,SourceEntry,SourceEntry),ElseGroup,ConditionTypeOrReference,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE (SourceTypeOrReferenceId=19 AND SourceEntry IN($ids)) OR (SourceTypeOrReferenceId=23 AND SourceGroup=7875 AND SourceEntry<=10) ORDER BY SourceTypeOrReferenceId,SourceEntry,ElseGroup;
 SELECT 'V','stage-phases',COUNT(*) FROM phase_definitions WHERE zoneId=7875 AND ((entry=4 AND phaseId='6933') OR (entry=5 AND phaseId='6934') OR (entry=6 AND phaseId='6935') OR (entry=7 AND phaseId='6936') OR (entry=9 AND phaseId='6938') OR (entry=10 AND phaseId='6939'));
@@ -30,6 +48,7 @@ $db=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-O
 $old=$env:MYSQL_PWD
 try {$env:MYSQL_PWD=$db[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($db[0]) --port=$($db[1]) --user=$($db[2]) --database=$($db[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Progression catalog read failed'}}finally{$env:MYSQL_PWD=$old}
 foreach($expected in @("V`tstage-phases`t6","V`tnatural-givers`t7","V`tdisabled`t0","V`tsuramar-trigger`t1","V`tzone-followups`t2","V`tresearch-service`t1","V`ttroop-service`t1","V`tmissions`t3")){if($rows -notcontains $expected){throw "Progression source data changed: $expected"}}
+foreach($expected in @("V`tarsenal-starter`t1","V`tarsenal-accept`t2")){if($rows -notcontains $expected){throw "Arsenal breadcrumb fixture mismatch: $expected"}}
 [IO.File]::WriteAllLines("$out/availability.tsv",@($rows | Where-Object {!$_.StartsWith("V`t")}))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/WarlockProgressionTest.cpp`" /Fe`"$out/availability.exe`" /Fo`"$out/availability.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/availability.exe`" `"$out/availability.tsv`"`r`n"

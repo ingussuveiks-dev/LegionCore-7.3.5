@@ -17,7 +17,7 @@ struct Quest {uint32 id=0,MinLevel=0,MaxLevel=0;int32 AllowableClasses=0,Exclusi
 struct QuestStore {std::map<uint32,Quest> rows;ExclusiveQuestGroups mExclusiveQuestGroups;Quest const* GetQuestTemplate(uint32 id)const{auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}} store;
 auto sQuestDataStore=&store;
 struct Player;
-struct Unit {virtual Player* ToPlayer(){return nullptr;}Unit* ToUnit(){return this;}bool IsCreature()const{return false;}bool isPet()const{return false;}Unit* GetOwner(){return nullptr;}struct Threat{Unit* getHostilTarget(){return nullptr;}} threat;Threat& getThreatManager(){return threat;}};
+struct Unit {virtual Player* ToPlayer(){return nullptr;}virtual uint32 getClassMask()const{return 0;}Unit* ToUnit(){return this;}bool IsCreature()const{return false;}bool isPet()const{return false;}Unit* GetOwner(){return nullptr;}struct Threat{Unit* getHostilTarget(){return nullptr;}} threat;Threat& getThreatManager(){return threat;}};
 struct FactionEntry{uint32 id;};struct Factions{FactionEntry row;FactionEntry const* LookupEntry(uint32 id){row.id=id;return &row;}} sFactionStore;
 struct Player:Unit {
  uint32 level=106;uint64 races=uint64(1)<<9;uint32 classes=256;
@@ -38,7 +38,7 @@ struct Player:Unit {
 #include "Previous.inc"
 #include "Class.inc"
 #include "Race.inc"
-enum {CONDITION_REPUTATION_RANK=5,CONDITION_QUESTREWARDED=8,CONDITION_QUESTTAKEN=9,CONDITION_QUEST_NONE=14,CONDITION_QUEST_COMPLETE=28,CONDITION_QUEST_OBJECTIVE_DONE=41};
+enum {CONDITION_CLASS=15,CONDITION_REPUTATION_RANK=5,CONDITION_QUESTREWARDED=8,CONDITION_QUESTTAKEN=9,CONDITION_QUEST_NONE=14,CONDITION_QUEST_COMPLETE=28,CONDITION_QUEST_OBJECTIVE_DONE=41};
 struct Condition;
 struct ConditionSourceInfo {Unit* object;Condition* mLastFailedCondition=nullptr;};
 struct ScriptMgr{bool OnConditionCheck(Condition*,ConditionSourceInfo&){return true;}} scripts;
@@ -68,6 +68,11 @@ int main(int argc,char**argv){
  for(auto pair:next){auto i=store.rows.find(abs(pair.second));if(i!=store.rows.end())i->second.prevQuests.push_back(pair.second<0?-int32(pair.first):int32(pair.first));}
  for(auto const& pair:store.rows)if(pair.second.ExclusiveGroup)store.mExclusiveQuestGroups.emplace(pair.second.ExclusiveGroup,pair.first);
  Player p;p.m_RewardedQuests={40821,40823,40824};
+ Player arsenal;auto canSelect=[&](uint32 id){auto q=store.GetQuestTemplate(id);assert(q);return arsenal.CoreGates(q)&&Meets(arsenal,19,id);};
+ assert(!canSelect(43984)&&!canSelect(44089));arsenal.m_RewardedQuests={40684,40623};
+ assert(canSelect(43984)&&!canSelect(44089));arsenal.m_RewardedQuests.insert(43984);arsenal.m_RewardedQuests.insert(42125);
+ assert(canSelect(44089));arsenal.classes=1;assert(!canSelect(44089));arsenal.classes=256;arsenal.level=101;assert(!canSelect(44089));arsenal.level=106;
+ arsenal.m_RewardedQuests.insert(43254);assert(!canSelect(44089));arsenal.m_RewardedQuests.erase(43984);assert(!canSelect(43984));
  auto take=[&](uint32 id){auto q=store.GetQuestTemplate(id);assert(q);return p.CoreGates(q)&&Meets(p,19,id);};
  assert(take(44099)&&!take(42608));p.m_RewardedQuests.insert(44099);assert(take(42608));
  p.active[42608]=QUEST_STATUS_INCOMPLETE;

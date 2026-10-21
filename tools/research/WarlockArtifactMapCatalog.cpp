@@ -10,7 +10,14 @@ int main(int argc, char** argv)
     if (argc != 2) return 1;
     DB2Storage<QuestLineEntry> lines("QuestLine.db2", QuestLineLoadInfo::Instance());
     DB2Storage<QuestLineXQuestEntry> quests("QuestLineXQuest.db2", QuestLineXQuestLoadInfo::Instance());
-    if (!lines.Load(argv[1], 0) || !quests.Load(argv[1], 0)) return 2;
+    DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    if (!lines.Load(argv[1], 0) || !quests.Load(argv[1], 0) || !effects.Load(argv[1], 0)) return 2;
+    unsigned preceding = 0, choices = 0;
+    for (auto q : quests)
+        if (q->QuestLineID == 274 && ((q->QuestID == 40684 && q->OrderIndex == 0) || (q->QuestID == 43984 && q->OrderIndex == 1))) ++preceding;
+    for (auto e : effects)
+        if (e->SpellID == 199411 && e->Effect == 205 && e->EffectMiscValue[0] == 245) ++choices;
+    if (preceding != 2 || choices != 1) return 5;
     std::map<int, std::pair<int, int>> expected{{3465, {247, 23}}, {3467, {207, 4}}, {3888, {274, 2}}};
     unsigned count = 0;
     for (auto q : quests)
