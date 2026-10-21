@@ -8,7 +8,7 @@ static Map* SpiritGravePlace(GarmPlayer& player,WorldSafeLocsEntry const& loc)
     auto base=sMapMgr->CreateBaseMap(loc.MapID);base->SetMapStop();
     auto& worker=sMapMgr->_mapThreads[loc.MapID];if(worker&&worker->joinable())worker->join();
     auto selected=sMapMgr->CreateMap(loc.MapID,&player);
-    StopGraveyardFixtureZones(*static_cast<MapInstanced*>(base));
+    if(base->Instanceable()||base->CanCreatedZone())StopGraveyardFixtureZones(*static_cast<MapInstanced*>(base));
     player.ResetMap();player.SetMap(selected);Require(selected->AddPlayerToMap(&player,false),"Spirit graveyard map attachment failed");
     uint32 zone,area;player.GetZoneAndAreaId(zone,area);player.UpdateZone(zone,area);
     return selected;
