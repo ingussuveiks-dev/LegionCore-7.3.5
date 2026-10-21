@@ -175,6 +175,7 @@ public:
     void ClearMenu();
     GossipMenuItemContainer const& GetMenuItems() const;
 
+    // Primary flags in the low 32 bits, secondary service flags in the high 32.
     static uint64 GetRequiredNpcFlagForOption(GossipOptionNpc optionNpc);
 };
 

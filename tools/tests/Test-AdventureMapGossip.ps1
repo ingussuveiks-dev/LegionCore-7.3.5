@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[string]$ReleaseDirectory)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/adventure-map-gossip"
@@ -16,6 +16,26 @@ $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 $filter=[regex]::Match($source,'            if \(!\(GossipMenu::GetRequiredNpcFlagForOption\(optionNpc\) & npcflags\)\)\s*continue;')
 if(!$filter.Success){throw 'Production gossip admission changed; update this test'}
 [IO.File]::WriteAllText("$out/Admission.inc",$filter.Value)
+$flags=[regex]::Match($source,'        npcflags = uint64\(source->GetUInt32Value\(UNIT_FIELD_NPC_FLAGS\)\) \|\s*\(uint64\(source->GetUInt32Value\(UNIT_FIELD_NPC_FLAGS2\)\) << 32\);')
+if(!$flags.Success){throw 'Production gossip flags must include both distinct NPC fields'}
+[IO.File]::WriteAllText("$out/Flags.inc",$flags.Value)
+function FunctionBlock([string]$text,[string]$marker){
+ $a=$text.IndexOf($marker);if($a -lt 0){throw "Missing $marker"};$b=$text.IndexOf('{',$a);$end=$b+1;$depth=1
+ while($depth -and $end -lt $text.Length){if($text[$end] -eq '{'){$depth++};if($text[$end] -eq '}'){$depth--};$end++}
+ if($depth){throw "Unbalanced $marker"};$text.Substring($a,$end-$a)
+}
+$shared=Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw
+[IO.File]::WriteAllText("$out/Classes.inc",(FunctionBlock $shared 'enum Classes')+';')
+$qdefs=Get-Content "$repo/src/server/game/Quests/QuestDef.h" -Raw
+[IO.File]::WriteAllText("$out/QuestStatus.inc",(FunctionBlock $qdefs 'enum QuestStatus')+';')
+$garr=Get-Content "$repo/src/server/game/Garrison/Garrison.cpp" -Raw
+foreach($pair in @(@('CanAddShipment','bool Garrison::canAddShipmentOrder('),@('CanStartUpgrade','bool Garrison::canStartUpgrade('),@('OpenShipment','void Garrison::OnGossipSelect('))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(FunctionBlock $garr $pair[1]))}
+$garrMgr=Get-Content "$repo/src/server/game/Garrison/GarrisonMgr.cpp" -Raw
+[IO.File]::WriteAllText("$out/SelectShipment.inc",(FunctionBlock $garrMgr 'uint32 GarrShipment::selectShipment('))
+$a=$source.IndexOf('                case GossipOptionNpc::ShipmentCrafter:');$b=$source.IndexOf('                case GossipOptionNpc::GarrisonTradeskill:',$a)
+[IO.File]::WriteAllText("$out/ShipmentGate.inc",$source.Substring($a,$b-$a))
+$a=$source.IndexOf('                case GossipOptionNpc::GarrisonTalent:');$b=$source.IndexOf('                case GossipOptionNpc::Trainer:',$a)
+[IO.File]::WriteAllText("$out/TalentGate.inc",$source.Substring($a,$b-$a))
 $a=$source.IndexOf('        case GossipOptionNpc::AdventureMap:',$source.IndexOf('void Player::OnGossipSelect'))
 $b=$source.IndexOf('        case GossipOptionNpc::GarrisonTalent:',$a)
 [IO.File]::WriteAllText("$out/Select.inc",$source.Substring($a,$b-$a))
@@ -36,8 +56,16 @@ $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/AdventureMapGossipTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`" `"$out/boards.tsv`"`r`n"
 [IO.File]::WriteAllText("$out/run.cmd",$cmd);& "$out/run.cmd"
 if($LASTEXITCODE){throw 'Production adventure-map interaction regression failed'}
+$serviceCmd=$cmd.Replace('AdventureMapGossipTest.cpp','GarrisonGossipServiceTest.cpp').Replace('`"$out/boards.tsv`"','')
+[IO.File]::WriteAllText("$out/run-services.cmd",$serviceCmd);& "$out/run-services.cmd"
+if($LASTEXITCODE){throw 'Production class-hall service regression failed'}
 if($VerifyReleaseBinary){
- $binary=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes("$repo/build-extractors/bin/Release/worldserver.exe"))
+ if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"}
+ $binary=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes("$ReleaseDirectory/worldserver.exe"))
  if(!$binary.Contains('AdventureMap: opening scouting map for player %u at creature %u')){throw 'Canonical Release lacks adventure-map interaction repair'}
+ $python=Get-Command python -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1
+ if(!$python){$python='C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'}
+ & $python "$PSScriptRoot/verify_gossip_service_release.py" $ReleaseDirectory
+ if($LASTEXITCODE){throw 'Actual Release gossip service lookup is stale'}
 }
 'PASS: actual gossip filter on every scouting-map template, map packet dispatch, native availability/start handlers, exactly-once selection and retry boundaries. Client map pins pending.'

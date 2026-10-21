@@ -11,7 +11,12 @@ constexpr int QUEST_STATUS_REWARDED=6,QUEST_STATUS_NONE=0;
 #include "Enums.inc"
 struct GossipMenu{static uint64 GetRequiredNpcFlagForOption(GossipOptionNpc);};
 #include "RequiredFlags.inc"
-bool Admit(GossipOptionNpc optionNpc,uint32 npcflags){for(int i=0;i<1;++i){
+enum {UNIT_FIELD_NPC_FLAGS,UNIT_FIELD_NPC_FLAGS2};
+struct FlagSource{uint32 first,second;uint32 GetUInt32Value(int index)const{return index==UNIT_FIELD_NPC_FLAGS?first:second;}};
+bool Admit(GossipOptionNpc optionNpc,uint32 first,uint32 second=0){
+ FlagSource actor{first,second};auto source=&actor;uint64 npcflags=0;
+#include "Flags.inc"
+ for(int i=0;i<1;++i){
 #include "Admission.inc"
  return true;}return false;}
 namespace WorldPackets{namespace NPC{struct ShowAdventureMap{int Guid=0;int Write(){return Guid;}};}namespace Quest{struct AdventureJournalStartQuest{uint32 QuestID;};}}
@@ -46,7 +51,18 @@ int main(int argc,char**argv){
  assert(!Admit(GossipOptionNpc::AdventureMap,uint32(UNIT_NPC_FLAG_VENDOR)));
  assert(Admit(GossipOptionNpc::Vendor,uint32(UNIT_NPC_FLAG_VENDOR))&&!Admit(GossipOptionNpc::Vendor,1));
  assert(Admit(GossipOptionNpc::Banker,uint32(UNIT_NPC_FLAG_BANKER))&&!Admit(GossipOptionNpc::Banker,1));
- assert(GossipMenu::GetRequiredNpcFlagForOption(GossipOptionNpc::GarrisonTalent)==UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE);
+ assert(GossipMenu::GetRequiredNpcFlagForOption(GossipOptionNpc::GarrisonTalent)==(uint64(UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE)<<32));
+ assert(UNIT_NPC_FLAG2_RECRUITER==0x100 && UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE==0x200);
+ assert(Admit(GossipOptionNpc::ShipmentCrafter,1,272)); // Dyala
+ assert(Admit(GossipOptionNpc::ShipmentCrafter,3,4)); // Draenor work orders
+ assert(!Admit(GossipOptionNpc::ShipmentCrafter,272,0));
+ assert(Admit(GossipOptionNpc::GarrisonTalent,1,512)); // Melinda
+ assert(!Admit(GossipOptionNpc::GarrisonTalent,512,0));
+ assert(!Admit(GossipOptionNpc::GarrisonTalent,1,256)); // recruiter is distinct
+ assert(Admit(GossipOptionNpc::GarrisonRecruitment,1,256));
+ assert(!Admit(GossipOptionNpc::GarrisonRecruitment,1,512));
+ assert(Admit(GossipOptionNpc::GarrisonMission,1,64));
+ assert(!Admit(GossipOptionNpc::GarrisonMission,64,0));
  Player p;p.Select(GossipOptionNpc::AdventureMap,339088);assert(p.packets==1&&p.lastGuid==339088&&!p.credits);
  std::vector<AdventureMapPOIEntry> pois{{3,1,39718,1},{4,1,39731,1},{6,1,39735,1},{7,1,39864,1},{8,1,39733,1},{9,2,123,1}};
  for(auto& poi:pois){sAdventureMapPOIStore.push_back(&poi);quests.rows[poi.QuestID]={poi.QuestID};}

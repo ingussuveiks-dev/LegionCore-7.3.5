@@ -222,25 +222,27 @@ uint64 GossipMenu::GetRequiredNpcFlagForOption(GossipOptionNpc optionNpc)
             requiredNpcFlag = UNIT_NPC_FLAG_ARTIFACT_POWER_RESPEC;
             break;
         case GossipOptionNpc::GarrisonArchitect:
-            requiredNpcFlag = UNIT_NPC_FLAG2_GARRISON_ARCHITECT;
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_GARRISON_ARCHITECT) << 32;
             break;
         case GossipOptionNpc::GarrisonMission:
-            requiredNpcFlag = UNIT_NPC_FLAG2_GARRISON_MISSION_NPC;
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_GARRISON_MISSION_NPC) << 32;
             break;
         case GossipOptionNpc::ShipmentCrafter:
-            requiredNpcFlag = UNIT_NPC_FLAG2_SHIPMENT_CRAFTER;
+            // Match Garrison::canAddShipmentOrder and the shipment handlers.
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_AI_OBSTACLE | UNIT_NPC_FLAG2_RECRUITER) << 32;
             break;
         case GossipOptionNpc::GarrisonTradeskill:
-            requiredNpcFlag = UNIT_NPC_FLAG2_TRADESKILL_NPC;
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_TRADESKILL_NPC) << 32;
             break;
         case GossipOptionNpc::GarrisonRecruitment:
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_RECRUITER) << 32;
+            break;
         case GossipOptionNpc::GarrisonTalent:
-            requiredNpcFlag = UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE;
+            requiredNpcFlag = uint64(UNIT_NPC_FLAG2_CLASS_HALL_UPGRADE) << 32;
             break;
         case GossipOptionNpc::AdventureMap:
-            // PrepareGossipMenu checks the first NPC flag field. Scouting
-            // maps expose normal gossip here; their secondary mission flag
-            // is neither a first-field flag nor a class-hall upgrade flag.
+            // Scouting maps use ordinary gossip, including before followers
+            // unlock the board's secondary mission flag.
             requiredNpcFlag = UNIT_NPC_FLAG_GOSSIP;
             break;
 //        case GossipOptionNpc::ContributionCollector:

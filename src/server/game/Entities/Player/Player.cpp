@@ -18203,10 +18203,13 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
     if (menuItemBounds.first == menuItemBounds.second && menuId == GetDefaultGossipMenuForSource(source))
         menuItemBounds = sGossipDataStore->GetGossipMenuItemsMapBounds(0);
 
-    uint32 npcflags = 0;
+    uint64 npcflags = 0;
     if (source->IsCreature())
     {
-        npcflags = source->GetUInt32Value(UNIT_FIELD_NPC_FLAGS);
+        // Keep the two fields distinct: a secondary service bit must never
+        // be admitted by an unrelated primary flag with the same value.
+        npcflags = uint64(source->GetUInt32Value(UNIT_FIELD_NPC_FLAGS)) |
+            (uint64(source->GetUInt32Value(UNIT_FIELD_NPC_FLAGS2)) << 32);
 
         if (npcflags & UNIT_NPC_FLAG_QUESTGIVER && showQuests)
             PrepareQuestMenu(source->GetGUID());
