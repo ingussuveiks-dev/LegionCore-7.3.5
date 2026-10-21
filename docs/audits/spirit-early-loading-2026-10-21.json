@@ -2,6 +2,7 @@
   "date": "2026-10-21",
   "base_commit": "ee7b33e9",
   "previous_audit": "docs/audits/spirit-linked-login-cancel-2026-10-21.json",
+  "follow_up_audit": "docs/audits/spirit-map-loading-2026-10-21.json",
   "scope": "Loading-screen notifications before Player construction, accepted request preservation, explicit cancellation, completion and repeated native login",
   "finding": "HandleLoadScreenOpcode cleared m_playerLoading for every loading-finished packet, even when no Player existed. After a valid instance link this consumed the accepted request but retained its socket, causing the SQL response to be rejected and leaving retry admission blocked by that socket. Loading notifications contain map/showing fields, not a login request identity; an early or stale notification must not cancel a pending request.",
   "reproduction": {

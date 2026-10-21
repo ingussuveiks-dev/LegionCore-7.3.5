@@ -34,10 +34,12 @@ static void SpiritDeliverQuery(WorldSession* session,SQLQueryHolderCallback&& re
 #include "TrialSpiritInstanceLinkNative.inc"
 #include "TrialSpiritLinkedCancelNative.inc"
 #include "TrialSpiritEarlyLoadingNative.inc"
+#include "TrialSpiritMapLoadingNative.inc"
 static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction,unsigned sourceMode)
 {
     static bool rsa=false;if(!rsa){Require(WorldPackets::Auth::ConnectTo::InitializeEncryption(),"Native ConnectTo RSA bootstrap failed");rsa=true;}
     auto addresses=realm.Addresses;realm.Addresses={boost::asio::ip::address_v4::loopback(),boost::asio::ip::address_v4::loopback()};
+    SpiritMapLoadingLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritEarlyLoadingLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritLinkedCancelLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritInstanceLinkLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);

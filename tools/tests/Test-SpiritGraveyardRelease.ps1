@@ -221,3 +221,23 @@ $logoutLoadingClear=[regex]::Match($cancelBodies.LogoutPlayer,"(?im)lea\s+rcx,\[
 if(!$logoutLoadingClear.Success -or (Resolve ([Convert]::ToInt64($logoutLoadingClear.Groups[1].Value,16))) -ne (Resolve (Symbol '?Clear@ObjectGuid@@'))){throw 'Canonical logout does not clear its own pending login GUID'}
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;player_offset=[int]$queryFields.Groups[2].Value;pending_guid_offset=[int]$queryFields.Groups[1].Value;null_player_returns_without_state_changes=$true;constructed_player_notification_flow_retained=$true;logout_clears_pending_request=$true} | ConvertTo-Json | Set-Content "$earlyOut/inputs.json"
 'PASS: canonical loading notification returns without state changes before Player creation and retains constructed-Player arrival/completion handling;392 native early-notification/login/retry cases match final-link inputs.'
+
+$mapLoadingOut="$repo/build-extractors/runtime-test/spirit-map-loading-release"
+New-Item -ItemType Directory -Force $mapLoadingOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit map loading '}).Count -ne 392){throw 'Run all392 native post-construction map-loading cases first'}
+foreach($mode in 0..6){if(@($lines | Where-Object {$_ -match "^PASS: spirit map loading .* mode=$mode map="}).Count -ne 56){throw "Missing native map-loading mode $mode"}}
+foreach($path in @('tools/tests/TrialSpiritMapLoadingNative.inc','tools/tests/TrialSpiritQueryNative.inc','src/server/game/Handlers/CharacterHandler.cpp','src/server/game/Handlers/MovementHandler.cpp','src/server/game/Server/Packets/MovementPackets.h','src/server/game/Server/Packets/CharacterPackets.cpp')){
+    if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Map-loading input changed after native run: $path"}
+}
+$mapLoadingAbi=@($lines | Where-Object {$_ -match '^SPIRIT_MAP_LOADING_ABI far=\d+ destination=\d+ current=\d+$'} | Select-Object -Unique)
+if($mapLoadingAbi.Count -ne 1){throw 'Missing unique native map-loading ABI'}
+$mapLoadingFields=[regex]::Match($mapLoadingAbi[0],'far=(\d+) destination=(\d+) current=(\d+)')
+$mapFar=([int]$mapLoadingFields.Groups[1].Value).ToString('X');$mapDestination=([int]$mapLoadingFields.Groups[2].Value).ToString('X');$mapCurrent=([int]$mapLoadingFields.Groups[3].Value).ToString('X')
+# MSVC selects the map-field offset with CMOVE: source only when far is false.
+# Both wrong-map and null-Player paths must share the harmless epilogue above.
+$mapLoadingGate=[regex]::Match($earlyText,"(?im)cmp\s+byte ptr \[\w+\+0*${mapFar}h\],0\r?\n[^\r\n]*mov\s+eax,0*${mapDestination}h\r?\n[^\r\n]*mov\s+edx,dword ptr \[\w+\+50h\]\r?\n[^\r\n]*mov\s+ecx,0*${mapCurrent}h\r?\n[^\r\n]*cmove\s+eax,ecx\r?\n[^\r\n]*cmp\s+edx,dword ptr \[rax\+\w+\]\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
+if(!$mapLoadingGate.Success -or $mapLoadingGate.Groups['reject'].Value -ne $earlyGate.Groups['reject'].Value -or $mapLoadingGate.Index -le $earlyGate.Index -or $mapLoadingGate.Index -ge $earlyOps[0].Index){throw 'Review canonical expected-map selection/rejection before loading side effects'}
+$earlyLines | Set-Content "$mapLoadingOut/HandleLoadScreenOpcode.txt"
+$mapLoadingGate.Value | Set-Content "$mapLoadingOut/expected-map-gate.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;far_offset=[int]$mapLoadingFields.Groups[1].Value;destination_map_offset=[int]$mapLoadingFields.Groups[2].Value;current_map_offset=[int]$mapLoadingFields.Groups[3].Value;far_prefers_destination_map=$true;wrong_map_returns_before_packets_and_state_changes=$true;valid_early_far_and_near_acknowledgements_retained=$true} | ConvertTo-Json | Set-Content "$mapLoadingOut/inputs.json"
+'PASS: canonical loading notification admits only the expected current/destination map before packet dispatch or state writes;392 native login, arrival-grace, far-transfer and near-transfer cases match final-link inputs.'

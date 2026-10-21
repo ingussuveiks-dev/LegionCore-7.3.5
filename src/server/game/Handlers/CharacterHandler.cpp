@@ -614,6 +614,13 @@ void WorldSession::HandleLoadScreenOpcode(WorldPackets::Character::LoadingScreen
     if (!player)
         return;
 
+    // During a far transfer the Player still belongs to the source map until
+    // WorldPortAck. Only the destination screen can acknowledge that transfer.
+    int32 expectedMap = int32(player->IsBeingTeleportedFar()
+        ? player->GetTeleportDest().GetMapId() : player->GetMapId());
+    if (loadingScreenNotify.MapID != expectedMap)
+        return;
+
     if (loadingScreenNotify.Showing)
         player->NotifyMapObjectArrivalLoading(loadingScreenNotify.MapID);
     else

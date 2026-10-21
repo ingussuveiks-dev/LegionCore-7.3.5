@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "78c44f62",
+  "previous_audit": "docs/audits/spirit-early-loading-2026-10-21.json",
+  "scope": "Map admission for decoded loading-screen notifications after Player construction, including pending far transfers, admitted arrivals and same-map teleports",
+  "finding": "HandleLoadScreenOpcode checked only Player existence. A finished notification for another map still invoked SendInitialPacketsAfterAddToMap and then cleared m_playerLoading even when Player::NotifyMapObjectArrivalLoaded rejected that map. A showing notification reached NotifyMapObjectArrivalLoading, which unconditionally cleared the loaded-map marker. During a far teleport GetMapId still names the source until WorldPortAck, so accepting both current and destination maps would retain the stale-source problem.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-230707",
+    "log": ".codex/spirit-map-loading-baseline.log",
+    "result": "The actual accepted request and instance link deliver a complete SQL holder to construct a native Player before its100ms map callback. A decoded finished notification for another map queues native outgoing packets and fails Wrong-map loading notification dispatched native outgoing packets. This baseline stops at that first assertion; the loading-GUID clear and showing-marker overwrite are established by production source, not claimed as additional executed baseline assertions. DBErrors is empty. Initial fixture compilation errors from Windows near/far macros and explicit QueryResult conversion were corrected before this runtime reproduction."
+  },
+  "implementation": [
+    "After the existing null-Player return, determine one expected map: teleport destination when IsBeingTeleportedFar, otherwise the current map. Return for any other MapID before either showing/finished branch and before initial packets, arrival helpers or loading-GUID clear.",
+    "Preserve valid notifications before/after the100ms login completion, early destination acknowledgements before far ACK, destination acknowledgements after far ACK and same-map near teleport notifications. Internal TeleportTo calls to NotifyMapObjectArrivalLoading remain unchanged because those precede the far semaphore and intentionally initialize the destination lifecycle.",
+    "Preserve existing explicit cancellation, logout ownership, deferred SQL/completion generation checks, protected-arrival timers and movement/aura ownership. No database migration or live character repair is needed."
+  ],
+  "native_modes": {
+    "0": "Wrong-map finished notification after SQL creates Player but before100ms completion preserves its pending GUID and queues no packets. The valid login still completes.",
+    "1": "A valid early completion records the current map. Wrong-map showing and finished notifications retain that marker and current login/map/socket state; native map admission succeeds.",
+    "2": "Native arrival methods create a grace hold; a valid finish starts8000ms and a1000ms update leaves7000ms. Repeated wrong-map and negative-map notifications preserve loaded marker, timers, root/gravity and queue no packets. The hold releases exactly after the remaining7000ms.",
+    "3": "Actual far TeleportTo retains the source Player map while the session targets its destination. A source finished notification and unrelated negative-map showing are rejected before the early destination finish; the actual WorldPortAck reaches the destination.",
+    "4": "A valid destination finish before WorldPortAck survives delayed source showing/finished packets. The native far ACK retains that early acknowledgement and completes in the destination.",
+    "5": "Actual far ACK without an early finish completes first. Source-map notifications after arrival queue nothing and do not alter state; a valid destination completion still sends its native initial packets.",
+    "6": "Actual same-map TeleportTo plus HandleMoveTeleportAck completes a40-yard near transfer. Matching-map screen events remain accepted; wrong/negative-map events before and after the movement ACK remain harmless."
+  },
+  "coverage": {
+    "map_loading_cases": 392,
+    "underlying_recovery_paths": 56,
+    "cases_per_mode": 56,
+    "modes": 7,
+    "existing_early_notification_cases": 392,
+    "existing_linked_cancellation_cases": 392,
+    "existing_instance_link_cases": 392,
+    "existing_deferred_query_cases": 392,
+    "existing_session_cases": 280,
+    "existing_aggregate_login_cases": 168,
+    "existing_last_owner_probes": 2,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "method": [
+    "Use actual CMSG_LOADING_SCREEN_NOTIFY wire decoding, accepted login/ConnectTo and World instance-link admission, complete LoginQueryHolder results, production Player construction and Map::UpdateSessions at99+1ms. Human/Orc level110 Warrior fixtures use loopback transports and the production handlers against original final-link Release libraries.",
+    "Snapshot pending GUID/serial, Player identity, Player/session maps, position, health, mover, map-change/world/near/far states, arrival map/loaded marker/wait/settle/root/gravity, instance socket and forceExit. Drain real WorldSocket outgoing packet queues before each probe and require zero packets for wrong-map events; matching finished events must queue exactly one SMSG_WORLD_SERVER_INFO and record their map.",
+    "Far controls use native map1220/default-team-graveyard DB2 anchors, actual TeleportTo, HandleWorldPortAck, UpdateZone and the existing500ms zone handoff when required. Near controls use TeleportTo and the typed movement ACK handler. No far/near semaphore or private arrival field is assigned by the fixture; private access observes state and supplies ABI offsets only.",
+    "Each completion retains health321, sickness15007 at598000ms, original item25 GUID/durability27, self mover and no corpse. Actual logout saves offline0, health321 and final map/position; removes Player/lookup/query/loading state and preserves a reusable realm socket. The isolated fixture row is then returned to its original recovery coordinates for subsequent cases."
+  ],
+  "limitations_and_pending_client_checks": [
+    "No WoW client was operated. Loading UI, streamed geometry readiness, movement release, camera, pet portrait and quest traversal remain client checks. Native WMO collision and extracted arrival tests do not verify rendering.",
+    "The packet probe observes production serialization/enqueueing on native sockets. It does not pump encryption/network writes or prove client receipt. Fixture enum eligibility and instance type are seeded rather than executing a complete authentication/HMAC exchange.",
+    "MapID and Showing contain no request/transfer generation. A delayed packet for the same map as a newer transfer cannot be distinguished by this fix. Matching-map duplicate notifications retain existing behavior; this change rejects different-map events only.",
+    "A legitimate early destination completion retains the existing initial-packet dispatch order before WorldPortAck, when Player still belongs to the source. This audit verifies its accepted state/acknowledgement and eventual native transfer; it does not establish that every packet in that pre-existing order carries destination context.",
+    "Tests make callback ordering deterministic and stop fixture map workers. They do not prove arbitrary concurrent IO/map/world interleavings. Arrival-grace controls use actual lifecycle methods without claiming a supporting collision object for that specific fixture location.",
+    "Character/auth schemas are schema-only scratch databases. Personal account/character rows are not copied or modified, world data is read-only during native execution, and the standalone portal migration check uses connection-local temporary tables."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed all392 new map-loading cases and all392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session and168 aggregate login cases, two ownership probes and configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR; schema-only scratch character/auth databases and SQL users were removed.",
+    "Canonical Release verification binds native ABI far26657/destination-map26648/current-map224 to the actual exception-bounded handler. Its CMOVE selects the destination field when far is true; wrong-map comparison jumps to the same harmless epilogue as null Player before all four packet/arrival/GUID operations. Source, fixtures, native-input manifest, executable and original final-link game.lib match.",
+    "Both Release targets built successfully to build-extractors/bin/Release through original generated static-library paths. Executable and MAP were regenerated together, with no OutDir override. Runtime configuration, certificates, DLLs, logs and extracted data were preserved.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed. Test-MapObjectArrival.ps1 passed production extracted geometry/arrival/gravity/root/visibility/movement/timeout checks. Test-DalaranPortalLanding.ps1 passed the native WMO support callback, phase/collision rejection, nine floor samples and repeatable isolated portal migration.",
+    "Owned hidden startup PID5016 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains; no user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-230928",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-230929",
+    "worldserver": "75F3F696D3BF0C181D7CBB9B91765314DE075913DCE56AF5E6DABB5E516EDB07",
+    "worldserver_map": "85522782B1B2EDB437C7E30A7975A54275F73A70A4E94CCFCC6BB44B81ED80C7",
+    "game_library": "4D5277137F49C9775D8CF88663FA01D6CD4D537C3B6D69CB6302ED1E8D30A4E0",
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "2CD906F324AAFE9B511A2114B37BCEAEBD08129BEEEDE7BBF90B2C962D80DB8B",
+      "tools/tests/TrialSpiritMapLoadingNative.inc": "79A71D2049A35BB2005A70DE13CFC148DAC1DF5612DEB14FD82E19AEB74F83B6",
+      "tools/tests/TrialSpiritQueryNative.inc": "C41BFF0AE3A1558D84172CD95DA7A43CB8EF8EBA73C4953E5A8EDEE8781697B7",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "B134280B229A055043919E7468A5C40F11F461ED0A3D1860DCE2AB9F96618592",
+      "tools/tests/Test-RockawayChannelNative.ps1": "A298EDF43324F852C80041812492530C02A688A91C929C783CE7CE2C9BADB5CB",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-230928/native-inputs.json": "0FF8059F0F1D2565546123BDCDA6D6EE5C7325246FB0AD691B542D073E53F09B",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-230928/native-lines.txt": "A5F0061FEA98FAE59C871D8F7DA5166B2C56672AFF5CC95234285081220A79DB",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-230928/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-230928/Server.log": "6668899F6F3583D6224BFF4D623C3BDBEAD07C8341EAC8EC97271659ADD67FE5",
+      "build-extractors/runtime-test/spirit-map-loading-release/inputs.json": "A1975C8070EB6F429C6784978507B57BB6A9310F99FB55A3A5A268F3A8CC40A3",
+      "build-extractors/runtime-test/spirit-map-loading-release/HandleLoadScreenOpcode.txt": "AA55F00521DC91600714955CD2B0643C900D0A83FAED2C1C0F4DDE1CFC4B7AD0",
+      "build-extractors/runtime-test/spirit-map-loading-release/expected-map-gate.txt": "E8A9E0E401E2C705D863A903E07E27559ACBF3B0FB9F043991C4F5D6BFF18F18",
+      ".codex/spirit-map-loading-baseline.log": "540592B1B419A30352C827A797DEFCBB102308B251B069D2C42EAE5991B3BA80",
+      ".codex/spirit-map-loading-build.log": "89B63BA39ED126A880B6C4E043F704D81F5DFBDF13345C4C0AEA8549BC8F2211",
+      ".codex/spirit-map-loading-fixed-verified.log": "3950936E6348E69FAEC332B93C870FFA5EB446BBC0F40C519F77AC31777E3DE1",
+      ".codex/spirit-map-loading-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-map-loading-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/spirit-map-loading-arrival.log": "BCE90C3B6A56806CC61C7A2E9B1B59ADEB7D981E5BD33127B9A83035AEDDE7AF",
+      ".codex/spirit-map-loading-landing.log": "080DDD56DC0E8FDA6AD1327ADE1FB2226B02B4D3BF7FC81AE90074694AE9F0E6",
+      ".codex/spirit-map-loading-startup.log": "2B2F584353BB20B7A3E3417B7E5B0962AE52E55A0E9B25FD58ADB95DDD2173BB",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-230929/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-230929/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-230929/Server.log": "CF448A53D75771467974C399B90546727C0B00139D656AB7E4613D19AF038DD7"
+    }
+  }
+}
