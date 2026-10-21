@@ -12,6 +12,8 @@ struct HandshakeSocket : Socket<HandshakeSocket>
     uint32 _type = 0;
     void* _compressionStream = nullptr;
     uint64 _key = 0;
+    uint32 stateLogs = 0;
+    uint32* externalStateLogs = nullptr;
     MessageBuffer _packetBuffer;
     bool* readFinished = nullptr;
     boost::system::error_code* readError = nullptr;
@@ -21,7 +23,9 @@ struct HandshakeSocket : Socket<HandshakeSocket>
     {
         *readFinished = true;
         *readError = error;
+#include "InitializerError.inc"
     }
+    void LogInitializationState(char const*) { ++stateLogs; if (externalStateLogs) ++*externalStateLogs; }
     bool Update() override
     {
 #include "HandshakeDeadline.inc"
@@ -42,9 +46,11 @@ int main()
         acceptor.accept(accepted);
         auto server = std::make_shared<HandshakeSocket>(std::move(accepted));
         bool completed = false;
+        uint32 stateLogs = 0;
         boost::system::error_code error;
         server->readFinished = &completed;
         server->readError = &error;
+        server->externalStateLogs = &stateLogs;
         server->Start();
         server->_authed = mode == 1;
         if (mode != 2)
@@ -57,14 +63,16 @@ int main()
                 std::cerr << "FAIL: expired handshake still owns an open TCP socket\n";
                 return 1;
             }
+            if (server->stateLogs != 1) return 5;
             // A pending read owns the server through shared_from_this. It must
             // finish without requiring the silent peer to close its own socket.
             std::weak_ptr<HandshakeSocket> weak = server;
             server.reset();
             context.run_for(std::chrono::milliseconds(250));
-            if (!completed || !error || !weak.expired())
+            if (!completed || !error || !weak.expired() || stateLogs != 1)
             {
-                std::cerr << "FAIL: handshake read/lifetime did not terminate\n";
+                std::cerr << "FAIL: handshake cleanup completed=" << completed << " error=" << error.value()
+                    << " category=" << error.category().name() << " expired=" << weak.expired() << " stateLogs=" << stateLogs << '\n';
                 return 2;
             }
             char byte;
@@ -82,6 +90,7 @@ int main()
                 return 3;
             client.close();
             context.run_for(std::chrono::milliseconds(250));
+            if (stateLogs != 1) return 6; // An open peer's EOF is still reported.
         }
     }
     std::cout << "PASS: real loopback timeout closes the native socket and cancels its pending read; authenticated and younger sockets survive.\n";

@@ -8,6 +8,7 @@
 #include <vector>
 using uint32=uint32_t; using uint64=uint64_t;
 #define TC_LOG_WARN(...) ((void)0)
+#define TC_LOG_INFO(...) ((void)0)
 constexpr int CONNECTION_TYPE_REALM=0, CONNECTION_TYPE_INSTANCE=1, ERROR_TIMED_OUT=1;
 namespace WorldPackets {
 namespace Auth {

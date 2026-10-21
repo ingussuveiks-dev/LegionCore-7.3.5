@@ -833,6 +833,9 @@ void WorldSession::SendConnectToInstance(WorldPackets::Auth::ConnectToSerial ser
     _instanceConnectSerial = uint32(serial);
 
     auto instanceAddress = realm.GetAddressForClient(boost::asio::ip::address::from_string(GetRemoteAddress()));
+    TC_LOG_INFO("network", "Account %u: instance serial %u target %s:%u for realm peer %s",
+        GetAccountId(), uint32(serial), instanceAddress.to_string().c_str(),
+        sWorld->getIntConfig(CONFIG_PORT_INSTANCE), GetRemoteAddress().c_str());
 
     _instanceConnectKey.Fields.AccountId = GetAccountId();
     _instanceConnectKey.Fields.ConnectionType = CONNECTION_TYPE_INSTANCE;

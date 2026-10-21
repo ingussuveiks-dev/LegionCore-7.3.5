@@ -17,6 +17,7 @@
 */
 
 #include "WorldSocket.h"
+#include "WorldSocketDiagnostics.h"
 #include "AuthenticationPackets.h"
 #include "BattlenetRpcErrorCodes.h"
 #include "BigNumber.h"
@@ -84,6 +85,7 @@ WorldSocket::~WorldSocket()
 
 void WorldSocket::Start()
 {
+    LogInitializationState("accepted");
     std::string ip_address = GetRemoteIpAddress().to_string();
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_IP_INFO);
     stmt->setString(0, ip_address);
@@ -105,6 +107,11 @@ void WorldSocket::Start()
     initializer.Write("\n", 1);
 
     QueuePacket(std::move(initializer));
+    // Start runs on the acceptor thread; the peer may already be advancing
+    // authentication on the socket thread. Do not read its mutable handshake
+    // buffers here just to log that the greeting was queued.
+    TC_LOG_INFO("network", "World handshake greeting queued: %s:%u",
+        GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()));
     //_queryProcessor.AddQuery(LoginDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&WorldSocket::CheckIpCallback, this, std::placeholders::_1)));
 }
 
@@ -149,15 +156,20 @@ void WorldSocket::InitializeHandler(boost::system::error_code const& error, std:
 
     if (error)
     {
-        if (error == boost::asio::error::operation_aborted && !IsOpen())
-            return; // Expected completion after the handshake deadline abort.
+        // IOCP can report Win32 ERROR_CONNECTION_ABORTED (1236), rather than
+        // WSAECONNABORTED or operation_aborted, after our own AbortSocket.
+        // An already locally closed socket has no new read failure to report.
+        if (!IsOpen())
+            return;
 
+        LogInitializationState("initializer read failed");
         TC_LOG_ERROR("network", "WorldSocket::InitializeHandler: closed with error %s (address: %s)", error.message().c_str(), GetRemoteIpAddress().to_string().c_str());
         CloseSocket();
         return;
     }
 
     GetReadBuffer().WriteCompleted(transferedBytes);
+    LogInitializationState("client initializer bytes received");
 
     MessageBuffer& packet = GetReadBuffer();
     if (packet.GetActiveSize() > 0)
@@ -224,6 +236,21 @@ void WorldSocket::InitializeHandler(boost::system::error_code const& error, std:
     AsyncReadWithCallback(&WorldSocket::InitializeHandler);
 }
 
+void WorldSocket::LogInitializationState(char const* event)
+{
+    boost::system::error_code endpointError;
+    auto local = underlying_stream().local_endpoint(endpointError);
+    WorldSocketDiagnostics::TcpInfo info{};
+    int queryError = 0;
+    bool const available = WorldSocketDiagnostics::Query(underlying_stream(), info, queryError);
+    TC_LOG_INFO("network", "World handshake %s: %s:%u -> local %u, age %u ms, type %u, initializer %u, continued auth %u, buffered %u; TCP info %u error %i state %u age %llu ms sent %llu received %llu unacked %u retransmitted %u send window %u receive window %u",
+        event, GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()), endpointError ? 0u : uint32(local.port()),
+        GetMSTimeDiffToNow(_initializationStart), uint32(_type), uint32(_compressionStream != nullptr), uint32(_key != 0), uint32(_packetBuffer.GetActiveSize()),
+        uint32(available), queryError, info.State, static_cast<unsigned long long>(info.ConnectionTimeMs),
+        static_cast<unsigned long long>(info.BytesOut), static_cast<unsigned long long>(info.BytesIn),
+        info.BytesInFlight, info.BytesRetrans, info.SndWnd, info.RcvWnd);
+}
+
 bool WorldSocket::Update()
 {
     // The client opens a second world connection while entering the world.
@@ -236,6 +263,7 @@ bool WorldSocket::Update()
     // WorldSession also bounds retries when the client does not report failure.
     if (!_authed && GetMSTimeDiffToNow(_initializationStart) >= 10000)
     {
+        LogInitializationState("deadline expired");
         TC_LOG_WARN("network", "WorldSocket initialization timed out after 10 seconds for %s:%u (type %u, initializer %u, continued auth %u, buffered bytes %u); aborting unfinished socket",
             GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()), uint32(_type), uint32(_compressionStream != nullptr), uint32(_key != 0), uint32(_packetBuffer.GetActiveSize()));
         AbortSocket();
@@ -971,6 +999,7 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<WorldPackets::Auth::
 
 void WorldSocket::HandleAuthContinuedSession(std::shared_ptr<WorldPackets::Auth::AuthContinuedSession> authSession)
 {
+    LogInitializationState("continued auth received");
     // TC_LOG_ERROR("network", "WorldSocket::HandleAuthContinuedSession");
 
     WorldSession::ConnectToKey key;
@@ -1032,6 +1061,9 @@ void WorldSocket::HandleConnectToFailed(WorldPackets::Auth::ConnectToFailed& con
 {
     if (_worldSession)
     {
+        TC_LOG_INFO("network", "Account %u: client CONNECT_TO_FAILED serial %u connection %u from %s:%u",
+            _worldSession->GetAccountId(), uint32(connectToFailed.Serial), uint32(connectToFailed.Con),
+            GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()));
         WorldSession* session = _worldSession.get();
         auto serial = connectToFailed.Serial;
         // The session owns the callback; serialize client reports with the
@@ -1052,6 +1084,7 @@ void WorldSocket::SendAuthResponseError(uint32 code)
 
 void WorldSocket::HandleEnableEncryptionAck()
 {
+    LogInitializationState("encryption acknowledged");
     // TC_LOG_ERROR("network", "WorldSocket::HandleEnableEncryptionAck _worldSession %u _type %u", bool(_worldSession), _type);
 
     if (_type == CONNECTION_TYPE_REALM)

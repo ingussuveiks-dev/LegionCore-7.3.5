@@ -114,6 +114,7 @@ protected:
 private:
     void CheckIpCallback(PreparedQueryResult result);
     void InitializeHandler(boost::system::error_code const& error, std::size_t transferedBytes);
+    void LogInitializationState(char const* event);
     void LogOpcodeText(OpcodeClient opcode, std::unique_lock<std::mutex> const& guard) const;
     void WritePacketToBuffer(EncryptablePacket const& packet, MessageBuffer& buffer);
     uint32 CompressPacket(uint8* buffer, WorldPacket const& packet);

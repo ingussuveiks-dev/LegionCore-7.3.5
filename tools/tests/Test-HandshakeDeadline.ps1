@@ -9,6 +9,10 @@ $start=$source.IndexOf('{',$start)+1
 $end=$source.IndexOf('    EncryptablePacket* queued;',$start)
 if($start -le 0 -or $end -lt $start){throw 'Missing production handshake deadline'}
 [IO.File]::WriteAllText("$output/HandshakeDeadline.inc",$source.Substring($start,$end-$start))
+$start=$source.IndexOf('    if (error)', $source.IndexOf('void WorldSocket::InitializeHandler('))
+$end=$source.IndexOf('    GetReadBuffer().WriteCompleted(', $start)
+if($start -lt 0 -or $end -le $start){throw 'Missing actual initializer error handler'}
+[IO.File]::WriteAllText("$output/InitializerError.inc",$source.Substring($start,$end-$start))
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
 $includes=$group.ClCompile.AdditionalIncludeDirectories.Split(';') | Where-Object {$_ -and $_ -notlike '%*'}
