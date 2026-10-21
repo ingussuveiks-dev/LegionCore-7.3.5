@@ -730,6 +730,8 @@ void WorldSession::LogoutPlayer(bool Save)
 
     if (m_Socket[CONNECTION_TYPE_INSTANCE])
     {
+        // This is an intentional logout, not a lost authenticated connection.
+        m_Socket[CONNECTION_TYPE_INSTANCE]->SetWorldSession(nullptr);
         m_Socket[CONNECTION_TYPE_INSTANCE]->CloseSocket();
         m_Socket[CONNECTION_TYPE_INSTANCE].reset();
     }

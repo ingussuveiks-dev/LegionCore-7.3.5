@@ -48,6 +48,7 @@
 #include "SocialMgr.h"
 #include "SystemPackets.h"
 #include "WorldStateMgr.h"
+#include "WorldSocket.h"
 
 void WorldSession::HandleCharEnum(PreparedQueryResult result, bool isDeleted)
 {
@@ -2070,6 +2071,22 @@ void WorldSession::AbortLogin(WorldPackets::Character::LoginFailureReason reason
     }
 
     m_playerLoading.Clear();
+    // Retire the unfinished instance connection without disconnecting the
+    // realm session. Its pending read and packets belong to the cancelled run.
+    auto instanceSocket = std::move(m_Socket[CONNECTION_TYPE_INSTANCE]);
+    if (instanceSocket)
+    {
+        instanceSocket->SetWorldSession(nullptr);
+        instanceSocket->AbortSocket();
+    }
+
+    // An EOF that preceded retirement is still a genuine session failure.
+    if (IsforceExit())
+    {
+        KickPlayer();
+        return;
+    }
+
     SendPacket(WorldPackets::Character::CharacterLoginFailed(reason).Write());
 }
 

@@ -43,6 +43,7 @@
     "Camera, movement, pet portrait, rapid interactive relogin, connection error presentation and quest traversal still require the7.3.5 client. No personal character/account data is used."
   ],
   "next_candidate": "AbortLogin after a valid instance socket has attached but before its SQL response, followed by a new accepted request. The native cancellation cases here precede socket attachment; do not infer that later boundary is covered.",
+  "linked_cancellation_followup": "docs/audits/spirit-linked-login-cancel-2026-10-21.json",
   "checks": [
     "Native stage of Test-TrialHelyaControlNative.ps1 passed392 new instance-link cases,392 existing deferred-query cases,280 session cases and168 aggregate login/offline cases, plus configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Scratch auth/character schemas and users were removed; world DB remained read-only.",
     "Test-SpiritGraveyardRelease.ps1 and Test-GhostReturnRelease.ps1 passed after the manifest-key correction below. Source/fixture/final-link library/canonical executable inputs match. Native ABI gives forceExit offset1256; disassembly rejects that byte before SetWorldSession and HandleContinuePlayerLogin, routing to the existing incoming-socket authentication-error/close branch. Existing saved-health, query serial,100ms completion and teleport guards pass.",

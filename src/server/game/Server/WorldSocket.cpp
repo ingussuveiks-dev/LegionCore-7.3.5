@@ -323,11 +323,15 @@ void WorldSocket::HandleSendAuthSession()
 
 void WorldSocket::OnClose()
 {
-    if (_worldSession)
-        _worldSession->SetforceExit();
-
-    std::lock_guard<std::mutex> sessionGuard(_worldSessionLock);
-    _worldSession = nullptr;
+    WorldSessionPtr session;
+    {
+        std::lock_guard<std::mutex> sessionGuard(_worldSessionLock);
+        session.swap(_worldSession);
+        if (session)
+            session->SetforceExit();
+    }
+    // Releasing the last owner can run session cleanup, which may detach this
+    // socket again. Let it happen after the association lock is released.
 }
 
 void WorldSocket::ReadHandler()
@@ -394,9 +398,10 @@ void WorldSocket::ReadHandler()
 void WorldSocket::SetWorldSession(WorldSessionPtr session)
 {
     std::lock_guard<std::mutex> sessionGuard(_worldSessionLock);
-    _worldSession = session;
-    _accountId = session->GetAccountId();
-    _authed = true;
+    _worldSession.swap(session);
+    _accountId = _worldSession ? _worldSession->GetAccountId() : 0;
+    _authed = bool(_worldSession);
+    // The old owner in the parameter is released after sessionGuard.
 }
 
 bool WorldSocket::ReadHeaderHandler()

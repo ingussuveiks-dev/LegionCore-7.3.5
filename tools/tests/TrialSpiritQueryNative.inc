@@ -32,14 +32,16 @@ static void SpiritDeliverQuery(WorldSession* session,SQLQueryHolderCallback&& re
     Require(((session->*Access(SpiritQueryProcessorTag{})).*Access(SpiritQueryListTag{})).empty(),"Ready native query callback was not consumed");
 }
 #include "TrialSpiritInstanceLinkNative.inc"
+#include "TrialSpiritLinkedCancelNative.inc"
 static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction,unsigned sourceMode)
 {
     static bool rsa=false;if(!rsa){Require(WorldPackets::Auth::ConnectTo::InitializeEncryption(),"Native ConnectTo RSA bootstrap failed");rsa=true;}
     auto addresses=realm.Addresses;realm.Addresses={boost::asio::ip::address_v4::loopback(),boost::asio::ip::address_v4::loopback()};
+    SpiritLinkedCancelLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     SpiritInstanceLinkLogin(guid,expected,itemGuid,durability,oldSession,difficulty,race,direction,sourceMode);
     for(unsigned mode=0;mode<7;++mode)
     {
-        SpiritLoopback realmSocket,instanceSocket;
+        SpiritLoopback realmSocket,instanceSocket;std::unique_ptr<SpiritLoopback> replacement;
         auto session=new WorldSession(0,"Query",realmSocket.socket,SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{});
         static bool abi=false;if(!abi){abi=true;std::cout<<"SPIRIT_QUERY_ABI loading="<<(reinterpret_cast<char*>(&(session->*Access(ControlLoadingTag{})))-reinterpret_cast<char*>(session))<<" player="<<(reinterpret_cast<char*>(&(session->*Access(SpiritQueryPlayerTag{})))-reinterpret_cast<char*>(session))<<std::endl;}
         auto shared=WorldSessionPtr(session,[](WorldSession*){});realmSocket.socket->SetWorldSession(shared);instanceSocket.socket->SetWorldSession(shared);session->AddInstanceConnection(instanceSocket.socket);
@@ -50,6 +52,7 @@ static void SpiritQueryLogin(ObjectGuid guid,WorldLocation const& expected,uint6
         auto other=ObjectGuid::Create<HighGuid::Player>(guid.GetCounter()+100000000);
         if(mode==0||mode==2||mode==3||mode==5)session->AbortLogin(WorldPackets::Character::LoginFailureReason::NoWorld);
         if(mode==2||mode==3||mode==5)SpiritRequestLogin(session,mode==3?other:guid);
+        if(mode==2||mode==5){replacement=std::make_unique<SpiritLoopback>();replacement->socket->SetWorldSession(shared);replacement->socket.get()->*Access(SpiritLinkTypeTag{})=CONNECTION_TYPE_INSTANCE;session->AddInstanceConnection(replacement->socket);}
         auto requestSerial=session->*Access(SpiritSessionSerialTag{});
         std::unique_ptr<SQLQueryHolderCallback> second;
         if(mode==4||mode==5)second=std::make_unique<SQLQueryHolderCallback>(SpiritQueryResponse(session));

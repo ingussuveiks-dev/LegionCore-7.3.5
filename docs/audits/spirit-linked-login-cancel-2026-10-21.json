@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "7eb90379",
+  "previous_audit": "docs/audits/spirit-instance-link-2026-10-21.json",
+  "scope": "Cancellation after native instance-socket attachment and before SQL response delivery; healthy realm reuse, repeated cancellation and normal logout/relogin",
+  "finding": "Confirmed: AbortLogin cleared only m_playerLoading and left the attached instance socket/session ownership in place. A subsequent accepted request therefore met HasInstanceConnection and could not attach its new socket. Closing the old socket without detachment would instead call OnClose and mark the healthy realm session forceExit. Ordinary LogoutPlayer also closed an associated instance socket; its teardown flag would prevent native subsequent links under the closing-session gate added in the previous fix.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-220156",
+    "log": ".codex/spirit-linked-cancel-baseline.log",
+    "result": "Actual accepted login and AddInstanceSocket/ProcessLinkInstanceSocket attach a real TCP transport and queue the native LoginQueryHolder. The ready callback is held, an actual asynchronous socket read is started, then AbortLogin executes. Original code fails immediately: Cancelled/retired login retained its instance socket. DBErrors is empty. This baseline stops before retry or the separate normal-logout control; it is not evidence of an observed deadlock or a separate normal-logout baseline failure."
+  },
+  "implementation": [
+    "AbortLogin moves the instance shared pointer out of its session slot, detaches WorldSocket session/auth/account ownership, and aborts the unfinished transport in both directions. The realm connection carries the existing login-failure response and stays available for a new request. An already-latched genuine forceExit is retained and KickPlayer closes the realm rather than leaving an unusable session.",
+    "Ordinary LogoutPlayer detaches the instance owner before its existing CloseSocket/reset. Intentional logout no longer creates a false forceExit, preserving subsequent login through the previous closing-session admission guard. Actual transport EOF still marks teardown.",
+    "WorldSocket::SetWorldSession accepts an empty shared pointer, updates account/authentication state from the new owner, and swaps the previous owner into its parameter so final release occurs after the mutex guard. OnClose takes its owner under the same mutex, marks genuine teardown, and releases that owner outside the lock. This prevents final-owner cleanup from re-entering detachment while the association mutex is held.",
+    "Existing request/completion serial checks remain responsible for stale SQL and delayed100ms results. Cancellation does not clear unrelated callbacks or reset a genuine disconnect flag."
+  ],
+  "native_modes": {
+    "0": "Attach/query, cancel and retire the old socket; deliver its SQL before retry. No Player/loading state returns. A fresh same-GUID request links and completes.",
+    "1": "Hold old SQL through cancellation, accept/link a new same-GUID request, then deliver old SQL while the new result is still pending. The current request/socket remain intact.",
+    "2": "Create the new same-GUID Player, then deliver old cancelled SQL. Current Player and completion serial remain unchanged.",
+    "3": "Cancel two separately attached requests and their pending reads, accept/link a third, then deliver both old SQL results before the valid third result. Only the third creates/completes its Player.",
+    "4": "Complete an ordinary login, execute actual LogoutPlayer, retire the old instance and accept/link/load the same GUID again in the same realm session. Both native100ms completions succeed and intentional closure does not set forceExit.",
+    "5": "Real instance peer EOF precedes cancellation. Abort does not erase genuine forceExit; the realm closes, stale SQL cannot create a Player, and native World session cleanup removes the session.",
+    "6": "Real realm peer EOF precedes cancellation. The old instance is retired, the existing teardown flag remains, stale SQL cannot create a Player and native World cleanup removes the session."
+  },
+  "coverage": {
+    "linked_cancellation_cases": 392,
+    "underlying_recovery_paths": 56,
+    "cases_per_mode": 56,
+    "modes": 7,
+    "last_owner_probes": 2,
+    "existing_instance_link_cases": 392,
+    "existing_deferred_query_cases": 392,
+    "existing_session_cases": 280,
+    "existing_aggregate_login_cases": 168,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "method": [
+    "Use the existing post-authentication native loopback fixture: accepted HandlePlayerLoginOpcode, AddInstanceSocket queue, actual private ProcessLinkInstanceSocket, native HandleContinuePlayerLogin and complete prepared LoginQueryHolder results. Ready production callbacks are retained to control delivery order rather than simulate SQL or Player loading.",
+    "A real AsyncRead is pending when cancellation occurs. After retirement the old slot, socket association and authentication flag must be empty, IsOpen false, and the IO context must become stopped within250ms without closing the peer. This proves the cancelled read terminates. Normal logout retains CloseSocket behavior; that control explicitly closes the fixture peer before draining its pending read.",
+    "Old connection keys are rejected without another query or kicking the realm. Old deadline callbacks and another idempotent close cannot abort the replacement. Valid results execute native Map::UpdateSessions at99+1ms and preserve alive health321, exact recovery map/position, sickness15007 at598000ms, original item25 GUID/durability27, self mover, no corpse and correct ObjectAccessor lookup. Logout saves health321/online0 and leaves no Player/lookup/query.",
+    "Two additional probes use native WorldSocket::SetWorldSession/OnClose with a synthetic nonzero account and a last shared owner whose custom deleter asks another thread to try the association mutex. The mutex must already be available. The probes also check nonzero account/auth attachment, empty detach clearing both, and genuine close versus intentional detach forceExit behavior. They test the release boundary without deliberately deadlocking or invoking a real session destructor under that mutex.",
+    "Prior deferred-query modes2/5 now explicitly attach a fresh fixture instance transport after cancellation. Their previous manually attached socket is correctly retired by the new production AbortLogin; keeping it would no longer represent the replacement request. The separate new cancellation fixture uses actual World admission for replacement sockets."
+  ],
+  "retained_observations": [
+    "The initial fixed native run at run-20261021-220441 passed all392 cancellation cases and configured existing tests. It preceded the two last-owner probes, final shared-pointer release placement and fresh-transport adjustment in the older SQL fixture; it is not substituted for the final run.",
+    "The normal-logout detachment and final-owner release changes are required companions of safe instance retirement. The clean original baseline specifically reproduced the retained cancellation socket; no unobserved crash/deadlock is claimed."
+  ],
+  "limitations_and_pending_client_checks": [
+    "No WoW client was used. Actual client cancellation UX, login-failure display, ConnectTo handshake, auth/HMAC/encryption exchange, encrypted packet delivery, camera, movement, pet portrait and interactive quest traversal remain unverified.",
+    "SQL futures are ready before deferred delivery; no claim is made that AbortLogin cancels MySQL worker execution. Old responses are rejected by existing lifetime guards.",
+    "The ordered EOF controls and last-owner mutex probes do not constitute a stress test of arbitrary concurrent IO/world-thread access. They preserve genuine failure semantics and validate release ordering at the tested boundaries.",
+    "Fixtures use synthetic account0 characters and account123456789 only for nonzero ownership probes in schema-only scratch auth/character databases. No personal account/character rows are copied or modified; world data is read-only."
+  ],
+  "next_candidate": "Native retry after a loading-finished notification clears m_playerLoading before Player construction: verify retained socket/request ownership. Existing deferred-query mode6 proves response rejection, not instance retirement or successful retry.",
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed392 new linked-cancellation/relogin cases, two native ownership-release probes,392 prior instance-link cases,392 deferred-query cases,280 session cases and168 aggregate login/offline cases, plus configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Scratch auth/character schemas and users were removed.",
+    "Canonical Release checks match native fixture/source/final-link library/executable inputs. ABI reports instance slot328, socket authentication520 and account412. AbortLogin clears both slot pointers and passes an empty owner before AbortSocket; LogoutPlayer passes an empty owner before CloseSocket. SetWorldSession has nullable account/auth state. Both SetWorldSession and OnClose call native _Mtx_unlock before their first reference-count decrement. Existing teardown/query/completion/health/teleport guards pass.",
+    "Both Release targets built successfully through original generated game/scripts library paths directly into build-extractors/bin/Release; executable and MAP regenerated together. Runtime config, certificates, DLLs, logs and extracted data were preserved. No OutDir override, migration or force push was used.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary, Test-ScenarioResume.ps1 -VerifyReleaseBinary and Test-InstanceConnectRetry.ps1 passed after the final build. The lightweight extracted-handler warning is not described as a warning-free build.",
+    "Owned hidden startup PID34744 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains and no user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-221042",
+    "initial_fixed_run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-220441",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-221115",
+    "worldserver": "AE8FD0D23CA92B4976B591C0910988C341F5D1E7520BBF3E195DBB2818A591DE",
+    "worldserver_map": "D0F2FECEDA9B73D78785FB7639901D6121F61EE086F8D1FD97B39C6A16111172",
+    "game_library": "5CBDFBA18405783E2503DDAC30CF6A8A1D4C62C8DAF9211AFE9E6BF86CE43B2A",
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "9714EA97369FC786725E4AAA082340B14EAD2B0A2D2DEB70067E769BC033195C",
+      "src/server/game/Server/WorldSocket.cpp": "D2F7F3E4E82F3709CC9510DD8AB643ACF448C49D280E3F19F776B647552C6791",
+      "src/server/game/Server/WorldSession.cpp": "3640AA4A08AE049EDFA7412C6D1A7379F9FB8358BA206C3B11563FE66D347AD3",
+      "tools/tests/TrialSpiritLinkedCancelNative.inc": "017AFB558CFD6F5692A2E1BE8E9AFA5175578DBF3AD484B022219886305B66C7",
+      "tools/tests/TrialSpiritQueryNative.inc": "701E74CB5553CADC397D32164745554E9D72958A3512ED4342D6D485C50B65B9",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-221042/native-inputs.json": "B5A0D8C1C104BC891ECE56385C97799B7CDA1B8A467AD72A48795C6C6D42D00C",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-221042/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-221042/Server.log": "D0360D7E45C7C0230AD4D769BE4E8C8A8D91EE9D8CE24D811A28853671A7F290",
+      "build-extractors/runtime-test/spirit-linked-cancel-release/inputs.json": "DDCDEDF616EBFF2F8130DB01070FD85A238C2DA82534B19F59D8A3C313B0CAB4",
+      "build-extractors/runtime-test/spirit-linked-cancel-release/AbortLogin.txt": "210CD8F4272497A90DDC069E4900BD85EFD08B8C7EC7BCDCA2BD3D2DB917EC9A",
+      "build-extractors/runtime-test/spirit-linked-cancel-release/LogoutPlayer.txt": "2B1DFB49120FA58798B1B824B06434EA2DC05DE35D71F85F06E05DF93E55C09B",
+      "build-extractors/runtime-test/spirit-linked-cancel-release/SetWorldSession.txt": "2403C5AADA428AEE0BA844E740236EEB86A5AB234ACEC7B1BCD3941E57B4DF6B",
+      "build-extractors/runtime-test/spirit-linked-cancel-release/OnClose.txt": "EC6D682EE224FA71B706C93B8B612E6016BB122956F340BC529A0748C28F2205",
+      ".codex/spirit-linked-cancel-baseline.log": "38A0C36C43A99A38BD3B0D390CC33A7BEAC2C7E60D42DCD7263ACEB7D8ABB239",
+      ".codex/spirit-linked-cancel-fixed.log": "DDEAECA982CB92AD539E4E00076BBC7099A304A3934AEF15F47DB2DCFB3102E4",
+      ".codex/spirit-linked-cancel-final-build.log": "8F7E3298E5116078C1BC7EC9E2F304A23800675ED4ACF62932F51B0688CF7E5B",
+      ".codex/spirit-linked-cancel-final-verified.log": "8F1CBC5E67B1BCCE73B014EB3B8A2A32FEC01647B58561D89E677F8C01A50124",
+      ".codex/spirit-linked-cancel-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-linked-cancel-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/spirit-linked-cancel-retry.log": "740456C53D16D8FA74740B8D98A56689D56ACF343AB959153A5330D24D0DD664",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-221115/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-221115/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-221115/Server.log": "7443E6EFBABABA6583FD6FAF85BA967310235AE20E66F85991814694027A36A2"
+    }
+  }
+}

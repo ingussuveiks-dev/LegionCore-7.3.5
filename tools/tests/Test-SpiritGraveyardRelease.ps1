@@ -160,3 +160,40 @@ if(!$rejectCalls.Count -or $rejectCalls[0] -ne (Resolve (Symbol '?SendAuthRespon
 $exitGate.Value | Set-Content "$linkOut/teardown-gate.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;teardown_offset=[int]$linkAbi[0].Split('=')[1];rejection_before_socket_association_and_sql=$true} | ConvertTo-Json | Set-Content "$linkOut/inputs.json"
 'PASS: canonical instance-link admission rejects a session already closing before socket association or login SQL;392 real loopback link/retry/cancel/EOF cases match final-link inputs.'
+
+$cancelOut="$repo/build-extractors/runtime-test/spirit-linked-cancel-release"
+New-Item -ItemType Directory -Force $cancelOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit linked cancel '}).Count -ne 392 -or @($lines | Where-Object {$_ -match '^PASS: native socket owner release kind=[01]$'}).Count -ne 2){throw 'Run392 linked-cancellation cases and both native last-owner probes first'}
+foreach($mode in 0..6){if(@($lines | Where-Object {$_ -match "^PASS: spirit linked cancel .* mode=$mode map="}).Count -ne 56){throw "Missing linked-cancellation mode $mode"}}
+foreach($path in @('tools/tests/TrialSpiritLinkedCancelNative.inc','tools/tests/TrialSpiritQueryNative.inc','src/server/game/Handlers/CharacterHandler.cpp','src/server/game/Server/WorldSocket.cpp','src/server/game/Server/WorldSession.cpp')){
+    if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Linked-cancellation input changed after native run: $path"}
+}
+$cancelAbi=@($lines | Where-Object {$_ -match '^SPIRIT_CANCEL_ABI '} | Select-Object -Unique)
+if($cancelAbi.Count -ne 1){throw 'Missing unique native cancellation ABI'}
+$cancelFields=[regex]::Match($cancelAbi[0],'^SPIRIT_CANCEL_ABI instance=(\d+) authed=(\d+) account=(\d+)$')
+if(!$cancelFields.Success){throw 'Native cancellation ABI changed'}
+$instanceOffset=([int]$cancelFields.Groups[1].Value).ToString('X');$instanceOwnerOffset=([int]$cancelFields.Groups[1].Value+8).ToString('X')
+$authOffset=([int]$cancelFields.Groups[2].Value).ToString('X');$accountOffset=([int]$cancelFields.Groups[3].Value).ToString('X')
+$cancelBodies=@{}
+foreach($entry in @(@('?AbortLogin@WorldSession@@','AbortLogin'),@('?LogoutPlayer@WorldSession@@','LogoutPlayer'),@('?SetWorldSession@WorldSocket@@','SetWorldSession'),@('?OnClose@WorldSocket@@','OnClose'))){
+    $range=Bounds $entry[0];$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+    $body=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw "Canonical cancellation disassembly failed: $($entry[1])"}
+    $body | Set-Content "$cancelOut/$($entry[1]).txt";$cancelBodies[$entry[1]]=$body -join "`n"
+}
+function CancelCalls([string]$body){@([regex]::Matches($body,'call\s+([0-9a-fA-F]{16})') | ForEach-Object {[pscustomobject]@{Index=$_.Index;Target=(Resolve ([Convert]::ToInt64($_.Groups[1].Value,16)))}})}
+$detach=Resolve (Symbol '?SetWorldSession@WorldSocket@@');$abortSocket=Resolve (Symbol '?AbortSocket@?$Socket@VWorldSocket@@');$closeSocket=Resolve (Symbol '?CloseSocket@?$Socket@VWorldSocket@@')
+foreach($entry in @(@('AbortLogin',$abortSocket),@('LogoutPlayer',$closeSocket))){
+    $calls=@(CancelCalls $cancelBodies[$entry[0]]);$detachCalls=@($calls | Where-Object Target -eq $detach);$closeCalls=@($calls | Where-Object Target -eq $entry[1])
+    if($detachCalls.Count -ne 1 -or $closeCalls.Count -ne 1 -or $detachCalls[0].Index -ge $closeCalls[0].Index){throw "Canonical $($entry[0]) does not detach before closing its instance"}
+    $before=$cancelBodies[$entry[0]].Substring([Math]::Max(0,$detachCalls[0].Index-350),[Math]::Min(350,$detachCalls[0].Index))
+    if($before -notmatch 'xorps\s+xmm0,xmm0[\s\S]*movdqu\s+xmmword ptr \[rsp\+[0-9a-f]+h\],xmm0[\s\S]*lea\s+rdx,\[rsp\+[0-9a-f]+h\]'){throw "Canonical $($entry[0]) no longer passes an empty session owner"}
+}
+if($cancelBodies.AbortLogin -notmatch "xor\s+eax,eax\r?\n[^\r\n]*mov\s+qword ptr \[(?<session>r\w+)\+0*${instanceOffset}h\],rax\r?\n[^\r\n]*mov\s+qword ptr \[\k<session>\+0*${instanceOwnerOffset}h\],rax"){throw 'Canonical cancellation does not clear the instance slot before retirement'}
+if($cancelBodies.SetWorldSession -notmatch "xor\s+eax,eax\r?\n[^\r\n]*mov\s+dword ptr \[r\w+\+0*${accountOffset}h\],eax" -or $cancelBodies.SetWorldSession -notmatch "setne\s+al\r?\n[^\r\n]*mov\s+byte ptr \[r\w+\+0*${authOffset}h\],al"){throw 'Canonical socket detach does not clear nullable account/authentication state'}
+$unlock=Resolve (Symbol '_Mtx_unlock')
+foreach($name in @('SetWorldSession','OnClose')){
+    $unlocks=@(CancelCalls $cancelBodies[$name] | Where-Object Target -eq $unlock);$decrement=[regex]::Match($cancelBodies[$name],'lock xadd\s+dword ptr')
+    if($unlocks.Count -ne 1 -or !$decrement.Success -or $unlocks[0].Index -ge $decrement.Index){throw "Canonical $name releases its last session owner before unlocking"}
+}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;owner_probes=2;instance_offset=[int]$cancelFields.Groups[1].Value;auth_offset=[int]$cancelFields.Groups[2].Value;account_offset=[int]$cancelFields.Groups[3].Value;detach_before_abort_and_logout=$true;last_owner_release_after_unlock=$true} | ConvertTo-Json | Set-Content "$cancelOut/inputs.json"
+'PASS: canonical AbortLogin/logout detach their instance before closure, nullable socket ownership clears auth/account state and final owners release after unlocking;392 native linked-cancellation/relogin cases and2 ownership probes match final-link inputs.'
