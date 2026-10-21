@@ -246,12 +246,14 @@ struct npc_glaidalis_nightmare_abomination : public ScriptedAI
 
     ObjectGuid targetGUID;
     uint32 fixateTimer = 0;
+    uint32 trailTimer = 1000;
 
     void Reset() {}
     
     void IsSummonedBy(Unit* summoner) override
     {
         fixateTimer = 2000;
+        trailTimer = 1000;
     }
 
     void JustDied(Unit* /*killer*/)
@@ -275,6 +277,14 @@ struct npc_glaidalis_nightmare_abomination : public ScriptedAI
 
         if (me->HasUnitState(UNIT_STATE_STUNNED))
             return;
+
+        if (trailTimer <= diff)
+        {
+            trailTimer = 1000;
+            me->CastSpell(me, 198464, true);
+        }
+        else
+            trailTimer -= diff;
 
         if (fixateTimer)
         {

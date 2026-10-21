@@ -1,0 +1,478 @@
+{
+  "build": "7.3.5.26972",
+  "links": [
+    {
+      "ID": 92080,
+      "SpellVisualID": 51680,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 198916
+    },
+    {
+      "ID": 92093,
+      "SpellVisualID": 51690,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 198937
+    },
+    {
+      "ID": 93379,
+      "SpellVisualID": 52393,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 201145
+    },
+    {
+      "ID": 104252,
+      "SpellVisualID": 51688,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 220369
+    }
+  ],
+  "events": [
+    {
+      "ID": 109812,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 3,
+      "SpellVisualKitID": 62037,
+      "parent": 51680
+    },
+    {
+      "ID": 109813,
+      "StartEvent": 9,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 10,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 3,
+      "SpellVisualKitID": 62037,
+      "parent": 51680
+    },
+    {
+      "ID": 111733,
+      "StartEvent": 3,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 62050,
+      "parent": 51688
+    },
+    {
+      "ID": 111735,
+      "StartEvent": 7,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 8,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 62054,
+      "parent": 51690
+    },
+    {
+      "ID": 112218,
+      "StartEvent": 7,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 8,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 63089,
+      "parent": 52393
+    }
+  ],
+  "effects": [
+    {
+      "ID": 129789,
+      "EffectType": 2,
+      "Effect": 314472,
+      "parent": 62050
+    },
+    {
+      "ID": 129790,
+      "EffectType": 2,
+      "Effect": 314473,
+      "parent": 62050
+    },
+    {
+      "ID": 129791,
+      "EffectType": 6,
+      "Effect": 24018,
+      "parent": 62050
+    },
+    {
+      "ID": 129797,
+      "EffectType": 2,
+      "Effect": 314477,
+      "parent": 62054
+    },
+    {
+      "ID": 129802,
+      "EffectType": 2,
+      "Effect": 314481,
+      "parent": 62054
+    },
+    {
+      "ID": 129964,
+      "EffectType": 2,
+      "Effect": 314592,
+      "parent": 62054
+    },
+    {
+      "ID": 132782,
+      "EffectType": 2,
+      "Effect": 316198,
+      "parent": 63089
+    },
+    {
+      "ID": 136012,
+      "EffectType": 2,
+      "Effect": 317928,
+      "parent": 62037
+    },
+    {
+      "ID": 154737,
+      "EffectType": 5,
+      "Effect": 64343,
+      "parent": 62037
+    }
+  ],
+  "attachments": [
+    {
+      "ID": 314472,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 73,
+      "AttachmentID": 2,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62050
+    },
+    {
+      "ID": 314473,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 73,
+      "AttachmentID": 1,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62050
+    },
+    {
+      "ID": 314477,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 24054,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.6000000238418579,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62054
+    },
+    {
+      "ID": 314481,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 24054,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.5235987901687622,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.6000000238418579,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62054
+    },
+    {
+      "ID": 314592,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 22508,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.75,
+      "ScaleVariation": 0.10000000149011612,
+      "StartAnimID": 65535,
+      "AnimID": 158,
+      "EndAnimID": 159,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62054
+    },
+    {
+      "ID": 316198,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 24740,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 2.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 63089
+    },
+    {
+      "ID": 317928,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 21975,
+      "AttachmentID": 19,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.25,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62037
+    }
+  ],
+  "models": [
+    {
+      "ID": 73,
+      "ModelFileDataID": 166602,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0,
+      "name": "Nature_Cast_Hand",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 1000
+        }
+      ],
+      "sha256": "f09cd0ca4aef9ea74f1acdedbc611ddb9c39711b8027b138db190e59f7d0474a"
+    },
+    {
+      "ID": 21975,
+      "ModelFileDataID": 1006478,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0,
+      "name": "Podling_Impact_AreaSplash",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 2000
+        }
+      ],
+      "sha256": "4596d8f6c105694f4413c426e31086e4519180a34dab874cb3a34ec1e777ef1c"
+    },
+    {
+      "ID": 22508,
+      "ModelFileDataID": 1037392,
+      "TextureFileDataID": 0,
+      "Scale": 2.0,
+      "Alpha": 1.0,
+      "name": "Highmaul_FungalGiant_Mushroom_Mind",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 1967
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 10000
+        },
+        {
+          "id": 159,
+          "variation": 0,
+          "duration_ms": 1000
+        }
+      ],
+      "sha256": "2c02e831bac7ca0becb7cf2ff8e918a752ddef8d468b1b935b540d5f01c0575d"
+    },
+    {
+      "ID": 24740,
+      "ModelFileDataID": 1034149,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0,
+      "name": "Target_Earth_State_CenterOnly_Projected",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 333
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 900
+        },
+        {
+          "id": 159,
+          "variation": 0,
+          "duration_ms": 800
+        }
+      ],
+      "sha256": "069eaec3b1551c60792f80fec66538d856c613138e1b77fc6b8d6c3babcf7e13"
+    }
+  ],
+  "missing_effect_names": [
+    24054
+  ],
+  "source_sha256": {
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+  },
+  "client_rendering_verified": false
+}

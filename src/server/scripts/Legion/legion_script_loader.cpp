@@ -121,6 +121,7 @@ void AddSC_boss_advisor_melandrus();
 
 void AddSC_instance_darkheart_thicket();       //Dark Heart Thicket
 void AddSC_boss_arch_druid_glaidalis();
+void AddSC_darkheart_thicket_trash();
 void AddSC_boss_oakheart();
 void AddSC_boss_dresaron();
 void AddSC_boss_shade_of_xavius();
@@ -383,6 +384,7 @@ void AddLegionScripts()
     
     AddSC_instance_darkheart_thicket();       //Dark Heart Thicket
     AddSC_boss_arch_druid_glaidalis();
+    AddSC_darkheart_thicket_trash();
     AddSC_boss_oakheart();
     AddSC_boss_dresaron();
     AddSC_boss_shade_of_xavius();
