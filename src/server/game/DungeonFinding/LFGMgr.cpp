@@ -759,6 +759,11 @@ void LFGMgr::LeaveLfg(ObjectGuid guid, uint32 queueId)
     std::lock_guard<std::recursive_mutex> _lock(m_lock);
 
     LfgState state = GetState(guid, queueId);
+    // SetState(NONE) clears the selection. Keep the slot so the removal packet
+    // addresses the original queue/ticket instead of queue 0.
+    LfgDungeonSet selectedDungeons = GetSelectedDungeons(guid, queueId);
+    if (selectedDungeons.empty() && !gguid.IsEmpty() && GetDungeon(gguid))
+        selectedDungeons.insert(GetDungeon(gguid));
     switch (state)
     {
         case LFG_STATE_QUEUED:
@@ -769,8 +774,9 @@ void LFGMgr::LeaveLfg(ObjectGuid guid, uint32 queueId)
                 GuidSet const& players = GetPlayers(gguid);
                 for (auto player : players)
                 {
+                    LfgDungeonSet const dungeons = GetSelectedDungeons(player, queueId);
                     SetState(player, LFG_STATE_NONE, queueId);
-                    SendLfgUpdateParty(player, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, GetSelectedDungeons(player, queueId)));
+                    SendLfgUpdateParty(player, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, dungeons));
                 }
 
                 LFGQueue& queue = GetQueue(gguid, queueId);
@@ -819,8 +825,8 @@ void LFGMgr::LeaveLfg(ObjectGuid guid, uint32 queueId)
             if (guid != gguid) // Player
                 SetState(guid, LFG_STATE_NONE, queueId);
 
-            SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_PROPOSAL_BEGIN, GetSelectedDungeons(guid, queueId)));
-            SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, GetSelectedDungeons(guid, queueId)));
+            SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_PROPOSAL_BEGIN, selectedDungeons));
+            SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, selectedDungeons));
             LFGQueue& queue = GetQueue(guid, queueId);
             queue.RemoveFromQueue(guid);
             RemoveFromQueue(guid, queueId);
@@ -1711,8 +1717,9 @@ void LFGMgr::FinishDungeon(ObjectGuid gguid, const uint32 dungeonId)
         if (!dungeons.empty())
             rDungeonId = *dungeons.begin();
 
+        LfgDungeonSet const completedDungeons = dungeons;
         SetState(guid, LFG_STATE_FINISHED_DUNGEON, queueId);
-        SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_DUNGEON_FINISHED, GetSelectedDungeons(guid, queueId)));
+        SendLfgUpdatePlayer(guid, LfgUpdateData(LFG_UPDATETYPE_DUNGEON_FINISHED, completedDungeons));
         StartAllOtherQueue(guid, queueId);
 
         Player* player = ObjectAccessor::FindPlayer(guid);
@@ -1833,7 +1840,36 @@ void LFGMgr::FinishDungeon(ObjectGuid gguid, const uint32 dungeonId)
     }
 
     if (Group* group = sGroupMgr->GetGroupByGUID(gguid))
+    {
+        _SaveToDB(gguid, group->GetDbStoreId());
         group->SendUpdate();
+    }
+}
+
+void LFGMgr::CleanupFinishedSoloScenario(Player* player, uint32 completedDungeon)
+{
+    Group* group = player->GetGroup();
+    if (!group || !group->isLFGGroup() || group->GetMembersCount() != 1)
+        return;
+
+    ObjectGuid const groupGuid = group->GetGUID();
+    uint32 const dungeonId = GetDungeon(groupGuid);
+    LFGDungeonData const* dungeon = GetLFGDungeon(dungeonId);
+    if (!dungeon || !dungeon->dbc->IsScenario() || player->GetMapId() == uint32(dungeon->map))
+        return;
+
+    // An unfinished run must remain available for re-entry. Content may also
+    // supply its completed slot when repairing a legacy, already rewarded run.
+    uint32 const queueId = GetQueueId(groupGuid);
+    if (GetState(groupGuid, queueId) != LFG_STATE_FINISHED_DUNGEON && completedDungeon != dungeonId)
+        return;
+
+    TC_LOG_INFO("lfg", "Retiring completed solo scenario %u for %s after exit", dungeonId, player->GetName());
+    // Login script order is not guaranteed. Register the restored member/ticket
+    // before native disband emits its removal, even if this hook ran first.
+    SetupGroupMember(player->GetGUID(), groupGuid);
+    group->Disband(); // native teardown sends the queue removal and deletes persistence
+    player->EnterInTimeWalk(nullptr);
 }
 
 LfgDungeonSet const& LFGMgr::GetDungeonsByRandom(uint32 randomdungeon)
@@ -2306,14 +2342,20 @@ void LFGMgr::RemoveGroupData(ObjectGuid guid)
     for (auto player : players)
     {
         ObjectGuid guid2 = player;
+        LfgDungeonSet dungeons = GetSelectedDungeons(player, queueId);
+        if (dungeons.empty() && it->second.GetDungeon())
+            dungeons.insert(it->second.GetDungeon());
         SetGroup(player, ObjectGuid::Empty, queueId);
         SetLfgGroup(player, ObjectGuid::Empty, queueId);
         if (state != LFG_STATE_PROPOSAL)
         {
             SetState(player, LFG_STATE_NONE, queueId);
-            SendLfgUpdateParty(guid2, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, GetSelectedDungeons(guid2, queueId)));
+            SendLfgUpdateParty(guid2, LfgUpdateData(LFG_UPDATETYPE_REMOVED_FROM_QUEUE, dungeons));
+            RemoveFromQueue(player, queueId);
         }
     }
+
+    RemoveFromGroupQueue(guid, queueId);
 
     {
         std::lock_guard<std::recursive_mutex> _lock(m_lock);
@@ -2763,12 +2805,31 @@ std::string LFGMgr::DumpQueueInfo(bool full)
 
 void LFGMgr::SetupGroupMember(ObjectGuid guid, ObjectGuid gguid)
 {
+    uint32 const dungeonId = GetDungeon(gguid);
+    if (!dungeonId || !GetLFGDungeon(dungeonId))
+        return;
+
     LfgDungeonSet dungeons;
-    dungeons.insert(GetDungeon(gguid));
+    dungeons.insert(dungeonId);
     uint32 queueId = GetQueueId(gguid, *dungeons.begin()&0xFFFFF);
+    PlayerDungeons[guid].insert(queueId);
+    GroupDungeons[gguid].insert(queueId);
+    // Restored groups have no client ride ticket after a server restart.
+    // Recreate only missing tickets; a relog on the same server keeps its ID/time.
+    auto ticket = GetTicket(guid, queueId);
+    if (!ticket || ticket->Type != WorldPackets::LFG::RideType::Lfg || ticket->Id != queueId)
+    {
+        WorldPackets::LFG::RideTicket restored;
+        restored.RequesterGuid = guid;
+        restored.Id = queueId;
+        restored.Type = WorldPackets::LFG::RideType::Lfg;
+        restored.Time = int32(GameTime::GetGameTime());
+        SetTicket(guid, restored, queueId);
+    }
     SetSelectedDungeons(guid, dungeons, queueId);
     SetState(guid, GetState(gguid, queueId), queueId);
     SetGroup(guid, gguid, queueId);
+    SetLfgGroup(guid, gguid, queueId);
     AddPlayerToGroup(gguid, guid);
 }
 

@@ -54,16 +54,18 @@ void LFGPlayerScript::OnLogin(Player* player)
     if (Group const* group = player->GetGroup())
     {
         gguid = group->GetGUID();
-        sLFGMgr->SetupGroupMember(guid, group->GetGUID());
+        if (group->isLFGGroup())
+            sLFGMgr->SetupGroupMember(guid, group->GetGUID());
     }
 
     if (LFGDungeonData const* dungeonData = sLFGMgr->GetLFGDungeon(sLFGMgr->GetDungeon(gguid)))
         player->EnterInTimeWalk(dungeonData->dbc, true);
-    /// @todo - Restore LfgPlayerData and send proper status to player if it was in a group
+    sLFGMgr->CleanupFinishedSoloScenario(player);
 }
 
 void LFGPlayerScript::OnMapChanged(Player* player)
 {
+    sLFGMgr->CleanupFinishedSoloScenario(player);
     Map const* map = player->GetMap();
     uint32 queueId = 0;
 

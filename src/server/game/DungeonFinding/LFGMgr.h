@@ -321,6 +321,7 @@ public:
     void Update(uint32 diff);
 
     void FinishDungeon(ObjectGuid gguid, uint32 dungeonId);
+    void CleanupFinishedSoloScenario(Player* player, uint32 completedDungeon = 0);
     void LoadRewards();
     void LoadLFGDungeons(bool reload = false);
 

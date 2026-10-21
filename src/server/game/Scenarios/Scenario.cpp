@@ -494,6 +494,7 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
         case SCENARIO_TYPE_DEFAULT:
         case SCENARIO_TYPE_USE_DUNGEON_DISPLAY:
         case SCENARIO_TYPE_BOOST_TUTORIAL:
+        case SCENARIO_TYPE_LEGION_INVASION:
             if (uint32 dungeonId = sLFGMgr->GetDungeon(groupGuid)) // lfg dungeons are rewarded through lfg
             {
                 // lfg dungeon that we are in is not current scenario
@@ -507,7 +508,6 @@ void Scenario::Reward(bool bonus, uint32 rewardStep)
             if (_challenge)
                 _challenge->Complete();
             break;
-        case SCENARIO_TYPE_LEGION_INVASION: /// The Broken Shore scenario.
         default:
             break;
     }

@@ -93,6 +93,19 @@ public:
 
 namespace LegionIntroSequence
 {
+    void CleanupCompletedScenario(Player* player)
+    {
+        uint32 const questId = player->GetTeam() == ALLIANCE ? 42740 : 40518;
+        if (!player->GetQuestRewardStatus(questId))
+            return;
+
+        Group* group = player->GetGroup();
+        lfg::LFGDungeonData const* dungeon = group && group->isLFGGroup() ?
+            sLFGMgr->GetLFGDungeon(sLFGMgr->GetDungeon(group->GetGUID()), player->GetTeam()) : nullptr;
+        if (dungeon && dungeon->map == 1460)
+            sLFGMgr->CleanupFinishedSoloScenario(player, dungeon->id);
+    }
+
     bool RemoveUnrewardedQuest(Player* player, uint32 questId)
     {
         if (player->GetQuestRewardStatus(questId) || player->GetQuestStatus(questId) == QUEST_STATUS_NONE)
@@ -142,10 +155,17 @@ public:
     void OnLogin(Player* player) override
     {
         LegionIntroSequence::RepairQuestLog(player);
+        LegionIntroSequence::CleanupCompletedScenario(player);
+    }
+
+    void OnMapChanged(Player* player) override
+    {
+        LegionIntroSequence::CleanupCompletedScenario(player);
     }
 
     void OnQuestReward(Player* player, Quest const* quest) override
     {
+        LegionIntroSequence::CleanupCompletedScenario(player);
         switch (quest->GetQuestId())
         {
             case 40518:
