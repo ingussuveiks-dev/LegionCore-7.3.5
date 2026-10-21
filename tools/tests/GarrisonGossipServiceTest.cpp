@@ -81,22 +81,26 @@ bool Player::ServiceGate(GossipOptionNpc option,Creature* creature){
 int main(){
  Player p;Garrison g;g._owner=&p;p._garrison=&g;
  ContainerEntry container;GarrShipment shipment;shipment.cEntry=&container;manager.row=&shipment;
- // Native DB2: 255 has the unfinished-quest flag; 321 is the normal shipment.
- CharShipmentEntry normal{321,129,0,649},tutorial{255,129,1,649};
+ // Native DB2: flag 1 does not mean the five-second tutorial here.
+ // 321 is the tutorial; 255/300 are the ordinary/upgraded 30-minute troops.
+ CharShipmentEntry normal{255,129,1,649},tutorial{321,129,0,649},advanced{300,129,1,738};
  sDB2Manager.rows.emplace(129,&normal);sDB2Manager.rows.emplace(129,&tutorial);
+ sDB2Manager.rows.emplace(129,&advanced);
  Creature dyala;dyala.entry=106216;dyala.secondary=272;
  Creature melinda;melinda.entry=108018;melinda.secondary=512;
  assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala)); // no site
  g._siteLevel[GARRISON_TYPE_CLASS_ORDER]=&g.site;
  assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala)); // quest absent
  p.quests[41797]=QUEST_STATUS_INCOMPLETE;
- assert(shipment.selectShipment(&p)==255);
+ assert(shipment.selectShipment(&p)==321);
  assert(p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala));
  g.OnGossipSelect(&dyala);assert(p.packets==1&&p.lastPacket==129);
  p.quests[41797]=QUEST_STATUS_REWARDED;
- assert(shipment.selectShipment(&p)==321);
+ assert(shipment.selectShipment(&p)==255);
+ g.talents.insert(362);assert(shipment.selectShipment(&p)==300);g.talents.clear();
  assert(p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala));
  p.quests[41797]=QUEST_STATUS_NONE;assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala));
+ p.quests[41797]=QUEST_STATUS_COMPLETE;assert(!p.ServiceGate(GossipOptionNpc::ShipmentCrafter,&dyala));
  assert(!p.ServiceGate(GossipOptionNpc::GarrisonTalent,&melinda));
  p.quests[42601]=QUEST_STATUS_INCOMPLETE;assert(p.ServiceGate(GossipOptionNpc::GarrisonTalent,&melinda));
  p.quests[42601]=QUEST_STATUS_REWARDED;assert(p.ServiceGate(GossipOptionNpc::GarrisonTalent,&melinda));

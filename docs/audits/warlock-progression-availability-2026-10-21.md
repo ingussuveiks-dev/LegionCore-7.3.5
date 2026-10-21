@@ -58,9 +58,15 @@ are bypassed to make these menus appear.
 Native DB2 confirms champion reward spells 201163 -> follower 589 and 207247 ->
 follower 616, matching the two Rise, Champions criteria. The troop fixture uses
 actual records: shipment 255 has unfinished-quest flag 1; shipment 321 has flag
-0 and is the ordinary post-quest order. Completion spell 210566 uses native
+0 and was interpreted here as the ordinary post-quest order. Completion spell 210566 uses native
 effect 90 for credit 106208. The initially drafted fixture had these shipment
 flags reversed; it was corrected from the native catalog before handoff.
+
+Follow-up correction: the flag interpretation above was still wrong. Checking
+native durations/capacities established 321 as the five-second tutorial and
+255/300 as the 30-minute normal/upgraded orders. The selector, fixture and
+executable collection checks are corrected in
+[the troop training audit](warlock-troop-training-2026-10-21.md).
 
 ## Zone and level-110 recommendations
 

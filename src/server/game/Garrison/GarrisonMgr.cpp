@@ -1038,6 +1038,20 @@ uint32 GarrShipment::selectShipment(Player* p) const
         return ShipmentID;
 
     DB2Manager::ShipmentConteinerMapBounds bound = sDB2Manager.GetShipmentConteinerBounds(ContainerID);
+    // Dyala's 7.3.5 tutorial is shipment 321 (5 seconds, one order).
+    // The generic flag interpretation below instead picks 255/300 (30 minutes)
+    // while 41797 is active, then keeps the tutorial after turn-in. These three
+    // records also distinguish the normal and Dark Mastery troop variants.
+    if (ContainerID == 129 && questReq == 41797 && p->getClass() == CLASS_WARLOCK)
+    {
+        QuestStatus status = p->GetQuestStatus(questReq);
+        uint32 selected = status == QUEST_STATUS_INCOMPLETE ? 321 :
+            status == QUEST_STATUS_REWARDED ? (g->hasTallent(362) ? 300 : 255) : 0;
+        for (auto itr = bound.first; itr != bound.second; ++itr)
+            if (selected && itr->second->ID == selected)
+                return selected;
+        return 0;
+    }
     for (auto itr2 = bound.first; itr2 != bound.second; ++itr2)
     {
         if (itr2->second->Flags & GARRISON_SHIPMENT_FLAG_REQUIRE_QUEST_NOT_COMPLETE)

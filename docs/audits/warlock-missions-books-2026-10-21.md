@@ -21,6 +21,10 @@ because the player has opened the board again. Existing native progression
 checks and their client limitations are in warlock-progression-availability-
 2026-10-21.md; actual troop/research/mission interactions remain client checks.
 
+Subsequent client evidence exposed duplicate Dyala options and an inverted
+tutorial/normal shipment selector. Those are repaired and covered by native
+lifecycle checks in [the troop audit](warlock-troop-training-2026-10-21.md).
+
 The core also has a separate ordinary mission generator. It filters by follower
 level/item level/count, player conditions, mission category and reward data.
 Campaign and unsupported quest mission categories are excluded from this random
