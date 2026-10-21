@@ -54,6 +54,12 @@ validation worldserver remains running. Logs are under ignored
 build-extractors/runtime-test/warlock-affliction-choice. The deployed executable
 was unchanged by this SQL-only fix.
 
-Actual client reopening and disappearance of the offer remain pending. The
+At the initial handoff, client reopening and disappearance remained pending. The
 reported client failure supersedes any assumption that the earlier first fix
 fully handled this character's acquisition history.
+
+Subsequent client evidence: the user confirmed the artifact choice is gone and
+provided an empty Calydus conversation screenshot. The separate remaining
+**A Greater Arsenal** map marker is tracked in
+[the map follow-up](warlock-artifact-map-2026-10-21.md); an empty gossip menu did
+not verify map availability.

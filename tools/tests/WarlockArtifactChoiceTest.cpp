@@ -8,12 +8,21 @@
 #include <string>
 #include <tuple>
 #include <vector>
-using uint32=uint32_t;using int32=int32_t;
+using uint32=uint32_t;using int32=int32_t;using uint64=uint64_t;
 #define ASSERT assert
 #define TC_LOG_DEBUG(...)
 #include "Status.inc"
 enum {CONDITION_CLASS=15,CONDITION_QUESTREWARDED=8,CONDITION_QUEST_COMPLETE=28,
- CONDITION_SOURCE_TYPE_PLAYER_CHOICE=32,CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS=33,DEFAULT_LOCALE=0};
+ CONDITION_SOURCE_TYPE_PLAYER_CHOICE=32,CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS=33,CONDITION_SOURCE_TYPE_QUEST_ACCEPT=19,DEFAULT_LOCALE=0,
+ DISABLE_TYPE_QUEST,INVALIDREASON_QUEST_ALREADY_ON,INVALIDREASON_DONT_HAVE_REQ,INVALIDREASON_QUEST_FAILED_LOW_LEVEL,INVALIDREASON_QUEST_FAILED_WRONG_RACE,
+ PLAYER_DYNAMIC_FIELD_AVAILABLE_QUEST_LINE_XQUEST_IDS};
+namespace DisableMgr{template<class T>bool IsDisabledFor(int,uint32,T*){return false;}}
+struct Quest{uint32 id=44089,MinLevel=102,MaxLevel=0;int32 AllowableClasses=0;uint64 AllowableRaces=uint64(-1);uint32 GetQuestId()const{return id;}};
+struct QuestStore{std::map<uint32,Quest> rows;Quest const* GetQuestTemplate(uint32 id){auto i=rows.find(id);return i==rows.end()?nullptr:&i->second;}} questStore;
+auto sQuestDataStore=&questStore;
+struct QuestLine{uint32 ID;};struct QuestLineXQuest{uint32 ID,QuestLineID,QuestID,OrderIndex;};
+std::vector<QuestLine*> sQuestLineStore;
+struct DB2Manager{std::map<uint32,std::vector<QuestLineXQuest*>> rows;auto GetQuestsByQuestLine(uint32 id){return &rows[id];}} sDB2Manager;
 struct Player;
 struct Unit {virtual Player* ToPlayer(){return nullptr;}Unit* ToUnit(){return this;}virtual uint32 getClassMask()const{return 0;}};
 struct Condition;
@@ -23,11 +32,23 @@ auto sScriptMgr=&scripts;
 using ObjectGuid=uint32;
 struct Session {int GetSessionDbLocaleIndex(){return 0;}} session;
 struct Player:Unit {
- uint32 classes=256;std::map<uint32,QuestStatus> quests;int packets=0,casts=0;
+ uint32 classes=256;std::map<uint32,QuestStatus> questStatuses;int packets=0,casts=0;
+ uint32 level=106;bool otherPrerequisites=true;std::vector<uint32> mapIds;
  std::vector<int> responses;
  Player* ToPlayer()override{return this;}uint32 getClassMask()const override{return classes;}
- QuestStatus GetQuestStatus(uint32 id){auto i=quests.find(id);return i==quests.end()?QUEST_STATUS_NONE:i->second;}
+ QuestStatus GetQuestStatus(uint32 id){auto i=questStatuses.find(id);return i==questStatuses.end()?QUEST_STATUS_NONE:i->second;}
  bool GetQuestRewardStatus(uint32 id){return GetQuestStatus(id)==QUEST_STATUS_REWARDED;}
+ uint32 getLevel()const{return level;}uint64 getRaceMask()const{return uint64(1)<<9;}
+ template<class... T>void SendCanTakeQuestResponse(T...)const{}
+ bool CanTakeQuest(Quest const*,bool);bool SatisfyQuestConditions(Quest const*,bool);bool SatisfyQuestStatus(Quest const*,bool);
+ bool SatisfyQuestLevel(Quest const*,bool);bool SatisfyQuestClass(Quest const*,bool)const;bool SatisfyQuestRace(Quest const*,bool);
+ // These unrelated admission gates have no requirements for quest 44089.
+ bool SatisfyQuestExclusiveGroup(Quest const*,bool){return otherPrerequisites;}
+ bool SatisfyQuestSkill(Quest const*,bool){return true;}bool SatisfyQuestReputation(Quest const*,bool){return true;}
+ bool SatisfyQuestPreviousQuest(Quest const*,bool){return true;}bool SatisfyQuestTimed(Quest const*,bool){return true;}
+ bool SatisfyQuestNextChain(Quest const*,bool){return true;}bool SatisfyQuestPrevChain(Quest const*,bool){return true;}
+ bool SatisfyQuestDay(Quest const*,bool){return true;}bool SatisfyQuestWeek(Quest const*){return true;}bool SatisfyQuestSeasonal(Quest const*){return true;}
+ void ClearDynamicValue(int){mapIds.clear();}void AddDynamicValue(int,uint32 id){mapIds.push_back(id);}void UpdateAvailableQuestLines();
  Session* GetSession(){return &session;}void CastSpell(Player*,uint32,bool){++casts;}
  void SendDisplayPlayerChoice(ObjectGuid,int32);
  template<class T>void SendDirectMessage(T packet){++packets;responses.clear();for(auto& r:packet->Responses)responses.push_back(r.ResponseID);}
@@ -52,6 +73,13 @@ struct ConditionMgr {
 } manager;
 auto sConditionMgr=&manager;
 #include "List.inc"
+#include "Conditions.inc"
+#include "QuestStatus.inc"
+#include "Level.inc"
+#include "Class.inc"
+#include "Race.inc"
+#include "Take.inc"
+#include "Map.inc"
 struct ItemReward {struct {int ItemID=0;struct Bonus{std::vector<int> BonusListIDs;};std::optional<Bonus> ItemBonus;} Item;int Quantity=0;};
 struct ResponseReward {int TitleId=0,PackageId=0,SkillLineId=0,SkillPointCount=0,ArenaPointCount=0,HonorPointCount=0,Money=0,Xp=0;uint32 SpellID=0;
  struct Item {int Id=0,Quantity=0;std::vector<int> BonusListIDs;};std::vector<Item> Items,Currency,Faction;};
@@ -72,14 +100,21 @@ struct WorldSession {Player* _player;void HandleChoiceResponse(WorldPackets::Mis
 #include "Display.inc"
 #include "Handle.inc"
 int main(int argc,char** argv){
- assert(argc==2);std::ifstream file(argv[1]);assert(file);int type,group,entry;Condition c;
+ assert(argc==3);std::ifstream file(argv[1]);assert(file);int type,group,entry;Condition c;
  while(file>>type>>group>>entry>>c.ElseGroup>>c.ConditionType>>c.ConditionValue1>>c.ConditionValue2>>c.ConditionValue3>>c.NegativeCondition)manager.rows[{type,group,entry}].push_back(c);
+ questStore.rows[44089]=Quest{};questStore.rows[41797]=Quest{41797,101};
+ std::ifstream mapFile(argv[2]);assert(mapFile);std::string tag;QuestLineXQuest mapRow;std::vector<QuestLineXQuest> mapRows;
+ while(mapFile>>tag>>mapRow.ID>>mapRow.QuestLineID>>mapRow.QuestID>>mapRow.OrderIndex){assert(tag=="L"&&mapRow.QuestID==44089);mapRows.push_back(mapRow);}
+ assert(mapRows.size()==3);mapRows.push_back({999,999,41797,0});std::vector<QuestLine> lines;
+ for(auto& row:mapRows){sDB2Manager.rows[row.QuestLineID].push_back(&row);lines.push_back({row.QuestLineID});}
+ for(auto& line:lines)sQuestLineStore.push_back(&line);
  for(auto id:{523,524,525}){Response r;r.ResponseId=id;r.Reward.emplace();r.Reward->SpellID=id;objects.rows[245].Responses.push_back(r);}
  uint32 cases=0;
  for(auto status:{QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED})for(auto afflictionEnd:{40623,41155,40712,41156})for(int mask=0;mask<8;++mask){
-  Player p;p.quests[40684]=QUEST_STATUS_REWARDED;
-  int ends[]={afflictionEnd,42125,43254};for(int i=0;i<3;++i)if(mask&(1<<i))p.quests[ends[i]]=status;
+  Player p;p.questStatuses[40684]=QUEST_STATUS_REWARDED;
+  int ends[]={afflictionEnd,42125,43254};for(int i=0;i<3;++i)if(mask&(1<<i))p.questStatuses[ends[i]]=status;
   bool any=mask!=7;assert(manager.IsObjectMeetToConditions(&p,manager.List(15,19326,0))==any);
+  p.UpdateAvailableQuestLines();assert(p.mapIds.size()==(any?4u:1u));assert(p.mapIds.back()==999);
   p.SendDisplayPlayerChoice(1,245);assert(p.packets==int(any));
   for(int i=0;i<3;++i){bool offered=(mask&(1<<i))==0;int id=523+i;
    assert((std::find(p.responses.begin(),p.responses.end(),id)!=p.responses.end())==offered);
@@ -88,7 +123,7 @@ int main(int argc,char** argv){
   }++cases;
  }
  // Actual reported history: acquisition rewarded, both return quests absent.
- Player acquired;for(auto q:{40684,40686,40495,40588,40623,40731,40824,42125,43254})acquired.quests[q]=QUEST_STATUS_REWARDED;
+ Player acquired;for(auto q:{40684,40686,40495,40588,40623,40731,40824,42125,43254})acquired.questStatuses[q]=QUEST_STATUS_REWARDED;
  assert(acquired.GetQuestStatus(40712)==QUEST_STATUS_NONE&&acquired.GetQuestStatus(41156)==QUEST_STATUS_NONE);
  auto fixedRows=manager.rows;
  for(auto& row:manager.rows){auto& list=row.second;list.erase(std::remove_if(list.begin(),list.end(),[](Condition const& condition){return condition.ConditionValue1==40623||condition.ConditionValue1==41155;}),list.end());}
@@ -97,20 +132,29 @@ int main(int argc,char** argv){
  manager.rows=fixedRows;acquired.packets=0;acquired.responses.clear();
  acquired.SendDisplayPlayerChoice(1,245);assert(!acquired.packets&&acquired.responses.empty());
  assert(!manager.IsObjectMeetToConditions(&acquired,manager.List(15,19326,0)));
+ auto mapConditions=manager.rows[{19,0,44089}];manager.rows.erase({19,0,44089});
+ acquired.UpdateAvailableQuestLines();assert(acquired.mapIds.size()==4); // Reported map defect with empty gossip.
+ manager.rows[{19,0,44089}]=mapConditions;acquired.UpdateAvailableQuestLines();assert(acquired.mapIds==std::vector<uint32>{999});
  int callbacks=scripts.calls;WorldSession acquiredSession{&acquired};WorldPackets::Misc::ChoiceResponse stale{245,523};
  acquiredSession.HandleChoiceResponse(stale);assert(!acquired.casts&&scripts.calls==callbacks);
  // A selected, active but not finished acquisition remains retryable.
- for(auto q:{40623,41155}){Player active;active.quests[40684]=QUEST_STATUS_REWARDED;active.quests[40686]=QUEST_STATUS_REWARDED;active.quests[q]=QUEST_STATUS_INCOMPLETE;
+ for(auto q:{40623,41155}){Player active;active.questStatuses[40684]=QUEST_STATUS_REWARDED;active.questStatuses[40686]=QUEST_STATUS_REWARDED;active.questStatuses[q]=QUEST_STATUS_INCOMPLETE;
   active.SendDisplayPlayerChoice(1,245);assert(active.responses.size()==3);}
  // Hidden selections survive abandonment; they must not hide an unfinished route.
- Player retry;retry.quests[40684]=QUEST_STATUS_REWARDED;for(auto q:{40686,40687,40688})retry.quests[q]=QUEST_STATUS_REWARDED;
+ Player retry;retry.questStatuses[40684]=QUEST_STATUS_REWARDED;for(auto q:{40686,40687,40688})retry.questStatuses[q]=QUEST_STATUS_REWARDED;
  retry.SendDisplayPlayerChoice(1,245);assert(retry.responses.size()==3);
  // Initial quest accept opens the choice before the gossip introduction is rewarded.
- Player first;first.quests[40684]=QUEST_STATUS_INCOMPLETE;first.SendDisplayPlayerChoice(1,245);assert(first.responses.size()==3);
+ Player first;first.questStatuses[40684]=QUEST_STATUS_INCOMPLETE;first.SendDisplayPlayerChoice(1,245);assert(first.responses.size()==3);
  assert(!manager.IsObjectMeetToConditions(&first,manager.List(15,19326,0)));
  Player foreign;foreign.classes=1;foreign.SendDisplayPlayerChoice(1,245);assert(!foreign.packets);
+ foreign.UpdateAvailableQuestLines();assert(foreign.mapIds==std::vector<uint32>{999});
+ Player low;low.level=101;low.UpdateAvailableQuestLines();assert(low.mapIds==std::vector<uint32>{999});
+ Player gated;gated.otherPrerequisites=false;gated.UpdateAvailableQuestLines();assert(gated.mapIds.empty());
+ for(auto status:{QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED}){Player taken;taken.questStatuses[44089]=status;taken.UpdateAvailableQuestLines();assert(taken.mapIds==std::vector<uint32>{999});}
+ Player refreshing;refreshing.UpdateAvailableQuestLines();assert(refreshing.mapIds.size()==4);for(auto q:{40623,42125,43254})refreshing.questStatuses[q]=QUEST_STATUS_REWARDED;
+ refreshing.UpdateAvailableQuestLines();assert(refreshing.mapIds==std::vector<uint32>{999});
  WorldSession s{&foreign};WorldPackets::Misc::ChoiceResponse packet{245,523};s.HandleChoiceResponse(packet);assert(!foreign.casts);
  // Existing unrelated choice behavior is outside this content change.
  objects.rows[999]=objects.rows[245];Player unrelated;unrelated.SendDisplayPlayerChoice(1,999);assert(unrelated.responses.size()==3);
- std::cout<<"PASS: "<<cases<<" native completion/alternate-ending masks, actual display and response handlers, gossip AND/OR gates, stale responses, introduction and abandoned-route retry\n";
+ std::cout<<"PASS: "<<cases<<" native completion/alternate-ending masks, actual display/response and map-update/admission handlers, three native DB2 map records, map refresh, unrelated lines, gossip, stale responses and abandoned-route retry\n";
 }
