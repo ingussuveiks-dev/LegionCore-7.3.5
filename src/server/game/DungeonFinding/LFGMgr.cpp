@@ -3036,13 +3036,16 @@ void LFGMgr::RemoveFromQueue(ObjectGuid guid, uint32 queueId)
 
 void LFGMgr::RemoveFromGroupQueue(ObjectGuid guid, uint32 queueId)
 {
-    TC_LOG_ERROR("lfg", "RemoveFromGroupQueue guid %s queueId %u", guid.ToString().c_str(), queueId);
+    // Solo proposals and repeated cleanup need not have a group queue.
+    if (guid.IsEmpty())
+        return;
 
     auto it = GroupDungeons.find(guid);
     if (it == GroupDungeons.end())
         return;
 
-    it->second.erase(queueId);
+    if (it->second.erase(queueId))
+        TC_LOG_DEBUG("lfg", "RemoveFromGroupQueue guid %s queueId %u", guid.ToString().c_str(), queueId);
     if (it->second.empty())
         GroupDungeons.erase(guid);
 }
