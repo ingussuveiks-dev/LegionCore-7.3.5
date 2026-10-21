@@ -67,10 +67,12 @@ static void ControlRoundTrip(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,
 }
 #include "TrialHelyaControlLoginNative.inc"
 #include "TrialGraveyardNative.inc"
+#include "TrialSpiritGraveyardNative.inc"
 #endif
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
 #ifndef TRIAL_HELYA_CONTROL_BASELINE
+    TrialSpiritGraveyardCases(p,map);
     TrialGraveyardCases(p,map,helya,group);
 #endif
     LoadPhaseThreeConditions();sSpellMgr->LoadSpellPrcoCheck();GarmPlayer subject(map,p.getRace());auto faction=subject.getFaction();auto display=subject.GetDisplayId();

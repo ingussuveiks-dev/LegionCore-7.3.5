@@ -25529,9 +25529,10 @@ void Player::SaveToDB(bool create /*=false*/)
     UpdateHonorFields();
 
     // Keep the source map attached for cleanup, but save the destination's
-    // character-select zone for both character INSERT and UPDATE.
+    // character-select zone for both character INSERT and UPDATE. Near
+    // teleports also save destination coordinates before their ACK arrives.
     uint32 savedZone = m_zoneId ? m_zoneId : m_oldZoneId;
-    if (IsBeingTeleportedFar())
+    if (IsBeingTeleported())
         savedZone = sMapMgr->GetZoneId(GetTeleportDest().GetMapId(), GetTeleportDest().GetPositionX(), GetTeleportDest().GetPositionY(), GetTeleportDest().GetPositionZ());
 
     TC_LOG_DEBUG("entities.unit", "The value of player %s at save: ", m_name.c_str());
