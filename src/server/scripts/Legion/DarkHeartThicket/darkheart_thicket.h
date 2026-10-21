@@ -14,6 +14,7 @@ enum eData
     DATA_DRESARON          = 2,
     DATA_XAVIUS            = 3,
     MAX_ENCOUNTER,
+    DATA_OAKHEART_AWAKENED = 100,
 };
 
 enum eCreatures
@@ -24,6 +25,8 @@ enum eCreatures
 
     //Pre-event Glaydalis
     NPC_DRUIDIC_PRESERVER                = 100403,
+    NPC_OAKHEART                         = 103344,
+    NPC_NIGHTMARE_DWELLER                = 101991,
     //dresaron
     NPC_DRESARON                         = 99200,
 
@@ -33,6 +36,11 @@ enum eCreatures
     //Dresaron achieve npc
     NPC_HATESPAWN_ABOMINATION            = 111008,
     NPC_EMERALD_EGG                      = 541898, //custom id but the same npc
+};
+
+enum eDarkheartActions
+{
+    ACTION_AWAKEN_OAKHEART = 1,
 };
 
 enum eGameObjects

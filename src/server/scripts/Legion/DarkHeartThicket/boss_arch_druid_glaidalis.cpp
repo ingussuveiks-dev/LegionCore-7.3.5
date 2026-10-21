@@ -392,11 +392,14 @@ class spell_nightmare_toxin : public AuraScript
 
     void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
     {
-        if (!GetTarget())
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE ||
+            !GetTarget() || !GetTarget()->IsAlive())
             return;
 
-        if (auto spider = GetTarget()->FindNearestCreature(101679, 40.0f, true))
-            spider->CastSpell(GetTarget(), 200686, true);
+        // A dead poisoner's corpse can still own the expiring toxin. Never
+        // substitute another nearby poisoner or change the eruption's faction.
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(GetTarget(), 200686, true);
     }
 
     void Register() override

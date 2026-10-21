@@ -4,7 +4,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/darkheart-trash"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/DarkHeartThicket/darkheart_thicket_trash.cpp" -Raw
-$start=$source.IndexOf('namespace DarkheartTrash');$end=$source.IndexOf('void AddSC_darkheart_thicket_trash()')
+$start=$source.IndexOf('namespace DarkheartTrash');$end=$source.IndexOf('// 100532.')
 if($start -lt 0 -or $end -le $start){throw 'Missing production trash handlers'}
 [IO.File]::WriteAllText("$out/Trash.inc",$source.Substring($start,$end-$start))
 $glaidalis=Get-Content "$repo/src/server/scripts/Legion/DarkHeartThicket/boss_arch_druid_glaidalis.cpp" -Raw

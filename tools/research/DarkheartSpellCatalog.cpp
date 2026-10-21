@@ -22,15 +22,18 @@ int main(int argc,char**argv)
  DB2Storage<SpellDurationEntry> durations("SpellDuration.db2",SpellDurationLoadInfo::Instance());
  DB2Storage<SpellCastTimesEntry> casts("SpellCastTimes.db2",SpellCastTimesLoadInfo::Instance());
  DB2Storage<SpellTargetRestrictionsEntry> targets("SpellTargetRestrictions.db2",SpellTargetRestrictionsLoadInfo::Instance());
- if(!names.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!visuals.Load(argv[1],0)||!durations.Load(argv[1],0)||!casts.Load(argv[1],0)||!targets.Load(argv[1],0))return 2;
- std::set<int> wanted;
+ DB2Storage<SpellRadiusEntry> radii("SpellRadius.db2",SpellRadiusLoadInfo::Instance());
+ if(!names.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!visuals.Load(argv[1],0)||!durations.Load(argv[1],0)||!casts.Load(argv[1],0)||!targets.Load(argv[1],0)||!radii.Load(argv[1],0))return 2;
+ std::set<int> wanted{165950,165953};
  if(argc>2){std::ifstream file(argv[2]);int id;while(file>>id)wanted.insert(id);}
  std::set<std::string> key{"Vile Mushroom","Vile Burst","Root Burst","Corrupted Infusion","Throw Spear","Poison Spear","Poisoned Spear","Nightfall","Nightmare Toxin","Blood Assault","Dreadfire","Dreadburst","Hatespawn","Tormenting Eye","Tormenting Fear","Scorching Shot","Shadow Decoy","Shoot","Propelling Charge","Disengage","Nightmare Eruption","Poisonous Blood","Noxious Spit","Rotting Earth","Blood Metamorphosis"};
+ key.insert({"Prancing Escape","Bloodbolt","Dread Inferno","Awakening Roots"});
  for(auto s:names)if(s->ID>=190000&&s->ID<230000&&key.count(Clean(s->Name->Str[0])))wanted.insert(s->ID);
  std::regex reference("\\$(?:@spelldesc)?([0-9]{6})");
  bool changed=true;while(changed){changed=false;for(auto e:effects)if(wanted.count(e->SpellID)){if(e->EffectTriggerSpell&&wanted.insert(e->EffectTriggerSpell).second)changed=true;if(e->Effect==3&&e->EffectBasePoints>100000&&e->EffectBasePoints<300000&&names.LookupEntry(e->EffectBasePoints)&&wanted.insert(e->EffectBasePoints).second)changed=true;}for(auto id:std::set<int>(wanted))if(auto s=names.LookupEntry(id)){auto desc=Clean(s->Description->Str[0]);for(std::sregex_iterator i(desc.begin(),desc.end(),reference),end;i!=end;++i)if(wanted.insert(std::stoi((*i)[1])).second)changed=true;}}
  for(auto id:wanted){auto s=names.LookupEntry(id);std::cout<<"S\t"<<id<<'\t'<<(s?Clean(s->Name->Str[0]):"MISSING")<<'\t'<<(s?Clean(s->Description->Str[0]):"")<<'\n';}
  for(auto e:effects)if(wanted.count(e->SpellID))std::cout<<"E\t"<<e->SpellID<<'\t'<<unsigned(e->DifficultyID)<<'\t'<<unsigned(e->EffectIndex)<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectBasePoints<<'\t'<<e->EffectTriggerSpell<<'\t'<<unsigned(e->ImplicitTarget[0])<<'\t'<<unsigned(e->ImplicitTarget[1])<<'\t'<<e->EffectAmplitude<<'\t'<<e->EffectAuraPeriod<<'\n';
+ for(auto e:effects)if(e->SpellID==198792)if(auto r=radii.LookupEntry(e->EffectRadiusIndex[0]))std::cout<<"R\t"<<e->SpellID<<'\t'<<e->DifficultyID<<'\t'<<e->EffectIndex<<'\t'<<r->Radius<<'\t'<<r->RadiusMin<<'\t'<<r->RadiusMax<<'\n';
  for(auto m:misc)if(wanted.count(m->SpellID)){auto d=durations.LookupEntry(m->DurationIndex);auto c=casts.LookupEntry(m->CastingTimeIndex);std::cout<<"M\t"<<m->SpellID<<'\t'<<unsigned(m->DifficultyID)<<'\t'<<m->CastingTimeIndex<<'\t'<<m->DurationIndex<<'\t'<<(d?d->Duration:0)<<'\t'<<m->RangeIndex<<'\t'<<(c?c->Base:0)<<'\n';}
  for(auto m:misc)if(wanted.count(m->SpellID)){std::cout<<"A\t"<<m->SpellID<<'\t'<<unsigned(m->DifficultyID);for(auto a:m->Attributes)std::cout<<'\t'<<a;std::cout<<'\n';}
  for(auto t:targets)if(wanted.count(t->SpellID))std::cout<<"T\t"<<t->SpellID<<'\t'<<unsigned(t->DifficultyID)<<'\t'<<unsigned(t->MaxTargets)<<'\t'<<t->Targets<<'\n';

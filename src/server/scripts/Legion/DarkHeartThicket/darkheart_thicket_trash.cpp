@@ -284,6 +284,74 @@ class spell_darkheart_growing_paranoia : public AuraScript
     }
 };
 
+// 100532. The native three-second Metamorphosis summons 113398. Replace the
+// Burster only after that summon really exists, so interrupts/failures remain
+// recoverable and the replacement cannot split into another generation.
+struct npc_darkheart_bloodtainted_burster : ScriptedAI
+{
+    explicit npc_darkheart_bloodtainted_burster(Creature* creature) : ScriptedAI(creature) { }
+    uint32 boltTimer = 1000;
+    uint32 metamorphosisTimer = 0;
+    bool requested = false;
+    bool transformed = false;
+
+    void Reset() override
+    {
+        boltTimer = 1000;
+        metamorphosisTimer = 0;
+        requested = false;
+        transformed = false;
+    }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (summoner && summoner->getVictim())
+            AttackStart(summoner->getVictim());
+        else
+            DoZoneInCombat();
+    }
+
+    void JustSummoned(Creature* summon) override
+    {
+        if (summon->GetEntry() != 113398 || !requested || transformed ||
+            !me->IsAlive() || !me->isInCombat() || !DarkheartTrash::IsMythic(me->GetMap()))
+            return;
+        transformed = true;
+        for (HostileReference* reference : me->getThreatManager().getThreatList())
+            if (Unit* target = reference->getTarget())
+                if (target->IsAlive())
+                    summon->AddThreat(target, reference->getThreat());
+        if (Unit* victim = me->getVictim())
+            if (summon->IsAIEnabled)
+                summon->AI()->AttackStart(victim);
+        me->DespawnOrUnsummon(100);
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (transformed || !UpdateVictim())
+            return;
+        boltTimer = boltTimer > diff ? boltTimer - diff : 0;
+        metamorphosisTimer = metamorphosisTimer > diff ? metamorphosisTimer - diff : 0;
+        if (me->HasUnitState(UNIT_STATE_CASTING))
+            return;
+        if (DarkheartTrash::IsMythic(me->GetMap()) && me->GetHealthPct() <= 50.0f && !metamorphosisTimer)
+        {
+            requested = true;
+            metamorphosisTimer = 6000;
+            DoCast(me, 225562); // Keep its native interruptible cast time.
+            return;
+        }
+        if (!boltTimer)
+        {
+            if (Unit* player = SelectTarget(SELECT_TARGET_RANDOM, 0, 40.0f, true))
+                DoCast(player, 201298);
+            boltTimer = 4500;
+        }
+        DoMeleeAttackIfReady();
+    }
+};
+
 void AddSC_darkheart_thicket_trash()
 {
     RegisterCreatureAI(npc_darkheart_rotheart_keeper);
@@ -294,4 +362,5 @@ void AddSC_darkheart_thicket_trash()
     RegisterAuraScript(spell_darkheart_noxious_spit);
     RegisterSpellScript(spell_darkheart_mythic_nightfall);
     RegisterAuraScript(spell_darkheart_growing_paranoia);
+    RegisterCreatureAI(npc_darkheart_bloodtainted_burster);
 }

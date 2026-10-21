@@ -7,6 +7,12 @@ Normal difficulty. No character quests, equipment or dungeon completion were
 changed. This is a code/data audit and regression result, **not a client-verified
 full dungeon clear**. Existing file comments claiming "100%" are not evidence.
 
+Follow-up migrations 09/10 and the additional native tests below address the
+remaining identified code gaps: Dryad escape, Burster regeneration, skipped HP
+windows, toxin attribution and Oakheart awakening. Earlier findings below are
+retained as the historical baseline; the follow-up section supersedes their
+"unimplemented/open" implementation status. Full client traversal is pending.
+
 ## Reported flowers and the actual visual chain
 
 The missing effects were not explained by a graphics setting alone:
@@ -198,3 +204,107 @@ vehicle warnings); its second check compares only newly appended records and
 preserves those historical messages. These old warnings are separate findings,
 not a clean bill of health for every in-game interaction. No validation server
 is left running. Client dungeon traversal remains pending.
+
+## Follow-up: remaining trash and Oakheart lifecycle
+
+Dryad's native movement leaf is **Prancing Escape 198792**, not one of the
+unrelated Disengage spells. Native effect 149 uses caster-back target 48,
+destination scatter 86 and a 15-yard radius. Migration 09 faces the current
+victim, including a pet tank, before a close-range (0..8 yards) cast. The native
+destination selection and charge retain collision checks. The 12..15-second
+repeat interval is a reconstruction, not a retail packet timing measurement.
+The unused 198722 dummy/198759 targeting helper is not presented as a complete
+retail target-selection implementation; the actual backward movement leaf is
+executed directly. Final trajectory, terrain clipping and creature animation
+remain client checks.
+
+Bloodtainted Burster 100532 now casts native Bloodbolt 201298 at a random Player.
+On Mythic/Keystone at or below 50% HP it attempts native, interruptible
+three-second Blood Metamorphosis 225562. Only its actual summon callback for
+113398 replaces the Burster, retaining live threat amounts and the current tank.
+Failed/interrupted casts can retry, and stale/wrong/repeated callbacks cannot
+consume the transition. The separate regenerated Fury receives Blood Assault
+and Blood Bomb, with **no Dispersion death action**, avoiding recursive splitting.
+The initial/repeat/retry timers (1/4.5/6 seconds) are script scheduling choices;
+they are not claimed to be sniff-verified. Normal/Heroic never attempt this
+Mythic-only transformation. Native damage, leech, summon and cast data are used.
+
+Grizzly's one-shot roar now admits all HP at/below 65%, and Imp's one-shot
+Inferno all HP at/below 50%; a large nonlethal hit cannot jump over their former
+60..65% and 49..51% windows. The Imp selects a Player without excluding top
+threat, including the solo-player case. Grizzly Swipe also remains available
+below its former 15% floor. Existing one-shot flags and repeat timings remain.
+
+Nightmare Toxin now uses its original aura caster, including a still-present dead
+poisoner, rather than finding an unrelated living poisoner within 40 yards.
+Eruption follows the native tooltip's natural-expiry contract; dispel, death and
+other early cleanup do not erupt. A missing original caster never substitutes a
+Player or another enemy. This avoids changing area hostility/faction. Native
+200686 retains the area damage and its eight 200687 spider summons. Spider
+illusion motion and Decoy clone/teleport rendering remain unverified client
+behavior; no additional missing named spell path was established for them.
+
+Oakheart starts passive, protected and in native Deep Roots 165950. Five distinct
+database Nightmare Dweller deaths unlock him; pet kills use the same instance
+death callback. Progress is keyed by DB spawn ID, so repeated notifications and
+corpse/grid reloads cannot double count. The versioned `D1` save suffix preserves
+partial progress across a server restart. Old boss-only completed saves remain
+unlocked; malformed/duplicate/zero-ID suffixes fail closed. A late-loaded boss
+reads the completed gate, and an encounter wipe does not restore killed trash.
+The optional 204852 death visual resolves its native nearby-entry target to
+Oakheart via source-13 conditions. Essential awakening does not depend on that
+cast succeeding. Cancel Deep Roots 165953, direct scoped aura removal and scoped
+flag cleanup release the boss without removing unrelated flags.
+
+`Test-DarkheartRemaining.ps1` executes the extracted Burster, toxin, instance
+death/save/load and boss reset/LOS handlers. Its migrated SQL rows also execute
+the actual SmartAI HP/range/player-selection branches and native backward
+destination/charge branches. Tests cover difficulty, pet targets, nonlethal HP
+skips, interrupted/failed summons, duplicate callbacks, original-caster death,
+deferred boss creation, partial/legacy/malformed saves and cleanup after a wipe.
+Migrations replay twice on connection-local shadow tables; unrelated template
+and SmartAI rows are preserved. Native C++ DB2 reads verify the actual 7.3.5
+spell IDs, three-second casts, leech, stun/removal, 113398 summon and 15-yard
+escape radius. Live effect/misc/target hotfix override counts are zero for the
+eight checked spell contracts. Fixtures do not execute full collision geometry,
+spell packets or client rendering.
+
+`darkheart-followup-visuals-2026-10-21.json` traces native SpellXSpellVisual,
+events, kits, model attachments and M2 animation lists for the new paths. All ten
+referenced models were fully read from the 26972 CASC installation and all 32
+index hashes stayed unchanged. Metamorphosis visual 60753 uses kits 74599/74600
+and Nightmare hand effects; Awakening Roots 53647 uses kit 64877 and eye
+attachment 19. No referenced EffectName is missing in this new subset. Prancing
+Escape has no separate SpellXSpellVisual row; native movement carries its
+presentation. None of this establishes that the client played the effects.
+
+The prior trash/14-area-action fixtures and handshake deadline/retry fixtures
+also passed again. `verify_darkheart_remaining_release.py` checks the existing
+13 handlers plus six new linked handler contracts, actual instance death/grid
+and boss reset callers, and the original-caster toxin call path. Release build,
+canonical deployment and startup evidence are recorded below after completion.
+
+Follow-up deployment completed into `build-extractors/bin/Release`, preserving
+runtime configuration, DLLs, certificates, extracted data and historical logs.
+The former EXE/MAP and scoped world rows were backed up privately before applying
+09/10. The first MySQL 8 dump attempt rejected the older server's missing
+COLUMN_STATISTICS table; no migration had run yet. Retrying with column
+statistics disabled completed all three scoped backups before either migration.
+
+The scripts library was rebuilt in its original generated Release path. The
+executable was relinked against the current original-path game/scripts libraries
+(only the executable output directory was overridden). Final-link SHA256 inputs:
+game.lib `30565a8cbe2d3db2ad87be12bc65f4cc337521d04dbf9a8c5ee18cff1e5e2fb1`,
+scripts.lib `4f033e3cfcdc755d29a150ce7dadd973e961ad399adb76d7e204c61e98706d79`.
+Canonical executable SHA256 is
+`075f4260abddf6dda84b694401c48f800ef2eeed3ef945e72f8742dab66af834`.
+Instruction-level checks passed for the six follow-up and 13 earlier DHT paths,
+pet follow/queue/accessory changes and all five handshake diagnostics. The
+canonical Scepter login binary test and Warlock regressions also passed.
+
+No user-owned server was running at deployment. Owned hidden validation PID
+30904 reached ready at 17:52:59 local time and gracefully finished database
+shutdown at 17:53:03 with exit 0. Fresh Server.log had no ERROR-level records;
+fresh DBErrors and stderr were empty. The validation server was stopped and no
+background server was left behind. This loader/startup result establishes
+acceptance of the migration/script bindings, not client encounter execution.

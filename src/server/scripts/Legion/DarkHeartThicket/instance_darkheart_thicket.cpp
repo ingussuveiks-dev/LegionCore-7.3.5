@@ -3,6 +3,8 @@
 */
 
 #include "darkheart_thicket.h"
+#include <set>
+#include <sstream>
 
 DoorData const doorData[] =
 {
@@ -36,6 +38,8 @@ public:
         ObjectGuid MalfurionCageGUID;
         ObjectGuid InvisDoorGUID;
         ObjectGuid DresaronGUID;
+        ObjectGuid OakheartGUID;
+        std::set<uint64> slainDwellers;
 
         void Initialize() override
         {
@@ -54,6 +58,15 @@ public:
         {
             switch (creature->GetEntry())
             {
+                case NPC_OAKHEART:
+                    OakheartGUID = creature->GetGUID();
+                    if (GetData(DATA_OAKHEART_AWAKENED) && creature->IsAIEnabled)
+                        creature->AI()->DoAction(ACTION_AWAKEN_OAKHEART);
+                    break;
+                case NPC_NIGHTMARE_DWELLER:
+                    if (!creature->IsAlive())
+                        RecordDwellerDeath(creature);
+                    break;
                 case NPC_MALFURION_STORMRAGE:    
                     MalfurionGUID = creature->GetGUID();
                     break;
@@ -66,6 +79,54 @@ public:
                 default:
                     break;
             }
+        }
+
+        void RecordDwellerDeath(Creature* creature)
+        {
+            // Database spawn IDs remain stable across corpse/grid reloads.
+            // Temporary summons and duplicate death notifications do not count.
+            uint64 spawn = creature->GetDBTableGUIDLow();
+            if (!spawn || slainDwellers.size() >= 5 || !slainDwellers.insert(spawn).second)
+                return;
+            if (Creature* oakheart = instance->GetCreature(OakheartGUID))
+            {
+                // Optional native visual is independent of essential progression.
+                creature->CastSpell(oakheart, 204852, true);
+                if (slainDwellers.size() == 5 && oakheart->IsAIEnabled)
+                    oakheart->AI()->DoAction(ACTION_AWAKEN_OAKHEART);
+            }
+            SaveToDB();
+        }
+
+        void OnUnitDeath(Unit* unit) override
+        {
+            if (unit->GetEntry() == NPC_NIGHTMARE_DWELLER)
+                if (Creature* creature = unit->ToCreature())
+                    RecordDwellerDeath(creature);
+        }
+
+        void WriteSaveDataMore(std::ostringstream& data) override
+        {
+            data << " D1 " << slainDwellers.size();
+            for (uint64 spawn : slainDwellers)
+                data << ' ' << spawn;
+        }
+
+        void ReadSaveDataMore(std::istringstream& data) override
+        {
+            slainDwellers.clear();
+            std::string version;
+            uint32 count = 0;
+            if (!(data >> version >> count) || version != "D1" || count > 5)
+                return; // Old boss-only saves remain readable.
+            std::set<uint64> loaded;
+            for (uint32 i = 0; i < count; ++i)
+            {
+                uint64 spawn = 0;
+                if (!(data >> spawn) || !spawn || !loaded.insert(spawn).second)
+                    return;
+            }
+            slainDwellers = std::move(loaded);
         }
 
         void OnGameObjectCreate(GameObject* go) override
@@ -102,6 +163,8 @@ public:
                     return MalfurionGUID;
                 case NPC_DRESARON:
                     return DresaronGUID;
+                case NPC_OAKHEART:
+                    return OakheartGUID;
                 case NPC_NIGHTMARE_BINDINGS:
                     return MalfurionCageGUID;
                 case GO_GLAIDALIS_INVIS_DOOR:
@@ -112,6 +175,8 @@ public:
 
         uint32 GetData(uint32 type) const override
         {
+            if (type == DATA_OAKHEART_AWAKENED)
+                return slainDwellers.size() == 5 || GetBossState(DATA_OAKHEART) == DONE;
             return 0;
         }
 

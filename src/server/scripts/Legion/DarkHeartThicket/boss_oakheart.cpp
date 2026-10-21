@@ -1,7 +1,7 @@
 /*
     Dungeon : Dark Heart Thicket 100-110
     Encounter: Oakheart
-    Normal: 100%, Heroic: 100%, Mythic: 100%
+    Automated lifecycle checks do not replace client encounter verification.
 */
 
 #include "ScriptMgr.h"
@@ -57,9 +57,33 @@ public:
         void Reset() override
         {
             _Reset();
+            UpdateAwakeningState();
 
             if (me->GetVehicleKit())
                 me->GetVehicleKit()->RemoveAllPassengers();
+        }
+
+        void UpdateAwakeningState()
+        {
+            if (instance->GetData(DATA_OAKHEART_AWAKENED))
+            {
+                DoCast(me, SPELL_CANCEL_DEEP_ROOTS, true);
+                me->RemoveAurasDueToSpell(165950); // Also clean up if the optional cast fails.
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+                me->SetReactState(REACT_AGGRESSIVE);
+            }
+            else
+            {
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+                me->SetReactState(REACT_PASSIVE);
+                DoCast(me, 165950, true);
+            }
+        }
+
+        void DoAction(int32 action) override
+        {
+            if (action == ACTION_AWAKEN_OAKHEART)
+                UpdateAwakeningState();
         }
 
         void EnterCombat(Unit* /*who*/) override
@@ -115,6 +139,8 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
+            if (!instance->GetData(DATA_OAKHEART_AWAKENED))
+                return;
             if (me->getVictim())
                 return;
 

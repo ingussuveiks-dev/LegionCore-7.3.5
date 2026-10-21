@@ -1,0 +1,1183 @@
+{
+  "build": "7.3.5.26972",
+  "scope": "Prancing Escape, Blood Metamorphosis, Oakheart roots/awakening and Nightmare Toxin native visual references",
+  "links": [
+    {
+      "ID": 70253,
+      "SpellVisualID": 40991,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 165950
+    },
+    {
+      "ID": 70254,
+      "SpellVisualID": 40585,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 165953
+    },
+    {
+      "ID": 93095,
+      "SpellVisualID": 5923,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 200684
+    },
+    {
+      "ID": 93097,
+      "SpellVisualID": 52211,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 200686
+    },
+    {
+      "ID": 95581,
+      "SpellVisualID": 53647,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 204852
+    },
+    {
+      "ID": 107476,
+      "SpellVisualID": 60753,
+      "Probability": 1.0,
+      "CasterPlayerConditionID": 0,
+      "CasterUnitConditionID": 0,
+      "ViewerPlayerConditionID": 0,
+      "ViewerUnitConditionID": 0,
+      "SpellIconFileID": 0,
+      "ActiveIconFileID": 0,
+      "Flags": 0,
+      "DifficultyID": 0,
+      "Priority": 0,
+      "SpellID": 225562
+    }
+  ],
+  "events": [
+    {
+      "ID": 6707,
+      "StartEvent": 1,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 2,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 36,
+      "parent": 5923
+    },
+    {
+      "ID": 6708,
+      "StartEvent": 3,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 37,
+      "parent": 5923
+    },
+    {
+      "ID": 6709,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 813,
+      "parent": 5923
+    },
+    {
+      "ID": 6710,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 813,
+      "parent": 5923
+    },
+    {
+      "ID": 6712,
+      "StartEvent": 7,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 8,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 63978,
+      "parent": 5923
+    },
+    {
+      "ID": 92688,
+      "StartEvent": 7,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 8,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 46506,
+      "parent": 40991
+    },
+    {
+      "ID": 96962,
+      "StartEvent": 3,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 45984,
+      "parent": 40585
+    },
+    {
+      "ID": 111880,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 62817,
+      "parent": 52211
+    },
+    {
+      "ID": 111881,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 62817,
+      "parent": 52211
+    },
+    {
+      "ID": 111882,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 3,
+      "SpellVisualKitID": 62816,
+      "parent": 52211
+    },
+    {
+      "ID": 111883,
+      "StartEvent": 5,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 3,
+      "SpellVisualKitID": 62816,
+      "parent": 52211
+    },
+    {
+      "ID": 116380,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 64877,
+      "parent": 53647
+    },
+    {
+      "ID": 116381,
+      "StartEvent": 6,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 2,
+      "SpellVisualKitID": 64877,
+      "parent": 53647
+    },
+    {
+      "ID": 143933,
+      "StartEvent": 1,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 2,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 74599,
+      "parent": 60753
+    },
+    {
+      "ID": 143934,
+      "StartEvent": 3,
+      "StartMinOffsetMs": 0,
+      "StartMaxOffsetMs": 0,
+      "EndEvent": 13,
+      "EndMinOffsetMs": 0,
+      "EndMaxOffsetMs": 0,
+      "TargetType": 1,
+      "SpellVisualKitID": 74600,
+      "parent": 60753
+    }
+  ],
+  "effects": [
+    {
+      "ID": 87,
+      "EffectType": 6,
+      "Effect": 24,
+      "parent": 36
+    },
+    {
+      "ID": 88,
+      "EffectType": 5,
+      "Effect": 27,
+      "parent": 36
+    },
+    {
+      "ID": 89,
+      "EffectType": 2,
+      "Effect": 277364,
+      "parent": 36
+    },
+    {
+      "ID": 90,
+      "EffectType": 2,
+      "Effect": 277365,
+      "parent": 36
+    },
+    {
+      "ID": 91,
+      "EffectType": 6,
+      "Effect": 25,
+      "parent": 37
+    },
+    {
+      "ID": 92,
+      "EffectType": 5,
+      "Effect": 2561,
+      "parent": 37
+    },
+    {
+      "ID": 93,
+      "EffectType": 2,
+      "Effect": 277366,
+      "parent": 37
+    },
+    {
+      "ID": 94,
+      "EffectType": 2,
+      "Effect": 277367,
+      "parent": 37
+    },
+    {
+      "ID": 1662,
+      "EffectType": 5,
+      "Effect": 24009,
+      "parent": 813
+    },
+    {
+      "ID": 1663,
+      "EffectType": 2,
+      "Effect": 278089,
+      "parent": 813
+    },
+    {
+      "ID": 92963,
+      "EffectType": 6,
+      "Effect": 16938,
+      "parent": 45984
+    },
+    {
+      "ID": 92964,
+      "EffectType": 5,
+      "Effect": 49362,
+      "parent": 45984
+    },
+    {
+      "ID": 94100,
+      "EffectType": 6,
+      "Effect": 17166,
+      "parent": 46506
+    },
+    {
+      "ID": 94101,
+      "EffectType": 1,
+      "Effect": 6539,
+      "parent": 46506
+    },
+    {
+      "ID": 131989,
+      "EffectType": 2,
+      "Effect": 315742,
+      "parent": 62816
+    },
+    {
+      "ID": 131990,
+      "EffectType": 2,
+      "Effect": 315743,
+      "parent": 62816
+    },
+    {
+      "ID": 131991,
+      "EffectType": 5,
+      "Effect": 64305,
+      "parent": 62817
+    },
+    {
+      "ID": 131992,
+      "EffectType": 2,
+      "Effect": 315744,
+      "parent": 62817
+    },
+    {
+      "ID": 135253,
+      "EffectType": 2,
+      "Effect": 317542,
+      "parent": 63978
+    },
+    {
+      "ID": 135254,
+      "EffectType": 1,
+      "Effect": 9349,
+      "parent": 63978
+    },
+    {
+      "ID": 137565,
+      "EffectType": 1,
+      "Effect": 9536,
+      "parent": 64877
+    },
+    {
+      "ID": 137570,
+      "EffectType": 2,
+      "Effect": 318815,
+      "parent": 64877
+    },
+    {
+      "ID": 137573,
+      "EffectType": 2,
+      "Effect": 318817,
+      "parent": 64877
+    },
+    {
+      "ID": 137574,
+      "EffectType": 2,
+      "Effect": 318818,
+      "parent": 64877
+    },
+    {
+      "ID": 154533,
+      "EffectType": 2,
+      "Effect": 328522,
+      "parent": 62816
+    },
+    {
+      "ID": 154585,
+      "EffectType": 5,
+      "Effect": 64308,
+      "parent": 62816
+    },
+    {
+      "ID": 163901,
+      "EffectType": 6,
+      "Effect": 29538,
+      "parent": 74599
+    },
+    {
+      "ID": 163902,
+      "EffectType": 2,
+      "Effect": 333708,
+      "parent": 74599
+    },
+    {
+      "ID": 163903,
+      "EffectType": 2,
+      "Effect": 333709,
+      "parent": 74599
+    },
+    {
+      "ID": 163904,
+      "EffectType": 2,
+      "Effect": 333710,
+      "parent": 74600
+    },
+    {
+      "ID": 163905,
+      "EffectType": 6,
+      "Effect": 29539,
+      "parent": 74600
+    },
+    {
+      "ID": 163906,
+      "EffectType": 2,
+      "Effect": 333711,
+      "parent": 74600
+    }
+  ],
+  "attachments": [
+    {
+      "ID": 277364,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 146,
+      "AttachmentID": 22,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 36
+    },
+    {
+      "ID": 277365,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 146,
+      "AttachmentID": 21,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 36
+    },
+    {
+      "ID": 277366,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 73,
+      "AttachmentID": 22,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 37
+    },
+    {
+      "ID": 277367,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 73,
+      "AttachmentID": 21,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 37
+    },
+    {
+      "ID": 278089,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 621,
+      "AttachmentID": 34,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 813
+    },
+    {
+      "ID": 315742,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 3613,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62816
+    },
+    {
+      "ID": 315743,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 18212,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62816
+    },
+    {
+      "ID": 315744,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 1625,
+      "AttachmentID": 34,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62817
+    },
+    {
+      "ID": 317542,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 276,
+      "AttachmentID": 34,
+      "Flags": 12,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 63978
+    },
+    {
+      "ID": 318815,
+      "Offset1": 2.0,
+      "Offset2": 0.44999998807907104,
+      "Offset3": 6.75,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 26199,
+      "AttachmentID": 19,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.45378559827804565,
+      "Pitch": 0.0,
+      "Roll": -0.0872664600610733,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.25,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 64877
+    },
+    {
+      "ID": 318817,
+      "Offset1": 2.0,
+      "Offset2": 0.44999998807907104,
+      "Offset3": 6.75,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 26199,
+      "AttachmentID": 19,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.45378559827804565,
+      "Pitch": 0.0,
+      "Roll": -0.0872664600610733,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.25,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 64877
+    },
+    {
+      "ID": 318818,
+      "Offset1": 2.0,
+      "Offset2": 0.44999998807907104,
+      "Offset3": 6.75,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 26199,
+      "AttachmentID": 19,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.45378559827804565,
+      "Pitch": 0.0,
+      "Roll": -0.0872664600610733,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 0.25,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 64877
+    },
+    {
+      "ID": 328522,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 18212,
+      "AttachmentID": 127,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 62816
+    },
+    {
+      "ID": 333708,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 26287,
+      "AttachmentID": 1,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 74599
+    },
+    {
+      "ID": 333709,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 26287,
+      "AttachmentID": 2,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 74599
+    },
+    {
+      "ID": 333710,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 27653,
+      "AttachmentID": 1,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 74600
+    },
+    {
+      "ID": 333711,
+      "Offset1": 0.0,
+      "Offset2": 0.0,
+      "Offset3": 0.0,
+      "OffsetVariation1": 0.0,
+      "OffsetVariation2": 0.0,
+      "OffsetVariation3": 0.0,
+      "SpellVisualEffectNameID": 27653,
+      "AttachmentID": 2,
+      "Flags": 0,
+      "PositionerID": 0,
+      "Yaw": 0.0,
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "YawVariation": 0.0,
+      "PitchVariation": 0.0,
+      "RollVariation": 0.0,
+      "Scale": 1.0,
+      "ScaleVariation": 0.0,
+      "StartAnimID": 65535,
+      "AnimID": 65535,
+      "EndAnimID": 65535,
+      "AnimKitID": 0,
+      "LowDefModelAttachID": 0,
+      "StartDelay": 0.0,
+      "parent": 74600
+    }
+  ],
+  "models": [
+    {
+      "ID": 73,
+      "ModelFileDataID": 166602,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 146,
+      "ModelFileDataID": 166605,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 276,
+      "ModelFileDataID": 165679,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 621,
+      "ModelFileDataID": 165738,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 1625,
+      "ModelFileDataID": 166643,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 3613,
+      "ModelFileDataID": 166646,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 18212,
+      "ModelFileDataID": 915921,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 26199,
+      "ModelFileDataID": 191473,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 26287,
+      "ModelFileDataID": 1327166,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    },
+    {
+      "ID": 27653,
+      "ModelFileDataID": 1329292,
+      "TextureFileDataID": 0,
+      "Scale": 1.0,
+      "Alpha": 1.0
+    }
+  ],
+  "assets": [
+    {
+      "file_data_id": 165679,
+      "name": "BestowDisease_Impact_Chest",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 3000
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 6000
+        }
+      ],
+      "sha256": "97eb8a7f9e0f85b30ace05deaf302d5935669a57911882ea45129e8f48640563"
+    },
+    {
+      "file_data_id": 165738,
+      "name": "BloodyExplosionGreen",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 667
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 1667
+        }
+      ],
+      "sha256": "e8af4fea5218d4aaa6102dff88efd299a4f64500e72501cc3a9b60721fe00b04"
+    },
+    {
+      "file_data_id": 166602,
+      "name": "Nature_Cast_Hand",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 1000
+        }
+      ],
+      "sha256": "f09cd0ca4aef9ea74f1acdedbc611ddb9c39711b8027b138db190e59f7d0474a"
+    },
+    {
+      "file_data_id": 166605,
+      "name": "Nature_PreCast_Low_Hand",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 1000
+        }
+      ],
+      "sha256": "51843a7d738712a8ffb8387d64dc3a11b10b69d3720b3d85346c9925a54b2e3a"
+    },
+    {
+      "file_data_id": 166643,
+      "name": "Poison_Impact_Chest",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 3000
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 4000
+        }
+      ],
+      "sha256": "2580e2de88ff202276bc67157df06ec3a685748017da99c06ed128c450efe81a"
+    },
+    {
+      "file_data_id": 166646,
+      "name": "PoisonElemental_Impact_Base",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 2800
+        }
+      ],
+      "sha256": "69afb5cf5d1591119d6378adb7a107b2f0610f1a8687db4086b6b62eea41b68c"
+    },
+    {
+      "file_data_id": 191473,
+      "name": "BT_StatueEyes",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 3333
+        }
+      ],
+      "sha256": "3174b21e7bb2d7b5ccd43d2922babb5272b327d61bf8ddf7f74034698701d51c"
+    },
+    {
+      "file_data_id": 915921,
+      "name": "Nova_Nature_Raid_Low",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 800
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 800
+        }
+      ],
+      "sha256": "a6927bde23ad6b09ec0004ff34443815df9bcaf3c58a6ff1a1ee34ecc82d1fce"
+    },
+    {
+      "file_data_id": 1327166,
+      "name": "7FX_Nightmare_Precast_Hand",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 667
+        },
+        {
+          "id": 158,
+          "variation": 0,
+          "duration_ms": 1000
+        },
+        {
+          "id": 159,
+          "variation": 0,
+          "duration_ms": 667
+        }
+      ],
+      "sha256": "663e5a18d7420adc5c8ba611f54330d304230216f094a38f53be34adbfec7109"
+    },
+    {
+      "file_data_id": 1329292,
+      "name": "7FX_Nightmare_Cast_Hand",
+      "animations": [
+        {
+          "id": 0,
+          "variation": 0,
+          "duration_ms": 1000
+        }
+      ],
+      "sha256": "f73d79743a876d0b21c67849515d92f9672e91381e15535107f3fc6f8bd85a13"
+    }
+  ],
+  "missing_effect_names": [],
+  "source_sha256": {
+    "SpellXSpellVisual": "426186996a698e96ec7ae1a21282c5ae06d545b8f5912ad28b6be08d7f854e8a",
+    "SpellVisualEvent": "fdf1dfe34f676e859d1f0288ee95bff4000b5f0b7102f3824e05440fdf84f54d",
+    "SpellVisualKitEffect": "599c9ac6943c427359c81975d4ee0f124f482651962aa3f5f969f3c1f394ef43",
+    "SpellVisualKitModelAttach": "b0fbc41e0bd8f29a12b454d7a589313e12a479916e1eb284cdcb5a5a531d2f81",
+    "SpellVisualEffectName": "ea85ae32fe2a04b308b05a4dbc45bb36d846bc17bbd5e217f8ad239e8d5f6ac2"
+  },
+  "client_rendering_verified": false
+}
