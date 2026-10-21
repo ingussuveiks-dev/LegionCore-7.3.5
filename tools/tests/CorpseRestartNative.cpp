@@ -13,6 +13,7 @@ static void ForgetCorpse(Corpse* corpse)
     sObjectAccessor->RemoveCorpse(corpse);
     delete corpse; // Unload only: retain the SQL row for the next process.
 }
+#include "CorpseReclaimNative.inc"
 static int RestartCorpses(int argc,char** argv)
 {
     InitializeNative(argc,argv);opcodeTable.Initialize();OpenScratch();
@@ -23,6 +24,7 @@ static int RestartCorpses(int argc,char** argv)
     std::cout<<"CORPSE_ABI field="<<sizeof(Field)<<std::endl;
     for(unsigned i=0;i<7;++i)sWorld->AddCharacterInfo(Owner(i),0,"Ghost"+std::to_string(i),GENDER_MALE,i==4?RACE_NIGHTELF:(i%2?RACE_ORC:RACE_HUMAN),CLASS_WARRIOR,110);
     if(!read){
+        CheckCorpseReclaim();
         Map map(1220,300,0,DIFFICULTY_NONE);
         for(unsigned i=0;i<6;++i){
             LootPlayer player(Session(),map,Owner(i).GetCounter(),{2370.78f+float(i),895.832f,252.924f,1.25f});
