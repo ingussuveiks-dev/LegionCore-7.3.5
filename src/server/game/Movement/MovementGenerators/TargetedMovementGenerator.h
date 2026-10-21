@@ -108,7 +108,7 @@ template<class T>
 class FollowMovementGenerator : public TargetedMovementGenerator<T, FollowMovementGenerator<T>>
 {
     public:
-        explicit FollowMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGenerator<T, FollowMovementGenerator<T> >(target, offset, angle), _path(nullptr), _recheckPredictedDistanceTimer(0), _recheckPredictedDistance(false), _range(offset), _angle(angle), _inheritWalkState(false) { }
+        explicit FollowMovementGenerator(Unit &target, float offset, float angle) : TargetedMovementGenerator<T, FollowMovementGenerator<T> >(target, offset, angle), _path(nullptr), _recheckPredictedDistanceTimer(0), _recheckPredictedDistance(false), _range(offset), _angle(angle) { }
         ~FollowMovementGenerator() = default;
 
         MovementGeneratorType GetMovementGeneratorType() const override { return FOLLOW_MOTION_TYPE; }
@@ -138,7 +138,6 @@ class FollowMovementGenerator : public TargetedMovementGenerator<T, FollowMoveme
         Optional<Position> _lastPredictedPosition;
         float _range;
         float _angle;
-        bool _inheritWalkState;
 };
 
 #endif

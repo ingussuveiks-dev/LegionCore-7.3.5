@@ -312,6 +312,16 @@ void ChaseMovementGenerator<Creature>::MovementInform(Creature& owner)
 
 //---- FollowMovementGenerator
 
+static UnitMoveType GetFollowTargetMoveType(Unit const* target)
+{
+    uint32 moveFlags = target->GetUnitMovementFlags();
+    // A completed scripted walk retains MoveSpline::walk. Client-controlled
+    // running does not replace that spline, so it must not force pet walk speed.
+    if (!target->movespline->Finalized() && target->movespline->isWalking())
+        moveFlags |= MOVEMENTFLAG_WALKING;
+    return UnitMoveType(Movement::SelectSpeedType(moveFlags));
+}
+
 template<class T>
 void FollowMovementGenerator<T>::UpdateSpeed(T&) { }
 
@@ -376,7 +386,7 @@ void FollowMovementGenerator<T>::ReachTarget(T& owner)
 template<>
 bool FollowMovementGenerator<Creature>::EnableWalking() const
 {
-    return IsTargetValid() && GetTarget()->IsWalking();
+    return IsTargetValid() && GetFollowTargetMoveType(GetTarget()) == MOVE_WALK;
 }
 
 template<>
@@ -408,14 +418,7 @@ static Optional<float> GetVelocity(Unit* owner, Unit* target, G3D::Vector3 const
     if (!owner->isInCombat() && !owner->IsVehicle() && !owner->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) &&
         (owner->isPet() || owner->isGuardian() || owner->GetGUID() == target->GetCritterGUID() || owner->GetCharmerOrOwnerGUID() == target->GetGUID()))
     {
-        uint32 moveFlags = target->GetUnitMovementFlags();
-        if (target->movespline->isWalking())
-        {
-            moveFlags |= MOVEMENTFLAG_WALKING;
-        }
-
-        UnitMoveType moveType = (UnitMoveType)Movement::SelectSpeedType(moveFlags);
-        speed = target->GetSpeed(moveType);
+        speed = target->GetSpeed(GetFollowTargetMoveType(target));
         if (playerPet)
         {
             float distance = owner->GetDistance2d(dest.x, dest.y) - target->GetObjectSize() - (*speed / 2.f);
@@ -435,7 +438,7 @@ static Position const PredictPosition(Unit* target)
     Position pos = target->GetPosition();
 
     // 0.5 - it's time (0.5 sec) between starting movement opcode (e.g. MSG_MOVE_START_FORWARD) and MSG_MOVE_HEARTBEAT sent by client
-    float speed = target->GetSpeed((UnitMoveType)Movement::SelectSpeedType(target->GetUnitMovementFlags())) * 0.5f;
+    float speed = target->GetSpeed(GetFollowTargetMoveType(target)) * 0.5f;
     float orientation = target->GetOrientation();
 
     if (target->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_FORWARD))
@@ -550,7 +553,7 @@ bool FollowMovementGenerator<Creature>::DoUpdate(Creature& owner, uint32 diff)
         else
             _path->Clear();
 
-        target->MovePositionToFirstCollision(targetPosition, owner.GetCombatReach() + _range, target->ToAbsoluteAngle(Position::NormalizeOrientation(_range)) - target->GetOrientation());
+        target->MovePositionToFirstCollision(targetPosition, owner.GetCombatReach() + _range, target->ToAbsoluteAngle(Position::NormalizeOrientation(_angle)) - target->GetOrientation());
 
         float x, y, z;
         targetPosition.GetPosition(x, y, z);
@@ -572,8 +575,7 @@ bool FollowMovementGenerator<Creature>::DoUpdate(Creature& owner, uint32 diff)
 
         Movement::MoveSplineInit init(*owner.ToUnit());
         init.MovebyPath(_path->GetPath());
-        if (_inheritWalkState)
-            init.SetWalk(target->IsWalking() || target->movespline->isWalking());
+        init.SetWalk(EnableWalking());
 
         if (Optional<float> velocity = GetVelocity(owner.ToUnit(), target, _path->GetActualEndPosition(), owner.isGuardian()))
             init.SetVelocity(*velocity);
