@@ -20,6 +20,7 @@
 #include "BattlegroundMgr.h"
 #include "BrawlersGuild.h"
 #include "CellImpl.h"
+#include "Corpse.h"
 #include "DisableMgr.h"
 #include "DynamicTree.h"
 #include "GridInfo.h"
@@ -3438,6 +3439,16 @@ bool InstanceMap::CanEnter(Player* player)
     // allow GM's to enter
     if (player->isGameMaster())
         return Map::CanEnter(player);
+
+    // A group/difficulty change can select another copy of the same map.
+    // Only the instance containing this corpse admits its returning ghost.
+    if (!player->IsAlive())
+        if (Corpse* corpse = player->GetCorpse())
+            if (corpse->GetMapId() == GetId() && corpse->GetInstanceId() != GetInstanceId())
+            {
+                player->SendTransferAborted(GetId(), TRANSFER_ABORT_LOCKED_TO_DIFFERENT_INSTANCE);
+                return false;
+            }
 
     // cannot enter if the instance is full (player cap), GMs don't count
     uint32 maxPlayers = GetMaxPlayers();

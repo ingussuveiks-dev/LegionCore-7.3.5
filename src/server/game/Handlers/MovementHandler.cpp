@@ -153,7 +153,8 @@ void WorldSession::HandleWorldPortAck()
 
     if (Corpse* corpse = sObjectAccessor->GetCorpseForPlayerGUID(player->GetGUID()))
     {
-        if (corpse->GetType() != CORPSE_BONES && corpse->GetMapId() == player->GetMapId())
+        if (corpse->GetType() != CORPSE_BONES && corpse->GetMapId() == player->GetMapId() &&
+            corpse->GetInstanceId() == player->GetInstanceId())
         {
             if (mEntry->IsDungeon())
             {
