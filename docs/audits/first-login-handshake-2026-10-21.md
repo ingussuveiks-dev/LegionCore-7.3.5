@@ -135,5 +135,24 @@ Final review replaced the greeting-queued state snapshot with endpoint-only
 logging to avoid acceptor/network-thread mutable-buffer reads. The rebuilt and
 PE-verified final image is
 `6a52dd1a4c273854672f1a032687221bf9e18d3ea726353934c3650b7f547774`.
-Its replacement of the running diagnostic image is pending the user's next
-graceful shutdown; the agent must not stop the user's fresh server itself.
+After the user confirmed worldserver was stopped again, the final EXE/MAP were
+copied into the canonical Release directory. The prior diagnostic image was
+preserved under ignored .codex/backups/first-login-diagnostics-final-20261021;
+configuration, DLLs, certificates and data remained intact. The canonical hash
+matches the final image above. Source and native tests are in commit 2a50387a.
+
+Owned hidden validation worldserver 27200 reached ready at 14:03:02 and tested
+both real listening ports through greeting/challenge exchange. A deliberately
+silent third probe produced the expected deadline WARN at 14:03:12, with
+sent=48, received=0, unacked=0 and no duplicate ERROR. This specific warning is
+test traffic, not a new failing game-client login. `server shutdown 0` ended
+the process with exit 0; databases closed at 14:03:15. Scoped logs contained no
+ERROR-level entries, DBErrors.log and stderr were empty, and no owned validation
+server remains running. Canonical Scepter and all five handshake diagnostic PE
+call sites passed again. The user's bnetserver was not controlled or stopped.
+
+No additional gameplay change or timeout increase was deployed. The earlier
+first-attempt client success remains the only real client retest; the final
+endpoint-only log adjustment is validated by native tests and runtime probes.
+The original intermittent failure remains unproven until observed with the new
+transport/client-report evidence. Preserve this limitation in future audits.
