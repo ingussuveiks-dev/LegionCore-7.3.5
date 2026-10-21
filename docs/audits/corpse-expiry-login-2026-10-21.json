@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "160d4812860e788d01b4572b93550b7199411523",
+  "scope": "Missing or expired corpse before the native login LoadCorpse component",
+  "previous_audit": "docs/audits/ghost-fallback-disconnect-2026-10-21.json",
+  "finding": "No production defect found in the exercised expiry/recovery paths. Existing Player::LoadCorpse calls ResurrectPlayer(0.5f) when a dead player has no cached corpse. This commit adds regression coverage and audit only.",
+  "checks": [
+    "Test-CorpseRestartNative.ps1 -VerifyReleaseBinary passed. Two independent native processes share only disposable corpse SQL; writer uses real KillPlayer/BuildPlayerRepop/SaveToDB for six distinct corpses, then removes cache objects without deleting SQL and exits.",
+    "Writer supplies two explicitly old timestamps via SQL UNIX_TIMESTAMP(NOW())-259260. Reader executes the actual CHAR_DEL_OLD_CORPSES prepared statement with the startup age parameter 3*DAY, waits for writes, and verifies only those two corpses plus the synthetic bones row are deleted. Actual CHAR_SEL_CORPSES independently excludes bones before cleanup.",
+    "To represent aging after startup SQL, reader ages two remaining SQL rows before native LoadCorpses hydrates them. Actual ObjectAccessor::RemoveOldCorpses removes both expired cache entries and SQL rows while retaining both fresh corpses. This controlled age input does not wait three days or replace native expiry decisions.",
+    "Native Corpse::IsExpired returns false exactly at three days and true one second later for each writer PvE/PvP corpse. Native bones return false at five minutes and true one second later. SQL uses its real wall clock; its exact boundary is inspected in the prepared SQL rather than asserted using a racing database/client clock.",
+    "Five new socketless Player inputs cover two startup-expired corpses, two runtime-expired corpses and an owner with no corpse ever created. Native LoadCorpse restores alive state at 500/1000 health, removes 8326 and PLAYER_FLAGS_GHOST, leaves no corpse and adds no resurrection sickness. The Night Elf case first asserts native 20584 exists and then is removed by recovery.",
+    "Repeated living LoadCorpse preserves deliberately changed health321 and creates no corpse, proving no repeated half-health reset. The two fresh PvE/PvP controls stay dead on LoadCorpse, retain identity/location/time/appearance, survive repeat-save without duplicate rows, then living LoadCorpse converts/deletes them. Final resurrectable SQL count is zero.",
+    "Release check confirms canonical worldserver and actual final-link game.lib hashes match the native run and retains the exception-bounded field15 uint64 startup identity check. ObjectAccessor.cpp was added to native freshness dependencies; startup World.cpp and prepared CharacterDatabase.cpp hashes are recorded as evidence.",
+    "Both native runs passed; final run additionally asserts that the Night Elf speed aura was actually applied. No production C++ or SQL migration changed, so canonical binaries were not rebuilt and no background servers were launched. Disposable schema-only auth/character databases and scratch SQL user were removed by the wrapper."
+  ],
+  "recovery_lines": [
+    "CORPSE_RECOVERY owner=10003 reason=startup-expired alive=1 ghost=0 initialHealth=500 repeatHealth=321",
+    "CORPSE_RECOVERY owner=10004 reason=runtime-expired alive=1 ghost=0 initialHealth=500 repeatHealth=321",
+    "CORPSE_RECOVERY owner=10005 reason=startup-expired alive=1 ghost=0 initialHealth=500 repeatHealth=321",
+    "CORPSE_RECOVERY owner=10006 reason=runtime-expired alive=1 ghost=0 initialHealth=500 repeatHealth=321",
+    "CORPSE_RECOVERY owner=10007 reason=missing alive=1 ghost=0 initialHealth=500 repeatHealth=321"
+  ],
+  "process_lines": [
+    "CORPSE_PROCESS phase=write pid=4900",
+    "CORPSE_PROCESS phase=read pid=35548"
+  ],
+  "limits": [
+    "This is native code/data verification, not client verification. Player ghost state is explicitly supplied to fresh socketless Players; aggregate Player::LoadFromDB and authenticated network login are not invoked. Character tables remain empty in this two-process fixture.",
+    "Corpse persistence, startup cleanup, runtime cleanup and native login recovery are exercised. Persisted character health/flags/aura reload after this recovery is not newly verified here; earlier saved-field logout/relog component audits retain their own scope.",
+    "Runtime expiry inputs are hydrated after startup cleanup; this does not model concurrent expiry while a Player is already online. No new behavior is claimed for that separate case.",
+    "Actual cold-client login, movement, visibility, resurrection UI, camera/pet state and corpse/bones appearance remain pending client checks. Existing audits and their observed failures remain unchanged."
+  ],
+  "evidence": {
+    "run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\corpse-restart-native\\run-20261021-090550",
+    "command": "tools/tests/Test-CorpseRestartNative.ps1 -VerifyReleaseBinary",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "tools/tests/CorpseRestartNative.cpp": "C65370C0EC9EC63B21380ECDB95085339F25D6EFACA6250B1F2C7927DC7BDB58",
+      "tools/tests/Test-RockawayChannelNative.ps1": "4099EC3D6A5354FAB6BDC466EFA2A5AD1B6E5B01B2626EEB6EDD602AC46D3543",
+      "src/server/game/Entities/Player/Player.cpp": "68BC0E4BDE3D1F5B13A4D09A8EA123A6FF0AD44BEB4E6A3B0D051D6540FA2001",
+      "src/server/game/Entities/Corpse/Corpse.cpp": "6139D4396E815B0B1F7DDB7D1C39E240C3852A8272404B076193C4BE4137AAC4",
+      "src/server/game/Globals/ObjectAccessor.cpp": "6A5124F0684EB880DCF4F868EC95C4B64D3CEAE84E016060852904D7C5B2DE57",
+      "src/server/game/World/World.cpp": "FD838007F3798C8CA8C653183E149DB8DC63377F97769C0D7D7C2F2C1978C98A",
+      "src/server/database/Database/Implementation/CharacterDatabase.cpp": "FAC7810AC82494D9F1454865005A74F43C124928F1694A6C41CAA94B78A14E20",
+      "build-extractors/bin/Release/worldserver.exe": "6E293A33619A470A62789719A20C52AE2E4CB1D039E0EA33CCEA762E388E0651",
+      "build-extractors/bin/Release/bnetserver.exe": "FE4C2D87F3D036735269E5D22970D7E90B02CE13F52AE9AF4501B8FFC90EC020",
+      "build-extractors/src/server/game/Release/game.lib": "ABEC172CDF3CD7734EEFEDB0C923800D067E2A815DF47FDBF9323DC448FA2604",
+      ".codex/corpse-expiry-native.log": "6F9BC5833F68D4B32275C49ACBCC348E3B3779ED2A1F3981FE5275DF8FAF071B",
+      ".codex/corpse-expiry-final.log": "6F9BC5833F68D4B32275C49ACBCC348E3B3779ED2A1F3981FE5275DF8FAF071B",
+      "run/native-inputs.json": "9F2197A96A495FDF396FFFC6A93A53AA8AC6BFB399F5F8F0E4C65E4AC00E73D5",
+      "run/native-lines.txt": "AF95D1E0EA0198C9DBD6C0323E4D16A18FE888FE791519277B1400DEEC03EAC2",
+      "run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "run/Server.log": "73A4FA6750BC2ABEE55A54B94241546BF13BA9ECE13E2B2EDA4AED4FA565B47F"
+    }
+  },
+  "next_candidate": "Corpse reclaim request admission: release delay, distance, map/instance, and repeated/stale requests."
+}
