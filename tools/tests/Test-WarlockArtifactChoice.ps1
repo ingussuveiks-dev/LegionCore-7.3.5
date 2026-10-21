@@ -12,12 +12,16 @@ $cases=@('CONDITION_CLASS','CONDITION_QUESTREWARDED','CONDITION_QUEST_COMPLETE')
 Save 'Cases' ($cases -join "`n")
 $a=$cond.IndexOf('    if (NegativeCondition)');$b=$cond.IndexOf("`n}",$a);Save 'Tail' $cond.Substring($a,$b-$a)
 Save 'List' (Block $cond 'bool ConditionMgr::IsObjectMeetToConditionList(')
-$migration=Get-Content "$repo/sql/updates/world/2026_10_21_01_warlock_artifact_choice.sql" -Raw
+$baseMigration=Get-Content "$repo/sql/updates/world/2026_10_21_01_warlock_artifact_choice.sql" -Raw
+$migration=Get-Content "$repo/sql/updates/world/2026_10_21_02_warlock_affliction_choice.sql" -Raw
 $sql=@"
 CREATE TEMPORARY TABLE saved_conditions LIKE conditions;
 INSERT INTO saved_conditions SELECT * FROM conditions;
 CREATE TEMPORARY TABLE conditions LIKE saved_conditions;
 INSERT INTO conditions SELECT * FROM saved_conditions;
+$baseMigration
+$migration
+$baseMigration
 $migration
 $migration
 SELECT 'COUNT',COUNT(*) FROM conditions WHERE Comment LIKE 'Warlock artifact choice - %';
@@ -27,7 +31,7 @@ SELECT SourceTypeOrReferenceId,SourceGroup,SourceEntry,ElseGroup,ConditionTypeOr
 $db=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='} | Select-Object -First 1).Split('"')[1].Split(';')
 $prior=$env:MYSQL_PWD
 try {$env:MYSQL_PWD=$db[3];$rows=@($sql | & C:/wamp64/bin/mysql/mysql8.4.9/bin/mysql.exe --host=$($db[0]) --port=$($db[1]) --user=$($db[2]) --database=$($db[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Artifact choice temporary SQL fixture failed'}}finally{$env:MYSQL_PWD=$prior}
-if($rows[0] -ne "COUNT`t30" -or $rows[1] -ne "OTHER`t0"){throw "Migration scope/repeat failure: $($rows[0]), $($rows[1])"}
+if($rows[0] -ne "COUNT`t42" -or $rows[1] -ne "OTHER`t0"){throw "Migration scope/repeat failure: $($rows[0]), $($rows[1])"}
 [IO.File]::WriteAllLines("$out/conditions.tsv",[string[]]$rows[2..($rows.Count-1)])
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/WarlockArtifactChoiceTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`" `"$out/conditions.tsv`"`r`n"

@@ -76,7 +76,7 @@ int main(int argc,char** argv){
  while(file>>type>>group>>entry>>c.ElseGroup>>c.ConditionType>>c.ConditionValue1>>c.ConditionValue2>>c.ConditionValue3>>c.NegativeCondition)manager.rows[{type,group,entry}].push_back(c);
  for(auto id:{523,524,525}){Response r;r.ResponseId=id;r.Reward.emplace();r.Reward->SpellID=id;objects.rows[245].Responses.push_back(r);}
  uint32 cases=0;
- for(auto status:{QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED})for(auto afflictionEnd:{40712,41156})for(int mask=0;mask<8;++mask){
+ for(auto status:{QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED})for(auto afflictionEnd:{40623,41155,40712,41156})for(int mask=0;mask<8;++mask){
   Player p;p.quests[40684]=QUEST_STATUS_REWARDED;
   int ends[]={afflictionEnd,42125,43254};for(int i=0;i<3;++i)if(mask&(1<<i))p.quests[ends[i]]=status;
   bool any=mask!=7;assert(manager.IsObjectMeetToConditions(&p,manager.List(15,19326,0))==any);
@@ -87,6 +87,21 @@ int main(int argc,char** argv){
    s.HandleChoiceResponse(packet);assert(p.casts==casts+int(offered)&&scripts.calls==callbacks+int(offered));
   }++cases;
  }
+ // Actual reported history: acquisition rewarded, both return quests absent.
+ Player acquired;for(auto q:{40684,40686,40495,40588,40623,40731,40824,42125,43254})acquired.quests[q]=QUEST_STATUS_REWARDED;
+ assert(acquired.GetQuestStatus(40712)==QUEST_STATUS_NONE&&acquired.GetQuestStatus(41156)==QUEST_STATUS_NONE);
+ auto fixedRows=manager.rows;
+ for(auto& row:manager.rows){auto& list=row.second;list.erase(std::remove_if(list.begin(),list.end(),[](Condition const& condition){return condition.ConditionValue1==40623||condition.ConditionValue1==41155;}),list.end());}
+ acquired.SendDisplayPlayerChoice(1,245);assert(acquired.responses==std::vector<int>{523}); // Baseline defect reproduced.
+ assert(manager.IsObjectMeetToConditions(&acquired,manager.List(15,19326,0)));
+ manager.rows=fixedRows;acquired.packets=0;acquired.responses.clear();
+ acquired.SendDisplayPlayerChoice(1,245);assert(!acquired.packets&&acquired.responses.empty());
+ assert(!manager.IsObjectMeetToConditions(&acquired,manager.List(15,19326,0)));
+ int callbacks=scripts.calls;WorldSession acquiredSession{&acquired};WorldPackets::Misc::ChoiceResponse stale{245,523};
+ acquiredSession.HandleChoiceResponse(stale);assert(!acquired.casts&&scripts.calls==callbacks);
+ // A selected, active but not finished acquisition remains retryable.
+ for(auto q:{40623,41155}){Player active;active.quests[40684]=QUEST_STATUS_REWARDED;active.quests[40686]=QUEST_STATUS_REWARDED;active.quests[q]=QUEST_STATUS_INCOMPLETE;
+  active.SendDisplayPlayerChoice(1,245);assert(active.responses.size()==3);}
  // Hidden selections survive abandonment; they must not hide an unfinished route.
  Player retry;retry.quests[40684]=QUEST_STATUS_REWARDED;for(auto q:{40686,40687,40688})retry.quests[q]=QUEST_STATUS_REWARDED;
  retry.SendDisplayPlayerChoice(1,245);assert(retry.responses.size()==3);

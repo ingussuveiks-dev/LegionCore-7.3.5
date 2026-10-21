@@ -1,5 +1,10 @@
 # Calydus completed artifact choices, 2026-10-21
 
+The first filter below missed the actual Affliction acquisition quest. The
+subsequent client failure and corrected 42-condition filter are recorded in
+[the Affliction follow-up](warlock-affliction-choice-2026-10-21.md). The original
+30-row and 32-case results below describe the earlier implementation only.
+
 ## Observed client failure and cause
 
 Maiko's client screenshot shows Calydus offering "Let me select my artifact"
