@@ -23134,6 +23134,12 @@ bool Player::LoadFromDB(ObjectGuid guid, CharacterDatabaseQueryHolder const& hol
     SetCanModifyStats(true);
     UpdateAllStats();
 
+    // UpdateAllStats queues stamina; InitStatsForLevel left max health at 1.
+    // Resolve its real item/aura-adjusted maximum before clamping saved health,
+    // and do not repeat the queued percentage-based update on the first tick.
+    UpdateStats(STAT_STAMINA);
+    m_updateStatsMask &= ~USM_STAMINA;
+
     // restore remembered power/health values (but not more max values)
     uint32 savedHealth = fields[f_health].GetUInt32();
     SetHealth(savedHealth > GetMaxHealth() ? GetMaxHealth() : savedHealth);

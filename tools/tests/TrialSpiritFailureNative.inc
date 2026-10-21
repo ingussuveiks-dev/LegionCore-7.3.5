@@ -36,6 +36,7 @@ struct SpiritLoopback
 
 static void TrialSpiritFailureCases(GarmPlayer& leader,InstanceMap& raid)
 {
+    SpiritLoginInputs();
     // Match worldserver Main's provider bootstrap before constructing native
     // WorldSocket packet crypto. The runner's working directory is Release.
     OpenSSLCrypto::threadsSetup(boost::filesystem::path("."));
@@ -57,6 +58,8 @@ static void TrialSpiritFailureCases(GarmPlayer& leader,InstanceMap& raid)
         Require(destination&&source&&destination->MapID!=source->MapID,"Spirit failure destination selection failed");
         auto owned=std::make_unique<GarmPlayer>(*leader.GetMap(),leader.getRace());auto player=owned.get();
         auto guid=player->GetGUID();auto session=player->GetSession();
+        std::string loginName="Spirit";auto nameNumber=guid.GetCounter();for(unsigned i=0;i<4;++i){loginName+=char('a'+nameNumber%26);nameNumber/=26;}player->SetName(loginName);
+        player->SetPrimarySpecialization(71);player->SetActiveTalentGroup(0);
         player->*Access(ControlSocialTag{})=sSocialMgr->LoadFromDB({},guid);
         SpiritGravePlace(*player,*body);
         sWorld->AddCharacterInfo(guid,0,player->GetName(),GENDER_MALE,player->getRace(),player->getClass(),player->getLevel());
@@ -113,11 +116,12 @@ static void TrialSpiritFailureCases(GarmPlayer& leader,InstanceMap& raid)
         auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT durability FROM item_instance WHERE guid=%llu",static_cast<unsigned long long>(itemGuid)).c_str());Require(row&&row->Fetch()[0].GetUInt32()==durability,"Spirit failure saved durability changed");
         auto corpses=CharacterDatabase.Query(Trinity::StringFormat("SELECT COUNT(*) FROM corpse WHERE guid=%u AND corpseType<>0",guid.GetCounter()).c_str());Require(corpses&&!corpses->Fetch()[0].GetUInt32(),"Spirit failure retained resurrectable corpse");
         session->HandleWorldPortAck();SpiritGraveRequest(session,healer.GetGUID());Require(!session->GetPlayer(),"Spirit failure stale requests recreated player");
-        GarmPlayer fresh(*leader.GetMap(),leader.getRace(),guid.GetCounter());fresh.SetMaxHealth(1000);fresh.SetHealth(f[6].GetUInt64());fresh.SetUInt32Value(PLAYER_FIELD_PLAYER_FLAGS,f[7].GetUInt32());
+        {GarmPlayer fresh(*leader.GetMap(),leader.getRace(),guid.GetCounter());fresh.SetMaxHealth(1000);fresh.SetHealth(f[6].GetUInt64());fresh.SetUInt32Value(PLAYER_FIELD_PLAYER_FLAGS,f[7].GetUInt32());
         auto stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS);stmt->setUInt64(0,guid.GetCounter());auto auras=ReadPrepared(stmt);stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS_EFFECTS);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlAurasLoadTag{}))(auras,ReadPrepared(stmt),0);
         fresh.LoadCorpse();SpiritGravePlace(fresh,mode?*destination:*source);session->HandleWorldPortAck();session->SendSpiritResurrect();
         Require(fresh.IsAlive()&&fresh.GetHealth()==321&&fresh.HasAura(15007)&&!fresh.GetCorpse()&&!fresh.IsBeingTeleported()&&fresh.GetMapId()==expected.GetMapId()&&fresh.GetExactDist(expected)<0.01f,"Spirit failure fresh-player component recovery failed");
-        fresh.GetMap()->RemovePlayerFromMap(&fresh,false);
+        fresh.GetMap()->RemovePlayerFromMap(&fresh,false);}
+        SpiritFullLogin(guid,expected,itemGuid,durability,session,uint32(raid.GetDifficultyID()),leader.getRace(),direction,mode);
         Require(raid.GetInstanceScript()->GetCompletedEncounterMask()==mask,"Spirit failure changed raid progress");
         std::cout<<"PASS: spirit failure recovery diff="<<uint32(raid.GetDifficultyID())<<" race="<<uint32(leader.getRace())<<" direction="<<direction<<" mode="<<mode<<" map="<<expected.GetMapId()<<" zone="<<zone<<" durability="<<durability<<std::endl;
     }

@@ -69,6 +69,7 @@ static void ControlRoundTrip(GarmPlayer& p,GarmPlayer& subject,InstanceMap& map,
 #include "TrialGraveyardNative.inc"
 #include "TrialSpiritGraveyardNative.inc"
 #include "TrialSpiritFarNative.inc"
+#include "TrialSpiritLoginNative.inc"
 #include "TrialSpiritFailureNative.inc"
 #endif
 static void ControlCase(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)

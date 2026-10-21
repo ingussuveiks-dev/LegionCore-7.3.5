@@ -85,5 +85,6 @@
       "build-extractors/runtime-test/trial-garm-native/startup-20261021-185050/Server.log": "13D19AC722766C87A914445E5FFF724C50780813433837036B10865AADF8D7E5"
     }
   },
-  "next_candidate": "Authenticated realm/instance reconnect admission and saved-character login, retaining this bounded component/native transport coverage separately."
+  "followup_audit": "docs/audits/spirit-login-health-2026-10-21.json",
+  "next_candidate": "Aggregate saved-character loading is now covered by the follow-up audit, which fixes deferred-stamina saved-health loss. Authenticated reconnect and the full session login callback remain separate."
 }

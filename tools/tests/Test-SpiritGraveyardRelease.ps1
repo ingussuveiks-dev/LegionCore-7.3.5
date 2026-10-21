@@ -29,3 +29,40 @@ if(($listing -join "`n") -notmatch "xor\s+${zeroReg},${zeroReg}"){throw 'Telepor
 $around | Set-Content "$out/near-far-zone-gate.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;near_offset=[int]($abiNear[0].Split('=')[1]);far_offset=[int]$abi.Groups[1].Value;cases=24;relog_components=16;far_cases=48;far_relog_components=32;failure_cases=56;near_and_far_resolve_destination_zone=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
 'PASS: canonical Release resolves saved destination zone for native near OR far transfers;24 near/48 cross-continent cases,56 refusal/transport-loss cases and16/32 relog components match final-link inputs.'
+
+$loginOut="$repo/build-extractors/runtime-test/spirit-login-release"
+New-Item -ItemType Directory -Force $loginOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit aggregate login '}).Count -ne 168){throw 'Run all168 aggregate LoadFromDB/offline recovery cases first'}
+if($inputs.'tools/tests/TrialSpiritLoginNative.inc' -ne (Get-FileHash "$repo/tools/tests/TrialSpiritLoginNative.inc").Hash){throw 'Aggregate login fixture changed after native run'}
+$loginAbi=@($lines | Where-Object {$_ -match '^SPIRIT_LOGIN_ABI '} | Select-Object -Unique)
+if($loginAbi.Count -ne 1){throw 'Missing unique native login ABI'}
+$loginFields=[regex]::Match($loginAbi[0],'^SPIRIT_LOGIN_ABI stats=(\d+) stamina=(\d+) mask=(\d+)$')
+if(!$loginFields.Success){throw 'Native login ABI changed'}
+$statsOffset=([int]$loginFields.Groups[1].Value).ToString('X')
+$stamina=[int]$loginFields.Groups[2].Value
+$clear=([uint32]::MaxValue -bxor [uint32]$loginFields.Groups[3].Value).ToString('X')
+$range=Bounds '?LoadFromDB@Player@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$loadLines=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical login disassembly failed'}
+$loadText=$loadLines -join "`n";$loadLines | Set-Content "$loginOut/LoadFromDB-Player.txt"
+$healthGate=[regex]::Match($loadText,"(?im)mov\s+rax,qword ptr \[(?<player>r\w+)\]\r?\n[^\r\n]*mov\s+edx,$stamina\r?\n[^\r\n]*mov\s+rcx,\k<player>\r?\n[^\r\n]*call\s+qword ptr \[rax\+0*(?<slot>[0-9a-f]+)h\]\r?\n[^\r\n]*and\s+dword ptr \[\k<player>\+0*${statsOffset}h\],0*${clear}h")
+if(!$healthGate.Success){throw 'Canonical login lacks synchronous stamina resolution and consumed deferred stamina bit'}
+$vtable=[regex]::Match($map,'(?m)\?\?_7Player@@6BUnit@@@\s+([0-9a-fA-F]{16})')
+if(!$vtable.Success){throw 'Missing native Player Unit vtable'}
+$vtableAddress=[Convert]::ToInt64($vtable.Groups[1].Value,16)
+$slot=[Convert]::ToInt32($healthGate.Groups['slot'].Value,16)
+$target=Resolve ([BitConverter]::ToInt64($binary,(Offset ($vtableAddress+$slot))))
+if($target -ne (Resolve (Symbol '?UpdateStats@Player@@'))){throw 'Canonical login stamina call does not dispatch native Player::UpdateStats'}
+$before=$loadText.Substring([Math]::Max(0,$healthGate.Index-250),[Math]::Min(250,$healthGate.Index))
+$virtualCalls=[regex]::Matches($before,'call\s+qword ptr \[rax\+([0-9a-fA-F]+)h\]')
+if(!$virtualCalls.Count){throw 'Missing preceding native stat scheduling call'}
+$priorSlot=[Convert]::ToInt32($virtualCalls[$virtualCalls.Count-1].Groups[1].Value,16)
+if((Resolve ([BitConverter]::ToInt64($binary,(Offset ($vtableAddress+$priorSlot))))) -ne (Resolve (Symbol '?UpdateAllStats@Player@@'))){throw 'Stamina resolution does not follow native UpdateAllStats'}
+$after=$loadText.Substring($healthGate.Index+$healthGate.Length,[Math]::Min(1500,$loadText.Length-$healthGate.Index-$healthGate.Length))
+$healthCalls=@([regex]::Matches($after,'call\s+([0-9a-fA-F]{16})') | ForEach-Object {Resolve ([Convert]::ToInt64($_.Groups[1].Value,16))})
+$maxHealth=Resolve (Symbol '?GetMaxHealth@Unit@@QEBA_KXZ')
+$setHealth=Resolve (Symbol '?SetHealth@Unit@@')
+if($healthCalls.Count -lt 4 -or $healthCalls[1] -ne $maxHealth -or $healthCalls[2] -ne $maxHealth -or $healthCalls[3] -ne $setHealth -or $after -notmatch 'cmp\s+rbx,rax[\s\S]*jbe\s+'){throw 'Canonical saved-health maximum clamp no longer follows stamina resolution'}
+($healthGate.Value+"`n"+$after) | Set-Content "$loginOut/saved-health-gate.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;aggregate_cases=168;stats_offset=[int]$loginFields.Groups[1].Value;stamina=$stamina;stamina_mask=[uint32]$loginFields.Groups[3].Value;virtual_update_stats_slot=$slot;saved_health_clamp=$true} | ConvertTo-Json | Set-Content "$loginOut/inputs.json"
+'PASS: canonical LoadFromDB resolves native stamina and clears its deferred bit before the saved-health clamp;168 full login/offline recovery cases match final-link inputs.'

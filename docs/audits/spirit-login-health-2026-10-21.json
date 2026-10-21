@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "6b2323391cc48d80d55b2c4135ec58b3671e1938",
+  "scope": "Aggregate native Player::LoadFromDB after spirit healer transfer refusal or interrupted far transfer; saved health, native inventory and offline sickness",
+  "previous_audit": "docs/audits/spirit-failure-2026-10-21.json",
+  "finding": "Production defect reproduced and fixed: LoadFromDB clamps saved health against the temporary1HP maximum before the queued stamina update has calculated the item/aura-adjusted maximum. Selected-field reload components in prior audits did not execute this aggregate ordering.",
+  "reproduction": {
+    "native_run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-191820",
+    "log": ".codex/spirit-login-native3.log",
+    "result": "Actual saved SQL health321 passes the preceding failure fixture, but a fresh ordinary Player through native LoginQueryHolder and LoadFromDB returns alive with health1/max1, exact expected map0 position/orientation and no teleport flags. This clean reproduction has empty DBErrors and fails the aggregate-health assertion.",
+    "sample": "SPIRIT_FULL_LOADED guid=5011 offline=0 alive=1 hp=1 max=1 map=0 distance=0 orientation=1.25 expectedO=1.25 teleport=0"
+  },
+  "implementation": "After UpdateAllStats schedules the pending stats, LoadFromDB calls native UpdateStats(STAT_STAMINA) and consumes only USM_STAMINA before the existing saved-health maximum clamp. Other stats and delayed operations keep their normal lifecycle. This avoids processing unrelated delayed pet/item operations early and prevents a repeated stale stamina percentage update on the first tick.",
+  "counts": {
+    "aggregate_loads": 168,
+    "underlying_failure_paths": 56,
+    "offline_ages_seconds": [
+      0,
+      20,
+      700
+    ],
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4,
+    "expansion_refusal_paths": 8,
+    "transport_loss_paths": 48,
+    "existing_near_cases": 24,
+    "existing_far_cases": 48,
+    "existing_failure_cases": 56
+  },
+  "checks": [
+    "Each full login constructs native LoginQueryHolder(account0,guid), calls Initialize and executes its entire query set through CharacterDatabase.DelayQueryHolder on the scratch character schema. A fresh ordinary Player(session) calls the actual linked Player::LoadFromDB; the fixture does not manually assign loaded health, flags, inventory, auras or map position.",
+    "The existing failure fixture now supplies valid letter-only names and Warrior specialization71 before the initial save. Native ObjectMgr::LoadPlayerInfo supplies race/class/stats/defaults with MaxPlayerLevel110. Custom starting quests are empty in the live world data; an admission check requires any future rows to belong to the loaded fixture quest catalog. No world temporary table or live world write is used in the final fixture.",
+    "All56 prior refusal/TCP-loss/idle-timeout paths now perform three sequential aggregate logins after their selected-field component control. Setting only each fixture row logout_time to native GameTime minus0/20/700 seconds exercises real LoadFromDB time_diff handling. Health remains321 and the original item GUID/entry25/durability27 reloads through actual inventory loading.",
+    "Sickness15007 reloads at598000ms, then578000ms after20 seconds offline, then is absent after700 additional seconds offline. The native maximum is calculated from actual race/class/item/aura state; saved health321 survives both active sickness and its expiry. An explicit native UpdateStatsByMask after each aggregate load proves the first deferred stat flush preserves that health and alive state.",
+    "Each aggregate load uses the selected native map, actual AddPlayerToMap and CheckInstanceLoginValid, then the same native LoadCorpse and UpdateZone components used to complete login. It reaches the expected map0/1/1220 position/orientation and native destination worker, alive/in-world, with no corpse or pending teleport.",
+    "Stale old-session ACK/resurrection and a repeated new-session resurrection cannot change health/durability or create a corpse. Native LogoutPlayer(true) then deletes the Player and persists the exact admitted map/XYZ/orientation/zone, health321, non-ghost flags and offline state. The next age reads that new native save and inventory again.",
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passes all168 aggregate cases, the56 underlying failure cases, prior24 near/48 far transfers and the configured graveyard/ghost/Helya regressions. Fresh native DBErrors is empty and Server.log has no ERROR. Scratch-only character/auth schemas and SQL users are removed; no live character/account rows were copied or changed.",
+    "Extended Test-SpiritGraveyardRelease.ps1 requires168 aggregate cases and unchanged aggregate fixture hash. Native ABI reports stats offset16692, STAT_STAMINA2 and USM_STAMINA4. Disassembly of deployed LoadFromDB verifies UpdateAllStats then UpdateStats(STAMINA) via the real Player Unit vtable, clears exactly that pending bit and retains the following native saved-health maximum comparison and SetHealth. No previous Release guard was weakened.",
+    "cmake --build build-extractors --config Release --target worldserver bnetserver -- /m:2 /nologo completed through the generated original-path libraries. Both final servers are in build-extractors/bin/Release; executable and MAP were generated together. Runtime config/certificates/DLLs/logs/extracted data were preserved and no global OutDir override was used.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary both pass after the canonical rebuild, retaining the full-login scenario selector/map-order safeguards.",
+    "No user server was running before rebuild. Owned hidden startup worldserver PID22012 reached ready and exited gracefully through server shutdown 0 with exit0. Fresh DBErrors and stderr are zero bytes and Server.log has no ERROR. No worldserver/bnetserver remains."
+  ],
+  "retained_observations": [
+    "The first attempted bootstrap shadowed playercreateinfo_quest unnecessarily and generated duplicate-alias/read-only errors. A following diagnostic used the wrong quest column name. Both were fixture SQL mistakes, were removed, and neither is accepted as production-defect evidence; the final bootstrap reads the native questid column and existing tables only.",
+    "The clean unpatched run191820 reproduced321->1HP with no DBErrors. The first fixed run192107 passed the three old-world aggregate logins, then its fixture used sessions.at(0) after real TCP cleanup had already removed account0. Scoped registration now preserves either the original fixture session or its legitimate absence. Run192220 subsequently passed all168 native cases; the final ABI/Release run is recorded below."
+  ],
+  "limits": [
+    "The aggregate Player::LoadFromDB and real LoginQueryHolder query set are executed. Socket authentication, character enumeration, the full WorldSession::HandlePlayerLogin callback/presentation, encrypted opcode routing and reconnect authentication are not executed.",
+    "Characters are synthetic level110 Human/Orc Warriors on disposable schema-only auth/character databases. The preserved inventory item is a real ordinary durable backpack item; pets, banks, void storage, equipped gear/relics and all other classes are not asserted by these cases.",
+    "Offline ages advance saved logout timestamps deterministically; concurrent map workers are fixture-owned and frozen. No WoW client rendering, UI, camera/pet portrait or visible movement/login verification is claimed.",
+    "Client confirmation should include saved low health after relog and the first in-world stat update, sickness countdown/expiry, inventory durability and movement at the restored graveyard."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-192504",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-192507",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "samples": [
+      "PASS: spirit aggregate login diff=17 race=1 direction=0 mode=0 offline=0 map=0 health=321 sickness=598000 durability=27",
+      "PASS: spirit aggregate login diff=17 race=1 direction=0 mode=0 offline=20 map=0 health=321 sickness=578000 durability=27",
+      "PASS: spirit aggregate login diff=17 race=1 direction=0 mode=0 offline=700 map=0 health=321 sickness=0 durability=27"
+    ],
+    "hashes": {
+      "src/server/game/Entities/Player/Player.cpp": "574C86F27EE585061F3B6B0C424A59472A967EBD43C14807FF5C2E80ECDBE62B",
+      "tools/tests/TrialSpiritLoginNative.inc": "EFA5F40E34C3539786253048790CE746B30FEB98A46ACE1ED799B6FEACF214EF",
+      "tools/tests/TrialSpiritFailureNative.inc": "0D967BA0E469FE535D0E3D05D0912B341E59B65FB50287AAC6C0541532F73708",
+      "tools/tests/TrialHelyaControlNative.cpp": "E6A2F5D8E8AEC13EA8F2ACF7D70ABDD7482532D261F65D1AA4D9742BFFB8AA72",
+      "tools/tests/Test-RockawayChannelNative.ps1": "E094E16BC7CE61187D321B35FAF714FEB5ECAA350DEAA78113ECFCB06114C4B6",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "577791E05E64A41443622D71C4E5502D3F84190B416A7665EAFED53658B6C094",
+      "src/server/game/Handlers/LoginQueryHolder.cpp": "BE8518B1F30D5AE0941EF1691DC1D3AD470D5D5E75780E941A8A9617B88C3B6C",
+      "src/server/game/Entities/Unit/StatSystem.cpp": "A667CC935579A29978B1D3BCD759D6FF10D0254E3B976528C4E1DA9CBE08E81F",
+      "build-extractors/src/server/game/Release/game.lib": "7C7170872E3B8F3DC336B96BC8C6637C2614476716461814DC714BE33FF7F6BE",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "4F033E3CFCDC755D29A150CE7DADD973E961AD399ADB76D7E204C61E98706D79",
+      "build-extractors/bin/Release/worldserver.exe": "FB4BCEE4A7F03B25AD516791E8D25041E802CB8946F3BAD03C85FA9424F4C718",
+      "build-extractors/bin/Release/worldserver.map": "F06CC79D4B26D191C5653458A4AEFCBB68E93CFE4FBA05E2BB27BD40472A82A1",
+      "build-extractors/bin/Release/bnetserver.exe": "3ABEA60AB6A5A7CCED9C78C8E4B5B4BDCC9CE872E070A56C2435E44137358F5D",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-192504/native-inputs.json": "A750FC9DB660F6CB5C0DC25D9014CC8FFC23D55D79143E6DDCA05FAB7165E6C5",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-192504/native-lines.txt": "11C6963F43E844DFE4B3A4B69E704706F1EE0724D0F063938909FB95EFEEA03B",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-192504/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-192504/Server.log": "AD696BDD3CF58B6545A2B33DDB4B14DEBFCA82471FF3F9D74E7486E618AAE97A",
+      "build-extractors/runtime-test/spirit-login-release/inputs.json": "5CF70645AEC5C7B83E7A0A8C7159C88873FB6BBDB9BCC5CAAF7272589105E5E1",
+      "build-extractors/runtime-test/spirit-login-release/saved-health-gate.txt": "6A208649F421A25BF7136DF6081349829782E87125462FF3778270054DD0C681",
+      ".codex/spirit-login-native3.log": "0F0398D4312BEAE7D36B19A87EC242750AF121E83B6763CCA2330CE20FCAD25E",
+      ".codex/spirit-login-build.log": "F7A41CF8C1109A096FA89347FD107CD599FCBCD37D80A92D5BD64314DD5BE272",
+      ".codex/spirit-login-verified.log": "47639F1241CC4E3566AB9A73C3307E6320ECD4430049408A083F5AD5B95813EF",
+      ".codex/spirit-login-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-login-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-192507/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-192507/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-192507/Server.log": "2817AD37A38AA610B72464885686521855B670406C6E40E0DD908277173FF013"
+    }
+  },
+  "next_candidate": "Authenticated reconnect and full session login callback, retaining aggregate character loading and client presentation as separate evidence."
+}
