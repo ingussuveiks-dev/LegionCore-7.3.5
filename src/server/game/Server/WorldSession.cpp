@@ -78,6 +78,7 @@ m_muteTime(mute_time), m_timeOutTime(0), _countPenaltiesHwid(0), _player(nullptr
 m_playerSave(false), m_sessionDbLocaleIndex(locale), m_latency(0), _tutorialsChanged(TUTORIALS_FLAG_NONE), recruiterId(recruiter), isRecruiter(isARecruiter), playerLoginCounter(0), forceExit(false), m_sUpdate(false), wardenModuleFailed(false), atAuthFlag(flag), canLogout(false),
 tokens(accountTokenMap)
 {
+    m_loginCompletionSerial = 0;
     _os = std::move(os);
     _accountName = std::move(name);
 

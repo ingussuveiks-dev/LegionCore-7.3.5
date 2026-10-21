@@ -2134,6 +2134,7 @@ class TC_GAME_API WorldSession
         bool isRecruiter;
         LockedQueue<WorldPacket*> _recvQueue;
         uint8 playerLoginCounter;
+        uint8 m_loginCompletionSerial;
         uint32 expireTime;
         bool forceExit;
         std::atomic<bool> m_sUpdate;

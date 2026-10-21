@@ -636,6 +636,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
         return;
     }
 
+    // Bind the delayed completion to this Player creation, including a rapid
+    // logout/relogin of the same GUID. Flood attempts must not invalidate it.
+    uint8 loginCompletionSerial = ++m_loginCompletionSerial;
+
     SendTutorialsData();
 
     sWorld->UpdateCharacterAccount(playerGuid, GetAccountId());
@@ -837,7 +841,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
     AddDelayedEvent(100, [=, this]() -> void
     {
         auto player = GetPlayer();
-        if (!player)
+        if (!player || m_loginCompletionSerial != loginCompletionSerial || player->GetGUID() != playerGuid)
             return;
 
         auto chatHandler = ChatHandler(player);
@@ -987,14 +991,14 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
         sCharacterService->FinalizeBoost(player);
 
-        bool firstLogin = pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST);
+        bool firstLogin = player->HasAtLoginFlag(AT_LOGIN_FIRST);
         if (firstLogin)
         {
-            pCurrChar->RemoveAtLoginFlag(AT_LOGIN_FIRST);
+            player->RemoveAtLoginFlag(AT_LOGIN_FIRST);
 
-            PlayerInfo const* info = sObjectMgr->GetPlayerInfo(pCurrChar->getRace(), pCurrChar->getClass());
+            PlayerInfo const* info = sObjectMgr->GetPlayerInfo(player->getRace(), player->getClass());
             for (uint32 spellId : info->castSpells)
-                pCurrChar->CastSpell(pCurrChar, spellId, true);
+                player->CastSpell(player, spellId, true);
         }
 
         // show time before shutdown if shutdown planned.

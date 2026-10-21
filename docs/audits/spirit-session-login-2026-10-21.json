@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "59b35ae7f1a3b7abcd7deb8bf79439f1278b5dbc",
+  "scope": "Native WorldSession::HandlePlayerLogin, its delayed100ms completion, map/session attachment, decoded loading notifications and rapid same-GUID relogin",
+  "previous_audit": "docs/audits/spirit-login-health-2026-10-21.json",
+  "finding": "Production callback lifetime defect reproduced and fixed. A delayed login callback looked up the current Player but also captured the original raw Player pointer. After logout and a new login in the same session it could admit the replacement at the old deadline and read the freed original pointer for first-login handling.",
+  "reproduction": {
+    "native_run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-201201",
+    "log": ".codex/spirit-session-replacement-baseline.log",
+    "result": "Four initial lifecycle modes passed. The new replacement mode stages loginA at0ms, logs it out at50ms, then stages a fresh ordinary Player for the same GUID in the same WorldSession. At100ms the old callback adds that replacement to the world instead of waiting until its own150ms deadline. Native assertion fails: Old login callback admitted the replacement Player at the old deadline. DBErrors is empty; a use-after-free crash was not observed or claimed."
+  },
+  "implementation": "WorldSession initializes a separate uint8 completion serial, advanced only after a successful LoadFromDB creates the next Player. The100ms callback captures that serial and GUID and rejects an absent Player, an older serial or a different GUID before initial packets or map admission. First-login flags/default casts use the validated current Player; the lambda no longer captures the original Player pointer. The existing flood-attempt counter is separate, and unrelated delayed session work is not cancelled. Normal accepted logins remain bounded by the existing ten-attempt session admission.",
+  "counts": {
+    "session_cases": 280,
+    "underlying_recovery_paths": 56,
+    "modes": 5,
+    "ordinary_completion": 56,
+    "early_and_repeated_notifications": 56,
+    "realm_loss_before_callback": 56,
+    "logout_before_callback": 56,
+    "same_guid_replacement": 56,
+    "existing_aggregate_loads": 168,
+    "existing_near_transfers": 24,
+    "existing_far_transfers": 48,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed all280 complete session cases plus the existing168 aggregate LoadFromDB/offline checks and configured56 failure/24 near/48 far/graveyard/ghost/Helya regressions. Native DBErrors is empty and Server.log has no ERROR records.",
+    "For every source refusal/TCP-loss/idle-timeout recovery path the fixture executes the complete native LoginQueryHolder query set, registers the fixture session and calls actual WorldSession::HandlePlayerLogin. Ordinary Player objects are created by production code; no fixture map admission or manual position/health reconstruction substitutes for the delayed callback.",
+    "Native WorldSocket loopback transports are assigned using the public SetWorldSession method and real session realm/instance slots. The actual Map::UpdateSessions drains AddSession and drives FunctionProcessor at99+1ms. Before100ms the Player stays changing-map/out-of-world with no ObjectAccessor lookup. The callback then executes native initial packet serialization, AddPlayerToMap, access validation, corpse handling, login hooks and state release.",
+    "Mode1 decodes real CMSG_LOADING_SCREEN_NOTIFY showing/finished packets before completion, repeats completion after map admission, repeats worldport ACK and resurrection requests, then executes native stat and session updates. Its separate flood counter is deliberately changed while the completion is pending; this must not invalidate the valid completion serial.",
+    "Mode2 receives real loopback realm peer EOF before the callback through Socket::ReadHandlerInternal -> WorldSocket::OnClose. While changing maps the native dispatcher finishes the100ms callback; its next ordinary session update observes transport loss, logs out/saves and removes the Player. This test records that bounded ordering rather than claiming no transient admission.",
+    "Mode3 logs out before100ms, deletes the actual Player, then executes the original delayed callback and late loading/worldport notifications with no current Player. No lookup, Player or loading flag is recreated.",
+    "Mode4 uses native logout at50ms and then a second native HandlePlayerLogin for the same GUID in the same WorldSession with a replacement instance transport. Completion serial advances1->2. The old callback at100ms cannot admit or release the replacement; it remains pending through149ms and its own callback completes at150ms. This covers GUID/address reuse rather than relying on a pointer/GUID check alone.",
+    "Full session cases run before the offline-expiry controls, with active sickness15007 at598000ms. All relevant completions retain alive health321, no corpse, the original item GUID/durability27, exact recovery coordinates, the expected map/session lookup and the Player as its own server mover. Repeated notifications/resurrection cannot change them. Native cleanup saves recovery position, health321, non-ghost flags, online0 and exactly one unchanged598000ms sickness row.",
+    "The Release check requires all280 cases,56 per mode, unchanged fixture/CharacterHandler/WorldSession/packet source hashes and matching source/final-link library/canonical executable inputs. Native ABI reports completion offset1249 separately from flood offset1248. Canonical HandlePlayerLogin increments that byte; callback disassembly verifies null/serial rejection and current-GUID comparison to the same return branch before SendInitialPacketsBeforeAddToMap. Previous saved-health and teleport binary guards remain intact.",
+    "The canonical Release worldserver and bnetserver targets were rebuilt through original generated library paths into build-extractors/bin/Release. This includes dependents of the WorldSession header. Executable and MAP were regenerated together; runtime config, certificates, DLLs, extracted data and existing logs were preserved. No global OutDir override or force push was used.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary pass after rebuilding. These retain scenario selector and native login/map-order safeguards.",
+    "No user server was running before rebuild. Owned hidden startup PID1104 reached ready and shut down gracefully with server shutdown0, exit0. Fresh startup DBErrors/stderr are zero bytes and Server.log has no ERROR. No worldserver/bnetserver remains. Scratch-only auth/character schemas and SQL users were removed; no live character/account rows were copied or changed."
+  ],
+  "retained_observations": [
+    ".codex/spirit-session-native.log and spirit-session-verified.log passed the first224 four-mode cases. They did not cover a new Player replacing the old one before its delayed completion. The subsequent clean replacement baseline failed before any production fix; those earlier passes are not evidence against this defect.",
+    "The replacement baseline had already expired sickness through the earlier aggregate controls. The final fixture order also exercises active sickness through every session lifecycle case before running the existing offline-expiry controls.",
+    "The full rebuild emits existing warnings from unrelated sources; build completion is not described as warning-free. New native and startup error logs are checked independently."
+  ],
+  "limits": [
+    "Actual HandlePlayerLogin and its delayed callback execute, with the native query holder, map dispatcher, packet serialization/queues, loading packet decoder and loopback EOF callback. Authentication/ConnectTo key exchange, character enumeration, HandleContinuePlayerLogin async response cancellation and client encryption/transport delivery are outside this probe.",
+    "WorldSocket::SetWorldSession directly supplies the fixture authenticated-session association. Outbound packets are serialized and queued, not rendered or asserted as received by a WoW client. The flood-counter state change is an explicit fixture boundary, not a network flood test.",
+    "Synthetic level110 Human/Orc Warriors use schema-only scratch databases, real ordinary inventory item25 and scoped registered scripts. First-login cinematics/cast effects, all classes, pets, bank/void storage, real reconnect timing and the complete live PlayerScript catalog are not asserted.",
+    "The server mover/self lookup and lifecycle flags are verified; actual client control, loading-screen/UI timing, camera, pet portrait and collision readiness still require the7.3.5 client. Early/repeated loading notifications are checked for server state preservation, not complete visual packet ordering.",
+    "The same-GUID replacement proof uses two sequential successful query-holder results delivered to the handler. Stale/cancelled SQL-holder results before Player construction remain separate from this completed delayed-callback lifetime fix."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-202149",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-201851",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "samples": [
+      "PASS: spirit session login diff=17 race=1 direction=0 source=0 mode=0 map=0",
+      "PASS: spirit session login diff=17 race=1 direction=0 source=0 mode=1 map=0",
+      "PASS: spirit session login diff=17 race=1 direction=0 source=0 mode=2 map=0",
+      "PASS: spirit session login diff=17 race=1 direction=0 source=0 mode=3 map=0",
+      "PASS: spirit session login diff=17 race=1 direction=0 source=0 mode=4 map=0"
+    ],
+    "hashes": {
+      "src/server/game/Handlers/CharacterHandler.cpp": "77ED7D90030F02567403A0D5118A3B02F35F6DF89FADD49BB4DDB2B7281AA211",
+      "src/server/game/Server/WorldSession.cpp": "AD53B9E26521AA8817358A3EB1C60152C8A9325612FB950EABD32CB156D8220B",
+      "src/server/game/Server/WorldSession.h": "0BE2A46ED2AF3566FFAA7AD0DA81363FF10A5CBB13EF090BB31DD2B9939ADDF0",
+      "src/server/game/Server/Packets/CharacterPackets.cpp": "69D501FA93C831B2248183BB1D67CB11CFAEAA191BFDFC1A11C5817CAA1BB0F2",
+      "tools/tests/TrialSpiritSessionNative.inc": "35C6C9DFBF8445F0688E7C17CBFD5BA7BFA676FBDCCAD30D7ED7EC420880E97F",
+      "tools/tests/TrialSpiritFailureNative.inc": "5A221F1AEDA2214B1924E3CF58701D93D691FEFF5ADE7A50EC02100AE4E8F870",
+      "tools/tests/Test-RockawayChannelNative.ps1": "48DB9E41C9930F1CF73D3E8561C3C2DCEFF7CA1FC5DFFA5B35EAAE8375757503",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "958A3DD06FD6CDADFF7ED238A377A7DF612B0DAB8E2E55F62BD7DC0EAB203BBF",
+      "build-extractors/src/server/game/Release/game.lib": "BE384538DA90BE85B2BF222B73731E311FFF0D8EC2A841B17702FC4A0590B5DE",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "6C3169E39AF7395998C5301AB638679AB8EACF64141EEF5DB5F76180FE781AA7",
+      "build-extractors/bin/Release/worldserver.exe": "6403520BB8A172A77FFEFEAA46D5F5D9705C2A0272D1F48B466F9F451A3CDE79",
+      "build-extractors/bin/Release/worldserver.map": "24A6CD3B6D5A0884C04B7344E70920C1D57E36BB5CB9782C6D0EB31F075105C9",
+      "build-extractors/bin/Release/bnetserver.exe": "BDF2AA19565574C30F84231F7D34AE774F0DA28C821B85DA27D151FE9E2869CE",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-202149/native-inputs.json": "C03F2CA7EFB9929E07AAC0F6E6CF979EA6C4F70A83917634D8C752C2F7427F3A",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-202149/native-lines.txt": "CB3A27AFA12E0A4459466F5BA3A45C40E1A215D3A03E175C92AA8725062FEAE2",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-202149/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-202149/Server.log": "71C3FE5B3FFA5E46450294161DA4EFBA24229795CAF2002971512851A646040C",
+      "build-extractors/runtime-test/spirit-session-release/inputs.json": "2FECB45FA2235FB56669AC1B9D6861C6BBFCA6B9ED2799CF4C797DB787B69ED3",
+      "build-extractors/runtime-test/spirit-session-release/completion-gate.txt": "ADE85704E40E47B6C3DD5AADC3FFEC2E3CFDC1E92A20B7A4DC895536E42974C2",
+      ".codex/spirit-session-replacement-baseline.log": "F11B66CD60628A3D41123B1812A318599629EB207A28AD33EF49F35A6C1D4780",
+      ".codex/spirit-session-build.log": "6CFEEFB5138E5D6E55A5D3298FB0AB3E3B3BCC95DFC441CF8C0321946C0AB29F",
+      ".codex/spirit-session-fixed-verified.log": "E7A0680017BF69BDA62BAEA60E8C4B7CA4E6CD41239301017D8CC3E9598284BD",
+      ".codex/spirit-session-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-session-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-201851/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-201851/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-201851/Server.log": "095F28ED0932E267EE949AECF01960AF0EB081CAD9ECD21AE8279893F0ED7B72"
+    }
+  },
+  "next_candidate": "Late/cancelled LoginQueryHolder responses before Player construction and authenticated instance-link retry, retaining client presentation as separate verification."
+}

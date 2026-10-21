@@ -89,5 +89,6 @@
       "build-extractors/runtime-test/trial-garm-native/startup-20261021-192507/Server.log": "2817AD37A38AA610B72464885686521855B670406C6E40E0DD908277173FF013"
     }
   },
-  "next_candidate": "Authenticated reconnect and full session login callback, retaining aggregate character loading and client presentation as separate evidence."
+  "followup_audit": "docs/audits/spirit-session-login-2026-10-21.json",
+  "next_candidate": "The full session login callback is covered by the follow-up audit, including its same-GUID replacement lifetime fix. Pending SQL-holder cancellation, authentication and client presentation remain separate."
 }
