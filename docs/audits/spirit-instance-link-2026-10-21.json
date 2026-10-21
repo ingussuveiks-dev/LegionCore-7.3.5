@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "7187d2a1",
+  "previous_audit": "docs/audits/spirit-login-query-2026-10-21.json",
+  "scope": "Native post-authentication World instance-socket admission, old keys, retry deadlines, cancellation, duplicate links and real TCP EOF before admission",
+  "finding": "Production defect reproduced: World::ProcessLinkInstanceSocket accepted the current-key instance socket after the realm transport had already received EOF and WorldSocket::OnClose had marked its WorldSession forceExit. It associated that incoming socket and queued HandleContinuePlayerLogin SQL before ordinary session cleanup could run.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261021-214904",
+    "log": ".codex/spirit-link-baseline.log",
+    "result": "Modes0 through4 pass their first recovery path. Mode5 runs real Socket read/EOF -> WorldSocket::OnClose on the authenticated fixture realm transport, verifies forceExit, then queues/dispatches an incoming current-key instance socket. Original production code associates it and queues login SQL, failing: Instance socket was admitted after realm EOF and queued login SQL. DBErrors is empty. The fixture subsequently adds native ABI reporting without changing this failing assertion."
+  },
+  "implementation": "Reject a session with IsforceExit() in World::ProcessLinkInstanceSocket before key/loading/instance admission, SetWorldSession, AddInstanceConnection or HandleContinuePlayerLogin. Rejection uses the existing unassociated incoming-socket error/close branch and cannot close or kick a healthy realm/new instance connection. Normal key, loading and duplicate-connection gates remain intact.",
+  "native_modes": {
+    "0": "Current-key instance link attaches; a duplicate is rejected without another SQL query or replacing/closing the valid socket. The real query,100ms completion and logout/save succeed.",
+    "1": "Actual session FunctionProcessor preserves the key through11999ms, runs the12-second connection deadline and rotates it. The old-key socket is rejected; the new key links and completes. Later pending deadlines do not abort a linked login.",
+    "2": "AbortLogin before socket admission; a current-key late socket is rejected without association, SQL or kicking the healthy realm.",
+    "3": "Abort, then a new accepted request for the same GUID; the prior key is rejected while the new loading request stays intact. Only the new-key socket attaches and completes its real query/Player.",
+    "4": "An already-closed incoming transport is ignored without SQL; a current open transport still attaches and completes.",
+    "5": "Real realm peer EOF marks teardown before dispatch. The incoming current-key socket is rejected without association or SQL. Actual World::UpdateSessions removes the closing session.",
+    "6": "After a valid instance link queues one SQL result, real instance peer EOF marks teardown. Another current-key socket is rejected without association or another query. The retained ready result is discarded, and native world session cleanup closes the realm/removes the session."
+  },
+  "counts": {
+    "instance_link_cases": 392,
+    "underlying_recovery_paths": 56,
+    "cases_per_mode": 56,
+    "modes": 7,
+    "existing_deferred_query_cases": 392,
+    "existing_session_cases": 280,
+    "existing_aggregate_login_cases": 168,
+    "race_variants": 2,
+    "raid_difficulty_contexts": 4
+  },
+  "method": [
+    "Use actual loopback TCP transports, WorldSession/WorldSocket, accepted HandlePlayerLoginOpcode, native ConnectTo packet/RSA serialization and actual AddInstanceSocket enqueue. The fixture drains one native link-queue record into the real private ProcessLinkInstanceSocket to inspect admission before unrelated session updates; it does not replace the production dispatcher or model socket IsOpen/OnClose behavior.",
+    "Fixture instance type and enumerated character eligibility are seeded at the post-authentication boundary. The actual current connection key comes from production SendConnectToInstance. Rejected transports have no WorldSession association, so their real close must not set forceExit on the valid session.",
+    "Accepted links call native HandleContinuePlayerLogin and the entire LoginQueryHolder query set against schema-only scratch auth/character databases. The fixture retains the genuine ready SQL callback until duplicate/deadline controls are checked, then delivers it through the production query processor. Every successful path creates an ordinary Player and executes Map::UpdateSessions at99+1ms, preserving ObjectAccessor lookup, alive health321, exact recovery position, sickness15007 at598000ms and the original item25 GUID/durability27. Logout leaves health321/online0 and no Player/lookup/query."
+  ],
+  "limitations_and_pending_client_checks": [
+    "No WoW client was used. This is not an end-to-end authentication or encrypted-wire test: login credentials/digests, auth continued-session SQL/HMAC, encryption acknowledgement, client ConnectTo handling and packet display are not exercised. The native socket admission boundary and actual TCP EOF are exercised.",
+    "Mode6 isolates rejection of a replacement link during teardown and deliberately discards its previously ready SQL result. It does not prove that an already-queued SQL response is skipped after disconnect. Existing session evidence retains the bounded completion-then-cleanup ordering; do not claim that behavior was changed here.",
+    "EOF is completed before link dispatch under fixture control. Concurrent IO/world-thread interleavings and generalized socket synchronization are not proven by this ordered regression.",
+    "The existing lightweight extracted-handler test remains useful for five-attempt bounds and queued client failure reports; its transport/session stubs do not substitute for these native socket tests.",
+    "Camera, movement, pet portrait, rapid interactive relogin, connection error presentation and quest traversal still require the7.3.5 client. No personal character/account data is used."
+  ],
+  "next_candidate": "AbortLogin after a valid instance socket has attached but before its SQL response, followed by a new accepted request. The native cancellation cases here precede socket attachment; do not infer that later boundary is covered.",
+  "checks": [
+    "Native stage of Test-TrialHelyaControlNative.ps1 passed392 new instance-link cases,392 existing deferred-query cases,280 session cases and168 aggregate login/offline cases, plus configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Scratch auth/character schemas and users were removed; world DB remained read-only.",
+    "Test-SpiritGraveyardRelease.ps1 and Test-GhostReturnRelease.ps1 passed after the manifest-key correction below. Source/fixture/final-link library/canonical executable inputs match. Native ABI gives forceExit offset1256; disassembly rejects that byte before SetWorldSession and HandleContinuePlayerLogin, routing to the existing incoming-socket authentication-error/close branch. Existing saved-health, query serial,100ms completion and teleport guards pass.",
+    "Test-InstanceConnectRetry.ps1 passed the extracted production deadline/report/admission handlers, including the new closing-session stub case. Its existing C4458 warning is not presented as a clean warning-free build.",
+    "Release worldserver/bnetserver targets built successfully through the original generated library paths into build-extractors/bin/Release; executable and MAP regenerated together. Runtime configuration, certificates, DLLs, logs and extracted data were preserved.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-ScenarioResume.ps1 -VerifyReleaseBinary passed against the rebuilt executable.",
+    "Owned hidden startup PID31912 reached ready, received server shutdown0 and exited0. Fresh DBErrors/stderr are empty and Server.log has no ERROR. No worldserver/bnetserver remains and no user-owned server was stopped."
+  ],
+  "validation_note": "The first combined native/Release run passed all native cases and preceding binary guards, then the new Release checker looked up Socket.h by a normalized path. The native manifest preserves src/server/game/../shared/Networking/Socket.h, so the lookup was corrected and standalone Release/ghost guards rerun successfully. Production code, native fixtures, libraries and executable did not change after the native run; native input hashes remain enforced. The checker script itself changed only that manifest lookup after its initial recorded hash.",
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-215137",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261021-215155",
+    "worldserver": "278448CFCA8013908E856F7A3F3583A3097A2CE3D7F978124264459CAD92C484",
+    "worldserver_map": "BEA2B9B2ECF4CBED86F25C207B1E26182862CBF27CEB82931F8E85BEBBB0B840",
+    "game_library": "036627713EDF289B7A5D802CF50A553C913175BFAABB2F6861587F1331C50AB1",
+    "hashes": {
+      "src/server/game/World/World.cpp": "DC5798DC8A00565D5AEE4C2CAE86BEB413D3643FB7BC303F52C325F572557B7E",
+      "tools/tests/TrialSpiritInstanceLinkNative.inc": "624515F04671200B5F19492598039A55A78A6BC98E4963F17CECA8BE4F8B6D09",
+      "tools/tests/InstanceConnectRetryTest.cpp": "BBDF1533D96205B0E7B5D78EDAFF20B2057F18CA5FC94F54D1D59712ED8337E6",
+      "tools/tests/Test-SpiritGraveyardRelease.ps1": "E4F8F3EBE5D504FC9B2B5275B561B283639413A8760549A40C74136721D0E70E",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-215137/native-inputs.json": "D2A658605CC582E853AB3619EDDE8F21B21787026D213BD154F5F1902D4ADE73",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-215137/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-215137/Server.log": "69504A3B4FE7B1CCFFDC83B9F9406E1CF3CA12C74B2C7005AF6E469D9278B5CC",
+      "build-extractors/runtime-test/spirit-instance-link-release/inputs.json": "1F83FA11E77896E7C21CE89F00056F6B43B40D231118653C145B1DC2CB38011F",
+      "build-extractors/runtime-test/spirit-instance-link-release/teardown-gate.txt": "389C8B0DBD714C76291634F5FCCD2B64E64CB0387676B5EEFAB535E6E22E05D6",
+      ".codex/spirit-link-baseline.log": "882DB220FB9F72246BA0B9DEF40CA2ECDFE6654883ACDF3A5A7DFF78B8C6F021",
+      ".codex/spirit-link-build.log": "CEBDC5BD8449818048201D878EDA8166DB830C6654F04B31C5DCCDF69FA1E26B",
+      ".codex/spirit-link-final-verified.log": "4F109CA8550811805C7D8B4AEA5792FF8754BB95E0B3613413687FB014347C7B",
+      ".codex/spirit-link-release.log": "09F1C8DF22B5AE7594D0C9894B7C1A8AEE95B58BBBA50938BAE7AEB15839F8ED",
+      ".codex/spirit-link-ghost-release.log": "800470C17BF1C9ACD606895C42FDCD5624ECC1480B94F2BFA23599DBB5C3F77D",
+      ".codex/spirit-link-retry.log": "740456C53D16D8FA74740B8D98A56689D56ACF343AB959153A5330D24D0DD664",
+      ".codex/spirit-link-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/spirit-link-scenario-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-215155/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-215155/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261021-215155/Server.log": "F57CAA4F77F5D4DEB347821F0A74B2356E739EA42953864161683564F2E22EA2"
+    }
+  }
+}

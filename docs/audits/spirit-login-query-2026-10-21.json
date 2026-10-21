@@ -51,6 +51,7 @@
     "Rapid cancel/relogin, login packet presentation, camera, movement, pet portrait and interactive quest traversal still require client confirmation. Full client quest completion is not inferred from these server lifecycle tests."
   ],
   "next_candidate": "Authenticated instance-link retry/cancellation boundaries before HandleContinuePlayerLogin, including old socket links after a newer accepted request.",
+  "instance_link_followup": "docs/audits/spirit-instance-link-2026-10-21.json",
   "checks": [
     "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed all392 deferred-query cases,280 existing session cases,168 aggregate login/offline cases and configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log contains no ERROR records.",
     "Native ABI reports loading GUID offset665, current Player offset304 and independent serial offset1249. Canonical callback disassembly compares its captured serial and returns on mismatch before tail-dispatching HandlePlayerLogin. Canonical handler checks loading GUID emptiness, current Player and holder GUID to one rejection branch before allocation, native Player constructor and LoadFromDB. Accepted opcode increments that serial once. Existing100ms completion, health and teleport executable guards remain intact.",

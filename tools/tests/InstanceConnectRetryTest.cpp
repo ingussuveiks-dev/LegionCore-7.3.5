@@ -43,6 +43,7 @@ struct WorldSession {
     uint32 GetAccountId()const{return 1;}
     uint64 GetConnectToInstanceKey()const{return _instanceConnectKey.Raw;}
     void SetforceExit(){forceExit=true;}
+    bool IsforceExit()const{return forceExit;}
     void AddInstanceConnection(std::shared_ptr<WorldSocket> s){m_Socket[1]=s;}
     void HandleContinuePlayerLogin(){continued=true;}
     bool HasInstanceConnection()const;
@@ -115,6 +116,9 @@ int main(){
     world.session->Advance(12000);assert(world.session->sent.size()==2 && !world.session->aborted);
     auto unknown=std::make_shared<WorldSocket>();world.ProcessLinkInstanceSocket({unknown,99});assert(unknown->delayedClose);
     auto closed=std::make_shared<WorldSocket>();closed->open=false;world.ProcessLinkInstanceSocket({closed,oldKey});assert(!closed->associated);
+    World exiting;exiting.session=std::make_shared<WorldSession>();exiting.session->forceExit=true;
+    auto late=std::make_shared<WorldSocket>();exiting.ProcessLinkInstanceSocket({late,exiting.session->GetConnectToInstanceKey()});
+    assert(late->delayedClose&&!late->associated&&!exiting.session->continued);
     // Break test-only shared ownership cycles.
     valid->_worldSession.reset();
     std::cout<<"PASS: silent-client deadlines, five-attempt bound, queued failures, stale reports, successful/cancelled login and stale/duplicate authenticated sockets\n";

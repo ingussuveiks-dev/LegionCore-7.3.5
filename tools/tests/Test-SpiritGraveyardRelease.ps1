@@ -132,3 +132,31 @@ if(@([regex]::Matches($requestText,"inc\s+byte ptr \[r\w+\+0*${serialOffset}h\]"
 $admissionGate.Value | Set-Content "$queryOut/preconstruction-gate.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;serial_offset=[int]$sessionFields.Groups[1].Value;loading_guid_offset=[int]$queryFields.Groups[1].Value;current_player_offset=[int]$queryFields.Groups[2].Value;stale_query_returns_before_handler=$true;admission_before_construction=$true} | ConvertTo-Json | Set-Content "$queryOut/inputs.json"
 'PASS: canonical login SQL callback rejects an older request serial, and native handler checks loading/current Player/GUID before construction;392 deferred-query cases match final-link inputs.'
+
+$linkOut="$repo/build-extractors/runtime-test/spirit-instance-link-release"
+New-Item -ItemType Directory -Force $linkOut | Out-Null
+if(@($lines | Where-Object {$_ -match '^PASS: spirit instance link '}).Count -ne 392){throw 'Run all392 native instance-link cases first'}
+foreach($mode in 0..6){if(@($lines | Where-Object {$_ -match "^PASS: spirit instance link .* mode=$mode map="}).Count -ne 56){throw "Missing native instance-link mode $mode"}}
+foreach($path in @('tools/tests/TrialSpiritInstanceLinkNative.inc','src/server/game/World/World.cpp','src/server/game/Server/WorldSocket.cpp','src/server/game/../shared/Networking/Socket.h')){
+    if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Instance-link input changed after native run: $path"}
+}
+$linkAbi=@($lines | Where-Object {$_ -match '^SPIRIT_LINK_ABI exit=\d+$'} | Select-Object -Unique)
+if($linkAbi.Count -ne 1){throw 'Missing unique native teardown ABI'}
+$exitOffset=([int]$linkAbi[0].Split('=')[1]).ToString('X')
+$range=Bounds '?ProcessLinkInstanceSocket@World@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$linkLines=@(& $dump.FullName /DISASM:NOBYTES $argument $exe)
+if($LASTEXITCODE){throw 'Canonical instance-link disassembly failed'}
+$linkText=$linkLines -join "`n";$linkLines | Set-Content "$linkOut/ProcessLinkInstanceSocket.txt"
+$exitGate=[regex]::Match($linkText,"(?im)cmp\s+byte ptr \[r\w+\+0*${exitOffset}h\],0\r?\n[^\r\n]*jne\s+(?<reject>[0-9a-f]{16})")
+if(!$exitGate.Success){throw 'Canonical instance link lacks native session teardown rejection'}
+$linkCalls=@([regex]::Matches($linkText,'call\s+([0-9a-fA-F]{16})') | ForEach-Object {[pscustomobject]@{Index=$_.Index;Target=(Resolve ([Convert]::ToInt64($_.Groups[1].Value,16)))}})
+$associate=@($linkCalls | Where-Object Target -eq (Resolve (Symbol '?SetWorldSession@WorldSocket@@')))
+$continue=@($linkCalls | Where-Object Target -eq (Resolve (Symbol '?HandleContinuePlayerLogin@WorldSession@@')))
+if($associate.Count -ne 1 -or $continue.Count -ne 1 -or $exitGate.Index -ge $associate[0].Index -or $associate[0].Index -ge $continue[0].Index){throw 'Session teardown rejection must precede socket association and native login SQL dispatch'}
+$rejection=[regex]::Match($linkText,'(?im)^\s*'+$exitGate.Groups['reject'].Value+':(?<body>[\s\S]*)')
+if(!$rejection.Success){throw 'Missing native teardown rejection target'}
+$rejectCalls=@([regex]::Matches($rejection.Groups['body'].Value,'call\s+([0-9a-fA-F]{16})') | ForEach-Object {Resolve ([Convert]::ToInt64($_.Groups[1].Value,16))})
+if(!$rejectCalls.Count -or $rejectCalls[0] -ne (Resolve (Symbol '?SendAuthResponseError@WorldSocket@@')) -or $rejectCalls -contains (Resolve (Symbol '?SetWorldSession@WorldSocket@@')) -or $rejectCalls -contains (Resolve (Symbol '?HandleContinuePlayerLogin@WorldSession@@'))){throw 'Native teardown branch does not reject only the incoming socket'}
+$exitGate.Value | Set-Content "$linkOut/teardown-gate.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=392;cases_per_mode=56;teardown_offset=[int]$linkAbi[0].Split('=')[1];rejection_before_socket_association_and_sql=$true} | ConvertTo-Json | Set-Content "$linkOut/inputs.json"
+'PASS: canonical instance-link admission rejects a session already closing before socket association or login SQL;392 real loopback link/retry/cancel/EOF cases match final-link inputs.'

@@ -356,7 +356,7 @@ void World::ProcessLinkInstanceSocket(std::pair<std::weak_ptr<WorldSocket>, uint
         key.Raw = linkInfo.second;
 
         WorldSessionPtr session = FindSession(uint32(key.Fields.AccountId));
-        if (!session || session->GetConnectToInstanceKey() != linkInfo.second ||
+        if (!session || session->IsforceExit() || session->GetConnectToInstanceKey() != linkInfo.second ||
             !session->PlayerLoading() || session->HasInstanceConnection())
         {
             sock->SendAuthResponseError(ERROR_TIMED_OUT);
