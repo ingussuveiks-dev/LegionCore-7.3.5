@@ -459,7 +459,10 @@ void Vehicle::InstallAccessory(VehicleAccessory const* as)
     if (GetRecAura())
         accessory->EnterVehicle(_me, -1);
     else
-        _me->HandleSpellClick(accessory, as->SeatId);
+        // Installing an NPC accessory is an internal boarding operation, not a
+        // player click. Spellclick rows may rescue a prisoner or summon a boat
+        // and need not contain a CONTROL_VEHICLE aura at all.
+        accessory->EnterVehicle(_me, as->SeatId);
 
     /// If for some reason adding accessory to vehicle fails it will unsummon in
     /// @VehicleJoinEvent::Abort
