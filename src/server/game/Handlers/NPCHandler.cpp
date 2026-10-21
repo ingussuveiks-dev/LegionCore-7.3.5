@@ -392,7 +392,7 @@ void WorldSession::HandleGossipSelectOption(WorldPackets::NPC::GossipSelectOptio
 void WorldSession::HandleSpiritHealerActivate(WorldPackets::NPC::SpiritHealerActivate& packet)
 {
     Player* player = GetPlayer();
-    if (!player)
+    if (!player || player->IsAlive())
         return;
 
     if (!player->GetNPCIfCanInteractWith(packet.Healer, UNIT_NPC_FLAG_SPIRITHEALER))
@@ -407,7 +407,9 @@ void WorldSession::HandleSpiritHealerActivate(WorldPackets::NPC::SpiritHealerAct
 void WorldSession::SendSpiritResurrect()
 {
     Player* player = GetPlayer();
-    if (!player)
+    // A repeated activation must not reapply resurrection penalties to the
+    // player who was already resurrected by the first request.
+    if (!player || player->IsAlive())
         return;
 
     player->ResurrectPlayer(0.5f, true);

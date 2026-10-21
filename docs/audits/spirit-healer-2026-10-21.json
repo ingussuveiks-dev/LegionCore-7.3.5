@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "be9f9e17ef90fb512c61a2c2aa908fd9bd52f354",
+  "scope": "Spirit healer activation admission, resurrection penalties and repeated requests",
+  "previous_audit": "docs/audits/corpse-reclaim-2026-10-21.json",
+  "finding": {
+    "before": "HandleSpiritHealerActivate and SendSpiritResurrect accepted an already living Player. GetNPCIfCanInteractWith admits a nearby neutral spirit healer for a living Player; it is not a dead-only guard. The helper then reapplies half-health resurrection, resurrection sickness at eligible levels and25 percent maximum-durability loss.",
+    "reproduction": "Against pinned pre-fix final-link game.lib, actual serialized activation at native healer6491 for living Human level10 changed health777 to500 and backpack item25 durability35 to27. The regression rejected those changes. No corpse was needed.",
+    "fix": "Reject null or alive Player in both the packet handler and direct resurrection helper, before interaction/feign-death side effects or resurrection penalties. Existing dead-player paths, including missing corpse and no ghost aura, are retained."
+  },
+  "checks": [
+    "Canonical Release worldserver and bnetserver built with cmake --build build-extractors --config Release --target worldserver bnetserver -- /m:2 /nologo. Original generated final-link game.lib path retained; no OutDir override or runtime configuration change.",
+    "Test-CorpseRestartNative.ps1 -VerifyReleaseBinary passes78 spirit cases:13 modes x Human/Orc x levels10/15/20. These include72 serialized/decoded SpiritHealerActivate packet cases and6 direct helper calls on living Players;18 cases permit resurrection and60 reject it.",
+    "Native template6491 is used with actual model/template admission, neutral faction35 and NPC flags16385. Each case asserts an initially living Player can pass the shared interaction function, proving that function alone does not prevent this regression. Death/repop, corpse SQL persistence, native item templates/addons and inventory placement run against schema-only scratch databases.",
+    "Nearby dead valid, missing-corpse and unreleased-state controls retain50 percent health resurrection and clear8326/ghost/corpse. Each permitted request applies one native25 percent maximum-durability loss to a real backpack item25:35 to27. No synthetic item metadata or modeled damage handler is used.",
+    "With fixture sickness start level11, level10 gets none, level15 gets five minutes and level20 gets ten minutes through actual ResurrectPlayer spell15007. After reducing remaining sickness duration by2000ms and setting health321, a repeated packet preserves health321, durability27 and the same sickness duration. There are18 repeated successful-request controls.",
+    "Initially alive and direct-alive controls preserve health777, durability35 and no sickness. Dead controls reject horizontal/vertical100-yard separation, wrong NPC flag, despawned healer, foreign map, foreign instance, different phase and unknown GUID. Rejected requests retain death/health/corpse pointer and saved SQL corpse GUID; accepted requests delete resurrectable SQL rows.",
+    "Existing48 reclaim cases, separate-process corpse save/startup loading, startup/runtime expiry, missing-corpse login component and exact corpse GUID controls also pass. Native DBErrors is empty and no Server ERROR is emitted. Schema-only scratch databases and their SQL user are removed.",
+    "New Test-SpiritHealerRelease.ps1 uses actual final-link game.lib, canonical PE and native source/input hashes. Native ABI reports Unit death-state offset2584 (0xA18), with ALIVE statically required to be0. Exception-bounded disassembly resolves incremental thunks and verifies both entry points compare ALIVE before calls, with a branch directly to a side-effect-free return epilogue. Both bodies retain calls to native resurrection and durability loss; the handler contains an inlined helper.",
+    "Validation-owned hidden worldserver PID25128 reached ready and exited gracefully0. Startup DBErrors/stderr are empty and Server.log has no ERROR entries. No worldserver/bnetserver remains running. Runtime binaries are in build-extractors/bin/Release; configs, certificates, DLLs, extracted data and logs directories are preserved."
+  ],
+  "counts": {
+    "spirit_cases": 78,
+    "packet_cases": 72,
+    "direct_helper_cases": 6,
+    "accepted": 18,
+    "rejected": 60,
+    "duplicate_controls": 18,
+    "existing_reclaim_cases": 48
+  },
+  "source_comparison": {
+    "primary": "Local native Player::GetNPCIfCanInteractWith, NPCHandler activation/helper, item durability and ResurrectPlayer code, current template6491 and runtime DB2 item/spell catalogs.",
+    "external": "https://github.com/TrinityCore/TrinityCore/blob/master/src/server/game/Handlers/NPCHandler.cpp",
+    "qualification": "The current sibling TrinityCore handler/helper has a similar resurrection/penalty flow; it is supporting source comparison, not retail7.3.5 packet evidence or proof that living activation is intended. The local executable reproduction establishes the defect."
+  },
+  "retained_failures": [
+    ".codex/spirit-healer-reference.log: first fixture attempted inventory admission before loading item templates and initializing backpack slots. It failed before any spirit request. Fixture now loads real ItemSparse/addon data and supplies16 native backpack slots; no production inventory change.",
+    ".codex/spirit-healer-reproduction.log: corrected fixture against the preserved pre-fix library fails on the first living activation with health500/durability27, reproducing the actual bug. Baseline library SHA and commit are retained in build-extractors/runtime-test/spirit-healer-reference.",
+    "First post-fix .codex/spirit-healer-native.log passed all78 cases. Final run also wires the new canonical Spirit Release checker into the wrapper and records its source hash; all native and Release checks pass."
+  ],
+  "limits": [
+    "Socketless Players, fixture-spawned native healer6491 and direct decoded-handler invocation are used. This does not authenticate a client or exercise network opcode dispatch, gossip confirmation UI, client-visible ghost models or packet arrival ordering.",
+    "Character tables remain empty: corpse SQL rows and backpack item state are checked, but no persistent character health/flags/sickness reload or aggregate Player::LoadFromDB is claimed. Native SaveToDB may UPDATE absent character rows during corpse conversion.",
+    "All successful ghost/corpse positions share the same native graveyard. Transfer to a different corpse graveyard, its admission/ACK/logout, equipped/banked item penalties, feign-death aura preservation, transport interaction and exact interaction-radius boundaries are not newly verified.",
+    "Client confirmation of Spirit Healer dialog, sickness display/duration, durability, resurrection movement/camera/pet state and visuals remains pending. Startup and binary inspection do not verify those."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\corpse-restart-native\\run-20261021-093734",
+    "startup": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-garm-native\\startup-20261021-093807",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "reference_commit": "be9f9e17ef90fb512c61a2c2aa908fd9bd52f354",
+    "hashes": {
+      "src/server/game/Handlers/NPCHandler.cpp": "202A0C6B92B49F72B1D64340A0B5DB7C0D50EB69371F487915A8C16A866E11B9",
+      "tools/tests/SpiritHealerNative.inc": "3134CA9E9925C85DAC1BD0EDBA485F0B4255336FCFD439FA9170AF5D9826035E",
+      "tools/tests/CorpseRestartNative.cpp": "D1067045EEC0743306596D746132D4FD6457DE0D6F1C7941C79D57DB79278388",
+      "tools/tests/Test-CorpseRestartNative.ps1": "8D2AA9E3F9C2C3E2DBF3E3E25CD73C7B45F20C371CA6EE13DF9185F039248AC8",
+      "tools/tests/Test-RockawayChannelNative.ps1": "28FBD24BF73A4E589654ADC7831AA9A15D336FEC33CA75DF9FF1094EAEAAA86B",
+      "tools/tests/Test-SpiritHealerRelease.ps1": "26820ADA63C551E18E6B0989012DEB5F6F1D27FB50FF6304662A11F2736542B2",
+      "build-extractors/bin/Release/worldserver.exe": "17A771B1B36096D033A54896E1FF69F6137CB40CF0AA0213C2CB5C633C39AC53",
+      "build-extractors/bin/Release/bnetserver.exe": "A083B9F3FC0BE4441D7AAB913776E40D7F4659C25634236825AE00D11B755EB8",
+      "build-extractors/src/server/game/Release/game.lib": "0A82856CABDCED1A4B0E03C6AF5E72C5EAEB9DF7FC1AA39946F29DD00451012E",
+      "build-extractors/runtime-test/spirit-healer-reference/game.lib": "ABEC172CDF3CD7734EEFEDB0C923800D067E2A815DF47FDBF9323DC448FA2604",
+      ".codex/spirit-healer-reference.log": "FC7D191BDDCAFA553B3007883B139597D513428A36AA8D6155E59087B3FCB0D2",
+      ".codex/spirit-healer-reproduction.log": "24FE178F98316767A12C7B3FA9DA225A63B95EAAA921F97344E9A33086BEDDFA",
+      ".codex/spirit-healer-build.log": "6C6FBEF7DD1CF70093263234C5583BC9F59D9524BBE5390454499049A27F4FEF",
+      ".codex/spirit-healer-native.log": "406B70EFE1139F59AAB26AAB7018EADBB91D9301F0CBAE1A9587CD4F2D723A80",
+      ".codex/spirit-healer-final.log": "E88F1905FF5D0B119065D932C8C3BDD8BBA3898D113DEB23A7692B8E574D583B",
+      ".codex/spirit-healer-startup.log": "6DD5B0E0FD5164F9380F4A4AE1D4104C1E7C1DB436FB8ED4A7FEF7A7F824D855",
+      "native/native-lines.txt": "77F411C6A494536F66C4122334FD401F000F4C2830AAB4A553C20D979FB76FE8",
+      "native/native-inputs.json": "715499946A8537C3AE33F1F3E3CCBCE495B9AEC0407438C66AC954FDC8D9A51D",
+      "native/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "native/Server.log": "97D4C468531B0207AF9FB1C65C2F3386FC707CAAC7F7618999B2D68B1D939760",
+      "release/inputs.json": "6D9FC5BBCB8AAD0BD31C0B39CFCF110855EC6509C8A3A40D6D87E54E9D5F56D3",
+      "release/HandleSpiritHealerActivate.txt": "5C14475C6C1632B25AE1BA6C517A6B698CACC96CCE4EBFDD9F55D553CB535DC4",
+      "release/SendSpiritResurrect.txt": "7996A7B9EB255D085736D1C74C184D05232F3E1E78263BB09CAF0BD005D4A6F0"
+    }
+  },
+  "next_candidate": "Spirit healer transfer to the corpse graveyard when ghost and corpse have different nearest graveyards, including logout and repeated requests."
+}
