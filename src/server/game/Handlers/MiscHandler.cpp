@@ -21,6 +21,7 @@
 #include "CharacterPackets.h"
 #include "Chat.h"
 #include "ContributionMgr.h"
+#include "ConditionMgr.h"
 #include "Corpse.h"
 #include "InstancePackets.h"
 #include "LFGMgr.h"
@@ -674,6 +675,15 @@ void WorldSession::HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& pack
 
     auto playerChoiceResponse = playerChoice->GetResponse(packet.ResponseID);
     if (!playerChoiceResponse)
+        return;
+
+    // Recheck at execution: a stale selection window must not restart a
+    // completed artifact route or cast its hidden chosen-quest reward spell.
+    if (packet.ChoiceID == 245 &&
+        (!sConditionMgr->IsObjectMeetToConditions(_player,
+            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, packet.ChoiceID)) ||
+         !sConditionMgr->IsObjectMeetToConditions(_player,
+            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, packet.ResponseID))))
         return;
 
     if (auto reward = playerChoiceResponse->Reward)

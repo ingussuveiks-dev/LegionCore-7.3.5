@@ -38689,8 +38689,11 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     if (!playerChoice)
         return;
 
-//    if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
-//        return;
+    // Calydus must offer only unfinished acquisition routes. Keep this scoped
+    // until the unrelated choice-condition data has its own content audit.
+    if (choiceId == 245 && !sConditionMgr->IsObjectMeetToConditions(this,
+        sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
+        return;
 
     auto locale = GetSession()->GetSessionDbLocaleIndex();
     auto playerChoiceLocale = locale != DEFAULT_LOCALE ? sObjectMgr->GetPlayerChoiceLocale(choiceId) : nullptr;
@@ -38710,9 +38713,10 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     {
         auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];
 
-//        if (!sConditionMgr->IsObjectMeetToConditions(this, sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
-//            continue;
-//
+        if (choiceId == 245 && !sConditionMgr->IsObjectMeetToConditions(this,
+            sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
+            continue;
+
 //        if (playerChoiceResponseTemplate.Reward)
 //        {
 //            bool rewardNotNeed = false;
