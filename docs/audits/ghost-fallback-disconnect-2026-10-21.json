@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "bfffb9286d91ab16ebd28bb97dbc0a0325426553",
+  "scope": "Disconnect before and after corrective ghost-transfer arrival",
+  "previous_audit": "docs/audits/ghost-unloaded-fallback-2026-10-21.json",
+  "result": "The existing production fixes pass both disconnect boundaries. This change adds native regression coverage and consolidates the fixture login-component loader; no additional production implementation or SQL migration is required.",
+  "checks": [
+    "16 new cases:4 native raid difficulties (LFR17/Normal14/Heroic15/Mythic16), Human/Orc, and2 disconnect boundaries. The Player dies/repopulates through real handlers, retaining its corpse in earned raidA. A distinct group-bound B is unloaded with the actual map lifecycle, recreated by SafeTeleport and rejected at WorldPortAck. The real homebind fallback targets native5041 on exterior1220.",
+    "Stage1 disconnects with corrective far transfer pending, before its ACK: IsBeingTeleportedFar=true and IsInWorld=false. Stage2 disconnects immediately after successful corrective ACK: in world with no pending transfer. A fixture-owned heap Player is released to the actual WorldSession::Update logout dispatcher, which saves and deletes it.",
+    "Actual characters SQL matches the captured native destination/current position, orientation, health, ghost flag, offline state and zone7541. Stage1 saves instance_id0 through the pending-destination branch. Stage2 retains the current exterior map native GetInstanceId value7541; the fixture does not assume stationary and pending saves use identical instance values.",
+    "Actual corpse SQL retains exactly one original corpse GUID and raidA instanceId; global owner-cache lookup still returns that corpse. An actual stale WorldPortAck on the deleted Players old session is inert.",
+    "Each case constructs a fresh socketless Player, restores actual saved position/orientation/flags/health and executes native prepared group/bind/aura loaders plus LoadCorpse. The normal post-aura DEAD assignment is reproduced. Native CreateMap/AddPlayerToMap selects the exterior. An old-session ACK after this new Player exists must not change its map, saved coordinates/orientation/health, ghost/corpse or transfer state.",
+    "The reloaded Player then executes the existing actual entrance720/5775 path into originalA, with earned encounter mask3,50% resurrection and one corpse conversion/deletion. Personal/group bindings and retry remain under the previous native checks.",
+    "All88 graveyard/logout cases pass (72 previous plus16 new). The common login-component loader now covers32 ghost relogs;40 complete ghost-return checks, prior different-instance guards and unloaded-target fallback/short-near controls pass. Final DBErrors and Server ERROR counts are zero.",
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary compiles the fixture against actual generated final-link libraries and verifies canonical Release logout/destination save, corpse-instance admission/ACK, pure-portal ghost admission and in-world-only near teleport. The canonical worldserver.exe, bnetserver.exe and game.lib hashes are unchanged from the previously verified production fix."
+  ],
+  "changes": [
+    "TrialGhostUnloadedNative gains explicit fixture-only logoutStage1/2 boundaries, native save/deletion/late-ACK assertions and a shared original-binding restore operation. The disconnected Player is never dereferenced after deletion; values required for assertions are copied beforehand.",
+    "TrialGraveyardNative adds modes9/10 and extracts the existing selected-field/prepared-loader relog sequence into TrialGhostRelog, retaining the16 older ghost-login cases and adding the16 fallback cases. Health is now restored from the actual saved field instead of a fixed1; saved position/orientation/health are asserted after native map admission and stale ACK."
+  ],
+  "evidence": {
+    "final_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-085358",
+    "initial_pass": ".codex/fallback-disconnect-native.log",
+    "final_pass": ".codex/fallback-disconnect-final.log",
+    "hashes": {
+      "tools/tests/TrialGraveyardNative.inc": "2EA0519B7B6C3808928AAFAF0B09E0EF30DB6C887F97834D8B021CF1FE9F8B94",
+      "tools/tests/TrialGhostUnloadedNative.inc": "BBEC5BEBA515C0F0D4942F2A249205CC3A2E5896DADD56D5DF68FF2E1C018834",
+      "src/server/game/Server/WorldSession.cpp": "9997D623E5E763FDEE8FF22D4C92CDAF41040F24FA5D65D685FC4877F9844A1D",
+      "src/server/game/Entities/Player/Player.cpp": "68BC0E4BDE3D1F5B13A4D09A8EA123A6FF0AD44BEB4E6A3B0D051D6540FA2001",
+      "src/server/game/Handlers/MovementHandler.cpp": "388B57A6FB8BA27BBF94BE3B32E6D39F2BA0BF895C723430A108EFDEE48C4287",
+      "build-extractors/bin/Release/worldserver.exe": "6E293A33619A470A62789719A20C52AE2E4CB1D039E0EA33CCEA762E388E0651",
+      "build-extractors/bin/Release/bnetserver.exe": "FE4C2D87F3D036735269E5D22970D7E90B02CE13F52AE9AF4501B8FFC90EC020",
+      "build-extractors/src/server/game/Release/game.lib": "ABEC172CDF3CD7734EEFEDB0C923800D067E2A815DF47FDBF9323DC448FA2604",
+      ".codex/fallback-disconnect-native.log": "1FF0AEDA36AD388487AE1EEC7D38E67892EEFD167D1E600A745DAEAFB785B0BE",
+      ".codex/fallback-disconnect-final.log": "1FF0AEDA36AD388487AE1EEC7D38E67892EEFD167D1E600A745DAEAFB785B0BE",
+      "build-extractors/runtime-test/ghost-return-release/inputs.json": "52CC125F6B5D528DBFCB9FFEE100C3F526E8F4EAAC1F9CA9A83B9EFAA94B6B15",
+      "run/native-lines.txt": "85C98F4F44218A045225998EB640422D83CBECA3C9A954B0D89335A8BC6C184D",
+      "run/native-inputs.json": "77DC4E7D5E485592E28A01924AD5C20D4DF2A31EAAF2D79BE20D79F1D24DBAF3",
+      "run/Server.log": "50007055A16234778F53125E4053D055560D69C40DF4B5A06D9E83CD88BB29D4",
+      "run/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    }
+  },
+  "retained_observations": [
+    "Both native runs passed. The final run adds explicit saved-coordinate/orientation/health assertions after map admission and late ACK. No new production failure was observed or suppressed.",
+    "The initial/reference failures from earlier corpse/foreign-instance/unloaded-target fixes remain in their previous audits. This audit does not replace those records or turn them into client verification."
+  ],
+  "limits": [
+    "This is synchronous native component testing with socketless sessions and schema-only disposable character/auth data. Logout executes the real session dispatcher, but no physical connection loss, TCP reconnect or authentication is simulated.",
+    "The common relog helper explicitly restores selected saved fields and invokes actual prepared loaders. It does not execute aggregate Player::LoadFromDB. Its final death-state assignment matches production ordering but is fixture code; authenticated client login is still unverified.",
+    "Both boundaries retain a live earned raidA and its group/save while actors are frozen. Full server restart, corpse expiry/missing corpse, group loss, invalid homebind, source-map destruction and other simultaneous transfer races remain separate cases.",
+    "No production sources or canonical runtime artifacts changed, so no redundant server rebuild/startup is claimed. This turn launched no worldserver/bnetserver processes. Canonical Release deployment and prior graceful startup evidence remain in the previous audit.",
+    "Client ghost movement, loading, visibility, corpse/bones visuals, camera/pet/UI, actual logout/relogin and retail packet timing still need client confirmation."
+  ],
+  "cleanup": {
+    "scratch_schemas": 0,
+    "scratch_users": 0,
+    "validation_servers_running": 0,
+    "native_tests_used_personal_character_or_account_rows": false
+  }
+}

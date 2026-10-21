@@ -31,6 +31,24 @@ struct GraveyardSession
     ~GraveyardSession(){const_cast<SessionMap&>(sWorld->GetAllSessions()).erase(session->GetAccountId());session->SetMap(nullptr);}
 };
 #include "TrialGhostReturnNative.inc"
+// Component reload after actual session logout. This deliberately executes
+// selected saved fields and native prepared loaders, not aggregate LoadFromDB
+// or authenticated TCP login. The old session remains fixture-owned.
+static void TrialGhostRelog(ObjectGuid guid,GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group,Map& staging,GraveyardSession& registered)
+{
+    auto corpse=sObjectAccessor->GetCorpseForPlayerGUID(guid);Require(corpse,"Ghost relog corpse missing");auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT map,position_x,position_y,position_z,orientation,playerFlags,health,online FROM characters WHERE guid=%u",guid.GetCounter()).c_str());Require(row&&row->Fetch()[0].GetUInt32()==1220&&!row->Fetch()[7].GetBool(),"Ghost relog offline exterior row missing");auto f=row->Fetch();
+    GarmPlayer fresh(staging,p.getRace(),guid.GetCounter());fresh.GetSession()->*Access(ControlLoadingTag{})=guid;
+    staging.RemovePlayerFromMap(&fresh,false);fresh.Relocate(f[1].GetFloat(),f[2].GetFloat(),f[3].GetFloat(),f[4].GetFloat());fresh.SetUInt32Value(PLAYER_FIELD_PLAYER_FLAGS,f[5].GetUInt32());fresh.SetHealth(f[6].GetUInt64());fresh.SetRaidDifficultyID(map.GetDifficultyID());
+    auto stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_GROUP_MEMBER);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlGroupLoadTag{}))(ReadPrepared(stmt));Require(fresh.GetGroup()==&group,"Ghost prepared group reload lost membership");
+    stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_INSTANCE);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlBindLoadTag{}))(ReadPrepared(stmt));
+    stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS);stmt->setUInt64(0,guid.GetCounter());auto auras=ReadPrepared(stmt);stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS_EFFECTS);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlAurasLoadTag{}))(auras,ReadPrepared(stmt),0);
+    // Same final death-state assignment as LoadFromDB after aura restoration.
+    Require(fresh.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST),"Reload lost saved ghost flag");fresh.*Access(GhostDeathTag{})=DEAD;fresh.LoadCorpse();Require(fresh.isDead()&&fresh.GetCorpse()==corpse&&fresh.GetHealth()==f[6].GetUInt64(),"Ghost login consumed its corpse or changed health");
+    auto selected=sMapMgr->CreateMap(1220,&fresh);StopGraveyardFixtureZones(*static_cast<MapInstanced*>(sMapMgr->FindBaseMap(1220)));Require(selected&&selected->GetId()==1220,"Ghost login lost exterior map");fresh.ResetMap();fresh.SetMap(selected);Require(selected->AddPlayerToMap(&fresh,false),"Ghost login exterior admission failed");fresh.GetSession()->*Access(ControlLoadingTag{})=ObjectGuid::Empty;
+    auto oldSession=registered.session;oldSession->SetMap(nullptr);registered.session=fresh.GetSession();const_cast<SessionMap&>(sWorld->GetAllSessions())[registered.session->GetAccountId()]=WorldSessionPtr(registered.session,[](WorldSession*){});registered.session->SetMap(selected);
+    oldSession->HandleWorldPortAck();Require(fresh.IsInWorld()&&fresh.GetMap()==selected&&fresh.isDead()&&fresh.GetCorpse()==corpse&&!fresh.IsBeingTeleported()&&fresh.GetHealth()==f[6].GetUInt64()&&fresh.GetExactDist(f[1].GetFloat(),f[2].GetFloat(),f[3].GetFloat())<0.01f&&std::abs(fresh.GetOrientation()-f[4].GetFloat())<0.001f,"Old session ACK or map admission changed reloaded ghost/position/health");
+    TrialGhostReturn(fresh,p,map,helya,group);fresh.GetMap()->RemovePlayerFromMap(&fresh,false);
+}
 static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,Group& group)
 {
     sObjectMgr->LoadGraveyardZones();auto destination=sWorldSafeLocsStore.LookupEntry(5779);auto home=sWorldSafeLocsStore.LookupEntry(5041);Require(destination&&destination->MapID==1220&&home&&home->MapID==1220,"Native raid exterior/fixture homebind missing");
@@ -46,9 +64,10 @@ static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,G
     auto staging=sMapMgr->CreateMap(1220,&p);StopGraveyardFixtureZones(*static_cast<MapInstanced*>(sMapMgr->FindBaseMap(1220)));
     // ACK, attacked disconnect, death-timer disconnect, an ordinary pending
     // exit, invalid instance, invalid destination, Save=false, an invalid
-    // stationary instance and the native GM invalid-instance exemption.
-    for(unsigned mode=0;mode<9;++mode){
-        bool logout=mode!=0;bool pending=mode>=3&&mode!=7;bool ghost=mode==1||mode==2;
+    // stationary instance, native GM exception, and disconnect immediately
+    // before/after the corrective fallback ACK (modes9/10).
+    for(unsigned mode=0;mode<11;++mode){
+        bool fallbackLogout=mode>=9;bool logout=mode!=0&&!fallbackLogout;bool pending=mode>=3&&mode!=7&&!fallbackLogout;bool ghost=mode==1||mode==2;
         Restart(p,map,helya);
         auto owned=std::make_unique<GarmPlayer>(*staging,p.getRace());auto target=owned.get();auto guid=target->GetGUID();auto session=target->GetSession();
         // Login normally initializes these fields. Use a distinct, valid
@@ -64,7 +83,7 @@ static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,G
         float fallbackOrientation=target->GetOrientation();
         // Real attacker/combat admission, with actor scheduling frozen. Never
         // CombatStop this subject before the actual logout death branch.
-        if(mode<=2){Require(helya.Attack(target,true),"Native Helya attacker setup failed");target->SetInCombatWith(&helya);}
+        if(mode<=2||fallbackLogout){Require(helya.Attack(target,true),"Native Helya attacker setup failed");target->SetInCombatWith(&helya);}
         Require(map.GetInstanceScript()->IsEncounterInProgress()&&(mode>2||(!target->getAttackers()->empty()&&target->isInCombat())),"Graveyard did not enter active attacked input");
         if(mode==2){target->CombatStop(true);target->KillPlayer();Require(target->GetDeathTimer()&&!target->GetCorpse(),"Death-timer logout input missing");}
         if(pending){
@@ -89,21 +108,7 @@ static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,G
             Require(bool(f[7].GetUInt32()&PLAYER_FLAGS_GHOST)==ghost,"Logout changed ghost/alive persistence");
             if(mode!=6){auto expectedZone=sMapMgr->GetZoneId(1220,expected->Loc.X,expected->Loc.Y,z);std::cout<<"GRAVE_ZONE_LOOKUP mode="<<mode<<" expected="<<expectedZone<<" saved="<<f[8].GetUInt32()<<std::endl;Require(expectedZone==7541&&f[8].GetUInt32()==expectedZone,"Pending logout retained a zone different from native Stormheim geometry");}
             if(ghost){
-                // Component login after actual LogoutPlayer deleted its Player.
-                // Restore the selected saved fields and execute real prepared
-                // group/bind/aura loaders. This is not aggregate LoadFromDB or
-                // an authenticated network login; the independent cold-process
-                // fixture separately covers startup corpse persistence.
-                GarmPlayer fresh(*staging,p.getRace(),guid.GetCounter());fresh.GetSession()->*Access(ControlLoadingTag{})=guid;
-                staging->RemovePlayerFromMap(&fresh,false);fresh.Relocate(f[1].GetFloat(),f[2].GetFloat(),f[3].GetFloat(),f[6].GetFloat());fresh.SetUInt32Value(PLAYER_FIELD_PLAYER_FLAGS,f[7].GetUInt32());fresh.SetRaidDifficultyID(map.GetDifficultyID());
-                auto stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_GROUP_MEMBER);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlGroupLoadTag{}))(ReadPrepared(stmt));Require(fresh.GetGroup()==&group,"Ghost prepared group reload lost membership");
-                stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_INSTANCE);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlBindLoadTag{}))(ReadPrepared(stmt));
-                stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS);stmt->setUInt64(0,guid.GetCounter());auto auras=ReadPrepared(stmt);stmt=CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_AURAS_EFFECTS);stmt->setUInt64(0,guid.GetCounter());(fresh.*Access(ControlAurasLoadTag{}))(auras,ReadPrepared(stmt),0);
-                // Same final assignment as LoadFromDB after aura restoration.
-                Require(fresh.HasFlag(PLAYER_FIELD_PLAYER_FLAGS,PLAYER_FLAGS_GHOST),"Reload lost saved ghost flag");fresh.*Access(GhostDeathTag{})=DEAD;fresh.SetHealth(1);fresh.LoadCorpse();Require(fresh.isDead()&&fresh.GetCorpse()==corpse,"Ghost login consumed its raid corpse");
-                auto selected=sMapMgr->CreateMap(1220,&fresh);StopGraveyardFixtureZones(*static_cast<MapInstanced*>(sMapMgr->FindBaseMap(1220)));Require(selected&&selected->GetId()==1220,"Ghost login lost exterior map");fresh.ResetMap();fresh.SetMap(selected);Require(selected->AddPlayerToMap(&fresh,false),"Ghost login exterior admission failed");fresh.GetSession()->*Access(ControlLoadingTag{})=ObjectGuid::Empty;
-                registered.session->SetMap(nullptr);registered.session=fresh.GetSession();const_cast<SessionMap&>(sWorld->GetAllSessions())[registered.session->GetAccountId()]=WorldSessionPtr(registered.session,[](WorldSession*){});registered.session->SetMap(selected);
-                TrialGhostReturn(fresh,p,map,helya,group);fresh.GetMap()->RemovePlayerFromMap(&fresh,false);
+                TrialGhostRelog(guid,p,map,helya,group,*staging,registered);
                 std::cout<<"PASS: native ghost logout/deletion, saved-field/prepared-aura/group/bind login components and reloaded-corpse return diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<" mode="<<mode<<std::endl;
             }
         }else{
@@ -112,8 +117,11 @@ static void TrialGraveyardCases(GarmPlayer& p,InstanceMap& map,Creature& helya,G
             Require(target->IsBeingTeleportedFar()&&loc.GetMapId()==1220&&loc.GetExactDist(destination->Loc.X,destination->Loc.Y,destination->Loc.Z+2)<0.01f&&std::abs(loc.GetOrientation()-destination->Loc.O*float(M_PI)/180.0f)<0.001f,"Actual active-encounter repop missed native exterior");
             session->HandleWorldPortAck();StopGraveyardFixtureZones(*static_cast<MapInstanced*>(sMapMgr->FindBaseMap(1220)));Require(target->IsInWorld()&&target->GetMapId()==1220&&!target->IsBeingTeleportedFar()&&target->isDead(),"Ghost exterior worldport ACK failed");
             target->SaveToDB();FlushWrites();auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT map,position_x,position_y,position_z FROM characters WHERE guid=%u",guid.GetCounter()).c_str());Require(row&&row->Fetch()[0].GetUInt32()==1220&&std::abs(row->Fetch()[1].GetFloat()-destination->Loc.X)<0.01f&&std::abs(row->Fetch()[2].GetFloat()-destination->Loc.Y)<0.01f,"Ghost save lost exterior destination");
-            TrialGhostReturn(*target,p,map,helya,group);
-            target->GetMap()->RemovePlayerFromMap(target,false);
+            if(fallbackLogout){
+                ClearCombat(p,helya);owned.release();TrialGhostUnloadedInstance(*target,map,group,uint8(mode-8));Require(!session->GetPlayer(),"Fallback boundary did not logout the heap Player");
+                Restart(p,map,helya);TrialGhostRelog(guid,p,map,helya,group,*staging,registered);
+                std::cout<<"PASS: fallback disconnect and prepared relog return diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<" mode="<<mode<<std::endl;
+            }else{TrialGhostReturn(*target,p,map,helya,group);target->GetMap()->RemovePlayerFromMap(target,false);}
         }
         Require(map.GetInstanceScript()->GetCompletedEncounterMask()==mask,"External repop changed earned raid progress");ClearCombat(p,helya);
         std::cout<<"PASS: native Trial external graveyard/death/repop/logout diff="<<uint32(map.GetDifficultyID())<<" race="<<uint32(p.getRace())<<" mode="<<mode<<std::endl;
