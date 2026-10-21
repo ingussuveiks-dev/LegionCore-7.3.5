@@ -156,3 +156,40 @@ first-attempt client success remains the only real client retest; the final
 endpoint-only log adjustment is validated by native tests and runtime probes.
 The original intermittent failure remains unproven until observed with the new
 transport/client-report evidence. Preserve this limitation in future audits.
+
+## Reproduced after the pet/LFG/accessory release, 16:49
+
+The original failure recurred on deployed SHA256
+`bd37b19788a118c215d03c910947bd471f1e9a66506beb5f161c25ebde36fd9c`.
+Worldserver was ready at 16:48:36. Realm peer 60087 authenticated at 16:48:59.
+At 16:49:08 the client opened instance peer 60089 on local port 8086 for serial
+17. At its 10015 ms deadline, TCP_INFO reported ESTABLISHED, BytesOut=48,
+BytesIn=0, BytesInFlight=0 and BytesRetrans=0. Thus the peer TCP stack
+acknowledged all greeting bytes, but no initializer reached the server. This
+does not establish whether the client application consumed the greeting.
+
+At 16:49:20 the server's bounded retry requested serial 35. The client explicitly
+reported CONNECT_TO_FAILED for serials 35, 53, 71 and 89 immediately, with no new
+accepted instance TCP connections. The server then aborted login. These are now
+observed client refusals, rather than an inference from server retry logs.
+
+The user restarted the game without restarting the server. At 16:50:32 peer
+64247 completed initializer in 1 ms, continued auth in 16 ms and encryption in
+47 ms; Client.log records Active Player Created at 16:50:33.037. The failed
+client's log had already been overwritten. The user confirmed this sequence.
+
+Read-only review of the running client's executable code located its native
+greeting comparison and response path (preferred addresses 0x140606b20 through
+0x140606c4f). It keeps per-connection greeting state and validates the 47-byte
+line before sending its own line. This static review is **not** evidence of
+which branch ran during the earlier failure. No client bytes or settings were
+modified. No speculative greeting delay, timeout increase or retry change was
+made, and the intermittent first-login issue remains unresolved.
+
+`tools/research/Save-WorldHandshakeIncident.ps1` can follow newly appended server
+records and immediately preserve Client.log, relevant server network records,
+process paths and TCP endpoint/state metadata on the next timeout. Supply the
+actual Client.log path with `-ClientLog` and use `-Watch`; default output stays
+under ignored runtime-test/handshake-incidents. It neither captures packets nor
+reads process memory. Run it before a real client reproduction and leave the
+failed client open. Preserving the log avoids losing the failed run on restart.
