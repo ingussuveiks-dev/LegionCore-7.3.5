@@ -2129,7 +2129,10 @@ bool Player::SafeTeleport(uint32 mapid, float x, float y, float z, float orienta
     // preparing unsummon pet if lost (we must get pet before teleportation or will not find it later)
     Pet* pet = GetPet();
 
-    if (GetMapId() == mapid && !(options & TELE_TO_ZONE_MAP))
+    // A near teleport requires the client's existing self object in this
+    // map. A rejected far transfer has already removed us from the world,
+    // even when its fallback destination has the source map's ID.
+    if (IsInWorld() && GetMapId() == mapid && !(options & TELE_TO_ZONE_MAP))
     {
         //lets reset far teleport flag if it wasn't reset during chained teleports
         SetSemaphoreTeleportFar(false);

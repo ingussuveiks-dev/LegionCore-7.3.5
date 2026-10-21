@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-21",
+  "base_commit": "c4f8d1f8546cbe6d9b4970beb8fe718ed29e1dde",
+  "scope": "Rejected far-transfer fallback after an initially unloaded target instance",
+  "previous_audit": "docs/audits/ghost-instance-admission-2026-10-21.json",
+  "finding": {
+    "before": "MapManager preflight does not construct an unloaded bound instance. SafeTeleport then constructs it and removes the player from the source world. If actual InstanceMap admission rejects at WorldPortAck, the existing homebind fallback can have the source mapId. SafeTeleport classified that fallback as near using mapId alone, although the Player had already been removed from the world.",
+    "reproduction": "Actual native DestroyInstance unloads empty B while group saves retain its ID. Preflight passes without creating B; transfer creates B; corpse-instance admission rejects at ACK. Reference logs far0 near1 world0 change0 dest1220 corpse1. A near ACK does not perform AddPlayerToMap.",
+    "fix": "Require IsInWorld as well as matching mapId and ordinary options before using the near branch. An out-of-world same-map fallback now follows the existing full far-transfer protocol and native map admission/AddPlayerToMap at the subsequent ACK. Homebind selection and corpse-instance rejection are unchanged.",
+    "data": "No SQL migration, special map/quest list, corpse relocation, new destination or personal-character repair."
+  },
+  "native_checks": [
+    "24 unloaded-target cases across LFR17, Normal14, Heroic15, Mythic16 and Human/Orc, embedded in ordinary ghost returns and16 actual logout/deleted-Player login-component returns. Earned original A has encounter mask3; separate B is created by public native CreateMap and then unloaded with actual MapInstanced::DestroyInstance.",
+    "Retained native group saves select B while no B map exists. CanPlayerEnter passes without constructing it or mutating ghost/corpse. Actual SafeTeleport constructs the saved B and removes the player from the exterior; actual ACK rejects the foreign corpse and starts the native homebind fallback.",
+    "Corrected first ACK reports far1 near0 world0 change0 dest1220 corpse1, with a non-null exterior teleport target and native5041 home coordinates. Second actual ACK restores IsInWorld, exterior position and cleared transfer/change flags without resurrection or corpse consumption. Repeated ACK is inert.",
+    "Each case then executes two in-world one-yard near teleports through actual SafeTeleport and CMSG_MOVE_TELEPORT_ACK handlers (48 near-path controls). Native SaveToDB retains fallback map/coordinates/health/ghost flag, and the original corpse SQL row retains GUID and instanceA.",
+    "Restore native original group bind and save already earned script progress; normal actual entrance720/native5775 then returns to A, resurrects50% and converts corpse once. All24 previous other-instance guards,24 original-instance returns,72 graveyard/logout modes and16 prepared ghost relog component cases pass. Native DBErrors and Server ERROR counts are zero.",
+    "Canonical Release PE check resolves incremental thunks and exception bounds for the exact SafeTeleport(uint32,float,float,float,float,uint32,uint32) overload. IsInWorld false and mapId mismatch both jump to the existing far branch before native CanPlayerEnter; prior corpse-instance admission/ACK and pure-portal ghost gates remain verified.",
+    "Test-CorpseRestartNative.ps1 -VerifyReleaseBinary passes against the rebuilt canonical executable/library, including the independent-process corpse identity regression.",
+    "Test-MapObjectArrival.ps1 and native Test-DalaranPortalLanding.ps1 pass; supporting collision, initial objects, near/seamless arrival lifecycle, phase/collision rejection and isolated portal data boundaries are retained.",
+    "Test-ScenarioResume.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass as native/component and canonical PE checks.",
+    "Full Release worldserver/bnetserver build used canonical build-extractors/bin/Release and original generated final-link libraries, without OutDir override. Hidden validation-owned worldserver PID19852 reached ready and exited gracefully0; startup DBErrors/stderr are empty and no servers remain running."
+  ],
+  "retained_failure": "The pre-fix native failure and flags are retained in .codex/ghost-unloaded-reference.log. Its pre-fix game.lib and commit/hash are retained under build-extractors/runtime-test/ghost-unloaded-reference. The final native test uses the same real unloaded-target lifecycle, not a manually assigned teleport flag or fake CanEnter result.",
+  "limits": [
+    "Fixtures are synchronous socketless native processes with frozen actor scheduling and disposable schema-only character/auth data. No personal character/account rows are used by these native persistence tests.",
+    "The unloaded B is a saved same-map foreign corpse instance, so its real InstanceMap::CanEnter rejects. Null factory results, a later AddPlayerToMap failure, source-map destruction during loading and admission changing for other reasons are not independently exercised here.",
+    "The16 relog cases restore saved fields and actual prepared group/bind/aura/LoadCorpse components after real Player deletion; they do not authenticate a socket or execute aggregate Player::LoadFromDB. Independent cold-process corpse tests do not reconstruct the whole cold raid/group/Player.",
+    "Homebind is intentionally initialized to valid native5041 on exterior1220, also the source map. Fallback to a different map, invalid homebind, disconnection during the corrective transfer, seamless/vehicle/transport chains and delayed-teleport races remain separate cases.",
+    "Actual client map loading, movement release, visibility, corpse/bones rendering, camera/pet/UI and full restart/relog need client verification. Native state/ACK tests and successful startup do not prove renderer or retail packet timing."
+  ],
+  "evidence": {
+    "raid_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261021-083951",
+    "cold_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\corpse-restart-native\\run-20261021-084045",
+    "startup": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-garm-native\\startup-20261021-084031",
+    "canonical_runtime": "build-extractors/bin/Release",
+    "hashes": {
+      "src/server/game/Entities/Player/Player.cpp": "68BC0E4BDE3D1F5B13A4D09A8EA123A6FF0AD44BEB4E6A3B0D051D6540FA2001",
+      "src/server/game/Handlers/MovementHandler.cpp": "388B57A6FB8BA27BBF94BE3B32E6D39F2BA0BF895C723430A108EFDEE48C4287",
+      "src/server/game/Maps/MapManager.cpp": "F219DFA0609DB2338528BCAA4088BDDFB50F2717FC6301FFBA90CF3589F9E7AF",
+      "src/server/game/Maps/MapInstanced.cpp": "6B4CCD1292E79AE8CCD2B3FAF707B4E1746BC073456DFE4049624C89B531BAC2",
+      "tools/tests/TrialGhostUnloadedNative.inc": "E3051B1DDCE45E85E24CD881B4484C98C26D1E9A20659730F99F229BD6356B3C",
+      "tools/tests/TrialGhostReturnNative.inc": "88B4D0CAC0EAC27D6011BDB0D63A53E90DB64E4449C307ED2041BA05B191356E",
+      "tools/tests/Test-GhostReturnRelease.ps1": "00E44BF4567760030190354C594184AFF8E5E1AF2209A47DFDA2073B7F83B6E4",
+      "tools/tests/Test-RockawayChannelNative.ps1": "F515CDA817BA87FC6D4C53B37C658C8615556D9C4FF613BFB4E2ABFD6E44BD99",
+      "build-extractors/bin/Release/worldserver.exe": "6E293A33619A470A62789719A20C52AE2E4CB1D039E0EA33CCEA762E388E0651",
+      "build-extractors/bin/Release/bnetserver.exe": "FE4C2D87F3D036735269E5D22970D7E90B02CE13F52AE9AF4501B8FFC90EC020",
+      "build-extractors/src/server/game/Release/game.lib": "ABEC172CDF3CD7734EEFEDB0C923800D067E2A815DF47FDBF9323DC448FA2604",
+      ".codex/ghost-unloaded-reference.log": "F3BC38F8272EEA01FBDFBF2442A2360B05A5DDEE32D92EBED43887A3A32706EF",
+      ".codex/ghost-unloaded-build.log": "26B26DC108E8913F3D447CD93EE2AD9CEAFEB6B6156C47CF52B0B30E0ABE89BD",
+      ".codex/ghost-unloaded-final.log": "807E39DB6D857FB27BD1C0C88134686241F549482031C4E2DDD0F71B35C95CA5",
+      ".codex/ghost-unloaded-cold.log": "3A18EA94B5BF869B5AF41C1D20DA2DA4D0E149F89FA804F889F75991D965ABE3",
+      ".codex/ghost-unloaded-arrival.log": "BCE90C3B6A56806CC61C7A2E9B1B59ADEB7D981E5BD33127B9A83035AEDDE7AF",
+      ".codex/ghost-unloaded-dalaran.log": "080DDD56DC0E8FDA6AD1327ADE1FB2226B02B4D3BF7FC81AE90074694AE9F0E6",
+      ".codex/ghost-unloaded-resume.log": "76355E7D1D26197B646F47D4087269DFB65F1288027CC173DBC57094DDF483C7",
+      ".codex/ghost-unloaded-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/ghost-unloaded-startup.log": "6CFB0E524686C8F639C66C37F2FBE88070E9F44F15A749AEFF153BDE0A3DA2FA",
+      "raid/native-lines.txt": "490B0290FD0420A1070C201F935D87C01FA33BEED06CFE57244F24B9A4ACD863",
+      "raid/native-inputs.json": "B723B83E267868E072D2FDBB20B6AFD0E69388A84C6E8161D5F83587CB7188FB",
+      "raid/Server.log": "F1EC09A6282AB23BBFA98753D3D4BB59B3A2850C879939DC576B9F64C879472E",
+      "raid/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "cold/native-lines.txt": "AFED4F5253FE9CA2BDA82E9F2B81217271D468E0942540D329C049661FD5D67B",
+      "cold/native-inputs.json": "D62B7EDB454F9EEA930D33896D5D091315FBD93B6B36A6E2D057627C262DC0A2",
+      "cold/Server.log": "DA8DBE501AFF3A1604DF9F1343EB540BED7ED66C7E33C7718879172EF4B13580",
+      "cold/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "startup/Server.log": "66A851DB7BB29327572DD6EC3B290E72D36D18BD4DE9D42D5FDFC81097008B15",
+      "startup/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "startup/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "release/inputs.json": "52CC125F6B5D528DBFCB9FFEE100C3F526E8F4EAAC1F9CA9A83B9EFAA94B6B15"
+    }
+  },
+  "cleanup": {
+    "scratch_schemas": 0,
+    "scratch_users": 0,
+    "validation_servers_running": 0,
+    "native_tests_used_personal_character_or_account_rows": false
+  }
+}

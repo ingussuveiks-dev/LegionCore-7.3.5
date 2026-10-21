@@ -1,6 +1,7 @@
 // Real corpse/repop and DB entrance720, admission and WorldPortAck. No
 // modeled corpse or manual resurrection after the exterior transfer.
 #include "TrialGhostInstanceNative.inc"
+#include "TrialGhostUnloadedNative.inc"
 static void TrialGhostReturn(GarmPlayer& player,GarmPlayer& leader,InstanceMap& raid,Creature& helya,Group& group)
 {
     auto corpse=player.GetCorpse();Require(corpse&&corpse->GetMapId()==1648&&corpse->GetInstanceId()==raid.GetInstanceId(),"Ghost return lost original raid corpse");
@@ -19,6 +20,7 @@ static void TrialGhostReturn(GarmPlayer& player,GarmPlayer& leader,InstanceMap& 
     Require(sMapMgr->CanPlayerEnter(1648,&player,true)&&player.isDead()&&player.GetCorpse()==corpse,"Login admission check mutated a ghost");
     ClearCombat(leader,helya);
     TrialGhostOtherInstance(player,raid,group);outdoor=player.GetMap();
+    TrialGhostUnloadedInstance(player,raid,group);outdoor=player.GetMap();
     Require(sMapMgr->CanPlayerEnter(1648,&player,false)&&player.isDead()&&player.GetCorpse()==corpse,"Successful preflight resurrected ghost before map admission");
     Require(sMapMgr->CreateMap(1648,&player)==&raid,"Ghost selected a different saved raid instance");
     auto row=WorldDatabase.Query("SELECT guid,id,map,zoneId,areaId,position_x,position_y,position_z,orientation,spawnMask,phaseMask,PhaseId FROM eventobject WHERE guid=410220");Require(bool(row),"Trial entrance DB spawn missing");auto f=row->Fetch();

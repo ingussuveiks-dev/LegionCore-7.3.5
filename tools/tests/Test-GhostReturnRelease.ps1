@@ -5,7 +5,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 $relative=$release.Link.AdditionalDependencies.Split(';') | Where-Object {$_ -match 'game\\Release\\game.lib$'} | Select-Object -First 1
 if(!$relative){throw 'Missing actual game final-link input'}
 $gameLib=[IO.Path]::GetFullPath((Join-Path "$repo/build-extractors/src/server/worldserver" $relative))
-foreach($path in @('Maps/Map.cpp','Maps/MapManager.cpp','Entities/EventObject/EventObject.cpp','Handlers/MovementHandler.cpp')){if((Get-Item "$repo/src/server/game/$path").LastWriteTimeUtc -gt (Get-Item $gameLib).LastWriteTimeUtc){throw "Game final-link input predates $path"}}
+foreach($path in @('Entities/Player/Player.cpp','Maps/Map.cpp','Maps/MapManager.cpp','Entities/EventObject/EventObject.cpp','Handlers/MovementHandler.cpp')){if((Get-Item "$repo/src/server/game/$path").LastWriteTimeUtc -gt (Get-Item $gameLib).LastWriteTimeUtc){throw "Game final-link input predates $path"}}
 if((Get-Item $gameLib).LastWriteTimeUtc -gt (Get-Item $exe).LastWriteTimeUtc){throw 'Canonical executable predates actual game library'}
 $bodies=@{}
 foreach($name in @('CanPlayerEnter@MapManager','CanEnter@InstanceMap','Update@EventObject','HandleWorldPortAck@WorldSession')){
@@ -41,5 +41,18 @@ $region=$listing[($indexes[0]-18)..$indexes[0]] -join "`n"
 # WorldSafeLocID at8 and SpellID at4. Only a pure location portal passes false.
 $gate=[regex]::Match($region,'cmp\s+dword ptr \[(?<template>\w+)\+8\],0\r?\n[^\r\n]*je\s+(?<alive>[0-9A-Fa-f]{16})\r?\n[^\r\n]*cmp\s+dword ptr \[\k<template>\+4\],0\r?\n[^\r\n]*jne\s+\k<alive>\r?\n[^\r\n]*xor\s+r9b,r9b\r?\n[^\r\n]*jmp\s+(?<ready>[0-9A-Fa-f]{16})\r?\n\s*\k<alive>:\s*mov\s+r9b,1\r?\n\s*\k<ready>:')
 if(!$gate.Success){throw 'Canonical pure-portal ghost admission or living spell/mixed gate missing; review codegen/ABI if changed'}
-[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;corpse_preflight_without_resurrection=$true;selected_instance_rejects_foreign_corpse=$true;ack_requires_matching_instance=$true;successful_ack_resurrects=$true;native_pure_portal_reqAlive_false=$true;native_spell_and_mixed_reqAlive_true=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
-'PASS: canonical Release selected-instance corpse admission and ACK instance match verified; preflight has no resurrection; same-instance ACK and pure-portal ghost admission retained.'
+$range=Bounds '?SafeTeleport@Player@@QEAA_NIMMMMII@Z';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$teleport=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Canonical SafeTeleport disassembly failed'};$teleport | Set-Content "$out/SafeTeleport-Player.txt"
+$inWorld=Resolve (Symbol '?IsInWorld@Object@@');$worldGates=@()
+for($i=0;$i -lt $teleport.Count-9;$i++){
+ $m=[regex]::Match($teleport[$i],'call\s+([0-9A-Fa-f]{16})')
+ if($m.Success -and (Resolve ([Convert]::ToInt64($m.Groups[1].Value,16))) -eq $inWorld){
+  $g=[regex]::Match(($teleport[($i+1)..($i+8)] -join "`n"),'test\s+al,al\r?\n[^\r\n]*je\s+(?<far>[0-9A-Fa-f]{16})\r?\n[^\r\n]*mov[^\r\n]+\r?\n[^\r\n]*cmp\s+dword ptr \[[^\]]+\],\w+\r?\n[^\r\n]*jne\s+\k<far>')
+  if($g.Success){$worldGates+=$g}
+ }
+}
+if($worldGates.Count -ne 1){throw 'Canonical same-map near branch lacks the IsInWorld gate; review codegen if changed'}
+$admit=Resolve (Symbol '?CanPlayerEnter@MapManager@@');$farCalls=@(for($i=0;$i -lt $teleport.Count;$i++){$m=[regex]::Match($teleport[$i],'call\s+([0-9A-Fa-f]{16})');if($m.Success -and (Resolve ([Convert]::ToInt64($m.Groups[1].Value,16))) -eq $admit){[Convert]::ToInt64(([regex]::Match($teleport[$i],'^\s*([0-9A-Fa-f]{16}):')).Groups[1].Value,16)}})
+if($farCalls.Count -ne 1 -or $farCalls[0] -le [Convert]::ToInt64($worldGates[0].Groups['far'].Value,16)){throw 'Canonical out-of-world branch does not lead to native far-transfer admission'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;corpse_preflight_without_resurrection=$true;selected_instance_rejects_foreign_corpse=$true;ack_requires_matching_instance=$true;near_requires_in_world=$true;successful_ack_resurrects=$true;native_pure_portal_reqAlive_false=$true;native_spell_and_mixed_reqAlive_true=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
+'PASS: canonical Release corpse-instance guards, ACK preservation, pure-portal admission and in-world-only near teleport verified; out-of-world fallback follows native far admission.'
