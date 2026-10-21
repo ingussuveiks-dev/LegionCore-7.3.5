@@ -20,5 +20,7 @@ try{
     if(!(Test-Path -LiteralPath "$result/Client.log")){throw 'New fragmented timeout was not saved'}
     if((Get-Content "$result/Client.log" -Raw).Trim() -ne 'fixture client before restart'){throw 'Client snapshot differs'}
     if((Get-Content "$result/server-network.log" -Raw) -notmatch 'new WARN'){throw 'Incident omitted new timeout'}
+    $history=Get-Content "$result/tcp-history.json" -Raw | ConvertFrom-Json
+    if(!@($history).Count -or !$history[0].CapturedUtc){throw 'No pre-abort TCP observation was preserved'}
 }finally{Wait-Job $job | Out-Null;Receive-Job $job | Out-Null;Remove-Job $job}
 'PASS: old records ignored; fragmented new timeout preserves client and correlated network evidence.'

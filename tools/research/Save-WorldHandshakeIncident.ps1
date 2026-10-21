@@ -9,6 +9,17 @@ $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 if(!$ServerLog){$ServerLog="$repo/build-extractors/bin/Release/logs/Server.log"}
 if(!$OutputDirectory){$OutputDirectory="$repo/build-extractors/runtime-test/handshake-incidents"}
+$history=[Collections.Generic.Queue[object]]::new()
+
+function Read-ConnectionSnapshot {
+    $processes=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -match '^(Wow.*|worldserver|bnetserver)\.exe$'} | Select-Object ProcessId,Name,ExecutablePath)
+    $ids=@($processes | ForEach-Object {$_.ProcessId})
+    $connections=@(if($ids.Count){
+        Get-NetTCPConnection -ErrorAction SilentlyContinue | Where-Object {$ids -contains $_.OwningProcess} |
+            Select-Object OwningProcess,State,LocalAddress,LocalPort,RemoteAddress,RemotePort
+    })
+    [pscustomobject]@{CapturedUtc=[DateTime]::UtcNow.ToString('o');Processes=$processes;Connections=$connections}
+}
 
 function Save-Incident {
     # Output is deliberately private runtime data, never part of the commit.
@@ -19,12 +30,11 @@ function Save-Incident {
     })
     $network | Set-Content -LiteralPath "$destination/server-network.log" -Encoding UTF8
     if(Test-Path -LiteralPath $ClientLog){Copy-Item -LiteralPath $ClientLog -Destination "$destination/Client.log"}
-    $processes=@(Get-CimInstance Win32_Process | Where-Object {$_.Name -match '^(Wow.*|worldserver|bnetserver)\.exe$'} | Select-Object ProcessId,Name,ExecutablePath)
-    $processes | ConvertTo-Json | Set-Content -LiteralPath "$destination/processes.json" -Encoding UTF8
-    $ids=@($processes | ForEach-Object {$_.ProcessId})
-    Get-NetTCPConnection -ErrorAction SilentlyContinue | Where-Object {$ids -contains $_.OwningProcess} |
-        Select-Object OwningProcess,State,LocalAddress,LocalPort,RemoteAddress,RemotePort |
-        ConvertTo-Json | Set-Content -LiteralPath "$destination/tcp.json" -Encoding UTF8
+    $snapshot=Read-ConnectionSnapshot
+    $snapshot | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath "$destination/tcp-current.json" -Encoding UTF8
+    # The deadline abort closes the failed socket before a later query can
+    # identify its owner. Preserve observations from BEFORE that abort as well.
+    ConvertTo-Json -InputObject @($history.ToArray()) -Depth 6 | Set-Content -LiteralPath "$destination/tcp-history.json" -Encoding UTF8
     Write-Output $destination
 }
 
@@ -34,8 +44,14 @@ if(!$Watch){Save-Incident;return}
 $position=if(Test-Path -LiteralPath $ServerLog){(Get-Item -LiteralPath $ServerLog).Length}else{0}
 $identity=if(Test-Path -LiteralPath $ServerLog){(Get-Item -LiteralPath $ServerLog).CreationTimeUtc.Ticks}else{0}
 $deadline=[DateTime]::UtcNow.AddSeconds($WatchSeconds)
+$nextSnapshot=[DateTime]::MinValue
 $pending=''
 while([DateTime]::UtcNow -lt $deadline){
+    if([DateTime]::UtcNow -ge $nextSnapshot){
+        $history.Enqueue((Read-ConnectionSnapshot))
+        while($history.Count -gt 30){[void]$history.Dequeue()}
+        $nextSnapshot=[DateTime]::UtcNow.AddSeconds(1)
+    }
     if(Test-Path -LiteralPath $ServerLog){
         $file=Get-Item -LiteralPath $ServerLog
         if($file.Length -lt $position -or $file.CreationTimeUtc.Ticks -ne $identity){$position=0;$pending='';$identity=$file.CreationTimeUtc.Ticks}

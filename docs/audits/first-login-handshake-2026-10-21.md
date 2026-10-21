@@ -193,3 +193,12 @@ actual Client.log path with `-ClientLog` and use `-Watch`; default output stays
 under ignored runtime-test/handshake-incidents. It neither captures packets nor
 reads process memory. Run it before a real client reproduction and leave the
 failed client open. Preserving the log avoids losing the failed run on restart.
+
+The watcher also retains its last 30 process/TCP observations, sampled about
+once per second. Querying only after the timeout is insufficient: AbortSocket
+has already closed the failed endpoint by then. These earlier observations can
+associate the accepted peer port with the actual local client PID and retain
+its TCP state before abort. This is optional read-only OS sampling, not a packet
+trace, application-read proof or a fix. The parser test covers old-record
+rejection, fragmented newly appended warnings, client-log preservation and a
+pre-abort observation. No client/server configuration or protocol was changed.
