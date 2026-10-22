@@ -1229,7 +1229,7 @@ class spell_hun_tar_trap_aura : public AuraScript
 
         updateTimer %= IN_MILLISECONDS;
         Unit* caster = GetCaster();
-        Unit* target = GetTarget();
+        Unit* target = GetUnitOwner();
         if (caster && target && caster->HasAura(HUNTER_EXPERT_TRAPPER)
             && !target->HasAura(HUNTER_SUPER_STICKY_TAR) && roll_chance_i(20))
             caster->CastSpell(target, HUNTER_SUPER_STICKY_TAR, true);

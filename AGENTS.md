@@ -68,6 +68,8 @@
 
 # Hunter pet regressions
 
+- Tar Trap135299's OnEffectUpdate has no AuraApplication. Use GetUnitOwner for its slow victim; GetTarget logs and returns null, disabling Expert Trapper's sticky-tar proc. Preserve the one-second remainder, talent/duplicate/chance gates and original caster. Run `Test-HunterTarTrapHook.ps1 -VerifyReleaseBinary`; trap visuals and live proc remain client checks.
+
 - Hunter Kill Command34026 requires native Pet Active166615. Shared hunter-pet auras must use persistent HUNTER_PET type, not a creation-spell whitelist: loaded pets retain taming spell79598. CastPetAuras's bool is apply/remove; hunter Call Pet loads pass current=false and still need live-pet auras. Preserve corpse/death removal, revive/create reapplication, row filters and other pet types. Run `Test-HunterPetAuras.ps1 -VerifyReleaseBinary` and pet lookup regressions; dummy credit, dismiss/call, revive and reconnect remain client checks.
 
 # Warlock spell regressions

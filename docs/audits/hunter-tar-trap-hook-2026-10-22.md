@@ -1,0 +1,9 @@
+# Hunter Tar Trap effect-update target, 2026-10-22
+
+Live Server.log repeatedly reports at 13:58:19..21: `spell_hun_tar_trap_aura`, spell 135299, AuraScript::GetTarget called in a hook in which the call will not have effect. The script calls GetTarget once per second from OnEffectUpdate. Native Aura::CallScriptEffectUpdateHandlers prepares EFFECT_UPDATE without an AuraApplication, so GetTarget correctly logs and returns null. The Expert Trapper sticky-tar proc therefore never reaches its victim even when eligible.
+
+Change only this callback to GetUnitOwner, which returns the unit carrying the slow aura. Keep the native shared getter validation and logging intact. Preserve the original caster, one-second timer/remainder, Expert Trapper gate, existing-sticky-tar check and 20 percent roll. No tutorial criteria or spell availability is bypassed.
+
+Test-HunterTarTrapHook.ps1 extracts the complete production aura class, actual effect-update dispatcher and native getters. The old HEAD reproduces `errors=1 casts=0` on the first eligible update. The repaired callback is checked for actual owner-targeted application, repeat updates, timer boundary/remainder, missing caster/owner, absent talent, failed roll, existing sticky aura, unrelated effect and removed aura. Release implementation/startup and client observations are recorded after deployment; this isolated test does not verify visual trap placement or every trap lesson.
+
+The repaired native callback test passed. Release scripts.lib was rebuilt at the original CMake location and the final worldserver link was staged. PE checks resolve the actual callback and confirm GetUnitOwner is called while GetTarget is absent; the same binary contains the construct spawn/death/retry paths. Staged SHA256: `20d2b0bcbe9a5c27d3b7bc81cfe2b19b325880e7922f5b1e4e2253c9a9a1ba8d`. Client trap placement, live slow/sticky proc and the absence of further tick errors still need a client check.
