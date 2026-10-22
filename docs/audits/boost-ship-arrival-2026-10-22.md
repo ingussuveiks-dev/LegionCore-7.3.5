@@ -152,3 +152,53 @@ deployment and visible-ship client confirmation are pending.
 Computer Use was attempted only for read-only game-window inspection. Its native
 pipe was unavailable, including the documented retry/reset recovery; no UI
 actions were taken and no game-window visual claim is made from that tool.
+
+Follow-up implementation `7a876754` was pushed to origin/main. After the user
+confirmed graceful worldserver shutdown, a process check confirmed it was gone.
+Only the executable and matching map were replaced in canonical Release, with
+matching staging/deployment hashes (follow-up SHA above). Previous binaries are
+in ignored `.codex/backups/boost-ship-visibility-20261022-105524/`.
+Canonical linked-PE arrival/visibility checks, Scepter login and handshake
+lifetime regressions pass. No second hidden validation server was launched.
+The saved Krau row now contains the correct native ship-local deck offsets;
+no further character data write was needed for the visibility deployment.
+The user has been asked to retest actual ship display and movement.
+
+## Second client result: arrival verified, NPC deck height incorrect
+
+The user confirmed: the ship is visible, movement works and Krau no longer falls.
+They additionally observed NPC feet inside the deck, except the nearest actor.
+This verifies the reported arrival behavior in the client, not the whole tutorial.
+
+Native collision probes at the script's actual local offsets explain the height
+failure. Every standing NPC reused the safe location's Z, although the deck is
+not flat. Horde trainer (5,0) is only 0.043 yards below its surface; entourage
+(8,-6/-2/2/6) are 0.313/0.256/0.305/0.362 below. The exit actor at (12,0) would
+be 0.504 below. Alliance offsets also differ (including -0.194 and +0.139).
+These are real model ray results, not an arbitrary visual-height adjustment.
+
+The scoped script helper now transforms each grounded passenger pose to world,
+queries only its actual ship model, and converts the supported height back to
+transport-local coordinates before native summon/home initialization. The
+wrapper restores that resolved pose after passenger-set handoff. Missing model
+or floor logs an error and rejects the placement; it does not invent support.
+An explicit airborne mode preserves the Legion bat's intentional +3 height.
+Player safe locations, movement/credit/wave/departure logic remain unchanged.
+
+Test-BoostShipFloor.ps1 now executes the extracted production placement helper
+and Offset with actual native Transport instances/transforms, runtime DB2 and
+collision models. It covers both factions' trainer, entourage, dummy, both
+sparring positions, all ten imps, infernal and exit poses; every final world Z
+matches its own model floor within 0.001 yards. Repeated projection is stable,
+X/Y stay fixed, intentional flight stays airborne, missing/disabled floor fails.
+A naive shared-Z negative control compiles but fails the real floor-contact
+check (exit 9). The corrected native test passes. BoostShipArrival and full
+TransportVisibility tests pass again. The linked-PE verifier checks native
+model queries in the helper and its inlined SummonPassenger implementation;
+the first check expected a non-inlined call and was corrected for MSVC inlining.
+
+Original-path script libraries were rebuilt and a final staging link completed.
+Staged NPC placement SHA-256:
+`5ab1cf6f94bfc861ac298e27267f3fd20757741c7111a3c9052ece8d310a39be`.
+Deployment and client confirmation of NPC feet, later combat movement and the
+full training/departure sequence remain pending at this implementation review.

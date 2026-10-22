@@ -10,7 +10,11 @@ checks = [
     ("?OnPlayerEnter" + script, "?PutPlayerOnTransport" + script),
     ("?Update" + script, "?ShouldDeferMapObjectArrivalVisibility@Player@@"),
     ("?SendToSelf@VisibleNotifier@Trinity@@", "?GetTransport@Map@@"),
+    # MSVC inlines the placement helper into the wrapper; verify its actual
+    # native collision call there rather than requiring a non-inlined helper.
+    ("?SummonPassenger" + script, "?getHeight@GameObjectModel@@"),
+    ("?PreparePassengerPosition@BoostExperience@@", "?getHeight@GameObjectModel@@"),
 ]
 for caller, target in checks:
     assert native["symbol"](target) in native["calls"](caller), f"Missing linked {caller} -> {target}"
-print("PASS: linked Release queries moving collision models, prepares the deck before self-create, defers NPCs and reconciles transport visibility")
+print("PASS: linked Release queries moving collision models, prepares initial and NPC deck poses, defers NPCs and reconciles transport visibility")

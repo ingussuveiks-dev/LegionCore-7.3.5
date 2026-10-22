@@ -20,6 +20,7 @@
 #include "ScriptedGossip.h"
 #include "TemporarySummon.h"
 #include "Transport.h"
+#include "GameObjectModel.h"
 #include "MotionMaster.h"
 #include "MoveSpline.h"
 #include "ObjectAccessor.h"
@@ -189,6 +190,27 @@ Position Offset(Position const& base, float x, float y, float z = 0.0f, float or
     return Position(base.GetPositionX() + x * cosine - y * sine,
         base.GetPositionY() + x * sine + y * cosine,
         base.GetPositionZ() + z, Position::NormalizeOrientation(facing + orientation));
+}
+
+bool PreparePassengerPosition(Transport* transport, Position& position, bool grounded)
+{
+    // The native safe location is one point on a curved/sloping deck. Copying
+    // its Z to every offset buries Horde entourage feet by up to 0.36 yards.
+    // Resolve standing actors against this ship, retaining intentional flight.
+    if (!grounded)
+        return true;
+    if (!transport->m_model)
+        return false;
+
+    float x, y, z, orientation;
+    position.GetPosition(x, y, z, orientation);
+    transport->CalculatePassengerPosition(x, y, z, &orientation);
+    float floor = transport->m_model->getHeight(x, y, z + 2.0f, 5.0f, transport->GetPhases(), false);
+    if (!std::isfinite(floor))
+        return false;
+    transport->CalculatePassengerOffset(x, y, floor, &orientation);
+    position.Relocate(x, y, floor, orientation);
+    return true;
 }
 }
 
@@ -373,9 +395,16 @@ public:
         }
 
         TempSummon* SummonPassenger(Transport* transport, uint32 entry, Position const& position,
-            Unit* summoner = nullptr, TempSummonType type = TEMPSUMMON_MANUAL_DESPAWN, uint32 duration = 0)
+            Unit* summoner = nullptr, TempSummonType type = TEMPSUMMON_MANUAL_DESPAWN, uint32 duration = 0, bool grounded = true)
         {
-            TempSummon* passenger = transport->SummonPassenger(entry, position, type, nullptr, duration, summoner);
+            Position spawnPosition = position;
+            if (!PreparePassengerPosition(transport, spawnPosition, grounded))
+            {
+                TC_LOG_ERROR("scripts", "Boost tutorial passenger %u has no supporting deck on transport %s at local %.3f %.3f %.3f",
+                    entry, transport->GetGUID().ToString().c_str(), position.GetPositionX(), position.GetPositionY(), position.GetPositionZ());
+                return nullptr;
+            }
+            TempSummon* passenger = transport->SummonPassenger(entry, spawnPosition, type, nullptr, duration, summoner);
             if (!passenger)
             {
                 TC_LOG_ERROR("scripts", "Boost tutorial failed to summon passenger %u on transport %s",
@@ -392,7 +421,7 @@ public:
             // for the lifetime of the runtime summon.
             transport->RemovePassenger(passenger);
             transport->AddPassenger(passenger);
-            passenger->m_movementInfo.transport.Pos.Relocate(position);
+            passenger->m_movementInfo.transport.Pos.Relocate(spawnPosition);
             passenger->m_movementInfo.transport.VehicleSeatIndex = -1;
             _passengerGuids.push_back(passenger->GetGUID());
 
@@ -831,7 +860,7 @@ public:
                 StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
             }
             if (TempSummon* attacker = SummonPassenger(transport, NPC_LEGION_BAT, Offset(deck, 0.0f, 8.0f, 3.0f),
-                nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000))
+                nullptr, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000, false))
             {
                 _legionGuids.push_back(attacker->GetGUID());
                 StartCombat(attacker, targets[(_legionGuids.size() - 1) % targets.size()]);
