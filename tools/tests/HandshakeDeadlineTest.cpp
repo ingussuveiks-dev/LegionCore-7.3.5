@@ -3,6 +3,14 @@ using boost::asio::ip::tcp;
 #include "Socket.h"
 #include "Timer.h"
 #include <iostream>
+#include <mutex>
+
+struct TestWorldSession
+{
+    uint32 GetAccountId() const { return 2; }
+    std::string GetPlayerName() const { return "fixture"; }
+};
+using WorldSessionPtr = std::shared_ptr<TestWorldSession>;
 
 struct HandshakeSocket : Socket<HandshakeSocket>
 {
@@ -12,6 +20,26 @@ struct HandshakeSocket : Socket<HandshakeSocket>
     uint32 _type = 0;
     void* _compressionStream = nullptr;
     uint64 _key = 0;
+    uint32 _accountId = 0;
+    std::mutex _worldSessionLock;
+    WorldSessionPtr _worldSession;
+    enum class ReadDataHandlerResult { Ok, Error };
+    ReadDataHandlerResult CheckDuplicateAuth()
+    {
+        std::unique_lock<std::mutex> sessionGuard(_worldSessionLock, std::defer_lock);
+#include "DuplicateAUTH_SESSION.inc"
+        return ReadDataHandlerResult::Ok;
+    }
+    ReadDataHandlerResult CheckDuplicateContinuedAuth()
+    {
+        std::unique_lock<std::mutex> sessionGuard(_worldSessionLock, std::defer_lock);
+#include "DuplicateAUTH_CONTINUED_SESSION.inc"
+        return ReadDataHandlerResult::Ok;
+    }
+    void SetWorldSession(WorldSessionPtr session)
+    {
+#include "SetWorldSession.inc"
+    }
     uint32 stateLogs = 0;
     uint32* externalStateLogs = nullptr;
     MessageBuffer _packetBuffer;
@@ -93,5 +121,42 @@ int main()
             if (stateLogs != 1) return 6; // An open peer's EOF is still reported.
         }
     }
-    std::cout << "PASS: real loopback timeout closes the native socket and cancels its pending read; authenticated and younger sockets survive.\n";
+    for (int mode = 0; mode != 2; ++mode)
+    {
+        boost::asio::io_context context;
+        tcp::acceptor acceptor(context, {boost::asio::ip::address_v4::loopback(), 0});
+        tcp::socket client(context);
+        client.connect(acceptor.local_endpoint());
+        tcp::socket accepted(context);
+        acceptor.accept(accepted);
+        auto server = std::make_shared<HandshakeSocket>(std::move(accepted));
+        server->_initializationStart = getMSTime() - 60000;
+        if (mode == 0)
+        {
+            server->SetWorldSession(std::make_shared<TestWorldSession>());
+            if (!server->_authed || server->_accountId != 2) return 7;
+            if (server->CheckDuplicateAuth() != HandshakeSocket::ReadDataHandlerResult::Error ||
+                server->CheckDuplicateContinuedAuth() != HandshakeSocket::ReadDataHandlerResult::Error) return 11;
+            server->SetWorldSession(nullptr);
+            if (server->_worldSession || server->_accountId != 0 || !server->_authed)
+            {
+                std::cerr << "FAIL: session detach reset a completed socket authentication\n";
+                return 8;
+            }
+            if (server->CheckDuplicateAuth() != HandshakeSocket::ReadDataHandlerResult::Error ||
+                server->CheckDuplicateContinuedAuth() != HandshakeSocket::ReadDataHandlerResult::Error) return 12;
+            if (!server->Update() || server->stateLogs)
+            {
+                std::cerr << "FAIL: detached authenticated socket restarted its handshake deadline\n";
+                return 9;
+            }
+        }
+        server->CloseSocket();
+        if (server->Update() || server->stateLogs)
+        {
+            std::cerr << "FAIL: already closed socket was processed as an expired handshake\n";
+            return 10;
+        }
+    }
+    std::cout << "PASS: real loopback handshake timeout/cancellation, ordinary EOF, authenticated/young sockets, session detach and already closed socket cleanup.\n";
 }

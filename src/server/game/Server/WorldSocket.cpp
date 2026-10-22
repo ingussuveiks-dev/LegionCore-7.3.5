@@ -253,6 +253,11 @@ void WorldSocket::LogInitializationState(char const* event)
 
 bool WorldSocket::Update()
 {
+    // Logout can detach and close a previously authenticated instance socket
+    // before the network thread removes it. Its old handshake is not pending.
+    if (!IsOpen())
+        return false;
+
     // The client opens a second world connection while entering the world.
     // On Windows that TCP connection can occasionally remain half-initialized:
     // it stays open, but the client never completes the initializer/encryption
@@ -400,7 +405,11 @@ void WorldSocket::SetWorldSession(WorldSessionPtr session)
     std::lock_guard<std::mutex> sessionGuard(_worldSessionLock);
     _worldSession.swap(session);
     _accountId = _worldSession ? _worldSession->GetAccountId() : 0;
-    _authed = bool(_worldSession);
+    // Authentication belongs to the socket lifetime, not session ownership.
+    // Intentional logout detaches the session before closing this socket and
+    // must not rearm the original ten-second initialization deadline.
+    if (_worldSession)
+        _authed = true;
     // The old owner in the parameter is released after sessionGuard.
 }
 
@@ -455,7 +464,7 @@ WorldSocket::ReadDataHandlerResult WorldSocket::ReadDataHandler()
             {
                 // locking just to safely log offending user is probably overkill but we are disconnecting him anyway
                 if (sessionGuard.try_lock())
-                    TC_LOG_ERROR("network", "WorldSocket::ProcessIncoming: received duplicate CMSG_AUTH_SESSION from %s", _worldSession->GetPlayerName().c_str());
+                    TC_LOG_ERROR("network", "WorldSocket::ProcessIncoming: received duplicate CMSG_AUTH_SESSION from %s", _worldSession ? _worldSession->GetPlayerName().c_str() : "<detached session>");
                 return ReadDataHandlerResult::Error;
             }
 
@@ -474,7 +483,7 @@ WorldSocket::ReadDataHandlerResult WorldSocket::ReadDataHandler()
             if (_authed)
             {
                 if (sessionGuard.try_lock())
-                    TC_LOG_ERROR("network.opcode", "WorldSocket::ProcessIncoming: received duplicate CMSG_AUTH_CONTINUED_SESSION from %s", _worldSession->GetPlayerName().c_str());
+                    TC_LOG_ERROR("network.opcode", "WorldSocket::ProcessIncoming: received duplicate CMSG_AUTH_CONTINUED_SESSION from %s", _worldSession ? _worldSession->GetPlayerName().c_str() : "<detached session>");
                 return ReadDataHandlerResult::Error;
             }
 

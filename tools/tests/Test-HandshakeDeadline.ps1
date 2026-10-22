@@ -1,4 +1,4 @@
-param()
+param([switch]$VerifyReleaseBinary,[string]$ReleaseDirectory)
 $ErrorActionPreference='Stop'
 $repo=(Resolve-Path "$PSScriptRoot/../..").Path
 $output=Join-Path $repo "build-extractors/runtime-test/handshake-deadline"
@@ -13,6 +13,19 @@ $start=$source.IndexOf('    if (error)', $source.IndexOf('void WorldSocket::Init
 $end=$source.IndexOf('    GetReadBuffer().WriteCompleted(', $start)
 if($start -lt 0 -or $end -le $start){throw 'Missing actual initializer error handler'}
 [IO.File]::WriteAllText("$output/InitializerError.inc",$source.Substring($start,$end-$start))
+$start=$source.IndexOf('void WorldSocket::SetWorldSession(')
+$start=$source.IndexOf('{',$start)+1
+$end=$source.IndexOf('bool WorldSocket::ReadHeaderHandler()', $start)
+if($start -le 0 -or $end -le $start){throw 'Missing actual session binding handler'}
+$body=$source.Substring($start,$end-$start)
+$body=$body.Substring(0,$body.LastIndexOf('}'))
+[IO.File]::WriteAllText("$output/SetWorldSession.inc",$body)
+foreach($case in @('AUTH_SESSION','AUTH_CONTINUED_SESSION')){
+ $start=$source.IndexOf('            if (_authed)', $source.IndexOf("case CMSG_${case}:"))
+ $end=$source.IndexOf('            std::shared_ptr<', $start)
+ if($start -lt 0 -or $end -le $start){throw "Missing duplicate $case admission"}
+ [IO.File]::WriteAllText("$output/Duplicate${case}.inc",$source.Substring($start,$end-$start))
+}
 [xml]$project=Get-Content "$repo/build-extractors/src/server/worldserver/worldserver.vcxproj"
 $group=$project.Project.ItemDefinitionGroup | Where-Object Condition -like '*Release|x64*' | Select-Object -First 1
 $includes=$group.ClCompile.AdditionalIncludeDirectories.Split(';') | Where-Object {$_ -and $_ -notlike '%*'}
@@ -36,3 +49,10 @@ try {
  & "$output/HandshakeDeadlineTest.exe"
  if($LASTEXITCODE){throw 'Handshake deadline regression failed'}
 } finally {$env:PATH=$previousPath}
+if($VerifyReleaseBinary){
+ if(!$ReleaseDirectory){$ReleaseDirectory="$repo/build-extractors/bin/Release"}
+ $python=(Get-Command python -ErrorAction SilentlyContinue | Select-Object -First 1).Source
+ if(!$python){$python='C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'}
+ & $python "$PSScriptRoot/verify_handshake_lifetime_release.py" $ReleaseDirectory
+ if($LASTEXITCODE){throw 'Actual Release lacks socket authentication lifetime repair'}
+}
