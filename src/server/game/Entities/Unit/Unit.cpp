@@ -16241,23 +16241,19 @@ Unit* Creature::SelectVictim()
         // The last taunt aura caster is alive an we are happy to attack him
         if (caster && caster->IsAlive())
             return getVictim();
-        if (!tauntAuras.empty())
+        // The newest caster can disappear (pet dismissed/despawned) or die
+        // before its taunt expires. Advance only while another effect exists;
+        // dereferencing end() here used the list sentinel as an AuraEffect.
+        // If every older caster is unavailable, use normal threat selection.
+        for (++aura; aura != tauntAuras.end(); ++aura)
         {
-            // We do not have last taunt aura caster but we have more taunt auras,
-            // so find first available target
-            do
+            caster = (*aura)->GetCaster();
+            if (caster && caster->IsAlive() && canSeeOrDetect(caster, true) && IsValidAttackTarget(caster) && caster->isInAccessiblePlaceFor(ToCreature()))
             {
-                ++aura;
-                caster = (*aura)->GetCaster();
-                if (caster && canSeeOrDetect(caster, true) && IsValidAttackTarget(caster) && caster->isInAccessiblePlaceFor(ToCreature()))
-                {
-                    target = caster;
-                    break;
-                }
-            } while (aura != tauntAuras.end());
+                target = caster;
+                break;
+            }
         }
-        else
-            target = getVictim();
     }
 
     if (CanHaveThreatList())
