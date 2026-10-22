@@ -263,3 +263,8 @@ the action buttons are spells, Kill Command is known, cooldown is zero and focus
 is 120. The repair restores shared hunter-pet auras for saved taming origins and
 fixes hunter load/create apply flags. It does not skip this lesson or establish
 client completion of the later tutorial sequence.
+
+After deployment, the user confirmed that Kill Command worked and they progressed
+past its lesson, then found another bug. The new stage/failure has not yet been
+identified. This verifies the Kill Command lesson only; the full tutorial chain
+and its remaining movement/pet/camera checks are still open.
