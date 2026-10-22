@@ -9,6 +9,15 @@
 - Investigate and fix the underlying cause of errors completely. Do not suppress logs, hide error messages, disable checks, or bypass failing behavior merely to make an error disappear from view.
 - Verify that the affected behavior works after the repair and retain useful diagnostics. If the cause or verification remains unresolved, report it explicitly rather than presenting hidden symptoms as a completed fix.
 
+# Investigation sources and regression coverage
+
+- Investigate missing or incorrect behavior in this order: first this project's matching Legion 7.3.5 DBC/DB2 data and other relevant local folders, runtime assets, database records, scripts, and core code; then `C:/wamp64/www/TrinityCore`, including available older versions/history; then GitHub implementations and fixes; then relevant YouTube gameplay, Wowhead, and original Blizzard data; finally the wider internet if the preceding sources do not resolve it.
+- The local TrinityCore checkout is a newer, different core, not this project's version. Treat its code and external implementations as references: verify client build, schema, API, IDs, and intended behavior against Legion 7.3.5 before adapting a fix. Do not copy incompatible modern behavior blindly.
+- When using a YouTube video as behavioral evidence, review the full relevant sequence, preferably the entire video, so prerequisites, timing, transitions, and cleanup are not missed. Record the source and what was actually reviewed; if only a transcript or partial footage is available, state that limitation and do not claim to have watched or verified unseen behavior.
+- For combat and progression changes, explicitly consider a pet or guardian dealing the final blow. Resolve credit to the eligible player/owner and any legitimately eligible group members according to the native quest/scenario rules; do not award player progression to the pet or lose credit because the killer is not a Player.
+- Before calling a fix complete, trace the full affected sequence and relevant alternative paths, not only the reported symptom. Cover player/pet/guardian killers, one-hit kills and scaling, repeated events and exactly-once credit, failed casts or missing actors, abandonment/retry/re-entry, group and faction variants, and shared NPC/script use where applicable. Check prerequisites, transitions, completion, cleanup, and unrelated behavior affected by the change.
+- Run the relevant regression checks and exercise the affected sequence as far as the available environment allows. Keep automated/native test evidence separate from actual client traversal; record remaining client checks and unresolved cases in the audit instead of assuming that compilation or a modeled happy path proves the whole scenario works.
+
 # Build and runtime convention
 
 - Treat `build-extractors/bin/Release` as the canonical final runtime directory for the compiled `bnetserver.exe` and `worldserver.exe`.
