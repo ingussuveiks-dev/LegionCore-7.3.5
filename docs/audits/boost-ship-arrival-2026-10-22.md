@@ -79,11 +79,37 @@ passes. Staged SHA-256:
 
 ## Deployment and client status
 
-At implementation review the new executable is staged, not yet deployed; Krau
-has not yet been moved. Runtime backups and personal character recovery data
-will remain in ignored local storage. Existing servers are user-owned; none
-were stopped by the agent. A fresh process/port check found no worldserver or
-bnetserver before deployment preparation.
+Implementation commit `bcf6dfea` was pushed to origin/main. The executable and
+matching map were copied to canonical `build-extractors/bin/Release`, and both
+hashes matched staging. The deployed executable has the SHA-256 above and passed
+the linked-PE arrival checks and Test-ScepterLogin.ps1 -VerifyReleaseBinary.
+Configuration, data, certificates and DLLs were preserved.
+
+Krau was confirmed offline. His complete character row and previous executable
+and map are backed up under ignored local
+`.codex/backups/boost-ship-arrival-20261022-104007/`. The recovery changes only
+position XYZ, orientation and instance_id: map 1557/zone 8422, instance 0,
+(-2556,2939.6,149.4), facing 1.98. This is CharacterService's native Horde boost
+bootstrap; OnPlayerEnter computes the current ship transform from safe location
+5752 before self-create. A complete before/after row comparison confirmed all
+other character fields unchanged. No quest, level, inventory or pet reset was
+performed. The initial strict floating-point equality guard matched zero rows;
+a bounded range for the observed old Z matched exactly one offline character.
+
+Existing servers were user-owned; none were stopped by the agent. A fresh
+process/port check found neither server before deployment. The agent subsequently
+launched only hidden worldserver PID 24280 for canonical runtime validation.
+It reached ready, exchanged native greetings/initializers/challenges on both
+8085/8086, and retained the expected timeout for a deliberately silent test peer.
+It was shut down with `server shutdown 0`, exited 0, and closed its database
+pools. No agent-owned server remains. DBErrors.log remained empty; this
+startup is not a tutorial traversal.
+
+The user subsequently launched visible bnetserver PID 33088 and worldserver PID
+30304. The latter reached ready at 10:44:12. Logs record Krau login at 10:44:57,
+tutorial scenario 1083 starting on map 1557, and passenger visibility at 10:45:07.
+There is no missing-transport error in this admission. These server observations
+do not establish whether the client displayed falling or whether movement works.
 
 Client confirmation is pending: cold login on deck without player/NPC falling,
 movement after the hold, pet portrait, trainer and tutorial restart, logout/relog.
