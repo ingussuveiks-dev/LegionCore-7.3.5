@@ -234,8 +234,9 @@ at 11:26:31.362. NPC visibility followed at 11:26:40; no supporting-deck error w
 reported in this admission. These logs support the observed admission, while
 the user's report supplies the actual visual confirmation.
 
-The user has been asked to check the full one-opponent/two-opponent/Legion/exit
-flight sequence if continuing the tutorial. That sequence, later combat movement,
+The user explicitly confirmed they are not continuing the tutorial yet and have
+tested arrival only. The full one-opponent/two-opponent/Legion/exit flight
+sequence, later combat movement,
 pet/ally killing blows, camera, pet portrait and beach dismount remain unverified
 in this session. No agent-owned hidden server remains. The visible user-owned
 servers are left running, and no further character data changes were made.
