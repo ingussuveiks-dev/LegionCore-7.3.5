@@ -51,6 +51,7 @@ enum Creatures : uint32
     NPC_HORDE_SPAR       = 111995,
 
     NPC_TRAINING_DUMMY   = 107104,
+    NPC_ARCANE_CONSTRUCT = 108478,
 
     NPC_LEGION_IMP       = 102658,
     NPC_LEGION_INFERNAL  = 112639,
@@ -65,7 +66,8 @@ enum Spells : uint32
 
 enum Criteria : uint32
 {
-    CRITERIA_SPAR_COMPLETE = 48772
+    CRITERIA_SPAR_COMPLETE = 48772,
+    CRITERIA_CONSTRUCTS_DESTROYED = 50571
 };
 
 enum InstanceData : uint32
@@ -170,6 +172,26 @@ uint8 GetFirstTargetLesson(uint32 scenarioId)
     }
 }
 
+bool HasLessonCriterion(CriteriaTree const* tree, uint32 type, uint32 asset)
+{
+    if (!tree)
+        return false;
+    if (tree->Criteria && tree->Criteria->Entry->Type == type && tree->Criteria->Entry->Asset == asset)
+        return true;
+    for (CriteriaTree const* child : tree->Children)
+        if (HasLessonCriterion(child, type, asset))
+            return true;
+    return false;
+}
+
+bool NeedsArcaneConstructs(CriteriaTree const* tree)
+{
+    // Native shared AoE completion event; Victory Rush also needs killable
+    // targets to earn Victorious, although its lesson has no destroy event.
+    return HasLessonCriterion(tree, CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_CONSTRUCTS_DESTROYED) ||
+        HasLessonCriterion(tree, CRITERIA_TYPE_CAST_SPELL, 34428);
+}
+
 void EnsureDoomguardShard(Player* player, uint32 step)
 {
     // The earlier Affliction lessons can consume the last shard. The
@@ -248,6 +270,11 @@ public:
         std::map<ObjectGuid, ObjectGuid> _combatTargets;
         uint32 _defenderTimer = 0;
         uint32 _secondWaveTimer = 0;
+        uint32 _constructStep = uint32(-1);
+        uint32 _constructRetryTimer = 0;
+        bool _constructCredit = false;
+        std::vector<ObjectGuid> _constructGuids;
+        std::vector<ObjectGuid> _deadConstructGuids;
 
         bool IsActiveSparringOpponent(ObjectGuid guid) const
         {
@@ -270,6 +297,14 @@ public:
                 return;
 
             ObjectGuid guid = creature->GetGUID();
+            if (std::find(_constructGuids.begin(), _constructGuids.end(), guid) != _constructGuids.end())
+            {
+                // Real, killable lesson actors. Only the trainee and their
+                // pets/guardians may finish this personal exercise.
+                if (!attacker || attacker->GetCharmerOrOwnerPlayerOrPlayerItself() != GetPlayer())
+                    damage = 0;
+                return;
+            }
             if (std::find(_yieldedSparringGuids.begin(), _yieldedSparringGuids.end(), guid) != _yieldedSparringGuids.end())
             {
                 damage = 0;
@@ -332,6 +367,9 @@ public:
         void CreatureDies(Creature* creature, Unit* killer) override
         {
             if (!creature)
+                return;
+
+            if (HandleConstructDeath(creature, killer))
                 return;
 
             if (IsActiveSparringOpponent(creature->GetGUID()))
@@ -467,12 +505,142 @@ public:
             }
         }
 
+        void ClearConstructWave()
+        {
+            for (ObjectGuid const& guid : _constructGuids)
+            {
+                if (Creature* construct = instance->GetCreature(guid))
+                    construct->DespawnOrUnsummon();
+                _passengerGuids.erase(std::remove(_passengerGuids.begin(), _passengerGuids.end(), guid), _passengerGuids.end());
+            }
+            _constructGuids.clear();
+            _deadConstructGuids.clear();
+        }
+
+        void SetArcaneConstructsForStep(Player* player, uint32 step, uint8 stepCount)
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            CriteriaTree const* tree = scenario ? sAchievementMgr->GetCriteriaTree(scenario->GetScenarioCriteriaByStep(step)) : nullptr;
+            bool wanted = player && step > 0 && stepCount >= 5 && step < uint32(stepCount - 4) && NeedsArcaneConstructs(tree);
+            if (_constructStep != step || !wanted)
+            {
+                ClearConstructWave();
+                _constructCredit = false;
+                _constructRetryTimer = 0;
+                _constructStep = step;
+            }
+            if (!wanted)
+                return;
+            if (_constructGuids.size() == 3)
+            {
+                if (!_constructRetryTimer)
+                    _constructRetryTimer = 1000;
+                return;
+            }
+
+            Transport* transport = GetGunship();
+            if (!transport)
+            {
+                _constructRetryTimer = 1000;
+                return;
+            }
+
+            // CUSTOM three-target cluster within Multi-Shot/other AoE range,
+            // on the lesson deck. No retail spawn count/coordinates are known.
+            Position const poses[] = { Offset(Deck(), 4.0f, -7.0f), Offset(Deck(), 6.0f, -7.0f), Offset(Deck(), 5.0f, -10.0f) };
+            while (_constructGuids.size() < 3)
+            {
+                TempSummon* construct = SummonPassenger(transport, NPC_ARCANE_CONSTRUCT, poses[_constructGuids.size()], nullptr,
+                    TEMPSUMMON_CORPSE_TIMED_DESPAWN, 15000);
+                if (!construct)
+                {
+                    _constructRetryTimer = 1000;
+                    return;
+                }
+                construct->setFaction(14);
+                construct->SetReactState(REACT_PASSIVE);
+                construct->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
+                construct->SetControlled(true, UNIT_STATE_ROOT);
+                _constructGuids.push_back(construct->GetGUID());
+                _visibilityTimer = 500;
+                TC_LOG_INFO("scripts", "Boost tutorial construct %s initialized: level %u, template health %llu/%llu, target health %llu/%llu, multiplier %.6f",
+                    construct->GetGUID().ToString().c_str(), uint32(construct->getLevel()),
+                    static_cast<unsigned long long>(construct->GetHealth()), static_cast<unsigned long long>(construct->GetMaxHealth()),
+                    static_cast<unsigned long long>(construct->GetHealth(player)), static_cast<unsigned long long>(construct->GetMaxHealth(player)),
+                    construct->GetHealthMultiplierForTarget(player));
+            }
+            _constructRetryTimer = 1000;
+            TC_LOG_INFO("scripts", "Boost tutorial spawned three Arcane Constructs for %s at step %u", player->GetName(), step);
+        }
+
+        bool HandleConstructDeath(Creature* creature, Unit* killer)
+        {
+            ObjectGuid guid = creature->GetGUID();
+            auto itr = std::find(_constructGuids.begin(), _constructGuids.end(), guid);
+            if (itr == _constructGuids.end())
+                return false;
+            if (std::find(_deadConstructGuids.begin(), _deadConstructGuids.end(), guid) != _deadConstructGuids.end())
+                return true;
+
+            Player* player = GetPlayer();
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!player || !scenario || scenario->GetCurrentStep() != _constructStep)
+                return true;
+            if (!killer || killer->GetCharmerOrOwnerPlayerOrPlayerItself() != player)
+            {
+                // Unexpected deaths restart the group without awarding credit.
+                ClearConstructWave();
+                _constructRetryTimer = 1000;
+                return true;
+            }
+
+            _deadConstructGuids.push_back(guid);
+            if (_constructGuids.size() != 3 || _deadConstructGuids.size() != 3)
+                return true;
+
+            uint32 step = _constructStep;
+            CriteriaTree const* tree = sAchievementMgr->GetCriteriaTree(scenario->GetScenarioCriteriaByStep(step));
+            if (!_constructCredit && HasLessonCriterion(tree, CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_CONSTRUCTS_DESTROYED))
+            {
+                _constructCredit = true; // Criteria update can synchronously change the step and clear these actors.
+                TC_LOG_INFO("scripts", "Boost tutorial credited destroyed Arcane Constructs for %s at step %u", player->GetName(), step);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, CRITERIA_CONSTRUCTS_DESTROYED);
+            }
+            if (scenario->GetCurrentStep() == step)
+                _constructRetryTimer = 2000; // A pet may finish before the required cast; keep a target available.
+            return true;
+        }
+
+        void UpdateConstructLesson(uint32 diff)
+        {
+            if (!_constructRetryTimer)
+                return;
+            if (_constructRetryTimer > diff)
+            {
+                _constructRetryTimer -= diff;
+                return;
+            }
+            _constructRetryTimer = 0;
+            bool missingActor = std::any_of(_constructGuids.begin(), _constructGuids.end(), [this](ObjectGuid const& guid)
+            {
+                return std::find(_deadConstructGuids.begin(), _deadConstructGuids.end(), guid) == _deadConstructGuids.end() &&
+                    !instance->GetCreature(guid);
+            });
+            if (missingActor || (_constructGuids.size() == 3 && _deadConstructGuids.size() == 3))
+                ClearConstructWave();
+            if (Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId()))
+                SetArcaneConstructsForStep(GetPlayer(), scenario->GetCurrentStep(), scenario->GetStepCount(false));
+        }
+
         void SetTrainingDummyForStep(Player* player, uint32 step, uint8 stepCount)
         {
-            // Retail keeps one target dummy for all target-based ability
-            // lessons. It disappears when the solo sparring opponent arrives.
+            SetArcaneConstructsForStep(player, step, stepCount);
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            CriteriaTree const* tree = scenario ? sAchievementMgr->GetCriteriaTree(scenario->GetScenarioCriteriaByStep(step)) : nullptr;
+            // Ordinary target lessons keep one immortal dummy. AoE/kill-based
+            // lessons replace it with actual destructible constructs.
             bool shouldSpawn = player && stepCount >= 5 &&
-                step >= GetFirstTargetLesson(GetScenarioFor(player)) && step < uint32(stepCount - 4);
+                step >= GetFirstTargetLesson(GetScenarioFor(player)) && step < uint32(stepCount - 4) && !NeedsArcaneConstructs(tree);
 
             if (_trainingDummySpawned == shouldSpawn)
                 return;
@@ -600,6 +768,7 @@ public:
 
         void Update(uint32 diff) override
         {
+            UpdateConstructLesson(diff);
             if (_secondWaveTimer)
             {
                 if (_secondWaveTimer > diff)

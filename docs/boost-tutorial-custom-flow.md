@@ -36,6 +36,13 @@
   Legion wave, and finally the exit bird. Completed sparring waves are removed
   before the next wave. Other class scenarios delay their dummy until their
   opening pet/form/preparation lessons are complete.
+- Native AoE lessons requiring event 50571 and the Victory Rush kill lesson
+  replace the ordinary dummy with three killable Arcane Constructs. Only full
+  destruction by the trainee/pet/guardian awards the native group event once;
+  targets refill when killed before the required cast. The three-target count
+  and positions are custom reconstruction, not retail spawn evidence. See
+  `audits/boost-construct-lessons-2026-10-22.md` for native data, lifecycle tests
+  and pending client verification.
 - The shipboard dummy is rooted so Fear can satisfy its lesson without sending
   the dummy running off the moving deck. Warlock sparring NPCs appear at steps
   10 and 11, after the Fear and greater-demon lessons.

@@ -57,7 +57,7 @@ int main(int argc, char** argv)
                   << " floor " << height << " delta " << height-z << '\n';
         if (!std::isfinite(height) || std::fabs(height-z)>2) return 5;
         Position base(location->Loc.X,location->Loc.Y,location->Loc.Z,pair.first==5219?2.937f:6.2787f);
-        std::vector<std::pair<float,float>> offsets{{5.f,0.f},{8.f,-6.f},{8.f,-2.f},{8.f,2.f},{8.f,6.f},{5.f,-8.f},{4.f,-7.f},{4.f,7.f},{12.f,0.f},{3.f,4.f}};
+        std::vector<std::pair<float,float>> offsets{{5.f,0.f},{8.f,-6.f},{8.f,-2.f},{8.f,2.f},{8.f,6.f},{5.f,-8.f},{4.f,-7.f},{4.f,7.f},{12.f,0.f},{3.f,4.f},{6.f,-7.f},{5.f,-10.f}};
         for(int index=0;index<10;++index)offsets.emplace_back(2+float(index%5)*2,-8+float(index/5)*16);
         for(auto const& offset:offsets)
         {
