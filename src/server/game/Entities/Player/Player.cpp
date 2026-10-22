@@ -30493,10 +30493,13 @@ int32 Player::NextGroupUpdateSequenceNumber(GroupCategory category)
 void Player::BeginMapObjectArrival(bool notifyMovement)
 {
     // Called before the first self-create packet. GM flight, existing levitation
-    // and vehicle passengers already have their own movement ownership.
-    if (_mapObjectArrivalMap >= 0 || !IsAlive() || CanFly() || IsLevitating() || GetVehicle() || GetTransport())
+    // and vehicle passengers already have their own movement ownership. A
+    // transport-local passenger can share the same verified floor hold while
+    // its ship continues updating its world position.
+    if (_mapObjectArrivalMap >= 0 || !IsAlive() || CanFly() || IsLevitating() || GetVehicle())
         return;
 
+    _mapObjectArrivalTransport = GetTransport() ? GetTransport()->GetGUID() : ObjectGuid();
     _mapObjectArrivalMap = int32(GetMapId());
     _mapObjectArrivalWait = 0;
     _mapObjectArrivalSettle = _mapObjectArrivalLoadedMap == _mapObjectArrivalMap ? 8000 : 0;
@@ -30543,7 +30546,8 @@ void Player::NotifyMapObjectArrivalLoaded(int32 mapId)
 bool Player::IsMapObjectArrivalProtected() const
 {
     return _mapObjectArrivalMap >= 0 && _mapObjectArrivalMap == int32(GetMapId())
-        && IsAlive() && !GetVehicle() && !GetTransport();
+        && IsAlive() && !GetVehicle()
+        && (GetTransport() ? GetTransport()->GetGUID() : ObjectGuid()) == _mapObjectArrivalTransport;
 }
 
 bool Player::ShouldDeferMapObjectArrivalVisibility(WorldObject const* target)
@@ -30560,7 +30564,8 @@ void Player::UpdateMapObjectArrival(uint32 diff)
     if (_mapObjectArrivalMap < 0)
         return;
 
-    if (_mapObjectArrivalMap != int32(GetMapId()) || !IsAlive() || GetVehicle() || GetTransport())
+    if (_mapObjectArrivalMap != int32(GetMapId()) || !IsAlive() || GetVehicle()
+        || (GetTransport() ? GetTransport()->GetGUID() : ObjectGuid()) != _mapObjectArrivalTransport)
     {
         EndMapObjectArrival();
         return;
@@ -30584,9 +30589,9 @@ void Player::EndMapObjectArrival(bool refreshVisibility)
     if (_mapObjectArrivalMap < 0)
         return;
 
-    bool showDeferredCreatures = refreshVisibility && IsInWorld()
-        && _mapObjectArrivalMap == int32(GetMapId()) && IsAlive() && !GetVehicle() && !GetTransport();
+    bool showDeferredCreatures = refreshVisibility && IsInWorld() && IsMapObjectArrivalProtected();
     _mapObjectArrivalMap = -1;
+    _mapObjectArrivalTransport = ObjectGuid();
     _mapObjectArrivalWait = 0;
     _mapObjectArrivalSettle = 0;
     SetFallInformation(0, GetPositionZ());

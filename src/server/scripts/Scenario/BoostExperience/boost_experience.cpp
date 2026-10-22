@@ -501,7 +501,15 @@ public:
             player->m_movementInfo.transport.Guid = transport->GetGUID();
             player->m_movementInfo.transport.Pos.Relocate(deck);
             player->m_movementInfo.transport.VehicleSeatIndex = -1;
-            player->NearTeleportTo(x, y, z, orientation);
+            if (!player->IsInWorld())
+            {
+                // Instance admission runs before SendInitSelf. Establish the
+                // deck pose and attachment before the client's first self.
+                player->Relocate(x, y, z, orientation);
+                player->SetFallInformation(0, z);
+            }
+            else
+                player->NearTeleportTo(x, y, z, orientation);
         }
 
         bool Setup()
@@ -519,7 +527,10 @@ public:
             }
 
             transport->EnableMovement(true);
-            PutPlayerOnTransport(player, transport);
+            // The pre-create placement already owns an arrival hold; a second
+            // near teleport here would clear it and restart client movement.
+            if (player->GetTransport() != transport)
+                PutPlayerOnTransport(player, transport);
 
             Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
             if (!scenario)
@@ -548,8 +559,13 @@ public:
                 _transportGuid = gameObject->GetGUID();
         }
 
-        void OnPlayerEnter(Player* /*player*/) override
+        void OnPlayerEnter(Player* player) override
         {
+            if (Transport* transport = GetGunship())
+                PutPlayerOnTransport(player, transport);
+            else
+                TC_LOG_ERROR("scripts", "Boost tutorial cannot prepare deck arrival: transport %u missing on map %u instance %u",
+                    TransportEntry(), instance->GetId(), instance->GetInstanceId());
             _setupTimer = 100;
         }
 
@@ -678,6 +694,11 @@ public:
                             }
 
                             bool alreadyVisible = player->HaveAtClient(passenger);
+                            if (player->ShouldDeferMapObjectArrivalVisibility(passenger))
+                            {
+                                _visibilityTimer = 100;
+                                continue;
+                            }
                             if (!alreadyVisible)
                             {
                                 passenger->SendUpdateToPlayer(player);

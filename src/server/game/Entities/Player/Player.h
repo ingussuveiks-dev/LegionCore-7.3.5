@@ -3754,6 +3754,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 _mapObjectArrivalWait = 0;
         uint32 _mapObjectArrivalSettle = 0;
         bool _mapObjectArrivalOwnRoot = false;
+        ObjectGuid _mapObjectArrivalTransport;
 };
 
 void AddItemsSetItem(Player*player, Item* item);

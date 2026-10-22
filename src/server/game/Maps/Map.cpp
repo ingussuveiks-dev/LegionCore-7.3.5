@@ -32,6 +32,7 @@
 #include "InstanceScript.h"
 #include "LFGMgr.h"
 #include "Map.h"
+#include "GameObjectModel.h"
 #include "MapDefines.h"
 #include "MapInstanced.h"
 #include "MapManager.h"
@@ -2875,6 +2876,26 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
     DynamicTreeCallback floor;
     float height = GetHeight(player->GetPhases(), destination.GetPositionX(), destination.GetPositionY(),
         destination.GetPositionZ() + 2.0f, true, 5.0f, &floor);
+    // Moving transports are outside the ordinary grid visitor and can still
+    // be waiting for their first dynamic-tree insertion. Query their actual
+    // phase-visible models rather than guessing a floor from an entry/map ID.
+    for (Transport* transport : _transports)
+    {
+        if (!transport->IsInWorld() || !player->canSeeOrDetect(transport, false, false))
+            continue;
+        if (destination.GetExactDist(transport) <= transport->GetVisibilityRange())
+            objects.push_back(transport);
+        if (transport->m_model)
+        {
+            float deck = transport->m_model->getHeight(destination.GetPositionX(), destination.GetPositionY(),
+                destination.GetPositionZ() + 2.0f, 5.0f, player->GetPhases(), true);
+            if (std::isfinite(deck) && (!std::isfinite(height) || deck > height))
+            {
+                height = deck;
+                floor.go = transport;
+            }
+        }
+    }
     bool supported = floor.go && std::isfinite(height) && std::fabs(height - destination.GetPositionZ()) <= 2.0f
         && floor.go->IsInWorld() && player->canSeeOrDetect(floor.go, false, false);
     bool needsArrivalHold = supported && (!notifyMovement || !player->HaveAtClient(floor.go)
@@ -2891,7 +2912,7 @@ void Map::BuildPlayerArrivalObjects(Player* player, Position const& destination,
     }
 
     // Only an actual phase-visible collision floor qualifies. Air destinations
-    // (including deliberate drop portals), ships, vehicles and GM flight keep
+    // (including deliberate drop portals), vehicles and GM flight keep
     // their normal movement semantics. A short blink on an already-known floor
     // needs no hold. A long same-map teleport can still be streaming that model.
     if (needsArrivalHold)
@@ -2912,7 +2933,11 @@ void Map::SendInitSelf(Player* player)
 
     // attach to player data current transport data
     if (Transport* transport = player->GetTransport())
-        transport->BuildCreateUpdateBlockForPlayer(&data, player);
+        if (!player->HaveAtClient(transport))
+        {
+            transport->BuildCreateUpdateBlockForPlayer(&data, player);
+            player->AddClient(transport->GetGUID());
+        }
 
     // build data for self presence in world at own client (one time for map)
     player->BuildCreateUpdateBlockForPlayer(&data, player);

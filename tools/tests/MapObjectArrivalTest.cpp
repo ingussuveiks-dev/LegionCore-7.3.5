@@ -12,6 +12,7 @@
 #define TC_LOG_DEBUG(...) ((void)0)
 using uint32 = uint32_t;
 using int32 = int32_t;
+using ObjectGuid = int;
 constexpr uint32 MOVEMENTFLAG_CAN_FLY=1, MOVEMENTFLAG_DISABLE_GRAVITY=2,
     MOVEMENTFLAG_ROOT=4, MOVEMENTFLAG_MASK_MOVING=8, MOVEMENTFLAG_FALLING=16, MOVEMENTFLAG_FALLING_FAR=32;
 constexpr uint32 UNIT_STATE_ROOT=1;
@@ -35,9 +36,16 @@ struct WorldObject:Position {
     void BuildCreateUpdateBlockForPlayer(UpdateData* d,Player*)const{d->objects.push_back(id);}
 };
 using Creature=WorldObject;
+struct Model {
+    float height=747.6f; bool enabled=true,visible=true;
+    float getHeight(float,float,float z,float range,std::set<uint32> const&,bool)const{
+        return enabled&&visible&&height>=z-range&&height<=z?height:-std::numeric_limits<float>::infinity();
+    }
+};
 struct GameObject:WorldObject {
     using WorldObject::WorldObject;
     bool mapObject=true;
+    Model* m_model=nullptr;
     bool HasFlag(int,int)const{return mapObject;}
     float GetVisibilityRange()const{return 90;}
 };
@@ -59,6 +67,7 @@ struct Player:WorldObject {
     int32 _mapObjectArrivalMap=-1,_mapObjectArrivalLoadedMap=-1;
     uint32 _mapObjectArrivalWait=0,_mapObjectArrivalSettle=0;
     bool _mapObjectArrivalOwnRoot=false;
+    ObjectGuid _mapObjectArrivalTransport=0;
     int GetMapId()const{return mapId;} bool IsAlive()const{return alive;}
     bool IsBeingTeleportedFar()const{return farTeleport;} auto const& GetTeleportDest()const{return dest;}
     void UpdateVisibilityForPlayer(){assert(_mapObjectArrivalMap==-1);++visibilityRefreshes;}
@@ -113,6 +122,7 @@ namespace Trinity {
 }
 struct Map {
     std::map<int,StaticTransport*> m_StaticTransports;
+    std::vector<Transport*> _transports;
     std::vector<GameObject*> grid;bool gridLoaded=false;Tree _dynamicTree;
     int id=0;float staticFloor=-std::numeric_limits<float>::infinity();
     Map(){_dynamicTree.gridLoaded=&gridLoaded;}
@@ -215,9 +225,9 @@ int main(){
     early.NotifyMapObjectArrivalLoaded(1);assert(!early._mapObjectArrivalSettle);
     early.farTeleport=true;early.dest.map=1;early.NotifyMapObjectArrivalLoaded(1);assert(!early._mapObjectArrivalSettle&&early._mapObjectArrivalLoadedMap==1);
     Player timeout;timeout.BeginMapObjectArrival();timeout.UpdateMapObjectArrival(29999);assert(timeout.IsLevitating());timeout.UpdateMapObjectArrival(1);assert(timeout.flags==0&&timeout.state==0);
-    for(int mode=0;mode<5;++mode){
+    for(int mode=0;mode<4;++mode){
         Player p;Transport boat(9);if(mode==0)p.flags=MOVEMENTFLAG_CAN_FLY;if(mode==1)p.flags=MOVEMENTFLAG_DISABLE_GRAVITY;
-        if(mode==2)p.vehicle=true;if(mode==3)p.transport=&boat;if(mode==4)p.alive=false;
+        if(mode==2)p.vehicle=true;if(mode==3)p.alive=false;
         auto original=p.flags;p.BeginMapObjectArrival();p.EndMapObjectArrival();assert(p._mapObjectArrivalMap==-1&&p.flags==original);
     }
     for(int mode=0;mode<6;++mode){
@@ -233,5 +243,33 @@ int main(){
     Map normal;Player passenger;Transport boat(5);WorldObject known(6),unknown(7);
     boat.passengers={&passenger,&known,&unknown};passenger.transport=&boat;passenger.known.insert(6);normal.SendInitSelf(&passenger);
     assert((passenger.session.packets.back().objects==std::vector<int>{5,1,6}));
+    // A moving ship can be pending insertion into the dynamic tree on the
+    // first map update. Its real model still identifies the supporting floor.
+    Map shipMap;Player sailor;Transport ship(55);Model deck;
+    ship.m_model=&deck;shipMap._transports.push_back(&ship);sailor.transport=&ship;
+    shipMap.SendInitSelf(&sailor);
+    assert(sailor.selfCreateProtected);
+    assert((sailor.session.packets.back().objects==std::vector<int>{55,1}));
+    assert(sailor.ShouldDeferMapObjectArrivalVisibility(&npc));
+    sailor.NotifyMapObjectArrivalLoaded(0);sailor.UpdateMapObjectArrival(7999);
+    assert(sailor.IsMapObjectArrivalProtected());
+    WorldSession shipSession{&sailor};MovementInfo staleShip;shipSession.RelocateMover(staleShip);
+    assert(!shipSession.relocations&&sailor.transport==&ship);
+    sailor.UpdateMapObjectArrival(1);
+    assert(!sailor.IsMapObjectArrivalProtected()&&sailor.transport==&ship&&sailor.visibilityRefreshes==1);
+    // Normal disembark, a different ship, and a vehicle cancel ownership.
+    for(int mode=0;mode<3;++mode){
+        Player p;Transport a(90),b(91);p.transport=&a;p.BeginMapObjectArrival();
+        if(mode==0)p.transport=nullptr;if(mode==1)p.transport=&b;if(mode==2)p.vehicle=true;
+        p.UpdateMapObjectArrival(1);assert(p._mapObjectArrivalMap==-1&&p.flags==0);
+    }
+    // No guessed ship floors: disabled/hidden models and deliberate air poses
+    // must not get gravity protection just because a transport exists nearby.
+    for(int mode=0;mode<3;++mode){
+        Map m;Player p;Transport t(99);Model model;
+        t.m_model=&model;m._transports.push_back(&t);
+        if(mode==0)model.enabled=false;if(mode==1)t.visible=false;if(mode==2)p.z+=20;
+        m.SendInitSelf(&p);assert(!p.IsMapObjectArrivalProtected());
+    }
     std::cout<<"PASS: extracted native geometry-before-self, actual floor callback, ordinary/distant/known/hidden floors, same-map explicit gravity/root, stale ACK rejection, early/late/duplicate loading, timeouts, movement and aura ownership cleanup.\n";
 }
