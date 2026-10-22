@@ -21053,6 +21053,9 @@ void Player::KilledMonsterCredit(uint32 entry, ObjectGuid guid /*= ObjectGuid::E
         if (!questid)
             continue;
 
+        if (questid == 40216 && (entry == 97441 || real_entry == 97441))
+            continue; // Addie's owner-scoped hunting controller owns all skill counters.
+
         // Lightning Rod tracks absorbed electricity, not dead drakes. Its
         // validated spell/release handlers write the native charge objective.
         if (questid == 38058 && real_entry == 90903)

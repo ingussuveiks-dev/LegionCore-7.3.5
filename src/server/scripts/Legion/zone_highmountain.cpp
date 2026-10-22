@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "SpellScript.h"
 #include "rockaway_coast.h"
+#include "highmountain_hunting.h"
 
 enum eSpells
 {
@@ -352,6 +353,9 @@ struct at_highmountain_shredding_cyclone : AreaTriggerAI
 
 void AddSC_highmountain()
 {
+    RegisterCreatureAI(npc_highmountain_addie_hunt);
+    RegisterAuraScript(aura_highmountain_addie_hunt);
+    RegisterSpellScript(spell_highmountain_hunting_skill);
     RegisterCreatureAI(npc_rockaway_vision);
     RegisterCreatureAI(npc_rockaway_ritualist);
     RegisterCreatureAI(npc_rockaway_tentacle);
