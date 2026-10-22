@@ -148,3 +148,40 @@ and why its previous unsaved portrait position was lost, remain unproven; curren
 recovery is not a claim of a universal intermittent-handshake fix. User-owned
 worldserver 12980 and bnetserver 25616 remain running in their visible setup;
 no agent-owned validation server remains.
+
+## Recurrence while testing boost ship NPC placement
+
+At 11:14:18 Krau's first instance connection on client port 58553 remained
+silent. TCP counters at 11:14:28 show 48 server bytes sent, zero received,
+zero unacknowledged and zero retransmitted. It never reached initializer or
+continued authentication. Realm connection 52567 authenticated normally.
+Client.log ends map loading at 11:14:18.348, then waits for the active player
+until failure at 11:14:30.521. Thus the deployed NPC floor helper was not
+executed for this failed login; it cannot be client-verified by this attempt.
+
+The user retried with Krau without restarting either side. At 11:19:34 the
+client immediately returned CONNECT_TO_FAILED for all five serials, opening no
+new instance socket. This repeats the earlier poisoned retry behavior; the
+successful server socket probes and repaired authentication latch do not prove
+the cause of the silent first connection is fixed. Preserve this unresolved
+finding. The incident is saved privately in ignored
+`build-extractors/runtime-test/handshake-incidents/20261022-112040-879/`.
+
+Read-only PktMon status was denied by Windows; packet capture was not started,
+no elevation/security change was attempted, and no client debugger was attached.
+The local modern TrinityCore was inspected as a reference; its V2 initializer
+is a different client protocol and was not copied into the 7.3.5 server. A
+client-only restart, leaving servers untouched, has been requested as an
+isolation/recovery check, not represented as a permanent repair.
+
+The user confirmed that a client-only restart restored Krau login and that the
+deployed ship NPC placement now looks correct. Bnetserver 9568 and worldserver
+30752 retained their 11:13:45/11:13:48 start times; fresh WoW PID 32808 started at
+11:26:16. Peer 54301 completed continued auth at 15 ms and encryption at 46 ms;
+Krau logged in at 11:26:31 and the client created its active player at
+11:26:31.362. Independently, live probes at 11:25:14 verified the exact 48-byte
+native greeting and 55-byte challenge exchange on both existing listeners.
+Thus client-only recovery is now observed on this same server boot. It does not
+establish why the previous client never sent its first initializer or why its
+retry state rejected new connections. No further network implementation change,
+timeout relaxation, log suppression, cache deletion or security change was made.

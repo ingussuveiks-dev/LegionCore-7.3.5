@@ -1,5 +1,12 @@
 # Boost tutorial: moving-ship arrival
 
+Current status: the final canonical Release is deployed. The user confirmed
+visible ship, movement without falling and correct NPC feet on deck. The full
+tutorial combat/departure sequence remains a separate client check. A recurring
+silent instance-handshake failure interrupted one retest and recovered after a
+client-only restart; its underlying cause remains unresolved (see the socket
+authentication lifetime audit). Earlier failures below are retained evidence.
+
 ## Report and cause
 
 The user reported Krau and nearby NPCs falling while the ship/world loaded on
@@ -202,3 +209,33 @@ Staged NPC placement SHA-256:
 `5ab1cf6f94bfc861ac298e27267f3fd20757741c7111a3c9052ece8d310a39be`.
 Deployment and client confirmation of NPC feet, later combat movement and the
 full training/departure sequence remain pending at this implementation review.
+
+NPC placement implementation `8d44973e` was pushed. Following the user's next
+shutdown confirmation and a no-worldserver process check, its executable and
+matching map were copied to canonical Release. Both copied hashes match staging
+(NPC placement SHA above). Prior binaries are preserved in ignored
+`.codex/backups/boost-ship-deck-20261022-111314/`. Canonical BoostShipArrival native
+call-path checks and Scepter login verification pass. No hidden server or
+character-data write was used for this deployment. Client retest was requested.
+
+## Final client arrival evidence
+
+The first retest was blocked before player loading by the separate instance
+handshake failure recorded in `socket-authentication-lifetime-2026-10-22.md`.
+After restarting only WoW, with the same servers left running, the user confirmed
+successful Krau login and correct NPC feet on the deck. Earlier in this run they
+had already confirmed persistent visible ship, working movement and no falling.
+
+Server evidence: user-owned bnetserver PID 9568 and worldserver PID 30752 started
+at 11:13:45/11:13:48 and remained unchanged. Fresh client PID 32808 started at
+11:26:16. Instance peer 54301 completed continued auth and encryption, Krau login
+and scenario 1083 began at 11:26:31, and Client.log records Active Player Created
+at 11:26:31.362. NPC visibility followed at 11:26:40; no supporting-deck error was
+reported in this admission. These logs support the observed admission, while
+the user's report supplies the actual visual confirmation.
+
+The user has been asked to check the full one-opponent/two-opponent/Legion/exit
+flight sequence if continuing the tutorial. That sequence, later combat movement,
+pet/ally killing blows, camera, pet portrait and beach dismount remain unverified
+in this session. No agent-owned hidden server remains. The visible user-owned
+servers are left running, and no further character data changes were made.
