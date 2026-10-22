@@ -1,8 +1,9 @@
 # Socket authentication lifetime, 2026-10-22
 
 Status: the logout lifetime defect is reproduced and repaired in source, with
-native regression and linked Release checks passing. Deployment and real client
-verification are pending the user's shutdown of their worldserver. The separate
+native regression and linked Release checks passing. The canonical Release is
+deployed and runtime probes passed; Maiko's real client login succeeded after
+restart. Logout/relogin validation is pending. The separate
 silent first-instance-handshake failure remains unresolved.
 
 ## Observed failure
@@ -83,3 +84,39 @@ no false initialization timeout for established retired connections; verify
 portrait position after a normal logout/login and vehicle boarding/dismount.
 The earlier Thunder Totem Native and Bolas Launcher quest admission findings
 remain diagnoses only and were not changed by this socket repair.
+
+## Deployment and owned runtime validation
+
+After the user confirmed worldserver was stopped, the previous EXE/MAP were
+backed up under ignored `.codex/backups/socket-auth-lifetime-20261022-095319`.
+Only worldserver.exe/worldserver.map were replaced in the canonical Release
+directory. Its SHA256 matches the staged image above, and the deployed PE passes
+the lifetime, diagnostic and scenario-call verifiers. Configuration, DLLs,
+certificates and extracted data were preserved. The agent did not stop or modify
+bnetserver; its log records the user's shutdown at 09:51:08-09:51:10. The user was
+therefore reminded to start both servers for the client retest.
+
+An initial direct validation launch reached ready but its closed console stdin
+caused a normal exit. A subsequent hidden harness initially read an earlier ready
+line and attempted a TCP probe before the new listener existed; it shut its owned
+server down gracefully. The harness was corrected to wait for the new owned PID's
+actual listening port, rather than a stale log line.
+
+Final owned validation PID 12956 reached ready, completed the exact native
+greeting/client initializer/auth-challenge exchange on ports 8085 and 8086 (55-byte
+challenge), and retained the real ten-second warning for deliberately silent test
+peer 55543. `server shutdown 0` closed databases and exited 0 at 09:55:48. Its
+stdout contained no ERROR/FATAL lines; stderr and DBErrors.log were empty. All
+owned validation processes have exited. The user was asked to launch the visible
+server and test Maiko; successful TCP probes do not prove game-client login.
+
+## Real client recovery after deployment
+
+The user launched bnetserver PID 25616 at 09:57:47 and worldserver PID 12980 at
+09:57:49; neither is agent-owned. Worldserver reached ready at 09:58:03. Maiko's
+instance peer 59636 completed its initializer in 1 ms, continued auth at 16 ms
+and encryption acknowledgement at 48 ms. Server login completed at 09:58:23;
+Client.log recorded Active Player Created at 09:58:23.492. The user confirmed
+that Maiko entered the game. This establishes current recovery, not a proven
+repair of the earlier silent first-instance-handshake cause: both the server
+and client were restarted. Keep the original limitation and repeat-login check.
