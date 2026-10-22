@@ -4,6 +4,11 @@
 - This LegionCore project uses MariaDB. The Wampserver menu's `Default DBMS: mysql` label does not identify this project's database server; use the actual connection settings in the runtime configuration.
 - Database connection settings and passwords are in `build-extractors/bin/Release/worldserver.conf`. Read them locally when needed; never copy passwords into documentation, command output, commits, or GitHub.
 
+# Error investigation and repair
+
+- Investigate and fix the underlying cause of errors completely. Do not suppress logs, hide error messages, disable checks, or bypass failing behavior merely to make an error disappear from view.
+- Verify that the affected behavior works after the repair and retain useful diagnostics. If the cause or verification remains unresolved, report it explicitly rather than presenting hidden symptoms as a completed fix.
+
 # Build and runtime convention
 
 - Treat `build-extractors/bin/Release` as the canonical final runtime directory for the compiled `bnetserver.exe` and `worldserver.exe`.
