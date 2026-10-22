@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "eb5e1510",
+  "previous_audit": "docs/audits/scenario-reconnect-2026-10-22.json",
+  "scope": "Two-account grouped Scenario progression during member/leader disconnect, full SQL party reload and online party replacement with native invalid-instance ejection",
+  "finding": "No additional production defect was observed. All32 two-account native group cases pass. A still-online member advances the shared Scenario while its member/leader is disconnected, and full re-login restores current stage2/progress and party membership. Online replacement-party disband deliberately invalidates the old stay; native logout saves homebind, and subsequent normal entry selects the new party instance with stage0. This commit adds regression coverage/audit and generalizes only test helpers.",
+  "fixture_correction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261022-073600",
+    "log": ".codex/scenario-group-baseline.log",
+    "result": "The first unchanged-party case passed, including offline stage advancement. The replacement-party case stopped at Native EOF save lost checkpoint/offline/later-position state: its test incorrectly required the old instance checkpoint after online party disband had marked the current stay invalid. Native Group::_homebindIfInstance sets m_InstanceValid=false, and WorldSession::LogoutPlayer deliberately saves the actual homebind destination. This is an expected invalid-instance fallback, not an observed server regression. The fixture now checks that native policy, then checks ordinary entry into the replacement party's separate instance. It never sets the validity flag to manufacture checkpoint preservation."
+  },
+  "implementation": [
+    "Create a second scratch character using native save/logout, assign only that disposable row to account1, and load it through a new account1 WorldSession, accepted login opcode, real instance-link dispatch and full SQL holder. Keep account0 and account1 connected on separate realm/instance loopback sockets; use actual Group::Create/AddMember and persisted group_member rows.",
+    "Join the second player to the first player's actual Scenario using a native party/InstanceSave binding and real teleport/admission. Start with actual stage1 progress7/33, not injected stage/progress fields. Vary whether the account0 player is leader or ordinary member.",
+    "After account0 TCP EOF, require native map/world logout, save and Player removal. While that player is absent, account1 completes the remaining type92 objectives:26 more main credits and both three-credit objectives. Require actual stage2, three serialized progress updates and the online player's new-step packet. Fresh account0 SQL login must restore its party and receive stage2/ActiveSteps/full criteria from the same live Scenario.",
+    "For replacement-party cases, use native disband and creation of a different party GUID while account0 remains in the old instance. Use native unbinds on only the scratch party/players to make a distinct replacement instance, then move account1 there through ordinary transfers. Require the old account0 stay to be invalidated by native policy. EOF must save homebind; new SQL login restores the new party at homebind without a stale scenario packet. A subsequent ordinary entry must select account1's replacement instance and serialize stage0 with no old progress.",
+    "Check retained leadership after leader disconnect. Restore a fresh solo control run through actual transfers and native criteria events before the existing relog tests; clean party bindings/membership and the account1 session. Generalize only the test reconnect helper for offline progress callbacks, expected live stage and native ejection. No server implementation or database migration is added."
+  ],
+  "native_cases": {
+    "total": 32,
+    "offline_progress": 16,
+    "replacement_party": 16,
+    "leader_disconnect": 16,
+    "ordinary_member_disconnect": 16,
+    "per_faction": 16,
+    "contexts": "Both Broken Shore faction scenarios are repeated across four parent raid-difficulty contexts and two travel directions. Direction0 pairs member/realm EOF/early finish; direction1 pairs leader/instance EOF/late finish. Each faction/party-mode/role combination runs four times; these coupled dimensions are not claimed as all independent cross-combinations.",
+    "retained_regressions": "Existing32 solo fresh-session reconnects,64 same-session live/old-boot relogs and48 scenario initialization/fresh teleport cases remain in the same execution."
+  },
+  "native_data": {
+    "map": 1460,
+    "alliance_scenario": 786,
+    "horde_scenario": 1189,
+    "shared_lfg": 908,
+    "difficulty": 12,
+    "alliance_stage1_events": [
+      44095,
+      44077,
+      52643
+    ],
+    "horde_stage1_events": [
+      54116,
+      54117,
+      54114
+    ],
+    "reader": "tools/research/ScenarioInitializationCatalog.cpp",
+    "catalog": ".codex/scenario-initialization-catalog.tsv"
+  },
+  "method_and_limits": [
+    "Both participants are native Players loaded from complete SQL holders into separate account sessions. Group persistence and Player::_LoadGroup execute normally; the returning player's group pointer must equal the active party. Scenario criteria are updated by the still-online account1 Player while ObjectAccessor confirms account0 is absent.",
+    "Replacement-party binding differences are established with native APIs on scratch actors. Native party formation can inherit saves; this controlled setup distinguishes the two live instances and is not a redesign or exhaustive test of binding inheritance. Online disband's homebind policy is preserved. Offline administrative membership/SQL changes and all group queue/LFG combinations are not covered.",
+    "Leader cases check that the party, leadership and the other member's progression survive disconnect. Automatic leader promotion timers, voting and leadership-transfer UI are not claimed verified.",
+    "Socket/login tests begin at the established post-authentication boundary. Authentication/HMAC/encryption exchange, queue admission and encrypted client delivery are not tested. The account1 seed reassignment and all other writes affect only schema-only disposable character/auth data; world access is read-only.",
+    "Fixture-owned map workers are stopped for deterministic execution; arbitrary cross-thread timing is not established. Server relocations separate saved/current/entrance positions and do not test client movement or collision. No actor/criteria serialization after process restart is claimed.",
+    "No WoW client was operated. Scenario/party UI, quest actor traversal/completion, visuals, voice, camera and pets remain client checks. Runtime configuration, certificates, DLLs, logs, extracted data and personal character rows are preserved."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed32 grouped cases:16 offline-progress and16 party replacement,16 leader and16 ordinary member disconnects,16 per faction and four per faction/mode/role combination. Online progress packets and returning stage2/ActiveSteps/full progress are decoded; homebind login has no scenario packet, and replacement-party entry has one stage0 snapshot with no old criteria.",
+    "The same final native execution retains32 solo fresh-session reconnects,64 live/old-boot relogs,48 scenario initialization cases and400 actual packed timestamp assertions. Existing280 loading-order,392 map-loading,392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session,168 aggregate-login and two socket-owner probes pass alongside configured spirit/ghost/graveyard/Helya regressions.",
+    "Canonical executable checks retain native map/world update/logout, instance Scenario destruction, guarded shared faction routing and the absolute progress timestamp copy. Current group/reconnect fixtures and production Group.cpp/Player.cpp/WorldSession.cpp hashes match final native inputs and the original final-link game.lib. Exception-bounded canonical Group::Disband and Player::_LoadGroup disassemblies are recorded for review; behavioral assertions execute the actual library through the two-account SQL lifecycle.",
+    "Native DBErrors is empty and Server.log has no ERROR. Disposable character/auth schemas (167 tables) and SQL user were removed. The only seed account reassignment is an explicitly scoped scratch row, followed by complete account1 Player loading.",
+    "Canonical worldserver.exe, MAP and final-link game.lib remain identical to the prior eb5e1510 audit. No server implementation change, rebuild, migration or runtime deployment was necessary. No worldserver/bnetserver was started or stopped in this task and none remains. Runtime configuration/data/certificates/DLLs/logs and personal rows were preserved; client limitations remain as listed."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-074422",
+    "worldserver": "F3CE5B779DEAFB9CF2D3B0538B26D71E32B9BF4CC74FC042757D5321A39AAF10",
+    "worldserver_map": "D80888B480E98F2DED587D510390141AED11C6E1792527F9C1B2278CD155AC01",
+    "game_library": "A3026E76667EF70ABB4A975B2367A42D390B6FE7E77126990C7C70E5A7964176",
+    "scripts_library": "77593D6A58C2EDF3BAC9672AE95DDDAC93C068DC15AAC2F1625FE2020EFB01D3",
+    "hashes": {
+      "tools/tests/TrialScenarioGroupNative.inc": "0ABE6FC7ACF518047C9587A7FC234C066ED97C971486E923F5563ADAF36F8CC4",
+      "tools/tests/TrialScenarioReconnectNative.inc": "C0E45057FF81EB870963DFD7137E5F9F7FB189FAA60FCF5DDFA6FCF63CDE1D8A",
+      "tools/tests/TrialScenarioInitializationNative.inc": "34BC4CCE514BF76070E5DABB5D57DA416B135BD1530C1AB3775A24931CCA15B8",
+      "tools/tests/Test-RockawayChannelNative.ps1": "82BBF977D1039481466BD51B8CFCDDE0FB29D0EDF7B739106AD817A1202A98FF",
+      "tools/tests/Test-ScenarioInitializationRelease.ps1": "CA574CC01E6730B4BE39EB2F92A568F07A13C76A7D82979BC7FAE9E7967E2995",
+      "src/server/game/Groups/Group.cpp": "9CC141EE493BFA9A59ADB061BD3C56A67D69B7E1CF6D86EE6D5BF7CBFC19D614",
+      "src/server/game/Entities/Player/Player.cpp": "E84CBC0B44DF63054F6FC6EF18C962B35C9CC7EE1C1FAB4073A4112CE25E53E9",
+      "src/server/game/Server/WorldSession.cpp": "DDA206BB3DE95310C7F480FE71CB0667EC5F7027E665CD242095CF2445007DD6",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-074422/native-inputs.json": "F8B78393C4F7736A958D01C398916815137B4F4FF2461F7D952BD94858FE1BFA",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-074422/native-lines.txt": "8C22C7BAEF4F39E430D13C21452DA0763F36329436F2FDBA1CDAFADF24FB3B0A",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-074422/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-074422/Server.log": "F84B5891FC16236103BF61096C05627650B681BAD282FC87A043E81B46F38D67",
+      "build-extractors/runtime-test/scenario-group-release/inputs.json": "37DBA3CBFBE575EDA99D64E6F0476148F4820CAD1CB8FE7A0C591ECD1915083F",
+      "build-extractors/runtime-test/scenario-group-release/Disband-Group--.txt": "0C9B77AB03B38A4BF6775277FE67D220D6E0BB0F6B8F681BF1616C45E353BD30",
+      "build-extractors/runtime-test/scenario-group-release/_LoadGroup-Player--.txt": "8663BB6E2C7FA80FE187772F81437A77AABABF02FB88C5EC630700DCE9BE9B48",
+      ".codex/scenario-group-baseline.log": "0989275A8356A0A6400D8FBE7472881E91404DD0A066468889A6B2C9DAFB5ECB",
+      ".codex/scenario-group-controls.log": "12E70B6F778E67D89558311FEDE952C822DCE8BD8C0496DAFF1B3EC53B084202",
+      ".codex/scenario-group-final-verified.log": "146E636D6229F1C56FD9ED3665F6C798F860FF472B50A3355D8998B3B39D818E"
+    }
+  }
+}

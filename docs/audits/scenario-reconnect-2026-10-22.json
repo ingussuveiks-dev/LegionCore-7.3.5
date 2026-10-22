@@ -1,5 +1,6 @@
 {
   "date": "2026-10-22",
+  "followup_audit": "docs/audits/scenario-group-resume-2026-10-22.json",
   "base_commit": "83758f7d",
   "previous_audit": "docs/audits/scenario-faction-relog-2026-10-22.json",
   "scope": "Real TCP EOF in a progressed scenario, native map/world logout and save, retired session destruction, fresh-session login and actual empty-instance destruction",

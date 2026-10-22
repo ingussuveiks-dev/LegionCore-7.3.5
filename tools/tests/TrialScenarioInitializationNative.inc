@@ -52,6 +52,7 @@ struct ScenarioLoginCleanup
 };
 #include "TrialScenarioRelogNative.inc"
 #include "TrialScenarioReconnectNative.inc"
+#include "TrialScenarioGroupNative.inc"
 static void TrialScenarioInitialization(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction)
 {
     static bool loaded=false;if(!loaded){sObjectMgr->LoadScenarioData();sObjectMgr->LoadScenarioSpellData();loaded=true;
@@ -73,7 +74,7 @@ static void TrialScenarioInitialization(ObjectGuid guid,WorldLocation const& exp
         scenario->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,scenarioId==786?44060:54140,1,0,player,player);Require(scenario->GetCurrentStep()==1,"Native first criterion did not advance scenario");scenario->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,scenarioId==786?44095:54116,7,0,player,player);Require(scenario->GetCurrentStep()==1,"Native partial criterion advanced scenario unexpectedly");
         auto updates=ReadScenarioPackets(session);Require(updates.updates.size()==2&&updates.updates[0].quantity==1&&updates.updates[1].quantity==7,"Native incremental scenario progress missing");for(auto const& wire:updates.updates)CheckScenarioProgress(wire,*scenario);for(auto const& state:updates.states)CheckScenarioState(state,*scenario,1,false);
         ReadScenarioPackets(session);scenario->SendStepUpdate(player,true);auto full=ReadScenarioPackets(session);Require(full.states.size()==1,"Native full scenario snapshot missing");CheckScenarioState(full.states[0],*scenario,1,true);
-        if(mode<2){player=TrialScenarioRelog(session,relogSocket,guid,*scenario,itemGuid,durability,mode==0);player=TrialScenarioRelog(session,restartSocket,guid,*scenario,itemGuid,durability,mode==1,true);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());}
+        if(mode<2){player=TrialScenarioGroup(session,shared,cleanup,realmSocket,instanceSocket,reconnectRealm,reconnectInstance,guid,expected,itemGuid,durability,mode==1,direction!=0);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());player=TrialScenarioRelog(session,relogSocket,guid,*scenario,itemGuid,durability,mode==0);player=TrialScenarioRelog(session,restartSocket,guid,*scenario,itemGuid,durability,mode==1,true);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());}
         if(mode==2){
             player=TrialScenarioReconnect(session,shared,cleanup,realmSocket,instanceSocket,reconnectRealm,reconnectInstance,guid,itemGuid,durability,false,direction!=0);player=TrialScenarioReconnect(session,shared,cleanup,reconnectRealm,reconnectInstance,unloadRealm,unloadInstance,guid,itemGuid,durability,true,direction!=0);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());
             auto instance=player->GetInstanceId();Require(player->TeleportTo(expected)&&player->IsBeingTeleportedFar(),"Scenario exit failed");SpiritFarFreeze(expected.GetMapId());session->HandleWorldPortAck();SpiritFarFreeze(expected.GetMapId());player->UpdateZone(player->GetCurrentZoneID(),player->GetCurrentAreaID());SpiritFarFreeze(expected.GetMapId());if(player->IsBeingTeleportedFar()&&player->IsChangeMap())session->m_Functions.Update(500);SpiritLoadingScreen(session,expected.GetMapId(),false);ReadScenarioPackets(session);
