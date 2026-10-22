@@ -15,6 +15,30 @@ bool Resumable(MapEntry const* entry, uint32 scenarioId)
         !entry->IsGarrison() && entry->ID != 1191 && scenario &&
         scenario->Type != SCENARIO_TYPE_CHALLENGE_MODE;
 }
+
+lfg::LFGDungeonData const* ResumeDungeon(Player const* player, uint32 scenarioId, uint32 mapId)
+{
+    if (auto data = sLFGMgr->GetLFGDungeon(uint16(scenarioId),uint16(mapId)))
+        return data;
+
+    // A faction/class scenario can share another scenario's native LFG row.
+    // Resolve the same map route used at construction, without accepting an
+    // arbitrary checkpoint for another faction, class or dungeon.
+    auto difficulty = sDB2Manager.GetDefaultMapDifficulty(mapId);
+    if (!difficulty)
+        return nullptr;
+    auto data = sLFGMgr->GetLFGDungeon(mapId,Difficulty(difficulty->DifficultyID),player->GetTeam());
+    if (!data)
+        return nullptr;
+    auto route = sObjectMgr->GetScenarioOnMap(mapId,data->difficulty,player->GetTeam(),player->getClass(),data->id);
+    if (!route || route->ScenarioID != scenarioId ||
+        (route->Team && route->Team != player->GetTeam()) ||
+        (route->Class && route->Class != player->getClass()) ||
+        (route->DifficultyID && route->DifficultyID != data->difficulty) ||
+        (route->LfgDungeonID && route->LfgDungeonID != data->id))
+        return nullptr;
+    return data;
+}
 }
 
 void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
@@ -28,7 +52,7 @@ void Player::PrepareScenarioLogin(uint32 mapId, uint32 instanceId)
         return;
     }
     // Native scenario/map routing must still exist after a data update.
-    auto data = sLFGMgr->GetLFGDungeon(uint16(m_scenarioResume.scenario),uint16(mapId));
+    auto data = ResumeDungeon(this,m_scenarioResume.scenario,mapId);
     if (!data || !sScenarioMgr->GetScenarioSteps(m_scenarioResume.scenario))
     {
         m_scenarioResume = {};
@@ -80,7 +104,7 @@ void Player::RecordScenarioEntrance()
         // a transport. Use its native LFG entrance in that case.
         if (GetSession()->PlayerLoading() || progress->GetCurrentStep() || GetTransport() || GetVehicle())
         {
-            auto data = sLFGMgr->GetLFGDungeon(uint16(progress->GetScenarioId()),uint16(GetMapId()));
+            auto data = ResumeDungeon(this,progress->GetScenarioId(),GetMapId());
             if (!data || (!data->x && !data->y && !data->z) ||
                 !MapManager::IsValidMapCoord(GetMapId(),data->x,data->y,data->z,data->o)) return;
             entrance.Relocate(data->x,data->y,data->z,data->o);

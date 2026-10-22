@@ -1,5 +1,6 @@
 {
   "date": "2026-10-22",
+  "followup_audit": "docs/audits/scenario-faction-relog-2026-10-22.json",
   "base_commit": "c1a7ffeb",
   "previous_audit": "docs/audits/spirit-loading-order-2026-10-21.json",
   "scope": "Actual Scenario initialization payloads after early/late loading finish and fresh solo re-entry, with native 7.3.5 Broken Shore faction catalogs",

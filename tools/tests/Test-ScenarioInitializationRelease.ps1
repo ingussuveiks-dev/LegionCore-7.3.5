@@ -33,3 +33,25 @@ if([regex]::Matches($tail,'sub\s+eax,edi').Count -ne 2 -or $tail -notmatch 'mov\
 $listing | Set-Content "$out/SendStepUpdate-Scenario.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$cases.Count;node_date_offset=$nodeDate;packet_date_offset=$packetDate;absolute_date_copy=$true;elapsed_fields_preserved=$true} | ConvertTo-Json | Set-Content "$out/inputs.json"
 'PASS: canonical Scenario snapshot copies the native absolute timestamp and preserves elapsed-time fields;48 actual serialized arrival/re-entry cases cover both faction scenarios.'
+
+$relogOut="$repo/build-extractors/runtime-test/scenario-relog-release"
+New-Item -ItemType Directory -Force $relogOut | Out-Null
+foreach($path in @('src/server/game/Entities/Player/PlayerScenario.cpp','tools/tests/TrialScenarioRelogNative.inc','tools/tests/ScenarioResumeTest.cpp','tools/tests/Test-ScenarioResume.ps1')){if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Scenario relog input changed: $path"}}
+$relogs=@($lines | Where-Object {$_ -match '^PASS: native scenario relog '})
+if($relogs.Count -ne 64){throw 'Run all64 live/old-boot scenario relog cases first'}
+foreach($id in 786,1189){foreach($early in 0..1){foreach($restart in 0..1){if(@($relogs | Where-Object {$_ -match " scenario=$id early=$early restart=$restart instance="}).Count -ne 8){throw "Missing faction/arrival/boot relog combination $id/$early/$restart"}}}}
+foreach($name in @('?PrepareScenarioLogin@Player@@','?RecordScenarioEntrance@Player@@')){if(@(Calls $name) -notcontains (Resolve (Symbol '?ResumeDungeon@'))){throw "Canonical $name bypasses the shared route resolver"}}
+$routeCalls=@(Calls '?ResumeDungeon@')
+foreach($name in @('?GetLFGDungeon@LFGMgr@lfg@@QEAAPEBULFGDungeonData@2@GG@Z','?GetDefaultMapDifficulty@DB2Manager@@','?GetLFGDungeon@LFGMgr@lfg@@QEAAPEBULFGDungeonData@2@IW4Difficulty@@I@Z','?GetScenarioOnMap@ObjectMgr@@')){if($routeCalls -notcontains (Resolve (Symbol $name))){throw "Canonical resume route lacks $name"}}
+$range=Bounds '?ResumeDungeon@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$routeListing=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Resume route disassembly failed'}
+$routeText=$routeListing -join "`n"
+$abi=@($lines | Where-Object {$_ -match '^SCENARIO_RELOG_ABI '} | Select-Object -Unique)
+if($abi.Count -ne 1 -or $abi[0] -notmatch '^SCENARIO_RELOG_ABI team=(\d+) class=(\d+) difficulty=(\d+) dungeon=(\d+)$'){throw 'Missing native scenario-route ABI'}
+$team=([int]$Matches[1]).ToString('X');$class=([int]$Matches[2]).ToString('X');$difficulty=([int]$Matches[3]).ToString('X');$dungeon=([int]$Matches[4]).ToString('X')
+foreach($offset in @($team,$class,$difficulty,$dungeon)){if($routeText -notmatch "dword ptr \[r\w+\+0*${offset}h?\]"){throw "Canonical route lacks native condition field $offset"}}
+$gate=[regex]::Match($routeText,'(?i)test\s+rax,rax\r?\n[^\r\n]*je\s+(?<reject>[0-9a-f]{16})\r?\n[^\r\n]*cmp\s+dword ptr \[rax\],r15d\r?\n[^\r\n]*jne\s+\k<reject>')
+if(!$gate.Success -or [regex]::Matches($routeText,("(?i)jne\s+"+$gate.Groups['reject'].Value)).Count -ne 4 -or $routeText -notmatch 'cmove\s+rax,rsi'){throw 'Review native exact scenario, faction/class/difficulty rejection and dungeon conditional return'}
+$routeListing | Set-Content "$relogOut/ResumeDungeon-verified.txt"
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$relogs.Count;live=32;old_boot=32;native_route_abi=$abi[0];caller_and_route_calls=$true;condition_rejection=$true} | ConvertTo-Json | Set-Content "$relogOut/inputs.json"
+'PASS: canonical scenario login/legacy entrance use the guarded native faction/class route;64 complete SQL logout/login cases preserve live progress or restart old-boot checkpoints at the entrance.'

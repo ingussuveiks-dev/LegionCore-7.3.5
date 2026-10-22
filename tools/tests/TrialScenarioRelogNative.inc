@@ -1,0 +1,25 @@
+static Player* TrialScenarioRelog(WorldSession* session,SpiritLoopback& nextSocket,ObjectGuid guid,Scenario& scenario,uint64 itemGuid,uint32 durability,bool early,bool restart=false)
+{
+    static bool abi=false;if(!abi){abi=true;ScenarioData route{};auto base=reinterpret_cast<char*>(&route);
+        std::cout<<"SCENARIO_RELOG_ABI team="<<(reinterpret_cast<char*>(&route.Team)-base)<<" class="<<(reinterpret_cast<char*>(&route.Class)-base)<<" difficulty="<<(reinterpret_cast<char*>(&route.DifficultyID)-base)<<" dungeon="<<(reinterpret_cast<char*>(&route.LfgDungeonID)-base)<<std::endl;}
+    auto prior=session->GetPlayer();auto instance=prior->GetInstanceId();auto map=prior->GetMap();map->PlayerRelocation(prior,prior->GetPositionX()+8,prior->GetPositionY(),prior->GetPositionZ(),prior->GetOrientation());WorldLocation position(*prior);
+    auto scenarioId=scenario.GetScenarioId();Require(scenario.GetCurrentStep()==1,"Scenario relog must begin with native progress");
+    session->SetMap(nullptr);session->LogoutPlayer(true);FlushWrites();Require(!session->GetPlayer()&&!ObjectAccessor::FindPlayer(guid),"Scenario logout retained Player");ReadScenarioPackets(session);
+    auto row=CharacterDatabase.Query(Trinity::StringFormat("SELECT map,instance_id,scenarioResume FROM characters WHERE guid=%u",guid.GetCounter()).c_str());Require(bool(row),"Scenario logout save missing");auto fields=row->Fetch();ScenarioResume checkpoint;
+    Require(fields[0].GetUInt32()==1460&&fields[1].GetUInt32()==instance&&checkpoint.Read(fields[2].GetString())&&checkpoint.map==1460&&checkpoint.scenario==scenarioId&&checkpoint.instance==instance&&checkpoint.boot==uint64(GameTime::GetStartTime()),"Native scenario logout did not persist its entrance/live-instance checkpoint");
+    Require(position.GetExactDist(checkpoint.x,checkpoint.y,checkpoint.z)>7,"Scenario relog did not separate later position from saved entrance");
+    if(restart){checkpoint.boot^=1;CharacterDatabase.DirectExecute(Trinity::StringFormat("UPDATE characters SET scenarioResume='%s' WHERE guid=%u",checkpoint.Write().c_str(),guid.GetCounter()).c_str());}
+    SpiritRequestLogin(session,guid);SpiritLinkSocket(nextSocket,session->GetConnectToInstanceKey());auto response=SpiritTakeLinkQuery(session);SpiritDeliverQuery(session,std::move(response));auto player=session->GetPlayer();Require(player,"Scenario relog SQL did not construct Player");SpiritFarFreeze(player->GetMapId());
+    std::cout<<"SCENARIO_RELOG_LOAD expected="<<scenarioId<<" restart="<<restart<<" saved_instance="<<instance<<" map="<<player->GetMapId()<<" instance="<<player->GetInstanceId()<<" selector="<<player->GetScenarioId()<<std::endl;
+    Require((restart?player->GetMap()!=map:player->GetMap()==map)&&player->GetMapId()==1460&&player->GetScenarioId()==scenarioId&&player->IsChangeMap()&&!player->IsInWorld(),"Full scenario relog lost the saved native map/instance/selector before admission");map=player->GetMap();ReadScenarioPackets(session);
+    if(early){SpiritLoadingScreen(session,1460,false);auto pending=ReadScenarioPackets(session);Require(!pending.initial&&pending.states.empty(),"Early relog finish initialized before admission");}
+    map->UpdateSessions(99);Require(!player->IsInWorld()&&player->IsChangeMap(),"Scenario relog admitted before100ms");map->UpdateSessions(1);SpiritFarFreeze(1460);
+    auto active=sScenarioMgr->GetScenario(player->GetInstanceId());auto stage=restart?0u:1u;
+    Require(player->IsInWorld()&&!player->IsChangeMap()&&ObjectAccessor::FindPlayer(guid)==player&&active&&active->GetScenarioId()==scenarioId&&active->GetCurrentStep()==stage&&player->GetScenarioId()==0,"Native scenario relog lost admission/stage/selector cleanup");
+    if(restart)Require(player->GetInstanceId()!=instance&&active!=&scenario&&active->GetAchievementMgr().GetCriteriaProgressMap()->empty()&&player->GetExactDist(checkpoint.x,checkpoint.y,checkpoint.z)<0.01f,"Old-boot scenario checkpoint retained transient progress or missed its entrance");
+    else Require(player->GetInstanceId()==instance&&active==&scenario&&player->GetExactDist(position)<0.01f,"Native scenario relog did not retain live instance/position");
+    auto packets=ReadScenarioPackets(session);if(!early){Require(!packets.initial&&packets.states.empty(),"Late relog initialized before finish");SpiritLoadingScreen(session,1460,false);packets=ReadScenarioPackets(session);}
+    Require(packets.initial==1&&packets.states.size()==1,"Scenario relog initialization missing/duplicated");CheckScenarioState(packets.states[0],*active,stage,true);
+    auto item=player->GetItemByGuid(ObjectGuid::Create<HighGuid::Item>(itemGuid));Require(player->GetHealth()==321&&player->HasAura(15007)&&player->GetAura(15007)->GetDuration()==598000&&item&&item->GetUInt32Value(ITEM_FIELD_DURABILITY)==durability&&player->GetUnitBeingMoved()==player&&!player->GetCorpse(),"Scenario relog changed saved health/aura/inventory/mover state");
+    std::cout<<"PASS: native scenario relog scenario="<<scenarioId<<" early="<<early<<" restart="<<restart<<" instance="<<player->GetInstanceId()<<std::endl;return player;
+}

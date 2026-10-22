@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "14b9c6e3",
+  "previous_audit": "docs/audits/scenario-initialization-2026-10-22.json",
+  "scope": "Complete native faction scenario logout/login, live-instance rejoining, old-boot entrance restart and shared LFG routing admission",
+  "finding": "PrepareScenarioLogin required a direct ScenarioID/map match in LFGDungeons. Horde Broken Shore1189 shares native LFG908 with Alliance786 and is selected through world scenario_data. A valid persisted1189 checkpoint was discarded before native map construction, so a new instance replaced the still-live run. RecordScenarioEntrance used the same direct lookup when initializing a legacy later-stage/transport entrance and could not record this shared route either.",
+  "reproduction": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261022-045815",
+    "log": ".codex/scenario-relog-baseline.log",
+    "observation": "Login saved location: player5063 map1460 instance50 checkpoint1189; SCENARIO_RELOG_LOAD expected=1189 saved_instance=50 map=1460 instance=51 selector=0",
+    "result": "Actual native LogoutPlayer saved the map, instance and versioned checkpoint. The real login opcode, instance-socket admission, full SQL holder and Player::LoadFromDB then lost the live instance and scenario selector before AddPlayerToMap. The fixture stops at that assertion; it does not claim an observed final homebind fallback. Four Alliance live rejoin cases had passed before the first Horde case failed. Exit1, no crash; disposable schemas/users cleaned.",
+    "checker_correction": "The run-20261022-050535 native suite passed64 position-separated relogs and all48 scenario cases. The new canonical checker initially required an h suffix for offset8, while dumpbin emits [rbx+8]. Its matcher was corrected; this was checker formatting, not another production failure. The final complete run binds the corrected checker to the same compiled source/binary and current fixtures."
+  },
+  "implementation": [
+    "Preserve direct native scenario/map LFG lookup first. If absent, obtain the native default map difficulty and shared team-eligible LFG metadata, then resolve ObjectMgr's actual map/difficulty/team/class/dungeon route. Accept only the requested scenario and matching nonzero route restrictions; zero fields retain native wildcard semantics.",
+    "Use the same resolver for login admission and legacy entrance initialization. Keep existing current-boot/live-map/scenario/instance/completion checks, old-boot entrance restart, selector consumption and checkpoint persistence unchanged. No scenario/map whitelist, invented DB2/LFG row, character progress reset or schema migration.",
+    "Extend extracted production handler tests with shared-route fresh/live/legacy entrance positives, missing metadata/route negatives, wrong scenario/team/class/difficulty/dungeon rejection, wildcard admission and exact-route precedence.",
+    "Extend actual serialized-packet tests with complete logout/login. Move each scratch Player eight yards through native Map::PlayerRelocation before saving, keeping the recorded entrance distinct from the later position. Live rejoining must preserve that later position and native stage1/partial criteria; an old-boot checkpoint must use a different native instance at entrance/stage0 with no old criteria."
+  ],
+  "native_modes": {
+    "live_early": "A current-boot checkpoint rejoins the same live Scenario. Loading finish before the99+1ms admission callback queues no early initialization; admitted initialization has native scenario ID, current step, ActiveSteps and full criteria progress.",
+    "live_late": "Same native save/load/rejoin path, with loading finish after map admission. Initialization is withheld until finish and sent once.",
+    "old_boot_early": "After another real save/logout, change only the scratch checkpoint's boot value. Even though its old native instance is still alive, full login allocates a new instance at the recorded entrance and emits stage0 after early finish/admission.",
+    "old_boot_late": "Same old-boot restart with finish after admission. No stale stage/criteria or extra initialization."
+  },
+  "native_data": {
+    "reader": "tools/research/ScenarioInitializationCatalog.cpp",
+    "catalog": ".codex/scenario-initialization-catalog.tsv",
+    "map": 1460,
+    "native_lfg": 908,
+    "native_difficulty": 12,
+    "alliance": {
+      "scenario": 786,
+      "team": 469,
+      "first_steps": [
+        1504,
+        1522
+      ],
+      "events": [
+        44060,
+        44095
+      ]
+    },
+    "horde": {
+      "scenario": 1189,
+      "team": 67,
+      "first_steps": [
+        2895,
+        2896
+      ],
+      "events": [
+        54140,
+        54116
+      ]
+    },
+    "routing": "Native LFG908 references786; world scenario_data selects786 for team469 and1189 for team67, with class/difficulty/LFG wildcard fields. Full native load uses these actual stores and routes; tests do not supply fake LFG metadata or a fake Scenario."
+  },
+  "method_and_limits": [
+    "64 complete relog cases:32 current-boot live and32 old-boot restarts, evenly split across both factions and early/late loading finishes. Four parent raid-difficulty contexts and two parent travel directions repeat the faction cases. The prior48 actual scenario initialization/fresh teleport cases remain in the same run.",
+    "Criteria progress is created by real type92 events, including actual stage advancement and7/33 accumulation. The fixture does not write Scenario stage/progress internals. Native SaveToDB/LogoutPlayer, persisted checkpoint parsing, accepted login/socket/SQL callback, actual map factory/admission, actual serialization and original final-link libraries are exercised.",
+    "The old-boot cases deliberately alter only a disposable checkpoint's boot value after a real save, while keeping the old native instance alive. This tests boot separation and entrance restart; it is not an observed process restart, crash recovery or actor-state serialization. Native PlayerRelocation establishes distinct positions for persistence checks and is not a test of client movement/collision.",
+    "Extracted negative routing tests execute the production resolver against controlled metadata boundaries. Native positive cases use runtime DB2/world metadata. Existing direct routes retain their prior precedence; this change does not redesign ObjectMgr/LFG selection globally.",
+    "No WoW client was operated. Actual UI, encrypted packet delivery, scene/voice/quest actor traversal, camera, pet portrait and full Broken Shore completion remain client checks. Fixture-owned map workers are stopped for deterministic lifecycle tests; arbitrary thread interleavings are not established.",
+    "Only schema-only disposable character/auth databases and scratch characters are written. World access is read-only; personal rows, runtime configuration and extracted data are preserved."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed64 final full SQL relogs:32 live and32 old-boot cases,32 per faction and eight per scenario/early/restart combination. Later position is separated from the saved entrance through native PlayerRelocation; live load retains it and old-boot load returns to entrance. Native step/ActiveSteps/full criteria packets are decoded, saved health321, sickness598000ms, item25 durability27, mover/corpse and once-only initialization are retained. The48 previous scenario cases and256 incremental/full timestamp assertions pass.",
+    "Existing280 loading-order,392 map-loading,392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session,168 aggregate-login and two socket-owner probes pass, with configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Disposable character/auth schemas (167 tables) and SQL user were removed.",
+    "Canonical exception-bounded PrepareScenarioLogin and RecordScenarioEntrance both call ResumeDungeon. Its deployed body calls the exact LFG lookup, native default map difficulty, shared team lookup and ObjectMgr route resolver. Native ScenarioData ABI binds team12/class16/difficulty8/dungeon20 offsets; actual code checks exact scenario, shares a rejection branch for team/class/difficulty mismatches and conditionally returns the dungeon match. Incremental-link thunks and actual final-link game.lib are checked, alongside the retained absolute scenario timestamp fix.",
+    "Test-ScenarioResume.ps1 -VerifyReleaseBinary passes original parsing/current-boot/live/old-boot/completion/entrance controls and new extracted production shared-route positive/negative admission cases. Test-ScenarioResumeData.ps1 passes the actual migration twice in a connection-local temporary table and native SELECT/UPDATE roundtrip. Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-NewBloodLogin.ps1 pass, preserving their content-specific recovery boundaries.",
+    "Both Release targets built successfully into build-extractors/bin/Release through the original generated library paths, without OutDir override or data migration. Runtime configuration, certificates, DLLs, logs and extracted data were preserved.",
+    "Owned hidden startup PID31024 reached ready, received server shutdown0 and exited0. DBErrors/stderr are empty, Server.log has no ERROR, and no worldserver/bnetserver remains. No user-owned server was stopped."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-051124",
+    "startup": "build-extractors/runtime-test/trial-garm-native/startup-20261022-050555",
+    "worldserver": "F3CE5B779DEAFB9CF2D3B0538B26D71E32B9BF4CC74FC042757D5321A39AAF10",
+    "worldserver_map": "D80888B480E98F2DED587D510390141AED11C6E1792527F9C1B2278CD155AC01",
+    "game_library": "A3026E76667EF70ABB4A975B2367A42D390B6FE7E77126990C7C70E5A7964176",
+    "scripts_library": "77593D6A58C2EDF3BAC9672AE95DDDAC93C068DC15AAC2F1625FE2020EFB01D3",
+    "native_db2": {
+      "dbc/enUS/Scenario.db2": "E77CC130EE594BCF084C5DD451FFBC7091C27DCDBB7F8CC61C051FB162E58101",
+      "dbc/enUS/ScenarioStep.db2": "4E422B1333A7B1BE8427CCB511017A93C093FA243ADB83DC74E255AD1702B94E",
+      "dbc/enUS/Criteria.db2": "8EE5F3D19D249D9A4F6A3B6745A0AB2D1A0A3B31C5B277B4942686C08E9C3750",
+      "dbc/enUS/CriteriaTree.db2": "10568E9752F38F16492E94DD569E77293A1E4A6C07EE6C0FE33B60D7A4BDDC05",
+      "dbc/enUS/MapDifficulty.db2": "3AC734985B0EFF360F014B1742FB9334B690AACA0B53EDC2B885294CC3551E28",
+      "dbc/enUS/LFGDungeons.db2": "EB05AA80F05F82048BBDA5931C6F34B062984DE64B992E7B195EA5D2B3700D42"
+    },
+    "hashes": {
+      "src/server/game/Entities/Player/PlayerScenario.cpp": "580297B1DA563AA7C5714B89DCB403AB7AABE823A7BD49056AE53FB8107A81A4",
+      "tools/tests/ScenarioResumeTest.cpp": "7F5BC822F17CF8EB8E2457F149AD2E99B16073650DE4FA289B167A1D7D9C825E",
+      "tools/tests/Test-ScenarioResume.ps1": "7DC3CA625D8BAC46187185CB536578042A979680816C13F062217C0AFF93ACF8",
+      "tools/tests/Test-RockawayChannelNative.ps1": "5F920F72189F00299C7AC5CFC3EBC1A9482B9035DE4083FDF31CCD358402D1E3",
+      "tools/tests/Test-ScenarioInitializationRelease.ps1": "6552E66121023E18F6D78235569DD1A7DF66160065763F251FE40F9428E7040E",
+      "tools/tests/TrialScenarioRelogNative.inc": "602F81ADA996EF35404A7E9356699CFB4623C47AF1C5045B3770895C3ABC1928",
+      "tools/tests/TrialScenarioInitializationNative.inc": "35B359F51DB5B677CE8945C049BF501D81FE90B54C187695D10DE6C64AEECD8B",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-051124/native-inputs.json": "444DFC2FBBE5F5F21F7919B3BEB0646950F009D62E3455154C6A85B6FB49717C",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-051124/native-lines.txt": "624861C235DDE70F6E7F9D6C33FD5A40A74E45A0090F2891BD4F2C659DE2688D",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-051124/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-051124/Server.log": "9B33C8E1E1A4743AAC7D0FDA1BE4E0232E3CF464FBA6DF22346DF8CC27014DCF",
+      "build-extractors/runtime-test/scenario-relog-release/inputs.json": "82D1A0D6EDE75631E4B5E3B01F16F36CCCDB3DAB11E54BA0467495B2E6E0CD11",
+      "build-extractors/runtime-test/scenario-relog-release/ResumeDungeon-verified.txt": "EEADECF84641CBFF920F0AD5D356F21C16556B4038A8D506B15AAB65D99900CA",
+      ".codex/scenario-relog-baseline.log": "D049FE2E7E0DF8B0727EBD629385688504E659B75BB768E5775CE59E7EE480DB",
+      ".codex/scenario-relog-build.log": "C53FC48CAE7309C24542D018F6E8E60C5C87014E6665B6D1170C0453C8D67310",
+      ".codex/scenario-relog-fixed-native.log": "65B56FF057D0DEB75564ED29FF5EABE48E7718C455458D43F4993B8FAA669F66",
+      ".codex/scenario-relog-final-verified.log": "10D31FEDA3E801EBD29580520B9E10F175D7CAED1E32FCE947905F8C8C13055B",
+      ".codex/scenario-relog-checked-verified.log": "848C22FE7B41C1164E4612ADDB3CE05445A21FA673D91D26DE77CC06B5D28CA2",
+      ".codex/scenario-relog-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/scenario-relog-resume.log": "34FBFC6A5DA832B2BEE9140E2EACECCFEEF9BF823EA2118E63DC9F67F57FF55A",
+      ".codex/scenario-relog-newblood.log": "BF581465B2BF26DEC33EBA9AC38E6FA758EE38B9B423182BCB70610047EDADAA",
+      ".codex/scenario-relog-data.log": "3F9D342B1BF10D74ECD697E5230C99CEA44C7AA5BDB7D661EAD1AC31D55BEDC8",
+      ".codex/scenario-relog-startup.log": "1628473B9168C1AA8208264474EE03768D342CF8E51917428C7CCD2D1922CBEA",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-050555/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-050555/stderr.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-garm-native/startup-20261022-050555/Server.log": "DCCF1C48D36677678C9FDD0DAFD6D25CC980082D16803BBA40FA924EEFDF8F77"
+    }
+  }
+}
