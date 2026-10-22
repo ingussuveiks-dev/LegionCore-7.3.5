@@ -9,7 +9,8 @@ checks = [
     ("?SendInitSelf@Map@@", "?BuildPlayerArrivalObjects@Map@@"),
     ("?OnPlayerEnter" + script, "?PutPlayerOnTransport" + script),
     ("?Update" + script, "?ShouldDeferMapObjectArrivalVisibility@Player@@"),
+    ("?SendToSelf@VisibleNotifier@Trinity@@", "?GetTransport@Map@@"),
 ]
 for caller, target in checks:
     assert native["symbol"](target) in native["calls"](caller), f"Missing linked {caller} -> {target}"
-print("PASS: linked Release queries moving collision models, prepares the deck before self-create and defers forced NPC visibility")
+print("PASS: linked Release queries moving collision models, prepares the deck before self-create, defers NPCs and reconciles transport visibility")

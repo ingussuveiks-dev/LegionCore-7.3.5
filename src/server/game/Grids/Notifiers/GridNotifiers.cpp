@@ -110,6 +110,15 @@ void VisibleNotifier::SendToSelf()
 
     for (auto it = vis_guids.begin(); it != vis_guids.end(); ++it)
     {
+        // Moving transports are not visited by the ordinary grid scan. An
+        // object-first arrival tracks their create like other geometry; do
+        // not immediately destroy that ship merely because the grid missed it.
+        // Missing, unloaded or no longer visible ships still use normal cleanup.
+        if (it->IsMOTransport())
+            if (Transport* visibleTransport = i_player.GetMap()->GetTransport(*it))
+                if (visibleTransport->IsInWorld() && i_player.canSeeOrDetect(visibleTransport, false, false))
+                    continue;
+
         // extralook shouldn't be removed by missing creature in grid where is curently player
         if (i_player.IsOnVehicle() || i_player.GetVehicleKit() != nullptr)
             if (i_player.HaveExtraLook(*it))

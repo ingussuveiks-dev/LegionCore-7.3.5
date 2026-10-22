@@ -118,3 +118,37 @@ exit bird/camera -> beach sequence, scaled one-hit surrender and pet/ally credit
 are not client-verified by these arrival fixtures. Their combat, wave, credit and
 departure handlers were not changed. Do not describe the full tutorial as
 verified from compilation, data inspection or these isolated tests.
+
+## First client failure: ship disappears after create
+
+The user reported that Krau loaded without falling, but the ship did not appear.
+This invalidates the initial arrival handoff as a complete client repair. The
+initial automated fixtures stopped after object creation and hold release; they
+did not execute VisibleNotifier::SendToSelf's subsequent out-of-range cleanup.
+
+Root cause: object-first arrival now records the ship's create in m_clientGUIDs.
+Moving transports are not ordinary grid objects, and VisibleNotifier protects
+their passengers but did not protect the ship itself. Its unvisited GUID thus
+became an out-of-range removal immediately after creation. This is a regression
+exposed by the new tracking; keeping the create untracked would conceal the
+lifecycle gap rather than reconcile visibility correctly.
+
+Test-TransportVisibility.ps1 extracts and executes the complete production
+SendToSelf. Before the follow-up repair it failed at the first retained-ship
+assertion. The repaired cleanup retains only an actual live map transport that
+the player can see. Both aboard and nearby observers retain it across repeated
+cycles; missing, unloaded, hidden and wrong-map transports are still removed.
+Ordinary object removal, existing passenger retention and vehicle extra-look
+exceptions also pass. No visibility or error check was disabled.
+
+The game library was rebuilt at its original link-input path, then worldserver
+was linked to staging with original libraries. The staged follow-up SHA-256 is
+`710e507dd9b10121e190aab14a48a9a279de70fe6c94a6222c03f127975338f5`.
+MapObjectArrival and BoostShipArrival regressions pass again; the linked-PE
+verifier additionally requires SendToSelf -> Map::GetTransport. The user-owned
+server is still running the initial build at this review point. Follow-up
+deployment and visible-ship client confirmation are pending.
+
+Computer Use was attempted only for read-only game-window inspection. Its native
+pipe was unavailable, including the documented retry/reset recovery; no UI
+actions were taken and no game-window visual claim is made from that tool.
