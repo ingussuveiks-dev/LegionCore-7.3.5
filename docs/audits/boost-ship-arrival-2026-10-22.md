@@ -240,3 +240,19 @@ sequence, later combat movement,
 pet/ally killing blows, camera, pet portrait and beach dismount remain unverified
 in this session. No agent-owned hidden server remains. The visible user-owned
 servers are left running, and no further character data changes were made.
+
+## Later tutorial report (2026-10-22)
+
+The user subsequently began Krau's tutorial. Arrival/feet remained correct, but
+the hunter lesson "Pet, Attack!" is blocked at 0/3: Kill Command reports "You
+can't do that yet". Client diagnostics returned `KC false pet true` and UI error
+ID 50. Further requested evidence is action slots 1..6, IsSpellKnown(34026),
+GetSpellCooldown(34026) and player focus; a chat screenshot is sufficient.
+Do not infer a missing pet from this report or relax the pet-control/cast checks
+without the actual failing state. No boost-sequence completion is verified.
+
+The separate Highmountain quest/mover repairs were built and deployed with both
+user servers already stopped. The owned hidden validation server reached ready
+and was gracefully shut down. This supersedes the earlier process-status note;
+no agent server is left running. These repairs do not yet resolve this hunter
+ability report or the intermittent socket initialization failure.

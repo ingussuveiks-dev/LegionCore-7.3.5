@@ -34,6 +34,14 @@
 - After completing a fix and its relevant checks, create a focused commit with the implementation, regression tests and audit, then push the current branch to `origin`. This is the user's standing preference; report the commit hash and distinguish automated checks from pending client verification.
 - Keep separate problems in separate commits. Review the staged diff, exclude runtime data, credentials and personal character backups, and do not force-push shared history.
 
+# Quest admission and packet regressions
+
+- AdventureJournal.Type is a suggestion category; ButtonActionType 3 starts a quest. Preserve the native PlayerCondition gate, exact self-offer popup authorization and separation from class-hall scouting selection/credit. Run Test-AdventureMapGossip.ps1 and verify_highmountain_quest_release.py; both Brawl and Suramar still require client acceptance checks.
+- QuestGiverQuestDetails::Write appends to its WorldPacket. Serialize/send it once; the former double call sent a second concatenated body. Keep the 7.3.5 GossipComplete empty (SuppressSound is a later protocol field). Run Test-QuestDetailsDelivery.ps1 and the linked PE check; actual window closure remains a client check.
+- Thunder Totem conversations 309/368 use EventObject SmartScript source 13, not scene 10. Keep their real quest gates, Bolas 107988/108081 quest-42630 spellclick admission and both natives' quest-45572 rescue limits. Run Test-ThunderTotemAdmission.ps1; neither world-quest intro should force an ineligible or inactive task onto the player.
+- A Hunter at Heart 40216 must not complete on acceptance. Preserve Addie's native 38/56/70 counters, separate stage credits, owner/pet kill dispatch, companion/gossip/area admission, quantity-bearing skill spells and retry/cleanup. Run Test-AddieHunting.ps1. Updating the controller actor entry must normalize the owner's summon-list key. Experience-bar/voice visuals and the full client quest remain separate checks.
+- Vehicle SetActiveMover packets can acknowledge an earlier server control command after the next mover is restored. Retain bounded history of actual issued commands (including the empty control-off transition), resend the server-selected mover, and continue rejecting unissued/expired GUIDs. Never adopt a client's mover or restart a scripted spline to hide the error. Run Test-WarlockRegression.ps1 and the linked PE check; camera, pet portrait and actual vehicle use remain client checks.
+
 # Legion 7.3.5 shop previews
 
 - For Mounts and Pets store offers, set `battlepay_display_info_visuals.DisplayId` to the collectible's `CreatureDisplayInfoID` and `VisualId` to the Store UI model scene `10`. Set `battlepay_display_info.FileDataID` to `10` as well.
