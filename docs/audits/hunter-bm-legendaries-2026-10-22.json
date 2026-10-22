@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-22",
+  "client_build": 26972,
+  "request": "Beast Mastery Hunter gear and single-target/AoE priorities for quests and dungeons; names and IDs only, no item grants or character changes",
+  "production_baseline": "8b625f07",
+  "release_sha256": "4651b7b349c543f852ee5dfa1c871d8a215da75f8a7ad3a1cf7b6f945d926518",
+  "runtime_changes": false,
+  "database_changes": false,
+  "server_processes_started_or_stopped": false,
+  "configuration": {
+    "Player.UnlimitedLegionLegendaries": true,
+    "meaning": "The ordinary two-Legendary retail constraint does not apply here; native class, level, slot and other item requirements still apply.",
+    "ordinary_legendary_required_level": 101,
+    "amanthul_required_level": 110
+  },
+  "sources": {
+    "native": "Runtime dbc/enUS, read using production DB2Storage and matching DB2LoadInfo/DB2Structure; no fixed-offset Python parsing",
+    "world_rules": "Read-only live MariaDB queries preserved in tools/research/HunterLegendaryRules.sql; credentials and character snapshots excluded",
+    "rotation": "https://github.com/simulationcraft/simc/blob/7742eb65075a74ebbd2e66799f122d7d58f121ce/profiles/Tier21/T21_Hunter_Beast_Mastery.simc",
+    "rotation_limit": "2018 Legion reference APL with ordinary two-Legendary and T21 assumptions. Its conditional priorities are useful; it is not a simulation of this server's unlimited-Legendary equipment or this character.",
+    "prior_shared_defensive_audit": "docs/audits/legendary-defensive-effects-2026-10-12.json"
+  },
+  "native_catalog": {
+    "hunter_equip_eligible_legendary_items": 28,
+    "additional_epic_or_artifact_ids": [140806,141482,147015,154174,128861],
+    "selected_direct_item_effect_rows": 41,
+    "missing_direct_item_spells": 0,
+    "native_semantic_checks_passed": 8,
+    "off_spec_transitive_gap": "The expanded research graph includes Survival ability 212011 -> absent legacy trigger 81040. This is not a direct BM Legendary item spell and was not repaired or represented as working."
+  },
+  "talents_with_soul_ring": {
+    "selected": [194397,217200,109215,199528,109248,131894,199532],
+    "names": ["Way of the Cobra","Dire Frenzy","Posthaste","One with the Pack","Binding Shot","A Murder of Crows","Killer Cobra"],
+    "extra_from_item": {"item":151641,"spell":247530,"spec":253,"talent":22347,"granted_spell":194306,"name":"Bestial Fury"},
+    "without_ring": "Bestial Fury is the baseline T21 reference choice in that row. Do not promise a universal numerical winner over One with the Pack without simulating the actual gear."
+  },
+  "recommended_legendary_mechanics": [
+    {"item":151805,"name":"Parsel's Tongue","slot":"chest","native":"Cobra Shot procs 248085: 8 seconds, up to four stacks, +1 percent player/pet damage and +2 percent leech per stack","world":"248084 proc family mask admits Cobra Shot","verification":"native DB2 and shared owner pet-damage paths reviewed; full combat proc delivery and refresh not client-tested"},
+    {"item":144326,"name":"The Mantle of Command","slot":"shoulders","native":"Dire Beast/Dire Frenzy -> 247993, +5 percent pet damage for 8 seconds","world":"235721 family mask includes both 120679 and 217200","verification":"native DB2 and owner pet-damage paths reviewed; full proc delivery pending client"},
+    {"item":137080,"name":"Roar of the Seven Lions","slot":"waist","native":"207318 reduces matching ability Focus costs by 15 percent","world":"207280 requires Bestial Wrath 19574; -19574 removes -207318. Infinite native child duration is therefore not by itself a permanent-buff bug.","verification":"native and live SQL review; duration and displayed Focus costs pending client"},
+    {"item":137227,"name":"Qa'pla, Eredun War Order","slot":"feet","native":"212278 amount -3000; proc mask includes Dire Beast and Dire Frenzy","world":"option 23 targets player, spell 34026, bp1=-1000","verification":"extracted production option-23 dispatcher yields -3000ms, including missing/mismatched rule guards; full proc delivery pending client"},
+    {"item":137101,"name":"Call of the Wild","slot":"wrists","native":"35 percent cooldown reduction mask covers Aspect of the Wild, Turtle and Cheetah","verification":"native mask intersections checked; live cooldowns pending client"},
+    {"item":151641,"name":"Soul of the Huntmaster","slot":"ring","native":"BM-only 247530 enables native talent 22347 / Bestial Fury 194306","verification":"native per-spec item admission and talent mapping; production handler learn/reapply/unequip/missing item/selected talent preservation pass. Client respec/relog pending."},
+    {"item":137382,"name":"The Apex Predator's Claw","slot":"ring","native":"Aura 451 selects native pet adaptation specializations 535/536/537; each includes the Ferocity/Tenacity/Cunning passive union","verification":"production apply/remove transitions and owner/class/mode guards pass for all three specs. Actual stat scaling, damage bonus, resummon and relog pending client."},
+    {"item":132452,"name":"Sephuz's Secret","slot":"alternative ring","native":"Baseline 10 percent movement and 2 percent haste; 10-second proc adds 60 percent movement and 23 percent haste; 30-second internal cooldown","core":"Successful control/interrupt/dispel paths and 226262 internal cooldown reviewed in Unit::HandleProcTriggerSpell","verification":"Conditional alternative for dungeons with successful interrupts/CC. Immunities, active proc delivery and pet-origin control not client-tested."},
+    {"item":132444,"name":"Prydaz, Xavaric's Magnum Opus","slot":"neck","verification":"Production absorb calculation/core absorption-loop tests pass: PvE shield 25 percent max HP; damage, depletion, overflow, bypass and schools covered. Repeated live application pending client."},
+    {"item":137064,"name":"The Shadow Hunter's Voodoo Mask","slot":"head","native":"Feign Death -> 208888 healing; leaving Feign Death removes healing","world":"5384 -> 208888 gated by 208884, -5384 -> -208888","verification":"Native and live SQL review; heal timing/amount and unequip pending client"},
+    {"item":132466,"name":"Roots of Shaladrassil","slot":"legs","native":"Standing-still driver 233665 checks movement; nourishment 208981 heals 3 percent max HP every second","verification":"Native and live SQL review; stationary/moving transitions pending client"},
+    {"item":146668,"name":"Vigilance Perch","slot":"optional utility gloves","native":"Kill-triggered movement stacks with out-of-combat Spirit Owl transformation","verification":"Native and linked/trigger rule review only; not a BM damage Legendary and flight-area/kill-credit/transform behavior not client-verified"},
+    {"item":144259,"name":"Kil'jaeden's Burning Wish","slot":"damage trinket","native":"On-use 235991 projectile area trigger 9737 leads to AoE 235999; native crit rule reads the 200-point dummy effect","verification":"Native/core/live SQL route reviewed with previous shared audit; actual target seeking, impact and damage not client-verified"},
+    {"item":144249,"name":"Archimonde's Hatred Reborn","slot":"defensive trinket","native":"30 percent max-HP absorb for 10 seconds, 75 percent of actual absorbed damage returned","verification":"Production aura and real absorb loop tests pass, including exactly-once reflection fixture; in-game use pending"},
+    {"item":140806,"name":"Convergence of Fates","slot":"optional non-Legendary damage trinket","native":"225139 proc amount 3; live option-23 rule reduces Aspect of the Wild 193530","verification":"Native/SQL route reviewed; effective proc frequency and comparison with actual item levels not simulated or client-tested"}
+  ],
+  "selection": {
+    "solo_rings": [151641,137382],
+    "dungeon_ring_alternative": "Keep Soul 151641; compare Sephuz 132452 with Apex 137382 when frequent successful interrupts/CC activate Sephuz.",
+    "universal_trinkets": [144259,144249],
+    "damage_alternative": "Consider Convergence of Fates 140806 instead of the defensive Archimonde trinket, based on actual item level and performance; no claim of a measured DPS winner.",
+    "cloak": "No BM-specific damage Legendary cloak. Do not recommend MM 151803 or Survival 151807 as a BM effect. Use an appropriate Agility cloak; at 110 consider T21 152131 together with its set.",
+    "tier_caveat": "Replacing every armor slot with orange gear can lose a valuable four-piece bonus. No unlimited-Legendary versus T21 full-gear simulation was run.",
+    "excluded": [
+      {"item":144258,"reason":"Velen's Future Sight is a healing-effect trinket, not the BM damage choice."},
+      {"item":152626,"reason":"Insignia of the Grand Army depends on the actual unlocked Netherlight Crucible traits; not a generic ring upgrade for a boosted character without them."},
+      {"item":154172,"reason":"Aman'Thul's Vision requires 110. Ordinary proc has a route; the dedicated empowered Pantheon implementation is commented out and no live binding to 256832 was found. Not fully implemented/verified; excluded from recommendation."},
+      {"item":154174,"reason":"Golganneth's Vitality is a Pantheon raid trinket; do not count on its empowered party effect for this universal quest/dungeon recommendation."}
+    ]
+  },
+  "priority_notes": [
+    "This is a conditional priority list, not a fixed repeating cast order.",
+    "Maintain Dire Frenzy attack-speed stacks (up to 3, 8-second native buff), refreshing near expiry and avoiding wasted charges; do not empty both charges blindly.",
+    "Use Bestial Wrath and pair Aspect of the Wild when available; do not waste entire cooldown cycles waiting for a perfect pairing.",
+    "Kill Command is the main single-target attack. During Bestial Wrath, Killer Cobra permits Kill Command -> Cobra Shot -> Kill Command when resources and pet/target state allow.",
+    "Maintain Parsel with Cobra Shot before its 8-second buff expires, while preserving Focus for Kill Command and necessary Multi-Shot.",
+    "With Titanstrike and the learned Titan's Thunder power, use Titan's Thunder during burst before the next Dire Frenzy; the native DF version buffs that next frenzy. It is not automatically available without the artifact.",
+    "For clustered enemies, maintain the pet's four-second Beast Cleave with Multi-Shot, then continue priority-target attacks; refresh Beast Cleave before expiry instead of blindly spamming Multi-Shot.",
+    "Use Crows on a target that dies during its 15-second duration for a cooldown reset. Native 131894 duration is 15000ms; the 16-tick damage expression is not the duration.",
+    "Misdirect to pet for solo, tank for dungeons; disable pet Growl autocast with a tank. Counter Shot is utility and can legitimately activate Sephuz; avoid wasting it merely to chase a buff.",
+    "Posthaste/Disengage and Cheetah provide movement; Turtle prevents attacking while active; Feign Death/Mask and Exhilaration are defensive tools. Orc Blood Fury can join burst.",
+    "No modern Barbed Shot or modern talent-tree recommendations are imported."
+  ],
+  "automated_checks": [
+    "Read-LegionLegendaryCatalog.ps1 -SourceFile HunterLegendaryCatalog.cpp -ProbeName HunterLegendaryCatalog: compiled with production reader/libs; eight native semantic assertions passed",
+    "Test-HunterLegendaryEffects.ps1: extracted production talent, pet-spec and cooldown handlers passed",
+    "Test-ItemEffectLifecycle.ps1: production item equip spec isolation and lifecycle passed; its named ring fixtures cover the generic Netherlord mechanism, not an in-client Huntmaster test",
+    "Test-LegendaryDefensiveEffects.ps1: production shield and actual shared absorption-loop fixtures passed"
+  ],
+  "remaining_client_checks": [
+    "Actual equip/unequip/spec change/relog/resummon/revive behavior with these items, including pet portrait and all damage/heal/Focus/CD changes",
+    "Full combat proc admission, timing, target seeking, successful versus immune CC and guardian interactions",
+    "Single-target and multi-target measured performance with the actual bonus IDs, item levels, artifact powers/relics, tier bonuses and chosen pet",
+    "No item has been granted, equipped or upgraded and no talent/action-bar layout was changed by this audit"
+  ]
+}
