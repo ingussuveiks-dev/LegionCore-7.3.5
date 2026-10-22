@@ -26,6 +26,7 @@ public:
     bool BoostCharacter(WorldSession* session, ObjectGuid targetCharGuid, uint16 specializationId, uint8 targetLevel,
         uint16 factionChoice, std::vector<uint32>& boostItems);
     void FinalizeBoost(Player* player);
+    bool ArrangeBoostActionBar(Player* player);
     void RestoreDeletedCharacter(WorldSession* session);
 
 	static CharacterService* instance();

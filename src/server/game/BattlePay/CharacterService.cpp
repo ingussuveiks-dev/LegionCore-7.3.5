@@ -1,4 +1,5 @@
 #include "CharacterService.h"
+#include "BoostActionBars.h"
 #include "CollectionMgr.h"
 #include "DatabaseEnv.h"
 #include "DB2Stores.h"
@@ -454,48 +455,75 @@ void MailBoostBags(Player* player)
 
 void PopulateBoostActionBar(Player* player)
 {
-    std::vector<uint32> spells;
-    std::set<uint32> addedSpells;
-
-    if (std::vector<SpecializationSpellsEntry const*> const* specializationSpells =
-        sDB2Manager.GetSpecializationSpells(player->GetSpecializationId()))
-    {
-        for (SpecializationSpellsEntry const* specializationSpell : *specializationSpells)
-            if (player->HasActiveSpell(specializationSpell->SpellID) && addedSpells.insert(specializationSpell->SpellID).second)
-                spells.push_back(specializationSpell->SpellID);
-    }
-
-    std::sort(spells.begin(), spells.end(), [](uint32 left, uint32 right)
-    {
-        SpellInfo const* leftInfo = sSpellMgr->GetSpellInfo(left);
-        SpellInfo const* rightInfo = sSpellMgr->GetSpellInfo(right);
-        uint32 leftLevel = leftInfo ? leftInfo->SpellLevel : 0;
-        uint32 rightLevel = rightInfo ? rightInfo->SpellLevel : 0;
-        return leftLevel != rightLevel ? leftLevel < rightLevel : left < right;
-    });
-
-    std::vector<uint32> remainingSpells;
-    for (auto const& knownSpell : player->GetSpellMapConst())
-        if (player->HasActiveSpell(knownSpell.first) && addedSpells.insert(knownSpell.first).second)
-            remainingSpells.push_back(knownSpell.first);
-
-    std::sort(remainingSpells.begin(), remainingSpells.end(), [](uint32 left, uint32 right)
-    {
-        SpellInfo const* leftInfo = sSpellMgr->GetSpellInfo(left);
-        SpellInfo const* rightInfo = sSpellMgr->GetSpellInfo(right);
-        uint32 leftLevel = leftInfo ? leftInfo->SpellLevel : 0;
-        uint32 rightLevel = rightInfo ? rightInfo->SpellLevel : 0;
-        return leftLevel != rightLevel ? leftLevel < rightLevel : left < right;
-    });
-    spells.insert(spells.end(), remainingSpells.begin(), remainingSpells.end());
-
-    bool changed = false;
-    for (uint32 spellId : spells)
-        changed |= player->AddSpellToActionBarIfAppropriate(spellId, false);
-
-    if (changed)
-        player->SendActionButtons(1);
+    sCharacterService->ArrangeBoostActionBar(player);
 }
+}
+
+bool CharacterService::ArrangeBoostActionBar(Player* player)
+{
+    if (!player)
+        return false;
+    std::vector<uint32> known;
+    for (auto const& spell : player->GetSpellMapConst())
+        known.push_back(spell.first);
+    std::vector<BoostActionBars::Action> old;
+    for (auto const& button : player->GetActionButtons())
+        if (button.second.uState != ACTIONBUTTON_DELETED)
+            old.push_back({button.first, button.second.GetAction(), uint8(button.second.GetType())});
+
+    auto priority = BoostActionBars::Priority(player->GetSpecializationId());
+    auto utility = BoostActionBars::Utility(player->getClass());
+    std::set<uint32> preferred(priority.begin(), priority.end());
+    preferred.insert(utility.begin(), utility.end());
+    auto eligible = [player, &preferred](uint32 id)
+    {
+        SpellInfo const* info = sSpellMgr->GetSpellInfo(id);
+        if (!info || !player->HasActiveSpell(id) || info->IsPassive() || info->IsProfession() ||
+            info->IsMountOrCompanions() || info->HasAttribute(SPELL_ATTR0_HIDDEN_CLIENTSIDE) ||
+            info->HasAttribute(SPELL_ATTR0_TRADESPELL))
+            return false;
+        // E.g. Dire Frenzy replaces Dire Beast; both base IDs can remain known.
+        if (SpellInfo const* replacement = player->GetCastSpellInfo(info, 0))
+            if (replacement->Id != id && player->HasActiveSpell(replacement->Id))
+                return false;
+        // Artifact actives may have no SkillLineAbility row. This is a curated
+        // current-spec whitelist, still subject to known/active/visible checks.
+        if (preferred.count(id))
+            return true;
+        // Restrict the fallback to class abilities and racials. Profession-book
+        // openers are not IsProfession() skill-grant spells; accepting every
+        // ClassMask=0 skill row also puts these books and generic UI spells here.
+        if (sSpellMgr->IsTalent(id))
+            return true;
+        if (auto entries = sDB2Manager.GetSpecializationSpells(player->GetSpecializationId()))
+            for (auto entry : *entries)
+                if (entry->SpellID == id)
+                    return true;
+        auto bounds = sSpellMgr->GetSkillLineAbilityMapBounds(id);
+        for (auto itr = bounds.first; itr != bounds.second; ++itr)
+            if (!itr->second->ClassMask || (itr->second->ClassMask & player->getClassMask()))
+                if (auto skill = sSkillLineStore.LookupEntry(itr->second->SkillLine))
+                    if (skill->CategoryID == SKILL_CATEGORY_CLASS ||
+                        (itr->second->RaceMask && !IsProfessionSkill(itr->second->SkillLine) &&
+                         itr->second->SkillLine != SKILL_RIDING && skill->CategoryID != SKILL_CATEGORY_LANGUAGES))
+                        return true;
+        return false;
+    };
+    std::vector<BoostActionBars::Action> planned;
+    if (!BoostActionBars::Build(player->GetSpecializationId(), player->getClass(), known, old, eligible, planned))
+    {
+        TC_LOG_ERROR("battlepay", "Boost action layout unavailable or full for %s specialization %u; retained saved actions",
+            player->GetName(), player->GetSpecializationId());
+        return false;
+    }
+    for (uint8 button = 0; button < 72; ++button)
+        player->RemoveActionButton(button);
+    for (auto const& button : planned)
+        player->AddActionButton(button.button, button.action, button.type);
+    player->SendActionButtons(1);
+    TC_LOG_INFO("battlepay", "Boost action layout arranged for %s specialization %u (%zu actions)",
+        player->GetName(), player->GetSpecializationId(), planned.size());
+    return true;
 }
 
 CharacterService* CharacterService::instance()

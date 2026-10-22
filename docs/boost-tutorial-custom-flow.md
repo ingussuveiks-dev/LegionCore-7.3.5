@@ -22,12 +22,16 @@
 - The tutorial action bar is a packet overlay. It starts empty; active known
   spells from CAST_SPELL criteria in completed/current DB2 lessons accumulate
   as lessons advance. Form/stance pages also receive the lesson buttons.
-- Persistent action buttons are never cleared. Client button edits on the two
+- Lesson transitions do not clear persistent actions. Client button edits on the two
   tutorial maps are ignored. Spell learning and reconnects regenerate the
   overlay. Leaving either map sends the saved normal layout again.
-- Departure also fills vacant normal slots with any newly learned active class
-  spells. Macros and occupied slots are preserved; passive/profession/mount
-  spells are filtered by the existing boost action-bar helper.
+- Boost initialization and successful departure arrange a custom PvE starter
+  layout for the current specialization. Main attacks precede utility, defensive
+  and pet buttons. Known replacement talents supersede their base spells;
+  profession books, generic UI, passive and mount spells are omitted. Macros,
+  items and flyouts are relocated intact. Existing stance pages are retained;
+  empty druid/rogue form pages receive suitable attacks. Ordinary subsequent
+  login/map changes retain manual edits. See the 2026-10-22 boost action-bar audit.
 - Sparring opponents yield before lethal damage, become friendly/nonattackable,
   kneel and credit event 48772 once. Legion attackers remain lethal encounters.
 - Training actors follow the recorded Warlock sequence: no dummy during the

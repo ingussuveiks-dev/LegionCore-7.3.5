@@ -26,6 +26,7 @@
 #include "ObjectAccessor.h"
 #include "Vehicle.h"
 #include "QuestData.h"
+#include "CharacterService.h"
 
 namespace BoostExperience
 {
@@ -1157,10 +1158,6 @@ public:
             return true;
 
         player->CombatStop(true);
-        // Fill any newly learned active class spells into vacant real slots. The
-        // tutorial overlay remains visible until OnMapChanged restores this bar.
-        for (auto const& spell : player->GetSpellMapConst())
-            player->AddSpellToActionBarIfAppropriate(spell.first, false);
         // Board the actual gossip bird. A second, identical vehicle left the
         // client showing the rider on deck while the other bird flew away.
         if (creature->AI())
@@ -1277,6 +1274,11 @@ public:
             else if (phase == 2)
             {
                 RestoreRiderControl(player);
+                // Once per successful tutorial departure, after all lessons and
+                // talent learning. Re-entry/login must keep later manual layouts.
+                sCharacterService->ArrangeBoostActionBar(player);
+                // Native action states persist on ordinary save/logout. Do not
+                // force a character-position checkpoint on the airborne bird.
                 // Alliance returns to Genn; Horde returns to Eitrigg.
                 uint32 questId = player->GetTeam() == ALLIANCE ? 42740 : 40518;
                 if (player->GetQuestStatus(questId) == QUEST_STATUS_NONE && !player->GetQuestRewardStatus(questId))

@@ -19,3 +19,14 @@ Automated verification:
 Deployment/client status: user-owned worldserver 34812 and bnetserver 31836 were observed and left running. No hidden server was started. Executable replacement, startup and client checks remain pending. The full 7.3.5 single-surrender 1/1, two-surrender 2/2, Legion attackers, exit bird/camera/pet portrait and beach delivery sequence is NOT verified by these fixtures. The newly visible constructs' actual model, health, targetability, AoE grouping, death credit, next lesson and later sequence require client traversal on both factions. Template and target-relative health are logged at each construct spawn for that check.
 
 Final deployment: before replacement both user server processes were already absent; neither was stopped by the agent. The executable/map and earlier Server.log were privately backed up in ignored `.codex/private-backups/boost-constructs-20261022`. The combined construct/Tar Trap build was copied to canonical `build-extractors/bin/Release`, SHA256 `20d2b0bcbe9a5c27d3b7bc81cfe2b19b325880e7922f5b1e4e2253c9a9a1ba8d`. Production construct, Tar Trap, Scepter login and their deployed-binary checks passed; the existing hunter-pet and boost-arrival PE checks passed too. Hidden owned validation worldserver 19892 reached ready without ERROR/database-loader errors, then shut down gracefully with exit 0. A subsequent process check found zero worldserver/bnetserver processes. No configuration, credentials, client settings, character state or runtime data were replaced. Client construct/next-step/full-chain verification remains pending; the user has been asked to replay Shooting Every Target through Playing Possum.
+
+Subsequent client confirmation: the user completed Krau's Horde Beast Mastery
+ship tutorial and reached the island. Server logs corroborate three constructs
+spawned at14:56:53 and destruction credit14:57:39; single surrender14:58:25;
+two-opponent wave14:58:27 and credits14:59:08/14:59:32, including a pet last blow;
+twelve Legion attackers divided two per player/five allies; bird boarding15:02:48
+and beach disembarkation15:04:00. No CreatureDies sparring fallback appears in
+this traversal. This confirms the normal Horde BM sequence, not Alliance,
+other-class, one-hit/retry or camera/pet-portrait variants. The log also contains
+an outstanding map1460 already-in-map admission diagnostic15:03:00; arrival
+succeeded, but that message is not declared fixed by the construct/bar changes.
