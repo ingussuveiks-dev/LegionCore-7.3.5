@@ -22027,11 +22027,20 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
         if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
             continue;
 
-        conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
-        if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
-            continue;
+        QuestStatus const status = GetQuestStatus(questId);
+        // Acceptance prerequisites govern starting a quest. An existing quest
+        // must retain its turn-in interaction when those prerequisites change
+        // or a legitimate alternate route (such as the boost ship) skips them.
+        // Explicit SHOW_MARK conditions still apply above; automatic repeatable
+        // turn-ins without an active quest retain their acceptance checks.
+        if (status != QUEST_STATUS_COMPLETE && status != QUEST_STATUS_INCOMPLETE)
+        {
+            conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_QUEST_ACCEPT, quest->GetQuestId());
+            if (!sConditionMgr->IsObjectMeetToConditions(this, conditions))
+                continue;
+        }
 
-        switch (GetQuestStatus(questId))
+        switch (status)
         {
             case QUEST_STATUS_COMPLETE:
                 if (quest->HasFlagEx(QUEST_FLAGS_EX_LEGENDARY_QUEST))

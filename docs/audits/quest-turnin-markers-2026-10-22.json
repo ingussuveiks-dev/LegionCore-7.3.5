@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-22",
+  "client_build": 26972,
+  "reported": "After the boosted Horde Hunter completed The Battle for Broken Shore, the tracker showed ready for turn-in but Eitrigg on the Bladefist Bay dock had no marker and right-click opened no window.",
+  "observed_data": {
+    "quest": 40518,
+    "status": "COMPLETE, unrewarded",
+    "questender": 100453,
+    "name": "Eitrigg",
+    "spawn": 350403,
+    "map": 1,
+    "spawn_phases": "7554 7553 7425",
+    "template_npcflag": 2,
+    "spawn_npcflag": 0,
+    "flag_selection": "Native ObjectMgr::ChooseCreatureFlags uses the template's questgiver flag when the spawn override is zero.",
+    "phase": "Completed 40518, before rewarded 40522, admits Durotar phase definition 4 / phase 7425; the correct Eitrigg is visible at the reported dock.",
+    "acceptance_conflict": "Source-19 acceptance conditions require preparation quest 44281 rewarded. The legitimate boost-ship route begins at 40518 and does not reward the skipped preparations.",
+    "rewarded_preparations": false
+  },
+  "cause": "Player::GetQuestDialogStatus reapplied QUEST_ACCEPT conditions to involved relations before reading active quest status. The skipped preparation made it return None instead of RewardCompletePOI even though the existing quest was complete. The fixture reproduces this with the actual old production function. The exact client's absent right-click packet was not captured; the relationship between the missing marker and right-click behavior still needs the client retest.",
+  "reference": "The local C:/wamp64/www/TrinityCore Player::GetQuestDialogStatus also treats involved-quest status separately from start-quest conditions. Its newer protocol was not copied.",
+  "fix": {
+    "file": "src/server/game/Entities/Player/Player.cpp",
+    "behavior": "Read the involved quest status first. Existing COMPLETE/INCOMPLETE quests retain their turn-in/incomplete marker even when acceptance prerequisites no longer pass. Source 19 still applies for other statuses and the starter relation loop.",
+    "preserved": [
+      "Explicit source-20 SHOW_MARK conditions and script status overrides",
+      "Creature/GO relation ownership and missing template handling",
+      "Normal quest acceptance and next-quest prerequisites, including the regular Horde introduction",
+      "Repeatable automatic quests without an active log entry still require acceptance checks and CanTakeQuest",
+      "Incomplete versus reward-complete and ordinary versus legendary/no-POI status flags",
+      "Actual reward validation, package choice, quest credit and exactly-once reward behavior",
+      "Boost ship, combat, scenario stages, pet/guardian credit, phase data and character progress"
+    ],
+    "database_migration": false,
+    "character_repair": false,
+    "manual_rewards_or_skipped_quest_rewards": false
+  },
+  "checks": [
+    "Test-QuestTurnInMarkers.ps1 -Baseline: pinned 0f5222a5 source reproduces None for a completed quest with failed preparation conditions",
+    "Test-QuestTurnInMarkers.ps1: extracted full production GetQuestDialogStatus and native status enum pass NPC/GO, complete/incomplete, absent/failed/rewarded states, wrong giver, explicit hidden marker, legendary/no-POI, start/next quest conditions, level gates, repeatable auto-turn-in and script override cases; querying status does not grant the next quest",
+    "Test-LegionIntroSequence.ps1: production quest-log repair and 76 quest/phase progression checks pass, including boosted/ordinary Horde and shared Alliance/Demon Hunter routes",
+    "Test-QuestDetailsDelivery.ps1: production packet dispatch serializes and sends exactly once",
+    "Release game.lib rebuilt in its canonical generated path, then worldserver linked into task staging; no global OutDir override on static libraries",
+    "verify_quest_turnin_release.py: actual final PE shows source-20 lookup before quest status, then COMPLETE and INCOMPLETE branches around only the source-19 acceptance lookup; incomplete branch retains status 0x20",
+    "Linked scenario completion/exit/relog/persistence verifier passes all ten existing call paths",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary passes",
+    "Release verifier rejects the backed-up pre-fix canonical executable",
+    "Canonical runtime reached ready with no startup/DBErrors errors; owned hidden validation worldserver exited gracefully with code 0"
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "files": ["worldserver.exe","worldserver.map"],
+    "sha256": "585dd1f0305320192b0e47d9350b1124902421738ea6fd8a3af2f5bc427cb4ca",
+    "previous_sha256": "4651b7b349c543f852ee5dfa1c871d8a215da75f8a7ad3a1cf7b6f945d926518",
+    "ownership": "No existing worldserver at deployment; no user-owned process was stopped. The Codex-owned hidden validation worldserver reached ready and then shut down gracefully with exit code 0; no temporary server remains.",
+    "preserved": "Runtime configs, credentials, certificates, DLLs, extracted data, logs and bnetserver executable"
+  },
+  "remaining_client_checks": [
+    "Start canonical worldserver, log in with Krau, verify Eitrigg's yellow question mark and actual right-click window",
+    "Choose a valid 40518 reward, receive it once, then accept Fate of the Horde 40522 from Eitrigg",
+    "Confirm repeat/relog does not duplicate rewards and subsequent Horde story phases remain correct",
+    "The fix reproduces and repairs the missing marker; it is not declared client-verified before the user's retest"
+  ]
+}

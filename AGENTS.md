@@ -36,6 +36,8 @@
 
 # Quest admission and packet regressions
 
+- Quest acceptance conditions (source 19) govern starting a quest, not the turn-in marker of an already active complete/incomplete quest. The boost ship legitimately skips preparation 44281; rechecking it hid Eitrigg 100453's completed 40518 marker on 2026-10-22. Preserve explicit SHOW_MARK/source-20 conditions, start/next-quest admission, repeatable auto-turn-in checks and reward validation. Run `Test-QuestTurnInMarkers.ps1` (the `-Baseline` mode reads pinned pre-fix source) and `verify_quest_turnin_release.py`; Eitrigg's actual client interaction/reward/40522 handoff remains a separate check.
+
 - AdventureJournal.Type is a suggestion category; ButtonActionType 3 starts a quest. Preserve the native PlayerCondition gate, exact self-offer popup authorization and separation from class-hall scouting selection/credit. Run Test-AdventureMapGossip.ps1 and verify_highmountain_quest_release.py; both Brawl and Suramar still require client acceptance checks.
 - QuestGiverQuestDetails::Write appends to its WorldPacket. Serialize/send it once; the former double call sent a second concatenated body. Keep the 7.3.5 GossipComplete empty (SuppressSound is a later protocol field). Run Test-QuestDetailsDelivery.ps1 and the linked PE check; actual window closure remains a client check.
 - Thunder Totem conversations 309/368 use EventObject SmartScript source 13, not scene 10. Keep their real quest gates, Bolas 107988/108081 quest-42630 spellclick admission and both natives' quest-45572 rescue limits. Run Test-ThunderTotemAdmission.ps1; neither world-quest intro should force an ineligible or inactive task onto the player.
