@@ -1,0 +1,9 @@
+# Vehicle mover acknowledgements — 2026-10-22
+
+Maiko's Bolas Launcher 108081 and Frightened Mountainstrider 107680 report pairs of zero/former vehicle mover GUIDs while the server has already restored the player. Native seats 4809/16718 and 4795/16657 both carry CAN_CONTROL (0x800). Boarding enters the normal charm handoff; exit issues vehicle control-off followed immediately by player control-on. SetClientControl/SetMovedUnit previously retained no record of the commands awaiting client acknowledgement.
+
+CMSG_SET_ACTIVE_MOVER has only a GUID, without a command sequence. Retain up to sixteen actual server-issued mover commands for five seconds, including the transient empty mover from control revocation. When such a delayed acknowledgement crosses the next selection, resend the current server mover. Do not accept the client's GUID, change possession, reset a spline or change viewpoint. Unissued and expired GUIDs still follow the existing error path. The scripted non-control departure-bird repair remains intact.
+
+Test-WarlockRegression.ps1 executes the production mover handler and history: zero/old-vehicle acknowledgements, unrelated GUID rejection, timeout, bounded history, timestamp wrap, authority preservation and the existing bird cases. It checks the recording sites against the actual outgoing commands. Client launcher/mountainstrider boarding, shooting/riding, dismounting, camera and pet portrait remain pending. This does not claim to fix the separate intermittent socket initialization failure.
+
+Release: actual canonical handler contains the bounded five-second history expiry; existing linked scenario completion paths and Scepter login verification pass. Warlock, pet lookup and aura re-entry regressions pass. Owned hidden canonical startup reached ready without errors and ended with graceful shutdown.

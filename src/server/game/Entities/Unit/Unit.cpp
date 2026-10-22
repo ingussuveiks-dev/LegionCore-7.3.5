@@ -17611,6 +17611,7 @@ void Unit::SetMovedUnit(Unit* target)
 
     WorldPackets::Movement::MoveSetActiveMover packet;
     packet.MoverGUID = target->GetGUID();
+    ToPlayer()->RecordClientMoverCommand(packet.MoverGUID, getMSTime());
     ToPlayer()->SendDirectMessage(packet.Write());
 }
 

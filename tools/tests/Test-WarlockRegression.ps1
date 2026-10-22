@@ -23,6 +23,12 @@ foreach ($entry in @(@('SpellCastResult CheckCast()', 'BurningRushCheckCast.inc'
     [IO.File]::WriteAllText("$output/$($entry[1])", $script.Substring($begin, $close - $begin))
 }
 $movement = [IO.File]::ReadAllText("$repo/src/server/game/Handlers/MovementHandler.cpp")
+$unit = [IO.File]::ReadAllText("$repo/src/server/game/Entities/Unit/Unit.cpp")
+$player = [IO.File]::ReadAllText("$repo/src/server/game/Entities/Player/Player.cpp")
+if($unit -notmatch 'RecordClientMoverCommand\(packet.MoverGUID, getMSTime\(\)\);\s*ToPlayer\(\)->SendDirectMessage\(packet.Write\(\)\);' -or
+   $player -notmatch 'if \(!allowMove\)\s*RecordClientMoverCommand\(ObjectGuid::Empty, getMSTime\(\)\);'){
+    throw 'Mover history must track actual outgoing selection and control revocation commands'
+}
 $begin = $movement.IndexOf('void WorldSession::HandleSetActiveMover(')
 $end = $movement.IndexOf('void WorldSession::HandleMoveTimeSkipped(', $begin)
 if ($begin -lt 0 -or $end -le $begin) { throw 'Cannot locate mover handler' }

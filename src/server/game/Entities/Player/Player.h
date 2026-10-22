@@ -25,6 +25,7 @@
 #include "Battleground.h"
 #include "CUFProfile.h"
 #include "Common.h"
+#include "ClientMoverHistory.h"
 #include "DBCEnums.h"
 #include "DatabaseEnvFwd.h"
 #include "EquipementSet.h"
@@ -2874,6 +2875,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void HandleFall(MovementInfo const& movementInfo);
 
         void SetClientControl(Unit* target, bool allowMove);
+        void RecordClientMoverCommand(ObjectGuid guid, uint32 now) { m_clientMoverHistory.Record(guid, now); }
+        bool WasClientMoverCommanded(ObjectGuid guid, uint32 now) { return m_clientMoverHistory.Contains(guid, now); }
 
         void SetSeer(WorldObject* target) { m_seer = target; }
         void SetViewpoint(WorldObject* target, bool apply);
@@ -3318,6 +3321,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         ObjectGuid m_playerSharingQuest;
         uint32 m_sharedQuestId;
         uint32 m_popupQuestId;
+        ClientMoverHistory<ObjectGuid> m_clientMoverHistory;
         uint32 m_ingametime;
 
         /*********************************************************/

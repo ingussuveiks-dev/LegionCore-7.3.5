@@ -1,6 +1,9 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include "../../src/server/game/Entities/Player/ClientMoverHistory.h"
+unsigned now = 1000;
+unsigned getMSTime(){return now;}
 
 struct Guid
 {
@@ -27,6 +30,8 @@ struct Vehicle
 };
 struct Player : Unit
 {
+    ClientMoverHistory<Guid> history;
+    bool WasClientMoverCommanded(Guid guid,unsigned time){return history.Contains(guid,time);}
     Unit* mover = nullptr;
     Unit* vehicleBase = nullptr;
     Vehicle vehicle;
@@ -89,5 +94,22 @@ int main()
     player.inWorld = false;
     session.HandleSetActiveMover(oldSelf);
     assert(session.sent == 1 && errors == 4);
+    player.inWorld = true;
+    player.mover = &player;
+    player.history.Record(bird.guid, now);
+    player.history.Record(Guid{0}, now);
+    player.history.Record(player.guid, now);
+    WorldPackets::Movement::SetActiveMover zero{{0}};
+    session.HandleSetActiveMover(zero);
+    session.HandleSetActiveMover(matching);
+    assert(session.sent==3&&session.lastSent==player.guid&&player.mover==&player&&errors==4);
+    session.HandleSetActiveMover(unrelated);assert(errors==5&&session.sent==3);
+    now+=5001;session.HandleSetActiveMover(matching);session.HandleSetActiveMover(zero);
+    assert(errors==7&&session.sent==3);
+    ClientMoverHistory<Guid> bounded;
+    for(unsigned i=0;i<17;++i)bounded.Record(Guid{i},now);
+    assert(!bounded.Contains(Guid{0},now)&&bounded.Contains(Guid{16},now));
+    ClientMoverHistory<Guid> wrap;wrap.Record(Guid{2},0xFFFFFFFEu);
+    assert(wrap.Contains(Guid{2},1));assert(!wrap.Contains(Guid{2},6000));
     std::cout << "Scripted mover resync and rejection of unrelated mover GUIDs passed.\n";
 }

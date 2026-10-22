@@ -32199,6 +32199,8 @@ void Player::SetClientControl(Unit* target, bool allowMove)
     WorldPackets::Movement::ControlUpdate update;
     update.Guid = target->GetGUID();
     update.On = allowMove;
+    if (!allowMove)
+        RecordClientMoverCommand(ObjectGuid::Empty, getMSTime());
     SendDirectMessage(update.Write());
 
     WorldObject* viewpoint = GetViewpoint();

@@ -488,6 +488,21 @@ void WorldSession::HandleSetActiveMover(WorldPackets::Movement::SetActiveMover& 
         {
             if (player->GetUnitBeingMoved()->GetGUID() != packet.ActiveMover)
             {
+                // Revoking a vehicle sends control-off and restoring the
+                // player immediately sends a second mover. The client's zero
+                // and former-vehicle acknowledgements may cross that restore.
+                // Repair its selected mover only for an actual recent server
+                // command; never adopt the GUID supplied by the client.
+                if (player->WasClientMoverCommanded(packet.ActiveMover, getMSTime()))
+                {
+                    WorldPackets::Movement::MoveSetActiveMover update;
+                    update.MoverGUID = player->GetUnitBeingMoved()->GetGUID();
+                    SendPacket(update.Write());
+                    TC_LOG_DEBUG("network", "HandleSetActiveMover: resynchronizing recent control handoff to %s",
+                        update.MoverGUID.ToString().c_str());
+                    return;
+                }
+
                 // A scripted passenger handoff can cross the client's last
                 // self-mover notification. Reassert the server-selected mover
                 // without accepting client control or restarting its spline.
