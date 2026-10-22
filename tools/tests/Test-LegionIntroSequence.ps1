@@ -13,7 +13,11 @@ while($depth -gt 0 -and $end -lt $source.Length){
  ++$end
 }
 if($depth -ne 0){throw 'Unbalanced production intro namespace.'}
-[IO.File]::WriteAllText("$output/LegionIntroSequence.inc",$source.Substring($start,$end-$start))
+# This probe executes quest-log repair. LFG completion cleanup has its own
+# BrokenShoreReentry/native lifecycle probes and requires their group runtime.
+$repair=$source.IndexOf('    bool RemoveUnrewardedQuest(', $start)
+if($repair -lt 0 -or $repair -ge $end){throw 'Production quest repair boundary missing.'}
+[IO.File]::WriteAllText("$output/LegionIntroSequence.inc","namespace LegionIntroSequence`n{`n"+$source.Substring($repair,$end-$repair))
 $vswhere="${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
 $vs=& $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'Visual C++ compiler not found.'}

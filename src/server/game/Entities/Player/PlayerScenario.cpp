@@ -5,6 +5,7 @@
 #include "WorldSession.h"
 #include "ObjectMgr.h"
 #include "Creature.h"
+#include "SpellMgr.h"
 
 namespace
 {
@@ -120,6 +121,29 @@ void Player::RecordScenarioEntrance()
     m_scenarioResume.instance = GetInstanceId();
     m_scenarioResume.boot = uint64(GameTime::GetStartTime());
     if (m_scenarioLoginId == progress->GetScenarioId()) SetScenarioId(0);
+}
+
+bool Player::ExitCompletedBrokenShoreLogin()
+{
+    uint32 const questId = GetTeam() == ALLIANCE ? 42740 : 40518;
+    if (GetMapId() != 1460 ||
+        (m_scenarioLoginId && m_scenarioLoginId != (GetTeam() == ALLIANCE ? 786 : 1189)) ||
+        (GetQuestStatus(questId) != QUEST_STATUS_COMPLETE && !IsQuestRewarded(questId)))
+        return false;
+
+    // Use the same destination as the native finale, even if its delayed
+    // teleport was cancelled by logout. The quest remains available to turn in.
+    auto destination = sSpellMgr->GetSpellTargetPosition(GetTeam() == ALLIANCE ? 208514 : 208517);
+    if (!destination || !MapManager::IsValidMapCoord(destination->target_mapId,
+        destination->target_X, destination->target_Y, destination->target_Z, destination->target_Orientation) ||
+        !TeleportTo(destination->target_mapId, destination->target_X, destination->target_Y,
+            destination->target_Z, destination->target_Orientation))
+        return false;
+
+    m_scenarioResume = {};
+    m_scenarioLoginId = m_scenarioLoginInstance = 0;
+    SetScenarioId(0);
+    return true;
 }
 
 bool Player::ExitCompletedDarkRidersLogin()

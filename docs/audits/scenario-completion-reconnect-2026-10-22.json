@@ -1,0 +1,177 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "2337dfd5",
+  "previous_audit": "docs/audits/scenario-group-resume-2026-10-22.json",
+  "scope": "Broken Shore finale TCP disconnect, full SQL re-login, native city return and quest package reward admission for Alliance786/42740 and Horde1189/40518",
+  "finding": "The final instance action completed criterion44826 before its delayed100ms spells208513/208516 granted quest kill credit90918. Disconnect before that callback discarded the callback and left an unfinished quest after the completed Scenario checkpoint had been cleared. The native finale now records90918 before44826, preserves the delayed movies/teleports, and ignores repeated finale actions. A rejected completed-quest login on map1460 now uses the native finale spell destination instead of generic exit/homebind fallback.",
+  "baseline": {
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261022-081957",
+    "log": ".codex/scenario-completion-baseline-native.log",
+    "dispatcher_pin": "2337dfd5:src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp",
+    "dispatcher_sha256": "3CFA02AF173C67A6643E2324CB191F2F7041C0C275480B8B00FC50EF2EFB45C1",
+    "result": "The pinned original instance dispatcher is compiled into the native fixture with current supporting libraries. Actual native monster-objective postprocessing is loaded, and embark credit1/1 is required before the finale. The real last criterion emits ScenarioComplete, but quest42740 remains status3(INCOMPLETE), final credit0/1; the regression assertion intentionally fails before its cancelled callback. This is not a run of an old complete worldserver executable.",
+    "login_fallback_evidence": "The old completed-quest city loss follows the actual rejected-map admission/fallback branches; the old full login was not reached in the pinned failing dispatcher run. The corrected full SQL login and destination are executed in the final tests."
+  },
+  "implementation": [
+    "Grant the same90918 credit used by native208513/208516 before completing44826, so ordinary disconnect/logout can save it. Keep the original100ms movie and teleport scheduling. Guard repeated SCENARION_STEP_END actions with a per-instance flag.",
+    "For rejected login maps only, ExitCompletedBrokenShoreLogin requires map1460 and a complete/rewarded faction intro quest, respects a different recorded scenario, validates the existing208514/208517 spell_target_position, then teleports and clears transient resume selectors. Preserve the Dark Riders exit and generic fallback.",
+    "Compile native quest SELECT/objective processing and return eligibility into the fixture. Select actual QuestPackageItem choices through the production eligibility API and use CMSG_QUEST_GIVER_CHOOSE_REWARD, including missing-choice and duplicate requests.",
+    "Retain all prior native initialization/relog/reconnect/group cases. Permit their final cleanup transfer to use a real near ACK when the native city return shares the destination map."
+  ],
+  "coverage": {
+    "cases": {
+      "completion": 64,
+      "initialization": 48,
+      "relog": 64,
+      "reconnect": 32,
+      "group": 32
+    },
+    "completion_boundaries": {
+      "before100ms_callback": 16,
+      "after_movie_completion_and_return_ACK": 16,
+      "after_quest_reward": 16,
+      "during_movie_with_pending_teleport": 16
+    },
+    "per_faction": 32,
+    "completed_instance_destroyed_before_login": 8,
+    "timestamp_assertions": 1104,
+    "contexts": "Four parent raid-difficulty contexts repeat Human/Orc Warriors and both socket channels. Direction0 uses realm EOF and direction1 uses instance EOF. Each faction/boundary/channel combination runs four times; parent difficulty does not change the scenario difficulty12.",
+    "assertions": [
+      "Actual type92 criteria reach stage8 through native DB2 trees, including the stage5 weighted threshold300; the real instance SetData finale emits one completed state with CurrentStep=-1, nine ActiveSteps and one ScenarioCompleted. Native full snapshots retain all criterion IDs/counts/timestamps.",
+      "Quest embark credit1/1 is a required input; final90918 is1/1 and quest COMPLETE before delayed visuals. Repeating the real finale produces no second completion or extra credit/cinematic scheduling.",
+      "Actual realm/instance TCP EOF drives native map/world logout and full SQL save. A fresh WorldSession reloads the character; completed checkpoints remain empty, the native city coordinates are exact, and no Scenario initialization/completion reward is replayed. Eight earliest-disconnect cases destroy the empty completed instance before re-login.",
+      "Native movie completion/skip ACK plus Player::Update(0) releases the deferred teleport; another16 cases disconnect while the native movie/pending transfer is still active.",
+      "Native recovery eligibility remains false for COMPLETE and REWARDED quests after actual SQL re-login.",
+      "Native quest packages9719/9720 require an eligible item choice. Zero-choice requests preserve the quest; a valid choice grants exactly its native quantity, repeated requests add no item/money/XP, saved reward records and inventory counts match, and after-reward SQL re-login retains the chosen item."
+    ]
+  },
+  "native_data": {
+    "reader": "tools/research/ScenarioInitializationCatalog.cpp",
+    "catalog": ".codex/scenario-completion-catalog.tsv",
+    "scenario_ids": [
+      786,
+      1189
+    ],
+    "map": 1460,
+    "difficulty": 12,
+    "last_stage_events": [
+      44826
+    ],
+    "last_criterion": 29714,
+    "step_reward_quest_ids": "All nine native steps of both scenarios have RewardQuestID=0; quest completion is separate.",
+    "credit_spells": [
+      208513,
+      208516
+    ],
+    "credit_effect": "Native SpellEffect134, MiscValue90918, caster target1",
+    "return_spells": [
+      208514,
+      208517
+    ],
+    "alliance_destination": [
+      0,
+      -8400.18,
+      1383.11,
+      135.12,
+      4.67713
+    ],
+    "horde_destination": [
+      1,
+      1440.42,
+      -5016.65,
+      12.05,
+      1.65021
+    ],
+    "quest_ids": [
+      42740,
+      40518
+    ],
+    "quest_packages": [
+      9719,
+      9720
+    ],
+    "native_rewarded_item_ids": [
+      136582,
+      138769
+    ],
+    "quest_enders": [
+      100395,
+      100453
+    ]
+  },
+  "verification": {
+    "native_command": "tools/tests/Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary",
+    "run": "build-extractors/runtime-test/trial-helya-control-native/run-20261022-083650",
+    "log": ".codex/scenario-completion-final-verified.log",
+    "native_db_errors_bytes": 0,
+    "native_server_errors": 0,
+    "release": "Canonical build-extractors/bin/Release worldserver/bnetserver Release build, actual generated game/scripts final-link inputs and source hashes. PE exception-bounded disassembly resolves incremental-link thunks, checks the delayed HandlePlayerLogin lambda calls the completed exit, verifies native quest/status/destination/TeleportTo calls,90918-before44826 ordering and the per-instance repeated-action guard.",
+    "startup": "Owned hidden PID19492 reached ready and was gracefully stopped with server shutdown0, exit0. Logs: build-extractors/runtime-test/scenario-completion/startup-20261022-081634. No user-launched server was stopped.",
+    "additional_checks": [
+      "Test-ScepterLogin.ps1 -VerifyReleaseBinary",
+      "Test-ScenarioResume.ps1 -VerifyReleaseBinary",
+      "Test-ScenarioResumeData.ps1",
+      "Test-NewBloodLogin.ps1",
+      "Test-DarkRidersLogin.ps1 -VerifyReleaseBinary",
+      "Test-BrokenShoreReentry.ps1",
+      "Test-LegionIntroSequence.ps1 (native repair and76 migration/phase checks)"
+    ],
+    "isolation": "Schema-only167-table disposable character/auth databases and scratch-only accounts are removed after each run. Private world pool is read-only; no personal quest/item/character data was edited.",
+    "sha256": {
+      "src/server/game/Entities/Player/Player.h": "6C4D0841B7C5652139A95765637EC85DA1BDA8D2CFAEF3875959636A22C67149",
+      "src/server/game/Entities/Player/PlayerScenario.cpp": "EE658B849F566A690E5587F3C6DF6D00EA80A86FC650B93E4D57BFA0A3EE02B3",
+      "src/server/game/Handlers/CharacterHandler.cpp": "C9948B78F33018C300767D84D3509367057275A6A64B3A1D31E0613BBE13BEBB",
+      "src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp": "610648862E630A94600BC74155E2C94C73CC3883E1BD2A665B71158A44B373E3",
+      "tools/tests/TrialScenarioCompletionNative.inc": "20F5B09BB2D9B305612F66297121980859D99EBC9B727C2B7203BD131A7D6732",
+      "tools/tests/TrialScenarioInitializationNative.inc": "5934E4F22B8DCAEAB56181EE1D721BF594EB22223672214CB7937BEBA7A3539A",
+      "tools/tests/TrialScenarioGroupNative.inc": "FC3C8631EC4BE1953917F237D9360A40FAA36370394BB2424C5BEB5A575B3410",
+      "tools/tests/Test-RockawayChannelNative.ps1": "EE1E4775BA18A4A23F48CFF11DB7361F094F447C145009FF96BAEFCF270A40DC",
+      "tools/tests/Test-ScenarioInitializationRelease.ps1": "C10F0626D174F541B81B975015E160743D695B27E5333AD49B24C88406B3C71C",
+      "tools/tests/Test-ScenarioResume.ps1": "E61FB3C8CD12FF4CF0465BC2D088120ED43ABCD3ACE9201E7855CF60C9624009",
+      "tools/tests/DarkRidersLoginTest.cpp": "1C5867F218B076EEA311C82F2AF2E4129F568B8F04C6FB8B592099F985EA927B",
+      "tools/tests/Test-LegionIntroSequence.ps1": "7037F8E4255E1DBA3840C1EF5694F3C1BDEB9D6C56872AC9036CFFD9427F5840",
+      "tools/research/ScenarioInitializationCatalog.cpp": "A37DAF2C8EEE6A6711F283E94BE73E2F217A8EA13B001F6E9C161F95A0C651BE",
+      "build-extractors/bin/Release/worldserver.exe": "6451E55D567E23D7B28F30E9926708827138547EF82A27A59775AF29611F73D9",
+      "build-extractors/bin/Release/worldserver.map": "883F41A090C58EA1057B6169F3A36B4CF916CD1EA74E79765A48A9DD5EB8AA4D",
+      "build-extractors/bin/Release/bnetserver.exe": "E1471C8ABE2EF8A120A9421C871100ADE574FD7B7D9E53B429E066E48888C314",
+      "build-extractors/src/server/game/Release/game.lib": "B354C91403F257AD5C40B98D2EAC4BCD974A507F4B5C84CEC1BF5658EED85833",
+      "build-extractors/src/server/scripts/Release/scripts.lib": "19A9E7644CD316AA49FC7DD04925AFAD4972B507B6422D56F535A016671A42B1",
+      "build-extractors/runtime-test/scenario-completion-release/inputs.json": "19F1554A3BFBDE400E538043E1FE019DBD93B574DC1E3D8647DEEDB09AD3B91B",
+      "build-extractors/runtime-test/scenario-completion-release/SetData-BrokenShore.txt": "0BF375AC2455E93436D5D9506A94CE0976E938A0B81946B6B37A8B8C0397DE28",
+      "build-extractors/runtime-test/scenario-completion-release/ExitCompletedBrokenShoreLogin.txt": "F797788D2DBA1F2BB5992F7B4B4E38A2F50B179715FAD797F1E4F419D81A0FD3",
+      ".codex/scenario-completion-baseline-native.log": "B7570BBB4F7468551A9AF6B7D43590ECA0EBC9B986F3D62156A9D06C617216BE",
+      ".codex/scenario-completion-controls.log": "3D1761DC9185222E20071332AFE121CF6C1FB1853B67752E0F93E2E4A4D26CD4",
+      ".codex/scenario-completion-final-verified.log": "E1F4C48262B0A682ED410D3303FE00EA42B82A5AF7930D6ED749F6BA78E05A0B",
+      ".codex/scenario-completion-build.log": "EA9603E040BE948BD4D3D47A4C7C069912535E3A71E3C8B7DCACEE8D667581C0",
+      ".codex/scenario-completion-incremental-build.log": "998CABB5F16FEB5143676DD1CFF136CCC6F99808FDE12E87C56B8E681CFE5DDF",
+      ".codex/scenario-completion-startup.log": "790B8103EE4647B51A28692AC7BE46B745F1CEE0DB9707F11D639428604FA179",
+      ".codex/scenario-completion-catalog.tsv": "D89BA55887EA269D3A87AA870800E3B6B4496ED3F74C1E09EE1A41826D4BE8C0",
+      ".codex/scenario-completion-scepter.log": "7744260574DF6CBB9BB2AC12E96326267A86BEF74069D5F0EBB6AE7AAAB8011A",
+      ".codex/scenario-completion-resume.log": "34FBFC6A5DA832B2BEE9140E2EACECCFEEF9BF823EA2118E63DC9F67F57FF55A",
+      ".codex/scenario-completion-resume-data.log": "3F9D342B1BF10D74ECD697E5230C99CEA44C7AA5BDB7D661EAD1AC31D55BEDC8",
+      ".codex/scenario-completion-newblood.log": "BF581465B2BF26DEC33EBA9AC38E6FA758EE38B9B423182BCB70610047EDADAA",
+      ".codex/scenario-completion-darkriders.log": "D0D821EDB1CC63434F4D56C0F5E7DB3CC03D386B01305905D48772182DA5607A",
+      ".codex/scenario-completion-reentry.log": "89F315D8D5548BC0F1DF76791684493607761D6297731646FC97E3CD8F4B2656",
+      ".codex/scenario-completion-intro.log": "E2AAE17174601801C093B0425605A94EDA594C160BA7D07D1D1DE8680FF5E9C6",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261022-083650/native-inputs.json": "3AF3EDFA6E5C7EF85A6E86458A1A691B2DFAB0A5E50583E3D18A585C3532A65C",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261022-083650/native-lines.txt": "D93B4F283C48DE2151E0611507FAE0B351133DE4D351894EB0304C0C14C08875",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261022-083650/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "build-extractors/runtime-test/trial-helya-control-native/run-20261022-083650/Server.log": "59EFB49EAEFA2B0E799E13BBB95CFFFBFDEB07C9ED2E515AA0A6A9563FF82AF7"
+    }
+  },
+  "fixture_notes": [
+    "The first scoped quest loader omitted native monster-objective SpecialFlags. It now compiles the exact production postprocessing case and requires native embark credit before testing the finale; the pinned failing baseline was repeated after this correction.",
+    "City entry requires native trinity strings. Reward packages are distinct from fixed RewardItem columns and require an actual eligible selection. SaveToDB uses its default UPDATE mode for existing characters; true would create a duplicate scratch INSERT. These were fixture corrections, not production database fixes.",
+    "All owned socket services now outlive exception cleanup; an early failing fixture unwound sockets before session logout and crashed its cleanup. No production socket implementation changed.",
+    "The actual cinematic holds the teleport until movie completion; tests send native CompleteMovie and tick zero elapsed time rather than ACK a destination map before it exists. Final cleanup may be a near transfer between points on map0/1.",
+    "Release login work is inside the native delayed HandlePlayerLogin lambda. The verifier checks that actual callback; an earlier verifier addressed only the scheduling function. Source/fixture/verifier hashes were then captured again in the final complete run.",
+    "Existing extracted ScenarioResume and DarkRiders fixtures retain their scoped boundaries/stubs for the new unrelated exit. IntroSequence repair extraction now selects its actual repair functions; LFG completion cleanup remains covered by the separate BrokenShoreReentry/native probes."
+  ],
+  "limits": [
+    "No WoW client was operated. Actual movie playback/timing/skip, audio, scenario UI, city/questgiver visibility and interaction, full NPC combat/traversal, camera, movement and pet portrait remain client checks.",
+    "This is not full Broken Shore actor traversal. Earlier stages use actual native criteria events with deterministic quantities; the real final instance script is attached at stage8 with its faction set. The quest is already accepted and embark credit is an input. Native quest enders are placed beside the player with their actual templates/relations, using fixture NullAI; their live spawn phase, story conversations and prerequisite/next-quest chain are not proven.",
+    "These are solo Warrior faction completion cases, not a full LFG queue/FinishDungeon reward audit or Demon Hunter route. Existing grouped progress cases continue to pass separately.",
+    "Real TCP disconnect/full SQL login and completed-instance destruction are tested, not a process/power failure or all thread interleavings. Criteria/actors remain transient; this change does not serialize exact-stage crash recovery.",
+    "The immediate credit is in player state before ordinary logout saves it; it is not an immediate standalone SQL transaction. Old saves that already lost90918 and retain no completion evidence cannot be safely auto-completed from a cleared checkpoint. No personal data was reset or granted rewards."
+  ]
+}

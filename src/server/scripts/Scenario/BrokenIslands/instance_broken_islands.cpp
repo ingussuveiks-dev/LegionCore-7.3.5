@@ -56,6 +56,7 @@ public:
         uint32 team = 0;
         WorldLocation loc_res_pla;  // for respawn
         bool firstEnter = false;
+        bool finaleStarted = false;
         std::map<ObjectGuid, uint32> arrivalTimers;
         std::set<ObjectGuid> boardedPlayers;
         std::set<ObjectGuid> landedPlayers;
@@ -720,6 +721,16 @@ public:
                     releaseWave(data);
                     break;
                 case SCENARION_STEP_END:
+                    if (finaleStarted)
+                        break;
+                    finaleStarted = true;
+                    // Completion drops the restart checkpoint. Persist the
+                    // native 208513/208516 kill credit before that boundary:
+                    // disconnecting cancels the delayed cinematic casts below.
+                    for (auto const& reference : instance->GetPlayers())
+                        if (Player* player = reference.getSource())
+                            if (player->CanContact())
+                                player->KilledMonsterCredit(90918);
                     updateCriteriaForPlayers(44826);
 
                     if (team == ALLIANCE)

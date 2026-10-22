@@ -1,6 +1,8 @@
 static ScenarioWirePackets ScenarioGroupTransfer(WorldSession* session,WorldLocation const& destination,uint32 selector=0)
 {
-    auto player=session->GetPlayer();if(selector)player->SetScenarioId(uint16(selector));Require(player->TeleportTo(destination)&&player->IsBeingTeleportedFar(),"Group scenario transfer did not start");SpiritFarFreeze(destination.GetMapId());ReadScenarioPackets(session);SpiritLoadingScreen(session,destination.GetMapId(),false);session->HandleWorldPortAck();SpiritFarFreeze(destination.GetMapId());player->UpdateZone(player->GetCurrentZoneID(),player->GetCurrentAreaID());SpiritFarFreeze(destination.GetMapId());if(player->IsBeingTeleportedFar()&&player->IsChangeMap())session->m_Functions.Update(500);Require(player->IsInWorld()&&!player->IsBeingTeleported(),"Group scenario transfer admission failed");return ReadScenarioPackets(session);
+    auto player=session->GetPlayer();if(selector)player->SetScenarioId(uint16(selector));Require(player->TeleportTo(destination)&&player->IsBeingTeleported(),"Group scenario transfer did not start");SpiritFarFreeze(destination.GetMapId());ReadScenarioPackets(session);SpiritLoadingScreen(session,destination.GetMapId(),false);
+    if(player->IsBeingTeleportedNear()){WorldPackets::Movement::MoveTeleportAck ack{WorldPacket(CMSG_MOVE_TELEPORT_ACK)};ack.MoverGUID=player->GetGUID();session->HandleMoveTeleportAck(ack);}else session->HandleWorldPortAck();
+    SpiritFarFreeze(destination.GetMapId());player->UpdateZone(player->GetCurrentZoneID(),player->GetCurrentAreaID());SpiritFarFreeze(destination.GetMapId());if(player->IsBeingTeleportedFar()&&player->IsChangeMap())session->m_Functions.Update(500);Require(player->IsInWorld()&&!player->IsBeingTeleported(),"Group scenario transfer admission failed");return ReadScenarioPackets(session);
 }
 struct ScenarioGroupPeer
 {

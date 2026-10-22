@@ -30,6 +30,7 @@ struct Player{
  int32 GetQuestObjectiveData(uint32,uint32)const;int32 GetQuestObjectiveData(Quest const*,int8 index)const{return index==0?claim:complete;}
  bool TeleportTo(uint32 target,float a,float b,float c,float d){++teleports;destination=target;x=a;y=b;z=c;o=d;return teleportSuccess;}
  void SetScenarioId(uint32 id){selector=id;}bool ExitCompletedDarkRidersLogin();
+ bool ExitCompletedBrokenShoreLogin(){return false;} // This fixture is scoped to map1533.
  Map*GetMap(){return &map;}bool CheckInstanceLoginValid(){return access;}float GetOrientation(){return 2;}uint32 GetGUIDLow(){return 1;}
 };
 #include "ObjectiveLookup.inc"

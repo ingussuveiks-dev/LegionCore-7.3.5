@@ -3216,6 +3216,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void PrepareScenarioLogin(uint32 mapId, uint32 instanceId);
         bool CanResumeScenarioLogin(uint32 scenarioId) const;
         bool ExitCompletedDarkRidersLogin();
+        bool ExitCompletedBrokenShoreLogin();
         uint32 GetScenarioLoginInstance() const { return m_scenarioLoginInstance; }
 
         // Adventures.

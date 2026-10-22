@@ -29,6 +29,16 @@ if($Offensive -or $lootProbe){
  $questSource=Get-Content "$repo/src/server/game/Globals/QuestData.cpp" -Raw
  $query=[regex]::Match($questSource,'(?s)void QuestDataStoreMgr::LoadQuests\(\).*?WorldDatabase.Query\(("SELECT ".*?" FROM quest_template")\);').Groups[1].Value
  if(!$query){throw 'Native quest loader SELECT could not be extracted'}
+ if($TrialHelyaControl){[IO.File]::WriteAllText("$output/NativeBrokenShoreQuest.inc",$query+' " WHERE ID IN (42740,40518)"')}
+ if($TrialHelyaControl){
+  $monster=[regex]::Match($questSource,'(?s)case QUEST_OBJECTIVE_MONSTER:\s+qinfo->SetSpecialFlag.*?break;').Value
+  if(!$monster){throw 'Native monster-objective postprocessing missing'}
+  [IO.File]::WriteAllText("$output/NativeBrokenShoreMonster.inc",$monster)
+  $returnSource=Get-Content "$repo/src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp" -Raw
+  $a=$returnSource.IndexOf('    bool CanReturnToBrokenShore(');$b=$returnSource.IndexOf('    bool SendBrokenShoreReturnMenu(', $a)
+  if($a -lt 0 -or $b -le $a){throw 'Native return eligibility boundary missing'}
+  [IO.File]::WriteAllText("$output/NativeBrokenShoreReturn.inc",$returnSource.Substring($a,$b-$a))
+ }
  if($TrialTurnIn){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44721,44729,44771,44868,44923,45088)"')}
  elseif($TrialCriteria){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44729,44868,44923,45088)"')}
  elseif($lootProbe){[IO.File]::WriteAllText("$output/NativeLostArmyQuest.inc",$query+' " WHERE ID IN (44923,45088)"')}
@@ -106,6 +116,10 @@ if($TrialInstance -and $Baseline){
  if(!(Test-Path $oldScripts) -or (Get-FileHash $oldScripts).Hash -ne (Get-Content "$output/scripts-baseline.sha256")){throw 'Capture the pinned original scripts library before editing'}
  $libs=$libs | ForEach-Object {if($_ -eq $trialScripts){$oldScripts}else{$_}}
 }
+if($TrialHelyaControl){
+ $brokenShoreSource="$repo/src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp"
+ if((Get-Item $brokenShoreSource).LastWriteTimeUtc -gt (Get-Item $trialScripts).LastWriteTimeUtc){throw 'Final-link scripts library predates Broken Shore completion'}
+}
 if($Baseline -and $lootProbe){
  # Historical libraries contain the old Player/Group bind-array layout.
  # Keep current enum definitions, but compile the fixture with that pinned
@@ -177,6 +191,12 @@ $run | Set-Content "$output/latest-run.txt"
 if((Get-Item "$run/DBErrors.log").Length){Get-Content "$run/DBErrors.log" -Tail 8;throw 'Native channel test emitted DB/script errors'}
 if($TrialHelya -and (Select-String -LiteralPath "$run/Server.log" -Pattern '\bERROR\s+\[')){throw 'Native Helya probe emitted a server error; resolve fixture/runtime prerequisites before accepting the result'}
 $hashes=@{}
+if($TrialHelyaControl){
+ foreach($path in @('src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp','src/server/scripts/Scenario/BrokenIslands/broken_islands.cpp','src/server/scripts/Scenario/BrokenIslands/broken_islands.h','src/server/game/Entities/Player/Player.h')){$hashes[$path]=(Get-FileHash "$repo/$path").Hash}
+ $hashes['NativeBrokenShoreQuest.inc']=(Get-FileHash "$output/NativeBrokenShoreQuest.inc").Hash
+ $hashes['NativeBrokenShoreMonster.inc']=(Get-FileHash "$output/NativeBrokenShoreMonster.inc").Hash
+ $hashes['NativeBrokenShoreReturn.inc']=(Get-FileHash "$output/NativeBrokenShoreReturn.inc").Hash
+}
 $inputs=@(Get-ChildItem "$runtime/dbc/enUS/Spell*.db2")
 $inputs+=@('Map','Difficulty','CreatureDisplayInfo','CreatureModelData','ChrClasses','Faction','FactionTemplate','SummonProperties','ConversationLine','BroadcastText','SoundKit','SoundKitEntry') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}
 if($lootProbe){$inputs+=@('Item','ItemSparse','ItemEffect','ItemCurrencyCost','CurrencyTypes','QuestObjective','QuestV2CliTask','ChrRaces') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"}}
@@ -229,7 +249,7 @@ if($TrialHelyaControl -or $TrialHelyaMistwatcher -or $TrialHelyaMariner -or $Tri
 if($TrialHelyaGrimelord){$hashes['sql/updates/world/2026_10_19_02_helya_fetid_rot.sql']=(Get-FileHash "$repo/sql/updates/world/2026_10_19_02_helya_fetid_rot.sql").Hash;foreach($path in @('TrialHelyaGrimelordNative.cpp','Test-TrialHelyaGrimelordNative.ps1','Test-TrialHelyaGrimelordData.ps1','Test-TrialHelyaGrimelordRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}}
 if($TrialHelyaMariner){foreach($path in @('TrialHelyaMarinerNative.cpp','Test-TrialHelyaMarinerNative.ps1','TrialHelyaGrimelordNative.cpp')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}}
 if($TrialHelyaMistwatcher){foreach($path in @('TrialHelyaMistwatcherNative.cpp','Test-TrialHelyaMistwatcherNative.ps1','Test-TrialHelyaMistwatcherRelease.ps1','TrialHelyaGrimelordNative.cpp')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path" ).Hash}}
-if($TrialHelyaControl){foreach($path in @('TrialHelyaControlNative.cpp','TrialHelyaControlLoginNative.inc','TrialGraveyardNative.inc','TrialGhostReturnNative.inc','TrialGhostInstanceNative.inc','TrialGhostUnloadedNative.inc','TrialSpiritGraveyardNative.inc','TrialSpiritFarNative.inc','TrialSpiritFailureNative.inc','TrialSpiritLoginNative.inc','TrialSpiritSessionNative.inc','TrialSpiritQueryNative.inc','TrialSpiritInstanceLinkNative.inc','TrialSpiritLinkedCancelNative.inc','TrialSpiritEarlyLoadingNative.inc','TrialSpiritMapLoadingNative.inc','TrialSpiritLoadingOrderNative.inc','TrialScenarioInitializationNative.inc','TrialScenarioRelogNative.inc','TrialScenarioReconnectNative.inc','TrialScenarioGroupNative.inc','ScenarioResumeTest.cpp','Test-ScenarioResume.ps1','Test-ScenarioInitializationRelease.ps1','Test-SpiritGraveyardRelease.ps1','Test-GhostReturnRelease.ps1','Test-TrialHelyaControlNative.ps1','Test-TrialHelyaControlRelease.ps1','Test-TrialHelyaControlLoginRelease.ps1','Test-LogoutTeleportRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash};$inputs+=@('AreaTable','Scenario','ScenarioStep','LFGDungeons') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"};$hashes['tools/research/ScenarioInitializationCatalog.cpp']=(Get-FileHash "$repo/tools/research/ScenarioInitializationCatalog.cpp").Hash;$hashes['sql/updates/world/2026_10_20_13_trial_of_valor_graveyard.sql']=(Get-FileHash "$repo/sql/updates/world/2026_10_20_13_trial_of_valor_graveyard.sql").Hash}
+if($TrialHelyaControl){foreach($path in @('TrialHelyaControlNative.cpp','TrialHelyaControlLoginNative.inc','TrialGraveyardNative.inc','TrialGhostReturnNative.inc','TrialGhostInstanceNative.inc','TrialGhostUnloadedNative.inc','TrialSpiritGraveyardNative.inc','TrialSpiritFarNative.inc','TrialSpiritFailureNative.inc','TrialSpiritLoginNative.inc','TrialSpiritSessionNative.inc','TrialSpiritQueryNative.inc','TrialSpiritInstanceLinkNative.inc','TrialSpiritLinkedCancelNative.inc','TrialSpiritEarlyLoadingNative.inc','TrialSpiritMapLoadingNative.inc','TrialSpiritLoadingOrderNative.inc','TrialScenarioInitializationNative.inc','TrialScenarioRelogNative.inc','TrialScenarioReconnectNative.inc','TrialScenarioGroupNative.inc','TrialScenarioCompletionNative.inc','ScenarioResumeTest.cpp','Test-ScenarioResume.ps1','Test-ScenarioInitializationRelease.ps1','Test-SpiritGraveyardRelease.ps1','Test-GhostReturnRelease.ps1','Test-TrialHelyaControlNative.ps1','Test-TrialHelyaControlRelease.ps1','Test-TrialHelyaControlLoginRelease.ps1','Test-LogoutTeleportRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash};$inputs+=@('AreaTable','Scenario','ScenarioStep','LFGDungeons','QuestPackageItem') | ForEach-Object {Get-Item "$runtime/dbc/enUS/$_.db2"};$hashes['tools/research/ScenarioInitializationCatalog.cpp']=(Get-FileHash "$repo/tools/research/ScenarioInitializationCatalog.cpp").Hash;$hashes['sql/updates/world/2026_10_20_13_trial_of_valor_graveyard.sql']=(Get-FileHash "$repo/sql/updates/world/2026_10_20_13_trial_of_valor_graveyard.sql").Hash}
 if($CorpseRestart){
  foreach($path in @('CorpseRestartNative.cpp','CorpseReclaimNative.inc','SpiritHealerNative.inc','Test-CorpseRestartNative.ps1','Test-CorpseRestartRelease.ps1','Test-SpiritHealerRelease.ps1')){$hashes["tools/tests/$path"]=(Get-FileHash "$repo/tools/tests/$path").Hash}
  foreach($path in @('src/server/game/Globals/ObjectAccessor.cpp','src/server/game/World/World.cpp','src/server/game/Handlers/NPCHandler.cpp','src/server/database/Database/Implementation/CharacterDatabase.cpp')){$hashes[$path]=(Get-FileHash "$repo/$path").Hash}

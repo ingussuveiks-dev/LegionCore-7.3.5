@@ -78,3 +78,31 @@ foreach($id in 786,1189){foreach($change in 0..1){foreach($leader in 0..1){$stag
 foreach($name in @('?Disband@Group@@','?_LoadGroup@Player@@')){$range=Bounds $name;$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1];$body=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw "Group scenario disassembly failed: $name"};$body | Set-Content "$groupOut/$($name.Trim('?').Replace('@','-')).txt"}
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$groups.Count;offline_progress=16;group_change=16;leader_disconnect=16;two_account_sql_loading=$true;native_homebind_ejection=$true} | ConvertTo-Json | Set-Content "$groupOut/inputs.json"
 'PASS:32 two-account grouped scenario cases retain offline progress/current packets, party leadership and native invalid-instance homebind plus replacement-party entry; source/library/executable match.'
+
+$completionOut="$repo/build-extractors/runtime-test/scenario-completion-release"
+New-Item -ItemType Directory -Force $completionOut | Out-Null
+foreach($path in @('tools/tests/TrialScenarioCompletionNative.inc','src/server/scripts/Scenario/BrokenIslands/instance_broken_islands.cpp','src/server/scripts/Scenario/BrokenIslands/broken_islands.h','src/server/game/Entities/Player/Player.h','src/server/game/Handlers/CharacterHandler.cpp','src/server/game/Globals/QuestData.cpp','src/server/game/Handlers/QuestHandler.cpp')){if($inputs.$path -ne (Get-FileHash "$repo/$path").Hash){throw "Scenario completion input changed: $path"}}
+if($inputs.'actual-final-link-scripts.lib' -ne (Get-FileHash $lib).Hash){throw 'Completion scripts library differs from native execution'}
+foreach($name in @('NativeBrokenShoreQuest.inc','NativeBrokenShoreMonster.inc','NativeBrokenShoreReturn.inc')){if($inputs.$name -ne (Get-FileHash "$repo/build-extractors/runtime-test/trial-helya-control-native/$name").Hash){throw "Completion native loader changed: $name"}}
+$completions=@($lines | Where-Object {$_ -match '^PASS: native scenario completion '})
+if($completions.Count -ne 64){throw 'Run all64 native scenario completion cases first'}
+foreach($id in 786,1189){foreach($boundary in 0..3){foreach($channel in 0..1){$city=if($id -eq 786){0}else{1};if(@($completions | Where-Object {$_ -match " scenario=$id boundary=$boundary instance_eof=$channel map=$city$"}).Count -ne 4){throw "Missing completion faction/boundary/channel case $id/$boundary/$channel"}}}}
+if(@(Calls '??R<lambda_1>@?1??HandlePlayerLogin@WorldSession@@') -notcontains (Resolve (Symbol '?ExitCompletedBrokenShoreLogin@Player@@'))){throw 'Canonical full login bypasses Broken Shore completion exit'}
+$helperCalls=@(Calls '?ExitCompletedBrokenShoreLogin@Player@@')
+foreach($name in @('?GetQuestStatus@Player@@','?IsQuestRewarded@Player@@','?GetSpellTargetPosition@SpellMgr@@','?TeleportTo@Player@@QEAA_NIMMMMII@Z')){if($helperCalls -notcontains (Resolve (Symbol $name))){throw "Canonical completed exit lacks $name"}}
+$finalName='?SetData@instance_broken_islands_InstanceMapScript@instance_broken_islands@@'
+$range=Bounds $finalName;$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+$listing=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw 'Broken Shore finale disassembly failed'}
+$finalText=$listing -join "`n"
+$credit=[regex]::Match($finalText,'(?is)mov\s+edx,0*16326h(?:(?!\bcall\b).)*call\s+(?<call>[0-9a-f]{16})')
+$criteria=[regex]::Match($finalText,'(?is)mov\s+r8d,0*AF1Ah(?:(?!\bcall\b).)*call\s+(?<call>[0-9a-f]{16})')
+if(!$credit.Success -or !$criteria.Success -or $credit.Index -ge $criteria.Index -or (Resolve ([Convert]::ToInt64($credit.Groups['call'].Value,16))) -ne (Resolve (Symbol '?KilledMonsterCredit@Player@@')) -or (Resolve ([Convert]::ToInt64($criteria.Groups['call'].Value,16))) -ne (Resolve (Symbol '?UpdateAchievementCriteria@Player@@'))){throw 'Canonical finale does not grant90918 before native44826 completion'}
+$abi=@($lines | Where-Object {$_ -match '^SCENARIO_COMPLETION_ABI '} | Select-Object -Unique)
+if($abi.Count -ne 1 -or $abi[0] -notmatch '^SCENARIO_COMPLETION_ABI finale=(\d+)$'){throw 'Missing native finale idempotence ABI'}
+$flag=([int]$Matches[1]).ToString('X')
+foreach($pattern in @("(?i)cmp\s+byte ptr \[rcx\+0*${flag}h\],0","(?i)mov\s+byte ptr \[rcx\+0*${flag}h\],1")){if($finalText -notmatch $pattern){throw 'Canonical finale lacks native repeated-action guard'}}
+$listing | Set-Content "$completionOut/SetData-BrokenShore.txt"
+$range=Bounds '?ExitCompletedBrokenShoreLogin@Player@@';$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1]
+& $dump.FullName /DISASM:NOBYTES $argument $exe | Set-Content "$completionOut/ExitCompletedBrokenShoreLogin.txt";if($LASTEXITCODE){throw 'Completed exit disassembly failed'}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;scripts_library=(Get-FileHash $lib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$completions.Count;before_callback=16;after_return=16;after_reward=16;during_movie=16;credit_before_completion=$true;native_finale_flag_offset=$flag;full_login_calls_native_exit=$true;native_quest_reward_handler=$true} | ConvertTo-Json | Set-Content "$completionOut/inputs.json"
+'PASS: canonical Broken Shore finale grants native90918 before44826 and guards repeats;64 TCP EOF/SQL reconnect cases preserve completion, native city return and exactly one quest reward across four boundaries.'

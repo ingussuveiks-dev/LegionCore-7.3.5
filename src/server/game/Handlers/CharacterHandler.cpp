@@ -930,7 +930,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder const& holder)
 
         bool addedToLoginMap = player->GetMap()->AddPlayerToMap(player);
         bool validLoginMap = addedToLoginMap && (player->GetMap()->IsGarrison() || player->CheckInstanceLoginValid());
-        if (!validLoginMap && !player->ExitCompletedDarkRidersLogin())
+        if (!validLoginMap && !player->ExitCompletedDarkRidersLogin() && !player->ExitCompletedBrokenShoreLogin())
         {
             TC_LOG_ERROR("entities.player", "Login map rejected: player %u map %u instance %u added %u; using exit/home fallback",player->GetGUIDLow(),player->GetMapId(),player->GetInstanceId(),uint32(addedToLoginMap));
             if (AreaTriggerStruct const* at = sAreaTriggerDataStore->GetGoBackTrigger(player->GetMapId()))

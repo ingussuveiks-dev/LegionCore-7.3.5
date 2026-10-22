@@ -86,5 +86,6 @@
       ".codex/scenario-group-controls.log": "12E70B6F778E67D89558311FEDE952C822DCE8BD8C0496DAFF1B3EC53B084202",
       ".codex/scenario-group-final-verified.log": "146E636D6229F1C56FD9ED3665F6C798F860FF472B50A3355D8998B3B39D818E"
     }
-  }
+  },
+  "completion_followup": "docs/audits/scenario-completion-reconnect-2026-10-22.json"
 }
