@@ -422,7 +422,9 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
             if (GetMap()->IsBattleArena())
                 RemoveArenaAuras();
 
-            CastPetAuras(current);
+            // A Call Pet load passes current=false too; it still creates a live
+            // hunter pet. Do not turn that lookup mode into aura removal.
+            CastPetAuras(getPetType() == HUNTER_PET ? IsAlive() : current);
         }
 
         TC_LOG_DEBUG("entities.pet", "New Pet has %s", GetGUID().ToString().c_str());
@@ -1676,7 +1678,8 @@ void Pet::InitPetCreateSpells()
     LearnPetPassives();
     InitLevelupSpellsForLevel();
 
-    CastPetAuras(false);
+    // A newly tamed hunter pet needs the same active-pet auras as a loaded one.
+    CastPetAuras(getPetType() == HUNTER_PET && IsAlive());
 }
 
 bool Pet::IsPermanentPetFor(Player* owner)
@@ -1991,8 +1994,10 @@ void Pet::CastPetAuras(bool apply, uint32 spellId)
         }
     }
 
-    //for all hunters pets
-    if(createdSpellId == 13481 || createdSpellId == 83245 || createdSpellId == 83244 || createdSpellId == 83243 || createdSpellId == 83242 || createdSpellId == 883)
+    // Loaded hunter pets retain their taming spell (for example 79598), not
+    // necessarily a Call Pet spell. Their persistent pet type is authoritative
+    // for both applying and removing shared hunter-pet auras.
+    if (getPetType() == HUNTER_PET)
     if (std::vector<PetAura> const* petSpell = sSpellMgr->GetPetAura(-1))
     {
         for (const auto& itr : *petSpell)

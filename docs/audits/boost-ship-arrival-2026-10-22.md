@@ -256,3 +256,10 @@ user servers already stopped. The owned hidden validation server reached ready
 and was gracefully shut down. This supersedes the earlier process-status note;
 no agent server is left running. These repairs do not yet resolve this hunter
 ability report or the intermittent socket initialization failure.
+
+Further client evidence and the Pet Active root-cause repair are recorded in
+`hunter-pet-active-2026-10-22.md`. Selected-target `/cast Kill Command` also fails;
+the action buttons are spells, Kill Command is known, cooldown is zero and focus
+is 120. The repair restores shared hunter-pet auras for saved taming origins and
+fixes hunter load/create apply flags. It does not skip this lesson or establish
+client completion of the later tutorial sequence.
