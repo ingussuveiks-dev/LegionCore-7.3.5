@@ -42,6 +42,7 @@ $b=$source.IndexOf('        case GossipOptionNpc::GarrisonTalent:',$a)
 $a=$source.IndexOf('uint16 Player::getAdventureQuestID()');$b=$source.IndexOf('int32 Player::GetCommandCooldown()',$a)
 [IO.File]::WriteAllText("$out/Credit.inc",$source.Substring($a,$b-$a))
 $source=Get-Content "$repo/src/server/game/Handlers/QuestHandler.cpp" -Raw
+[IO.File]::WriteAllText("$out/JournalOpen.inc",(FunctionBlock $source 'void WorldSession::HandleAdventureJournalOpenQuest('))
 $a=$source.IndexOf('void WorldSession::HandleAdventureJournalStartQuest(');$b=$source.IndexOf('void WorldSession::HandleQueryAdventureMapPOI(',$a)
 [IO.File]::WriteAllText("$out/Adventure.inc",$source.Substring($a,$b-$a))
 $sql=@"

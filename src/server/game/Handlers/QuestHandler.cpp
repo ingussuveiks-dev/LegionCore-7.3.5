@@ -842,7 +842,10 @@ void WorldSession::HandleAdventureJournalOpenQuest(WorldPackets::Quest::Adventur
     if (!entry)
         return;
 
-    if (entry->Type != 3/*typeQuest*/)
+    // Type describes the suggestion category (zone, brawl, ...). The
+    // button action is what selects a quest; e.g. Suramar is Type 0/Action 3.
+    if (entry->ButtonActionType != 3 ||
+        !sConditionMgr->IsPlayerMeetingCondition(_player, entry->PlayerConditionID))
         return;
 
     auto quest = sQuestDataStore->GetQuestTemplate(entry->QuestID);
@@ -852,7 +855,8 @@ void WorldSession::HandleAdventureJournalOpenQuest(WorldPackets::Quest::Adventur
     if (_player->hasQuest(entry->QuestID) || !_player->CanTakeQuest(quest, true))
         return;
 
-    _player->SetQuestSharingInfo(_player->GetGUID(), quest->GetQuestId());
+    // Authorize only this self-offered quest in HandleQuestGiverAcceptQuest.
+    _player->SetPopupQuestId(quest->GetQuestId());
     PlayerMenu menu(this);
     menu.SendQuestGiverQuestDetails(quest, _player->GetGUID(), true, false);
 }
@@ -860,6 +864,28 @@ void WorldSession::HandleAdventureJournalOpenQuest(WorldPackets::Quest::Adventur
 void WorldSession::HandleAdventureJournalStartQuest(WorldPackets::Quest::AdventureJournalStartQuest& packet)
 {
     auto questID = packet.QuestID;
+
+    // Adventure Journal suggestions and class-hall scouting use the same
+    // start opcode. A journal quest must not consume the scouting selection
+    // or award its zone-selection credit.
+    auto journal = std::find_if(sAdventureJournalStore.begin(), sAdventureJournalStore.end(),
+        [this, questID](AdventureJournalEntry const* entry)
+        {
+            return entry->ButtonActionType == 3 && entry->QuestID == questID &&
+                sConditionMgr->IsPlayerMeetingCondition(_player, entry->PlayerConditionID);
+        });
+    if (journal != sAdventureJournalStore.end())
+    {
+        Quest const* quest = sQuestDataStore->GetQuestTemplate(questID);
+        if (quest && sConditionMgr->IsPlayerMeetingCondition(_player, (*journal)->PlayerConditionID) &&
+            _player->CanTakeQuest(quest, true) && _player->CanAddQuest(quest, true))
+        {
+            _player->AddQuestAndCheckCompletion(quest, _player);
+            _player->SetPopupQuestId(0);
+            _player->PlayerTalkClass->SendCloseGossip();
+        }
+        return;
+    }
 
     if (std::find_if(sAdventureMapPOIStore.begin(), sAdventureMapPOIStore.end(), [questID](AdventureMapPOIEntry const* adventureMapPOIEntry) -> bool { return adventureMapPOIEntry->Type == 1 && adventureMapPOIEntry->QuestID == questID; }) == sAdventureMapPOIStore.end())
         return;
