@@ -2,8 +2,8 @@
 
 Status: the logout lifetime defect is reproduced and repaired in source, with
 native regression and linked Release checks passing. The canonical Release is
-deployed and runtime probes passed; Maiko's real client login succeeded after
-restart. Logout/relogin validation is pending. The separate
+deployed and runtime probes passed; Maiko's real client login, logout/relogin and
+full client restart succeeded. The separate
 silent first-instance-handshake failure remains unresolved.
 
 ## Observed failure
@@ -120,3 +120,31 @@ Client.log recorded Active Player Created at 09:58:23.492. The user confirmed
 that Maiko entered the game. This establishes current recovery, not a proven
 repair of the earlier silent first-instance-handshake cause: both the server
 and client were restarted. Keep the original limitation and repeat-login check.
+
+## Follow-up client checks and portrait persistence
+
+The user initially confirmed the portrait had returned to the upper-left corner.
+After moving it again, the native Lua check returned `userPlaced true sync 1`.
+The user then confirmed `/reload` retained the position. At this point the local
+layout-local.txt contained PlayerFrame anchored CENTER at (-421, 43) and
+TargetFrame anchored CENTER at (375, 33), whereas the earlier file contained
+only DBMMinimapButton. These are observed user-selected positions, not coordinates
+forced by a script or addon. No client addon or setting was installed/overridden.
+Absence of a server type-6 row alone is not evidence of a broken save path: this
+observed frame placement is persisted in the local layout file.
+
+The user confirmed that a normal logout/login retained the center placement.
+The log records logout at 10:06:25, successful login at 10:06:30, another logout
+at 10:06:39 and successful login at 10:07:04. The user additionally tested full
+Exit Game/restart with both servers left running: logout at 10:07:50, successful
+Maiko login at 10:08:16 and Client.log Active Player Created at 10:08:16.272.
+The user confirmed that the portrait still stayed in the center. No established
+connection was falsely classified as an expired handshake during these logouts.
+
+Thus normal relog and full client restart are now client-verified for login and
+portrait persistence. Vehicle boarding/dismount portrait behavior was not retested.
+The original reason that the earlier client remained silent at first handshake,
+and why its previous unsaved portrait position was lost, remain unproven; current
+recovery is not a claim of a universal intermittent-handshake fix. User-owned
+worldserver 12980 and bnetserver 25616 remain running in their visible setup;
+no agent-owned validation server remains.
