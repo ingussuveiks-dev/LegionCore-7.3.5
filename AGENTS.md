@@ -1,3 +1,9 @@
+# Project environment and database access
+
+- Environment versions confirmed by the user on 2026-10-22: Wampserver 3.4.2 (64-bit), Apache 2.4.67, PHP 7.4.33, MariaDB 11.4.9, and separately installed MySQL 5.7.44.
+- This LegionCore project uses MariaDB. The Wampserver menu's `Default DBMS: mysql` label does not identify this project's database server; use the actual connection settings in the runtime configuration.
+- Database connection settings and passwords are in `build-extractors/bin/Release/worldserver.conf`. Read them locally when needed; never copy passwords into documentation, command output, commits, or GitHub.
+
 # Build and runtime convention
 
 - Treat `build-extractors/bin/Release` as the canonical final runtime directory for the compiled `bnetserver.exe` and `worldserver.exe`.
@@ -9,6 +15,7 @@
 
 # Commit and push convention
 
+- The project's GitHub repository is `https://github.com/ingussuveiks-dev/LegionCore-7.3.5` (`origin`). Consult its commit history and the local Git log/diffs to establish what was changed previously, including when earlier chats have been archived; do not rely on chat memory alone.
 - After completing a fix and its relevant checks, create a focused commit with the implementation, regression tests and audit, then push the current branch to `origin`. This is the user's standing preference; report the commit hash and distinguish automated checks from pending client verification.
 - Keep separate problems in separate commits. Review the staged diff, exclude runtime data, credentials and personal character backups, and do not force-push shared history.
 
