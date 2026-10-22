@@ -575,8 +575,6 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, ObjectGuid npcGU
         packet.Objectives[i].Type = objs[i].Type;
     }
 
-    _session->SendPacket(packet.Write());
-
     player->SendDirectMessage(packet.Write());
 }
 
