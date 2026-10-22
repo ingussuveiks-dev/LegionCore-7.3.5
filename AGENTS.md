@@ -70,6 +70,8 @@
 
 # Hunter pet regressions
 
+- Dead-pet loading calls Pet::setDeathState before selecting CurrentPetIndex. Update saved hunter health by its persistent PetNumber across active/unslotted records, never by an assumed GetCurrentPet pointer; a missing current selection crashed Revive Pet982 on2026-10-22. Preserve corpse flags, death/revive owner auras, charm cleanup and native revive/save commands. Run `Test-PetReviveLifecycle.ps1 -VerifyReleaseBinary`, pet lookup and Hunter aura tests; its baseline mode reproduces the ACCESS_VIOLATION. Actual revival, portrait, Kill Command and reconnect remain client checks.
+
 - Creature::SelectVictim must check the taunt-effect iterator against end() after advancing and before dereferencing. A missing/dead newest pet taunter exposed the old do/while sentinel read in Broken Shore combat (2026-10-22). Skip dead older casters and retain normal threat/helper/evade fallback. Run `Test-CreatureTauntVictim.ps1 -VerifyReleaseBinary`; its baseline mode reproduces the old failure and its PE check verifies the deployed guard. Actual pet-taunt combat and beach arrival still require client confirmation.
 
 - Tar Trap135299's OnEffectUpdate has no AuraApplication. Use GetUnitOwner for its slow victim; GetTarget logs and returns null, disabling Expert Trapper's sticky-tar proc. Preserve the one-second remainder, talent/duplicate/chance gates and original caster. Run `Test-HunterTarTrapHook.ps1 -VerifyReleaseBinary`; trap visuals and live proc remain client checks.

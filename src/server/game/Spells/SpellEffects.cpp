@@ -7223,10 +7223,14 @@ void Spell::EffectResurrectPet(SpellEffIndex /*effIndex*/)
     if (!player->GetPet())
     {
         PetStable const* petStable = player->GetPetStable();
+        if (!petStable)
+            return;
         auto deadPetItr = std::find_if(petStable->ActivePets.begin(), petStable->ActivePets.end(), [](Optional<PetStable::PetInfo> const& petInfo)
         {
             return petInfo && !petInfo->Health;
         });
+        if (deadPetItr == petStable->ActivePets.end())
+            return;
         PetSaveMode slot = PetSaveMode(std::distance(petStable->ActivePets.begin(), deadPetItr));
 
         // Position passed to SummonPet is irrelevant with current implementation,

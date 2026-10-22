@@ -639,7 +639,9 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
 
             // update health so pet can be resurrected
             if (Player* player = Unit::ToPlayer(GetOwner()))
-                player->GetPetStable()->GetCurrentPet()->Health = GetHealth();
+                if (PetStable* stable = player->GetPetStable())
+                    if (CharmInfo* charm = GetCharmInfo())
+                        stable->UpdatePetHealth(charm->GetPetNumber(), GetHealth());
         }
     }
     else if (getDeathState() == ALIVE)

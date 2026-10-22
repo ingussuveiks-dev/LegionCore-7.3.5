@@ -140,6 +140,27 @@ public:
     std::array<Optional<PetInfo>, MAX_PET_STABLES> StabledPets;     // PET_SAVE_FIRST_STABLE_SLOT - PET_SAVE_LAST_STABLE_SLOT
     std::vector<PetInfo> UnslottedPets;                             // PET_SAVE_NOT_IN_SLOT
 
+    // A dead pet is reconstructed before LoadPetFromDB selects its current
+    // index. Update that exact record, never an unrelated current pet.
+    bool UpdatePetHealth(uint32 petNumber, uint32 health)
+    {
+        if (!petNumber)
+            return false;
+        for (auto& pet : ActivePets)
+            if (pet && pet->PetNumber == petNumber)
+            {
+                pet->Health = health;
+                return true;
+            }
+        for (auto& pet : UnslottedPets)
+            if (pet.PetNumber == petNumber)
+            {
+                pet.Health = health;
+                return true;
+            }
+        return false;
+    }
+
     PetInfo* GetCurrentPet() { return const_cast<PetInfo*>(const_cast<PetStable const*>(this)->GetCurrentPet()); }
     PetInfo const* GetCurrentPet() const
     {
