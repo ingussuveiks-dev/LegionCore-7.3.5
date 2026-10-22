@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-22",
+  "base_commit": "83758f7d",
+  "previous_audit": "docs/audits/scenario-faction-relog-2026-10-22.json",
+  "scope": "Real TCP EOF in a progressed scenario, native map/world logout and save, retired session destruction, fresh-session login and actual empty-instance destruction",
+  "finding": "No additional production defect was observed. All32 native disconnect/fresh-session cases pass: existing instances retain native position/stage/progress, while actual DestroyInstance loss restarts at the recorded entrance with stage0 and empty progress. This commit adds regression coverage and audit evidence; server implementation and runtime binaries are unchanged.",
+  "implementation": [
+    "Extend the existing native Scenario fixture at stage1 with actual criteria1 and7/33. Move the scratch Player eight yards with native PlayerRelocation so the current position differs from its recorded entrance.",
+    "Close the real loopback TCP peer on either the realm or instance channel. Execute actual Map::UpdateSessions and World::UpdateSessions; require native forced teardown, Player deletion, map/world session removal, both closed/detached sockets and a persisted offline checkpoint. Do not call LogoutPlayer or SetMap to manufacture the disconnect outcome.",
+    "Destroy the retired WorldSession after native teardown and release its fixture owner. Construct a new WorldSession with new realm/instance loopback transports, require initial login serial0 and clean loading/map/teardown state, then execute the accepted login opcode, native instance-link dispatch, full SQL holder and delayed map admission.",
+    "For the second disconnect, destroy only the empty fixture-owned map1460 instance through native MapInstanced::DestroyInstance. Assert both map and Scenario are absent before reconnecting. Keep the real saved checkpoint unchanged, including its current boot marker; this is actual instance loss rather than the prior old-boot simulation.",
+    "Decode actual queued initialization and scenario packets. A live instance must retain stage1, ActiveSteps, criteria progress and later position; a destroyed instance must create stage0 at its entrance without old criteria. Preserve health321, sickness598000ms, item25 durability27, mover/corpse state and duplicate-notification protection."
+  ],
+  "native_cases": {
+    "total": 32,
+    "live_instance": 16,
+    "destroyed_instance": 16,
+    "per_faction": 16,
+    "contexts": "Four parent raid-difficulty contexts and two travel directions repeat both Broken Shore factions. Direction0 uses realm EOF/early loading finish; direction1 uses instance EOF/late loading finish, with both live/destroyed outcomes. Loading order and channel are deliberately paired here; all cross-combinations are not claimed.",
+    "retained_regressions": "The previous64 same-session live/old-boot relogs and48 scenario initialization/fresh teleport cases remain in the same native execution."
+  },
+  "native_data": {
+    "map": 1460,
+    "alliance_scenario": 786,
+    "horde_scenario": 1189,
+    "shared_lfg": 908,
+    "difficulty": 12,
+    "reader": "tools/research/ScenarioInitializationCatalog.cpp",
+    "routing": "Use the existing runtime DB2/world stores and the committed shared faction route resolver. No invented Scenario, LFG record, stage or criteria state is injected."
+  },
+  "method_and_limits": [
+    "EOF is observed by an actual asynchronous socket read; the test advances the native map/world session cycles and uses their logout/save path. It then explicitly destroys the fully retired session. A new post-authentication WorldSession, realm/instance sockets and login request are created; no stale Player/session is reused.",
+    "Socket association and login start at the established post-authentication fixture boundary. TLS/authentication/HMAC/encryption exchange, account queue admission and encrypted client delivery are not exercised. Schema-only scratch account0/characters are used, not personal account data.",
+    "Map workers belong only to the disposable native fixture and are stopped for deterministic execution. Explicit native DestroyInstance exercises map/Scenario deletion and subsequent real factory reconstruction, not expiration of the production unload timer or arbitrary cross-thread interleavings.",
+    "PlayerRelocation provides distinct later/entrance positions for persistence checks; it does not establish client movement/collision. Criteria are awarded through native type92 events, not by writing Scenario internals.",
+    "No WoW client was operated. Scenario UI, actor/quest traversal and completion, visuals/voice, camera, pet portrait and reconnect under actual network latency remain client checks. No actor-state serialization or exact-stage recovery after a server crash is claimed.",
+    "World access is read-only; character/auth writes and session destruction affect only disposable schema-only test data. Runtime configuration, binaries, certificates, DLLs, logs and extracted data are preserved."
+  ],
+  "checks": [
+    "Test-TrialHelyaControlNative.ps1 -VerifyReleaseBinary passed32 real TCP EOF/fresh-session cases,16 per faction,16 live and16 actually destroyed instances. Each scenario/instance-loss/channel combination occurs four times. Existing64 relogs,48 scenario cases and288 incremental/full timestamp assertions also pass.",
+    "Native EOF map/world updates delete the Player, remove map/world session registrations, close/reset both socket slots and detach socket ownership. Native save retains the real versioned current-boot checkpoint and offline character state. The old session is destroyed and a clean new constructor/login/socket/SQL path reconstructs the Player. No direct logout or fabricated map removal is used for the disconnect outcome.",
+    "Canonical exception-bounded Map::UpdateSessions and World::UpdateSessions retain calls to WorldSession::Update and LogoutPlayer. Canonical MapInstanced::DestroyInstance calls ScenarioMgr::RemoveScenario. Existing Release checks also preserve shared faction routing, actual caller admission and absolute scenario progress timestamps. Native input hashes bind current fixtures/source to the original final-link game.lib and deployed executable.",
+    "Existing280 loading-order,392 map-loading,392 early-loading,392 linked-cancellation,392 instance-link,392 deferred-query,280 session,168 aggregate-login and two socket-owner probes pass, alongside configured spirit/ghost/graveyard/Helya regressions. Native DBErrors is empty and Server.log has no ERROR. Schema-only scratch character/auth databases (167 tables) and SQL user were removed.",
+    "Canonical worldserver.exe, MAP and final-link game.lib match the83758f7d audited Release. No implementation change, rebuild, migration or runtime deployment was needed. No worldserver/bnetserver was started or stopped in this task and none remains; runtime configuration/data/certificates/DLLs/logs were preserved. Client checks remain pending as listed in method_and_limits."
+  ],
+  "evidence": {
+    "native_run": "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-071443",
+    "worldserver": "F3CE5B779DEAFB9CF2D3B0538B26D71E32B9BF4CC74FC042757D5321A39AAF10",
+    "worldserver_map": "D80888B480E98F2DED587D510390141AED11C6E1792527F9C1B2278CD155AC01",
+    "game_library": "A3026E76667EF70ABB4A975B2367A42D390B6FE7E77126990C7C70E5A7964176",
+    "scripts_library": "77593D6A58C2EDF3BAC9672AE95DDDAC93C068DC15AAC2F1625FE2020EFB01D3",
+    "hashes": {
+      "tools/tests/TrialScenarioReconnectNative.inc": "A0BF441E935CEA3C14789F3871C2D018B001627261B7A1540A31B538D8E81789",
+      "tools/tests/TrialScenarioInitializationNative.inc": "D95A5966F6771B49B5E1B04B39C642ED6AC3564F0D629453D37A2A5EA51741B2",
+      "tools/tests/Test-RockawayChannelNative.ps1": "0E43FA579DEA14CABD994CB6E49BFAA1AF0498A0668A85DA6780B8CBA1F9497E",
+      "tools/tests/Test-ScenarioInitializationRelease.ps1": "FF324E12E89F3733522F04D32B809DFA697F1FCB986FB225BA3FCAF5342879E2",
+      "src/server/game/Maps/Map.cpp": "67AD070B009870E58C92C34BDA845A3A378D7532DEAADCD053F3B968766A811B",
+      "src/server/game/Maps/MapInstanced.cpp": "6B4CCD1292E79AE8CCD2B3FAF707B4E1746BC073456DFE4049624C89B531BAC2",
+      "src/server/game/Server/WorldSession.cpp": "DDA206BB3DE95310C7F480FE71CB0667EC5F7027E665CD242095CF2445007DD6",
+      "src/server/game/Server/WorldSocket.cpp": "D2F7F3E4E82F3709CC9510DD8AB643ACF448C49D280E3F19F776B647552C6791",
+      "src/server/game/World/World.cpp": "DC5798DC8A00565D5AEE4C2CAE86BEB413D3643FB7BC303F52C325F572557B7E",
+      "src/server/game/Entities/Player/PlayerScenario.cpp": "580297B1DA563AA7C5714B89DCB403AB7AABE823A7BD49056AE53FB8107A81A4",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-071443/native-inputs.json": "786EFDA1C0CE4216272A716D11088655D06A98D0D69A633E9E16B1D77B48886D",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-071443/native-lines.txt": "76DAEC045EE75808A02598F6F74B5A8527D870EE32410E473EF589BB81AFD8DE",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-071443/DBErrors.log": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "C:\\wamp64\\www\\LegionCore-7.3.5\\build-extractors\\runtime-test\\trial-helya-control-native\\run-20261022-071443/Server.log": "81E524D65C1F5F7CF5B7D5BB3CD5A8E36AC9C6F18C1DC3A18BDB3B7D85A14A04",
+      "build-extractors/runtime-test/scenario-reconnect-release/inputs.json": "4AEBB5E7684A302BF710994DDB51736AEA8882357D2D83441ADEDAB7873F36FD",
+      "build-extractors/runtime-test/scenario-reconnect-release/UpdateSessions-Map--.txt": "8EC9FDB2A82EE5915991A7EABD648C356D6E29D521F04104863E72A7726676E6",
+      "build-extractors/runtime-test/scenario-reconnect-release/UpdateSessions-World--.txt": "7A2944B393FDB82999014CC1A41941739A1053B6EDFE59B9D85203557846F638",
+      "build-extractors/runtime-test/scenario-reconnect-release/DestroyInstance-MapInstanced--.txt": "2809054FC63D06BF57DCFFC630FF1FF1871CCFF7694F07232E3EB9DB5F39AC77",
+      ".codex/scenario-reconnect-native.log": "39215F516FCF8713978F7446165207AD1DEA74FDEAA01719676C4FBB3D93340C",
+      ".codex/scenario-reconnect-final-verified.log": "1C27AEEC16550A27EDC17E03F343164A5AC795C408E221A4AAC3AA2D9BD1956D"
+    }
+  }
+}

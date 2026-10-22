@@ -48,9 +48,10 @@ static void CheckScenarioState(ScenarioWireState const& state,Scenario& scenario
 struct ScenarioLoginCleanup
 {
     WorldSession* session;WorldSessionPtr previous;
-    ~ScenarioLoginCleanup(){if(session->GetPlayer()){session->SetMap(nullptr);session->LogoutPlayer(true);FlushWrites();}auto& sessions=const_cast<SessionMap&>(sWorld->GetAllSessions());if(previous)sessions[0]=previous;else sessions.erase(0);}
+    ~ScenarioLoginCleanup(){if(session&&session->GetPlayer()){session->SetMap(nullptr);session->LogoutPlayer(true);FlushWrites();}auto& sessions=const_cast<SessionMap&>(sWorld->GetAllSessions());if(previous)sessions[0]=previous;else sessions.erase(0);}
 };
 #include "TrialScenarioRelogNative.inc"
+#include "TrialScenarioReconnectNative.inc"
 static void TrialScenarioInitialization(ObjectGuid guid,WorldLocation const& expected,uint64 itemGuid,uint32 durability,WorldSession* oldSession,uint32 difficulty,uint8 race,unsigned direction)
 {
     static bool loaded=false;if(!loaded){sObjectMgr->LoadScenarioData();sObjectMgr->LoadScenarioSpellData();loaded=true;
@@ -60,7 +61,7 @@ static void TrialScenarioInitialization(ObjectGuid guid,WorldLocation const& exp
     dynamic_cast<VMAP::VMapManager2*>(VMAP::VMapFactory::createOrGetVMapManager())->InitializeThreadUnsafe({{1460,{}}});MMAP::MMapFactory::createOrGetMMapManager()->InitializeThreadUnsafe({{1460,{}}});
     auto addresses=realm.Addresses;realm.Addresses={boost::asio::ip::address_v4::loopback(),boost::asio::ip::address_v4::loopback()};
     for(unsigned mode=0;mode<3;++mode){
-        SpiritLoopback realmSocket,instanceSocket,relogSocket,restartSocket;auto session=new WorldSession(0,"ScenarioInit",realmSocket.socket,SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{});auto shared=WorldSessionPtr(session,[](WorldSession*){});realmSocket.socket->SetWorldSession(shared);
+        SpiritLoopback realmSocket,instanceSocket,relogSocket,restartSocket,reconnectRealm,reconnectInstance,unloadRealm,unloadInstance;auto session=new WorldSession(0,"ScenarioInit",realmSocket.socket,SEC_PLAYER,6,0,"Win",LOCALE_enUS,0,false,AT_AUTH_FLAG_NONE,{});auto shared=WorldSessionPtr(session,[](WorldSession*){});realmSocket.socket->SetWorldSession(shared);
         auto& sessions=const_cast<SessionMap&>(sWorld->GetAllSessions());auto found=sessions.find(0);WorldSessionPtr previous;if(found!=sessions.end()){previous=found->second;Require(previous.get()==oldSession,"Scenario fixture would replace unrelated session");}sessions[0]=shared;ScenarioLoginCleanup cleanup{session,previous};
         SpiritRequestLogin(session,guid);SpiritLinkSocket(instanceSocket,session->GetConnectToInstanceKey());auto response=SpiritTakeLinkQuery(session);SpiritDeliverQuery(session,std::move(response));SpiritCancelComplete(session,guid,expected,itemGuid,durability);auto player=session->GetPlayer();
         uint32 scenarioId=player->GetTeam()==ALLIANCE?786:1189;auto data=sLFGMgr->GetLFGDungeon(uint16(786),uint16(1460));Require(data&&(data->x||data->y||data->z),"Native Broken Shore LFG entrance missing");auto route=sObjectMgr->GetScenarioOnMap(1460,data->difficulty,player->GetTeam(),player->getClass(),data->id);Require(route&&route->ScenarioID==scenarioId,"Native faction scenario route differs");
@@ -74,6 +75,7 @@ static void TrialScenarioInitialization(ObjectGuid guid,WorldLocation const& exp
         ReadScenarioPackets(session);scenario->SendStepUpdate(player,true);auto full=ReadScenarioPackets(session);Require(full.states.size()==1,"Native full scenario snapshot missing");CheckScenarioState(full.states[0],*scenario,1,true);
         if(mode<2){player=TrialScenarioRelog(session,relogSocket,guid,*scenario,itemGuid,durability,mode==0);player=TrialScenarioRelog(session,restartSocket,guid,*scenario,itemGuid,durability,mode==1,true);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());}
         if(mode==2){
+            player=TrialScenarioReconnect(session,shared,cleanup,realmSocket,instanceSocket,reconnectRealm,reconnectInstance,guid,itemGuid,durability,false,direction!=0);player=TrialScenarioReconnect(session,shared,cleanup,reconnectRealm,reconnectInstance,unloadRealm,unloadInstance,guid,itemGuid,durability,true,direction!=0);scenario=sScenarioMgr->GetScenario(player->GetInstanceId());
             auto instance=player->GetInstanceId();Require(player->TeleportTo(expected)&&player->IsBeingTeleportedFar(),"Scenario exit failed");SpiritFarFreeze(expected.GetMapId());session->HandleWorldPortAck();SpiritFarFreeze(expected.GetMapId());player->UpdateZone(player->GetCurrentZoneID(),player->GetCurrentAreaID());SpiritFarFreeze(expected.GetMapId());if(player->IsBeingTeleportedFar()&&player->IsChangeMap())session->m_Functions.Update(500);SpiritLoadingScreen(session,expected.GetMapId(),false);ReadScenarioPackets(session);
             player->SetScenarioId(uint16(scenarioId));Require(player->TeleportTo(entrance)&&player->IsBeingTeleportedFar(),"Scenario re-entry failed");SpiritFarFreeze(1460);ReadScenarioPackets(session);SpiritLoadingScreen(session,1460,false);Require(ReadScenarioPackets(session).states.empty(),"Fresh scenario snapshot sent before re-entry ACK");session->HandleWorldPortAck();SpiritFarFreeze(1460);auto fresh=sScenarioMgr->GetScenario(player->GetInstanceId());Require(player->GetInstanceId()!=instance&&fresh&&fresh!=scenario&&fresh->GetScenarioId()==scenarioId&&fresh->GetCurrentStep()==0,"Unbound solo re-entry did not construct a fresh native scenario");scenario=fresh;auto rejoined=ReadScenarioPackets(session);Require(rejoined.initial==1&&rejoined.states.size()==1,"Fresh re-entry snapshot missing/duplicated");CheckScenarioState(rejoined.states[0],*scenario,0,true);
         }

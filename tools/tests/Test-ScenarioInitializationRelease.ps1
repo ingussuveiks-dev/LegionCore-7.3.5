@@ -55,3 +55,16 @@ if(!$gate.Success -or [regex]::Matches($routeText,("(?i)jne\s+"+$gate.Groups['re
 $routeListing | Set-Content "$relogOut/ResumeDungeon-verified.txt"
 [ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$relogs.Count;live=32;old_boot=32;native_route_abi=$abi[0];caller_and_route_calls=$true;condition_rejection=$true} | ConvertTo-Json | Set-Content "$relogOut/inputs.json"
 'PASS: canonical scenario login/legacy entrance use the guarded native faction/class route;64 complete SQL logout/login cases preserve live progress or restart old-boot checkpoints at the entrance.'
+
+$reconnectOut="$repo/build-extractors/runtime-test/scenario-reconnect-release"
+New-Item -ItemType Directory -Force $reconnectOut | Out-Null
+if($inputs.'tools/tests/TrialScenarioReconnectNative.inc' -ne (Get-FileHash "$PSScriptRoot/TrialScenarioReconnectNative.inc").Hash){throw 'Scenario reconnect fixture changed after native execution'}
+foreach($path in @('Maps/Map.cpp','Maps/MapInstanced.cpp','Server/WorldSession.cpp','Server/WorldSocket.cpp','World/World.cpp')){if($inputs."src/server/game/$path" -ne (Get-FileHash "$repo/src/server/game/$path").Hash){throw "Scenario reconnect source changed: $path"}}
+$reconnects=@($lines | Where-Object {$_ -match '^PASS: native scenario reconnect '})
+if($reconnects.Count -ne 32){throw 'Run all32 native EOF/fresh-session reconnect cases first'}
+foreach($id in 786,1189){foreach($unload in 0..1){foreach($channel in 0..1){if(@($reconnects | Where-Object {$_ -match " scenario=$id unload=$unload instance_eof=$channel instance="}).Count -ne 4){throw "Missing reconnect faction/instance/channel combination $id/$unload/$channel"}}}}
+foreach($name in @('?UpdateSessions@Map@@','?UpdateSessions@World@@')){$calls=@(Calls $name);foreach($target in @('?Update@WorldSession@@','?LogoutPlayer@WorldSession@@')){if($calls -notcontains (Resolve (Symbol $target))){throw "Canonical $name lacks $target"}}}
+if(@(Calls '?DestroyInstance@MapInstanced@@') -notcontains (Resolve (Symbol '?RemoveScenario@ScenarioMgr@@'))){throw 'Canonical instance destruction does not remove its Scenario'}
+foreach($name in @('?UpdateSessions@Map@@','?UpdateSessions@World@@','?DestroyInstance@MapInstanced@@')){$range=Bounds $name;$argument='/RANGE:0x{0:X},0x{1:X}' -f $range[0],$range[1];$body=@(& $dump.FullName /DISASM:NOBYTES $argument $exe);if($LASTEXITCODE){throw "Reconnect disassembly failed: $name"};$body | Set-Content "$reconnectOut/$($name.Trim('?').Replace('@','-')).txt"}
+[ordered]@{worldserver=(Get-FileHash $exe).Hash;game_library=(Get-FileHash $gameLib).Hash;native_inputs=(Get-FileHash "$run/native-inputs.json").Hash;cases=$reconnects.Count;live=16;destroyed_instance=16;native_map_and_world_cleanup=$true;native_scenario_destruction=$true} | ConvertTo-Json | Set-Content "$reconnectOut/inputs.json"
+'PASS: canonical map/world session cycles retain native update/logout and instance destruction removes Scenario;32 real TCP EOF/fresh-session reconnect cases cover live and destroyed instances for both factions.'

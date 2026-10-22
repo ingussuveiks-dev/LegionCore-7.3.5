@@ -1,5 +1,6 @@
 {
   "date": "2026-10-22",
+  "followup_audit": "docs/audits/scenario-reconnect-2026-10-22.json",
   "base_commit": "14b9c6e3",
   "previous_audit": "docs/audits/scenario-initialization-2026-10-22.json",
   "scope": "Complete native faction scenario logout/login, live-instance rejoining, old-boot entrance restart and shared LFG routing admission",
