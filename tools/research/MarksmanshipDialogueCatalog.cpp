@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     if (!texts.Load(argv[1], 0) || !kits.Load(argv[1], 0) || !sounds.Load(argv[1], 0) ||
         !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0))
         return 2;
-    for (uint32 identity : {106998u, 107282u, 103501u, 107281u})
+    for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
     texts.LoadFromDB();
     displays.LoadFromDB();
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
             << uint32(actorDisplay->Gender) << '\n';
     }
     std::set<uint32> soundKits;
-    for (uint32 identity : {106998u, 107282u, 103501u, uint32(line->BroadcastTextID)})
+    for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, uint32(line->BroadcastTextID)})
     {
         auto text = texts.LookupEntry(identity);
         if (!text)

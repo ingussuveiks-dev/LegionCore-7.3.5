@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-24 Europe/Riga",
+  "build": "7.3.5.26972",
+  "scope": "Vereesa100397 initial Niskara LOS speech/timer/first waypoint admission. Partial executable lifecycle repair, not full Marksmanship/client/video certification.",
+  "root_cause": {
+    "admission": "Initial event0 is friendly OOC_LOS10, range10, NOT_REPEATABLE1, TALK0/6000ms with target7. Its only source22/group1 condition tests972/0 against target1, the base actor, not the invoker. A friendly pet, guardian or NPC can satisfy that actor-stage condition and consume event0 before the player approaches.",
+    "speaker": "This core's actual TALK action treats a selected Creature as the speaker. A pet selected by target7 therefore replaces Vereesa as talker, sets mTalkerEntry to the pet entry and sends its text group0 request. The timer subsequently dispatches TEXT_OVER0 with that pet entry. Native event3 requires TEXT_OVER0/100397, so speech1/4000ms and event4's first waypoint path100397 never start. Later player LOS is rejected by event0 runOnce. The native regression reproduces that stall, not merely a SQL-row mismatch.",
+    "credit": "Original0 ->1 ->57 includes native205763 victim-target cast and102129 invoker credit. A pet-triggered entrance can also reach those links. Their semantics and the shared owner-credit resolver are preserved; the repair prevents the nonplayer entrance event from running at all. It does not disable legitimate combat pet/guardian credit elsewhere."
+  },
+  "repair": {
+    "migration": "Guarded transaction24 changes only native100397 event0's TALK speaker target7 to SELF1 and adds TYPE_MASK32/PLAYER16 on condition target0 in the same ElseGroup0. The original972/0 condition remains on the base actor target1; source group1 is event0+1, not event1. Both dispatch and native ProcessEvent condition lookup use that exact source key.",
+    "preservation": "Keep original10yd/no-hostile/OOC gate,6000/4000ms speech timers, text0/1/2 and their voices, event flags/links, native cast205763,102129 credit, three path100397 points and all other100397 actions/conditions. SELF keeps Vereesa as talker while native mLastInvoker still supplies the actual player's text variables. No C++ AI binding/event list replacement, creature/item/progression grant, character write or core-wide pet TALK rewrite.",
+    "custom_data": "Require native SmartAI/empty ScriptName/menu19331, exact initial LOS/TALK tuple and supported3/4/1/57 callbacks. Unknown intro speaker target, altered callback/credit, base-stage target or additional/alternative condition groups cause the migration to skip instead of replacing them. Reapplication recognizes its own Player condition without duplicates. Negative-GUID/custom runtime scripts are not rewritten; only the known positive base template rows change.",
+    "retry": "Rejected pets/guardians/friendly NPCs/null invokers do not set runOnce. Missing/wrong scenario, later stages, distance/LOS/hostility/combat and expired/missing actor hosts also cannot consume the supported initial event; normal eligible player LOS can retry after the condition clears. Actual instance reconstruction, dead/ghost-player/relog/re-entry behavior and reset semantics remain native and need traversal; no invented durable recovery is added."
+  },
+  "sources": {
+    "local_first": "Reviewed actual world actor370758 on1489/phaseMask1/phaseId5586,100397 initial/tail SmartAI, source22 conditions, creature_text0/1/2 and first3 waypoints. Read production OnMoveInLineOfSight/ProcessEventsFor/ProcessEvent/TALK/text timer/TEXT_OVER/LINK/WP_START and native source22 group+1 lookup/TYPE_MASK/scenario condition branches. Scoped tests use the actual current schema and production bodies. No character data was read or changed.",
+    "trinity_history": {
+      "path": "C:/wamp64/www/TrinityCore",
+      "commit": "c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "url": "https://github.com/TrinityCore/TrinityCore/blob/c2d61e05cf3dc555608e6b2a06772c27d207548c/src/server/game/AI/SmartScripts/SmartScript.cpp",
+      "reviewed": "Exact26972 historical TALK branch explicitly excludes pets when choosing a creature speaker and uses a different talk-target API. This corroborates the local pet-speaker hazard, but is not a ready compatible Vereesa acquisition script. Do not transplant its whole action/API into this custom core; this fix is scoped data/player admission and SELF speaker only."
+    },
+    "github": "Previously pinned donor comparison in docs/audits/legion-artifact-donor-review-2026-10-23.json remains applicable. No new external implementation imported and no claim that all donor branches were exhaustively searched.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "date": "2016-08-27 from prior audit; exact client build unknown",
+      "new_rendered_samples": [
+        "0:04: actual Rescue Mission quest offer beside Vereesa and the green portal; acceptance/prerequisite chain was not continuously followed.",
+        "1:05: named Vereesa speaks the native Orestes/wait-here line0 beside the player, with the pet present separately. This is not a pet speaking.",
+        "1:10: Vereesa's native ascend-the-rise line1 is visible; NPC is ahead of the player on the path.",
+        "1:14: map/objective view; not evidence of unseen NPC movement.",
+        "1:20: player/pet follow the rise toward the NPC/archway. No combat/kill result, precise sentry-warning timing or exact movement interpolation is inferred."
+      ],
+      "limits": "Sparse paused frames only, NOT a full continuous relevant sequence or full19:04 video. Initial rapid-seek/buffering frames with stale35/60-second UI values were excluded; ads and unobserved elapsed playback were not counted. Audio muted, automatic subtitles not authoritative, voice timing not measured. No remote media downloaded; temporary background browser tab closed. Prior end-sequence samples stay documented separately."
+    }
+  },
+  "native_voice_dependencies": {
+    "reader": "Extended MarksmanshipDialogueCatalog.cpp to include103289/103242/103441. The typed26972 base lacks these broadcasts; actual native read-only HotfixDatabase overlay resolves their female text/sound. Existing world speech Sound0 uses the native female broadcast sound selector; display28222 resolves Model2209/Gender1. No text, sound ID or timing was replaced.",
+    "links": [
+      {"speech_group":0,"broadcast":103289,"sound_kit":61800,"file_data_id":1382615,"bytes_fully_read":37896},
+      {"speech_group":1,"broadcast":103242,"sound_kit":61830,"file_data_id":1382680,"bytes_fully_read":22567},
+      {"speech_group":2,"broadcast":103441,"sound_kit":61838,"file_data_id":1382688,"bytes_fully_read":23502}
+    ],
+    "limits": "Native SoundKit/SoundKitEntry resolves nonzero audible metadata; all3 local client payloads fully read with32 stable CASC index hashes using Test-CascVisualFiles.ps1. No audio decoding/listening, playback, animation or client packet-delivery verification. Actual initial pose/visual effects and later combat remain pending."
+  },
+  "checks": [
+    "Test-MarksmanshipArrival.ps1 -VerifyReleaseBinary passes before and after native updater deployment. Actual-schema TEMPORARY actor/script/conditions clones apply24 twice, export the actual0/1/3/4/57 tuples and source1 rows, compare every field of all other SmartAI rows, and preserve custom ScriptName, speaker target, stage target, text actor, credit and alternative condition gate. No live fixture writes.",
+    "MarksmanshipArrivalTest.cpp compiles actual native ConditionMgr ElseGroups and both source22 lookups, TYPE_MASK/scenario cases, ProcessEventsFor, phase/runOnce guard, per-event admission, OOC_LOS, TALK, text timer, TEXT_OVER, action invoker prefix, FindLinkedEvent/LINK and WP_START request bodies. Original target7/actor-only condition reproduces pet-speaker entry416, consumed event0 and no subsequent waypoint request even when player approaches. Fixed data rejects pet/guardian/NPC/null before consumption, retains the player text GUID, runs0 ->1 ->path100397 once, and deduplicates20 further approaches.",
+    "Native fixture covers stages1..14 rejection, both faction-labelled player hosts,8 distance/LOS/hostility/combat/scenario/instance/expiry changes with retry, and a missing base actor followed by recovery. GetTargets, distance/LOS/map/scheduler, actor AI/StartPath, cast and credit are controlled hosts/boundaries; successful path spline, actual205763 target/cast, saved102129 quest counter, real faction phasing and full combat are NOT proven by them. No player/pet combat kill sequence is invented here.",
+    "verify_marksmanship_arrival_release.py checks actual native OnMoveInLineOfSight -> ProcessEventsFor, condition admission -> ProcessEvent, per-event condition lookup, action -> native ProcessEvent LINK callback, CreatureTextMgr::SendChat and timer dispatch. FindLinkedEvent is inlined in the real Release, so the checker verifies the actual linked action/event bridge rather than requiring a nonexistent outline symbol. Its inherited PE chain verifies existing claim/presentation/pickup/report-use/return/Talonclaw repairs.",
+    "Test-MarksmanshipClaimDialogue.ps1 -VerifyReleaseBinary still passes on the deployed SQL state. Test-ScriptPetCredit.ps1 -VerifyReleaseBinary retains native player/pet/guardian/charm/group-source behavior, and Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. No warnings or diagnostics were suppressed. These are native/PE checks, not client traversal."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "B1A5489D4D7FA1003B1E4C4F7A12A3AC0630D5277E37C25176C37EED355D3D24",
+    "migration": "sql/updates/world/2026_10_23_24_marksmanship_arrival.sql",
+    "migration_sha1": "A036E6F462E7B524C88AF668F482644FD786E50F",
+    "build": "Data-only production repair; no production C++ changed and no new worldserver build claimed. Existing canonical Release fromf3094072 retains the checked implementation/hash, and the actual final-link paths still reference original scripts/Release/scripts.lib and game/Release/game.lib. New native regressions/catalog compiled independently through the configured toolchain/libraries; deployed PE checks pass.",
+    "readback": "Native updater records24 RELEASED at exact SHA1. Event0 retains10/1/10yd/6000ms/link1 and now targetSELF1. Source22/group1 has exactly original44/target1/972/0 plus32/target0/16 in ElseGroup0. Native1/205763/victim2 ->57/102129/invoker7, speech3 and path4 remain unchanged. Scoped private actor/condition backups precede updater; configs/certificates and character tables untouched by task operations.",
+    "startup": "Task-owned canonical PID34676 reached World initialized, then gracefully exited0; new DBErrors bytes0 and protected configuration/certificate hashes unchanged. No user/unknown server was stopped and no task-owned server remains. Loader success is not a scenario run.",
+    "private_evidence": ".codex/marksmanship-arrival-*.log/TSV/backup SQL, marksmanship-arrival-audio and marksmanship-arrival-startup; excluded from commits."
+  },
+  "remaining": [
+    "Actual client entrance with active pet/guardian and both factions, first speech/audio, ascent/sentry encounter, reset/re-entry/death/relog and all later stages still need traversal. No full quest or visual is marked client verified.",
+    "Local40419 objectives still alias optional Looted Bow103490 and Phase Portal103481 at StorageIndex4. GO248419 LINK3 really awards103490 before return59 awards103481; local matching DB2/hotfix has no complete authoritative target objective records. This repair does not invent a free index, reindex existing saved quests or change character counters. Objective history/migration strategy remains a separate unresolved investigation.",
+    "Remaining Marksmanship admission/preparation variants, encounter kills/scaling/group eligibility, missing summon/cache/re-entry recovery, actual loot/equip/use/arrival and full video/all36-route review remain unfinished."
+  ]
+}
