@@ -40,6 +40,22 @@ bool NativeCompletedLoot(Loot* loot,GameObject* go){
 }
 int main()
 {
+ // Native quest chain: Stolen Thunder41574 -> Creator's Workshop42158 ->
+ // Never Hunt Alone42185. The final chest belongs to42185, not either
+ // prerequisite (which has already been rewarded at the Temple of Storms).
+ for(uint32 status:{uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)}){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=42185;hunter.status=status;
+  GameObject rifle;rifle.entry=249812;
+  assert(!ArtifactAcquisition::Use(&hunter,&rifle)); // actual loot permitted
+  hunter.bank=true;assert(ArtifactAcquisition::Use(&hunter,&rifle));
+  assert(rifle.ai.script.calls==1&&hunter.lastItem==128861);
+  assert(ArtifactAcquisition::Use(&hunter,&rifle)&&rifle.ai.script.calls==1);
+ }
+ for(uint32 wrongQuest:{41574u,42158u}){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=wrongQuest;hunter.owned=true;
+  GameObject rifle;rifle.entry=249812;
+  assert(ArtifactAcquisition::Use(&hunter,&rifle)&&!rifle.ai.script.calls&&!hunter.ownItemEvents);
+ }
  for(auto row:ArtifactAcquisition::Pickups){
   Player p;p.cls=row.playerClass;p.quest=row.quest;GameObject go;go.entry=row.object;
   assert(!ArtifactAcquisition::Use(&p,&go)&&!go.ai.script.calls); // real native loot required

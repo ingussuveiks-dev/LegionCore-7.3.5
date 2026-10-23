@@ -1,0 +1,13 @@
+{
+  "reported": "Never Hunt Alone1099 reaches Stage5 Wield Titanstrike but the final weapon cannot be taken.",
+  "cause": "ArtifactAcquisition::Pickups admitted249812/128861 for42158 The Creator's Workshop or41574 Stolen Thunder. Native quest data places the final pickup in42185 Never Hunt Alone after both prerequisites have been rewarded. Active() rejects rewarded prerequisites, so the scripted Use handler swallowed the actual click before native loot.",
+  "repair": "Admit only active42185 for the Hunter chest. Preserve class/alive/teleport/phase/visibility/LOS/distance/flags/spawn gates, actual ordinary loot, full-bag behavior and the existing owned/bank unique-copy replay path. No item is granted remotely and no character quest state is reset.",
+  "native_completion": "249812 is a chest with Data1=249812, actual loot128861 and go_artifact_acquisition. Its real GO_JUST_DEACTIVATED state invokes212010 (trigger212012, artifact-equip effect249 for128861 and scene1270),50923 credit, exit bird106854 and211970 cleanup through the existing linked chain. Native1099 order4 criteria tree48023 uses event50923; order5 uses50924. No progression action is moved to the initial click.",
+  "checks": [
+    "Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary passes actual extracted Use/SetLootState/SmartGameObjectAI handlers: explicit real42185 incomplete/complete cases, reject41574/42158, ordinary loot, owned/bank, repeated click, all existing admission failures and unrelated artifacts.",
+    "Test-ArtifactAcquisitionData.ps1 passes real loot links and native completed-loot selector. Full bags retain loot; ownership replay does not duplicate a unique artifact.",
+    "Canonical PE contains the five-uint32 Hunter tuple249812/128861/3/42185/0 and lacks the former prerequisite tuple. This extends the old shared-log-string check that could not detect a stale Hunter mapping."
+  ],
+  "deployment": "Canonical Release SHA25642788051e74e1499b99517de4fd68afa9571390abf8c86e82f13a2c736b7cab1, built before the user server's16:09:12 startup; no user server stopped. Existing DB loot/criteria/scene chain preserved.",
+  "remaining_client_checks": "Actual fresh42185 pickup, visible rifle and Wield scene, bag-full retry, owned/bank replay, exactly-once50923 and departure through the exit bird. Client arrival at Stage5 was observed in the supplied screenshot; successful pickup has not yet been reported. Other artifact chains are not certified by this fix."
+}

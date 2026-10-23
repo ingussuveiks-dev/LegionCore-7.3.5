@@ -25,5 +25,12 @@ if($LASTEXITCODE){throw 'Artifact acquisition native handler regression failed'}
 if($VerifyReleaseBinary){
  $ascii=[Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes("$repo/build-extractors/bin/Release/worldserver.exe"))
  if(!$ascii.Contains('Artifact acquisition: player %u used owned artifact %u at object %u')){throw 'Canonical Release lacks artifact ownership repair'}
- 'PASS: canonical executable contains the compiled artifact acquisition handler'
+ $bytes=[IO.File]::ReadAllBytes("$repo/build-extractors/bin/Release/worldserver.exe")
+ # The native Pickup array is five adjacent uint32 fields. Verify the actual
+ # linked quest tuple, not merely a log string shared with the stale handler.
+ $hex=[BitConverter]::ToString($bytes)
+ $correct=[BitConverter]::ToString([byte[]](@(249812,128861,3,42185,0) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
+ $stale=[BitConverter]::ToString([byte[]](@(249812,128861,3,42158,41574) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
+ if(!$hex.Contains($correct) -or $hex.Contains($stale)){throw 'Canonical Release has stale Hunter artifact quest admission'}
+ 'PASS: canonical executable contains artifact acquisition and the native Hunter42185 pickup tuple, without the stale prerequisite tuple'
 }
