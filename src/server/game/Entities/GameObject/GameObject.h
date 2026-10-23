@@ -148,6 +148,8 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
 
         void SetOwnerGUID(ObjectGuid owner);
         ObjectGuid GetOwnerGUID() const;
+        ObjectGuid GetSummonerGUID() const { return m_summonerGUID; }
+        void SetSummonerGUID(ObjectGuid guid) { m_summonerGUID = guid; }
         Unit* GetOwner() const;
         void RemoveFromOwner();
 
@@ -344,6 +346,7 @@ class TC_GAME_API GameObject : public WorldObject, public GridObject<GameObject>
         Position m_stationaryPosition;
 
         ObjectGuid m_lootRecipient;
+        ObjectGuid m_summonerGUID = ObjectGuid::Empty;
         ObjectGuid m_lootRecipientGroup;
         bool   m_manual_anim;
         bool   m_isDynActive;

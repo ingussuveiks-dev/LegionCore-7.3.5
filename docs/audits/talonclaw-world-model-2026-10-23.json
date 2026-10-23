@@ -1,6 +1,7 @@
 {
   "date": "2026-10-23",
   "build": "7.3.5.26972",
+  "lifecycle_followup": "talonclaw-world-pickup-2026-10-23.json",
   "scope": "Deterministic native world-weapon carrier for Talonclaw100310. Does not complete the Survival scenario or certify client rendering, pickup disappearance or timing.",
   "finding": {
     "runtime": "100310 had flags_extra0, no AI/script/addon/spellclick and no persisted spawns. Dakarr99480 death LINK2 summons it before LINK3 creates chest248834. WDB displays are33225/66609. Native ChooseDisplayId therefore randomly selects either display, including33225, which has no Talonclaw state visual.",

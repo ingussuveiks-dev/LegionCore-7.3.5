@@ -3025,6 +3025,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
         delete go;
         return nullptr;
     }
+    go->SetSummonerGUID(GetGUID());
     go->SetTratsport(GetTransport());
     go->SetRespawnTime(respawnTime);
 

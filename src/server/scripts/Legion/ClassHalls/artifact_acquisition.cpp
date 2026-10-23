@@ -6,6 +6,7 @@
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
 #include "Creature.h"
+#include "TemporarySummon.h"
 #include "CreatureAI.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
@@ -85,11 +86,42 @@ public:
     void OnLogin(Player* player) override { DarkRidersCompletion::Recover(player); }
     void OnUpdate(Player* player, uint32) override { DarkRidersCompletion::Recover(player); }
 };
+namespace TalonclawWorldPickup
+{
+void Retire(GameObject* object, uint32 state, Unit* unit)
+{
+    if (!object || object->GetEntry() != 248834 || object->GetMapId() != 1511 || state != GO_JUST_DEACTIVATED ||
+        object->getLootState() != GO_JUST_DEACTIVATED)
+        return;
+    Player* player = unit ? unit->ToPlayer() : nullptr;
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() || player->getClass() != CLASS_HUNTER ||
+        player->GetMap() != object->GetMap() || !player->InSamePhase(object) ||
+        !ArtifactAcquisition::Active(player, 40385) || !player->HasItemCount(128808, 1, true))
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    ObjectGuid source = object->GetSummonerGUID();
+    if (!scenario || scenario->GetScenarioId() != 973 || scenario->GetCurrentStep() < 12 ||
+        !source.IsCreatureOrVehicle() || source.GetEntry() != 99480)
+        return;
+
+    std::list<Creature*> actors;
+    object->GetCreatureListWithEntryInGrid(actors, 100310, 3.0f);
+    for (Creature* actor : actors)
+        if (actor && actor->GetEntry() == 100310 && actor->IsInWorld() && !actor->IsDespawn() &&
+            actor->GetMap() == object->GetMap() && actor->InSamePhase(object) && actor->GetExactDist(object) <= 3.0f)
+            if (TempSummon* summon = actor->ToTempSummon())
+                if (summon->GetSummonerGUID() == source)
+                {
+                    actor->DespawnOrUnsummon(1000);
+                }
+}
+}
 class go_artifact_acquisition : public GameObjectScript
 {
 public:
     go_artifact_acquisition():GameObjectScript("go_artifact_acquisition"){}
     bool OnGossipHello(Player* player,GameObject* go) override {return ArtifactAcquisition::Use(player,go);}
+    void OnLootStateChanged(GameObject* object, uint32 state, Unit* unit) override { TalonclawWorldPickup::Retire(object, state, unit); }
 };
 namespace TalonclawPresentation
 {

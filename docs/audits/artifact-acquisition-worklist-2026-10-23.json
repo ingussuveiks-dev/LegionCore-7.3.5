@@ -688,8 +688,9 @@
       "return_credit_repair_audit": "docs/audits/talonclaw-return-credit-2026-10-23.json",
       "departure_repair_audit": "docs/audits/talonclaw-departure-2026-10-23.json",
       "world_model_repair_audit": "docs/audits/talonclaw-world-model-2026-10-23.json",
+      "world_pickup_repair_audit": "docs/audits/talonclaw-world-pickup-2026-10-23.json",
       "start": 41542,
-      "status": "loot, presentation equip, claim, return credit, personal Dorro departure/portal and deterministic native world-weapon model repaired with native regressions; actor retirement, prerequisite/scenario, exact visual match and client traversal remain pending",
+      "status": "loot, presentation equip, claim, return credit, personal Dorro departure/portal, native world-weapon model and source-scoped pickup retirement repaired with native regressions; prerequisite/scenario, exact visual timing and client traversal remain pending",
       "quests": [
         {
           "id": 41542,
