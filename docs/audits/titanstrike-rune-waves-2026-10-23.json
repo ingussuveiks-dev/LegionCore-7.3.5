@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-23",
+  "scope": "Stolen Thunder41574, scenario1068, map1495: rune waves and Grif/Theodore",
+  "baseline": [
+    "Original timed lists summoned2 tombguards,3 worgs,2 trackers. A dying actor's source22 negative near-creature condition used the killer as origin. It could block or prematurely emit a progression message depending on player/pet range.",
+    "Grif104904 had no Theodore summon or general combat assistance. Theodore106289 already exists, with native display14316/model8575 and active98..110 scaling.",
+    "Native DB2 scenario step2301/order2/tree47217 requires script-event92/49992.210772/210777 transform trackers/worgs; they do not summon their pets.194584 is Crippling Slash, not Shoot; use native6660 for ranged assistance."
+  ],
+  "implementation": [
+    "Prustaga's scoped SmartAI delegate preserves native ritual/conversation/waypoints. Three native timed lists now signal numbered wave readiness at11/9/8seconds. A tracked state machine spawns1 tombguard,2 tombguards, then2 trackers+1 tombguard+2 worgs. Wolves are NPC summons of their trackers, never player minions.",
+    "Track actual actor GUIDs and death state, independent of killer/range. Missing actors retry instead of counting as defeated. Failed wolf summons still retry after a tracker dies or its corpse disappears. Repeated old death messages and stale readiness signals cannot advance another wave. Only all required deaths emit the existing native3/4/5 data transition once.",
+    "First/second completion retains the native rune removal and next ritual. Final rune/door/49992 credit/next waypoint execute before the optional conversation, so a rejected conversation cannot consume progression.",
+    "Grif owns Theodore independently from Stage2/order1 through the final map1495 stage. The bear follows, assists player/pet combat and resummons after death; Grif shoots with6660. The permanent player pet is untouched. Quest abandonment/map-context loss cleans helper summons; fresh rune retry restores runes and resets native event state.",
+    "Only104904/104949 bindings and matching known SmartAI rows are changed. Preserve custom script bindings, custom wave data, other map1495 class scenarios and native1099 final return. No quest credit is invented or granted to an NPC pet."
+  ],
+  "verification": {
+    "automated": [
+      "Test-TitanstrikeRunes.ps1 executes the actual Prustaga/Grif callbacks with a fixture world and the production wave state:1/2/5 required actors, all120 final kill orders, dead-state observations independent of player/pet/guardian/ally killer, distant actors, failed/lost summons, dead parents, repeated/stale messages, other scenario, player death pause, abandonment/reset and Theodore stages1..5 with the permanent pet retained.",
+      "Real-schema SQL fixture applies migration twice, checks all LINK destinations, exact11/9/8s timers and final51->9->205->53->11 action chain. Custom script/data preserved. Native C++ DB2 reader validates1068/1099 criteria, transforms, Shoot6660 and referenced displays.",
+      "Release rebuilt without OutDir override into canonical build-extractors/bin/Release. Final-link inputs are scripts/Release/scripts.lib and game/Release/game.lib. x64 PE check resolves incremental thunks and verifies real Grif scenario/quest/Theodore/Shoot constants plus Prustaga native SmartAI dispatch.",
+      "Owned hidden canonical worldserver11724 reached ready and exited gracefully0. No new DBErrors or startup errors; three historical missing-LINK lines from10:15..10:16 were retained. Earlier validator27632 also exited0; its whole-log assertion incorrectly included those historical lines, so validation was corrected to inspect appended errors. No user server was stopped."
+    ],
+    "release_sha256": "77669258ea9dff0856176f747b923b079c598110106960c92c97dd2f710b1d85",
+    "client_confirmed": ["Previous readiness dialogue eventually advanced Stage1 to Stage2 before this repair."],
+    "pending_client": [
+      "Theodore appears in Stage2, follows Grif and assists subsequent fights without hiding the player's own pet.",
+      "Protect Prustaga:1 enemy then first rune disappears;2 enemies then second rune; final3 NPCs+2 wolves all defeated then last rune/door/next stage.",
+      "Actual ranged/melee combat, visual timing, ally/pet killing blows, death/retry, abandonment and full subsequent Titanstrike completion. Group eligibility uses existing native scenario credit; multiplayer client traversal is unverified."
+    ]
+  },
+  "sources": [
+    "Matching local build26972 DB2, live World SmartAI/templates/conditions, native dispatcher and linked Release code.",
+    "User-requested1/2/(3 NPC+2 pets) composition and Stage2-through-final Theodore lifecycle. This is a reconstruction from that report, not a claimed recovered retail sniff.",
+    "https://warcraft.wiki.gg/wiki/Grif_Wildheart (text identifies Theodore); https://www.wowhead.com/quest=41574/stolen-thunder (textual stage context). Current local TrinityCore has no matching implementation; GitHub search found scenario declarations but no usable wave implementation. No YouTube footage was reviewed."
+  ]
+}

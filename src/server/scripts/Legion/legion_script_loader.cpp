@@ -242,6 +242,7 @@ void AddSC_invasion_point_argus();
 void AddSC_sentinax();
 void Addsc_paraxis();
 void AddSC_class_hall_artifact_onboarding();
+void AddSC_titanstrike_runes();
 
 // Micro-Holidays
 void AddSC_CallOfTheScarab();
@@ -505,6 +506,7 @@ void AddLegionScripts()
     AddSC_sentinax();
     Addsc_paraxis();
     AddSC_class_hall_artifact_onboarding();
+    AddSC_titanstrike_runes();
 
     AddSC_CallOfTheScarab();
     AddSC_GlowcapFestival();
