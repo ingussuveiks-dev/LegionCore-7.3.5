@@ -55,10 +55,14 @@
     "ownership": "No existing worldserver at deployment; no user-owned process was stopped. The Codex-owned hidden validation worldserver reached ready and then shut down gracefully with exit code 0; no temporary server remains.",
     "preserved": "Runtime configs, credentials, certificates, DLLs, extracted data, logs and bnetserver executable"
   },
+  "client_verification": {
+    "date": "2026-10-23",
+    "user_report": "Varu nodot un saņemt nākamo uzdevumu",
+    "scope": "User confirmed Eitrigg's actual interaction permits The Battle for Broken Shore turn-in and the next quest. Separate inspection of reward quantity, XP/money and repeat/relog was not reported.",
+    "login": "The first instance handshake failed before player loading; a client-only restart recovered Krau login on the same unchanged server boot. See instance-login-handshake-2026-10-23.json; recovery is not a permanent handshake fix."
+  },
   "remaining_client_checks": [
-    "Start canonical worldserver, log in with Krau, verify Eitrigg's yellow question mark and actual right-click window",
-    "Choose a valid 40518 reward, receive it once, then accept Fate of the Horde 40522 from Eitrigg",
-    "Confirm repeat/relog does not duplicate rewards and subsequent Horde story phases remain correct",
-    "The fix reproduces and repairs the missing marker; it is not declared client-verified before the user's retest"
+    "Confirm reward quantity and repeat/relog does not duplicate rewards",
+    "Subsequent Horde story traversal and phases beyond the observed next-quest handoff"
   ]
 }
