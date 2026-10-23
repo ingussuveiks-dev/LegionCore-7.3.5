@@ -88,8 +88,9 @@ int main(){
   ai.SetData(2,2);ai.SetData(2,2);assert(ai.calls.size()==1&&ai.wave.started);
   for(unsigned wave=0;wave<3;++wave){
    auto before=ai.calls.size();ai.SetData(3,3);ai.SetData(4,4);ai.SetData(5,5);assert(ai.calls.size()==before);
-   ai.SetData(7,wave+1);ai.UpdateAI(500);assert(ai.wave.Count()==(wave==0?1:wave==1?2:5));
+   ai.SetData(7,wave+1);ai.UpdateAI(500);assert(ai.wave.Count()==(wave==0?1:wave==1?3:5));
    auto guids=ai.wave.guids;unsigned count=unsigned(ai.wave.Count());
+   if(wave==1){assert(objects[guids[0]]->entry==106341&&objects[guids[1]]->entry==106335&&objects[guids[2]]->entry==106344);assert(objects[guids[2]]->summoner==guids[0]);}
    if(wave==2){assert(objects[guids[3]]->summoner==guids[0]&&objects[guids[4]]->summoner==guids[1]);assert(!dynamic_cast<SmartAI*>(objects[guids[0]]->ai)->combatMove);}
    for(unsigned i=0;i<count;++i){objects[guids[i]]->alive=false;objects[guids[i]]->x+=float(i)*100;ai.UpdateAI(500);assert(ai.wave.index==wave+(i+1==count));}
    assert(ai.calls.back()==std::make_pair(wave+3,wave+3));before=ai.calls.size();ai.UpdateAI(500);assert(ai.calls.size()==before);
@@ -132,5 +133,5 @@ int main(){
   for(int i=0;i<5;++i){states[ids[order[i]]]=TitanstrikeRunes::Life::Dead;assert(w.Update(spawn,read)==(i==4));}
   assert(!w.Update(spawn,read));++permutations;
  }while(std::next_permutation(order.begin(),order.end()));assert(permutations==120);
- std::cout<<"PASS: production Prustaga/Grif callbacks and wave state; 1/2/(3+2),120 final kill orders, retries/lost actors/dead owners, duplicate/stale reports, wrong scenario, death pause/abandonment, Stage2-through-final Theodore and permanent pet preserved\n";
+ std::cout<<"PASS: production Prustaga/Grif callbacks and wave state; 1/(2+1)/(3+2),120 final kill orders, retries/lost actors/dead owners, duplicate/stale reports, wrong scenario, death pause/abandonment, Stage2-through-final Theodore and permanent pet preserved\n";
 }

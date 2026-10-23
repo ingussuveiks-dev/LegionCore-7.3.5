@@ -1,0 +1,7 @@
+{
+  "scope": "Correction to the earlier user-report reconstruction in titanstrike-rune-waves-2026-10-23.json; that historical evidence is retained",
+  "evidence": "https://www.youtube.com/watch?v=CroQaRMV_dQ, rune combat at5:20-6:30 sampled every2seconds. The second wave includes a Disturbed Tracker, Restless Tombguard and enemy worg; the final wave still has two trackers, one guard and two worgs. The orange summoned tiger and blue player pet are distinct from the enemy worg and Theodore.",
+  "change": "Keep two NPC opponents in wave2, replacing the inferred second guard with its tracker and adding that tracker's wolf. Track all three actual enemy GUIDs and require the wolf's death too. Native ritual delays, numbered signals, rune/door criteria and final five-actor wave remain unchanged.",
+  "verification": "Production Prustaga callbacks/wave state check1/3/5 actual enemy actors and the wave2 wolf's NPC summoner; existing120 final kill orders, missing/dead-parent retry, stale events and abandonment remain. Canonical Release and its linked PE verified. This is video-informed reconstruction, not recovered sniff data or client verification.",
+  "pending_client": "Observed second-wave composition, all three deaths before rune removal and the full subsequent scenario remain client checks. The broader Stage2/Stage4 audits record visual/voice limits separately."
+}

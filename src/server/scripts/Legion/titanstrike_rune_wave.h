@@ -11,7 +11,7 @@ struct Enemy
 {
     uint32_t entry;
     float x, y, z;
-    int parent; // final wolves belong to the two trackers, not the player
+    int parent; // enemy wolves belong to trackers, not the player
 };
 
 inline std::array<Enemy, 5> Layout(unsigned wave)
@@ -20,8 +20,9 @@ inline std::array<Enemy, 5> Layout(unsigned wave)
     if (wave == 0)
         return {{guard, {}, {}, {}, {}}};
     if (wave == 1)
-        return {{{106335, 4887.54f, 312.818f, -36.3468f, -1},
-                 {106335, 4888.9f, 318.578f, -36.3436f, -1}, {}, {}, {}}};
+        return {{{106341, 4887.54f, 312.818f, -36.3468f, -1},
+                 {106335, 4888.9f, 318.578f, -36.3436f, -1},
+                 {106344, 4886.54f, 312.818f, -36.3468f, 0}, {}, {}}};
     return {{{106341, 4887.52f, 312.828f, -36.3467f, -1},
              {106341, 4888.94f, 318.653f, -36.3437f, -1}, guard,
              {106344, 4886.52f, 312.828f, -36.3467f, 0},
@@ -43,7 +44,7 @@ public:
 
     void Start() { *this = Wave(); started = true; }
     void Arm(unsigned number) { if (started && index < 3 && number == index + 1) armed = true; }
-    std::size_t Count() const { return index == 0 ? 1 : index == 1 ? 2 : 5; }
+    std::size_t Count() const { return index == 0 ? 1 : index == 1 ? 3 : 5; }
 
     template<class Spawn, class Lookup> bool Update(Spawn spawn, Lookup lookup)
     {

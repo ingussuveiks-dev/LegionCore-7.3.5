@@ -98,7 +98,7 @@ struct npc_titanstrike_prustaga : SmartAI
         actors.push_back(actor->GetGUID());
         if (auto player = Participant())
         {
-            // The two trackers shoot from the rear; the guard and wolves charge.
+            // Trackers shoot from the rear; the guard and wolves charge.
             if (enemy.entry == 106341)
                 if (auto ai = dynamic_cast<SmartAI*>(actor->AI()))
                     ai->SetCombatMove(false);
