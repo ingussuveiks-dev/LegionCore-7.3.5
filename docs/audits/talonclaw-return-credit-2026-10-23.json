@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Persist actual Talonclaw claim and move Return-to-Dalaran credit off Dakarr's death onto the qualified player's real arrival. Does not implement the missing Dorro portal.",
+  "prior_repairs": ["talonclaw-acquisition-2026-10-23.json", "talonclaw-presentation-2026-10-23.json"],
+  "local_evidence": [
+    "Fresh runtime quest_objectives:280793 is100111/flight, amount1/storage0;280794 is100112/reclaim, amount0/storage1/Flags2;282143 is103798/return, amount1/storage2/Flags2.",
+    "Native QuestObjectiveFlags:2 is SEQUENCED, not OPTIONAL; optional is4. The native KilledMonsterCredit loop compares curKillCount < obj.Amount before saving. Amount0 therefore never saves the actual197651 personal100112 claim and makes that objective trivially complete. This is distinct from merely missing a spell callback.",
+    "Typed26972 native197651 effect1 is90/personal100112. Native205575 instead has effect134/group103798 plus a dummy aura: blindly casting it on one arriving player could award a nearby group member before that member's own arrival/claim. Native effect dispatch and production handlers were inspected.",
+    "Dakarr99480 native death1 ->LINK2 ->LINK3 ends by referring to id4, but id4 is another DEATH6 action33/103798/players50. It grants Return-to-Dalaran in the cave, before both claim and actual travel. The combat condition on source22/group1 applies only to combat id0, not that death credit.",
+    "Native AreaTable7502 is Dalaran on map1220. Return eligibility can be checked after teleport completion without guessing a portal's exact spell or causing travel itself.",
+    "Dorro100005 has only his initial speech action. Native hotfix broadcast103406/sound62702 is that speech;106397/sound62703 is the later departure sentence visible in video. Neither the latter speech nor a portal action is present in his current SmartAI. Gossip text103407 is legitimate and its empty option list alone is not proof that a new gossip option is required.",
+    "205304 is linked to205305 Eye of the Archmage, so its convenient Dalaran coordinates are not sufficient evidence of Dorro's portal. Several generic Dalaran GO/NPC templates and teleport spells exist. No unrelated portal/spell was substituted simply because its name matches."
+  ],
+  "reference_review": {
+    "trinity": "Local exact26972 snapshot c2d61e05cf3dc555608e6b2a06772c27d207548c targeted Dorro/103798/47688 search did not identify a Survival return implementation. The numeric47688 also has unrelated Wrath/quest localization hits; those are not donors.",
+    "github": "Inspected AshamaneProject/AshamaneCore recursive tree at b09c1c393cf2e01bc5e857ea6117680d2aaeadb0 via GitHub API, truncated=false. No talonclaw/survival/spear artifact CPP path; the already-reviewed hunter class-hall reference is not a return implementation. Path absence is not an exhaustive search of every generic source body. No donor code imported.",
+    "github_source": "https://github.com/AshamaneProject/AshamaneCore/tree/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles",
+    "video": "https://www.youtube.com/watch?v=aAzrSVxEElk",
+    "method": "Additional rendered, paused frame sampling only, muted; not continuous footage/audio or the whole22:42 video. Inspected21:03,21:08,21:13,21:19,21:23,21:28,21:33,21:38,21:43,21:48,21:58,22:08,22:18,22:33,22:38. Exact26972 video build remains unverified.",
+    "observed": "Dorro's second speech follows the pickup; a blue return portal is visible by21:19/21:23. Player remains in the cave at21:28 and a loading screen appears at21:33; the actual click between those samples was not observed. Dalaran/Krasus arrival and ready-for-turn-in status are visible at21:58. At22:33 Emmarel has the Spear completion window;22:38 shows completed chat and the next On Eagle's Wings offer.",
+    "private_frames_sha256": {
+      "21m23s.png": "F97C98705CD465E35E07246BA9B936980C1C635561C686E83E5A82F24E880580",
+      "21m58s.png": "86866319B34475D6ADEF284BBC8D9953BE2BBC3A841336F10E87BBF28E274BBA",
+      "22m33s.png": "E01C7509ADBF485E303927027A923B880B1F8A734EDB43E29C284C4E78146378",
+      "22m38s.png": "E502C5D60FF064F7B94C099CDB13ABBEDDAD7E4ACCF220C12320BBE0EDDDA2E5"
+    }
+  },
+  "repair": [
+    "Correct only280794's exact amount0/type0/storage1/object100112/Flags2 row to amount1. Keep SEQUENCED and the other objectives. The existing guarded197651 presentation completion now records the actual personal claim rather than an unsavable0/0 counter.",
+    "Remove only the exact premature native id4 death credit and terminate the matching248834 summon LINK3 correctly. Retain the penultimate47688 stage event, weapon actor100310 and chest248834 summons, their order and all combat conditions. Preserve nonmatching/custom chains and objective quantities.",
+    "A separate PlayerScript checks login/update only after world arrival: alive, not teleporting, Hunter, actual Dalaran1220/7502, incomplete nonrewarded40385, persisted flight100111 and claim100112, missing return103798 and owned Talonclaw including bank ownership. Award personal103798 exactly once through the normal quest counter, not a group-wide spell, kill, nearest-player or item-ownership shortcut.",
+    "Hearthstone, a future repaired portal or another valid return transport all use the same real-arrival rule. No teleport is forced, no item is granted, no quest is force-completed and no character record is edited. Abandonment/reward/missing claim or item, death, wrong map/zone and in-flight transfer cannot award arrival."
+  ],
+  "checks": [
+    "Test-TalonclawReturn.ps1 passes actual registered production login/update hooks, native object-to-storage lookup, personal spell-effect90 handler and monster-credit objective loop. It demonstrates Amount0 losing claim versus Amount1 persisting it, and claim-before-return across teleporting/settled arrival. Overall quest-store/status plumbing is a fixture, not a live character traversal.",
+    "The same test covers null player, wrong class/map/zone, death, teleport, no flight/claim/item, already credited/rewarded/complete/failed/absent quest, repeated login/update and personal/nonplayer/null spell targets. No pet or nearby group member receives return credit from this owner-only hook.",
+    "Actual-schema temporary MariaDB fixtures restore the original bad rows, run the migration twice, verify amount1/Flags2/storage1, native root and links, removal of early credit, unchanged other objectives and preservation of custom credit/link/quantity branches. -BaselineSql deliberately omits the migration and fails the claim1 assertion.",
+    "Test-SurvivalReturnCatalog.ps1 uses the native reader for area/map and personal90 versus group134 effects; missing base BroadcastText records are resolved separately from the actual local hotfix database, not guessed from packed fields.",
+    "Test-TalonclawPresentation.ps1, Test-TalonclawAcquisition.ps1, Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary, Test-SceneLifecycle.ps1 and Test-DarkRidersCompletion.ps1 pass after the addition. Presentation extraction boundary is narrowed to exclude the new independent return handler.",
+    "verify_talonclaw_return_release.py passes actual PE instruction constants, persisted objective lookup, personal KilledMonsterCredit/ownership calls and both registered login/update paths; verifies absence of a group-return CastSpell. Retains prior presentation, scene-instance and all ten scenario/LFG binary checks."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "22C63D456C1E26241A49BEF2F5D04A67D26A3913DC914AA26502C69FED25EF8F",
+    "migration": "sql/updates/world/2026_10_23_12_talonclaw_return_credit.sql",
+    "migration_sha1": "267D6BB6FD7439A59D236B1715398AF20250307D",
+    "build": "Normal Release worldserver and bnetserver targets, no OutDir override. Canonical linker still uses src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; deployed return instructions inspected rather than trusting startup or a registration string alone.",
+    "live_readback": "280794 Amount1/Flags2;99480 IDs0/1/2/3 remain, LINK3 now0 and no id4. Private affected quest-objective/SmartAI backups taken before application.",
+    "startup": "Task-owned PID24524 reached canonical initialization and exited gracefully with code0; zero newly appended DBErrors bytes and unchanged configuration/certificate hashes. No user server stopped and no task-owned server remains running.",
+    "private_evidence": ".codex/backups/talonclaw-return-20261023, .codex/talonclaw-return-startup and .codex/survival-video-review; no runtime assets, credentials or character backups committed."
+  },
+  "remaining": [
+    "Implement and validate Dorro's second native speech and actual delayed portal, including its exact model/spell/click target, position, personal admission, failed creation/cast retry and cleanup. Existing hearthstone travel can receive correct arrival credit, but that does not repair or certify the missing portal visual/interaction.",
+    "Prerequisite39427 and the earlier complete scenario remain unresolved. This is not whole-route completion or client certification. Native definitions, frame samples, extracted handler regressions and startup are separate evidence types.",
+    "Existing active quests with previously lost Amount0 claim or prematurely stored return cannot be reconstructed safely from shop ownership. No character state was fabricated or reset; such a legacy state may need legitimate acquisition replay/quest retry, to be assessed during client testing.",
+    "Client checks: fresh ordinary/owned/bank pickup,1/1 reclaim saved after the scene,0/1 return while still in the cave, actual travel before1/1 return, Emmarel turn-in/next quest, group/faction/pet encounter variants, abandoned/re-entered scenario, cancelled scene, failed equip and relog."
+  ]
+}

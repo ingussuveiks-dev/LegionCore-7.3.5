@@ -180,9 +180,34 @@ class spell_talonclaw_presentation : public AuraScript
     }
 };
 
+namespace TalonclawReturn
+{
+void Recover(Player* player)
+{
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_HUNTER || player->GetMapId() != 1220 || player->GetZoneId() != 7502 ||
+        player->GetQuestRewardStatus(40385) || player->GetQuestStatus(40385) != QUEST_STATUS_INCOMPLETE ||
+        player->GetQuestObjectiveData(40385, 100111) < 1 || player->GetQuestObjectiveData(40385, 100112) < 1 ||
+        player->GetQuestObjectiveData(40385, 103798) >= 1 || !player->HasItemCount(128808, 1, true))
+        return;
+
+    player->KilledMonsterCredit(103798);
+    TC_LOG_INFO("entities.player", "Talonclaw: credited actual Dalaran return after claimed artifact for player %u", player->GetGUIDLow());
+}
+}
+
+class player_talonclaw_return : public PlayerScript
+{
+public:
+    player_talonclaw_return() : PlayerScript("player_talonclaw_return") { }
+    void OnLogin(Player* player) override { TalonclawReturn::Recover(player); }
+    void OnUpdate(Player* player, uint32) override { TalonclawReturn::Recover(player); }
+};
+
 void AddSC_artifact_acquisition()
 {
     new go_artifact_acquisition();
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
+    new player_talonclaw_return();
 }

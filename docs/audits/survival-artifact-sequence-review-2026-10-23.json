@@ -3,6 +3,7 @@
   "build": "7.3.5.26972",
   "status": "Native sequence and scene definitions inspected; partial visual sampling only; full route remains unresolved",
   "prior_repair": "talonclaw-acquisition-2026-10-23.json repairs the chest loot path, not this complete chain",
+  "later_focused_repairs": ["talonclaw-presentation-2026-10-23.json", "talonclaw-return-credit-2026-10-23.json"],
   "native_reader": {
     "source": "tools/research/SurvivalArtifactCatalog.cpp",
     "check": "tools/tests/Test-SurvivalArtifactCatalog.ps1 passes",

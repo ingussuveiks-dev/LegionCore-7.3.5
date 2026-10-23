@@ -5,7 +5,7 @@ $out="$repo/build-extractors/runtime-test/talonclaw-presentation"
 New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,$first);if($first -lt 0 -or $last -lt $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-[IO.File]::WriteAllText("$out/Presentation.inc",(Section $source 'namespace TalonclawPresentation' 'void AddSC_artifact_acquisition()'))
+[IO.File]::WriteAllText("$out/Presentation.inc",(Section $source 'namespace TalonclawPresentation' 'namespace TalonclawReturn'))
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))
 if($BaselineScene){$source=(& git -C $repo show 4449e4cc:src/server/game/Entities/Player/Player.cpp) -join "`n"}else{$source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
 [IO.File]::WriteAllText("$out/Lifecycle.inc",(Section $source 'void Player::SendSpellScene(' 'void Player::HandleArenaDeserter()'))
