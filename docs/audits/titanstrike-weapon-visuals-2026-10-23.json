@@ -1,0 +1,28 @@
+﻿{
+    "reported":  "Titanstrike appears as a different small rocky creature in both Volund\u0027s room and the final Temple of Storms. Prustaga should hold the stolen rifle before walking into her portal.",
+    "native_evidence":  [
+                            "Both dedicated props106428/106745 randomly selected display42428 or69591. Native26972 CreatureDisplayInfo/ModelData:42428 -\u003e model24 -\u003e FileDataID124637, actual CASC internal name Infernal.69591 -\u003e model1731 -\u003e FileDataID124640 InvisibleStalker, state visual kit67322.",
+                            "Native kit67322 -\u003e effect143770/type2 -\u003e attachment322438 -\u003e effect name27401 -\u003e FileDataID1346250. The actual read-only CASC M2 name is doodad_Firearm_2H_ArtifactLegion_D_01. Attachment34, offset(0,-1,0), scale1.5 belong to this invisible anchor.69591 is not itself a visible rifle model.",
+                            "The native SpellVisualEffectName metadata is B930A934 with six leading floats and a later model field10. The core\u0027s unused SQL projection is a different layout; the probe uses a metadata-matched packed projection. Relationship columns omitted from client-only core LoadInfo projections are added for the native DB2 file loader, not guessed from packed offsets.",
+                            "Prustaga104949 already has128861 in ranged virtual slot2 (equipment ItemID5), but timed list10494902 never selects ranged sheath state2 when despawning106428. The list then starts portal path10494904."
+                        ],
+    "repair":  [
+                   "Migration09 replaces only the exact42428/69591 alternatives with deterministic69591 on106428/106745, preserving custom model choices. Ground0/Flight1 keeps these dedicated elevated props at their native summon height; template aura210993 and native kit attachment remain intact.",
+                   "Insert a zero-delay native action40/ranged sheath2 immediately after taking/despawning the prop and before the original2000ms portal path delay. Guard all ten native list actions/timers, zero links and equipment128861; preserve custom lists. All original delays total28500ms, portal summon and departure/dialogue events remain unchanged."
+               ],
+    "reference":  {
+                      "sources":  [
+                                      "https://www.youtube.com/watch?v=CroQaRMV_dQ",
+                                      "https://www.youtube.com/watch?v=zmzxQerUCJo"
+                                  ],
+                      "reviewed":  "Original11:44 video: previous full transcript/timeline10-second sampling, now dense2-second sampling10:05-10:45 shows Volund\u0027s death, Prustaga\u0027s betrayal, rifle in hand, walk and portal. Final8:17 Never Hunt Alone video downloaded and all timeline10-second contact sheets visually reviewed through Hati binding, final weapon/scene, departure and Dalaran turn-in. These are visual samples, not continuous playback or verified audio.",
+                      "limits":  "Preserve native conversation spell IDs211046/196978 and existing stage gate/timers rather than claiming recovered retail sniff timing. Exact voiced line duration, hand animation, portal playback and both continuous sequences remain client observations."
+                  },
+    "checks":  [
+                   "Test-TitanstrikeWeaponVisuals.ps1 passes metadata-native model/kit/attachment IDs, actual SQL repeat/custom-list/custom-model tests, equip slot and unchanged timers, plus extracted SmartAI SET_SHEATH and packed Unit setter with repeat/null-actor boundaries.",
+                   "Read-only CASC exports of three actual files fully read; internal M2 names inspected. Native rune model/hover lifecycle was already tested separately; the user now confirms the rune appearance repair.",
+                   "Migration09 transactionally installed and registered B550D7D4C33C533A17A51738EC50594F463ACC78 at16:08:43, before the user\u0027s16:09:12 startup. Readback: both models69591 only, both Ground0/Flight1, eleven timed-list rows with draw at5 and portal path at6. No matching actor/list errors observed in the new startup log. Startup does not exercise the theft."
+               ],
+    "pending_wind_report":  "Separate report clarified by user: direction and placement are now correct; only a small empty strip beside the NPCs is missing. Native Spirit Winds visual49393 -\u003e kit58494 uses floor attachments at localX0/15/25/35. No wind placement/orientation/force change is included in this weapon repair; the requested NPC-end gap is a separate follow-up.",
+    "remaining_client_checks":  "Both floating rifle appearances and height, Prustaga actually drawing/carrying it on the portal walk, full portal disappearance, and final real loot/scene/credit/bird. Automated metadata/SQL/dispatcher checks do not establish client render/animation behavior."
+}
