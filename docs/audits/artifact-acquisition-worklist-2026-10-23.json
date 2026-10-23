@@ -1,0 +1,4005 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "All 36 selected artifacts; this inventory certifies neither full chains nor visuals.",
+  "priority": "Finish Hunter route review, then remaining classes; preserve previous Warlock repairs and user client observations in their original audits.",
+  "sources": {
+    "routes": "docs/audits/artifact-routes-2026-10-23.json",
+    "route_sha256": "b6214431a6d7e463d4ef9d22857af2b9db067da82527a6f411e70f711a10c17e",
+    "equip_sha256": "7fba4ed7f34c557183420fdcc08a0aa9eea8009efa2235245a126c6717f0a8bb",
+    "donor_review": "docs/audits/legion-artifact-donor-review-2026-10-23.json"
+  },
+  "common_findings": [
+    {
+      "path": "src/server/game/Spells/SpellEffects.cpp",
+      "handler": "EffectForceEquipItem",
+      "effect": 249,
+      "problem": "Unconditional return disabled native equip for all 55 records.",
+      "repair_audit": "docs/audits/artifact-force-equip-2026-10-23.json",
+      "limit": "Each quest must still reach its equip spell after real acquisition; shared handler tests do not prove that callback or client visuals."
+    }
+  ],
+  "routes": [
+    {
+      "class_id": 1,
+      "specialization": "Arms",
+      "weapon": "Strom'kar, the Warbreaker",
+      "item": 128910,
+      "start": 41105,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41105,
+          "title": "The Sword of Kings",
+          "prerequisites_any": [
+            40582
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39530,
+          "title": "The Forgening",
+          "prerequisites_any": [
+            39191,
+            40043,
+            41105
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39192,
+          "title": "The Forge of Odyn",
+          "prerequisites_any": [
+            39530
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247877,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247877
+          ],
+          "script": "",
+          "sai_spells": [
+            206436,
+            206448
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 206439,
+          "item": 128910,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 1,
+      "specialization": "Protection",
+      "weapon": "Scale of the Earth-Warder",
+      "item": 128289,
+      "start": 39191,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 39191,
+          "title": "Legacy of the Icebreaker",
+          "prerequisites_any": [
+            40580
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39530,
+          "title": "The Forgening",
+          "prerequisites_any": [
+            39191,
+            40043,
+            41105
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39192,
+          "title": "The Forge of Odyn",
+          "prerequisites_any": [
+            39530
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248831,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248831
+          ],
+          "script": "go_art_earthwarder",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 188074,
+          "item": 128289,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 208562,
+          "item": 128289,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 1,
+      "specialization": "Fury",
+      "weapon": "Warswords of the Valarjar",
+      "item": 128908,
+      "start": 40043,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40043,
+          "title": "The Hunter of Heroes",
+          "prerequisites_any": [
+            40581
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39530,
+          "title": "The Forgening",
+          "prerequisites_any": [
+            39191,
+            40043,
+            41105
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39192,
+          "title": "The Forge of Odyn",
+          "prerequisites_any": [
+            39530
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248832,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248832
+          ],
+          "script": "go_art_warswords",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 194201,
+          "item": 128908,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 208578,
+          "item": 128908,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 2,
+      "specialization": "Holy",
+      "weapon": "The Silver Hand",
+      "item": 128823,
+      "start": 42231,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42231,
+          "title": "The Mysterious Paladin",
+          "prerequisites_any": [
+            40410
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42120,
+          "title": "The Silver Hand",
+          "prerequisites_any": [
+            42377
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42377,
+          "title": "The Brother's Trail",
+          "prerequisites_any": [
+            42231
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249824,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            249824
+          ],
+          "script": "go_art_silverhand",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 211842,
+          "item": 128823,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 2,
+      "specialization": "Protection",
+      "weapon": "Truthguard",
+      "item": 128866,
+      "start": 42000,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42000,
+          "title": "Seeker of Truth",
+          "prerequisites_any": [
+            40411
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42002,
+          "title": "To Northrend",
+          "prerequisites_any": [
+            42000
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42005,
+          "title": "The End of the Saga",
+          "prerequisites_any": [
+            42002
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42017,
+          "title": "Shrine of the Truthguard",
+          "prerequisites_any": [
+            42005
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249420,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            249420
+          ],
+          "script": "go_sr_truthguard",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 210133,
+          "item": 128866,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 2,
+      "specialization": "Retribution",
+      "weapon": "Ashbringer",
+      "item": 120978,
+      "start": 42770,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42770,
+          "title": "Seeking Guidance",
+          "prerequisites_any": [
+            40409
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42771,
+          "title": "Keeping the Peace",
+          "prerequisites_any": [
+            42770
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42772,
+          "title": "Sacred Ground",
+          "prerequisites_any": [
+            42770
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42773,
+          "title": "The Light Reveals",
+          "prerequisites_any": [
+            42772
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42774,
+          "title": "Hope Prevails",
+          "prerequisites_any": [
+            42773
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 38376,
+          "title": "The Search for the Highlord",
+          "prerequisites_any": [
+            42774
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247318,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247318
+          ],
+          "script": "go_bs_the_ashbringer",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 181257,
+          "item": 120978,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 181511,
+          "item": 120978,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 3,
+      "specialization": "Beast Mastery",
+      "weapon": "Titanstrike",
+      "item": 128861,
+      "start": 41541,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41541,
+          "title": "A Beastly Expedition",
+          "prerequisites_any": [
+            40621
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41574,
+          "title": "Stolen Thunder",
+          "prerequisites_any": [
+            41541
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42158,
+          "title": "The Creator's Workshop",
+          "prerequisites_any": [
+            41574
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42185,
+          "title": "Never Hunt Alone",
+          "prerequisites_any": [
+            42158
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249812,
+          "type": 3,
+          "loot_link": 249812,
+          "expected_loot_entries": [
+            249812
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            212010
+          ],
+          "native_equip_spells": [
+            212010
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 212010,
+          "item": 128861,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 212011,
+          "item": 128861,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 3,
+      "specialization": "Survival",
+      "weapon": "Talonclaw",
+      "item": 128808,
+      "start": 41542,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41542,
+          "title": "Preparation for the Hunt",
+          "prerequisites_any": [
+            40619
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40385,
+          "title": "The Spear in the Shadow",
+          "prerequisites_any": [
+            41542
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40953,
+          "title": "On Eagle's Wings",
+          "prerequisites_any": [
+            40385,
+            40952,
+            41008,
+            41009
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40954,
+          "title": "The Unseen Path",
+          "prerequisites_any": [
+            40953
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40955,
+          "title": "Oath of Service",
+          "prerequisites_any": [
+            40954
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39427,
+          "title": "The Eagle Spirit's Blessing",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248834,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248834
+          ],
+          "script": "",
+          "sai_spells": [
+            205589
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 197651,
+          "item": 128808,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 208601,
+          "item": 128808,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 3,
+      "specialization": "Marksmanship",
+      "weapon": "Thas'dorah, Legacy of the Windrunners",
+      "item": 128826,
+      "start": 41540,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41540,
+          "title": "Rendezvous with the Courier",
+          "prerequisites_any": [
+            40620
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40392,
+          "title": "Call of the Marksman",
+          "prerequisites_any": [
+            41540
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40400,
+          "title": "Clandestine Operation",
+          "prerequisites_any": [
+            40392
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40419,
+          "title": "Rescue Mission",
+          "prerequisites_any": [
+            40400,
+            40402,
+            40403
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40952,
+          "title": "Hunter to Hunter",
+          "prerequisites_any": [
+            40419
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40402,
+          "title": "Clandestine Operation",
+          "prerequisites_any": [
+            40392
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40403,
+          "title": "Clandestine Operation",
+          "prerequisites_any": [
+            40392
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248419,
+          "type": 3,
+          "loot_link": 248419,
+          "expected_loot_entries": [
+            248419
+          ],
+          "script": "",
+          "sai_spells": [
+            200279
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 200262,
+          "item": 128826,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 4,
+      "specialization": "Assassination",
+      "weapon": "The Kingslayers",
+      "item": 128870,
+      "start": 42501,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42501,
+          "title": "Finishing the Job",
+          "prerequisites_any": [
+            40842
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42503,
+          "title": "Codebreaker",
+          "prerequisites_any": [
+            42501,
+            42502
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42539,
+          "title": "Cloak and Dagger",
+          "prerequisites_any": [
+            42503
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42568,
+          "title": "Preparation",
+          "prerequisites_any": [
+            42539
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42502,
+          "title": "No Sanctuary",
+          "prerequisites_any": [
+            40842
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42504,
+          "title": "The Unseen Blade",
+          "prerequisites_any": [
+            42568
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42627,
+          "title": "The Unseen Blade",
+          "prerequisites_any": [
+            42568
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 251107,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            251107
+          ],
+          "script": "go_the_kingslayers",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 215113,
+          "item": 128870,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 4,
+      "specialization": "Outlaw",
+      "weapon": "The Dreadblades",
+      "item": 128872,
+      "start": 40847,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40847,
+          "title": "A Friendly Accord",
+          "prerequisites_any": [
+            40843
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40849,
+          "title": "The Dreadblades",
+          "prerequisites_any": [
+            40847
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40950,
+          "title": "Honoring Success",
+          "prerequisites_any": [
+            40849,
+            41924,
+            42627
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 254087,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            254087
+          ],
+          "script": "go_scenario_dreadblades",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 202182,
+          "item": 128872,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 4,
+      "specialization": "Subtlety",
+      "weapon": "Fangs of the Devourer",
+      "item": 128476,
+      "start": 41919,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41919,
+          "title": "The Shadows Reveal",
+          "prerequisites_any": [
+            40844
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41920,
+          "title": "A Matter of Finesse",
+          "prerequisites_any": [
+            41919
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41921,
+          "title": "Closing In",
+          "prerequisites_any": [
+            41920
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41922,
+          "title": "Traitor!",
+          "prerequisites_any": [
+            41921
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41924,
+          "title": "Fangs of the Devourer",
+          "prerequisites_any": [
+            41922
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249347,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            249347
+          ],
+          "script": "go_art_devourer",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 209818,
+          "item": 128476,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [
+        {
+          "entry": 105332,
+          "event": 0,
+          "missing_link": 1
+        }
+      ],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 5,
+      "specialization": "Holy",
+      "weapon": "T'uure, Beacon of the Naaru",
+      "item": 128825,
+      "start": 41957,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41957,
+          "title": "The Vindicator's Plea",
+          "prerequisites_any": [
+            40708
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41966,
+          "title": "House Call",
+          "prerequisites_any": [
+            41957
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41967,
+          "title": "Out of the Darkness",
+          "prerequisites_any": [
+            41966
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41993,
+          "title": "Salvation From On High",
+          "prerequisites_any": [
+            41967
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42074,
+          "title": "Return of the Light",
+          "prerequisites_any": [
+            41993
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249705,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            249705
+          ],
+          "script": "go_art_tuure",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 210734,
+          "item": 128825,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [
+        {
+          "entry": 105697,
+          "event": 0,
+          "missing_link": 1
+        }
+      ],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 5,
+      "specialization": "Shadow",
+      "weapon": "Xal'atath, Blade of the Black Empire",
+      "item": 128827,
+      "start": 40710,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40710,
+          "title": "Blade in Twilight",
+          "prerequisites_any": [
+            40707
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40938,
+          "title": "The Light and the Void",
+          "prerequisites_any": [
+            40710,
+            41632,
+            42074
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41015,
+          "title": "Artifacts Need Artificers",
+          "prerequisites_any": [
+            40938
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41017,
+          "title": "Empowering Your Artifact",
+          "prerequisites_any": [
+            41015
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247690,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247690
+          ],
+          "script": "",
+          "sai_spells": [
+            201780,
+            201917,
+            204919
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 201778,
+          "item": 128827,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 205774,
+          "item": 128827,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 5,
+      "specialization": "Discipline",
+      "weapon": "Light's Wrath",
+      "item": 128868,
+      "start": 41625,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41625,
+          "title": "The Light's Wrath",
+          "prerequisites_any": [
+            40709
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41626,
+          "title": "A New Threat",
+          "prerequisites_any": [
+            41625
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41627,
+          "title": "A Forgotten Enemy",
+          "prerequisites_any": [
+            41626
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41628,
+          "title": "Eyes of the Dragon",
+          "prerequisites_any": [
+            41627
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41629,
+          "title": "Harnessing the Holy Fire",
+          "prerequisites_any": [
+            41628
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41630,
+          "title": "Unleashing Judgment",
+          "prerequisites_any": [
+            41629
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41631,
+          "title": "The Nexus Vault",
+          "prerequisites_any": [
+            41630
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41632,
+          "title": "A Gift of Time",
+          "prerequisites_any": [
+            41631
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40938,
+          "title": "The Light and the Void",
+          "prerequisites_any": [
+            40710,
+            41632,
+            42074
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41015,
+          "title": "Artifacts Need Artificers",
+          "prerequisites_any": [
+            40938
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41017,
+          "title": "Empowering Your Artifact",
+          "prerequisites_any": [
+            41015
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248572,
+          "type": 3,
+          "loot_link": 248572,
+          "expected_loot_entries": [
+            248572
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            208011
+          ],
+          "native_equip_spells": [
+            208011
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 208011,
+          "item": 128868,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 6,
+      "specialization": "Blood",
+      "weapon": "Maw of the Damned",
+      "item": 128402,
+      "start": 40740,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40740,
+          "title": "The Dead and the Damned",
+          "prerequisites_any": [
+            40722
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39757,
+          "title": "Keeping Your Edge",
+          "prerequisites_any": [
+            38990,
+            40740,
+            40935
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39761,
+          "title": "Advanced Runecarving",
+          "prerequisites_any": [
+            39757
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39832,
+          "title": "Plans and Preparations",
+          "prerequisites_any": [
+            39761
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247566,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247566
+          ],
+          "script": "",
+          "sai_spells": [
+            200152
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 200134,
+          "item": 128402,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 205138,
+          "item": 128402,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 6,
+      "specialization": "Frost",
+      "weapon": "Blades of the Fallen Prince",
+      "item": 128292,
+      "start": 38990,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 38990,
+          "title": "The Call of Icecrown",
+          "prerequisites_any": [
+            40723
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39757,
+          "title": "Keeping Your Edge",
+          "prerequisites_any": [
+            38990,
+            40740,
+            40935
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39761,
+          "title": "Advanced Runecarving",
+          "prerequisites_any": [
+            39757
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39832,
+          "title": "Plans and Preparations",
+          "prerequisites_any": [
+            39761
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247386,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247386
+          ],
+          "script": "",
+          "sai_spells": [
+            190435
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 186209,
+          "item": 128292,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 197092,
+          "item": 128292,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 6,
+      "specialization": "Unholy",
+      "weapon": "Apocalypse",
+      "item": 128403,
+      "start": 40930,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40930,
+          "title": "Apocalypse",
+          "prerequisites_any": [
+            40724
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40931,
+          "title": "Following the Curse",
+          "prerequisites_any": [
+            40930
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40932,
+          "title": "Disturbing the Past",
+          "prerequisites_any": [
+            40931
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40933,
+          "title": "A Grisly Task",
+          "prerequisites_any": [
+            40932
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40934,
+          "title": "The Dark Riders",
+          "prerequisites_any": [
+            40933
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40986,
+          "title": "The Dark Riders",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40935,
+          "title": "The Call of Vengeance",
+          "prerequisites_any": [
+            40934
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40987,
+          "title": "The Call of Vengeance",
+          "prerequisites_any": [
+            40986
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 246699,
+          "type": 3,
+          "loot_link": 246699,
+          "expected_loot_entries": [
+            246699
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            202618
+          ],
+          "native_equip_spells": [
+            202618
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 202618,
+          "item": 128403,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 7,
+      "specialization": "Enhancement",
+      "weapon": "Doomhammer",
+      "item": 128819,
+      "start": 40224,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40224,
+          "title": "The Hammer in the Deep",
+          "prerequisites_any": [
+            41328
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40225,
+          "title": "A Ring Reforged",
+          "prerequisites_any": [
+            39771,
+            40224,
+            40341
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42932,
+          "title": "What the Stonemother Knows",
+          "prerequisites_any": [
+            42931
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42933,
+          "title": "The Troggs that Fel to Earth",
+          "prerequisites_any": [
+            42932
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42935,
+          "title": "Stone Drake Rescue",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42936,
+          "title": "Clutch Play",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42937,
+          "title": "Needlerock Beatdown",
+          "prerequisites_any": [
+            42935
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 256905,
+          "type": 3,
+          "loot_link": 69060,
+          "expected_loot_entries": [
+            69060
+          ],
+          "script": "",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 193747,
+          "item": 128819,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 7,
+      "specialization": "Elemental",
+      "weapon": "The Fist of Ra-den",
+      "item": 128935,
+      "start": 39771,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 39771,
+          "title": "The Voice of Thunder",
+          "prerequisites_any": [
+            41329
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40225,
+          "title": "A Ring Reforged",
+          "prerequisites_any": [
+            39771,
+            40224,
+            40341
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43334,
+          "title": "The Coming Storm",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43338,
+          "title": "The Codex of Ra",
+          "prerequisites_any": [
+            43334
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 256789,
+          "type": 3,
+          "loot_link": 69058,
+          "expected_loot_entries": [
+            69058
+          ],
+          "script": "",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 199863,
+          "item": 128935,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 7,
+      "specialization": "Restoration",
+      "weapon": "Sharas'dal, Scepter of Tides",
+      "item": 128911,
+      "start": 40341,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40341,
+          "title": "Throne of the Tides: Azshara's Power",
+          "prerequisites_any": [
+            41330
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40225,
+          "title": "A Ring Reforged",
+          "prerequisites_any": [
+            39771,
+            40224,
+            40341
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43644,
+          "title": "To the Deeps",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43645,
+          "title": "Wavespeaker's Trail",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249342,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            249342
+          ],
+          "script": "go_art_sharasdal",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 209685,
+          "item": 128911,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 8,
+      "specialization": "Arcane",
+      "weapon": "Aluneth",
+      "item": 127857,
+      "start": 42001,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42001,
+          "title": "Aluneth, Greatstaff of the Magna",
+          "prerequisites_any": [
+            41079
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42006,
+          "title": "A New Threat",
+          "prerequisites_any": [
+            42003
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42007,
+          "title": "A Forgotten Enemy",
+          "prerequisites_any": [
+            42006
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42008,
+          "title": "Eyes of the Dragon",
+          "prerequisites_any": [
+            42007
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42009,
+          "title": "Harnessing the Arcane",
+          "prerequisites_any": [
+            42008
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42010,
+          "title": "Arcane Unleashed",
+          "prerequisites_any": [
+            42009
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42011,
+          "title": "The Nexus Vault",
+          "prerequisites_any": [
+            42010
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41114,
+          "title": "The Champion's Return",
+          "prerequisites_any": [
+            11997,
+            42011,
+            42012,
+            42479
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41125,
+          "title": "Unlocked Potential",
+          "prerequisites_any": [
+            41114
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41112,
+          "title": "The Great Akazamzarak",
+          "prerequisites_any": [
+            41125
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41113,
+          "title": "The Only Way to Travel",
+          "prerequisites_any": [
+            41112
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249814,
+          "type": 3,
+          "loot_link": 249814,
+          "expected_loot_entries": [
+            249814
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            211954
+          ],
+          "native_equip_spells": [
+            211954
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 211954,
+          "item": 127857,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 8,
+      "specialization": "Fire",
+      "weapon": "Felo'melorn",
+      "item": 128820,
+      "start": 40267,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40267,
+          "title": "An Unexpected Message",
+          "prerequisites_any": [
+            41080
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40270,
+          "title": "The Path of Atonement",
+          "prerequisites_any": [
+            40267
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 11997,
+          "title": "The Frozen Flame",
+          "prerequisites_any": [
+            40270
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 247494,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            247494
+          ],
+          "script": "",
+          "sai_spells": [
+            196023
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 196020,
+          "item": 128820,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 205152,
+          "item": 128820,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 8,
+      "specialization": "Frost",
+      "weapon": "Ebonchill",
+      "item": 128862,
+      "start": 42452,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42452,
+          "title": "Finding Ebonchill",
+          "prerequisites_any": [
+            41081
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42455,
+          "title": "Alodi's Gems",
+          "prerequisites_any": [
+            42452
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42476,
+          "title": "The Deadwind Site",
+          "prerequisites_any": [
+            42452
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42477,
+          "title": "Daio the Decrepit",
+          "prerequisites_any": [
+            42452
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42479,
+          "title": "The Mage Hunter",
+          "prerequisites_any": [
+            42476,
+            42477
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 251049,
+          "type": 3,
+          "loot_link": 251049,
+          "expected_loot_entries": [
+            251049
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            214775
+          ],
+          "native_equip_spells": [
+            214775
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 214775,
+          "item": 128862,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 9,
+      "specialization": "Affliction",
+      "weapon": "Ulthalesh, the Deadwind Harvester",
+      "item": 128942,
+      "start": 40495,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40495,
+          "title": "Ulthalesh, the Deadwind Harvester",
+          "prerequisites_any": [
+            40686
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40588,
+          "title": "Following the Curse",
+          "prerequisites_any": [
+            40495
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40604,
+          "title": "Disturbing the Past",
+          "prerequisites_any": [
+            40588
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40606,
+          "title": "To Point the Way",
+          "prerequisites_any": [
+            40604
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40611,
+          "title": "The Fate of Deadwind",
+          "prerequisites_any": [
+            40606
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40623,
+          "title": "The Dark Riders",
+          "prerequisites_any": [
+            40611
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40712,
+          "title": "The Power Possessed",
+          "prerequisites_any": [
+            40623,
+            41155
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40731,
+          "title": "The Heart of the Dreadscar",
+          "prerequisites_any": [
+            40729
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40821,
+          "title": "Power Overwhelming",
+          "prerequisites_any": [
+            40731
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41155,
+          "title": "The Dark Riders",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41156,
+          "title": "The Power Possessed",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 246021,
+          "type": 3,
+          "loot_link": 246021,
+          "expected_loot_entries": [
+            246021
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            204819
+          ],
+          "native_equip_spells": [
+            204819
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 204819,
+          "item": 128942,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 9,
+      "specialization": "Demonology",
+      "weapon": "Skull of the Man'ari",
+      "item": 128943,
+      "start": 42128,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42128,
+          "title": "Ritual Reagents",
+          "prerequisites_any": [
+            40688
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42168,
+          "title": "Looking into the Darkness",
+          "prerequisites_any": [
+            42128
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42125,
+          "title": "Dark Whispers",
+          "prerequisites_any": [
+            42168
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 249821,
+          "type": 3,
+          "loot_link": 249821,
+          "expected_loot_entries": [
+            249821
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            211764,
+            211766
+          ],
+          "native_equip_spells": [
+            211764
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 211764,
+          "item": 128943,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 9,
+      "specialization": "Destruction",
+      "weapon": "Scepter of Sargeras",
+      "item": 128941,
+      "start": 43100,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 43100,
+          "title": "Finding the Scepter",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43153,
+          "title": "An Eye for a Scepter",
+          "prerequisites_any": [
+            43100
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 43254,
+          "title": "Ritual Ruination",
+          "prerequisites_any": [
+            43153
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 252054,
+          "type": 3,
+          "loot_link": 252054,
+          "expected_loot_entries": [
+            252054
+          ],
+          "script": "go_ritual_scepter",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 219839,
+          "item": 128941,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 10,
+      "specialization": "Brewmaster",
+      "weapon": "Fu Zan, the Wanderer's Companion",
+      "item": 128938,
+      "start": 42762,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42762,
+          "title": "The Wanderer's Companion",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42768,
+          "title": "The Riddle of Purity",
+          "prerequisites_any": [
+            42762
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42957,
+          "title": "Journey to the East",
+          "prerequisites_any": [
+            42768
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42868,
+          "title": "The Monkey King's Challenge",
+          "prerequisites_any": [
+            42957
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42765,
+          "title": "The Trial at the Temple",
+          "prerequisites_any": [
+            42957
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40698,
+          "title": "Purity of Form",
+          "prerequisites_any": [
+            40570,
+            41003,
+            42765
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40793,
+          "title": "A Matter of Planning",
+          "prerequisites_any": [
+            40698
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42766,
+          "title": "The Riddle of the Barrel",
+          "prerequisites_any": [
+            42762
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42767,
+          "title": "The Riddle of the Land",
+          "prerequisites_any": [
+            42762
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 251605,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            251605
+          ],
+          "script": "",
+          "sai_spells": [
+            217814
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 217813,
+          "item": 128938,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [
+        {
+          "entry": 100438,
+          "event": 9,
+          "missing_link": 10
+        }
+      ],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 10,
+      "specialization": "Mistweaver",
+      "weapon": "Sheilun, Staff of the Mists",
+      "item": 128937,
+      "start": 41003,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41003,
+          "title": "The Emperor's Gift",
+          "prerequisites_any": [
+            40639
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40698,
+          "title": "Purity of Form",
+          "prerequisites_any": [
+            40570,
+            41003,
+            42765
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40793,
+          "title": "A Matter of Planning",
+          "prerequisites_any": [
+            40698
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 256913,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            256913
+          ],
+          "script": "go_art_sheylun",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 202438,
+          "item": 128937,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [
+        {
+          "entry": 100438,
+          "event": 9,
+          "missing_link": 10
+        }
+      ],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 10,
+      "specialization": "Windwalker",
+      "weapon": "Fists of the Heavens",
+      "item": 128940,
+      "start": 40569,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40569,
+          "title": "The Legend of the Sands",
+          "prerequisites_any": [
+            40638
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40633,
+          "title": "Off To Adventure!",
+          "prerequisites_any": [
+            40569
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40634,
+          "title": "Thunder on the Sands",
+          "prerequisites_any": [
+            40633
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40570,
+          "title": "Into The Heavens",
+          "prerequisites_any": [
+            40634
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248086,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248086
+          ],
+          "script": "",
+          "sai_spells": [
+            199502
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 199499,
+          "item": 128940,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 224657,
+          "item": 128940,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [
+        {
+          "entry": 100475,
+          "event": 1,
+          "missing_link": 7
+        },
+        {
+          "entry": 100475,
+          "event": 6,
+          "missing_link": 8
+        },
+        {
+          "entry": 100438,
+          "event": 9,
+          "missing_link": 10
+        }
+      ],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 11,
+      "specialization": "Balance",
+      "weapon": "Scythe of Elune",
+      "item": 128858,
+      "start": 40783,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40783,
+          "title": "The Scythe of Elune",
+          "prerequisites_any": [
+            40781
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40784,
+          "title": "Its Rightful Place",
+          "prerequisites_any": [
+            40783
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40785,
+          "title": "A Foe of the Dark",
+          "prerequisites_any": [
+            40784
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40834,
+          "title": "Following the Curse",
+          "prerequisites_any": [
+            40785
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40835,
+          "title": "Disturbing the Past",
+          "prerequisites_any": [
+            40834
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40837,
+          "title": "The Deadwind Hunt",
+          "prerequisites_any": [
+            40835
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40838,
+          "title": "The Dark Riders",
+          "prerequisites_any": [
+            40837
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40900,
+          "title": "The Burden Borne",
+          "prerequisites_any": [
+            40838
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 246437,
+          "type": 3,
+          "loot_link": 246437,
+          "expected_loot_entries": [
+            246437
+          ],
+          "script": "go_artifact_acquisition",
+          "sai_spells": [
+            205387
+          ],
+          "native_equip_spells": [
+            205387
+          ],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 205387,
+          "item": 128858,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 11,
+      "specialization": "Feral",
+      "weapon": "Fangs of Ashamane",
+      "item": 128860,
+      "start": 42428,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 42428,
+          "title": "The Shrine of Ashamane",
+          "prerequisites_any": [
+            40701
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42439,
+          "title": "Aid for the Ashen",
+          "prerequisites_any": [
+            42428
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42440,
+          "title": "The Shrine in Peril",
+          "prerequisites_any": [
+            42438,
+            42439
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42430,
+          "title": "The Fangs of Ashamane",
+          "prerequisites_any": [
+            42440
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41255,
+          "title": "Sowing The Seed",
+          "prerequisites_any": [
+            40900,
+            41689,
+            42430
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40651,
+          "title": "The Seed of Ages",
+          "prerequisites_any": [
+            41255
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41332,
+          "title": "Ascending The Circle",
+          "prerequisites_any": [
+            40651
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40652,
+          "title": "Word on the Winds",
+          "prerequisites_any": [
+            41332
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40653,
+          "title": "Making Trails",
+          "prerequisites_any": [
+            40652
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 42438,
+          "title": "Seeds of Renewal",
+          "prerequisites_any": [
+            42428
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 250386,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            250386
+          ],
+          "script": "",
+          "sai_spells": [
+            214714
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 214715,
+          "item": 128860,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 11,
+      "specialization": "Guardian",
+      "weapon": "Claws of Ursoc",
+      "item": 128821,
+      "start": 41468,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41468,
+          "title": "Mistress of the Claw",
+          "prerequisites_any": [
+            40702
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41782,
+          "title": "To The Hills",
+          "prerequisites_any": [
+            41468
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41783,
+          "title": "Fallen Offerings",
+          "prerequisites_any": [
+            41782
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41790,
+          "title": "The First Trial of Ursol",
+          "prerequisites_any": [
+            41783
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41791,
+          "title": "The Second Trial of Ursol",
+          "prerequisites_any": [
+            41790
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41792,
+          "title": "The Third Trial of Ursol",
+          "prerequisites_any": [
+            41791
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40647,
+          "title": "When Dreams Become Nightmares",
+          "prerequisites_any": [
+            41792
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41918,
+          "title": "The Dreamer Returns",
+          "prerequisites_any": [
+            40647
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248853,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248853
+          ],
+          "script": "",
+          "sai_spells": [
+            199963
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 199960,
+          "item": 128821,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 208779,
+          "item": 128821,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 11,
+      "specialization": "Restoration",
+      "weapon": "G'Hanir, the Mother Tree",
+      "item": 128306,
+      "start": 40649,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40649,
+          "title": "Meet with Mylune",
+          "prerequisites_any": [
+            40703
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41422,
+          "title": "Necessary Preparations",
+          "prerequisites_any": [
+            40649
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41449,
+          "title": "Join the Dreamer",
+          "prerequisites_any": [
+            41422
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41436,
+          "title": "In Deep Slumber",
+          "prerequisites_any": [
+            41449
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41690,
+          "title": "Reconvene",
+          "prerequisites_any": [
+            41436
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41689,
+          "title": "Cleansing the Mother Tree",
+          "prerequisites_any": [
+            41690
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248499,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248499
+          ],
+          "script": "",
+          "sai_spells": [
+            207560,
+            207582
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 207562,
+          "item": 128306,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 12,
+      "specialization": "Havoc",
+      "weapon": "Twinblades of the Deceiver",
+      "item": 127829,
+      "start": 40819,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 40819,
+          "title": "Making Arrangements",
+          "prerequisites_any": [
+            40817
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41120,
+          "title": "Making Arrangements",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41121,
+          "title": "By Any Means",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41119,
+          "title": "The Hunt",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39051,
+          "title": "By Any Means",
+          "prerequisites_any": [
+            40819
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 39247,
+          "title": "The Hunt",
+          "prerequisites_any": [
+            39051
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 251878,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            251878
+          ],
+          "script": "",
+          "sai_spells": [
+            189916
+          ],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 189523,
+          "item": 127829,
+          "target1": 1,
+          "target2": 0
+        },
+        {
+          "spell": 201010,
+          "item": 127829,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    },
+    {
+      "class_id": 12,
+      "specialization": "Vengeance",
+      "weapon": "Aldrachi Warblades",
+      "item": 128832,
+      "start": 41803,
+      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "quests": [
+        {
+          "id": 41803,
+          "title": "Asking a Favor",
+          "prerequisites_any": [
+            40818
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40247,
+          "title": "Asking a Favor",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41804,
+          "title": "Ask and You Shall Receive",
+          "prerequisites_any": [
+            41803
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41806,
+          "title": "Return to Jace",
+          "prerequisites_any": [
+            41804
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41807,
+          "title": "Establishing a Connection",
+          "prerequisites_any": [
+            41806
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 41863,
+          "title": "Vengeance Will Be Ours",
+          "prerequisites_any": [
+            41807
+          ],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        },
+        {
+          "id": 40249,
+          "title": "Vengeance Will Be Ours",
+          "prerequisites_any": [],
+          "lifecycle_review": "pending",
+          "visual_review": "pending"
+        }
+      ],
+      "pickup_objects": [
+        {
+          "entry": 248785,
+          "type": 3,
+          "loot_link": 0,
+          "expected_loot_entries": [
+            248785
+          ],
+          "script": "go_bs_the_aldrachi_warblades",
+          "sai_spells": [],
+          "native_equip_spells": [],
+          "native_create_spells": []
+        }
+      ],
+      "native_equip_effects": [
+        {
+          "spell": 208301,
+          "item": 128832,
+          "target1": 1,
+          "target2": 0
+        }
+      ],
+      "broken_actor_links": [],
+      "video": {
+        "url": null,
+        "reviewed_intervals": [],
+        "status": "not reviewed in this inventory"
+      },
+      "checkpoints": {
+        "quest_admission_and_faction_variants": "pending",
+        "actor_initial_pose_and_visibility": "pending",
+        "stage_transitions_and_exactly_once_credit": "pending",
+        "player_pet_guardian_group_credit": "pending",
+        "scaled_one_hit_surrender_or_death": "pending",
+        "npc_weapon_pickup_departure_visuals": "pending",
+        "weapon_visibility_and_no_early_interaction": "pending",
+        "actual_loot_and_full_bags_retry": "pending",
+        "equip_parent_and_paired_item": "pending",
+        "artifact_power_and_save_relog": "pending",
+        "failed_cast_or_missing_actor_retry": "pending",
+        "abandon_reentry_cleanup": "pending",
+        "camera_movement_and_pet_restoration": "pending",
+        "complete_client_traversal": "pending"
+      },
+      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+    }
+  ]
+}
