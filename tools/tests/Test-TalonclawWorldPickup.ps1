@@ -12,7 +12,8 @@ $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisi
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))
 [IO.File]::WriteAllText("$out/Retire.inc",(Section $source 'namespace TalonclawWorldPickup' 'class go_artifact_acquisition'))
 if($Baseline){$source=(& git -C $repo show ff3c129a:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"}
-[IO.File]::WriteAllText("$out/Binding.inc",(Section $source 'class go_artifact_acquisition' 'namespace TalonclawPresentation'))
+$end=if($source.Contains('class go_marksmanship_pickup')){'class go_marksmanship_pickup'}else{'namespace TalonclawPresentation'}
+[IO.File]::WriteAllText("$out/Binding.inc",(Section $source 'class go_artifact_acquisition' $end))
 $source=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.h" -Raw
 $members=@('ObjectGuid GetSummonerGUID() const { return m_summonerGUID; }','void SetSummonerGUID(ObjectGuid guid) { m_summonerGUID = guid; }','ObjectGuid m_summonerGUID = ObjectGuid::Empty;')
 foreach($member in $members){if(!$source.Contains($member)){throw "Native provenance member missing: $member"}}

@@ -233,6 +233,24 @@ public:
     bool OnGossipHello(Player* player,GameObject* go) override {return ArtifactAcquisition::Use(player,go);}
     void OnLootStateChanged(GameObject* object, uint32 state, Unit* unit) override { TalonclawWorldPickup::Retire(object, state, unit); }
 };
+class go_marksmanship_pickup : public GameObjectScript
+{
+    struct AI : SmartGameObjectAI
+    {
+        explicit AI(GameObject* object) : SmartGameObjectAI(object) { }
+
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            if (go->GetEntry() == 248419 && (!player || ArtifactAcquisition::Use(player, go)))
+                return true;
+            return SmartGameObjectAI::GossipHello(player, isUse);
+        }
+    };
+public:
+    go_marksmanship_pickup() : GameObjectScript("go_marksmanship_pickup") { }
+    bool OnGossipHello(Player* player, GameObject* object) override { return !player || ArtifactAcquisition::Use(player, object); }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+};
 namespace TalonclawPresentation
 {
 struct State
@@ -626,6 +644,7 @@ void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
     new go_artifact_acquisition();
+    new go_marksmanship_pickup();
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
     RegisterAuraScript(spell_marksmanship_presentation);

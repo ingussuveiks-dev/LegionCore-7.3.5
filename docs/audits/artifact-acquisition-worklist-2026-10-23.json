@@ -18,6 +18,13 @@
       "problem": "Unconditional return disabled native equip for all 55 records.",
       "repair_audit": "docs/audits/artifact-force-equip-2026-10-23.json",
       "limit": "Each quest must still reach its equip spell after real acquisition; shared handler tests do not prove that callback or client visuals."
+    },
+    {
+      "path": "src/server/game/Handlers/SpellHandler.cpp",
+      "handler": "HandleGameobjectReportUse",
+      "problem": "Direct report-use calls AI gossip rather than ScriptMgr::OnGossipHello; a GameObjectScript-only gate does not cover that route.",
+      "repair_audit": "docs/audits/marksmanship-report-use-2026-10-23.json",
+      "limit": "Scoped Marksmanship SmartAI wrapper repaired; other artifacts require individual report-use/AI and delayed-context audits, not a blanket assumption or generic packet rewrite."
     }
   ],
   "routes": [
@@ -815,8 +822,9 @@
       "owned_replay_repair_audit": "docs/audits/marksmanship-owned-replay-2026-10-23.json",
       "presentation_repair_audit": "docs/audits/marksmanship-presentation-2026-10-23.json",
       "pickup_admission_repair_audit": "docs/audits/marksmanship-pickup-admission-2026-10-23.json",
+      "report_use_repair_audit": "docs/audits/marksmanship-report-use-2026-10-23.json",
       "start": 41540,
-      "status": "partial: native8-stage/scene review, original owned/bank replay, final-stage opening/real loot/post-claim gates and guarded1169-to200262 equip callback pass native/Release checks; objective storage, report-use visibility edges, full video/sequence and actual client visuals/loot/equip remain pending",
+      "status": "partial: native8-stage/scene review, original owned/bank replay, final-stage opening/real loot/post-claim, direct-report SmartAI admission and guarded1169-to200262 equip pass native/Release checks; objective storage, delayed phase/cache/re-entry integration, full video/sequence and actual client visuals/loot/equip remain pending",
       "quests": [
         {
           "id": 41540,
