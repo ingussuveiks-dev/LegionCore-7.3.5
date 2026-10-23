@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Deterministic native world-weapon carrier for Talonclaw100310. Does not complete the Survival scenario or certify client rendering, pickup disappearance or timing.",
+  "finding": {
+    "runtime": "100310 had flags_extra0, no AI/script/addon/spellclick and no persisted spawns. Dakarr99480 death LINK2 summons it before LINK3 creates chest248834. WDB displays are33225/66609. Native ChooseDisplayId therefore randomly selects either display, including33225, which has no Talonclaw state visual.",
+    "native_models": "Typed CreatureDisplayInfo/CreatureModelData:33225 -> model53/file118355, scale2.25, state kit0;66609 -> model3923/file124640, scale1, state kit61290. The actual ObjectMgr trigger-file classification includes124640, not118355. Invisible means the carrier mesh is hidden, not that its attached item/beam must be removed.",
+    "native_visual": "Kit61290 contains type2 attachments313388/313390. Attachment313388 uses effect-name26873/type1/GenericID128808 at attachment28, scale1/alpha1: the item-based Talonclaw visual, not a guessed spear model.313390 uses effect8451/model file253570 at attachment19, scale1/alpha1; the local spells list identifies NatureBeam_State_Base.M2. Mesh/attachment/beam playback remains a client check.",
+    "repair": "Guardedly add CREATURE_FLAG_EXTRA_TRIGGER128 only to the original unbound template with the exact native two-display tuple and flags_extra0. Native ChooseDisplayId then selects GetFirstInvisibleModel66609 rather than randomizing. Retain WDB models and the normal native GM debug substitution33225. Preserve custom script/AI/flags/display definitions rather than overwriting them.",
+    "interaction": "The native trigger flag also makes the carrier not selectable. This actor has npcflag0 and no spellclick; real acquisition remains the separate chest248834, whose flags/loot/AI/script are untouched. No item, objective, reward, teleport or group-credit bypass is introduced. No earlier spawn or availability is added."
+  },
+  "sources": {
+    "local_first": "Actual MariaDB template/WDB/model records and SmartAI summon links; matching runtime DB2s; production ObjectMgr model classification/ChooseDisplayId, Creature InitEntry and Unit client display serialization. Hotfix queries for the two displays/models, kit61290, both attachments/effect names and relevant hotfix IDs returned no overriding rows. No character records read or changed.",
+    "local_trinitycore": "Inspected exact26972 commit c2d61e05cf3dc555608e6b2a06772c27d207548c for SpellVisualEffectName structure/load-info; those named definitions were absent. Earlier Survival/donor audits retain their targeted search limits. No incompatible donor gameplay code imported.",
+    "schema_reference": "https://github.com/wowdev/WoWDBDefs/blob/d8b2f0bdd36260b0b0221916b84c8b5ea3e0a6c5/definitions/SpellVisualEffectName.dbd",
+    "schema_review": "Reviewed the B930A934 block explicitly listing7.3.5.26972. Confirms six floats, Flags/GenericID/TextureFileDataID, byte Type and ModelFileDataID/RibbonQualityID/DissolveEffectID. This is a field-layout reference, not an artifact quest implementation.",
+    "video": "No new footage/audio reviewed for this fix. Prior survival-artifact-sequence-review and talonclaw-return-credit audits record muted rendered samples and unseen intervals of https://www.youtube.com/watch?v=aAzrSVxEElk. They do not establish exact ground-weapon pose/disappearance. The native item128808 attachment, not an unseen video interval, identifies the correct carrier."
+  },
+  "reader_corrections": [
+    "The initial attempt used incomplete production kit load-info without the relationship fields and asserted in the research process, not in worldserver. The probe now explicitly includes the native parent fields and checks its packed record sizes against DB2Meta::GetRecordSize before loading.",
+    "The initial generic SpellVisualEffectName struct produced nonsensical alpha/model values because its layout differs from the matching metadata. Those results were rejected. A research-only typed26972 adapter using the native metadata/loader and the pinned matching DBD now returns the validated item128808/beam records. The existing worldserver LOAD_DB2 for this table is commented out; no runtime loader or hotfix schema repair is claimed here."
+  ],
+  "checks": [
+    "Test-TalonclawWorldModel.ps1 -VerifyReleaseBinary passes. Its temporary actual-schema MariaDB fixture applies the migration twice, preserves existing interaction/scale/AI/script fields and the neighbour, and rejects custom flags/script/AI or a changed native display tuple.",
+    "The compiled fixture extracts the actual trigger-file classifier, random/first-visible/first-invisible selectors, ObjectMgr::ChooseDisplayId, Creature::InitEntry model branch and Unit client display field. Both random branches resolve to66609 for normal players after the fix; GM33225, unrelated random models, explicit spawn overrides and unknown model classification remain intact. Test object stores/player/packet buffer are fixtures, not a live map or client.",
+    "-BaselineSql reproduces the old defect: without migration, the first random branch selects33225 and fails the66609 assertion. Failure is retained as expected evidence rather than suppressed.",
+    "The typed native catalog validates both carrier models,61290 and its two attachment/effect-name paths. No guessed packed offsets or external visual overlay is used.",
+    "The deployed-PE check decodes the actual112-byte unwind-free ChooseDisplayId leaf, tests flag128 and resolves both tail jumps to GetFirstInvisibleModel and ordinary GetRandomValidModelId. It also runs earlier departure/return/presentation/scene/LFG checks against the canonical binary. This is not client-rendering evidence.",
+    "Test-TalonclawAcquisition.ps1, Test-TalonclawPresentation.ps1, Test-TalonclawReturn.ps1 and Test-TalonclawDeparture.ps1 pass. Return's extracted unchanged native credit loop still emits its existing int32-to-uint16 fixture compilation warning; it is not hidden or changed by this model patch."
+  ],
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_23_14_talonclaw_world_model.sql",
+    "migration_sha1": "F69C899C29D8C3EB0CB51E9D541BEED210C74C99",
+    "runtime_readback": "100310 flags_extra128, unit_flags768/npcflag0, AIName/ScriptName empty; update registered RELEASED. No chest, boss or character data changed.",
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "937FDC2E90372B990D635B983358EA263C5EF419A997A877AB7F90706AF9516B",
+    "binary": "SQL-only repair; deployed executable intentionally unchanged from1228cbc1. Release final-link inputs still name src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib, not a global OutDir override. Actual deployed selector instructions checked.",
+    "startup": "Task-owned PID13056 initialized from the canonical directory and gracefully exited0; new DBErrors bytes0; protected configuration/certificate hashes unchanged. No user/unknown server stopped and no task-owned server remains.",
+    "private_evidence": ".codex/backups/talonclaw-world-model-20261023 and .codex/talonclaw-world-model-startup; runtime DB2s, credentials and backups are not committed."
+  },
+  "remaining": [
+    "Client: visible spear and nature beam at the native cave position, attachment orientation/scale, ordinary versus GM view, full pickup/brandish and actual world-actor disappearance. This patch fixes model selection only;100310's manual lifetime/retirement still requires a separate tracked-source lifecycle repair.",
+    "Prerequisite39427 and the entire earlier scenario remain unresolved. Boss death admission/one-hit/pet/guardian/group/faction credit, abandon/re-entry and shared-source actor cleanup are not certified by this noncombat model change. Existing chest inventory/full-bag/owned-item guards and persisted claim/return checks are unchanged.",
+    "No full video, all36-chain, precise retail portal or client traversal completion is claimed. Prior unrelated Test-QuestAttemptCleanup fixture compile failure remains documented in the departure audit; this SQL-only model patch does not change Player cleanup."
+  ]
+}
