@@ -64,6 +64,7 @@ WorldSocket::WorldSocket(tcp::socket&& socket) : Socket(std::move(socket))
     _key = 0;
 
     _worldSession = nullptr;
+    _sendBufferSize = 4096;
     _compressionStream = nullptr;
     _OverSpeedPings = 0;
     _accountId = 0;
@@ -89,8 +90,23 @@ void WorldSocket::Start()
     std::string ip_address = GetRemoteIpAddress().to_string();
     LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_SEL_IP_INFO);
     stmt->setString(0, ip_address);
-    PreparedQueryResult result = LoginDatabase.Query(stmt);
+    // SocketMgr calls Start on the acceptor thread. As in TrinityCore 7.3.5,
+    // finish the IP check through Update's callback processor before touching
+    // read buffers or the native socket's non-locking write queue. That keeps
+    // initialization and subsequent completions on the same network thread.
+    _queryProcessor.AddCallback(LoginDatabase.AsyncQuery(stmt).WithPreparedCallback(
+        std::bind(&WorldSocket::CheckIpCallback, this, std::placeholders::_1)));
+}
 
+void WorldSocket::CheckIpCallback(PreparedQueryResult result)
+{
+    // A queued result must not restart a socket cancelled while SQL was pending.
+    if (!IsOpen())
+        return;
+
+    // This core's LOGIN_SEL_IP_INFO selects ip_banned rows, unlike upstream's
+    // ban-status/country projection. Preserve the existing nonempty-result ban
+    // semantics rather than reading an IP string or timestamp as those fields.
     if (result)
     {
         TC_LOG_INFO("network", "WorldSocket::CheckIpCallback: Sent Auth Response (IP %s banned).", GetRemoteIpAddress().to_string().c_str());
@@ -107,47 +123,8 @@ void WorldSocket::Start()
     initializer.Write("\n", 1);
 
     QueuePacket(std::move(initializer));
-    // Start runs on the acceptor thread; the peer may already be advancing
-    // authentication on the socket thread. Do not read its mutable handshake
-    // buffers here just to log that the greeting was queued.
     TC_LOG_INFO("network", "World handshake greeting queued: %s:%u",
         GetRemoteIpAddress().to_string().c_str(), uint32(GetRemotePort()));
-    //_queryProcessor.AddQuery(LoginDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&WorldSocket::CheckIpCallback, this, std::placeholders::_1)));
-}
-
-void WorldSocket::CheckIpCallback(PreparedQueryResult result)
-{
-    if (result)
-    {
-        bool banned = false;
-        do
-        {
-            Field* fields = result->Fetch();
-            if (fields[0].GetUInt64() != 0)
-                banned = true;
-
-            if (!fields[1].GetString().empty())
-                _ipCountry = fields[1].GetString();
-
-        } while (result->NextRow());
-
-        if (banned)
-        {
-            TC_LOG_INFO("network", "WorldSocket::CheckIpCallback: Sent Auth Response (IP %s banned).", GetRemoteIpAddress().to_string().c_str());
-            DelayedCloseSocket();
-            return;
-        }
-    }
-
-    _packetBuffer.Resize(ClientConnectionInitialize.length() + 1);
-
-    AsyncReadWithCallback(&WorldSocket::InitializeHandler);
-
-    MessageBuffer initializer;
-    initializer.Write(ServerConnectionInitialize.c_str(), ServerConnectionInitialize.length());
-    initializer.Write("\n", 1);
-
-    QueuePacket(std::move(initializer));
 }
 
 void WorldSocket::InitializeHandler(boost::system::error_code const& error, std::size_t transferedBytes)

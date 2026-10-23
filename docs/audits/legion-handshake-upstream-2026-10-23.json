@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-23",
+  "request": "Compare the intermittent instance-connection failure with matching-version TrinityCore on GitHub first, then other Legion projects; repair an evidenced missing stage if found.",
+  "original_incident": "docs/audits/instance-login-handshake-2026-10-23.json",
+  "references": [
+    {
+      "repository": "TrinityCore/TrinityCore",
+      "commit": "c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "date": "2018-06-29",
+      "version_evidence": "Commit explicitly updates allowed build to 7.3.5.26972; the WorldSocket.cpp history through 2018-08-12 still identifies this as its latest change.",
+      "url": "https://github.com/TrinityCore/TrinityCore/commit/c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "file_root": "https://github.com/TrinityCore/TrinityCore/blob/c2d61e05cf3dc555608e6b2a06772c27d207548c/",
+      "files": ["src/server/game/Server/WorldSocket.cpp","src/server/game/Server/WorldSocket.h","src/server/game/Server/WorldSession.cpp","src/server/shared/Networking/Socket.h","src/server/game/Server/Packets/AuthenticationPackets.cpp","src/server/game/Server/Packets/AuthenticationPackets.h"]
+    },
+    {
+      "repository": "AshamaneProject/AshamaneCore",
+      "branch": "legion",
+      "commit": "b3ec0305caba2ab84596da501e9213ec4707d026",
+      "url": "https://github.com/AshamaneProject/AshamaneCore/tree/b3ec0305caba2ab84596da501e9213ec4707d026",
+      "files": ["src/server/game/Server/WorldSocket.cpp","src/server/game/Server/WorldSocketMgr.cpp","src/server/shared/Networking/Socket.h","src/server/shared/Networking/NetworkThread.h","src/server/shared/Networking/AsyncAcceptor.h","src/server/game/Server/Packets/AuthenticationPackets.cpp","src/server/game/Server/Packets/AuthenticationPackets.h"],
+      "scope": "Pinned Legion branch with matching initializer/authentication/ConnectTo wire representation. Ashamane is based on TrinityCore, not independent confirmation from a different networking design."
+    },
+    {
+      "commit": "97a79af4701621ec04b88c8b548dbc35d120e99e",
+      "url": "https://github.com/TrinityCore/TrinityCore/commit/97a79af4701621ec04b88c8b548dbc35d120e99e",
+      "scope": "Original threading-model change explicitly explains per-network-thread io_service and single-thread ownership of socket operations except the intermediate packet queue."
+    }
+  ],
+  "comparison": {
+    "same": [
+      "Server and client initializer lines, each 48 wire bytes including newline",
+      "AuthCheckSeed, SessionKeySeed and ContinuedSessionSeed",
+      "AuthChallenge serialization and AuthContinuedSession/ConnectToFailed parsing",
+      "ConnectTo payload/envelope field order, RSA protocol key equality, public protocol HMAC constant, Pi digits, Haiku, Panama key, Adler and XOR constants",
+      "Native ConnectTo attempt serials 17/35/53/71/89"
+    ],
+    "difference": "Both pinned upstream implementations queue an asynchronous IP query in Start and initialize buffers/read/greeting in CheckIpCallback, dispatched by the socket network thread's Update. Our Start instead ran synchronous SQL and issued the native read and non-locking greeting write from SocketMgr's acceptor thread; the async handoff was commented out.",
+    "proved": "The pinned pre-fix production Start, executed with the real Socket/MessageBuffer in a two-thread fixture, issued read/write on the acceptor thread. The same fixture can complete its greeting successfully; it does not reproduce or prove the cause of the user's silent connection.",
+    "not_proved": "No dynamic failed-client trace identifies which client receive/dispatch branch stopped responding. The upstream handoff difference is a concrete architecture divergence, not proof of a race causing the observed sent=48/received=0 incident.",
+    "excluded_differences": "Do not replace the 7.3.5 initializer with modern TrinityCore V2, change authentication bytes, remove the working fresh-accept-socket repair, or remove bounded retry/deadline/lifetime fixes."
+  },
+  "implementation": {
+    "WorldSocket.cpp": [
+      "Restore asynchronous IP query scheduling in Start and network-thread initialization in CheckIpCallback via the existing QueryCallbackProcessor/Update dispatcher.",
+      "Reject a result for an already closed/closing socket before starting reads or queuing a greeting.",
+      "Adapt the callback to this core's actual SELECT * FROM ip_banned result: a nonempty result remains a ban. Do not read the IP string/timestamp as upstream's differently shaped ban-status/country projection.",
+      "Initialize send-buffer size to 4096 as upstream does; SocketAdded retains its configured override."
+    ],
+    "LoginDatabase.cpp": "Register LOGIN_SEL_IP_INFO with CONNECTION_BOTH: asynchronous world sockets and existing synchronous bnetserver callers are both supported; query text/schema/ban semantics are unchanged.",
+    "unchanged": ["Client executable/settings","Handshake bytes and crypto constants","Ten-second handshake deadline","Twelve-second retry deadline and five-attempt bound","Authentication latch and cancellation behavior","Quest/scenario/character state"]
+  },
+  "automated_checks": [
+    "compare_legion_handshake.py against both pinned references: initializer, auth packet layouts, ConnectTo constants/crypto and serial checks pass; baseline active_start parser excludes commented-out AsyncQuery text.",
+    "Test-WorldSocketStartThread.ps1 -Baseline: actual pre-fix Start runs read/write on acceptor; successful exact loopback exchange also demonstrates the distinction from reproducing the user's failure.",
+    "Test-WorldSocketStartThread.ps1: actual current Start/CheckIpCallback, native Socket/MessageBuffer and native QueryCallback/AsyncCallbackProcessor with controlled database futures: 16 worker-owned exact exchanges; pending future, banned result and close-before-result paths pass. No live account or database mutation.",
+    "Test-HandshakeDeadline.ps1 -VerifyReleaseBinary: actual timeout/cancellation, ordinary EOF, young/authenticated sockets, detach and already-closed cases pass.",
+    "Test-InstanceConnectRetry.ps1: retry bounds, silent-client deadlines, queued/stale reports, successful/cancelled login and link guards pass.",
+    "Test-WorldSocketDiagnostics.ps1 -VerifyReleaseBinary: Windows TCP_INFO ABI/counters and closed-socket fallback pass; all five deployed diagnostic call sites remain present.",
+    "verify_world_socket_start_release.py: actual PE Start calls async SQL, binds CheckIpCallback and does not issue native reads/greeting writes; Update dispatches ready queries and the bound callback issues native read/write.",
+    "Game and database libraries built in original generated Release locations, followed by staging-only final worldserver link. Canonical EXE/MAP copies have matching hashes.",
+    "Test-ScepterLogin.ps1 -VerifyReleaseBinary and the existing ten scenario completion/exit/relog/persistence PE call paths pass.",
+    "Canonical startup reached ready without ERROR or DBErrors entries. Sixteen initializer-only probes against the real MariaDB-backed canonical server, instance listener first, received exact 48-byte greetings and valid 55-byte challenges on both 8086 and 8085 (31-47ms). These exercise actual asynchronous prepared-query completion; they send no account authentication."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "files": ["worldserver.exe","worldserver.map"],
+    "sha256": "d542d62fe2e515b7e4514dc52d03c12ce5a6788963d66e435c02405456228f57",
+    "previous_sha256": "585dd1f0305320192b0e47d9350b1124902421738ea6fd8a3af2f5bc427cb4ca",
+    "ownership": "User worldserver had already shut down before deployment. No user-owned process was stopped. Owned hidden validation worldserver 26944 reached ready and shut down gracefully with exit code 0; no temporary server remains.",
+    "preserved": "Runtime configuration, credentials, certificates, DLLs, logs, extracted data, bnetserver executable and character data"
+  },
+  "remaining_client_checks": [
+    "Cold WoW-client login against the deployed server, repeated client starts and ordinary logout/relog/instance transfers.",
+    "Preserve and trace any recurrence before restarting the client. Passing initializer probes or one successful login cannot prove the original intermittent silence permanently fixed.",
+    "Do not label this ownership/handoff repair a proven root-cause fix for the user's intermittent failure until actual client evidence supports that claim."
+  ]
+}

@@ -34,6 +34,10 @@
 - After completing a fix and its relevant checks, create a focused commit with the implementation, regression tests and audit, then push the current branch to `origin`. This is the user's standing preference; report the commit hash and distinguish automated checks from pending client verification.
 - Keep separate problems in separate commits. Review the staged diff, exclude runtime data, credentials and personal character backups, and do not force-push shared history.
 
+# Connection startup regressions
+
+- Keep WorldSocket's initial read buffers/native greeting write on its network thread. Start runs on the acceptor thread and must schedule the asynchronous IP check; Update dispatches CheckIpCallback. LOGIN_SEL_IP_INFO must support CONNECTION_BOTH for synchronous bnetserver and asynchronous world callers. Its local result is an ip_banned row, not upstream's ban-status/country projection. Reject closed sockets before applying a delayed result. Run `Test-WorldSocketStartThread.ps1`, handshake deadline/retry/diagnostic regressions and `verify_world_socket_start_release.py`. The original intermittent client silence is still unproven: restoring this upstream 7.3.5 handoff and passing socket probes do not establish its root cause; retain actual client evidence in the handshake audits.
+
 # Quest admission and packet regressions
 
 - Quest acceptance conditions (source 19) govern starting a quest, not the turn-in marker of an already active complete/incomplete quest. The boost ship legitimately skips preparation 44281; rechecking it hid Eitrigg 100453's completed 40518 marker on 2026-10-22. Preserve explicit SHOW_MARK/source-20 conditions, start/next-quest admission, repeatable auto-turn-in checks and reward validation. Run `Test-QuestTurnInMarkers.ps1` (the `-Baseline` mode reads pinned pre-fix source) and `verify_quest_turnin_release.py`. On 2026-10-23 the user confirmed actual Eitrigg turn-in and the next quest; reward quantity, repeat/relog and later story traversal remain separate checks.
