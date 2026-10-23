@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-23",
+  "scope": "The Hunter's Call gossip and Huey/Stolen Thunder spellclick admission",
+  "findings": [
+    "Grif100810, Apata99986 and Courier100171 each granted their existing credit and linked to absent event1, matching the three reported SmartScript errors. Add LINK61 -> CLOSE_GOSSIP72 -> invoker7 without replacing an existing custom continuation.",
+    "Huey106854 had no source18 condition on212060. His summon executed before source22 quest checks. Admit41574 incomplete or complete before the native spellclick executes; quest changes already dirty this conditioned NPC flag through Player::UpdateForQuestWorldObjects.",
+    "Huey's1068 outgoing trip and1099 step5 return are distinct valid uses. Preserve the existing source22 final-return conditions and active/completed quest support.",
+    "The user confirmed Stage1 eventually advanced after selecting Grif104904's readiness gossip. Preserve the actual30000+15000+10000ms dialogue list, Prustaga's movement and native49879 credit; no forced progression or shortened dialogue was added."
+  ],
+  "automated": [
+    "Test-HunterIntroInteractions.ps1: production CLOSE_GOSSIP and LINK tail compiled/executed, mixed/empty/null targets, active/complete native quest conditions, NONE/failed/rewarded/non-player refusal.",
+    "Actual migration applied twice to temporary real-schema tables; exact rows and native1099 return checked, custom continuations/conditions preserved,55-second dialogue unchanged. Quest flag-update source admission checked structurally, not by a client packet test."
+  ],
+  "client_confirmed": ["Snowfeather invitation and quest acceptance previously confirmed; user subsequently reached Stolen Thunder.", "Readiness gossip eventually advances1068 Stage1 to Stage2."],
+  "pending_client": ["All three information gossip windows close after credit without missing-LINK errors.", "Huey inactive before41574, active immediately after acceptance, inactive after abandonment/reward, final1099 return remains usable."],
+  "limits": "This data repair does not certify subsequent rune waves, visuals, combat or the entire artifact chain. Native scenario/catalog and wave work are tracked separately. No user server was stopped or hidden validation server launched."
+}
