@@ -44,12 +44,14 @@ int main(int argc, char** argv)
     std::cout << "CONVERSATION_LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t'
         << line->SpellVisualKitID << '\t' << line->AnimKitID << '\t' << line->AdditionalDuration << '\n';
     std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281};
-    for (uint32 identity : {2737u, 2464u, 3421u, 3183u, 2632u, 2633u, 3364u})
+    for (uint32 identity : {2737u, 2464u, 3421u, 3183u, 2632u, 2633u, 3364u,
+                            2625u, 2630u, 2658u, 2659u, 3427u, 2631u})
     {
         auto combatLine = lines.LookupEntry(identity);
         if (!combatLine)
             return 12;
-        broadcastIds.insert(combatLine->BroadcastTextID);
+        if (combatLine->BroadcastTextID)
+            broadcastIds.insert(combatLine->BroadcastTextID);
         std::cout << "CONVERSATION_LINE\t" << combatLine->ID << '\t' << combatLine->BroadcastTextID << '\t'
             << combatLine->SpellVisualKitID << '\t' << combatLine->AnimKitID << '\t' << combatLine->AdditionalDuration << '\n';
     }

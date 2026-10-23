@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "Orestes/Vereesa farewell conversation1072, summoned by200832 after Mistress Torvis death. Lifetime-only repair; not a whole encounter, quest or visual certification.",
+  "finding": {
+    "before": "The3 native conversation_creature slots each supplied2650ms. GenerateDynamicFieldData sums them to7950; CreateConversation adds5000, setting last-line deadline12950. Native Update removes the conversation once caster playback elapsed time exceeds that field. Lines2659/3427/2631 do not even start until13050/18050/23050ms. Line2658's3352ms voice from9850 also extends past12950. A ready server and valid voice IDs did not prevent early removal.",
+    "repair": "Guarded migration changes only1072 live-creature slot0 duration2650 ->25000. Slots1/2 remain2650, so native sum30300 plus unchanged5000 padding yields35300ms. All6 native line IDs/offsets/actor indices,2 real actors, player sentinel, broadcast/sound/kit IDs, Torvis death actions,200ms cast delay, Orestes10s death/credit list and scenario progression are untouched. No shared core timeout or visibility behavior changed.",
+    "sizing": "Measured maximum line end is23050 +ceil(1977.732ms voice) +5000 native ConversationLine.AdditionalDuration =30028ms. Required native5000 padding makes35028ms; rounding only the adjustable slot to25000 gives35300ms,272ms over that lower bound. This is conservative lifetime sizing from matching local data, not a claim about the client's exact speech-timer implementation."
+  },
+  "sources": {
+    "local_first": "Actual world1072 actor/creature/line rows and sole local SmartAI200832 reference100749/0/2. Reviewed production CreateConversation, GenerateDynamicFieldData, Update and playback deadline handling; matching typed ConversationLine/BroadcastText/SoundKit/SoundKitEntry with actual native read-only Hotfix overlay; local26972 CASC voice bytes. Extended MarksmanshipDialogueCatalog.cpp with all6 farewell lines. Line3427 legitimately has BroadcastTextID0 and5000 AdditionalDuration: skip nonexistent broadcast0, while retaining failures on unresolved nonzero broadcasts. No character data read or modified.",
+    "trinity": {
+      "path": "C:/wamp64/www/TrinityCore",
+      "commit": "c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "url": "https://github.com/TrinityCore/TrinityCore/blob/c2d61e05cf3dc555608e6b2a06772c27d207548c/src/server/game/Entities/Conversation/Conversation.cpp",
+      "reviewed": "Exact26972 conversation creation uses template.LastLineEndTime for both client field and duration, confirming that expiry must cover the final line. ConversationDataStore.h identifies the second packed line uint32 as StartTime in milliseconds, corresponding to our textId field. Its participant/template schema and later packed actor fields differ from our custom rows; no incompatible upstream class/schema or guessed actor flag conversion was copied. Existing bounded donor-review audit remains applicable."
+    },
+    "github": "Targeted searches for conversation_creature/1072/2650 and200832/Orestes returned no usable fix. No external implementation imported or exhaustive-search claim.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "new_rendered_samples": [
+        "8:12: defeated Torvis area and Vereesa's get-you-out/Alleria speech in game chat.",
+        "8:17: Orestes's cathedral/wounds/cold speech bubble;8:22 prone allied NPC with visible green sparkle/heal-like particles. The spell/animation producing those particles was not identified or repaired.",
+        "8:27: Vereesa's Orestes/try-to warning bubble.",
+        "8:32: Orestes's good-luck/save-Alleria bubble, corresponding to native2659;8:37 remains beside the allied/corpse group. This later native line is beyond the old12950ms deadline. Exact packet/cast start time is not established.",
+        "8:47: Vereesa's Rest-in-the-Light speech and STAGE5 Quiet the Herald are visible together. This does not certify our local10s credit/death list or exact local line offsets; later encounter timing remains a separate discrepancy to investigate."
+      ],
+      "limits": "Sparse paused samples only, NOT continuous full relevant sequence or full19:04 footage. Muted; no voice listening or exact timing measurement. Ads, stale seek values, unobserved playback and automatic chapter/subtitle inaccuracies excluded. Sparse-frame timing is not substituted for local26972 data or claimed to match it exactly. Exact client build unknown; no remote media downloaded and temporary background tab closed."
+    }
+  },
+  "native_voice_dependencies": {
+    "actors": "Slots0/1 resolve live100397/100398 through the caster's visibility lookup; slot2/creatureId0 emits the native Player sentinel. Stored creatureGuid values are not used in this generation branch. Missing either real actor still rejects generation with its existing debug diagnostic.",
+    "lines": [
+      {"line":2625,"start_ms":0,"broadcast":103665,"sound_kit":61845,"file_data_id":1382706,"voice_seconds":3.821587,"additional_ms":3000},
+      {"line":2630,"start_ms":4550,"broadcast":103474,"sound_kit":61846,"file_data_id":1382707,"voice_seconds":7.669206,"additional_ms":3000},
+      {"line":2658,"start_ms":9850,"broadcast":104147,"sound_kit":61847,"file_data_id":1382708,"voice_seconds":3.351791,"additional_ms":3000},
+      {"line":2659,"start_ms":13050,"broadcast":104144,"sound_kit":61848,"file_data_id":1382709,"voice_seconds":5.328662,"additional_ms":3000},
+      {"line":3427,"start_ms":18050,"broadcast":0,"voice_seconds":0,"additional_ms":5000},
+      {"line":2631,"start_ms":23050,"broadcast":103672,"sound_kit":61849,"file_data_id":1382710,"voice_seconds":1.977732,"additional_ms":5000}
+    ],
+    "evidence": "All6 matching native lines have visualKit0/AnimKit0. All5 nonzero speech links resolve actual Hotfix broadcasts/native sound records. Test-MarksmanshipFarewellAudio.ps1 fully exports local read-only CASC payloads, validates mono Vorbis metadata with ffprobe and decodes all samples with ffmpeg; all32 index hashes remain unchanged. No audio playback/listening or actual client rendering claimed; no audio/client assets committed."
+  },
+  "checks": [
+    "Test-MarksmanshipFarewell.ps1 passes before and after native updater. Actual-schema TEMPORARY clones apply02 twice, compare every creature field across all conversations after normalizing only intended slot0 duration, confirm all line fields unchanged, and preserve custom slot duration/creature/line timing or alternative conversation_actor definitions.",
+    "ConversationFarewellTest.cpp compiles actual native ConversationData structs, GenerateDynamicFieldData, CreateConversation lifetime block and Update body. Baseline removes at12951ms before3 line starts. Fixed lifetime remains at all6 starts,30028ms measured final end and exact35300 boundary; removes at35301, retains actual actor GUID slots/player sentinel, rejects each missing actor and removes immediately on quest-scope expiry. A fresh object replays the data. World lookup/clock/visibility/scope are controlled hosts, not a real map, client, saved re-entry or packet trace.",
+    "Test-MarksmanshipFarewell.ps1 -VerifyReleaseBinary verifies actual deployed CreateConversation -> GenerateDynamicFieldData -> last-line field/lifetime store, zero30s fallback,5s padding and native playback-elapsed deadline/scope cleanup in Update. Inherited PE chain retains prior pickup/equip/report-use/return/arrival and owner-selector bridges. Source native Update's unused p_time warning remains unsuppressed.",
+    "Test-MarksmanshipFarewellAudio.ps1 -ClientPath D:/wow/Legion7.3.5 passes all5 full-decode/metadata/index checks and all6 conservative voice-plus-additional end times, preserving native5s padding. Requires local matching client, FFmpeg/ffprobe and VisualC++ toolchain.",
+    "Test-MarksmanshipOrestes.ps1, Test-SmartInvokerPlayer.ps1, Test-ScriptPetCredit.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass. No encounter credit, owner resolution, raw invoker or group visibility rewrite belongs to this migration."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "CD44A64DFC14D5652FFEBFA6883A4170FE1B0A1B151F9E8228B29E141500DB99",
+    "migration": "sql/updates/world/2026_10_24_02_marksmanship_farewell_lifetime.sql",
+    "migration_sha1": "6846B1A1E0464A799CFF633DB9BBE94810DDA7E2",
+    "build": "Data-only production repair; no new server build claimed. Canonical EXE hash unchanged; actual generated final-link inputs remain original scripts/Release/scripts.lib and game/Release/game.lib. Native fixture/catalog compiled separately; deployed PE verified.",
+    "readback": "Native updater records02 RELEASED at exact SHA1. Live1072 durations read back25000/2650/2650 and runtime sum+5000=35300. Private pre-update1072 creature/data/actor backups retained; runtime configuration/certificates and character tables unchanged by task operations.",
+    "startup": "Task-owned PID35532 reached World initialized and gracefully exited0. Appended DBErrors0 bytes; protected configs/certificates unchanged. No user/unknown server stopped and no task-owned server remains. Startup does not traverse a quest.",
+    "private_evidence": ".codex/marksmanship-farewell-*.log/TSV/scoped SQL backups, startup directory and ignored runtime-test/marksmanship-farewell[-audio] outputs."
+  },
+  "remaining": [
+    "Torvis's row2 action85/200832 still uses the actual killer as caster and closest Player50 as target. Pet/guardian caster ownership, personal/group visibility and playback-expiry bookkeeping require a separate scoped repair; extending this data lifetime does not prove that every killer reaches a Player-owned conversation. Missing actor/cast failure retry remains unresolved.",
+    "Orestes still uses the native10s delayed48071 credit/death list while his conversation has later lines. Actual death/pose/voice order, group eligibility, early Torvis kills/one-hit scaling, ownerless killers, abandonment/re-entry/relog and both factions need further native/client investigation. No guessed animation, actor resurrection or forced quest completion added.",
+    "Full client scenario972 traversal, all36-route visual/full-video comparisons, real acquisition/equip/use/return, remaining objective-storage alias and other spell219 caster routes remain pending. No whole quest or visual marked client verified."
+  ]
+}
