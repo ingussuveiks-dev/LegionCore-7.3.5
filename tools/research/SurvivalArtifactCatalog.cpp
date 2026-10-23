@@ -54,7 +54,7 @@ int main(int argc, char** argv)
                     std::cout << "STEP\t" << scenario->ID << '\t' << unsigned(step->OrderIndex) << '\t'
                         << step->ID << '\t' << step->Criteriatreeid << '\t' << step->Title->Str[0] << '\t'
                         << step->Description->Str[0] << '\n';
-                    if (scenario->ID == 973)
+                    if (scenario->ID == 973 || scenario->ID == 972)
                     {
                         std::set<uint32> pendingTrees{uint32(step->Criteriatreeid)}, seenTrees;
                         while (!pendingTrees.empty())
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
                                 std::cout << "DAKARR_ROOT_FLAGS\t" << tree->Flags << '\n';
                             if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
                             {
-                                std::cout << "CRITERION\t" << unsigned(step->OrderIndex) << '\t' << id << '\t'
+                                std::cout << (scenario->ID == 973 ? "CRITERION\t" : "MARKSMANSHIP_CRITERION\t") << unsigned(step->OrderIndex) << '\t' << id << '\t'
                                     << criterion->ID << '\t' << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
                                 if (criterion->ID == 29263)
                                     std::cout << "DAKARR_RULE\t" << criterion->ModifierTreeId << '\t' << unsigned(criterion->StartEvent) << '\t'
@@ -86,17 +86,17 @@ int main(int argc, char** argv)
         }
     std::set<uint32> survivalLines;
     for (auto line : lines)
-        if (line->QuestID == 41542 || line->QuestID == 39427 || line->QuestID == 40385)
+        if (line->QuestID == 41542 || line->QuestID == 39427 || line->QuestID == 40385 || line->QuestID == 41540)
             survivalLines.insert(line->QuestLineID);
     for (auto line : lines)
         if (survivalLines.count(line->QuestLineID))
             std::cout << "QUEST\t" << line->QuestLineID << '\t' << unsigned(line->OrderIndex) << '\t' << line->QuestID << '\n';
     for (auto effect : effects)
-        if (effect->SpellID == 205589 || effect->SpellID == 197651 || effect->SpellID == 208601)
+        if (effect->SpellID == 205589 || effect->SpellID == 197651 || effect->SpellID == 208601 || effect->SpellID == 200279 || effect->SpellID == 200262)
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
                 << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t'
                 << effect->EffectTriggerSpell << '\t' << effect->EffectItemType << '\n';
-    std::set<uint32> pendingPackages{1583}, seenPackages, pendingScripts, seenScripts;
+    std::set<uint32> pendingPackages{1583, 1535}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {
         uint32 package = *pendingPackages.begin();

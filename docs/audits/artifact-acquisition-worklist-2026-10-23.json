@@ -811,8 +811,9 @@
       "specialization": "Marksmanship",
       "weapon": "Thas'dorah, Legacy of the Windrunners",
       "item": 128826,
+      "owned_replay_repair_audit": "docs/audits/marksmanship-owned-replay-2026-10-23.json",
       "start": 41540,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "native8-stage/scene review begun; owned/bank gossip replay now final-stage/active-quest gated with native regressions; ordinary loot admission, real equip callback, full sequence/visual/client traversal remain pending",
       "quests": [
         {
           "id": 41540,
