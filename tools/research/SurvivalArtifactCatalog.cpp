@@ -78,12 +78,19 @@ int main(int argc, char** argv)
                             auto tree = trees.LookupEntry(id);
                             if (!tree)
                                 return 6;
+                            if (scenario->ID == 972)
+                                std::cout << "MARKSMANSHIP_TREE\t" << unsigned(step->OrderIndex) << '\t' << tree->ID << '\t'
+                                    << tree->Parent << '\t' << unsigned(tree->Operator) << '\t' << tree->Amount << '\t' << tree->CriteriaID << '\n';
                             if (id == 46289)
                                 std::cout << "DAKARR_ROOT_FLAGS\t" << tree->Flags << '\n';
                             if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
                             {
                                 std::cout << (scenario->ID == 973 ? "CRITERION\t" : "MARKSMANSHIP_CRITERION\t") << unsigned(step->OrderIndex) << '\t' << id << '\t'
                                     << criterion->ID << '\t' << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
+                                if (scenario->ID == 972)
+                                    std::cout << "MARKSMANSHIP_RULE\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
+                                        << unsigned(criterion->StartEvent) << '\t' << unsigned(criterion->FailEvent) << '\t'
+                                        << criterion->EligibilityWorldStateId << '\t' << unsigned(criterion->Flags) << '\t' << tree->Flags << '\n';
                                 if (criterion->ID == 29263)
                                     std::cout << "DAKARR_RULE\t" << criterion->ModifierTreeId << '\t' << unsigned(criterion->StartEvent) << '\t'
                                         << unsigned(criterion->FailEvent) << '\t' << criterion->EligibilityWorldStateId << '\t'

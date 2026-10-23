@@ -831,8 +831,9 @@
       "orestes_discovery_repair_audit": "docs/audits/marksmanship-orestes-discovery-2026-10-24.json",
       "farewell_lifetime_repair_audit": "docs/audits/marksmanship-farewell-lifetime-2026-10-24.json",
       "farewell_caster_repair_audit": "docs/audits/marksmanship-farewell-caster-2026-10-24.json",
+      "orestes_credit_retry_repair_audit": "docs/audits/marksmanship-orestes-credit-retry-2026-10-24.json",
       "start": 41540,
-      "status": "partial: prior pickup/equip/admission/return/claim/arrival/combat/discovery/lifetime repairs retained; Torvis200832 now explicitly casts as the bounded Player/owner with real200ms source/owner revalidation, native group visibility/playback ownership and raw combat invoker preserved. Native/Release/loader evidence separate from client visuals. Missing-actor/cast recovery, Orestes death timing, full video, objective storage, encounter gates/counts, cache/re-entry and actual client loot/equip remain pending",
+      "status": "partial: prior pickup/equip/admission/return/claim/arrival/combat/discovery/lifetime/caster repairs retained. Orestes no longer consumes delayed48071/death with no eligible nearby quest Player: native10s phase arms a guarded Player LOS/credit/LINK-death retry while actor remains loaded. Native/Release/loader evidence separate from client visuals. Missing-actor/cast recovery, Orestes visual death timing, full video, objective storage, encounter gates/counts, unload/reset/cache/re-entry and actual client loot/equip remain pending",
       "quests": [
         {
           "id": 41540,
