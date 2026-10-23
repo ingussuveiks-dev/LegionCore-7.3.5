@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -12,6 +13,8 @@
 using uint32=uint32_t;
 constexpr uint32 CLASS_HUNTER=3,QUEST_STATUS_INCOMPLETE=3;
 constexpr int TEMPSUMMON_MANUAL_DESPAWN=0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT=1,REACT_DEFENSIVE=1;
+constexpr int UNIT_FIELD_EMOTE_STATE=1,EMOTE_STATE_USE_STANDING=69,EMOTE_ONESHOT_NONE=0;
+constexpr uint32 UNIT_FIELD_FLAGS=2,UNIT_FLAG_NOT_SELECTABLE=33554432;
 int failedSummonLogs=0;
 #define TC_LOG_ERROR(...) (++failedSummonLogs)
 struct ObjectGuid {
@@ -24,7 +27,7 @@ struct Motion {int follows=0;void MoveFollow(Creature*,float,float){++follows;}}
 struct Unit {
  virtual ~Unit()=default;bool alive=true,visible=true,hostile=false,combat=false;int phase=1,level=102,faction=35;uint32 entry=0;
  float x=4890,y=315,z=-36;ObjectGuid guid;Unit* victim=nullptr;std::set<Unit*> attackers;
- bool IsAlive()const{return alive;}bool isInCombat(){return combat;}Unit* getVictim(){return victim;}
+ bool IsAlive()const{return alive;}bool isInCombat(){return combat;}Unit* getVictim(){return victim;}uint32 GetEntry(){return entry;}void CombatStop(bool){combat=false;victim=nullptr;}
  std::set<Unit*>* getAttackers(){return &attackers;}
  bool InSamePhaseId(Unit* u)const{return phase==u->phase;}
  bool IsValidAttackTarget(Unit* u){return u&&u!=this&&u->hostile&&u->alive;}
@@ -45,7 +48,7 @@ struct NativeScript {int resets=0;void OnReset(){++resets;}};
 std::map<ObjectGuid,Creature*> objects;std::vector<std::unique_ptr<Creature>> allocated;
 uint64_t serial=100;uint32 failEntry=0;
 struct Creature:Unit {
- AI* ai=nullptr;Motion motion;uint32 map=1495;int despawns=0,shots=0,spawns=0,respawns=0;ObjectGuid summoner;
+ AI* ai=nullptr;Motion motion;uint32 map=1495,dbguid=0,flags=0;int despawns=0,shots=0,bolts=0,activationCasts=0,spawns=0,respawns=0,emote=0;bool reactivating=false;ObjectGuid summoner;
  Creature(uint32 e=104949){entry=e;guid=++serial;objects[guid]=this;}
  ~Creature(){objects.erase(guid);}
  AI* AI(){return ai;}Map* GetMap(){return &worldMap;}uint32 GetMapId()const{return map;}uint32 GetInstanceId()const{return 1;}
@@ -55,7 +58,11 @@ struct Creature:Unit {
  GameObject* FindNearestGameObject(uint32 e,float){assert(e==248780);return &fixtureDoor;}
  Motion* GetMotionMaster(){return &motion;}float GetPositionX(){return x;}float GetPositionY(){return y;}float GetPositionZ(){return z;}float GetOrientation(){return 0;}
  void setFaction(int f){faction=f;}int getFaction(){return faction;}void SetLevel(int l){level=l;}int getLevel(){return level;}void SetReactState(int){}
- void CastSpell(Unit* u,uint32 s,bool){assert(u&&s==6660);++shots;}void SetFacingToObject(Unit*){}
+ void CastSpell(Unit* u,uint32 s,bool){assert(u&&(s==6660||s==187207||s==210845));if(s==6660)++shots;else if(s==187207)++bolts;else ++activationCasts;}void SetFacingToObject(Unit*){}
+ bool HasAura(uint32 s){assert(s==210836);return reactivating;}void SetUInt32Value(int field,int value){assert(field==UNIT_FIELD_EMOTE_STATE);emote=value;}
+ uint32 GetDBTableGUIDLow(){return dbguid;}bool HasFlag(uint32 field,uint32 flag){assert(field==UNIT_FIELD_FLAGS);return (flags&flag)!=0;}
+ void RemoveAurasDueToSpell(uint32 s){assert(s==210836);reactivating=false;}
+ void GetCreatureListWithEntryInGrid(std::list<Creature*>& list,uint32 e,float distance){for(auto p:objects)if(p.second->visible&&p.second->entry==e&&GetDistance(p.second)<distance)list.push_back(p.second);}
 };
 struct SmartAI:AI {
  Creature* me;NativeScript script;bool combatMove=true;int baseUpdates=0;std::vector<std::pair<uint32,uint32>> calls;
@@ -108,7 +115,12 @@ int main(){
  Creature grif(104904);npc_titanstrike_grif helper(&grif);scenario.step=0;helper.UpdateAI(500);assert(helper.bearGuid.IsEmpty());
  scenario.step=1;helper.UpdateAI(500);auto bear=helper.bearGuid;assert(!bear.IsEmpty()&&objects[bear]->summoner==grif.guid&&player.pet==&pet);
  Creature enemy(106335);enemy.hostile=true;pet.victim=&enemy;
- for(unsigned step=1;step<=5;++step){scenario.step=step;helper.UpdateAI(500);assert(helper.bearGuid==bear&&objects[bear]->victim==&enemy);}
+ for(unsigned step=1;step<=5;++step){scenario.step=step;helper.UpdateAI(500);assert(helper.bearGuid==bear);if(step==3)assert(!objects[bear]->victim);else assert(objects[bear]->victim==&enemy);}
+ scenario.step=3;Creature robot(105016);robot.x=grif.x;robot.y=grif.y;robot.reactivating=true;grif.combat=true;helper.UpdateAI(500);
+ assert(!grif.combat&&grif.emote==EMOTE_STATE_USE_STANDING&&!objects[bear]->combat);
+ robot.reactivating=false;helper.UpdateAI(500);assert(grif.emote==0);
+ Creature machine(106354);machine.hostile=true;machine.x=base.x;machine.y=base.y;pet.victim=&machine;ai.UpdateAI(500);assert(base.bolts==1);ai.UpdateAI(500);assert(base.bolts==1);
+ pet.victim=&enemy;scenario.step=5;
  assert(grif.shots>0&&player.pet==&pet);objects[bear]->alive=false;helper.UpdateAI(500);assert(helper.bearGuid!=bear&&!objects[bear]->visible);
  bear=helper.bearGuid;player.status=0;helper.UpdateAI(500);assert(helper.bearGuid.IsEmpty()&&!objects[bear]->visible);
  player.status=3;scenario.id=909;helper.UpdateAI(500);assert(helper.bearGuid.IsEmpty());

@@ -15,6 +15,7 @@ struct npc_titanstrike_prustaga : SmartAI
     TitanstrikeRunes::Wave<ObjectGuid> wave;
     std::vector<ObjectGuid> actors;
     uint32 timer = 0;
+    uint32 workshopShotTimer = 0;
 
     Scenario* Progress() const
     {
@@ -118,6 +119,23 @@ struct npc_titanstrike_prustaga : SmartAI
                 ResetEncounter();
             return;
         }
+        if (progress->GetCurrentStep() == 3)
+        {
+            auto player = Participant();
+            Unit* target = player ? player->getVictim() : nullptr;
+            if (!target && player && player->GetPet())
+                target = player->GetPet()->getVictim();
+            if (workshopShotTimer > 500)
+                workshopShotTimer -= 500;
+            else if (target && target->IsAlive() && (target->GetEntry() == 106352 || target->GetEntry() == 106354) &&
+                me->IsValidAttackTarget(target) && me->InSamePhaseId(target) && me->GetDistance(target) < 40.0f)
+            {
+                me->SetFacingToObject(target);
+                me->CastSpell(target, 187207, false); // native Prustaga Thorim's Bolt
+                workshopShotTimer = 3000;
+            }
+            return;
+        }
         if (progress->GetCurrentStep() != 2 || !Participant())
             return;
         // A fresh/retried instance still at the rune objective can bootstrap
@@ -140,12 +158,18 @@ struct npc_titanstrike_grif : SmartAI
     explicit npc_titanstrike_grif(Creature* creature) : SmartAI(creature) { }
     ObjectGuid bearGuid;
     uint32 timer = 0, shotTimer = 0;
+    bool repairing = false;
 
     void Cleanup()
     {
         if (auto bear = ObjectAccessor::GetCreature(*me, bearGuid))
             bear->DespawnOrUnsummon();
         bearGuid.Clear();
+        if (repairing)
+        {
+            repairing = false;
+            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
+        }
     }
 
     void JustDied(Unit* killer) override
@@ -156,10 +180,15 @@ struct npc_titanstrike_grif : SmartAI
 
     void UpdateAI(uint32 diff) override
     {
+        auto progress = me->GetMapId() == 1495 ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
+        bool workshop = progress && progress->GetScenarioId() == 1068 && progress->GetCurrentStep() == 3;
+        // StartPath refuses actors in combat. Release the previous rune fight
+        // before the native one-shot workshop waypoint event is evaluated.
+        if (workshop)
+            me->CombatStop(true);
         SmartAI::UpdateAI(diff);
         if (timer > diff) { timer -= diff; return; }
         timer = 500;
-        auto progress = me->GetMapId() == 1495 ? sScenarioMgr->GetScenario(me->GetInstanceId()) : nullptr;
         Player* player = nullptr;
         if (progress && progress->GetScenarioId() == 1068 && progress->GetCurrentStep() >= 1)
             for (auto const& ref : me->GetMap()->GetPlayers())
@@ -190,6 +219,26 @@ struct npc_titanstrike_grif : SmartAI
         }
         if (!player->IsAlive())
             return;
+        if (workshop)
+        {
+            bear->CombatStop(true);
+            bear->GetMotionMaster()->MoveFollow(me, 2.0f, 1.5f);
+            auto robot = me->FindNearestCreature(105016, 6.0f, true);
+            bool work = robot && robot->HasAura(210836);
+            if (work)
+                me->SetFacingToObject(robot);
+            if (work != repairing)
+            {
+                repairing = work;
+                me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, work ? EMOTE_STATE_USE_STANDING : EMOTE_ONESHOT_NONE);
+            }
+            return; // Grif/Theodore repair; Prustaga assists the player's fight
+        }
+        if (repairing)
+        {
+            repairing = false;
+            me->SetUInt32Value(UNIT_FIELD_EMOTE_STATE, EMOTE_ONESHOT_NONE);
+        }
         Unit* target = player->getVictim();
         if (!target)
             if (auto pet = player->GetPet())

@@ -244,6 +244,7 @@ void Addsc_paraxis();
 void AddSC_class_hall_artifact_onboarding();
 void AddSC_titanstrike_runes();
 void AddSC_titanstrike_storms();
+void AddSC_titanstrike_workshop();
 
 // Micro-Holidays
 void AddSC_CallOfTheScarab();
@@ -509,6 +510,7 @@ void AddLegionScripts()
     AddSC_class_hall_artifact_onboarding();
     AddSC_titanstrike_runes();
     AddSC_titanstrike_storms();
+    AddSC_titanstrike_workshop();
 
     AddSC_CallOfTheScarab();
     AddSC_GlowcapFestival();

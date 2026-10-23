@@ -1,0 +1,35 @@
+{
+  "scope": "Stolen Thunder41574, scenario1068 Stage4/order3 workshop",
+  "observed": [
+    "User/video: Grif and Theodore stay with XR9-47, Prustaga helps fight the machines, and only defeated attackers permit functional relay/console/hologram progression.",
+    "XR's old UPDATE condition inspected nonexistent Unit invoker0; its30-yard missing-creature radius also excluded the tank43yards away. There was no boot/death identity gate.",
+    "Conversation2055 addressed Mimiron actor2 to a player sentinel before his hologram existed. Its four7200ms actor durations plus the native5000ms tail expired before the last line at58750ms."
+  ],
+  "changes": [
+    "SmartAI delegate records the actual DB tank382302 and crushers382300/382303. Require native Grif boot and all three observed deaths; missing actors cannot count. Preserve native50-yard210845 SpellHit activation and retry still-locked actors after failed casts. Each functional transition runs once.",
+    "Keep native broken/repair animations10588/10589/10590, periodic Reactivating210836->210841 sparks, attacks211733/211736, console249717, hologram106376/aura201239, later stairs/chest/weapon flow and49889 Stage4 credit. Do not grant scenario credit merely for killing machines.",
+    "Grif clears prior combat before the native one-shot StartPath event, faces/works at the relay and keeps Theodore beside him. Prustaga uses her native Thorim's Bolt187207 against workshop attackers. Other stages retain Grif/Theodore combat assistance and the permanent player pet is unchanged.",
+    "Native initial functional/Grif lines remain2055. The remaining original five line IDs move to9002055 with the exact relative offsets; actor2 is the actual Mimiron106376. Begin only after console arrival/hologram success and no earlier than14150ms after functional. Extend lifetime through the last line. Failed hologram/conversation creation retries without duplicate successful handoffs."
+  ],
+  "verification": {
+    "automated": [
+      "Test-TitanstrikeWorkshop.ps1 executes the production XR callbacks with all six kill orders, the distant tank, unrelated corpses, boot/stale/duplicate gates, missing actors, failed activation/summon/conversation and single handoff.",
+      "Real-schema temporary fixtures apply migration twice, preserve custom binding/data, check native boot/SpellHit/console/weapon49889 continuation and every copied line/actor/duration. Native build26972 catalog confirms210845 radius50, conversation2055, repair visual55446 and hologram visual41416.",
+      "Test-TitanstrikeRunes.ps1 executes updated ally callbacks: Grif/Theodore leave combat and work at XR during Stage4, Prustaga attacks with187207, and earlier/later assistance/rune lifecycle remains covered.",
+      "Canonical Release linked-PE verifier checks the actual three DB identities, native activation/repair constants, hologram/conversation, ally spells and SmartAI dispatch."
+    ],
+    "runtime": "Owned hidden canonical worldserver30268 applied the migrations/reached ready and exited gracefully0; no new DBErrors or startup errors. Actor/condition/conversation rows admitted. Startup does not exercise an active workshop or verify client visuals. Earlier server25068 also exited0 while finding the separate wind tracking loader error, now repaired. No user server stopped and no hidden server left running.",
+    "release_sha256": "c5e484263ca6279df27d7df2741af295a9d0bf244a64d6ba25293901b04f9ff3",
+    "client_confirmed": [],
+    "pending_client": [
+      "Grif's working pose and native repair sparks, Theodore staying beside him, Prustaga assistance, all three machine attacks and player/pet/ally killing blows.",
+      "Functional line only after all three deaths; relay walks to and activates console; one blue Mimiron hologram appears; full audible dialogue with correct portrait/speaker and timing.",
+      "Mimiron/companions walk upstairs, native console/chest/weapon effects and Volund arrival advance Stage5; death/abandonment/re-entry and full subsequent Titanstrike completion remain client checks."
+    ]
+  },
+  "reference": {
+    "url": "https://www.youtube.com/watch?v=CroQaRMV_dQ",
+    "review": "Full transcript plus complete timeline10-second visual sampling; Stage4 at6:50-9:30 sampled every5seconds. Native dialogue line IDs, offsets and Hotfix BroadcastText sounds compared with7:00-9:30 reference sequence. No claim of continuous video or fully heard audio.",
+    "assumptions": "Grif's use-standing working emote is a reconstruction; exact retail hand animation and client playback require observation. Existing native visual assets are retained rather than replaced by guessed spell names."
+  }
+}
