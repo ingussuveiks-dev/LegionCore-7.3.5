@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Native scene completion, cancellation and aura-removal instance lifetime; discovered while tracing the missing Talonclaw equip callback.",
+  "local_evidence": [
+    "Player::SceneCompleted left its instance registered and dispatched completion again for repeated packets. SendSpellScene(false) cancelled an arbitrary matching unordered-map entry without erasing it. A late packet from a removed presentation could complete a new aura using the same scene ID.",
+    "SceneCompleted and TrigerScene retained map iterators across script callbacks. Those callbacks can remove a scene aura or start a replacement, invalidating iterators and changing which presentation is current.",
+    "The existing SceneHandler routes both native cancellation and completion packets through SceneCompleted. This behavior is retained rather than inventing a separate cancellation reward rule.",
+    "The separate scene1142 aura-removal completion workaround is preserved. Direct scripted SendSpellScene usage also exists in Draenor and Mardum; the fix is shared infrastructure, not a Survival-only protocol change."
+  ],
+  "repair": [
+    "Snapshot matching instance IDs on removal, send native cancel packets, and retire only that snapshot. Do not cancel a replacement created reentrantly.",
+    "Reject obsolete same-scene completion, mark completion before callbacks, retain the scene ID by value, and retire the completed instance. Reentrant completion cannot recursively dispatch or downgrade the completed status.",
+    "After a callback, verify that the instance remains registered and is not superseded before generic event dispatch or old-aura cleanup. Other scene IDs remain independent.",
+    "Retain existing native trigger event actions, spell/credit routing, the100ms phase-update release and scene1142 completion handling. No packet layout or quest admission is changed."
+  ],
+  "checks": [
+    "Test-SceneLifecycle.ps1 compiles the extracted production launch/trigger/status/completion methods and actual SceneHandler functions. It passes repeated/stale/unknown IDs, aura removal, same-scene overlap/replacement, unrelated scenes, recursive completion and scene1142 cleanup.",
+    "Test-SceneLifecycle.ps1 -Baseline uses pinned4449e4cc and fails as expected: the completed scene remains registered and completion credit is repeated.",
+    "Test-TalonclawPresentation.ps1 also exercises these production methods with the real new aura hooks. Its -BaselineScene mode fails the completed-instance cleanup assertion against4449e4cc.",
+    "Test-VrektScene.ps1 and Test-CommandersValor.ps1 pass their existing native/fixture checks. They are not client tests of every shared scene.",
+    "verify_scene_lifecycle_release.py passes against the actual canonical PE: completion calls status validation, native event dispatch, aura removal and instance-map erasure; cancel and complete handlers retain their completion calls. It also retains all ten existing scenario/LFG PE checks."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "14D0607491DC1C9657FCCD9BD7B6868484834E4898952282B62C6EFB0F8AAC5F",
+    "final_link_inputs": ["build-extractors/src/server/game/Release/game.lib", "build-extractors/src/server/scripts/Release/scripts.lib"],
+    "method": "Normal cmake --build build-extractors --config Release --target worldserver bnetserver -j8, no global OutDir. Generated Release linker dependencies and map contributions game:Player.obj/scripts:artifact_acquisition.obj inspected. The same executable contains the separately committed Talonclaw callback repair.",
+    "startup": "Task-owned PID27724 reached canonical initialization and exited gracefully with code0. No new DBErrors bytes; configuration and certificate hashes unchanged. No worldserver/bnetserver remains running.",
+    "instrumentation_limit": "First monitor attempt PID26316 encountered Windows log-sharing access denial. Its finally block gracefully shut down that task-owned process. The private monitor was corrected to read with FileShare.ReadWrite and only newly appended startup output before the successful second run. DBErrors remained last-modified13:20:20, before both runs."
+  },
+  "remaining": [
+    "Actual client completion/cancel, camera/root/phase/pet restoration and affected shared story scenes still need client testing. Extracted production logic and PE inspection do not certify renderer or packet delivery behavior.",
+    "Generic scene event semantics and all unrelated scene definitions were not redesigned. No full36-chain or continuous YouTube review is claimed."
+  ]
+}

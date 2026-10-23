@@ -37099,20 +37099,24 @@ void Player::SendSpellScene(uint32 miscValue, SpellInfo const* /*spellInfo*/, bo
     }
     else
     {
-        uint32 ID = 0;
+        std::vector<uint32> instances;
         for (auto data : m_sceneInstanceID)
-            if (data.second == miscValue) // no break. get last.
-                ID = data.first;
+            if (data.second == miscValue)
+                instances.push_back(data.first);
 
-        if (!ID)    //as we have sctipt with finishing scene it now could be 0.
+        if (instances.empty())
             return;
 
         //TODO: this is a hack to "properly" reload the phase when completing the Keystone quest + scene
         // this should probably always be happening, but this I'd rather not break anything
         if (miscValue == 1142)
-            SceneCompleted(ID);
+            SceneCompleted(*std::max_element(instances.begin(), instances.end()));
 
-        SendDirectMessage(WorldPackets::Scene::CancelScene(ID).Write());
+        for (uint32 instance : instances)
+        {
+            SendDirectMessage(WorldPackets::Scene::CancelScene(instance).Write());
+            m_sceneInstanceID.erase(instance);
+        }
     }
 }
 
@@ -37131,10 +37135,26 @@ void Player::SceneCompleted(uint32 instance)
     if (data == m_sceneInstanceID.end())
         return;
 
+    uint32 sceneId = data->second;
+    if (HasSceneStatus(sceneId, SCENE_COMPLETE))
+        return;
+    for (auto const& other : m_sceneInstanceID)
+        if (other.second == sceneId && other.first > instance)
+        {
+            m_sceneInstanceID.erase(instance);
+            return;
+        }
+    m_sceneStatus[sceneId] = SCENE_COMPLETE;
+
     // Triger some events at complete scene.
     TrigerScene(instance, "complete");
 
-    m_sceneStatus[data->second] = SCENE_COMPLETE;
+    for (auto const& other : m_sceneInstanceID)
+        if (other.second == sceneId && other.first > instance)
+        {
+            m_sceneInstanceID.erase(instance);
+            return;
+        }
 
     AddDelayedEvent(100, [this]() -> void
     {
@@ -37144,12 +37164,13 @@ void Player::SceneCompleted(uint32 instance)
     AuraEffectList const& periodicAuras = GetAuraEffectsByType(SPELL_AURA_ACTIVATE_SCENE);
     for (AuraEffectList::const_iterator i = periodicAuras.begin(); i != periodicAuras.end(); ++i)
     {
-        if ((*i)->GetMiscValue() == data->second)
+        if ((*i)->GetMiscValue() == sceneId)
         {
             RemoveAurasDueToSpell((*i)->GetId());
             break;
         }
     }
+    m_sceneInstanceID.erase(instance);
 }
 
 //! If check SCENE_LAUNCH return true if SCENE_COMPLETE too
@@ -37171,18 +37192,29 @@ void Player::TrigerScene(uint32 instanceID, std::string const Event)
         return;
     }
 
-    if (SpellScene const* spell_scene = sSpellMgr->GetSpellScene(data->second))
+    uint32 sceneId = data->second;
+    for (auto const& other : m_sceneInstanceID)
+        if (other.second == sceneId && other.first > instanceID)
+            return;
+    if (SpellScene const* spell_scene = sSpellMgr->GetSpellScene(sceneId))
         if (sScriptMgr->OnSceneTrigger(this, spell_scene, Event))
             return;
 
-    const std::vector<SceneTriggerEvent>* triggerEvent = sSpellMgr->GetSceneTriggerEvent(data->second);
+    if (m_sceneInstanceID.find(instanceID) == m_sceneInstanceID.end())
+        return;
+    for (auto const& other : m_sceneInstanceID)
+        if (other.second == sceneId && other.first > instanceID)
+            return;
+
+    const std::vector<SceneTriggerEvent>* triggerEvent = sSpellMgr->GetSceneTriggerEvent(sceneId);
     if (!triggerEvent)
     {
-        TC_LOG_DEBUG("entities.player", " >> TrigerScene can't find SpellScene instance Event: %s instance %u Misc %u", Event.c_str(), instanceID, data->second);
+        TC_LOG_DEBUG("entities.player", " >> TrigerScene can't find SpellScene instance Event: %s instance %u Misc %u", Event.c_str(), instanceID, sceneId);
         return;
     }
 
-    m_sceneStatus[data->second] = SCENE_TRIGER;
+    if (!HasSceneStatus(sceneId, SCENE_COMPLETE))
+        m_sceneStatus[sceneId] = SCENE_TRIGER;
 
     for (std::vector<SceneTriggerEvent>::const_iterator itr = triggerEvent->begin(); itr != triggerEvent->end(); ++itr)
     {
