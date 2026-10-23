@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-23",
+  "class": "Hunter",
+  "specialization": "Survival",
+  "quest": 40385,
+  "object": 248834,
+  "item": 128808,
+  "scope": "Repair the actual Talonclaw loot path and scoped owned-item completion. The complete quest/scenario and its visual sequence remain under review.",
+  "local_evidence": [
+    "Fresh runtime MariaDB query: chest248834 is type3/SmartGameObjectAI, Data1=0, ScriptName empty, native lock1691 and flags2097152. Existing gameobject_loot_template248834 contains Talonclaw128808 at100 percent, one copy.",
+    "Its native state70/3 root casts205589, then LINK1 sends script event92, then LINK3 summons100005. This existing completion sequence was retained.",
+    "The matching26972 native SpellEffect export has two effects on205589, both aura application; the scene aura uses MiscValue1220. It has no item-create effect. spell_scene1220 selects package1583, PlaybackFlags21, no custom script. Fresh spell_scene_event query returns no1220 rows; spell_script_names has no205589 handler. No demonstrated alternate item grant repairs the absent loot link.",
+    "Quest data maps The Spear in the Shadow40385 to the actual Survival acquisition sequence, after the selection/preparation quest41542. Keep the actual acquisition quest active; selection41542 alone does not admit pickup.",
+    "The id2 gossip scene replay was already guarded by source22/group3/sourceId1/type2/128808/quantity1. It was an owned-item replay, not proven early credit for an unowned item. The previous general pickup audit is refined accordingly."
+  ],
+  "repair": [
+    "Guardedly link only248834's existing loot ID and register go_artifact_acquisition, preserving native lock, flags, quest/personal fields and AI. The migration preserves custom handlers/nonstandard loot links.",
+    "Add248834/128808/HUNTER/40385 to the existing shared acquisition handler. Ordinary acquisition uses actual native loot; full bags remain a loot failure without completion. A valid already-owned or bank copy replays the native completed-loot event once and the native ownership criterion, without creating another unique item.",
+    "Replace only the now-redundant exact id2 owned-copy gossip replay and remove its exact orphan ownership condition after successful registration. The handler retains class, active/nonrewarded quest, alive/teleport, spawn/flags, phase/visibility/LOS/map/distance and repeated-completion gates.",
+    "Native scene205589, package1583, completed-loot root and LINK1/LINK3 actions are unchanged. No scenario step is force-completed, no actor is made selectable early, and no item is added directly to any character."
+  ],
+  "checks": [
+    "Test-TalonclawAcquisition.ps1 passes before and after deployment: actual-schema temporary tables, baseline loot0, owned gossip/condition restoration, repeat migration,100-percent matching item, preserved lock/flags/settings, native completion root and links, redundant gossip/orphan removal, unrelated Marksmanship chest and custom-handler preservation.",
+    "Test-ArtifactAcquisition.ps1 -Baseline fails as expected using pinned6c8e74a5: the new Survival owned-copy production-handler assertion fails. The current fixture passes all nine handlers and explicit40385 incomplete/complete, owned/bank/repeat and41542-only rejection checks, alongside the existing failure and native callback bridge cases.",
+    "Test-ArtifactAcquisitionData.ps1 passes for the previous eight repairs, including their native GetLootId selector and idempotent SQL fixtures.",
+    "Release worldserver and bnetserver build succeeds without global OutDir overrides. Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary confirms both42185 and40385 linked Hunter tuples; verify_artifact_force_equip_release.py confirms the repaired shared equip function still delegates to native inventory validation/swap.",
+    "Migration installed in the actual runtime MariaDB after private affected-table backups. Readback: Data1=248834/ScriptName=go_artifact_acquisition; IDs0/1/3 retain their native actions/links; no id2 or its orphan source22 condition remains.",
+    "Canonical configuration startup/shutdown succeeds at17:18 Europe/Riga; zero newly appended DBErrors bytes. Protected configuration/certificate hashes remain unchanged. Task-owned worldserver PID27764 exits gracefully with code0; no user server was stopped and no task-owned server remains running."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "0D4E801A4478B6DFDE30CADA48A8307C1FDF263612CC827D12E54D5E4EE4AA0E",
+    "migration": "sql/updates/world/2026_10_23_10_talonclaw_acquisition.sql",
+    "private_evidence": ".codex/talonclaw-startup and .codex/backups/talonclaw-acquisition-20261023"
+  },
+  "remaining": [
+    "No YouTube sequence was reviewed for Survival in this repair. No client pickup animation, weapon visibility, equip, follow-up NPC/transport or full quest traversal is certified.",
+    "Trace the complete entrance/encounter/stage/cleanup sequence and compare native7.3.5 data, compatible donor history and video. Explicitly test object admission before each intended stage, repeated interactions, one-hit combat, pet/guardian/group/faction credit, missing/failed actors/casts, abandonment and re-entry.",
+    "Client checks: empty/full bags and retry, ordinary/owned/bank copy, actual weapon obtained exactly once, scene playback and follow-up100005 at the right time, manual/effect-driven equip and prior weapon storage, saved artifact powers/relog, camera/movement/pet restoration. Native handler fixtures and startup do not execute these client paths."
+  ]
+}

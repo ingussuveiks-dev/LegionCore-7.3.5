@@ -1,9 +1,9 @@
-param([switch]$VerifyReleaseBinary)
+param([switch]$VerifyReleaseBinary,[switch]$Baseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/artifact-acquisition"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
-$s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
+if($Baseline){$s=(& git -C $repo show 6c8e74a5:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"}else{$s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw}
 $a=$s.IndexOf('namespace ArtifactAcquisition');$b=$s.IndexOf('namespace DarkRidersCompletion',$a)
 [IO.File]::WriteAllText("$out/Acquisition.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
@@ -32,5 +32,7 @@ if($VerifyReleaseBinary){
  $correct=[BitConverter]::ToString([byte[]](@(249812,128861,3,42185,0) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
  $stale=[BitConverter]::ToString([byte[]](@(249812,128861,3,42158,41574) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
  if(!$hex.Contains($correct) -or $hex.Contains($stale)){throw 'Canonical Release has stale Hunter artifact quest admission'}
- 'PASS: canonical executable contains artifact acquisition and the native Hunter42185 pickup tuple, without the stale prerequisite tuple'
+ $survival=[BitConverter]::ToString([byte[]](@(248834,128808,3,40385,0) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
+ if(!$hex.Contains($survival)){throw 'Canonical Release lacks Survival40385 pickup admission'}
+ 'PASS: canonical executable contains artifact acquisition and native Hunter42185/40385 pickup tuples, without the stale prerequisite tuple'
 }

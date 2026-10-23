@@ -7,6 +7,7 @@ namespace ArtifactAcquisition
 struct Pickup {uint32 object,item,playerClass,quest,alternate;};
 Pickup const Pickups[]={
     {249812,128861,CLASS_HUNTER,42185,0}, // Never Hunt Alone, after the workshop
+    {248834,128808,CLASS_HUNTER,40385,0},
     {248572,128868,CLASS_PRIEST,41631,0},
     {246699,128403,CLASS_DEATH_KNIGHT,40934,40986},
     {249814,127857,CLASS_MAGE,42011,0},

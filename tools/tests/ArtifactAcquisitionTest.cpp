@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 using uint32=uint32_t;
 #define TC_LOG_INFO(...) ((void)0)
@@ -40,6 +41,20 @@ bool NativeCompletedLoot(Loot* loot,GameObject* go){
 }
 int main()
 {
+ _set_abort_behavior(0,_CALL_REPORTFAULT);
+ for(uint32 status:{uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)}){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=40385;hunter.status=status;
+  GameObject spear;spear.entry=248834;
+  assert(!ArtifactAcquisition::Use(&hunter,&spear));
+  hunter.bank=true;assert(ArtifactAcquisition::Use(&hunter,&spear));
+  assert(spear.ai.script.calls==1&&hunter.lastItem==128808);
+  assert(ArtifactAcquisition::Use(&hunter,&spear)&&spear.ai.script.calls==1);
+ }
+ {
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=41542;hunter.owned=true;
+  GameObject spear;spear.entry=248834;
+  assert(ArtifactAcquisition::Use(&hunter,&spear)&&!spear.ai.script.calls&&!hunter.ownItemEvents);
+ }
  // Native quest chain: Stolen Thunder41574 -> Creator's Workshop42158 ->
  // Never Hunt Alone42185. The final chest belongs to42185, not either
  // prerequisite (which has already been rewarded at the Temple of Storms).
@@ -79,5 +94,5 @@ int main()
   }
  }
  Player p;GameObject go;go.entry=252054;assert(!ArtifactAcquisition::Use(&p,&go)); // existing Scepter handler unchanged
- std::cout<<"PASS: eight production artifact pickups; ordinary loot path, owned/bank copy and real SmartAI loot-state callback, once-only and class/quest/visibility/location gates\n";
+ std::cout<<"PASS: nine production artifact pickups; ordinary loot path, owned/bank copy and real SmartAI loot-state callback, once-only and class/quest/visibility/location gates\n";
 }
