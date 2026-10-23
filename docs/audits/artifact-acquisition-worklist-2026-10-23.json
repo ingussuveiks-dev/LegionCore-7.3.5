@@ -814,8 +814,9 @@
       "item": 128826,
       "owned_replay_repair_audit": "docs/audits/marksmanship-owned-replay-2026-10-23.json",
       "presentation_repair_audit": "docs/audits/marksmanship-presentation-2026-10-23.json",
+      "pickup_admission_repair_audit": "docs/audits/marksmanship-pickup-admission-2026-10-23.json",
       "start": 41540,
-      "status": "partial: native8-stage/scene review, final-stage owned/bank replay and guarded1169-to200262 equip callback pass native/Release checks; ordinary loot admission, objective storage, full video/sequence and actual client visuals/equip remain pending",
+      "status": "partial: native8-stage/scene review, original owned/bank replay, final-stage opening/real loot/post-claim gates and guarded1169-to200262 equip callback pass native/Release checks; objective storage, report-use visibility edges, full video/sequence and actual client visuals/loot/equip remain pending",
       "quests": [
         {
           "id": 41540,

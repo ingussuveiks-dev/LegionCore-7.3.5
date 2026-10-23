@@ -4,19 +4,22 @@
 #include <iostream>
 using uint32=uint32_t;
 #define TC_LOG_INFO(...) ((void)0)
+#define TC_LOG_DEBUG(...) ((void)0)
 enum {CLASS_HUNTER=3,CLASS_PRIEST=5,CLASS_DEATH_KNIGHT=6,CLASS_MAGE=8,CLASS_WARLOCK=9,CLASS_DRUID=11,
  QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,GAMEOBJECT_FIELD_FLAGS=0,GO_FLAG_IN_USE=1,GO_FLAG_NOT_SELECTABLE=2,
- GO_JUST_DEACTIVATED=3,SMART_EVENT_GO_STATE_CHANGED=70,CRITERIA_TYPE_OWN_ITEM=36,GAMEOBJECT_TYPE_FISHINGNODE=17};
+ GO_JUST_DEACTIVATED=3,SMART_EVENT_GO_STATE_CHANGED=70,SMART_EVENT_GOSSIP_HELLO=64,CRITERIA_TYPE_OWN_ITEM=36,GAMEOBJECT_TYPE_FISHINGNODE=17};
 struct Player;
+struct GameObject;
 struct Scenario {uint32 id=973,step=12;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}};
 struct ScenarioManager {Scenario scenario;bool present=true;Scenario* GetScenario(uint32 instance){return present&&instance==42?&scenario:nullptr;}} scenarioManager;
 auto sScenarioMgr=&scenarioManager;
 using Unit=Player;using LootState=uint32;
 struct Script {uint32 calls=0,event=0,state=0;Unit* invoker=nullptr;
- void ProcessEventsFor(uint32 e,Unit* u,uint32 s){++calls;event=e;state=s;invoker=u;}
+ void ProcessEventsFor(uint32 e,Unit* u,uint32 s,uint32=0,bool=false,void const* = nullptr,GameObject* = nullptr){++calls;event=e;state=s;invoker=u;}
 };
-struct SmartGameObjectAI {Script script;Script* GetScript(){return &script;}void OnStateChanged(uint32,Unit*);};
+struct SmartGameObjectAI {Script script;GameObject* go=nullptr;Script* GetScript(){return &script;}void OnStateChanged(uint32,Unit*);bool GossipHello(Player*,bool);};
 #include "OnStateChanged.inc"
+#include "GossipHello.inc"
 struct GameObject {
  uint32 entry=0,flags=0,m_lootState=0;bool spawned=true;int map=1;SmartGameObjectAI ai;
  uint32 GetEntry(){return entry;}uint32 GetGoType(){return 3;}bool isSpawned(){return spawned;}bool HasFlag(uint32,uint32 mask){return (flags&mask)!=0;}
@@ -43,6 +46,11 @@ struct Player {
 struct Loot{bool empty=false;bool isLooted(){return empty;}};
 bool NativeCompletedLoot(Loot* loot,GameObject* go){
 #include "CompletedLootPredicate.inc"
+}
+void PreparePickup(GameObject& object, uint32 entry)
+{
+ scenarioManager={};object.entry=entry;
+ if(entry==248419){scenarioManager.scenario.id=972;scenarioManager.scenario.step=7;object.mapId=1489;}
 }
 int main()
 {
@@ -78,6 +86,23 @@ int main()
   assert(ArtifactAcquisition::Use(&hunter,&spear)&&!spear.ai.script.calls&&!hunter.ownItemEvents);
  }
  scenarioManager={};
+ for(uint32 stage=0;stage<=14;++stage) for(uint32 ownership=0;ownership<3;++ownership){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=40419;hunter.owned=ownership==1;hunter.bank=ownership==2;
+  GameObject bow;PreparePickup(bow,248419);scenarioManager.scenario.step=stage;
+  bool allowed=stage==7||stage==8;
+  assert(ArtifactAcquisition::Use(&hunter,&bow)==!allowed);
+  if(allowed){bow.ai.go=&bow;assert(!bow.ai.GossipHello(&hunter,true));}
+  assert(bow.ai.script.calls==uint32(allowed)&&!hunter.ownItemEvents&&bow.getLootState()!=GO_JUST_DEACTIVATED);
+  if(allowed)assert(bow.ai.script.event==64&&bow.ai.script.state==0&&bow.ai.script.invoker==&hunter);
+ }
+ for(uint32 missing=0;missing<4;++missing){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=40419;hunter.owned=true;
+  GameObject bow;PreparePickup(bow,248419);
+  if(missing==0)scenarioManager.present=false;if(missing==1)scenarioManager.scenario.id=1136;
+  if(missing==2)hunter.instance=43;if(missing==3)bow.mapId=1;
+  assert(ArtifactAcquisition::Use(&hunter,&bow)&&!bow.ai.script.calls&&!hunter.ownItemEvents);
+ }
+ scenarioManager={};
  // Native quest chain: Stolen Thunder41574 -> Creator's Workshop42158 ->
  // Never Hunt Alone42185. The final chest belongs to42185, not either
  // prerequisite (which has already been rewarded at the Temple of Storms).
@@ -95,21 +120,28 @@ int main()
   assert(ArtifactAcquisition::Use(&hunter,&rifle)&&!rifle.ai.script.calls&&!hunter.ownItemEvents);
  }
  for(auto row:ArtifactAcquisition::Pickups){
-  Player p;p.cls=row.playerClass;p.quest=row.quest;GameObject go;go.entry=row.object;
+  Player p;p.cls=row.playerClass;p.quest=row.quest;GameObject go;PreparePickup(go,row.object);
   assert(!ArtifactAcquisition::Use(&p,&go)&&!go.ai.script.calls); // real native loot required
   // Full bags leave real loot present: native LootHandler only deactivates a
   // fully looted chest. The extracted native event bridge receives no call.
   assert(go.getLootState()!=GO_JUST_DEACTIVATED);
   Loot pending;assert(!NativeCompletedLoot(&pending,&go));
   pending.empty=true;assert(NativeCompletedLoot(&pending,&go));
-  p.owned=true;assert(ArtifactAcquisition::Use(&p,&go));
-  assert(go.ai.script.calls==1&&go.ai.script.event==70&&go.ai.script.state==3&&go.ai.script.invoker==&p);
-  assert(p.ownItemEvents==1&&p.lastItem==row.item);
-  assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1&&p.ownItemEvents==1);
-  go=GameObject{};go.entry=row.object;p.owned=false;p.bank=true;assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1);
-  if(row.alternate){go=GameObject{};go.entry=row.object;p.quest=row.alternate;assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1);}
+  if(row.object==248419){
+   p.owned=true;assert(!ArtifactAcquisition::Use(&p,&go)&&!go.ai.script.calls&&!p.ownItemEvents);
+   p.owned=false;p.bank=true;assert(!ArtifactAcquisition::Use(&p,&go)&&!go.ai.script.calls&&!p.ownItemEvents);
+   assert(go.getLootState()!=GO_JUST_DEACTIVATED);
+  }
+  else{
+   p.owned=true;assert(ArtifactAcquisition::Use(&p,&go));
+   assert(go.ai.script.calls==1&&go.ai.script.event==70&&go.ai.script.state==3&&go.ai.script.invoker==&p);
+   assert(p.ownItemEvents==1&&p.lastItem==row.item);
+   assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1&&p.ownItemEvents==1);
+   go=GameObject{};PreparePickup(go,row.object);p.owned=false;p.bank=true;assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1);
+   if(row.alternate){go=GameObject{};PreparePickup(go,row.object);p.quest=row.alternate;assert(ArtifactAcquisition::Use(&p,&go)&&go.ai.script.calls==1);}
+  }
   for(int failure=0;failure<13;++failure){
-   p=Player{};p.cls=row.playerClass;p.quest=row.quest;p.owned=true;go=GameObject{};go.entry=row.object;
+   p=Player{};p.cls=row.playerClass;p.quest=row.quest;p.owned=true;go=GameObject{};PreparePickup(go,row.object);
    if(failure==0)p.cls=1;if(failure==1)p.quest=999;if(failure==2)p.rewarded=true;if(failure==3)p.status=0;
    if(failure==4)p.alive=false;if(failure==5)p.teleport=true;if(failure==6)p.phase=false;if(failure==7)p.visible=false;
    if(failure==8)p.los=false;if(failure==9)p.distance=6;if(failure==10)p.map=2;if(failure==11)go.flags=GO_FLAG_NOT_SELECTABLE;if(failure==12)go.spawned=false;
@@ -117,5 +149,5 @@ int main()
   }
  }
  Player p;GameObject go;go.entry=252054;assert(!ArtifactAcquisition::Use(&p,&go)); // existing Scepter handler unchanged
- std::cout<<"PASS: nine production artifact pickups; ordinary loot path, owned/bank copy and real SmartAI loot-state callback, once-only and class/quest/visibility/location gates\n";
+ std::cout<<"PASS: ten pickup admissions; Marksmanship keeps native gossip without forced deactivation, nine existing owned-state replays retain the real SmartAI callback and common class/quest/visibility/location gates\n";
 }

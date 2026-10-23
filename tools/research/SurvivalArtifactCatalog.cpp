@@ -28,6 +28,7 @@ int main(int argc, char** argv)
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
     DB2Storage<QuestLineXQuestEntry> lines("QuestLineXQuest.db2", QuestLineXQuestLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
@@ -36,6 +37,8 @@ int main(int argc, char** argv)
     if (!scenarios.Load(argv[1], 0) || !steps.Load(argv[1], 0) || !lines.Load(argv[1], 0) || !effects.Load(argv[1], 0))
         return 2;
     if (!trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0))
+        return 2;
+    if (!locks.Load(argv[1], 0))
         return 2;
     if (!scripts.Load(argv[1], 0))
         return 3;
@@ -96,6 +99,12 @@ int main(int argc, char** argv)
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
                 << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t'
                 << effect->EffectTriggerSpell << '\t' << effect->EffectItemType << '\n';
+    auto lock = locks.LookupEntry(1691);
+    if (!lock)
+        return 7;
+    for (uint32 slot = 0; slot < 8; ++slot)
+        std::cout << "MARKSMANSHIP_LOCK\t" << slot << '\t' << unsigned(lock->Type[slot]) << '\t'
+            << lock->Index[slot] << '\t' << lock->Skill[slot] << '\t' << unsigned(lock->Action[slot]) << '\n';
     std::set<uint32> pendingPackages{1583, 1535}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {

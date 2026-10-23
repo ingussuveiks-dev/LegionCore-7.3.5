@@ -12,6 +12,9 @@ $a=$s.IndexOf('void GameObject::SetLootState(');$b=$s.IndexOf('    if (m_model)'
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 $a=$s.IndexOf('void SmartGameObjectAI::OnStateChanged(');$b=$s.IndexOf('void SmartGameObjectAI::EventInform(',$a)
 [IO.File]::WriteAllText("$out/OnStateChanged.inc",$s.Substring($a,$b-$a))
+$a=$s.IndexOf('bool SmartGameObjectAI::GossipHello(');$b=$s.IndexOf('bool SmartGameObjectAI::GossipUse(',$a)
+if($a -lt 0 -or $b -lt $a){throw 'Native gameobject gossip dispatcher missing'}
+[IO.File]::WriteAllText("$out/GossipHello.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Handlers/LootHandler.cpp" -Raw
 if(!$s.Contains('else if (loot->isLooted() || go->GetGoType() == GAMEOBJECT_TYPE_FISHINGNODE)') -or !$s.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Native completed-loot admission changed'}
 $lootPredicate=[regex]::Match($s,'else if \((loot->isLooted\(\) \|\| go->GetGoType\(\) == GAMEOBJECT_TYPE_FISHINGNODE)\)')
@@ -34,5 +37,7 @@ if($VerifyReleaseBinary){
  if(!$hex.Contains($correct) -or $hex.Contains($stale)){throw 'Canonical Release has stale Hunter artifact quest admission'}
  $survival=[BitConverter]::ToString([byte[]](@(248834,128808,3,40385,0) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
  if(!$hex.Contains($survival)){throw 'Canonical Release lacks Survival40385 pickup admission'}
- 'PASS: canonical executable contains artifact acquisition and native Hunter42185/40385 pickup tuples, without the stale prerequisite tuple'
+ $marksmanship=[BitConverter]::ToString([byte[]](@(248419,128826,3,40419,0) | ForEach-Object {[BitConverter]::GetBytes([uint32]$_)}))
+ if(!$hex.Contains($marksmanship)){throw 'Canonical Release lacks Marksmanship40419 pickup admission'}
+ 'PASS: canonical executable contains artifact acquisition and native Hunter42185/40385/40419 pickup tuples, without the stale prerequisite tuple'
 }

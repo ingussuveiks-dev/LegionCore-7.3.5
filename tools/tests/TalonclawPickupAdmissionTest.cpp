@@ -5,8 +5,10 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 using uint32 = uint32_t;
+using int64 = int64_t;
 using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
 enum { CONDITION_ITEM = 2, CONDITION_CLASS = 15, CONDITION_MAPID = 22, CONDITION_SCENARION_STEP = 44,
@@ -45,7 +47,8 @@ struct Scenario { uint32 id = expectedScenario, step = firstStage; uint32 GetSce
 struct ScenarioManager { Scenario scenario; bool present = true; Scenario* GetScenario(uint32 id) { return present && id == 42 ? &scenario : nullptr; } } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
 struct Condition;
-struct ConditionSourceInfo { Unit* object; explicit ConditionSourceInfo(Unit* value) : object(value) {} };
+using WorldObject = Unit;
+struct ConditionSourceInfo { Unit* object; explicit ConditionSourceInfo(Unit* value, Unit* = nullptr) : object(value) {} };
 struct Condition {
     uint32 ElseGroup = 0, ConditionType = 0, ConditionValue1 = 0, ConditionValue2 = 0, ConditionValue3 = 0, ReferenceId = 0;
     bool NegativeCondition = false;
@@ -63,9 +66,16 @@ struct Condition {
 };
 using ConditionList = std::vector<Condition*>;
 using ConditionReferenceContainer = std::map<uint32, ConditionList>;
+using ConditionTypeContainer = std::map<uint32, ConditionList>;
+using SmartEventConditionContainer = std::map<std::pair<int32_t, uint32>, ConditionTypeContainer>;
 struct ConditionMgr {
     ConditionReferenceContainer ConditionReferenceStore;
+    SmartEventConditionContainer SmartEventConditionStore;
     bool IsObjectMeetToConditionList(ConditionSourceInfo&, ConditionList const&) const;
+    bool IsObjectMeetingSmartEventConditions(int64, uint32, uint32, Unit*, WorldObject*) const;
+    bool IsObjectMeetToConditions(ConditionSourceInfo& sourceInfo, ConditionList const& conditions) const {
+        return conditions.empty() || IsObjectMeetToConditionList(sourceInfo, conditions);
+    }
     bool IsObjectMeetToConditions(Unit* object, ConditionList const& conditions) const {
         if (conditions.empty()) return true;
         ConditionSourceInfo sourceInfo(object);
@@ -74,6 +84,7 @@ struct ConditionMgr {
 } conditionManager;
 auto* sConditionMgr = &conditionManager;
 #include "ElseGroups.inc"
+#include "SmartEventConditions.inc"
 struct LootItem {
     bool loot_restricted = false, needs_quest = false;
     std::set<uint32> allowedGUIDs;
@@ -93,13 +104,16 @@ int main(int argc, char** argv) {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     assert(argc == 2 || argc == 3);
     if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; expectedItem = 128826; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(argc == 3 ? 24 : 20);
+    bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot";
+    uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
+    std::ifstream input(argv[1]); std::vector<Condition> rows(ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
         assert(target == 0);
     }
     LootItem item; for (Condition& condition : rows) item.conditions.push_back(&condition);
+    if (ownedReplay) conditionManager.SmartEventConditionStore[{248419, 1}][eventId + 1] = item.conditions;
     CachedLoot cache;
     {
         Player player; LootItem unguarded; scenarioManager.scenario.step = firstStage - 1;
@@ -111,6 +125,7 @@ int main(int argc, char** argv) {
         bool expected = (stage == firstStage || stage == firstStage + 1) && (status == 1 || status == 3);
         assert(item.AllowedForPlayer(&player) == expected);
         assert((cache.Read(&player, &item) != nullptr) == expected);
+        if (ownedReplay) assert(conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &player, &player) == expected);
     }
     for (uint32 invalid = 0; invalid < 8; ++invalid) {
         scenarioManager = {}; worldMap.instanced = true; instanceMap.id = 42;
@@ -132,12 +147,20 @@ int main(int argc, char** argv) {
     LootItem unrelated; assert(unrelated.AllowedForPlayer(&player));
     item.loot_restricted = true; assert(!item.AllowedForPlayer(&player));
     assert(!cache.Read(&player, nullptr));
-    if (argc == 3) {
+    if (ownedReplay) {
         player.rewarded = false; player.owned = false; player.bank = true; item.loot_restricted = false;
         Condition original; original.ConditionType = CONDITION_ITEM; original.ConditionValue1 = expectedItem; original.ConditionValue2 = 1;
         ConditionSourceInfo originalContext(&player); assert(!original.Meets(originalContext));
         assert(item.AllowedForPlayer(&player));
         player.bank = false; assert(!item.AllowedForPlayer(&player));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &player, &player));
+        Unit pet;
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &pet, &pet));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, nullptr, nullptr));
+    }
+    else {
+        player.rewarded = false; player.owned = false; player.bank = false; item.loot_restricted = false;
+        assert(item.AllowedForPlayer(&player) && cache.Read(&player, &item));
     }
     std::cout << "PASS: actual SQL rows/native condition cases/ElseGroup evaluator and loot condition bridge reject early/wrong/abandoned/cached requests, retaining intended final/completed stages and incomplete/complete quests without changing other loot\n";
 }

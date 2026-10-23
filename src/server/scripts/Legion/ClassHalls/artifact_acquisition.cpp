@@ -117,6 +117,7 @@ struct Pickup {uint32 object,item,playerClass,quest,alternate;};
 Pickup const Pickups[]={
     {249812,128861,CLASS_HUNTER,42185,0}, // Never Hunt Alone, after the workshop
     {248834,128808,CLASS_HUNTER,40385,0},
+    {248419,128826,CLASS_HUNTER,40419,0},
     {248572,128868,CLASS_PRIEST,41631,0},
     {246699,128403,CLASS_DEATH_KNIGHT,40934,40986},
     {249814,127857,CLASS_MAGE,42011,0},
@@ -146,6 +147,14 @@ bool Use(Player* p,GameObject* go)
                 if (go->GetMapId() != 1511 || !scenario || scenario->GetScenarioId() != 973 ||
                     scenario->GetCurrentStep() < 12 || scenario->GetCurrentStep() > 13)
                     return true;
+            }
+            if (row.object == 248419)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(p->GetInstanceId());
+                if (go->GetMapId() != 1489 || !scenario || scenario->GetScenarioId() != 972 ||
+                    scenario->GetCurrentStep() < 7 || scenario->GetCurrentStep() > 8)
+                    return true;
+                return false;
             }
             if (!p->HasItemCount(row.item,1,true)) return false;
             // A shop/bank copy satisfies ownership. Replay the same native

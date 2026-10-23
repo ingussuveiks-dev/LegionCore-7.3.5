@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath)
+param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-pickup-admission"
@@ -57,6 +57,7 @@ $source=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
 $cases=(Section $source '        case CONDITION_ITEM:' '        case CONDITION_ITEM_EQUIPPED:')+(Section $source '        case CONDITION_CLASS:' '        case CONDITION_RACE:')+(Section $source '        case CONDITION_QUESTREWARDED:' '        case CONDITION_QUEST_NONE:')+(Section $source '        case CONDITION_MAPID:' '        case CONDITION_AREAID:')+(Section $source '        case CONDITION_SCENARION_STEP:' '        case CONDITION_REALM_ACHIEVEMENT:')
 [IO.File]::WriteAllText("$out/Conditions.inc",$cases)
 [IO.File]::WriteAllText("$out/ElseGroups.inc",(Section $source 'bool ConditionMgr::IsObjectMeetToConditionList(' 'bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object,'))
+[IO.File]::WriteAllText("$out/SmartEventConditions.inc",(Section $source 'bool ConditionMgr::IsObjectMeetingSmartEventConditions(' 'bool Condition::isLoaded() const'))
 $source=Get-Content "$repo/src/server/game/Loot/LootMgr.cpp" -Raw
 [IO.File]::WriteAllText("$out/LootCondition.inc",(Section $source 'bool LootItem::AllowedForPlayer(Player const* player) const' 'void LootItem::AddAllowedLooter('))
 $recheck=Section $source '    if (item && !AllowedForPlayer(player,' 'uint32 Loot::GetMaxSlotInLootFor('
@@ -68,7 +69,8 @@ $source=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
 $send=Section $source 'void Spell::SendLoot(' 'bool Spell::isDelayableNoMore()'
 if($send.IndexOf('sScriptMgr->OnGossipHello(') -lt 0 -or $send.IndexOf('player->SendLoot(guid, loottype);') -lt 0 -or $send.IndexOf('sScriptMgr->OnGossipHello(') -ge $send.IndexOf('player->SendLoot(guid, loottype);')){throw 'Native open-lock loot bypasses the script admission'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$fixture=if($MarksmanshipRowsPath){"`"$MarksmanshipRowsPath`" marksmanship"}else{"`"$out/conditions.tsv`""}
+$mode=if($MarksmanshipLoot){'marksmanship-loot'}elseif($MarksmanshipRoot){'marksmanship-root'}else{'marksmanship'}
+$fixture=if($MarksmanshipRowsPath){"`"$MarksmanshipRowsPath`" $mode"}else{"`"$out/conditions.tsv`""}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" $fixture`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Native Talonclaw pickup admission failed'}

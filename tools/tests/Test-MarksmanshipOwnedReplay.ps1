@@ -12,6 +12,7 @@ INSERT INTO conditions (SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId
 $sql=@"
 CREATE TEMPORARY TABLE saved_go LIKE gameobject_template;
 INSERT INTO saved_go SELECT * FROM gameobject_template WHERE entry=248419;
+UPDATE saved_go SET ScriptName='' WHERE ScriptName='go_artifact_acquisition';
 CREATE TEMPORARY TABLE gameobject_template LIKE saved_go;
 INSERT INTO gameobject_template SELECT * FROM saved_go;
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
