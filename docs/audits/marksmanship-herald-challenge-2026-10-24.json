@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "Restore the native Vereesa-to-Herald challenge signal without consuming it on initial instance loading or before its scenario stage. Partial Marksmanship repair, not complete acquisition or visual certification.",
+  "root_cause": {
+    "sender": "Vereesa100397 row25 is UPDATE60, initial0/0, repeat1000/1000, NOT_REPEATABLE1, SET_DATA45/1/1, closest living creature19/100836/50. It previously had no event conditions. Actual ProcessAction sets runOnce before GetTargets; an empty target list still consumes the one-shot. Vereesa initially spawns near248/1952 and Herald near203/1485, about469yd apart. Thus the initial update can consume the signal long before the normal route reaches the Herald. Merely gating the receiver would still lose this signal.",
+    "premature": "If the Herald is already nearby while an earlier stage is active, the same unguarded sender and receiver consume the challenge prematurely. Native972 step4/root46385 is Quiet the Herald, after Orestes48071 and before Herald47927. This is displayed Stage5, not zero-based step5.",
+    "shared_map": "Live instance_template1489 binds instance_tuure. Its actual script handles graveyard placement and106221 death notifying106134, not Hunter challenge admission. Map1489 is shared; no replacement map script or class-wide death handling was introduced. New condition44 resolves the actor's actual instance Scenario and admits only972/4."
+  },
+  "repair": {
+    "migration": "2026_10_24_07_marksmanship_herald_challenge.sql",
+    "changes": "Only three source22 conditions: Vereesa group26/event25 requires actor972/4 and nearby living100836 within the same native50yd search; Herald group1/event0 additionally requires actor972/4. SourceGroup is event_id+1, SourceId0, ConditionTarget1. Preserve every SmartAI field, speech, flag, duration, cast, conversation, target and later link. No progression, inventory, health, damage or reward override.",
+    "retry": "Rejected stage or missing/dead/out-of-range Herald leaves the existing sender unconsumed. Once the correct living actor and stage are present, native SET_DATA -> SmartAI::SetData -> DATA_SET -> TALK runs once. The original8000ms text timer and TEXT_OVER -> Vereesa data6/6 -> native text10 remain intact. This is loaded-actor retry, not persistence/recreation of absent actors or proof of a complete reconnect.",
+    "guards": "Match the native templates/empty scripts, exact sender and receiver definitions, known text continuation, actual spawn map/phase and103558 broadcast binding. Existing admission on either event or changed custom definitions refuses the migration. Applying twice adds no duplicates. No released migration was edited."
+  },
+  "sources": {
+    "local_first": "Actual MariaDB SmartAI/conditions/templates/spawns/texts/instance binding, production SmartScript repeat/action/target/timer/data/text paths, SmartAI::SetData, native condition29/44 and default-alive nearest helper. Native matching DB2 catalog confirms972 step4/root46385/criterion29305/type92/asset47927 and preceding48071. MarksmanshipDialogueCatalog uses the actual read-only Hotfix connection; no character queries or changes.",
+    "dialogue": "Broadcast103558 is absent from the base BroadcastText DB2 but exists after the real Hotfix overlay: male SoundKit61818, 'You stand on the threshold of oblivion! Your lives belong to the Inquisition!' Vereesa103652 uses female61814, 'I'm going to relish silencing that fiend!' Both SoundKits and their native file entries resolve. Localized world text is not substituted for the native broadcast. These two clips were not newly decoded or listened to in this repair.",
+    "trinity": "Local exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c SmartScript.cpp also consumes runOnce before action target handling, and closest-creature selection defaults to100yd only when distance0 and uses !dead. No modern API/schema copied. The existing bounded donor audit remains applicable, not exhaustive.",
+    "github": "Targeted queries for100397/100836/smart_scripts and103558/Herald/Niskara found no usable independent implementation; unrelated numeric results were not used. No donor code imported.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "reviewed": "New rendered samples8:41, paused8:52, then one explicit5s back-seek confirmed paused8:47.8:47 retains the farewell chat;8:52 shows Quiet the Herald and the 'You believe yourselves worthy to enter the cathedral? Then come forth and be tested!' talking-head passage. Playback between samples was not continuously reviewed and was muted. Advertisement excluded; temporary tab11 closed. Not a full video, complete encounter, voice or exact26972 client review.",
+      "distinction": "The8:52 talking-head text maps through actual native conversation1555 line3421 to broadcast103837/SoundKit61840. It is NOT the restored ordinary103558 challenge. Existing1555 AGGRO and later1395 data remain untouched. The video sample does not prove when103558 should sound or that our current visual/voice presentation matches the whole encounter. Previous farewell audit retains its separate sparse observations."
+    }
+  },
+  "checks": [
+    "Test-MarksmanshipHeraldChallenge.ps1 -VerifyReleaseBinary passes before and after native deployment. Actual-schema TEMPORARY tables apply migration twice, compare every SmartAI field and every unrelated admission, export the three actual new conditions, preserve custom gates and refuse changed AI/script/range/repeat/difficulty/link/signal/speech/duration/text-over definitions. Live records are not modified by these fixtures.",
+    "Compiled extracted production UpdateTimer/RecalcTimer, repeat guard, condition lookup/ElseGroups/29/44, closest-target19, SET_DATA, SmartAI::SetData, DATA_SET, TALK, TEXT_OVER and text-timer bodies reproduce the baseline lost signal and premature speech. Fixed hosts reject all other tested stages, wrong/missing scenario, absent base/instance, expired source, missing/dead/distant/map/phase-mismatched Herald; arrival/correction permits retry. Repeated timers/data produce one speech. The native strict text-timer deadline reaches the original Vereesa text10 after8000ms plus a subsequent tick, once.",
+    "Native DATA_SET receiver admission uses actor target1 even with null/player/pet/guardian test invokers. This patch gives no credits to any of them, changes no death handlers and adds no manual group awards. Existing Test-ScriptPetCredit.ps1 -VerifyReleaseBinary passes real shared owner/credit/caster/loader regressions; this is not live group/faction combat or a one-hit-boss test.",
+    "Dedicated PE verifier checks the actual runOnce store before target-action dispatch, distinct SET_DATA/TALK entries, real nearest/scenario condition calls, SmartAI data bridge, text send and timed dispatcher. Original farewell/pickup/return/equip PE chain retained. World/grid/scenario/text hosts remain controlled primitives rather than a real live-map traversal.",
+    "Test-MarksmanshipFarewellDoor.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass. Test-MarksmanshipFarewellAudio.ps1 -ClientPath D:/wow/Legion7.3.5 passes with the extended read-only dialogue catalog: five existing1072 voice payloads fully decoded,44151+5000ms fits50300, all32 client index hashes unchanged. This does not certify new Herald audio playback."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "5514E045136C2CB08D9A3F61DE6406D7E664CB4BA2E61F7EFEC0E2D671FD373D",
+    "migration_sha1": "87AE83D80C0910D77B59A640DAF826845F096BBB",
+    "readback": "Native updater records07 with the exact hash RELEASED. Live source22 contains exactly the three expected conditions; sender25 and receiver0 retain original fields. Scoped non-character backup saved privately before startup.",
+    "startup": "Task-owned PID12632 reached World initialized, then gracefully exited0. Newly appended DBErrors0 bytes; protected runtime configurations/certificates unchanged. No user or unknown server stopped and no task-owned world/bnet server remains.",
+    "build": "Data-only production repair, no new server build claimed. Canonical executable unchanged. Generated Release final link still names original scripts/Release/scripts.lib and game/Release/game.lib, with no global OutDir override; deployed native paths checked.",
+    "private_evidence": ".codex/marksmanship-herald-* logs/catalog TSVs/scoped backup and ignored runtime-test fixtures. Credentials, runtime/media and personal characters excluded from Git."
+  },
+  "remaining": [
+    "Actual client speech/voice, actor poses, relative103558 versus103837 timing, camera, companion movement and complete Herald fight are not verified. Do not infer a missing visual from text alone or claim a full YouTube comparison.",
+    "Full unload/reset/re-entry/save recovery, early boss killing via unintended geometry, Torvis missing-actor/cast replay, Orestes pending phase persistence and later Qormaladon admission remain unfinished. Shared instance_tuure behavior was inspected but not changed or certified for the Priest route.",
+    "Complete quest40419 objective-storage mapping, real weapon loot/equip/use/full-bag/save tests and other36-route continuous video/client reviews remain pending. Monday client tests remain with the user; existing unrelated Stormheim fixture blocker is not concealed."
+  ],
+  "next_action": "Continue the native Herald/Qormaladon lifecycle and companion signal audit, including premature combat and safe re-entry, before changing further encounter behavior. Retain the distinction between ordinary speech103558 and AGGRO conversation1555/103837."
+}

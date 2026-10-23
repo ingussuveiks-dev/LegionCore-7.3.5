@@ -37,7 +37,7 @@ int main(int argc, char** argv)
         !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
         !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
         return 2;
-    for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u})
+    for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u, 103558u, 103652u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
     texts.LoadFromDB();
     displays.LoadFromDB();
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
         return 3;
     std::cout << "CONVERSATION_LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t'
         << line->SpellVisualKitID << '\t' << line->AnimKitID << '\t' << line->AdditionalDuration << '\n';
-    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281};
+    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281,103558,103652};
     for (uint32 identity : {2737u, 2464u, 3421u, 3183u, 2632u, 2633u, 3364u,
                             2625u, 2630u, 2658u, 2659u, 3427u, 2631u})
     {
