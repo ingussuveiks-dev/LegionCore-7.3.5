@@ -823,8 +823,9 @@
       "presentation_repair_audit": "docs/audits/marksmanship-presentation-2026-10-23.json",
       "pickup_admission_repair_audit": "docs/audits/marksmanship-pickup-admission-2026-10-23.json",
       "report_use_repair_audit": "docs/audits/marksmanship-report-use-2026-10-23.json",
+      "return_admission_repair_audit": "docs/audits/marksmanship-return-admission-2026-10-23.json",
       "start": 41540,
-      "status": "partial: native8-stage/scene review, original owned/bank replay, final-stage opening/real loot/post-claim, direct-report SmartAI admission and guarded1169-to200262 equip pass native/Release checks; objective storage, delayed phase/cache/re-entry integration, full video/sequence and actual client visuals/loot/equip remain pending",
+      "status": "partial: native8-stage/scene review, owned/bank replay, final-stage opening/loot/post-claim, direct-report SmartAI admission, guarded1169-to200262 equip and completed-claim Vereesa return admission/retry pass native/Release/data-loader checks; sparse end-video frames reviewed, not full footage; objective storage, acquisition-driven speech, blue Vereesa visual, delayed phase/cache/re-entry, real arrival and client visuals/loot/equip remain pending",
       "quests": [
         {
           "id": 41540,

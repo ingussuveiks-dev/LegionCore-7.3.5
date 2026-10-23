@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Vereesa100397 return-menu/action admission and failed-attempt retry after native Thas'dorah acquisition. Data repair only; not full scenario, visual, teleport-arrival or client certification.",
+  "finding": {
+    "early_return": "Menu19331/0 and its original GOSSIP_SELECT55 had no ownership/quest/completed-scenario conditions. Native ProcessAction could grant103481 and queue205040 before the bow acquisition, once the timed speech enabled gossip. An empty native SmartEvent condition store admits the stage7 owner in the regression; the new store rejects that same request. This demonstrates missing action admission, not a live client traversal.",
+    "retry": "The original choice had event_flags1/NOT_REPEATABLE. Native ProcessAction sets runOnce before executing its action, and ProcessEvent rejects a later attempt regardless of whether the queued invoker spell succeeded. Clear only that bit on the return choice so a failed attempt can be retried while admission remains valid. This does not establish that every asynchronous teleport failure leaves credit unchanged.",
+    "shared_id": "The original gossip choice55 and flag LINK55 shared an ID. Source22 uses event_id+1, so a new group56 return gate would also gate the LINK which enables the gossip flag. Isolate only the original choice as59 and use source22/group60. The native loader orders id/link and the existing LINK55 sorts first; this was not diagnosed as random LINK selection. Preserve the speech54 -> LINK55 flag action and choice59 -> LINK56 native travel."
+  },
+  "repair": {
+    "admission": "Add matching12-row source15/menu19331/option0 and source22/group60/actor100397/source0 condition lists. Both incomplete9 and complete28 active40419 variants require nonrewarded40419, Hunter class4, map1489, exactly completed scenario972 step8, and actual128826 ownership including bank. Stage7 and earlier are rejected even for an externally owned copy. No item, objective, reward, scenario-completion, position or character records are modified.",
+    "preservation": "Rename only the verified native choice55 to the free59 slot and clear its bit1, preserving other event flags, actions, texts, gossip flag LINK55 and travel LINK56 flags1. Keep native credit103481 and invoker-cast205040. Migration checks the actor/menu/action/link tuples and skips conflicting59, incoming LINK59, custom actor scripts/actions/menu definitions and an existing shared group56 condition. Existing destination condition lists are not overwritten. Conditions and smart_scripts are InnoDB; the update is transactional and repeatable.",
+    "native_return": "Typed26972 SpellEffect confirms205040 effect0=252/TELEPORT_L, MiscValue1317, targets25/17; effect1=90 personal monster credit102548, targets25/0. Local EffectTeleportUnits uses1317 as a custom loading-screen ID, not an LFG dungeon. TARGET_DEST_DB resolves spell_target_position205040 -> map1220 (-837,4330.1,745), orientation6.09993. The repair retains this native path rather than adding a guessed teleport or giving the bow as a reward."
+  },
+  "sources": {
+    "local_first": "Read matching runtime actor/menu/SmartAI/conditions, quest40419 objectives/rewards, credit templates, target position, native gossip preparation/selection, SmartEvent condition lookup, ProcessEvent runOnce guard, ProcessAction LINK tail/FindLinkedEvent, queued invoker cast, spell targeting and EffectTeleportUnits. Extended the existing typed native26972 catalog for205040 targets and QuestObjective coverage. Prior pickup/scene/equip evidence remains in the preceding Marksmanship audits.",
+    "trinity_history": "Reviewed local exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c SQL history. Complete relevant quest_objectives_locale rows in sql/old/7/world/01_2018_02_19/2018_01_05_00_world.sql record281574 quest40419 StorageIndex3 (speak to Vereesa and leave Niskara),281980 index5 (take Thas'dorah),281311 index2,281310 index1 and281978 index4, VerifiedBuild25549. The Spanish _01 file corroborates3/5. These are historical locale records, not a complete26972 base objective replacement. Older Order updates must not be confused with StorageIndex.",
+    "donors": "Re-read artifact-routes and legion-artifact-donor-review. The bounded pinned donor review supplies no ready Marksmanship return replacement; no new external implementation was imported and no exhaustive GitHub claim is made. The native missing admission and one-shot retry failure are locally reproducible.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "publication": "2016-08-27, read from expanded YouTube description; exact client build unknown",
+      "duration": "19:04",
+      "actually_reviewed": [
+        "Sparse rendered frames at15:15 and17:02 show Stage7/Where Is She and corridor traversal; the preceding15 minutes were not reviewed.",
+        "17:46 shows the final Bow of Legend stage, green altar beam and Take Thas'dorah0/1;17:51 shows the Removing interaction cast.",
+        "17:56 shows the player holding the bow during presentation with green swirl/leaf-like particles;18:01 is a black fade. The title text itself was not captured.",
+        "18:06 shows Vereesa's bow-in-right-hands bubble, weapon on the player, no scenario overlay and Speak with Vereesa and leave Niskara0/1.",
+        "18:11 shows Gorich's portrait/yell and the altar beam still present;18:16 shows player/Vereesa near the altar;18:21 shows the overrun/leave bubble.",
+        "18:26 shows a blue casting visual on Vereesa;18:31 shows a Legion loading screen. The exact gossip selection/click between sampled frames was not captured.",
+        "18:51 shows Dalaran/Krasus Landing and Vereesa's yellow turn-in marker;18:56 shows quest completion/18850XP and the next Hunter to Hunter offer."
+      ],
+      "limits": "Partial sampled footage only, not a full continuous sequence or the entire video. Playback elapsed between calls is not counted as observation. Muted audio was not verified; automatic subtitles are not authoritative. Initial seek-buffer stale frames were excluded. No remote media downloaded. The temporary browser tab was closed. No local client was traversed."
+    }
+  },
+  "objective_followup": {
+    "actual_sql": "40419 objectives:281309 storage1/object102128/flags0;281310 storage2/102129/flags2;281311 storage3/102131/flags2;281574 storage5/102548/flags2;281978 storage4/103481/flags0;281980 storage4/103490/flags6. Amounts1. Flags6 are sequenced+optional, not proof of a hidden objective. Phase Portal103481 and Looted Bow103490 alias storage4; Leave Niskara is102548. Both40419 and40952 have no item reward in their four reward slots, so real loot remains necessary.",
+    "native_coverage": "The actual typed QuestObjective reader yields3448 records, plausible sample QuestIDs33145/34076/34496, but none of the six target IDs or their six object IDs. The matching hotfix query also supplies none. This is incomplete local objective coverage, not proof that the parent field is always misread. Do not repeat the earlier speculative parent-layout diagnosis as established fact.",
+    "decision": "Historical locale indices disagree with our current base data, but a complete matching base record and migration strategy for already saved per-slot counters are still absent. Do not invent a free index, reindex saved quests or modify character data. The objective alias, earlier speech/credit sequence and potential premature completion remain unresolved and must be audited separately."
+  },
+  "checks": [
+    "Test-MarksmanshipReturnAdmission.ps1 -VerifyReleaseBinary passes. Actual-schema temporary tables apply21 twice:12 menu rows/12 event rows, exact equality, untouched flag group56, native other-action/flag preservation, bit129 ->128 preservation, occupied59/custom script/action/menu/shared gate/list preservation and rollback. No fixture writes to the live tables.",
+    "MarksmanshipReturnLinksTest.cpp compiles actual FindLinkedEvent, ProcessAction's LINK tail and ProcessEvent's phase/runOnce guard. It follows54 ->55 flag and59 ->56 travel; unchanged flags1 remain on native LINKs. The old choice-bit1 variant permits only one attempt; repaired repeatable choice reaches two native travel LINK attempts. Remaining action bodies, timers, CastSpell, inventory and TeleportTo are fixture boundaries, not exercised gameplay.",
+    "The shared admission C++ host compiles production condition cases/ElseGroup evaluator and actual SmartEvent lookup with actor100397/source0/event59 -> group60. It covers stages0..14, five quest states, missing/wrong scenario/map/class/instance/owner, inventory versus bank/absent ownership, rewarded/abandoned, cached-condition reevaluation, null and pet invokers. The empty native baseline admits the rejected stage7 owner. Controlled Player/scenario hosts are not full live gossip/network/collision tests. No pet/group-wide progression is added by this patch.",
+    "Native catalog verifies205040 effects/targets and actual DB destination. Existing production SmartAI owner/pet/guardian/caster bridge passes Test-ScriptPetCredit.ps1 -VerifyReleaseBinary; this is not all encounter kill-credit traversal. Existing native bounded quest-credit test in Test-TalonclawReturn.ps1 passes, but its40385 host does not certify the unresolved40419 objective alias or exactly-once arrival.",
+    "Test-MarksmanshipPickupAdmission.ps1 -VerifyReleaseBinary, Test-MarksmanshipReportUse.ps1 -VerifyReleaseBinary, Test-MarksmanshipPresentation.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass with unchanged canonical6046273B executable. Existing native condition-key conversion warnings remain visible. Return PE mode invokes the established report-use/scene/LFG chain inspection, not a new proof of every NPC gossip/teleport instruction."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "6046273B7BFB953FC1C8B070663DE0B3C04DAF28E7EC30E8F05538D2FA83F704",
+    "binary": "Data-only21; no production C++ changes or rebuild. The preceding20 build's original scripts/game final-link inputs and strict deployed PE/map checks remain valid; no global OutDir or alternate runtime deployment.",
+    "migration": "sql/updates/world/2026_10_23_21_marksmanship_return_admission.sql",
+    "migration_sha1": "094304F3E55234326B650178365EC80F1D85363F",
+    "readback": "Native updater records21 RELEASED with the exact hash. Actor100397 choice59/link56/event62/flags0 retains credit103481/target7; LINK55 remains flag1/action81/1/target1 and LINK56 flag1/action85/205040/target7. Menu and event-group60 each contain12 rows; group56 remains absent. Target position unchanged.",
+    "startup": "Task-owned canonical PID28856 reached World initialized, then graceful exit0. Newly appended DBErrors bytes0 and protected configuration/certificate hashes unchanged. No user/unknown server stopped and no task server remains running. Startup is loader evidence, not an in-game return attempt.",
+    "private_evidence": ".codex/marksmanship-return-admission-test.log, .codex/marksmanship-return-admission-startup and .codex/backups/marksmanship-return-admission-20261023; no credentials, runtime/character data or media committed."
+  },
+  "remaining": [
+    "The blue Vereesa casting visual in the sampled video is not yet traced to native26972 visual/animation data or reproduced locally. Do not substitute an arbitrary spell name/ID. Current205040 is a player invoker cast; no claim that it supplies that NPC pose/effect.",
+    "Timed text52/54 can say the bow is taken before a slow player loots it. Do not place player-item conditions blindly on NPC TEXT_OVER and consume its one-shot event. A proper acquisition-driven speech/retry/cleanup lifecycle remains necessary.",
+    "Native205040's personal Leave Niskara credit is not an observed successful-arrival callback. Cast failure, teleport rejection, lost actor, abandonment/re-entry/relog, async phase changes, scenario persistence and pet/camera restoration still need end-to-end checks; retry admission alone does not prove those paths.",
+    "Actual client opening/real loot/equip/save, exact scene title/particles/audio/timing, return marker/completion, group/faction variants, all earlier encounters/prerequisites and the full relevant video remain pending. No all36 completion or client verification claim."
+  ]
+}

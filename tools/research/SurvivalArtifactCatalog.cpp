@@ -29,6 +29,7 @@ int main(int argc, char** argv)
     DB2Storage<QuestLineXQuestEntry> lines("QuestLineXQuest.db2", QuestLineXQuestLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
+    DB2Storage<QuestObjectiveEntry> objectives("QuestObjective.db2", QuestObjectiveLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
@@ -39,6 +40,8 @@ int main(int argc, char** argv)
     if (!trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0))
         return 2;
     if (!locks.Load(argv[1], 0))
+        return 2;
+    if (!objectives.Load(argv[1], 0))
         return 2;
     if (!scripts.Load(argv[1], 0))
         return 3;
@@ -95,16 +98,43 @@ int main(int argc, char** argv)
         if (survivalLines.count(line->QuestLineID))
             std::cout << "QUEST\t" << line->QuestLineID << '\t' << unsigned(line->OrderIndex) << '\t' << line->QuestID << '\n';
     for (auto effect : effects)
-        if (effect->SpellID == 205589 || effect->SpellID == 197651 || effect->SpellID == 208601 || effect->SpellID == 200279 || effect->SpellID == 200262)
+    {
+        if (effect->SpellID == 205589 || effect->SpellID == 197651 || effect->SpellID == 208601 || effect->SpellID == 200279 || effect->SpellID == 200262 || effect->SpellID == 205040)
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
                 << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t'
                 << effect->EffectTriggerSpell << '\t' << effect->EffectItemType << '\n';
+        if (effect->SpellID == 205040)
+            std::cout << "RETURN_TARGET\t" << effect->EffectIndex << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+    }
     auto lock = locks.LookupEntry(1691);
     if (!lock)
         return 7;
     for (uint32 slot = 0; slot < 8; ++slot)
         std::cout << "MARKSMANSHIP_LOCK\t" << slot << '\t' << unsigned(lock->Type[slot]) << '\t'
             << lock->Index[slot] << '\t' << lock->Skill[slot] << '\t' << unsigned(lock->Action[slot]) << '\n';
+    for (uint32 id : {281309, 281310, 281311, 281574, 281978, 281980})
+    {
+        auto objective = objectives.LookupEntry(id);
+        if (!objective)
+        {
+            std::cout << "MARKSMANSHIP_OBJECTIVE_MISSING\t" << id << '\n';
+            continue;
+        }
+        std::cout << "MARKSMANSHIP_OBJECTIVE\t" << id << '\t' << objective->QuestID << '\t'
+            << unsigned(objective->Type) << '\t' << unsigned(objective->OrderIndex) << '\t'
+            << unsigned(objective->StorageIndex) << '\t' << objective->ObjectID << '\t' << objective->Amount << '\t' << unsigned(objective->Flags) << '\n';
+    }
+    uint32 objectiveCount = 0;
+    for (auto objective : objectives)
+    {
+        ++objectiveCount;
+        if (objectiveCount <= 3 || objective->ObjectID == 102128 || objective->ObjectID == 102129 ||
+            objective->ObjectID == 102131 || objective->ObjectID == 102548 || objective->ObjectID == 103481 || objective->ObjectID == 103490)
+            std::cout << "QUEST_OBJECTIVE_SAMPLE\t" << objective->ID << '\t' << objective->QuestID << '\t'
+                << unsigned(objective->Type) << '\t' << unsigned(objective->StorageIndex) << '\t'
+                << objective->ObjectID << '\t' << objective->Amount << '\t' << unsigned(objective->Flags) << '\n';
+    }
+    std::cout << "QUEST_OBJECTIVE_RECORDS\t" << objectiveCount << '\n';
     std::set<uint32> pendingPackages{1583, 1535}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {

@@ -11,6 +11,7 @@ using uint32 = uint32_t;
 using int64 = int64_t;
 using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
+uint32 lastStage = 13, eventEntry = 248419, eventSource = 1;
 enum { CONDITION_ITEM = 2, CONDITION_CLASS = 15, CONDITION_MAPID = 22, CONDITION_SCENARION_STEP = 44,
     CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8,
     QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, QUEST_STATUS_REWARDED = 6 };
@@ -103,17 +104,25 @@ struct CachedLoot {
 int main(int argc, char** argv) {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     assert(argc == 2 || argc == 3);
-    if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; expectedItem = 128826; scenarioManager = {}; }
+    if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; lastStage = 8; expectedItem = 128826; scenarioManager = {}; }
     bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot";
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
-    std::ifstream input(argv[1]); std::vector<Condition> rows(ownedReplay ? 24 : 20);
+    bool returnEvent = argc == 3 && std::string(argv[2]) == "marksmanship-return";
+    if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = 59; scenarioManager = {}; }
+    std::ifstream input(argv[1]); std::vector<Condition> rows(returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
         assert(target == 0);
     }
     LootItem item; for (Condition& condition : rows) item.conditions.push_back(&condition);
-    if (ownedReplay) conditionManager.SmartEventConditionStore[{248419, 1}][eventId + 1] = item.conditions;
+    if (ownedReplay) conditionManager.SmartEventConditionStore[{eventEntry, eventSource}][eventId + 1] = item.conditions;
+    if (returnEvent) {
+        Player owner; scenarioManager.scenario.step = 7;
+        ConditionMgr original;
+        assert(original.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+    }
     CachedLoot cache;
     {
         Player player; LootItem unguarded; scenarioManager.scenario.step = firstStage - 1;
@@ -122,10 +131,10 @@ int main(int argc, char** argv) {
     for (uint32 stage = 0; stage <= 14; ++stage) for (uint32 status : {0u, 1u, 3u, 5u, 6u}) {
         scenarioManager = {}; scenarioManager.scenario.step = stage;
         Player player; player.status = status;
-        bool expected = (stage == firstStage || stage == firstStage + 1) && (status == 1 || status == 3);
+        bool expected = stage >= firstStage && stage <= lastStage && (status == 1 || status == 3);
         assert(item.AllowedForPlayer(&player) == expected);
         assert((cache.Read(&player, &item) != nullptr) == expected);
-        if (ownedReplay) assert(conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &player, &player) == expected);
+        if (ownedReplay) assert(conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &player, &player) == expected);
     }
     for (uint32 invalid = 0; invalid < 8; ++invalid) {
         scenarioManager = {}; worldMap.instanced = true; instanceMap.id = 42;
@@ -153,10 +162,10 @@ int main(int argc, char** argv) {
         ConditionSourceInfo originalContext(&player); assert(!original.Meets(originalContext));
         assert(item.AllowedForPlayer(&player));
         player.bank = false; assert(!item.AllowedForPlayer(&player));
-        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &player, &player));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &player, &player));
         Unit pet;
-        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, &pet, &pet));
-        assert(!conditionManager.IsObjectMeetingSmartEventConditions(248419, eventId, 1, nullptr, nullptr));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &pet, &pet));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, nullptr, nullptr));
     }
     else {
         player.rewarded = false; player.owned = false; player.bank = false; item.loot_restricted = false;
