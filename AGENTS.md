@@ -40,6 +40,8 @@
 
 # Quest admission and packet regressions
 
+- All-class Dalaran invitation masks must admit NONE1, retaining later campaign prerequisites at REWARDED64. DK40714/Mage41035 require class32/128; Warrior Eitrigg93775 accepts41052, not Warlock40716. Run `Test-DalaranAllClassOffers.ps1` against a fresh artifact audit: native149 race/class pairs,22 invitation rows and36 selection effects. Shaman uses static Thrall; DK/Mage native effect150 self-offers must not be modeled as summoned NPCs. Preserve pure-summon versus aura behavior. Class/race admission and selected acquisition starts do not verify whole quest chains; retain later actor LINK findings and client visibility/travel checks.
+
 - Quest acceptance conditions (source 19) govern starting a quest, not the turn-in marker of an already active complete/incomplete quest. The boost ship legitimately skips preparation 44281; rechecking it hid Eitrigg 100453's completed 40518 marker on 2026-10-22. Preserve explicit SHOW_MARK/source-20 conditions, start/next-quest admission, repeatable auto-turn-in checks and reward validation. Run `Test-QuestTurnInMarkers.ps1` (the `-Baseline` mode reads pinned pre-fix source) and `verify_quest_turnin_release.py`. On 2026-10-23 the user confirmed actual Eitrigg turn-in and the next quest; reward quantity, repeat/relog and later story traversal remain separate checks.
 
 - AdventureJournal.Type is a suggestion category; ButtonActionType 3 starts a quest. Preserve the native PlayerCondition gate, exact self-offer popup authorization and separation from class-hall scouting selection/credit. Run Test-AdventureMapGossip.ps1 and verify_highmountain_quest_release.py; both Brawl and Suramar still require client acceptance checks.

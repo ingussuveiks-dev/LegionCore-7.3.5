@@ -1,0 +1,44 @@
+{
+  "scope": "Post-Broken-Shore Legion Dalaran class introduction and specialization acquisition admission; not certification of all36 full quest playthroughs",
+  "changes": [
+    "Migration03 repairs the known legacy74 quest-end masks to NONE1 for11 initial invitation area spells and11 later campaign invitations. Preserve prerequisite rewarded64, class/race/gender/autocast filters, custom statuses and unrelated rows. Three rows had already been repaired previously;19 additional legacy rows were repaired.",
+    "DK40714 and Mage41035 now carry their native class masks32/128. Previously unrestricted templates advertised foreign-class offers on the map.",
+    "Warrior Eitrigg93775 acceptance now handles41052 rather than the copied Warlock40716 ID. Existing personal/follow, dialogue and acceptance cleanup remain."
+  ],
+  "class_starts": [
+    {"class":1,"quest":41052,"spell":216443,"actor":93775},
+    {"class":2,"quest":38710,"spell":190886,"actor":92909},
+    {"class":3,"quest":40384,"spell":196908,"actor":100786},
+    {"class":4,"quest":40832,"spell":201208,"actor":102018},
+    {"class":5,"quest":40705,"spell":226409,"actor":101344},
+    {"class":6,"quest":40714,"spell":200023,"route":"native effect150 self quest offer"},
+    {"class":7,"quest":39746,"actor":91731,"route":"existing static Thrall366025/map1220/phaseMask1"},
+    {"class":8,"quest":41035,"spell":195356,"route":"native effect150 self quest offer"},
+    {"class":9,"quest":40716,"spell":204860,"actor":103506},
+    {"class":10,"quest":12103,"spell":193978,"actor":98519},
+    {"class":11,"quest":40643,"spell":199277,"actor":101061},
+    {"class":12,"quest":39047,"spell":195286,"actor":99343}
+  ],
+  "verification": [
+    "Native C++ build26972 DB2 reader enumerates149 race/class pairs and36 player specializations; matches the independent structural artifact catalog exactly. All22 native invitation spells resolved. Do not invent an aura for pure-summon spells or DK's effect150.",
+    "Test-DalaranAllClassOffers.ps1 executes the extracted production SpellArea requirements against22 live rows,149 native pairs,both genders, offer/prerequisite states and wrong areas:131120 cases. Temporary real-schema migration fixtures reconstruct old masks/class gates/Warrior event, apply twice, and preserve unrelated/custom data.",
+    "Live database verifies all12 initial quest class masks, no extra source19/20 acceptance gates, ten initial usable/selectable questgivers including static Thrall, and all20 initial/later summoned giver relations/SmartAI flags and matching acceptance events. All initial quests admit every native race of their class; boost100 meets their MinLevel98 (Monk's existing minimum72 is unchanged).",
+    "Fresh artifact-routes-2026-10-23.json enumerates36 choices against the read-only current World snapshot and native artifact items. All36 reward spells' chosen-quest effect16 independently confirmed by the native C++ DB2 reader. No automatic loot/link/class-race admission findings in the audited route scope.",
+    "Test-ArtifactOnboarding.ps1 with the fresh audit executes all36 production responses across900 native pair/owned-unowned cases and2431 actual native quest race/class admission cases, plus login/abandon/retry, wrong class/level/response, completed quests and full quest log. Existing Hunter/Warlock SpellArea lifecycle tests still pass.",
+    "Migration03 was already applied by the canonical updater before this handoff; this audit/tests complete that previously unfinished work. Canonical owned validation30268 loaded the final database cleanly and shut down0. These are data-only changes; canonical executable0f7a4618f2de0dfca10ae9b0f6707fdd6354a021702a9b892e72056022e6bbf6 contains the existing native predicates/onboarding and the latest Titanstrike changes."
+  ],
+  "observed_followups": [
+    "Priest101344 baseline had only acceptance TALK with missing LINK1, no native follow/personal bootstrap. This is recorded separately for the focused priest-messenger repair; a row's existence alone did not establish messenger lifecycle.",
+    "The current local table uses Hooded Priestess101344 for both factions. Newer TrinityCore/Ashamane references distinguish an Alliance summon202051/actor102333. That later implementation is reference only; no unverified faction actor/voice port is claimed. Both factions' class/race quest admission is checked here."
+  ],
+  "limits": [
+    "Only Hunter Snowfeather appearance/usable40384 was user-confirmed earlier. Other classes' actual arrival, actor visibility, speech, acceptance, abandonment and travel to their class hall still need client checks.",
+    "The full artifact structural audit retains five missing later actor LINK references:100438 event9->10;100475 event1->7 and6->8;105332 event0->1;105697 event0->1. Their intended actions require executable content review; they were not deleted or declared repaired. They are outside this class-invitation admission repair.",
+    "All36 selected acquisition starts are covered, not every subsequent encounter, item interaction, visual or quest finale. Native tests do not establish complete client playthroughs or exact-stage recovery after a restart."
+  ],
+  "sources": [
+    "Matching local26972 DB2 via native C++ reader, current read-only World data, production SpellArea/Player quest gates and class_hall_artifact_onboarding callbacks.",
+    "Fresh artifact-routes-2026-10-23.json records snapshot/native/source hashes and all retained review findings.",
+    "Newer reference only: C:/wamp64/www/TrinityCore/src/server/scripts/BrokenIsles/zone_dalaran_broken_isle.cpp and https://github.com/AshamaneProject/AshamaneCore/blob/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles/zone_dalaran_legion.cpp. No modern DB schema or faction-specific behavior was copied."
+  ]
+}

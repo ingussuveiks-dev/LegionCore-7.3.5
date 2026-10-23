@@ -1,3 +1,4 @@
+param([string]$AuditFile="$PSScriptRoot/../../docs/audits/artifact-routes-2026-10-15.json")
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/artifact-onboarding"
@@ -5,7 +6,7 @@ New-Item -ItemType Directory -Force -Path $out | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/class_hall_artifact_onboarding.cpp" -Raw
 $a=$source.IndexOf('namespace');$b=$source.IndexOf('void AddSC_class_hall_artifact_onboarding()',$a)
 [IO.File]::WriteAllText("$out/Onboarding.inc",$source.Substring($a,$b-$a))
-$audit=Get-Content "$repo/docs/audits/artifact-routes-2026-10-15.json" -Raw | ConvertFrom-Json
+$audit=Get-Content $AuditFile -Raw | ConvertFrom-Json
 if($audit.routes.Count -ne 36 -or $audit.native_race_class_pairs.Count -ne 149){throw 'Full native catalog audit required'}
 $pairs=@($audit.native_race_class_pairs | ForEach-Object {"$($_[0])`t$($_[1])"})
 [IO.File]::WriteAllLines("$out/races.tsv",[string[]]$pairs)

@@ -1,4 +1,4 @@
-param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/dalaran-class-intro")
+param([string]$OutputDirectory="$PSScriptRoot/../../build-extractors/runtime-test/dalaran-class-intro",[string]$OffersFile="",[string]$PairsFile="")
 $ErrorActionPreference='Stop'
 $output=[IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Force -Path $output | Out-Null
@@ -18,13 +18,14 @@ $a=$source.IndexOf('enum QuestStatus');$b=$source.IndexOf('};',$a)+2
 [IO.File]::WriteAllText("$output/ClassIntroStatus.inc",$source.Substring($a,$b-$a))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if(!$vs){throw 'Visual C++ compiler not found'}
+$extra=if($OffersFile -and $PairsFile){'"'+[IO.Path]::GetFullPath($OffersFile)+'" "'+[IO.Path]::GetFullPath($PairsFile)+'"'}else{''}
 $cmd=@"
 @echo off
 call "$vs/VC/Auxiliary/Build/vcvars64.bat" >nul
 if errorlevel 1 exit /b 1
 cl /nologo /EHsc /std:c++17 /W4 /I"$output" "$PSScriptRoot/DalaranClassIntroTest.cpp" /Fe"$output/DalaranClassIntroTest.exe" /Fo"$output/DalaranClassIntroTest.obj"
 if errorlevel 1 exit /b 1
-"$output/DalaranClassIntroTest.exe"
+"$output/DalaranClassIntroTest.exe" $extra
 exit /b %errorlevel%
 "@
 [IO.File]::WriteAllText("$output/run.cmd",$cmd)

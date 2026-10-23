@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <utility>
 #include <map>
 #include <vector>
 using uint32=uint32_t;
@@ -21,13 +23,13 @@ auto sGameEventMgr=&events;
 struct Player {
  QuestStatus state=QUEST_STATUS_NONE;uint32 introQuest=40716;
  QuestStatus prerequisite=QUEST_STATUS_REWARDED;
- uint32 zone=7502,area=7502;bool aura=false;unsigned casts=0,removals=0;
+ uint32 zone=7502,area=7502,race=1,gender=0,prerequisiteQuest=40824;bool aura=false;unsigned casts=0,removals=0;
  void SetQuestUpdate(uint32);
  void GetZoneAndAreaId(uint32& z,uint32& a)const{z=zone;a=area;}
- uint32 GetMapId()const{return 1220;}uint32 getGender()const{return 0;}
- uint32 getRaceMask()const{return 1;}uint32 classMask=256;uint32 getClassMask()const{return classMask;}
+ uint32 GetMapId()const{return 1220;}uint32 getGender()const{return gender;}
+ uint32 getRaceMask()const{return 1u<<(race-1);}uint32 classMask=256;uint32 getClassMask()const{return classMask;}
  uint32 GetOldZoneID()const{return zone;}uint32 GetOldAreaID()const{return area;}
- QuestStatus GetQuestStatus(uint32 id)const{if(id==40824)return prerequisite;assert(id==introQuest||id==44099);return state;}
+ QuestStatus GetQuestStatus(uint32 id)const{if(id==prerequisiteQuest)return prerequisite;assert(id==introQuest||id==44099);return state;}
  bool HasAura(uint32 id)const{assert(id==204860||id==224338||id==196908);return id==196908?false:aura;}
  void CastSpell(Player*,uint32 id,bool){assert(id==204860||id==224338||id==196908);if(id!=196908)aura=true;++casts;}
  void RemoveAurasDueToSpell(uint32 id){assert(id==204860||id==224338||id==196908);if(aura){aura=false;++removals;}}
@@ -43,7 +45,24 @@ struct SpellArea {
 };
 #include "ClassIntroArea.inc"
 #include "ClassIntroQuestUpdate.inc"
-int main(){
+int main(int argc,char** argv){
+ if(argc==3){
+  std::ifstream pairsFile(argv[2]);std::vector<std::pair<uint32,uint32>> pairs;uint32 race,cls;
+  while(pairsFile>>race>>cls)pairs.emplace_back(race,cls);assert(pairs.size()==149);
+  std::ifstream offers(argv[1]);SpellArea row;unsigned rows=0,cases=0;
+  while(offers>>row.spellId>>row.areaId>>row.questStart>>row.questStartStatus>>row.questEnd>>row.questEndStatus>>row.raceMask>>row.classmask>>row.gender){
+   ++rows;assert(row.questEndStatus==1);
+   for(auto pair:pairs)for(uint32 gender:{0u,1u})
+    for(auto before:{QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_REWARDED})
+     for(auto state:{QUEST_STATUS_NONE,QUEST_STATUS_INCOMPLETE,QUEST_STATUS_COMPLETE,QUEST_STATUS_FAILED,QUEST_STATUS_REWARDED}){
+      Player p;p.race=pair.first;p.classMask=1u<<(pair.second-1);p.gender=gender;p.introQuest=row.questEnd;p.prerequisiteQuest=row.questStart;p.prerequisite=before;p.state=state;p.area=row.areaId;
+      bool expected=(row.classmask&int(p.classMask))&&state==QUEST_STATUS_NONE&&(!row.questStart||before==QUEST_STATUS_REWARDED);
+      assert(row.IsFitToRequirements(&p,p.zone,p.area)==expected);assert(!row.IsFitToRequirements(&p,8392,8392));++cases;
+     }
+  }
+  assert(rows==22);std::cout<<"PASS: actual SpellArea requirements for22 live class invitations,149 native race/class pairs,both genders, all offer/prerequisite statuses and wrong areas: "<<cases<<" cases\n";
+  return 0;
+ }
  SpellArea fixed,old;old.questEndStatus=74;
  manager.ends.emplace(40716,&fixed);
  Player p;

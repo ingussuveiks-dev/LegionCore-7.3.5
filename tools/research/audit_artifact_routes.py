@@ -21,6 +21,7 @@ def main():
     p.add_argument('--world',type=Path,required=True)
     p.add_argument('--items',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--date',default='2026-10-15')
     args=p.parse_args()
     hashes={}
     def rows(name):
@@ -159,7 +160,7 @@ def main():
     review_findings=[dict(kind='missing_actor_sai_link',entry=e,event=event,missing_link=link,
                           referenced_by_routes=sorted(set(items)),status='intended action unknown; needs executable route review')
                      for (e,event,link),items in sorted(review_links.items())]
-    result=dict(date='2026-10-15',build='7.3.5.26972',routes=routes,findings=findings,review_findings=review_findings,
+    result=dict(date=args.date,build='7.3.5.26972',routes=routes,findings=findings,review_findings=review_findings,
                 native_race_class_pairs=native_pairs,scenario_routing=scenario_rows,
                 native_artifact_related_scenarios=sorted({s['ScenarioID'] for s in steps if s['RewardQuestID'] in {q for r in routes for q in r['canonical_links']}}),
                 native_lfg_scenarios=[dict(id=x['ID'],scenario=x['ScenarioID'],map=x['MapID'],difficulty=x['DifficultyID']) for x in lfg if x['ScenarioID']],
