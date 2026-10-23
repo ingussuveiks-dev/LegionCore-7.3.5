@@ -1,0 +1,27 @@
+{
+  "scope": "Thunder of the Titans1068, Stolen Thunder41574: Stage1 Making Introductions at the FIRST entrance door, before the wind corridor",
+  "client_failure": "On2026-10-23 the user showed an open entrance door with Meet Prustaga with Grif0/1 and explicitly confirmed it remained Stage1 after more than one minute. This is a later failure despite the earlier successful introduction recorded in hunter-intro-interactions-2026-10-23.json.",
+  "findings": [
+    "Grif104904 readiness event0 cast optional conversation210494 BEFORE starting native timed list104904 and path104904. Native SMART_ACTION_CAST returns before LINK on a rejected cast; the one-shot gossip event can therefore be consumed without starting the introduction.",
+    "Prustaga104949 entrance waypoint1/path104949 cast187207 Thorim's Bolt BEFORE criterion92/49879 and companion follow commands. Rejection likewise skips those essential LINKs. This bolt belongs to the first-door introduction, not just later combat.",
+    "Opening shrine door249364 is separate from meeting criterion49879; an open door is not evidence that the criterion ran. No live cast-result trace was captured, so which of the two rejected-cast paths caused this particular client failure remains unproven."
+  ],
+  "repair": [
+    "Reorder only the two exact reviewed SQL graphs: Grif timed list -> path -> NPC flags -> optional conversation; Prustaga actual waypoint credit -> follow -> Grif follow data -> bolt.",
+    "Keep native30+15+10-second conversations, waypoint coordinates, criterion49879, player-only nearest50-yard credit selection, nonrepeatable flags and all later stage events. Do not award credit from a door state, proximity alone, a timer or a mob death.",
+    "Whole-graph predicates refuse partial/custom definitions; repeat application is a no-op. No core/source handler or executable changes are required."
+  ],
+  "automated": [
+    "Test-TitanstrikeIntroduction.ps1 applies actual migration twice to temporary real-schema tables, replays exported BEFORE/AFTER graphs through extracted production CAST/criterion205/LINK code, reproduces both old failed-cast paths and verifies essential actions survive failures afterward.",
+    "Tests include successful/rejected casts, missing target, player/pet/null invokers, missing eligible player, exact graph fields, unchanged55-second timings, valid LINK destinations, custom-graph preservation and unchanged later events. Spatial selection, path/timer execution, actual cast validation and one-shot admission are explicitly fixture boundaries.",
+    "Native7.3.5 DB2 reader confirms scenario1068 Stage1 tree47167, criterion29684, type92 asset49879.",
+    "Test-HunterIntroInteractions.ps1 and Test-TitanstrikeRunes.ps1 -VerifyReleaseBinary passed; existing canonical Release SHA2560f7a4618f2de0dfca10ae9b0f6707fdd6354a021702a9b892e72056022e6bbf6 is unchanged."
+  ],
+  "pending_client": [
+    "Restart/recreate the entrance actors with the updated SmartAI definitions, choose Grif readiness, hear the complete introduction, see Prustaga reach her first waypoint and Stage1 become1/1 then Stage2.",
+    "Retry/re-entry, player leaving the50-yard credit radius during the actual waypoint, combat preventing native StartPath, and first-door attack/voice timing remain separate integration checks; this patch does not add a universal progression fallback.",
+    "The previously deployed wind/whirlwind and workshop/hologram changes remain pending client checks. A whirlwind travels empty unless a player actually enters it; only a boarded player is released at its endpoint."
+  ],
+  "deployment": "Migration07 installed transactionally in the configured world database and recorded in updates. Live SQL readback confirmed both reordered graphs. Existing actors still retain their loaded definitions until recreation/restart. No binary was rebuilt or replaced.",
+  "runtime_ownership": "User-owned bnetserver11868 and worldserver24424 were observed. Neither was stopped, and no background validation server was launched. A clean startup/loader check has not yet occurred."
+}
