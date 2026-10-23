@@ -246,7 +246,7 @@ struct State
         if (admitted || finished || !Current(player))
             return;
         Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
-        if (!scenario || scenario->GetScenarioId() != 973 || scenario->GetCurrentStep() != 12)
+        if (!scenario || scenario->GetScenarioId() != 973 || scenario->GetCurrentStep() < 12 || scenario->GetCurrentStep() > 13)
             return;
         instance = player->GetInstanceId();
         admitted = true;

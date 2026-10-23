@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Correct Survival presentation admission after this core's deferred SmartAI invoker cast. Found while tracing Marksmanship scene-to-real-equip behavior; this does not itself implement Marksmanship200262.",
+  "finding": {
+    "actual_order": "Actual248834 source1 state70/3 root0/action85 queues205589 with this project's production200ms AddDelayedEvent. Its LINK1/action205 immediately sends92/47689. Player::UpdateAchievementCriteria forwards to the instance; AchievementMgr<Scenario>::SendCriteriaUpdate synchronously invokes Scenario::UpdateCurrentStep. Matching26972 scenario973 has13 stages, so completing pickup step12 can move current progress to13 before the delayed scene aura begins.",
+    "defect": "TalonclawPresentation::State::Begin required exactly12. In that genuine local dispatch order,205589's scene could play but its controller never admitted the owner, so later scene completion and20s fallback did not cast real equip/claim197651. Checking the generic effect249 implementation or beginning the scene before advancing the fixture's stage did not catch this separate ordering failure.",
+    "previous_test_gap": "The earlier scene regression called Begin first and changed step afterwards. That modeled a possible path, not the queued SmartAI85 -> immediate205 -> delayed aura path. This audit explicitly supersedes that ordering assumption; earlier client-unverified limitations remain.",
+    "repair": "Accept exactly pickup12 or completed13 when the scene aura begins, retaining scenario973/map1511/class/active40385/existing128808 admission. Keep the captured instance, completion-status check, existing20s fallback, one-shot finished guard and native197651 cast. Earlier11 and invalid14 still reject. No global SmartAI scheduling, stage credit, spell timing, inventory grant or actor visual changes.",
+    "reference_distinction": "The local TrinityCore exact26972 invoker-cast case executes CastSpell immediately and uses different cast-flag APIs. This project has its own200ms queue. Do not copy that historical generic action over all quests just to make this one controller's old ordering assumption hold."
+  },
+  "sources": {
+    "local_first": "Actual MariaDB248834 scene/criterion action/link/target records, native26972 scenario973 final criterion and13-stage count, production SmartScript invoker queue/action205, Player instance forwarding, Scenario achievement send/update, scene lifecycle and scoped aura controller.",
+    "trinity": "Read the complete bounded SMART_ACTION_INVOKER_CAST case from C:/wamp64/www/TrinityCore at c2d61e05cf3dc555608e6b2a06772c27d207548c. It is a reference distinction only; no code imported. Existing pinned artifact donor review remains applicable.",
+    "video_limit": "No new footage/audio reviewed. This is a deterministic local scheduling defect, not a newly verified retail visual timing. Earlier partial Survival footage and newly read Marksmanship init/master definitions retain their original limits."
+  },
+  "checks": [
+    "Test-TalonclawPresentation.ps1 -BaselineRevision 32ef718b compiles the pinned pre-fix controller and fails the deferred-scene equip assertion; the current controller passes. The initial new test also reproduced the failure against the then-current source before the one-line implementation change.",
+    "The new timeline compiles the actual200ms AddDelayedEvent statement/lambda, actual action205 body and actual AchievementMgr<Scenario>::SendCriteriaUpdate specialization, then advances the scenario host before flushing the queued cast into the real production aura hooks and scene lifecycle. It requires exactly205589 then197651, with duplicate completion suppressed. It also covers completed13 admission/fallback and logout, abandonment or another instance before the delayed cast.",
+    "Fixture boundaries: target lookup, timer host, selected-player list, Scenario final-step update and CastSpell receiver are controlled fixtures. The full native Scenario criteria manager, map scheduler, client playback and inventory swap are not executed by this timeline. The test now models the verified native action ordering instead of reversing it. The extracted criterion body only renames its local event identifier for the fixture.",
+    "Existing tests retain ordinary pickup12, wrong/early/invalid-later context, stale instance callback, scene replacement, missing callback/large tick, cancel/complete-equivalent removal, invalid owner/pet/null, abandonment/re-entry and exactly-once controller behavior. Test-SceneLifecycle.ps1, Test-TalonclawReturn.ps1 and Test-TalonclawDeparture.ps1 pass. The native unused timedCompleted and existing return-loop narrowing fixture warnings remain visible.",
+    "Test-MarksmanshipOwnedReplay.ps1 -VerifyReleaseBinary, Test-ScriptPetCredit.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass on the new canonical build. No earlier Marksmanship replay condition or shared owner-credit behavior is replaced.",
+    "Test-ArtifactForceEquip.ps1 passes all55 typed26972 effect249 rows using the real production handler and fixture inventory services. The separate verify_artifact_force_equip_release.py confirms deployed existing-item/paired-item validation, errors and native SwapItem delegation. These remain separate from an actual client equip.",
+    "New PE check disassembles the real AfterApply admission: CMP12/JB and CMP13/JA share the rejection target. It includes prior scenario/scene/presentation/return/departure/model/pickup/Dakarr checks and confirms the canonical executable, not a stale scripts library."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "B57882A4E81661F4BEEA7AEEFE31A23FA65EBD8B29B957A13911F450BDDB2FEA",
+    "build": "Both Release targets rebuilt with /p:LinkIncremental=false, no global OutDir. Actual final-link inputs remain original scripts/Release/scripts.lib and game/Release/game.lib, and final PE instruction checks pass.",
+    "database": "No persistent SQL or character/item/configuration change. The existing205589 script binding and source actions are preserved; only temporary SQL fixtures and live read checks were used.",
+    "startup": "Task-owned canonical PID30504 reached World initialized and exited gracefully0. Appended DBErrors bytes0; protected configurations/certificates unchanged. No user/unknown process stopped and no task server remains running.",
+    "private_evidence": ".codex/talonclaw-deferred-scene-build.log and .codex/talonclaw-deferred-scene-startup; runtime/private data excluded from commits."
+  },
+  "remaining": [
+    "Actual client full ordinary/owned pickup, visual/title/audio,197651 real equip and persisted100112 claim, inventory errors/manual equip, portal departure, camera/movement/pet and relog still need observation. Bank ownership does not make effect249 search/move an item out of the bank.",
+    "This repairs delayed admission, not every failed native CastSpell/inventory validation or missing-actor recovery. Rejected inventory/equip diagnostics must remain visible. An arbitrary server/admin scene cast is not evidence of completing the whole acquisition path.",
+    "Marksmanship1169 still needs its own demonstrated real200262 equip callback, objective-storage audit, ordinary loot admission and full video/sequence review. Shared delayed scheduling must be included in that future regression.",
+    "Survival prerequisite39427, earlier stages, beyond50/disconnected/group recovery and exact visuals remain under the continuing all36 worklist; no chain is marked client verified."
+  ]
+}

@@ -70,6 +70,9 @@ struct Player : Unit {
     std::set<uint32> auras;
     PhaseManager phase;
     std::function<void(uint32)> removed;
+    std::function<void(uint32)> cast;
+    std::function<void()> criteriaUpdate;
+    std::vector<std::function<void()>> delayedInvokerCasts;
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
     Player* ToPlayer() override { return this; }
@@ -78,7 +81,11 @@ struct Player : Unit {
     bool HasSceneStatus(uint32, SceneEventStatus const&) const;
     void TrigerScene(uint32, std::string const);
     void SendDirectMessage(Message const* packet) { messages.push_back(*packet); }
-    void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 100); callback(); }
+    void AddDelayedEvent(uint32 delay, std::function<void()> callback) {
+        if (delay == 100) callback();
+        else { assert(delay == 200); delayedInvokerCasts.push_back(callback); }
+    }
+    void FlushInvokerCasts() { auto pending = std::move(delayedInvokerCasts); delayedInvokerCasts.clear(); for (auto& callback : pending) callback(); }
     PhaseManager& GetPhaseMgr() { return phase; }
     AuraEffectList const& GetAuraEffectsByType(int type) { assert(type == 430); return effects; }
     void RemoveAurasDueToSpell(uint32 spell) {
@@ -94,8 +101,13 @@ struct Player : Unit {
         if (removed) removed(spell);
     }
     bool HasAura(uint32 spell) { return auras.count(spell) != 0; }
-    void CastSpell(Player* target, uint32 spell, bool triggered) {
-        assert(target == this && triggered); casts.push_back(spell); auras.insert(spell);
+    void CastSpell(Unit* target, uint32 spell, bool triggered) {
+        assert(target == this && (triggered || spell == 205589)); casts.push_back(spell); auras.insert(spell);
+        if (cast) cast(spell);
+    }
+    void UpdateAchievementCriteria(uint32 type, uint32 asset, uint32 second, uint32 third, Unit* invoker, bool ignoreGroup) {
+        assert(type == 92 && asset == 47689 && second == 0 && third == 0 && invoker == this && ignoreGroup);
+        if (criteriaUpdate) criteriaUpdate();
     }
     void KilledMonsterCredit(uint32 entry) { credits.push_back(entry); }
     uint32 Start(AuraEffect& effect) {

@@ -685,6 +685,7 @@
       "sequence_review_audit": "docs/audits/survival-artifact-sequence-review-2026-10-23.json",
       "partial_repair_audit": "docs/audits/talonclaw-acquisition-2026-10-23.json",
       "presentation_repair_audit": "docs/audits/talonclaw-presentation-2026-10-23.json",
+      "deferred_scene_repair_audit": "docs/audits/talonclaw-deferred-scene-2026-10-23.json",
       "return_credit_repair_audit": "docs/audits/talonclaw-return-credit-2026-10-23.json",
       "departure_repair_audit": "docs/audits/talonclaw-departure-2026-10-23.json",
       "world_model_repair_audit": "docs/audits/talonclaw-world-model-2026-10-23.json",
@@ -693,7 +694,7 @@
       "boss_death_credit_repair_audit": "docs/audits/talonclaw-death-credit-2026-10-23.json",
       "pickup_admission_repair_audit": "docs/audits/talonclaw-pickup-admission-2026-10-23.json",
       "start": 41542,
-      "status": "loot, presentation equip, claim, return credit, personal departure/portal, native weapon model, source-scoped pickup retirement, final Dakarr admission/owner recovery and final-stage opening/loot admission repaired with native regressions; prerequisite/earlier scenario, beyond50/group traversal, exact visuals and client traversal remain pending",
+      "status": "loot, presentation equip including actual deferred-cast ordering, claim, return credit, personal departure/portal, native weapon model, source-scoped pickup retirement, final Dakarr admission/owner recovery and final-stage opening/loot admission repaired with native regressions; prerequisite/earlier scenario, beyond50/group traversal, exact visuals and client traversal remain pending",
       "quests": [
         {
           "id": 41542,

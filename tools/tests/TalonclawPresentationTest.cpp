@@ -9,12 +9,52 @@ struct Scenario {
     uint32 id = 973, step = 12;
     uint32 GetScenarioId() const { return id; }
     uint32 GetCurrentStep() const { return step; }
+    void SendCriteriaUpdate(struct CriteriaProgress const*) { }
+    void UpdateCurrentStep(bool loading) { assert(!loading); if (step == 12) step = 13; }
 };
 struct ScenarioManager {
     Scenario scenario; bool present = true;
     Scenario* GetScenario(uint32 instance) { return present && instance == 42 ? &scenario : nullptr; }
 } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
+struct CriteriaProgress {};
+template<class Owner> struct AchievementMgr {
+    Owner* owner;
+    Owner* GetOwner() const { return owner; }
+    void SendCriteriaUpdate(CriteriaProgress const*, uint32, bool) const;
+};
+#include "ScenarioCriteriaSend.inc"
+struct ObjectAccessor {
+    static Unit* GetUnit(Unit& context, uint32 guid) {
+        Player* player = context.ToPlayer();
+        return player && player->IsInWorld() && player->GetGUIDLow() == guid ? player : nullptr;
+    }
+};
+using ObjectList = std::list<Unit*>;
+Player* GetScriptCreditPlayer(Unit* unit) { return unit ? unit->ToPlayer() : nullptr; }
+enum { SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA = 205 };
+using CriteriaTypes = uint32;
+struct PickupActions {
+    Player* recipient;
+    Unit* GetBaseObject() const { return recipient; }
+    ObjectList* GetTargets(int, Unit*) const { return new ObjectList{recipient}; }
+    struct Event {
+        struct { struct { uint32 type = 92, misc1 = 47689, misc2 = 0, misc3 = 0; } achievementCriteria; } action;
+    };
+    ObjectList* GetTargets(Event const&, Unit* unit) const { return GetTargets(0, unit); }
+    void Criteria() {
+        Event event; Unit* unit = recipient;
+        switch (SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA) {
+#include "PickupCriteria.inc"
+        }
+    }
+    void QueueScene() {
+        Player* tempLastInvoker = recipient;
+        uint32 targetGUID = recipient->GetGUIDLow(), spellID = 205589;
+        bool isTrigger = false;
+#include "DeferredInvoker.inc"
+    }
+};
 int warnings = 0;
 #define TC_LOG_WARN(...) (++warnings)
 struct Aura { Unit* owner = nullptr; Unit* GetUnitOwner() const { return owner; } };
@@ -73,6 +113,33 @@ struct Pickup {
 int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     {
+        Pickup pickup;
+        pickup.player.cast = [&](uint32 spell) { if (spell == 205589) pickup.Begin(); };
+        CriteriaProgress progress; AchievementMgr<Scenario> criteria{&scenarioManager.scenario};
+        pickup.player.criteriaUpdate = [&]() { criteria.SendCriteriaUpdate(&progress, 0, false); };
+        PickupActions actions{&pickup.player};
+        actions.QueueScene(); assert(pickup.player.casts.empty() && pickup.player.delayedInvokerCasts.size() == 1);
+        actions.Criteria(); assert(scenarioManager.scenario.step == 13 && pickup.player.casts.empty());
+        pickup.player.FlushInvokerCasts(); pickup.Finish(); pickup.Finish();
+        assert((pickup.player.casts == std::vector<uint32>{205589, 197651}));
+    }
+    {
+        Pickup pickup; scenarioManager.scenario.step = 13; pickup.Begin(); pickup.Tick(20000);
+        assert(pickup.player.casts == std::vector<uint32>{197651});
+    }
+    for (uint32 invalid = 0; invalid < 3; ++invalid) {
+        Pickup pickup;
+        pickup.player.cast = [&](uint32 spell) { if (spell == 205589) pickup.Begin(); };
+        CriteriaProgress progress; AchievementMgr<Scenario> criteria{&scenarioManager.scenario};
+        pickup.player.criteriaUpdate = [&]() { criteria.SendCriteriaUpdate(&progress, 0, false); };
+        PickupActions actions{&pickup.player}; actions.QueueScene(); actions.Criteria();
+        if (invalid == 0) pickup.player.world = false;
+        if (invalid == 1) pickup.player.quest = 0;
+        if (invalid == 2) pickup.player.runtimeInstance = 43;
+        pickup.player.FlushInvokerCasts(); if (pickup.scene) pickup.Finish(); pickup.Tick(UINT32_MAX);
+        assert(pickup.player.casts == (invalid == 0 ? std::vector<uint32>{} : std::vector<uint32>{205589}));
+    }
+    {
         Pickup pickup; pickup.Begin(); assert(pickup.player.casts.empty());
         pickup.Tick(19999); assert(pickup.player.casts.empty());
         scenarioManager.scenario.step = 13; scenarioManager.present = false;
@@ -100,7 +167,7 @@ int main() {
         assert(pickup.player.effects.empty() && pickup.player.m_sceneInstanceID.empty());
         session._player = nullptr; session.HandleScenePlaybackCanceled(packet);
     }
-    for (uint32 invalid = 0; invalid < 12; ++invalid) {
+    for (uint32 invalid = 0; invalid < 13; ++invalid) {
         Pickup pickup;
         switch (invalid) {
             case 0: pickup.player.world = false; break;
@@ -115,6 +182,7 @@ int main() {
             case 9: scenarioManager.present = false; break;
             case 10: scenarioManager.scenario.id = 962; break;
             case 11: scenarioManager.scenario.step = 11; break;
+            case 12: scenarioManager.scenario.step = 14; break;
         }
         pickup.Begin(); pickup.Finish(); pickup.Tick(UINT32_MAX);
         assert(pickup.player.casts.empty());
@@ -160,4 +228,5 @@ int main() {
         assert(pickup.player.casts.empty());
     }
     std::cout << "PASS: extracted native scene and Talonclaw aura hooks, actual owner getter, final-stage owned-item admission, complete/cancel-equivalent removal, bounded missing-callback cleanup, invalidation, stale retry, no grant or duplicate scenario credit\n";
+    std::cout << "PASS: native200ms invoker queue -> synchronous native criterion dispatcher -> completed-step scene admission/equip, with pre-dispatch logout/abandon/re-entry rejection\n";
 }
