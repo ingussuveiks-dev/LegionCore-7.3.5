@@ -17,11 +17,11 @@
     "Native7.3.5 DB2 reader confirms scenario1068 Stage1 tree47167, criterion29684, type92 asset49879.",
     "Test-HunterIntroInteractions.ps1 and Test-TitanstrikeRunes.ps1 -VerifyReleaseBinary passed; existing canonical Release SHA2560f7a4618f2de0dfca10ae9b0f6707fdd6354a021702a9b892e72056022e6bbf6 is unchanged."
   ],
+  "client_confirmed": "After installing migration07 and the requested worldserver restart/readiness retest, the user answered Pāriet uz Stage 2. This confirms the first-door Stage1-to-Stage2 transition in this run; it does not separately certify every voice/visual or alternative path.",
   "pending_client": [
-    "Restart/recreate the entrance actors with the updated SmartAI definitions, choose Grif readiness, hear the complete introduction, see Prustaga reach her first waypoint and Stage1 become1/1 then Stage2.",
     "Retry/re-entry, player leaving the50-yard credit radius during the actual waypoint, combat preventing native StartPath, and first-door attack/voice timing remain separate integration checks; this patch does not add a universal progression fallback.",
     "The previously deployed wind/whirlwind and workshop/hologram changes remain pending client checks. A whirlwind travels empty unless a player actually enters it; only a boarded player is released at its endpoint."
   ],
   "deployment": "Migration07 installed transactionally in the configured world database and recorded in updates. Live SQL readback confirmed both reordered graphs. Existing actors still retain their loaded definitions until recreation/restart. No binary was rebuilt or replaced.",
-  "runtime_ownership": "User-owned bnetserver11868 and worldserver24424 were observed. Neither was stopped, and no background validation server was launched. A clean startup/loader check has not yet occurred."
+  "runtime_ownership": "User-owned bnetserver11868/worldserver24424 were not stopped by the agent. After the user's restart, bnetserver34944/worldserver13160 were observed in the canonical runtime. No background validation server was launched. DBErrors.log remained594 bytes with no appended lines after this restart/retest; the historic13:20 rejected spell0 entry is retained and was repaired separately before this task. No claim of unseen console output is made."
 }
