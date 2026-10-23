@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Talonclaw248834 opening, owned-copy replay and item-loot stage admission. Not a whole Survival quest/visual/client certification.",
+  "finding": {
+    "gap": "The existing acquisition handler admitted any active40385 Hunter with a visible/reachable chest, without checking scenario973 progress. A boss death with no credit recipient can leave its native LINK-summoned chest present at step11. The previous owner fallback repairs eligible nearby owners, but intentionally not every disconnected/out-of-range branch. The old handler then allowed actual loot or owned/bank replay before the native pickup stage.",
+    "native_stage": "Typed26972 scenario973 step11/tree46289/criterion29263/asset47688 is the final Dakarr fight; step12/tree46291/criterion29264/asset47689 is Talonclaw pickup. Final completed progress may be13. Existing scene/presentation logic requires the same final-stage context, but that later aura check cannot prevent an earlier inventory receipt.",
+    "live_data": "Fresh MariaDB248834 is chest3/lock1691/flags2097152/Data1=248834/SmartGameObjectAI/go_artifact_acquisition. Its loot row is128808/count1/chance100. No static248834 spawn, source4 loot condition or source22 chest condition was found. Native99480 LINK summons remain the source; no spawn/visibility/actor flags are changed.",
+    "root_paths": "GameObject::Use calls ScriptMgr::OnGossipHello before native use. Open Lock's Spell::SendLoot also calls this hook before Player::SendLoot. LootItem::AllowedForPlayer executes source4 item conditions; cached Loot::LootItemInSlot rechecks AllowedForPlayer before Player::StoreLootItem reaches CanStoreNewItem/StoreNewItem. A completed-loot scene gate alone does not cover these inventory paths."
+  },
+  "repair": [
+    "For248834 only, require map1511, a real live scenario973 and step12 or13 before either real native loot admission or the existing owned/bank-copy completion replay. All previous class/quest/alive/teleport/spawn/flags/map/phase/visibility/LOS/distance/completed-loot checks remain. Other eight pickups are unchanged.",
+    "Add source4/group248834/item128808 conditions for the actual loot item. Four ElseGroups explicitly combine steps12/13 with incomplete/complete40385; each retains Hunter class mask4, map1511 and nonrewarded quest admission. This also revalidates stale cached item requests after abandonment, wrong-instance/scenario or progress changes. No direct item creation, equip, scene cast, criterion or forced stage is added.",
+    "Use this core's native condition9 for incomplete quests and28 for complete-unrewarded quests. Condition44 compares an exact zero-based step; it has no modern greater-than mode. Condition47 is terrain swap here, not quest-state admission. Do not import incompatible condition IDs or masks.",
+    "The migration is guarded by the original object binding and real nonreference/count1 loot row; it skips an existing custom condition list instead of OR-ing new permissive groups into it. It changes no native chest lock, flags, loot quantity/chance, creature lifecycle or other source's128808 records."
+  ],
+  "evidence": {
+    "sources": "Matching local26972 DB2 catalog, actual runtime MariaDB rows, native GameObject/Spell loot opening, ConditionMgr class/map/quest/scenario/ElseGroup and source4-loader paths, LootItem admission, cached slot recheck and Player inventory receipt. Existing local TrinityCore and pinned GitHub review findings remain in legion-artifact-donor-review/survival-artifact-sequence-review; no donor code was imported for this local gate defect.",
+    "video_limit": "No new video/audio reviewed. Prior sparse muted final-fight/pickup samples support the sequence already recorded in the Survival audits, not this server's admission behavior or any unseen interval. Actual client traversal remains pending.",
+    "baseline": "Test-ArtifactAcquisition.ps1 -BaselineRevision aed9a6e0 compiles the pinned pre-fix production handler and fails the premature-pickup assertion. The current handler passes the same all-stage/ownership tests. A native LootItem with no conditions admits the step11 fixture, whereas the migrated condition list rejects it.",
+    "tests": "Test-TalonclawPickupAdmission.ps1 -VerifyReleaseBinary passes actual-schema temporary migration twice, all20 condition rows, custom handler/reference/condition and unrelated-row preservation. C++ compiles the real condition cases, ElseGroup evaluator, LootItem::AllowedForPlayer and cached-slot recheck tail. Covers stages0..14, incomplete/complete/absent/failed/rewarded quests, missing/wrong scenario/instance/map/class, cached eligibility invalidation and unrelated unconditioned loot.",
+    "opening_tests": "The extracted shared production acquisition handler passes normal/owned/bank paths at12/13 and rejects early/later/missing/wrong context without callback or ownership credit. Existing all-nine physical/class/quest/bag/replay gates remain. Source-order checks verify open-lock script admission before loot and slot validation before storage.",
+    "fixture_limits": "Map/scenario hosts, scalar geometry, cached-slot host and inventory/AI receivers are fixtures. The slot test compiles the real recheck tail, not the full native slot enumeration or network packet handler. Full bags, inventory ownership and completed-loot callbacks retain their separate acquisition regressions. No live malicious packet, group distribution, client click/loot/equip or visual execution is certified.",
+    "binary_check": "Canonical PE verifies actual248834/1511/973/final-stage constants in ArtifactAcquisition::Use, native per-item ConditionMgr call and Player::StoreLootItem -> LootItemInSlot, plus the existing Dakarr owner/admission, pickup retirement, model, departure, return, presentation, scene and LFG chain. The first new verifier used an ambiguous one/two-object overload prefix; it was corrected to the exact native one-object symbol and the check passes without being disabled.",
+    "regressions": "Test-TalonclawDakarr.ps1, Test-ScriptPetCredit.ps1 -VerifyReleaseBinary, Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary, Test-TalonclawAcquisition.ps1 and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass on the final canonical build. Native DB2 all13-stage and unchanged completed-loot action/scene checks remain included."
+  },
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "CCAEAEF3DFA169711AB1659EB2B3CD7CC92C76713445750A3DB5C5971BF164EF",
+    "migration": "sql/updates/world/2026_10_23_16_talonclaw_pickup_admission.sql",
+    "migration_sha1": "4870A8A89859A1B5A3E3113CD5AEC88D076B8CF7",
+    "database": "Privately backed up the affected world condition slice, applied migration16 and registered the matching RELEASED hash. Post-start readback retains all20 rows/four groups of5. No character, runtime configuration, password or item records modified.",
+    "build": "Both canonical Release targets built with /p:LinkIncremental=false and no global OutDir; final-link inputs remain original scripts/Release/scripts.lib and game/Release/game.lib. Actual deployed executable instructions checked, not only copied hashes.",
+    "startup": "Task-owned PID22384 reached World initialized, exited gracefully0, appended DBErrors bytes0 and preserved protected configurations/certificates. No unknown/user process stopped; no task server remains running.",
+    "private_evidence": ".codex/backups/talonclaw-pickup-admission-20261023, .codex/talonclaw-pickup-admission-build.log and .codex/talonclaw-pickup-admission-startup; these runtime/private assets are not committed."
+  },
+  "remaining": [
+    "Actual client early interaction, correct cursor/availability at the final stage, real loot with empty/full bags and retry, owned/bank replay, scene/equip/camera/pet, both factions and abandon/re-entry still require observation. No weapon/model visibility timing is changed or newly verified.",
+    "A final kill with no eligible native or fallback credit reference can still leave a pending fight and existing chest. This repair rejects that premature reward rather than using it as a workaround; outside50/disconnected references, reset/re-entry and failed-spawn recovery still need their own repair/evidence.",
+    "Stage13 admission preserves remaining native loot/replay opportunities, not a guarantee of one artifact per group member from a shared depleted chest. Existing group/personal-loot rules are unchanged. Custom pre-existing loot condition lists are preserved and need their own audit.",
+    "Prerequisite39427, earlier scenario encounters and exact visual/audio choreography remain pending under the all36 worklist."
+  ]
+}

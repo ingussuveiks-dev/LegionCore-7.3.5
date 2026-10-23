@@ -691,8 +691,9 @@
       "world_pickup_repair_audit": "docs/audits/talonclaw-world-pickup-2026-10-23.json",
       "boss_admission_repair_audit": "docs/audits/talonclaw-dakarr-admission-2026-10-23.json",
       "boss_death_credit_repair_audit": "docs/audits/talonclaw-death-credit-2026-10-23.json",
+      "pickup_admission_repair_audit": "docs/audits/talonclaw-pickup-admission-2026-10-23.json",
       "start": 41542,
-      "status": "loot, presentation equip, claim, return credit, personal departure/portal, native weapon model, source-scoped pickup retirement, final Dakarr stage admission and missed death-event owner recovery repaired with native regressions; prerequisite/earlier scenario, beyond50/group traversal, exact visuals and client traversal remain pending",
+      "status": "loot, presentation equip, claim, return credit, personal departure/portal, native weapon model, source-scoped pickup retirement, final Dakarr admission/owner recovery and final-stage opening/loot admission repaired with native regressions; prerequisite/earlier scenario, beyond50/group traversal, exact visuals and client traversal remain pending",
       "quests": [
         {
           "id": 41542,

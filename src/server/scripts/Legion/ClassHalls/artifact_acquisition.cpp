@@ -140,6 +140,13 @@ bool Use(Player* p,GameObject* go)
                 go->HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE|GO_FLAG_NOT_SELECTABLE) ||
                 p->GetMap()!=go->GetMap() || !p->InSamePhase(go) || !p->canSeeOrDetect(go) || !p->IsWithinLOSInMap(go) ||
                 p->GetExactDist(go)>5.0f || go->getLootState()==GO_JUST_DEACTIVATED) return true;
+            if (row.object == 248834)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(p->GetInstanceId());
+                if (go->GetMapId() != 1511 || !scenario || scenario->GetScenarioId() != 973 ||
+                    scenario->GetCurrentStep() < 12 || scenario->GetCurrentStep() > 13)
+                    return true;
+            }
             if (!p->HasItemCount(row.item,1,true)) return false;
             // A shop/bank copy satisfies ownership. Replay the same native
             // loot-completed AI event, without trying to loot another unique

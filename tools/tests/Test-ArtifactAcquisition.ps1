@@ -1,9 +1,9 @@
-param([switch]$VerifyReleaseBinary,[switch]$Baseline)
+param([switch]$VerifyReleaseBinary,[switch]$Baseline,[string]$BaselineRevision)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/artifact-acquisition"
 New-Item -ItemType Directory -Force -Path $out | Out-Null
-if($Baseline){$s=(& git -C $repo show 6c8e74a5:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"}else{$s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw}
+if($BaselineRevision){$s=(& git -C $repo show "${BaselineRevision}:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp") -join "`n";if($LASTEXITCODE){throw 'Cannot read acquisition baseline'}}elseif($Baseline){$s=(& git -C $repo show 6c8e74a5:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"}else{$s=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw}
 $a=$s.IndexOf('namespace ArtifactAcquisition');$b=$s.IndexOf('namespace DarkRidersCompletion',$a)
 [IO.File]::WriteAllText("$out/Acquisition.inc",$s.Substring($a,$b-$a))
 $s=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
