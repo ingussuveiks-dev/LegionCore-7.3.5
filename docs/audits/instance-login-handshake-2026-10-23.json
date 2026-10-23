@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-23",
+  "timezone": "Europe/Riga",
+  "status": "Original intermittent silent instance handshake remains unresolved; client-only recovery and subsequent quest turn-in confirmed",
+  "release_sha256": "585dd1f0305320192b0e47d9350b1124902421738ea6fd8a3af2f5bc427cb4ca",
+  "prior_evidence": [
+    "docs/audits/first-login-handshake-2026-10-21.md",
+    "docs/audits/socket-authentication-lifetime-2026-10-22.md"
+  ],
+  "failed_attempt": {
+    "worldserver_ready": "08:27:26",
+    "realm_handshake": "08:27:59: initializer and encryption complete normally on 8085",
+    "instance_accept": "08:28:13: serial 17, TCP peer 60732, local port 8086",
+    "deadline": "08:28:23: age 10011ms, initializer=0, continued-auth=0, buffered=0",
+    "tcp": {"state":4,"sent":48,"received":0,"unacknowledged":0,"retransmitted":0},
+    "interpretation": "The peer TCP stack acknowledged the 48-byte server greeting, but no initializer reached the server. These counters do not prove that the client application read the greeting or identify why it remained silent.",
+    "retry": "At 08:28:25 client reports CONNECT_TO_FAILED for serials 35/53/71/89 immediately, without new accepted instance connections; server aborts login after its existing five-attempt bound.",
+    "client_log": "Character Login SEND / waiting for active player at 08:28:13.515; wait ends at 08:28:25.686 and the object manager is destroyed. No Active Player Created in this failed run.",
+    "scope": "Failure precedes HandleContinuePlayerLogin and the loading of Krau's world state; it did not exercise Eitrigg's quest dialog code."
+  },
+  "incident_preservation": {
+    "tool": "tools/research/Save-WorldHandshakeIncident.ps1",
+    "private_directory": "build-extractors/runtime-test/handshake-incidents/20261023-083116-691",
+    "saved_before_client_restart": true,
+    "contents": "Failed Client.log, filtered server network records and current process/TCP metadata. No pre-abort sampling history was available for the first attempt; the failed socket's process ownership is not proven by a later snapshot.",
+    "followup_watch": "A 45-second read-only watcher during client recovery ended with no new handshake timeout and left no helper process running.",
+    "excluded_from_git": "Raw client/server logs and process/TCP snapshots remain ignored private runtime data."
+  },
+  "recovery": {
+    "action": "User closed and restarted WoW only; both user-owned servers continued running.",
+    "server_start_times_unchanged": {"bnetserver":"08:27:06","worldserver":"08:27:09"},
+    "new_client_started": "08:32:09",
+    "instance_handshake": "08:32:21: new peer 51114 sends initializer in 0-1ms, continued auth at 16ms, encryption acknowledged at 47ms",
+    "server_login": "08:32:22: Krau level 102 logged in",
+    "client_active_player": "08:32:22.589",
+    "user_confirmation": "Ar Krau tieku spēlē",
+    "quest_followup": "User subsequently confirmed Eitrigg turn-in and the next quest; see quest-turnin-markers-2026-10-22.json."
+  },
+  "changes": {
+    "server_or_client_code": false,
+    "configuration_or_protocol": false,
+    "character_data": false,
+    "timeouts_or_retry_bounds": false,
+    "user_servers_stopped": false,
+    "agent_servers_started": false
+  },
+  "remaining_investigation": [
+    "Determine why the original client connection acknowledged TCP greeting bytes without sending its initializer, then refused later instance attempts.",
+    "Preserve a future failure before restarting the client; capture actual application receive/dispatch evidence if available. Static code inspection, successful socket probes and recovery do not establish this missing cause.",
+    "Do not call the original handshake fixed, increase timeouts speculatively, suppress diagnostics, clear unrelated character/quest data or attribute this pre-login failure to Eitrigg."
+  ]
+}
