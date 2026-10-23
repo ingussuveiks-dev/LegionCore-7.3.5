@@ -29,7 +29,12 @@ def immediates(prefix):
 grif = immediates('?UpdateAI@npc_titanstrike_grif@@')
 assert {1495,1068,41574,106289,6660}.issubset(grif), 'Wrong deployed Grif scenario, quest, Theodore or Shoot'
 assert 194584 not in grif, 'Grif still tries a melee Crippling Slash instead of Shoot'
+follow = '?Follow@npc_titanstrike_grif@@'
+assert native['symbol'](follow) in native['calls']('?UpdateAI@npc_titanstrike_grif@@')
+for callee in ('?SetSpeed@Unit@@', '?GetCurrentMovementGeneratorType@MotionMaster@@', '?MoveFollow@MotionMaster@@'):
+    assert native['symbol'](callee) in native['calls'](follow), f'Deployed Theodore follow lacks {callee}'
+assert 14 in immediates(follow), 'Deployed Theodore follow lacks FOLLOW_MOTION_TYPE guard'
 assert native['symbol']('?SetData@SmartAI@@') in native['calls']('?SetData@npc_titanstrike_prustaga@@')
 assert native['symbol']('?SetData@SmartAI@@') in native['calls']('?UpdateAI@npc_titanstrike_prustaga@@')
 native['symbol']('?Spawn@npc_titanstrike_prustaga@@')
-print('PASS: actual Release Grif uses map1495/scenario1068/quest41574, Theodore106289 and Shoot6660; Prustaga preserves native SmartAI data dispatch')
+print('PASS: actual Release Grif uses native scenario/Theodore/Shoot, guarded follow and speed synchronization; Prustaga preserves native SmartAI data dispatch')

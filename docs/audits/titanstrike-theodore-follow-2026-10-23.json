@@ -1,0 +1,16 @@
+{
+  "reported": "Theodore follows Grif but moves very slowly in the client's Hunter artifact scenario.",
+  "scope": "npc_titanstrike_grif, map1495/scenario1068, active Stolen Thunder41574, Stage2 through the final stage. No generic pet/movement code or player pet ownership changes.",
+  "findings": [
+    "The helper called MoveFollow every500ms while idle and during the workshop. Native MotionMaster::MoveFollow unconditionally Mutates a fresh generator, resetting its path, last-target position and spline rather than retaining the running follow.",
+    "Theodore106289 is a manual TempSummon, not a player Pet/Guardian with matching owner GUID. Native follow speed synchronization and GetVelocity's owner branch therefore do not apply. Its template run rate1 differs from Grif104904's1.14286; walk rates are both1. These defects are established in code/data; their individual contribution to the perceived very slow motion is not client-isolated."
+  ],
+  "repair": "A scoped Follow helper copies changed walk/run rates from Grif and starts follow only when the current motion is not FOLLOW_MOTION_TYPE. Combat/chase remains available, follow resumes after combat, workshop CombatStop/repair behavior stays intact. No teleport, speed boost or new pet ownership is introduced.",
+  "checks": [
+    "Test-TitanstrikeRunes.ps1 -VerifyReleaseBinary passes: production callbacks, ten idle polls retain one generator, Grif rate changes are propagated, workshop follow is retained, combat/resummon/abandonment and all prior wave checks.",
+    "Test-PetFollowMovement.ps1 passes extracted native follow/spline/speed dispatch across walk/run/combat and movement boundaries. This is separate from the scoped AI fixture.",
+    "PE verifier resolves the actual canonical Grif UpdateAI -> Follow -> SetSpeed/GetCurrentMovementGeneratorType/MoveFollow calls and FOLLOW_MOTION_TYPE14 guard. Test-ScepterLogin.ps1 -VerifyReleaseBinary also passes after linking."
+  ],
+  "deployment": "Release scripts.lib rebuilt at its original final-link input path; worldserver rebuilt to canonical build-extractors/bin/Release without global OutDir override. SHA25642788051e74e1499b99517de4fd68afa9571390abf8c86e82f13a2c736b7cab1. No server was running at deployment. User subsequently launched worldserver33276 at16:09:12; its16:09:26 ready and Krau login were observed. A planned owned startup check refused to launch because that user server existed; no owned/background server was created or stopped.",
+  "remaining_client_checks": "Walking/running behind Grif on stairs and turns, following after fights, workshop pose and normal chase/attacks. Compile/PE/startup evidence does not verify smooth visible movement or prove the entire artifact chain."
+}

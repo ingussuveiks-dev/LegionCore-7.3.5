@@ -160,6 +160,19 @@ struct npc_titanstrike_grif : SmartAI
     uint32 timer = 0, shotTimer = 0;
     bool repairing = false;
 
+    void Follow(Creature* bear)
+    {
+        // Theodore is a TempSummon, not a player Pet: native pet speed
+        // synchronization does not apply. Retain Grif's current walk/run rates.
+        for (auto type : {MOVE_WALK, MOVE_RUN})
+            if (bear->GetSpeedRate(type) != me->GetSpeedRate(type))
+                bear->SetSpeed(type, me->GetSpeedRate(type));
+        // Replacing the generator every poll restarts its spline and forgets
+        // its last target position. Only resume follow after another movement.
+        if (bear->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+            bear->GetMotionMaster()->MoveFollow(me, 2.0f, 1.5f);
+    }
+
     void Cleanup()
     {
         if (auto bear = ObjectAccessor::GetCreature(*me, bearGuid))
@@ -215,14 +228,14 @@ struct npc_titanstrike_grif : SmartAI
             bear->setFaction(me->getFaction());
             bear->SetLevel(me->getLevel());
             bear->SetReactState(REACT_DEFENSIVE);
-            bear->GetMotionMaster()->MoveFollow(me, 2.0f, 1.5f);
+            Follow(bear);
         }
         if (!player->IsAlive())
             return;
         if (workshop)
         {
             bear->CombatStop(true);
-            bear->GetMotionMaster()->MoveFollow(me, 2.0f, 1.5f);
+            Follow(bear);
             auto robot = me->FindNearestCreature(105016, 6.0f, true);
             bool work = robot && robot->HasAura(210836);
             if (work)
@@ -252,7 +265,7 @@ struct npc_titanstrike_grif : SmartAI
         if (!target || !target->IsAlive() || !me->IsValidAttackTarget(target) || me->GetDistance(target) > 80.0f || !me->InSamePhaseId(target))
         {
             if (!bear->isInCombat())
-                bear->GetMotionMaster()->MoveFollow(me, 2.0f, 1.5f);
+                Follow(bear);
             return;
         }
         if (!bear->getVictim())

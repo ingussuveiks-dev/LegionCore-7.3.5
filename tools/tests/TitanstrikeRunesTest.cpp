@@ -15,6 +15,8 @@ constexpr uint32 CLASS_HUNTER=3,QUEST_STATUS_INCOMPLETE=3;
 constexpr int TEMPSUMMON_MANUAL_DESPAWN=0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT=1,REACT_DEFENSIVE=1;
 constexpr int UNIT_FIELD_EMOTE_STATE=1,EMOTE_STATE_USE_STANDING=69,EMOTE_ONESHOT_NONE=0;
 constexpr uint32 UNIT_FIELD_FLAGS=2,UNIT_FLAG_NOT_SELECTABLE=33554432;
+enum UnitMoveType { MOVE_WALK, MOVE_RUN };
+constexpr int FOLLOW_MOTION_TYPE=14, CHASE_MOTION_TYPE=5;
 int failedSummonLogs=0;
 #define TC_LOG_ERROR(...) (++failedSummonLogs)
 struct ObjectGuid {
@@ -23,10 +25,11 @@ struct ObjectGuid {
  static const ObjectGuid Empty;
 };const ObjectGuid ObjectGuid::Empty;
 struct Creature;struct Player;struct Pet;
-struct Motion {int follows=0;void MoveFollow(Creature*,float,float){++follows;}};
+struct Motion {int follows=0,type=0;void MoveFollow(Creature*,float,float){++follows;type=FOLLOW_MOTION_TYPE;}int GetCurrentMovementGeneratorType(){return type;}};
 struct Unit {
  virtual ~Unit()=default;bool alive=true,visible=true,hostile=false,combat=false;int phase=1,level=102,faction=35;uint32 entry=0;
  float x=4890,y=315,z=-36;ObjectGuid guid;Unit* victim=nullptr;std::set<Unit*> attackers;
+ float speeds[2]={1.0f,1.0f};float GetSpeedRate(UnitMoveType t){return speeds[t];}void SetSpeed(UnitMoveType t,float rate){speeds[t]=rate;}
  bool IsAlive()const{return alive;}bool isInCombat(){return combat;}Unit* getVictim(){return victim;}uint32 GetEntry(){return entry;}void CombatStop(bool){combat=false;victim=nullptr;}
  std::set<Unit*>* getAttackers(){return &attackers;}
  bool InSamePhaseId(Unit* u)const{return phase==u->phase;}
@@ -69,7 +72,7 @@ struct SmartAI:AI {
  explicit SmartAI(Creature* c):me(c){c->ai=this;}
  virtual void JustDied(Unit*){}virtual void SetData(uint32 id,uint32 value){calls.emplace_back(id,value);}
  virtual void UpdateAI(uint32){++baseUpdates;}void SetCombatMove(bool b){combatMove=b;}
- void AttackStart(Unit* target)override{me->victim=target;me->combat=true;}
+ void AttackStart(Unit* target)override{me->victim=target;me->combat=true;me->motion.type=CHASE_MOTION_TYPE;}
  NativeScript* GetScript(){return &script;}
 };
 Creature* Creature::SummonCreature(uint32 e,float px,float py,float pz,float,int,uint32){
@@ -115,10 +118,19 @@ int main(){
  // later stages, pet-only combat, death/resummon and quest/map cleanup.
  Creature grif(104904);npc_titanstrike_grif helper(&grif);scenario.step=0;helper.UpdateAI(500);assert(helper.bearGuid.IsEmpty());
  scenario.step=1;helper.UpdateAI(500);auto bear=helper.bearGuid;assert(!bear.IsEmpty()&&objects[bear]->summoner==grif.guid&&player.pet==&pet);
+ // A follower keeps one generator instead of restarting its spline every
+ // 500 ms, and follows Grif's changing rates rather than its slower template.
+ grif.speeds[MOVE_RUN]=1.14286f;grif.speeds[MOVE_WALK]=1.2f;
+ for(int i=0;i<10;++i)helper.UpdateAI(500);
+ assert(objects[bear]->motion.follows==1);
+ assert(objects[bear]->speeds[MOVE_RUN]==grif.speeds[MOVE_RUN]&&objects[bear]->speeds[MOVE_WALK]==grif.speeds[MOVE_WALK]);
+ grif.speeds[MOVE_RUN]=1.5f;helper.UpdateAI(500);
+ assert(objects[bear]->speeds[MOVE_RUN]==1.5f&&objects[bear]->motion.follows==1);
  Creature enemy(106335);enemy.hostile=true;pet.victim=&enemy;
  for(unsigned step=1;step<=5;++step){scenario.step=step;helper.UpdateAI(500);assert(helper.bearGuid==bear);if(step==3)assert(!objects[bear]->victim);else assert(objects[bear]->victim==&enemy);}
  scenario.step=3;Creature robot(105016);robot.x=grif.x;robot.y=grif.y;robot.reactivating=true;grif.combat=true;helper.UpdateAI(500);
  assert(!grif.combat&&grif.emote==EMOTE_STATE_USE_STANDING&&!objects[bear]->combat);
+ auto follows=objects[bear]->motion.follows;helper.UpdateAI(500);assert(objects[bear]->motion.follows==follows);
  robot.reactivating=false;helper.UpdateAI(500);assert(grif.emote==0);
  Creature machine(106354);machine.hostile=true;machine.x=base.x;machine.y=base.y;pet.victim=&machine;ai.UpdateAI(500);assert(base.bolts==1);ai.UpdateAI(500);assert(base.bolts==1);
  pet.victim=&enemy;scenario.step=5;
