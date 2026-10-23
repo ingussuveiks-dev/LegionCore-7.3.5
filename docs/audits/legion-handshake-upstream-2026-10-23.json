@@ -69,8 +69,15 @@
     "ownership": "User worldserver had already shut down before deployment. No user-owned process was stopped. Owned hidden validation worldserver 26944 reached ready and shut down gracefully with exit code 0; no temporary server remains.",
     "preserved": "Runtime configuration, credentials, certificates, DLLs, logs, extracted data, bnetserver executable and character data"
   },
+  "client_verification": {
+    "date": "2026-10-23",
+    "implementation_commit": "8a82a976",
+    "user_report": "Ar pirmo mēģinājumu tieku spēlē",
+    "scope": "In response to the deployed-version cold-client login check, the user confirmed Krau entered the game on the first attempt.",
+    "limitation": "One successful client login does not establish that the intermittent handshake failure has been eliminated."
+  },
   "remaining_client_checks": [
-    "Cold WoW-client login against the deployed server, repeated client starts and ordinary logout/relog/instance transfers.",
+    "Repeated client starts and ordinary logout/relog/instance transfers after the first successful cold-client login.",
     "Preserve and trace any recurrence before restarting the client. Passing initializer probes or one successful login cannot prove the original intermittent silence permanently fixed.",
     "Do not label this ownership/handoff repair a proven root-cause fix for the user's intermittent failure until actual client evidence supports that claim."
   ]
