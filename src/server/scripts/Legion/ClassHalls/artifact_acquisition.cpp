@@ -13,9 +13,68 @@
 #include "Map.h"
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
+#include "SmartAI.h"
 #include <cmath>
 #include <mutex>
 #include <unordered_map>
+
+namespace TalonclawDakarr
+{
+struct Gate
+{
+    bool held = false;
+    bool addedFlag = false;
+    ReactStates reaction = REACT_AGGRESSIVE;
+
+    bool Update(Creature* actor)
+    {
+        if (!actor)
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        bool blocked = actor->GetMapId() == 1511 && (!scenario ||
+            (scenario->GetScenarioId() == 973 && scenario->GetCurrentStep() != 11));
+        if (blocked)
+        {
+            if (!held)
+            {
+                held = true;
+                addedFlag = !actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                reaction = actor->GetReactState();
+                if (actor->isInCombat())
+                    actor->CombatStop(true);
+            }
+            actor->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            actor->SetReactState(REACT_PASSIVE);
+        }
+        else if (held)
+        {
+            if (addedFlag)
+                actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            actor->SetReactState(reaction);
+            held = false;
+        }
+        return blocked;
+    }
+};
+}
+
+struct npc_talonclaw_dakarr : SmartAI
+{
+    explicit npc_talonclaw_dakarr(Creature* creature) : SmartAI(creature) { }
+    TalonclawDakarr::Gate gate;
+
+    void InitializeAI() override { SmartAI::InitializeAI(); gate.Update(me); }
+    void Reset() override { SmartAI::Reset(); gate.Update(me); }
+    void UpdateAI(uint32 diff) override { gate.Update(me); SmartAI::UpdateAI(diff); }
+    void AttackStart(Unit* target) override { if (!gate.Update(me)) SmartAI::AttackStart(target); }
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        if (gate.Update(me))
+            damage = 0;
+        else
+            SmartAI::DamageTaken(attacker, damage, type);
+    }
+};
 
 namespace ArtifactAcquisition
 {
@@ -413,6 +472,7 @@ public:
 
 void AddSC_artifact_acquisition()
 {
+    RegisterCreatureAI(npc_talonclaw_dakarr);
     new go_artifact_acquisition();
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
