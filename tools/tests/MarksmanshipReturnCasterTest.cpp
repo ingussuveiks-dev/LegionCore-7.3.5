@@ -13,6 +13,7 @@ using int32=int32_t;
 using SpellEffIndex=uint32;
 #include "CastFlags.inc"
 enum { SMART_ACTION_CAST=11, SMART_ACTION_INVOKER_CAST=85, SMART_TARGET_POSITION=8, SMART_TARGET_NONE=0, SMART_TARGET_ACTION_INVOKER=7, SPELL_EFFECT_HANDLE_HIT_TARGET=1 };
+enum {SMART_TARGET_ACTION_INVOKER_PLAYER=130};
 enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED_BAD_TARGETS, SPELL_FAILED_SPELL_IN_PROGRESS };
 enum { CLASS_HUNTER=3, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, EFFECT_0=0, EFFECT_1=1, SPELL_EFFECT_TELEPORT_L=252, SPELL_EFFECT_KILL_CREDIT=90 };
 #define TC_LOG_DEBUG(...) ((void)0)
@@ -30,6 +31,8 @@ struct WorldObject {
     bool IsUnit(){return ToUnit()!=nullptr;}
     bool IsCreature(){return !IsPlayer();}
     bool IsInWorld(){return world;}
+    int GetMap(){return 1;}bool InSamePhase(WorldObject*){return true;}bool IsWithinDistInMap(WorldObject*,float){return true;}
+    bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     virtual ObjectGuid GetGUID(){return {};}
 };
 struct SmartAI { void SetCombatMove(bool){} };
@@ -101,6 +104,7 @@ struct SpellInfo { Effect effect; Effect const* GetEffect(uint32,uint32) const{r
 struct SpellManager { SpellInfo info; SpellInfo const* GetSpellInfo(uint32){return &info;} } spellManager;
 auto sSpellMgr=&spellManager;
 Unit* GetScriptCreditCaster(Unit* invoker,SpellInfo const*){return invoker;}
+Player* GetScriptCreditPlayer(Unit* invoker){return invoker?invoker->ToPlayer():nullptr;}
 struct Spell {
     uint32 effectHandleMode=SPELL_EFFECT_HANDLE_HIT_TARGET,m_diffMode=0;
     Unit* unitTarget=nullptr;
@@ -111,13 +115,13 @@ struct Spell {
     void EffectTeleportUnits(SpellEffIndex){++teleports;if(!rejectTeleport)if(auto* player=unitTarget?unitTarget->ToPlayer():nullptr)player->TeleportToFixture(1220,-837,4330.1f,745,6.09993f,0);}
 };
 #include "CreditEffect.inc"
-struct ObjectAccessor { static Unit* GetUnit(Unit&,ObjectGuid guid){return guid.pointer&&guid.pointer->world?guid.pointer:nullptr;} };
+struct ObjectAccessor { static Unit* GetUnit(Unit&,ObjectGuid guid){return guid.pointer&&guid.pointer->world?guid.pointer:nullptr;}static WorldObject* GetWorldObject(Unit&,ObjectGuid guid){return guid.pointer;} };
 struct GameObject { SpellCastResult CastSpell(Unit*,uint32){return SPELL_CAST_OK;} };
 using ObjectList=std::list<WorldObject*>;
 struct SmartScriptHolder {
     uint32 type=11,targetType=7;
     struct {struct {uint32 spell=205040,flags=0;} cast;} action;
-    struct {float x=0,y=0,z=0;} target;
+    struct {float x=0,y=0,z=0;struct{uint32 dist=0;}playerDistance;} target;
     uint32 GetTargetType()const{return targetType;}
 };
 struct SmartScript {
@@ -126,6 +130,7 @@ struct SmartScript {
     GameObject* go=nullptr;
     uint32 recalc=0;
     Unit* GetLastInvoker(){return invoker;}
+    WorldObject* GetBaseObject(){return me;}
     bool IsUnit(WorldObject* object){return object&&object->ToUnit();}
     void RecalcTimer(SmartScriptHolder&,uint32 low,uint32 high){assert(low==500&&high==500);++recalc;}
     ObjectList* GetTargets(SmartScriptHolder const& e,Unit* selected){

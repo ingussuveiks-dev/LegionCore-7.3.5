@@ -764,7 +764,20 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                 break;
 
             Unit* originalInvoker = tempLastInvoker;
-            tempLastInvoker = GetScriptCreditCaster(tempLastInvoker, sSpellMgr->GetSpellInfo(e.action.cast.spell));
+            ObjectGuid castSource{};
+            uint32 playerCastDistance = 0;
+            if (e.action.cast.flags & SMARTCAST_INVOKER_PLAYER)
+            {
+                if (e.GetTargetType() != SMART_TARGET_ACTION_INVOKER_PLAYER || !e.target.playerDistance.dist || !GetBaseObject())
+                    break;
+                tempLastInvoker = GetScriptCreditPlayer(tempLastInvoker);
+                if (!tempLastInvoker)
+                    break;
+                castSource = GetBaseObject()->GetGUID();
+                playerCastDistance = e.target.playerDistance.dist;
+            }
+            else
+                tempLastInvoker = GetScriptCreditCaster(tempLastInvoker, sSpellMgr->GetSpellInfo(e.action.cast.spell));
             ObjectList* targets = GetTargets(e, unit);
             if (!targets)
                 break;
@@ -788,7 +801,7 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                     bool isTrigger = (e.action.cast.flags & SMARTCAST_TRIGGERED) != 0;
                     if (!(e.action.cast.flags & SMARTCAST_AURA_NOT_PRESENT) || !castTarget->HasAura(e.action.cast.spell))
                     {
-                        tempLastInvoker->AddDelayedEvent(200, [tempLastInvoker, targetGUID, spellID, isTrigger]() -> void
+                        tempLastInvoker->AddDelayedEvent(200, [tempLastInvoker, targetGUID, spellID, isTrigger, castSource, playerCastDistance]() -> void
                         {
                             if (!tempLastInvoker)
                                 return;
@@ -796,6 +809,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
                             Unit* target = ObjectAccessor::GetUnit(*tempLastInvoker, targetGUID);
                             if (!target)
                                 return;
+
+                            if (playerCastDistance)
+                            {
+                                WorldObject* source = ObjectAccessor::GetWorldObject(*tempLastInvoker, castSource);
+                                if (target != tempLastInvoker || !source || !tempLastInvoker->IsInWorld() || !source->IsInWorld() ||
+                                    tempLastInvoker->GetMap() != source->GetMap() || !tempLastInvoker->InSamePhase(source) ||
+                                    !tempLastInvoker->IsWithinDistInMap(source, float(playerCastDistance)) ||
+                                    (source->HasQuestObjectScope() && !source->CanTargetQuestObject(tempLastInvoker)))
+                                    return;
+                            }
 
                             tempLastInvoker->CastSpell(target, spellID, isTrigger);
                         });

@@ -11,6 +11,7 @@ constexpr uint32 TARGET_FLAG_UNIT_MASK=1,TARGET_FLAG_CORPSE_MASK=2,TARGET_FLAG_G
 constexpr uint32 SMART_ACTION_TALK=1,SMART_ACTION_INVOKER_CAST=85,SMART_ACTION_CROSS_CAST=86,SMART_ACTION_NONE=0,SMART_EVENT_UPDATE_IC=0;
 constexpr uint32 SMART_TARGET_SELF=1,SMART_TARGET_ACTION_INVOKER=7,SMART_TARGET_PLAYER_DISTANCE=18,SMART_EVENT_OOC_LOS=10,SMART_EVENT_TEXT_OVER=52,TARGET_UNIT_CASTER=1,CONDITION_TYPE_MASK=32;
 constexpr uint32 SMARTCAST_INTERRUPT_PREVIOUS=1,SMARTCAST_TRIGGERED=2,SMARTCAST_AURA_NOT_PRESENT=32;
+constexpr uint32 SMARTCAST_INVOKER_PLAYER=128,SMART_TARGET_ACTION_INVOKER_PLAYER=130;
 constexpr uint32 SMART_ACTION_SET_INST_DATA=34,TRIGGERED_IGNORE_CAST_IN_PROGRESS=0x00000020,SPELL_FAILED_SPELL_IN_PROGRESS=123;
 constexpr uint32 CURRENT_GENERIC_SPELL=1,CURRENT_CHANNELED_SPELL=2,CURRENT_AUTOREPEAT_SPELL=3,SPELL_STATE_FINISHED=3,SPELL_STATE_DELAYED=5,SPELL_ATTR2_NOT_RESET_AUTO_ACTIONS=2,SPELL_ATTR10_CAN_PARRY_ON_CAST=10;
 struct ActiveInfo{bool HasAttribute(uint32){return false;}};
@@ -30,6 +31,8 @@ struct Unit{
  ObjectGuid GetGUID(){return this;}uint32 GetGUIDLow(){return 0;}uint32 GetEntry(){return entry;}char const* GetName(){return "fixture";}
  bool isType(uint32 mask){return (player?16u:8u)&mask;}bool HasAura(uint32){return false;}void InterruptNonMeleeSpells(bool){}
  bool IsUnit(){return true;}Unit* ToGameObject(){return nullptr;}Unit* ToCorpse(){return nullptr;}
+ bool IsInWorld(){return true;}int GetMap(){return 1;}bool InSamePhase(Unit*){return true;}bool IsWithinDistInMap(Unit*,float){return true;}
+ bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(Unit*){return true;}
  void AddDelayedEvent(uint32 delay,std::function<void()> task){assert(delay==200);pending.push_back(task);}
  void Flush(){auto tasks=std::move(pending);for(auto& f:tasks)f();}
  void CastSpell(Unit* explicitTarget,uint32 id,bool triggered){
@@ -58,12 +61,14 @@ struct Creature:Unit{bool combat=false,los=true;Creature(){entry=101282;}Creatur
  bool isInCombat(){return combat;}bool IsWithinDistInMap(Unit* unit,float range){return unit&&unit->distance<=range;}
  bool IsWithinLOSInMap(Unit*){return los;}bool IsHostileTo(Unit*){return false;}
 };
-struct ObjectAccessor{static Unit* GetUnit(Unit&,ObjectGuid guid){return guid.value;}};
+struct ObjectAccessor{static Unit* GetUnit(Unit&,ObjectGuid guid){return guid.value;}static Unit* GetWorldObject(Unit&,ObjectGuid guid){return guid.value;}};
 struct SpellInfo{};struct Spells{SpellInfo info;SpellInfo* GetSpellInfo(uint32){return &info;}}spells;auto sSpellMgr=&spells;
 Unit* GetScriptCreditCaster(Unit* invoker,SpellInfo const*){return invoker;} // Ordinary companion spells retain their caster.
+Player* GetScriptCreditPlayer(Unit* invoker){return invoker?invoker->ToPlayer():nullptr;}
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder{
  uint32 type=1,targetType=1;
+ uint32 GetTargetType()const{return targetType;}struct{struct{uint32 dist=0;}playerDistance;}target;
  int entryOrGuid=-369378;uint32 GetEventType(){return 52;}
  struct{struct{uint32 textGroupID=0,duration=5000;}talk;
  struct{uint32 field=10085002,data=1;}setInstanceData;

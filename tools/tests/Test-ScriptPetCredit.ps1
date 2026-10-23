@@ -1,4 +1,4 @@
-param([string]$BaselineRevision,[switch]$VerifyReleaseBinary)
+param([string]$BaselineRevision,[switch]$VerifyReleaseBinary,[string]$InvokerCastRowsPath)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/script-pet-credit"
@@ -15,12 +15,24 @@ Extract $fixed 'namespace' 'SmartScript::SmartScript()' 'CreditHelpers'
 Extract $s '        case SMART_ACTION_INVOKER_CAST:' '        case SMART_ACTION_ADD_AURA:' 'InvokerCast'
 Extract $s '        case SMART_ACTION_CALL_KILLEDMONSTER:' '        case SMART_ACTION_SET_INST_DATA:' 'KillAction'
 Extract $s '        case SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA:' '        case SMART_ACTION_SUMMON_CONVERSATION:' 'CriteriaAction'
+Extract $fixed 'namespace SmartInvokerPlayer' 'ObjectList* SmartScript::GetTargets(' 'PlayerResolver'
+Extract $fixed '        case SMART_TARGET_ACTION_INVOKER_PLAYER:' '        case SMART_TARGET_POSITION:' 'PlayerTarget'
+$targetSource=$fixed.Substring($fixed.IndexOf('ObjectList* SmartScript::GetTargets('))
+$targetSource=$targetSource.Substring(0,$targetSource.IndexOf('ObjectList* SmartScript::GetWorldObjectsInDist('))
+[IO.File]::WriteAllText("$out/TargetTail.inc",[regex]::Replace($targetSource.Substring($targetSource.LastIndexOf('    if (GetBaseObject() && GetBaseObject()->HasQuestObjectScope())')),'\bl\b','targets'))
+$target=Get-Content "$out/PlayerTarget.inc" -Raw
+[IO.File]::WriteAllText("$out/PlayerTarget.inc",([regex]::Replace([regex]::Replace($target,'\bl\b','targets'),'\btrigger\b','currentInvoker')).Replace('e.target.','event.target.'))
+$source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.cpp" -Raw
+Extract $source '        case SMART_ACTION_ADD_AURA:' '        case SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS:' 'CastValidation'
+$validation=Get-Content "$out/CastValidation.inc" -Raw
+[IO.File]::WriteAllText("$out/CastValidation.inc",[regex]::Replace($validation,'\be\b','event'))
 $s=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 Extract $s 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const' 'Player* Unit::GetAffectingPlayer() const' 'OwnerPlayer'
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw
 Extract $s 'enum SmartCastFlags' '// one line in DB' 'CastFlags'
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/ScriptPetCreditTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`"`r`n"
+$rowArgument=if($InvokerCastRowsPath){' "'+[IO.Path]::GetFullPath($InvokerCastRowsPath)+'"'}else{''}
+$cmd="@echo off`r`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`r`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/ScriptPetCreditTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`r`nif errorlevel 1 exit /b 1`r`n`"$out/test.exe`"$rowArgument`r`n"
 [IO.File]::WriteAllText("$out/run.cmd",$cmd);& "$out/run.cmd"
 if($LASTEXITCODE){throw 'Global SmartAI pet credit regression failed'}
 if($VerifyReleaseBinary){

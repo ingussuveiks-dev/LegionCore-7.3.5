@@ -898,6 +898,12 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_CAST:
         case SMART_ACTION_INVOKER_CAST:
         case SMART_ACTION_CAST_CUSTOM:
+            if (e.GetActionType() == SMART_ACTION_INVOKER_CAST && (e.action.cast.flags & SMARTCAST_INVOKER_PLAYER) &&
+                (e.GetTargetType() != SMART_TARGET_ACTION_INVOKER_PLAYER || !e.target.playerDistance.dist))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %ld SourceType %u Event %u player invoker cast requires a bounded player-invoker target, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id);
+                return false;
+            }
             if (!IsSpellValid(e, e.action.cast.spell))
                 return false;
             break;

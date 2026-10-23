@@ -12,7 +12,7 @@
 #include <vector>
 using uint32=uint32_t;using int64=int64_t;using uint64=uint64_t;
 enum SMART_EVENT {SMART_EVENT_OOC_LOS=10,SMART_EVENT_LINK=61};
-enum {SMART_TARGET_ACTION_INVOKER=7,SMART_EVENT_FLAG_NOT_REPEATABLE=1,CONDITION_TYPE_MASK=32,
+enum {SMART_TARGET_ACTION_INVOKER=7,SMART_TARGET_ACTION_INVOKER_PLAYER=130,SMART_EVENT_FLAG_NOT_REPEATABLE=1,CONDITION_TYPE_MASK=32,
     CONDITION_SCENARION_STEP=44,SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA=205,SMART_ACTION_INVOKER_CAST=85,
     SPELL_EFFECT_KILL_CREDIT=90,SPELL_EFFECT_KILL_CREDIT2=134};
 using CriteriaTypes=uint32;
@@ -35,6 +35,8 @@ struct WorldObject {
     virtual Unit* ToUnit(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}
     bool IsQuestObjectExpired(){return expired;}bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}
     bool isType(uint32 mask){return ToPlayer()&&(mask&16);}
+    ObjectGuid GetGUID(){return {ToUnit()};}bool IsInWorld(){return true;}bool InSamePhase(WorldObject*){return true;}
+    bool IsWithinDistInMap(WorldObject*,float){return true;}bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     Creature* FindNearestCreature(uint32 identity,float){auto found=nearby.find(identity);return found==nearby.end()?nullptr:found->second;}
     float GetVisibilityRange(){return 100;}
 };
@@ -63,6 +65,7 @@ bool ObjectGuid::IsPlayer()const{return unit&&unit->ToPlayer();}
 struct ObjectAccessor {
     static Player* GetPlayer(Unit const&,ObjectGuid guid){return guid.unit&&guid.unit->available?guid.unit->ToPlayer():nullptr;}
     static Unit* GetUnit(Unit const&,ObjectGuid guid){return guid.unit&&guid.unit->available?guid.unit:nullptr;}
+    static WorldObject* GetWorldObject(WorldObject const&,ObjectGuid guid){return guid.unit&&guid.unit->available?guid.unit:nullptr;}
 };
 #include "OwnerPlayer.inc"
 struct Scenario {uint32 id=972,step=2;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}};
@@ -120,6 +123,7 @@ struct Conversation {
 #include "ConversationData.inc"
 struct SmartScriptHolder {
     int64 entryOrGuid=100398;uint32 source_type=0,event_id=0,link=0,type=0,actionType=0,targetType=0,targetRange=0;bool runOnce=false;
+    struct{struct{uint32 dist=0;}playerDistance;}target;
     struct {uint32 event_flags=1,event_phase_mask=0;struct{uint32 noHostile=1,maxDist=5,cooldownMin=0,cooldownMax=0;}los;}event;
     struct {struct{uint32 type=92,misc1=49592,misc2=0,misc3=0;}achievementCriteria;struct{uint32 spell=200848,flags=0;}cast;}action;
     uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetTargetType()const{return targetType;}uint32 GetScriptType()const{return source_type;}

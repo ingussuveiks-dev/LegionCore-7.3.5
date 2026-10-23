@@ -18,6 +18,7 @@ struct ObjectGuid {
 };
 struct Creature {uint32 identity=0;ObjectGuid GetGUID(){return {identity};}} vereesa{100397},orestes{100398};
 struct WorldObject {
+    bool player=true;uint32 guid=42;bool IsPlayer()const{return player;}uint32 GetGUID()const{return guid;}
     std::map<uint32,Creature*> nearby{{100397,&vereesa},{100398,&orestes}};
     Creature* FindNearestCreature(uint32 identity,float){auto found=nearby.find(identity);return found==nearby.end()?nullptr:found->second;}
     float GetVisibilityRange(){return 100;}
@@ -41,10 +42,11 @@ struct Conversation {
     void SetCreature(ConversationDynamicFieldCreatures* value,uint32 index,bool){creatures[index]=*value;}
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
-    uint32 GetUInt32Value(uint32 field){assert(field==7);return deadline;}
+    uint32 GetUInt32Value(uint32 field)const{assert(field==7);return deadline;}
     void SetDuration(int32 value){assert(value>0);lifetime=value;}uint32 GetDuration(){return lifetime;}
     bool IsQuestObjectExpired(){return questExpired;}void Remove(){removed=true;}
     bool GenerateDynamicFieldData(uint32,WorldObject*,uint32&);
+    bool CanNeverSee2(WorldObject const*)const;
     bool Start(Unit* caster){uint32 triggerEntry=entry;
 #include "Lifetime.inc"
         return true;
@@ -53,6 +55,7 @@ struct Conversation {
 };
 #include "ConversationData.inc"
 #include "Update.inc"
+#include "Playback.inc"
 int main(int argc,char** argv){
     _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==2);std::ifstream input(argv[1]);std::string text;
     while(std::getline(input,text)){std::istringstream row(text);std::string kind;row>>kind;
@@ -75,5 +78,11 @@ int main(int argc,char** argv){
     for(uint32 missing:{100397u,100398u}){Unit unavailable;unavailable.nearby.erase(missing);Conversation rejected;assert(!rejected.Start(&unavailable));}
     {Conversation cleanup;assert(cleanup.Start(&finder));cleanup.questExpired=true;currentTime=101;cleanup.Update(1);assert(cleanup.removed);}
     {Conversation replay;assert(replay.Start(&finder)&&replay.deadline==35300);}
+    {WorldObject petCaster;petCaster.player=false;petCaster.guid=7;Conversation misowned;misowned.casterGUID=7;misowned.playing.clear();assert(misowned.Start(&petCaster));
+        currentTime=100;assert(!misowned.CanNeverSee2(&finder)&&misowned.CanNeverSee2(&petCaster)&&!misowned.playing.count(7));
+        currentTime=100+35301;misowned.Update(1);assert(!misowned.removed);
+        Conversation owned;owned.playing.clear();assert(owned.Start(&finder));currentTime=100;assert(!owned.CanNeverSee2(&finder)&&owned.playing.count(42));
+        currentTime=100+35301;owned.Update(1);assert(owned.removed);
+    }
     std::cout<<"PASS: actual conversation payload/lifetime/update bodies reproduce12950ms expiry before3 lines; repaired35300ms lifetime retains all6 native slots, player sentinel and live actor GUIDs, then expires normally or on scope expiry. Missing actors reject creation; map/clock/visibility remain controlled hosts.\n";
 }

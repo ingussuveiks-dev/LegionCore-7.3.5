@@ -77,6 +77,9 @@ struct Player : Unit {
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
     uint32 expectedQuest = 40385, expectedItem = 128808, expectedCriterion = 47689, castResult = 0;
     Player* ToPlayer() override { return this; }
+    uint32 GetMap(){return map;}
+    bool InSamePhase(Player*){return true;}bool IsWithinDistInMap(Player*,float){return true;}
+    bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(Player*){return true;}
     void SendSpellScene(uint32, SpellInfo const*, bool, Position*);
     void SceneCompleted(uint32);
     bool HasSceneStatus(uint32, SceneEventStatus const&) const;

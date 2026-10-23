@@ -10,6 +10,7 @@
 using uint32 = uint32_t;
 constexpr int SMART_ACTION_CAST=11, SMART_ACTION_INVOKER_CAST=85;
 constexpr int SMART_TARGET_OWNER_OR_SUMMONER=23, SMART_TARGET_SELF=1, SMART_TARGET_POSITION=8;
+constexpr int SMART_TARGET_ACTION_INVOKER_PLAYER=130;
 constexpr int CONDITION_NEAR_CREATURE=29, SPELL_EFFECT_HANDLE_HIT_TARGET=1;
 constexpr int SPELL_EFFECT_KILL_CREDIT=90, SPELL_EFFECT_KILL_CREDIT2=134;
 constexpr int SPELL_CAST_OK=0, SPELL_FAILED_BAD_TARGETS=1, SPELL_FAILED_SPELL_IN_PROGRESS=2;
@@ -19,7 +20,7 @@ using SpellEffIndex=int;
 #define ENSURE_AI(type, ai) (ai)
 #include "CastFlags.inc"
 struct Unit;
-struct ObjectAccessor { static Unit* GetUnit(Unit&, Unit* guid) { return guid; } };
+struct ObjectAccessor { static Unit* GetUnit(Unit&, Unit* guid) { return guid; }static Unit* GetWorldObject(Unit&,Unit* guid){return guid;} };
 using ObjectGuid=Unit*;
 struct FakeAI { void SetCombatMove(bool) {} };
 struct Unit {
@@ -35,6 +36,8 @@ struct Unit {
     Unit* GetCharmerOrOwnerPlayerOrPlayerItself() { return player ? this : (owner && owner->player ? owner : nullptr); }
     bool IsPlayer() { return player; }
     bool IsUnit() { return true; }
+    bool IsInWorld(){return true;}int GetMap(){return 1;}bool InSamePhase(Unit*){return true;}
+    bool IsWithinDistInMap(Unit*,float){return true;}bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(Unit*){return true;}
     FakeAI* AI() { return &ai; }
     bool GetCharmerGUID() const { return false; }
     Unit* GetCharmer() const { return nullptr; }
@@ -83,7 +86,7 @@ using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder {
     int actionType=11,targetType=23;
     struct { struct { uint32 spell=198287,flags=18; } cast; } action;
-    struct { float x=0,y=0,z=0; } target;
+    struct { float x=0,y=0,z=0;struct{uint32 dist=0;}playerDistance; } target;
     int GetTargetType() { return targetType; }
 };
 struct FakeGO { int CastSpell(Unit*,uint32) { return SPELL_FAILED_BAD_TARGETS; } };
@@ -92,6 +95,7 @@ struct SmartScript {
     Unit* invoker=nullptr;
     FakeGO* go=nullptr;
     Unit* GetLastInvoker() { return invoker; }
+    Unit* GetBaseObject(){return me;}
     bool IsUnit(Unit* u) { return u!=nullptr; }
     ObjectList* GetTargets(SmartScriptHolder& e,Unit*) {
         auto l=new ObjectList;

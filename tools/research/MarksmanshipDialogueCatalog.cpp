@@ -30,13 +30,29 @@ int main(int argc, char** argv)
     DB2Storage<SoundKitEntryEntry> sounds("SoundKitEntry.db2", SoundKitEntryLoadInfo::Instance());
     DB2Storage<ConversationLineEntry> lines("ConversationLine.db2", ConversationLineLoadInfo::Instance());
     DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2", CreatureDisplayInfoLoadInfo::Instance());
+    DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     if (!texts.Load(argv[1], 0) || !kits.Load(argv[1], 0) || !sounds.Load(argv[1], 0) ||
-        !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0))
+        !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0) || !effects.Load(argv[1], 0))
         return 2;
     for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
     texts.LoadFromDB();
     displays.LoadFromDB();
+    effects.LoadFromDB();
+    uint32 conversationEffects = 0;
+    for (auto effect : effects)
+        if (effect->SpellID == 200832 || effect->SpellID == 200848)
+        {
+            if (effect->Effect != 219 || effect->EffectAura || effect->EffectIndex || effect->DifficultyID ||
+                effect->EffectMiscValue[0] != (effect->SpellID == 200832 ? 1072 : 1073) ||
+                effect->ImplicitTarget[0] != 18 || effect->ImplicitTarget[1])
+                return 13;
+            ++conversationEffects;
+            std::cout << "STORY_EFFECT\t" << effect->SpellID << '\t' << effect->Effect << '\t'
+                << effect->EffectMiscValue[0] << '\t' << effect->ImplicitTarget[0] << '\n';
+        }
+    if (conversationEffects != 2)
+        return 14;
     auto line = lines.LookupEntry(3566);
     auto display = displays.LookupEntry(65514);
     if (!line || !display)

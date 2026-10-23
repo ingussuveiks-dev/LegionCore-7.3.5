@@ -1,5 +1,6 @@
 #include "SceneLifecycleFixture.h"
 #include <initializer_list>
+using WorldObject=Player;
 enum { CLASS_HUNTER = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, EFFECT_0 = 0, EFFECT_1 = 1, AURA_EFFECT_HANDLE_REAL = 1, SPELL_CAST_OK = 0 };
 using SpellCastResult = uint32;
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
@@ -35,6 +36,7 @@ template<class Owner> struct AchievementMgr {
 };
 #include "ScenarioCriteriaSend.inc"
 struct ObjectAccessor {
+    static WorldObject* GetWorldObject(Unit&,uint32){assert(false);return nullptr;}
     static Unit* GetUnit(Unit& context, uint32 guid) {
         Player* player = context.ToPlayer();
         return player && player->IsInWorld() && player->GetGUIDLow() == guid ? player : nullptr;
@@ -61,6 +63,7 @@ struct PickupActions {
     void QueueScene() {
         Player* tempLastInvoker = recipient;
         uint32 targetGUID = recipient->GetGUIDLow(), spellID = PresentationSpell;
+        uint32 castSource=0,playerCastDistance=0;
         bool isTrigger = false;
 #include "DeferredInvoker.inc"
     }
