@@ -76,6 +76,17 @@
     "scope": "In response to the deployed-version cold-client login check, the user confirmed Krau entered the game on the first attempt.",
     "limitation": "One successful client login does not establish that the intermittent handshake failure has been eliminated."
   },
+  "subsequent_recurrence": {
+    "date": "2026-10-23",
+    "deployed_sha256": "6e11b6ff212ac97c71839876af2e702e66e831c50f88f36f235afea1a0ded27b",
+    "scope": "The legendary travel-form build retains the verified asynchronous socket handoff. User worldserver 30284 started at 09:43:01, bnetserver 29628 at 09:42:58.",
+    "failed_attempt": "09:50:04 instance TCP peer 62540 accepted; deadline at 09:50:14, sent=48 received=0 unacked=0 retransmitted=0, initializer=0. Serial 35/53/71/89 failures followed immediately. Realm connection peer 62539 completed its initializer/encryption normally.",
+    "same_client_retries": "User confirmed another failure without restarting WoW. Logs at 09:53:57 and later 09:57 retries show immediate CONNECT_TO_FAILED for all five serials with no newly accepted instance TCP socket. Client12896 started 09:49:46.",
+    "private_preservation": "Failed Client.log, network records and process/TCP metadata saved before restart to ignored build-extractors/runtime-test/handshake-incidents/20261023-095404-418; a separate full-log snapshot is under 20261023-dalaran-recurrence. This post-failure snapshot cannot establish ownership/application reads of the already closed failed socket.",
+    "additional_trace_attempt": "A short Microsoft-Windows-Winsock-AFD ETW session was attempted for future application/socket evidence, but Windows denied access because the current tool process is not elevated. Session creation failed; logman query confirmed no such owned session exists. No trace is left running, no privilege or client binary was changed.",
+    "recovery": "User restarted only WoW and confirmed Ar Krau tieku spēlē. New client35092 started09:58:15; instance56817 sent its initializer in16ms, continued auth31ms, encryption63ms, and Krau logged in09:58:31. Both user server processes/start times stayed unchanged.",
+    "conclusion": "The recurrence disproves treating the upstream handoff repair as sufficient to eliminate the intermittent failure. Root cause of the initial application-level silence remains unresolved; restarting WoW is recovery only. This failure precedes character/world loading and does not exercise Dalaran quest or owl-form cleanup."
+  },
   "remaining_client_checks": [
     "Repeated client starts and ordinary logout/relog/instance transfers after the first successful cold-client login.",
     "Preserve and trace any recurrence before restarting the client. Passing initializer probes or one successful login cannot prove the original intermittent silence permanently fixed.",
