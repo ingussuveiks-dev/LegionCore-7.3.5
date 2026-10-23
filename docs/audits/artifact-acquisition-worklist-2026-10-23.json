@@ -828,8 +828,9 @@
       "claim_dialogue_repair_audit": "docs/audits/marksmanship-claim-dialogue-2026-10-23.json",
       "arrival_repair_audit": "docs/audits/marksmanship-arrival-2026-10-24.json",
       "combat_conversation_repair_audit": "docs/audits/marksmanship-combat-conversations-2026-10-24.json",
+      "orestes_discovery_repair_audit": "docs/audits/marksmanship-orestes-discovery-2026-10-24.json",
       "start": 41540,
-      "status": "partial: prior pickup/equip/admission/return/claim/arrival repairs retained; four native combat conversations now opt in to bounded player/owner target130 without replacing raw pet combat invokers or globally changing action206. Native payload/owner/group/Release/loader evidence in combat-conversation audit. Sparse video frames only; full video, objective storage, encounter gates/counts, spell219 caster paths, cache/re-entry and actual client visuals/loot/equip remain pending",
+      "status": "partial: prior pickup/equip/admission/return/claim/arrival/combat repairs retained; Orestes discovery now admits only a Player at native972/2 before consuming one-shot, credits the actual finder and preserves native200848 Player self-cast. Native1073 live-actor/line/voice dependencies and missing-actor failure covered separately from client rendering. Sparse video frames only; failed-cast presentation recovery, full video, objective storage, encounter gates/counts, other spell219 caster paths, cache/re-entry and actual client visuals/loot/equip remain pending",
       "quests": [
         {
           "id": 41540,

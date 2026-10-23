@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "Marksmanship scenario972, Ranger Orestes100398 discovery event3 and its native conversation1073. Partial repair, not whole-chain/client verification.",
+  "finding": {
+    "spawn": "370711, map1489, phaseMask1/phaseId5586, position311.658/1650.55/-70.8907",
+    "before": "Friendly OOC_LOS event3 had a5yd one-shot, no source22 conditions, criteria92/49592 sent to closest Player100yd, then LINK4 INVOKER_CAST200848 on raw invoker7. A pet/guardian/NPC could consume it, a premature approach could consume it before the native search step, and a nearby peer rather than the finder was selected. The ordinary conversation spell is not a pure kill-credit spell: the existing credit-caster bridge correctly does not convert a pet into a Player for it.",
+    "native_sequence": "Typed ScenarioStep/CriteriaTree/Criteria972: zero-based2 is Search for Your Allies with asset49592; zero-based3 is Defeat the Hound Mistress with asset48071. Orestes updates send data3/4 to Vereesa within60/20yd for speech6/7 and path10039702. These independent approach actions are unchanged. Torvis death sends Orestes data1/1; its native10000ms list awards48071 then kills Orestes. That death/list is not the discovery trigger and is not changed by this repair.",
+    "repair": "Guarded migration admits only a Player invoker at the native actor's exact972/2 step before runOnce is consumed. Criterion targets that actual finder7 instead of an unrelated nearest Player. Native5yd/friendly/OOC/one-shot/link4, ordinary200848 cast flags,200ms callback and native later death/list remain intact. LINK4 deliberately has no search-step gate: the criterion can advance the scenario before the conversation cast is queued. Custom actor/script/target/range/speech/admission definitions are not overwritten."
+  },
+  "sources": {
+    "local_first": "Actual MariaDB smart_scripts/conditions/creature and conversation_data/conversation_creature rows; matching native scenario catalog .codex/marksmanship-return-native.tsv; matching effect219/1073/DEST_CASTER200848 from the prior local spell probe. Reviewed production ConditionMgr source22 lookup/group+1, TYPE_MASK and SCENARION_STEP, SmartAI LOS, one-shot, action205/85/LINK/owner bridge, native delayed target lookup and Conversation::GenerateDynamicFieldData. No character data read or modified.",
+    "trinity": {
+      "path": "C:/wamp64/www/TrinityCore",
+      "commit": "c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "url": "https://github.com/TrinityCore/TrinityCore/blob/c2d61e05cf3dc555608e6b2a06772c27d207548c/src/server/game/AI/SmartScripts/SmartScript.cpp",
+      "reviewed": "Exact26972 OOC_LOS checks creature combat/distance/LOS/friendly state, but does not itself require a Player or a scenario step. No ready Orestes chain imported; previous bounded artifact-donor review remains applicable."
+    },
+    "github": "New targeted searches site:github.com +100398/49592 and200848/Orestes returned no usable implementation. This is not an exhaustive donor/history search. No external implementation imported.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "new_rendered_samples": [
+        "5:44 and5:54: player/pet move toward the allied NPC area; search objective still displayed. No exact trigger range or path interpolation inferred.",
+        "6:14: prone allied NPC, Orestes warning text in game chat; search objective still visible in the sampled frame.",
+        "6:19: STAGE4 Defeat the Hound Mistress appears with Mistress Torvis's little-group/meal speech bubble, matching the native conversation's second line.",
+        "6:24: actor arrangement/continued dialogue; automatic subtitle mistranscribes hounds as house, so it is not used as authoritative text.",
+        "6:29: Vereesa's Witch/beasts/head speech bubble, matching the native third line."
+      ],
+      "limits": "Paused sparse frames with gaps, NOT continuous full relevant sequence or full19:04 video. Muted audio, exact client build unknown. Ads, failed slider action, stale time readings and unattended playback while coding were excluded. Existing later Torvis death/end-claim samples remain separate in prior audits. No exact cast packets, criterion ID, voice timing or5yd range established from footage; no remote media downloaded and temporary tab closed."
+    }
+  },
+  "native_conversation_dependencies": {
+    "conversation": 1073,
+    "creatures": "Native live-creature slots0/1/2 resolve entries100398/100749/100397 through the Player's visibility search. Stored creatureGuid values are not used by this native generation branch; do not replace them with guessed GUIDs. Each duration4800, total14400ms. Missing any actor rejects generation without suppressing its existing debug diagnostic.",
+    "lines": [
+      {"slot":0,"line":3364,"start_ms":0,"broadcast":102645,"sound_kit":61824,"file_data_id":1382654,"bytes_read":20624,"additional_duration_ms":3000},
+      {"slot":1,"line":2632,"start_ms":4800,"broadcast":104116,"sound_kit":61825,"file_data_id":1382655,"bytes_read":55296,"additional_duration_ms":1000},
+      {"slot":2,"line":2633,"start_ms":9200,"broadcast":104118,"sound_kit":61826,"file_data_id":1382656,"bytes_read":28936,"additional_duration_ms":1000}
+    ],
+    "evidence": "Extended typed MarksmanshipDialogueCatalog.cpp reads matching ConversationLine, BroadcastText with actual read-only native Hotfix overlay, SoundKit/SoundKitEntry. All3 lines have SpellVisualKitID0/AnimKitID0; no missing kit was guessed or substituted. CASC fully reads the3 payloads with32 unchanged index hashes. Presence and payload generation are not audio listening, decoding, rendering or client packet delivery."
+  },
+  "checks": [
+    "Test-MarksmanshipOrestes.ps1 passes before and after deployment. Actual-schema TEMPORARY clones apply migration twice. All Orestes/Torvis fields compare equal after normalizing just the two intended target fields, including native postboss timed list. Exactly2 new source22/group4 conditions; custom ScriptName,100->50 target range, speech spell and alternative admission gate preserved. No live fixture writes.",
+    "MarksmanshipOrestesTest.cpp compiles production condition ElseGroups and both lookups, LOS/runOnce/dispatch/action prefix/LINK lookup, action205, action85, native owner/credit-caster and target7 bodies, plus actual200ms callback. Original unguarded closest-player event reproduces pet-cast/consumed event and wrong-stage consumption; fixed data rejects pets/guardians/NPC/null before consumption, queues Player self-cast after search criterion advances the hosted step, preserves actual finder rather than nearby peer, and deduplicates20 approaches. Both faction-labelled hosts, wrong steps0..14,5yd boundary, distance/LOS/combat/hostility/scenario/instance/expiry/missing-base recovery covered.",
+    "Same fixture compiles production Conversation::GenerateDynamicFieldData and production ConversationData structs against all actual1073 rows. Checks3 live creature GUID slots,3 line offsets,14400ms duration, and rejection when each required actor is absent. World lookup, scenario storage/progression, distance/LOS/scheduler and CastSpell remain controlled hosts; this does not execute native spell effects or save a real quest.",
+    "Test-MarksmanshipOrestes.ps1 -VerifyReleaseBinary passes: actual arrival LOS/conditions/LINK/one-shot bridge PE chain and actual ProcessAction owner/caster bridge validated in canonical Release. Its inherited checks retain prior real-loot/report-use/owned scene/equip/return repairs. Test-SmartInvokerPlayer.ps1 still passes for the4 combat-conversation opt-ins. Test-ScepterLogin.ps1 -VerifyReleaseBinary passes. No useful diagnostic or check suppressed."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "CD44A64DFC14D5652FFEBFA6883A4170FE1B0A1B151F9E8228B29E141500DB99",
+    "migration": "sql/updates/world/2026_10_24_01_marksmanship_orestes_discovery.sql",
+    "migration_sha1": "8F8D1F33A38C9392640719067F991D474F70ECA4",
+    "build": "Data-only production repair, no new server build claimed. Original generated final link still names scripts/Release/scripts.lib and game/Release/game.lib; both precede the current canonical EXE timestamp. Existing deployed implementation passes PE tests. New native fixture/catalog compiled separately.",
+    "readback": "Native updater records exact SHA1 RELEASED. Orestes3 is10/one-shot/friendly5yd/link4/action205/92/49592/target7/0;4 remains61/85/200848/flags0/target7. Source22 group4 has32/target0/16 and44/target1/972/2 in ElseGroup0. Private scoped pre-update script/condition backups retained.",
+    "startup": "Task-owned PID16592 reached World initialized then graceful exit0. Appended DBErrors0 bytes; protected configs/certificates unchanged. No user/unknown server stopped and no task-owned server remains. Startup is not a scenario run.",
+    "private_evidence": ".codex/marksmanship-orestes-*.log/TSV/backup SQL, audio and startup directories; excluded from commits."
+  },
+  "remaining": [
+    "Native runOnce still records discovery before the delayed cast succeeds. Missing delayed target, rejected cast or missing conversation actor can leave valid discovery credit with no conversation; fixture documents this, no automatic presentation retry claimed. Later missing Orestes/Torvis actor recovery and death/list eligibility remain independent repairs to investigate.",
+    "Fresh fixture represents an engine reset only, not persistence, live abandonment/re-entry, corpse restoration, relog or saved scenario replay. Both faction-labelled hosts are not real faction/phasing traversal. No new group kill credit or pet combat dispatch is introduced by this Player-only proximity event; native later encounter/group/scenario behavior remains to be traversed.",
+    "Actual client approach, warning/voice/pose, Torvis start/death/one-hit and pet/guardian final blow, Orestes death delay, retries/re-entry, full relevant video and whole972 chain remain pending. Earlier real loot/equip/use/return and unresolved40419 objective-storage alias still require their separate client/data checks. No whole quest or visual marked client verified; all36-route task remains incomplete."
+  ]
+}
