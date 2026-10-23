@@ -1,0 +1,70 @@
+{
+  "request": "Find reusable public Legion7.3.5 artifact scenarios before reconstructing all classes from video; start with TrinityCore history",
+  "scope": "Bounded source review, not an exhaustive GitHub search or36-scenario client certification. No external implementation was imported and no executable/database changes belong to this research.",
+  "official_trinity": {
+    "repository": "https://github.com/TrinityCore/TrinityCore",
+    "history": "C:/wamp64/www/TrinityCore is not shallow. Examined TDB735.00 at7f2b7dc9c2165d2608742473a931f55b1c1a753a, exact26972 update c2d61e05cf3dc555608e6b2a06772c27d207548c and pre8.0 DB2-update parent ccbe4404f1806f047c009d14ed1dea9806dd5736.",
+    "source": "https://github.com/TrinityCore/TrinityCore/commit/c2d61e05cf3dc555608e6b2a06772c27d207548c",
+    "finding": "The examined Legion-era script trees contain no BrokenIsles/artifact/class-hall scenario implementation set. Targeted source/SQL search for104904/104949/105016/41574 found quest data/localization updates but no executable Titanstrike encounter chain. This is not a claim that those snapshots contain no Legion database data or that every historical branch was exhaustively searched."
+  },
+  "candidates": [
+    {
+      "repository": "AshamaneProject/AshamaneCore",
+      "ref": "legion",
+      "commit": "b3ec0305caba2ab84596da501e9213ec4707d026",
+      "source": "https://github.com/AshamaneProject/AshamaneCore/blob/b3ec0305caba2ab84596da501e9213ec4707d026/src/server/scripts/BrokenIsles/ClassHalls/class_hall_hunter.cpp",
+      "finding": "Hunter and Paladin class-hall files are registration stubs with empty AddSC functions. Druid file inspected contains gatewarden teleports, not a complete artifact-acquisition sequence. README explicitly marks class-hall basics and Legion scripts WIP. Not a ready complete7.3.5 acquisition donor."
+    },
+    {
+      "repository": "zitengzela/LegionCore-7.3.5V2",
+      "commit": "80ad17a234fd4ed462bc9a23e401b70f86f15a0d",
+      "source": "https://github.com/zitengzela/LegionCore-7.3.5V2/blob/80ad17a234fd4ed462bc9a23e401b70f86f15a0d/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp",
+      "finding": "All24 artifact CPP paths already exist in our tree. Hunter class-hall CPP is empty. Reviewed wind sections retain uninitialized windSpell and cancel tornado emission on aggro; tornado completion is inside the vehicle-kit branch. The reviewed code does not supply our missing complete Titanstrike repair. Other files may still contain useful differences; filename equality does not imply identical content."
+    },
+    {
+      "repository": "Legion-Pandaria-Preservation-Project/LegionCore-7.3.5V2",
+      "commit": "6c41d0faa23474bf9e76a4811b144d43e9545bab",
+      "source": "https://github.com/Legion-Pandaria-Preservation-Project/LegionCore-7.3.5V2/tree/6c41d0faa23474bf9e76a4811b144d43e9545bab/src/server/scripts/Scenario/Artifacts",
+      "finding": "Same24 artifact CPP paths; ShieldsRest blob a43cfcc71afe180b306b44a1d814ad0c3fb143b4 is byte-identical to the inspected zitengzela file. No new rune/wind fix in that exact file."
+    },
+    {
+      "repository": "Titans-Project/LegionCore-Reforged",
+      "commit": "76b195fed30e94da716688639c1c1b1d05d60f55",
+      "source": "https://github.com/Titans-Project/LegionCore-Reforged/blob/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp",
+      "finding": "Same24 artifact CPP paths. Reviewed Windshaper section still has the uninitialized windSpell and cancellation on combat; no independent tornado lifetime in that section. Current project activity alone does not establish complete acquisition fidelity."
+    },
+    {
+      "repository": "SoulSeekkor/LegionCore-7.3.5",
+      "ref": "merged",
+      "commit": "ee862f67113139be0d6507c34a973a6264a805f2",
+      "source": "https://github.com/SoulSeekkor/LegionCore-7.3.5/blob/ee862f67113139be0d6507c34a973a6264a805f2/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp",
+      "finding": "Same24 artifact CPP paths and the same reviewed wind defects. A merged branch is not evidence that this encounter was repaired or tested."
+    },
+    {
+      "repository": "The-Legion-Preservation-Project/LegionCore-7.3.5",
+      "commit": "fed58f79c498521836612acd12009e9fa9e60e31",
+      "source": "https://github.com/The-Legion-Preservation-Project/LegionCore-7.3.5/blob/fed58f79c498521836612acd12009e9fa9e60e31/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp",
+      "finding": "Our upstream's reviewed wind code also retains those defects. Replacing our repaired encounter with it would regress the reviewed paths."
+    }
+  ],
+  "newer_reference_only": {
+    "repository": "AshamaneProject/AshamaneCore",
+    "commit": "b09c1c393cf2e01bc5e857ea6117680d2aaeadb0",
+    "source": "https://github.com/AshamaneProject/AshamaneCore/tree/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles/Scenario",
+    "finding": "Newer BFA-oriented tree has additional artifact sources for Tirisfal, Karazhan, Ursoc, Falanaar, Restoration and Mage content. These are useful references for actors, dialogue, event order and spell IDs, not compatible ready-made7.3.5 replacements.",
+    "reviewed_examples": [
+      "scenario_artifact_truthguard.cpp declares Hunter criterion tree IDs but registers only its Paladin instance, Orik and shield object; those declarations do not implement Titanstrike's winds/runes/workshop.",
+      "scenario_artifact_ursocslair.cpp npc_lea_stonepaw_105243::MoveInLineOfSight calls player->GetScenario()->CompleteScenario after nearby-player handling. This bypass-shaped progression and its null/scenario assumptions need review before any adaptation.",
+      "scenario_artifact_karazhan_catacombs.cpp uses newer InstanceScenario/PhasingHandler APIs and local stage numbering. Those APIs and stages cannot be copied over our verified988 stage gates without mapping them to native7.3.5 criteria."
+    ]
+  },
+  "reuse_decision": [
+    "No complete, proven all36 acquisition package was found among the examined sources. Closely related LegionCore forks already share our24 native artifact CPP files; a bulk overwrite offers no demonstrated completion benefit.",
+    "For each remaining route, compare a pinned donor's actual changed actor/spell/waypoint/SmartAI/condition rows against our36-route native audit, then port only absent compatible behavior. Missing dedicated CPP is not proof of missing content: many local chains use SmartAI.",
+    "Preserve current post-scaling killing-blow protection, owner/pet credit, scenario resume, movement/camera/pet restoration, actual item pickup and our class/race invitation conditions. Map encounter logic is normally class/spec specific; native race eligibility and faction invitation/transport differences must still be checked separately.",
+    "Before accepting a port, verify matching26972 DB2/IDs and schema/API semantics, complete LINK graph/condition origins, real visual attachments and progression/cleanup/re-entry/failed-cast cases. Keep source license/attribution. A compiled donor or its README is not a client playthrough."
+  ],
+  "local_status": "All3 Warlock weapons were reported traversed/repaired by the user; Hunter ship tutorial reached the island and Titanstrike entrance Stage1-to-Stage2 was just confirmed. Hunter's other2 artifacts and all later untested Titanstrike visuals are not thereby certified. Existing all-class invitation audit covers149 native race/class pairs and36 acquisition starts, not complete36 chains.",
+  "tornado_clarification": "Current local FierceWinds starts its route without a passenger prerequisite and unconditionally despawns/cleans its AT at the endpoint. RemoveAllPassengers only releases someone if boarding actually occurred. Released empty tornadoes must travel and disappear empty; killing the caster must not remove an already released tornado.",
+  "limits": "Repository trees and selected source sections were inspected at pinned commits; no donor server was executed and complete external base databases/SQL graphs were not compared. No assertion that all GitHub repositories, private projects, older branches or client behaviors have been exhausted."
+}
