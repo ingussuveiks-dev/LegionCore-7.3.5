@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "status": "Native sequence and scene definitions inspected; partial visual sampling only; full route remains unresolved",
+  "prior_repair": "talonclaw-acquisition-2026-10-23.json repairs the chest loot path, not this complete chain",
+  "native_reader": {
+    "source": "tools/research/SurvivalArtifactCatalog.cpp",
+    "check": "tools/tests/Test-SurvivalArtifactCatalog.ps1 passes",
+    "method": "Uses production DB2Storage for typed quest/scenario/criteria/effect/package data and production DB2FileLoader/DB2Record named-field access for sparse SceneScriptText. No guessed packed string offsets, external overlays or Lua execution.",
+    "reader_limit": "The initial research attempt to bulk-materialize SceneScriptText through DB2Storage raised ACCESS_VIOLATION. Its exact internal materialization failure is unresolved. The probe now reads the same native table through DB2FileLoader::GetRecord/GetString, which succeeds and validates the expected scene definitions. No runtime/core loader change is claimed.",
+    "questline_sha256": "C2D7266900A43FAD156FD19C0D06F2278C48B327FBC9C7D00162B084C69DDBFF",
+    "scenario_steps_sha256": "4E422B1333A7B1BE8427CCB511017A93C093FA243ADB83DC74E255AD1702B94E",
+    "scene_text_sha256": "75C0E4C7C5FE7D753E1823A40683D9B7ED1C458952B28B08D103903CB09A19A4"
+  },
+  "native_sequence": {
+    "questline": 220,
+    "quests_in_order": [41542, 39427, 40385],
+    "scenario": 973,
+    "map": 1511,
+    "lfg_entries": [1178, 1384],
+    "zero_based_stage_assets": [47582, 47590, 48069, 48172, 48172, 47607, 47608, 47627, 47634, 47640, 47640, 47688, 47689],
+    "stage_count": 13,
+    "final_stage": {"order": 12, "step": 1987, "tree": 46291, "leaf": 46292, "criteria": 29264, "type": 92, "asset": 47689},
+    "important_distinctions": "Stages3 and4 share wardstone asset48172 with different tree amounts. Stages9 and10 share47640. A single asset match is not proof of the correct stage, quantity, replay handling or credit ownership."
+  },
+  "confirmed_local_gaps": [
+    {
+      "kind": "skipped_prerequisite",
+      "evidence": "Native line220 requires41542 ->39427 ->40385. Runtime quest_template_addon instead links41542 directly to40385, whose PrevQuestID is41542;39427 has neither PrevQuestID nor NextQuestID and no source19 admission adds it back.",
+      "remaining": "Restore the whole blessing offer/travel/objective/turn-in path before enforcing its prerequisite. A fresh creature_queststarter query has no39427 starter. Its current enders95400/95415/110821 and objective actors110685/110936/110937/110938 require native-version/actor verification; several referenced templates are absent. Simply tightening40385 would block an already missing middle quest."
+    },
+    {
+      "kind": "equip_callback_not_demonstrated",
+      "evidence": "Native197651 equips128808 and credits100112;208601 additionally sends47689. Current chest completion casts205589 and sends47689 directly. Scene1220 has no custom ScriptName, no spell_scene_event rows and no spell_script_names205589 row. No spell_linked_spell trigger/effect routes involving205589/197651/208601 were found. The only production197651 literal is the unused SelectArfiactSpellForSpec mapping.",
+      "remaining": "Trace all native scene removal/complete and spell-link dispatch before adding a narrowly scoped completion/equip callback. Include active/owned acquisition, cancelled and missing callbacks, old instance replay, abandon/retry and failed equip. Do not infer a blocked mandatory objective from100112 alone: its current SQL Amount=0 and Flags=2, whereas103798 is quantity1."
+    },
+    {
+      "kind": "premature_return_credit_and_bad_link",
+      "evidence": "Dakarr99480 death event1 correctly sends native penultimate asset47688, LINK2 summons100310, LINK3 summons248834. LINK3 then references id4, but id4 is another DEATH6 event, not LINK61. That independent death row awards103798 (Return to Dalaran) while still in the cave. Its only source22 condition gates combat id0 at scenario973/stage11, not that death credit. KillCredit1/2 are0.",
+      "remaining": "Repair together with the actual return path, rather than clearing the link just to hide a diagnostic. Dorro100005 has menu19148/text28019 and gossip flag1, but no menu options or extra SmartAI travel action in the inspected runtime data. Verify the native portal/travel spell and actual Dalaran arrival before moving the credit."
+    }
+  ],
+  "native_visual_definition": {
+    "scene_spell": 205589,
+    "scene_id": 1220,
+    "package": 1583,
+    "main_script": 13976,
+    "weapon": 128808,
+    "weapon_type": 1,
+    "visual": 53909,
+    "initial_sound": 77363,
+    "brandish_sound": 5496,
+    "weapon_effect": 10,
+    "text_animation": 4586,
+    "finding": "The local native scene contains the weapon presentation, race-dependent transforms, clone weapon equip, camera and cleanup definitions. Clone:EquipWeapon is a client scene actor operation, not proof that the player's inventory item is equipped. Its explicit main-script trigger is Smooth Phase Complete. Native asset existence is not proof of live playback."
+  },
+  "references": [
+    {"source": "C:/wamp64/www/TrinityCore at c2d61e05cf3dc555608e6b2a06772c27d207548c", "review": "Targeted Legion script search for Talonclaw/The Spear in the Shadow returned no implementation; preserve the wider earlier donor review limits."},
+    {"source": "https://github.com/AshamaneProject/AshamaneCore/blob/b09c1c393cf2e01bc5e857ea6117680d2aaeadb0/src/server/scripts/BrokenIsles/ClassHalls/class_hall_hunter.cpp", "review": "All219 lines inspected. It implements invitation/selection helpers, not the Survival scenario. Its newer specialization IDs are incompatible; no code imported."}
+  ],
+  "video": {
+    "url": "https://www.youtube.com/watch?v=aAzrSVxEElk",
+    "title": "The Spear in the Shadow WoW Survival Hunter Artifact Scenario",
+    "uploader": "ZaFrostPet",
+    "duration": "22:42",
+    "method": "Viewed rendered gameplay frames in the browser, muted; no transcript. This was sparse visual sampling, not continuous full-video review or audio verification. Seek/buffering frames and advertisements were excluded; three initially mislabelled temporary screenshots were removed.",
+    "observations": [
+      {"time": "0:02", "seen": "Apata quest offer and an Eagle Spirit visible at the starting platform."},
+      {"time": "2:21 / 3:00", "seen": "Harbor warder combat with the player's pet; stage3 trap objective visible at3:00. This does not prove the complete trap transition."},
+      {"time": "8:00", "seen": "Stage5 wardstone collection objective is0/3, with a Mist Warder and blue spell effects."},
+      {"time": "20:02 /20:09 /20:16", "seen": "Stage12 final cave battle against Dakarr, before the artifact presentation."},
+      {"time": "20:54", "seen": "Player clone raises Talonclaw in a green vertical beam with leaf effects and the weapon title. Matches the type of presentation defined in the local native scene, not proof of our server delivering it."},
+      {"time": "21:01 /21:06", "seen": "Dorro's spirit stands near the remains after pickup; the quest still shows0/1 Return to Dalaran, supporting that this credit belongs after leaving the cave."}
+    ],
+    "private_frames": [
+      {"file": ".codex/survival-video-review/20m54s.png", "sha256": "50C572E5E003E07CF8514861EF1A6AE53A542862ED916E74B4EFBE744BEB6A7B"},
+      {"file": ".codex/survival-video-review/21m06s.png", "sha256": "59D08B951C2432B9293A4040F41F810353EB60888FBC104AED0DA207AE759E78"}
+    ],
+    "still_required": "Review the full blessing chain and all scenario transitions, including the precise pickup click/scene timing, fog crossing, companion deaths, traps, Dorro's complete dialogue and return/turn-in. No unseen interval, actual sound or exact26972 client build is certified by these samples."
+  },
+  "runtime": "This investigation changed no gameplay implementation, persistent database records or deployed executables. No server processes were launched/stopped. The prior eebbedf8 Release/SQL repair remains the deployed baseline; native research tests are separate from actual client traversal."
+}

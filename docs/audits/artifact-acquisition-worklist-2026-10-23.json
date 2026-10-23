@@ -682,6 +682,7 @@
       "specialization": "Survival",
       "weapon": "Talonclaw",
       "item": 128808,
+      "sequence_review_audit": "docs/audits/survival-artifact-sequence-review-2026-10-23.json",
       "partial_repair_audit": "docs/audits/talonclaw-acquisition-2026-10-23.json",
       "start": 41542,
       "status": "queued for executable lifecycle and visual review; client traversal pending",
@@ -774,9 +775,10 @@
       ],
       "broken_actor_links": [],
       "video": {
-        "url": null,
+        "url": "https://www.youtube.com/watch?v=aAzrSVxEElk",
         "reviewed_intervals": [],
-        "status": "not reviewed in this inventory"
+        "reviewed_frames": ["0:02", "2:21", "3:00", "8:00", "20:02", "20:09", "20:16", "20:54", "21:01", "21:06"],
+        "status": "partial muted frame sampling; full sequence and audio remain unreviewed; see sequence_review_audit"
       },
       "checkpoints": {
         "quest_admission_and_faction_variants": "pending",
