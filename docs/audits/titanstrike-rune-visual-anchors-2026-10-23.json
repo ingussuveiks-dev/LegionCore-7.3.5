@@ -1,0 +1,26 @@
+{
+  "scope": "Hunter1068/map1495/phase6985 Stage3 rune door248780; not the entrance door or corridor tornadoes",
+  "client_observed": "The user reached Stage3 and showed two visible runes and lightning flattened near the floor. The screenshot alone does not establish whether an earlier wave had already removed a rune; the native selection and movement defects below were independently reproduced.",
+  "causes": [
+    "Rune templates106322/106323/106324 have visible displays69560/69561/69562 AND invisible alternative11686. Spawns382291/382292/382294 had modelid0 and flags_extra0, so native ChooseDisplayId -> GetRandomValidModelId could choose the invisible model.",
+    "The rune and shared64367 templates have Ground1/Flight2. Native Flight2 is CanFly; only Flight1 is DisableGravity. UpdateMovementFlags therefore permitted gravity at elevated native spawn coordinates. Rune Z is about-28.5; the doorway floor is around-36.5. Ritual helper Z ranges from-36.4658 to-14.2905.",
+    "Five of13 ritual helpers at their actual positions are20.228..24.453 yards from Prustaga's ritual waypoint. The old20-yard3D admission excluded those high anchors once gravity was corrected."
+  ],
+  "repair": [
+    "Explicit visible display override on only the three matching native rune spawns, preserving custom nonzero overrides. Keep all native positions, phase, model metadata and animation kit10586.",
+    "Per-spawn Ground0/Flight1 on those three runes and13 identified Hunter ritual helpers:382232,382234,382235,382240,382241,382242,382243,382246,382247,382248,382249,382250,382251. Preserve existing unrelated override fields. No shared template movement changes; other maps/classes/ship/corridor helpers retain their previous settings.",
+    "Change the matching ritual proximity condition20 ->30 only while its native base-actor1068/zero-based-step2 gate exists. Retain native191160/visual49471, stage cleanup and rune death progression."
+  ],
+  "reference": {
+    "url": "https://www.youtube.com/watch?v=CroQaRMV_dQ&t=307s",
+    "review": "Previously reviewed whole transcript and sampled full timeline. This repair additionally inspected extracted4:55 and5:07 frames and the existing2-second rune-wave contact sheet. The5:07 frame shows three colored runes high above Prustaga; wave frames show separated lightning strands. No claim of continuous viewing/audio review or native sniff provenance."
+  },
+  "automated": [
+    "Test-TitanstrikeRuneVisuals.ps1: real-schema temporary SQL twice; exact16 actor set; unchanged coordinates/animation/phase, custom model, foreign map, existing Rooted/InteractionPauseTimer fields and unrelated overrides preserved; custom scenario gate respected.",
+    "Actual exported rows execute extracted production model selection, movement data/enum/constructor and UpdateMovementFlags. Reproduces invisible alternate and CanFly-with-gravity branch; all3 explicit display IDs survive both random outcomes and all16 corrected actors disable gravity above/on/below sampled floor heights.",
+    "Production DB2Storage reader validates visible models8972/8973/8974, native invisible model1731, kit10586 and191160 -> visual49471. No fabricated display metadata or replacement visual.",
+    "Test-TitanstrikeStorms.ps1 -VerifyReleaseBinary and Test-TitanstrikeRunes.ps1 -VerifyReleaseBinary pass with the installed migration; native visual regression also passes after deployment. Existing canonical Release SHA2560f7a4618f2de0dfca10ae9b0f6707fdd6354a021702a9b892e72056022e6bbf6 is unchanged."
+  ],
+  "deployment": "Migration08 installed transactionally in the configured world database and registered in updates. Readback confirms16 overrides and all3 correct display IDs at unchanged Z/animation kit. User-owned worldserver13160 and bnetserver34944 were not stopped; no validation server was launched. Existing actors/template caches require fresh startup before visual retest.",
+  "limits": "Spatial sampling is a fixture, not a live collision/render test. Actual startup and first appearance/continued height, three-rune visibility, per-wave removal and lightning disappearance after door opening still need a fresh client run. No character, quest progress, stage counters or executable changes are part of this repair."
+}
