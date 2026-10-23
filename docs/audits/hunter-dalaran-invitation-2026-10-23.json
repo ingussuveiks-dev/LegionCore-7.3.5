@@ -17,7 +17,7 @@
   "repair": {
     "migration": "sql/updates/world/2026_10_23_00_hunter_dalaran_invitation.sql",
     "scope": "Change only the original196908/7502/0/40384/class4/autocast row's legacy allowed mask74 to1. Preserve custom replacements and all other offers.",
-    "application": "Applied to the configured live World database and registered in updates with SHA1 1178c98d2733703688580560f3a74805440299ea. Final row reads quest_end_status1. Running worldserver cache still needs reload spell_area or its next ordinary restart.",
+    "application": "Applied to the configured live World database and registered in updates with SHA1 1178c98d2733703688580560f3a74805440299ea. Final row reads quest_end_status1. After reload/relog instructions, the user confirmed the invitation in the client; see client_verification below.",
     "runtime": "Data-only repair; existing canonical Release contains the tested predicate. No executable replacement or server stop; user worldserver30284 and bnetserver29628 kept running. No owned temporary process or trace remains."
   },
   "verification": [
@@ -32,9 +32,15 @@
     "39566 The Search for Knowledge has Alchemy171 with RequiredSkillPoints0; the current native skill comparison admits a character with skill value0. This is a separate map/quest-admission issue; its data and other class/branch markers were not changed here.",
     "No claim is made that the city's other map pins or entire Hunter campaign are fixed or client-verified by this invitation repair."
   ],
+  "client_verification": {
+    "date": "2026-10-23",
+    "implementation_commit": "6b8a0161",
+    "user_report": "Snowfeather parādās, uzdevumu varu paņemt",
+    "confirmed": "Snowfeather appears for Krau and offers a usable Needs of the Hunters40384 quest interaction.",
+    "scope_limit": "No report yet confirms turn-in, follow-up quests, saved acceptance across relog, dialogue/audio, timeout/despawn or the full artifact chain."
+  },
   "client_checks_pending": [
-    "Reload spell_area in the running server console, then re-enter Dalaran/relog. Confirm personal Snowfeather appears and permits accepting40384; existing timeout is30seconds, so interact promptly.",
-    "Turn in to Emmarel, complete41415 and select the Beast Mastery/Titanstrike path via40618. Personal visibility, dialogue, actual acceptance, downstream actors and artifact scenario remain unverified.",
+    "Turn in to Emmarel, complete41415 and select the Beast Mastery/Titanstrike path via40618. Saved acceptance, dialogue/audio, timeout/despawn, downstream actors and artifact scenario remain unverified.",
     "Confirm the previous owl-form repair clears the visual/movement state after the buff expires or is cancelled, and that a normal mount can then be used where permitted. The user reported a connection failure in response to that test, not successful owl cleanup."
   ],
   "references": [
