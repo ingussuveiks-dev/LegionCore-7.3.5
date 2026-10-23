@@ -1293,7 +1293,8 @@ enum SMARTAI_TARGETS
     SMART_TARGET_HOSTILE_RANDOM_AURA            = 127,   // Any random target except top threat player
     SMART_TARGET_RANDOM_POSITION                = 128,   // Any random position
     SMART_TARGET_TARGETUNIT                     = 129,   // Target unit by GetTargetUnit()
-    SMART_TARGET_END                            = 130
+    SMART_TARGET_ACTION_INVOKER_PLAYER          = 130,
+    SMART_TARGET_END                            = 131
 };
 
 struct SmartTarget

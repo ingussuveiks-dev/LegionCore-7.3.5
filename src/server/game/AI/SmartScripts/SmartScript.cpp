@@ -3012,6 +3012,19 @@ SmartScriptHolder SmartScript::CreateEvent(SMART_EVENT e, uint32 event_flags, ui
     return script;
 }
 
+namespace SmartInvokerPlayer
+{
+Player* Resolve(Unit* invoker, WorldObject* source, uint32 maxDistance)
+{
+    Player* player = GetScriptCreditPlayer(invoker);
+    if (!player || !source || !maxDistance || !player->IsInWorld() || !source->IsInWorld() ||
+        player->GetMap() != source->GetMap() || !player->InSamePhase(source) ||
+        !player->IsWithinDistInMap(source, float(maxDistance)))
+        return nullptr;
+    return player;
+}
+}
+
 ObjectList* SmartScript::GetTargets(SmartScriptHolder const& e, Unit* invoker /*= NULL*/)
 {
     Unit* trigger = nullptr;
@@ -3339,6 +3352,10 @@ ObjectList* SmartScript::GetTargets(SmartScriptHolder const& e, Unit* invoker /*
             
             break;
         }
+        case SMART_TARGET_ACTION_INVOKER_PLAYER:
+            if (Player* player = SmartInvokerPlayer::Resolve(trigger, GetBaseObject(), e.target.playerDistance.dist))
+                l->push_back(player);
+            break;
         case SMART_TARGET_POSITION:
         case SMART_TARGET_RANDOM_POSITION:
         default:

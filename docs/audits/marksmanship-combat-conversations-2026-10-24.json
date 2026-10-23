@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-24 Europe/Riga",
+  "build": "7.3.5.26972",
+  "scope": "Recover four native Niskara combat conversation requests for player-controlled pet/guardian/charmed-unit invokers without changing raw combat invokers or globally changing action206. Partial Marksmanship repair; no full chain or client visual certification.",
+  "root_cause": "SmartAI EnterCombat/JustDied passes the actual enemy/killer. Existing target7 returns that Unit unchanged, while SUMMON_CONVERSATION206's non-coordinate branch accepts only Player targets. A pet/guardian/charmed creature therefore loses these conversation requests even though the already repaired action205/33 credit paths can resolve its owner. Replacing every combat invoker with its owner or choosing an unrelated nearest player would alter other native actions and is not the repair.",
+  "repair": {
+    "opt_in_target": "Add server-side SmartAI target130 SMART_TARGET_ACTION_INVOKER_PLAYER, with target_param1 as required positive maximum distance. This is a custom server selector, not a26972 client SpellImplicitTarget ID or packet change. Prior local data had no target>=130. Existing target7, all prior enum values, ordinary casts and action206 itself remain unchanged; END advances131.",
+    "resolution": "SmartInvokerPlayer::Resolve reuses actual GetScriptCreditPlayer and Unit::GetCharmerOrOwnerPlayerOrPlayerItself: direct Player or eligible direct player owner/charmer. Require live world objects, identical Map pointer including instance, native phase compatibility and bounded native map distance. Reject null, ownerless, unavailable/NPC-owned, remote/wrong-map/wrong-phase sources or owners and zero range. It never substitutes a loot recipient/nearest player, writes mLastInvoker, awards progression or adds a new group-credit rule. Native GetTargets final quest-scope filtering still runs on the resolved Player.",
+    "migration": "Guarded migration25 opts in only four supported native SmartAI rows with empty custom ScriptName, original event/link/conversation/flag/target tuples and no coordinate override. Set target130/100yd; retain all other fields. Reapplication is idempotent; custom speaker target, conversation/position or C++ actor binding is not replaced. All three affected actors currently have a single map1489/phase5586 spawn; this is not a blanket rewrite of every actor sharing the map.",
+    "isolation": "Before25 the local table had655 action206 rows,476 using raw invoker7. No global action conversion is made: only4 rows opt in. Native coordinate conversations, other selected targets, raw pet-triggered conversations elsewhere, event timing/NOT_REPEATABLE flags, spell219 conversation casts, criteria, loot and kill/group rewards remain unchanged. The existing scoped Geir repair and its original raw7 pet-rejection baseline still pass.",
+    "group_and_failure": "Each opted-in target selects one Player. Native Conversation::CreateConversation then retains the caster's group visibility list, not one separate conversation per member. Actual actor/line generation, map admission, diagnostics and failed-create deletion remain native. This patch adds no automatic conversation creation retry or artificial success, and does not certify full abandonment/re-entry reconstruction or actor admission."
+  },
+  "affected_rows": [
+    {"actor":100394,"spawn":370688,"event":0,"trigger":"AGGRO4","link":2,"flags":1,"conversation":1123,"line":2737,"portrait_display":18345,"actor_duration_ms":3150},
+    {"actor":100749,"spawn":370686,"event":4,"trigger":"native death LINK61","link":5,"flags":0,"conversation":1009,"line":2464,"portrait_display":4426,"actor_duration_ms":6050},
+    {"actor":100836,"spawn":370742,"event":6,"trigger":"AGGRO4","link":0,"flags":1,"conversation":1555,"line":3421,"portrait_display":4426,"actor_duration_ms":4200},
+    {"actor":100836,"spawn":370742,"event":8,"trigger":"native death LINK61","link":0,"flags":1,"conversation":1395,"line":3183,"portrait_display":67031,"actor_duration_ms":6350}
+  ],
+  "sources": {
+    "local_first": "Read actual map1489 phase5586 actor/spawn profiles, SmartAI death/aggro/LINK chains and conditions, native972 ScenarioStep/CriteriaTree/Criteria references, owner/charmer resolution, target selection/loader, action206, and full relevant Conversation::CreateConversation/GenerateDynamicFieldData. Typed DB2 plus actual read-only hotfix overlay and local CASC supply voice/model dependencies. No character data was used.",
+    "trinity": "Targeted exact26972 local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c search found no directly compatible custom206 conversation/selector implementation; unrelated numeric substring matches in older boss scripts were rejected. Historical absence of these custom symbols is not proof that all upstream conversation systems are absent.",
+    "github": "Inherited pinned donor review remains applicable. Two additional focused public GitHub searches for SmartScript conversation/owner resolution and100836/1555/SmartAI returned no actionable implementation. No modern API or donor code imported; not an exhaustive search.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel": "ZaFrostPet",
+      "new_review": "Rendered paused1:30 shows the Felguard Lookout fight and its red chat, but no clear portrait.8:00 still shows the Torvis fight despite the automatically generated Finding Orestes chapter title.8:25 shows bodies and Vereesa/Orestes dialogue after that fight. These are contextual samples, not proof of all four conversation IDs, who caused aggro/final damage or our client behavior.",
+      "limits": "Sparse frames only, not the full relevant combat/death sequence or full19:04 video. Auto-generated chapters/captions are navigation hints, not authoritative behavior. Muted audio, ads, stale seek/buffering frames and unobserved elapsed playback were excluded. No remote media downloaded; temporary background tab closed. Full voice/portrait/order comparison remains pending."
+    }
+  },
+  "native_dependencies": {
+    "payload": "Each of1123/1009/1555/1395 has a real conversation_data line and conversation_actor row; conversation_creature is empty. Native GenerateDynamicFieldData accepts the actor/line payload, retaining actor IDs50641/50802/50802/50831 and original display/duration fields. There is no fabricated substitute actor or new reward. Actual portrait appearance remains a client/video check.",
+    "lines": [
+      {"line":2737,"broadcast":104083,"visual_kit":0,"anim_kit":0,"additional_duration_ms":500,"male_sound_kit":61795,"file_data_id":1382610},
+      {"line":2464,"broadcast":103778,"visual_kit":0,"anim_kit":0,"additional_duration_ms":2000,"male_sound_kit":61802,"file_data_id":1382617},
+      {"line":3421,"broadcast":103837,"visual_kit":0,"anim_kit":0,"additional_duration_ms":500,"male_sound_kit":61840,"file_data_id":1382690},
+      {"line":3183,"broadcast":103887,"visual_kit":0,"anim_kit":0,"additional_duration_ms":1000,"male_sound_kit":61803,"file_data_id":1382618}
+    ],
+    "models_and_audio": "Typed native displays18345/4426/67031 resolve model8108/68/8246 and gender0/0/2. The catalog preserves native line/Broadcast/SoundKit/SoundKitEntry links through the read-only hotfix overlay; neutral gender is not asserted to prove a particular client voice-selection rule. All11 catalog-referenced local voice files, including the4 new combat files and7 prior entrance/end files, are fully read with32 stable CASC index hashes. Presence is not decoding/listening, sound delivery or visual rendering. No proprietary payload committed."
+  },
+  "checks": [
+    "Test-SmartInvokerPlayer.ps1 -VerifyReleaseBinary passes before and after deployment. Actual-schema TEMPORARY tables apply25 twice, verify exactly4 targets130/100, compare every field of all other conversation/related combat rows and preserve custom actor script, target, position and conversation. Original Torvis85/200832 and all credit/ordinary spell rows remain unchanged.",
+    "SmartInvokerPlayerTest.cpp compiles actual owner lookup, credit-player resolver, new Resolve, GetTargets trigger selection/new130 case/final scope filter, native positive-distance admission branch, unchanged action206 and actual Conversation dynamic-field generation/group-visibility branch. Only fixture-bound variable identifiers are renamed in extracted target/action snippets. Original7 pet request is rejected;130 admits direct player, pet, guardian and player charmer without changing the raw cause/last invoker. Native last-invoker fallback works; ownerless/NPC-owned/null causes,9 world/map/phase/range/availability/base/scope failures and zero range reject. The100yd boundary admits; invalid131 rejects.",
+    "All4 actual line/display/duration payloads and owner/group visibility sets are asserted; coordinate-mode source caster is unchanged. Failed creation/missing actor data take native delete/failure handling without leaks. Successful mock world ownership is explicitly cleaned up by the fixture. Controlled hosts include world lookup/map/distance/phase/scope/group state and CreateConversation/map/network/scheduler: no real client creation, playback, lifecycle timeout or complete combat traversal is implied.",
+    "verify_smart_invoker_player_release.py decodes actual compressed x64 target switch tables.130 has a distinct branch from raw7 and its inlined body invokes native owner lookup, both in-world checks, map-pointer comparison, phase and distance. Real IsTargetValid130 shares the positive-distance branch with18/21. Actual ProcessAction -> GetTargets and Conversation::CreateConversation -> GenerateDynamicFieldData bridges remain linked. No nonexistent outline helper symbol is assumed.",
+    "Canonical Release regressions pass: SmartInvokerPlayer, ScriptPetCredit, ScepterLogin, MarksmanshipClaimDialogue, MarksmanshipArrival, StormheimEternalVictory, ScenarioLfgLifecycle and SmartGameObjectFlags with -VerifyReleaseBinary. The inherited Marksmanship PE chain retains pickup/report-use/scene/return/Talonclaw repairs. Existing compiler narrowing/shadow/native LFG warnings remain visible, not suppressed."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "CD44A64DFC14D5652FFEBFA6883A4170FE1B0A1B151F9E8228B29E141500DB99",
+    "migration": "sql/updates/world/2026_10_23_25_marksmanship_combat_conversations.sql",
+    "migration_sha1": "52F58F1EF44D373D551E368899378C0FD2D33B04",
+    "build": "Both Release targets built in canonical directory using parallel2, CL=/MP2, CL_MPCount2 and LinkIncremental=false with CL restored. No OutDir override; actual final-link dependencies remain original scripts/Release/scripts.lib and game/Release/game.lib. Libraries refreshed before worldserver and actual new switch130/loader implementation verified in the deployed executable/map.",
+    "readback": "Native updater records25 RELEASED at exact SHA1. Exactly4 live rows use130/100 with original flags/links/IDs; Torvis spell200832/85/nearest50 and Herald criteria205/92/raw7 remain unchanged. Private three-actor SmartAI backup precedes updater. No credentials, character/config/runtime files are committed.",
+    "startup": "Task-owned canonical PID31272 reached World initialized and gracefully exited0. New DBErrors bytes0, protected configuration/certificate hashes unchanged. No user/unknown server stopped and no task-owned server remains. This establishes real loader admission, not scenario/client execution.",
+    "private_evidence": ".codex/smart-invoker-player-*.log/disassembly, marksmanship-combat-*.log/native/readback/backup, marksmanship-combat-conversation-audio and marksmanship-combat-conversations-startup; excluded from commits."
+  },
+  "remaining": [
+    "Client aggro/death conversations with player/pet/guardian/charmers, portraits/voices/timing/group visibility, repeated combat/reset, one-hit/scaling and failed/missing creation recovery still need actual traversal. This patch adds no actor-stage admission or quest prerequisites; their full review remains pending.",
+    "Native Torvis200832 and Orestes200848 use219 conversations1072/1073 and have separate caster/visibility/sequence semantics; not changed or certified here. Null/missing owner has no nearest-player or invented-credit fallback. Native per-event runOnce/timing remains, not a new automatic retry.",
+    "Full Marksmanship encounters, summoner counts/gates, objective StorageIndex4 alias/history, durable re-entry/cache recovery, actual loot/equip/use/arrival, complete video and all36 routes remain unfinished."
+  ]
+}

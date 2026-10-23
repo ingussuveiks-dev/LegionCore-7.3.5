@@ -43,7 +43,17 @@ int main(int argc, char** argv)
         return 3;
     std::cout << "CONVERSATION_LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t'
         << line->SpellVisualKitID << '\t' << line->AnimKitID << '\t' << line->AdditionalDuration << '\n';
-    for (uint32 identity : {28222u, 65514u})
+    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281};
+    for (uint32 identity : {2737u, 2464u, 3421u, 3183u})
+    {
+        auto combatLine = lines.LookupEntry(identity);
+        if (!combatLine)
+            return 12;
+        broadcastIds.insert(combatLine->BroadcastTextID);
+        std::cout << "CONVERSATION_LINE\t" << combatLine->ID << '\t' << combatLine->BroadcastTextID << '\t'
+            << combatLine->SpellVisualKitID << '\t' << combatLine->AnimKitID << '\t' << combatLine->AdditionalDuration << '\n';
+    }
+    for (uint32 identity : {28222u, 65514u, 18345u, 4426u, 67031u})
     {
         auto actorDisplay = displays.LookupEntry(identity);
         if (!actorDisplay)
@@ -52,7 +62,7 @@ int main(int argc, char** argv)
             << uint32(actorDisplay->Gender) << '\n';
     }
     std::set<uint32> soundKits;
-    for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, uint32(line->BroadcastTextID)})
+    for (uint32 identity : broadcastIds)
     {
         auto text = texts.LookupEntry(identity);
         if (!text)

@@ -370,6 +370,7 @@ bool SmartAIMgr::IsTargetValid(SmartScriptHolder const& e)
         }
         case SMART_TARGET_PLAYER_DISTANCE:
         case SMART_TARGET_CLOSEST_PLAYER:
+        case SMART_TARGET_ACTION_INVOKER_PLAYER:
         {
             if (e.target.playerDistance.dist == 0)
             {
