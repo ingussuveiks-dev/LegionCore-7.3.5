@@ -20,6 +20,7 @@ CREATE TEMPORARY TABLE gossip_menu_option LIKE saved_menu;
 INSERT INTO gossip_menu_option SELECT * FROM saved_menu;
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid=100397 AND source_type=0;
+UPDATE saved_smart SET action_type=85 WHERE id=56 AND event_type=61 AND link=0 AND action_type=11 AND action_param1=205040 AND action_param2=0 AND target_type=7;
 UPDATE saved_smart SET id=55 WHERE id=59 AND event_type=62 AND action_type=33 AND action_param1=103481;
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 INSERT INTO smart_scripts SELECT * FROM saved_smart;

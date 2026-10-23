@@ -30,6 +30,10 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
     DB2Storage<QuestObjectiveEntry> objectives("QuestObjective.db2", QuestObjectiveLoadInfo::Instance());
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());
+    DB2Storage<SpellXSpellVisualEntry> visuals("SpellXSpellVisual.db2", SpellXSpellVisualLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
@@ -42,6 +46,8 @@ int main(int argc, char** argv)
     if (!locks.Load(argv[1], 0))
         return 2;
     if (!objectives.Load(argv[1], 0))
+        return 2;
+    if (!misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !ranges.Load(argv[1], 0) || !visuals.Load(argv[1], 0))
         return 2;
     if (!scripts.Load(argv[1], 0))
         return 3;
@@ -107,6 +113,19 @@ int main(int argc, char** argv)
             std::cout << "RETURN_TARGET\t" << effect->EffectIndex << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
     }
     auto lock = locks.LookupEntry(1691);
+    for (auto entry : misc)
+        if (entry->SpellID == 205040 && !entry->DifficultyID)
+        {
+            auto cast = castTimes.LookupEntry(entry->CastingTimeIndex);
+            auto range = ranges.LookupEntry(entry->RangeIndex);
+            if (!cast || !range)
+                return 8;
+            std::cout << "RETURN_CAST\t" << entry->CastingTimeIndex << '\t' << cast->Base << '\t'
+                << entry->RangeIndex << '\t' << range->RangeMax[0] << '\t' << range->RangeMax[1] << '\n';
+        }
+    for (auto visual : visuals)
+        if (visual->SpellID == 205040)
+            std::cout << "RETURN_VISUAL\t" << unsigned(visual->DifficultyID) << '\t' << visual->SpellVisualID << '\n';
     if (!lock)
         return 7;
     for (uint32 slot = 0; slot < 8; ++slot)

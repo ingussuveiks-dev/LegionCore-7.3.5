@@ -1484,6 +1484,20 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool TeleportTo(uint32 mapid, Position const* pos, uint32 options = 0, uint32 spellID = 0);
         bool TeleportTo(WorldLocation const& loc, uint32 options = 0);
         bool TeleportTo(uint32 locEntry, uint32 options = 0);
+        class ScopedTeleportDelay
+        {
+            Player& player;
+            bool previous;
+        public:
+            explicit ScopedTeleportDelay(Player& target) : player(target), previous(target.IsCanDelayTeleport())
+            {
+                player.SetCanDelayTeleport(true);
+            }
+            ~ScopedTeleportDelay() { player.SetCanDelayTeleport(previous); }
+            ScopedTeleportDelay(ScopedTeleportDelay const&) = delete;
+            ScopedTeleportDelay& operator=(ScopedTeleportDelay const&) = delete;
+            bool IsPending() const { return player.IsHasDelayedTeleport(); }
+        };
         bool TeleportToBGEntryPoint();
         void TeleportToHomeBind();
         void TeleportToChallenge(uint32 mapid, float x, float y, float z, float orientation);

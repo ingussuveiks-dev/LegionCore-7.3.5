@@ -4,6 +4,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SpellScript.h"
+#include "Spell.h"
 #include "SpellAuraEffects.h"
 #include "Creature.h"
 #include "TemporarySummon.h"
@@ -640,6 +641,89 @@ public:
     GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
 };
 
+namespace MarksmanshipReturn
+{
+bool Scoped(Unit* caster)
+{
+    return caster && caster->IsCreature() && caster->GetEntry() == 100397 &&
+        caster->GetMapId() == 1489 && !caster->ToCreature()->GetScriptId();
+}
+
+bool Current(Player* player, Unit* caster)
+{
+    if (!player || !Scoped(caster) || !caster->IsInWorld() || !caster->IsAlive() || !player->IsInWorld() || !player->IsAlive() ||
+        player->getClass() != CLASS_HUNTER || player->GetMapId() != 1489 ||
+        player->GetInstanceId() != caster->GetInstanceId() || !player->InSamePhase(caster) ||
+        !ArtifactAcquisition::Active(player, 40419) || !player->HasItemCount(128826, 1, true))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 8;
+}
+
+struct State
+{
+    bool accepted = false;
+
+    void Teleport(Player* player, Unit* caster, Spell* spell, SpellEffIndex effect)
+    {
+        accepted = false;
+        if (!Current(player, caster) || player->IsBeingTeleported())
+            return;
+        Player::ScopedTeleportDelay guard(*player);
+        spell->EffectTeleportUnits(effect);
+        accepted = guard.IsPending();
+    }
+
+    bool CreditAllowed(Player* player, Unit* caster) const
+    {
+        return accepted && Current(player, caster) && player->IsBeingTeleportedFar();
+    }
+};
+}
+
+class spell_marksmanship_return : public SpellScript
+{
+    PrepareSpellScript(spell_marksmanship_return);
+    MarksmanshipReturn::State state;
+    bool scoped = false;
+
+    bool Load() override
+    {
+        scoped = MarksmanshipReturn::Scoped(GetCaster());
+        return true;
+    }
+
+    SpellCastResult Check()
+    {
+        Unit* target = GetExplTargetUnit();
+        Player* player = target ? target->ToPlayer() : nullptr;
+        if (scoped &&
+            (!MarksmanshipReturn::Current(player, GetCaster()) || player->IsBeingTeleported()))
+            return SPELL_FAILED_BAD_TARGETS;
+        return SPELL_CAST_OK;
+    }
+
+    void Hit(SpellEffIndex effect)
+    {
+        if (!scoped)
+            return;
+        if (effect == EFFECT_0)
+        {
+            PreventHitDefaultEffect(effect);
+            state.Teleport(GetHitPlayer(), GetCaster(), GetSpell(), effect);
+        }
+        else if (!state.CreditAllowed(GetHitPlayer(), GetCaster()))
+            PreventHitDefaultEffect(effect);
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_marksmanship_return::Check);
+        OnEffectHitTarget += SpellEffectFn(spell_marksmanship_return::Hit, EFFECT_0, SPELL_EFFECT_TELEPORT_L);
+        OnEffectHitTarget += SpellEffectFn(spell_marksmanship_return::Hit, EFFECT_1, SPELL_EFFECT_KILL_CREDIT);
+    }
+};
+
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
@@ -648,6 +732,7 @@ void AddSC_artifact_acquisition()
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
     RegisterAuraScript(spell_marksmanship_presentation);
+    RegisterSpellScript(spell_marksmanship_return);
     new player_talonclaw_return();
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();

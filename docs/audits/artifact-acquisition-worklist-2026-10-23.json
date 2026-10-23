@@ -824,8 +824,9 @@
       "pickup_admission_repair_audit": "docs/audits/marksmanship-pickup-admission-2026-10-23.json",
       "report_use_repair_audit": "docs/audits/marksmanship-report-use-2026-10-23.json",
       "return_admission_repair_audit": "docs/audits/marksmanship-return-admission-2026-10-23.json",
+      "return_caster_repair_audit": "docs/audits/marksmanship-return-caster-2026-10-23.json",
       "start": 41540,
-      "status": "partial: native8-stage/scene review, owned/bank replay, final-stage opening/loot/post-claim, direct-report SmartAI admission, guarded1169-to200262 equip and completed-claim Vereesa return admission/retry pass native/Release/data-loader checks; sparse end-video frames reviewed, not full footage; objective storage, acquisition-driven speech, blue Vereesa visual, delayed phase/cache/re-entry, real arrival and client visuals/loot/equip remain pending",
+      "status": "partial: prior pickup/equip/admission repairs retained; native Vereesa return caster/visual dependencies and ordered accepted-transfer/group-credit guard repaired with native fixtures; final Release/loader evidence in return-caster audit. Sparse end-video frames only; full video, objective storage, acquisition-driven speech, delayed cache/re-entry, actual arrival and client visuals/loot/equip remain pending",
       "quests": [
         {
           "id": 41540,
