@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "specialization": "Survival",
+  "scope": "Connect the real final chest presentation to native existing-item equip; not a complete Survival-chain repair.",
+  "sequence_review": "docs/audits/survival-artifact-sequence-review-2026-10-23.json",
+  "shared_scene_repair": "docs/audits/scene-instance-lifecycle-2026-10-23.json",
+  "evidence": [
+    "Typed native DB2 data:205589 applies scene1220 plus root;197651 equips existing128808 and credits100112;208601 additionally sends47689. Chest248834 already sends47689 after casting205589. Therefore use197651, not the double-scenario-credit208601.",
+    "Scene package1583/main13976 equips a presentation clone and defines visual53909, sound77363 and Talonclaw brandishing. Clone equipment is not the player's inventory. Scene1220 has no custom handler or spell_scene_event callback, and no linked-spell route to197651 was found in the earlier fresh runtime query.",
+    "The exact native scenario973 final step is zero-based12. Completed-loot SmartAI casts205589 before its linked47689 event. The hook captures admission at aura application, before scenario completion may advance or release that scenario.",
+    "Previous local TrinityCore history, pinned donor and partial muted YouTube sampling are recorded in the sequence audit. No additional video was watched for this patch. The sampled20:54 brandish and21:06 post-pickup Dorro frames are partial visual references, not full-video or client verification."
+  ],
+  "repair": [
+    "Add an aura script only to205589, preserving native scene package, visual/audio definitions, root and chest action order. Admit a live Hunter with active nonrewarded40385, already-owned Talonclaw, map1511 and scenario973/stage12. Capture the instance before the native final-stage event.",
+    "When native complete/cancel handling removes that presentation aura, cast197651 once on its player owner after scene1220 is completed. Do not grant an item, equip a clone, force a scenario step, credit a pet, or send47689 again.",
+    "Remove an admitted presentation if its owner dies, abandons/rewards the quest, loses the weapon, teleports or leaves the captured map/instance; no equip is awarded on that invalidation. A missing owner/nonplayer is safe. No faction-specific bypass or group-wide reward is added.",
+    "After20000ms without completion, warn explicitly, remove only the scene's own aura through native removal, close its instance and attempt the same existing-item equip once. This is longer than the inspected approximately9-second native brandish timing. It is bounded recovery, not evidence that a missing visual played.",
+    "Use GetUnitOwner in effect-update context, which has no AuraApplication. Shared stale-instance cleanup prevents an old callback from finishing a subsequent retry.",
+    "The SQL migration adds only the exact205589 script binding, idempotently preserving custom and unrelated bindings."
+  ],
+  "checks": [
+    "Test-TalonclawPresentation.ps1 passes: extracted production State/AuraScript, typed registered apply/update/remove hooks, native owner getter, Player scene lifecycle and real complete/cancel packet handlers. Tests include no early equip, final scenario released during playback,19999+1ms and large-diff timeout, repeated callbacks, invalid initial/ongoing admission, optional complete quest, removed/restarted presentation, null/nonplayer owner and additive repeat SQL.",
+    "Test-SurvivalArtifactCatalog.ps1 passes against actual26972 DB2:13 stages, final criterion47689, questline220 and original clone/visual definitions.",
+    "Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary, Test-TalonclawAcquisition.ps1 and Test-ArtifactAcquisitionData.ps1 pass. Actual loot and already-owned/bank branches remain separate from the presentation callback; full bags do not invent an item or fire completed-loot credit.",
+    "Test-ArtifactForceEquip.ps1 passes all55 native effect249 records and extracted inventory validation/swap/error/repeat/child-item branches. verify_artifact_force_equip_release.py confirms the native inventory path in the deployed executable. An equip rejection remains an actual native error with the owned item retained, not a fabricated success. Native GetItemByEntry defaults inBank=false: a bank-only owned copy admits the pickup replay, but197651 does not remotely withdraw/equip that copy. Retrieve it before manual equip; the bank fixture certifies ownership admission, not bank-to-equipment transfer.",
+    "Test-DarkRidersCompletion.ps1 passes its existing production recovery and native catalog checks after the shared artifact script addition.",
+    "verify_talonclaw_presentation_release.py passes: actual linked instruction operands retain973/12 admission,1511/40385/128808 ownership,1220/197651 completion,20000ms fallback and native CastSpell/Remove calls. Uses Capstone5.0.9 for instruction decoding and the existing PE/unwind reader; includes the scene/LFG PE checks."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "14D0607491DC1C9657FCCD9BD7B6868484834E4898952282B62C6EFB0F8AAC5F",
+    "migration": "sql/updates/world/2026_10_23_11_talonclaw_presentation.sql",
+    "migration_sha1": "5571C56006864D7603A69729E3B9ECF8F87ED648",
+    "live_readback": "Exactly one205589/spell_talonclaw_presentation binding; update registered RELEASED with matching hash after canonical startup.",
+    "startup": "Both Release servers built to the canonical directory using their real static libraries. Task-owned PID27724 initialized and shut down gracefully, exit0; zero new DBErrors bytes; protected configuration/certificates unchanged. No user server stopped, no task-owned server left running.",
+    "private_evidence": ".codex/backups/talonclaw-presentation-20261023 and .codex/talonclaw-presentation-startup; no credentials or character data committed."
+  },
+  "remaining": [
+    "Prerequisite39427 offer/actors/travel, later scenario interactions and Dorro return are still unresolved. Dakarr's premature103798 Return-to-Dalaran death credit and invalid LINK require the real return path, not suppression. This patch does not certify a playable whole route.",
+    "Client checks: ordinary and bank-owned pickup, weapon appears and is taken in the correct order, sound/green beam/brandish, actual post-scene equip and displaced weapon storage, cancel/timeout and manual retry after inventory rejection, independent roots, camera/pet restoration and relogged artifact state.",
+    "Group/pet/guardian killing blows, scaling/one-hit encounters, faction travel, missing later actors and full abandon/re-entry traversal remain route checks. This aura is owner-only and does not alter any combat credit handler.",
+    "No real character was changed or granted an artifact for testing. All executable checks here are native/fixture/startup checks, not client traversal or full YouTube verification."
+  ]
+}
