@@ -66,9 +66,17 @@ int main(int argc, char** argv)
                             auto tree = trees.LookupEntry(id);
                             if (!tree)
                                 return 6;
+                            if (id == 46289)
+                                std::cout << "DAKARR_ROOT_FLAGS\t" << tree->Flags << '\n';
                             if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
+                            {
                                 std::cout << "CRITERION\t" << unsigned(step->OrderIndex) << '\t' << id << '\t'
                                     << criterion->ID << '\t' << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
+                                if (criterion->ID == 29263)
+                                    std::cout << "DAKARR_RULE\t" << criterion->ModifierTreeId << '\t' << unsigned(criterion->StartEvent) << '\t'
+                                        << unsigned(criterion->FailEvent) << '\t' << criterion->EligibilityWorldStateId << '\t'
+                                        << unsigned(criterion->Flags) << '\t' << tree->Flags << '\n';
+                            }
                             for (auto child : trees)
                                 if (uint32(child->Parent) == id)
                                     pendingTrees.insert(child->ID);

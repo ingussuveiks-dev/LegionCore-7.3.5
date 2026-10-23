@@ -22,3 +22,17 @@ assert any(instruction.mnemonic == 'mov' and len(instruction.operands) == 2 and
            for instruction in instructions('?DamageTaken@npc_talonclaw_dakarr@@')), 'Blocked damage is not zeroed'
 assert b'npc_talonclaw_dakarr' in native['binary']
 print('PASS: actual Release guards Dakarr1511/973/11, passive/nonattackable cleanup and every native SmartAI delegate without replacing death credit/spawn actions')
+
+recover = '?RecoverDeathCredit@TalonclawDakarr@@'
+eligible = '?Eligible@TalonclawDakarr@@'
+values = {operand.imm for instruction in instructions(recover) for operand in instruction.operands if operand.type == CS_OP_IMM}
+assert {1511, 973, 11, 12, 47688}.issubset(values), 'Wrong missed death-event recovery scope'
+targets = native['calls'](recover)
+for prefix in (eligible, '?IsObjectMeetingSmartEventConditions@ConditionMgr@@', '?GetLootRecipient@Creature@@', '?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@', '?UpdateAchievementCriteria@Player@@'):
+    assert native['symbol'](prefix) in targets, f'Missing native death-credit path: {prefix}'
+assert 40385 in {operand.imm for instruction in instructions(eligible) for operand in instruction.operands if operand.type == CS_OP_IMM}
+assert native['symbol']('?IsWithinDistInMap@WorldObject@@') in native['calls'](eligible), 'Recovery loses native spatial admission'
+death_calls = [operand.imm for instruction in instructions('?JustDied@npc_talonclaw_dakarr@@')
+               if instruction.mnemonic in {'call', 'jmp'} for operand in instruction.operands if operand.type == CS_OP_IMM]
+assert death_calls.index(native['symbol']('?JustDied@SmartAI@@')) < death_calls.index(native['symbol'](recover)), 'Recovery must follow the unchanged native death actions'
+print('PASS: actual Release invokes native SmartAI death before scoped47688 recovery, retaining native loot/owner/spatial/player-criteria bridges')

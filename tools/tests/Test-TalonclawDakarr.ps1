@@ -1,4 +1,4 @@
-param([switch]$BaselineSql,[switch]$VerifyReleaseBinary)
+param([switch]$BaselineSql,[switch]$VerifyReleaseBinary,[string]$BaselineRevision)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-dakarr"
@@ -58,7 +58,12 @@ if($condition.Count -ne 1 -or $condition[0] -ne "condition`t44`t1`t973`t11"){thr
 [IO.File]::WriteAllText("$out/condition.tsv",$condition[0].Substring(10))
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,$first);if($first -lt 0 -or $last -lt $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
+if($BaselineRevision){$source=(& git -C $repo show "${BaselineRevision}:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp") -join "`n";if($LASTEXITCODE){throw 'Cannot read baseline Dakarr source'}}
 [IO.File]::WriteAllText("$out/Dakarr.inc",(Section $source 'namespace TalonclawDakarr' 'namespace ArtifactAcquisition'))
+$source=Get-Content "$repo/src/server/game/Grids/Notifiers/GridNotifiers.cpp" -Raw
+[IO.File]::WriteAllText("$out/NearestPlayer.inc",(Section $source 'bool NearestPlayerInObjectRangeCheck::operator()(Player* u)' 'NearestPlayerNotGMInObjectRangeCheck::NearestPlayerNotGMInObjectRangeCheck'))
+$source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
+[IO.File]::WriteAllText("$out/PlayerScenario.inc",(Section $source '    // Update scenario/challenge criterias' '    // Update only individual achievement criteria here, otherwise we may get multiple updates'))
 $source=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
 [IO.File]::WriteAllText("$out/Condition.inc",(Section $source '        case CONDITION_SCENARION_STEP:' '        case CONDITION_REALM_ACHIEVEMENT:'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
@@ -78,6 +83,7 @@ if($LASTEXITCODE){throw 'Native Dakarr admission regression failed'}
 & "$PSScriptRoot/Test-SurvivalArtifactCatalog.ps1"
 $native=Get-Content "$repo/build-extractors/runtime-test/artifact-acquisition/survival-native.tsv"
 if($native -notcontains "CRITERION`t11`t46290`t29263`t92`t47688`t0"){throw 'Native final Dakarr lair stage mismatch'}
+if($native -notcontains "DAKARR_RULE`t0`t0`t0`t0`t0`t0" -or $native -notcontains "DAKARR_ROOT_FLAGS`t0"){throw 'Native Dakarr alive/faction/extra-criteria rules changed'}
 if($VerifyReleaseBinary){
  & "$PSScriptRoot/Test-TalonclawWorldPickup.ps1" -VerifyReleaseBinary
  $previousPython=$env:PYTHONPATH

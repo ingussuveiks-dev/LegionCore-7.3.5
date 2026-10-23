@@ -8,6 +8,7 @@
 #include "Creature.h"
 #include "TemporarySummon.h"
 #include "CreatureAI.h"
+#include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "Map.h"
@@ -20,6 +21,35 @@
 
 namespace TalonclawDakarr
 {
+bool Eligible(Creature* actor, Player* player)
+{
+    return actor && player && player->IsInWorld() && player->CanContact() && !player->isGameMaster() && !player->IsBeingTeleported() &&
+        player->getClass() == CLASS_HUNTER && !player->GetQuestRewardStatus(40385) &&
+        (player->GetQuestStatus(40385) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(40385) == QUEST_STATUS_COMPLETE) &&
+        (player->IsAlive() || !player->GetCorpse()) && actor->GetMap() == player->GetMap() &&
+        actor->InSamePhase(player) && actor->IsWithinDistInMap(player, 50.0f);
+}
+
+void RecoverDeathCredit(Creature* actor, Unit* killer)
+{
+    if (!actor || actor->GetMapId() != 1511)
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 973 || scenario->GetCurrentStep() != 11 ||
+        !sConditionMgr->IsObjectMeetingSmartEventConditions(99480, 1, SMART_SCRIPT_TYPE_CREATURE, killer, actor))
+        return;
+    Player* player = actor->GetLootRecipient();
+    if (!Eligible(actor, player))
+        player = killer ? killer->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+    if (!Eligible(actor, player))
+        return;
+    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 47688, 0, 0, killer, true);
+    if (scenario->GetCurrentStep() == 12)
+        TC_LOG_INFO("entities.player", "Talonclaw: recovered final Dakarr death credit for player %u", player->GetGUIDLow());
+    else
+        TC_LOG_ERROR("scripts", "Talonclaw: final Dakarr death event did not advance scenario for player %u", player->GetGUIDLow());
+}
+
 struct Gate
 {
     bool held = false;
@@ -73,6 +103,11 @@ struct npc_talonclaw_dakarr : SmartAI
             damage = 0;
         else
             SmartAI::DamageTaken(attacker, damage, type);
+    }
+    void JustDied(Unit* killer) override
+    {
+        SmartAI::JustDied(killer);
+        TalonclawDakarr::RecoverDeathCredit(me, killer);
     }
 };
 
