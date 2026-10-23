@@ -1,0 +1,12 @@
+{
+  "scope": "Priestly Matters40705, Hooded Priestess101344 summoned by native226409; follow-up to all-class Dalaran audit",
+  "observed": "Current database has only event0 quest-accept TALK linked to missing1. Unlike the other nineteen initial/campaign messengers, this actor has no summoned follow/personal/timeout chain. Native spell is a timed summon3850 and the template is a selectable SmartAI questgiver.",
+  "repair": "Restore acceptance LINK1 with5-second despawn after the existing line. Add guarded54 follow-player -> personal visibility207 ->30-second timeout, using the same native action/target pattern as this class's later messenger112695 and the other class messengers. Do not fabricate a greeting/voice, change the original acceptance line, award credit or alter other NPCs. Custom scripts, existing bootstraps and colliding event slots are preserved.",
+  "verification": "Test-PriestDalaranMessenger.ps1 reconstructs the missing baseline in temporary real-schema tables, applies twice, walks actual acceptance/bootstrap LINK graphs, checks target7 versus self1, no missing links/unrelated changes and custom slot/script preservation. Canonical loader validation is recorded after deployment; SQL replay does not substitute for actual AI/client execution.",
+  "runtime": "Owned hidden canonical worldserver36632 applied migration06, reached ready and shut down gracefully0. No newly appended DBErrors/startup errors; historical errors retained. No user server stopped and no hidden server left running. Canonical executable SHA256 remains0f7a4618f2de0dfca10ae9b0f6707fdd6354a021702a9b892e72056022e6bbf6; this repair is data-only.",
+  "limits": [
+    "Follow and timeout are a reconstruction from this database's native messenger pattern, not a claimed recovered retail sniff.",
+    "The existing shared local Priestess offer remains for both factions. The newer reference's separate Alliance202051/102333 is not ported. Class/race admission to40705 is covered for both factions; faction-specific model/speech fidelity is unverified.",
+    "Existing acceptance text is Russian with no BroadcastText/sound mapping; no synthetic replacement is claimed. Client appearance, personal visibility, follow, acceptance/cleanup and subsequent travel still need verification."
+  ]
+}
