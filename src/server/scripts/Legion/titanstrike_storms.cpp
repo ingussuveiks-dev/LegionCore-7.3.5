@@ -1,5 +1,6 @@
 #include "ScriptMgr.h"
 #include "AreaTriggerAI.h"
+#include "Creature.h"
 #include "Player.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
@@ -15,6 +16,24 @@ struct at_titanstrike_spirit_winds : AreaTriggerAI
     {
         auto progress = at->GetMapId() == 1495 ? sScenarioMgr->GetScenario(at->GetInstanceId()) : nullptr;
         return progress && progress->GetScenarioId() == 1068 && progress->GetCurrentStep() == 1;
+    }
+
+    void CalculateDuration(int32& /*duration*/) override
+    {
+        // Each native kit58494 is the entire corridor, not one force box.
+        // Keep the upper emitter's visual; a second copy from the lower box
+        // extends past the tornado endpoints onto the entrance stairs.
+        // This callback runs after visual selection and before AddToMap.
+        if (Active())
+            if (auto caster = at->GetCaster())
+                if (auto helper = caster->ToCreature())
+                    if (helper->GetDBTableGUIDLow() == 365439)
+                    {
+                        at->SetUInt32Value(AREATRIGGER_FIELD_SPELL_FOR_VISUALS, 0);
+                        at->SetUInt32Value(AREATRIGGER_FIELD_SPELL_XSPELL_VISUAL_ID, 0);
+                    }
+        // Retain both actual spell210880 force fields, their geometry, native
+        // duration, independent cleanup and the already-correct force vector.
     }
 
     bool CreateUnitList(std::list<Unit*>& units) override

@@ -1,0 +1,22 @@
+{
+  "client_reports": [
+    "User clarified that wind direction/placement is now correct, but there should be a small clear strip beside the three NPCs.",
+    "User then clarified that the visible floor extends too far onto the entrance stairs, whereas the real push ends before those stairs at the tornado endpoints. The apparent extra height is caused by that extension onto the stairs, not a request to lower the whole effect."
+  ],
+  "scope": "Hunter map1495/scenario1068/Stage2 Spirit Winds210880, AT6837/custom11360, DB emitters365439 and365440. Preserve shared NPC64367, Paladin scenario1082, other maps and all tornado paths/passenger cleanup.",
+  "cause_evidence": [
+    "The current instance activates both emitters, correctly supplying two overlapping native gameplay force fields. Each also publishes the same complete-corridor visual49393/kit58494, duplicating a full assembly from the lower emitter rather than adding a short extra visual segment.",
+    "Native26972 kit58494 contains eight floor mesh attachments at localX0/15/25/35. Their effect24409 uses FileDataID1133115, actual read-only CASC M2 FelArakkoa_Windwrap_State. Native kit scales0.25/0.22 and yaw pi/2 project that mesh across localX[-16.7284,51.6435], about68 yards, before the front-target15-yard offset.",
+    "With the two actual DB positions/orientation, nominal upper assembly Y bounds are261.447..335.788; the lower duplicate extends to224.190..298.531. Native tornado endpoints areY263.76/261.48/259.24. Thus the lower duplicate extends toward the entrance stairs about37 yards beyond the upper assembly. Exact collision-clipped destinations and rendered transparent edges are not measured by this calculation.",
+    "Along the corridor axis, the single native upper assembly leaves predicted3.66..3.99-yard mesh gaps from the three native windshaper positions. No new coordinates or arbitrary wind height are required."
+  ],
+  "repair": "In the scoped AT CalculateDuration callback, clear only the lower365439 SPELL_FOR_VISUALS and SPELL_XSPELL_VISUAL_ID fields after native visual selection and before AddToMap publication. The upper365440 assembly remains. Preserve both actual spell IDs, duration, positions, dimensions, wind vector(-0.508373,-2.95661,0), speed3, affected-player tracking, force ownership, removal/retry and stage/death cleanup. No collision or global visual schema changes.",
+  "checks": [
+    "Test-TitanstrikeStorms.ps1 -VerifyReleaseBinary passes extracted production callbacks: lower-only visual selection, upper/missing/player caster and other map/scenario/stage boundaries, unchanged infinite duration, lower field still applies/removes force, overlapping/foreign forces, NPC death/stage cleanup and independent launched tornado completion/release.",
+    "The test checks the real AreaTrigger::CreateAreaTrigger ordering: native visual fields, then CalculateDuration, then AddToMap. No late visible-create/hide transition is used.",
+    "Native catalog plus audit_titanstrike_wind_extent.py read the actual kit attachments and CASC mesh bounds and check the duplicate extension and small NPC-side gap. Static mesh projections are not a client rendering test.",
+    "PE verification confirms both Apply and CalculateDuration use actual map1495/scenario1068 gates, the latter checks DB spawn365439. Compiler now outlines Active instead of inlining it; the verifier follows its real call and validates its constants. Existing force/tornado checks and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass."
+  ],
+  "deployment": "scripts.lib rebuilt at its original path and worldserver linked to canonical build-extractors/bin/Release, SHA2567582a411919fa2a9fd80e1d36ec8b4227ae16944e161006d9f75bb4f584e4a72. No user server was running during deployment. Owned hidden validation process27176 reached ready and shut down gracefully with exit0; no background server remains. No DB or character data changed for this wind repair.",
+  "remaining_client_checks": "Actual lower-field visual fallback must remain invisible, the single strip must stop at the tornado end before the stairs and leave the NPC-side gap. Check movement/force continuity between the two underlying fields, no initial flash, all three deaths stopping the floor, and an already-launched empty/occupied tornado finishing independently. Native assembly bounds are approximate visual evidence, not proof of exact pixel clipping or full scenario completion."
+}

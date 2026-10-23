@@ -6,6 +6,11 @@ New-Item -ItemType Directory -Force $out | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/titanstrike_storms.cpp" -Raw
 $a=$source.IndexOf('struct at_titanstrike_spirit_winds');$b=$source.IndexOf('void AddSC_titanstrike_storms()',$a)
 [IO.File]::WriteAllText("$out/TitanstrikeStormArea.inc",$source.Substring($a,$b-$a))
+$nativeCreate=Get-Content "$repo/src/server/game/Entities/AreaTrigger/AreaTrigger.cpp" -Raw
+$visualSelection=$nativeCreate.IndexOf('SetUInt32Value(AREATRIGGER_FIELD_SPELL_XSPELL_VISUAL_ID, info->GetSpellXSpellVisualId(caster));')
+$callback=$nativeCreate.IndexOf('_ai->CalculateDuration(_duration);',$visualSelection)
+$publish=$nativeCreate.IndexOf('if (!GetMap()->AddToMap(this))',$callback)
+if($visualSelection -lt 0 -or $callback -le $visualSelection -or $publish -le $callback){throw 'Native pre-publish visual callback order changed'}
 $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp" -Raw
 $actors=''
 foreach($name in @('npc_sr_spectral_windshaperAI','npc_sr_fierce_windsAI')){

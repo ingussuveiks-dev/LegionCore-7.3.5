@@ -61,5 +61,7 @@ int main(int argc,char** argv){
   auto n=names.LookupEntry(a->SpellVisualEffectNameID);if(!n)return 8;
   std::cout<<"EFFECT_NAME\t"<<n->ID<<'\t'<<unsigned(n->type)<<'\t'<<n->model<<'\t'<<n->texture<<'\t'<<n->scale<<'\t'<<n->flags<<'\n';
   std::cout<<"ATTACH\t"<<Parent(attaches,a)<<'\t'<<a->ID<<'\t'<<a->SpellVisualEffectNameID<<'\t'<<n->model<<'\t'<<a->Offset[0]<<'\t'<<a->Offset[1]<<'\t'<<a->Offset[2]<<'\t'<<a->Scale<<'\t'<<unsigned(a->AttachmentID)<<'\t'<<a->AnimKitID<<'\n';
+  if(Parent(attaches,a)==58494&&n->model==1133115)
+   std::cout<<"WIND_FLOOR\t"<<a->ID<<'\t'<<a->Offset[0]<<'\t'<<a->Offset[1]<<'\t'<<a->Offset[2]<<'\t'<<a->Scale<<'\t'<<a->Yaw<<'\t'<<a->Pitch<<'\t'<<a->Roll<<'\n';
  }
 }
