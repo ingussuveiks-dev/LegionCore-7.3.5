@@ -9273,18 +9273,22 @@ void Spell::EffectForceEquipItem(SpellEffIndex effIndex)
     if (!player)
         return;
 
-    auto const& item = player->GetItemByEntry(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);
-    if (!item)
+    Item* item = player->GetItemByEntry(m_spellInfo->GetEffect(effIndex, m_diffMode)->MiscValue);
+    if (!item || item->IsEquipped())
         return;
 
-    return;
-
-    uint16 dest;
-    if (player->CanEquipItem(NULL_SLOT, dest, item, true) == EQUIP_ERR_OK)
+    uint16 destination;
+    InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, item, true);
+    if (result == EQUIP_ERR_OK && !item->GetChildItem().IsEmpty())
+        result = player->CanEquipChildItem(item);
+    if (result != EQUIP_ERR_OK)
     {
-        player->EquipItem(dest, item, true);
-        player->AutoUnequipOffhandIfNeed();
+        player->SendEquipError(result, item);
+        return;
     }
+
+    if (destination != item->GetPos())
+        player->SwapItem(item->GetPos(), destination);
 }
 
 void Spell::EffectGiveArtifactPower(SpellEffIndex effIndex)

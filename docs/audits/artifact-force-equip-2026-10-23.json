@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "problem": "Spell::EffectForceEquipItem returned unconditionally after finding the existing item. Native effect249 never equipped it. The disabled code below that return would also have called EquipItem without first removing or swapping the inventory item.",
+  "source_history": "git blame attributes the unconditional return and unreachable direct EquipItem path to the repository's initial cbf4f253 source. The local TrinityCore exact26972 snapshot c2d61e05cf3dc555608e6b2a06772c27d207548c contains no EffectForceEquipItem implementation under that name. The compatible implementation reference is this core's Player::SwapItem and HandleAutoEquipItem, including child-item admission, source/destination validation, removal, old-item storage and offhand handling.",
+  "native_evidence": {
+    "reader": "tools/research/ArtifactEquipCatalog.cpp through native DB2Storage and DB2LoadInfo",
+    "effect_records": 55,
+    "distinct_items": 39,
+    "selected_artifact_routes_covered": 36,
+    "targets": "All55 records target caster (1), with no secondary target. Three of the39 distinct item entries have ArtifactID0; they also retain the general existing-item equip behavior.",
+    "spell_effect_sha256": "DFCB7076421E3B99FB23E769ACDDB9215D051069FE5E7488FC33B67770C194DB",
+    "item_sparse_sha256": "8EECBF592E1706E07C28409547EAECDC0C51C325EF3E952FB7028098DCDFEC17"
+  },
+  "repair": [
+    "Keep hit-target dispatch and Player caster admission. Look up the already-owned item using the existing inventory/equipment search; no item creation and no bank access are introduced.",
+    "An already equipped item is a no-op. Validate CanEquipItem with swap enabled and CanEquipChildItem for paired weapons; report the exact inventory error rather than silently ignoring a rejection.",
+    "Delegate movement to native SwapItem instead of directly calling EquipItem. The native inventory implementation retains equipment restrictions, old-item storage, paired-item and offhand handling. No quest objective, stage, object visibility, loot admission or item grant is added by this effect."
+  ],
+  "automated": [
+    "Test-ArtifactForceEquip.ps1 passes: compiles the actual production effect handler against fixture inventory services for all55 native records. Covers empty/occupied destination delegation, old-item preservation in the fixture, successful paired-item admission, already-equipped/repeated use, wrong dispatch mode, nonplayer caster, missing item, main/child errors and identical source/destination.",
+    "Test-ArtifactForceEquip.ps1 -Baseline fails as expected on pinned c235689c: first successful equip assertion fails; MSVC also reports unreachable code. This reproduces the disabled handler independently of current source.",
+    "Test-ArtifactAcquisition.ps1 and -VerifyReleaseBinary pass: eight existing acquisition handlers, actual SmartAI loot-state bridge, full-loot predicate, once-only credit and ownership/class/quest/location admission; deployed Hunter42185 tuple retained.",
+    "Test-ArtifactAcquisitionData.ps1 passes: temporary actual-schema SQL fixtures, repeat migration, native loot ID resolution, no early gossip credit and preservation of settings/custom handlers.",
+    "verify_artifact_force_equip_release.py passes on canonical Release: actual linked handler calls GetItemByEntry, CanEquipItem, CanEquipChildItem, SendEquipError and SwapItem; no direct EquipItem call. Its reused PE reader also passes ten scenario completion/persistence call-path checks.",
+    "cmake --build build-extractors --config Release --target worldserver bnetserver -j8 succeeds. SpellEffects.cpp rebuilt into the normal src/server/game/Release/game.lib, and worldserver/bnetserver linked directly into bin/Release without an OutDir override. Existing C5055 warning at SpellEffects.cpp4277 is outside this repair. git diff --check passes."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "3B0D8A0609919280FC0F16A59B4B714298F3BB726AE0AA246666996E8E691348",
+    "bnetserver_sha256": "F2629619595427AB826FBC78B7F2F019CE9B4FAD3A894854CF1AA9B93AF29B2D",
+    "process_ownership": "No worldserver/bnetserver processes were present at pre-build inspection or final inspection. This task launched/stopped no servers and changed no characters or persistent world database records. No startup smoke or client session was performed."
+  },
+  "remaining": [
+    "The fixture verifies the real spell handler's delegation, not the full native inventory transaction or a client. Native SwapItem's empty/occupied equipment, child-item and storage branches were traced in source, not executed by this fixture.",
+    "In client, obtain each weapon through the real quest sequence, confirm the equip spell is actually reached after successful acquisition, inspect weapon model/paired offhand and previous weapon storage, then save/relog and inspect artifact powers. Retry after equipment/bag restrictions, including full bags and old offhand replacement.",
+    "A shop/bank copy can already satisfy separate acquisition ownership checks; this effect deliberately does not remotely retrieve it from the bank. Actual ordinary equipment remains available through the native inventory UI.",
+    "This common repair does not certify any complete acquisition chain. Prerequisites, NPC weapon theft/pickup/departure, phasing, visual attachments, pet/guardian/group/faction progression, one-hit kills, repeated events, missing actors/casts, abandonment/re-entry and camera/pet cleanup remain route-specific checks in the36-route worklist."
+  ]
+}
