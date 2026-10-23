@@ -351,6 +351,8 @@ class spell_talonclaw_presentation : public AuraScript
     }
 };
 
+namespace MarksmanshipClaim { void Queue(Player* player); }
+
 namespace MarksmanshipPresentation
 {
 struct State
@@ -408,6 +410,8 @@ struct State
         SpellCastResult result = player->CastSpell(player, 200262, true);
         if (result != SPELL_CAST_OK)
             TC_LOG_WARN("scripts", "Thas'dorah pickup: native equip 200262 failed with result %u for player %u; owned pickup replay remains available", uint32(result), player->GetGUIDLow());
+        else
+            MarksmanshipClaim::Queue(player);
     }
 };
 }
@@ -723,6 +727,83 @@ class spell_marksmanship_return : public SpellScript
         OnEffectHitTarget += SpellEffectFn(spell_marksmanship_return::Hit, EFFECT_1, SPELL_EFFECT_KILL_CREDIT);
     }
 };
+
+namespace MarksmanshipClaim
+{
+bool Ready(Player* player, uint32 instance)
+{
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_HUNTER || player->GetMapId() != 1489 || player->GetInstanceId() != instance ||
+        !ArtifactAcquisition::Active(player, 40419) || !player->HasItemCount(128826, 1, true))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(instance);
+    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 8;
+}
+
+bool Native(Creature* actor)
+{
+    if (actor->GetScriptId() || actor->GetCreatureTemplate()->AIName != "SmartAI")
+        return false;
+    if (actor->GetDBTableGUIDLow() && !sSmartScriptMgr->GetScript(-int32(actor->GetDBTableGUIDLow()), SMART_SCRIPT_TYPE_CREATURE).empty())
+        return false;
+    auto events = sSmartScriptMgr->GetScript(100397, SMART_SCRIPT_TYPE_CREATURE);
+    uint32 claim = 0, conversation = 0, matchingIds = 0;
+    for (auto const& entry : events)
+    {
+        if (entry.event_id == 52 || entry.event_id == 53)
+            ++matchingIds;
+        if (entry.event_id == 52 && entry.link == 53 && entry.GetEventType() == SMART_EVENT_TEXT_OVER &&
+            entry.event.event_chance == 100 && !entry.event.event_phase_mask && entry.event.event_flags == SMART_EVENT_FLAG_NOT_REPEATABLE &&
+            entry.event.textOver.textGroupID == 22 && entry.event.textOver.creatureEntry == 100397 &&
+            entry.GetActionType() == SMART_ACTION_TALK && entry.action.talk.textGroupID == 23 &&
+            entry.action.talk.duration == 5000 && entry.GetTargetType() == SMART_TARGET_ACTION_INVOKER &&
+            (entry.event.event_flags & SMART_EVENT_FLAG_NOT_REPEATABLE))
+            ++claim;
+        if (entry.event_id == 53 && !entry.link && entry.GetEventType() == SMART_EVENT_LINK &&
+            entry.event.event_chance == 100 && !entry.event.event_phase_mask && entry.event.event_flags == SMART_EVENT_FLAG_NOT_REPEATABLE &&
+            entry.GetActionType() == SMART_ACTION_SUMMON_CONVERSATION && entry.action.conversation.id == 1654 &&
+            !entry.action.conversation.targetX && !entry.action.conversation.targetY && !entry.action.conversation.targetZ &&
+            entry.GetTargetType() == SMART_TARGET_ACTION_INVOKER)
+            ++conversation;
+    }
+    return matchingIds == 2 && claim == 1 && conversation == 1;
+}
+
+bool Attempt(Player* player)
+{
+    Creature* actor = player->FindNearestCreature(100397, 100.0f, true);
+    if (!actor || !actor->IsInWorld() || !actor->IsAlive() || !actor->IsAIEnabled || !actor->AI() ||
+        actor->GetMapId() != player->GetMapId() || actor->GetInstanceId() != player->GetInstanceId() || !player->InSamePhase(actor))
+        return false;
+    if (!Native(actor))
+        return true;
+    SmartScript* script = static_cast<SmartAI*>(actor->AI())->GetScript();
+    if (script->HasRunEvent(52, SMART_EVENT_TEXT_OVER))
+        return true;
+    if (script->IsTextPending(22, 100397))
+        return false;
+    script->ProcessEventsFor(SMART_EVENT_TEXT_OVER, player, 22, 100397);
+    return script->HasRunEvent(52, SMART_EVENT_TEXT_OVER);
+}
+
+void Retry(Player* player, uint32 instance, uint32 elapsed)
+{
+    if (!Ready(player, instance) || Attempt(player))
+        return;
+    if (elapsed >= 60000)
+    {
+        TC_LOG_WARN("scripts", "Thas'dorah pickup: native Vereesa claim dialogue unavailable after 60000ms for player %u; owned pickup replay remains available", player->GetGUIDLow());
+        return;
+    }
+    player->AddDelayedEvent(500, [player, instance, elapsed]() { Retry(player, instance, elapsed + 500); });
+}
+
+void Queue(Player* player)
+{
+    if (player)
+        Retry(player, player->GetInstanceId(), 0);
+}
+}
 
 void AddSC_artifact_acquisition()
 {

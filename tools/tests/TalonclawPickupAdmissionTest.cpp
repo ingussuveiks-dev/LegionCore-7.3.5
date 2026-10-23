@@ -107,8 +107,9 @@ int main(int argc, char** argv) {
     if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; lastStage = 8; expectedItem = 128826; scenarioManager = {}; }
     bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot";
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
-    bool returnEvent = argc == 3 && std::string(argv[2]) == "marksmanship-return";
-    if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = 59; scenarioManager = {}; }
+    bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
+    bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
+    if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
     std::ifstream input(argv[1]); std::vector<Condition> rows(returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;

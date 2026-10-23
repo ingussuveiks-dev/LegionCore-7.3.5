@@ -83,6 +83,19 @@ class SmartScript
         Unit* GetLastInvoker();
         ObjectGuid mLastInvoker;
 
+        bool IsTextPending(uint32 textId, uint32 talkerEntry) const
+        {
+            return mUseTextTimer && mLastTextID == textId && mTalkerEntry == talkerEntry;
+        }
+
+        bool HasRunEvent(uint32 eventId, SMART_EVENT type) const
+        {
+            for (auto const& entry : mEvents)
+                if (entry.event_id == eventId && entry.GetEventType() == uint32(type) && entry.runOnce)
+                    return true;
+            return false;
+        }
+
     private:
         void IncPhase(int32 p = 1);
         void DecPhase(int32 p = 1);

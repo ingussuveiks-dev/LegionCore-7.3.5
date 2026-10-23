@@ -101,6 +101,12 @@ template<class Script> UpdateHook MakeUpdate(void(Script::*function)(uint32, Aur
 #define AuraEffectApplyFn(function,effect,aura,mode) MakeApply(&function,effect,aura,mode)
 #define AuraEffectRemoveFn(function,effect,aura,mode) MakeApply(&function,effect,aura,mode)
 #define AuraEffectUpdateFn(function,effect,aura) MakeUpdate(&function,effect,aura)
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+namespace MarksmanshipClaim {
+std::vector<Player*> notices;
+void Queue(Player* player) { notices.push_back(player); }
+}
+#endif
 #include "Presentation.inc"
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
 using PresentationScript = spell_marksmanship_presentation;
@@ -130,6 +136,18 @@ struct Pickup {
 };
 int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
+    #ifdef MARKSMANSHIP_PRESENTATION_TEST
+    {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup;pickup.Begin();pickup.Finish();pickup.Finish();
+        assert(MarksmanshipClaim::notices==std::vector<Player*>{&pickup.player});
+    }
+    {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup;pickup.player.castResult=5;pickup.Begin();pickup.Finish();
+        assert(MarksmanshipClaim::notices.empty());
+    }
+    #endif
     {
         Pickup pickup;
         pickup.player.cast = [&](uint32 spell) { if (spell == PresentationSpell) pickup.Begin(); };
