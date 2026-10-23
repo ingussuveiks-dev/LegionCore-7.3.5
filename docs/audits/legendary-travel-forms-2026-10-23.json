@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-23",
+  "report": "Krau remains in Spirit Owl form after the movement-speed buff ends in Orgrimmar; server logs repeatedly report Unknown Shapeshift Type: 38.",
+  "native_735_evidence": {
+    "reader": "tools/research/LegendaryTravelFormsCatalog.cpp, compiled against the server's actual generated Release dependencies and reading build-extractors/bin/Release/dbc/enUS",
+    "vigilance_perch": "146668 equips 241332, linked to controller 242105. Speed aura 242066 is 5 percent per stack, maximum five, 60000ms. Form 242070 has infinite duration and shapeshift effect 38.",
+    "sentinels_eternal_refuge": "241331 is linked to controller 242111. Speed aura 241846 has the same five-stack/60000ms lifetime. Form 241849 has infinite duration and shapeshift effect 40.",
+    "controllers": "Both native periodic-dummy effects tick every 500ms. Existing spell_script_names bindings select the two production classes; negative item-passive links remove their controllers on unequip. No database migration is needed.",
+    "forms": "37/38 both exist with display 38633; 39/40 both exist with display 10045. Each pair has native MountTypeID 295/204. Unit::GetModelForForm already resolves the display and Horde fallback correctly.",
+    "hotfix_check": "No spell_effect hotfix rows override these six speed/form/controller spells in the configured runtime Hotfix database.",
+    "local_reference": "No corresponding Spirit Owl/Vigilance Perch implementation found in the newer C:/wamp64/www/TrinityCore source; the matching runtime DB2 and local lifecycle establish the repair."
+  },
+  "cause": [
+    "Both item controllers only cast their form when five stacks are present and the owner is out of combat. They never removed the infinite form after the speed buff expired or lost stacks, and had no controller-removal cleanup.",
+    "HandleAuraModShapeshift's resource switch omitted valid Spirit Owl 37/38 and Wisp 40. It logged an unknown-form error but continued through the common model code. This diagnostic omission was distinct from the missing form lifetime cleanup; silencing the message alone would not repair expiry."
+  ],
+  "implementation": [
+    "A shared updater removes only the relevant item's form when its speed aura is missing or below five stacks, the aura owner enters combat, or the owner is dead. This runs on the native 500ms controller tick, so normal expiry cleanup is bounded by the next tick rather than claiming an exact same-frame removal.",
+    "Existing form/other shapeshift checks retain one-time application and do not replace another active form. No kill/proc/credit, speed-stack, flight-area, movement, mount or pet code was changed.",
+    "Both controllers use GetUnitOwner and bind AfterEffectRemove to clean their own form when the item/controller is removed, including when its caster cannot resolve.",
+    "Admit all four native legendary travel forms through the existing neutral-resource branch. Common form/model restoration, boosts, temporary spells and InitDataForForm remain in use; truly unknown types still log their error."
+  ],
+  "automated_checks": [
+    "Test-LegendaryTravelForms.ps1 -Baseline: pinned e6cc8408 production controllers reproduce both orphaned forms; full production shapeshift handler reproduces missing 37/38/40 admission on apply/remove.",
+    "Test-LegendaryTravelForms.ps1: extracts both actual controller classes, their shared updater, native form enum and the complete AuraEffect::HandleAuraModShapeshift handler. Registered periodic/removal callbacks exercise missing/four/five stacks, repeated ticks, expiry, stack loss, combat and recovery, death, unequip/controller removal, absent caster/owner, and unrelated form preservation. Native common removal restores display/form and preserves hunter focus in the fixture. Rendering and flight are not simulated evidence of a working client.",
+    "Native LegendaryTravelFormsCatalog probe asserts actual five-stack/60-second speed buffs, infinite forms, 500ms periodic-dummy controllers, form 38/40 effects and all four native model/mount records.",
+    "verify_legendary_travel_forms_release.py: actual x64 PE controllers call owner-based shared lifecycle handling, missing/low stacks branch to native removal, both removal callbacks are bound, and native dispatch sends 37/38/39/40 to the neutral-resource branch while absent form 8 retains the diagnostic branch. Resolves incremental thunks and chained unwind fragments. Previous canonical executable is rejected.",
+    "Test-HunterLegendaryEffects.ps1, Test-WarlockRegression.ps1, Test-AuraScriptReentry.ps1 and Test-ScepterLogin.ps1 pass.",
+    "Staged executable retains the native Tar Trap owner callback, asynchronous WorldSocket handoff/diagnostics and all ten scenario completion/exit/relog/persistence call paths.",
+    "After deployment, canonical EXE/MAP hashes match staging; canonical native-form dispatch/lifetime PE verification and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass.",
+    "Canonical runtime startup reached ready with no startup ERROR or DBErrors entries, including script-hook admission. Sixteen initializer-only loopback probes returned native greetings/challenges on 8086/8085; no account authentication or real client aura behavior was exercised. Owned hidden worldserver 5016 shut down gracefully with exit code 0."
+  ],
+  "build": {
+    "result": "Release game.lib and scripts.lib built in their original generated locations, then linked worldserver with a staging-only final OutDir override.",
+    "staging_directory": "build-extractors/runtime-test/legendary-travel-forms/Release",
+    "sha256": "6e11b6ff212ac97c71839876af2e702e66e831c50f88f36f235afea1a0ded27b",
+    "canonical_directory": "build-extractors/bin/Release",
+    "deployment": "Verified EXE/MAP copied to the canonical directory after both user processes exited. Previous canonical files backed up privately; configuration, certificates, DLLs, logs, extracted data and bnetserver executable preserved.",
+    "ownership": "Initially observed user worldserver 9828 and bnetserver 26556 were not stopped by Codex. Server.log records orderly shutdown at 09:28:09; both processes were absent before deployment. Owned hidden validation worldserver 5016 reached ready, then shut down gracefully with exit code 0 at 09:37:52. No temporary server remains."
+  },
+  "pending_client_checks": [
+    "After deployment, Krau's old owl form clears when no valid speed stacks remain; normal model, movement, gravity, action buttons and permanent pet portrait are restored.",
+    "Five stacks out of combat activate the owl; refreshed stacks retain it; expiry, combat, damage/casting interrupts, unequip and logout/relog clean up correctly. Check both permitted-flight and restricted/indoor areas without assuming this repair verifies their flight gates.",
+    "Exercise the sibling Sentinel Wisp form in the client; current evidence for it is native data and production-handler fixtures only.",
+    "No client traversal or proof of actual visual/flight restoration is claimed from compilation, native fixtures, PE checks or a ready server."
+  ]
+}

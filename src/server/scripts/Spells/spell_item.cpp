@@ -2953,6 +2953,24 @@ class spell_item_honorable_pennant : public SpellScriptLoader
         }
 };
 
+// These forms have an infinite native duration. Their lifetime belongs to the
+// five-stack speed buff, not to whether the current area permits flight.
+static void UpdateLegendaryTravelForm(Unit* owner, uint32 speedSpell, uint32 formSpell)
+{
+    if (!owner)
+        return;
+
+    Aura* speedAura = owner->GetAura(speedSpell);
+    if (!speedAura || speedAura->GetStackAmount() < 5 || owner->isInCombat() || !owner->IsAlive())
+    {
+        owner->RemoveAurasDueToSpell(formSpell);
+        return;
+    }
+
+    if (!owner->HasAura(formSpell) && owner->GetShapeshiftForm() == FORM_NONE)
+        owner->CastSpell(owner, formSpell, true);
+}
+
 // 242105 Vigilance Perch
 class spell_item_vigilance_perch : public AuraScript
 {
@@ -2960,15 +2978,19 @@ class spell_item_vigilance_perch : public AuraScript
  
     void OnTick(AuraEffect const* /*aurEff*/)
     {
-        if (Unit* caster = GetCaster())
-            if (Aura* aura = caster->GetAura(242066))
-                if (aura->GetStackAmount() >= 5 && !caster->isInCombat() && !caster->HasAura(242070) && caster->GetShapeshiftForm() == FORM_NONE)
-                    caster->CastSpell(caster, 242070, true);
+        UpdateLegendaryTravelForm(GetUnitOwner(), 242066, 242070);
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* owner = GetUnitOwner())
+            owner->RemoveAurasDueToSpell(242070);
     }
  
     void Register() override
     {
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_item_vigilance_perch::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_item_vigilance_perch::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
  
@@ -2979,15 +3001,19 @@ class spell_item_sentinels_eternal_refuge : public AuraScript
  
     void OnTick(AuraEffect const* /*aurEff*/)
     {
-        if (Unit* caster = GetCaster())
-            if (Aura* aura = caster->GetAura(241846))
-                if (aura->GetStackAmount() >= 5 && !caster->isInCombat() && !caster->HasAura(241849) && caster->GetShapeshiftForm() == FORM_NONE)
-                    caster->CastSpell(caster, 241849, true);
+        UpdateLegendaryTravelForm(GetUnitOwner(), 241846, 241849);
+    }
+
+    void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        if (Unit* owner = GetUnitOwner())
+            owner->RemoveAurasDueToSpell(241849);
     }
  
     void Register() override
     {
         OnEffectPeriodic += AuraEffectPeriodicFn(spell_item_sentinels_eternal_refuge::OnTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_item_sentinels_eternal_refuge::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
     }
 };
 
