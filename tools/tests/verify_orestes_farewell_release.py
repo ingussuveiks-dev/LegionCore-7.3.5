@@ -32,8 +32,9 @@ for caller, callee in [
     ('?UpdateTimer@SmartScript@@', '?ProcessEvent@SmartScript@@'),
     ('?ProcessAction@SmartScript@@', '?UpdateAchievementCriteria@Player@@'),
     ('?ProcessAction@SmartScript@@', '?Kill@Unit@@'),
+    ('?ProcessAction@SmartScript@@', '?UseDoorOrButton@GameObject@@'),
     ('?IsWithinDistInMap@WorldObject@@', '?InSamePhase@WorldObject@@'),
 ]:
     assert native['symbol'](callee) in native['calls'](caller), f'Missing native bridge {caller} -> {callee}'
-assert len({action_case(number) for number in [22, 37, 205]}) == 3, 'Phase/credit/death actions alias'
+assert len({action_case(number) for number in [9, 22, 37, 205]}) == 4, 'Door/phase/credit/death actions alias'
 print('PASS: deployed action22 writes the actual phase consumed by timer/event bit gates; native timer dispatch, Player criteria, death and phase-aware proximity remain linked. SQL/native hosts do not prove client traversal')

@@ -31,14 +31,35 @@ int main(int argc, char** argv)
     DB2Storage<ConversationLineEntry> lines("ConversationLine.db2", ConversationLineLoadInfo::Instance());
     DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2", CreatureDisplayInfoLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
     if (!texts.Load(argv[1], 0) || !kits.Load(argv[1], 0) || !sounds.Load(argv[1], 0) ||
-        !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0) || !effects.Load(argv[1], 0))
+        !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
+        !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
         return 2;
     for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
     texts.LoadFromDB();
     displays.LoadFromDB();
     effects.LoadFromDB();
+    misc.LoadFromDB();
+    castTimes.LoadFromDB();
+    uint32 storyCasts = 0;
+    for (auto entry : misc)
+        if (entry->SpellID == 200832 && !entry->DifficultyID)
+        {
+            auto cast = castTimes.LookupEntry(entry->CastingTimeIndex);
+            if ((entry->CastingTimeIndex && !cast) || (cast && cast->Base))
+                return 15;
+            ++storyCasts;
+            std::cout << "STORY_CAST\t" << entry->SpellID << '\t' << entry->CastingTimeIndex << '\t' << (cast ? cast->Base : 0) << '\t' << entry->Attributes[0] << '\n';
+        }
+    if (storyCasts != 1)
+        return 16;
+    for (auto effect : effects)
+        if (effect->SpellID == 130491)
+            std::cout << "POSE_EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                << effect->Effect << '\t' << effect->EffectAura << '\n';
     uint32 conversationEffects = 0;
     for (auto effect : effects)
         if (effect->SpellID == 200832 || effect->SpellID == 200848)

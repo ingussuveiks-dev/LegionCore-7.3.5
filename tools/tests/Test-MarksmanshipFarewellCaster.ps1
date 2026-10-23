@@ -4,7 +4,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/marksmanship-farewell-caster"
 New-Item -ItemType Directory -Force $out | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_03_marksmanship_farewell_caster.sql" -Raw
-$reset="UPDATE smart_scripts SET action_param2=0,target_type=21,target_param1=50 WHERE entryorguid=100749 AND source_type=0 AND id=2;"
+$reset="UPDATE smart_scripts SET link=3,action_param2=0,target_type=21,target_param1=50 WHERE entryorguid=100749 AND source_type=0 AND id=2;"
 $sql=@"
 CREATE TEMPORARY TABLE saved_actor LIKE creature_template;
 INSERT INTO saved_actor SELECT * FROM creature_template WHERE entry=100749;

@@ -64,25 +64,39 @@ int main(int argc,char** argv){
         else assert(false);
     }
     assert(store.creatures.size()==3&&store.lines.size()==6);Unit finder;
+    uint32 fixedDeadline=5000;for(auto const& actor:store.creatures)fixedDeadline+=actor.duration;
+    assert(fixedDeadline==35300||fixedDeadline==50300);
     auto fixed=store.creatures;store.creatures[0].duration=2650;
     {Conversation baseline;assert(baseline.Start(&finder));assert(baseline.deadline==12950);currentTime=100+12951;baseline.Update(1);assert(baseline.removed);
         uint32 omitted=0;for(auto const& row:store.lines)if(row.textId>=baseline.deadline)++omitted;assert(omitted==3);
     }
     store.creatures=fixed;
-    {Conversation repaired;assert(repaired.Start(&finder));assert(repaired.deadline==35300&&repaired.lifetime==35300&&repaired.lines.size()==6&&repaired.creatures.size()==3);
+    if(fixedDeadline==50300)
+    {
+        store.creatures[0].duration=25000;
+        Conversation previous;
+        assert(previous.Start(&finder)&&previous.deadline==35300);
+        currentTime=100+37173;
+        previous.Update(1);
+        assert(previous.removed);
+        store.creatures=fixed;
+    }
+    {Conversation repaired;assert(repaired.Start(&finder));assert(repaired.deadline==fixedDeadline&&repaired.lifetime==fixedDeadline&&repaired.lines.size()==6&&repaired.creatures.size()==3);
         assert(repaired.creatures[0].GuidLow==100397&&repaired.creatures[1].GuidLow==100398&&repaired.creatures[2].GuidLow==0xFFFFFFFFFF);
         for(auto const& row:store.lines){assert(row.textId<repaired.deadline);currentTime=100+row.textId;repaired.Update(1);assert(!repaired.removed);}
-        currentTime=100+30028;repaired.Update(1);assert(!repaired.removed);currentTime=100+35300;repaired.Update(1);assert(!repaired.removed);
-        currentTime=100+35301;repaired.Update(1);assert(repaired.removed);
+        if(fixedDeadline==50300)
+            for(uint32 checkpoint:{35301u,37173u,44151u,49151u}){currentTime=100+checkpoint;repaired.Update(1);assert(!repaired.removed);}
+        currentTime=100+30028;repaired.Update(1);assert(!repaired.removed);currentTime=100+fixedDeadline;repaired.Update(1);assert(!repaired.removed);
+        currentTime=100+fixedDeadline+1;repaired.Update(1);assert(repaired.removed);
     }
     for(uint32 missing:{100397u,100398u}){Unit unavailable;unavailable.nearby.erase(missing);Conversation rejected;assert(!rejected.Start(&unavailable));}
     {Conversation cleanup;assert(cleanup.Start(&finder));cleanup.questExpired=true;currentTime=101;cleanup.Update(1);assert(cleanup.removed);}
-    {Conversation replay;assert(replay.Start(&finder)&&replay.deadline==35300);}
+    {Conversation replay;assert(replay.Start(&finder)&&replay.deadline==fixedDeadline);}
     {WorldObject petCaster;petCaster.player=false;petCaster.guid=7;Conversation misowned;misowned.casterGUID=7;misowned.playing.clear();assert(misowned.Start(&petCaster));
         currentTime=100;assert(!misowned.CanNeverSee2(&finder)&&misowned.CanNeverSee2(&petCaster)&&!misowned.playing.count(7));
-        currentTime=100+35301;misowned.Update(1);assert(!misowned.removed);
+        currentTime=100+fixedDeadline+1;misowned.Update(1);assert(!misowned.removed);
         Conversation owned;owned.playing.clear();assert(owned.Start(&finder));currentTime=100;assert(!owned.CanNeverSee2(&finder)&&owned.playing.count(42));
-        currentTime=100+35301;owned.Update(1);assert(owned.removed);
+        currentTime=100+fixedDeadline+1;owned.Update(1);assert(owned.removed);
     }
-    std::cout<<"PASS: actual conversation payload/lifetime/update bodies reproduce12950ms expiry before3 lines; repaired35300ms lifetime retains all6 native slots, player sentinel and live actor GUIDs, then expires normally or on scope expiry. Missing actors reject creation; map/clock/visibility remain controlled hosts.\n";
+    std::cout<<"PASS: actual conversation payload/lifetime/update bodies reproduce12950ms expiry before3 lines; configured"<<fixedDeadline<<"ms lifetime retains all6 native slots, player sentinel and live actor GUIDs, then expires normally or on scope expiry. Missing actors reject creation; map/clock/visibility remain controlled hosts.\n";
 }

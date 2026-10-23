@@ -15,7 +15,7 @@ enum SMART_EVENT {SMART_EVENT_OOC_LOS=10,SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=
 enum {SMART_TARGET_ACTION_INVOKER=7,SMART_TARGET_ACTION_INVOKER_PLAYER=130,SMART_EVENT_FLAG_NOT_REPEATABLE=1,CONDITION_TYPE_MASK=32,
     CONDITION_SCENARION_STEP=44,SMART_ACTION_UPDATE_ACHIEVEMENT_CRITERIA=205,SMART_ACTION_INVOKER_CAST=85,
     SPELL_EFFECT_KILL_CREDIT=90,SPELL_EFFECT_KILL_CREDIT2=134};
-enum {CONDITION_QUESTTAKEN=9,CONDITION_QUEST_COMPLETE=28,CONDITION_ALIVE=36,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_REWARDED=6,
+enum {CONDITION_QUESTTAKEN=9,CONDITION_QUEST_COMPLETE=28,CONDITION_ALIVE=36,CONDITION_NEAR_GAMEOBJECT=30,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_REWARDED=6,
     SMART_ACTION_SET_EVENT_PHASE=22,SMART_ACTION_DIE=37};
 #ifdef ORESTES_FAREWELL_TEST
 enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,SMART_EVENT_TARGET_HEALTH_PCT=3,
@@ -29,7 +29,7 @@ using QuestStatus=uint32;
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) assert(false)
 #include "CastFlags.inc"
-struct Unit;struct Player;struct Creature;
+struct Unit;struct Player;struct Creature;struct GameObject;
 enum class HighGuid {Player};
 struct ObjectGuid {
     Unit* unit=nullptr;bool IsPlayer()const;static ObjectGuid Empty;
@@ -41,8 +41,10 @@ struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
 struct WorldObject {
     bool expired=false,instanced=true;
     std::map<uint32,Creature*> nearby;
+    GameObject* nearbyDoor=nullptr;
     virtual ~WorldObject()=default;
     virtual Unit* ToUnit(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}
+    virtual GameObject* ToGameObject(){return nullptr;}
     bool IsCreature(){return !ToPlayer();}
     bool IsQuestObjectExpired(){return expired;}bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}
     bool isType(uint32 mask){return ToPlayer()&&(mask&16);}
@@ -93,6 +95,7 @@ void Player::UpdateAchievementCriteria(CriteriaTypes type,uint32 asset,uint32 mi
     if(scenarioManager.scenario.step==(asset==49592?2u:3u)){++accepted;++scenarioManager.scenario.step;}
 }
 struct ConditionSourceInfo {WorldObject* mConditionTargets[2];ConditionSourceInfo(WorldObject* first,WorldObject* second):mConditionTargets{first,second}{}};
+GameObject* GetClosestGameObjectWithEntry(WorldObject* object,uint32 identity,float range){return object&&identity==249740&&range==50?object->nearbyDoor:nullptr;}
 struct Condition {
     uint32 ElseGroup=0,ConditionType=0,ConditionTarget=0,ConditionValue1=0,ConditionValue2=0,ConditionValue3=0,ReferenceId=0;bool NegativeCondition=false;
     bool isLoaded(){return true;}
@@ -142,14 +145,34 @@ struct Conversation {
 };
 #include "ConversationData.inc"
 struct SmartScriptHolder {
-    int64 entryOrGuid=100398;uint32 source_type=0,event_id=0,link=0,type=0,actionType=0,targetType=0,targetRange=0,timer=0;bool runOnce=false,active=true,enableTimed=false;
+    int64 entryOrGuid=100398;uint32 source_type=0,event_id=0,link=0,type=0,actionType=0,targetType=0,targetRange=0,targetExtra=0,timer=0;bool runOnce=false,active=true,enableTimed=false;
     struct{struct{uint32 dist=0;}playerDistance;}target;
     struct {uint32 event_flags=1,event_phase_mask=0;struct{uint32 noHostile=1,maxDist=5,cooldownMin=0,cooldownMax=0;}los;struct{uint32 repeatMin=0,repeatMax=0;}minMaxRepeat;}event;
     struct {struct{uint32 type=92,misc1=49592,misc2=0,misc3=0;}achievementCriteria;struct{uint32 spell=200848,flags=0;}cast;struct{uint32 phase=1;}setEventPhase;}action;
     uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetTargetType()const{return targetType;}uint32 GetScriptType()const{return source_type;}
 };
 using SmartAIEventList=std::vector<SmartScriptHolder>;using ObjectList=std::list<WorldObject*>;
+#ifdef ORESTES_FAREWELL_TEST
+enum {SMART_ACTION_ACTIVATE_GOBJECT=9,GO_READY=1,GO_ACTIVATED=2,GAMEOBJECT_TYPE_DOOR=0,
+    GO_STATE_READY=1,GO_STATE_ACTIVE=0,GO_STATE_ACTIVE_ALTERNATIVE=2,GAMEOBJECT_FIELD_FLAGS=1,GO_FLAG_IN_USE=1};
+namespace GameTime {uint32 GetGameTime(){return 100;}}
+struct GameObject:WorldObject {
+    uint32 m_lootState=GO_READY,state=GO_STATE_READY,flags=16,opens=0,m_cooldownTime=0,stepAtOpen=0;bool deadAtOpen=false;
+    Creature* source=nullptr;Unit* recipient=nullptr;
+    struct Info {uint32 GetAutoCloseTime(){return 0;}} info;
+    struct DoorAI {uint32 notifications=0;void OnStateChanged(uint32 state,Unit*){assert(state==GO_ACTIVATED);++notifications;}} ai;
+    GameObject* ToGameObject()override{return this;}Info* GetGOInfo(){return &info;}uint32 GetGoType(){return GAMEOBJECT_TYPE_DOOR;}DoorAI* AI(){return &ai;}
+    void SetLootState(uint32 value,Unit* user=nullptr){m_lootState=value;if(value==GO_ACTIVATED){recipient=user;deadAtOpen=source&&source->dead;stepAtOpen=scenarioManager.scenario.step;}}
+    void SetFlag(uint32 field,uint32 value){assert(field==GAMEOBJECT_FIELD_FLAGS);flags|=value;}
+    void RemoveFlag(uint32 field,uint32 value){assert(field==GAMEOBJECT_FIELD_FLAGS);flags&=~value;}
+    uint32 GetGoState(){return state;}void SetGoState(uint32 value){state=value;if(value==GO_STATE_ACTIVE)++opens;}
+    void UseDoorOrButton(uint32,bool,Unit*);void SwitchDoorOrButton(bool,bool);
+};
+#include "DoorUse.inc"
+#include "DoorSwitch.inc"
+#else
 struct GameObject{};
+#endif
 struct SmartScript {
     Creature* me=nullptr;Player* closest=nullptr;SmartAIEventList mEvents;ObjectGuid mLastInvoker;uint32 mEventPhase=0;
 #ifdef ORESTES_FAREWELL_TEST
@@ -159,11 +182,15 @@ struct SmartScript {
     WorldObject* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker.unit;}
     bool IsInPhase(uint32 mask)const{return mEventPhase&&((1u<<(mEventPhase-1))&mask);}void SetPhase(uint32 phase){mEventPhase=phase;}
     bool IsUnit(WorldObject* object){return object&&object->ToUnit();}
+    bool IsGameObject(WorldObject* object){return object&&object->ToGameObject();}
     void RecalcTimer(SmartScriptHolder&,uint32,uint32){}
     ObjectList* GetTargets(SmartScriptHolder const& row,Unit* unit){Unit* trigger=unit?unit:GetLastInvoker();auto* l=new ObjectList;
         switch(row.GetTargetType()){
 #include "InvokerTarget.inc"
             case 21:if(closest&&closest->distance<=row.targetRange)l->push_back(closest);break;
+#ifdef ORESTES_FAREWELL_TEST
+            case 15:if(row.targetRange==249740&&row.targetExtra==50&&me&&me->nearbyDoor)l->push_back(me->nearbyDoor);break;
+#endif
         }
 #ifdef ORESTES_FAREWELL_TEST
         if(l->empty()){delete l;return nullptr;}
@@ -191,6 +218,7 @@ struct SmartScript {
 #ifdef ORESTES_FAREWELL_TEST
 #include "SetPhase.inc"
 #include "Die.inc"
+#include "ActivateDoor.inc"
 #endif
         }
 #include "LinkTail.inc"

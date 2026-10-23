@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "1072 farewell lifetime, Orestes pending-credit delay and Fel Spike Door admission. Partial acquisition repair, not a full client/video certification.",
+  "correction": "The earlier35300ms sufficiency claim used only max(packed offset + voice + AdditionalDuration). It did not bound the entire ordered voice/gap sequence. This audit supersedes that sufficiency claim, not the historical native12950ms truncation or its successful migration02 deployment. Current audio QA reads actual live data by default, not the legacy02 temporary fixture.",
+  "findings": {
+    "budget": "Matching local5 fully decoded voice clips plus all6 native AdditionalDuration values total44151ms after per-clip upward millisecond rounding. Last ordered cue starts37173ms, already beyond35300. Add the unchanged native5000ms padding:49151ms. Guarded05 changes only1072 slot0 from25000 to40000:40000+2650+2650+5000=50300ms. Preserve every line ID/index/packed offset/actor/sentinel/broadcast/visual/animation field. The bound conservatively covers both the existing packed-offset calculation and ordered voice/gap playback; it is not a claim to have reverse-engineered every client scheduling rule.",
+    "transition": "Orestes's previous10000ms timer armed credit/death while the farewell could still be playing.05 changes only that known phase-arm timer to50500ms: actual200ms queued200832 cast +50300ms native conversation lifetime. Native typed SpellMisc/CastTimes and actual Hotfix overlay confirm200832 cast index1/Base0. Its Attributes0=0x29800100 does not contain CANT_USED_IN_COMBAT0x10000000; the video's later cue cannot simply be explained by inventing that restriction. Existing stage3/quest/alive/Player/range retry remains; no fake credit, item grant or direct scenario-step assignment added.",
+    "door": "Leaving Torvis's immediate door opening while lengthening the farewell would enlarge premature access to the next encounter.06 moves the exact native action9/closestGO15/249740/50 from Torvis LINK3 to Orestes LINK7 after eligible48071 credit and native death37. Torvis200832 LINK2 now continues directly to original LINK4/1009 and LINK5/Vereesa data; owner-caster flags, personal dialogue and all other death fields are preserved. Orestes5->6->7 executes native credit, death, then door use. Both existing quest ElseGroups gain native condition30 on the actor for the nearby door, so missing door does not consume credit or kill Orestes; its appearance permits retry. No new AI binding, shared core action or model/animation override added.",
+    "door_data": "Live249740 is type0/display26055/flags16/empty AI and ScriptName, Data0/1/2 all0, static136676/map1489/phase5586/state1. It is the same Fel Spike Door display as initial247891 but a different spawn at292.118/1648.09/-68.7502, near Orestes311.658/1650.55/-70.8907. Flags16 retain NOT_SELECTABLE; no ordinary click invitation added. Native closest-GO checker uses entry and IsWithinDistInMap, including map/phase; condition/action use the same50yd search. Native9 sets GO_READY then UseDoorOrButton; SwitchDoorOrButton sets IN_USE and opens the native closed state. Native toggle semantics are unchanged and exactly-once admission prevents a repeat from closing it.",
+    "pose": "Orestes already has template-addon130491; native effect6/aura4 is retained without inventing a Feign Death handler or healing cast. Rendered sparkle appears on several lootable corpses, with actual looting visible; it is not sufficient evidence for an Orestes healing spell. Earlier sparse-frame healing interpretation remains unconfirmed."
+  },
+  "native_audio": {
+    "lines": [
+      {"id":2625,"packed_start":0,"voice":3822,"additional":3000,"ordered_start":0,"ordered_end":6822},
+      {"id":2630,"packed_start":4550,"voice":7670,"additional":3000,"ordered_start":6822,"ordered_end":17492},
+      {"id":2658,"packed_start":9850,"voice":3352,"additional":3000,"ordered_start":17492,"ordered_end":23844},
+      {"id":2659,"packed_start":13050,"voice":5329,"additional":3000,"ordered_start":23844,"ordered_end":32173},
+      {"id":3427,"packed_start":18050,"voice":0,"additional":5000,"ordered_start":32173,"ordered_end":37173},
+      {"id":2631,"packed_start":23050,"voice":1978,"additional":5000,"ordered_start":37173,"ordered_end":44151}
+    ],
+    "units": "milliseconds; worst decoded voice alternative per line, not sum of mutually exclusive alternatives",
+    "old_absolute_end":30028,
+    "ordered_end":44151,
+    "native_padding":5000,
+    "new_lifetime":50300,
+    "transition_delay":50500
+  },
+  "sources": {
+    "local_first": "Actual world1072/100398/100397/100749/249740 rows, native Conversation producer/playback expiry and SmartAI timer/phase/conditions/LINK/actions; addon130491, zero door autoclose, closest-GO range/phase visitor, GameObject::UseDoorOrButton/SwitchDoorOrButton and SmartAI::JustDied. Matching typed DB2 plus native read-only Hotfix overlay, CASC payload reads/FFprobe/full FFmpeg decode. No character queries, grants or resets.",
+    "trinity": "Reviewed local exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c Conversation.cpp LastLineEndTime assignment. Its template/participant schema is different from this core's summed custom creature durations. Existing exact-build SmartAI timer/phase/LOS reference and pinned donor audit retained; no modern schema or implementation copied.",
+    "github": "Targeted Orestes/200832 and Orestes/Torvis/10000 searches yielded no usable implementation; unrelated numeric hits not used. Existing legion-artifact-donor-review-2026-10-23.json remains bounded, not an exhaustive search claim.",
+    "video": {
+      "url":"https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title":"Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel":"ZaFrostPet",
+      "reviewed":"New rendered samples around7:49..8:49, including actual combat, farewell actors, in-game timestamped chat and later stage5. Confirmed paused seek values8:29/8:34/8:49 after asynchronous seek settled. Continuous playback had gaps; ads, unsettled frames, recommendation overlays and unattended continuation through9:14 are excluded. Not a full video/continuous sequence/audio review; exact client build unconfirmed. Automatic captions are inaccurate, so use visible native chat instead.",
+      "observations":"Visible chat stamps: Torvis death speech19:45:06; first farewell cue19:45:17; Orestes reply19:45:23; Vereesa reply19:45:34; Orestes final speech19:45:40; final Vereesa cue19:45:53; Herald challenge19:45:58.8:29 still shows stage4 and living wounded Orestes;8:49 shows stage5 and Orestes corpse tooltip. Thus final cue is roughly36s after first, while the old limit was35.3s. The cadence is consistent with an ordered voice/gap budget, but does not prove the26972 client's precise scheduler or map displayed doors to entries by appearance alone.",
+      "limits":"Do not reuse earlier unsettled seek labels as exact timing proof. The delay between Torvis death and first cue, exact animation/camera/voice/door transition and present-client latency still need traversal. No missing heal spell inferred from corpse sparkle. Temporary tab10 closed."
+    }
+  },
+  "checks": [
+    "Upgraded Test-MarksmanshipFarewellAudio.ps1 explicitly reproduces baseline failure:35300 <44151+5000. Full decoded output/failed summary retained privately. New temporary fixture and then actual LIVE50300 data pass;5 voice files fully decoded,32 client index hashes unchanged. Silent3427's real5000 gap included; no playback claim. Native reader confirms instant200832 and prints unchanged130491 dummy aura metadata.",
+    "Test-MarksmanshipFarewellBudget.ps1 -VerifyReleaseBinary passes actual-schema TEMPORARY05 twice, every-field SmartAI/conversation snapshots, custom duration/line/creature/actor/timer/arm/credit/phase/script/extra-row guards. Compiled native conversation Generate/Update/visibility retains new50300 budget through ordered checkpoints and expires after its real deadline; previous35300 expires before37173. Compiled native timer/conditions/LOS/LINK rejects the former10s boundary, waits50500, then requires a present eligible Player. Historical02/03/04 fixtures explicitly normalize their own temporary pre-migration baselines; they are not live traversal proofs.",
+    "Test-MarksmanshipFarewellDoor.ps1 -VerifyReleaseBinary passes actual-schema06 twice with full affected-actor field comparison, exact one remaining door action and10 actual conditions. Custom slot/caster/range/flags/door script/death link/admission/other inbound link/actor refuse migration. Compiled production condition30, action9, UseDoorOrButton and SwitchDoorOrButton reproduce premature opening at stage3 with the original action, then show closed door before budget/eligible credit, credit before death before opening, actual invoker and retained16 flag, missing-door retry and exactly1 activation despite repeated events. Existing pet/guardian/null proximity, faction hosts, quests, stages, map/phase, missing base and scope-expiry regressions retained.",
+    "Test-MarksmanshipFarewellCaster.ps1 -VerifyReleaseBinary and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass. PE verifier retains native duration/selector/pickup/return chain and actual phase consumer, timer, Player criteria, death and UseDoorOrButton bridges; door9/phase22/death37/criteria205 have distinct actual switch entries. No new server C++ code or global cast/GO action behavior changed.",
+    "World/scenario/clock/GO lookup/template/AI operations are controlled fixture hosts. Production native GameObject state bodies execute, but no live-map collision/model traversal or real client group/faction playback is asserted. Native diagnostic warnings remain enabled."
+  ],
+  "deployment": {
+    "directory":"build-extractors/bin/Release",
+    "worldserver_sha256":"5514E045136C2CB08D9A3F61DE6406D7E664CB4BA2E61F7EFEC0E2D671FD373D",
+    "migrations":[
+      {"name":"2026_10_24_05_marksmanship_farewell_budget.sql","sha1":"3E923887C9D82BF40EC4DCDB742D79215ED9689D"},
+      {"name":"2026_10_24_06_marksmanship_farewell_door.sql","sha1":"B605BB388D733D4E46B2A44AD193C95B68C248B8"}
+    ],
+    "readback":"Native updater records both exact SHA1 values RELEASED. Live50300 lifetime/50500 phase-arm; Torvis2->4 leaves original4->5 intact; Orestes5->6->7 emits48071/death/native249740 opening; both quest branches now require nearby249740. Scoped private backups retained outside Git. No historical released SQL edited.",
+    "build":"Data-only production changes; no new server build claimed. Canonical EXE unchanged and actual implementation checked. Final link retains original scripts/Release/scripts.lib and game/Release/game.lib; no OutDir override, runtime configuration/data preserved.",
+    "startup":"Task-owned19536 applied05 and33096 applied06. Both reached World initialized, graceful exit0, appended DBErrors0 bytes, protected config/certificates unchanged. No user/unknown server stopped; no task-owned world/bnet server remains.",
+    "private_evidence":".codex/marksmanship-farewell-budget-* and marksmanship-farewell-door-* logs/TSV/scoped backups, native audio summary and ignored runtime-test fixtures. Audio/video media and runtime secrets not committed."
+  },
+  "remaining": [
+    "This is a conservative presentation safety budget, not exact client timing certification. Client first-visibility/network delay is not synchronized by this server timer; actual26972 voice/animation/actor pose/door collision and stage timing still need observation. Torvis-to-first-cue delay and Vereesa follow/hold behavior remain unresolved; no unsupported out-of-combat restriction or healing visual added.",
+    "Native cast or conversation creation failure still lacks presentation replay. Complete grid/instance unload/reset of pending phase, already missing Orestes, premature boss combat via unintended geometry, external pre-opened door state, saved reconnect/re-entry and real pet/group/faction traversal remain unfinished. Missing DOOR while the existing actor remains loaded now waits safely; this does not recreate an absent actor or grant advancement without an eligible Player.",
+    "Full40419 objective-storage alias, later encounter admission and real loot/equip/use remain pending, as do other36-route continuous video/client reviews. Existing unrelated Stormheim fixture blocker is not hidden or reported as passing."
+  ]
+}

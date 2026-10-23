@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24",
   "build": "7.3.5.26972",
+  "sizing_followup": "docs/audits/marksmanship-farewell-budget-door-2026-10-24.json supersedes the35300ms sufficiency claim: ordered native voice/gap budget was not covered by the earlier absolute-offset-only calculation. Historical migration02 results remain recorded here; current lifetime50300 and coupled delay/door checks are in the follow-up.",
   "scope": "Orestes/Vereesa farewell conversation1072, summoned by200832 after Mistress Torvis death. Lifetime-only repair; not a whole encounter, quest or visual certification.",
   "finding": {
     "before": "The3 native conversation_creature slots each supplied2650ms. GenerateDynamicFieldData sums them to7950; CreateConversation adds5000, setting last-line deadline12950. Native Update removes the conversation once caster playback elapsed time exceeds that field. Lines2659/3427/2631 do not even start until13050/18050/23050ms. Line2658's3352ms voice from9850 also extends past12950. A ready server and valid voice IDs did not prevent early removal.",

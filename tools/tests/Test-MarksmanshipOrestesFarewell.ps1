@@ -13,7 +13,7 @@ INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid IN(100398,
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 INSERT INTO smart_scripts SELECT * FROM saved_smart;
 DELETE FROM smart_scripts WHERE entryorguid=100398 AND ((source_type=0 AND id IN(5,6)) OR (source_type=9 AND id=1));
-UPDATE smart_scripts SET action_type=205,action_param1=92,action_param2=48071,target_type=21,target_param1=50,comment='TS - CSC' WHERE entryorguid=100398 AND source_type=9 AND id=0;
+UPDATE smart_scripts SET event_param1=10000,event_param2=10000,action_type=205,action_param1=92,action_param2=48071,target_type=21,target_param1=50,comment='TS - CSC' WHERE entryorguid=100398 AND source_type=9 AND id=0;
 INSERT INTO smart_scripts(entryorguid,source_type,id,event_type,event_flags,action_type,target_type,comment) VALUES(100398,9,1,0,1,37,1,'TS - Die');
 CREATE TEMPORARY TABLE baseline_smart LIKE smart_scripts;
 INSERT INTO baseline_smart SELECT * FROM smart_scripts;
@@ -58,15 +58,19 @@ if(Compare-Object $before $after){throw 'Unrelated Orestes/Torvis fields changed
 [IO.File]::WriteAllLines("$out/conditions.tsv",[string[]]@($rows | Where-Object {$_ -like "gate`t*"} | ForEach-Object {$_.Substring(5)}))
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
-[IO.File]::WriteAllText("$out/QuestConditions.inc",(Section $source '        case CONDITION_QUESTTAKEN:' '        case CONDITION_QUEST_NONE:')+(Section $source '        case CONDITION_ALIVE:' '        case CONDITION_HP_VAL:'))
+[IO.File]::WriteAllText("$out/QuestConditions.inc",(Section $source '        case CONDITION_QUESTTAKEN:' '        case CONDITION_QUEST_NONE:')+(Section $source '        case CONDITION_ALIVE:' '        case CONDITION_HP_VAL:')+(Section $source '        case CONDITION_NEAR_GAMEOBJECT:' '        case CONDITION_OBJECT_ENTRY:'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
 $sections=@{
  'SetPhase'=@('        case SMART_ACTION_SET_EVENT_PHASE:','        case SMART_ACTION_INC_EVENT_PHASE:')
  'Die'=@('        case SMART_ACTION_DIE:','        case SMART_ACTION_SET_IN_COMBAT_WITH_ZONE:')
  'TimedUpdate'=@('        case SMART_EVENT_UPDATE:','        case SMART_EVENT_UPDATE_OOC:')
  'UpdateTimer'=@('void SmartScript::UpdateTimer(','bool SmartScript::CheckTimer(')
+ 'ActivateDoor'=@('        case SMART_ACTION_ACTIVATE_GOBJECT:','        case SMART_ACTION_RESET_GOBJECT:')
 }
 foreach($name in $sections.Keys){[IO.File]::WriteAllText("$out/$name.inc",(Section $source $sections[$name][0] $sections[$name][1]))}
+$source=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
+[IO.File]::WriteAllText("$out/DoorUse.inc",(Section $source 'void GameObject::UseDoorOrButton(' 'void GameObject::SetGoArtKit('))
+[IO.File]::WriteAllText("$out/DoorSwitch.inc",(Section $source 'void GameObject::SwitchDoorOrButton(' '//! Analog SwitchDoorOrButton'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/MarksmanshipOrestesFarewellTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`" `"$out/conditions.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Orestes farewell regression failed'}
