@@ -323,6 +323,107 @@ class spell_talonclaw_presentation : public AuraScript
     }
 };
 
+namespace MarksmanshipPresentation
+{
+struct State
+{
+    uint32 instance = 0;
+    uint32 elapsed = 0;
+    bool admitted = false;
+    bool finished = false;
+    bool fallback = false;
+
+    bool Current(Player* player) const
+    {
+        return player && player->IsInWorld() && player->IsAlive() && !player->IsBeingTeleported() &&
+            player->getClass() == CLASS_HUNTER && player->GetMapId() == 1489 &&
+            ArtifactAcquisition::Active(player, 40419) && player->HasItemCount(128826, 1, true);
+    }
+
+    void Begin(Player* player)
+    {
+        if (admitted || finished || !Current(player))
+            return;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 972 || scenario->GetCurrentStep() < 7 || scenario->GetCurrentStep() > 8)
+            return;
+        instance = player->GetInstanceId();
+        admitted = true;
+    }
+
+    bool Update(Player* player, uint32 diff)
+    {
+        if (!admitted || finished)
+            return false;
+        if (!Current(player) || player->GetInstanceId() != instance)
+        {
+            admitted = false;
+            return true;
+        }
+        if (diff < 20000 - elapsed)
+        {
+            elapsed += diff;
+            return false;
+        }
+        elapsed = 20000;
+        fallback = true;
+        TC_LOG_WARN("scripts", "Thas'dorah pickup: scene 1169 completion callback missing after 20000ms for player %u", player->GetGUIDLow());
+        return true;
+    }
+
+    void Finish(Player* player)
+    {
+        if (!admitted || finished || !Current(player) || player->GetInstanceId() != instance ||
+            (!fallback && !player->HasSceneStatus(1169, SCENE_COMPLETE)))
+            return;
+        finished = true;
+        SpellCastResult result = player->CastSpell(player, 200262, true);
+        if (result != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts", "Thas'dorah pickup: native equip 200262 failed with result %u for player %u; owned pickup replay remains available", uint32(result), player->GetGUIDLow());
+    }
+};
+}
+
+class spell_marksmanship_presentation : public AuraScript
+{
+    PrepareAuraScript(spell_marksmanship_presentation);
+    MarksmanshipPresentation::State state;
+
+    bool Validate(SpellInfo const*) override
+    {
+        return ValidateSpellInfo({200262});
+    }
+
+    Player* PlayerOwner()
+    {
+        Unit* owner = GetUnitOwner();
+        return owner ? owner->ToPlayer() : nullptr;
+    }
+
+    void AfterApply(AuraEffect const*, AuraEffectHandleModes)
+    {
+        state.Begin(PlayerOwner());
+    }
+
+    void Update(uint32 diff, AuraEffect*)
+    {
+        if (state.Update(PlayerOwner(), diff))
+            Remove();
+    }
+
+    void AfterRemove(AuraEffect const*, AuraEffectHandleModes)
+    {
+        state.Finish(PlayerOwner());
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_marksmanship_presentation::AfterApply, EFFECT_1, SPELL_AURA_ACTIVATE_SCENE, AURA_EFFECT_HANDLE_REAL);
+        OnEffectUpdate += AuraEffectUpdateFn(spell_marksmanship_presentation::Update, EFFECT_1, SPELL_AURA_ACTIVATE_SCENE);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_marksmanship_presentation::AfterRemove, EFFECT_1, SPELL_AURA_ACTIVATE_SCENE, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 namespace TalonclawReturn
 {
 void Recover(Player* player)
@@ -518,6 +619,7 @@ void AddSC_artifact_acquisition()
     new go_artifact_acquisition();
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
+    RegisterAuraScript(spell_marksmanship_presentation);
     new player_talonclaw_return();
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();

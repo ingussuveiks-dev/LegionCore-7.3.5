@@ -813,8 +813,9 @@
       "weapon": "Thas'dorah, Legacy of the Windrunners",
       "item": 128826,
       "owned_replay_repair_audit": "docs/audits/marksmanship-owned-replay-2026-10-23.json",
+      "presentation_repair_audit": "docs/audits/marksmanship-presentation-2026-10-23.json",
       "start": 41540,
-      "status": "native8-stage/scene review begun; owned/bank gossip replay now final-stage/active-quest gated with native regressions; ordinary loot admission, real equip callback, full sequence/visual/client traversal remain pending",
+      "status": "partial: native8-stage/scene review, final-stage owned/bank replay and guarded1169-to200262 equip callback pass native/Release checks; ordinary loot admission, objective storage, full video/sequence and actual client visuals/equip remain pending",
       "quests": [
         {
           "id": 41540,

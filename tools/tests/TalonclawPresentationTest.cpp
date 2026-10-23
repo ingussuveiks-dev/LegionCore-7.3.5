@@ -1,16 +1,26 @@
 #include "SceneLifecycleFixture.h"
 #include <initializer_list>
-enum { CLASS_HUNTER = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, EFFECT_0 = 0, AURA_EFFECT_HANDLE_REAL = 1 };
+enum { CLASS_HUNTER = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, EFFECT_0 = 0, EFFECT_1 = 1, AURA_EFFECT_HANDLE_REAL = 1, SPELL_CAST_OK = 0 };
+using SpellCastResult = uint32;
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+constexpr uint32 ScenarioId = 972, FinalStep = 7, PresentationSpell = 200279, EquipSpell = 200262;
+constexpr uint32 PresentationScene = 1169, PresentationMap = 1489, PresentationQuest = 40419, PresentationItem = 128826, PickupCriterion = 48210, SceneEffect = 1;
+constexpr uint32 ScenePackage = 1535, SceneFlags = 17;
+#else
+constexpr uint32 ScenarioId = 973, FinalStep = 12, PresentationSpell = 205589, EquipSpell = 197651;
+constexpr uint32 PresentationScene = 1220, PresentationMap = 1511, PresentationQuest = 40385, PresentationItem = 128808, PickupCriterion = 47689, SceneEffect = 0;
+constexpr uint32 ScenePackage = 1583, SceneFlags = 21;
+#endif
 using AuraEffectHandleModes = int;
 namespace ArtifactAcquisition {
 #include "Active.inc"
 }
 struct Scenario {
-    uint32 id = 973, step = 12;
+    uint32 id = ScenarioId, step = FinalStep;
     uint32 GetScenarioId() const { return id; }
     uint32 GetCurrentStep() const { return step; }
     void SendCriteriaUpdate(struct CriteriaProgress const*) { }
-    void UpdateCurrentStep(bool loading) { assert(!loading); if (step == 12) step = 13; }
+    void UpdateCurrentStep(bool loading) { assert(!loading); if (step == FinalStep) ++step; }
 };
 struct ScenarioManager {
     Scenario scenario; bool present = true;
@@ -39,7 +49,7 @@ struct PickupActions {
     Unit* GetBaseObject() const { return recipient; }
     ObjectList* GetTargets(int, Unit*) const { return new ObjectList{recipient}; }
     struct Event {
-        struct { struct { uint32 type = 92, misc1 = 47689, misc2 = 0, misc3 = 0; } achievementCriteria; } action;
+        struct { struct { uint32 type = 92, misc1 = PickupCriterion, misc2 = 0, misc3 = 0; } achievementCriteria; } action;
     };
     ObjectList* GetTargets(Event const&, Unit* unit) const { return GetTargets(0, unit); }
     void Criteria() {
@@ -50,7 +60,7 @@ struct PickupActions {
     }
     void QueueScene() {
         Player* tempLastInvoker = recipient;
-        uint32 targetGUID = recipient->GetGUIDLow(), spellID = 205589;
+        uint32 targetGUID = recipient->GetGUIDLow(), spellID = PresentationSpell;
         bool isTrigger = false;
 #include "DeferredInvoker.inc"
     }
@@ -75,16 +85,16 @@ struct AuraScript {
     virtual bool Validate(SpellInfo const*) { return true; }
     virtual void Register() {}
     Unit* GetUnitOwner() const;
-    bool ValidateSpellInfo(std::initializer_list<int> spells) { return spells.size() == 1 && *spells.begin() == 197651; }
+    bool ValidateSpellInfo(std::initializer_list<int> spells) { return spells.size() == 1 && *spells.begin() == EquipSpell; }
     void Remove() { remove(); }
 };
 #include "Owner.inc"
 template<class Script> ApplyHook MakeApply(void(Script::*function)(AuraEffect const*, AuraEffectHandleModes), int effect, int aura, int mode) {
-    assert(effect == 0 && aura == 430 && mode == 1);
+    assert(effect == SceneEffect && aura == 430 && mode == 1);
     return {[function](AuraScript* script, AuraEffect const* value, int handle) { (static_cast<Script*>(script)->*function)(value, handle); }};
 }
 template<class Script> UpdateHook MakeUpdate(void(Script::*function)(uint32, AuraEffect*), int effect, int aura) {
-    assert(effect == 0 && aura == 430);
+    assert(effect == SceneEffect && aura == 430);
     return {[function](AuraScript* script, uint32 diff, AuraEffect* value) { (static_cast<Script*>(script)->*function)(diff, value); }};
 }
 #define PrepareAuraScript(name) public:
@@ -92,19 +102,27 @@ template<class Script> UpdateHook MakeUpdate(void(Script::*function)(uint32, Aur
 #define AuraEffectRemoveFn(function,effect,aura,mode) MakeApply(&function,effect,aura,mode)
 #define AuraEffectUpdateFn(function,effect,aura) MakeUpdate(&function,effect,aura)
 #include "Presentation.inc"
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+using PresentationScript = spell_marksmanship_presentation;
+#else
+using PresentationScript = spell_talonclaw_presentation;
+#endif
 struct Pickup {
     Player player;
     AuraEffect effect;
     Aura aura;
-    spell_talonclaw_presentation script;
+    PresentationScript script;
     uint32 scene = 0;
     Pickup() {
         scenarioManager = {}; aura.owner = &player; script.m_aura = &aura;
+        player.map = PresentationMap; player.expectedQuest = PresentationQuest; player.expectedItem = PresentationItem;
+        player.expectedCriterion = PickupCriterion; effect.scene = PresentationScene; effect.spell = PresentationSpell;
+        spellManager.scene.SceneScriptPackageID = ScenePackage; spellManager.scene.PlaybackFlags = SceneFlags;
         script.Register(); assert(script.Validate(nullptr));
         player.removed = [this](uint32 spell) {
-            if (spell == 205589) script.AfterEffectRemove.function(&script, &effect, 1);
+            if (spell == PresentationSpell) script.AfterEffectRemove.function(&script, &effect, 1);
         };
-        script.remove = [this]() { player.RemoveAurasDueToSpell(205589); };
+        script.remove = [this]() { player.RemoveAurasDueToSpell(PresentationSpell); };
     }
     void Begin() { scene = player.Start(effect); script.AfterEffectApply.function(&script, &effect, 1); }
     void Tick(uint32 diff) { script.OnEffectUpdate.function(&script, diff, &effect); }
@@ -114,22 +132,22 @@ int main() {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     {
         Pickup pickup;
-        pickup.player.cast = [&](uint32 spell) { if (spell == 205589) pickup.Begin(); };
+        pickup.player.cast = [&](uint32 spell) { if (spell == PresentationSpell) pickup.Begin(); };
         CriteriaProgress progress; AchievementMgr<Scenario> criteria{&scenarioManager.scenario};
         pickup.player.criteriaUpdate = [&]() { criteria.SendCriteriaUpdate(&progress, 0, false); };
         PickupActions actions{&pickup.player};
         actions.QueueScene(); assert(pickup.player.casts.empty() && pickup.player.delayedInvokerCasts.size() == 1);
-        actions.Criteria(); assert(scenarioManager.scenario.step == 13 && pickup.player.casts.empty());
+        actions.Criteria(); assert(scenarioManager.scenario.step == FinalStep + 1 && pickup.player.casts.empty());
         pickup.player.FlushInvokerCasts(); pickup.Finish(); pickup.Finish();
-        assert((pickup.player.casts == std::vector<uint32>{205589, 197651}));
+        assert((pickup.player.casts == std::vector<uint32>{PresentationSpell, EquipSpell}));
     }
     {
-        Pickup pickup; scenarioManager.scenario.step = 13; pickup.Begin(); pickup.Tick(20000);
-        assert(pickup.player.casts == std::vector<uint32>{197651});
+        Pickup pickup; scenarioManager.scenario.step = FinalStep + 1; pickup.Begin(); pickup.Tick(20000);
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell});
     }
     for (uint32 invalid = 0; invalid < 3; ++invalid) {
         Pickup pickup;
-        pickup.player.cast = [&](uint32 spell) { if (spell == 205589) pickup.Begin(); };
+        pickup.player.cast = [&](uint32 spell) { if (spell == PresentationSpell) pickup.Begin(); };
         CriteriaProgress progress; AchievementMgr<Scenario> criteria{&scenarioManager.scenario};
         pickup.player.criteriaUpdate = [&]() { criteria.SendCriteriaUpdate(&progress, 0, false); };
         PickupActions actions{&pickup.player}; actions.QueueScene(); actions.Criteria();
@@ -137,20 +155,20 @@ int main() {
         if (invalid == 1) pickup.player.quest = 0;
         if (invalid == 2) pickup.player.runtimeInstance = 43;
         pickup.player.FlushInvokerCasts(); if (pickup.scene) pickup.Finish(); pickup.Tick(UINT32_MAX);
-        assert(pickup.player.casts == (invalid == 0 ? std::vector<uint32>{} : std::vector<uint32>{205589}));
+        assert(pickup.player.casts == (invalid == 0 ? std::vector<uint32>{} : std::vector<uint32>{PresentationSpell}));
     }
     {
         Pickup pickup; pickup.Begin(); assert(pickup.player.casts.empty());
         pickup.Tick(19999); assert(pickup.player.casts.empty());
-        scenarioManager.scenario.step = 13; scenarioManager.present = false;
+        scenarioManager.scenario.step = FinalStep + 1; scenarioManager.present = false;
         pickup.Finish(); pickup.Finish(); pickup.Tick(1);
-        assert(pickup.player.casts == std::vector<uint32>{197651});
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell});
         assert(pickup.player.effects.empty() && pickup.player.m_sceneInstanceID.empty());
     }
     {
         Pickup pickup; pickup.Begin(); pickup.Tick(19999); int before = warnings;
         pickup.Tick(1); pickup.Tick(UINT32_MAX); pickup.Finish();
-        assert(pickup.player.casts == std::vector<uint32>{197651} && warnings == before + 1);
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell} && warnings == before + 1);
         assert(pickup.player.effects.empty() && pickup.player.m_sceneInstanceID.empty());
     }
     {
@@ -163,7 +181,7 @@ int main() {
         session.HandleScenePlaybackCanceled(packet);
         session.HandleScenePlaybackComplete(packet);
         session.HandleScenePlaybackCanceled(packet);
-        assert(pickup.player.casts == std::vector<uint32>{197651});
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell});
         assert(pickup.player.effects.empty() && pickup.player.m_sceneInstanceID.empty());
         session._player = nullptr; session.HandleScenePlaybackCanceled(packet);
     }
@@ -181,10 +199,15 @@ int main() {
             case 8: pickup.player.owned = false; break;
             case 9: scenarioManager.present = false; break;
             case 10: scenarioManager.scenario.id = 962; break;
-            case 11: scenarioManager.scenario.step = 11; break;
-            case 12: scenarioManager.scenario.step = 14; break;
+            case 11: scenarioManager.scenario.step = FinalStep - 1; break;
+            case 12: scenarioManager.scenario.step = FinalStep + 2; break;
         }
         pickup.Begin(); pickup.Finish(); pickup.Tick(UINT32_MAX);
+        assert(pickup.player.casts.empty());
+    }
+    for (uint32 step = 0; step <= FinalStep + 3; ++step) {
+        if (step == FinalStep || step == FinalStep + 1) continue;
+        Pickup pickup; scenarioManager.scenario.step = step; pickup.Begin(); pickup.Finish(); pickup.Tick(UINT32_MAX);
         assert(pickup.player.casts.empty());
     }
     for (uint32 invalid = 0; invalid < 8; ++invalid) {
@@ -208,9 +231,9 @@ int main() {
     }
     {
         Pickup pickup; pickup.Begin(); uint32 obsolete = pickup.scene;
-        pickup.player.RemoveAurasDueToSpell(205589);
+        pickup.player.RemoveAurasDueToSpell(PresentationSpell);
         assert(pickup.player.casts.empty());
-        spell_talonclaw_presentation retry; retry.m_aura = &pickup.aura; retry.Register();
+        PresentationScript retry; retry.m_aura = &pickup.aura; retry.Register();
         pickup.player.removed = [&](uint32) { retry.AfterEffectRemove.function(&retry, &pickup.effect, 1); };
         uint32 current = pickup.player.Start(pickup.effect);
         retry.AfterEffectApply.function(&retry, &pickup.effect, 1);
@@ -227,6 +250,30 @@ int main() {
         pickup.aura.owner = nullptr; pickup.script.AfterApply(nullptr, 1); pickup.Tick(UINT32_MAX);
         assert(pickup.player.casts.empty());
     }
-    std::cout << "PASS: extracted native scene and Talonclaw aura hooks, actual owner getter, final-stage owned-item admission, complete/cancel-equivalent removal, bounded missing-callback cleanup, invalidation, stale retry, no grant or duplicate scenario credit\n";
+    assert(spellManager.scene.SceneScriptPackageID == ScenePackage && spellManager.scene.PlaybackFlags == SceneFlags);
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+    {
+        Pickup pickup; pickup.player.castResult = 5;
+        pickup.player.cast = [&](uint32 spell) { if (spell == PresentationSpell) pickup.Begin(); };
+        CriteriaProgress progress; AchievementMgr<Scenario> criteria{&scenarioManager.scenario};
+        pickup.player.criteriaUpdate = [&]() { criteria.SendCriteriaUpdate(&progress, 0, false); };
+        PickupActions actions{&pickup.player}; actions.QueueScene(); actions.Criteria(); pickup.player.FlushInvokerCasts();
+        pickup.Tick(UINT32_MAX);
+        assert(scenarioManager.scenario.step == FinalStep + 1 && pickup.player.casts == std::vector<uint32>{PresentationSpell});
+        assert(pickup.player.effects.empty());
+    }
+    {
+        Pickup pickup; pickup.Begin(); pickup.player.castResult = 5; int before = warnings;
+        pickup.Finish(); pickup.Finish(); pickup.Tick(UINT32_MAX);
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell} && warnings == before + 1);
+        assert(pickup.player.effects.empty());
+        PresentationScript retry; retry.m_aura = &pickup.aura; retry.Register(); pickup.player.castResult = 0;
+        pickup.player.removed = [&](uint32 spell) { if (spell == PresentationSpell) retry.AfterRemove(&pickup.effect, 1); };
+        uint32 scene = pickup.player.Start(pickup.effect); retry.AfterApply(&pickup.effect, 1);
+        pickup.player.SceneCompleted(scene);
+        assert((pickup.player.casts == std::vector<uint32>{EquipSpell, EquipSpell}));
+    }
+#endif
+    std::cout << "PASS: extracted native scene and route-specific aura hooks, actual owner getter, final-stage owned-item admission, complete/cancel-equivalent removal, bounded missing-callback cleanup, invalidation, stale retry, no grant or duplicate scenario credit\n";
     std::cout << "PASS: native200ms invoker queue -> synchronous native criterion dispatcher -> completed-step scene admission/equip, with pre-dispatch logout/abandon/re-entry rejection\n";
 }

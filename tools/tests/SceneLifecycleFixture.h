@@ -75,6 +75,7 @@ struct Player : Unit {
     std::vector<std::function<void()>> delayedInvokerCasts;
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
+    uint32 expectedQuest = 40385, expectedItem = 128808, expectedCriterion = 47689, castResult = 0;
     Player* ToPlayer() override { return this; }
     void SendSpellScene(uint32, SpellInfo const*, bool, Position*);
     void SceneCompleted(uint32);
@@ -101,12 +102,15 @@ struct Player : Unit {
         if (removed) removed(spell);
     }
     bool HasAura(uint32 spell) { return auras.count(spell) != 0; }
-    void CastSpell(Unit* target, uint32 spell, bool triggered) {
-        assert(target == this && (triggered || spell == 205589)); casts.push_back(spell); auras.insert(spell);
+    uint32 CastSpell(Unit* target, uint32 spell, bool triggered) {
+        assert(target == this && (triggered || spell == 205589 || spell == 200279)); casts.push_back(spell);
+        if (castResult) return castResult;
+        auras.insert(spell);
         if (cast) cast(spell);
+        return 0;
     }
     void UpdateAchievementCriteria(uint32 type, uint32 asset, uint32 second, uint32 third, Unit* invoker, bool ignoreGroup) {
-        assert(type == 92 && asset == 47689 && second == 0 && third == 0 && invoker == this && ignoreGroup);
+        assert(type == 92 && asset == expectedCriterion && second == 0 && third == 0 && invoker == this && ignoreGroup);
         if (criteriaUpdate) criteriaUpdate();
     }
     void KilledMonsterCredit(uint32 entry) { credits.push_back(entry); }
@@ -120,10 +124,10 @@ struct Player : Unit {
     uint32 getClass() const { return playerClass; }
     uint32 GetMapId() const { return map; }
     uint32 GetInstanceId() const { return runtimeInstance; }
-    bool GetQuestRewardStatus(uint32 id) const { assert(id == 40385); return rewarded; }
-    uint32 GetQuestStatus(uint32 id) const { assert(id == 40385); return quest; }
+    bool GetQuestRewardStatus(uint32 id) const { assert(id == expectedQuest); return rewarded; }
+    uint32 GetQuestStatus(uint32 id) const { assert(id == expectedQuest); return quest; }
     bool HasItemCount(uint32 item, uint32 count, bool bank) const {
-        assert(item == 128808 && count == 1 && bank); return owned;
+        assert(item == expectedItem && count == 1 && bank); return owned;
     }
     uint32 GetGUIDLow() const { return 123; }
 };
