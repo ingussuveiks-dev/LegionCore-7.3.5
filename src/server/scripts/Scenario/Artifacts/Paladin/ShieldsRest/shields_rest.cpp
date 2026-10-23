@@ -531,12 +531,13 @@ public:
         npc_sr_spectral_windshaperAI(Creature* creature) : ScriptedAI(creature)
         {
             me->SetReactState(REACT_DEFENSIVE);
+            SetCombatMovement(false); // keep each emitter at its native lane
             checkWindPos = false;
         }
 
         EventMap events;
         bool checkWindPos;
-        uint32 windSpell;
+        uint32 windSpell = 0;
 
         void Reset() override
         {
@@ -555,7 +556,8 @@ public:
 
         void EnterCombat(Unit* /*who*/) override
         {
-            events.CancelEvent(EVENT_1);
+            // The corridor continues producing storms while its guardians
+            // fight. Already released storms finish independently of them.
             events.RescheduleEvent(EVENT_2, 2000);
         }
 
@@ -574,7 +576,10 @@ public:
                 switch (eventId)
                 {
                     case EVENT_1:
-                        DoCast(windSpell);
+                        if (windSpell)
+                            // Native target 106 is a CHANNEL_CASTER destination.
+                            // This AI has no channel: supply the actual lane origin.
+                            me->CastSpell(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), windSpell, false);
                         events.RescheduleEvent(EVENT_1, urand(6, 12) * IN_MILLISECONDS);
                         break;
                     case EVENT_2:
@@ -606,29 +611,43 @@ public:
             me->SetReactState(REACT_PASSIVE);
         }
 
-        uint16 startTimer;
+        uint16 startTimer = 0;
+        uint32 lifetime = 0;
+        bool finished = false;
 
         void Reset() override {}
         
         void IsSummonedBy(Unit* summoner) override
         {
             startTimer = 500;
+            lifetime = 30000;
+            finished = false;
         }
 
         void MovementInform(uint32 type, uint32 id) override
         {
-            if (type != POINT_MOTION_TYPE)
+            if (type != POINT_MOTION_TYPE || id != 1 || finished)
                 return;
+            finished = true;
+            lifetime = 0;
+            startTimer = 0;
 
             if (me->GetVehicleKit())
-            {
                 me->GetVehicleKit()->RemoveAllPassengers();
-                me->DespawnOrUnsummon(100);
-            }
+            me->RemoveAllAreaObjects();
+            me->DespawnOrUnsummon(100);
         }
 
         void UpdateAI(uint32 diff) override
         {
+            if (lifetime && lifetime <= diff)
+            {
+                lifetime = 0;
+                MovementInform(POINT_MOTION_TYPE, 1); // failed path: release safely
+                return;
+            }
+            if (lifetime)
+                lifetime -= diff;
             if (startTimer)
             {
                 if (startTimer <= diff)
@@ -636,9 +655,16 @@ public:
                     startTimer = 0;
                     DoCast(me, SPELL_FIERCE_WINDS_AT, true);
 
+                    bool moving = false;
                     for (uint8 i = 0; i < 3; i++)
                         if (me->GetDistance(windshaperPos[i]) < 2.0f)
+                        {
                             me->GetMotionMaster()->MovePoint(1, windEndPos[i].GetPositionX(), windEndPos[i].GetPositionY(), windEndPos[i].GetPositionZ(), false);
+                            moving = true;
+                            break;
+                        }
+                    if (!moving)
+                        MovementInform(POINT_MOTION_TYPE, 1);
                 }
                 else
                     startTimer -= diff;

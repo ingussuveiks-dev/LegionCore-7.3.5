@@ -27,6 +27,7 @@
 #include "Vehicle.h"
 #include "AreaTrigger.h"
 #include "AreaTriggerAI.h"
+#include "SmartAI.h"
 
 enum Spells
 {
@@ -831,6 +832,21 @@ struct npc_unga_banana_ship : public ScriptedAI
     }
 };
 
+// Entry64367 is also the native invisible ritual emitter in Shield's Rest.
+// Its shared template's banana-ship binding previously bypassed those SmartAI
+// events entirely. Keep the original ship AI on every other map.
+class npc_unga_banana_ship_script : public CreatureScript
+{
+public:
+    npc_unga_banana_ship_script() : CreatureScript("npc_unga_banana_ship") { }
+    CreatureAI* GetAI(Creature* creature) const override
+    {
+        if (creature->GetMapId() == 1495)
+            return new SmartAI(creature);
+        return new npc_unga_banana_ship(creature);
+    }
+};
+
 // Unga Pirates 63256, 62508, 67027, 62590, 62506
 struct npc_unga_pirate : public ScriptedAI
 {
@@ -1288,7 +1304,7 @@ void AddSC_unga_ingoo()
     RegisterCreatureAI(npc_unga_gladiators);
     RegisterCreatureAI(npc_unga_zipline_to_ship);
     RegisterCreatureAI(npc_unga_captain_ook);
-    RegisterCreatureAI(npc_unga_banana_ship);
+    new npc_unga_banana_ship_script();
     RegisterCreatureAI(npc_unga_pirate);
     RegisterCreatureAI(npc_unstable_keg);
     RegisterCreatureAI(npc_unga_ookie);

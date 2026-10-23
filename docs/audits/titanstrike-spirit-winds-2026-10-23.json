@@ -1,0 +1,36 @@
+{
+  "scope": "Stolen Thunder 41574, scenario1068/map1495, Stage2 corridor and native shared invisible emitters",
+  "observed": [
+    "User: three Windshapers were stationary without floor wind or tornadoes; their deaths did advance Stage3.",
+    "Floor210880 was started only by the Paladin cryptstalker event. Native AT6837/custom11360 had visual49393, oriented box and 3yd/s wind data but no actions, so UpdateAffectedList returned before tracking anyone.",
+    "Native210976/210977/210978 summon106432 with target106 CHANNEL_CASTER. The AI has no channel. Explicit lane destinations preserve native summon spells, models and lifetimes. Combat previously canceled their emission timer.",
+    "Entry64367's shared npc_unga_banana_ship binding bypassed SmartAI entirely. Map1495 now selects SmartAI; every other map retains the original banana-ship implementation. Its ritual timer's nearby-Prustaga condition now uses base actor1 instead of a missing invoker0."
+  ],
+  "changes": [
+    "Activate native emitters365439/365440 only during Hunter Stage2 until all three Windshaper deaths; leaving the stage also removes their floor. Keep unrelated rune helpers untouched by floor polling.",
+    "Scoped11360 AI tracks real phase-visible players through native IsInArea. Apply native wind parameters, remove only its own force, retry overlaps, and release during vehicle/taxi/stun/independent movement-force immunity. Clean exit and BeforeRemove; never erase another source's force.",
+    "Keep Windshapers at their native lanes and emitting during combat. Tornadoes retain independent lifetime/path, release passengers and their AT at the endpoint, handle invalid lanes/timeout and ignore duplicate completion. Killing casters does not remove released tornadoes."
+  ],
+  "verification": {
+    "automated": [
+      "Test-TitanstrikeStorms.ps1 executes extracted production AT, corridor Update, Windshaper, tornado and shared-AI factory callbacks. Covers three lanes, explicit destination, combat emissions, caster-death independence, endpoint/timeout/invalid-lane cleanup, overlaps/foreign forces, vehicles/stun, wrong scenario and stage cleanup.",
+      "Temporary real-schema SQL fixtures verify repeated migration, target tracking, base-actor condition and custom binding preservation; they shadow all modified tables.",
+      "Native C++ build26972 DB2 catalog checks summon entry106432/properties64/control0/slot0/target106, SpiritWinds AT6837 and attached tornado AT6840. Native EffectSummonType creates a timed wild TempSummon; TempSummon update/location checks do not require a living caster.",
+      "Canonical Release rebuilt using generated scripts/Release/scripts.lib and game/Release/game.lib; linked-PE checks inspect actual floor, force, tornado and shared factory implementations. Full rune and workshop regressions also pass."
+    ],
+    "runtime": "Owned hidden canonical server25068 exited0 after detecting the native AT loader rejecting NO_ACTION spellId0. Repaired that applied row to valid native210880 (still NO_ACTION); repeat fixtures and owned server30268 then reached ready/exited0 with no newly appended DBErrors. Historical lines retained. No user server stopped; no owned server left running.",
+    "release_sha256": "c5e484263ca6279df27d7df2741af295a9d0bf244a64d6ba25293901b04f9ff3",
+    "client_confirmed": [],
+    "pending_client": [
+      "Cold arrival: visible wind floor pushes backwards, three guardians keep their lanes and cast storms.",
+      "Storm contact boards/carries/releases the player at the native lane end, including movement, camera and permanent pet portrait.",
+      "Last guardian removes floor and advances Stage3 while released storms finish. Observe rune lightning/cleanup after restoring native helper SmartAI.",
+      "Paladin corridor and Unga Ingoo ship gameplay remain separate client checks; the factory test checks selection, not full ship gameplay."
+    ]
+  },
+  "reference": {
+    "url": "https://www.youtube.com/watch?v=CroQaRMV_dQ",
+    "review": "Whole transcript and full11:44 timeline sampled visually at10-second intervals; Stage4 additionally sampled at5-second and rune combat at2-second intervals. Relevant wind frames around4:10-4:50 were compared with the user's screenshots. This is sampled visual/transcript review, not a claim of uninterrupted playback or listening to every voice clip.",
+    "limits": "Native data and video inform the reconstruction; actual renderer, force packets and boarding/drop still require client confirmation."
+  }
+}

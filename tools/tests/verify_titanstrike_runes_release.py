@@ -12,11 +12,16 @@ def immediates(prefix):
     address = native['symbol'](prefix)
     index = bisect.bisect_right(native['starts'], address-native['base'])-1
     begin, end, unwind = native['functions'][index]
-    origin = native['root'](begin, unwind)
-    for first, last, data in native['functions'][index+1:]:
-        if first != end or native['root'](first, data) != origin:
-            break
-        end = last
+    if not begin <= address-native['base'] < end:
+        following = min(value for value in native['symbols'].values() if value > address)
+        assert following-address <= 128, f'Unbounded leaf callback: {prefix}'
+        end = following-native['base']
+    else:
+        origin = native['root'](begin, unwind)
+        for first, last, data in native['functions'][index+1:]:
+            if first != end or native['root'](first, data) != origin:
+                break
+            end = last
     at = native['offset'](address)
     code = native['binary'][at:at+native['base']+end-address]
     return {op.imm for ins in decoder.disasm(code, address) for op in ins.operands if op.type == CS_OP_IMM}

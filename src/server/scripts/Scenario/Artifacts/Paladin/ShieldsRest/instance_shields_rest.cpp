@@ -5,6 +5,8 @@
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "shields_rest.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 
 
@@ -272,7 +274,30 @@ public:
             }
         }
 
-        void Update(uint32 diff) override {}
+        uint32 hunterWindTimer = 0;
+        void Update(uint32 diff) override
+        {
+            if (hunterWindTimer > diff) { hunterWindTimer -= diff; return; }
+            hunterWindTimer = 500;
+            auto scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1068)
+                return;
+            bool active = scenario->GetCurrentStep() == 1 && windshaperDiedCount < 3;
+            for (auto guid : trashList)
+                if (auto helper = instance->GetCreature(guid))
+                    // Native Hunter corridor emitters; the other invisible
+                    // actors are rune/ritual effects and must remain untouched.
+                    if (helper->GetDBTableGUIDLow() == 365439 || helper->GetDBTableGUIDLow() == 365440)
+                    {
+                        if (active && !helper->HasAura(SPELL_SPIRIT_WINDS_AT))
+                            helper->CastSpell(helper, SPELL_SPIRIT_WINDS_AT, true);
+                        else if (!active && helper->HasAura(SPELL_SPIRIT_WINDS_AT))
+                        {
+                            helper->RemoveAurasDueToSpell(SPELL_SPIRIT_WINDS_AT);
+                            helper->RemoveAllAreaObjects();
+                        }
+                    }
+        }
     };
 };
 
