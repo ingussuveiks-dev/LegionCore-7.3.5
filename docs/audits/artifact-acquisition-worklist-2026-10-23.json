@@ -2,6 +2,7 @@
   "date": "2026-10-23",
   "build": "7.3.5.26972",
   "scope": "All 36 selected artifacts; this inventory certifies neither full chains nor visuals.",
+  "live_pickup_followup": "docs/audits/artifact-pickup-followup-2026-10-23.json",
   "priority": "Finish Hunter route review, then remaining classes; preserve previous Warlock repairs and user client observations in their original audits.",
   "sources": {
     "routes": "docs/audits/artifact-routes-2026-10-23.json",

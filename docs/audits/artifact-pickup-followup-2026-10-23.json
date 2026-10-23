@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-23",
+  "status": "Fresh read-only MariaDB findings queued for executable scene/loot investigation; no SQL repair applied",
+  "reason": "The earlier36-route audit only flagged missing chest loot links when a direct SmartAI spell contained native equip249. Several other chests cast scene auras instead, so zero automated findings did not establish a working item-acquisition path.",
+  "fresh_query": "Read actual runtime WorldDatabaseInfo privately. Selected gameobject_template entry/type/Data1/AIName/ScriptName, all source1 SmartAI actions and joined existing loot for the nine listed entries. No credentials or character data exported.",
+  "shared_observation": "All nine objects are chest type3 with SmartGameObjectAI and no C++ ScriptName. All have both a state70/GO_JUST_DEACTIVATED root and id2/event64/action85 repeating their pickup scene spell. SmartGameObjectAI::GossipHello dispatches event64 independently of completed loot; its event_param1=3 is not a completed-loot gate. Event64 may therefore invoke scene/progression before successful item storage. Exact native scene callbacks and intended grants still need tracing before deleting or replacing this behavior.",
+  "objects": [
+    {"entry": 248834, "specialization": "Hunter Survival", "item": 128808, "data1": 0, "scene_spell": 205589},
+    {"entry": 248419, "specialization": "Hunter Marksmanship", "item": 128826, "data1": 248419, "scene_spell": 200279},
+    {"entry": 247690, "specialization": "Priest Shadow", "item": 128827, "data1": 0, "scene_spell": 201780},
+    {"entry": 251605, "specialization": "Monk Brewmaster", "item": 128938, "data1": 0, "scene_spell": 217814},
+    {"entry": 248086, "specialization": "Monk Windwalker", "item": 128940, "data1": 0, "scene_spell": 199502},
+    {"entry": 250386, "specialization": "Druid Feral", "item": 128860, "data1": 0, "scene_spell": 214714},
+    {"entry": 248853, "specialization": "Druid Guardian", "item": 128821, "data1": 0, "scene_spell": 199963},
+    {"entry": 248499, "specialization": "Druid Restoration", "item": 128306, "data1": 0, "scene_spell": 207560},
+    {"entry": 251878, "specialization": "Demon Hunter Havoc", "item": 127829, "data1": 0, "scene_spell": 189916}
+  ],
+  "loot_query_result": "Only248419 joined loot through its current Data1: Item128826, Chance100, MinCount1, MaxCount1. The other eight Data1 values are0; this proves missing direct loot linkage, not absence of every possible scene/script item grant.",
+  "additional_graph_review": [
+    "247690 id0 links to id1, but id1 is event70 rather than LINK61. Validate actual SmartAI link admission and intended simultaneous stage signal before repairing.",
+    "251878 id4 links to missing id5. Do not invent the missing action or clear the link just to suppress diagnostics.",
+    "The existing route audit also shows Blood247566 id0 link1 without an exported destination. Inspect the fresh current graph and native spell200152 before treating this as a repaired route."
+  ],
+  "next_steps": [
+    "Prioritize Hunter Survival and Marksmanship. Follow205589/scene1220 and200279/scene1169 through native7.3.5 scene data, spell scripts, scenario criteria and any item-create/equip callbacks. Confirm actual pickup quest and prior encounter gates against the complete chain, not just canonical NextQuest links.",
+    "Compare compatible pinned donor changes and the complete relevant gameplay video sequence when local data cannot establish the scene callback or visual timing. Record reviewed intervals and visual evidence precisely.",
+    "For a confirmed fix, preserve scene visuals and native full-loot behavior, include owned/bank unique-copy recovery, bag failure/retry, repeated click/exactly-once credit, missing actors/casts, abandon/re-entry and no early admission; run SQL temporary-table and actual production-handler regressions, then build/deploy/verify any C++ change."
+  ],
+  "limits": "No videos were reviewed for these nine routes in this pass, no donor behavior was imported, and no client traversal, new progression or visual playback was verified. The separate shared effect249 repair is deployed but does not resolve these pending route-specific acquisition concerns."
+}
