@@ -3,6 +3,7 @@
   "build": "7.3.5.26972",
   "scope": "Persist actual Talonclaw claim and move Return-to-Dalaran credit off Dakarr's death onto the qualified player's real arrival. Does not implement the missing Dorro portal.",
   "prior_repairs": ["talonclaw-acquisition-2026-10-23.json", "talonclaw-presentation-2026-10-23.json"],
+  "later_departure_repair": "talonclaw-departure-2026-10-23.json",
   "local_evidence": [
     "Fresh runtime quest_objectives:280793 is100111/flight, amount1/storage0;280794 is100112/reclaim, amount0/storage1/Flags2;282143 is103798/return, amount1/storage2/Flags2.",
     "Native QuestObjectiveFlags:2 is SEQUENCED, not OPTIONAL; optional is4. The native KilledMonsterCredit loop compares curKillCount < obj.Amount before saving. Amount0 therefore never saves the actual197651 personal100112 claim and makes that objective trivially complete. This is distinct from merely missing a spell callback.",

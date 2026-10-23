@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,$first);if($first -lt 0 -or $last -lt $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing production block $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-[IO.File]::WriteAllText("$out/Return.inc",(Section $source 'namespace TalonclawReturn' 'void AddSC_artifact_acquisition()'))
+[IO.File]::WriteAllText("$out/Return.inc",(Section $source 'namespace TalonclawReturn' 'namespace TalonclawDeparture'))
 $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 [IO.File]::WriteAllText("$out/ObjectiveLookup.inc",(Section $source 'int32 Player::GetQuestObjectiveData(uint32' 'int32 Player::GetQuestObjectiveData(Quest const*'))
 $credit=Section $source 'void Player::KilledMonsterCredit(' 'void Player::KilledPlayerCredit()'

@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-23",
+  "build": "7.3.5.26972",
+  "scope": "Restore a personal, post-claim Dorro departure sequence and a usable Dalaran portal. Reconstruction using verified native assets; exact retail portal identity/timing and client playback remain unverified.",
+  "source_review": {
+    "prior_native_and_donor_review": "talonclaw-return-credit-2026-10-23.json records local exact26972 TrinityCore and pinned Ashamane source review. No compatible complete Survival departure donor was identified there. No new external implementation was imported here.",
+    "video": "https://www.youtube.com/watch?v=aAzrSVxEElk",
+    "review_limit": "Uses the rendered, muted samples already recorded in talonclaw-return-credit-2026-10-23.json, especially21:03/21:13/21:19/21:23/21:58/22:33/22:38. No additional video or audio was reviewed for this patch; not a continuous full-video review.",
+    "observed_order": "Pickup presentation, Dorro's initial speech, later departure speech, blue portal, loading screen, Krasus arrival and Emmarel turn-in/next quest. The earlier audit records the unobserved click interval and private frame hashes.",
+    "native_actor": "100005, display72823, existing SmartAI/event60 initial speech group0 and gossip19148/text28019 retained. Native chest-linked summon coordinates3878.35/1636.92/-0.0612079/o1.89629 reused, but the summon is moved after actual claim and scene removal rather than running during the presentation.",
+    "native_voice": "Actual local hotfix broadcasts103406/106397 select sounds62702/62703. Typed26972 SoundKit/SoundKitEntry resolve them to FileDataIDs1386269/1386270, volume0.8. Group1 restores106397 without inventing dialogue/audio IDs. File references do not prove audible client playback.",
+    "native_portal_asset": "Generic Portal-to-Dalaran display8111 resolves through typed GameObjectDisplayInfo to FileDataID244119, ObjectEffectPackage0. This display already belongs to native Dalaran portal templates such as244510. The exact retail Dorro portal GO/NPC ID was not established.",
+    "native_travel": "190598 is a self-only effect252 teleport with loading-screen1317 and no extra quest-credit effects. Its existing spell_target_position is map1220 near -828.61/4371.63/738.64, the native Krasus destination. No shared portal template/teleport spell or destination is modified.205575 is not used because its134 effect can credit a group;205304 is not substituted from Eye of the Archmage."
+  },
+  "repair": [
+    "A registered owner-state controller waits for live Hunter40385, persisted flight100111 and claim100112, owned Talonclaw, no205589 presentation aura, scenario973 at final-or-completed step on map1511, and proximity to the native cave. Shop ownership, a different scenario or an unclaimed/abandoned quest cannot spawn the departure.",
+    "Summon personal Dorro from the actual eligible player and bind him to that quest attempt. Preserve his native SmartAI first speech/gossip instead of overwriting AI event slots. After10s, play the restored native second speech to the owner; after a further6s, summon the personal portal beside him.",
+    "10s/6s timing, a two-yard right-side placement and300s renewable portal lifetime are bounded reconstruction choices informed by the sampled sequence, not claimed sniffed retail values. The engine's GetNearPosition/MovePosition handles the offset. Precise cave placement, animation and audio overlap require client comparison.",
+    "Use isolated GO9000575/type10/display8111 with a dedicated script, no default travel/credit spell and no interaction-blocking flags. Validate actual owner, quest claim, map/scenario, lifetime, phase, visibility, LOS, spawn/flags and five-yard range on every click. Only the owner self-casts native190598; no item or quest credit is awarded at the click.",
+    "A failed cast leaves the portal available and logs its result. Actual return credit remains the separate validated Dalaran-arrival hook. Thus a failed teleport does not complete the return objective or consume the portal.",
+    "Missing NPC, AI or portal creation retries at one-second intervals, capped at30 failures with first/last warnings. Missing/dead/out-of-phase actors and expired portals can be reconstructed without taking over an unrelated actor. Successful state retains GUIDs, not raw pointers or deferred cross-map actor captures.",
+    "Bind both objects to the native quest-object scope. Abandonment, death, invalid quest/item, leaving the cave, map/instance change and logout clear only that owner's state/scope; the portal AI also removes an expired, ownerless or out-of-phase portal. Native RemoveAllGameObjects also handles player map departure. State access across player/map hooks is mutex-protected.",
+    "Guardedly replace only the old immediate chest LINK3 summon after confirming the new portal/text registration, leaving native205589 and47689 actions intact. Add, rather than overwrite, group1 and the isolated GO template. Foreign portal script IDs or a conflicting text group disable the controller instead of spawning a foreign portal. SQL fixtures preserve custom definitions/chains."
+  ],
+  "checks": [
+    "Test-TalonclawDeparture.ps1 compiles the extracted production readiness/state/controller/gossip/portal-AI code. Tests cover post-scene admission,10s+6s order, exactly-once speech, no repeated live portal, actual click versus early credit, failed-cast retry, wrong owner/class/map/scenario/stage/phase/visibility/LOS/range/flags, missing claim/item, reward/abandon, dead/missing actors, failed summons,30-attempt cap, expiry, instance change, logout and retry.",
+    "Its actual-schema temporary MariaDB fixture runs the migration twice, checks model/flags/default spell fields, preserved native scene/criterion/first speech/AI, replaced early summon, restored106397 and custom portal/text/chain preservation. -BaselineSql fails the missing-portal assertion as expected.",
+    "Test-SurvivalReturnCatalog.ps1 uses the native typed DB2 reader for portal model, both voice files and pure190598 travel; separately queries actual runtime world/hotfix records for destination and broadcasts. Missing base BroadcastText records are not guessed from packed fields.",
+    "Test-TalonclawAcquisition.ps1, Test-TalonclawReturn.ps1, Test-TalonclawPresentation.ps1, Test-ArtifactAcquisition.ps1 -VerifyReleaseBinary, Test-DarkRidersCompletion.ps1 and Test-SceneLifecycle.ps1 pass. Acquisition's retained-link assertion now checks the preserved criterion link; the new departure fixture separately verifies intentional replacement of the old actor link.",
+    "Test-NewBloodQuestCleanup.ps1 passes extracted production quest scopes, cancellation, descendants, player isolation, remote-map expiry and same-tick reaccept. These are the cleanup APIs used here, not a live Survival traversal.",
+    "Known unrelated fixture failure retained: unchanged Test-QuestAttemptCleanup.ps1 does not compile because its Player stub lacks the pre-existing UpdateForQuestWorldObjects call extracted from Player.cpp. No runtime Player.cpp change belongs to this patch; that old fixture is not presented as passing or suppressed. The broader native cleanup regression above passes.",
+    "verify_talonclaw_departure_release.py checks actual PE readiness constants, native personal summons/quest binding, speech/timers, owner click190598, absence of click credit, scope cancellation and portal deletion; includes all earlier return/presentation/scene/LFG PE checks."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "937FDC2E90372B990D635B983358EA263C5EF419A997A877AB7F90706AF9516B",
+    "migration": "sql/updates/world/2026_10_23_13_talonclaw_departure.sql",
+    "migration_sha1": "530CB522F6561C5C860E462C3D3D833819097C46",
+    "build": "Both Release server targets built normally, no global OutDir. Final linker uses src/server/scripts/Release/scripts.lib and src/server/game/Release/game.lib; actual deployed instructions inspected.",
+    "live_readback": "9000575/type10/display8111/flags0/script bound; Dorro groups0/1 reference103406/106397; chest IDs0/1 retain205589 and47689, criterion link now0 and no immediate id3. Update registered RELEASED with matching hash.",
+    "startup": "Task-owned PID12000 initialized canonically and exited gracefully with code0. No new DBErrors bytes; protected configurations/certificates unchanged. No user server stopped and no task-owned server remains running.",
+    "private_evidence": ".codex/backups/talonclaw-departure-20261023 and .codex/talonclaw-departure-startup; no credentials, runtime assets or character data committed."
+  },
+  "remaining": [
+    "Actual client: ghost appears only after taking the weapon, both voices and their overlap, exact portal model/size/offset/birth animation, clickable cursor, failed travel/retry, cold Krasus arrival/camera/pet restoration, correct return1/1 and Emmarel turn-in/next quest. Native/fixture/startup/PE checks do not certify any of these observed client behaviors.",
+    "The exact retail Dorro portal entry and millisecond timings remain unresolved. The native generic portal asset/travel reconstruction is explicitly not an exact visual match certification.",
+    "Prerequisite39427, the earlier complete scenario, weapon actor100310 removal/pose after pickup, one-hit/pet/guardian combat credit and faction/group/second-artifact traversal still require the continuing route audit. No full36-chain or whole-video completion is claimed.",
+    "Previously lost Amount0 claims/premature return counters cannot be fabricated from owned shop items. Legacy active states may still need legitimate acquisition replay or quest retry, assessed during client testing without altering the user's characters."
+  ]
+}

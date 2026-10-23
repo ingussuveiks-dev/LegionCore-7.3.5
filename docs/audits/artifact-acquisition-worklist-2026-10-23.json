@@ -686,8 +686,9 @@
       "partial_repair_audit": "docs/audits/talonclaw-acquisition-2026-10-23.json",
       "presentation_repair_audit": "docs/audits/talonclaw-presentation-2026-10-23.json",
       "return_credit_repair_audit": "docs/audits/talonclaw-return-credit-2026-10-23.json",
+      "departure_repair_audit": "docs/audits/talonclaw-departure-2026-10-23.json",
       "start": 41542,
-      "status": "loot, presentation equip, persisted claim and actual return credit repaired with native regressions; prerequisite/scenario/Dorro portal and client traversal remain pending",
+      "status": "loot, presentation equip, claim, return credit and personal Dorro departure/portal reconstructed with native regressions; prerequisite/scenario, exact visual match and client traversal remain pending",
       "quests": [
         {
           "id": 41542,

@@ -13,12 +13,36 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<BroadcastTextEntry> texts("BroadcastText.db2", BroadcastTextLoadInfo::Instance());
     DB2Storage<AreaTableEntry> areas("AreaTable.db2", AreaTableLoadInfo::Instance());
-    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !texts.Load(argv[1], 0) || !areas.Load(argv[1], 0))
+    DB2Storage<GameObjectDisplayInfoEntry> displays("GameObjectDisplayInfo.db2", GameobjectDisplayInfoLoadInfo::Instance());
+    DB2Storage<SoundKitEntry> sounds("SoundKit.db2", SoundKitLoadInfo::Instance());
+    DB2Storage<SoundKitEntryEntry> tracks("SoundKitEntry.db2", SoundKitEntryLoadInfo::Instance());
+    if (!spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !texts.Load(argv[1], 0) || !areas.Load(argv[1], 0) || !displays.Load(argv[1], 0))
         return 2;
+    if (!sounds.Load(argv[1], 0) || !tracks.Load(argv[1], 0))
+        return 5;
+    for (uint32 id : {62702u, 62703u})
+    {
+        auto sound = sounds.LookupEntry(id);
+        if (!sound)
+            return 6;
+        bool found = false;
+        for (auto track : tracks)
+            if (track->SoundKitID == int32(id) && track->FileDataID)
+            {
+                std::cout << "VOICE\t" << id << '\t' << track->FileDataID << '\t' << sound->VolumeFloat << '\n';
+                found = true;
+            }
+        if (!found)
+            return 7;
+    }
     auto dalaran = areas.LookupEntry(7502);
     if (!dalaran)
         return 3;
     std::cout << "AREA\t" << dalaran->ID << '\t' << dalaran->ContinentID << '\t' << dalaran->AreaName->Str[0] << '\n';
+    auto portal = displays.LookupEntry(8111);
+    if (!portal || !portal->FileDataID)
+        return 4;
+    std::cout << "PORTAL_MODEL\t" << portal->ID << '\t' << portal->FileDataID << '\t' << portal->ObjectEffectPackageID << '\n';
     std::set<uint32> selected{197651};
     for (uint32 id = 205540; id <= 205600; ++id)
         selected.insert(id);

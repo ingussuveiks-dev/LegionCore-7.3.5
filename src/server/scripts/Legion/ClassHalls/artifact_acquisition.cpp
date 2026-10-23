@@ -5,6 +5,16 @@
 #include "ScenarioMgr.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
+#include "Creature.h"
+#include "CreatureAI.h"
+#include "CreatureTextMgr.h"
+#include "GameObjectAI.h"
+#include "Map.h"
+#include "ObjectAccessor.h"
+#include "ObjectMgr.h"
+#include <cmath>
+#include <mutex>
+#include <unordered_map>
 
 namespace ArtifactAcquisition
 {
@@ -204,10 +214,177 @@ public:
     void OnUpdate(Player* player, uint32) override { TalonclawReturn::Recover(player); }
 };
 
+namespace TalonclawDeparture
+{
+bool Ready(Player* player)
+{
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_HUNTER || player->GetMapId() != 1511 ||
+        player->GetQuestRewardStatus(40385) || player->GetQuestStatus(40385) != QUEST_STATUS_INCOMPLETE ||
+        player->GetQuestObjectiveData(40385, 100111) < 1 || player->GetQuestObjectiveData(40385, 100112) < 1 ||
+        player->GetQuestObjectiveData(40385, 103798) >= 1 || !player->HasItemCount(128808, 1, true) ||
+        player->HasAura(205589) || player->GetExactDist(3878.35f, 1636.92f, -0.0612079f) > 60.0f)
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    GameObjectTemplate const* portal = sObjectMgr->GetGameObjectTemplate(9000575);
+    uint32 scriptId = sObjectMgr->GetScriptId("go_talonclaw_return_portal");
+    CreatureTextGroup const* text = sCreatureTextMgr->GetTextGroup(100005, 1);
+    return scenario && scenario->GetScenarioId() == 973 && scenario->GetCurrentStep() >= 12 &&
+        portal && scriptId && portal->ScriptId == scriptId && text && text->size() == 1 && text->front().BroadcastTextID == 106397;
+}
+
+struct State
+{
+    ObjectGuid dorro, portal;
+    uint32 instance = 0, wait = 0, failures = 0;
+    bool spoken = false;
+
+    void Failed(Player* player, char const* actor)
+    {
+        ++failures;
+        wait = 1000;
+        if (failures == 1 || failures == 30)
+            TC_LOG_WARN("scripts", "Talonclaw departure: missing %s for player %u, attempt %u/30", actor, player->GetGUIDLow(), failures);
+    }
+
+    void Update(Player* player, uint32 diff)
+    {
+        if (failures >= 30)
+            return;
+        if (diff < wait)
+        {
+            wait -= diff;
+            return;
+        }
+        wait = 0;
+        Creature* actor = player->GetMap()->GetCreature(dorro);
+        if (actor && (!actor->IsAlive() || actor->IsQuestObjectExpired() || !player->InSamePhase(actor)))
+        {
+            actor->DespawnOrUnsummon();
+            actor = nullptr;
+        }
+        if (!actor)
+        {
+            actor = player->SummonCreature(100005, 3878.35f, 1636.92f, -0.0612079f, 1.89629f,
+                TEMPSUMMON_MANUAL_DESPAWN, 0, player->GetGUID());
+            if (!actor)
+            {
+                Failed(player, "Dorro");
+                return;
+            }
+            player->BindQuestObject(40385, actor);
+            dorro = actor->GetGUID();
+            spoken = false;
+            wait = 10000;
+            return;
+        }
+        if (!spoken)
+        {
+            if (!actor->IsAIEnabled)
+            {
+                Failed(player, "Dorro AI");
+                return;
+            }
+            actor->AI()->Talk(1, player->GetGUID());
+            spoken = true;
+            wait = 6000;
+            return;
+        }
+        if (player->GetMap()->GetGameObject(portal))
+            return;
+        Position pos = actor->GetNearPosition(2.0f, 1.5707963f);
+        GameObject* object = player->SummonGameObject(9000575, pos, actor->GetOrientation(), 0.0f, 0.0f,
+            std::sin(actor->GetOrientation() * 0.5f), std::cos(actor->GetOrientation() * 0.5f), 300, player->GetGUID());
+        if (!object)
+        {
+            Failed(player, "return portal");
+            return;
+        }
+        player->BindQuestObject(40385, object);
+        portal = object->GetGUID();
+        failures = 0;
+    }
+};
+
+bool Use(Player* player, GameObject* object)
+{
+    if (!object || object->GetEntry() != 9000575 || !Ready(player) || object->GetOwnerGUID() != player->GetGUID() ||
+        object->IsQuestObjectExpired() || !object->isSpawned() || player->GetMap() != object->GetMap() ||
+        object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+        !player->InSamePhase(object) || !player->canSeeOrDetect(object) || !player->IsWithinLOSInMap(object) ||
+        player->GetExactDist(object) > 5.0f)
+        return true;
+    SpellCastResult result = player->CastSpell(player, 190598, true);
+    if (result != SPELL_CAST_OK)
+        TC_LOG_WARN("scripts", "Talonclaw departure: return cast failed for player %u, result %u", player->GetGUIDLow(), uint32(result));
+    return true;
+}
+}
+
+class player_talonclaw_departure : public PlayerScript
+{
+    std::mutex mutex;
+    std::unordered_map<ObjectGuid, TalonclawDeparture::State> states;
+
+    void Clear(Player* player)
+    {
+        if (states.erase(player->GetGUID()))
+            player->CancelQuestObjects(40385);
+    }
+
+public:
+    player_talonclaw_departure() : PlayerScript("player_talonclaw_departure") { }
+    void OnUpdate(Player* player, uint32 diff) override
+    {
+        if (!player)
+            return;
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!TalonclawDeparture::Ready(player))
+        {
+            Clear(player);
+            return;
+        }
+        auto found = states.find(player->GetGUID());
+        if (found != states.end() && found->second.instance != player->GetInstanceId())
+            Clear(player);
+        auto& state = states[player->GetGUID()];
+        state.instance = player->GetInstanceId();
+        state.Update(player, diff);
+    }
+    void OnLogout(Player* player) override
+    {
+        if (!player)
+            return;
+        std::lock_guard<std::mutex> lock(mutex);
+        Clear(player);
+    }
+    void OnMapChanged(Player* player) override { OnLogout(player); }
+};
+
+class go_talonclaw_return_portal : public GameObjectScript
+{
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        void UpdateAI(uint32) override
+        {
+            Player* owner = ObjectAccessor::GetPlayer(*go, go->GetOwnerGUID());
+            if (go->IsQuestObjectExpired() || !TalonclawDeparture::Ready(owner) || !owner->InSamePhase(go))
+                go->Delete();
+        }
+    };
+public:
+    go_talonclaw_return_portal() : GameObjectScript("go_talonclaw_return_portal") { }
+    bool OnGossipHello(Player* player, GameObject* object) override { return TalonclawDeparture::Use(player, object); }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+};
+
 void AddSC_artifact_acquisition()
 {
     new go_artifact_acquisition();
     new player_dark_riders_completion();
     RegisterAuraScript(spell_talonclaw_presentation);
     new player_talonclaw_return();
+    new player_talonclaw_departure();
+    new go_talonclaw_return_portal();
 }

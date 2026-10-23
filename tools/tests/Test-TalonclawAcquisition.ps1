@@ -30,7 +30,7 @@ FROM gameobject_template g JOIN gameobject_loot_template l ON l.Entry=g.Data1 WH
 SELECT 'settings',COUNT(*) FROM gameobject_template g JOIN saved_go s ON s.entry=g.entry
 WHERE g.entry=248834 AND g.flags=s.flags AND g.Data0=s.Data0 AND g.Data3=s.Data3 AND g.Data8=s.Data8 AND g.Data30=s.Data30;
 SELECT 'root',COUNT(*) FROM smart_scripts WHERE entryorguid=248834 AND source_type=1 AND id=0 AND event_type=70 AND event_param1=3 AND action_type=85 AND action_param1=205589 AND link=1;
-SELECT 'links',COUNT(*) FROM smart_scripts s JOIN saved_sai original ON original.entryorguid=s.entryorguid AND original.source_type=s.source_type AND original.id=s.id AND original.link=s.link AND original.event_type=s.event_type AND original.action_type=s.action_type AND original.action_param1=s.action_param1 WHERE s.entryorguid=248834 AND s.id IN(1,3);
+SELECT 'links',COUNT(*) FROM smart_scripts s JOIN saved_sai original ON original.entryorguid=s.entryorguid AND original.source_type=s.source_type AND original.id=s.id AND original.link=s.link AND original.event_type=s.event_type AND original.action_type=s.action_type AND original.action_param1=s.action_param1 WHERE s.entryorguid=248834 AND s.id=1;
 SELECT 'early',COUNT(*) FROM smart_scripts WHERE entryorguid=248834 AND source_type=1 AND id=2;
 SELECT 'orphan',COUNT(*) FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=248834 AND SourceId=1 AND SourceGroup=3;
 SELECT 'other-go',COUNT(*) FROM gameobject_template g JOIN saved_go s ON s.entry=g.entry WHERE g.entry=248419 AND g.Data1=s.Data1 AND g.ScriptName=s.ScriptName;
@@ -48,7 +48,7 @@ try {
  $rows=@($sql | & C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
  if($LASTEXITCODE){throw 'Talonclaw temporary SQL fixture failed'}
 }finally{$env:MYSQL_PWD=$previous}
-foreach($expected in @("loot`t248834`t248834`t128808`t100`t1`t1`tgo_artifact_acquisition","settings`t1","root`t1","links`t2","early`t0","orphan`t0","other-go`t1","other-sai`t1","custom`t1","custom-gossip`t1")){
+foreach($expected in @("loot`t248834`t248834`t128808`t100`t1`t1`tgo_artifact_acquisition","settings`t1","root`t1","links`t1","early`t0","orphan`t0","other-go`t1","other-sai`t1","custom`t1","custom-gossip`t1")){
  if($rows -notcontains $expected){throw "Talonclaw fixture mismatch: $expected"}
 }
 'PASS: Talonclaw real loot linkage, repeat migration, native scene/completed-loot links, removed duplicate owned-copy path, preserved admission flags and other Hunter chest'
