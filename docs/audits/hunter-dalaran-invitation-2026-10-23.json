@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-23",
+  "report": "Krau reached Legion Dalaran but has no visible next Hunter questgiver; the map offers various class/artifact/profession quest names. User also asks about missing riding training and mounting while in Vigilance Perch owl form.",
+  "read_only_character_findings": {
+    "state": "Level102 Hunter on map1220/zone7502, no active quest rows at the initial read; 44663 rewarded, 40384/41415/40618 not rewarded.",
+    "riding": "Skill762=300/300 and known34091 Artisan Riding; Master Riding90265 absent. Native trainer spell90266 learns90265. Maztha44919 and Hira31238 both have a90266 trainer row requiring skill300/level80, base cost50000000 copper (5000 gold before discounts). Hira has a spawn on old Northrend map571 only; Maztha spawns in Orgrimmar map1. No skill, money, spell or quest was granted.",
+    "professions": "Leatherworking165=700/700; Alchemy171 absent at read time. Skin Deep39958 is the Leatherworking offer from Namha Moonwater93523, not the Hunter introduction."
+  },
+  "root_cause": "The original196908 area7502/classmask4/quest_end40384 row used allowed mask74 (active/complete/rewarded), excluding NONE. Thus the native summon was blocked precisely when Snowfeather needed to offer Needs of the Hunters.",
+  "native_evidence": {
+    "probe": "tools/research/HunterDalaranOfferCatalog.cpp, using the real server DB2 reader and build26972 runtime records",
+    "spell": "196908 Summon Snowfeather, effect28 summon100786, duration300000. Unlike the warlock invitation, it has no dummy/persistent aura effect.",
+    "actor": "Existing creature_queststarter100786->40384. Native SmartAI follows invoker, sets personal invisibility, times out after30000ms and despawns5000ms after accepting40384. No actor/script/path/dialogue changes.",
+    "chain": "40384 Needs of the Hunters ->41415 The Hunter's Call ->40618 Weapons of Legend; existing addon prerequisites require the previous quest. Emmarel102478 is at the Hunter's Reach shop, not on the open Krasus platform.",
+    "mounting": "Unit::IsInDisallowedMountForm and Spell::CheckCast reject mounting in owl form38 (native form flags32776). Speed buff242066 has attributes0=0, so native HandleCancelAura permits cancellation. Removing that buff lets the fixed500ms controller remove the infinite form; ordinary mount/area/flight requirements still apply. No automatic mount/form-switch feature was added."
+  },
+  "repair": {
+    "migration": "sql/updates/world/2026_10_23_00_hunter_dalaran_invitation.sql",
+    "scope": "Change only the original196908/7502/0/40384/class4/autocast row's legacy allowed mask74 to1. Preserve custom replacements and all other offers.",
+    "application": "Applied to the configured live World database and registered in updates with SHA1 1178c98d2733703688580560f3a74805440299ea. Final row reads quest_end_status1. Running worldserver cache still needs reload spell_area or its next ordinary restart.",
+    "runtime": "Data-only repair; existing canonical Release contains the tested predicate. No executable replacement or server stop; user worldserver30284 and bnetserver29628 kept running. No owned temporary process or trace remains."
+  },
+  "verification": [
+    "Test-DalaranClassIntro.ps1 executes extracted production SpellArea::IsFitToRequirements and Player::SetQuestUpdate. Covers initial/abandoned Hunter offer, all quest states, other classes/areas and no new cast after acceptance, alongside existing Warlock tests.",
+    "The Hunter fixture explicitly models196908 as a pure summon rather than fabricating an aura. It does not claim duplicate-summon suppression or actor despawn verification from the aura fixture; actor cleanup remains an existing SmartAI data check and a client requirement.",
+    "Test-HunterDalaranOfferData.ps1 applies the actual migration twice to connection-local copies, checks exact row repair, unrelated/custom-mask preservation and existing questgiver/personal/follow/acceptance-cleanup rows. Live tables are not changed by that test.",
+    "Native catalog confirms the actual summon100786, trainer90266->90265 mapping and cancellable speed buff242066. Database schema/actual trainer and spawn records were read before giving the training recommendation."
+  ],
+  "map_marker_findings_not_repaired_in_this_migration": [
+    "UpdateAvailableQuestLines uses native CanTakeQuest, including source19 conditions. It does not establish that an actor is currently spawned/phase-visible. Do not replace this with an unrestricted quest or NPC grant.",
+    "Several reported artifact branch templates have AllowableClasses0 and missing/partial prerequisites. Intended branches:38576/42811/42812 Paladin;40714 Death Knight;40819/41120 Demon Hunter;43644 Shaman;39427 Hunter Survival. The latter follows41542 Preparation for the Hunt, not initial BM onboarding.",
+    "39566 The Search for Knowledge has Alchemy171 with RequiredSkillPoints0; the current native skill comparison admits a character with skill value0. This is a separate map/quest-admission issue; its data and other class/branch markers were not changed here.",
+    "No claim is made that the city's other map pins or entire Hunter campaign are fixed or client-verified by this invitation repair."
+  ],
+  "client_checks_pending": [
+    "Reload spell_area in the running server console, then re-enter Dalaran/relog. Confirm personal Snowfeather appears and permits accepting40384; existing timeout is30seconds, so interact promptly.",
+    "Turn in to Emmarel, complete41415 and select the Beast Mastery/Titanstrike path via40618. Personal visibility, dialogue, actual acceptance, downstream actors and artifact scenario remain unverified.",
+    "Confirm the previous owl-form repair clears the visual/movement state after the buff expires or is cancelled, and that a normal mount can then be used where permitted. The user reported a connection failure in response to that test, not successful owl cleanup."
+  ],
+  "references": [
+    "https://www.wowhead.com/quest=40384/needs-of-the-hunters",
+    "https://www.wow-pro.com/hunter-artifact-and-class-hall/",
+    "https://worldofwarcraft.blizzard.com/en-us/news/20565047/unlocking-flying-in-legion"
+  ]
+}
