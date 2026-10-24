@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -and $HelyaBaseline) -or (($Baseline -or $HelyaBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
+if(@($Baseline,$HelyaBaseline,$TargetBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-intro"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -9,6 +9,7 @@ $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "9dd043ad:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned final intro baseline'}}
 if($HelyaBaseline){$source=(& git -C $repo show "a5a82529:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya baseline'}}
+if($TargetBaseline){$source=(& git -C $repo show "f6b173ea:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya target baseline'}}
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 if($first -lt 0 -or $last -le $first){throw 'Final intro member fields missing'}
@@ -26,7 +27,7 @@ $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/ObjectInMap.inc",(Block $source 'template<class T> static T* GetObjectInMap('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsFinalIntroTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final intro native regression failed'}
 if($VerifyReleaseBinary){

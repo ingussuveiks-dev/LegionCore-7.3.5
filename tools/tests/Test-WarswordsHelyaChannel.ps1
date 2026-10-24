@@ -15,4 +15,6 @@ if($VerifyReleaseBinary){
  if(!$? -or $LASTEXITCODE){throw 'Native binding and canonical intro regression failed'}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_warswords_helya_channel_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Helya channel guard missing'}}finally{$env:PYTHONPATH=$previous}
+ & "$PSScriptRoot/Test-WarswordsHelyaTargetNative.ps1"
+ if(!$? -or $LASTEXITCODE){throw 'Actual native Helya recipient lifecycle failed'}
 }

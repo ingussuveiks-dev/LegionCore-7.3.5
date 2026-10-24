@@ -586,13 +586,13 @@ public:
             introPending = true;
             uint32 generation = introGeneration;
             ObjectGuid playerGuid = player->GetGUID();
-            if (!helya->HasAura(195062, helya->GetGUID()))
+            if (!me->HasAura(195062, helya->GetGUID()))
             {
-                SpellCastResult result = helya->CastSpell(helya, 195062);
+                SpellCastResult result = helya->CastSpell(me, 195062);
                 if (generation != introGeneration || !introPending || !me->IsAlive())
                     return;
                 if (result != SPELL_CAST_OK || !helya->IsInWorld() || helya->IsPreDelete() || !helya->IsAlive() ||
-                    helya->GetMap() != me->GetMap() || !helya->InSamePhase(me) || !helya->HasAura(195062, helya->GetGUID()))
+                    helya->GetMap() != me->GetMap() || !helya->InSamePhase(me) || !me->HasAura(195062, helya->GetGUID()))
                 {
                     introDone = false;
                     introPending = false;

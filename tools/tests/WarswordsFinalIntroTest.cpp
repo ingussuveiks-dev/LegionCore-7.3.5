@@ -75,8 +75,8 @@ struct Creature : Unit
     Creature* FindNearestCreature(uint32 identity, float distance, bool aliveOnly) { assert(identity == 99043 && distance == 100 && aliveOnly); return helya; }
     Player* FindNearestPlayer(float distance, bool aliveOnly) { assert(distance == 100 && aliveOnly); return nearest; }
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
-    uint32 CastSpell(Unit* target, uint32 identity) { assert(target == this && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; aura = auraWorks; auraCaster = guid; } if (onCast) onCast(); return castWorks ? 0 : 1; }
-    bool HasAura(uint32 identity, ObjectGuid caster) const { assert(identity == 195062 && caster == guid); return aura && auraCaster == caster; }
+    uint32 CastSpell(Unit* target, uint32 identity) { auto receiver = dynamic_cast<Creature*>(target); assert(receiver && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; receiver->aura = auraWorks; receiver->auraCaster = guid; } if (onCast) onCast(); return castWorks ? 0 : 1; }
+    bool HasAura(uint32 identity, ObjectGuid caster) const { assert(identity == 195062); return aura && auraCaster == caster; }
     ObjectGuid GetGUID() const { return guid; }
     bool InSamePhase(Creature*) const { return phase; }
     void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 8000); callbacks.push_back(std::move(callback)); }
@@ -129,7 +129,7 @@ struct Fixture
     Player owner, intruder;
     Creature actor, helya;
     IntroAI ai{&actor};
-    Fixture() { intruder.guid = 2; intruder.status = 0; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
+    Fixture() { intruder.guid = 2; intruder.status = 0; actor.guid = 98; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
     ~Fixture() { ObjectAccessor::players.clear(); }
     void Start() { ai.MoveInLineOfSight(&owner); }
 };
@@ -181,6 +181,10 @@ int main()
         fixture.actor.Flush(); assert(fixture.ai.attacks == 1);
     }
     std::cout << "BASELINE: pinned a5a82529 consumes intro and arms8s engagement despite missing Helya or failed195062; no retry/actual aura acknowledgement. Controlled world/cast/timer, not client visuals.\n";
+#elif defined(TARGET_BASELINE)
+    Fixture fixture; fixture.Start();
+    assert(fixture.helya.aura && !fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
+    std::cout << "BASELINE: pinned f6b173ea acknowledges195062 on Helya herself, not Vigfus, and still starts843/8s. Controlled services; real native Spell/Aura recipient comparison runs separately.\n";
 #else
     for (uint32 invalid = 0; invalid < 19; ++invalid)
     {
@@ -209,7 +213,7 @@ int main()
             fixture.ai.TickVisual(1); fixture.Start();
             assert(recoveryRequests == 1 && warningRequests == 1);
         }
-        assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && fixture.helya.aura);
+        assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && fixture.actor.aura && !fixture.helya.aura);
         assert(fixture.owner.acceptedConversations == uint32(presentationWorks));
         fixture.owner.distance = 100; fixture.actor.Flush(); fixture.actor.Flush();
         assert(fixture.ai.attacks == 1 && fixture.ai.attacked == &fixture.owner && fixture.actor.auraRemovals == 1 && !fixture.ai.introPending);
@@ -273,23 +277,27 @@ int main()
         fixture.actor.helya = &fixture.helya; fixture.helya.world = fixture.helya.alive = fixture.helya.phase = true;
         fixture.helya.predelete = false; fixture.helya.map = &instanceMap;
         fixture.ai.TickVisual(1000); fixture.ai.UpdateIntro(1000);
-        assert(fixture.owner.conversations == 1 && fixture.helya.aura && fixture.actor.callbacks.size() == 1 && recoveryRequests == 1);
+        assert(fixture.owner.conversations == 1 && fixture.actor.aura && !fixture.helya.aura && fixture.actor.callbacks.size() == 1 && recoveryRequests == 1);
     }
     {
         Fixture fixture; fixture.helya.auraWorks = false;
         fixture.Start(); assert(fixture.helya.acceptedCasts == 1 && !fixture.owner.conversations && fixture.actor.callbacks.empty());
-        fixture.helya.aura = true; fixture.ai.TickVisual(1000); fixture.Start();
+        fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid; fixture.ai.TickVisual(1000); fixture.Start();
         assert(fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     }
     {
-        Fixture fixture; fixture.helya.aura = true; fixture.Start();
+        Fixture fixture; fixture.actor.aura = true; fixture.actor.auraCaster = fixture.helya.guid; fixture.Start();
         assert(fixture.helya.casts == 0 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     }
     for (bool failed : {false, true})
     {
-        Fixture fixture; fixture.helya.aura = true; fixture.helya.auraCaster = 100; fixture.helya.castWorks = !failed;
+        Fixture fixture; fixture.actor.aura = true; fixture.actor.auraCaster = 100; fixture.helya.castWorks = !failed;
         fixture.Start();
         assert(fixture.helya.casts == 1 && fixture.owner.conversations == uint32(!failed) && fixture.actor.callbacks.size() == uint32(!failed));
+    }
+    {
+        Fixture fixture; fixture.helya.aura = true; fixture.Start();
+        assert(fixture.helya.casts == 1 && fixture.actor.aura && fixture.actor.auraCaster == fixture.helya.guid && fixture.owner.conversations == 1);
     }
     {
         Fixture fixture; fixture.helya.castWorks = false; fixture.Start();
@@ -317,6 +325,6 @@ int main()
         Fixture fixture; fixture.owner.onConversation = [&]() { fixture.ai.Reset(); }; fixture.Start();
         assert(fixture.helya.casts == 1 && !fixture.ai.introPending && !fixture.ai.introDone && fixture.actor.callbacks.empty());
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and actual self195062 aura before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
 #endif
 }
