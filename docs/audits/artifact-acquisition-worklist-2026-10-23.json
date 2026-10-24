@@ -257,6 +257,8 @@
       "class_id": 1,
       "specialization": "Fury",
       "weapon": "Warswords of the Valarjar",
+      "weapon_phase_audit": "docs/audits/warswords-weapon-phase-2026-10-24.json",
+      "weapon_phase_review": "Weapon134150 previously matched shared7003 before final944/6. Guarded migration56 retains only existing7001 on that exact spawn, preserving early7003 bonfire/runestones/guards and all shared definitions. Actual-schema idempotence/12 custom variants, native phase/ElseGroup/intersection host, live migration/hash and canonical phase/retreat/owner PE/startup/Scepter pass. Ordinary visibility repaired; cached-GUID Use, real loot/equip/return and client visuals remain open. Do not globally stage-gate7003 to hide final98602.",
       "scaled_retreat_audit": "docs/audits/warswords-scaled-retreat-2026-10-24.json",
       "scaled_retreat_review": "First98007 pre-hit50 check lost native46982 on scaled lethal blows. Scoped1511/944/4 post-scaled projected half-health guard now retains both native escape legs, no-heal clamp, eligible active40043 owner/charmer credit and retry, exactly-once pending/second-leg/reset state claimed before reentrant cast. Pinned baseline,64 owner/phase/cast hosts, native arithmetic/36 scale cases/exact-half/invalid-context matrix, typed DB2, canonical vtables/thresholds/dispatcher, Release/startup/Scepter pass. Partial muted samples include12:57 living retreat/100315/Stage6 transition, not measured HP/full footage; actual paths/channel/audio, native group and full client traversal remain pending. Phase7003 quest-only final-actor admission, final15/7, failed99609 and genuine gated loot/return remain open.",
       "final_owner_credit_audit": "docs/audits/warswords-final-owner-credit-2026-10-24.json",
@@ -345,7 +347,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain first98007 post-scaled half-health/two-leg owner46982 and final98602 owner46987/848 repairs. Investigate phase7003 entry52 active40043-only final-actor admission against native944/5 before final15/7-percent chase, failed99609 summons and genuine gated248832 loot/full-bag/equip-pair/scene/acknowledged return103739. Full first paths/channel/audio/re-entry and complete Fury video/client traversal remain unverified."
+      "next_action": "Retain first98007/final98602 owner repairs and weapon-only7001 phase. Entry52/7003 also contains prerequisites/early environment: never globally restrict it to final stage. Add scoped final-actor and cached-GUID weapon interaction admission, then genuine248832 loot/full-bag/equip-pair/scene/acknowledged return103739, final15/7 and failed99609 recovery. Full paths/channel/audio/re-entry and complete Fury video/client traversal remain unverified."
     },
     {
       "class_id": 2,
