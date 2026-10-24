@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "followup_correction": "docs/audits/stromkar-linked-finale-2026-10-24.json withdraws this audit's disconnected201904 conclusion. Existing spell_linked_spell206456 ->201904 type0 does connect the native request path; it was omitted from reverse searches. No actual child-hit/final-actor/departure/VFX completion established.",
   "scope": "Restore native206455 Execute nearby destination selection and current actor/caster eligibility. Retain the actual jump206456/49109 flow. Not a repaired legacy departure callback, full replay recovery, actual client movement or all36 certification.",
   "inherited": "Clean4dcbbde4/main=origin/main; worklist, artifact-routes, donor review and45-48.48's fresh typed data separates real206455/206456 from the preserved201904 Dark Drain legacy list. No new server C++ behavior is required for this missing source13 target list.",
   "local_evidence": {

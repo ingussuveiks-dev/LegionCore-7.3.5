@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "followup_correction": "docs/audits/stromkar-linked-finale-2026-10-24.json supersedes the incomplete legacy-link inference: an existing spell_linked_spell206456 ->201904 type0 bridge was omitted from the earlier search. Preserve it; final actor presence/hit/list/visual execution remain separate.",
   "scope": "Protect Zakajz104276's existing low-health transition from final scaled killing blows in1037/8-9. Retain all13 native SmartAI rows and genuine acquisition paths. Not a whole Arms chain, actual execution/departure or client certification.",
   "inherited": "Clean9a066ebd/main=origin/main; worklist, artifact-routes, donor review and45/46/47. Started with owned-scene replay investigation, identified deletion/legacy callback gaps, then completed this independent confirmed scaled-damage fix rather than inventing a replay/weapon grant. Existing released migrations remain immutable.",
   "local_evidence": {

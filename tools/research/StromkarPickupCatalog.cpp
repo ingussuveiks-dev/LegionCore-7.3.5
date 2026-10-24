@@ -51,7 +51,7 @@ int main(int argc, char** argv)
         return 5;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456};
+    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456, 204394, 202014, 63048};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -118,6 +118,14 @@ int main(int argc, char** argv)
     for (auto effect : effects)
         if (effect->EffectTriggerSpell == 206456)
             std::cout << "ARRIVAL_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->DifficultyID << '\n';
+    for (auto effect : effects)
+        if (effect->EffectMiscValue[0] == 104307 || effect->EffectMiscValue[0] == 103151)
+        {
+            auto spell = spells.LookupEntry(effect->SpellID);
+            std::cout << "ACTOR_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
+                << effect->EffectMiscValue[0] << '\t' << effect->EffectMiscValue[1] << '\t' << effect->EffectTriggerSpell << '\t'
+                << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\t' << (spell ? spell->Name->Str[0] : "") << '\n';
+        }
     DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());
     if (!miscellaneous.Load(argv[1], 0) || !ranges.Load(argv[1], 0))

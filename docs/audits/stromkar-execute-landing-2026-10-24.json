@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "followup_correction": "docs/audits/stromkar-linked-finale-2026-10-24.json withdraws the disconnected206456/201904 statement below: an existing type0 spell_linked_spell bridge was omitted from the earlier bounded searches. Preserve that bridge.50's source17 fix remains unchanged; actual child-hit/actor/departure/VFX remain unverified.",
   "scope": "Revalidate the player's acquisition context when native206456 executes after the206455 jump. This is not proof of physical arrival, actor identity/cleanup, exactly-once native scenario credit, visual parity or a complete Arms/all36 chain.",
   "inherited": "Clean4e31bab8/main=origin/main; actual worklist, artifact-routes, donor review and45-49 audits read.49 supplies the native launch destination/caster filter but does not constrain the later self-target206456 cast.",
   "local_evidence": {
