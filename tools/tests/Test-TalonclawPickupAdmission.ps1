@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast,[string]$XalatathRowsPath,[uint32]$XalatathLootId=247690,[switch]$XalatathRoot,[switch]$XalatathGossip,[switch]$XalatathBaseline)
+param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast,[string]$XalatathRowsPath,[uint32]$XalatathLootId=247690,[switch]$XalatathRoot,[switch]$XalatathGossip,[switch]$XalatathBaseline,[string]$StromkarRowsPath,[uint32]$StromkarLootId=247877,[switch]$StromkarRoot)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-pickup-admission"
@@ -82,6 +82,7 @@ if($XalatathRowsPath){
  if($XalatathBaseline){$mode+='-baseline'}
  $fixture="`"$XalatathRowsPath`" $mode $XalatathLootId"
 }
+if($StromkarRowsPath){$mode=if($StromkarRoot){'stromkar-root'}else{'stromkar-loot'};$fixture="`"$StromkarRowsPath`" $mode $StromkarLootId"}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" $fixture`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Native Talonclaw pickup admission failed'}

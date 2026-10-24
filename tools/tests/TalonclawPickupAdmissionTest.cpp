@@ -151,14 +151,26 @@ int main(int argc, char** argv) {
         assert(chest.GetLootId() == 247690);
         if (xalatathRoot) { castAdmission = true; eventEntry = 247690; }
     }
-    bool ownedReplay = xalatathRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
+    bool stromkar = argc == 4 && std::string(argv[2]).find("stromkar-") == 0;
+    bool stromkarRoot = stromkar && std::string(argv[2]) == "stromkar-root";
+    if (stromkar) {
+        expectedQuest = 41105; expectedMap = 1539; expectedScenario = 1037; firstStage = lastStage = 9;
+        expectedItem = 128910; expectedClassMask = 1; scenarioManager = {};
+        GameObjectTemplate chest;
+        assert(chest.GetLootId() == 0);
+        chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
+        assert(chest.GetLootId() == 247877);
+        if (stromkarRoot) { castAdmission = true; eventEntry = 247877; }
+    }
+    bool ownedReplay = xalatathRoot || stromkarRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
     if (titanstrike) eventId = 0;
     if (xalatathRoot) eventId = xalatathGossip ? 2 : 0;
+    if (stromkarRoot) eventId = 0;
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -181,6 +193,16 @@ int main(int argc, char** argv) {
         script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
         player.owned = true;
         script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 1);
+    }
+    if (stromkarRoot) {
+        Player player;
+        SmartScript script; script.base = &player; script.mEvents = {{247877, 0, 1, SMART_EVENT_GO_STATE_CHANGED}};
+        scenarioManager.scenario.step = 8;
+        script.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED, &player, 3); assert(script.actions == 0);
+        scenarioManager.scenario.step = 9; player.owned = false;
+        script.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED, &player, 3); assert(script.actions == 0);
+        player.owned = true;
+        script.ProcessEventsFor(SMART_EVENT_GO_STATE_CHANGED, &player, 3); assert(script.actions == 1);
     }
     if (returnEvent) {
         Player owner; scenarioManager.scenario.step = 7;
@@ -219,7 +241,7 @@ int main(int argc, char** argv) {
         if (invalid == 1) scenarioManager.scenario.id = 944;
         if (invalid == 2) scenarioManager.present = false;
         if (invalid == 3) player.mapId = 1;
-        if (invalid == 4) player.classMask = 1;
+        if (invalid == 4) player.classMask = expectedClassMask == 1 ? 16 : 1;
         if (invalid == 5) player.quest = 41542;
         if (invalid == 6) worldMap.instanced = false;
         if (invalid == 7) instanceMap.id = 43;
@@ -231,6 +253,14 @@ int main(int argc, char** argv) {
         assert(!item.AllowedForPlayer(&dead) && !cache.Read(&dead, &item));
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &dead, &dead));
     }
+    if (stromkar) {
+        for (uint32 sharedMapScenario : {991u, 1092u}) {
+            Player owner; scenarioManager.scenario.id = sharedMapScenario;
+            assert(!item.AllowedForPlayer(&owner) && !cache.Read(&owner, &item));
+            if (ownedReplay) assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+        }
+        scenarioManager = {};
+    }
     Player player; player.status = QUEST_STATUS_COMPLETE; player.rewarded = true;
     assert(!item.AllowedForPlayer(&player));
     LootItem unrelated; assert(unrelated.AllowedForPlayer(&player));
@@ -240,7 +270,7 @@ int main(int argc, char** argv) {
         player.rewarded = false; player.owned = false; player.bank = true; item.loot_restricted = false;
         Condition original; original.ConditionType = CONDITION_ITEM; original.ConditionValue1 = expectedItem; original.ConditionValue2 = 1;
         ConditionSourceInfo originalContext(&player); assert(!original.Meets(originalContext));
-        assert(item.AllowedForPlayer(&player) == !xalatathRoot);
+        assert(item.AllowedForPlayer(&player) == !(xalatathRoot || stromkarRoot));
         player.bank = false; assert(!item.AllowedForPlayer(&player));
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &player, &player));
         Unit pet;
