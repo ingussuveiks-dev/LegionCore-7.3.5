@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify repaired Release'}
+if(($Baseline -and $AdmissionBaseline) -or (($Baseline -or $AdmissionBaseline) -and $VerifyReleaseBinary)){throw 'Select a single baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-thresholds"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,10 +8,12 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "eb5c0e24:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final threshold baseline unavailable'}}
+if($AdmissionBaseline){$source=(& git -C $repo show "14774c59:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final admission baseline unavailable'}}
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $source 'void Reset()'))
+[IO.File]::WriteAllText("$out/EncounterReady.inc",$(if($Baseline -or $AdmissionBaseline){''}else{Block $source 'bool IsEncounterReady('}))
 $pre=if($Baseline){Block $source 'void DamageTaken('}else{'void DamageTaken(Unit*, uint32&, DamageEffectType) override { }'}
 $post=if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}
 [IO.File]::WriteAllText("$out/DamageTaken.inc",$pre)
@@ -32,7 +34,7 @@ $source=Get-Content "$repo/src/common/Utilities/Util.h" -Raw
 $source=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block $source 'enum CriteriaTypes')+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsFinalThresholdsTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final threshold native regression failed'}
 if($VerifyReleaseBinary){

@@ -430,6 +430,25 @@ public:
             count_adds = 0;
         }
 
+        bool IsEncounterReady() const
+        {
+            if (me->GetEntry() != 98602 || me->GetMapId() != 1511)
+                return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 5;
+        }
+
+        bool CanAIAttack(Unit const*) const override
+        {
+            return IsEncounterReady();
+        }
+
+        void AttackStart(Unit* target) override
+        {
+            if (IsEncounterReady())
+                ScriptedAI::AttackStart(target);
+        }
+
         void EnterCombat(Unit* who) override
         {
             events.RescheduleEvent(EVENT_1, 7000); // 195574
@@ -603,6 +622,11 @@ public:
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
         {
+            if (!IsEncounterReady())
+            {
+                damage = 0;
+                return;
+            }
             if (!attacker || !damage || !me->IsAlive() || me->GetEntry() != 98602 || me->GetMapId() != 1511)
                 return;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());

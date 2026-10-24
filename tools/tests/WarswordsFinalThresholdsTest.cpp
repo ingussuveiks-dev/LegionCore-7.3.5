@@ -9,6 +9,7 @@ struct FinalBoss : CreatureAI
 #include "Fields.inc"
     void Talk(uint32 identity) { texts.push_back(identity); if (onTalk) onTalk(identity); }
 #include "Reset.inc"
+#include "EncounterReady.inc"
 #include "DamageTaken.inc"
 #include "AfterScaling.inc"
 };
@@ -33,6 +34,11 @@ int main()
         assert(fixture.ai.texts == (std::vector<uint32>{0, 0}));
     }
     std::cout << "BASELINE: pinned final full-health scaled lethal hit omits15/7 lines/movement; reentrant pre-hit speech duplicates before phase claim. Controlled services, not client combat.\n";
+#elif defined(ADMISSION_BASELINE)
+    Fixture fixture; Player player;
+    scenarioManager.scenario.step = 0;
+    assert(player.Deal(&fixture.actor, 200000) > 0 && !fixture.actor.alive && fixture.ai.texts.empty());
+    std::cout << "BASELINE: pinned14774c59 actual post-scaled final handler permits stage0 lethal damage; no dialogue request is not damage admission. Controlled native scaling/death decision, not live client.\n";
 #else
     uint32 cases = 0;
     for (bool alliance : {false, true}) for (uint32 kind = 0; kind < 4; ++kind)
@@ -83,7 +89,7 @@ int main()
         if (invalid >= 8) scenarioManager.scenario.step = invalid == 8 ? 0 : invalid == 9 ? 4 : invalid == 10 ? 6 : invalid == 11 ? 7 : 8;
         uint32 supplied = damage;
         fixture.ai.DamageTakenAfterScaling(attacker, damage, 0);
-        assert(damage == supplied && fixture.ai.texts.empty() && fixture.actor.motion.points.empty());
+        assert(damage == (invalid >= 5 ? 0 : supplied) && fixture.ai.texts.empty() && fixture.actor.motion.points.empty());
     }
     for (uint32 resetLine : {0u, 1u})
     {
@@ -104,6 +110,40 @@ int main()
         Fixture fixture; Unit npc; uint32 damage = 2000; fixture.ai.DamageTakenAfterScaling(&npc, damage, 0);
         assert(fixture.ai.phase1 && fixture.ai.phase2 && damage == 2000);
     }
-    std::cout << "PASS: " << cases << " actual native scale/hook/current-suspended/owner-label/faction-label paths; projected strict15/7 boundaries, no health/damage clamp or quest grant, once-before-speech claims, invalid scope and reset/reentrant guards. Movement/speech are requests, not lethal-hit cinematic survival or client visuals.\n";
+    uint32 admissionCases = 0;
+    for (uint32 step = 0; step < 9; ++step) for (uint32 kind = 0; kind < 5; ++kind)
+        for (bool alliance : {false, true}) for (bool suspended : {false, true})
+    {
+        Fixture fixture; Player player; player.alliance = alliance;
+        Unit pet, guardian, charmed, npc; pet.owner = guardian.owner = &player; charmed.charmer = &player;
+        Unit* attacker = std::vector<Unit*>{&player, &pet, &guardian, &charmed, &npc}[kind];
+        CreatureAI temporary;
+        fixture.actor.active = suspended ? &temporary : &fixture.ai;
+        fixture.actor.i_disabledAI = suspended ? &fixture.ai : nullptr;
+        scenarioManager.scenario.step = step;
+        uint32 scaled = uint32(200000 / fixture.actor.GetHealthMultiplierForTarget(attacker));
+        uint32 dealt = attacker->Deal(&fixture.actor, 200000);
+        assert(dealt == (step == 5 ? scaled : 0u) && fixture.actor.alive == (step != 5));
+        assert(fixture.actor.health == 100000 && player.credits == 0);
+        assert(fixture.ai.texts.size() == (step == 5 ? 2u : 0u));
+        ++admissionCases;
+    }
+    {
+        Fixture fixture; Player player;
+        scenarioManager.scenario.step = 4;
+        assert(player.Deal(&fixture.actor, 200000) == 0 && fixture.actor.alive);
+        scenarioManager.scenario.step = 5;
+        assert(player.Deal(&fixture.actor, 0) == 0 && fixture.actor.alive);
+        uint32 scaledHit = uint32(1 / fixture.actor.GetHealthMultiplierForTarget(&player));
+        assert(player.Deal(&fixture.actor, 1) == scaledHit && fixture.actor.alive);
+        scenarioManager.scenario.step = 4;
+        uint64 health = fixture.actor.health;
+        assert(player.Deal(&fixture.actor, 200000) == 0 && fixture.actor.health == health);
+        scenarioManager.scenario.step = 5;
+        uint32 scaledLethal = uint32(200000 / fixture.actor.GetHealthMultiplierForTarget(&player));
+        assert(player.Deal(&fixture.actor, 200000) == scaledLethal && !fixture.actor.alive);
+    }
+    std::cout << "PASS: " << admissionCases << " actual scaled dispatch stage/owner-label/faction-label/current-suspended paths reject wrong-stage lethal damage; stationary4->5 and reverse transitions re-evaluate live state without persistent immunity or health repair.\n";
+    std::cout << "PASS: " << cases << " actual native scale/hook/current-suspended/owner-label/faction-label paths; projected strict15/7 boundaries, unchanged stage5 damage/health and no quest grant, once-before-speech claims, invalid scope and reset/reentrant guards. Movement/speech are requests, not lethal-hit cinematic survival or client visuals.\n";
 #endif
 }

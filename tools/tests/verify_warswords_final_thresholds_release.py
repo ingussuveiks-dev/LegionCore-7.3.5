@@ -25,12 +25,14 @@ thresholds = [index for index, entry in enumerate(body) if entry.mnemonic == 'ca
 talks = [index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
          and native['resolve'](entry.operands[0].imm) == native['symbol']('?Talk@CreatureAI@@QEAAXE')]
 assert len(thresholds) == len(talks) == 2, 'Both native final low-health requests must remain'
+attacker_register = next(entry.op_str.split(', ')[0] for entry in body[:20] if entry.mnemonic == 'mov' and entry.op_str.endswith(', rdx'))
+generation_register = next(entry.op_str.split(', ')[0] for entry in body[:thresholds[0]] if entry.mnemonic == 'mov' and entry.op_str.endswith(', dword ptr [rbx + 0xc8]'))
 for threshold, talk, displacement in zip(thresholds, talks, (0xc4, 0xc5)):
-    assert any(entry.mnemonic == 'mov' and entry.op_str == 'r8, rsi' for entry in body[threshold - 4:threshold]), 'Percentage uses raw/template rather than attacker-relative maximum'
+    assert any(entry.mnemonic == 'mov' and entry.op_str == f'r8, {attacker_register}' for entry in body[threshold - 4:threshold]), 'Percentage uses raw/template rather than attacker-relative maximum'
     assert body[threshold + 1].op_str == 'rdi, rax' and body[threshold + 2].mnemonic == 'jae', 'Strict below15/7 boundary changed'
     claim = next(index for index, entry in enumerate(body) if entry.mnemonic == 'mov' and entry.op_str == f'byte ptr [rbx + {displacement:#x}], 1')
     assert threshold < claim < talk, 'Reentrant speech runs before once-only phase claim'
-    assert body[talk + 1].mnemonic == 'cmp' and body[talk + 1].op_str == 'ebp, dword ptr [rbx + 0xc8]' and body[talk + 2].mnemonic == 'jne', 'Reset during speech continues obsolete phase requests'
+    assert body[talk + 1].mnemonic == 'cmp' and body[talk + 1].op_str == f'{generation_register}, dword ptr [rbx + 0xc8]' and body[talk + 2].mnemonic == 'jne', 'Reset during speech continues obsolete phase requests'
 tables = []
 for entry in instructions('?GetAI@npc_vigfus_bladewind_last@@'):
     for operand in entry.operands:
