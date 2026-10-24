@@ -108,6 +108,26 @@ int main(int argc, char** argv)
     for (uint32 slot = 0; slot < 10; ++slot)
         if (execution->Spells[slot])
             std::cout << "OVERRIDE\t684\t" << slot << '\t' << execution->Spells[slot] << '\n';
+    for (auto entry : overrides)
+        for (int32 spell : entry->Spells)
+            if (spell == 206455)
+                std::cout << "EXECUTE_OVERRIDE\t" << entry->ID << '\n';
+    for (auto effect : effects)
+        if (effect->EffectTriggerSpell == 206455 || (effect->Effect == 6 && effect->EffectAura == 293 && effect->EffectMiscValue[0] == 684))
+            std::cout << "EXECUTE_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\n';
+    DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());
+    if (!miscellaneous.Load(argv[1], 0) || !ranges.Load(argv[1], 0))
+        return 14;
+    miscellaneous.LoadFromDB(); ranges.LoadFromDB();
+    for (auto entry : miscellaneous)
+        if (!entry->DifficultyID && entry->SpellID == 206455)
+        {
+            auto range = ranges.LookupEntry(entry->RangeIndex);
+            if (!range)
+                return 15;
+            std::cout << "EXECUTE_RANGE\t" << range->RangeMin[0] << '\t' << range->RangeMax[0] << '\t' << range->RangeMin[1] << '\t' << range->RangeMax[1] << '\n';
+        }
     std::set<uint32> pendingPackages{1590}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {
