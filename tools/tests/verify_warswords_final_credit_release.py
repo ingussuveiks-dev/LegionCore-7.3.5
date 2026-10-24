@@ -4,7 +4,7 @@ import bisect
 import re
 import runpy
 import struct
-from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM, CS_OP_REG
 from capstone.x86_const import X86_REG_RIP
 
 native = runpy.run_path(str(Path(__file__).with_name('verify_scenario_lfg_release.py')))
@@ -40,7 +40,14 @@ assert {46987, 848, 92, 2} <= values, 'Native progression/conversation/death tex
 owner_call = next(index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
                   and native['resolve'](entry.operands[0].imm) == native['symbol'](owner))
 assert any(entry.mnemonic == 'test' and entry.op_str == 'rax, rax' for entry in body[owner_call + 1:owner_call + 5]), 'Missing unresolved-owner guard'
-assert any(entry.mnemonic == 'test' and entry.op_str in ('rdx, rdx', 'rbx, rbx') for entry in body[:owner_call]), 'Missing null-killer guard'
+killer_registers = {'rdx'}
+for entry in body[:owner_call]:
+    if entry.mnemonic == 'mov' and len(entry.operands) == 2 and all(operand.type == CS_OP_REG for operand in entry.operands):
+        if entry.reg_name(entry.operands[1].reg) in killer_registers:
+            killer_registers.add(entry.reg_name(entry.operands[0].reg))
+assert any(entry.mnemonic == 'test' and any(entry.op_str == f'{register}, {register}' for register in killer_registers)
+           and body[index + 1].mnemonic == 'je' and body[index + 1].operands[0].imm > body[owner_call].address
+           for index, entry in enumerate(body[:owner_call])), 'Missing null-killer branch around owner resolution'
 tables = []
 for entry in instructions(factory):
     for operand in entry.operands:

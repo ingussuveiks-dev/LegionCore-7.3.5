@@ -68,7 +68,7 @@ struct Creature : Unit
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
     uint32 CastSpell(Unit* target, uint32 identity) { assert(target == this && identity == 195062); ++casts; if (castWorks) ++acceptedCasts; return castWorks ? 0 : 1; }
     void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 8000); callbacks.push_back(std::move(callback)); }
-    void RemoveAura(uint32 identity) { assert(identity == 205424); ++auraRemovals; }
+    void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) ++auraRemovals; }
     void RemoveFlag(uint32, uint32) { }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
     void Flush() { auto pending = std::move(callbacks); callbacks.clear(); for (auto& callback : pending) callback(); }

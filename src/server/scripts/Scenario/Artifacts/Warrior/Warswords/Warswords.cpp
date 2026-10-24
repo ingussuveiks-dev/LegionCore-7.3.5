@@ -305,6 +305,26 @@ public:
         bool introPending = false;
         uint32 introGeneration = 0;
         uint32 introRetryTimer = 0;
+        ObjectGuid spectres[2] = {};
+        bool spectreDefeated[2] = {};
+        bool spectreActive = false;
+        uint32 spectreSlot = 2;
+        uint32 spectreRetryTimer = 0;
+        uint32 spectreGeneration = 0;
+
+        void CancelSpectreRush()
+        {
+            ++spectreGeneration;
+            spectreActive = false;
+            spectreSlot = 2;
+            spectreRetryTimer = 0;
+            count_adds = 0;
+            for (uint32 index = 0; index < 2; ++index)
+            {
+                spectres[index] = {};
+                spectreDefeated[index] = false;
+            }
+        }
 
         void Reset() override
         {
@@ -316,7 +336,9 @@ public:
             phase1 = false;
             phase2 = false;
             events.Reset();
+            CancelSpectreRush();
             summons.DespawnAll();
+            me->RemoveAura(195996);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_AGGRESSIVE);
             count_adds = 0;
@@ -332,6 +354,8 @@ public:
 
         void JustSummoned(Creature* summon) override
         {
+            if (spectreActive && spectreSlot < 2 && summon->GetEntry() == 99609 && summon->IsInWorld() && summon->IsAlive())
+                spectres[spectreSlot] = summon->GetGUID();
             summons.Summon(summon);
             summon->CastSpell(summon, 197852);
             summon->GetMotionMaster()->MoveRandom(10.0f);
@@ -339,17 +363,78 @@ public:
 
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
-            if (summon->GetEntry() == 99609)
-            {
-                count_adds++;
-                if (count_adds >= 2)
+            if (!spectreActive || !me->IsAlive() || !summon || summon->IsAlive() || summon->GetEntry() != 99609)
+                return;
+            for (uint32 index = 0; index < 2; ++index)
+                if (!spectreDefeated[index] && spectres[index] == summon->GetGUID())
                 {
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    me->RemoveAura(195996);
-                    count_adds = 0;
+                    spectreDefeated[index] = true;
+                    if (++count_adds == 2)
+                    {
+                        spectreActive = false;
+                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        me->SetReactState(REACT_AGGRESSIVE);
+                        me->RemoveAura(195996);
+                    }
+                    return;
                 }
+        }
+
+        void SummonedCreatureDespawn(Creature* summon) override
+        {
+            if (!summon)
+                return;
+            summons.Despawn(summon);
+            if (!spectreActive)
+                return;
+            for (uint32 index = 0; index < 2; ++index)
+                if (!spectreDefeated[index] && spectres[index] == summon->GetGUID())
+                    spectres[index] = {};
+        }
+
+        void UpdateSpectreRush(uint32 diff)
+        {
+            if (!spectreActive || !me->IsAlive() || !me->IsInWorld())
+                return;
+            if (spectreRetryTimer > diff)
+            {
+                spectreRetryTimer -= diff;
+                return;
             }
+            spectreRetryTimer = 1000;
+            uint32 generation = spectreGeneration;
+            for (uint32 index = 0; index < 2; ++index)
+            {
+                if (spectreDefeated[index])
+                    continue;
+                if (Creature* spectre = ObjectAccessor::GetCreature(*me, spectres[index]))
+                    if (spectre->IsAlive())
+                        continue;
+                spectres[index] = {};
+                spectreSlot = index;
+                me->SummonCreature(99609, me->GetPositionX() + irand(-5, 5), me->GetPositionY() + irand(-5, 5), me->GetPositionZ(), 0);
+                if (generation != spectreGeneration || !spectreActive)
+                    return;
+                spectreSlot = 2;
+            }
+        }
+
+        void BeginSpectreRush()
+        {
+            if (spectreActive)
+                return;
+            CancelSpectreRush();
+            spectreActive = true;
+            uint32 generation = spectreGeneration;
+            me->StopAttack();
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            me->SetReactState(REACT_PASSIVE);
+            DoCast(195996);
+            if (generation != spectreGeneration || !spectreActive)
+                return;
+            UpdateSpectreRush(0);
+            if (generation == spectreGeneration)
+                events.RescheduleEvent(EVENT_3, 51000);
         }
 
         bool IsIntroTarget(Player* player, float distance) const
@@ -420,6 +505,8 @@ public:
 
         void JustDied(Unit* who) override
         {
+            CancelSpectreRush();
+            summons.DespawnAll();
             Talk(2);
             if (Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
             {
@@ -448,10 +535,11 @@ public:
         void UpdateAI(uint32 diff) override
         {
             UpdateIntro(diff);
+            UpdateSpectreRush(diff);
             if (!UpdateVictim())
                 return;
 
-            if (me->HasAura(195996))
+            if (spectreActive || me->HasAura(195996))
                 return;
 
             events.Update(diff);
@@ -472,15 +560,7 @@ public:
                         events.RescheduleEvent(EVENT_2, 23000); // 195575 23 + after 195996
                         break;
                     case EVENT_3:
-                        DoCast(195996);
-                        me->StopAttack();
-                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                        me->SetReactState(REACT_PASSIVE);
-                        for (uint8 i = 0; i < 2; ++i)
-                        {
-                            me->SummonCreature(99609, me->GetPositionX() + irand(-5, 5), me->GetPositionY() + irand(-5, 5), me->GetPositionZ(), 0);
-                        }
-                        events.RescheduleEvent(EVENT_3, 51000);
+                        BeginSpectreRush();
                         break;
                     case EVENT_4:
                         DoCast(196135);

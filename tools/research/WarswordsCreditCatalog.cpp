@@ -46,6 +46,8 @@ int main(int argc, char** argv)
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
     DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
     DB2Storage<LFGDungeonsEntry> dungeons("LFGDungeons.db2", LfgDungeonsLoadInfo::Instance());
     if (!steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0) || !spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !dungeons.Load(argv[1], 0))
         return 5;
@@ -54,6 +56,10 @@ int main(int argc, char** argv)
     criteria.LoadFromDB();
     spells.LoadFromDB();
     effects.LoadFromDB();
+    if (!misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
+        return 17;
+    misc.LoadFromDB();
+    castTimes.LoadFromDB();
     dungeons.LoadFromDB();
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     if (!maps.Load(argv[1], 0))
@@ -150,12 +156,20 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996, 205443, 194201, 208578, 192085, 225890})
+    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)
             return 7;
         std::cout << "SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
+        for (auto data : misc)
+            if (data->SpellID == identity && !data->DifficultyID)
+            {
+                auto cast = castTimes.LookupEntry(data->CastingTimeIndex);
+                std::cout << "CAST\t" << identity << '\t' << data->CastingTimeIndex << '\t'
+                    << (cast ? cast->Base : 0) << '\t' << (cast ? cast->Minimum : 0) << '\t'
+                    << (cast ? cast->PerLevel : 0) << '\t' << data->LaunchDelay << '\n';
+            }
         for (auto effect : effects)
             if (!effect->DifficultyID && effect->SpellID == identity)
                 std::cout << "EFFECT\t" << identity << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
