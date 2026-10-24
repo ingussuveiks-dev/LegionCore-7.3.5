@@ -33,10 +33,13 @@ int main(int argc,char** argv){
     DB2Storage<SpellEntry> spells("Spell.db2",SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0))return 5;spells.LoadFromDB();effects.LoadFromDB();
-    std::set<uint32> selected{201778,201780,204919,201917,205774};
+    std::set<uint32> selected{201778,201780,204919,201917,205774,201791,201899};
     for(auto identity:selected){auto spell=spells.LookupEntry(identity);if(!spell)return 6;std::cout<<"SPELL\t"<<identity<<'\t'<<spell->Name->Str[0]<<'\n';}
     for(auto effect:effects)if(!effect->DifficultyID&&selected.count(effect->SpellID))
         std::cout<<"EFFECT\t"<<effect->SpellID<<'\t'<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'<<effect->EffectAura<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectTriggerSpell<<'\n';
+    for (auto effect : effects)
+        if (!effect->DifficultyID && (effect->SpellID == 201791 || effect->SpellID == 201899))
+            std::cout << "TARGET\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
     DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     if (!items.Load(argv[1], 0) || !children.Load(argv[1], 0))

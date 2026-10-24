@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "weapon_summon_retry_repair_audit": "docs/audits/xalatath-weapon-summon-retry-2026-10-24.json",
+      "weapon_summon_retry_review": "42 retains native20s credit then phase1-arms original247690 creation as scoped1539/991/8/living UPDATE500ms/once/retry2; original DIE moves to success-only LINK31, old timed-list death removed. Native old timed-list null creation ->death baseline, fixed timer/conditions/pointer/LINK/DIE host,13 custom TEMP variants, live hash/graph and canonical consumer/startup checked. Fresh muted Bue10:05/20/25/30/40 frame samples are partial only. Core SummonGameObject ignores AddToMap return, so nonnull insertion/visibility is NOT certified; failed actors/casts/nearest-player credit/re-entry and client visuals/full chain remain pending.",
       "farthing_finale_repair_audit": "docs/audits/xalatath-farthing-finale-2026-10-24.json",
       "farthing_finale_review": "41 preserves native101148 SmartAI finale while adding actual post-scaling killing-blow protection scoped to map1539/scenario991/steps7-8. Original invincibility runs before scaling; native raw2/scaled-lethal baseline dies before HP0..1/casts/201899/timed-list/GO. Fixed production wrapper, native scaling/HP-case/DIE host, controlled player/pet/guardian and suspended-AI paths,12 custom SQL variants and canonical vtable/branch/build/startup checked. No quest credit or item fabricated. Native nearest-player credit eligibility, failed actors/casts/summon/re-entry, full fight/video/client visuals and pickup replay remain unfinished.",
       "pickup_cast_repair_audit": "docs/audits/xalatath-pickup-cast-admission-2026-10-24.json",

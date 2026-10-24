@@ -36,6 +36,9 @@ struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid Empty;};ObjectGuid Objec
 struct InstanceMap {uint32 GetInstanceId(){return 42;}} instanceMap;
 struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
 struct WorldObject {
+#ifdef XALATATH_WEAPON_RETRY_TEST
+    uint32 mapId=1539;uint32 GetMapId(){return mapId;}
+#endif
     bool instanced=true,expired=false;std::vector<Creature*> nearby;
     virtual ~WorldObject()=default;virtual Unit* ToUnit(){return nullptr;}virtual Creature* ToCreature(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}virtual GameObject* ToGameObject(){return nullptr;}
     bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}bool IsQuestObjectExpired(){return expired;}
@@ -71,6 +74,9 @@ struct SmartAI {
 };
 struct GameObject:WorldObject {SmartAI ai;SmartAI* AI(){return &ai;}};
 struct Creature:Unit {
+#ifdef XALATATH_WEAPON_RETRY_TEST
+    uint32 deaths=0;bool isDead(){return !alive;}void Kill(Creature* target){assert(target==this);alive=false;++deaths;}
+#endif
     uint32 identity=0,speeches=0,lastSpeech=99;float distance=1;bool alive=true,sameMap=true,samePhase=true,available=true,combat=false;
     SmartAI ai;Creature* ToCreature()override{return this;}SmartAI* AI(){return &ai;}
     bool IsAlive(){return alive;}uint32 GetEntry(){return identity;}bool isInCombat(){return combat;}bool HasUnitState(uint32){return false;}
@@ -108,6 +114,9 @@ struct Condition {
 #include "HeraldScenario.inc"
 #ifdef MARKSMANSHIP_POST_INQUISITOR_TEST
 #include "AliveCondition.inc"
+#endif
+#ifdef XALATATH_WEAPON_RETRY_TEST
+#include "MapCondition.inc"
 #endif
             default:assert(false);
         }return NegativeCondition?!condMeets:condMeets;
@@ -234,6 +243,9 @@ struct SmartScript {
 #endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
 #include "SummonGo.inc"
+#endif
+#ifdef XALATATH_WEAPON_RETRY_TEST
+#include "NativeDie.inc"
 #endif
 #ifdef MARKSMANSHIP_FINAL_STAGE_TEST
 #include "CriteriaAction.inc"
