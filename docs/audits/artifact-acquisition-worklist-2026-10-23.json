@@ -257,6 +257,8 @@
       "class_id": 1,
       "specialization": "Fury",
       "weapon": "Warswords of the Valarjar",
+      "return_credit_audit": "docs/audits/warswords-return-credit-2026-10-24.json",
+      "return_credit_review": "Departure lambda no longer awards103739 on192085 request. Pinned6c6a6fc7 failed/accepted-jump baseline proves premature credit; fixed lambda retains acquisition/scene/jump but no arrival grant. Existing Skyhold93823/369004/base5997/2s33-103739/player-radius50 receiver and216016 target30.98yd away checked read-only, native dispatcher/jump tests and exact installed deployed lambda/earlier paths/Scepter/startup pass. Actual arrival/visibility/group/quest counters remain unverified. Legacy12-second automatic departure still needs proper player-button/actor/retry replacement; no duplicate arrival reward invented.",
       "scene_equip_audit": "docs/audits/warswords-scene-equip-2026-10-24.json",
       "scene_equip_review": "Migration58 binds original1218/1580 completion to scoped living active40043 Warrior/1511/944/6-7/existing inventory128908; native194201 equips and actual128908/134553 linked pair is inspected with warnings on failure. Pinned missing-hook baseline, native scene/packet/force-equip hosts, forged/stale/cancel/repeated/16 invalid/failed pair cases, TEMP custom/idempotence, live binding, canonical inlined registry/vtable/call paths/build/startup and shared presentation checks pass. Full194201 event/group/duplicate counters and true storage/client equipment remain separate.225890 learns205545; it is not the return button. Legacy return timer still requires repair.",
       "real_loot_audit": "docs/audits/warswords-real-loot-2026-10-24.json",
@@ -353,7 +355,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain retreat/owner, weapon-only7001, live admission, actual248832 loot and scoped1218/1580 native194201 equipment bridge.225890 is learn205545, not return: trace215997/override730/192085/216016/Val'kyr/beam and existing Skyhold Danica103739 before repairing actual player button, failed-cast retry and acknowledged return. Current12-second automatic return is still wrong against samples. Verify full194201 duplicate/group counters, true inventory parent/child swap, missing-scene retry/re-entry/save and client visuals. Add scoped final98602 admission without hiding shared7003 prerequisites, final15/7 and failed99609 recovery. Full paths/channel/audio/native group and complete Fury video/client traversal remain unverified."
+      "next_action": "Retain previous loot/equip/owner/phase/admission repairs and removal of premature timer103739. Existing1479/base5997 Danica33-103739/radius50 is within30.98yd of216016; actual visibility/arrival/group/quest counters still need traversal, not another duplicate grant. Restore proper finale Val'kyr/beam/215997-override730 player button and failed-cast/re-entry recovery before replacing the still-wrong12-second automatic jump.225890 only learns205545. Verify full194201 duplicate/group counters, true inventory parent/child swap and missing-scene/save/client visuals. Add scoped final98602 admission without hiding shared7003 prerequisites, final15/7 and failed99609 recovery. Full paths/channel/audio/native group and complete Fury video/client traversal remain unverified."
     },
     {
       "class_id": 2,

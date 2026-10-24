@@ -36,9 +36,13 @@ struct Unit
     virtual Player* ToPlayer() { return nullptr; }
     virtual uint32 GetTypeId() { return 3; }
     uint32 casts = 0, conversations = 0, delays = 0;
-    void CastSpell(Unit*, uint32 identity, bool = false) { assert(identity == 205443 || identity == 192085); ++casts; }
+    bool jumpWorks = true;
+    uint32 jumpRequests = 0, acceptedJumps = 0;
+    std::vector<std::function<void()>> pendingEvents;
+    void CastSpell(Unit*, uint32 identity, bool = false) { assert(identity == 205443 || identity == 192085); ++casts; if (identity == 192085) { ++jumpRequests; if (jumpWorks) ++acceptedJumps; } }
     void CreateConversation(uint32 identity) { assert(identity == 849); ++conversations; }
-    void AddDelayedEvent(uint32 delay, std::function<void()>) { assert(delay == 12000); ++delays; }
+    void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 12000); ++delays; pendingEvents.push_back(std::move(callback)); }
+    void FlushDelayedEvents() { auto callbacks = std::move(pendingEvents); pendingEvents.clear(); for (auto& callback : callbacks) callback(); }
 };
 struct Map {} instanceMap, otherMap;
 struct Creature { uint32 despawns = 0; void DespawnOrUnsummon(uint32 delay) { assert(delay == 1000); ++despawns; } } soul;
@@ -278,6 +282,30 @@ int main()
     player.items = 1;
     weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
     assert(player.achievements == 2 && player.items == 1);
+    for (bool jumpWorks : {false, true})
+    {
+        scenarioManager = {};
+        Player traveler;
+        traveler.items = 1;
+        traveler.jumpWorks = jumpWorks;
+        GameObject pickup;
+        assert(script.OnGossipHello(&traveler, &pickup));
+        assert(traveler.credits == 1 && traveler.casts == 1 && traveler.jumpRequests == 0);
+        traveler.FlushDelayedEvents();
+        assert(traveler.jumpRequests == 1 && traveler.acceptedJumps == uint32(jumpWorks));
+#ifdef RETURN_BASELINE
+        assert(traveler.credits == 2);
+#else
+        assert(traveler.credits == 1);
+#endif
+        traveler.FlushDelayedEvents();
+        assert(traveler.jumpRequests == 1);
+    }
+#ifdef RETURN_BASELINE
+    std::cout << "BASELINE: pinned6c6a6fc7 awards103739 when the timer requests192085, including a failed jump; no native arrival occurred. Controlled cast/timer services.\n";
+#else
+    std::cout << "PASS: completed pickup and failed/accepted legacy jump requests do not grant103739 before arrival; existing Skyhold actor credit is checked separately.\n";
+#endif
     std::cout << "PASS: actual opening rejects invalid/stale contexts; activation no longer grants items/progression, and completed/owned loot requires possession. Eight claim paths retain presentation; inventory/world services are controlled, equip/return remain separate.\n";
 #endif
 }

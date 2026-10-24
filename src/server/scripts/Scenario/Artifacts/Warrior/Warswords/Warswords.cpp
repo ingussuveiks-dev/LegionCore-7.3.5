@@ -491,7 +491,6 @@ public:
                 target->AddDelayedEvent(12000, [target]() -> void
                 {
                     target->CastSpell(target, 192085);
-                    target->ToPlayer()->KilledMonsterCredit(103739);
                 });
             }
         }
