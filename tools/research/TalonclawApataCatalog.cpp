@@ -22,8 +22,10 @@ int main(int argc,char** argv)
     DB2Storage<SpellEntry> spells("Spell.db2",SpellLoadInfo::Instance());
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2",SpellEffectLoadInfo::Instance());
     DB2Storage<BroadcastTextEntry> texts("BroadcastText.db2",BroadcastTextLoadInfo::Instance());
-    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!texts.Load(argv[1],0))return 5;
-    spells.LoadFromDB();effects.LoadFromDB();texts.LoadFromDB();
+    DB2Storage<SoundKitEntryEntry> sounds("SoundKitEntry.db2",SoundKitEntryLoadInfo::Instance());
+    DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2",CreatureDisplayInfoLoadInfo::Instance());
+    if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!texts.Load(argv[1],0)||!sounds.Load(argv[1],0)||!displays.Load(argv[1],0))return 5;
+    spells.LoadFromDB();effects.LoadFromDB();texts.LoadFromDB();sounds.LoadFromDB();displays.LoadFromDB();
     for(uint32 identity:{13u,197355u}){
         auto spell=spells.LookupEntry(identity);if(!spell)return 6;
         std::cout<<"SPELL\t"<<identity<<'\t'<<spell->Name->Str[0]<<'\n';
@@ -38,6 +40,14 @@ int main(int argc,char** argv)
         for(char const* phrase:{"Beloved brother","shall be avenged","not healing"})
             selected=selected||first.find(phrase)!=std::string::npos||second.find(phrase)!=std::string::npos;
         if(selected)std::cout<<"CANDIDATE_TEXT\t"<<text->ID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\t'<<first<<'\t'<<second<<'\n';
+        if(text->SoundEntriesID[1]>=62694&&text->SoundEntriesID[1]<=62697){
+            std::cout<<"VOICE_TEXT\t"<<text->ID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\t'<<uint32(text->LanguageID)<<'\t'<<text->ConditionID<<'\t'<<text->EmotesID<<'\t'<<second<<'\n';
+            for(uint32 index=0;index<3;++index)std::cout<<"VOICE_EMOTE\t"<<text->ID<<'\t'<<index<<'\t'<<text->EmoteID[index]<<'\t'<<text->EmoteDelay[index]<<'\n';
+        }
     }
+    for(auto sound:sounds)if(sound->SoundKitID>=62694&&sound->SoundKitID<=62697)
+        std::cout<<"AUDIO_FILE\t"<<sound->SoundKitID<<'\t'<<sound->FileDataID<<'\t'<<uint32(sound->Frequency)<<'\t'<<sound->Volume<<'\n';
+    auto display=displays.LookupEntry(66135);if(!display)return 7;
+    std::cout<<"DISPLAY\t66135\t"<<uint32(display->Gender)<<'\n';
     HotfixDatabase.Close();
 }
