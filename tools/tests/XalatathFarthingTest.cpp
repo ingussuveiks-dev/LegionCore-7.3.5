@@ -5,6 +5,13 @@
 using uint32=uint32_t;
 using uint64=uint64_t;
 using DamageEffectType=int;
+#ifdef STROMKAR_ZAKAJZ_TEST
+constexpr uint32 actorEntry=104276,scenarioIdentity=1037,firstStage=8,lastStage=9;
+#define npc_xalatath_farthing npc_stromkar_zakajz
+#define XalatathFarthing StromkarZakajz
+#else
+constexpr uint32 actorEntry=101148,scenarioIdentity=991,firstStage=7,lastStage=8;
+#endif
 enum { SMART_EVENT_DAMAGED=32, SMART_EVENT_HEALTH_PCT=2, SMART_ACTION_DIE=37, SMART_EVENT_FLAG_ALLOW_EVENT_IN_COMBAT=0x020 };
 uint32 messages=0;
 #define TC_LOG_INFO(...) (++messages)
@@ -19,7 +26,7 @@ struct CreatureAI {
 struct InstanceScript { void OnCreatureDamageTaken(Creature*,Unit*,uint32&) { } };
 struct Unit { uint32 kind=0;uint32 Deal(Creature*,uint32); };
 struct Creature {
-    uint32 entry=101148,map=1539,instance=42;
+    uint32 entry=actorEntry,map=1539,instance=42;
     uint64 hp=100000,targetHp=1000;
     float multiplier=0.001f;
     bool alive=true;
@@ -44,7 +51,7 @@ struct Creature {
     void Kill(Creature* target) { assert(target==this);alive=false; }
 };
 struct Scenario {
-    uint32 identity=991,step=7;
+    uint32 identity=scenarioIdentity,step=firstStage;
     uint32 GetScenarioId() const { return identity; }
     uint32 GetCurrentStep() const { return step; }
 };
@@ -108,7 +115,7 @@ struct HealthProbe {
 };
 int main() {
     _set_abort_behavior(0,_CALL_REPORTFAULT);
-    for(uint32 kind:{0u,1u,2u})for(bool suspended:{false,true})for(uint32 stage:{7u,8u}) {
+    for(uint32 kind:{0u,1u,2u})for(bool suspended:{false,true})for(uint32 stage:{firstStage,lastStage}) {
         scenarioManager={};scenarioManager.scenario.step=stage;messages=0;
         Unit attacker;attacker.kind=kind;Creature actor;CreatureAI temporary;
         npc_xalatath_farthing content(&actor);
@@ -140,10 +147,10 @@ int main() {
         if(invalid==1)actor.map=1533;
         if(invalid==2)actor.instance=43;
         if(invalid==3)scenarioManager.present=false;
-        if(invalid==4)scenarioManager.scenario.identity=1037;
+        if(invalid==4)scenarioManager.scenario.identity=scenarioIdentity==1037?991:1037;
         if(invalid==5)scenarioManager.scenario.identity=1092;
-        if(invalid==6)scenarioManager.scenario.step=6;
-        if(invalid==7)scenarioManager.scenario.step=9;
+        if(invalid==6)scenarioManager.scenario.step=firstStage-1;
+        if(invalid==7)scenarioManager.scenario.step=lastStage+1;
         if(invalid==8)actor.alive=false;
         uint32 damage=2000;content.DamageTakenAfterScaling(&attacker,damage,0);
         assert(damage==2000 && actor.hp==100000);

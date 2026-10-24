@@ -1384,6 +1384,35 @@ void Queue(Player* player)
 }
 }
 
+namespace StromkarZakajz
+{
+void Protect(Creature* actor, Unit* attacker, uint32& damage)
+{
+    if (!actor || !attacker || !damage || !actor->IsAlive() || actor->GetEntry() != 104276 || actor->GetMapId() != 1539)
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() < 8 || scenario->GetCurrentStep() > 9 ||
+        damage < actor->GetHealth(attacker))
+        return;
+    damage = 0;
+    if (actor->GetHealth() > 1)
+    {
+        actor->SetHealth(1);
+        TC_LOG_INFO("scripts.ai", "Stromkar: protected Zakajz's native finale from a scaled killing blow");
+    }
+}
+}
+
+struct npc_stromkar_zakajz : SmartAI
+{
+    explicit npc_stromkar_zakajz(Creature* actor) : SmartAI(actor) { }
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        SmartAI::DamageTakenAfterScaling(attacker, damage, type);
+        StromkarZakajz::Protect(me, attacker, damage);
+    }
+};
+
 namespace XalatathFarthing
 {
 void Protect(Creature* actor, Unit* attacker, uint32& damage)
@@ -1659,6 +1688,7 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_ambush_event();
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterCreatureAI(npc_xalatath_farthing);
+    RegisterCreatureAI(npc_stromkar_zakajz);
     RegisterCreatureAI(npc_xalatath_soul_attack);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);

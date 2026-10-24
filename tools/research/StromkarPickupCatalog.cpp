@@ -51,7 +51,7 @@ int main(int argc, char** argv)
         return 5;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{206436, 206439, 206448, 225891};
+    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -98,6 +98,16 @@ int main(int argc, char** argv)
     if (!scripts.Load(argv[1], 0) || !members.Load(argv[1], 0) || !texts.Load(&textFile, SceneScriptTextLoadInfo::Instance()))
         return 9;
     scripts.LoadFromDB(); members.LoadFromDB();
+    DB2Storage<OverrideSpellDataEntry> overrides("OverrideSpellData.db2", OverrideSpellDataLoadInfo::Instance());
+    if (!overrides.Load(argv[1], 0))
+        return 12;
+    overrides.LoadFromDB();
+    auto execution = overrides.LookupEntry(684);
+    if (!execution)
+        return 13;
+    for (uint32 slot = 0; slot < 10; ++slot)
+        if (execution->Spells[slot])
+            std::cout << "OVERRIDE\t684\t" << slot << '\t' << execution->Spells[slot] << '\n';
     std::set<uint32> pendingPackages{1590}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {
