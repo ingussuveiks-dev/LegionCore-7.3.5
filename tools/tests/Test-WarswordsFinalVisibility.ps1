@@ -37,7 +37,10 @@ if($VerifyReleaseBinary){
  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
  $previous=$env:MYSQL_PWD
  try{$env:MYSQL_PWD=$connection[3];$rows=@("SELECT 'instance',map,script FROM instance_template WHERE map=1511;SELECT 'binding',entry,ScriptName FROM creature_template WHERE ScriptName='npc_vigfus_bladewind_last';SELECT 'spawn',guid,id,map,PhaseId FROM creature WHERE id=98602;"|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Final visibility binding read failed'}}finally{$env:MYSQL_PWD=$previous}
- foreach($expected in @("instance`t1511`tinstance_warswords","binding`t98602`tnpc_vigfus_bladewind_last","spawn`t361283`t98602`t1511`t7003")){if($rows -notcontains $expected){throw "Final visibility binding changed: $expected"}}
+ $bindingEvidence="$out/live-bindings-$(Get-Date -Format yyyyMMdd-HHmmss-fff).tsv"
+ [IO.File]::WriteAllLines($bindingEvidence,[string[]]$rows)
+ "Final visibility binding evidence: $bindingEvidence"
+ foreach($expected in @("instance`t1511`tinstance_warswords","binding`t98602`tnpc_vigfus_bladewind_last","spawn`t361283`t98602`t1511`t7003")){if($rows -notcontains $expected){throw "Final visibility binding changed: $expected; returned $($rows.Count) rows, evidence $bindingEvidence"}}
  if($rows.Count -ne 3){throw 'Additional final visibility bindings need review'}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_warswords_final_visibility_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical final visibility missing'}}finally{$env:PYTHONPATH=$previous}
