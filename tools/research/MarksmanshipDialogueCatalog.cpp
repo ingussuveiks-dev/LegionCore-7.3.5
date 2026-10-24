@@ -112,7 +112,7 @@ int main(int argc, char** argv)
         return 3;
     std::cout << "CONVERSATION_LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t'
         << line->SpellVisualKitID << '\t' << line->AnimKitID << '\t' << line->AdditionalDuration << '\n';
-    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281,103558,103652,103671,106844,107106,135514};
+    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281,103558,103652,103671,106844,107106,135514,103234,103232};
     for (uint32 identity : {2737u, 2464u, 3421u, 3183u, 2632u, 2633u, 3364u,
                             2625u, 2630u, 2658u, 2659u, 3427u, 2631u, 2539u, 2541u, 2543u, 3422u})
     {

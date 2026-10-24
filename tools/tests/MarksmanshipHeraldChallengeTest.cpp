@@ -31,12 +31,12 @@ struct InstanceMap {uint32 GetInstanceId(){return 42;}} instanceMap;
 struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
 struct WorldObject {
     bool instanced=true,expired=false;std::vector<Creature*> nearby;
-    virtual ~WorldObject()=default;virtual Creature* ToCreature(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}virtual GameObject* ToGameObject(){return nullptr;}
+    virtual ~WorldObject()=default;virtual Unit* ToUnit(){return nullptr;}virtual Creature* ToCreature(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}virtual GameObject* ToGameObject(){return nullptr;}
     bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}bool IsQuestObjectExpired(){return expired;}
     bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     Creature* FindNearestCreature(uint32,float,bool=true);bool IsWithinDistInMap(Creature*,float);float GetDistance(Creature*);
 };
-struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}};
+struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}};
 struct Player:Unit {Player* ToPlayer()override{return this;}};
 struct SmartAI {
     SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);
@@ -75,6 +75,9 @@ struct Condition {
         switch(ConditionType){
 #include "HeraldConditions.inc"
 #include "HeraldScenario.inc"
+#ifdef MARKSMANSHIP_POST_INQUISITOR_TEST
+#include "AliveCondition.inc"
+#endif
             default:assert(false);
         }return NegativeCondition?!condMeets:condMeets;
     }
