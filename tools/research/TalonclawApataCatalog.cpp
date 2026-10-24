@@ -6,6 +6,7 @@
 #include "MySQLThreading.h"
 #include <cstdlib>
 #include <iostream>
+#include <set>
 int main(int argc,char** argv)
 {
     if(argc!=2)return 1;
@@ -26,11 +27,19 @@ int main(int argc,char** argv)
     DB2Storage<CreatureDisplayInfoEntry> displays("CreatureDisplayInfo.db2",CreatureDisplayInfoLoadInfo::Instance());
     if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!texts.Load(argv[1],0)||!sounds.Load(argv[1],0)||!displays.Load(argv[1],0))return 5;
     spells.LoadFromDB();effects.LoadFromDB();texts.LoadFromDB();sounds.LoadFromDB();displays.LoadFromDB();
-    for(uint32 identity:{13u,197355u}){
+    for(uint32 identity:{13u,197355u,197615u,198883u}){
         auto spell=spells.LookupEntry(identity);if(!spell)return 6;
         std::cout<<"SPELL\t"<<identity<<'\t'<<spell->Name->Str[0]<<'\n';
     }
-    for(auto effect:effects)if(!effect->DifficultyID&&(effect->SpellID==13||effect->SpellID==197355))
+    std::set<uint32> selectedSpells{13,197355,197615,198883};
+    for(auto spell:spells){
+        std::string name=spell->Name->Str[0];
+        if(name.find("Apata")!=std::string::npos||name.find("Cat Boss")!=std::string::npos){
+            selectedSpells.insert(spell->ID);
+            std::cout<<"SCENE_SPELL\t"<<spell->ID<<'\t'<<name<<'\n';
+        }
+    }
+    for(auto effect:effects)if(!effect->DifficultyID&&selectedSpells.count(effect->SpellID))
         std::cout<<"EFFECT\t"<<effect->SpellID<<'\t'<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'
             <<effect->EffectAura<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectTriggerSpell<<'\t'
             <<effect->ImplicitTarget[0]<<'\t'<<effect->ImplicitTarget[1]<<'\n';
