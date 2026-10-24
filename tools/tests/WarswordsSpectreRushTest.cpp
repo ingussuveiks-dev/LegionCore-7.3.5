@@ -56,6 +56,7 @@ struct Creature : Unit
     Map* GetMap() const { return map; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
     void StopAttack() { }
+    void UpdateObjectVisibility() { }
     void SetFlag(uint32, uint32 mask) { flags |= mask; }
     void RemoveFlag(uint32, uint32 mask) { flags &= ~mask; }
     void SetReactState(uint32 state) { react = state; }
@@ -125,7 +126,7 @@ void Unit::NotifyDeath(Creature* creature)
 #include "DeathDispatch.inc"
 }
 int irand(int minimum, int maximum) { assert(minimum == -5 && maximum == 5); return 0; }
-struct Scenario { uint32 GetScenarioId() const { return 944; } uint32 GetCurrentStep() const { return 5; } };
+struct Scenario { uint32 step = 5; uint32 GetScenarioId() const { return 944; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario scenario; Scenario* GetScenario(uint32 instance) { return instance == 42 ? &scenario : nullptr; } } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
 struct FinalBoss : ScriptedAI
@@ -139,6 +140,7 @@ struct FinalBoss : ScriptedAI
     void UpdateIntro(uint32) { }
     void RemoveIntroConversation() { }
 #include "Fields.inc"
+#include "EncounterActive.inc"
 #include "EncounterReady.inc"
 #include "Reset.inc"
 #include "JustSummoned.inc"
@@ -186,7 +188,11 @@ struct Fixture
     Creature actor;
     FinalBoss ai{&actor};
     Unit player, pet, guardian, npc;
-    Fixture() { ObjectAccessor::creatures.clear(); ai.Reset();
+    Fixture() { ObjectAccessor::creatures.clear();
+#ifdef FIRST
+        actor.entry = 98007; scenarioManager.scenario.step = 4;
+#endif
+        ai.Reset();
 #ifndef FIRST
         ai.introDone = true;
 #endif
@@ -297,6 +303,18 @@ int main()
         fixture.Kill(fixture.Child(2), &fixture.guardian); fixture.Kill(fixture.Child(3), &fixture.pet); fixture.Unlocked();
     }
 #ifdef FIRST
+    for (uint32 step : {0u, 3u, 5u, 6u, 7u}) for (bool retreating : {false, true})
+    {
+        Fixture fixture; fixture.actor.victim = true; fixture.actor.results = {0, 0};
+        fixture.ai.BeginSpectreRush(); fixture.ai.phase = retreating;
+        scenarioManager.scenario.step = step; fixture.ai.UpdateAI(1000);
+        assert(fixture.actor.attempts == 2 && fixture.ai.events.elapsed == 0 && fixture.actor.moves == 0);
+    }
+    {
+        Fixture fixture; fixture.actor.victim = true; fixture.actor.results = {0, 0};
+        fixture.ai.BeginSpectreRush(); fixture.ai.phase = true; fixture.ai.UpdateAI(1000);
+        assert(fixture.actor.attempts == 2 && fixture.ai.events.elapsed == 0 && fixture.actor.moves == 0);
+    }
     {
         Fixture fixture; fixture.ai.BeginSpectreRush(); auto obsolete = fixture.Child(0);
         fixture.ai.RetreatHandoff(); assert(fixture.ai.phase && !fixture.ai.spectreActive && !fixture.actor.aura);

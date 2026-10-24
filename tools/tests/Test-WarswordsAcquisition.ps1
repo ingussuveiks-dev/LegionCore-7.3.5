@@ -12,6 +12,7 @@ $checks=@(
  @{Name='Test-WarswordsSpectreRush.ps1';Parameters=@{FirstBoss=$true}},
  @{Name='Test-WarswordsSpectreRush.ps1';Parameters=@{}},
  @{Name='Test-WarswordsFinalVisibility.ps1';Parameters=@{}},
+ @{Name='Test-WarswordsFirstReentry.ps1';Parameters=@{}},
  @{Name='Test-WarswordsWeaponPhase.ps1';Parameters=@{}},
  @{Name='Test-WarswordsRetreat.ps1';Parameters=@{}},
  @{Name='Test-WarswordsFinalCredit.ps1';Parameters=@{}},

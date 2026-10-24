@@ -45,11 +45,12 @@ for consumer, slot in (('?AddToWorld@Creature@@', 0x18), ('?RemoveFromWorld@Crea
     assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == slot for entry in instructions(consumer)), f'Native lifecycle misses the selected instance callback: {consumer}'
 
 creation = instructions(create)
-registration = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'movups' and entry.op_str == 'xmmword ptr [rcx + 0x20], xmm6')
-bootstrap = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rsi + 0x300], 0')
+registration = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'movups' and entry.op_str == 'xmmword ptr [rax + 0x20], xmm6')
+bootstrap = next(index for index, entry in enumerate(creation) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rbp + 0x300], 0')
 assert registration < bootstrap, 'Late bootstrap skips final GUID registration'
 for prefix in (create, remove, step):
     assert any(operand.type == CS_OP_IMM and operand.imm == 98602 for entry in instructions(prefix) for operand in entry.operands), 'Instance registry no longer scopes final98602'
+    assert any(operand.type == CS_OP_IMM and operand.imm == 98007 for entry in instructions(prefix) for operand in entry.operands), 'Instance registry no longer scopes first98007'
 assert native['symbol']('?OnCreatureRemove@InstanceScript@@') in native['calls'](remove), 'Removal bypasses native object/minion cleanup'
 assert native['symbol']('??8ObjectGuid@@') in native['calls'](remove), 'Stale removal can erase a replacement actor'
 
@@ -58,7 +59,7 @@ lookup = native['symbol']('?GetCreature@Map@@')
 assert lookup in native['calls'](step), 'Visibility refresh does not resolve the tracked actor on its actual instance map'
 refresh = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'mov' and entry.op_str == 'r8, qword ptr [rcx + 0xf0]')
 assert transition[refresh + 1].op_str == 'dl, 1' and transition[refresh + 3].mnemonic == 'call' and transition[refresh + 3].op_str == 'r8', 'Stage transition does not force the real Unit visibility update'
-bootstrap = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rbx + 0x300], 0')
+bootstrap = next(index for index, entry in enumerate(transition) if entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rdi + 0x300], 0')
 assert refresh < bootstrap, 'Early myscenario gate skips stationary visibility changes'
 assert native['symbol']('?UpdateVisibility@VisibilityUpdateTask@@') in native['calls']('?UpdateObjectVisibility@Unit@@'), 'Forced native Unit refresh is missing'
 assert native['symbol']('?UpdateObjectVisibility@WorldObject@@') in native['calls']('?UpdateVisibility@VisibilityUpdateTask@@'), 'Native refresh does not reach nearby-object visibility'

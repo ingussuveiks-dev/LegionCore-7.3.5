@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <iostream>
 #include <list>
 #include <vector>
@@ -128,6 +129,9 @@ struct Creature : Unit
     CreatureAI* i_disabledAI = nullptr;
     MotionMaster motion;
     Player* nearby = nullptr;
+    uint32 visibilityRequests = 0;
+    std::function<void()> onVisibility;
+    void UpdateObjectVisibility() { ++visibilityRequests; if (onVisibility) onVisibility(); }
     Creature* ToCreature() override { return this; }
     Creature const* ToCreature() const override { return this; }
     bool HasScalableLevels() const { return scalable; }
@@ -171,6 +175,7 @@ struct FirstBoss : CreatureAI
     EventMap events;
     SummonList summons;
 #include "SpectreState.inc"
+#include "EncounterActive.inc"
     std::vector<uint32> texts;
     void Talk(uint32 identity) { texts.push_back(identity); }
     void DoCast(uint32 identity)
@@ -345,7 +350,7 @@ int main()
         if (invalid == 7) scenarioManager.scenario.step = 6;
         uint32 damage = 2000;
         boss.DamageTakenAfterScaling(&player, damage, 0);
-        assert(damage == 2000 && !boss.phase && actor.health == 100000 && player.credits == 0);
+        assert(damage == uint32(invalid < 2 ? 2000 : 0) && !boss.phase && actor.health == 100000 && player.credits == 0);
     }
     scenarioManager = {};
     Player player;
@@ -368,6 +373,23 @@ int main()
     actor.alive = false;
     boss.DamageTakenAfterScaling(&player, damage, 0);
     assert(!boss.phase && damage == 1000);
+    {
+        scenarioManager = {}; scenarioManager.scenario.step = 5;
+        Creature restored; FirstBoss fresh(&restored); Player owner; Unit pet, guardian;
+        pet.owner = guardian.owner = &owner; restored.active = &fresh;
+        for (Unit* killer : std::vector<Unit*>{&owner, &pet, &guardian, nullptr})
+        {
+            uint32 lethal = 200000;
+            fresh.DamageTakenAfterScaling(killer, lethal, 0);
+            assert(!lethal && !fresh.phase && !owner.credits && restored.health == 100000);
+        }
+        fresh.phase = fresh.check_first_rephase = true;
+        restored.onVisibility = [&]() { assert(!fresh.phase && !fresh.IsEncounterActive()); };
+        fresh.Reset(); assert(restored.visibilityRequests == 1);
+        fresh.Reset(); assert(restored.visibilityRequests == 1);
+        uint32 lethal = 200000; fresh.DamageTaken(&owner, lethal, 0);
+        assert(!restored.despawns && !fresh.secondRetreatStarted);
+    }
 #endif
 #ifdef BASELINE
     std::cout << "BASELINE: pinned first Vigfus dies to full-health scaled lethal blows without retreat or46982 for Player/pet/guardian/charmer and current/suspended AI hosts.\n";

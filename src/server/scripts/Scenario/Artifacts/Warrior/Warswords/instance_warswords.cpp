@@ -61,10 +61,13 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
-            auto finalActor = objects.find(98602);
-            if (finalActor != objects.end())
-                if (Creature* creature = instance->GetCreature(finalActor->second))
-                    creature->UpdateObjectVisibility();
+            for (uint32 entry : {98007u, 98602u})
+            {
+                auto actor = objects.find(entry);
+                if (actor != objects.end())
+                    if (Creature* creature = instance->GetCreature(actor->second))
+                        creature->UpdateObjectVisibility();
+            }
             if (!myscenario)
                 return;
 
@@ -136,8 +139,8 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
-            if (creature->GetEntry() == 98602)
-                objects[98602] = creature->GetGUID();
+            if (creature->GetEntry() == 98007 || creature->GetEntry() == 98602)
+                objects[creature->GetEntry()] = creature->GetGUID();
             if (!myscenario)
                 return;
 
@@ -151,9 +154,9 @@ public:
         void OnCreatureRemove(Creature* creature) override
         {
             InstanceScript::OnCreatureRemove(creature);
-            auto finalActor = objects.find(98602);
-            if (creature->GetEntry() == 98602 && finalActor != objects.end() && finalActor->second == creature->GetGUID())
-                objects.erase(finalActor);
+            auto actor = objects.find(creature->GetEntry());
+            if ((creature->GetEntry() == 98007 || creature->GetEntry() == 98602) && actor != objects.end() && actor->second == creature->GetGUID())
+                objects.erase(actor);
         }
 
         void OnUnitDeath(Unit* creature) override

@@ -69,7 +69,7 @@ assert not any(entry.operands and entry.operands[0].type != CS_OP_MEM and entry.
 assert armed.address < movement[calls_to(move, '?DoCast@UnitAI@@QEAAXI@Z')[0]].address, 'Pending arrival claim must precede reentrant channel cast'
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'word ptr [rcx + 0xc4], 0' for entry in instructions(reset))
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rcx + 0xc6], 0' for entry in instructions(reset))
-assert any(entry.mnemonic == 'mov' and entry.op_str == 'word ptr [rcx + 0xc5], 0x100' for entry in instructions(pre)), 'Second leg does not clear pending and claim started together'
+assert any(entry.mnemonic == 'mov' and entry.op_str == 'word ptr [rdi + 0xc5], 0x100' for entry in instructions(pre)), 'Second leg does not clear pending and claim started together'
 damage = instructions('?DealDamage@Unit@@')
 division = next(index for index, entry in enumerate(damage) if entry.mnemonic == 'divss' and entry.op_str == 'xmm1, xmm0')
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x180

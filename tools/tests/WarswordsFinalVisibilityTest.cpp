@@ -54,6 +54,7 @@ struct Instance : InstanceScript
 #include "Step.inc"
 #include "Remove.inc"
 };
+#ifndef FIRST_REENTRY
 int main()
 {
 #ifdef BASELINE
@@ -146,3 +147,4 @@ int main()
     std::cout << "PASS: " << cases << " actual creature current/suspended-AI visibility/absent-world stage/corpse paths; exact5..7 policy including terminal7 without callback, null seer, missing scenario, unrelated reuse, pre-bootstrap registration and unchanged-phase refresh, unload/replacement/stale-remove, preserved native base cleanup/wave/scene requests. Controlled task/notifier, not live packets or client pixels.\n";
 #endif
 }
+#endif

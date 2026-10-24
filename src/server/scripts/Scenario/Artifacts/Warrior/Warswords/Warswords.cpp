@@ -116,7 +116,7 @@ public:
         EventMap events;
         SummonList summons;
         uint32 count_adds;
-        bool phase, check_first_rephase;
+        bool phase = false, check_first_rephase;
         bool secondRetreatStarted;
         ObjectGuid spectres[2] = {};
         bool spectreDefeated[2] = {};
@@ -141,6 +141,7 @@ public:
 
         void Reset() override
         {
+            bool wasRetreating = phase;
             phase = false;
             check_first_rephase = false;
             secondRetreatStarted = false;
@@ -152,6 +153,40 @@ public:
             count_adds = 0;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_AGGRESSIVE);
+            if (wasRetreating && me->GetEntry() == 98007 && me->GetMapId() == 1511)
+                me->UpdateObjectVisibility();
+        }
+
+        bool IsEncounterActive() const
+        {
+            if (me->GetEntry() != 98007 || me->GetMapId() != 1511)
+                return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 &&
+                (scenario->GetCurrentStep() == 4 || (scenario->GetCurrentStep() == 5 && phase));
+        }
+
+        bool IsEncounterReady() const
+        {
+            if (me->GetEntry() != 98007 || me->GetMapId() != 1511)
+                return true;
+            return !phase && IsEncounterActive();
+        }
+
+        bool CanBeVisibleFor(WorldObject const*) const override
+        {
+            return IsEncounterActive();
+        }
+
+        bool CanAIAttack(Unit const*) const override
+        {
+            return IsEncounterReady();
+        }
+
+        void AttackStart(Unit* target) override
+        {
+            if (IsEncounterReady())
+                ScriptedAI::AttackStart(target);
         }
 
         void EnterCombat(Unit* who) override
@@ -255,6 +290,8 @@ public:
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
+            if (!IsEncounterActive())
+                return;
             if (check_first_rephase)
             {
                 check_first_rephase = false;
@@ -276,6 +313,11 @@ public:
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
         {
+            if (!IsEncounterActive())
+            {
+                damage = 0;
+                return;
+            }
             if (!attacker || !damage || !me->IsAlive() || me->GetEntry() != 98007 || me->GetMapId() != 1511)
                 return;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
@@ -330,6 +372,8 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (!IsEncounterReady())
+                return;
             UpdateSpectreRush(diff);
             if (!UpdateVictim())
                 return;
