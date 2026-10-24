@@ -125,7 +125,12 @@ void Unit::NotifyDeath(Creature* creature)
 int irand(int minimum, int maximum) { assert(minimum == -5 && maximum == 5); return 0; }
 struct FinalBoss : ScriptedAI
 {
-    explicit FinalBoss(Creature* actor) : ScriptedAI(actor), summons(me) { introDone = false; }
+    explicit FinalBoss(Creature* actor) : ScriptedAI(actor), summons(me)
+    {
+#ifndef FIRST
+        introDone = false;
+#endif
+    }
     void UpdateIntro(uint32) { }
 #include "Fields.inc"
 #include "Reset.inc"
@@ -136,6 +141,10 @@ struct FinalBoss : ScriptedAI
 #include "BeginSpectreRush.inc"
 #include "JustDied.inc"
 #include "UpdateAI.inc"
+    void RetreatHandoff()
+    {
+#include "RetreatHandoff.inc"
+    }
 };
 Creature* Creature::SummonCreature(uint32 identity, float positionX, float positionY, float positionZ, float orientation)
 {
@@ -276,6 +285,22 @@ int main()
         fixture.pet.NotifyDeath(fixture.Child(0)); assert(fixture.ai.count_adds == 0);
         fixture.Kill(fixture.Child(2), &fixture.guardian); fixture.Kill(fixture.Child(3), &fixture.pet); fixture.Unlocked();
     }
+#ifdef FIRST
+    {
+        Fixture fixture; fixture.ai.BeginSpectreRush(); auto obsolete = fixture.Child(0);
+        fixture.ai.RetreatHandoff(); assert(fixture.ai.phase && !fixture.ai.spectreActive && !fixture.actor.aura);
+        assert(!fixture.Child(0)->world && !fixture.Child(1)->world);
+        fixture.Kill(obsolete, &fixture.pet); fixture.ai.UpdateSpectreRush(60000); fixture.ai.BeginSpectreRush();
+        assert(fixture.actor.attempts == 2 && fixture.ai.count_adds == 0 && !fixture.ai.spectreActive);
+        fixture.ai.Reset(); fixture.ai.BeginSpectreRush(); assert(fixture.actor.attempts == 4);
+        fixture.Kill(fixture.Child(2), &fixture.guardian); fixture.Kill(fixture.Child(3), &fixture.pet); fixture.Unlocked();
+    }
+    {
+        Fixture fixture; fixture.actor.onVisual = [&](Creature*) { fixture.ai.RetreatHandoff(); };
+        fixture.ai.BeginSpectreRush(); assert(fixture.ai.phase && !fixture.ai.spectreActive && fixture.actor.attempts == 1 && !fixture.ai.events.scheduled);
+        assert(!fixture.Child(0)->world);
+    }
+#endif
     std::cout << "PASS: " << cases << " summon-result/cast/killer paths; actual native InitSummon/death owner dispatch and map resolver, bounded missing/uninserted/despawn/predelete/map/dead retries, GUID-only exactly-once deaths, synchronous deaths, reset/death/reentrant epoch cleanup. Geometry, spell visuals, real combat/group and client traversal are not executed.\n";
 #endif
 }

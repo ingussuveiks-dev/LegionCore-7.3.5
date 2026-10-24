@@ -11,6 +11,8 @@ if($Baseline){$source=(& git -C $repo show "1e36ad79:$path") -join "`n";if($LAST
 $first=$source.IndexOf('struct npc_vigfus_bladewindAI :');$last=$source.IndexOf('class npc_vigfus_bladewind_last :',$first)
 if($first -lt 0 -or $last -le $first){throw 'Missing distinct first boss'}
 $source=$source.Substring($first,$last-$first)
+$spectres=if($Baseline){''}else{$first=$source.IndexOf('        ObjectGuid spectres[2]');$last=$source.IndexOf('        void Reset()',$first);if($first -lt 0 -or $last -le $first){throw 'First spectre state missing'};$source.Substring($first,$last-$first)}
+[IO.File]::WriteAllText("$out/SpectreState.inc",$spectres)
 foreach($name in @('Reset','DamageTaken','MovementInform')){[IO.File]::WriteAllText("$out/$name.inc",(Block $source "void $name("))}
 $post=if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}
 [IO.File]::WriteAllText("$out/AfterScaling.inc",$post)

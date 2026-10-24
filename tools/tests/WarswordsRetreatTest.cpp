@@ -145,7 +145,7 @@ struct Creature : Unit
     void RemoveFlag(uint32, uint32 mask) { flags &= ~mask; }
     void SetReactState(uint32 state) { react = state; }
     void StopAttack() { ++stops; }
-    void RemoveAura(uint32 identity) { assert(identity == 128264); ++removed; }
+    void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996); if (identity == 128264) ++removed; }
     void DespawnOrUnsummon(uint32 delay) { assert(delay == 7000); ++despawns; }
     Player* FindNearestPlayer(float range) { assert(range == 100.f); return nearby; }
 };
@@ -168,6 +168,7 @@ struct FirstBoss : CreatureAI
     uint32 count_adds = 0;
     EventMap events;
     SummonList summons;
+#include "SpectreState.inc"
     std::vector<uint32> texts;
     void Talk(uint32 identity) { texts.push_back(identity); }
     void DoCast(uint32 identity)
@@ -221,6 +222,13 @@ int main()
                 actor.castWorks = castWorks;
                 FirstBoss boss(&actor);
                 boss.Reset();
+#ifndef BASELINE
+                boss.spectreActive = true;
+                boss.spectreDefeated[0] = true;
+                boss.spectres[0] = {&add};
+                boss.count_adds = 1;
+                uint32 generation = boss.spectreGeneration;
+#endif
                 actor.active = suspended ? &temporary : &boss;
                 actor.i_disabledAI = suspended ? &boss : nullptr;
                 uint32 damage = attacker->Deal(&actor, 200000);
@@ -229,6 +237,9 @@ int main()
                 continue;
 #else
                 assert(damage == 0 && actor.alive && actor.health == 50000 && boss.phase && player.credits == 1 && unrelated.credits == 0);
+                assert(!boss.spectreActive && boss.spectreGeneration > generation && boss.count_adds == 0);
+                assert(!boss.spectres[0].unit && !boss.spectres[1].unit && !boss.spectreDefeated[0] && !boss.spectreDefeated[1]);
+                assert(boss.summons.resets == 2);
                 assert(boss.texts == std::vector<uint32>{5} && actor.motion.points == std::vector<uint32>{1});
                 assert(actor.react == REACT_PASSIVE && actor.stops == 1 && boss.events.resets == 2);
                 assert((actor.flags & (UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC)) != 0);
