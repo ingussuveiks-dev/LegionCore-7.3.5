@@ -438,15 +438,35 @@ public:
     };
 };
 
+namespace WarswordsAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || weapon->GetEntry() != 248832 || weapon->GetMapId() != 1511 ||
+            !player->IsAlive() || !player->CanContact() || player->getClass() != CLASS_WARRIOR ||
+            player->GetMap() != weapon->GetMap() || !player->InSamePhase(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) || player->GetQuestRewardStatus(40043) ||
+            (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 6;
+    }
+}
+
 // 248832
 class go_art_warswords : public GameObjectScript
 {
 public:
     go_art_warswords() : GameObjectScript("go_art_warswords") {}
 
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        return !WarswordsAcquisition::CanTake(player, go);
+    }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED)
+        if (target && state == GO_ACTIVATED && WarswordsAcquisition::CanTake(target->ToPlayer(), go))
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
             {
