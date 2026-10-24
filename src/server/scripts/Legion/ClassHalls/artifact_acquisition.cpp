@@ -113,6 +113,33 @@ struct npc_talonclaw_dakarr : SmartAI
     }
 };
 
+namespace TitanstrikePrustaga
+{
+void Protect(Creature* actor, Unit* attacker, uint32& damage)
+{
+    if (!actor || !attacker || !damage || actor->GetEntry() != 106730 || actor->GetMapId() != 1609 || !actor->IsAlive())
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 1099 || damage < actor->GetHealth(attacker))
+        return;
+    damage = 0;
+    if (actor->GetHealth() > 1)
+    {
+        actor->SetHealth(1);
+        TC_LOG_INFO("scripts.ai", "Titanstrike: protected Prustaga's surrender from a scaled killing blow");
+    }
+}
+}
+
+struct npc_titanstrike_final_prustaga : SmartAI
+{
+    explicit npc_titanstrike_final_prustaga(Creature* creature) : SmartAI(creature) { }
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+    {
+        TitanstrikePrustaga::Protect(me, attacker, damage);
+    }
+};
+
 namespace ArtifactAcquisition
 {
 struct Pickup {uint32 object,item,playerClass,quest,alternate;};
@@ -856,6 +883,7 @@ void Queue(Player* player)
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
+    RegisterCreatureAI(npc_titanstrike_final_prustaga);
     new go_artifact_acquisition();
     new go_marksmanship_pickup();
     new player_dark_riders_completion();
