@@ -31,8 +31,13 @@ int main(int argc, char** argv)
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<ModifierTreeEntry> modifiers("ModifierTree.db2", ModifierTreeLoadInfo::Instance());
     DB2Storage<SoundKitEntryEntry> sounds("SoundKitEntry.db2", SoundKitEntryLoadInfo::Instance());
+    DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
+    DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
     if (!lines.Load(argv[1], 0) || !texts.Load(argv[1], 0) || !criteria.Load(argv[1], 0) ||
-        !trees.Load(argv[1], 0) || !modifiers.Load(argv[1], 0) || !sounds.Load(argv[1], 0))
+        !trees.Load(argv[1], 0) || !modifiers.Load(argv[1], 0) || !sounds.Load(argv[1], 0) ||
+        !spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !misc.Load(argv[1], 0) || !durations.Load(argv[1], 0))
         return 2;
     lines.LoadFromDB();
     texts.LoadFromDB();
@@ -40,8 +45,44 @@ int main(int argc, char** argv)
     trees.LoadFromDB();
     modifiers.LoadFromDB();
     sounds.LoadFromDB();
+    spells.LoadFromDB();
+    effects.LoadFromDB();
+    misc.LoadFromDB();
+    durations.LoadFromDB();
+    std::set<uint32> selectedSpells{211690,211694,211731,211738,211820,211823,211824,211826,211827,
+        211753,208447,211848,211851,211934};
+    for (auto effect : effects)
+        if (effect->Effect == 219 && (effect->EffectMiscValue[0] == 2167 || effect->EffectMiscValue[0] == 2173))
+            selectedSpells.insert(effect->SpellID);
+    for (size_t previous = 0; previous != selectedSpells.size();)
+    {
+        previous = selectedSpells.size();
+        for (auto effect : effects)
+            if (!effect->DifficultyID && selectedSpells.count(effect->SpellID) && effect->EffectTriggerSpell)
+                selectedSpells.insert(effect->EffectTriggerSpell);
+    }
+    for (uint32 identity : selectedSpells)
+    {
+        auto spell = spells.LookupEntry(identity);
+        if (!spell)
+            return 9;
+        std::cout << "SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
+    }
+    for (auto effect : effects)
+        if (!effect->DifficultyID && selectedSpells.count(effect->SpellID))
+            std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0]
+                << '\t' << effect->EffectTriggerSpell << '\t' << effect->ImplicitTarget[0] << '\t'
+                << effect->ImplicitTarget[1] << '\n';
+    for (auto entry : misc)
+        if (!entry->DifficultyID && selectedSpells.count(entry->SpellID))
+        {
+            auto duration = durations.LookupEntry(entry->DurationIndex);
+            std::cout << "DURATION\t" << entry->SpellID << '\t' << (duration ? duration->Duration : 0) << '\n';
+        }
     std::set<uint32> soundKits;
-    for (uint32 identity : {4555u, 4556u, 4557u})
+    for (uint32 identity : {4555u, 4556u, 4557u, 4598u, 4599u, 4600u, 4601u, 4826u,
+        4615u, 4619u, 4616u, 4620u, 4621u})
     {
         auto line = lines.LookupEntry(identity);
         if (!line)
