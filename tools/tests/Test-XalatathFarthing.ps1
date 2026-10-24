@@ -23,7 +23,7 @@ if((Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw) -
 [IO.File]::WriteAllText("$out/NativeDie.inc",(Section $source '        case SMART_ACTION_DIE:' '        case SMART_ACTION_SET_IN_COMBAT_WITH_ZONE:'))
 [IO.File]::WriteAllText("$out/HealthEvent.inc",(Section $source '        case SMART_EVENT_HEALTH_PCT:' '        case SMART_EVENT_TARGET_HEALTH_PCT:'))
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_41_xalatath_farthing_finale.sql" -Raw
-$normalization=Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw
+$normalization=(Get-Content "$PSScriptRoot/XalatathActorRetryBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw)
 $reset=@'
 DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor;
 UPDATE creature_template SET ScriptName='' WHERE entry=101148;

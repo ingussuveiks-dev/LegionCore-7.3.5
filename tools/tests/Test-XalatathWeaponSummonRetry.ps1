@@ -9,7 +9,7 @@ $retry="$repo/build-extractors/runtime-test/marksmanship-bow-summon-retry"
 New-Item -ItemType Directory -Force $out | Out-Null
 & "$PSScriptRoot/Test-MarksmanshipBowSummonRetry.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary *> "$out/native-prerequisite.log"
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_42_xalatath_weapon_summon_retry.sql" -Raw
-$normalization=Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw
+$normalization=(Get-Content "$PSScriptRoot/XalatathActorRetryBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw)
 $reset=@'
 DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor;
 DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object;

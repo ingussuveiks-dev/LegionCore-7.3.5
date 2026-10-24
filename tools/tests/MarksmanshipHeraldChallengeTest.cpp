@@ -19,6 +19,10 @@ enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) assert(false)
 struct Unit;struct Creature;struct Player;struct GameObject;struct SpellInfo;struct SmartScript;
+#ifdef XALATATH_ACTOR_RETRY_TEST
+constexpr SMART_EVENT SMART_EVENT_SUMMONED_UNIT=static_cast<SMART_EVENT>(17),SMART_EVENT_SPELLHIT=static_cast<SMART_EVENT>(8),SMART_EVENT_RESET=static_cast<SMART_EVENT>(25);
+struct SpellInfo {uint32 Id=201899;struct Misc {struct {uint32 SchoolMask=1;}MiscData;}misc;Misc* GetMisc()const{return const_cast<Misc*>(&misc);}};
+#endif
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
 enum {SMART_ACTION_WP_START=53,SMART_ESCORT_TARGETS=0xFFFFFF,SMART_ESCORT_ESCORTING=1};
 enum ReactStates {REACT_PASSIVE=0};
@@ -36,6 +40,11 @@ struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid Empty;};ObjectGuid Objec
 struct InstanceMap {uint32 GetInstanceId(){return 42;}} instanceMap;
 struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
 struct WorldObject {
+#ifdef XALATATH_ACTOR_RETRY_TEST
+    Creature* SummonCreature(uint32,float,float,float,float,TempSummonType,uint32);
+    void GetPosition(float& positionX,float& positionY){positionX=positionY=0;}
+    float GetPositionZ(){return 0;}
+#endif
 #ifdef XALATATH_WEAPON_RETRY_TEST
     uint32 mapId=1539;uint32 GetMapId(){return mapId;}
 #endif
@@ -51,6 +60,10 @@ struct WorldObject {
 #endif
 };
 struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}
+#ifdef XALATATH_ACTOR_RETRY_TEST
+    bool IsCreature(){return ToCreature()!=nullptr;}
+    virtual uint32 GetEntry(){return 0;}
+#endif
 #ifdef MARKSMANSHIP_FINAL_STAGE_TEST
     Player* GetCharmerOrOwnerPlayerOrPlayerItself(){return nullptr;}
 #endif
@@ -63,6 +76,10 @@ struct Player:Unit {Player* ToPlayer()override{return this;}
 #endif
 };
 struct SmartAI {
+#ifdef XALATATH_ACTOR_RETRY_TEST
+    void JustSummoned(Creature*);void SpellHit(Unit*,SpellInfo const*);void IsSummonedBy(Unit*);
+    void AttackStart(Unit*){assert(false);}
+#endif
     SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
     Creature* me=nullptr;uint32 mEscortQuestID=0,despawnTime=0,escort=0,loadAttempts=0,mCurrentWPID=0;bool mCanRepeatPath=false,running=false,pathAvailable=true;
@@ -74,6 +91,10 @@ struct SmartAI {
 };
 struct GameObject:WorldObject {SmartAI ai;SmartAI* AI(){return &ai;}};
 struct Creature:Unit {
+#ifdef XALATATH_ACTOR_RETRY_TEST
+    bool IsAIEnabled=true;
+    using WorldObject::GetPosition;
+#endif
 #ifdef XALATATH_WEAPON_RETRY_TEST
     uint32 deaths=0;bool isDead(){return !alive;}void Kill(Creature* target){assert(target==this);alive=false;++deaths;}
 #endif
@@ -140,12 +161,20 @@ auto sCreatureTextMgr=&textManager;
 struct SmartScriptHolder {
     int64 entryOrGuid=0;uint32 event_id=0,source_type=0,link=0,type=0,actionType=0,targetType=0,timer=0;bool runOnce=false,active=true,enableTimed=false;
     struct {uint32 event_flags=0,event_phase_mask=0;
+#ifdef XALATATH_ACTOR_RETRY_TEST
+        struct {uint32 creature=0,cooldownMin=0,cooldownMax=0;}summoned;
+        struct {uint32 spell=0,school=0,cooldownMin=0,cooldownMax=0;}spellHit;
+#endif
         struct {uint32 min=0,max=0,repeatMin=0,repeatMax=0;}minMaxRepeat;
         struct {uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;}dataSet;
         struct {uint32 textGroupID=0,creatureEntry=0;}textOver;
         struct {uint32 pointID=0,pathID=0;}waypoint;
     }event;
     struct {struct {uint32 field=0,data=0;}setData;struct {uint32 textGroupID=0,duration=0;}talk;struct {uint32 flags=0;}cast;
+#ifdef XALATATH_ACTOR_RETRY_TEST
+        struct {uint32 creature=0,type=0,duration=0,storageID=0,attackInvoker=0,phaseByTarget=0;}summonCreature;
+        uint32 spell=0;
+#endif
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
         struct {uint32 run=0,pathID=0,repeat=0,quest=0,despawnTime=0,reactState=0;}wpStart;
 #endif
@@ -172,6 +201,11 @@ struct SmartScriptHolder {
 using SmartAIEventList=std::vector<SmartScriptHolder>;using ObjectList=std::list<WorldObject*>;
 uint32 urand(uint32 minimum,uint32 maximum){assert(minimum==maximum);return minimum;}
 struct SmartScript {
+#ifdef XALATATH_ACTOR_RETRY_TEST
+    uint32 lists=0;std::vector<uint32> casts;
+    void ResetBaseObject(){}void InitTimer(SmartScriptHolder& row){row.timer=row.event.minMaxRepeat.min;row.active=true;}
+    void OnReset();
+#endif
     Creature* me=nullptr;SmartAIEventList mEvents,mTimedActionList;ObjectGuid mLastInvoker,mTextGUID;
     uint32 mTalkerEntry=0,mLastTextID=0,mTextTimer=0;bool mUseTextTimer=false;
     WorldObject* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker.unit;}
@@ -221,6 +255,10 @@ struct SmartScript {
 #include "TimedUpdate.inc"
 #include "DataEvent.inc"
 #include "TextOver.inc"
+#ifdef XALATATH_ACTOR_RETRY_TEST
+#include "SummonedEvent.inc"
+#include "SpellHitEvent.inc"
+#endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
 #include "WaypointReached.inc"
 #endif
@@ -233,6 +271,14 @@ struct SmartScript {
         if(GetBaseObject()&&GetBaseObject()->IsQuestObjectExpired())return;
 #include "ActionStart.inc"
         switch(nativeEvent.GetActionType()){
+#ifdef XALATATH_ACTOR_RETRY_TEST
+            case 12:{
+#include "FixedCreatureSummon.inc"
+                break;
+            }
+            case 11:casts.push_back(nativeEvent.action.spell);break;
+            case 80:++lists;break;
+#endif
 #include "SetData.inc"
 #include "Talk.inc"
 #ifdef MARKSMANSHIP_INQUISITOR_TEST

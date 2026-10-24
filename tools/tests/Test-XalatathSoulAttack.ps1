@@ -19,6 +19,7 @@ $first=$source.LastIndexOf('    if (spellHitTarget)',$last)
 if($first -lt 0 -or $last -le $first){throw 'Native hit callback boundary missing'}
 [IO.File]::WriteAllText("$out/NativeHitDispatch.inc",($source.Substring($first,$last-$first)+"`n    }`n"))
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_43_xalatath_soul_attack_retry.sql" -Raw
+$normalization=Get-Content "$PSScriptRoot/XalatathActorRetryBaseline.sql" -Raw
 $reset=@'
 DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor;
 UPDATE creature_template SET ScriptName='' WHERE entry=102247;
@@ -33,9 +34,11 @@ INSERT INTO saved_actor SELECT * FROM creature_template WHERE entry IN(101148,10
 CREATE TEMPORARY TABLE creature_template LIKE saved_actor;
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid IN(101148,102247);
+$normalization
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 CREATE TEMPORARY TABLE saved_conditions LIKE conditions;
 INSERT INTO saved_conditions SELECT * FROM conditions WHERE (SourceTypeOrReferenceId=22 AND SourceEntry IN(101148,102247)) OR (SourceTypeOrReferenceId=17 AND SourceEntry=201899);
+DELETE FROM saved_conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=101148 AND SourceId=0 AND SourceGroup IN(33,34);
 CREATE TEMPORARY TABLE conditions LIKE saved_conditions;
 CREATE TEMPORARY TABLE saved_bindings LIKE spell_script_names;
 INSERT INTO saved_bindings SELECT * FROM spell_script_names WHERE spell_id=201899;

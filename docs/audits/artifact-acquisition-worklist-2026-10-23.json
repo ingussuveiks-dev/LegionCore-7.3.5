@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Maps/Map.cpp",
+      "handler": "Map::SummonCreature",
+      "problem": "AddToMap's bool is ignored before InitSummon; a nonnull uninserted allocation can still emit owner/child callbacks. Pre-insertion InitStats/minion/owner registration and not-in-world cleanup require a separate safe rollback audit.",
+      "investigation_audit": "docs/audits/xalatath-finale-actor-retry-2026-10-24.json",
+      "limit": "Open source-contract finding, not repaired or observed as a live grid rejection. Native invalid-cell ASSERT remains; the shared gameobject cleanup fix must not be assumed safe for all creature/minion types."
+    },
+    {
       "path": "src/server/game/Entities/Object/Object.cpp",
       "related_path": "src/server/game/Maps/Map.cpp",
       "handler": "SummonGameObject",
@@ -1441,6 +1448,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "finale_actor_retry_repair_audit": "docs/audits/xalatath-finale-actor-retry-2026-10-24.json",
+      "finale_actor_retry_review": "44 arms phase2 after native low-health aura, repeats the exact102247/type8 summon at500ms only in living1539/991/7 context, and stops creation on the actual owner SUMMONED_UNIT17 callback/phase3. Native201899 SpellHit29 now links original disarm41062/conversation201791, so null creation or failed hit cannot play them early. TEMP/idempotence15 custom variants, native callback/phase/timer/LINK/reset fixture, live graph/hash and canonical consumers/startup checked. Fresh muted Bue10:01..41 five-second samples cover finale dialogue -> Stage9 blade/blue glow -> loot -> raised-weapon title, not full footage/audio or local fidelity. Nonnull map insertion failure, disappeared/stale actors, nearest-player credit, full reset/re-entry, pickup and client chain remain unresolved.",
       "soul_attack_retry_repair_audit": "docs/audits/xalatath-soul-attack-retry-2026-10-24.json",
       "soul_attack_retry_review": "43 scopes102247's original201899 to its actual Farthing summoner via native invoker7 and a selected SmartAI wrapper; retries normal failed/unacknowledged casts every5s only in live1539/991/7/61204/HP<=1% owner context, stopping on actual own-target SpellHitTarget rather than CastSpell acceptance. Farthing reset generations cancel old future retries without custom SetData slots or fabricated progression. Guarded TEMP14 variants, native callback/policy/lifecycle fixture, actual canonical vtables/branches, final Release and own clean startup checked. Missing child creation, other finale casts, nearest-player credit, full abandonment/re-entry, full video/audio and client visuals/loot/equip remain pending.",
       "map_insertion_repair_audit": "docs/audits/gameobject-summon-insertion-2026-10-24.json",
