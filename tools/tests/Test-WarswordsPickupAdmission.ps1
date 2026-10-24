@@ -1,17 +1,19 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$LootBaseline,[switch]$ReturnBaseline)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$LootBaseline,[switch]$ReturnBaseline,[switch]$DepartureBaseline)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $LootBaseline -or $ReturnBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify repaired Release'}
-if(@($Baseline,$LootBaseline,$ReturnBaseline|Where-Object {$_}).Count -gt 1){throw 'Choose one pinned baseline'}
+if(($Baseline -or $LootBaseline -or $ReturnBaseline -or $DepartureBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify repaired Release'}
+if(@($Baseline,$LootBaseline,$ReturnBaseline,$DepartureBaseline|Where-Object {$_}).Count -gt 1){throw 'Choose one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-pickup-admission"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
 $source=Get-Content "$repo/$path" -Raw
-if($Baseline -or $LootBaseline -or $ReturnBaseline){$revision=if($ReturnBaseline){'6c6a6fc7'}elseif($LootBaseline){'c3728f9e'}else{'c9b90aba'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pickup baseline'}}
+if($Baseline -or $LootBaseline -or $ReturnBaseline -or $DepartureBaseline){$revision=if($DepartureBaseline){'d7c3ac3b'}elseif($ReturnBaseline){'6c6a6fc7'}elseif($LootBaseline){'c3728f9e'}else{'c9b90aba'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pickup baseline'}}
 [IO.File]::WriteAllText("$out/PickupObject.inc",(Block $source 'class go_art_warswords :')+';')
 $helper=if($Baseline){''}else{Block $source 'namespace WarswordsAcquisition'}
 [IO.File]::WriteAllText("$out/PickupAdmission.inc",$helper)
+$native=Get-Content "$repo/src/server/game/Scenarios/Scenario.cpp" -Raw
+[IO.File]::WriteAllText("$out/ScenarioCompleted.inc",(Block $native 'bool Scenario::IsCompleted(').Replace('Scenario::',''))
 $criteria=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block $criteria 'enum CriteriaTypes')+';')
 $native=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
@@ -31,7 +33,7 @@ $predicate=[regex]::Match($native,'else if \((loot->isLooted\(\) \|\| go->GetGoT
 if(!$predicate.Success -or !$native.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Missing native completed-loot release'}
 [IO.File]::WriteAllText("$out/NativeCompleteLoot.inc",'return '+$predicate.Groups[1].Value+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$baselineArgument=if($ReturnBaseline){' /DRETURN_BASELINE'}elseif($LootBaseline){' /DBASELINE /DLOOT_BASELINE'}elseif($Baseline){' /DBASELINE'}else{''}
+$baselineArgument=if($DepartureBaseline){' /DDEPARTURE_BASELINE'}elseif($ReturnBaseline){' /DRETURN_BASELINE'}elseif($LootBaseline){' /DBASELINE /DLOOT_BASELINE'}elseif($Baseline){' /DBASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4$baselineArgument /I`"$out`" `"$PSScriptRoot/WarswordsPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Warswords native pickup admission failed'}
 if($VerifyReleaseBinary){

@@ -19,6 +19,7 @@ $checks=@(
  @{Name='Test-WarswordsPickupAdmission.ps1';Parameters=@{}},
  @{Name='Test-WarswordsPresentation.ps1';Parameters=@{}},
  @{Name='Test-WarswordsReturnCredit.ps1';Parameters=@{}},
+ @{Name='Test-WarswordsReturnAdmission.ps1';Parameters=@{}},
  @{Name='Test-ScepterLogin.ps1';Parameters=@{}}
 )
 for($index=0;$index -lt $checks.Count;++$index){

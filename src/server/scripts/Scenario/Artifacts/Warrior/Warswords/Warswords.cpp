@@ -872,6 +872,18 @@ public:
 
 namespace WarswordsAcquisition
 {
+    bool CanReturn(Player* player, uint32 instanceId)
+    {
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR || !player->GetMap() ||
+            player->GetMapId() != 1511 || player->GetInstanceId() != instanceId || player->GetQuestRewardStatus(40043) ||
+            (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE) ||
+            !player->HasItemCount(128908, 1, true))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+        return scenario && scenario->GetScenarioId() == 944 && scenario->IsCompleted(false);
+    }
+
     bool CanTake(Player* player, GameObject* weapon)
     {
         if (!player || !weapon || weapon->GetEntry() != 248832 || weapon->GetMapId() != 1511 ||
@@ -919,9 +931,12 @@ public:
 
                 target->ToPlayer()->KilledMonsterCredit(98033);
                 target->CreateConversation(849);
-                target->AddDelayedEvent(12000, [target]() -> void
+                Player* player = target->ToPlayer();
+                uint32 instanceId = go->GetInstanceId();
+                target->AddDelayedEvent(12000, [player, instanceId]() -> void
                 {
-                    target->CastSpell(target, 192085);
+                    if (WarswordsAcquisition::CanReturn(player, instanceId))
+                        player->CastSpell(player, 192085);
                 });
             }
         }

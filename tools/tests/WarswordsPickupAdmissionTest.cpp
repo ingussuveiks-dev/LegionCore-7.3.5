@@ -68,7 +68,8 @@ struct GameObject
 struct Player : Unit
 {
     uint32 status = QUEST_STATUS_INCOMPLETE, playerClass = CLASS_WARRIOR, credits = 0, achievements = 0, items = 0;
-    bool alive = true, contact = true, phase = true, rewarded = false;
+    bool alive = true, contact = true, phase = true, rewarded = false, world = true, teleporting = false;
+    uint32 mapId = 1511, instance = 42;
     Map* map = &instanceMap;
     float distance = 1.f;
     bool room = true, storeWorks = true;
@@ -77,6 +78,10 @@ struct Player : Unit
     Player* ToPlayer() override { return this; }
     uint32 GetTypeId() override { return TYPEID_PLAYER; }
     bool IsAlive() const { return alive; }
+    bool IsInWorld() const { return world; }
+    bool IsBeingTeleported() const { return teleporting; }
+    uint32 GetMapId() const { return mapId; }
+    uint32 GetInstanceId() const { return instance; }
     bool CanContact() const { return contact; }
     uint32 getClass() const { return playerClass; }
     Map* GetMap() const { return map; }
@@ -119,15 +124,17 @@ struct Player : Unit
 };
 struct Scenario
 {
-    uint32 identity = 944, step = 6;
+    uint32 identity = 944, currentStep = 6;
     uint32 GetScenarioId() const { return identity; }
-    uint32 GetCurrentStep() const { return step; }
+    uint32 GetCurrentStep() const { return currentStep; }
+    uint32 GetStepCount(bool bonus) const { assert(!bonus); return 7; }
+#include "ScenarioCompleted.inc"
 };
 struct ScenarioMgr
 {
-    bool available = true;
+    bool available = true, acceptOtherInstance = false;
     Scenario scenario;
-    Scenario* GetScenario(uint32 identity) { return available && identity == 42 ? &scenario : nullptr; }
+    Scenario* GetScenario(uint32 identity) { return available && (identity == 42 || (identity == 43 && acceptOtherInstance)) ? &scenario : nullptr; }
 } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
 struct GameObjectScript
@@ -175,9 +182,9 @@ int main()
         if (invalid == 11) weapon.instance = 43;
         if (invalid == 12) scenarioManager.available = false;
         if (invalid == 13) scenarioManager.scenario.identity = 909;
-        if (invalid == 14) scenarioManager.scenario.step = 0;
-        if (invalid == 15) scenarioManager.scenario.step = 5;
-        if (invalid == 16) scenarioManager.scenario.step = 7;
+        if (invalid == 14) scenarioManager.scenario.currentStep = 0;
+        if (invalid == 15) scenarioManager.scenario.currentStep = 5;
+        if (invalid == 16) scenarioManager.scenario.currentStep = 7;
         if (invalid == 17) player.status = 5;
 #ifdef BASELINE
 #ifdef LOOT_BASELINE
@@ -258,7 +265,7 @@ int main()
                 }
                 assert(player.achievements == 2 && player.items == 1 && player.credits == 1 && player.conversations == 1 && player.delays == 1);
                 assert(player.casts == 1);
-                scenarioManager.scenario.step = 7;
+                scenarioManager.scenario.currentStep = 7;
                 assert(script.OnGossipHello(&player, &weapon));
                 script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
                 assert(player.achievements == 2 && player.delays == 1);
@@ -291,6 +298,7 @@ int main()
         GameObject pickup;
         assert(script.OnGossipHello(&traveler, &pickup));
         assert(traveler.credits == 1 && traveler.casts == 1 && traveler.jumpRequests == 0);
+        scenarioManager.scenario.currentStep = 7;
         traveler.FlushDelayedEvents();
         assert(traveler.jumpRequests == 1 && traveler.acceptedJumps == uint32(jumpWorks));
 #ifdef RETURN_BASELINE
@@ -301,6 +309,55 @@ int main()
         traveler.FlushDelayedEvents();
         assert(traveler.jumpRequests == 1);
     }
+#if !defined(RETURN_BASELINE)
+    for (uint32 invalid = 0; invalid < 18; ++invalid)
+    {
+        scenarioManager = {}; Player traveler; traveler.items = 1;
+        {
+            GameObject pickup;
+            assert(script.OnGossipHello(&traveler, &pickup));
+        }
+        scenarioManager.scenario.currentStep = 7;
+        if (invalid == 0) traveler.world = false;
+        if (invalid == 1) traveler.contact = false;
+        if (invalid == 2) traveler.alive = false;
+        if (invalid == 3) traveler.teleporting = true;
+        if (invalid == 4) traveler.playerClass = 8;
+        if (invalid == 5) traveler.map = nullptr;
+        if (invalid == 6) traveler.mapId = 1220;
+        if (invalid == 7) { traveler.instance = 43; scenarioManager.acceptOtherInstance = true; }
+        if (invalid == 8) traveler.rewarded = true;
+        if (invalid == 9) traveler.status = 0;
+        if (invalid == 10) traveler.status = 5;
+        if (invalid == 11) traveler.items = 0;
+        if (invalid == 12) scenarioManager.available = false;
+        if (invalid == 13) scenarioManager.scenario.identity = 973;
+        if (invalid == 14) scenarioManager.scenario.currentStep = 6;
+        if (invalid == 15) scenarioManager.scenario.currentStep = 8;
+        if (invalid == 16) scenarioManager.scenario.currentStep = 0;
+        if (invalid == 17) traveler.mapId = 1479;
+        traveler.FlushDelayedEvents();
+#ifdef DEPARTURE_BASELINE
+        assert(traveler.jumpRequests == 1);
+#else
+        assert(!traveler.jumpRequests);
+#endif
+        assert(traveler.credits == 1 && traveler.achievements == 2);
+    }
+#ifdef DEPARTURE_BASELINE
+    std::cout << "BASELINE: pinned d7c3ac3b requests192085 in18 stale departure contexts including abandon, death, map change and a different live944 instance. Controlled callback, not a live client teleport.\n";
+#else
+    assert(!WarswordsAcquisition::CanReturn(nullptr, 42));
+    for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE), uint32(QUEST_STATUS_COMPLETE)})
+    {
+        scenarioManager = {}; Player traveler; traveler.items = 1; traveler.status = status;
+        GameObject pickup; assert(script.OnGossipHello(&traveler, &pickup));
+        scenarioManager.scenario.currentStep = 7; traveler.FlushDelayedEvents();
+        assert(traveler.jumpRequests == 1 && traveler.credits == 1);
+    }
+    std::cout << "PASS: actual native completion predicate and installed callback reject18 stale contexts; original instance, live active quest and real possession required, no GO lifetime capture or departure credit. Missing button/retry and real teleport/client remain separate.\n";
+#endif
+#endif
 #ifdef RETURN_BASELINE
     std::cout << "BASELINE: pinned6c6a6fc7 awards103739 when the timer requests192085, including a failed jump; no native arrival occurred. Controlled cast/timer services.\n";
 #else

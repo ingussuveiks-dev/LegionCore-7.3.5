@@ -217,6 +217,8 @@ int main(int argc, char** argv)
         {
             std::cout << "STEP\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t'
                 << step->Title->Str[0] << '\t' << step->Description->Str[0] << '\n';
+            std::cout << "STEP_KIND\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t' << step->IsBonusObjective() << '\n';
+            std::cout << "STEP_REWARD\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t' << step->RewardQuestID << '\n';
             std::set<uint32> pending{uint32(step->Criteriatreeid)}, seen;
             while (!pending.empty())
             {
