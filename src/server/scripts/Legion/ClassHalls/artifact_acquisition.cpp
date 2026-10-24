@@ -1384,6 +1384,44 @@ void Queue(Player* player)
 }
 }
 
+namespace XalatathPresentation
+{
+bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+{
+    if (!scene || scene->MiscValue != 1187 || scene->SceneScriptPackageID != 1553)
+        return false;
+    if (trigger != "complete" || !player || !player->HasSceneStatus(1187, SCENE_COMPLETE) ||
+        !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_PRIEST || player->GetMapId() != 1539 ||
+        !ArtifactAcquisition::Active(player, 40710) || !player->GetItemByEntry(128827))
+        return true;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 991 || scenario->GetCurrentStep() < 8 || scenario->GetCurrentStep() > 9)
+        return true;
+    SpellCastResult result = player->CastSpell(player, 201778, true);
+    if (result != SPELL_CAST_OK)
+    {
+        TC_LOG_WARN("scripts", "Xalatath pickup: native equip 201778 failed with result %u for player %u; no item or progression granted", uint32(result), player->GetGUIDLow());
+        return true;
+    }
+    Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+    Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    if (!weapon || weapon->GetEntry() != 128827 || !child || child->GetEntry() != 133958 || weapon->GetChildItem() != child->GetGUID())
+        TC_LOG_WARN("scripts", "Xalatath pickup: native equip 201778 accepted but blade/paired item is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
+    return true;
+}
+}
+
+class scene_xalatath_pickup : public SceneTriggerScript
+{
+public:
+    scene_xalatath_pickup() : SceneTriggerScript("scene_xalatath_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return XalatathPresentation::Complete(player, scene, trigger);
+    }
+};
+
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
@@ -1402,4 +1440,5 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_return();
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
+    new scene_xalatath_pickup();
 }

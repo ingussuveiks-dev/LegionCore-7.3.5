@@ -17,27 +17,45 @@ enum { SPELL_AURA_ACTIVATE_SCENE = 430, PHASE_UPDATE_FLAG_ZONE_UPDATE = 1 };
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Position { int GetPosition() const { return 0; } };
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
-enum { INVENTORY_SLOT_BAG_0 = 255, EQUIPMENT_SLOT_MAINHAND = 15, NULL_SLOT = 255, SPELL_EFFECT_HANDLE_HIT_TARGET = 1 };
+enum { INVENTORY_SLOT_BAG_0 = 255, EQUIPMENT_SLOT_MAINHAND = 15, EQUIPMENT_SLOT_OFFHAND = 16, NULL_SLOT = 255, SPELL_EFFECT_HANDLE_HIT_TARGET = 1 };
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_CANT_EQUIP, EQUIP_ERR_BAG_FULL };
 using SpellEffIndex = uint32;
 using uint16 = uint16_t;
-struct ChildGuid { bool IsEmpty() const { return true; } };
+struct ChildGuid { uint32 value = 0; bool IsEmpty() const { return value == 0; } bool operator!=(ChildGuid const& other) const { return value != other.value; } };
 struct Item {
+#ifdef XALATATH_PRESENTATION_TEST
+    uint32 entry = 128827;
+#else
     uint32 entry = 128826;
+#endif
     uint16 position = 0xFF20;
+    uint32 identity = 0;
     uint32 GetEntry() const { return entry; }
     uint16 GetPos() const { return position; }
     bool IsEquipped() const { return position == 0xFF0F; }
-    ChildGuid GetChildItem() const { return {}; }
+    ChildGuid GetChildItem() const {
+#ifdef XALATATH_PRESENTATION_TEST
+        return {entry == 128827 ? 133958u : 0u};
+#else
+        return {};
+#endif
+    }
+    ChildGuid GetGUID() const { return {identity ? identity : entry}; }
 };
 struct SpellInfo {
-    struct Effect { uint32 MiscValue = 128826; } effect;
+    struct Effect { uint32 MiscValue =
+#ifdef XALATATH_PRESENTATION_TEST
+        128827
+#else
+        128826
+#endif
+    ; } effect;
     Effect const* GetEffect(SpellEffIndex, uint32) const { return &effect; }
 };
 #else
 struct SpellInfo {};
 #endif
-struct SpellScene { uint32 PlaybackFlags = 21, SceneScriptPackageID = 1583; };
+struct SpellScene { uint32 PlaybackFlags = 21, SceneScriptPackageID = 1583, MiscValue = 0; };
 struct SceneTriggerEvent { std::string Event; uint32 trigerSpell = 0, MonsterCredit = 0, MiscValue = 1220; };
 struct Message { uint32 instance; bool cancel; };
 namespace WorldPackets { namespace Scene {
@@ -94,6 +112,8 @@ struct Player : Unit {
     std::function<void()> criteriaUpdate;
     std::vector<std::function<void()>> delayedInvokerCasts;
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
+    bool contact = true;
+    bool CanContact() const { return contact; }
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
     uint32 expectedQuest = 40385, expectedItem = 128808, expectedCriterion = 47689, castResult = 0;
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
@@ -103,20 +123,38 @@ struct Player : Unit {
     InventoryResult equipResult = EQUIP_ERR_OK;
     uint32 equipErrors = 0, swaps = 0;
     std::function<void()> forceEquip;
-    Item* GetItemByEntry(uint32 entry) { assert(entry == 128826); return owned && !bankOnly ? &artifact : nullptr; }
+    Item* GetItemByEntry(uint32 entry) { assert(entry == artifact.entry); return owned && !bankOnly ? &artifact : nullptr; }
+#ifdef XALATATH_PRESENTATION_TEST
+    Item paired{133958, 0xFF40};
+    Item* offhand = nullptr;
+    InventoryResult childResult = EQUIP_ERR_OK;
+#endif
     Item* GetItemByPos(uint32 bag, uint32 slot) {
-        assert(bag == INVENTORY_SLOT_BAG_0 && slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
+        assert(bag == INVENTORY_SLOT_BAG_0);
+#ifdef XALATATH_PRESENTATION_TEST
+        if (slot == EQUIPMENT_SLOT_OFFHAND) return offhand;
+#endif
+        assert(slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
     }
     InventoryResult CanEquipItem(uint32 slot, uint16& destination, Item* item, bool swap) {
         assert(slot == NULL_SLOT && item == &artifact && swap); destination = 0xFF0F; return equipResult;
     }
-    InventoryResult CanEquipChildItem(Item*) { assert(false); return EQUIP_ERR_OK; }
+    InventoryResult CanEquipChildItem(Item*) {
+#ifdef XALATATH_PRESENTATION_TEST
+        return childResult;
+#else
+        assert(false); return EQUIP_ERR_OK;
+#endif
+    }
     void SendEquipError(InventoryResult result, Item* item) { assert(result != EQUIP_ERR_OK && item == &artifact); ++equipErrors; }
     void SwapItem(uint16 source, uint16 destination) {
         assert(source == artifact.position && destination == 0xFF0F); ++swaps;
         if (swapBlocked) return;
         if (mainhand) mainhand->position = source;
         artifact.position = destination; mainhand = &artifact;
+#ifdef XALATATH_PRESENTATION_TEST
+        paired.position = 0xFF10; offhand = &paired;
+#endif
     }
 #endif
     Player* ToPlayer() override { return this; }
@@ -153,6 +191,9 @@ struct Player : Unit {
         if (castResult) return castResult;
 #ifdef MARKSMANSHIP_PRESENTATION_TEST
         if (spell == 200262 && forceEquip) forceEquip();
+#ifdef XALATATH_PRESENTATION_TEST
+        if (spell == 201778 && forceEquip) forceEquip();
+#endif
 #endif
         auras.insert(spell);
         if (cast) cast(spell);
