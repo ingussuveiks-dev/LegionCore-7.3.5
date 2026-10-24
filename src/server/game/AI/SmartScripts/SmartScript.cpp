@@ -4570,7 +4570,7 @@ void SmartScript::DecPhase(int32 p)
 
 bool SmartScript::IsInPhase(uint32 p) const
 {
-    return ((1 << (mEventPhase - 1)) & p) != 0;
+    return mEventPhase > 0 && mEventPhase <= SMART_EVENT_PHASE_COUNT && ((1u << (mEventPhase - 1)) & p) != 0;
 }
 
 void SmartScript::SetPhase(uint32 p)

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-24",
+  "scope": "Shared SmartAI phase predicate safety prerequisite for the queued Marksmanship search-route phase gate. Server event phases1..12 are distinct from zero-based scenario972 steps.",
+  "finding": "Native IsInPhase evaluated signed1 << (mEventPhase-1) without a range guard. Default/reset phase0 subtracts to an invalid shift count; oversized phases also have no portable C++ shift guarantee. The pinned production predicate compiled by this environment's MSVC/x64 concretely aliases phase33 to phase1. This is an extracted native arithmetic reproduction, NOT proof that a legitimate live quest supplied33 or an observed client failure was caused by it.",
+  "repair": "Require mEventPhase>0 and <= native SMART_EVENT_PHASE_COUNT before an unsigned1u shift. Preserve all valid1..12 phase-mask results and caller-side mask0 always-active behavior. No phase setter/reset/event flag, actor data, scenario step, timers, conditions, credit, movement or speech behavior is replaced.",
+  "sources": {
+    "local": "Actual SmartScript::IsInPhase/SetPhase, ProcessEvent/UpdateTimer consumers, OnReset phase0 assignment and native phase enums/count12/masks4095. Before the separate search migration, read-only MariaDB census has71496 SmartAI rows,13643 with nonzero phase masks; this is inventory, not execution of those scripts.",
+    "trinity": "Exact local26972 c2d61e05cf3dc555608e6b2a06772c27d207548c SmartScript.h117 has the same unguarded inline predicate. No newer engine/API or external implementation was imported.",
+    "external": "The targeted GitHub/video review belongs to the separately audited search-route repair. No video can prove this internal integer predicate; no new footage or client failure attributed to it. Source-native arithmetic and deployed instructions provide the evidence."
+  },
+  "checks": [
+    "Test-SmartEventPhase.ps1 -Baseline reads pinned828374ec9792b2123d6ec9297cc162c0b95d6ed6 methods and reproduces MSVC/x64 phase33 aliasing mask1. Baseline verifies this known invalid-input behavior, not a repaired pass or a client repro.",
+    "Test-SmartEventPhase.ps1 -VerifyReleaseBinary compiles the complete actual setter/predicate. All53248 combinations of phases0..12 and native masks0..4095 pass, plus invalid13/31/32/33/63/64/UINT32_MAX against low/full masks and an explicit set1/reset0 sequence. Invalid input is refused rather than wrapped; no masked index fallback hides it.",
+    "Actual deployed ProcessEvent and UpdateTimer both read phase+0xac, decrement the index, compare unsigned against11 and branch to rejection before BT. Invalid phases and unmatched masks reach the same rejection; the original mask0 bypass reaches normal dispatch. This checks the final inlined implementation, not a source string or unrelated test executable.",
+    "The separate search-route native test covers the unchanged phase action, actual timer/event bit gates and pending phase0->1, with native text timer and waypoint retry. Test-ScepterLogin.ps1 -VerifyReleaseBinary and Test-SmartGameObjectFlags.ps1 -VerifyReleaseBinary pass on the new executable. Existing inherited PE chain retains prior artifact/arrival/return/expiry implementations. Source-host checks remain distinct from actual world traversal."
+  ],
+  "deployment": {
+    "directory": "build-extractors/bin/Release",
+    "worldserver_sha256": "F303F74175F2557EF14878ECBE3A7EF80C7EB42420F195A451A6BB91A6642203",
+    "build": "Completed Release worldserver/bnetserver via build-extractors, native original library outputs, /p:CL_MPCount=2 and /p:LinkIncremental=false; no global OutDir. Fresh game.lib04:05:03 and unchanged scripts.lib03:34:36 precede worldserver.exe04:05:10 local2026-10-24. Header/scripts sources do not change in this predicate repair; older unchanged scripts.lib is intentional, not a substituted stale game.lib. Actual final link retains ../scripts/Release/scripts.lib and ../game/Release/game.lib.",
+    "startup": "Task-owned PID34144 reached World initialized and gracefully exited0; appended DBErrors0 bytes, protected config/certificates unchanged. This startup also loaded the separately audited search-route data migration. No user/unknown process stopped, no task-owned world/bnet server remains and no credentials or personal character state changed.",
+    "private_evidence": ".codex/smart-phase-* baseline/native/PE/disassembly logs and .codex/marksmanship-search-release-build.log. Runtime binaries excluded from Git."
+  },
+  "limits": [
+    "No observed player quest failure is attributed solely to phase33. Ordinary valid-mask behavior is exhaustively preserved in the predicate host, not all71496 complete SmartAI rows or live encounters.",
+    "This does not recover a lost event or persist quest/actor state across reset. Marksmanship's queued LINK43 retry/data migration is a separate focused repair and audit; full client visuals/traversal remain pending."
+  ]
+}

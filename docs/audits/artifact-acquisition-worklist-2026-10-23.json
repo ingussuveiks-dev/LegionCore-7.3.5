@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/AI/SmartScripts/SmartScript.cpp",
+      "handler": "IsInPhase",
+      "problem": "Reset/invalid event phases reached an undefined signed shift; native MSVC/x64 baseline aliases phase33 to phase1.",
+      "repair_audit": "docs/audits/smart-event-phase-bounds-2026-10-24.json",
+      "limit": "Valid phase-mask predicate and deployed consumers verified; not evidence of a live phase33 quest failure or full chain/client traversal."
+    },
+    {
       "path": "src/server/game/Spells/SpellEffects.cpp",
       "handler": "EffectForceEquipItem",
       "effect": 249,
