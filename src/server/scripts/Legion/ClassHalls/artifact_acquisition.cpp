@@ -114,6 +114,61 @@ struct npc_talonclaw_dakarr : SmartAI
     }
 };
 
+namespace TalonclawAmbush
+{
+void Protect(Creature* actor, Unit* attacker, uint32& damage, uint32& encounterStep)
+{
+    if (!actor || !attacker || !damage || actor->GetEntry() != 100376 || actor->GetMapId() != 1511 || !actor->IsAlive())
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 973)
+        return;
+    if (encounterStep && encounterStep != scenario->GetCurrentStep())
+    {
+        damage = 0;
+        return;
+    }
+    if (scenario->GetCurrentStep() != 9 && scenario->GetCurrentStep() != 10)
+        return;
+    if (!encounterStep)
+        encounterStep = scenario->GetCurrentStep();
+    uint32 percent = encounterStep == 9 ? 70 : 60;
+    uint64 health = actor->GetHealth(attacker);
+    uint64 floor = actor->CountPctFromMaxHealth(percent, attacker);
+    if (health > floor && damage < health - floor)
+        return;
+    damage = 0;
+    uint64 baseFloor = std::max<uint64>(1, actor->CountPctFromMaxHealth(percent));
+    if (actor->GetHealth() > baseFloor)
+    {
+        actor->SetHealth(baseFloor);
+        TC_LOG_INFO("scripts.ai", "Talonclaw: protected Dakarr's ambush transition at scenario step %u", encounterStep);
+    }
+}
+}
+
+struct npc_talonclaw_ambush_dakarr : SmartAI
+{
+    explicit npc_talonclaw_ambush_dakarr(Creature* creature) : SmartAI(creature) { }
+    uint32 encounterStep = 0;
+
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        if (!encounterStep && me->GetEntry() == 100376 && me->GetMapId() == 1511)
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 973 && (scenario->GetCurrentStep() == 9 || scenario->GetCurrentStep() == 10))
+                encounterStep = scenario->GetCurrentStep();
+        }
+        SmartAI::DamageTaken(attacker, damage, type);
+    }
+
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+    {
+        TalonclawAmbush::Protect(me, attacker, damage, encounterStep);
+    }
+};
+
 namespace TitanstrikePrustaga
 {
 void Protect(Creature* actor, Unit* attacker, uint32& damage)
@@ -1152,6 +1207,7 @@ void Queue(Player* player)
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
+    RegisterCreatureAI(npc_talonclaw_ambush_dakarr);
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);
