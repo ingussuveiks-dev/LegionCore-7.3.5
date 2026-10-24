@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/common/DataStores/DB2FileLoader.cpp",
+      "handler": "DB2FileLoaderRegularImpl::RecordGetVarInt/CommonData",
+      "problem": "Reversed data-base minus record pointer produced a wrapped external row index and actual native SpellVisual load ACCESS_VIOLATION, blocking matching visual-data inspection.",
+      "repair_audit": "docs/audits/db2-common-data-row-2026-10-24.json",
+      "limit": "Forward record offset repaired; pinned source baseline,120 typed controlled cases, six deployed decoder bodies and real native SpellVisual/Helya graph expansion checked. No rendered client visual, whole quest, malformed-file or all compression/64-bit-value certification."
+    },
+    {
       "path": "src/server/game/Maps/Map.cpp",
       "handler": "Map::SummonCreature",
       "problem": "AddToMap's bool is ignored before InitSummon; a nonnull uninserted allocation can still emit owner/child callbacks. Pre-insertion InitStats/minion/owner registration and not-in-world cleanup require a separate safe rollback audit.",
@@ -256,6 +263,8 @@
     {
       "class_id": 1,
       "specialization": "Fury",
+      "helya_visual_data_audit": "docs/audits/db2-common-data-row-2026-10-24.json",
+      "helya_visual_data_review": "Actual native SpellVisual expansion exposed/repaired a shared CommonData external-row pointer reversal. Typed local195062->50629/205424->53867 links, five events, kits/attachments/model file IDs, procedure/AnimKit/segments and four sound kits now resolve, with base-only client-parent/name limits explicit.195062 is truly channeled, supporting deferred aura acknowledgement;205424 is distinct infinite self aura, not a substitute. Actor addon reads are empty and source only removes205424, so application path remains open. No actor/target/phase change from reference names; actual M2/socket/embedded effects, event-target semantics, uninterrupted video/audio and local client rendering remain unverified.",
       "helya_channel_audit": "docs/audits/warswords-helya-channel-2026-10-24.json",
       "helya_channel_review": "Automatic final98602 intro now waits for live same-map/phase99043 and actual self195062 aura before843/original8s, retaining normal self cast and finite native7s duration. Missing/rejected/unapplied effects retry at1s with warning/recovery; existing self aura is not refreshed, stale cast/conversation Reset cannot arm a closure. Pinned a5a82529 baseline, actual source-extracted host with foreign-caster/delayed-aura/repeated-failure/saturating-tick cases, typed26972 duration/effect/cast catalogue, selected canonical PE, sequential earlier regressions/Scepter and task-owned startup pass. Only partial muted video samples; full visual-kit/model graph, Helya visibility/cleanup, direct-stage5 combat bypass, full native aura/client timing and full Fury/all36 traversal remain open.",
       "final_visibility_audit": "docs/audits/warswords-final-visibility-2026-10-24.json",
@@ -369,7 +378,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain final live5..7 visibility/exact-GUID refresh including terminal completion, stage5 combat-selection/AttackStart/post-scaled damage guards, projected15/7 request guards, both GUID-bound Spectre Rush lifecycles, first retreat cancellation and final intro identity/retry plus live Helya/self195062 aura acknowledgement before843/original8s. Trace native visual-kit/attachment/model graph and full relevant continuous video before changing caster/target/timing or Helya AI/visibility/cleanup. Direct stage5 combat still bypasses the automatic introduction and lethal hits can truncate15/7; do not invent invulnerability/death timing. Scope first stage5 re-entry/player/group admission without hiding shared7000/7003. Restore finale Val'kyr/beam/215997-override730 player button/retry before replacing12-second automatic jump. Open-world93819/7509 belongs to43090, not verified40043; zero-coordinate208 targets Players, not SELF Creature. Existing1479/base5997 Danica103739 lies30.98yd from216016 but actual visibility/arrival/group counters are unverified. Verify194201 duplicate/group effects, true128908/134553 storage/equip/save, missing-scene and native aura/client visuals. Full paths/audio/native group and complete Fury video/client traversal remain open."
+      "next_action": "Retain final live5..7 visibility/exact-GUID refresh, stage5 combat-selection/post-scaled damage guards,15/7 request guards, both Spectre Rush lifecycles, first retreat cancellation and intro identity/retry/live Helya/self195062 acknowledgement before843/original8s. Native visual reference graph now resolves through the repaired CommonData reader; inspect actual M2/socket/embedded effects, event target semantics,205424 application path and full relevant continuous video before changing caster/target/timing or Helya AI/visibility/cleanup. Direct stage5 combat still bypasses automatic intro and lethal hits truncate15/7; do not invent invulnerability/death timing. Scope first stage5 re-entry/player/group admission without hiding shared7000/7003. Restore finale Val'kyr/beam/215997-override730 player button/retry before replacing12-second automatic jump. Open-world93819/7509 belongs to43090, not verified40043; zero-coordinate208 targets Players, not SELF Creature. Existing1479/base5997 Danica103739 lies30.98yd from216016 but actual visibility/arrival/group counters are unverified. Verify194201 duplicate/group effects, true128908/134553 storage/equip/save and missing-scene/client visuals. Full paths/audio/native group and complete Fury video/client traversal remain open."
     },
     {
       "class_id": 2,

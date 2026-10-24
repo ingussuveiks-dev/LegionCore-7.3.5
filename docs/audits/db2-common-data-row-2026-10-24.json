@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-24 Europe/Riga",
+  "build": "7.3.5.26972",
+  "scope": "Repair a real native regular DB2 CommonData decoder crash that blocked reading matching SpellVisual data. Use the repaired reader to trace Helya195062/205424 visual references. No new quest actor binding, spell target, phase, model, aura grant, reward or cinematic behavior is introduced by this increment.",
+  "inherited": "main=origin/main38bad8a2, the checked Helya acknowledgement/retry repair. Retain its separate actual-aura-versus-rendering limits, all previous Fury audits and all36 pending traversal work.",
+  "root_cause": {
+    "actual_failure": "The new native WarswordsHelyaVisualCatalog successfully loaded SpellXSpellVisual, then crashed with exit-1073741819/ACCESS_VIOLATION while expanding the real canonical SpellVisual.db2. Diagnostic rerun linked with temporary LINK=/DEBUG preserved a native symbolic stack: RecordGetId -> RecordGetVarInt<unsigned int> -> AutoProduceData -> DB2StorageBase::Load. This is an actual isolated research executable/data reproduction, not a reported worldserver startup or client quest crash.",
+    "arithmetic": "Regular CommonData computes the row from (_data.get() - record)/RecordSize, reversing the forward record offset. For external-ID row1 this narrows-1 to UINT32_MAX, then RecordGetId indexes _idTable out of bounds. In-record IDs ignore the passed row and can mask the error. Row0 also masks it. The common-value lookup needs the actual record's external ID to select its override/default; do not clamp to row0, substitute a default, disable assertions or skip the table.",
+    "repair": "One production expression changes to (record - _data.get())/RecordSize. Keep actual RecordGetId, common override lookup, defaults, types, record-size division, ordinary/sparse/other-compression branches and diagnostics unchanged. No broad malformed-file validation or64-bit common-value semantics repair is claimed."
+  },
+  "sources": {
+    "local": "Actual canonical26972 SpellVisual.db2 WDC1/layout0x1C1301D2 plus typed native Store/Loader, Regular RecordGetId/RecordGetVarInt/AutoProduceData/GetRawRecordData/GetMaxId, external ID/common metadata setup, DB2Meta/DB2LoadInfo and neighbouring native compression paths. Root-table records include read-only hotfix overlays; client parent/name records use explicit matching packed metadata and layout-size checks, base only.",
+    "trinity": "Historical local Trinity ccbe4404f1806f047c009d14ed1dea9806dd5736 has the same reversed CommonData expression. It is a reference, not a compatible fix imported from a modern core.",
+    "github": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/common/DataStores/DB2FileLoader.cpp",
+    "donor_review": "Pinned raw donor634-669 uses the same reversed expression at662. Bounded source review found no repair there; no exhaustive donor absence claim. The forward pointer arithmetic is established by the native file failure, caller/ID contracts and baseline/fixed regressions.",
+    "video": "No additional footage reviewed for this native decoder repair. Inherit only explicitly partial muted ZaFrostPet2GrquYoczQM samples in the Helya audit; they do not establish actor/target/event timing or local playback. Full relevant continuous sequence and client comparison remain open.",
+    "schema_limit": "A speculative spell_custom_attr read failed because that table is absent; no custom-attribute conclusion is drawn from the failure. Repeated valid creature_template_addon/creature_addon reads for99043/98602 and361286/361283 returned zero rows. No matching spell-attribute table was returned by the scoped schema lookup. No SQL, configuration or character writes."
+  },
+  "native_visual_reference_review": {
+    "boundary": "Resolved numeric data references only, not a verified rendered beam. Server-root tables use base plus read-only hotfixes. SpellVisualEvent/KitEffect/ModelAttach parent fields and reordered EffectName records are explicit base-only client metadata; do not imply that client-only hotfix overrides or model bytes were loaded. Sound/animation IDs are not inferred from names or substituted for beam effects.",
+    "actor": "Display66238 -> model8558/file1266228, display scale11/model scale1, state visual kit0. Actual M2 animation/socket bytes and local rendered model are not checked here.",
+    "channel": "195062 is actually channeled in matching SpellMisc Attributes[1] (805307396 &0x44 nonzero), not merely named Channel. Retain previous cast0/duration7000ms/effect0 dummy4/explicit-any25. Native Spell::prepare may return before a channeled cast applies its aura, confirming the need for the previous repair's later acknowledgement path. SpellXSpellVisual row90089 ->50629, difficulty0/probability1/no caster/viewer conditions. No missile set or alternate caster/hostile/low-violence visual in this root record.",
+    "events": [
+      {"visual":50629,"event":104428,"start":7,"end":8,"target_type":1,"kit":21999},
+      {"visual":50629,"event":104429,"start":7,"end":8,"target_type":2,"kit":60379},
+      {"visual":50629,"event":104430,"start":8,"end":13,"target_type":2,"kit":60380},
+      {"visual":50629,"event":104431,"start":11,"end":12,"target_type":2,"kit":60384},
+      {"visual":53867,"event":114640,"start":7,"end":8,"target_type":2,"kit":65227}
+    ],
+    "attachments": "21999 ->291331/name10165/attachment255/file199909/scale1.60379 ->312023,312024/name4135/attachments1,2/file196733 and312026,312027/name23066/attachments1,2/file166109, all scale1.60380 ->312025/name6350/attachment19/file253425/scale1.60384 ->314270/name6342/attachment21/file166109/scale6. All these names have alpha1/type0. Their Start/Loop/End anim IDs are65535 and attachment AnimKit0; these are raw sentinels, not an asserted played animation.",
+    "other_kit_effects": "60379 animation23201 has initial/loop65535 and AnimKit9034. Kit9034 has0 one-shot duration/stop/low-def IDs, segment17309 animation55/start230, and17310/17311 animation0/start0.60384 procedure8564 type26 values4386,0,0,3, plus animation23208/initial65535/loop124/AnimKit0. Numeric procedure and event target semantics are not guessed into an actor assignment.195062 kits contain types1/2/5/6, not a type13 beam row; embedded models/procedures can still have effects, so absence of type13 does not establish absence of a visible beam.",
+    "audio": "Sound76006 ->files566352,565699,566668;76033 ->568289,569055,568695,569721,569077;76034 ->1416770,1416769.205424 link95925 ->53867/kit65227 has sound76031 ->638182 and attachment319325/name24234/attachment255/file366760/scale7/alpha0.3/type0. All resolved SoundKitEntry frequencies1/volumes1. No audio playback heard or claimed.",
+    "communing_limit": "205424 is not channeled (Attributes[1]1056), with native infinite self dummy aura from the prior catalogue. Its distinct53867/65227 translucent model reference is not equivalent to195062. Source currently only removes205424 during delayed engagement; scoped actor addon reads are empty. Its full upstream application path/initial pose still needs tracing before adding an aura or changing actor targeting."
+  },
+  "verification": [
+    "Test-DB2CommonDataRow -Baseline pins38bad8a2. It compiles actual regular RecordGetVarInt, RecordGetId, GetFieldOffset and packed helper. Row0 succeeds; controlled checked external-ID storage detects UINT32_MAX on row1, while an internal-ID control succeeds. The guard is a fixture service and reports an out-of-range exception, not an artificial claim of native ACCESS_VIOLATION; the separate real file reproduction supplies the actual crash evidence.",
+    "Fixed extracted handlers execute120 typed cases: uint32/int32/uint16/uint8/float, external and internal IDs, four rows, default and distinct ID overrides, and strides16/24/40. Ordinary uncompressed controls also pass. Windows little-endian conversion and metadata/arrays are controlled fixture services; uint64 common-value contents, sparse malformed files, every other compression and world/client rendering are not certified.",
+    "Test-DB2CommonDataRow -VerifyReleaseBinary requires all six canonical scalar instantiations to start with actual record, subtract data base, divide by native RecordSize and pass forward quotient plus actual record to native RecordGetId. It also checks actual storage -> file expansion and regular expansion -> verified scalar consumers. Actual native full SpellVisual table now expands successfully through those linked production libraries; no fallback parser, fake missing row or suppressed error.",
+    "Test-WarswordsHelyaVisualData runs the typed root/client-parent catalogue and requires195062/205424 links, five events, live actor-model reference, procedure/animation/attachment and native sound-file paths. Matching size/layout validation and explicit base-only boundary retained. Initial probe diagnostics, including the failed /DEBUG pragma attempt (removed) and successful temporary LINK=/DEBUG stack, are not hidden as a successful baseline. A byte frequency initially printed as a control character; its diagnostic serialization now explicitly casts to unsigned, without changing data.",
+    "Thirteen sequential checks pass: CommonDataRow Release, HelyaVisualData, HelyaChannel Release, first/final SpectreRush Release, FinalVisibility Release (nested Admission/Thresholds/native catalogue), WeaponPhase, Retreat, FinalCredit, PickupAdmission, Presentation, ReturnCredit and ScepterLogin Release. Existing inherited native conversion/shadow/unused-parameter warnings remain visible. No concurrent use of the shared catalogue build command/output paths."
+  ],
+  "base_file_sha256": {
+    "SpellVisual": "84006F590941B62B1E4EF68F521DF4037308387723097356B29699C361EEAAFA",
+    "SpellXSpellVisual": "426186996A698E96EC7AE1A21282C5AE06D545B8F5912AD28B6BE08D7F854E8A",
+    "SpellVisualEvent": "FDF1DFE34F676E859D1F0288EE95BFF4000B5F0B7102F3824E05440FDF84F54D",
+    "SpellVisualKit": "F132307415150DD8BA923066AA4FB8054AD815FC621179E947480E7FA2B1035D",
+    "SpellVisualKitEffect": "599C9AC6943C427359C81975D4EE0F124F482651962AA3F5F969F3C1F394EF43",
+    "SpellVisualKitModelAttach": "B0FBC41E0BD8F29A12B454D7A589313E12A479916E1EB284CDCB5A5A531D2F81",
+    "SpellVisualEffectName": "EA85AE32FE2A04B308B05A4DBC45BB36D846BC17BBD5E217F8AD239E8D5F6AC2",
+    "SpellVisualAnim": "1AED9698E86A4847799A8FB82DE51E03749DD7ACF02BEF79A0C5689F8D4AC1FF",
+    "AnimKit": "B3B895F30BEE3CED65A107C638EEAD9931FDF5C4F1EFE1DA73D328FC99FAA5F1",
+    "AnimKitSegment": "65A0658E7AFDC5FCD2CCBC62EA76CD289344E9B6FC2A32CF6E6E96EB896A381B"
+  },
+  "deployment": {
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "04C2A0C4AB490E6B77AFFD883A0E9EE21E33247EBCCF16D7384DD926095BE61B",
+    "bnetserver_sha256": "C1D986676509F11DAD000F6452D258F6670D3D5860495DA4D30406BE7A285D1A",
+    "build": "Both canonical Release targets rebuilt with MP2/parallel2/LinkIncrementalfalse, no OutDir override. Actual final-link ../../common/Release/common.lib resolves to build-extractors/src/common/Release/common.lib; original scripts/game Release libraries also resolved and checked. Initial over-specific literal SRC/COMMON check was corrected to actual relative link input; no deployment or server launch occurred in that failed check. Deployed six decoder bodies and earlier selected implementation consumers checked, not hash/startup alone.",
+    "startup": "Task-owned canonical worldserver PID35604 reached ready, gracefully exited0, appended0 DBErrors bytes and retained protected configuration/certificate hashes. Explicit no-server assertion passed. No user/unknown server stopped and no task-owned server remains."
+  },
+  "remaining": "This fixes the decoder/research blocker, not every artifact visual. Complete matching M2/socket/embedded effect inspection, actual target/event semantics,205424 application, Helya first appearance/cleanup and full relevant video/audio/client traversal before changing visual assignments. Preserve prior direct stage5 combat, lethal15/7 truncation, first re-entry, Val'kyr/return-button, real loot/equip/save/group/duplicate and all36 open findings. Monday2026-10-26 client tests remain the user's task."
+}
