@@ -58,6 +58,11 @@
       "scenario_artifact_karazhan_catacombs.cpp uses newer InstanceScenario/PhasingHandler APIs and local stage numbering. Those APIs and stages cannot be copied over our verified988 stage gates without mapping them to native7.3.5 criteria."
     ]
   },
+  "targeted_objective_reuse": {
+    "audit": "docs/audits/stromkar-objective-slots-order-2026-10-24.json",
+    "source": "https://github.com/TrinityCore/TrinityCore/releases/tag/TDB735.00",
+    "finding": "Original local TDB735 archive five41105 objective rows plus POIs provide independent narrative Order and unique StorageIndex0/3/4/1/2 data, VerifiedBuild25549. This bounded data comparison supports54 and the scoped native ordering repair after aggregate-zero character-progress preflight; it does not provide the missing Arms departure actor or an exact26972/full-scenario donor. No bulk base import or character conversion."
+  },
   "reuse_decision": [
     "No complete, proven all36 acquisition package was found among the examined sources. Closely related LegionCore forks already share our24 native artifact CPP files; a bulk overwrite offers no demonstrated completion benefit.",
     "For each remaining route, compare a pinned donor's actual changed actor/spell/waypoint/SmartAI/condition rows against our36-route native audit, then port only absent compatible behavior. Missing dedicated CPP is not proof of missing content: many local chains use SmartAI.",

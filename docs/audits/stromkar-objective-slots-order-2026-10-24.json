@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-24 Europe/Riga",
+  "build": "7.3.5.26972",
+  "scope": "Repair41105 optional-portal/return counter aliasing and preserve independent native story order. Not a complete Arms chain, departure actor/portal, actual return-credit/visual traversal or all36 certification.",
+  "inherited": "Clean main=origin/main atc3e09217. Re-read worklist/routes/donor and Skyhold audit. Its StorageIndex3 finding is resolved here using newly examined independent735 quest-query data, rather than the incomplete runtime QuestObjective.db2 or a server-generated client cache. Earlier loot/equip/Execute/Thoradin/jump changes and applied migration bytes remain unchanged.",
+  "root_cause": {
+    "counter_alias": "The five live41105 rows stored both optional Dalaran Crater286343/object102394 and required sequenced return282354/object103739 in slot3. Actual KilledMonsterCredit's native status/group/objective loop writes via SetQuestObjectiveData; both completion lookup and live quest counters use StorageIndex. Optional102394 therefore made the return read1 without103739. With the required tomb113105 and boss103114 credits, CanCompleteQuest returned true without an actual return. The native baseline fixture reproduces this, not just a duplicate-row SQL count.",
+    "presentation": "QuestDataStoreMgr::LoadQuests orders SQL by StorageIndex and Quest::LoadQuestObjective normally appends. Save slots are not presentation sequence: restoring native slots alone would display portal -> boss -> return -> optional portal -> reach tomb. Existing41105 sequenced flags and narrative order must not be 'fixed' by sorting by slot or dropping flags. Native query builder copies GetObjectives in vector order, and packet serializer independently writes each objective's StorageIndex. Both loops are compiled in the regression."
+  },
+  "independent_native_source": {
+    "release": "https://github.com/TrinityCore/TrinityCore/releases/tag/TDB735.00",
+    "release_commit": "7f2b7dc9c2165d2608742473a931f55b1c1a753a",
+    "local_file": ".codex/TDB735/TDB_full_735.00_2018_02_19/TDB_world_735.00_2018_02_19.sql",
+    "sha256": "786D8B7F84FE1DAF765B770483721AE529F3D758DA2271F812C261D914F1E99E",
+    "reviewed_rows": [
+      "281862: Order0,slot0,monster97377,amount1,optional4",
+      "286343: Order1,slot3,monster102394,amount1,optional4",
+      "286344: Order2,slot4,monster113105,amount1,flags0",
+      "281863: Order3,slot1,monster103114,amount1,sequenced2",
+      "282354: Order4,slot2,monster103739,amount1,sequenced2"
+    ],
+    "compatibility": "Original archive rows are VerifiedBuild25549, a735-era source, NOT an exact26972 sniff. All five objective IDs/types/object IDs/counts/flags match the live21737/23877 rows and unchanged native quest text. Both TDB and current live quest_poi rows independently associate objective order1/2/3/4 with286343/286344/281863/282354; the regression requires that live identity/order mapping. No live type41 conditions for41105 were found; native condition41 resolves quest/object ID, not a hardcoded save slot. Current26972 DB2 has no41105 rows and cannot overrule these server-query data. No wholesale modern schema or Trinity code port, no copied packet fields and no guess from a matching spell name.",
+    "search_order_and_limits": "Local runtime/code/MariaDB first; then original local TDB735 archive and targeted local Trinity history. An initial unbounded numeric search matched giant SQL lines and was discarded in favor of table-aware extraction of only these rows/POIs. A read-only SELECT literal,* syntax failed and was not used as evidence. The official GitHub release page was opened to verify source identity. No unrelated donor implementation or full external database was imported. No new YouTube/browser/audio review; inherit only the explicitly sparse muted prior Stromkar frames. This correction is supported by independent quest data and executable counter behavior, not a new claim to full video parity."
+  },
+  "repair": {
+    "sql": "Guarded migration54 changes only StorageIndex of286344 1->4,281863 2->1,282354 3->2, retaining optional286343 at3 and281862 at0. It requires the exact five known IDs/types/current slots/object IDs/amounts/flags/Flags2/TaskStep/Bugged shape. Other columns, descriptions, builds, objectives, admission/markers, items, spells, actors, faction/group rules and credit amounts are untouched. Reapplication is a no-op;10 unknown/custom variants are preserved unchanged.",
+    "core": "Only41105 inserts objectives by the five verified story identities rather than save slot. Existing40729 ritual-first branch and ordinary append behavior for other quests remain intact. Unknown41105 identities sort after the known story identities in their own relative order. No generic quest schema migration, flag bypass, forced quest completion, fabricated stage credit or item grant.",
+    "existing_progress_safety": "This core persists character_queststatus_objectives.objective as int8 StorageIndex, despite its ambiguous column name. Existing slot3 data cannot distinguish optional portal from true return, and slots1/2 also change meaning. It would be unsafe to silently reinterpret existing41105 progress or pretend an objective-ID-keyed save. Before canonical application, with no worldserver/bnetserver running, read ONLY aggregate counts: quest41105 status rows0 and objective rows0. Repeat immediately before startup; fail closed if either is nonzero. The same aggregate counts remain0 afterward. No character row was read into an audit, rewritten, deleted, reset, granted an item or backfilled. A separate deployment containing41105 progress must resolve that migration explicitly before applying54; this repair is not an automatic character-data converter."
+  },
+  "verification": [
+    "Test-StromkarObjectives pins and table-parses the independent TDB archive/hash, verifies exact Order/storage/identity/flags/build, replays54 twice in real-schema TEMP tables and preserves10 custom slot/object/amount/flags/Flags2/type/step/Bugged/missing/extra variants. Full before/after snapshots prove only intended slot values changed. After deployment it normalizes a TEMP baseline only with54's exact live RELEASED hash and checks actual live corrected rows.",
+    "Native fixture compiles actual Quest::LoadQuestObjective, Player Get/SetQuestObjectiveData, HasQuestObjectiveComplete, CanCompleteQuest, _LoadQuestStatusObjectives, actual KilledMonsterCredit status/raid/monster-credit block and actual objective save loop. Baseline reproduces optional portal -> return1 and premature completion after tomb/boss; the old loader separately misorders corrected slots. Fixed120 input permutations produce the verified story sequence. Actual query-build and objective packet-write loops retain that order while serializing independent slots.",
+    "All four optional-travel combinations leave return0 until real103739. Tomb/boss alone cannot complete; omitting any one required goal cannot complete. Native save-loop/statement and load-function replay preserve progress through controlled session re-entry; real return completes once and repeated credits after completion do not replay. Inactive quest, blocked raid, rewarded completion, unknown41105 IDs, another quest and existing40729 ritual order are covered. Completion after actual103739 is still dependent on the actual actor/event giving valid credit; an arbitrary early103739 callback is not newly authorized or prevented by this data repair.",
+    "Field/query/statement/packet sinks, status/reward/group services and criteria helpers are controlled adapters. No real database character writes, unit death pipeline, owner/pet/guardian/group dispatch, race/faction scene traversal, abandonment, return portal or client display is simulated as verified. Native host conversion/shadow diagnostics remain visible. The first fixture compile modeled m_achievementMgr as an object instead of pointer and failed; corrected to the real pointer contract, without changing production behavior or suppressing diagnostics.",
+    "Canonical PE verifies actual41105 conditional branch, exact five story identities, new-rank retention, existing-ID lookup, unsigned greater-rank stop, vector stride and selected insertion position, plus live LoadQuests ->LoadQuestObjective. It also reruns deployed Skyhold destination/arrival/source17 consumers. Scepter VerifyRelease, NewBlood full-sequence/production objective-order and quest turn-in marker regressions pass; NewBlood host adds only required algorithm include for the newly compiled loader branch."
+  ],
+  "deployment": {
+    "migration": "2026_10_24_54_stromkar_objective_slots.sql",
+    "sha1": "8E0D71B314313B439722DDA11F304810FF24E356",
+    "state": "RELEASED; applied bytes immutable",
+    "runtime": "build-extractors/bin/Release",
+    "worldserver_sha256": "4A44ADC54FE09335E18C6282F3C90A97C87CD76D684183023DB47E2A38B89D33",
+    "bnetserver_sha256": "A16A7FCA8DB6CEE78FA0029BDA4BD2E0E7CCE95C54B8D1CC9A9620C604AC480B",
+    "build": "Canonical Release worldserver/bnetserver; original game/scripts Release libraries and INCREMENTAL:NO final-link inputs checked, no OutDir override. New actual ordering implementation and existing Skyhold/Scepter implementation checked in deployed executable.",
+    "startup": "Own canonical PID36852 applied exactly54, initialized14s, graceful exit0, appended DBErrors0 bytes; protected configuration/certificates unchanged. No user/unknown server stopped; no task servers remain.",
+    "private_evidence": ".codex/backups/stromkar-objectives54-20261024/world-objectives.tsv scoped world-only backup; stromkar-objectives54-* TEMP/native/PE/build/startup and aggregate-zero preflight/after logs. No credentials, runtime, client cache, media or personal character data staged."
+  },
+  "remaining": [
+    "Identify and implement genuine finale Val'kyr/Gaze spawn/placement/admission/timing and actual return103739 delivery; do not use93819's hardcoded Dalaran trigger blindly or pretend the isolated counter fix completes departure.",
+    "Actual201904 child hit/list/channel/credits, interrupted movement/failed cast, physical portal/ascent/teleport, camera/pet restoration, owned replay after chest deletion and full abandon/re-entry remain open. Preserve existing loot/equip and native jump bridge.",
+    "Complete relevant video/audio and Monday client quest-cache/query refresh, ordered objective display, absence of premature return credit, real loot/equip/save and full route remain pending. Other35 routes and all36 completion remain unfinished."
+  ]
+}
