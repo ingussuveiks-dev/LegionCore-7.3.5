@@ -15,6 +15,10 @@ $end=if($Stromkar){'namespace XalatathFarthing'}else{'namespace XalatathSoulAtta
 if(!$source.Contains("RegisterCreatureAI($binding);")){throw 'Missing creature registration'}
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 [IO.File]::WriteAllText("$out/SmartDamage.inc",(Section $source 'void SmartAI::DamageTaken(' 'void SmartAI::HealReceived('))
+if($Stromkar){
+ $conditionsSource=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
+ [IO.File]::WriteAllText("$out/StromkarConditionTail.inc",(Section $conditionsSource '    if (NegativeCondition)' 'uint32 Condition::GetSearcherTypeMaskForCondition()'))
+}
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 $first=$source.IndexOf('uint32 Unit::DealDamage(');$scaled=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$first)
 if($source.IndexOf('victim->GetAI()->DamageTaken(this, damage, damagetype);',$first) -ge $scaled){throw 'Native pre-scaling damage order changed'}
@@ -30,6 +34,19 @@ if((Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScriptMgr.h" -Raw) -
 [IO.File]::WriteAllText("$out/HealthEvent.inc",(Section $source '        case SMART_EVENT_HEALTH_PCT:' '        case SMART_EVENT_TARGET_HEALTH_PCT:'))
 $migration=Get-Content "$repo/sql/updates/world/$migrationName" -Raw
 $normalization=if($Stromkar){''}else{(Get-Content "$PSScriptRoot/XalatathActorRetryBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/XalatathFarthingFinaleBaseline.sql" -Raw)}
+if($Stromkar){
+ $followupPath="$repo/sql/updates/world/2026_10_24_51_stromkar_thoradin_presence.sql"
+ if(Test-Path $followupPath){
+  $followupHash=(Get-FileHash $followupPath -Algorithm SHA1).Hash
+  $normalization=@"
+DELETE FROM saved_smart WHERE entryorguid=104276 AND source_type=0 AND id=9 AND link=0 AND event_type=60 AND event_phase_mask=0 AND event_chance=100 AND event_flags=0
+AND event_param1=0 AND event_param2=0 AND event_param3=500 AND event_param4=500 AND action_type=12 AND action_param1=104307 AND action_param2=8 AND action_param3=0
+AND action_param4=0 AND action_param5=0 AND action_param6=0 AND target_type=8 AND target_param1=0 AND target_param2=0 AND target_param3=0
+AND ABS(target_x-1886.91)<0.001 AND ABS(target_y-2194.33)<0.001 AND ABS(target_z-37.1166)<0.001 AND target_o=0
+AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_24_51_stromkar_thoradin_presence.sql' AND hash='$followupHash' AND state='RELEASED');
+"@
+ }
+}
 $reset=@"
 DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor;
 UPDATE creature_template SET ScriptName='' WHERE entry=$entry;

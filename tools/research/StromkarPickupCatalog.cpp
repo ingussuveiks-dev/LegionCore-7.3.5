@@ -2,6 +2,7 @@
 #include "DB2Structure.h"
 #include "DB2LoadInfo.h"
 #include "DB2FileLoader.h"
+#include "DB2Meta.h"
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
@@ -10,6 +11,30 @@
 #include <set>
 #include <cstdio>
 #include <filesystem>
+#include <vector>
+#pragma pack(push, 1)
+struct StromkarKitEffectRecord
+{
+    SpellVisualKitEffectEntry effect;
+    int32 kit;
+};
+struct StromkarKitAttachmentRecord
+{
+    SpellVisualKitModelAttachEntry attachment;
+    int32 kit;
+};
+struct StromkarEffectNameRecord
+{
+    int32 ID;
+    float radius, speed, scale, minimumScale, maximumScale, alpha;
+    uint32 flags;
+    int32 generic, texture;
+    uint8 type;
+    int32 model;
+    uint32 ribbon;
+    int32 dissolve;
+};
+#pragma pack(pop)
 struct StromkarSceneFile : DB2FileSource
 {
     std::string name;
@@ -51,7 +76,7 @@ int main(int argc, char** argv)
         return 5;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456, 204394, 202014, 63048};
+    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456, 204394, 202014, 63048, 204093};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -125,6 +150,77 @@ int main(int argc, char** argv)
             std::cout << "ACTOR_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectMiscValue[0] << '\t' << effect->EffectMiscValue[1] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\t' << (spell ? spell->Name->Str[0] : "") << '\n';
+        }
+    DB2Storage<CreatureDisplayInfoEntry> actorDisplays("CreatureDisplayInfo.db2", CreatureDisplayInfoLoadInfo::Instance());
+    DB2Storage<CreatureModelDataEntry> actorModels("CreatureModelData.db2", CreatureModelDataLoadInfo::Instance());
+    if (!actorDisplays.Load(argv[1], 0) || !actorModels.Load(argv[1], 0))
+        return 16;
+    actorDisplays.LoadFromDB(); actorModels.LoadFromDB();
+    auto thoradinDisplay = actorDisplays.LookupEntry(68038);
+    auto thoradinModel = thoradinDisplay ? actorModels.LookupEntry(thoradinDisplay->ModelID) : nullptr;
+    if (!thoradinModel || !thoradinModel->FileDataID)
+        return 17;
+    std::cout << "THORADIN_MODEL\t" << thoradinDisplay->ID << '\t' << thoradinDisplay->ModelID << '\t'
+        << thoradinModel->FileDataID << '\t' << thoradinDisplay->CreatureModelScale << '\t' << unsigned(thoradinDisplay->CreatureModelAlpha) << '\n';
+    std::cout << "THORADIN_VISUAL\t" << thoradinDisplay->ExtendedDisplayInfoID << '\t' << thoradinDisplay->StateSpellVisualKitID << '\t'
+        << unsigned(thoradinDisplay->Flags) << '\t' << thoradinDisplay->TextureVariationFileDataID[0] << '\t'
+        << thoradinDisplay->TextureVariationFileDataID[1] << '\t' << thoradinDisplay->TextureVariationFileDataID[2] << '\n';
+    DB2Storage<SpellVisualKitEntry> actorKits("SpellVisualKit.db2", SpellVisualKitLoadInfo::Instance());
+    auto kitEffectInfo = SpellVisualKitEffectLoadInfo::Instance();
+    std::vector<DB2FieldMeta> kitFields(kitEffectInfo->Fields, kitEffectInfo->Fields + kitEffectInfo->FieldCount);
+    kitFields.push_back({true, FT_INT, "SpellVisualKitID"});
+    DB2LoadInfo fullKitInfo(kitFields.data(), kitFields.size(), SpellVisualKitEffectMeta::Instance(), HOTFIX_SEL_SPELL_VISUAL_KIT_EFFECT);
+    DB2Storage<StromkarKitEffectRecord> actorKitEffects("SpellVisualKitEffect.db2", &fullKitInfo);
+    if (sizeof(StromkarKitEffectRecord) != fullKitInfo.Meta->GetRecordSize() || !actorKits.Load(argv[1], 0) || !actorKitEffects.Load(argv[1], 0))
+        return 18;
+    actorKits.LoadFromDB();
+    auto thoradinKit = actorKits.LookupEntry(thoradinDisplay->StateSpellVisualKitID);
+    if (!thoradinKit)
+        return 19;
+    std::cout << "THORADIN_KIT\t" << thoradinKit->ID << '\t' << thoradinKit->Flags << '\t' << thoradinKit->DelayMin << '\t' << thoradinKit->DelayMax << '\n';
+    auto attachmentInfo = SpellVisualKitModelAttachLoadInfo::Instance();
+    std::vector<DB2FieldMeta> attachmentFields(attachmentInfo->Fields, attachmentInfo->Fields + attachmentInfo->FieldCount);
+    attachmentFields.push_back({true, FT_INT, "SpellVisualKitID"});
+    DB2LoadInfo fullAttachmentInfo(attachmentFields.data(), attachmentFields.size(), SpellVisualKitModelAttachMeta::Instance(), HOTFIX_SEL_SPELL_VISUAL_KIT_MODEL_ATTACH);
+    DB2Storage<StromkarKitAttachmentRecord> actorAttachments("SpellVisualKitModelAttach.db2", &fullAttachmentInfo);
+    DB2FieldMeta nameFields[] = {
+        {true, FT_INT, "ID"}, {false, FT_FLOAT, "EffectRadius"}, {false, FT_FLOAT, "BaseMissileSpeed"},
+        {false, FT_FLOAT, "Scale"}, {false, FT_FLOAT, "MinAllowedScale"}, {false, FT_FLOAT, "MaxAllowedScale"},
+        {false, FT_FLOAT, "Alpha"}, {false, FT_INT, "Flags"}, {true, FT_INT, "GenericID"},
+        {true, FT_INT, "TextureFileDataID"}, {false, FT_BYTE, "Type"}, {true, FT_INT, "ModelFileDataID"},
+        {false, FT_INT, "RibbonQualityID"}, {true, FT_INT, "DissolveEffectID"}
+    };
+    DB2LoadInfo nameInfo(nameFields, std::size(nameFields), SpellVisualEffectNameMeta::Instance(), HOTFIX_SEL_SPELL_VISUAL_EFFECT_NAME);
+    DB2Storage<StromkarEffectNameRecord> actorEffectNames("SpellVisualEffectName.db2", &nameInfo);
+    DB2Storage<SpellProceduralEffectEntry> actorProcedures("SpellProceduralEffect.db2", SpellProceduralEffectLoadInfo::Instance());
+    if (sizeof(StromkarKitAttachmentRecord) != fullAttachmentInfo.Meta->GetRecordSize() || sizeof(StromkarEffectNameRecord) != nameInfo.Meta->GetRecordSize() ||
+        !actorAttachments.Load(argv[1], 0) || !actorEffectNames.Load(argv[1], 0) || !actorProcedures.Load(argv[1], 0))
+        return 20;
+    actorProcedures.LoadFromDB();
+    for (auto effect : actorKitEffects)
+        if (effect->kit == thoradinKit->ID)
+        {
+            std::cout << "THORADIN_KIT_EFFECT\t" << effect->effect.ID << '\t' << effect->effect.EffectType << '\t' << effect->effect.Effect << '\n';
+            if (effect->effect.EffectType == 2)
+            {
+                auto attachment = actorAttachments.LookupEntry(effect->effect.Effect);
+                auto name = attachment ? actorEffectNames.LookupEntry(attachment->attachment.SpellVisualEffectNameID) : nullptr;
+                if (!name)
+                    return 21;
+                auto const& visual = attachment->attachment;
+                std::cout << "THORADIN_ATTACHMENT\t" << visual.ID << '\t' << visual.SpellVisualEffectNameID << '\t' << unsigned(visual.AttachmentID) << '\t'
+                    << visual.Scale << '\t' << visual.AnimKitID << '\t' << name->model << '\t' << name->alpha << '\t' << unsigned(name->type) << '\n';
+            }
+            if (effect->effect.EffectType == 1)
+            {
+                auto procedure = actorProcedures.LookupEntry(effect->effect.Effect);
+                if (!procedure)
+                    return 22;
+                std::cout << "THORADIN_PROCEDURE\t" << procedure->ID << '\t' << unsigned(procedure->Type);
+                for (float value : procedure->Value)
+                    std::cout << '\t' << value;
+                std::cout << '\n';
+            }
         }
     DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());

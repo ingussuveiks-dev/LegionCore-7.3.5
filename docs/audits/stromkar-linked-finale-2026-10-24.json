@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "presence_followup": "docs/audits/stromkar-thoradin-presence-2026-10-24.json records combined51/52 final receiver creation/retry/GUID deduplication. This supersedes the missing-creation next action, not the remaining actual child-hit/list/departure/client-VFX limits.",
   "scope": "Correct an incomplete48-50 audit conclusion and retain the existing206456 ->201904 linked finale with executable request/PE regressions. No production data, spell link, actor, dialogue, credit or visual was added by this follow-up.",
   "correction": "The statement that actual206456 is disconnected from104276's201904 list was too strong and is withdrawn. The earlier reverse native EffectTriggerSpell/Smart/spellclick searches omitted spell_linked_spell. Fresh live data has an existing206456 ->201904 type0/default link. Native Spell::cast invokes that bridge after immediate effects; native positive LINK_ACTION_DEFAULT requests triggered201904 from the player, using the explicit target or caster fallback. Existing source13 target38 conditions allow creature102039 or104276; an actual hit on104276 can therefore reach its existing SpellHit201904 event/list. Do not add a second reconnect, fake SpellHit, duplicate event or replace this with a new guessed spell. Requesting the child cast is not proof that it successfully selects/hits the actor or completes the list.",
   "local_evidence": {

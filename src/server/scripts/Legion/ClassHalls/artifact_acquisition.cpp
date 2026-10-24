@@ -1406,10 +1406,47 @@ void Protect(Creature* actor, Unit* attacker, uint32& damage)
 struct npc_stromkar_zakajz : SmartAI
 {
     explicit npc_stromkar_zakajz(Creature* actor) : SmartAI(actor) { }
+    ObjectGuid thoradin = {};
+    void JustSummoned(Creature* actor) override
+    {
+        SmartAI::JustSummoned(actor);
+        if (actor && actor->GetEntry() == 104307 && me->GetEntry() == 104276 && me->GetMapId() == 1539)
+            thoradin = actor->GetGUID();
+    }
+    bool HasThoradin() const
+    {
+        Creature* actor = ObjectAccessor::GetCreature(*me, thoradin);
+        return actor && actor->IsInWorld() && actor->IsAlive() && actor->GetEntry() == 104307 && actor->InSamePhase(me);
+    }
     void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
     {
         SmartAI::DamageTakenAfterScaling(attacker, damage, type);
         StromkarZakajz::Protect(me, attacker, damage);
+    }
+};
+
+namespace StromkarThoradinPresence
+{
+bool Missing(Condition* condition, ConditionSourceInfo& sourceInfo)
+{
+    if (!condition || condition->SourceType != CONDITION_SOURCE_TYPE_SMART_EVENT || condition->SourceEntry != 104276 ||
+        condition->SourceGroup != 10 || condition->SourceId || condition->ConditionType != CONDITION_NEAR_CREATURE ||
+        condition->ConditionTarget != 1 || condition->ConditionValue1 != 104307 || condition->ConditionValue2 != 50 ||
+        condition->ConditionValue3 || !condition->NegativeCondition)
+        return true;
+    Creature* owner = sourceInfo.mConditionTargets[1] ? sourceInfo.mConditionTargets[1]->ToCreature() : nullptr;
+    auto* content = owner ? dynamic_cast<npc_stromkar_zakajz*>(owner->AI()) : nullptr;
+    return content && !content->HasThoradin();
+}
+}
+
+class condition_stromkar_thoradin_absence : public ConditionScript
+{
+public:
+    condition_stromkar_thoradin_absence() : ConditionScript("condition_stromkar_thoradin_absence") { }
+    bool OnConditionCheck(Condition* condition, ConditionSourceInfo& sourceInfo) override
+    {
+        return StromkarThoradinPresence::Missing(condition, sourceInfo);
     }
 };
 
@@ -1689,6 +1726,7 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterCreatureAI(npc_xalatath_farthing);
     RegisterCreatureAI(npc_stromkar_zakajz);
+    new condition_stromkar_thoradin_absence();
     RegisterCreatureAI(npc_xalatath_soul_attack);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);

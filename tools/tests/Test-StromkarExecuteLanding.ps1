@@ -92,7 +92,16 @@ if($VerifyReleaseBinary){
  $hash=(Get-FileHash "$repo/sql/updates/world/2026_10_24_50_stromkar_execute_landing.sql" -Algorithm SHA1).Hash
  $live=Query "SELECT 'release',hash,state FROM updates WHERE name='2026_10_24_50_stromkar_execute_landing.sql'; SELECT 'row',ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE $scope ORDER BY ElseGroup,ConditionTypeOrReference;"
  if($live -notcontains "release`t$hash`tRELEASED"){throw 'Live50 hash mismatch'}
- $actual=@($live|Where-Object {$_ -like "row`t*"}|ForEach-Object {$_.Substring(4)});if(Compare-Object $nativeRows $actual){throw 'Live landing differs from tested rows'}
+ $actual=@($live|Where-Object {$_ -like "row`t*"}|ForEach-Object {$_.Substring(4)})
+ if($actual.Count -eq 18){
+  $followupHash=(Get-FileHash "$repo/sql/updates/world/2026_10_24_51_stromkar_thoradin_presence.sql" -Algorithm SHA1).Hash
+  $followup=Query "SELECT 'followup',hash,state FROM updates WHERE name='2026_10_24_51_stromkar_thoradin_presence.sql';SELECT 'extras',COUNT(*) FROM conditions WHERE $scope AND SourceGroup=0 AND SourceId=0 AND ConditionTypeOrReference=29 AND ConditionTarget=0 AND ConditionValue1=104307 AND ConditionValue2=50 AND ConditionValue3=0 AND NegativeCondition=0 AND ErrorTextId=0 AND ScriptName='' AND ElseGroup IN(0,1);"
+  if($followup -notcontains "followup`t$followupHash`tRELEASED" -or $followup -notcontains "extras`t2"){throw 'Unrecognized later landing rules'}
+  $extraRows=@("0`t29`t0`t104307`t50`t0`t0","1`t29`t0`t104307`t50`t0`t0")
+  foreach($extra in $extraRows){if($actual -notcontains $extra){throw 'Missing known51 actor rule'}}
+  $actual=@($actual|Where-Object {$_ -notin $extraRows})
+ }
+ if(Compare-Object $nativeRows $actual){throw 'Live landing differs from tested rows'}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_stromkar_execute_landing_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical landing consumer failed'}}finally{$env:PYTHONPATH=$previous}
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 using uint32=uint32_t;
 using uint64=uint64_t;
+using ObjectGuid=uint32;
 using DamageEffectType=int;
 #ifdef STROMKAR_ZAKAJZ_TEST
 constexpr uint32 actorEntry=104276,scenarioIdentity=1037,firstStage=8,lastStage=9;
@@ -21,6 +22,7 @@ struct Creature;
 struct CreatureAI {
     virtual ~CreatureAI()=default;
     virtual void Reset() { }
+    virtual void JustSummoned(Creature*) { }
     virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType) { }
 };
 struct InstanceScript { void OnCreatureDamageTaken(Creature*,Unit*,uint32&) { } };
@@ -31,6 +33,8 @@ struct Creature {
     float multiplier=0.001f;
     bool alive=true;
     bool combat=true;
+    bool inWorld=true,phase=true;
+    ObjectGuid guid=1;
     CreatureAI* active=nullptr;
     CreatureAI* i_disabledAI=nullptr;
     Creature* ToCreature() { return this; }
@@ -39,6 +43,9 @@ struct Creature {
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return map; }
     uint32 GetInstanceId() const { return instance; }
+    ObjectGuid GetGUID() const { return guid; }
+    bool IsInWorld() const { return inWorld; }
+    bool InSamePhase(Creature const*) const { return phase; }
     uint64 GetHealth(Unit*) const { return targetHp; }
     uint64 GetHealth() const { return hp; }
     uint64 GetMaxHealth() const { return 100000; }
@@ -50,6 +57,28 @@ struct Creature {
     void SetHealth(uint64 value) { hp=targetHp=value; }
     void Kill(Creature* target) { assert(target==this);alive=false; }
 };
+#ifdef STROMKAR_ZAKAJZ_TEST
+struct ObjectAccessor {
+    static Creature* tracked;
+    static Creature* GetCreature(Creature& context,ObjectGuid guid) {
+        return tracked&&tracked->guid==guid&&tracked->map==context.map&&tracked->instance==context.instance?tracked:nullptr;
+    }
+};
+Creature* ObjectAccessor::tracked=nullptr;
+constexpr uint32 CONDITION_SOURCE_TYPE_SMART_EVENT=22,CONDITION_NEAR_CREATURE=29;
+struct ConditionSourceInfo;
+struct Condition {
+    uint32 SourceType=22,SourceEntry=104276,SourceGroup=10,SourceId=0,ConditionType=29,ConditionTarget=1,ConditionValue1=104307,ConditionValue2=50,ConditionValue3=0;
+    bool NegativeCondition=true;
+    bool Meets(ConditionSourceInfo&,bool);
+};
+struct ConditionSourceInfo { Creature* mConditionTargets[2]{nullptr,nullptr};Condition* mLastFailedCondition=nullptr; };
+struct ConditionScript {
+    explicit ConditionScript(char const*) { }
+    virtual ~ConditionScript()=default;
+    virtual bool OnConditionCheck(Condition*,ConditionSourceInfo&) { return true; }
+};
+#endif
 struct Scenario {
     uint32 identity=scenarioIdentity,step=firstStage;
     uint32 GetScenarioId() const { return identity; }
@@ -69,9 +98,11 @@ struct SmartAI : CreatureAI {
     Creature* me;
     uint32 mInvincibilityHpLevel=1;
     Script script;
+    uint32 summonEvents=0;
     explicit SmartAI(Creature* actor):me(actor) { }
     Script* GetScript() { return &script; }
     void Reset() override { }
+    void JustSummoned(Creature*) override { ++summonEvents; }
     void DamageTaken(Unit*,uint32&,DamageEffectType);
 };
 #include "SmartDamage.inc"
@@ -79,6 +110,16 @@ struct SmartAI : CreatureAI {
 #include "Farthing.inc"
 #else
 struct npc_xalatath_farthing : SmartAI { using SmartAI::SmartAI; };
+#endif
+#if defined(STROMKAR_ZAKAJZ_TEST) && !defined(BASELINE)
+struct TestScriptMgr {
+    condition_stromkar_thoradin_absence script;
+    bool OnConditionCheck(Condition* condition,ConditionSourceInfo& info) { return script.OnConditionCheck(condition,info); }
+} testScriptManager;
+auto* sScriptMgr=&testScriptManager;
+bool Condition::Meets(ConditionSourceInfo& sourceInfo,bool nativeNearby) {
+    bool condMeets=nativeNearby;
+#include "StromkarConditionTail.inc"
 #endif
 uint32 Unit::Deal(Creature* victim,uint32 damage) {
     DamageEffectType damagetype=0;
@@ -115,6 +156,35 @@ struct HealthProbe {
 };
 int main() {
     _set_abort_behavior(0,_CALL_REPORTFAULT);
+#if defined(STROMKAR_ZAKAJZ_TEST) && !defined(BASELINE)
+    {
+        Creature owner,ghost;ghost.entry=104307;ghost.guid=99;
+        npc_stromkar_zakajz content(&owner);owner.active=&content;
+        Condition condition;ConditionSourceInfo source;source.mConditionTargets[1]=&owner;
+        condition_stromkar_thoradin_absence gate;
+        assert(gate.OnConditionCheck(&condition,source));
+        Creature unrelated;unrelated.entry=123;content.JustSummoned(&unrelated);assert(!content.HasThoradin()&&content.summonEvents==1);
+        ObjectAccessor::tracked=&ghost;content.JustSummoned(&ghost);
+        assert(content.HasThoradin()&&!gate.OnConditionCheck(&condition,source)&&content.summonEvents==2);
+        assert(!condition.Meets(source,false)&&!condition.Meets(source,true));
+        for(uint32 invalid=0;invalid<6;++invalid) {
+            ghost.inWorld=ghost.alive=ghost.phase=true;ghost.map=1539;ghost.instance=42;ghost.entry=104307;
+            if(invalid==0)ghost.inWorld=false;
+            if(invalid==1)ghost.alive=false;
+            if(invalid==2)ghost.phase=false;
+            if(invalid==3)ghost.map=1;
+            if(invalid==4)ghost.instance=43;
+            if(invalid==5)ghost.entry=123;
+            assert(!content.HasThoradin()&&gate.OnConditionCheck(&condition,source));
+            assert(condition.Meets(source,false));
+        }
+        ObjectAccessor::tracked=nullptr;assert(gate.OnConditionCheck(&condition,source));
+        assert(!condition.Meets(source,true));
+        owner.active=nullptr;assert(!gate.OnConditionCheck(&condition,source));
+        condition.SourceEntry=1;assert(gate.OnConditionCheck(&condition,source));
+        std::cout<<"PASS: actual Stromkar summon callback retains native delegate and caches only104307 GUID; actual condition helper suppresses any live resolved same-phase receiver without a distance dependency and retries removed/dead/uninserted/wrong-map/instance/entry actors. Map lookup is a controlled adapter, not real allocation/visibility proof\n";
+    }
+#endif
     for(uint32 kind:{0u,1u,2u})for(bool suspended:{false,true})for(uint32 stage:{firstStage,lastStage}) {
         scenarioManager={};scenarioManager.scenario.step=stage;messages=0;
         Unit attacker;attacker.kind=kind;Creature actor;CreatureAI temporary;
