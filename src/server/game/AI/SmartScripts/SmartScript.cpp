@@ -1526,6 +1526,16 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_SUMMON_GO:
         {
+            if ((e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE) && e.GetTargetType() == SMART_TARGET_POSITION)
+            {
+                if (!GetBaseObject() || !GetBaseObject()->SummonGameObject(e.action.summonGO.entry, e.target.x, e.target.y, e.target.z, e.target.o, 0, 0, 0, 0, e.action.summonGO.despawnTime))
+                {
+                    e.runOnce = false;
+                    return;
+                }
+                break;
+            }
+
             if (!GetBaseObject())
                 break;
 

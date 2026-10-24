@@ -7,11 +7,13 @@ $search="$repo/build-extractors/runtime-test/marksmanship-search-path"
 New-Item -ItemType Directory -Force $out | Out-Null
 & "$PSScriptRoot/Test-MarksmanshipSearchPath.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary *> "$out/search-prerequisite.log"
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_12_marksmanship_bow_reveal.sql" -Raw
+$summonBaseline=Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw
 $scope='SourceTypeOrReferenceId=22 AND SourceEntry=100397 AND SourceGroup IN(46,51)'
 $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object; DELETE FROM gameobject; INSERT INTO gameobject SELECT * FROM saved_spawn; DELETE FROM waypoints; INSERT INTO waypoints SELECT * FROM saved_path;"
 $sql=@"
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid=100397;
+$summonBaseline
 SET @known_reveal=(SELECT COUNT(*) FROM saved_smart WHERE source_type=0 AND ((id=45 AND link=50) OR (id=49 AND link=51) OR (id=50 AND link=0)))=3;
 UPDATE saved_smart SET link=CASE id WHEN 45 THEN 0 WHEN 49 THEN 50 WHEN 50 THEN 51 END WHERE source_type=0 AND id IN(45,49,50) AND @known_reveal;
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart; INSERT INTO smart_scripts SELECT * FROM saved_smart;

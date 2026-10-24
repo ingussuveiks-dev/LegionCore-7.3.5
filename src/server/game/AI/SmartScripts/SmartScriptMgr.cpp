@@ -1014,6 +1014,13 @@ bool SmartAIMgr::IsEventValid(SmartScriptHolder& e)
         case SMART_ACTION_SUMMON_GO:
             if (!IsGameObjectValid(e, e.action.summonGO.entry))
                 return false;
+            if ((e.action.summonGO.flags & SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE) &&
+                (e.GetTargetType() != SMART_TARGET_POSITION || e.GetEventType() != SMART_EVENT_UPDATE ||
+                    !e.event.event_phase_mask || !(e.event.event_flags & SMART_EVENT_FLAG_NOT_REPEATABLE)))
+            {
+                TC_LOG_ERROR("sql.sql", "SmartAIMgr: Entry %ld SourceType %u Event %u summon retry requires a phased, non-repeatable UPDATE with a fixed position, skipped.", e.entryOrGuid, e.GetScriptType(), e.event_id);
+                return false;
+            }
             break;
         case SMART_ACTION_ADD_ITEM:
         case SMART_ACTION_REMOVE_ITEM:

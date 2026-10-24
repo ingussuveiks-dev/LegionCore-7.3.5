@@ -22,6 +22,7 @@ INSERT INTO conditions SELECT * FROM saved_conditions WHERE NOT ($scope);
 SELECT 'before-smart',smart_scripts.* FROM smart_scripts ORDER BY entryorguid,source_type,id;
 SELECT 'before-gates',conditions.* FROM conditions ORDER BY SourceEntry,SourceGroup,ElseGroup,ConditionTypeOrReference;
 $migration
+SELECT 'first-guard',@marksman_herald_challenge;
 $migration
 SELECT 'after-smart',smart_scripts.* FROM smart_scripts ORDER BY entryorguid,source_type,id;
 SELECT 'after-gates',conditions.* FROM conditions WHERE NOT ($scope) ORDER BY SourceEntry,SourceGroup,ElseGroup,ConditionTypeOrReference;
@@ -49,6 +50,7 @@ foreach($entry in @(100397,100836)){
 $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" | Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
 $previous=$env:MYSQL_PWD
 try{$env:MYSQL_PWD=$connection[3];$rows=@($sql | & C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Herald temporary SQL fixture failed'}}finally{$env:MYSQL_PWD=$previous}
+[IO.File]::WriteAllLines("$out/fixture-diagnostics.tsv",[string[]]$rows)
 foreach($expected in @("count`t3","custom-gate-100397`t1","custom-gate-100836`t1","custom-preserved-100397`t1","custom-preserved-100836`t1")+@($variants.Keys | ForEach-Object {"$_`t0"})){if($rows -notcontains $expected){throw "Herald mismatch: $expected"}}
 foreach($kind in @('smart','gates')){
  $before=@($rows | Where-Object {$_ -like "before-$kind`t*"} | ForEach-Object {$_.Substring(8+$kind.Length)})

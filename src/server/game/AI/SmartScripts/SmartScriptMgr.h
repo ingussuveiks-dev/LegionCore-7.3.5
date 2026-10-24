@@ -608,6 +608,11 @@ enum SMART_ACTION
     SMART_ACTION_END                                = 225,
 };
 
+enum SmartSummonGameObjectFlags
+{
+    SMART_SUMMON_GAMEOBJECT_RETRY_ON_FAILURE = 0x2
+};
+
 struct SmartAction
 {
     SMART_ACTION type;
@@ -883,6 +888,7 @@ struct SmartAction
         {
             uint32 entry;
             uint32 despawnTime;
+            uint32 flags;
         } summonGO;
 
         struct

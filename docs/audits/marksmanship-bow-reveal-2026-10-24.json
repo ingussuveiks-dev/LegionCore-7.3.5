@@ -2,6 +2,7 @@
   "date": "2026-10-24",
   "build": "7.3.5.26972",
   "scope": "Thas'dorah248419 visibility at discovery, separated from permission to loot. This is a small timing repair, not a completed Hunter chain or client certification.",
+  "retry_followup": "docs/audits/marksmanship-bow-summon-retry-2026-10-24.json supersedes the remaining consumed-summon-failure finding for the scoped flagged poll. Historical migration12 and its fixture remain unchanged; reset/re-entry and real visuals are not certified by that follow-up.",
   "finding": {
     "before": "There is no static248419 spawn. Vereesa100397 waypoint14/path10039704 starts speech19 (There! her bow!) without creating the bow. Its only summon is LINK50 after speech20/21, when speech22 begins and49 advances Where Is She. Thus discovery refers to an object that does not yet exist, not simply an absent glow on an existing object.",
     "repair": "Guarded migration12 reroutes only three links:45 now links50,50 terminates,49 links51. The original summon occurs with discovery speech19, at its original62.6788/1215.55/-38.6585/0.705752 position,3600-second lifetime,9806 display and1.5 scale. Original49/47846 progression and51/102131 credit remain together at their existing later dialogue. No item grant, early criterion or duplicate later bow is added.",

@@ -847,8 +847,9 @@
       "post_inquisitor_retry_repair_audit": "docs/audits/marksmanship-post-inquisitor-retry-2026-10-24.json",
       "search_path_retry_repair_audit": "docs/audits/marksmanship-search-path-retry-2026-10-24.json",
       "bow_reveal_repair_audit": "docs/audits/marksmanship-bow-reveal-2026-10-24.json",
+      "bow_summon_retry_repair_audit": "docs/audits/marksmanship-bow-summon-retry-2026-10-24.json",
       "start": 41540,
-      "status": "partial: prior native pickup/equip/admission/return/claim/arrival/combat/discovery/caster/budget/waypoint/phase repairs retained in linked audits. New bow reveal moves original248419 summon to discovery speech19 at972/6, retaining original position/model/lifetime and later49/51 credits; pickup/report-use/loot remain blocked until7/8. New muted16:42..18:07 sparse video samples support visibility before Take, not full sequence or exact instants. Summon failure retry and final-stage text-expiry timing remain open. Group7, voice/rendering/per-point timing, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
+      "status": "partial: preceding repairs retained in linked audits. Discovery speech19 arms phase2 and unused62 retries native bow creation at972/6-7 until success without repeating dialogue; new opt-in flag2 preserves all original legacy summon semantics. Original model/position/lifetime and later49/51 credits remain, pickup/report-use/loot blocked until7/8. Muted16:42..18:07 sparse footage supports visibility before Take, not full sequence/exact instants. Final-stage text-expiry timing, group7, voice/rendering/per-point timing, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
       "quests": [
         {
           "id": 41540,

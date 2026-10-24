@@ -41,7 +41,7 @@ struct WorldObject {
     bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     Creature* FindNearestCreature(uint32,float,bool=true);bool IsWithinDistInMap(Creature*,float);float GetDistance(Creature*);
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
-    uint32 summons=0;bool summonAvailable=true;
+    uint32 summons=0,summonAttempts=0;bool summonAvailable=true;
     void GetPosition(float& positionX,float& positionY,float& positionZ,float& orientation){positionX=positionY=positionZ=orientation=0;}
     GameObject* SummonGameObject(uint32,float,float,float,float,float,float,float,float,uint32);
 #endif
@@ -126,7 +126,7 @@ struct SmartScriptHolder {
         struct {uint32 phase=0;}setEventPhase;
 #endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
-        struct {uint32 entry=0,despawnTime=0;}summonGO;
+        struct {uint32 entry=0,despawnTime=0,flags=0;}summonGO;
 #endif
     }action;
     struct {struct {uint32 entry=0,dist=0,dead=0;}closest;
@@ -162,6 +162,7 @@ struct SmartScript {
             case 1:if(me)targets->push_back(me);break;
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
             case 8:break;
+            case 128:break;
 #endif
             default:assert(false);
         }if(targets->empty()){delete targets;return nullptr;}return targets;
