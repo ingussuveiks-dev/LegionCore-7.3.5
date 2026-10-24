@@ -67,6 +67,7 @@ int main(int argc,char** argv){
     for(unsigned blocker=0;blocker<6;++blocker){RetryFixture blocked;blocked.Reach();switch(blocker){case 0:blocked.vereesa.alive=false;break;case 1:scenarioManager.present=false;break;case 2:scenarioManager.scenario.id=1010;break;case 3:blocked.vereesa.instanced=false;break;case 4:blocked.vereesa.expired=true;break;case 5:blocked.script.me=nullptr;break;}
         blocked.Tick();assert(!blocked.vereesa.summonAttempts&&!blocked.script.mEvents[2].runOnce);blocked.script.me=&blocked.vereesa;blocked.vereesa.alive=true;blocked.vereesa.instanced=true;blocked.vereesa.expired=false;scenarioManager={};scenarioManager.scenario.step=6;blocked.Tick();assert(blocked.vereesa.summons==1);}
     {RetryFixture happy;happy.Reach();happy.script.UpdateTimer(happy.script.mEvents[2],1);assert(happy.vereesa.summons==1&&happy.vereesa.speeches==1&&happy.script.mTextTimer==5000&&scenarioManager.scenario.step==6);}
+    for(unsigned phase: {2u,3u}){RetryFixture cue;cue.Reach();cue.script.mEvents[2].event.event_phase_mask=6;cue.script.SetPhase(phase);scenarioManager.scenario.step=7;cue.Tick();assert(cue.vereesa.summons==1&&cue.script.mEvents[2].runOnce);}
 #endif
     conditionManager.SmartEventConditionStore.clear();
     std::ifstream shapes(argv[3]);unsigned rows=0;int64 actor;uint32 source,id,flags,link,entry,lifetime,originalSummonFlags;float positionX,positionY,positionZ,orientation;

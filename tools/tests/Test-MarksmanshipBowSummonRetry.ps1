@@ -9,7 +9,7 @@ $common="$repo/build-extractors/runtime-test/marksmanship-herald-challenge"
 New-Item -ItemType Directory -Force $out | Out-Null
 & "$PSScriptRoot/Test-MarksmanshipBowReveal.ps1" *> "$out/reveal-prerequisite.log"
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_13_marksmanship_bow_summon_retry.sql" -Raw
-$normalization=Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw
+$normalization=(Get-Content "$PSScriptRoot/MarksmanshipFinalStageBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw)
 $scope='SourceTypeOrReferenceId=22 AND SourceEntry=100397 AND SourceGroup=63'
 $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object; DELETE FROM gameobject; INSERT INTO gameobject SELECT * FROM saved_spawn;"
 $sql=@"

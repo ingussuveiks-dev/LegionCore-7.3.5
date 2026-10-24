@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 using uint32=uint32_t;using uint8=uint8_t;using int64=int64_t;
 enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_WAYPOINT_START=39,SMART_EVENT_WAYPOINT_REACHED=40};
@@ -46,8 +47,18 @@ struct WorldObject {
     GameObject* SummonGameObject(uint32,float,float,float,float,float,float,float,float,uint32);
 #endif
 };
-struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}};
-struct Player:Unit {Player* ToPlayer()override{return this;}};
+struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+    Player* GetCharmerOrOwnerPlayerOrPlayerItself(){return nullptr;}
+#endif
+};
+struct Player:Unit {Player* ToPlayer()override{return this;}
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+    uint32 criteria=0,creditHandoffs=0;bool allowProgress=true,alive=true;
+    bool IsAlive()override{return alive;}
+    void UpdateAchievementCriteria(uint32,uint32,uint32,uint32,Unit*,bool);
+#endif
+};
 struct SmartAI {
     SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
@@ -63,6 +74,10 @@ struct Creature:Unit {
     uint32 identity=0,speeches=0,lastSpeech=99;float distance=1;bool alive=true,sameMap=true,samePhase=true,available=true,combat=false;
     SmartAI ai;Creature* ToCreature()override{return this;}SmartAI* AI(){return &ai;}
     bool IsAlive(){return alive;}uint32 GetEntry(){return identity;}bool isInCombat(){return combat;}bool HasUnitState(uint32){return false;}
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+    Player* selectedPlayer=nullptr;float playerDistance=1;
+    Player* SelectNearestPlayer(float range){return selectedPlayer&&selectedPlayer->IsAlive()&&playerDistance<=range?selectedPlayer:nullptr;}
+#endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
     float GetObjectSize(){return 1;}void GetNearPoint2D(Position&,float,float){}Position GetFirstCollisionPosition(float,float){return {};}
 #endif
@@ -80,6 +95,9 @@ Creature* WorldObject::FindNearestCreature(uint32 identity,float range,bool aliv
 struct Scenario {uint32 id=972,step=4;uint32 GetScenarioId(){return id;}uint32 GetCurrentStep(){return step;}};
 struct ScenarioManager {bool present=true;Scenario scenario;Scenario* GetScenario(uint32 identity){return present&&identity==42?&scenario:nullptr;}} scenarioManager;
 auto sScenarioMgr=&scenarioManager;
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+#include "CreditPlayer.inc"
+#endif
 struct ConditionSourceInfo {WorldObject* mConditionTargets[2];ConditionSourceInfo(WorldObject* first,WorldObject* second):mConditionTargets{first,second}{}};
 struct Condition {
     uint32 ElseGroup=0,ConditionType=0,ConditionTarget=0,ConditionValue1=0,ConditionValue2=0,ConditionValue3=0,ReferenceId=0;bool NegativeCondition=false;
@@ -128,8 +146,14 @@ struct SmartScriptHolder {
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
         struct {uint32 entry=0,despawnTime=0,flags=0;}summonGO;
 #endif
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+        struct {uint32 type=0,misc1=0,misc2=0,misc3=0;}achievementCriteria;
+#endif
     }action;
     struct {struct {uint32 entry=0,dist=0,dead=0;}closest;
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+        struct {uint32 dist=0;}playerDistance;
+#endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
         float x=0,y=0,z=0,o=0;struct {float range=0,distance=0,angle=0;}randomPos;
 #endif
@@ -160,6 +184,13 @@ struct SmartScript {
 #undef l
 #undef e
             case 1:if(me)targets->push_back(me);break;
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+#define e row
+#define l targets
+#include "ClosestPlayer.inc"
+#undef l
+#undef e
+#endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
             case 8:break;
             case 128:break;
@@ -203,6 +234,10 @@ struct SmartScript {
 #endif
 #ifdef MARKSMANSHIP_BOW_REVEAL_TEST
 #include "SummonGo.inc"
+#endif
+#ifdef MARKSMANSHIP_FINAL_STAGE_TEST
+#include "CriteriaAction.inc"
+            case SMART_ACTION_CALL_KILLEDMONSTER:{auto* targets=GetTargets(nativeEvent,unit);if(targets){for(auto* target:*targets)if(auto* player=GetScriptCreditPlayer(target))++player->creditHandoffs;delete targets;}break;}
 #endif
             default:assert(false);
         }

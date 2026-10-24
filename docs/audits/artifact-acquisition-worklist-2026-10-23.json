@@ -848,8 +848,9 @@
       "search_path_retry_repair_audit": "docs/audits/marksmanship-search-path-retry-2026-10-24.json",
       "bow_reveal_repair_audit": "docs/audits/marksmanship-bow-reveal-2026-10-24.json",
       "bow_summon_retry_repair_audit": "docs/audits/marksmanship-bow-summon-retry-2026-10-24.json",
+      "final_stage_cue_repair_audit": "docs/audits/marksmanship-final-stage-cue-2026-10-24.json",
       "start": 41540,
-      "status": "partial: preceding repairs retained in linked audits. Discovery speech19 arms phase2 and unused62 retries native bow creation at972/6-7 until success without repeating dialogue; new opt-in flag2 preserves all original legacy summon semantics. Original model/position/lifetime and later49/51 credits remain, pickup/report-use/loot blocked until7/8. Muted16:42..18:07 sparse footage supports visibility before Take, not full sequence/exact instants. Final-stage text-expiry timing, group7, voice/rendering/per-point timing, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
+      "status": "partial: preceding repairs retained in linked audits. Discovery19 arms phase2;62 retains native bow creation retry at972/6-7 in phases2/3. Actual text22/15000 expiry now arms phase3; unused63 retries original47846 until native6->7 advancement, then51 search credit is allowed and poll stops. No repeated Take speech, synthetic timer, item grant or changed closest-player/group policy. Pickup/report-use/loot remain blocked until7/8. Sparse muted16:42..18:07 footage is not full sequence/exact timing. Group7, voice/rendering/per-point timing, recipient-policy limits, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
       "quests": [
         {
           "id": 41540,

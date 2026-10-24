@@ -7,7 +7,7 @@ $search="$repo/build-extractors/runtime-test/marksmanship-search-path"
 New-Item -ItemType Directory -Force $out | Out-Null
 & "$PSScriptRoot/Test-MarksmanshipSearchPath.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary *> "$out/search-prerequisite.log"
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_12_marksmanship_bow_reveal.sql" -Raw
-$summonBaseline=Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw
+$summonBaseline=(Get-Content "$PSScriptRoot/MarksmanshipFinalStageBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw)
 $scope='SourceTypeOrReferenceId=22 AND SourceEntry=100397 AND SourceGroup IN(46,51)'
 $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object; DELETE FROM gameobject; INSERT INTO gameobject SELECT * FROM saved_spawn; DELETE FROM waypoints; INSERT INTO waypoints SELECT * FROM saved_path;"
 $sql=@"

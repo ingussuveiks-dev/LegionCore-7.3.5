@@ -6,7 +6,7 @@ $common="$repo/build-extractors/runtime-test/marksmanship-herald-challenge"
 New-Item -ItemType Directory -Force $out | Out-Null
 & "$PSScriptRoot/Test-MarksmanshipPostInquisitor.ps1" *> "$out/post-inquisitor-prerequisite.log"
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_11_marksmanship_search_path_retry.sql" -Raw
-$summonBaseline=Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw
+$summonBaseline=(Get-Content "$PSScriptRoot/MarksmanshipFinalStageBaseline.sql" -Raw)+"`n"+(Get-Content "$PSScriptRoot/MarksmanshipSummonRetryBaseline.sql" -Raw)
 $scope='SourceTypeOrReferenceId=22 AND SourceEntry=100397 AND SourceGroup IN(43,44,62)'
 $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart; DELETE FROM creature_template; INSERT INTO creature_template SELECT * FROM saved_actor; DELETE FROM waypoints; INSERT INTO waypoints SELECT * FROM saved_path;"
 $sql=@"
