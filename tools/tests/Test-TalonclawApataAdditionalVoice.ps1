@@ -12,6 +12,7 @@ DELETE FROM creature_template_wdb; INSERT INTO creature_template_wdb SELECT * FR
 DELETE FROM creature_model_info; INSERT INTO creature_model_info SELECT * FROM saved_model;
 DELETE FROM creature; INSERT INTO creature SELECT * FROM saved_spawns;
 DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart;
+UPDATE smart_scripts SET action_param1=21 WHERE entryorguid=100235 AND source_type=0 AND id=21 AND action_type=1 AND action_param1=20 AND link=22;
 '@
 $sql=@"
 CREATE TEMPORARY TABLE saved_text LIKE creature_text;

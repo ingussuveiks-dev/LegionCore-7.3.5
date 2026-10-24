@@ -74,6 +74,8 @@ $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
 $sections=@{
  'RepeatGuard'=@('    if ((e.event.event_phase_mask && !IsInPhase(','    ConditionList conds =')
  'TextOver'=@('        case SMART_EVENT_TEXT_OVER:','        case SMART_EVENT_DATA_SET:')
+ 'DataSet'=@('        case SMART_EVENT_DATA_SET:','        case SMART_EVENT_PASSENGER_REMOVED:')
+ 'Die'=@('        case SMART_ACTION_DIE:','        case SMART_ACTION_SET_IN_COMBAT_WITH_ZONE:')
  'Talk'=@('        case SMART_ACTION_TALK:','        case SMART_ACTION_SIMPLE_TALK:')
  'Cast'=@('        case SMART_ACTION_CAST:','        case SMART_ACTION_CAST_CUSTOM:')
  'Waypoint'=@('        case SMART_ACTION_WP_START:','        case SMART_ACTION_WP_PAUSE:')

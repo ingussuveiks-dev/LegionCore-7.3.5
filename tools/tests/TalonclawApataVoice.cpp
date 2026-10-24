@@ -47,7 +47,10 @@ int Run(int argc,char** argv)
     Require(files.Load(argv[1],0),"Native voice files missing");files.LoadFromDB();
     auto display=sCreatureDisplayInfoStore.LookupEntry(66135);
     Require(display&&display->Gender==GENDER_FEMALE,"Actual Apata display is not female");
-#ifdef APATA_ADDITIONAL_VOICE
+#ifdef APATA_DEATH_WARNING
+    std::map<uint32,uint32> expected{{20,102115}};
+    std::map<uint32,uint32> soundKits{{20,62699}};
+#elif defined(APATA_ADDITIONAL_VOICE)
     std::map<uint32,uint32> expected{{2,102002},{21,102116}};
     std::map<uint32,uint32> soundKits{{2,62688},{21,62700}};
 #else
@@ -58,7 +61,7 @@ int Run(int argc,char** argv)
     std::ifstream snapshot(argv[2]);Require(bool(snapshot),"Missing scoped SQL rows");
     uint32 count=0,group=0,sqlSound=0,broadcast=0,type=0,hold=0;
     while(snapshot>>group>>sqlSound>>broadcast>>type>>hold){
-        Require(expected.count(group)==1&&sqlSound==0&&type==(group==11?14u:12u),"Unexpected speech scope/metadata");
+        Require(expected.count(group)==1&&sqlSound==0&&type==((group==11||group==20)?14u:12u),"Unexpected speech scope/metadata");
         auto wanted=sBroadcastTextStore.LookupEntry(expected.at(group));
         Require(wanted&&wanted->SoundEntriesID[0]==0&&wanted->SoundEntriesID[1]==soundKits.at(group),"Wrong native voice identity");
         auto current=sBroadcastTextStore.LookupEntry(broadcast);
@@ -77,6 +80,9 @@ int Run(int argc,char** argv)
         Require(std::string(value)==(group==2?"Defend yourselves!":"It is... over for me... you must... finish this."),"Wrong original additional line");
         Require(!wanted->LanguageID&&!wanted->ConditionID&&!wanted->EmotesID,"Additional speech introduces another language, condition or animation kit");
         for(uint32 index=0;index<3;++index)Require(!wanted->EmoteID[index]&&!wanted->EmoteDelay[index],"Additional speech introduces another gesture");
+#endif
+#ifdef APATA_DEATH_WARNING
+        Require(std::string(value)=="Not again, beast! I will-- AAARGHH!!","Wrong native ambush warning");
 #endif
         std::cout<<"TEXT\t"<<group<<'\t'<<value<<'\n';
         uint32 linked=0;

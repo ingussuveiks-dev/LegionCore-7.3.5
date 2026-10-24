@@ -2,6 +2,7 @@
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
   "scope": "Scoped Talonclaw EO108 in-place stage/cast recovery and owned effect cleanup. Neither complete Survival acquisition nor actual client scene playback is certified.",
+  "followup_warning34": "docs/audits/talonclaw-apata-death-warning-2026-10-24.json addresses the world SAY21 duplication/undispatched warning noted below: root21 now selects native YELL20/102115; cinematic1517 retains both farewells. Actual visual/timing/client checks and other33 remaining limits still apply.",
   "failure": "Native EventObject::Update caches affectedPlayers after its enter callback even when SmartAI rejects every root or a cast fails. It does not reevaluate a cached player who remains inside. Correct source13 conditions from32 therefore still left early entry,973/10->11 and failed casts dependent on leaving/reentering24yards. Fresh SmartScript instances also do not provide persistent per-player nonrepeatable state.",
   "repair": {
     "binding": "Guarded33 changes only EO108 ScriptName from SmartEventObject to eventobject_talonclaw_ambush, requiring its actual24-yard template, native three actions, corrected source13 gates and1145->1517/25 mapping. Existing custom binding/data variants are retained. No native action, stage condition, scene package, flags, duration, spawn or credit is replaced.",

@@ -9,7 +9,7 @@
 using uint32=uint32_t;
 using uint8=uint8_t;
 using ReactStates=uint32;
-enum {SMART_ACTION_TALK=1,SMART_ACTION_CAST=11,SMART_ACTION_WP_START=53,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_DATA_SET=38,SMART_EVENT_LINK=61,SMART_EVENT_FLAG_NOT_REPEATABLE=1,SMART_ESCORT_TARGETS=1,SMART_TARGET_POSITION=8,SMARTCAST_TRIGGERED=2,SMARTCAST_INTERRUPT_PREVIOUS=1,SMARTCAST_AURA_NOT_PRESENT=32,CAST_FORCE_TARGET_SELF=16,SMARTCAST_COMBAT_MOVE=64};
+enum {SMART_ACTION_TALK=1,SMART_ACTION_CAST=11,SMART_ACTION_DIE=37,SMART_ACTION_WP_START=53,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_DATA_SET=38,SMART_EVENT_LINK=61,SMART_EVENT_FLAG_NOT_REPEATABLE=1,SMART_ESCORT_TARGETS=1,SMART_TARGET_POSITION=8,SMARTCAST_TRIGGERED=2,SMARTCAST_INTERRUPT_PREVIOUS=1,SMARTCAST_AURA_NOT_PRESENT=32,CAST_FORCE_TARGET_SELF=16,SMARTCAST_COMBAT_MOVE=64};
 enum SpellCastResult {SPELL_CAST_OK,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_SPELL_IN_PROGRESS};
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) (++errors)
@@ -40,6 +40,10 @@ struct AI {
 struct Creature:Unit {
     struct AI controller;
     std::vector<uint32> casts;
+    std::vector<uint32> dialogue;
+    uint32 deaths=0;
+    bool isDead(){return deaths!=0;}
+    void Kill(Creature* target){assert(target==this&&!dialogue.empty());++deaths;}
     Creature* ToCreature() override{return this;}
     struct AI* AI(){return &controller;}
     uint32 GetEntry(){return 100235;}
@@ -54,14 +58,14 @@ struct Chat {uint32 group,time;bool running;};
 struct TextManager {
     uint32 time=0;
     std::vector<Chat> chats;
-    void SendChat(Creature* actor,uint8 group,ObjectGuid){chats.push_back({group,time,actor->controller.running});}
+    void SendChat(Creature* actor,uint8 group,ObjectGuid){actor->dialogue.push_back(group);chats.push_back({group,time,actor->controller.running});}
 } textManager;
 auto sCreatureTextMgr=&textManager;
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder {
     uint32 event_id=0,link=0,eventType=0,actionType=0,entryOrGuid=100235;
     bool runOnce=false;
-    struct {uint32 event_flags=1,event_phase_mask=0;struct{uint32 textGroupID=0,creatureEntry=0;}textOver;} event;
+    struct {uint32 event_flags=1,event_phase_mask=0;struct{uint32 textGroupID=0,creatureEntry=0;}textOver;struct{uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;}dataSet;} event;
     struct {
         struct {uint32 textGroupID=0,duration=0;}talk;
         struct {uint32 spell=0,flags=0;}cast;
@@ -95,6 +99,7 @@ struct SmartScript {
 #include "RepeatGuard.inc"
         switch(nativeEvent.GetEventType()){
 #include "TextOver.inc"
+#include "DataSet.inc"
         case SMART_EVENT_LINK:ProcessAction(nativeEvent,unit,var0,var1,bvar,spell,gob);break;
         }
     }
@@ -103,6 +108,7 @@ struct SmartScript {
         nativeEvent.runOnce=true;
         switch(nativeEvent.GetActionType()){
 #include "Talk.inc"
+#include "Die.inc"
 #include "Cast.inc"
 #include "Waypoint.inc"
         }
@@ -116,9 +122,21 @@ struct SmartScript {
 #include "FindLink.inc"
 int main(int argc,char** argv)
 {
-    _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==2);
+    _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==2||argc==3);
+    bool deathWarning=argc==3&&std::string(argv[2])=="death";
     std::ifstream input(argv[1]);std::vector<SmartScriptHolder> definitions;
-    for(uint32 count=0;count<5;++count){SmartScriptHolder row;uint32 first=0,second=0;assert(input>>row.event_id>>row.link>>row.eventType>>row.event.event_flags>>row.event.textOver.textGroupID>>row.event.textOver.creatureEntry>>row.actionType>>first>>second);row.action.talk={first,second};row.action.cast={first,second};row.action.wpStart={first,second,0,0,0,0};definitions.push_back(row);}
+    for(uint32 count=0;count<(deathWarning?2u:5u);++count){SmartScriptHolder row;uint32 first=0,second=0;assert(input>>row.event_id>>row.link>>row.eventType>>row.event.event_flags>>row.event.textOver.textGroupID>>row.event.textOver.creatureEntry>>row.actionType>>first>>second);row.event.dataSet={row.event.textOver.textGroupID,row.event.textOver.creatureEntry,0,0};row.action.talk={first,second};row.action.cast={first,second};row.action.wpStart={first,second,0,0,0,0};definitions.push_back(row);}
+    if(deathWarning){
+        for(uint32 invokerType:{0u,1u,2u,3u}){
+            Creature actor;Player player;Unit pet,guardian;SmartScript script;script.me=&actor;script.invoker=invokerType==0?&player:invokerType==1?&pet:invokerType==2?&guardian:nullptr;script.mEvents=definitions;textManager={};
+            script.ProcessEventsFor(38,script.invoker,5,6);assert(textManager.chats.empty()&&!actor.deaths);
+            script.ProcessEventsFor(38,script.invoker,6,6);assert(textManager.chats.size()==1&&textManager.chats[0].group==20&&actor.deaths==1);
+            script.ProcessEventsFor(38,script.invoker,6,6);assert(textManager.chats.size()==1&&actor.deaths==1);
+            script.Tick(16);assert(textManager.chats.size()==1&&actor.casts.empty());
+        }
+        SmartScript missing;missing.mEvents=definitions;textManager={};missing.ProcessEventsFor(38,nullptr,6,6);assert(textManager.chats.empty());
+        assert(errors==0);std::cout<<"PASS: actual DATA_SET/repeat/TALK/DIE/LINK bodies emit world warning20 once before self death for player/pet/guardian/null invokers, never scene-owned21; wrong signal/missing actor safe. Controlled chat/death sinks, not scene rendering.\n";return 0;
+    }
     assert(definitions.size()==5&&definitions.front().event_id==15);
     for(uint32 tick:{1u,16u,100u,500u,1000u})for(uint32 invokerType:{0u,1u,2u}){
         Creature actor;Player player;Unit pet;
