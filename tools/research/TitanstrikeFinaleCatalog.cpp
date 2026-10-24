@@ -100,6 +100,19 @@ int main(int argc, char** argv)
                 soundKits.insert(kit);
     }
     std::set<int32> selectedModifiers;
+    for (uint32 identity : {4565u, 4566u, 4567u, 4568u})
+    {
+        auto line = lines.LookupEntry(identity);
+        if (!line)
+            return 10;
+        auto text = texts.LookupEntry(line->BroadcastTextID);
+        if (!text)
+            return 11;
+        std::cout << "COMBAT_LINE\t" << identity << '\t' << line->BroadcastTextID << '\t'
+            << line->AdditionalDuration << '\t' << line->NextConversationLineID << '\n';
+        std::cout << "COMBAT_TEXT\t" << text->ID << '\t' << text->SoundEntriesID[0] << '\t'
+            << text->SoundEntriesID[1] << '\t' << text->Text->Str[0] << '\t' << text->Text1->Str[0] << '\n';
+    }
     for (uint32 identity : {48019u, 48020u, 48094u, 48021u, 48022u})
     {
         auto tree = trees.LookupEntry(identity);

@@ -305,6 +305,110 @@ class spell_titanstrike_aftermath : public SpellScript
     }
 };
 
+namespace TitanstrikeCombatDialogue
+{
+bool Scoped(Creature* actor)
+{
+    return actor && actor->GetEntry() == 106714 && actor->GetMapId() == 1609;
+}
+
+bool Allowed(Creature* actor)
+{
+    if (!Scoped(actor))
+        return true;
+    if (!actor->IsInWorld() || !actor->IsAlive())
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 1099 || scenario->GetCurrentStep() != 2)
+        return false;
+    auto progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+    auto defeated = progress->find(48020);
+    if (defeated != progress->end() && defeated->second.Counter)
+        return false;
+    Creature* boss = actor->FindNearestCreature(106730, 100.0f, true);
+    return boss && boss->IsInWorld() && boss->IsAlive() && boss->GetHealth() > 1 &&
+        boss->GetMap() == actor->GetMap() && boss->InSamePhase(actor);
+}
+
+struct Story : Conversation
+{
+    ObjectGuid opponent;
+
+    explicit Story(ObjectGuid identity) : opponent(identity) { }
+
+    void Update(uint32 diff) override
+    {
+        if (!IsInWorld())
+            return;
+        Creature* actor = ObjectAccessor::GetCreature(*this, GetCasterGUID());
+        if (!Scoped(actor) || !Allowed(actor) || !InSamePhase(actor))
+        {
+            Remove();
+            return;
+        }
+        Creature* boss = actor->FindNearestCreature(106730, 100.0f, true);
+        if (!boss || boss->GetGUID() != opponent)
+        {
+            Remove();
+            return;
+        }
+        Conversation::Update(diff);
+    }
+};
+
+void Create(Creature* actor, SpellInfo const* info, Position const& position)
+{
+    if (!Scoped(actor) || !Allowed(actor))
+        return;
+    Creature* boss = actor->FindNearestCreature(106730, 100.0f, true);
+    if (!boss)
+        return;
+    auto story = new Story(boss->GetGUID());
+    if (!story->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(),
+        info->Effects[EFFECT_0]->MiscValue, actor, info, position))
+    {
+        delete story;
+        TC_LOG_ERROR("scripts.ai", "Titanstrike: combat conversation %u creation failed for Thorim; no progression changed", info->Id);
+    }
+}
+}
+
+class spell_titanstrike_combat_dialogue : public SpellScript
+{
+    PrepareSpellScript(spell_titanstrike_combat_dialogue);
+
+    bool Validate(SpellInfo const* info) override
+    {
+        return info->Effects[EFFECT_0] && info->Effects[EFFECT_0]->Effect == SPELL_EFFECT_SUMMON_CONVERSATION &&
+            ((info->Id == 211824 && info->Effects[EFFECT_0]->MiscValue == 2152) ||
+             (info->Id == 211826 && info->Effects[EFFECT_0]->MiscValue == 2153) ||
+             (info->Id == 211827 && info->Effects[EFFECT_0]->MiscValue == 2154));
+    }
+
+    SpellCastResult Check()
+    {
+        return TitanstrikeCombatDialogue::Allowed(GetCaster()->ToCreature()) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void Create(SpellEffIndex effect)
+    {
+        Creature* actor = GetCaster()->ToCreature();
+        if (!TitanstrikeCombatDialogue::Scoped(actor))
+            return;
+        PreventHitDefaultEffect(effect);
+        Position position = actor->GetPosition();
+        if (GetExplTargetDest() && GetHitDest())
+            position = *GetHitDest();
+        TitanstrikeCombatDialogue::Create(actor, GetSpellInfo(), position);
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_titanstrike_combat_dialogue::Check);
+        OnEffectHit += SpellEffectFn(spell_titanstrike_combat_dialogue::Create, EFFECT_0, SPELL_EFFECT_SUMMON_CONVERSATION);
+    }
+};
+
 namespace ArtifactAcquisition
 {
 struct Pickup {uint32 object,item,playerClass,quest,alternate;};
@@ -1050,6 +1154,7 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_talonclaw_dakarr);
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterSpellScript(spell_titanstrike_aftermath);
+    RegisterSpellScript(spell_titanstrike_combat_dialogue);
     new go_artifact_acquisition();
     new go_marksmanship_pickup();
     new player_dark_riders_completion();
