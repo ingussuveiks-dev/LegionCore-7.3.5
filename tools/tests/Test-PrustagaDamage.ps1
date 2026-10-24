@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing production section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 [IO.File]::WriteAllText("$out/Protection.inc",(Section $source 'namespace TitanstrikePrustaga' 'struct npc_titanstrike_final_prustaga'))
-[IO.File]::WriteAllText("$out/Wrapper.inc",(Section $source 'struct npc_titanstrike_final_prustaga' 'namespace ArtifactAcquisition'))
+[IO.File]::WriteAllText("$out/Wrapper.inc",(Section $source 'struct npc_titanstrike_final_prustaga' 'namespace TitanstrikeAftermath'))
 foreach($identity in @('npc_titanstrike_prustaga','npc_titanstrike_final_prustaga')){
  if(@(& rg -l -F "RegisterCreatureAI($identity)" "$repo/src/server/scripts" -g '*.cpp').Count -ne 1 -or @(& rg -l -F "struct $identity :" "$repo/src/server/scripts" -g '*.cpp').Count -ne 1){throw "Duplicate Prustaga definition/registration: $identity"}
 }
@@ -35,6 +35,9 @@ INSERT INTO creature_template SELECT * FROM saved_actor;
 UPDATE creature_template SET ScriptName='';
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid=106730 AND source_type IN(0,9);
+INSERT INTO saved_smart(entryorguid,source_type,id,event_type,event_chance,event_flags,action_type,action_param1,action_param2,target_type,target_param1,comment)
+SELECT 106730,9,6,0,100,1,205,92,50997,21,100,'Pinned pre23 handoff'
+WHERE NOT EXISTS(SELECT 1 FROM saved_smart WHERE source_type=9 AND id=6);
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 INSERT INTO smart_scripts SELECT * FROM saved_smart;
 $migration
@@ -70,14 +73,17 @@ SELECT 'live-count',source_type,COUNT(*) FROM smart_scripts WHERE entryorguid=10
 SELECT 'live-scaling',LevelScalingMin,LevelScalingMax FROM creature_template_scaling WHERE Entry=106730;
 SELECT 'released',hash,state FROM updates WHERE name='2026_10_24_20_titanstrike_final_prustaga_binding.sql';
 SELECT 'released-initial',hash,state FROM updates WHERE name='2026_10_24_19_titanstrike_prustaga_damage.sql';
+SELECT 'released-handoff',hash,state FROM updates WHERE name='2026_10_24_23_titanstrike_aftermath_handoff.sql';
 '@
  $previous=$env:MYSQL_PWD
  try{$env:MYSQL_PWD=$connection[3];$live=@($query|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Prustaga live readback failed'}}finally{$env:MYSQL_PWD=$previous}
  $hash=(Get-FileHash "$repo/sql/updates/world/2026_10_24_20_titanstrike_final_prustaga_binding.sql" -Algorithm SHA1).Hash
  $initialHash=(Get-FileHash "$repo/sql/updates/world/2026_10_24_19_titanstrike_prustaga_damage.sql" -Algorithm SHA1).Hash
- foreach($expected in @("live-binding`tSmartAI`tnpc_titanstrike_final_prustaga","rune-binding`tSmartAI`tnpc_titanstrike_prustaga","live-count`t0`t10","live-count`t9`t8","live-scaling`t98`t110","released`t$hash`tRELEASED","released-initial`t$initialHash`tRELEASED")){if($live -notcontains $expected){throw "Live Prustaga mismatch: $expected"}}
+ $handoffHash=(Get-FileHash "$repo/sql/updates/world/2026_10_24_23_titanstrike_aftermath_handoff.sql" -Algorithm SHA1).Hash
+ $listCount=if($live -contains "released-handoff`t$handoffHash`tRELEASED"){7}else{8}
+ foreach($expected in @("live-binding`tSmartAI`tnpc_titanstrike_final_prustaga","rune-binding`tSmartAI`tnpc_titanstrike_prustaga","live-count`t0`t10","live-count`t9`t$listCount","live-scaling`t98`t110","released`t$hash`tRELEASED","released-initial`t$initialHash`tRELEASED")){if($live -notcontains $expected){throw "Live Prustaga mismatch: $expected"}}
  $live | Set-Content -Encoding utf8 "$out/live.tsv"
  $previousPython=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previousPython";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_prustaga_damage_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Prustaga protection missing'}}finally{$env:PYTHONPATH=$previousPython}
 }
-'PASS: scoped native Prustaga protection and repeat/custom-preserving binding migration; original health event, timed list, visuals, Player-distance credits and scripted death retained. Full client combat remains pending.'
+'PASS: scoped native Prustaga protection, pinned pre23 binding migration and exact live handoff-version count; health event, surviving timed visuals and scripted death retained. Full client combat remains pending.'

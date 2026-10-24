@@ -10,6 +10,7 @@
 #include "Creature.h"
 #include "TemporarySummon.h"
 #include "CreatureAI.h"
+#include "Conversation.h"
 #include "ConditionMgr.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
@@ -137,6 +138,170 @@ struct npc_titanstrike_final_prustaga : SmartAI
     void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
     {
         TitanstrikePrustaga::Protect(me, attacker, damage);
+    }
+};
+
+namespace TitanstrikeAftermath
+{
+bool Current(Player* player, uint32 instance)
+{
+    if (!player || !player->IsInWorld() || !player->CanContact() ||
+        player->GetMapId() != 1609 || player->GetInstanceId() != instance || player->getClass() != CLASS_HUNTER ||
+        player->GetQuestRewardStatus(42185) ||
+        (player->GetQuestStatus(42185) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42185) != QUEST_STATUS_COMPLETE))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(instance);
+    if (!scenario || scenario->GetScenarioId() != 1099 ||
+        (scenario->GetCurrentStep() != 2 && scenario->GetCurrentStep() != 3))
+        return false;
+    auto progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+    auto defeated = progress->find(48020);
+    return defeated != progress->end() && defeated->second.Counter;
+}
+
+bool Advance(Player* player, uint32 instance, bool& creditSent)
+{
+    if (!Current(player, instance) || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->FindNearestCreature(106730, 100.0f, true))
+        return false;
+    Creature* hati = player->FindNearestCreature(103154, 100.0f, true);
+    if (!hati || !hati->IsInWorld() || !hati->IsAlive() || !hati->IsAIEnabled || !hati->AI() ||
+        hati->GetMap() != player->GetMap() || !hati->InSamePhase(player))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(instance);
+    if (hati->HasAura(211967))
+        return scenario->GetCurrentStep() == 3;
+    if (!hati->HasAura(211970))
+    {
+        hati->AI()->SetData(1, 1);
+        if (!hati->HasAura(211970) &&
+            (hati->CastSpell(hati, 211970, true) != SPELL_CAST_OK || !hati->HasAura(211970)))
+            return false;
+    }
+    if (scenario->GetCurrentStep() == 2)
+    {
+        auto progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto handedOff = progress->find(48094);
+        if (creditSent || (handedOff != progress->end() && handedOff->second.Counter))
+            return false;
+        creditSent = true;
+        player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50997, 0, 0, nullptr, true);
+        if (scenario->GetCurrentStep() != 3)
+            TC_LOG_ERROR("scripts.ai", "Titanstrike: aftermath credit did not publish the Hati step for player %u", player->GetGUIDLow());
+    }
+    if (scenario->GetCurrentStep() != 3 || !Current(player, instance) ||
+        !hati->IsInWorld() || !hati->IsAlive() || hati->GetMap() != player->GetMap() || !hati->InSamePhase(player))
+        return false;
+    hati->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+    return true;
+}
+
+struct Story : Conversation
+{
+    uint32 instance;
+    uint32 retryRemaining = 0;
+    bool creditSent = false;
+    bool reportedWait = false;
+
+    explicit Story(uint32 identity) : instance(identity) { }
+
+    void Update(uint32 diff) override
+    {
+        if (!IsInWorld())
+            return;
+        Player* player = ObjectAccessor::GetPlayer(*this, GetCasterGUID());
+        if (IsQuestObjectExpired() || !Current(player, instance) || !InSamePhase(player))
+        {
+            Remove();
+            return;
+        }
+        auto started = playing.find(GetCasterGUID());
+        if (started == playing.end() || getMSTime() - started->second <= GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME))
+            return;
+        if (diff < retryRemaining)
+        {
+            retryRemaining -= diff;
+            return;
+        }
+        retryRemaining = 1000;
+        if (Advance(player, instance, creditSent))
+        {
+            Remove();
+            return;
+        }
+        if (!reportedWait)
+        {
+            reportedWait = true;
+            TC_LOG_ERROR("scripts.ai", "Titanstrike: completed aftermath is waiting for eligible Hati/player context for player %u; no handoff bypass", player->GetGUIDLow());
+        }
+    }
+};
+
+void Request(Player* player, SpellInfo const* info, uint32 instance, uint32 attempt = 0)
+{
+    if (!Current(player, instance) || sScenarioMgr->GetScenario(instance)->GetCurrentStep() != 2)
+        return;
+    bool created = false;
+    if (player->IsAlive() && !player->IsBeingTeleported() && !player->HasAura(211934) && !player->FindNearestCreature(106730, 100.0f, true))
+    {
+        auto story = new Story(instance);
+        if (story->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2167,
+            player, info, player->GetPosition()))
+        {
+            if (story->GetUInt32Value(CONVERSATION_FIELD_LAST_LINE_END_TIME) >= 72398)
+            {
+                player->BindQuestObject(42185, story);
+                created = true;
+            }
+            else
+                story->Remove();
+        }
+        else
+            delete story;
+    }
+    if (created)
+        return;
+    if (!attempt)
+        TC_LOG_ERROR("scripts.ai", "Titanstrike: aftermath creation/context unavailable for player %u; retrying within this quest attempt", player->GetGUIDLow());
+    if (attempt >= 30)
+    {
+        TC_LOG_ERROR("scripts.ai", "Titanstrike: aftermath retry exhausted for player %u; no Hati progression awarded", player->GetGUIDLow());
+        return;
+    }
+    player->AddQuestDelayedEvent(42185, 1000, [player, info, instance, attempt]()
+    {
+        Request(player, info, instance, attempt + 1);
+    });
+}
+}
+
+class spell_titanstrike_aftermath : public SpellScript
+{
+    PrepareSpellScript(spell_titanstrike_aftermath);
+
+    bool Validate(SpellInfo const* info) override
+    {
+        return info->Id == 211960 && info->Effects[EFFECT_0] &&
+            info->Effects[EFFECT_0]->Effect == SPELL_EFFECT_SUMMON_CONVERSATION && info->Effects[EFFECT_0]->MiscValue == 2167;
+    }
+
+    SpellCastResult Check()
+    {
+        Player* player = GetCaster()->ToPlayer();
+        return player && TitanstrikeAftermath::Current(player, player->GetInstanceId()) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+
+    void Create(SpellEffIndex effect)
+    {
+        PreventHitDefaultEffect(effect);
+        if (Player* player = GetCaster()->ToPlayer())
+            TitanstrikeAftermath::Request(player, GetSpellInfo(), player->GetInstanceId());
+    }
+
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_titanstrike_aftermath::Check);
+        OnEffectHit += SpellEffectFn(spell_titanstrike_aftermath::Create, EFFECT_0, SPELL_EFFECT_SUMMON_CONVERSATION);
     }
 };
 
@@ -884,6 +1049,7 @@ void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
+    RegisterSpellScript(spell_titanstrike_aftermath);
     new go_artifact_acquisition();
     new go_marksmanship_pickup();
     new player_dark_riders_completion();
