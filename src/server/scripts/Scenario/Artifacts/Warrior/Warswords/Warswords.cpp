@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "Item.h"
+#include "ObjectAccessor.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <algorithm>
@@ -301,9 +302,17 @@ public:
         uint32 count_adds;
 
         bool phase1, phase2, introDone;
+        bool introPending = false;
+        uint32 introGeneration = 0;
+        uint32 introRetryTimer = 0;
 
         void Reset() override
         {
+            ++introGeneration;
+            if (introPending)
+                introDone = false;
+            introPending = false;
+            introRetryTimer = 0;
             phase1 = false;
             phase2 = false;
             events.Reset();
@@ -343,24 +352,69 @@ public:
             }
         }
 
+        bool IsIntroTarget(Player* player, float distance) const
+        {
+            if (!player || !me->IsInWorld() || !me->IsAlive() || me->GetMapId() != 1511 || !player->IsInWorld() ||
+                !player->IsAlive() || !player->CanContact() || player->IsBeingTeleported() ||
+                player->getClass() != CLASS_WARRIOR || player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                me->GetExactDist2d(player) > distance || player->GetQuestRewardStatus(40043) ||
+                (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 5;
+        }
+
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (introDone || !IsIntroTarget(player, 40.0f))
                 return;
-
-            if (me->GetExactDist2d(who) <= 40.0f)
-                if (!introDone)
+            introDone = true;
+            introPending = true;
+            uint32 generation = introGeneration;
+            ObjectGuid playerGuid = player->GetGUID();
+            player->CreateConversation(843);
+            if (Creature* helya = me->FindNearestCreature(99043, 100.0f, true))
+                helya->CastSpell(helya, 195062);
+            me->AddDelayedEvent(8000, [this, generation, playerGuid]() -> void
+            {
+                if (generation != introGeneration || !introPending)
+                    return;
+                introPending = false;
+                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                if (!IsIntroTarget(player, 100.0f))
                 {
-                    who->CreateConversation(843);
-                    introDone = true;
-                    if (Creature* targ = me->FindNearestCreature(99043, 100.0f, true))
-                        targ->CastSpell(targ, 195062);
-                    me->AddDelayedEvent(8000, [this]() -> void
-                    {
-                        me->RemoveAura(205424);
-                        if (Player* pl = me->FindNearestPlayer(100.0f, true))
-                            AttackStart(pl);
-                    });
+                    introDone = false;
+                    return;
+                }
+                me->RemoveAura(205424);
+                AttackStart(player);
+            });
+        }
+
+        void UpdateIntro(uint32 diff)
+        {
+            if (introDone)
+                return;
+            if (introRetryTimer > diff)
+            {
+                introRetryTimer -= diff;
+                return;
+            }
+            introRetryTimer = 1000;
+            if (!me->IsInWorld() || !me->IsAlive() || me->GetMapId() != 1511 || me->HasUnitState(UNIT_STATE_SIGHTLESS) ||
+                (!me->HasReactState(REACT_AGGRESSIVE) && !CanSeeEvenInPassiveMode()))
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() != 5)
+                return;
+            std::list<Player*> players;
+            me->GetPlayerListInGrid(players, 40.0f);
+            for (Player* player : players)
+                if (!player->isInFlight() && me->canSeeOrDetect(player, false, true) && IsIntroTarget(player, 40.0f))
+                {
+                    MoveInLineOfSight(player);
+                    break;
                 }
         }
 
@@ -393,6 +447,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            UpdateIntro(diff);
             if (!UpdateVictim())
                 return;
 
