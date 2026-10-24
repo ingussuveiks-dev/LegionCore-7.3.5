@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing production section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 [IO.File]::WriteAllText("$out/Protection.inc",(Section $source 'namespace TalonclawAmbush' 'struct npc_talonclaw_ambush_dakarr'))
-[IO.File]::WriteAllText("$out/Wrapper.inc",(Section $source 'struct npc_talonclaw_ambush_dakarr' 'namespace TitanstrikePrustaga'))
+[IO.File]::WriteAllText("$out/Wrapper.inc",(Section $source 'struct npc_talonclaw_ambush_dakarr' 'namespace TalonclawAmbushEvent'))
 foreach($needle in @('RegisterCreatureAI(npc_talonclaw_ambush_dakarr)','struct npc_talonclaw_ambush_dakarr :')){
  if(@(& rg -l -F $needle "$repo/src/server/scripts" -g '*.cpp').Count -ne 1){throw "Ambush definition/registration count: $needle"}
 }

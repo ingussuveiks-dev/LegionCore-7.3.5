@@ -9,6 +9,7 @@ DELETE FROM conditions; INSERT INTO conditions SELECT * FROM saved_conditions;
 UPDATE conditions SET SourceId=10 WHERE SourceTypeOrReferenceId=22 AND SourceEntry=108 AND SourceId=13 AND SourceGroup IN(1,3) AND ConditionTypeOrReference=44 AND ConditionValue1=973;
 DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart;
 DELETE FROM eventobject_template; INSERT INTO eventobject_template SELECT * FROM saved_actor;
+UPDATE eventobject_template SET ScriptName='SmartEventObject' WHERE entry=108 AND ScriptName='eventobject_talonclaw_ambush';
 DELETE FROM spell_scene; INSERT INTO spell_scene SELECT * FROM saved_scene;
 '@
 $sql=@"

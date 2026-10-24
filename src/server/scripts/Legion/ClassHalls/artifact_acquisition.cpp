@@ -18,6 +18,11 @@
 #include "ObjectAccessor.h"
 #include "ObjectMgr.h"
 #include "SmartAI.h"
+#include "EventObject.h"
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
+#include "ObjectVisitors.hpp"
 #include <cmath>
 #include <mutex>
 #include <unordered_map>
@@ -167,6 +172,181 @@ struct npc_talonclaw_ambush_dakarr : SmartAI
     {
         TalonclawAmbush::Protect(me, attacker, damage, encounterStep);
     }
+};
+
+namespace TalonclawAmbushEvent
+{
+struct State
+{
+    uint32 instance = 0;
+    uint32 wait = 0;
+    bool mist = false;
+    bool scene = false;
+};
+std::mutex stateLock;
+std::unordered_map<ObjectGuid, State> states;
+
+void Save(Player* player, State const& state)
+{
+    std::lock_guard<std::mutex> guard(stateLock);
+    states[player->GetGUID()] = state;
+}
+
+void Clear(Player* player)
+{
+    State state;
+    {
+        std::lock_guard<std::mutex> guard(stateLock);
+        auto found = states.find(player->GetGUID());
+        if (found == states.end())
+            return;
+        state = found->second;
+        states.erase(found);
+    }
+    if (state.mist)
+        player->RemoveAurasDueToSpell(198883, player->GetGUID());
+    if (state.scene)
+        player->RemoveAurasDueToSpell(197615, player->GetGUID());
+}
+
+State Load(Player* player)
+{
+    State state;
+    {
+        std::lock_guard<std::mutex> guard(stateLock);
+        auto found = states.find(player->GetGUID());
+        if (found != states.end())
+            state = found->second;
+    }
+    if (state.instance != player->GetInstanceId())
+    {
+        Clear(player);
+        state = State{};
+        state.instance = player->GetInstanceId();
+        Save(player, state);
+    }
+    return state;
+}
+
+Scenario* Current(Player* player)
+{
+    if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->GetMapId() != 1511 || player->getClass() != CLASS_HUNTER || player->GetQuestRewardStatus(40385) ||
+        (player->GetQuestStatus(40385) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40385) != QUEST_STATUS_COMPLETE))
+        return nullptr;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 973 && (scenario->GetCurrentStep() == 10 || scenario->GetCurrentStep() == 11) ? scenario : nullptr;
+}
+
+bool Scoped(EventObject* event)
+{
+    return event && event->GetEntry() == 108 && event->GetMapId() == 1511;
+}
+
+bool Eligible(Player* player, EventObject* event)
+{
+    Scenario* scenario = Current(player);
+    if (!scenario || !Scoped(event) || !event->eventTemplate || event->eventTemplate->radius != 24.0f ||
+        player->GetMap() != event->GetMap() || !player->InSamePhase(event) || !player->IsWithinDistInMap(event, event->eventTemplate->radius))
+        return false;
+    uint32 root = scenario->GetCurrentStep() == 10 ? 0 : 2;
+    if (sConditionMgr->GetConditionsForSmartEvent(108, root, SMART_SCRIPT_TYPE_EVENTOBJECT).empty() ||
+        !sConditionMgr->IsObjectMeetingSmartEventConditions(108, root, SMART_SCRIPT_TYPE_EVENTOBJECT, player, event))
+        return false;
+    State state = Load(player);
+    return root == 0 ? !player->HasAura(198883) : !state.scene && !player->HasAura(197615);
+}
+
+bool Dispatch(Player* player, EventObject* event, bool enter)
+{
+    if (!player || !player->IsAlive())
+        return false;
+    SmartScript script;
+    script.OnInitialize(event, nullptr);
+    script.ProcessEventsFor(enter ? SMART_EVENT_EVENTOBJECT_ONTRIGGER : SMART_EVENT_EVENTOBJECT_OFFTRIGGER, player, event->GetEntry());
+    return true;
+}
+
+bool Enter(Player* player, EventObject* event)
+{
+    if (!Eligible(player, event))
+        return false;
+    uint32 step = Current(player)->GetCurrentStep();
+    Dispatch(player, event, true);
+    State state = Load(player);
+    if (step == 10)
+        state.mist = player->HasAura(198883, player->GetGUID());
+    else
+    {
+        state.scene = player->HasAura(197615, player->GetGUID()) && player->HasSceneStatus(1145, SCENE_LAUNCH);
+        if (!state.scene && player->HasAura(197615, player->GetGUID()))
+        {
+            player->RemoveAurasDueToSpell(197615, player->GetGUID());
+            TC_LOG_ERROR("scripts", "Talonclaw: ambush scene aura applied without native scene launch for player %u", player->GetGUIDLow());
+        }
+    }
+    Save(player, state);
+    return step == 10 ? state.mist : state.scene;
+}
+
+void Update(Player* player, uint32 diff)
+{
+    Scenario* scenario = Current(player);
+    if (!scenario)
+    {
+        if (player)
+            Clear(player);
+        return;
+    }
+    State state = Load(player);
+    if (state.mist && scenario->GetCurrentStep() != 10)
+    {
+        player->RemoveAurasDueToSpell(198883, player->GetGUID());
+        state.mist = false;
+    }
+    if (state.wait > diff)
+    {
+        state.wait -= diff;
+        Save(player, state);
+        return;
+    }
+    state.wait = 500;
+    Save(player, state);
+    if ((scenario->GetCurrentStep() == 10 && player->HasAura(198883)) || (scenario->GetCurrentStep() == 11 && state.scene))
+        return;
+    auto rearm = [player](WorldObject* object)
+    {
+        if (object->GetTypeId() != TYPEID_EVENTOBJECT)
+            return;
+        EventObject* event = static_cast<EventObject*>(object);
+        if (Eligible(player, event))
+            event->affectedPlayers.erase(player->GetGUID());
+    };
+    Trinity::WorldObjectWorker<decltype(rearm)> worker(player, rearm, GRID_MAP_TYPE_MASK_EVENTOBJECT);
+    Trinity::VisitNearbyObject(player, 30.0f, worker);
+}
+}
+
+class eventobject_talonclaw_ambush : public EventObjectScript
+{
+public:
+    eventobject_talonclaw_ambush() : EventObjectScript("eventobject_talonclaw_ambush") { }
+    bool IsTriggerMeets(Player* player, EventObject* event) override
+    {
+        return !TalonclawAmbushEvent::Scoped(event) || TalonclawAmbushEvent::Eligible(player, event);
+    }
+    bool OnTrigger(Player* player, EventObject* event, bool enter) override
+    {
+        return !enter || !TalonclawAmbushEvent::Scoped(event) ? TalonclawAmbushEvent::Dispatch(player, event, enter) : TalonclawAmbushEvent::Enter(player, event);
+    }
+};
+
+class player_talonclaw_ambush_event : public PlayerScript
+{
+public:
+    player_talonclaw_ambush_event() : PlayerScript("player_talonclaw_ambush_event") { }
+    void OnUpdate(Player* player, uint32 diff) override { TalonclawAmbushEvent::Update(player, diff); }
+    void OnLogout(Player* player) override { TalonclawAmbushEvent::Clear(player); }
 };
 
 namespace TitanstrikePrustaga
@@ -1208,6 +1388,8 @@ void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
     RegisterCreatureAI(npc_talonclaw_ambush_dakarr);
+    new eventobject_talonclaw_ambush();
+    new player_talonclaw_ambush_event();
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);
