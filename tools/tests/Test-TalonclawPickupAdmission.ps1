@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast,[string]$XalatathRowsPath,[uint32]$XalatathLootId=247690)
+param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast,[string]$XalatathRowsPath,[uint32]$XalatathLootId=247690,[switch]$XalatathRoot,[switch]$XalatathGossip,[switch]$XalatathBaseline)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-pickup-admission"
@@ -59,6 +59,8 @@ $cases+=(Section $source '        case CONDITION_ALIVE:' '        case CONDITION
 [IO.File]::WriteAllText("$out/Conditions.inc",$cases)
 [IO.File]::WriteAllText("$out/ElseGroups.inc",(Section $source 'bool ConditionMgr::IsObjectMeetToConditionList(' 'bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object,'))
 [IO.File]::WriteAllText("$out/SmartEventConditions.inc",(Section $source 'bool ConditionMgr::IsObjectMeetingSmartEventConditions(' 'bool Condition::isLoaded() const'))
+$dispatch=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
+[IO.File]::WriteAllText("$out/RootDispatch.inc",(Section $dispatch 'void SmartScript::ProcessEventsFor(' 'void SmartScript::ProcessAction('))
 $source=Get-Content "$repo/src/server/game/Loot/LootMgr.cpp" -Raw
 [IO.File]::WriteAllText("$out/LootCondition.inc",(Section $source 'bool LootItem::AllowedForPlayer(Player const* player) const' 'void LootItem::AddAllowedLooter('))
 $recheck=Section $source '    if (item && !AllowedForPlayer(player,' 'uint32 Loot::GetMaxSlotInLootFor('
@@ -76,7 +78,9 @@ if($TitanstrikeRowsPath){$mode=if($TitanstrikeCast){'titanstrike-cast'}elseif($T
 $source=Get-Content "$repo/src/server/game/Entities/GameObject/GameObjectData.cpp" -Raw
 [IO.File]::WriteAllText("$out/GetLootId.inc",(Section $source 'uint32 GameObjectTemplate::GetLootId() const' 'uint32 GameObjectTemplate::GetGossipMenuId() const'))
 if($XalatathRowsPath){
- $fixture="`"$XalatathRowsPath`" xalatath-loot $XalatathLootId"
+ $mode=if($XalatathGossip){'xalatath-gossip'}elseif($XalatathRoot){'xalatath-root'}else{'xalatath-loot'}
+ if($XalatathBaseline){$mode+='-baseline'}
+ $fixture="`"$XalatathRowsPath`" $mode $XalatathLootId"
 }
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" $fixture`n")
 & "$out/run.cmd"

@@ -34,6 +34,7 @@ struct Unit {
     uint32 mapId = expectedMap, classMask = expectedClassMask;
     bool alive = true;
     bool IsAlive() const { return alive; }
+    bool IsQuestObjectExpired() const { return false; }
     virtual Player* ToPlayer() { return nullptr; }
     Unit* ToUnit() { return this; }
     bool IsCreature() const { return false; }
@@ -97,6 +98,24 @@ struct ConditionMgr {
 auto* sConditionMgr = &conditionManager;
 #include "ElseGroups.inc"
 #include "SmartEventConditions.inc"
+enum SMART_EVENT { SMART_EVENT_LINK = 61, SMART_EVENT_GOSSIP_HELLO = 64, SMART_EVENT_GO_STATE_CHANGED = 70 };
+struct SpellInfo {};
+struct GameObject {};
+struct SmartScriptHolder {
+    int64 entryOrGuid = 247690;
+    uint32 event_id = 0, source_type = 1;
+    SMART_EVENT eventType = SMART_EVENT_GO_STATE_CHANGED;
+    SMART_EVENT GetEventType() const { return eventType; }
+};
+struct SmartScript {
+    std::vector<SmartScriptHolder> mEvents;
+    WorldObject* base = nullptr;
+    uint32 actions = 0;
+    WorldObject* GetBaseObject() const { return base; }
+    void ProcessEvent(SmartScriptHolder&, Unit*, uint32, uint32, bool, SpellInfo const*, GameObject*) { ++actions; }
+    void ProcessEventsFor(SMART_EVENT, Unit*, uint32 = 0, uint32 = 0, bool = false, SpellInfo const* = nullptr, GameObject* = nullptr);
+};
+#include "RootDispatch.inc"
 struct LootItem {
     bool loot_restricted = false, needs_quest = false;
     std::set<uint32> allowedGUIDs;
@@ -119,7 +138,10 @@ int main(int argc, char** argv) {
     bool titanstrike = argc == 3 && std::string(argv[2]).find("titanstrike-") == 0;
     bool castAdmission = argc == 3 && std::string(argv[2]) == "titanstrike-cast";
     if (titanstrike) { expectedQuest = 42185; expectedMap = 1609; expectedScenario = 1099; firstStage = 4; lastStage = 5; expectedItem = 128861; eventEntry = 249812; scenarioManager = {}; }
-    bool xalatath = argc == 4 && std::string(argv[2]) == "xalatath-loot";
+    bool xalatath = argc == 4 && std::string(argv[2]).find("xalatath-") == 0;
+    bool xalatathRoot = xalatath && std::string(argv[2]) != "xalatath-loot";
+    bool xalatathGossip = xalatathRoot && std::string(argv[2]).find("xalatath-gossip") == 0;
+    bool xalatathBaseline = xalatathRoot && std::string(argv[2]).find("-baseline") != std::string::npos;
     if (xalatath) {
         expectedQuest = 40710; expectedMap = 1539; expectedScenario = 991; firstStage = 8; lastStage = 9;
         expectedItem = 128827; expectedClassMask = 16; scenarioManager = {};
@@ -127,10 +149,12 @@ int main(int argc, char** argv) {
         assert(chest.GetLootId() == 0);
         chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
         assert(chest.GetLootId() == 247690);
+        if (xalatathRoot) { castAdmission = true; eventEntry = 247690; }
     }
-    bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot";
+    bool ownedReplay = xalatathRoot || (argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot");
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
     if (titanstrike) eventId = 0;
+    if (xalatathRoot) eventId = xalatathGossip ? 2 : 0;
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
@@ -141,7 +165,23 @@ int main(int argc, char** argv) {
         assert(target == 0);
     }
     LootItem item; for (Condition& condition : rows) item.conditions.push_back(&condition);
-    if (ownedReplay) conditionManager.SmartEventConditionStore[{eventEntry, eventSource}][eventId + 1] = item.conditions;
+    if (ownedReplay && !xalatathBaseline) conditionManager.SmartEventConditionStore[{eventEntry, eventSource}][eventId + 1] = item.conditions;
+    if (xalatathBaseline && xalatathGossip) conditionManager.SmartEventConditionStore[{eventEntry, eventSource}][eventId + 1] = {&rows.front()};
+    if (xalatathBaseline) {
+        Player early; early.owned = xalatathGossip; scenarioManager.scenario.step = 7;
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &early, &early));
+    }
+    if (xalatathRoot) {
+        Player player;
+        SMART_EVENT eventType = xalatathGossip ? SMART_EVENT_GOSSIP_HELLO : SMART_EVENT_GO_STATE_CHANGED;
+        SmartScript script; script.base = &player; script.mEvents = {{247690, eventId, 1, eventType}};
+        scenarioManager.scenario.step = 7;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
+        scenarioManager.scenario.step = 8; player.owned = false;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 0);
+        player.owned = true;
+        script.ProcessEventsFor(eventType, &player, 3); assert(script.actions == 1);
+    }
     if (returnEvent) {
         Player owner; scenarioManager.scenario.step = 7;
         ConditionMgr original;
@@ -200,7 +240,7 @@ int main(int argc, char** argv) {
         player.rewarded = false; player.owned = false; player.bank = true; item.loot_restricted = false;
         Condition original; original.ConditionType = CONDITION_ITEM; original.ConditionValue1 = expectedItem; original.ConditionValue2 = 1;
         ConditionSourceInfo originalContext(&player); assert(!original.Meets(originalContext));
-        assert(item.AllowedForPlayer(&player));
+        assert(item.AllowedForPlayer(&player) == !xalatathRoot);
         player.bank = false; assert(!item.AllowedForPlayer(&player));
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &player, &player));
         Unit pet;

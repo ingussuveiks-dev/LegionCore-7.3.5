@@ -9,6 +9,9 @@ DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart;
 UPDATE smart_scripts SET event_type=70,event_param1=3 WHERE id=1;
 DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object;
 DELETE FROM conditions; INSERT INTO conditions SELECT * FROM saved_conditions;
+DELETE FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=247690 AND SourceId=1;
+INSERT INTO conditions(SourceTypeOrReferenceId,SourceGroup,SourceEntry,SourceId,ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition,ErrorTextId,ScriptName,Comment)
+VALUES(22,3,247690,1,0,2,0,128827,1,0,0,0,'','Smart Only If Player Has Artifact');
 '@
 $sql=@"
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;

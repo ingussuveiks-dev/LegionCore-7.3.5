@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "progression_admission_repair_audit": "docs/audits/xalatath-progression-admission-2026-10-24.json",
+      "progression_admission_review": "38 gates both state70/id0 and gossip64/id2 before LINK/scene/48493/extra-action on living active nonrewarded Priest40710/map1539/scenario991/exact8-9 and nonbank128827.56 native source22 rules preserve five actions and source4 loot. Old empty state and item-only early gossip baselines fail denial; native root dispatch/condition/ElseGroup fixture and14 custom variants pass, live hash/rows and deployed consumers checked. Physical early opening/despawn, delayed-cast failure/abandon races and retry/dedup remain separate; not full client verification.",
       "scene_equip_repair_audit": "docs/audits/xalatath-scene-equip-2026-10-24.json",
       "scene_equip_review": "37 restores scoped1187/package1553 real COMPLETE -> existing inventory201778 equip, checking Priest40710/map1539/scenario991/exact8-9 and actual parent/paired offhand result. No item/progression grant or global201778 restriction. Native scene/packet/force-equip regression, invalid/stale/forged/repeated/cancel/failed cast and child-error cases, live SQL binding and canonical PE/build/startup checked. Actual client equip/visuals and missing-callback/owned-gossip retry/early interaction controller remain pending; no timeout or full-route certification.",
       "real_loot_repair_audit": "docs/audits/xalatath-real-loot-2026-10-24.json",
