@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "pickup_link_repair_audit": "docs/audits/xalatath-pickup-link-2026-10-24.json",
+      "pickup_link_review": "35 corrects invalid shared id1 state70/state3 destination to LINK61/state0, preserving all scene201780, criterion48493, Dark Drain204919/conversation201917 requests and ownership condition. Old owned-gossip continuation fails native LINK baseline; fixed native resolver/state/repeat host,14 custom SQL variants, typed26972 payloads, canonical GO/LINK/criterion PE and own startup pass. Ordinary state3 previously dispatched id1 independently, so not every pickup transition was blocked. Sparse16:50/55,17:30/40 video frames show portrait ->purple weapon presentation ->loot/extra-action button, not full client/video verification. Data1 remains0 and real grant/equip, paired item, successful-scene dependency and whole route remain unresolved; trace package1553/actual admission next.",
       "item": 128827,
       "start": 40710,
       "status": "queued for executable lifecycle and visual review; client traversal pending",

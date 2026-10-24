@@ -1,6 +1,7 @@
 {
   "date": "2026-10-23",
   "status": "Fresh read-only MariaDB findings queued for executable scene/loot investigation; no SQL repair applied",
+  "followup_xalatath35": "docs/audits/xalatath-pickup-link-2026-10-24.json records the later actual two-field repair of247690's invalid id1 LINK destination and native regression. Historical inventory below predates35. Missing direct loot linkage, real equip and full Shadow route are deliberately not labelled fixed by this graph repair.",
   "followup": "The original query below is a pre-repair snapshot. Survival248834 is now repaired separately in talonclaw-acquisition-2026-10-23.json. A subsequent conditions query also found ownership guards on all nine id2 gossip rows: source22/group3/sourceId1/type2/item/quantity1. They cannot be called proven early progression for players without the artifact. The generic GossipHello dispatcher has no completed-loot gate, but the data-specific conditions must also be executed. Preserve these distinctions when investigating the remaining eight routes.",
   "reason": "The earlier36-route audit only flagged missing chest loot links when a direct SmartAI spell contained native equip249. Several other chests cast scene auras instead, so zero automated findings did not establish a working item-acquisition path.",
   "fresh_query": "Read actual runtime WorldDatabaseInfo privately. Selected gameobject_template entry/type/Data1/AIName/ScriptName, all source1 SmartAI actions and joined existing loot for the nine listed entries. No credentials or character data exported.",
