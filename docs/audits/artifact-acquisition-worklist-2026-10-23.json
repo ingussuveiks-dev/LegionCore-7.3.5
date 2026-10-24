@@ -59,6 +59,8 @@
       "opening_admission_audit": "docs/audits/stromkar-opening-admission-2026-10-24.json",
       "scaled_finale_audit": "docs/audits/stromkar-zakajz-scaled-finale-2026-10-24.json",
       "execute_target_audit": "docs/audits/stromkar-execute-target-2026-10-24.json",
+      "execute_landing_audit": "docs/audits/stromkar-execute-landing-2026-10-24.json",
+      "execute_landing_review": "50 adds16 native source17 rules to206456, rechecking current active living equipped Warrior41105/map1539/scenario1037/exact9/native206448 before unchanged arrival effects. Actual native arrival/cast/condition fixture,16 custom SQL variants, fresh reverse reference and canonical source17/triggered-arrival consumers checked. Rejected-context retry and duplicate sink are controlled, not actual scenario/effect dispatch. Interrupted movement/missing original actor, native credit exactly once and legacy departure/VFX remain unresolved; no new video/client verification.",
       "execute_target_review": "49 adds22 source13/effect0 rules to actual Execute206455: living defeated104276/1539/1037/exact9 candidate0 and active living equipped Warrior41105/native206448 caster1. Actual nearby selector baseline reproduces self fallback; target/caster matrix,9 custom SQL variants, native684/range40/reverse references, loader and canonical consumers checked. Sparse settled17:45/50 video frames reviewed, not full motion/audio. Native206456 landing revalidation and legacy201904/104307 departure/103151 missingLINK2 remain unresolved.",
       "scaled_finale_review": "48 preserves native Zakajz104276 HP transition after actual scaled lethal hits only at1539/1037/8-9;13 native Smart rows unchanged,12 custom binding variants and current/suspended native damage/PE/baseline checked. Fresh26972 Override684 selects Execute206455 ->206456/49109, not legacy Dark Drain201904; companion/departure link unresolved. Summoned247877 is deleted after loot, so gossip-only owned replay would be insufficient. No full finale/credit/replay/client certification.",
       "opening_admission_review": "47 guards physical normal/open-lock/report-use before loot/gossip with selected SmartAI delegate: active living Warrior41105/map1539/scenario1037/exact9 plus actual object/spatial state. Native baseline,26 invalid contexts, stage/status/ownership matrix,12 custom SQL variants, unchanged45/46 predicates and new canonical vtable/gate checked. No visibility change or invented owned replay; three-row graph has no64 replay, and scene/cast/full-bag/re-entry/ability/boss paths remain open.",
@@ -147,7 +149,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Audit actual206456 landing/context changes and legacy201904/104307 departure plus missing103151 LINK2; resolve summon-delete-safe presentation recovery, root/bar ordering/completed10, then credit/summon/earlier sequence/full relevant video. Keep client checks pending."
+      "next_action": "Continue206456 physical-arrival/original-actor/native-credit lifecycle beyond50's current player-context recheck, then legacy201904/104307 departure and103151 missingLINK2. Resolve summon-delete-safe presentation recovery, root/bar ordering/completed10, ability/summon/earlier sequence/full relevant video. Keep client checks pending."
     },
     {
       "class_id": 1,

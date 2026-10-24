@@ -115,6 +115,9 @@ int main(int argc, char** argv)
     for (auto effect : effects)
         if (effect->EffectTriggerSpell == 206455 || (effect->Effect == 6 && effect->EffectAura == 293 && effect->EffectMiscValue[0] == 684))
             std::cout << "EXECUTE_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\n';
+    for (auto effect : effects)
+        if (effect->EffectTriggerSpell == 206456)
+            std::cout << "ARRIVAL_REFERENCE\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->DifficultyID << '\n';
     DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellRangeEntry> ranges("SpellRange.db2", SpellRangeLoadInfo::Instance());
     if (!miscellaneous.Load(argv[1], 0) || !ranges.Load(argv[1], 0))
