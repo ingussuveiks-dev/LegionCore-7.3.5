@@ -49,7 +49,7 @@ int main(int argc,char** argv){
  DB2Storage<VisualName> names("SpellVisualEffectName.db2",&nameInfo.info);
  if(!spells.Load(argv[1],0)||!effects.Load(argv[1],0)||!misc.Load(argv[1],0)||!durations.Load(argv[1],0)||!visuals.Load(argv[1],0)||!displays.Load(argv[1],0)||!models.Load(argv[1],0)||!items.Load(argv[1],0))return 2;
  if(!kitEffects.Load(argv[1],0)||!attaches.Load(argv[1],0)||!names.Load(argv[1],0))return 7;
- std::set<uint32> ids={196978,210993,211046,211083,211034,211970,211967,211934,212010,212050,211008,211739,211740,211753,211848};
+ std::set<uint32> ids={196978,210993,211046,211083,211034,211970,211967,211934,212010,212011,212012,212050,211008,211739,211740,211753,211848};
  for(auto id:ids){auto s=spells.LookupEntry(id);if(!s)return 3;std::cout<<"SPELL\t"<<id<<'\t'<<s->Name->Str[0]<<'\n';}
  for(auto e:effects)if(ids.count(e->SpellID)&&!e->DifficultyID)std::cout<<"EFFECT\t"<<e->SpellID<<'\t'<<e->EffectIndex<<'\t'<<e->Effect<<'\t'<<e->EffectAura<<'\t'<<e->EffectMiscValue[0]<<'\t'<<e->EffectMiscValue[1]<<'\t'<<e->EffectTriggerSpell<<'\t'<<e->ImplicitTarget[0]<<'\t'<<e->ImplicitTarget[1]<<'\n';
  for(auto v:visuals)if(ids.count(v->SpellID))std::cout<<"VISUAL\t"<<v->SpellID<<'\t'<<v->SpellVisualID<<'\n';

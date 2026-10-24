@@ -10,6 +10,15 @@ using uint32 = uint32_t;
 using uint64 = uint64_t;
 using Seconds = uint32;
 using LootState = uint32;
+#ifdef TITANSTRIKE
+constexpr uint32 PickupEntry = 249812, PickupMap = 1609, PickupQuest = 42185, PickupItem = 128861;
+constexpr uint32 PickupActor = 106745, PickupSource = 103154, PickupScenario = 1099, PickupStep = 4;
+constexpr float PickupRadius = 6.0f;
+#else
+constexpr uint32 PickupEntry = 248834, PickupMap = 1511, PickupQuest = 40385, PickupItem = 128808;
+constexpr uint32 PickupActor = 100310, PickupSource = 99480, PickupScenario = 973, PickupStep = 12;
+constexpr float PickupRadius = 3.0f;
+#endif
 enum { CLASS_HUNTER = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, GO_JUST_DEACTIVATED = 3, GO_STATE_READY = 1, SMART_EVENT_GO_STATE_CHANGED = 70 };
 struct ObjectGuid {
     uint32 entry = 0, counter = 0, kind = 0;
@@ -51,9 +60,9 @@ struct Map {
     void AddToMap(GameObject*);
 };
 struct WorldObject {
-    ObjectGuid identity{99480, 10, 1};
+    ObjectGuid identity{PickupSource, 10, 1};
     Map* worldMap = nullptr;
-    uint32 mapId = 1511;
+    uint32 mapId = PickupMap;
     bool world = true, phase = true, scope = true, playerKind = false, creatureKind = true;
     ObjectGuid GetGUID() const { return identity; }
     bool IsInWorld() const { return world; }
@@ -83,13 +92,13 @@ struct Player : Unit {
     bool IsBeingTeleported() const { return teleporting; }
     uint32 getClass() const { return playerClass; }
     uint32 GetInstanceId() const { return instance; }
-    bool GetQuestRewardStatus(uint32 id) const { assert(id == 40385); return rewarded; }
-    uint32 GetQuestStatus(uint32 id) const { assert(id == 40385); return quest; }
-    bool HasItemCount(uint32 item, uint32 count, bool bank) const { assert(item == 128808 && count == 1 && bank); return owned; }
+    bool GetQuestRewardStatus(uint32 id) const { assert(id == PickupQuest); return rewarded; }
+    uint32 GetQuestStatus(uint32 id) const { assert(id == PickupQuest); return quest; }
+    bool HasItemCount(uint32 item, uint32 count, bool bank) const { assert(item == PickupItem && count == 1 && bank); return owned; }
 };
 struct Creature : Unit {
-    uint32 entry = 100310, removals = 0;
-    float distance = 0.12f;
+    uint32 entry = PickupActor, removals = 0;
+    float distance = PickupRadius - 0.1f;
     bool visible = true, m_despawn = false;
     virtual TempSummon* ToTempSummon() { return nullptr; }
     uint32 GetEntry() const { return entry; }
@@ -101,7 +110,7 @@ struct Creature : Unit {
     void ForcedDespawn(uint32, Seconds const&) { assert(false); }
 };
 struct TempSummon : Creature {
-    ObjectGuid summoner{99480, 10, 1};
+    ObjectGuid summoner{PickupSource, 10, 1};
     bool onUnload = false;
     EventProcessor m_Events;
     TempSummon* ToTempSummon() override { return this; }
@@ -112,21 +121,21 @@ struct TempSummon : Creature {
 #include "Despawn.inc"
 #include "UnSummonDelay.inc"
 #include "DelayExecute.inc"
-struct Scenario { uint32 id = 973, step = 12; uint32 GetScenarioId() const { return id; } uint32 GetCurrentStep() const { return step; } };
+struct Scenario { uint32 id = PickupScenario, step = PickupStep; uint32 GetScenarioId() const { return id; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario scenario; bool present = true; Scenario* GetScenario(uint32 instance) { return present && instance == 42 ? &scenario : nullptr; } } scenarioManager;
 auto* sScenarioMgr = &scenarioManager;
 struct NativeScript {
     uint32 calls = 0;
     void ProcessEventsFor(uint32 event, Unit*, uint32 state) {
         assert(event == 70); ++calls; order.push_back("smart");
-        if (state == GO_JUST_DEACTIVATED && scenarioManager.scenario.step == 12) scenarioManager.scenario.step = 13;
+        if (state == GO_JUST_DEACTIVATED && scenarioManager.scenario.step == PickupStep) scenarioManager.scenario.step = PickupStep + 1;
     }
 };
 struct SmartGameObjectAI { NativeScript script; NativeScript* GetScript() { return &script; } void OnStateChanged(uint32, Unit*); };
 #include "OnStateChanged.inc"
 struct GameObject : WorldObject {
     ObjectGuid owner;
-    uint32 entry = 248834, m_lootState = 0;
+    uint32 entry = PickupEntry, m_lootState = 0;
     bool spawnedByDefault = true;
     std::list<Creature*> candidates;
     std::vector<ObjectGuid> viewers;
@@ -147,7 +156,7 @@ struct GameObject : WorldObject {
     void SetSpawnedByDefault(bool value) { spawnedByDefault = value; }
     void AddPlayerInPersonnalVisibilityList(ObjectGuid viewer) { viewers.push_back(viewer); }
     void AddPlayersInPersonnalVisibilityList(GuidUnorderedSet const& list) { viewers.insert(viewers.end(), list.begin(), list.end()); }
-    void GetCreatureListWithEntryInGrid(std::list<Creature*>& output, uint32 id, float range) const { assert(id == 100310 && range == 3.0f); output = candidates; }
+    void GetCreatureListWithEntryInGrid(std::list<Creature*>& output, uint32 id, float range) const { assert(id == PickupActor && range == PickupRadius); output = candidates; }
 };
 struct StaticTransport : GameObject {};
 void Unit::AddGameObject(GameObject* object) { ++ownedObjects; object->owner = identity; object->spawnedByDefault = false; }
@@ -168,6 +177,7 @@ namespace ArtifactAcquisition {
 bool Use(Player*, GameObject*) { return false; }
 }
 #include "Retire.inc"
+#include "TitanstrikeRetire.inc"
 struct GameObjectScript {
     explicit GameObjectScript(char const*) {}
     virtual bool OnGossipHello(Player*, GameObject*) { return false; }
@@ -205,8 +215,8 @@ int main() {
         Map map; Unit source; source.worldMap = &map;
         for (bool player : {false, true}) for (uint32 duration : {0u, 3600u}) for (bool creator : {false, true}) {
             source.playerKind = player; source.creatureKind = !player; source.ownedObjects = 0;
-            source.identity = {player ? 0u : 99480u, 10, player ? 4u : 1u}; map.expected = source.identity;
-            auto object = source.SummonGameObject(248834, 0, 0, 0, 0, 0, 0, 0, 0, duration, {}, nullptr, creator);
+            source.identity = {player ? 0u : PickupSource, 10, player ? 4u : 1u}; map.expected = source.identity;
+            auto object = source.SummonGameObject(PickupEntry, 0, 0, 0, 0, 0, 0, 0, 0, duration, {}, nullptr, creator);
             assert(object && object->GetSummonerGUID() == source.identity && !object->spawnedByDefault);
             bool owned = creator && (player || !duration);
             assert(source.ownedObjects == uint32(owned) && (object->owner == source.identity) == owned);
@@ -228,7 +238,7 @@ int main() {
         loot.empty = true; assert(NativeCompletedLoot(&loot, &pickup.object));
         pickup.Finish(); assert(pickup.actor.IsDespawn() && pickup.actor.visible && pickup.actor.removals == 0);
         assert((order == std::vector<std::string>{"smart", "smart", "schedule"}));
-        assert(scenarioManager.scenario.step == 13);
+        assert(scenarioManager.scenario.step == PickupStep + 1);
         pickup.Finish(); assert(pickup.actor.m_Events.schedules == 1);
         pickup.actor.m_Events.Update(999); assert(pickup.actor.visible && pickup.actor.removals == 0);
         pickup.actor.m_Events.Update(1); assert(!pickup.actor.visible && pickup.actor.removals == 1);
@@ -237,7 +247,7 @@ int main() {
     for (uint32 failure = 0; failure < 17; ++failure) {
         Pickup pickup; Map other;
         switch (failure) {
-            case 0: pickup.object.entry = 249812; break;
+            case 0: pickup.object.entry = 248419; break;
             case 1: pickup.object.mapId = 1495; break;
             case 2: pickup.player.world = false; break;
             case 3: pickup.player.alive = false; break;
@@ -250,12 +260,12 @@ int main() {
             case 10: pickup.player.owned = false; break;
             case 11: scenarioManager.present = false; break;
             case 12: scenarioManager.scenario.id = 972; break;
-            case 13: scenarioManager.scenario.step = 11; break;
+            case 13: scenarioManager.scenario.step = PickupStep - 1; break;
             case 14: pickup.object.SetSummonerGUID({}); break;
             case 15: pickup.object.SetSummonerGUID({99999, 10, 1}); break;
-            case 16: pickup.object.SetSummonerGUID({99480, 10, 4}); break;
+            case 16: pickup.object.SetSummonerGUID({PickupSource, 10, 4}); break;
         }
-        pickup.Finish(); assert(pickup.actor.visible && !pickup.actor.removals);
+        pickup.Finish(); assert(pickup.actor.visible && !pickup.actor.removals && !pickup.actor.m_Events.schedules);
     }
     {
         Pickup pickup;
@@ -263,7 +273,7 @@ int main() {
         binding.OnLootStateChanged(&pickup.object, 3, &pickup.player);
         pickup.object.SetLootState(3, nullptr);
         Unit pet; pickup.object.SetLootState(3, &pet);
-        assert(pickup.actor.visible && !pickup.actor.removals);
+        assert(pickup.actor.visible && !pickup.actor.removals && !pickup.actor.m_Events.schedules);
     }
     {
         Pickup pickup; Map other;
@@ -274,28 +284,39 @@ int main() {
         actors[0].summoner.counter = 11;
         actors[1].phase = false;
         actors[2].worldMap = &other;
-        actors[3].distance = 4;
+        actors[3].distance = PickupRadius + 0.1f;
         actors[4].world = false;
         actors[5].m_despawn = true;
         actors[6].entry = 100005;
         pickup.Finish(); pickup.actor.m_Events.Update(1000); assert(pickup.actor.removals == 1);
-        for (auto const& actor : actors) assert(actor.removals == 0);
+        for (auto const& actor : actors) assert(actor.removals == 0 && actor.m_Events.schedules == 0);
         assert(staticActor.removals == 0);
     }
     {
         Pickup pickup;
-        pickup.object.SetSummonerGUID({99480, 11, 1});
-        pickup.Finish(); assert(pickup.actor.removals == 0);
+        pickup.object.SetSummonerGUID({PickupSource, 11, 1});
+        pickup.Finish(); assert(pickup.actor.removals == 0 && pickup.actor.m_Events.schedules == 0);
         pickup.actor.summoner.counter = 11;
         pickup.player.quest = QUEST_STATUS_COMPLETE;
         pickup.Finish(); pickup.actor.m_Events.Update(1000); assert(pickup.actor.removals == 1);
     }
     {
-        Pickup pickup; pickup.object.candidates.clear(); pickup.Finish(); assert(pickup.actor.removals == 0);
+        Pickup pickup; pickup.object.candidates.clear(); pickup.Finish(); assert(pickup.actor.removals == 0 && pickup.actor.m_Events.schedules == 0);
         pickup.object.candidates.push_back(&pickup.actor); pickup.player.quest = 0;
-        pickup.Finish(); assert(pickup.actor.removals == 0);
+        pickup.Finish(); assert(pickup.actor.removals == 0 && pickup.actor.m_Events.schedules == 0);
         pickup.player.quest = QUEST_STATUS_INCOMPLETE;
         pickup.Finish(); pickup.actor.m_Events.Update(1000); assert(pickup.actor.removals == 1);
     }
-    std::cout << "PASS: native summon provenance without ownership changes; completed-loot bridge preserves SmartAI and retires only the actual source's Talonclaw, with invalid/replay/abandon/re-entry/pet/null and shared-object isolation\n";
+#ifdef TITANSTRIKE
+    {
+        Pickup pickup;
+        scenarioManager.scenario.step = 6;
+        pickup.Finish(); assert(!pickup.actor.m_Events.schedules);
+        scenarioManager.scenario.step = 4;
+        pickup.actor.distance = 4.82f;
+        pickup.Finish(); assert(pickup.actor.m_Events.schedules == 1);
+    }
+#endif
+    std::cout << "PASS: native summon provenance and completed-loot dispatch preserve SmartAI; scoped prop " << PickupActor
+        << " retires once after1000ms, with invalid/replay/abandon/re-entry/pet/null and shared-object isolation\n";
 }

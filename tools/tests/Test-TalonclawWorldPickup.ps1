@@ -1,4 +1,4 @@
-param([switch]$Baseline,[switch]$BaselineSummoner,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$BaselineSummoner,[switch]$VerifyReleaseBinary,[switch]$Titanstrike,[switch]$BaselineTitanstrike)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-world-pickup"
@@ -11,6 +11,11 @@ function Section([string]$source,[string]$start,[string]$end){
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))
 [IO.File]::WriteAllText("$out/Retire.inc",(Section $source 'namespace TalonclawWorldPickup' 'class go_artifact_acquisition'))
+[IO.File]::WriteAllText("$out/TitanstrikeRetire.inc",(Section $source 'namespace TitanstrikeWorldPickup' 'namespace TalonclawWorldPickup'))
+if($BaselineTitanstrike){
+ $source=(& git -C $repo show 0b9857fb:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"
+ if($LASTEXITCODE){throw 'Cannot read pinned Titanstrike baseline'}
+}
 if($Baseline){$source=(& git -C $repo show ff3c129a:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp) -join "`n"}
 $end=if($source.Contains('class go_marksmanship_pickup')){'class go_marksmanship_pickup'}else{'namespace TalonclawPresentation'}
 [IO.File]::WriteAllText("$out/Binding.inc",(Section $source 'class go_artifact_acquisition' $end))
@@ -38,7 +43,8 @@ $predicate=[regex]::Match($source,'else if \((loot->isLooted\(\) \|\| go->GetGoT
 if(!$predicate.Success -or !$source.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Native real-loot completion admission changed'}
 [IO.File]::WriteAllText("$out/CompletedLootPredicate.inc",'return '+$predicate.Groups[1].Value+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawWorldPickupTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+$mode=if($Titanstrike){'/DTITANSTRIKE'}else{''}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TalonclawWorldPickupTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Native Talonclaw world-pickup regression failed'}
 if($VerifyReleaseBinary){
@@ -46,7 +52,8 @@ if($VerifyReleaseBinary){
  $previousPython=$env:PYTHONPATH
  try {
   $env:PYTHONPATH="$repo/.codex/pe-review-deps;$previousPython"
-  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_talonclaw_world_pickup_release.py" "$repo/build-extractors/bin/Release"
+  $verifier=if($Titanstrike){'verify_titanstrike_world_pickup_release.py'}else{'verify_talonclaw_world_pickup_release.py'}
+  & C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$verifier" "$repo/build-extractors/bin/Release"
   if($LASTEXITCODE){throw 'Deployed world-pickup verification failed'}
  }finally{$env:PYTHONPATH=$previousPython}
 }

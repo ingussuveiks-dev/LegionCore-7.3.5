@@ -161,7 +161,7 @@ int main(int argc, char** argv)
                 << objective->ObjectID << '\t' << objective->Amount << '\t' << unsigned(objective->Flags) << '\n';
     }
     std::cout << "QUEST_OBJECTIVE_RECORDS\t" << objectiveCount << '\n';
-    std::set<uint32> pendingPackages{1583, 1535}, seenPackages, pendingScripts, seenScripts;
+    std::set<uint32> pendingPackages{1583, 1535, 1622}, seenPackages, pendingScripts, seenScripts;
     while (!pendingPackages.empty())
     {
         uint32 package = *pendingPackages.begin();

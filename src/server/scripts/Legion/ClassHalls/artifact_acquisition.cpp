@@ -205,6 +205,34 @@ public:
     void OnLogin(Player* player) override { DarkRidersCompletion::Recover(player); }
     void OnUpdate(Player* player, uint32) override { DarkRidersCompletion::Recover(player); }
 };
+namespace TitanstrikeWorldPickup
+{
+void Retire(GameObject* object, uint32 state, Unit* unit)
+{
+    if (!object || object->GetEntry() != 249812 || object->GetMapId() != 1609 || state != GO_JUST_DEACTIVATED ||
+        object->getLootState() != GO_JUST_DEACTIVATED)
+        return;
+    Player* player = unit ? unit->ToPlayer() : nullptr;
+    if (!player || !player->IsInWorld() || !player->IsAlive() || player->IsBeingTeleported() || player->getClass() != CLASS_HUNTER ||
+        player->GetMap() != object->GetMap() || !player->InSamePhase(object) ||
+        !ArtifactAcquisition::Active(player, 42185) || !player->HasItemCount(128861, 1, true))
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    ObjectGuid source = object->GetSummonerGUID();
+    if (!scenario || scenario->GetScenarioId() != 1099 || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() > 5 ||
+        !source.IsCreatureOrVehicle() || source.GetEntry() != 103154)
+        return;
+
+    std::list<Creature*> actors;
+    object->GetCreatureListWithEntryInGrid(actors, 106745, 6.0f);
+    for (Creature* actor : actors)
+        if (actor && actor->GetEntry() == 106745 && actor->IsInWorld() && !actor->IsDespawn() &&
+            actor->GetMap() == object->GetMap() && actor->InSamePhase(object) && actor->GetExactDist(object) <= 6.0f)
+            if (TempSummon* summon = actor->ToTempSummon())
+                if (summon->GetSummonerGUID() == source)
+                    actor->DespawnOrUnsummon(1000);
+}
+}
 namespace TalonclawWorldPickup
 {
 void Retire(GameObject* object, uint32 state, Unit* unit)
@@ -240,7 +268,11 @@ class go_artifact_acquisition : public GameObjectScript
 public:
     go_artifact_acquisition():GameObjectScript("go_artifact_acquisition"){}
     bool OnGossipHello(Player* player,GameObject* go) override {return ArtifactAcquisition::Use(player,go);}
-    void OnLootStateChanged(GameObject* object, uint32 state, Unit* unit) override { TalonclawWorldPickup::Retire(object, state, unit); }
+    void OnLootStateChanged(GameObject* object, uint32 state, Unit* unit) override
+    {
+        TalonclawWorldPickup::Retire(object, state, unit);
+        TitanstrikeWorldPickup::Retire(object, state, unit);
+    }
 };
 class go_marksmanship_pickup : public GameObjectScript
 {
