@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 using uint32=uint32_t;using uint8=uint8_t;using int64=int64_t;
-enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_WAYPOINT_START=39};
+enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_WAYPOINT_START=39,SMART_EVENT_WAYPOINT_REACHED=40};
 enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,SMART_EVENT_TARGET_HEALTH_PCT=3,
     SMART_EVENT_MANA_PCT=4,SMART_EVENT_TARGET_MANA_PCT=5,SMART_EVENT_RANGE=9,SMART_EVENT_VICTIM_CASTING=13,SMART_EVENT_FRIENDLY_HEALTH=14,
     SMART_EVENT_FRIENDLY_IS_CC=15,SMART_EVENT_FRIENDLY_MISSING_BUFF=16,SMART_EVENT_HAS_AURA=23,SMART_EVENT_TARGET_BUFFED=24,
@@ -21,7 +21,12 @@ struct Unit;struct Creature;struct Player;struct GameObject;struct SpellInfo;str
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
 enum {SMART_ACTION_WP_START=53,SMART_ESCORT_TARGETS=0xFFFFFF,SMART_ESCORT_ESCORTING=1};
 enum ReactStates {REACT_PASSIVE=0};
-struct Position {};
+struct Position {
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+    float GetPositionX(){return 0;}float GetPositionY(){return 0;}float GetPositionZ(){return 0;}
+    void SimplePosXYRelocationByAngle(Position&,float,float){}
+#endif
+};
 struct WayPoint {uint32 id=1;float x=0,y=0,z=0;};
 struct MotionMaster {uint32 moves=0;void MovePoint(uint32 identity,float,float,float){assert(identity==1);++moves;}};
 #define CAST_AI(type, object) static_cast<type*>(object)
@@ -35,6 +40,11 @@ struct WorldObject {
     bool InInstance(){return instanced;}Map* GetMap(){return &worldMap;}bool IsQuestObjectExpired(){return expired;}
     bool HasQuestObjectScope(){return false;}bool CanTargetQuestObject(WorldObject*){return true;}
     Creature* FindNearestCreature(uint32,float,bool=true);bool IsWithinDistInMap(Creature*,float);float GetDistance(Creature*);
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+    uint32 summons=0;bool summonAvailable=true;
+    void GetPosition(float& positionX,float& positionY,float& positionZ,float& orientation){positionX=positionY=positionZ=orientation=0;}
+    GameObject* SummonGameObject(uint32,float,float,float,float,float,float,float,float,uint32);
+#endif
 };
 struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}Unit* ToUnit()override{return this;}virtual bool IsAlive(){return true;}};
 struct Player:Unit {Player* ToPlayer()override{return this;}};
@@ -53,6 +63,9 @@ struct Creature:Unit {
     uint32 identity=0,speeches=0,lastSpeech=99;float distance=1;bool alive=true,sameMap=true,samePhase=true,available=true,combat=false;
     SmartAI ai;Creature* ToCreature()override{return this;}SmartAI* AI(){return &ai;}
     bool IsAlive(){return alive;}uint32 GetEntry(){return identity;}bool isInCombat(){return combat;}bool HasUnitState(uint32){return false;}
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+    float GetObjectSize(){return 1;}void GetNearPoint2D(Position&,float,float){}Position GetFirstCollisionPosition(float,float){return {};}
+#endif
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
     MotionMaster motion;ReactStates reaction=REACT_PASSIVE;void SetReactState(ReactStates state){reaction=state;}
     Position GetPosition(){return {};}MotionMaster* GetMotionMaster(){return &motion;}
@@ -103,6 +116,7 @@ struct SmartScriptHolder {
         struct {uint32 min=0,max=0,repeatMin=0,repeatMax=0;}minMaxRepeat;
         struct {uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;}dataSet;
         struct {uint32 textGroupID=0,creatureEntry=0;}textOver;
+        struct {uint32 pointID=0,pathID=0;}waypoint;
     }event;
     struct {struct {uint32 field=0,data=0;}setData;struct {uint32 textGroupID=0,duration=0;}talk;struct {uint32 flags=0;}cast;
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
@@ -111,8 +125,15 @@ struct SmartScriptHolder {
 #ifdef MARKSMANSHIP_SEARCH_PATH_TEST
         struct {uint32 phase=0;}setEventPhase;
 #endif
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+        struct {uint32 entry=0,despawnTime=0;}summonGO;
+#endif
     }action;
-    struct {struct {uint32 entry=0,dist=0,dead=0;}closest;}target;
+    struct {struct {uint32 entry=0,dist=0,dead=0;}closest;
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+        float x=0,y=0,z=0,o=0;struct {float range=0,distance=0,angle=0;}randomPos;
+#endif
+    }target;
     uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetTargetType()const{return targetType;}uint32 GetScriptType()const{return source_type;}
 };
 using SmartAIEventList=std::vector<SmartScriptHolder>;using ObjectList=std::list<WorldObject*>;
@@ -127,6 +148,9 @@ struct SmartScript {
     bool IsInPhase(uint32){return false;}
 #endif
     bool IsCreature(WorldObject* object){return object&&object->ToCreature();}bool IsPlayer(WorldObject* object){return object&&object->ToPlayer();}bool IsGameObject(WorldObject*){return false;}
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+    bool IsUnit(WorldObject* object){return object&&object->ToUnit();}
+#endif
     ObjectList* GetWorldObjectsInDist(float){auto* result=new ObjectList;for(auto* actor:me->nearby)result->push_back(actor);return result;}
     ObjectList* GetTargets(SmartScriptHolder const& row,Unit*){auto* targets=new ObjectList;
         switch(row.GetTargetType()){
@@ -136,6 +160,9 @@ struct SmartScript {
 #undef l
 #undef e
             case 1:if(me)targets->push_back(me);break;
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+            case 8:break;
+#endif
             default:assert(false);
         }if(targets->empty()){delete targets;return nullptr;}return targets;
     }
@@ -153,6 +180,9 @@ struct SmartScript {
 #include "TimedUpdate.inc"
 #include "DataEvent.inc"
 #include "TextOver.inc"
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+#include "WaypointReached.inc"
+#endif
 #ifdef MARKSMANSHIP_SEARCH_PATH_TEST
             case SMART_EVENT_LINK:ProcessAction(nativeEvent,unit);break;
 #endif
@@ -169,6 +199,9 @@ struct SmartScript {
 #endif
 #ifdef MARKSMANSHIP_SEARCH_PATH_TEST
 #include "SetPhase.inc"
+#endif
+#ifdef MARKSMANSHIP_BOW_REVEAL_TEST
+#include "SummonGo.inc"
 #endif
             default:assert(false);
         }

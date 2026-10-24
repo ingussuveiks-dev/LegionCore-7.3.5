@@ -846,8 +846,9 @@
       "waypoint_failure_retry_repair_audit": "docs/audits/smart-waypoint-start-retry-2026-10-24.json",
       "post_inquisitor_retry_repair_audit": "docs/audits/marksmanship-post-inquisitor-retry-2026-10-24.json",
       "search_path_retry_repair_audit": "docs/audits/marksmanship-search-path-retry-2026-10-24.json",
+      "bow_reveal_repair_audit": "docs/audits/marksmanship-bow-reveal-2026-10-24.json",
       "start": 41540,
-      "status": "partial: prior pickup/equip/admission/return/claim/arrival/combat/discovery/caster repairs retained.50300ms farewell/50500ms phase-arm precede guarded48071/death/door. Herald requires972/4; Inquisitor approach972/5.1033/1556 retain41000/15000ms budgets. Native stage6 data10 retries the lost initial post-boss signal; TEXT_OVER16 now arms unused phase1 and new61 retries the original search path after combat/path refusal, without repeating Enough or waiting its7s speech. Parent/link/retry all require living actor972/6; native combat prohibition/route/credits/item flow retained. Shared phase predicate safely bounds reset/invalid indices. Native/Release/startup evidence and prior partial16:10..16:40 video samples are not continuous footage/client traversal. Discovery group7, exact visual/voice/per-point/reveal timing, cast/actor/reset/unload/re-entry/abandonment recovery, full video, objective storage and real client loot/equip remain pending",
+      "status": "partial: prior native pickup/equip/admission/return/claim/arrival/combat/discovery/caster/budget/waypoint/phase repairs retained in linked audits. New bow reveal moves original248419 summon to discovery speech19 at972/6, retaining original position/model/lifetime and later49/51 credits; pickup/report-use/loot remain blocked until7/8. New muted16:42..18:07 sparse video samples support visibility before Take, not full sequence or exact instants. Summon failure retry and final-stage text-expiry timing remain open. Group7, voice/rendering/per-point timing, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
       "quests": [
         {
           "id": 41540,

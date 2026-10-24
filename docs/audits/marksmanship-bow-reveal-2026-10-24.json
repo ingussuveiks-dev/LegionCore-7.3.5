@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "Thas'dorah248419 visibility at discovery, separated from permission to loot. This is a small timing repair, not a completed Hunter chain or client certification.",
+  "finding": {
+    "before": "There is no static248419 spawn. Vereesa100397 waypoint14/path10039704 starts speech19 (There! her bow!) without creating the bow. Its only summon is LINK50 after speech20/21, when speech22 begins and49 advances Where Is She. Thus discovery refers to an object that does not yet exist, not simply an absent glow on an existing object.",
+    "repair": "Guarded migration12 reroutes only three links:45 now links50,50 terminates,49 links51. The original summon occurs with discovery speech19, at its original62.6788/1215.55/-38.6585/0.705752 position,3600-second lifetime,9806 display and1.5 scale. Original49/47846 progression and51/102131 credit remain together at their existing later dialogue. No item grant, early criterion or duplicate later bow is added.",
+    "admission": "New source22 groups46/51 require alive base actor972/6 for discovery and linked summon. Original waypoint/path match and NOT_REPEATABLE parent45 remain. Existing ScriptMgr use and native SmartGameObjectAI report-use admission still reject stage6; source4 loot and source22 pickup/presentation/owned-replay gates retain exact stage7/8, Hunter, active40419 and actual ownership checks. A visible name/model is not permission to loot. Native state/loot then scene1169 then existing-item equip200262 are not replaced.",
+    "preservation": "Actual-schema temporary double-application fixture compares every original SmartAI field except the three intended link values, all existing scoped conditions and complete gameobject template. Rejects custom actor/AI, object binding/model/loot/flags, summon position/lifetime, dialogue/duration/path/waypoint/link/phase/repeat, downstream credits, Take timer and alternate summon link. Existing condition groups are never overwritten."
+  },
+  "sources": {
+    "local_first": "Read actual MariaDB100397 rows44..55,248419 template/no static spawn/loot128826, source22 pickup gates and production waypoint/TALK/LINK/SUMMON_GO, WorldObject::SummonGameObject, ArtifactAcquisition::Use and scoped report-use wrapper. gameobject_template_addon is absent in this schema; the attempted read failed rather than supplying evidence. Typed native MarksmanshipBowModelCatalog resolves display9806 -> FileDataID353152/ObjectEffectPackage0, and1691 -> ordinary OPEN(type2/index5/skill0/action0). Actual hotfix tables contain zero overrides for9806/1691. No visual-ID substitution based on a spell name.",
+    "trinity": "Targeted git grep248419 in scripts/SQL at local exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c returned no acquisition implementation. Current checkout4ad7c7ba is modern and not imported. This is bounded search, not exhaustive historical absence.",
+    "github": "Inherited legion-artifact-donor-review-2026-10-23.json. New targeted web search for248419/100397/Thas'dorah script produced no usable donor. No external code or modern schema imported.",
+    "video": {
+      "url": "https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "channel": "ZaFrostPet",
+      "title": "Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "review": "New rendered paused samples16:42,16:47,16:52,16:57,17:02,17:07,17:12,17:17,17:22,17:27,17:32,17:37,17:42,17:47,17:52,17:57,18:02,18:07.16:52 shows discovery speech and bow name tooltip while still Where Is She;17:12/17:17 show the bow over the green altar before the later Take speech/final stage.17:47 shows final-stage overlay,17:52 extracting,18:02 fade and18:07 the player with the bow and Vereesa's later speech. Some adjacent captures retain prior rendered frames during seek settling; those do not establish exact transition instants.",
+      "limits": "Muted5-second paused sampling, not continuous footage or full19:04 review. Initial ads excluded. Exact recording build and audio playback unknown. Establishes relative visibility before permission, not earliest spawn time, exact spell IDs, every attachment/glow or frame-accurate timing. No claim that all36 quests were compared."
+    }
+  },
+  "referenced_file_ids": [353152],
+  "verification": {
+    "native": "Test-MarksmanshipBowReveal.ps1 compiles production waypoint event gate, condition source/ElseGroups/alive/scenario logic, repeat guard, TALK, FindLinkedEvent/LINK and full SUMMON_GO action. Controlled map/summon host checks position/lifetime and counts, not real creation or rendering. Reproduces missing discovery bow in the prior graph; fixed graph reveals once with speech19 at stage6 without progression. Wrong point/path, all non6 stages, dead/missing actor, absent/wrong scenario, noninstance and expired scope cannot consume discovery. Repeated valid reach deduplicates. Failed native summon remains unrecovered and explicitly tested as an open case.",
+    "regressions": "Test-MarksmanshipBowReveal.ps1 -VerifyReleaseBinary passes before and after native updater deployment, including inherited search/postboss/Inquisitor/Herald native tests and current canonical phase/waypoint/report-use/pickup/presentation checks. Test-MarksmanshipPickupAdmission.ps1 -VerifyReleaseBinary passes its real source4/source22 condition bodies, ownership replay, native OPEN lock, failed bags/item handling and stage6 rejection fixtures. Test-ArtifactForceEquip.ps1 passes actual effect249 handler coverage for55 native records. These hosts and PE checks are not live loot/equip tests.",
+    "assets": "Test-CascVisualFiles.ps1 read all3508 bytes of local26972 FileDataID353152 successfully; all32 client CASC index hashes unchanged. No media/client data committed. This verifies file availability, not embedded particle/attachment fidelity or rendered appearance.",
+    "deployment": {
+      "migration": "2026_10_24_12_marksmanship_bow_reveal.sql",
+      "sha1": "DB4374DFC1680DFB4E876ABD44AB4E5687910877",
+      "readback": "Native updater records exact SHA1 RELEASED. Live45 ->50 ->0 and49 ->51 retain original events/actions/positions/timers; four alive/972/6 base-actor gates read back in groups46/51. Scoped pre-update actor/gate backups remain private. No character data or item grants.",
+      "runtime": "Canonical build-extractors/bin/Release; no production C++ changed, so no new server build required. Actual final link command still names original scripts/Release/scripts.lib and game/Release/game.lib, INCREMENTAL:NO and canonical OUT. game.lib04:05:03/scripts.lib03:34:36 precede worldserver04:05:10 local2026-10-24; inspected deployed guard implementations via inherited PE checks rather than startup/hash alone.",
+      "worldserver_sha256": "F303F74175F2557EF14878ECBE3A7EF80C7EB42420F195A451A6BB91A6642203",
+      "bnetserver_sha256": "2BB32A7021E3B822832953351AF3BAD21F6583719E3186A0775D61B17C96191D",
+      "startup": "Task-owned hidden worldserver35868 reached World initialized, gracefully exited0, appended0 DBErrors bytes; protected configuration/certificates unchanged. No user/unknown process stopped; no task server remains. Startup does not execute the quest/waypoint or prove rendering."
+    }
+  },
+  "remaining": [
+    "SummonGameObject failure still consumes original waypoint45 after TALK; moving the summon does not add a retry. Native controlled failure proves the remaining limitation. Do not call this whole reveal lifecycle complete until recovery is addressed.",
+    "Observed final-stage overlay follows the Take speech in these samples; existing49 is linked at speech22 start rather than text expiry. This repair preserves that pre-existing progression timing; exact cue timing and a guarded retry-safe adjustment remain separate work.",
+    "Need actual client discovery model/green altar/glows/attachment/sound, early clicks and extraction/real loot/scene/equip/full bags/save/return. Asset existence and compiled admission do not certify rendered visuals or inventory swaps.",
+    "No new group/faction/pet/guardian progression rule. Native later49/51 and existing owner/pet/guardian credit bridges are unchanged; current reveal signal is a waypoint event with null invoker, not a kill. Shared Priest map and unrelated actors are untouched. Actual grouped/all faction traversal remains untested.",
+    "Abandonment/re-entry/reload and route interruption can still lose nonpersisted actor state; no character data was changed or repaired. Prior missing discovery speech group7, objective StorageIndex4 alias and remaining route findings remain open in preceding audits."
+  ],
+  "next": "Repair retained summon failure without repeating discovery speech or granting items, then verify native final-stage cue timing against the entire relevant sequence."
+}
