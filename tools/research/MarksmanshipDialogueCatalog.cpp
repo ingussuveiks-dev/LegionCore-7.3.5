@@ -33,9 +33,11 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
+    DB2Storage<SpellXSpellVisualEntry> visuals("SpellXSpellVisual.db2", SpellXSpellVisualLoadInfo::Instance());
     if (!texts.Load(argv[1], 0) || !kits.Load(argv[1], 0) || !sounds.Load(argv[1], 0) ||
         !lines.Load(argv[1], 0) || !displays.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
-        !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
+        !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !spells.Load(argv[1], 0) || !visuals.Load(argv[1], 0))
         return 2;
     for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u, 103558u, 103652u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
@@ -44,6 +46,24 @@ int main(int argc, char** argv)
     effects.LoadFromDB();
     misc.LoadFromDB();
     castTimes.LoadFromDB();
+    spells.LoadFromDB();
+    visuals.LoadFromDB();
+    for (uint32 identity : {206638u, 46957u})
+    {
+        auto spell = spells.LookupEntry(identity);
+        if (!spell)
+            return 17;
+        std::cout << "INTERROGATION_SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
+    }
+    for (auto effect : effects)
+        if (effect->SpellID == 206638 || effect->SpellID == 46957)
+            std::cout << "INTERROGATION_EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                << effect->Effect << '\t' << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t'
+                << effect->EffectTriggerSpell << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+    for (auto visual : visuals)
+        if (visual->SpellID == 206638 || visual->SpellID == 46957)
+            std::cout << "INTERROGATION_VISUAL\t" << visual->SpellID << '\t' << visual->SpellVisualID << '\t'
+                << uint32(visual->DifficultyID) << '\n';
     uint32 storyCasts = 0;
     for (auto entry : misc)
         if (entry->SpellID == 200832 && !entry->DifficultyID)
@@ -80,9 +100,9 @@ int main(int argc, char** argv)
         return 3;
     std::cout << "CONVERSATION_LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t'
         << line->SpellVisualKitID << '\t' << line->AnimKitID << '\t' << line->AdditionalDuration << '\n';
-    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281,103558,103652};
+    std::set<uint32> broadcastIds{103289,103242,103441,106998,107282,103501,107281,103558,103652,103671,106844,107106,135514};
     for (uint32 identity : {2737u, 2464u, 3421u, 3183u, 2632u, 2633u, 3364u,
-                            2625u, 2630u, 2658u, 2659u, 3427u, 2631u})
+                            2625u, 2630u, 2658u, 2659u, 3427u, 2631u, 2539u, 2541u, 2543u, 3422u})
     {
         auto combatLine = lines.LookupEntry(identity);
         if (!combatLine)

@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 using uint32=uint32_t;using uint8=uint8_t;using int64=int64_t;
-enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52};
+enum SMART_EVENT {SMART_EVENT_UPDATE=60,SMART_EVENT_LINK=61,SMART_EVENT_DATA_SET=38,SMART_EVENT_TEXT_OVER=52,SMART_EVENT_WAYPOINT_START=39};
 enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,SMART_EVENT_TARGET_HEALTH_PCT=3,
     SMART_EVENT_MANA_PCT=4,SMART_EVENT_TARGET_MANA_PCT=5,SMART_EVENT_RANGE=9,SMART_EVENT_VICTIM_CASTING=13,SMART_EVENT_FRIENDLY_HEALTH=14,
     SMART_EVENT_FRIENDLY_IS_CC=15,SMART_EVENT_FRIENDLY_MISSING_BUFF=16,SMART_EVENT_HAS_AURA=23,SMART_EVENT_TARGET_BUFFED=24,
@@ -18,6 +18,14 @@ enum {SMART_EVENT_UPDATE_IC=0,SMART_EVENT_UPDATE_OOC=1,SMART_EVENT_HEALTH_PCT=2,
 #define TC_LOG_DEBUG(...) ((void)0)
 #define TC_LOG_ERROR(...) assert(false)
 struct Unit;struct Creature;struct Player;struct GameObject;struct SpellInfo;struct SmartScript;
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+enum {SMART_ACTION_WP_START=53,SMART_ESCORT_TARGETS=0xFFFFFF,SMART_ESCORT_ESCORTING=1};
+enum ReactStates {REACT_PASSIVE=0};
+struct Position {};
+struct WayPoint {uint32 id=1;float x=0,y=0,z=0;};
+struct MotionMaster {uint32 moves=0;void MovePoint(uint32 identity,float,float,float){assert(identity==1);++moves;}};
+#define CAST_AI(type, object) static_cast<type*>(object)
+#endif
 struct ObjectGuid {Unit* unit=nullptr;static ObjectGuid Empty;};ObjectGuid ObjectGuid::Empty;
 struct InstanceMap {uint32 GetInstanceId(){return 42;}} instanceMap;
 struct Map {InstanceMap* ToInstanceMap(){return &instanceMap;}} worldMap;
@@ -30,12 +38,25 @@ struct WorldObject {
 };
 struct Unit:WorldObject {ObjectGuid GetGUID(){return {this};}};
 struct Player:Unit {Player* ToPlayer()override{return this;}};
-struct SmartAI {SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);};
+struct SmartAI {
+    SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+    Creature* me=nullptr;uint32 mEscortQuestID=0,despawnTime=0,escort=0,loadAttempts=0;bool mCanRepeatPath=false,running=false,pathAvailable=true;
+    std::vector<WayPoint> points{{1,179.385f,1310.59f,-58.9791f}};std::vector<WayPoint>* mWayPoints=nullptr;Position mLastOOCPos;
+    bool HasEscortState(uint32 state){return (escort&state)!=0;}void AddEscortState(uint32 state){escort|=state;}void StopPath(){escort=0;}
+    bool LoadPath(uint32 identity);void SetRun(bool run){running=run;}WayPoint* GetNextWayPoint(){return &points[0];}
+    void SetDespawnTime(uint32 value){despawnTime=value;}void StartPath(bool,uint32,bool,Unit*);
+#endif
+};
 struct GameObject:WorldObject {SmartAI ai;SmartAI* AI(){return &ai;}};
 struct Creature:Unit {
     uint32 identity=0,speeches=0,lastSpeech=99;float distance=1;bool alive=true,sameMap=true,samePhase=true,available=true,combat=false;
     SmartAI ai;Creature* ToCreature()override{return this;}SmartAI* AI(){return &ai;}
     bool IsAlive(){return alive;}uint32 GetEntry(){return identity;}bool isInCombat(){return combat;}bool HasUnitState(uint32){return false;}
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+    MotionMaster motion;ReactStates reaction=REACT_PASSIVE;void SetReactState(ReactStates state){reaction=state;}
+    Position GetPosition(){return {};}MotionMaster* GetMotionMaster(){return &motion;}
+#endif
 };
 bool WorldObject::IsWithinDistInMap(Creature* actor,float range){return actor&&actor->available&&actor->sameMap&&actor->samePhase&&actor->distance<=range;}
 float WorldObject::GetDistance(Creature* actor){return actor->distance;}
@@ -80,7 +101,11 @@ struct SmartScriptHolder {
         struct {uint32 id=0,value=0,cooldownMin=0,cooldownMax=0;}dataSet;
         struct {uint32 textGroupID=0,creatureEntry=0;}textOver;
     }event;
-    struct {struct {uint32 field=0,data=0;}setData;struct {uint32 textGroupID=0,duration=0;}talk;struct {uint32 flags=0;}cast;}action;
+    struct {struct {uint32 field=0,data=0;}setData;struct {uint32 textGroupID=0,duration=0;}talk;struct {uint32 flags=0;}cast;
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+        struct {uint32 run=0,pathID=0,repeat=0,quest=0,despawnTime=0,reactState=0;}wpStart;
+#endif
+    }action;
     struct {struct {uint32 entry=0,dist=0,dead=0;}closest;}target;
     uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetTargetType()const{return targetType;}uint32 GetScriptType()const{return source_type;}
 };
@@ -104,6 +129,10 @@ struct SmartScript {
         }if(targets->empty()){delete targets;return nullptr;}return targets;
     }
     void RecalcTimer(SmartScriptHolder&,uint32,uint32);void UpdateTimer(SmartScriptHolder&,uint32);
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+    uint32 pathId=0;uint32 GetPathId(){return pathId;}void SetPathId(uint32 identity){pathId=identity;}
+    bool IsSmart(){return me!=nullptr;}void StoreTargetList(ObjectList* targets,uint32 identity){assert(identity==SMART_ESCORT_TARGETS);delete targets;}
+#endif
     void ProcessEventsFor(SMART_EVENT,Unit* =nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr);
 #define e nativeEvent
     void ProcessEvent(SmartScriptHolder& nativeEvent,Unit* unit=nullptr,uint32 var0=0,uint32 var1=0,bool bvar=false,SpellInfo const* spell=nullptr,GameObject* gob=nullptr){
@@ -121,6 +150,9 @@ struct SmartScript {
         switch(nativeEvent.GetActionType()){
 #include "SetData.inc"
 #include "Talk.inc"
+#ifdef MARKSMANSHIP_INQUISITOR_TEST
+#include "WaypointAction.inc"
+#endif
             default:assert(false);
         }
     }
@@ -134,6 +166,7 @@ struct SmartScript {
 #include "UpdateTimer.inc"
 #include "AiSetData.inc"
 SmartAIEventList definitions;
+#ifndef MARKSMANSHIP_INQUISITOR_TEST
 struct Fixture {
     Creature vereesa,herald;SmartScript sender,receiver;
     Fixture(){scenarioManager={};vereesa.identity=100397;herald.identity=100836;vereesa.nearby={&herald};herald.nearby={&vereesa};
@@ -179,3 +212,4 @@ int main(int argc,char** argv){
     {Fixture timing;timing.Tick();timing.receiver.TextTick(8000);assert(timing.receiver.mUseTextTimer&&!timing.receiver.mTextTimer&&!timing.vereesa.speeches);timing.receiver.TextTick(1);assert(!timing.receiver.mUseTextTimer&&timing.vereesa.speeches==1&&timing.vereesa.lastSpeech==10);timing.receiver.TextTick(1000);assert(timing.vereesa.speeches==1);}
     std::cout<<"PASS: native timer/repeat/conditions/nearest/SET_DATA/SmartAI/TALK reproduce lost and premature Herald challenge; native972 stage4 and living50yd actor preserve loaded retry and exactly-once speech/8000ms text timer. World/grid/scenario/text hosts are not client traversal or audio verification.\n";
 }
+#endif
