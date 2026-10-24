@@ -57,7 +57,7 @@ enum class HighGuid { GameObject };
 struct Map {
     std::vector<GameObject*> objects;
     ObjectGuid expected;
-    void AddToMap(GameObject*);
+    bool AddToMap(GameObject*);
 };
 struct WorldObject {
     ObjectGuid identity{PickupSource, 10, 1};
@@ -142,6 +142,7 @@ struct GameObject : WorldObject {
     SmartGameObjectAI ai;
     GameObject() { creatureKind = false; }
     virtual ~GameObject() = default;
+    void CleanupsBeforeDelete() { assert(false); }
 #include "Summoner.inc"
     uint32 GetEntry() const { return entry; }
     uint32 GetGoType() const { return 3; }
@@ -160,7 +161,7 @@ struct GameObject : WorldObject {
 };
 struct StaticTransport : GameObject {};
 void Unit::AddGameObject(GameObject* object) { ++ownedObjects; object->owner = identity; object->spawnedByDefault = false; }
-void Map::AddToMap(GameObject* object) { assert(object->GetSummonerGUID() == expected); objects.push_back(object); }
+bool Map::AddToMap(GameObject* object) { assert(object->GetSummonerGUID() == expected); objects.push_back(object); return true; }
 struct Generator { uint32 Generate() const { return 1; } } generator;
 struct ObjectManager {
     bool present = true, transport = false;

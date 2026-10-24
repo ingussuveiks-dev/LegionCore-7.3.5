@@ -4423,7 +4423,13 @@ GameObject* Map::SummonGameObject(uint32 entry, float x, float y, float z, float
     if (viewersList)
         go->AddPlayersInPersonnalVisibilityList(*viewersList);
 
-    map->AddToMap(go);
+    if (!map->AddToMap(go))
+    {
+        TC_LOG_ERROR("maps", "Map::SummonGameObject: failed to add gameobject %u to map %u at %f %f %f; creation canceled", entry, map->GetId(), x, y, z);
+        go->CleanupsBeforeDelete();
+        delete go;
+        return nullptr;
+    }
 
     return go;
 }

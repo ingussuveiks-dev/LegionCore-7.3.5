@@ -12,6 +12,14 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Entities/Object/Object.cpp",
+      "related_path": "src/server/game/Maps/Map.cpp",
+      "handler": "SummonGameObject",
+      "problem": "Both APIs ignored AddToMap(false) and returned an uninserted allocation; naive deletion would leave pre-insertion owner/passenger references.",
+      "repair_audit": "docs/audits/gameobject-summon-insertion-2026-10-24.json",
+      "limit": "Native controlled false-result baseline/cleanup matrix and canonical return/vtable branches checked. No real grid rejection or client artifact disappearance reproduced; invalid-cell ASSERT remains unchanged."
+    },
+    {
       "path": "src/server/game/AI/SmartScripts/SmartScript.cpp",
       "handler": "IsInPhase",
       "problem": "Reset/invalid event phases reached an undefined signed shift; native MSVC/x64 baseline aliases phase33 to phase1.",
@@ -1433,6 +1441,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "map_insertion_repair_audit": "docs/audits/gameobject-summon-insertion-2026-10-24.json",
+      "map_insertion_review": "Shared WorldObject/Map summon APIs now clean rejected allocations through native owner/transport-aware virtual cleanup and return null on AddToMap(false), allowing42's existing retry to retain Farthing. Controlled native baseline/matrix, actual StaticTransport cleanup vtable and canonical return branches checked; no live grid failure injected or client visibility/loot certified. Native map ASSERT remains intact; full chain remains unfinished.",
       "weapon_summon_retry_repair_audit": "docs/audits/xalatath-weapon-summon-retry-2026-10-24.json",
       "weapon_summon_retry_review": "42 retains native20s credit then phase1-arms original247690 creation as scoped1539/991/8/living UPDATE500ms/once/retry2; original DIE moves to success-only LINK31, old timed-list death removed. Native old timed-list null creation ->death baseline, fixed timer/conditions/pointer/LINK/DIE host,13 custom TEMP variants, live hash/graph and canonical consumer/startup checked. Fresh muted Bue10:05/20/25/30/40 frame samples are partial only. Core SummonGameObject ignores AddToMap return, so nonnull insertion/visibility is NOT certified; failed actors/casts/nearest-player credit/re-entry and client visuals/full chain remain pending.",
       "farthing_finale_repair_audit": "docs/audits/xalatath-farthing-finale-2026-10-24.json",
