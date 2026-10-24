@@ -8,6 +8,7 @@ struct FinalBoss : CreatureAI
     explicit FinalBoss(Creature* actor) : me(actor) { introDone = false; }
 #include "Fields.inc"
     void Talk(uint32 identity) { texts.push_back(identity); if (onTalk) onTalk(identity); }
+    void RemoveIntroConversation() { }
 #include "Reset.inc"
 #include "EncounterReady.inc"
 #include "DamageTaken.inc"

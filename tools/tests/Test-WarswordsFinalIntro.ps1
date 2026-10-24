@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$ConversationBaseline,[switch]$TimingBaseline,[switch]$CleanupBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline -or $ConversationBaseline -or $TimingBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
+if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline,$ConversationBaseline,$TimingBaseline,$CleanupBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline -or $ConversationBaseline -or $TimingBaseline -or $CleanupBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-intro"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -14,12 +14,14 @@ if($BubbleBaseline){$source=(& git -C $repo show "05cd027c:$path") -join "`n";if
 if($CommunionBaseline){$source=(& git -C $repo show "a617a973:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned communion baseline'}}
 if($ConversationBaseline){$source=(& git -C $repo show "638dfa31:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned conversation baseline'}}
 if($TimingBaseline){$source=(& git -C $repo show "46ae22fd:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned dialogue timing baseline'}}
+if($CleanupBaseline){$source=(& git -C $repo show "2d87fcfb:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned dialogue cleanup baseline'}}
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 if($first -lt 0 -or $last -le $first){throw 'Final intro member fields missing'}
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 foreach($name in @('Reset','MoveInLineOfSight')){[IO.File]::WriteAllText("$out/$name.inc",(Block $source "void $name("))}
 [IO.File]::WriteAllText("$out/StartConversation.inc",$(if($source.Contains('bool StartIntroConversation(')){Block $source 'bool StartIntroConversation('}else{''}))
+[IO.File]::WriteAllText("$out/RemoveConversation.inc",$(if($source.Contains('void RemoveIntroConversation(')){Block $source 'void RemoveIntroConversation('}else{''}))
 $helper=if($Baseline){''}else{Block $source 'bool IsIntroTarget('}
 [IO.File]::WriteAllText("$out/IsIntroTarget.inc",$helper)
 $retry=if($Baseline){''}else{Block $source 'void UpdateIntro('}
@@ -36,10 +38,11 @@ $combat=if($last -gt $first){$update.Substring($first,$last-$first)}else{''}
 [IO.File]::WriteAllText("$out/CombatTick.inc",$combat)
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/GetPlayer.inc",(Block $source 'Player* ObjectAccessor::GetPlayer('))
+[IO.File]::WriteAllText("$out/GetConversation.inc",(Block $source 'Conversation* ObjectAccessor::GetConversation('))
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/ObjectInMap.inc",(Block $source 'template<class T> static T* GetObjectInMap('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}elseif($CommunionBaseline){'/DCOMMUNION_BASELINE'}elseif($ConversationBaseline){'/DCONVERSATION_BASELINE'}elseif($TimingBaseline){'/DTIMING_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}elseif($CommunionBaseline){'/DCOMMUNION_BASELINE'}elseif($ConversationBaseline){'/DCONVERSATION_BASELINE'}elseif($TimingBaseline){'/DTIMING_BASELINE'}elseif($CleanupBaseline){'/DCLEANUP_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsFinalIntroTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final intro native regression failed'}
 if($VerifyReleaseBinary){

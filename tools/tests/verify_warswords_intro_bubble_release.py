@@ -51,7 +51,7 @@ assert any(entry.mnemonic == 'mov' and entry.op_str == 'rcx, qword ptr [rbx + 0x
 lifecycle = '?UpdateLifecycle@npc_vigfus_bladewind_lastAI@npc_vigfus_bladewind_last@@'
 body = instructions(lifecycle)
 remove = next(index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?RemoveAura@Unit@@QEAAXIVObjectGuid@@'))
-for condition, jump in (('eax, 0x1812a', 'jne'), ('dword ptr [rcx + 0xe0], 0x5e7', 'jne'), ('dword ptr [rcx + 0xa18], 0', 'je')):
+for condition, jump in (('eax, 0x1812a', 'jne'), ('dword ptr [rax + 0xe0], 0x5e7', 'jne'), ('dword ptr [rax + 0xa18], 0', 'je')):
     position = next(index for index, entry in enumerate(body[:remove]) if entry.mnemonic == 'cmp' and entry.op_str == condition)
     assert body[position + 1].mnemonic == jump and body[position + 1].operands[0].imm > body[remove].address, 'Corpse lifecycle can remove an alive or unrelated actor bubble'
 assert body[remove - 2].op_str == 'edx, 0x32270' and native['symbol']('?HasAura@Unit@@') in native['calls'](lifecycle), 'Corpse lifecycle does not conditionally remove actual205424'

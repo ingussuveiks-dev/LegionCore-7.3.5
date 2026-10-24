@@ -43,6 +43,13 @@ int main(int argc, char** argv)
             Require(!create(9000843, &caster), "Missing conversation data was admitted");
             auto conversation = create(843, &caster);
             Require(conversation && conversation->IsInWorld() && conversation->GetCasterGUID() == caster.GetGUID(), "Actual843 creation was not acknowledged");
+            auto guid = conversation->GetGUID();
+            Require(ObjectAccessor::GetConversation(caster, guid) == conversation, "Native map-local conversation lookup failed");
+            {
+                Map otherMap(1511, 300, 9999994, DIFFICULTY_N_SCENARIO);
+                Actor observer(&otherMap, 98602, 10002, {3515.15f, 1800.61f, 0.630465f, 0.0f});
+                Require(!ObjectAccessor::GetConversation(observer, guid), "Native conversation lookup crossed maps");
+            }
             Require(conversation->GetDuration() == 43200 && conversation->GetLines().size() == 2 && conversation->GetActors().size() == 2, "Native843 payload/lifetime changed");
             Require(conversation->GetLine(0)->id == 2066 && conversation->GetLine(1)->id == 2067, "Native843 line order changed");
             Require(conversation->GetLine(0)->textId == 0 && conversation->GetLine(1)->textId == 12150, "Native843 absolute line start times changed");
@@ -50,12 +57,13 @@ int main(int argc, char** argv)
                 conversation->GetLine(0)->unk2 == 0 && conversation->GetLine(1)->unk2 == 1, "Native843 camera/actor payload changed");
             conversation->Remove();
             Require(!conversation->IsInWorld(), "Canceled conversation remained in world");
+            Require(!ObjectAccessor::GetConversation(caster, guid), "Removed conversation remained accessible");
             map.RemoveAllObjectsInRemoveList();
             conversation = create(843, &caster);
             Require(conversation && conversation->IsInWorld(), "Native843 retry failed");
             conversation->Remove();
             map.RemoveAllObjectsInRemoveList();
-            std::cout << "PASS: actual native843 creation returns false for null caster/missing data and true only after native generation/map insertion; two lines2066/2067 at absolute0/12150ms with native cameras135/620 and actors0/1, two actors,43200 lifetime, canceled removal and recreation work. Real Creature caster/no Players or character saves; not player/group visibility, audio playback or client traversal.\n";
+            std::cout << "PASS: actual native843 creation returns false for null caster/missing data and true only after native generation/map insertion; map-local GUID lookup finds it, rejects another map, and returns null after native removal; recreation works. Two lines2066/2067 at0/12150ms, cameras135/620, actors0/1 and43200 lifetime retained. Real Creature caster/no Players or character saves; not player/group visibility, audio playback or client traversal.\n";
         }
         WorldDatabase.Close(); HotfixDatabase.Close(); MySQL::Library_End();
     }

@@ -31,7 +31,7 @@ for index in auras:
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r9d, r9d' for entry in body[casts[0] - 8:casts[0]]), 'Original normal rather than triggered cast lost'
 assert any(entry.mnemonic == 'lea' and entry.op_str == 'r13, [rdi + 0x20]' for entry in body[:casts[0]]), 'Actual final actor pointer lost'
 assert body[casts[0] - 2].op_str == 'rdx, qword ptr [r13]' and body[casts[0] - 1].op_str == 'rcx, r14', 'Native channel is not selected Helya to actual Vigfus'
-assert any(entry.mnemonic == 'test' and entry.op_str == 'edx, edx' and body[index + 1].mnemonic == 'jne' for index, entry in enumerate(body[casts[0] + 1:auras[1]], start=casts[0] + 1)), 'Failed casts no longer reject the intro'
+assert any(entry.mnemonic == 'test' and entry.op_str == 'eax, eax' and body[index + 1].mnemonic == 'jne' for index, entry in enumerate(body[casts[0] + 1:auras[1]], start=casts[0] + 1)), 'Failed casts no longer reject the intro'
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rdi + 0xc6], 0' for entry in body[auras[1]:dialogue[0]]), 'Failed visual permanently consumes introDone'
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [r12], 0' for entry in body[auras[1]:dialogue[0]]), 'Failed visual leaves delayed intro pending'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rcx + 0x100], 0' and body[index + 1].mnemonic == 'jne' for index, entry in enumerate(body[:-1])), 'LOS ignores visual retry throttle'
@@ -40,7 +40,7 @@ created = body[dialogue[0] + 2]
 assert created.mnemonic == 'jne', 'Native conversation result is not a success branch'
 success = next(index for index, entry in enumerate(body) if entry.address == created.operands[0].imm)
 after_dialogue = body[success:success + 11]
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'eax, dword ptr [rcx]' for entry in after_dialogue) and any(entry.mnemonic == 'je' for entry in after_dialogue), 'Conversation reset can arm an obsolete transition'
+assert any(entry.mnemonic == 'cmp' and entry.op_str == 'ebx, dword ptr [rax]' for entry in after_dialogue) and any(entry.mnemonic == 'je' for entry in after_dialogue), 'Conversation reset can arm an obsolete transition'
 update = instructions('?UpdateAI@' + actor)
 tick = next(index for index, entry in enumerate(update) if entry.mnemonic == 'mov' and entry.op_str == 'dword ptr [rcx + 0x100], eax')
 assert any(entry.mnemonic == 'cmovbe' for entry in update[:tick]), 'Visual countdown can underflow'

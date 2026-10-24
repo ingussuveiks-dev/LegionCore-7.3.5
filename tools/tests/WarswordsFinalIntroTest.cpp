@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <list>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 using uint32 = uint32_t;
@@ -66,20 +67,28 @@ struct ObjectManager
 auto* sObjectMgr = &objectManager;
 struct Conversation
 {
-    static inline uint32 deleted = 0, removed = 0;
+    static inline uint32 deleted = 0, removed = 0, nextGuid = 1000;
     static inline std::vector<Conversation*> objects;
     bool world = false;
+    bool predelete = false;
+    Map* map = &instanceMap;
+    ObjectGuid guid = ++nextGuid;
+    std::function<void()> onRemove;
+    Map* GetMap() const { return map; }
+    bool IsPreDelete() const { return predelete; }
+    ObjectGuid GetGUID() const { return guid; }
     Conversation() { objects.push_back(this); }
     ~Conversation() { ++deleted; objects.erase(std::find(objects.begin(), objects.end(), this)); }
     bool CreateConversation(uint32, uint32 identity, Player* player, void*, Player& pose)
     {
         assert(identity == 843 && player == &pose);
         bool result = player->conversationWorks;
+        map = player->GetMap();
         player->CreateConversation(identity);
         world = result;
         return result;
     }
-    void Remove() { assert(world); world = false; ++removed; }
+    void Remove() { assert(world); world = false; ++removed; if (onRemove) onRemove(); }
 };
 struct Creature : Unit
 {
@@ -145,12 +154,27 @@ auto* sScenarioMgr = &scenarioManager;
 struct ObjectAccessor
 {
     static std::unordered_map<ObjectGuid, Player*> players;
-    template<class Target> static Target* GetObjectInWorld(ObjectGuid guid, Target*) { auto found = players.find(guid); return found == players.end() ? nullptr : found->second; }
+    template<class Target> static Target* GetObjectInWorld(ObjectGuid guid, Target*)
+    {
+        if constexpr (std::is_same_v<Target, Conversation>)
+        {
+            for (auto conversation : Conversation::objects)
+                if (conversation->guid == guid && conversation->world) return conversation;
+            return nullptr;
+        }
+        else
+        {
+            auto found = players.find(guid);
+            return found == players.end() ? nullptr : found->second;
+        }
+    }
 #include "ObjectInMap.inc"
     static Player* GetPlayer(WorldObject const&, ObjectGuid);
+    static Conversation* GetConversation(WorldObject const&, ObjectGuid);
 };
 std::unordered_map<ObjectGuid, Player*> ObjectAccessor::players;
 #include "GetPlayer.inc"
+#include "GetConversation.inc"
 struct EventMap { void Reset() { } };
 struct SummonList { explicit SummonList(Creature*) { } void DespawnAll() { } };
 struct ScriptedAI
@@ -174,6 +198,7 @@ struct IntroAI : ScriptedAI
 #include "Reset.inc"
 #include "IsIntroTarget.inc"
 #include "StartConversation.inc"
+#include "RemoveConversation.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
 #include "UpdateLifecycle.inc"
@@ -226,7 +251,14 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
 }
 int main()
 {
-#ifdef TIMING_BASELINE
+#ifdef CLEANUP_BASELINE
+    Fixture fixture; fixture.Start();
+    auto original = Conversation::objects.back();
+    fixture.actor.Advance(1000); fixture.ai.Reset(); fixture.Start();
+    assert(original->world && Conversation::objects.back()->world && Conversation::objects.size() == 2 && !Conversation::removed);
+    std::cout << "BASELINE: pinned2d87fcfb Reset/retry leaves the first843 alive while starting a second; no tracked conversation identity or native cancellation. Controlled world/conversation services, not client overlap capture.\n";
+    return 0;
+#elif defined(TIMING_BASELINE)
     Fixture fixture; fixture.Start();
     fixture.actor.Advance(7999); assert(!fixture.ai.attacks && fixture.actor.bubble && fixture.ai.introPending);
     fixture.actor.Advance(1); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble && !fixture.ai.introPending);
@@ -285,6 +317,36 @@ int main()
 #else
     {
         Fixture fixture; fixture.Start();
+        auto original = Conversation::objects.back();
+        assert(fixture.ai.introConversation == original->GetGUID());
+        auto foreign = new Conversation; foreign->world = true;
+        fixture.actor.Advance(1000); fixture.ai.Reset();
+        assert(!original->world && foreign->world && !fixture.ai.introConversation && Conversation::removed == 1);
+        fixture.ai.Reset(); assert(Conversation::removed == 1);
+        fixture.Start(); auto replacement = Conversation::objects.back();
+        assert(replacement != original && replacement->world && fixture.ai.introConversation == replacement->GetGUID());
+        fixture.actor.Flush(); assert(replacement->world && fixture.ai.attacks == 1);
+        fixture.ai.Reset(); assert(!replacement->world && foreign->world && Conversation::removed == 2 && fixture.ai.introDone);
+    }
+    for (uint32 missing = 0; missing < 4; ++missing)
+    {
+        Fixture fixture; fixture.Start(); auto conversation = Conversation::objects.back();
+        if (missing == 0) conversation->world = false;
+        if (missing == 1) conversation->predelete = true;
+        if (missing == 2) conversation->map = &otherMap;
+        if (missing == 3) fixture.actor.map = nullptr;
+        fixture.ai.Reset();
+        assert(!fixture.ai.introConversation && !Conversation::removed);
+    }
+    {
+        Fixture fixture; fixture.Start(); auto original = Conversation::objects.back();
+        original->onRemove = [&]() { assert(!fixture.ai.introConversation); fixture.Start(); };
+        fixture.ai.Reset(); auto replacement = Conversation::objects.back();
+        assert(!original->world && replacement != original && replacement->world && fixture.ai.introConversation == replacement->GetGUID() && fixture.ai.introPending);
+        fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && replacement->world);
+    }
+    {
+        Fixture fixture; fixture.Start();
         constexpr uint32 voiceEnd = 12150 + 17824;
         constexpr uint32 paddedEnd = voiceEnd + 1000;
         static_assert(paddedEnd == 30974 && IntroDelay >= paddedEnd && IntroDelay - paddedEnd < 1000);
@@ -304,8 +366,10 @@ int main()
     for (uint32 invalid = 0; invalid < 21; ++invalid)
     {
         Fixture fixture; fixture.Start(); fixture.actor.Advance(12150);
+        auto conversation = Conversation::objects.back();
         Invalidate(fixture, invalid, true); fixture.actor.Advance(18850);
         assert(!fixture.ai.attacks && fixture.actor.bubble && !fixture.ai.introDone && !fixture.ai.introPending);
+        assert(!conversation->world && !fixture.ai.introConversation && Conversation::removed == 1);
     }
     for (uint32 deadline : {8000u, 12150u, 30999u})
     {
@@ -545,7 +609,9 @@ int main()
         assert(fixture.actor.bubble && fixture.ai.introPending);
         fixture.actor.alive = false;
         fixture.ai.UpdateLifecycle(1);
-        assert(!fixture.actor.bubble);
+        assert(!fixture.actor.bubble && !fixture.ai.introConversation && Conversation::removed == 1);
+        fixture.actor.Flush();
+        assert(!fixture.ai.attacks && !fixture.ai.introPending && !fixture.ai.introDone && Conversation::removed == 1);
         fixture.actor.bubble = true;
         fixture.ai.UpdateLifecycle(1);
         assert(!fixture.actor.bubble);
@@ -562,6 +628,6 @@ int main()
         fixture.ai.UpdateLifecycle(1);
         assert(fixture.actor.bubble);
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5, acknowledged Helya195062 and843; timed callbacks keep sphere/combat closed through8000/12150/30974/30999ms and open once at31000ms. Mid-dialogue21 invalid contexts cancel; Reset at8000/12150/30999 rejects old callbacks and restarts the full budget.56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry retained. Completed Reset/late addon/corpse cleanup remain scoped. Timers/casts/world controlled; measured English voice budget is not all-locales, channel/rise/pose, audio playback or client traversal proof.\n";
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5, acknowledged Helya195062 and843; timed callbacks keep sphere/combat closed through8000/12150/30974/30999ms and open once at31000ms. Tracked843 GUID clears before native removal; Reset/retry,21 terminal-invalid contexts and dead lifecycle remove only that object, skip missing/predelete/other-map/null-map and preserve reentrant replacements/unrelated conversations.56 stage/status,19 initial/21 delayed invalid contexts, failed construction/cast, old-epoch callbacks and1s retry retained. World/timer services controlled; not native client playback or channel/rise/pose certification.\n";
 #endif
 }

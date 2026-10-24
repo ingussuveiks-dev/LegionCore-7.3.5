@@ -98,6 +98,7 @@ struct FinalBoss : ScriptedAI
 {
     struct SummonCleanup { void DespawnAll() { } } summons;
     void CancelSpectreRush() { }
+    void RemoveIntroConversation() { }
 #include "JustDied.inc"
 };
 

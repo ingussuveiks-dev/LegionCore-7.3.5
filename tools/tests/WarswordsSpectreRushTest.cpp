@@ -137,6 +137,7 @@ struct FinalBoss : ScriptedAI
 #endif
     }
     void UpdateIntro(uint32) { }
+    void RemoveIntroConversation() { }
 #include "Fields.inc"
 #include "EncounterReady.inc"
 #include "Reset.inc"

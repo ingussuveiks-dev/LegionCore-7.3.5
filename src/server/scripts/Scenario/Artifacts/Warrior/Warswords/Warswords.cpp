@@ -400,6 +400,7 @@ public:
         uint32 spectreGeneration = 0;
         uint32 introVisualRetryTimer = 0;
         bool introVisualWarned = false;
+        ObjectGuid introConversation = {};
 
         void CancelSpectreRush()
         {
@@ -435,6 +436,16 @@ public:
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_AGGRESSIVE);
             count_adds = 0;
+            RemoveIntroConversation();
+        }
+
+        void RemoveIntroConversation()
+        {
+            ObjectGuid guid = introConversation;
+            introConversation = {};
+            if (guid)
+                if (Conversation* conversation = ObjectAccessor::GetConversation(*me, guid))
+                    conversation->Remove();
         }
 
         bool IsEncounterReady() const
@@ -449,8 +460,12 @@ public:
 
         void UpdateLifecycle(uint32) override
         {
-            if (me->GetEntry() == 98602 && me->GetMapId() == 1511 && !me->IsAlive() && me->HasAura(205424))
-                me->RemoveAura(205424);
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511 && !me->IsAlive())
+            {
+                RemoveIntroConversation();
+                if (me->HasAura(205424))
+                    me->RemoveAura(205424);
+            }
         }
 
         bool CanAIAttack(Unit const*) const override
@@ -591,6 +606,7 @@ public:
                 conversation->Remove();
                 return false;
             }
+            introConversation = conversation->GetGUID();
             return true;
         }
 
@@ -661,6 +677,7 @@ public:
                 if (!IsIntroTarget(player, 100.0f))
                 {
                     introDone = false;
+                    RemoveIntroConversation();
                     return;
                 }
                 me->RemoveAura(205424);
@@ -702,6 +719,7 @@ public:
         {
             CancelSpectreRush();
             summons.DespawnAll();
+            RemoveIntroConversation();
             if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
                 me->RemoveAura(205424);
             Talk(2);
