@@ -151,32 +151,37 @@ void SmartAI::SetAutoAttack(bool on)
     mCanAutoAttack = on;
 }
 
-void SmartAI::StartPath(bool run, uint32 path, bool repeat, Unit* /*invoker*/)
+bool SmartAI::StartPath(bool run, uint32 path, bool repeat, Unit* /*invoker*/)
 {
     if (me->isInCombat())// no wp movement in combat
     {
         TC_LOG_DEBUG("misc", "SmartAI::StartPath: Creature entry %u wanted to start waypoint movement while in combat, ignoring.", me->GetEntry());
-        return;
+        return false;
     }
     if (HasEscortState(SMART_ESCORT_ESCORTING))
         StopPath();
     if (path)
         if (!LoadPath(path))
-            return;
+            return false;
     if (!mWayPoints || mWayPoints->empty())
-        return;
+        return false;
+
+    WayPoint* wp = GetNextWayPoint();
+    if (!wp)
+    {
+        mCurrentWPID = 0;
+        return false;
+    }
 
     AddEscortState(SMART_ESCORT_ESCORTING);
     mCanRepeatPath = repeat;
 
     SetRun(run);
 
-    if (WayPoint* wp = GetNextWayPoint())
-    {
-        mLastOOCPos = me->GetPosition();
-        me->GetMotionMaster()->MovePoint(wp->id, wp->x, wp->y, wp->z);
-        GetScript()->ProcessEventsFor(SMART_EVENT_WAYPOINT_START, nullptr, wp->id, GetScript()->GetPathId());
-    }
+    mLastOOCPos = me->GetPosition();
+    me->GetMotionMaster()->MovePoint(wp->id, wp->x, wp->y, wp->z);
+    GetScript()->ProcessEventsFor(SMART_EVENT_WAYPOINT_START, nullptr, wp->id, GetScript()->GetPathId());
+    return true;
 }
 
 bool SmartAI::LoadPath(uint32 entry)

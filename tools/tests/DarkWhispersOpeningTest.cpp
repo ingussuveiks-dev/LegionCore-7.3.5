@@ -19,7 +19,7 @@ struct Creature;struct Player;
 struct Unit{virtual ~Unit()=default;virtual Creature* ToCreature(){return nullptr;}virtual Player* ToPlayer(){return nullptr;}ObjectGuid GetGUID(){return 1;}};
 struct Player:Unit{Player* ToPlayer()override{return this;}};
 struct AI{bool running=false;uint32 mEscortQuestID=0;
- void StartPath(bool run,uint32 id,bool repeat,Unit*){assert(run&&id==106692&&!repeat);running=true;}
+ bool StartPath(bool run,uint32 id,bool repeat,Unit*){assert(run&&id==106692&&!repeat);running=true;return true;}
  void SetDespawnTime(uint32){}
 };
 struct Creature:Unit{AI ai;AI* AI(){return &ai;}Creature* ToCreature()override{return this;}uint32 GetEntry(){return 106692;}void SetReactState(ReactStates){} };
@@ -32,7 +32,7 @@ auto sCreatureTextMgr=&textMgr;
 #include "ChatRange.inc"
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder{
- uint32 event_id=0,link=0,type=0,event=SMART_EVENT_LINK,entryOrGuid=106692;
+ uint32 event_id=0,link=0,type=0,event=SMART_EVENT_LINK,entryOrGuid=106692;bool runOnce=false;
  struct {struct{uint32 textGroupID=0,duration=16500;}talk;
  struct{uint32 run=1,pathID=106692,repeat=0,quest=0,despawnTime=0,reactState=0;}wpStart;}action;
  uint32 GetActionType(){return type;}uint32 GetEventType(){return event;}uint32 GetScriptType(){return 0;}

@@ -35,7 +35,7 @@ struct Unit:WorldObject {
 struct Player:Unit {uint32 faction=0;Player* ToPlayer()override{return this;}};
 struct SmartAI {
     uint32 paths=0,path=0,mEscortQuestID=0;
-    void StartPath(bool run,uint32 entry,bool repeat,Unit*){assert(run&&!repeat);++paths;path=entry;}
+    bool StartPath(bool run,uint32 entry,bool repeat,Unit*){assert(run&&!repeat);++paths;path=entry;return true;}
     void SetDespawnTime(uint32 value){assert(value==0);}
 };
 struct Creature:Unit {

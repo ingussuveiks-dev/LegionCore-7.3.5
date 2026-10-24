@@ -24,7 +24,7 @@ struct Unit {
 };
 using ObjectList=std::list<Unit*>;
 struct SmartScriptHolder {
- uint32 event_id=0,link=0,eventType=0,actionType=0,targetType=1,entryOrGuid=100812;
+ uint32 event_id=0,link=0,eventType=0,actionType=0,targetType=1,entryOrGuid=100812;bool runOnce=false;
  struct{struct{uint32 creature=100812,type=8,duration=0,attackInvoker=0,phaseByTarget=0;}summonCreature;
  struct{uint32 run=1,pathID=100812,repeat=0,reactState=0,quest=0,despawnTime=0;}wpStart;
  struct{uint32 flag=0;}unitFlag;}action;
@@ -46,9 +46,9 @@ struct Creature:Unit {
 struct GameObject:Unit{uint32 uses=0;GameObject* ToGameObject()override{return this;}void SetLootState(uint32){}void UseDoorOrButton(uint32,bool,Unit*){++uses;}}gate;
 struct SmartAI {
  Creature* me;SmartScript* script;std::vector<WayPoint>* mWayPoints=nullptr;WayPoint* mLastWP=nullptr;Position mLastOOCPos;
- uint32 mEscortQuestID=0,despawnTime=0,path=0;bool escort=false,mCanRepeatPath=false;
+ uint32 mEscortQuestID=0,despawnTime=0,path=0,mCurrentWPID=0;bool escort=false,mCanRepeatPath=false;
  SmartScript* GetScript(){return script;}void IsSummonedBy(Unit*);void JustSummoned(Creature*){}
- void AttackStart(Unit*){}void StartPath(bool,uint32,bool,Unit*);bool HasEscortState(uint32){return escort;}void AddEscortState(uint32){escort=true;}void StopPath(){escort=false;}
+ void AttackStart(Unit*){}bool StartPath(bool,uint32,bool,Unit*);bool HasEscortState(uint32){return escort;}void AddEscortState(uint32){escort=true;}void StopPath(){escort=false;}
  bool LoadPath(uint32 id){path=id;mWayPoints=&points;return id==100812&&!points.empty();}void SetRun(bool){}WayPoint* GetNextWayPoint(){return mWayPoints&&!mWayPoints->empty()?&mWayPoints->front():nullptr;}
  void SetDespawnTime(uint32 n){despawnTime=n;}
 };

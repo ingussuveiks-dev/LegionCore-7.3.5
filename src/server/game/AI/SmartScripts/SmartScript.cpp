@@ -1703,7 +1703,11 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             ObjectList* targets = GetTargets(e, unit);
             StoreTargetList(targets, SMART_ESCORT_TARGETS);
             me->SetReactState(static_cast<ReactStates>(e.action.wpStart.reactState));
-            CAST_AI(SmartAI, me->AI())->StartPath(run, entry, repeat, unit);
+            if (!CAST_AI(SmartAI, me->AI())->StartPath(run, entry, repeat, unit))
+            {
+                e.runOnce = false;
+                return;
+            }
 
             uint32 quest = e.action.wpStart.quest;
             uint32 DespawnTime = e.action.wpStart.despawnTime;

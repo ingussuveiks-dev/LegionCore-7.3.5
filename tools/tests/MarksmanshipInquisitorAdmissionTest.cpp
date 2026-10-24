@@ -47,7 +47,9 @@ int main(int argc,char** argv){
         for(Unit* source:{static_cast<Unit*>(&player),&pet,&guardian,static_cast<Unit*>(nullptr)})invokers.receiver.ProcessEventsFor(SMART_EVENT_DATA_SET,source,9,9);
         assert(!invokers.vereesa.motion.moves&&!invokers.receiver.mEvents[0].runOnce);scenarioManager.scenario.step=5;invokers.Tick();assert(invokers.vereesa.motion.moves==1&&!invokers.receiver.mLastInvoker.unit);}
     {InquisitorFixture missing;missing.sender.me=nullptr;missing.Tick();assert(!missing.vereesa.motion.moves);}
-    {InquisitorFixture combat;combat.vereesa.combat=true;combat.Tick();assert(combat.receiver.mEvents[0].runOnce&&!combat.vereesa.motion.moves&&!combat.vereesa.ai.loadAttempts);}
-    {InquisitorFixture missingPath;missingPath.vereesa.ai.pathAvailable=false;missingPath.Tick();assert(missingPath.receiver.mEvents[0].runOnce&&!missingPath.vereesa.motion.moves&&missingPath.vereesa.ai.loadAttempts==1);}
-    std::cout<<"PASS: native conditions/timer/nearest/SET_DATA/DATA_SET/WP_START/SmartAI StartPath reject premature interrogation and preserve stage5 approach, retries and one-shot path dispatch. Later LINK/casts/scenes and world/path/motion primitives are not exercised here; combat/missing-path retry remains unresolved.\n";
+    {InquisitorFixture combat;combat.vereesa.combat=true;combat.Tick();assert(!combat.receiver.mEvents[0].runOnce&&!combat.vereesa.motion.moves&&!combat.vereesa.ai.loadAttempts);
+        combat.vereesa.combat=false;combat.Tick();assert(combat.receiver.mEvents[0].runOnce&&combat.vereesa.motion.moves==1);combat.Tick();assert(combat.vereesa.motion.moves==1);}
+    {InquisitorFixture missingPath;missingPath.vereesa.ai.pathAvailable=false;missingPath.Tick();assert(!missingPath.receiver.mEvents[0].runOnce&&!missingPath.vereesa.motion.moves&&missingPath.vereesa.ai.loadAttempts==1);
+        missingPath.vereesa.ai.pathAvailable=true;missingPath.Tick();assert(missingPath.receiver.mEvents[0].runOnce&&missingPath.vereesa.motion.moves==1&&missingPath.vereesa.ai.loadAttempts==2);}
+    std::cout<<"PASS: native conditions/timer/nearest/SET_DATA/DATA_SET/WP_START/SmartAI StartPath reject premature interrogation and preserve stage5 approach, combat/path retry and one-shot dispatch. Later LINK/casts/scenes and world/path/motion primitives are not exercised here.\n";
 }

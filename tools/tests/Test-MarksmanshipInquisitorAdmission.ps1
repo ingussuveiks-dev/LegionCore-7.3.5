@@ -69,7 +69,7 @@ function Section([string]$source,[string]$start,[string]$end){$first=$source.Ind
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartScript.cpp" -Raw
 [IO.File]::WriteAllText("$out/WaypointAction.inc",(Section $source '        case SMART_ACTION_WP_START:' '        case SMART_ACTION_WP_PAUSE:'))
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
-[IO.File]::WriteAllText("$out/StartPath.inc",(Section $source 'void SmartAI::StartPath(' 'bool SmartAI::LoadPath('))
+[IO.File]::WriteAllText("$out/StartPath.inc",(Section $source 'bool SmartAI::StartPath(' 'bool SmartAI::LoadPath('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" /I`"$common`" `"$PSScriptRoot/MarksmanshipInquisitorAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/rows.tsv`" `"$out/conditions.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Inquisitor admission regression failed'}

@@ -41,11 +41,11 @@ struct Player:Unit {Player* ToPlayer()override{return this;}};
 struct SmartAI {
     SmartScript* script=nullptr;SmartScript* GetScript(){return script;}void SetData(uint32,uint32);
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
-    Creature* me=nullptr;uint32 mEscortQuestID=0,despawnTime=0,escort=0,loadAttempts=0;bool mCanRepeatPath=false,running=false,pathAvailable=true;
+    Creature* me=nullptr;uint32 mEscortQuestID=0,despawnTime=0,escort=0,loadAttempts=0,mCurrentWPID=0;bool mCanRepeatPath=false,running=false,pathAvailable=true;
     std::vector<WayPoint> points{{1,179.385f,1310.59f,-58.9791f}};std::vector<WayPoint>* mWayPoints=nullptr;Position mLastOOCPos;
     bool HasEscortState(uint32 state){return (escort&state)!=0;}void AddEscortState(uint32 state){escort|=state;}void StopPath(){escort=0;}
     bool LoadPath(uint32 identity);void SetRun(bool run){running=run;}WayPoint* GetNextWayPoint(){return &points[0];}
-    void SetDespawnTime(uint32 value){despawnTime=value;}void StartPath(bool,uint32,bool,Unit*);
+    void SetDespawnTime(uint32 value){despawnTime=value;}bool StartPath(bool,uint32,bool,Unit*);
 #endif
 };
 struct GameObject:WorldObject {SmartAI ai;SmartAI* AI(){return &ai;}};

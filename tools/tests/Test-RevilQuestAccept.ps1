@@ -18,7 +18,7 @@ Extract $s '        case SMART_EVENT_ACCEPTED_QUEST:' '        case SMART_EVENT_
 Extract $s '        case SMART_EVENT_WAYPOINT_REACHED:' '        case SMART_EVENT_SUMMON_DESPAWNED:' 'Waypoint'
 $s=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 Extract $s 'void SmartAI::IsSummonedBy(' 'void SmartAI::DamageDealt(' 'Summoned'
-Extract $s 'void SmartAI::StartPath(' 'bool SmartAI::LoadPath(' 'StartPath'
+Extract $s 'bool SmartAI::StartPath(' 'bool SmartAI::LoadPath(' 'StartPath'
 $s=Get-Content "$repo/src/server/game/Entities/Creature/TemporarySummon.cpp" -Raw
 Extract $s 'void TempSummon::InitSummon()' 'bool TempSummon::InitBaseStat(' 'InitSummon'
 $migration=Get-Content "$repo/sql/updates/world/2026_10_20_07_revil_quest_accept_link.sql" -Raw
