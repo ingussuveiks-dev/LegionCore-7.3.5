@@ -4,7 +4,31 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
+namespace WarswordsArrival
+{
+    bool IsParticipant(Player* player, uint32 instanceId, InstanceScript const* script)
+    {
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR || !player->GetMap() ||
+            player->GetMapId() != 1511 || player->GetInstanceId() != instanceId ||
+            player->GetInstanceScript() != script || player->GetQuestRewardStatus(40043) ||
+            (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+        return scenario && scenario->GetScenarioId() == 944;
+    }
+
+    bool CanLand(Player* player, uint32 instanceId, InstanceScript const* script)
+    {
+        if (!IsParticipant(player, instanceId, script))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+        return scenario && scenario->GetCurrentStep() == 0;
+    }
+}
 
 class instance_warswords : public InstanceMapScript
 {
@@ -41,14 +65,14 @@ public:
             if (!player)
                 return;
 
-            player->AddDelayedEvent(3000, [player, this]() -> void
+            uint32 instanceId = instance->GetInstanceId();
+            player->AddDelayedEvent(3000, [player, this, instanceId]() -> void
             {
-                if (player->getClass() != CLASS_WARRIOR)
-                {
-                    myscenario = false;
+                if (!WarswordsArrival::IsParticipant(player, instanceId, this))
                     return;
-                }
                 myscenario = true;
+                if (!WarswordsArrival::CanLand(player, instanceId, this))
+                    return;
 
                 player->CastSpell(player, 205534);
                 player->CastSpell(player, 189695);
@@ -224,6 +248,8 @@ public:
                     for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                         if (Player* player = i->getSource())
                         {
+                            if (!WarswordsArrival::CanLand(player, instance->GetInstanceId(), this))
+                                continue;
                             player->CastSpell(3386.46f, 1406.94f, 68.94f, 205744);
                             player->CreateConversation(838);
                         }

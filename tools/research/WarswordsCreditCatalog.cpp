@@ -199,7 +199,7 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424})
+    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424, 205534, 189695, 205744})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)

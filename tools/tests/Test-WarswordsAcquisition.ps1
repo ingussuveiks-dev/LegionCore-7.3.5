@@ -6,6 +6,7 @@ New-Item -ItemType Directory -Force $out|Out-Null
 $checks=@(
  @{Name='Test-DB2CommonDataRow.ps1';Parameters=@{}},
  @{Name='Test-WarswordsHelyaVisualData.ps1';Parameters=@{}},
+ @{Name='Test-WarswordsArrival.ps1';Parameters=@{}},
  @{Name='Test-WarswordsCommunion.ps1';Parameters=@{}},
  @{Name='Test-WarswordsIntroBubble.ps1';Parameters=@{}},
  @{Name='Test-WarswordsHelyaChannel.ps1';Parameters=@{}},
