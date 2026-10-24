@@ -2,10 +2,33 @@
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <set>
 #include <vector>
 using uint32 = uint32_t;
+using LootState = uint32;
+using ItemPosCountVec = std::vector<uint32>;
 #include "CriteriaTypes.inc"
-enum { CLASS_WARRIOR = 1, TYPEID_PLAYER = 4, GO_ACTIVATED = 2, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1 };
+enum { CLASS_WARRIOR = 1, TYPEID_PLAYER = 4, GO_ACTIVATED = 2, GO_JUST_DEACTIVATED = 3, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
+    NULL_BAG = 255, NULL_SLOT = 255, GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGNODE = 17 };
+enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
+struct Item { };
+struct LootItem
+{
+    struct
+    {
+        uint32 ItemID = 128908, RandomPropertiesID = 0;
+        struct { std::vector<uint32> BonusListIDs; uint32 Context = 0; } ItemBonus;
+    } item;
+    uint32 count = 1;
+    bool freeforall = false, is_looted = false;
+    std::set<uint32> GetAllowedLooters() const { return {}; }
+};
+struct Loot
+{
+    LootItem item;
+    uint32 gold = 0, unlootedCount = 1;
+#include "NativeIsLooted.inc"
+};
 struct Player;
 struct Unit
 {
@@ -19,12 +42,18 @@ struct Unit
 };
 struct Map {} instanceMap, otherMap;
 struct Creature { uint32 despawns = 0; void DespawnOrUnsummon(uint32 delay) { assert(delay == 1000); ++despawns; } } soul;
+struct GameObjectAI { void OnStateChanged(uint32, Unit*) { } } objectAI;
 struct GameObject
 {
     uint32 entry = 248832, mapId = 1511, instance = 42;
     Map* map = &instanceMap;
     float interactionRange = 5.f;
     bool soulPresent = true;
+    uint32 m_lootState = GO_ACTIVATED;
+    uint32 getLootState() const { return m_lootState; }
+    uint32 GetGoType() const { return GAMEOBJECT_TYPE_CHEST; }
+    GameObjectAI* AI() const { return &objectAI; }
+    void SetLootState(uint32 state, Unit*);
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instance; }
@@ -38,6 +67,9 @@ struct Player : Unit
     bool alive = true, contact = true, phase = true, rewarded = false;
     Map* map = &instanceMap;
     float distance = 1.f;
+    bool room = true, storeWorks = true;
+    uint32 inventoryErrors = 0;
+    Item storedItem;
     Player* ToPlayer() override { return this; }
     uint32 GetTypeId() override { return TYPEID_PLAYER; }
     bool IsAlive() const { return alive; }
@@ -48,8 +80,32 @@ struct Player : Unit
     bool IsWithinDistInMap(GameObject* weapon, float range) const { assert(range == weapon->GetInteractionDistance()); return distance <= range; }
     bool GetQuestRewardStatus(uint32 identity) const { assert(identity == 40043); return rewarded; }
     uint32 GetQuestStatus(uint32 identity) const { assert(identity == 40043); return status; }
-    bool HasItemCount(uint32 identity, uint32 count) { assert(identity == 128908 && count == 1); return items != 0; }
-    bool AddItem(uint32 identity, uint32 count) { assert(identity == 128908 && count == 1); ++items; return true; }
+    bool HasItemCount(uint32 identity, uint32 count, bool = false) { assert(identity == 128908 && count == 1); return items != 0; }
+    bool AddItem(uint32 identity, uint32 count) { assert(identity == 128908 && count == 1); if (!room) return false; ++items; return true; }
+    InventoryResult CanStoreNewItem(uint32, uint32, ItemPosCountVec& destination, uint32 identity, uint32 count, void*, bool quest)
+    {
+        assert(identity == 128908 && count == 1 && !quest);
+        if (!room)
+            return EQUIP_ERR_INVENTORY_FULL;
+        destination.push_back(1);
+        return EQUIP_ERR_OK;
+    }
+    Item* StoreNewItem(ItemPosCountVec const&, uint32 identity, bool, uint32, std::set<uint32> const&, std::vector<uint32> const&, uint32)
+    {
+        assert(identity == 128908);
+        if (!storeWorks)
+            return nullptr;
+        ++items;
+        return &storedItem;
+    }
+    void SendEquipError(InventoryResult result, void*, void*, uint32 identity) { assert(result == EQUIP_ERR_INVENTORY_FULL && identity == 128908); ++inventoryErrors; }
+    void StoreLootItem(Loot* loot)
+    {
+        LootItem* item = &loot->item;
+        void* qitem = nullptr;
+#include "NativeStoreInventory.inc"
+#include "NativeConsumeLoot.inc"
+    }
     void UpdateAchievementCriteria(uint32 type, uint32 identity, uint32 = 0)
     {
         assert((type == 92 && identity == 47017) || (type == 152 && identity == 944));
@@ -79,9 +135,20 @@ struct GameObjectScript
 };
 #include "PickupAdmission.inc"
 #include "PickupObject.inc"
+GameObjectScript* currentScript = nullptr;
+struct ScriptMgr
+{
+    void OnGameObjectLootStateChanged(GameObject* object, uint32 state, Unit* player) { assert(currentScript); currentScript->OnLootStateChanged(object, state, player); }
+} scriptManager;
+auto* sScriptMgr = &scriptManager;
+#include "NativeSetLootState.inc"
+bool CompletedLoot(Loot* loot, GameObject* go) {
+#include "NativeCompleteLoot.inc"
+}
 int main()
 {
     go_art_warswords script;
+    currentScript = &script;
     uint32 baselineBypasses = 0;
     for (uint32 invalid = 0; invalid < 18; ++invalid)
     {
@@ -109,10 +176,16 @@ int main()
         if (invalid == 16) scenarioManager.scenario.step = 7;
         if (invalid == 17) player.status = 5;
 #ifdef BASELINE
+#ifdef LOOT_BASELINE
+        assert(script.OnGossipHello(&player, &weapon));
+        script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
+        assert(!player.achievements && !player.items && !player.credits);
+#else
         assert(!script.OnGossipHello(&player, &weapon));
         script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
         assert(player.achievements == 2 && player.items == 1 && player.credits == 1);
         ++baselineBypasses;
+#endif
 #else
         assert(script.OnGossipHello(&player, &weapon));
         script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
@@ -122,9 +195,44 @@ int main()
 #endif
     }
 #ifdef BASELINE
+#ifndef LOOT_BASELINE
     assert(baselineBypasses == 18);
-    std::cout << "BASELINE:18 invalid/stale direct interactions bypass admission and still grant item/progression. Controlled services, not live packet exploit.\n";
+#endif
+    scenarioManager = {};
+    Player full;
+    full.room = false;
+    GameObject unopened;
+    script.OnLootStateChanged(&unopened, GO_ACTIVATED, &full);
+    assert(full.items == 0 && full.achievements == 2 && full.credits == 1 && full.delays == 1);
+#ifdef LOOT_BASELINE
+    std::cout << "BASELINE: pinned c3728f9e retains admission but grants progression/scene/return with zero items after full-bag AddItem failure. Controlled storage result, not live character traversal.\n";
 #else
+    std::cout << "BASELINE:18 invalid/stale direct interactions bypass admission; full-bag AddItem failure also grants progression with zero items. Controlled services, not live packet exploit.\n";
+#endif
+#else
+    for (uint32 failure : {0u, 1u})
+    {
+        scenarioManager = {};
+        Player player;
+        GameObject weapon;
+        Loot loot;
+        player.room = failure != 0;
+        player.storeWorks = failure != 1;
+        assert(!script.OnGossipHello(&player, &weapon));
+        weapon.SetLootState(GO_ACTIVATED, &player);
+        player.StoreLootItem(&loot);
+        assert(!loot.isLooted() && !loot.item.is_looted && loot.unlootedCount == 1 && player.items == 0);
+        assert(player.inventoryErrors == uint32(failure == 0));
+        assert(!CompletedLoot(&loot, &weapon));
+        weapon.SetLootState(GO_ACTIVATED, &player);
+        assert(!player.achievements && !player.credits && !player.casts && !player.delays);
+        player.room = player.storeWorks = true;
+        player.StoreLootItem(&loot);
+        assert(loot.isLooted() && loot.item.is_looted && loot.unlootedCount == 0 && player.items == 1);
+        assert(CompletedLoot(&loot, &weapon));
+        weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
+        assert(player.items == 1 && player.achievements == 2 && player.credits == 1 && player.casts == 1 && player.delays == 1);
+    }
     for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE), uint32(QUEST_STATUS_COMPLETE)})
         for (bool soulPresent : {false, true})
             for (uint32 held : {0u, 1u})
@@ -135,12 +243,17 @@ int main()
                 player.items = held;
                 GameObject weapon;
                 weapon.soulPresent = soulPresent;
-                assert(!script.OnGossipHello(&player, &weapon));
-                script.OnLootStateChanged(&weapon, GO_ACTIVATED + 1, &player);
-                assert(!player.achievements && player.items == held);
-                script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
+                assert(script.OnGossipHello(&player, &weapon) == bool(held));
+                if (!held)
+                {
+                    script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
+                    weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
+                    assert(!player.achievements && !player.items);
+                    player.items = 1;
+                    weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
+                }
                 assert(player.achievements == 2 && player.items == 1 && player.credits == 1 && player.conversations == 1 && player.delays == 1);
-                assert(player.casts == uint32(!held));
+                assert(player.casts == 1);
                 scenarioManager.scenario.step = 7;
                 assert(script.OnGossipHello(&player, &weapon));
                 script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
@@ -161,7 +274,10 @@ int main()
     player.distance = weapon.interactionRange;
     assert(!script.OnGossipHello(&player, &weapon));
     script.OnLootStateChanged(&weapon, GO_ACTIVATED, &player);
+    assert(!player.achievements && !player.items);
+    player.items = 1;
+    weapon.SetLootState(GO_JUST_DEACTIVATED, &player);
     assert(player.achievements == 2 && player.items == 1);
-    std::cout << "PASS: actual pickup helper/gossip/activation reject invalid/revoked/stale contexts and retain8 eligible legacy paths. Full-bag, exact-once real scenario changes, loot/equip/return remain separate.\n";
+    std::cout << "PASS: actual opening rejects invalid/stale contexts; activation no longer grants items/progression, and completed/owned loot requires possession. Eight claim paths retain presentation; inventory/world services are controlled, equip/return remain separate.\n";
 #endif
 }

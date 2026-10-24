@@ -1,12 +1,28 @@
 #include "DB2Store.h"
 #include "DB2Structure.h"
 #include "DB2LoadInfo.h"
+#include "DB2FileLoader.h"
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
 #include <cstdlib>
+#include <cstdio>
+#include <filesystem>
 #include <iostream>
 #include <set>
+
+struct WarswordsSceneFile : DB2FileSource
+{
+    std::string name;
+    FILE* file;
+    explicit WarswordsSceneFile(std::string path) : name(std::move(path)), file(std::fopen(name.c_str(), "rb")) { }
+    ~WarswordsSceneFile() override { if (file) std::fclose(file); }
+    bool IsOpen() const override { return file != nullptr; }
+    bool Read(void* buffer, std::size_t size) override { return std::fread(buffer, size, 1, file) == 1; }
+    std::size_t GetPosition() const override { return std::ftell(file); }
+    std::size_t GetFileSize() const override { return std::filesystem::file_size(name); }
+    char const* GetFileName() const override { return name.c_str(); }
+};
 
 int main(int argc, char** argv)
 {
@@ -39,6 +55,81 @@ int main(int argc, char** argv)
     spells.LoadFromDB();
     effects.LoadFromDB();
     dungeons.LoadFromDB();
+    DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
+    if (!maps.Load(argv[1], 0))
+        return 11;
+    maps.LoadFromDB();
+    auto map = maps.LookupEntry(1511);
+    if (!map)
+        return 12;
+    std::cout << "MAP\t" << map->ID << '\t' << unsigned(map->InstanceType) << '\t' << map->IsDungeon() << '\t'
+        << map->IsScenario() << '\t' << unsigned(map->MaxPlayers) << '\n';
+    DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
+    DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());
+    DB2Storage<SceneScriptPackageMemberEntry> members("SceneScriptPackageMember.db2", SceneScriptPackageMemberLoadInfo::Instance());
+    DB2FileLoader texts;
+    WarswordsSceneFile sceneFile(std::string(argv[1]) + "SceneScriptText.db2");
+    if (!children.Load(argv[1], 0) || !scripts.Load(argv[1], 0) || !members.Load(argv[1], 0) || !texts.Load(&sceneFile, SceneScriptTextLoadInfo::Instance()))
+        return 8;
+    children.LoadFromDB();
+    scripts.LoadFromDB();
+    members.LoadFromDB();
+    DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
+    if (!items.Load(argv[1], 0))
+        return 13;
+    items.LoadFromDB();
+    for (uint32 identity : {128908, 134553})
+    {
+        auto item = items.LookupEntry(identity);
+        if (!item)
+            return 14;
+        std::cout << "ITEM\t" << identity << '\t' << unsigned(item->ArtifactID) << '\t' << unsigned(item->InventoryType)
+            << '\t' << item->ItemLevel << '\t' << item->Display->Str[0] << '\n';
+    }
+    for (auto child : children)
+        if (child->ItemID == 128908)
+            std::cout << "CHILD\t" << child->ItemID << '\t' << child->ChildItemID << '\t' << unsigned(child->ChildItemEquipSlot) << '\n';
+    std::set<uint32> packages{1580}, seenPackages, pendingScripts, seenScripts;
+    while (!packages.empty())
+    {
+        uint32 package = *packages.begin();
+        packages.erase(package);
+        if (!seenPackages.insert(package).second)
+            continue;
+        for (auto member : members)
+            if (member->SceneScriptPackageID == package)
+            {
+                if (member->ChildSceneScriptPackageID)
+                    packages.insert(member->ChildSceneScriptPackageID);
+                if (member->SceneScriptID)
+                    pendingScripts.insert(member->SceneScriptID);
+            }
+    }
+    while (!pendingScripts.empty())
+    {
+        uint32 identity = *pendingScripts.begin();
+        pendingScripts.erase(identity);
+        if (!seenScripts.insert(identity).second)
+            continue;
+        auto script = scripts.LookupEntry(identity);
+        if (!script)
+            return 9;
+        bool found = false;
+        for (uint32 index = 0; index < texts.GetRecordCount(); ++index)
+        {
+            auto record = texts.GetRecord(index);
+            if (record && record.GetId() == identity)
+            {
+                found = true;
+                std::cout << "SCENE_TEXT\t" << identity << '\t' << record.GetString("Name") << '\n' << record.GetString("Script") << '\n';
+                break;
+            }
+        }
+        if (!found)
+            return 10;
+        if (script->NextSceneScriptID)
+            pendingScripts.insert(script->NextSceneScriptID);
+    }
     bool foundDungeon = false;
     for (auto dungeon : dungeons)
         if (dungeon->ScenarioID == 944)
@@ -49,7 +140,7 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996})
+    for (uint32 identity : {128264, 195996, 205443, 194201, 208578, 192085})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)

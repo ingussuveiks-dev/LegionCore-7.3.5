@@ -13,6 +13,7 @@ using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
 uint32 lastStage = 13, eventEntry = 248419, eventSource = 1;
 uint32 expectedClassMask = 4;
+bool playersOwnArtifactByDefault = true;
 enum { GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGHOLE = 25,
     GAMEOBJECT_TYPE_GATHERING_NODE = 50, GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD = 51 };
 struct GameObjectTemplate {
@@ -49,7 +50,7 @@ struct Unit {
 };
 struct Player : Unit {
     uint32 quest = expectedQuest, status = 3;
-    bool rewarded = false, owned = true, bank = false;
+    bool rewarded = false, owned = playersOwnArtifactByDefault, bank = false;
     Player* ToPlayer() override { return this; }
     uint32 GetGUID() const { return 7; }
     QuestStatus GetQuestStatus(uint32 id) const { return quest == id ? status : 0; }
@@ -153,6 +154,16 @@ int main(int argc, char** argv) {
     }
     bool stromkar = argc == 4 && std::string(argv[2]).find("stromkar-") == 0;
     bool stromkarRoot = stromkar && std::string(argv[2]) == "stromkar-root";
+    bool warswords = argc == 4 && std::string(argv[2]) == "warswords-loot";
+    if (warswords) {
+        playersOwnArtifactByDefault = false;
+        expectedQuest = 40043; expectedMap = 1511; expectedScenario = 944; firstStage = lastStage = 6;
+        expectedItem = 128908; expectedClassMask = 1; scenarioManager = {};
+        GameObjectTemplate chest;
+        assert(chest.GetLootId() == 0);
+        chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
+        assert(chest.GetLootId() == 248832);
+    }
     if (stromkar) {
         expectedQuest = 41105; expectedMap = 1539; expectedScenario = 1037; firstStage = lastStage = 9;
         expectedItem = 128910; expectedClassMask = 1; scenarioManager = {};
@@ -170,7 +181,7 @@ int main(int argc, char** argv) {
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(warswords ? 14 : stromkar ? (stromkarRoot ? 14 : 10) : castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -238,7 +249,7 @@ int main(int argc, char** argv) {
         Player player;
         assert(item.AllowedForPlayer(&player));
         if (invalid == 0) scenarioManager.scenario.step = firstStage - 1;
-        if (invalid == 1) scenarioManager.scenario.id = 944;
+        if (invalid == 1) scenarioManager.scenario.id = expectedScenario == 944 ? 973 : 944;
         if (invalid == 2) scenarioManager.present = false;
         if (invalid == 3) player.mapId = 1;
         if (invalid == 4) player.classMask = expectedClassMask == 1 ? 16 : 1;
@@ -248,6 +259,15 @@ int main(int argc, char** argv) {
         assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
     }
     worldMap.instanced = true; instanceMap.id = 42; scenarioManager = {};
+    if (warswords) {
+        for (uint32 invalid = 0; invalid < 3; ++invalid) {
+            Player player;
+            player.alive = invalid != 0;
+            player.owned = invalid == 1;
+            player.bank = invalid == 2;
+            assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
+        }
+    }
     if (castAdmission) {
         Player dead; dead.alive = false;
         assert(!item.AllowedForPlayer(&dead) && !cache.Read(&dead, &item));

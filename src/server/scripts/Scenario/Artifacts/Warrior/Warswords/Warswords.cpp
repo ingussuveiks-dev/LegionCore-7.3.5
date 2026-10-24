@@ -461,12 +461,20 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* go) override
     {
-        return !WarswordsAcquisition::CanTake(player, go);
+        if (!WarswordsAcquisition::CanTake(player, go))
+            return true;
+        if (player->HasItemCount(128908, 1, true))
+        {
+            go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true;
+        }
+        return false;
     }
 
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED && WarswordsAcquisition::CanTake(target->ToPlayer(), go))
+        if (target && state == GO_JUST_DEACTIVATED && WarswordsAcquisition::CanTake(target->ToPlayer(), go) &&
+            go->getLootState() == GO_JUST_DEACTIVATED && target->ToPlayer()->HasItemCount(128908, 1, true))
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
             {
@@ -475,11 +483,7 @@ public:
                 if (Creature* trigger = go->FindNearestCreature(98678, 10.0f))
                     trigger->DespawnOrUnsummon(1000);
 
-                if (!target->ToPlayer()->HasItemCount(128908, 1))
-                {
-                    target->ToPlayer()->AddItem(128908, 1);
-                    target->CastSpell(target, 205443, true);
-                }
+                target->CastSpell(target, 205443, true);
 
                 target->ToPlayer()->KilledMonsterCredit(98033);
                 target->CreateConversation(849);
