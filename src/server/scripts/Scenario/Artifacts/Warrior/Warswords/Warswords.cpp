@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Item.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <algorithm>
@@ -497,6 +498,45 @@ public:
     }
 };
 
+namespace WarswordsPresentation
+{
+    bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+    {
+        if (!scene || scene->MiscValue != 1218 || scene->SceneScriptPackageID != 1580)
+            return false;
+        if (trigger != "complete" || !player || !player->HasSceneStatus(1218, SCENE_COMPLETE) ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+            player->getClass() != CLASS_WARRIOR || player->GetMapId() != 1511 || player->GetQuestRewardStatus(40043) ||
+            (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE) ||
+            !player->GetItemByEntry(128908))
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() < 6 || scenario->GetCurrentStep() > 7)
+            return true;
+        SpellCastResult result = player->CastSpell(player, 194201, true);
+        if (result != SPELL_CAST_OK)
+        {
+            TC_LOG_WARN("scripts", "Warswords pickup: native equip 194201 failed with result %u for player %u; existing items retained", uint32(result), player->GetGUIDLow());
+            return true;
+        }
+        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+        if (!weapon || weapon->GetEntry() != 128908 || !child || child->GetEntry() != 134553 || weapon->GetChildItem() != child->GetGUID())
+            TC_LOG_WARN("scripts", "Warswords pickup: native equip 194201 accepted but parent/child is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
+        return true;
+    }
+}
+
+class scene_warswords_pickup : public SceneTriggerScript
+{
+public:
+    scene_warswords_pickup() : SceneTriggerScript("scene_warswords_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return WarswordsPresentation::Complete(player, scene, trigger);
+    }
+};
+
 void AddSC_Warswords()
 {
     new go_mystic_bonfire();
@@ -506,4 +546,5 @@ void AddSC_Warswords()
     new npc_vigfus_bladewind_last();
 
     new go_art_warswords();
+    new scene_warswords_pickup();
 };

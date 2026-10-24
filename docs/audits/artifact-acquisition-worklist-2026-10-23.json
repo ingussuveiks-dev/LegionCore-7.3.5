@@ -257,6 +257,8 @@
       "class_id": 1,
       "specialization": "Fury",
       "weapon": "Warswords of the Valarjar",
+      "scene_equip_audit": "docs/audits/warswords-scene-equip-2026-10-24.json",
+      "scene_equip_review": "Migration58 binds original1218/1580 completion to scoped living active40043 Warrior/1511/944/6-7/existing inventory128908; native194201 equips and actual128908/134553 linked pair is inspected with warnings on failure. Pinned missing-hook baseline, native scene/packet/force-equip hosts, forged/stale/cancel/repeated/16 invalid/failed pair cases, TEMP custom/idempotence, live binding, canonical inlined registry/vtable/call paths/build/startup and shared presentation checks pass. Full194201 event/group/duplicate counters and true storage/client equipment remain separate.225890 learns205545; it is not the return button. Legacy return timer still requires repair.",
       "real_loot_audit": "docs/audits/warswords-real-loot-2026-10-24.json",
       "real_loot_review": "Migration57 links native248832 loot with14 active-Warrior/final-stage/no-owned-copy rules. Acquisition now waits for native completed state3 plus actual128908 ownership; activation/full bags/null storage no longer award progress. Pinnedc3728f9e baseline, native storage/release/condition/cached-slot hosts, idempotence/12 custom variants, live hash/link/rules, canonical PE/build/startup/Scepter and shared route regressions pass.205443 is scene1218/package1580, not server equip; real parent/child128908/134553 differs from scene clone134562/134548. Auto-equip, return-button/arrival, group/persistence and client traversal remain unverified. Partial muted17:39-18:14 samples only, no continuous full-video certification.",
       "pickup_admission_audit": "docs/audits/warswords-pickup-admission-2026-10-24.json",
@@ -269,7 +271,7 @@
       "final_owner_credit_review": "Final98602 Player-only/null-unsafe JustDied loses46987/848 on pet/guardian kills. Native owner/charmer resolution now retains Talk2 and emits original progression/dialogue from the Player. Pinned baseline, actual callback/owner/group-type/Player-scenario bridge hosts, typed944 stage5/29088/92/46987/root0, live bindings, canonical death-slot0x130/owner/guards/native bridge, Release/startup/Scepter pass. Sparse muted16:25/17:30 video frames only, no full footage/client parity. Earlier50/15/7-percent phases, failed actors/conversation and real gated loot/equip/return remain open.",
       "item": 128908,
       "start": 40043,
-      "status": "in progress: retreat/owner, weapon phase/admission and real-loot/full-bag repairs checked natively; full lifecycle, equipment, return, visuals and client traversal pending",
+      "status": "in progress: retreat/owner, weapon phase/admission, real loot/full-bag and scene-to-native-equip checked; full lifecycle/group/return/visuals and actual client equipment/traversal pending",
       "quests": [
         {
           "id": 40043,
@@ -344,14 +346,14 @@
         "npc_weapon_pickup_departure_visuals": "pending",
         "weapon_visibility_and_no_early_interaction": "pending",
         "actual_loot_and_full_bags_retry": "native storage/release/conditions, full-bag/null-store retry and deployed link checked; actual client loot/retry pending",
-        "equip_parent_and_paired_item": "pending",
+        "equip_parent_and_paired_item": "native completed-scene/194201 parent-child equip handler and deployed wiring checked with controlled swap services; real inventory/client/save pending",
         "artifact_power_and_save_relog": "pending",
         "failed_cast_or_missing_actor_retry": "pending",
         "abandon_reentry_cleanup": "pending",
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain retreat/owner, weapon-only7001, live admission and actual248832 native loot repairs. Trace194201/208578 force-equip/225890 and scene1218/package1580; repair player-activated return button/failed-cast retry/acknowledged103739 separately. Current unconditional12-second return does not match sampled video. Verify true parent/child equip and client full-bag/re-entry/save; do not confuse scene clone IDs with real items. Add scoped final98602 admission without hiding shared7003 prerequisites, final15/7 and failed99609 recovery. Full paths/channel/audio/native group and complete Fury video/client traversal remain unverified."
+      "next_action": "Retain retreat/owner, weapon-only7001, live admission, actual248832 loot and scoped1218/1580 native194201 equipment bridge.225890 is learn205545, not return: trace215997/override730/192085/216016/Val'kyr/beam and existing Skyhold Danica103739 before repairing actual player button, failed-cast retry and acknowledged return. Current12-second automatic return is still wrong against samples. Verify full194201 duplicate/group counters, true inventory parent/child swap, missing-scene retry/re-entry/save and client visuals. Add scoped final98602 admission without hiding shared7003 prerequisites, final15/7 and failed99609 recovery. Full paths/channel/audio/native group and complete Fury video/client traversal remain unverified."
     },
     {
       "class_id": 2,

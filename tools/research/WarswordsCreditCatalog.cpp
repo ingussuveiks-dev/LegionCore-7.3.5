@@ -59,6 +59,16 @@ int main(int argc, char** argv)
     if (!maps.Load(argv[1], 0))
         return 11;
     maps.LoadFromDB();
+    DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
+    if (!locks.Load(argv[1], 0))
+        return 15;
+    locks.LoadFromDB();
+    auto lock = locks.LookupEntry(1691);
+    if (!lock)
+        return 16;
+    for (uint32 index = 0; index < MAX_LOCK_CASE; ++index)
+        std::cout << "LOCK\t" << lock->ID << '\t' << index << '\t' << unsigned(lock->Type[index]) << '\t'
+            << lock->Index[index] << '\t' << lock->Skill[index] << '\n';
     auto map = maps.LookupEntry(1511);
     if (!map)
         return 12;
@@ -140,7 +150,7 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996, 205443, 194201, 208578, 192085})
+    for (uint32 identity : {128264, 195996, 205443, 194201, 208578, 192085, 225890})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)

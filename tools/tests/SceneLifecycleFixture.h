@@ -27,6 +27,8 @@ struct Item {
     uint32 entry = 128827;
 #elif defined(STROMKAR_PRESENTATION_TEST)
     uint32 entry = 128910;
+#elif defined(WARSWORDS_PRESENTATION_TEST)
+    uint32 entry = 128908;
 #else
     uint32 entry = 128826;
 #endif
@@ -38,6 +40,8 @@ struct Item {
     ChildGuid GetChildItem() const {
 #ifdef XALATATH_PRESENTATION_TEST
         return {entry == 128827 ? 133958u : 0u};
+#elif defined(WARSWORDS_PRESENTATION_TEST)
+        return {entry == 128908 ? 134553u : 0u};
 #else
         return {};
 #endif
@@ -50,6 +54,8 @@ struct SpellInfo {
         128827
 #elif defined(STROMKAR_PRESENTATION_TEST)
         128910
+#elif defined(WARSWORDS_PRESENTATION_TEST)
+        128908
 #else
         128826
 #endif
@@ -128,14 +134,18 @@ struct Player : Unit {
     uint32 equipErrors = 0, swaps = 0;
     std::function<void()> forceEquip;
     Item* GetItemByEntry(uint32 entry) { assert(entry == artifact.entry); return owned && !bankOnly ? &artifact : nullptr; }
-#ifdef XALATATH_PRESENTATION_TEST
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
+#ifdef WARSWORDS_PRESENTATION_TEST
+    Item paired{134553, 0xFF40};
+#else
     Item paired{133958, 0xFF40};
+#endif
     Item* offhand = nullptr;
     InventoryResult childResult = EQUIP_ERR_OK;
 #endif
     Item* GetItemByPos(uint32 bag, uint32 slot) {
         assert(bag == INVENTORY_SLOT_BAG_0);
-#ifdef XALATATH_PRESENTATION_TEST
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
         if (slot == EQUIPMENT_SLOT_OFFHAND) return offhand;
 #endif
         assert(slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
@@ -144,7 +154,7 @@ struct Player : Unit {
         assert(slot == NULL_SLOT && item == &artifact && swap); destination = 0xFF0F; return equipResult;
     }
     InventoryResult CanEquipChildItem(Item*) {
-#ifdef XALATATH_PRESENTATION_TEST
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
         return childResult;
 #else
         assert(false); return EQUIP_ERR_OK;
@@ -156,7 +166,7 @@ struct Player : Unit {
         if (swapBlocked) return;
         if (mainhand) mainhand->position = source;
         artifact.position = destination; mainhand = &artifact;
-#ifdef XALATATH_PRESENTATION_TEST
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
         paired.position = 0xFF10; offhand = &paired;
 #endif
     }
@@ -200,6 +210,9 @@ struct Player : Unit {
 #endif
 #ifdef STROMKAR_PRESENTATION_TEST
         if (spell == 206439 && forceEquip) forceEquip();
+#endif
+#ifdef WARSWORDS_PRESENTATION_TEST
+        if (spell == 194201 && forceEquip) forceEquip();
 #endif
 #endif
         auras.insert(spell);
