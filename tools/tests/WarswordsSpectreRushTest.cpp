@@ -45,6 +45,7 @@ struct Creature : Unit
     bool IsCreature() const override { return true; }
     ScriptedAI* AI() override { return brain; }
     uint32 GetEntry() const { return entry; }
+    uint32 GetMapId() const { return 1511; }
     ObjectGuid GetGUID() const { return guid; }
     bool IsAlive() const { return alive; }
     bool HasAura(uint32 identity) const { assert(identity == 195996); return aura; }
@@ -57,7 +58,7 @@ struct Creature : Unit
     void SetFlag(uint32, uint32 mask) { flags |= mask; }
     void RemoveFlag(uint32, uint32 mask) { flags &= ~mask; }
     void SetReactState(uint32 state) { react = state; }
-    void RemoveAura(uint32 spell) { assert(spell == 195996); aura = false; ++auraRemovals; }
+    void RemoveAura(uint32 spell) { assert(spell == 195996 || spell == 205424); if (spell == 195996) { aura = false; ++auraRemovals; } }
     float GetPositionX() const { return 3515; }
     float GetPositionY() const { return 1800; }
     float GetPositionZ() const { return 0.6f; }

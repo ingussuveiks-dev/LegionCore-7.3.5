@@ -147,7 +147,7 @@ struct Creature : Unit
     void RemoveFlag(uint32, uint32 mask) { flags &= ~mask; }
     void SetReactState(uint32 state) { react = state; }
     void StopAttack() { ++stops; }
-    void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996); if (identity == 128264) ++removed; }
+    void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996 || identity == 205424); if (identity == 128264) ++removed; }
     void DespawnOrUnsummon(uint32 delay) { assert(delay == 7000); ++despawns; }
     Player* FindNearestPlayer(float range) { assert(range == 100.f); return nearby; }
 };

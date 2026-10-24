@@ -76,12 +76,23 @@ struct ObjectAccessor
     }
 };
 #include "OwnerPlayer.inc"
+struct Creature : Unit
+{
+    uint32 entry = 98602, mapId = 1511;
+    bool bubble = true;
+    uint32 GetEntry() const { return entry; }
+    uint32 GetMapId() const { return mapId; }
+    void RemoveAura(uint32 identity) { assert(identity == 205424); bubble = false; }
+};
 struct ScriptedAI
 {
+    Creature actor;
+    Creature* me = &actor;
+    bool bubbleClearedAtTalk = false;
     virtual ~ScriptedAI() = default;
     virtual void JustDied(Unit*) { }
     uint32 talks = 0;
-    void Talk(uint32 identity) { assert(identity == 2); ++talks; }
+    void Talk(uint32 identity) { assert(identity == 2); bubbleClearedAtTalk = !me->bubble; ++talks; }
 };
 struct FinalBoss : ScriptedAI
 {
@@ -114,6 +125,7 @@ int main(int argc, char**)
             boss.JustDied(killer);
             Player* expected = killer == &charmed ? &charmer : &owner;
             assert(boss.talks == 1);
+            if (!baseline) assert(!boss.actor.bubble && boss.bubbleClearedAtTalk);
             if (baseline && killer != &owner)
             {
                 assert(expected->credits == 0 && expected->conversations == 0);
@@ -136,6 +148,7 @@ int main(int argc, char**)
                 FinalBoss boss;
                 boss.JustDied(killer);
                 assert(boss.talks == 1);
+                assert(!boss.actor.bubble && boss.bubbleClearedAtTalk);
                 assert(owner.credits == 0 && charmer.credits == 0 && unrelated.credits == 0);
                 assert(owner.conversations == 0 && charmer.conversations == 0 && unrelated.conversations == 0);
                 assert(scenarioManager.scenario.events == 0);
@@ -155,5 +168,14 @@ int main(int argc, char**)
             scenarioManager.available = true;
         }
     }
-    std::cout << "PASS: actual final death callback and native owner resolver; one event per callback, owner/charmer targeting, both faction labels, no nearby or group blanket award. Death dispatch, scenario, conversation and map services are not traversed.\n";
+    if (!baseline)
+        for (uint32 scope = 0; scope < 2; ++scope)
+        {
+            FinalBoss boss;
+            if (scope) boss.actor.mapId = 1220;
+            else boss.actor.entry = 98007;
+            boss.JustDied(nullptr);
+            assert(boss.actor.bubble && boss.talks == 1);
+        }
+    std::cout << "PASS: actual final death callback and native owner resolver; one event per callback, owner/charmer targeting, both faction labels, no nearby or group blanket award. Scoped205424 is cleared before Talk2 for player/pet/guardian/charmer and unresolved/null killers, not unrelated entry/map. Death dispatch, scenario, conversation and map services are not traversed.\n";
 }

@@ -53,13 +53,13 @@ struct Player : Unit
 void Unit::CreateConversation(uint32 identity) { assert(ToPlayer()); ToPlayer()->CreateConversation(identity); }
 struct Creature : Unit
 {
-    uint32 mapId = 1511, instance = 42, auraRemovals = 0, casts = 0;
+    uint32 entry = 98602, mapId = 1511, instance = 42, auraRemovals = 0, casts = 0;
     Creature* helya = nullptr;
     Player* nearest = nullptr;
     std::list<Player*> nearbyPlayers;
     uint32 playerScans = 0;
     bool castWorks = true;
-    bool auraWorks = true, aura = false, phase = true;
+    bool auraWorks = true, aura = false, phase = true, bubble = true;
     ObjectGuid guid = 99, auraCaster = 99;
     std::function<void()> onCast;
     std::function<void(uint32)> onElapsed;
@@ -67,6 +67,7 @@ struct Creature : Unit
     uint32 acceptedCasts = 0;
     std::vector<std::function<void()>> callbacks;
     uint32 GetMapId() const { return mapId; }
+    uint32 GetEntry() const { return entry; }
     uint32 GetInstanceId() const { return instance; }
     bool HasUnitState(uint32 state) const { assert(state == UNIT_STATE_SIGHTLESS); return sightless; }
     bool HasReactState(uint32 state) const { assert(state == REACT_AGGRESSIVE); return aggressive; }
@@ -77,10 +78,11 @@ struct Creature : Unit
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
     uint32 CastSpell(Unit* target, uint32 identity) { auto receiver = dynamic_cast<Creature*>(target); assert(receiver && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; receiver->aura = auraWorks; receiver->auraCaster = guid; } if (onCast) onCast(); return castWorks ? 0 : 1; }
     bool HasAura(uint32 identity, ObjectGuid caster) const { assert(identity == 195062); return aura && auraCaster == caster; }
+    bool HasAura(uint32 identity) const { assert(identity == 205424); return bubble; }
     ObjectGuid GetGUID() const { return guid; }
     bool InSamePhase(Creature*) const { return phase; }
     void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 8000); callbacks.push_back(std::move(callback)); }
-    void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) ++auraRemovals; }
+    void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) { ++auraRemovals; bubble = false; } }
     void RemoveFlag(uint32, uint32) { }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
     void Flush() { if (onElapsed) onElapsed(8000); auto pending = std::move(callbacks); callbacks.clear(); for (auto& callback : pending) callback(); }
@@ -108,6 +110,7 @@ struct ScriptedAI
     explicit ScriptedAI(Creature* actor) : me(actor) { }
     virtual void Reset() { }
     virtual void MoveInLineOfSight(Unit*) { }
+    virtual void UpdateLifecycle(uint32) { }
     bool CanSeeEvenInPassiveMode() const { return seePassive; }
     void AttackStart(Player* player) { attacked = player; ++attacks; }
 };
@@ -119,6 +122,7 @@ struct IntroAI : ScriptedAI
 #include "IsIntroTarget.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
+#include "UpdateLifecycle.inc"
     void TickVisual(uint32 diff)
     {
 #include "VisualTick.inc"
@@ -159,7 +163,16 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
 }
 int main()
 {
-#ifdef BASELINE
+#ifdef BUBBLE_BASELINE
+    Fixture fixture;
+    fixture.Start(); fixture.actor.Flush(); assert(!fixture.actor.bubble && fixture.ai.introDone && !fixture.ai.introPending);
+    fixture.actor.bubble = true;
+    fixture.ai.Reset();
+    fixture.ai.UpdateIntro(1);
+    assert(fixture.actor.bubble && fixture.ai.introDone);
+    std::cout << "BASELINE: pinned05cd027c Reset retains an addon bubble reapplied by native evade after the introduction already finished. Controlled addon/evade services, not a client reproduction.\n";
+    return 0;
+#elif defined(BASELINE)
     {
         Fixture fixture; scenarioManager.scenario.step = 0;
         fixture.Start(); assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
@@ -325,6 +338,63 @@ int main()
         Fixture fixture; fixture.owner.onConversation = [&]() { fixture.ai.Reset(); }; fixture.Start();
         assert(fixture.helya.casts == 1 && !fixture.ai.introPending && !fixture.ai.introDone && fixture.actor.callbacks.empty());
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
+    {
+        Fixture fixture;
+        assert(fixture.actor.bubble);
+        fixture.ai.UpdateIntro(1);
+        fixture.ai.UpdateIntro(1);
+        assert(fixture.actor.bubble && fixture.ai.introPending);
+        fixture.Start(); fixture.ai.Reset();
+        assert(fixture.actor.bubble && !fixture.ai.introDone && !fixture.ai.introPending);
+        fixture.Start(); fixture.actor.Flush();
+        assert(!fixture.actor.bubble && fixture.ai.introDone && !fixture.ai.introPending);
+        for (uint32 repeat = 0; repeat < 3; ++repeat)
+        {
+            fixture.actor.bubble = true;
+            fixture.ai.Reset();
+            assert(!fixture.actor.bubble && fixture.ai.introDone);
+            fixture.actor.bubble = true;
+            fixture.ai.UpdateIntro(1);
+            assert(!fixture.actor.bubble);
+            auto removals = fixture.actor.auraRemovals;
+            fixture.ai.UpdateIntro(1);
+            assert(fixture.actor.auraRemovals == removals);
+        }
+    }
+    for (uint32 scope = 0; scope < 2; ++scope)
+    {
+        Fixture fixture;
+        fixture.ai.introDone = true;
+        if (scope) fixture.actor.mapId = 1220;
+        else fixture.actor.entry = 98007;
+        fixture.ai.Reset();
+        assert(fixture.actor.bubble);
+        fixture.ai.UpdateIntro(1);
+        assert(fixture.actor.bubble);
+    }
+    {
+        Fixture fixture;
+        fixture.Start(); fixture.ai.UpdateLifecycle(1);
+        assert(fixture.actor.bubble && fixture.ai.introPending);
+        fixture.actor.alive = false;
+        fixture.ai.UpdateLifecycle(1);
+        assert(!fixture.actor.bubble);
+        fixture.actor.bubble = true;
+        fixture.ai.UpdateLifecycle(1);
+        assert(!fixture.actor.bubble);
+        auto removals = fixture.actor.auraRemovals;
+        fixture.ai.UpdateLifecycle(1);
+        assert(fixture.actor.auraRemovals == removals);
+    }
+    for (uint32 scope = 0; scope < 2; ++scope)
+    {
+        Fixture fixture;
+        fixture.actor.alive = false;
+        if (scope) fixture.actor.mapId = 1220;
+        else fixture.actor.entry = 98007;
+        fixture.ai.UpdateLifecycle(1);
+        assert(fixture.actor.bubble);
+    }
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Pending Reset retains initial bubble; completed intro clears native-evade or late-respawn addon reapplication without repeated removals; dead-only lifecycle clears late corpse reapplication, only98602/1511. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
 #endif
 }

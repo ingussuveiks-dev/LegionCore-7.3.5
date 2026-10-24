@@ -423,6 +423,8 @@ public:
             introRetryTimer = 0;
             introVisualRetryTimer = 0;
             introVisualWarned = false;
+            if (introDone && me->GetEntry() == 98602 && me->GetMapId() == 1511)
+                me->RemoveAura(205424);
             phase1 = false;
             phase2 = false;
             events.Reset();
@@ -440,6 +442,12 @@ public:
                 return true;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
             return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 5;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511 && !me->IsAlive() && me->HasAura(205424))
+                me->RemoveAura(205424);
         }
 
         bool CanAIAttack(Unit const*) const override
@@ -633,7 +641,11 @@ public:
         void UpdateIntro(uint32 diff)
         {
             if (introDone)
+            {
+                if (!introPending && me->GetEntry() == 98602 && me->GetMapId() == 1511 && me->HasAura(205424))
+                    me->RemoveAura(205424);
                 return;
+            }
             if (introRetryTimer > diff)
             {
                 introRetryTimer -= diff;
@@ -660,6 +672,8 @@ public:
         {
             CancelSpectreRush();
             summons.DespawnAll();
+            if (me->GetEntry() == 98602 && me->GetMapId() == 1511)
+                me->RemoveAura(205424);
             Talk(2);
             if (Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
             {
