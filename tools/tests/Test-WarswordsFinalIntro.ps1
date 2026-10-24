@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot verify repaired Release'}
+if(($Baseline -and $HelyaBaseline) -or (($Baseline -or $HelyaBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-intro"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,6 +8,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Warrior/Warswords/Warswords.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "9dd043ad:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned final intro baseline'}}
+if($HelyaBaseline){$source=(& git -C $repo show "a5a82529:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya baseline'}}
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 if($first -lt 0 -or $last -le $first){throw 'Final intro member fields missing'}
@@ -17,12 +18,15 @@ $helper=if($Baseline){''}else{Block $source 'bool IsIntroTarget('}
 [IO.File]::WriteAllText("$out/IsIntroTarget.inc",$helper)
 $retry=if($Baseline){''}else{Block $source 'void UpdateIntro('}
 [IO.File]::WriteAllText("$out/UpdateIntro.inc",$retry)
+$tick=''
+if(!$Baseline -and !$HelyaBaseline){$update=Block $source 'void UpdateAI(';$tick=$update.Substring($update.IndexOf('{')+1);$tick=$tick.Substring(0,$tick.IndexOf('            UpdateIntro(diff);'))}
+[IO.File]::WriteAllText("$out/VisualTick.inc",$tick)
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/GetPlayer.inc",(Block $source 'Player* ObjectAccessor::GetPlayer('))
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/ObjectInMap.inc",(Block $source 'template<class T> static T* GetObjectInMap('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsFinalIntroTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final intro native regression failed'}
 if($VerifyReleaseBinary){

@@ -7,7 +7,12 @@
 #include <vector>
 using uint32 = uint32_t;
 using ObjectGuid = uint32;
+using SpellCastResult = uint32;
+uint32 warningRequests = 0, recoveryRequests = 0;
+#define TC_LOG_WARN(...) (++warningRequests)
+#define TC_LOG_INFO(...) (++recoveryRequests)
 enum { TYPEID_PLAYER = 4, CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
+    SPELL_CAST_OK = 0,
     UNIT_FIELD_FLAGS = 0, UNIT_FLAG_IMMUNE_TO_PC = 1, UNIT_FLAG_IMMUNE_TO_NPC = 2, UNIT_FLAG_NOT_ATTACKABLE_1 = 4, REACT_AGGRESSIVE = 2, UNIT_STATE_SIGHTLESS = 8 };
 struct Map { } instanceMap, otherMap;
 struct Player;
@@ -54,6 +59,10 @@ struct Creature : Unit
     std::list<Player*> nearbyPlayers;
     uint32 playerScans = 0;
     bool castWorks = true;
+    bool auraWorks = true, aura = false, phase = true;
+    ObjectGuid guid = 99, auraCaster = 99;
+    std::function<void()> onCast;
+    std::function<void(uint32)> onElapsed;
     bool sightless = false, aggressive = true;
     uint32 acceptedCasts = 0;
     std::vector<std::function<void()>> callbacks;
@@ -66,12 +75,15 @@ struct Creature : Unit
     Creature* FindNearestCreature(uint32 identity, float distance, bool aliveOnly) { assert(identity == 99043 && distance == 100 && aliveOnly); return helya; }
     Player* FindNearestPlayer(float distance, bool aliveOnly) { assert(distance == 100 && aliveOnly); return nearest; }
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
-    uint32 CastSpell(Unit* target, uint32 identity) { assert(target == this && identity == 195062); ++casts; if (castWorks) ++acceptedCasts; return castWorks ? 0 : 1; }
+    uint32 CastSpell(Unit* target, uint32 identity) { assert(target == this && identity == 195062); ++casts; if (castWorks) { ++acceptedCasts; aura = auraWorks; auraCaster = guid; } if (onCast) onCast(); return castWorks ? 0 : 1; }
+    bool HasAura(uint32 identity, ObjectGuid caster) const { assert(identity == 195062 && caster == guid); return aura && auraCaster == caster; }
+    ObjectGuid GetGUID() const { return guid; }
+    bool InSamePhase(Creature*) const { return phase; }
     void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 8000); callbacks.push_back(std::move(callback)); }
     void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) ++auraRemovals; }
     void RemoveFlag(uint32, uint32) { }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
-    void Flush() { auto pending = std::move(callbacks); callbacks.clear(); for (auto& callback : pending) callback(); }
+    void Flush() { if (onElapsed) onElapsed(8000); auto pending = std::move(callbacks); callbacks.clear(); for (auto& callback : pending) callback(); }
 };
 struct Scenario { uint32 identity = 944, step = 5; uint32 GetScenarioId() const { return identity; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario scenario; bool present = true; Scenario* GetScenario(uint32 instance) { return present && instance == 42 ? &scenario : nullptr; } } scenarioManager;
@@ -107,13 +119,17 @@ struct IntroAI : ScriptedAI
 #include "IsIntroTarget.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
+    void TickVisual(uint32 diff)
+    {
+#include "VisualTick.inc"
+    }
 };
 struct Fixture
 {
     Player owner, intruder;
     Creature actor, helya;
     IntroAI ai{&actor};
-    Fixture() { intruder.guid = 2; intruder.status = 0; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; ai.Reset(); }
+    Fixture() { intruder.guid = 2; intruder.status = 0; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
     ~Fixture() { ObjectAccessor::players.clear(); }
     void Start() { ai.MoveInLineOfSight(&owner); }
 };
@@ -154,6 +170,17 @@ int main()
         assert(fixture.ai.attacked == &fixture.intruder && fixture.ai.introDone);
     }
     std::cout << "BASELINE: pinned9dd043ad starts final intro at stage0, attacks an unrelated nearest Player and retains the pending attack across Reset. Controlled map/cast/timer services.\n";
+#elif defined(HELYA_BASELINE)
+    for (bool missing : {false, true})
+    {
+        Fixture fixture;
+        if (missing) fixture.actor.helya = nullptr;
+        else fixture.helya.castWorks = false;
+        fixture.Start();
+        assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && !fixture.helya.aura);
+        fixture.actor.Flush(); assert(fixture.ai.attacks == 1);
+    }
+    std::cout << "BASELINE: pinned a5a82529 consumes intro and arms8s engagement despite missing Helya or failed195062; no retry/actual aura acknowledgement. Controlled world/cast/timer, not client visuals.\n";
 #else
     for (uint32 invalid = 0; invalid < 19; ++invalid)
     {
@@ -172,8 +199,18 @@ int main()
         fixture.helya.castWorks = fixture.owner.conversationWorks = presentationWorks;
         fixture.owner.onConversation = [&]() { fixture.Start(); };
         fixture.Start(); fixture.Start();
-        assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && fixture.helya.casts == uint32(!missingHelya));
-        assert(fixture.owner.acceptedConversations == uint32(presentationWorks) && fixture.helya.acceptedCasts == uint32(!missingHelya && presentationWorks));
+        bool waiting = missingHelya || !presentationWorks;
+        assert(fixture.owner.conversations == uint32(!waiting) && fixture.actor.callbacks.size() == uint32(!waiting) && fixture.helya.casts == uint32(!missingHelya));
+        if (waiting)
+        {
+            assert(!fixture.ai.introDone && !fixture.ai.introPending && warningRequests == 1);
+            fixture.actor.helya = &fixture.helya; fixture.helya.castWorks = true;
+            fixture.ai.TickVisual(999); fixture.Start(); assert(!fixture.owner.conversations);
+            fixture.ai.TickVisual(1); fixture.Start();
+            assert(recoveryRequests == 1 && warningRequests == 1);
+        }
+        assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && fixture.helya.aura);
+        assert(fixture.owner.acceptedConversations == uint32(presentationWorks));
         fixture.owner.distance = 100; fixture.actor.Flush(); fixture.actor.Flush();
         assert(fixture.ai.attacks == 1 && fixture.ai.attacked == &fixture.owner && fixture.actor.auraRemovals == 1 && !fixture.ai.introPending);
         fixture.ai.Reset(); fixture.Start(); assert(fixture.owner.conversations == 1);
@@ -222,6 +259,64 @@ int main()
         Fixture fixture; fixture.actor.aggressive = false; fixture.ai.seePassive = true;
         fixture.ai.UpdateIntro(1); fixture.actor.Flush(); assert(fixture.ai.attacked == &fixture.owner);
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5;56 stage/status cases,19 initial and21 delayed invalid contexts, identity-only targeting/retry/reset epochs/reentrant or failed speech/optional or failed Helya/boundary/pet/null and bounded stationary retry checked. Timers, geometry, combat and world/cast services remain controlled; no client visual/audio proof.\n";
+    for (uint32 invalid = 0; invalid < 6; ++invalid)
+    {
+        Fixture fixture;
+        if (invalid == 0) fixture.actor.helya = nullptr;
+        if (invalid == 1) fixture.helya.world = false;
+        if (invalid == 2) fixture.helya.predelete = true;
+        if (invalid == 3) fixture.helya.alive = false;
+        if (invalid == 4) fixture.helya.map = &otherMap;
+        if (invalid == 5) fixture.helya.phase = false;
+        fixture.Start(); fixture.Start();
+        assert(!fixture.ai.introDone && !fixture.owner.conversations && fixture.actor.callbacks.empty() && warningRequests == 1);
+        fixture.actor.helya = &fixture.helya; fixture.helya.world = fixture.helya.alive = fixture.helya.phase = true;
+        fixture.helya.predelete = false; fixture.helya.map = &instanceMap;
+        fixture.ai.TickVisual(1000); fixture.ai.UpdateIntro(1000);
+        assert(fixture.owner.conversations == 1 && fixture.helya.aura && fixture.actor.callbacks.size() == 1 && recoveryRequests == 1);
+    }
+    {
+        Fixture fixture; fixture.helya.auraWorks = false;
+        fixture.Start(); assert(fixture.helya.acceptedCasts == 1 && !fixture.owner.conversations && fixture.actor.callbacks.empty());
+        fixture.helya.aura = true; fixture.ai.TickVisual(1000); fixture.Start();
+        assert(fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
+    }
+    {
+        Fixture fixture; fixture.helya.aura = true; fixture.Start();
+        assert(fixture.helya.casts == 0 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
+    }
+    for (bool failed : {false, true})
+    {
+        Fixture fixture; fixture.helya.aura = true; fixture.helya.auraCaster = 100; fixture.helya.castWorks = !failed;
+        fixture.Start();
+        assert(fixture.helya.casts == 1 && fixture.owner.conversations == uint32(!failed) && fixture.actor.callbacks.size() == uint32(!failed));
+    }
+    {
+        Fixture fixture; fixture.helya.castWorks = false; fixture.Start();
+        fixture.ai.TickVisual(1000); fixture.Start();
+        assert(fixture.helya.casts == 2 && warningRequests == 1 && fixture.actor.callbacks.empty());
+        fixture.ai.Reset(); fixture.Start();
+        assert(fixture.helya.casts == 3 && warningRequests == 2 && fixture.actor.callbacks.empty());
+        fixture.ai.TickVisual(UINT32_MAX); fixture.helya.castWorks = true; fixture.Start();
+        assert(fixture.helya.casts == 4 && recoveryRequests == 1 && fixture.actor.callbacks.size() == 1);
+    }
+    for (uint32 reentry = 0; reentry < 4; ++reentry)
+    {
+        Fixture fixture;
+        fixture.helya.onCast = [&]() {
+            if (reentry == 0) fixture.Start();
+            if (reentry == 1) fixture.ai.Reset();
+            if (reentry == 2) fixture.owner.status = 0;
+            if (reentry == 3) fixture.helya.world = false;
+        };
+        fixture.Start();
+        assert(fixture.helya.casts == 1 && fixture.owner.conversations == uint32(reentry == 0) && fixture.actor.callbacks.size() == uint32(reentry == 0));
+        if (reentry != 0) assert(!fixture.ai.introDone && !fixture.ai.introPending);
+    }
+    {
+        Fixture fixture; fixture.owner.onConversation = [&]() { fixture.ai.Reset(); }; fixture.Start();
+        assert(fixture.helya.casts == 1 && !fixture.ai.introPending && !fixture.ai.introDone && fixture.actor.callbacks.empty());
+    }
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and actual self195062 aura before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
 #endif
 }

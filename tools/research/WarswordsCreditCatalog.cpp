@@ -48,6 +48,7 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
     DB2Storage<LFGDungeonsEntry> dungeons("LFGDungeons.db2", LfgDungeonsLoadInfo::Instance());
     if (!steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0) || !spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !dungeons.Load(argv[1], 0))
         return 5;
@@ -56,10 +57,11 @@ int main(int argc, char** argv)
     criteria.LoadFromDB();
     spells.LoadFromDB();
     effects.LoadFromDB();
-    if (!misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
+    if (!misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !durations.Load(argv[1], 0))
         return 17;
     misc.LoadFromDB();
     castTimes.LoadFromDB();
+    durations.LoadFromDB();
     DB2Storage<BroadcastTextEntry> textsStore("BroadcastText.db2", BroadcastTextLoadInfo::Instance());
     DB2Storage<SoundKitEntry> soundKits("SoundKit.db2", SoundKitLoadInfo::Instance());
     DB2Storage<SoundKitEntryEntry> soundFiles("SoundKitEntry.db2", SoundKitEntryLoadInfo::Instance());
@@ -186,7 +188,7 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890})
+    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)
@@ -196,9 +198,13 @@ int main(int argc, char** argv)
             if (data->SpellID == identity && !data->DifficultyID)
             {
                 auto cast = castTimes.LookupEntry(data->CastingTimeIndex);
+                auto duration = durations.LookupEntry(data->DurationIndex);
                 std::cout << "CAST\t" << identity << '\t' << data->CastingTimeIndex << '\t'
                     << (cast ? cast->Base : 0) << '\t' << (cast ? cast->Minimum : 0) << '\t'
                     << (cast ? cast->PerLevel : 0) << '\t' << data->LaunchDelay << '\n';
+                std::cout << "DURATION\t" << identity << '\t' << data->DurationIndex << '\t'
+                    << (duration ? duration->Duration : 0) << '\t' << (duration ? duration->MaxDuration : 0) << '\t'
+                    << (duration ? duration->DurationPerLevel : 0) << '\n';
             }
         for (auto effect : effects)
             if (!effect->DifficultyID && effect->SpellID == identity)

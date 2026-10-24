@@ -397,6 +397,8 @@ public:
         uint32 spectreSlot = 2;
         uint32 spectreRetryTimer = 0;
         uint32 spectreGeneration = 0;
+        uint32 introVisualRetryTimer = 0;
+        bool introVisualWarned = false;
 
         void CancelSpectreRush()
         {
@@ -419,6 +421,8 @@ public:
                 introDone = false;
             introPending = false;
             introRetryTimer = 0;
+            introVisualRetryTimer = 0;
+            introVisualWarned = false;
             phase1 = false;
             phase2 = false;
             events.Reset();
@@ -566,15 +570,50 @@ public:
         void MoveInLineOfSight(Unit* who) override
         {
             Player* player = who ? who->ToPlayer() : nullptr;
-            if (introDone || !IsIntroTarget(player, 40.0f))
+            if (introDone || introVisualRetryTimer || !IsIntroTarget(player, 40.0f))
                 return;
+            introVisualRetryTimer = 1000;
+            Creature* helya = me->FindNearestCreature(99043, 100.0f, true);
+            if (!helya || !helya->IsInWorld() || helya->IsPreDelete() || !helya->IsAlive() ||
+                helya->GetMap() != me->GetMap() || !helya->InSamePhase(me))
+            {
+                if (!introVisualWarned)
+                    TC_LOG_WARN("scripts", "Warswords intro waiting for live same-phase Helya99043; original dialogue and 8-second transition not started");
+                introVisualWarned = true;
+                return;
+            }
             introDone = true;
             introPending = true;
             uint32 generation = introGeneration;
             ObjectGuid playerGuid = player->GetGUID();
+            if (!helya->HasAura(195062, helya->GetGUID()))
+            {
+                SpellCastResult result = helya->CastSpell(helya, 195062);
+                if (generation != introGeneration || !introPending || !me->IsAlive())
+                    return;
+                if (result != SPELL_CAST_OK || !helya->IsInWorld() || helya->IsPreDelete() || !helya->IsAlive() ||
+                    helya->GetMap() != me->GetMap() || !helya->InSamePhase(me) || !helya->HasAura(195062, helya->GetGUID()))
+                {
+                    introDone = false;
+                    introPending = false;
+                    if (!introVisualWarned)
+                        TC_LOG_WARN("scripts", "Warswords intro waiting for native Helya195062 aura (cast result %u); original dialogue and 8-second transition not started", uint32(result));
+                    introVisualWarned = true;
+                    return;
+                }
+            }
+            if (!IsIntroTarget(player, 40.0f))
+            {
+                introDone = false;
+                introPending = false;
+                return;
+            }
+            if (introVisualWarned)
+                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura; starting original dialogue and 8-second transition");
+            introVisualWarned = false;
             player->CreateConversation(843);
-            if (Creature* helya = me->FindNearestCreature(99043, 100.0f, true))
-                helya->CastSpell(helya, 195062);
+            if (generation != introGeneration || !introPending)
+                return;
             me->AddDelayedEvent(8000, [this, generation, playerGuid]() -> void
             {
                 if (generation != introGeneration || !introPending)
@@ -664,6 +703,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            introVisualRetryTimer = introVisualRetryTimer > diff ? introVisualRetryTimer - diff : 0;
             UpdateIntro(diff);
             UpdateSpectreRush(diff);
             if (!UpdateVictim())
