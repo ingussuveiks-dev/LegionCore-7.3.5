@@ -36,6 +36,7 @@ SELECT 'SECOND';
 $snapshot
 SELECT 'END';
 SELECT 'return',COUNT(*) FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=106854 AND SourceGroup=3 AND ConditionTypeOrReference=44 AND ConditionValue1=1099 AND ConditionValue2=5;
+SELECT 'saved-return',COUNT(*) FROM saved_cond WHERE SourceTypeOrReferenceId=22 AND SourceEntry=106854 AND SourceGroup=3 AND ConditionTypeOrReference=44 AND ConditionValue1=1099 AND ConditionValue2=5;
 UPDATE smart_scripts SET action_type=1 WHERE source_type=0 AND entryorguid=100810 AND id=1;
 UPDATE conditions SET ConditionValue1=12345 WHERE SourceTypeOrReferenceId=18 AND SourceGroup=106854 AND SourceEntry=212060;
 $migration
@@ -51,7 +52,10 @@ $first=$rows[($a+1)..($b-1)];$second=$rows[($b+1)..($d-1)]
 if(($first -join '|') -ne ($second -join '|')){throw 'Hunter interaction migration is not idempotent'}
 $expected=@("link`t99986`t1`t61`t72`t7","link`t100171`t1`t61`t72`t7","link`t100810`t1`t61`t72`t7","click`t0`t9`t0`t41574","click`t1`t28`t0`t41574")
 if(($first -join '|') -ne ($expected -join '|')){throw "Wrong migrated interactions: $($first -join '|')"}
-foreach($r in @("return`t1","custom-link`t1","custom-click`t2","timing`t55000")){if($rows -notcontains $r){throw "Missing preservation result $r"}}
+foreach($r in @("custom-link`t1","custom-click`t2","timing`t55000")){if($rows -notcontains $r){throw "Missing preservation result $r"}}
+$return=($rows|Where-Object {$_ -like "return`t*"}).Split("`t")[1]
+$savedReturn=($rows|Where-Object {$_ -like "saved-return`t*"}).Split("`t")[1]
+if([int]$return -lt 1 -or $return -ne $savedReturn){throw 'Existing final-return scenario conditions changed'}
 $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
 $a=$player.IndexOf('void Player::UpdateForQuestWorldObjects(');$section=$player.Substring($a,6000)
 if(!$section.Contains('CONDITION_QUESTTAKEN') -or !$section.Contains('GetConditionsForSpellClickEvent')){throw 'Quest change must dirty conditioned spellclick NPC flags'}
