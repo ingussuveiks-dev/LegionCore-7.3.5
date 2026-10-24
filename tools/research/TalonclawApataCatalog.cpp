@@ -37,16 +37,20 @@ int main(int argc,char** argv)
     for(auto text:texts){
         std::string first=text->Text->Str[0],second=text->Text1->Str[0];
         bool selected=false;
-        for(char const* phrase:{"Beloved brother","shall be avenged","not healing"})
+        for(char const* phrase:{"Beloved brother","shall be avenged","not healing","over for me","Not again, beast","drop a flare","hold them off","set the trap"})
             selected=selected||first.find(phrase)!=std::string::npos||second.find(phrase)!=std::string::npos;
         if(selected)std::cout<<"CANDIDATE_TEXT\t"<<text->ID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\t'<<first<<'\t'<<second<<'\n';
         if(text->SoundEntriesID[1]>=62694&&text->SoundEntriesID[1]<=62697){
             std::cout<<"VOICE_TEXT\t"<<text->ID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\t'<<uint32(text->LanguageID)<<'\t'<<text->ConditionID<<'\t'<<text->EmotesID<<'\t'<<second<<'\n';
             for(uint32 index=0;index<3;++index)std::cout<<"VOICE_EMOTE\t"<<text->ID<<'\t'<<index<<'\t'<<text->EmoteID[index]<<'\t'<<text->EmoteDelay[index]<<'\n';
         }
+        if((text->SoundEntriesID[0]>=62685&&text->SoundEntriesID[0]<=62710)||(text->SoundEntriesID[1]>=62685&&text->SoundEntriesID[1]<=62710))
+            std::cout<<"NEIGHBOR_TEXT\t"<<text->ID<<'\t'<<text->SoundEntriesID[0]<<'\t'<<text->SoundEntriesID[1]<<'\t'<<first<<'\t'<<second<<'\n';
     }
     for(auto sound:sounds)if(sound->SoundKitID>=62694&&sound->SoundKitID<=62697)
         std::cout<<"AUDIO_FILE\t"<<sound->SoundKitID<<'\t'<<sound->FileDataID<<'\t'<<uint32(sound->Frequency)<<'\t'<<sound->Volume<<'\n';
+    for(auto sound:sounds)if(sound->SoundKitID>=62685&&sound->SoundKitID<=62710)
+        std::cout<<"NEIGHBOR_FILE\t"<<sound->SoundKitID<<'\t'<<sound->FileDataID<<'\t'<<uint32(sound->Frequency)<<'\t'<<sound->Volume<<'\n';
     auto display=displays.LookupEntry(66135);if(!display)return 7;
     std::cout<<"DISPLAY\t66135\t"<<uint32(display->Gender)<<'\n';
     HotfixDatabase.Close();

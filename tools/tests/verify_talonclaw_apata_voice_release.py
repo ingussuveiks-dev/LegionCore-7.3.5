@@ -13,4 +13,4 @@ for caller, callee in [
     ('??RCreatureTextBuilder@@', '?Initialize@Chat@1WorldPackets@@'),
 ]:
     assert native['symbol'](callee) in native['calls'](caller), f'Missing native voice/text bridge {caller} -> {callee}'
-print('PASS: deployed native TALK ->SendChat ->SendText retains inlined SendSound via real PlaySound serialization/distribution and the CreatureTextBuilder packet route; actual builder consumes native localized broadcast text before Chat initialization. Gender sound selection and four payloads checked separately, not client playback')
+print('PASS: deployed native TALK ->SendChat ->SendText retains inlined SendSound via real PlaySound serialization/distribution and the CreatureTextBuilder packet route; actual builder consumes native localized broadcast text before Chat initialization. Gender sound selection and payloads checked separately, not client playback')

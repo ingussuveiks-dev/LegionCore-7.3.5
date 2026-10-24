@@ -47,13 +47,20 @@ int Run(int argc,char** argv)
     Require(files.Load(argv[1],0),"Native voice files missing");files.LoadFromDB();
     auto display=sCreatureDisplayInfoStore.LookupEntry(66135);
     Require(display&&display->Gender==GENDER_FEMALE,"Actual Apata display is not female");
+#ifdef APATA_ADDITIONAL_VOICE
+    std::map<uint32,uint32> expected{{2,102002},{21,102116}};
+    std::map<uint32,uint32> soundKits{{2,62688},{21,62700}};
+#else
     std::map<uint32,uint32> expected{{11,102113},{12,102114},{13,103426},{14,103430}};
+    std::map<uint32,uint32> soundKits{{11,62694},{12,62695},{13,62696},{14,62697}};
+#endif
+    auto expectedCount=expected.size();
     std::ifstream snapshot(argv[2]);Require(bool(snapshot),"Missing scoped SQL rows");
     uint32 count=0,group=0,sqlSound=0,broadcast=0,type=0,hold=0;
     while(snapshot>>group>>sqlSound>>broadcast>>type>>hold){
         Require(expected.count(group)==1&&sqlSound==0&&type==(group==11?14u:12u),"Unexpected speech scope/metadata");
         auto wanted=sBroadcastTextStore.LookupEntry(expected.at(group));
-        Require(wanted&&wanted->SoundEntriesID[0]==0&&wanted->SoundEntriesID[1]==62683+group,"Wrong native voice identity");
+        Require(wanted&&wanted->SoundEntriesID[0]==0&&wanted->SoundEntriesID[1]==soundKits.at(group),"Wrong native voice identity");
         auto current=sBroadcastTextStore.LookupEntry(broadcast);
         Speaker actor;
         CreatureTextEntry text{};text.sound=sqlSound;
@@ -66,6 +73,11 @@ int Run(int argc,char** argv)
         Speaker missingDisplay{0,GENDER_FEMALE};Require(SelectedSound(&missingDisplay,&text,current)==selected,"Missing display lost native actor gender fallback");
         auto value=DB2Manager::GetBroadcastTextValue(current,LOCALE_enUS,GENDER_FEMALE);
         Require(value&&value[0],"Native localized female text is empty");
+#ifdef APATA_ADDITIONAL_VOICE
+        Require(std::string(value)==(group==2?"Defend yourselves!":"It is... over for me... you must... finish this."),"Wrong original additional line");
+        Require(!wanted->LanguageID&&!wanted->ConditionID&&!wanted->EmotesID,"Additional speech introduces another language, condition or animation kit");
+        for(uint32 index=0;index<3;++index)Require(!wanted->EmoteID[index]&&!wanted->EmoteDelay[index],"Additional speech introduces another gesture");
+#endif
         std::cout<<"TEXT\t"<<group<<'\t'<<value<<'\n';
         uint32 linked=0;
         for(auto file:files)if(file->SoundKitID==selected){
@@ -75,9 +87,9 @@ int Run(int argc,char** argv)
         Require(linked==1,"Expected one actual native voice file per line");
         expected.erase(group);++count;
     }
-    Require(count==4&&expected.empty(),"Incomplete native voice snapshot");
+    Require(count==expectedCount&&expected.empty(),"Incomplete native voice snapshot");
     HotfixDatabase.Close();
-    std::cout<<"PASS: actual typed native text/display/sound data and production SendText sound selector resolve four female Apata voices; localized text accessor, explicit sound override and native fallbacks preserved. Speaker getters controlled; no client playback claim.\n";
+    std::cout<<"PASS: actual typed native text/display/sound data and production SendText sound selector resolve "<<count<<" female Apata voices; localized text accessor, explicit sound override and native fallbacks preserved. Speaker getters controlled; no client playback claim.\n";
     return 0;
 }
 int main(int argc,char** argv)
