@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast)
+param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast,[string]$XalatathRowsPath,[uint32]$XalatathLootId=247690)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-pickup-admission"
@@ -73,6 +73,11 @@ $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -
 $mode=if($MarksmanshipLoot){'marksmanship-loot'}elseif($MarksmanshipRoot){'marksmanship-root'}elseif($MarksmanshipDialogue){'marksmanship-dialogue'}elseif($MarksmanshipReturn){'marksmanship-return'}else{'marksmanship'}
 $fixture=if($MarksmanshipRowsPath){"`"$MarksmanshipRowsPath`" $mode"}else{"`"$out/conditions.tsv`""}
 if($TitanstrikeRowsPath){$mode=if($TitanstrikeCast){'titanstrike-cast'}elseif($TitanstrikeRoot){'titanstrike-root'}else{'titanstrike-loot'};$fixture="`"$TitanstrikeRowsPath`" $mode"}
+$source=Get-Content "$repo/src/server/game/Entities/GameObject/GameObjectData.cpp" -Raw
+[IO.File]::WriteAllText("$out/GetLootId.inc",(Section $source 'uint32 GameObjectTemplate::GetLootId() const' 'uint32 GameObjectTemplate::GetGossipMenuId() const'))
+if($XalatathRowsPath){
+ $fixture="`"$XalatathRowsPath`" xalatath-loot $XalatathLootId"
+}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" $fixture`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Native Talonclaw pickup admission failed'}

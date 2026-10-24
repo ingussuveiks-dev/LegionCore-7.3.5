@@ -12,6 +12,15 @@ using int64 = int64_t;
 using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
 uint32 lastStage = 13, eventEntry = 248419, eventSource = 1;
+uint32 expectedClassMask = 4;
+enum { GAMEOBJECT_TYPE_CHEST = 3, GAMEOBJECT_TYPE_FISHINGHOLE = 25,
+    GAMEOBJECT_TYPE_GATHERING_NODE = 50, GAMEOBJECT_TYPE_CHALLENGE_MODE_REWARD = 51 };
+struct GameObjectTemplate {
+    uint32 type = GAMEOBJECT_TYPE_CHEST;
+    struct { uint32 chestLoot = 0; } chest, fishingHole, gatheringNode, challengeModeReward;
+    uint32 GetLootId() const;
+};
+#include "GetLootId.inc"
 enum { CONDITION_ITEM = 2, CONDITION_CLASS = 15, CONDITION_MAPID = 22, CONDITION_SCENARION_STEP = 44,
     CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8, CONDITION_ALIVE = 36,
     QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, QUEST_STATUS_REWARDED = 6 };
@@ -22,7 +31,7 @@ struct InstanceMap { uint32 id = 42; uint32 GetInstanceId() const { return id; }
 struct Map { bool instanced = true; InstanceMap* ToInstanceMap() { return instanced ? &instanceMap : nullptr; } } worldMap;
 struct Unit {
     virtual ~Unit() = default;
-    uint32 mapId = expectedMap, classMask = 4;
+    uint32 mapId = expectedMap, classMask = expectedClassMask;
     bool alive = true;
     bool IsAlive() const { return alive; }
     virtual Player* ToPlayer() { return nullptr; }
@@ -105,11 +114,20 @@ struct CachedLoot {
 };
 int main(int argc, char** argv) {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
-    assert(argc == 2 || argc == 3);
+    assert(argc == 2 || argc == 3 || argc == 4);
     if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; lastStage = 8; expectedItem = 128826; scenarioManager = {}; }
     bool titanstrike = argc == 3 && std::string(argv[2]).find("titanstrike-") == 0;
     bool castAdmission = argc == 3 && std::string(argv[2]) == "titanstrike-cast";
     if (titanstrike) { expectedQuest = 42185; expectedMap = 1609; expectedScenario = 1099; firstStage = 4; lastStage = 5; expectedItem = 128861; eventEntry = 249812; scenarioManager = {}; }
+    bool xalatath = argc == 4 && std::string(argv[2]) == "xalatath-loot";
+    if (xalatath) {
+        expectedQuest = 40710; expectedMap = 1539; expectedScenario = 991; firstStage = 8; lastStage = 9;
+        expectedItem = 128827; expectedClassMask = 16; scenarioManager = {};
+        GameObjectTemplate chest;
+        assert(chest.GetLootId() == 0);
+        chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
+        assert(chest.GetLootId() == 247690);
+    }
     bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot";
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
     if (titanstrike) eventId = 0;
