@@ -14,7 +14,7 @@ using int8 = int8_t;
 using ObjectGuid = uint32;
 using QuestStatus = uint32;
 enum { CONDITION_ITEM=2, CONDITION_QUESTREWARDED=8, CONDITION_QUESTTAKEN=9, CONDITION_CLASS=15, CONDITION_MAPID=22,
-    CONDITION_QUEST_COMPLETE=28, CONDITION_ALIVE=36, CONDITION_SCENARION_STEP=44,
+    CONDITION_QUEST_COMPLETE=28, CONDITION_OBJECT_ENTRY=31, CONDITION_ALIVE=36, CONDITION_SCENARION_STEP=44,
     QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, QUEST_STATUS_REWARDED=6,
     UNIT_FIELD_NPC_FLAGS=0, UNIT_NPC_FLAG_SPELLCLICK=0x1000000,
     NPC_CLICK_CAST_CASTER_CLICKER=1, NPC_CLICK_CAST_TARGET_CLICKER=2, NPC_CLICK_CAST_ORIG_CASTER_OWNER=4,
@@ -42,6 +42,7 @@ struct Unit {
     struct Vehicle { uint32 GetCreatureEntry() const { return 106854; } };
     Vehicle* GetVehicleKit() { return nullptr; }
     uint32 GetEntry() const { return entry; }
+    uint32 GetTypeId() { return ToPlayer()?4u:ToCreature()?3u:0u; }
     bool IsCreature() { return ToCreature()!=nullptr; }
     bool isPet() const { return false; }
     Unit* GetOwner() const { return nullptr; }
@@ -120,7 +121,7 @@ using SpellClickInfoContainer=std::multimap<uint32,SpellClickInfo>;
 using SpellClickInfoMapBounds=std::pair<SpellClickInfoContainer::const_iterator,SpellClickInfoContainer::const_iterator>;
 struct ObjectMgr { SpellClickInfoContainer clicks{{106854,{}}}; SpellClickInfoMapBounds GetSpellClickInfoMapBounds(uint32 identity) { return clicks.equal_range(identity); } } templates;
 auto* sObjectMgr=&templates;
-struct SpellMgr { SpellInfo spell; SpellInfo const* GetSpellInfo(uint32 identity) { assert(identity==212060); return &spell; } } spells;
+struct SpellMgr { uint32 identity=212060; SpellInfo spell; SpellInfo const* GetSpellInfo(uint32 requested) { assert(requested==identity); return &spell; } } spells;
 auto* sSpellMgr=&spells;
 #include "ClickVisibility.inc"
 #include "HandleSpellClick.inc"
@@ -129,6 +130,7 @@ void ReadRows(char const* path,std::vector<Condition>& rows) {
     while(input>>row.ElseGroup>>row.ConditionType>>row.ConditionTarget>>row.ConditionValue1>>row.ConditionValue2>>row.ConditionValue3>>row.NegativeCondition) rows.push_back(row);
     assert(input.eof());
 }
+#ifndef TALONCLAW_BOARDING_TEST
 int main(int argc,char** argv) {
     _set_abort_behavior(0,_CALL_REPORTFAULT);
     assert(argc==5);
@@ -210,3 +212,4 @@ int main(int argc,char** argv) {
     actor.clickFlag=false;assert(!player.canSeeSpellClickOn(&actor));
     std::cout<<"PASS: native source18 lookup/visibility/HandleSpellClick plus source22 lookup/ElseGroups gate final owned Hunter42185 at1099/5; initial41574 branches preserved, early/failed/rewarded/abandoned/dead/missing/wrong contexts and pet/null return recipients rejected\n";
 }
+#endif

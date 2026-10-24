@@ -20689,7 +20689,7 @@ void Player::RemoveActiveQuest(uint32 quest_id)
         GetPhaseMgr().NotifyConditionChanged(phaseUdateData);
         // Static camp props remain visible across the artifact handoff. Refresh
         // their per-player interaction flags after reward/abandonment too.
-        if (quest_id == 40604 || quest_id == 40835 || quest_id == 40932 || quest_id == 40606)
+        if (quest_id == 40604 || quest_id == 40835 || quest_id == 40932 || quest_id == 40606 || quest_id == 40385)
             UpdateForQuestWorldObjects();
     });
 }

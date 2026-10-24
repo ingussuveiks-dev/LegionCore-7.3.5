@@ -59,7 +59,8 @@ if($condition.Count -ne 1 -or $condition[0] -ne "condition`t44`t1`t973`t11"){thr
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,$first);if($first -lt 0 -or $last -lt $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
 if($BaselineRevision){$source=(& git -C $repo show "${BaselineRevision}:src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp") -join "`n";if($LASTEXITCODE){throw 'Cannot read baseline Dakarr source'}}
-[IO.File]::WriteAllText("$out/Dakarr.inc",(Section $source 'namespace TalonclawDakarr' 'namespace ArtifactAcquisition'))
+$end=if($source.Contains('namespace TitanstrikePrustaga')){'namespace TitanstrikePrustaga'}else{'namespace ArtifactAcquisition'}
+[IO.File]::WriteAllText("$out/Dakarr.inc",(Section $source 'namespace TalonclawDakarr' $end))
 $source=Get-Content "$repo/src/server/game/Grids/Notifiers/GridNotifiers.cpp" -Raw
 [IO.File]::WriteAllText("$out/NearestPlayer.inc",(Section $source 'bool NearestPlayerInObjectRangeCheck::operator()(Player* u)' 'NearestPlayerNotGMInObjectRangeCheck::NearestPlayerNotGMInObjectRangeCheck'))
 $source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw

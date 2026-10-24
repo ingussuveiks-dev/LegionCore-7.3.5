@@ -4,7 +4,8 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-departure"
 New-Item -ItemType Directory -Force $out | Out-Null
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-$start=$source.IndexOf('namespace TalonclawDeparture');$end=$source.IndexOf('void AddSC_artifact_acquisition()',$start)
+$start=$source.IndexOf('namespace TalonclawDeparture');$end=$source.IndexOf('namespace MarksmanshipReturn',$start)
+if($end -lt 0){$end=$source.IndexOf('void AddSC_artifact_acquisition()',$start)}
 if($start -lt 0 -or $end -lt $start){throw 'Missing production departure lifecycle'}
 [IO.File]::WriteAllText("$out/Departure.inc",$source.Substring($start,$end-$start))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
