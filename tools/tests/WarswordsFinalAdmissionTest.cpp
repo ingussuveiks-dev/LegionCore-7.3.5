@@ -103,6 +103,7 @@ struct ScenarioMgr
 auto* sScenarioMgr = &scenarioManager;
 struct FinalAI : ScriptedAI
 {
+    bool introDone = false, introPending = false;
     explicit FinalAI(Creature* actor) : ScriptedAI(actor) { }
 #include "EncounterReady.inc"
 #include "CanAIAttack.inc"
@@ -118,12 +119,22 @@ int main()
     ai.AttackStart(&target);
     assert(actor.attacks == 1 && actor.motion.chases == 1);
     std::cout << "BASELINE: pinned14774c59 final boss admits native target selection/direct scripted engagement at stage0. Controlled combat services, not live client.\n";
+#elif defined(COMMUNION_BASELINE)
+    for (bool pending : {false, true})
+    {
+        Creature actor; FinalAI ai(&actor); Unit target;
+        scenarioManager = {}; ai.introDone = pending; ai.introPending = pending;
+        assert(actor.canCreatureAttack(&target)); ai.AttackStart(&target);
+        assert(actor.attacks == 1 && actor.motion.chases == 1);
+    }
+    std::cout << "BASELINE: pinneda617a973 stage5 admits native selection/direct engagement both before and during communion. Controlled combat services, not client footage.\n";
 #else
     uint32 cases = 0;
     for (uint32 step = 0; step < 9; ++step) for (bool movement : {false, true})
         for (bool attackWorks : {false, true}) for (bool casterPet : {false, true})
     {
         Creature actor; FinalAI ai(&actor); Unit target;
+        ai.introDone = true;
         scenarioManager = {}; scenarioManager.scenario.step = step;
         ai.movementAllowed = movement; actor.attackWorks = attackWorks; actor.casterPet = casterPet;
         assert(ai.CanAIAttack(&target) == (step == 5));
@@ -137,6 +148,7 @@ int main()
     for (uint32 invalid = 0; invalid < 3; ++invalid)
     {
         Creature actor; FinalAI ai(&actor); Unit target;
+        ai.introDone = true;
         scenarioManager = {};
         if (invalid == 0) scenarioManager.available = false;
         if (invalid == 1) actor.instance = 99;
@@ -156,6 +168,7 @@ int main()
     for (uint32 rejected = 0; rejected < 4; ++rejected)
     {
         Creature actor; FinalAI ai(&actor); Unit target; scenarioManager = {};
+        ai.introDone = true;
         if (rejected == 0) target.inMap = false;
         if (rejected == 1) actor.world = false;
         if (rejected == 2) actor.valid = false;
@@ -164,12 +177,24 @@ int main()
     }
     {
         Creature actor; FinalAI ai(&actor); Unit target; scenarioManager = {};
+        ai.introDone = true;
         scenarioManager.scenario.step = 4; ai.AttackStart(&target); assert(!actor.attacks);
         scenarioManager.scenario.step = 5; ai.AttackStart(nullptr); assert(!actor.attacks);
         ai.AttackStart(&target); assert(actor.attacks == 1);
         scenarioManager.scenario.step = 6; ai.AttackStart(&target); assert(actor.attacks == 1);
         scenarioManager.scenario.step = 5; ai.AttackStart(&target); assert(actor.attacks == 2);
     }
-    std::cout << "PASS: " << cases << " source-extracted native selection and scripted moving/stationary/caster-pet/failed-attack paths; exact live1511/98602/944/5 admission, missing scenario, transitions/retry, null target and unrelated reuse retained. No visibility/client certification.\n";
+    for (bool done : {false, true}) for (bool pending : {false, true})
+        for (bool movement : {false, true})
+    {
+        Creature actor; FinalAI ai(&actor); Unit target; scenarioManager = {};
+        ai.introDone = done; ai.introPending = pending; ai.movementAllowed = movement;
+        bool ready = done && !pending;
+        assert(actor.canCreatureAttack(&target) == ready); ai.AttackStart(&target);
+        assert(actor.attacks == uint32(ready) && actor.motion.chases == uint32(ready && movement));
+        ai.introDone = false; ai.introPending = false;
+        ai.AttackStart(&target); assert(actor.attacks == uint32(ready));
+    }
+    std::cout << "PASS: " << cases << " source-extracted native selection and scripted moving/stationary/caster-pet/failed-attack paths; exact live1511/98602/944/5 plus completed nonpending intro, all four intro states, missing scenario, transitions/retry, null target and unrelated reuse retained. No visibility/client certification.\n";
 #endif
 }

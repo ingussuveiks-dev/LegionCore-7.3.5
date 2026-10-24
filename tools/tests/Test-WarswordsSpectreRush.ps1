@@ -12,6 +12,7 @@ if($Baseline){$revision=if($FirstBoss){'07d1d27d'}else{'924618e7'};$source=(& gi
 if($FirstBoss){$first=$source.IndexOf('class npc_vigfus_bladewind :');$last=$source.IndexOf('class npc_vigfus_bladewind_last :',$first);$source=$source.Substring($first,$last-$first)}else{$source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))}
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
+[IO.File]::WriteAllText("$out/EncounterReady.inc",$(if(!$FirstBoss -and !$Baseline){Block $source 'bool IsEncounterReady('}else{''}))
 foreach($name in @('Reset','JustSummoned','SummonedCreatureDies','JustDied','UpdateAI')){
  $body=if($FirstBoss -and $Baseline -and $name -eq 'JustDied'){'void JustDied(Unit*) override { }'}else{Block $source "void $name("}
  [IO.File]::WriteAllText("$out/$name.inc",$body)

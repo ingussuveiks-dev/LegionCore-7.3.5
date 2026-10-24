@@ -440,6 +440,8 @@ public:
         {
             if (me->GetEntry() != 98602 || me->GetMapId() != 1511)
                 return true;
+            if (!introDone || introPending)
+                return false;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
             return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 5;
         }
@@ -720,7 +722,7 @@ public:
             introVisualRetryTimer = introVisualRetryTimer > diff ? introVisualRetryTimer - diff : 0;
             UpdateIntro(diff);
             UpdateSpectreRush(diff);
-            if (!UpdateVictim())
+            if (!IsEncounterReady() || !UpdateVictim())
                 return;
 
             if (spectreActive || me->HasAura(195996))

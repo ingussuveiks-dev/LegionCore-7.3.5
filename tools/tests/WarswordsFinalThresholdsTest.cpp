@@ -18,7 +18,7 @@ struct Fixture
 {
     Creature actor;
     FinalBoss ai{&actor};
-    Fixture() { scenarioManager = {}; scenarioManager.scenario.step = 5; actor.entry = 98602; actor.active = &ai; ai.Reset(); }
+    Fixture() { scenarioManager = {}; scenarioManager.scenario.step = 5; actor.entry = 98602; actor.active = &ai; ai.Reset(); ai.introDone = true; }
 };
 int main()
 {
@@ -39,6 +39,13 @@ int main()
     scenarioManager.scenario.step = 0;
     assert(player.Deal(&fixture.actor, 200000) > 0 && !fixture.actor.alive && fixture.ai.texts.empty());
     std::cout << "BASELINE: pinned14774c59 actual post-scaled final handler permits stage0 lethal damage; no dialogue request is not damage admission. Controlled native scaling/death decision, not live client.\n";
+#elif defined(COMMUNION_BASELINE)
+    for (bool pending : {false, true})
+    {
+        Fixture fixture; Player player; fixture.ai.introDone = pending; fixture.ai.introPending = pending;
+        assert(player.Deal(&fixture.actor, 200000) > 0 && !fixture.actor.alive);
+    }
+    std::cout << "BASELINE: pinneda617a973 scaled lethal damage kills final Vigfus before/during communion at stage5. Controlled native scaling/current-suspended dispatch, not live client.\n";
 #else
     uint32 cases = 0;
     for (bool alliance : {false, true}) for (uint32 kind = 0; kind < 4; ++kind)
@@ -111,6 +118,23 @@ int main()
         assert(fixture.ai.phase1 && fixture.ai.phase2 && damage == 2000);
     }
     uint32 admissionCases = 0;
+    uint32 communionCases = 0;
+    for (bool done : {false, true}) for (bool pending : {false, true})
+        for (uint32 kind = 0; kind < 5; ++kind) for (bool alliance : {false, true}) for (bool suspended : {false, true})
+    {
+        Fixture fixture; Player player; player.alliance = alliance;
+        Unit pet, guardian, charmed, npc; pet.owner = guardian.owner = &player; charmed.charmer = &player;
+        Unit* attacker = std::vector<Unit*>{&player, &pet, &guardian, &charmed, &npc}[kind];
+        fixture.ai.introDone = done; fixture.ai.introPending = pending;
+        CreatureAI temporary; fixture.actor.active = suspended ? &temporary : &fixture.ai;
+        fixture.actor.i_disabledAI = suspended ? &fixture.ai : nullptr;
+        uint32 scaled = uint32(200000 / fixture.actor.GetHealthMultiplierForTarget(attacker));
+        bool ready = done && !pending;
+        assert(attacker->Deal(&fixture.actor, 200000) == (ready ? scaled : 0));
+        assert(fixture.actor.alive == !ready && fixture.actor.health == 100000 && player.credits == 0);
+        assert(fixture.ai.texts.size() == (ready ? 2u : 0u));
+        ++communionCases;
+    }
     for (uint32 step = 0; step < 9; ++step) for (uint32 kind = 0; kind < 5; ++kind)
         for (bool alliance : {false, true}) for (bool suspended : {false, true})
     {
@@ -143,6 +167,7 @@ int main()
         uint32 scaledLethal = uint32(200000 / fixture.actor.GetHealthMultiplierForTarget(&player));
         assert(player.Deal(&fixture.actor, 200000) == scaledLethal && !fixture.actor.alive);
     }
+    std::cout << "PASS: " << communionCases << " all intro-state/scaled lethal/current-suspended/owner/faction paths reject damage until completed nonpending communion without credit, healing or permanent immunity.\n";
     std::cout << "PASS: " << admissionCases << " actual scaled dispatch stage/owner-label/faction-label/current-suspended paths reject wrong-stage lethal damage; stationary4->5 and reverse transitions re-evaluate live state without persistent immunity or health repair.\n";
     std::cout << "PASS: " << cases << " actual native scale/hook/current-suspended/owner-label/faction-label paths; projected strict15/7 boundaries, unchanged stage5 damage/health and no quest grant, once-before-speech claims, invalid scope and reset/reentrant guards. Movement/speech are requests, not lethal-hit cinematic survival or client visuals.\n";
 #endif

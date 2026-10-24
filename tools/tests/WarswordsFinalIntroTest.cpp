@@ -112,10 +112,11 @@ struct ScriptedAI
     virtual void MoveInLineOfSight(Unit*) { }
     virtual void UpdateLifecycle(uint32) { }
     bool CanSeeEvenInPassiveMode() const { return seePassive; }
-    void AttackStart(Player* player) { attacked = player; ++attacks; }
+    virtual void AttackStart(Unit* target) { attacked = target ? target->ToPlayer() : nullptr; ++attacks; }
 };
 struct IntroAI : ScriptedAI
 {
+    uint32 victimChecks = 0, combatTicks = 0;
     explicit IntroAI(Creature* actor) : ScriptedAI(actor), summons(me) { introDone = false; }
 #include "Fields.inc"
 #include "Reset.inc"
@@ -123,6 +124,15 @@ struct IntroAI : ScriptedAI
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
 #include "UpdateLifecycle.inc"
+#include "EncounterReady.inc"
+#include "AttackStart.inc"
+    bool UpdateVictim() { ++victimChecks; return true; }
+    void UpdateSpectreRush(uint32) { }
+    void TickCombat(uint32 diff)
+    {
+#include "CombatTick.inc"
+        ++combatTicks;
+    }
     void TickVisual(uint32 diff)
     {
 #include "VisualTick.inc"
@@ -163,7 +173,15 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
 }
 int main()
 {
-#ifdef BUBBLE_BASELINE
+#ifdef COMMUNION_BASELINE
+    Fixture fixture;
+    fixture.ai.TickCombat(1); assert(fixture.ai.victimChecks == 1 && fixture.ai.combatTicks == 1);
+    fixture.Start(); assert(fixture.ai.introPending);
+    fixture.ai.TickCombat(1); assert(fixture.ai.victimChecks == 2 && fixture.ai.combatTicks == 2);
+    fixture.ai.AttackStart(&fixture.owner); assert(fixture.ai.attacks == 1 && fixture.ai.introPending);
+    std::cout << "BASELINE: pinneda617a973 calls native victim selection/tick and direct AttackStart before/during pending communion. Controlled timers/casts/world.\n";
+    return 0;
+#elif defined(BUBBLE_BASELINE)
     Fixture fixture;
     fixture.Start(); fixture.actor.Flush(); assert(!fixture.actor.bubble && fixture.ai.introDone && !fixture.ai.introPending);
     fixture.actor.bubble = true;
@@ -199,10 +217,30 @@ int main()
     assert(fixture.helya.aura && !fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     std::cout << "BASELINE: pinned f6b173ea acknowledges195062 on Helya herself, not Vigfus, and still starts843/8s. Controlled services; real native Spell/Aura recipient comparison runs separately.\n";
 #else
+    for (bool missing : {false, true})
+    {
+        Fixture fixture;
+        fixture.owner.distance = 1000;
+        fixture.ai.TickCombat(1); assert(!fixture.ai.victimChecks && !fixture.ai.combatTicks);
+        fixture.owner.distance = 1;
+        if (missing) fixture.actor.helya = nullptr;
+        else fixture.helya.castWorks = false;
+        fixture.Start(); fixture.ai.TickCombat(1000);
+        assert(!fixture.ai.introDone && !fixture.ai.introPending && !fixture.ai.victimChecks && !fixture.ai.combatTicks);
+        fixture.ai.AttackStart(&fixture.owner); assert(!fixture.ai.attacks);
+        fixture.actor.helya = &fixture.helya; fixture.helya.castWorks = true;
+        fixture.ai.TickCombat(1000); assert(fixture.ai.introDone && fixture.ai.introPending && !fixture.ai.victimChecks);
+        fixture.ai.AttackStart(&fixture.owner); assert(!fixture.ai.attacks);
+        fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && !fixture.ai.introPending);
+        fixture.ai.TickCombat(1); assert(fixture.ai.victimChecks == 1 && fixture.ai.combatTicks == 1);
+        fixture.ai.Reset(); fixture.ai.TickCombat(1);
+        assert(fixture.ai.introDone && fixture.ai.victimChecks == 2 && fixture.ai.combatTicks == 2);
+    }
     for (uint32 invalid = 0; invalid < 19; ++invalid)
     {
         Fixture fixture; Invalidate(fixture, invalid, false); fixture.Start();
         assert(!fixture.owner.conversations && !fixture.ai.introDone && fixture.actor.callbacks.empty() && !fixture.helya.casts && !fixture.actor.auraRemovals);
+        assert(fixture.ai.IsEncounterReady() == (fixture.actor.mapId != 1511));
     }
     for (uint32 stage = 0; stage < 8; ++stage) for (uint32 status = 0; status < 7; ++status)
     {
@@ -236,6 +274,7 @@ int main()
     {
         Fixture fixture; fixture.Start(); Invalidate(fixture, invalid, true); fixture.actor.Flush();
         assert(!fixture.ai.attacks && !fixture.actor.auraRemovals && !fixture.ai.introDone && !fixture.ai.introPending);
+        assert(fixture.ai.IsEncounterReady() == (fixture.actor.mapId != 1511));
         fixture.owner = Player{}; fixture.actor.mapId = 1511; fixture.actor.instance = 42; fixture.actor.alive = fixture.actor.world = true;
         scenarioManager = {}; ObjectAccessor::players[1] = &fixture.owner;
         fixture.Start(); fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && fixture.ai.attacked == &fixture.owner);
@@ -243,6 +282,7 @@ int main()
     {
         Fixture fixture; fixture.Start(); auto obsolete = std::move(fixture.actor.callbacks.front()); fixture.actor.callbacks.clear();
         fixture.ai.Reset(); fixture.Start(); obsolete(); assert(fixture.ai.introPending && !fixture.ai.attacks && !fixture.actor.auraRemovals);
+        fixture.ai.TickCombat(1); assert(!fixture.ai.victimChecks && !fixture.ai.combatTicks);
         fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && fixture.ai.attacked == &fixture.owner);
     }
     {
@@ -395,6 +435,6 @@ int main()
         fixture.ai.UpdateLifecycle(1);
         assert(fixture.actor.bubble);
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Pending Reset retains initial bubble; completed intro clears native-evade or late-respawn addon reapplication without repeated removals; dead-only lifecycle clears late corpse reapplication, only98602/1511. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Actual IsEncounterReady/AttackStart/UpdateAI prefix excludes victim dispatch during missing/failed/pending intro; actual8s eligible callback opens combat, completed Reset preserves retry. Pending Reset retains initial bubble; completed intro clears native-evade or late-respawn addon reapplication without repeated removals; dead-only lifecycle clears a surviving corpse aura, only98602/1511. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
 #endif
 }

@@ -46,6 +46,7 @@ struct Creature : Unit
     ScriptedAI* AI() override { return brain; }
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return 1511; }
+    uint32 GetInstanceId() const { return 42; }
     ObjectGuid GetGUID() const { return guid; }
     bool IsAlive() const { return alive; }
     bool HasAura(uint32 identity) const { assert(identity == 195996); return aura; }
@@ -124,6 +125,9 @@ void Unit::NotifyDeath(Creature* creature)
 #include "DeathDispatch.inc"
 }
 int irand(int minimum, int maximum) { assert(minimum == -5 && maximum == 5); return 0; }
+struct Scenario { uint32 GetScenarioId() const { return 944; } uint32 GetCurrentStep() const { return 5; } };
+struct ScenarioManager { Scenario scenario; Scenario* GetScenario(uint32 instance) { return instance == 42 ? &scenario : nullptr; } } scenarioManager;
+auto* sScenarioMgr = &scenarioManager;
 struct FinalBoss : ScriptedAI
 {
     explicit FinalBoss(Creature* actor) : ScriptedAI(actor), summons(me)
@@ -134,6 +138,7 @@ struct FinalBoss : ScriptedAI
     }
     void UpdateIntro(uint32) { }
 #include "Fields.inc"
+#include "EncounterReady.inc"
 #include "Reset.inc"
 #include "JustSummoned.inc"
 #include "SummonedCreatureDies.inc"
@@ -180,7 +185,11 @@ struct Fixture
     Creature actor;
     FinalBoss ai{&actor};
     Unit player, pet, guardian, npc;
-    Fixture() { ObjectAccessor::creatures.clear(); ai.Reset(); }
+    Fixture() { ObjectAccessor::creatures.clear(); ai.Reset();
+#ifndef FIRST
+        ai.introDone = true;
+#endif
+    }
     ~Fixture() { ObjectAccessor::creatures.clear(); }
     void Kill(Creature* summon, Unit* killer) { summon->alive = false; killer->NotifyDeath(summon); }
     Creature* Child(uint32 index) { return actor.children.at(index).get(); }

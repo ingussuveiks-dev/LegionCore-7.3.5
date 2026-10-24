@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HelyaBaseline,[switch]$TargetBaseline,[switch]$BubbleBaseline,[switch]$CommunionBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
+if(@($Baseline,$HelyaBaseline,$TargetBaseline,$BubbleBaseline,$CommunionBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $HelyaBaseline -or $TargetBaseline -or $BubbleBaseline -or $CommunionBaseline) -and $VerifyReleaseBinary)){throw 'Select one baseline without repaired Release verification'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/warswords-final-intro"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -11,6 +11,7 @@ if($Baseline){$source=(& git -C $repo show "9dd043ad:$path") -join "`n";if($LAST
 if($HelyaBaseline){$source=(& git -C $repo show "a5a82529:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya baseline'}}
 if($TargetBaseline){$source=(& git -C $repo show "f6b173ea:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned Helya target baseline'}}
 if($BubbleBaseline){$source=(& git -C $repo show "05cd027c:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned bubble reset baseline'}}
+if($CommunionBaseline){$source=(& git -C $repo show "a617a973:$path") -join "`n";if($LASTEXITCODE){throw 'Missing pinned communion baseline'}}
 $source=$source.Substring($source.IndexOf('class npc_vigfus_bladewind_last :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 if($first -lt 0 -or $last -le $first){throw 'Final intro member fields missing'}
@@ -25,12 +26,17 @@ $lifecycle=if($source.Contains('void UpdateLifecycle(')){Block $source 'void Upd
 $tick=''
 if(!$Baseline -and !$HelyaBaseline){$update=Block $source 'void UpdateAI(';$tick=$update.Substring($update.IndexOf('{')+1);$tick=$tick.Substring(0,$tick.IndexOf('            UpdateIntro(diff);'))}
 [IO.File]::WriteAllText("$out/VisualTick.inc",$tick)
+foreach($entry in @(@('EncounterReady','bool IsEncounterReady('),@('AttackStart','void AttackStart('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",$(if($source.Contains($entry[1])){Block $source $entry[1]}else{''}))}
+$update=Block $source 'void UpdateAI('
+$first=$update.IndexOf('{')+1;$last=$update.IndexOf('            if (spectreActive')
+$combat=if($last -gt $first){$update.Substring($first,$last-$first)}else{''}
+[IO.File]::WriteAllText("$out/CombatTick.inc",$combat)
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/GetPlayer.inc",(Block $source 'Player* ObjectAccessor::GetPlayer('))
 $source=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/ObjectInMap.inc",(Block $source 'template<class T> static T* GetObjectInMap('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($HelyaBaseline){'/DHELYA_BASELINE'}elseif($TargetBaseline){'/DTARGET_BASELINE'}elseif($BubbleBaseline){'/DBUBBLE_BASELINE'}elseif($CommunionBaseline){'/DCOMMUNION_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/WarswordsFinalIntroTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Final intro native regression failed'}
 if($VerifyReleaseBinary){
