@@ -42,6 +42,9 @@ int main(int argc, char** argv)
     for (uint32 identity : {103289u, 103242u, 103441u, 106998u, 107282u, 103501u, 107281u, 103558u, 103652u})
         std::cout << "BASE_BROADCAST\t" << identity << '\t' << bool(texts.LookupEntry(identity)) << '\n';
     texts.LoadFromDB();
+    lines.LoadFromDB();
+    kits.LoadFromDB();
+    sounds.LoadFromDB();
     displays.LoadFromDB();
     effects.LoadFromDB();
     misc.LoadFromDB();
@@ -64,6 +67,15 @@ int main(int argc, char** argv)
         if (visual->SpellID == 206638 || visual->SpellID == 46957)
             std::cout << "INTERROGATION_VISUAL\t" << visual->SpellID << '\t' << visual->SpellVisualID << '\t'
                 << uint32(visual->DifficultyID) << '\n';
+    uint32 interrogationSpellCreators = 0;
+    for (auto effect : effects)
+        if (effect->Effect == 219 && (effect->EffectMiscValue[0] == 1033 || effect->EffectMiscValue[0] == 1556))
+        {
+            ++interrogationSpellCreators;
+            std::cout << "INTERROGATION_CREATOR\t" << effect->SpellID << '\t' << effect->EffectMiscValue[0] << '\t'
+                << effect->EffectIndex << '\t' << uint32(effect->DifficultyID) << '\n';
+        }
+    std::cout << "INTERROGATION_SPELL_CREATORS\t" << interrogationSpellCreators << '\n';
     uint32 storyCasts = 0;
     for (auto entry : misc)
         if (entry->SpellID == 200832 && !entry->DifficultyID)

@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-24",
+  "build": "7.3.5.26972",
+  "scope": "Native1033 capture and1556 Inquisitor introduction conversation lifetimes. Partial presentation repair, not exact client scheduling, full encounter or36-route certification.",
+  "findings": {
+    "capture": "1033 used two virtual conversation_actor rows of9000ms, producing23000ms including the native5000ms padding. Fully decoded local voices total26552ms even before the three3000ms AdditionalDuration gaps. Packed final voice+gap ends25981ms; the conservative ordered voice/gap end is35552ms. The old23000ms lifetime does not cover these bounds. With the unchanged native padding, the safety budget is40552ms.",
+    "introduction": "1556 used a single3450ms actor, producing8450ms including padding. Its full decoded voice is8505ms after upward rounding, already55ms beyond that lifetime, before its native1000ms gap. Voice/gap end9505ms plus unchanged native5000ms requires14505ms. This is a full-payload budget comparison, not proof that an audible word was cut at an exact55ms boundary; leading/trailing silence and precise client playback still need observation.",
+    "producer": "Production GenerateDynamicFieldData prefers conversation_actor when nonempty, otherwise conversation_creature; it does not sum both branches. Actor duration contributes only to the aggregate deadline/lifetime, not the six serialized actor appearance fields. CreateConversation retains its30000ms zero-duration fallback and adds5000ms. Actual Update expires from the caster's registered playback elapsed time. No global producer, expiry, actor rendering, cast or progress code changed.",
+    "repair": "Guarded09 changes only1033 primary actor0 duration9000->27000 and1556 actor0 duration3450->10000.1033 secondary actor remains9000, yielding41000ms;1556 yields15000ms. Margins above the conservative voice/gap+padding bounds are448ms and495ms. All original line IDs, packed offsets, speaker/actor/display/flag fields, visual/animation references, speech and gameplay timers remain unchanged. Do not delay boss combat until these longer presentation lifetimes expire.",
+    "shared_use": "Live SmartAI206 creators are only Vereesa100397 row33/1556 and row36/1033. Native matching SpellEffect plus actual Hotfix overlay finds zero effect219 creators for either ID; live static conversation spawns for both IDs are zero. Bounded script-source search found no other direct creator, ignoring an unrelated numeric coordinate match. This is not an exhaustive claim about future/custom content."
+  },
+  "native_audio": {
+    "units": "milliseconds; complete mono Vorbis payload duration rounded upward, worst alternative per line rather than summing mutually exclusive voice alternatives",
+    "1033": {
+      "old_lifetime":23000,
+      "new_lifetime":41000,
+      "absolute_voice_gap_end":25981,
+      "ordered_voice_gap_end":35552,
+      "native_padding":5000,
+      "lines":[
+        {"id":2539,"packed_start":0,"voice":10393,"additional":3000,"ordered_start":0,"ordered_end":13393},
+        {"id":2541,"packed_start":5500,"voice":2178,"additional":3000,"ordered_start":13393,"ordered_end":18571},
+        {"id":2543,"packed_start":9000,"voice":13981,"additional":3000,"ordered_start":18571,"ordered_end":35552}
+      ]
+    },
+    "1556": {
+      "old_lifetime":8450,
+      "new_lifetime":15000,
+      "absolute_voice_gap_end":9505,
+      "ordered_voice_gap_end":9505,
+      "native_padding":5000,
+      "lines":[{"id":3422,"packed_start":0,"voice":8505,"additional":1000,"ordered_start":0,"ordered_end":9505}]
+    },
+    "payloads":[
+      {"soundkit":61804,"file":1382619,"voice":10393,"sha256":"BBE0C6684A8B1BA0FC6F4B83C99A1524D22E7936DE0D18323E8DC03D9F270B82"},
+      {"soundkit":61805,"file":1382620,"voice":13981,"sha256":"377F8469C92BFA44F2D9A91DC55C66E544AD69C8F4D662102405E85DBCC069C1"},
+      {"soundkit":61806,"file":1382621,"voice":2178,"sha256":"89501FB08544A14988196A5F799936772E2C220A0BCED0D928728C89B354F76F"},
+      {"soundkit":61812,"file":1382642,"voice":8505,"sha256":"8A70356A8F15492DFE74D145B316D84446E3950C0A42FECADC706D12A36919A3"}
+    ],
+    "limits": "The ordered bound is conservative, not a reverse-engineered full client scheduler. The packed-offset bound is also retained. Network/first-visibility delay, actual audible content and client rendering are not certified by payload decoding. No voice or video media committed."
+  },
+  "sources": {
+    "local_first": "Actual actor/line/creature rows, complete native Conversation Generate/Create/Update/playback bodies, matching typed ConversationLine/BroadcastText/SoundKit entries and actual read-only Hotfix overlay. Reader now explicitly overlays line/kit/file stores too; direct census finds zero relevant line/kit/file overrides for these four voices, so this does not change the measured baseline. Read-only local CASC payload reads, FFprobe metadata, full FFmpeg decode and index hashes; no character queries, grants or resets. Previous admission audit supplies the unchanged downstream SmartAI/cast/eye/death trace.",
+    "trinity": "Reviewed exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c Conversation.cpp LastLineEndTime use. Its template deadline and delta-time implementation differ from this core's custom actor-duration sum/playback-clock implementation. No incompatible template/schema or duration engine copied.",
+    "github": "Targeted conversation_actor/1033/9000 and conversation_actor/1556/3450 searches found no usable independent lifetime repair. Existing bounded donor review retained; no external implementation imported.",
+    "video": {
+      "url":"https://www.youtube.com/watch?v=Ir4d93HcwdU",
+      "title":"Rescue Mission WoW Marksmanship Hunter Artifact Scenario",
+      "channel":"ZaFrostPet",
+      "reviewed":"New confirmed paused rendered samples14:07,14:12,14:27 and14:42, including an enlarged14:27 view. Initial stale13:22 accessibility value is excluded: the actual pause was15:47 after unattended playback. The intervening video was not reviewed, then an explicit back-seek returned to14:07. Further samples were sought while paused; this was muted sparse-frame review, not a full video, continuous relevant sequence, audio listening or confirmed26972 recording. Temporary tab13 closed.",
+      "observations":"14:07 shows Vereesa's Alleria question.14:12 shows 'No!', a yellow-green enclosing effect and Qormaladon's first 'Another Windrunner...' cue.14:27 shows the final 'This Vereesa should prove useful...' cue while the boss is already taking damage;14:42 shows later combat/player stun and the prior dialogue in chat. Thus combat overlaps the monologue in this reference; no new waiting barrier, boss invulnerability or delayed credit was introduced. The visible effect is compatible with the previously traced native Fel Shield timing, but appearance alone does not prove its full visual-kit/attachment mapping. Small chat timestamps are not used as exact playback measurements."
+    }
+  },
+  "checks": [
+    "Test-MarksmanshipInterrogationBudget.ps1 -VerifyReleaseBinary passes before and after deployment. Actual-schema TEMPORARY fixtures apply09 twice, compare every other actor/line/creature field across the full tables, export actual definitions and normalized pre-fix baseline fixtures. Custom primary/secondary durations, actor/display/creature/flag fields, line/offset/speaker, extra actor/line or mixed creature branch refuse the relevant update. The other unmodified conversation still repairs independently.",
+    "Compiled extracted production actor payload/aggregate lifetime/playback expiry bodies reproduce23000/8450 expiry before the audited checkpoints and retain repaired41000/15000 through the voice/gap+padding boundaries, then expire normally. Every actor and line payload field is retained; no live NPC lookup is substituted for the native virtual-actor branch. Re-entry as a fresh object, wrong/missing definitions,35s zero-duration fallback and scope-expired cleanup branch remain exercised. Clock/map/scope primitives are controlled hosts, not proof that a real abandoned quest assigns the required scope.",
+    "Test-MarksmanshipFarewellAudio.ps1 now accepts only the known1072/1033/1556 definitions, validates native line order/count and actor-versus-creature branch, uses actual LIVE rows by default and preserves its optional fixture input. Old baseline1033/1556 fixtures explicitly fail their full-decode budget checks; failed summaries are retained privately. Repaired TEMP fixtures and then actual LIVE data both pass. All four interrogation payloads fully decoded; all32 client index hashes unchanged. Original1072 six-line/silent-marker/five-file QA still passes50300ms protection.",
+    "Native PE verifies canonical duration producer, unchanged zero fallback/padding, payload/last-line/lifetime stores, elapsed-time consumer and cleanup. Test-MarksmanshipInquisitorAdmission.ps1 -VerifyReleaseBinary (including Herald admission prerequisite) and Test-ScepterLogin.ps1 -VerifyReleaseBinary pass. No server C++ implementation changed; source-host tests do not prove the whole scenario's client behavior."
+  ],
+  "deployment": {
+    "directory":"build-extractors/bin/Release",
+    "worldserver_sha256":"5514E045136C2CB08D9A3F61DE6406D7E664CB4BA2E61F7EFEC0E2D671FD373D",
+    "migration_sha1":"33F7BBCD19DE59F9B12B58B173359934A8360F7F",
+    "readback":"Native updater records09 with the exact SHA1 RELEASED. Live actor1033/0=27000,1033/1=9000,1556/0=10000 and native aggregate lifetimes41000/15000. Scoped non-character actor backup retained privately; no historical released SQL edited.",
+    "startup":"Task-owned PID5252 reached World initialized and gracefully exited0. Newly appended DBErrors0 bytes, protected configuration/certificates unchanged. No user/unknown server stopped; no task-owned world/bnet server remains.",
+    "build":"Data-only production changes; no new server build claimed. Canonical executable unchanged and implementation checked. Original generated Release final-link dependencies retain scripts/Release/scripts.lib and game/Release/game.lib, with no global OutDir override.",
+    "private_evidence":".codex/marksmanship-interrogation-*, marksmanship-audio-*-baseline/live summaries and logs, local payload hashes, scoped backup and ignored runtime-test fixtures. Runtime secrets, client/media and personal character data excluded from Git."
+  },
+  "remaining": [
+    "Actual full voice playback, captions/actor poses, exact client scheduling, relative concurrent TALK/1556/1033 timing, complete visual-kit/model/attachment/animation trace and recording-build fidelity remain unverified. This is a bounded lifetime repair, not a new choreography claim.",
+    "Vereesa combat/missing-path one-shot loss, failed casts/missing source or conversation creation, actual abandonment/reconnect scope and replay, eye/scaled one-hit/group/faction alternatives, discovery group7 and full40419 objective storage remain open in the preceding audits.",
+    "Real weapon loot/equip/use/full-bag/save and the other36-route full video/client reviews remain pending. Monday traversal remains with the user; native/asset/startup evidence is kept separate."
+  ]
+}

@@ -27,7 +27,14 @@ using Unit=WorldObject;
 #include "ConversationStructs.inc"
 struct Store {
     std::vector<ConversationCreature> creatures;std::vector<ConversationData> lines;std::vector<ConversationActor> actors;
+#ifdef MARKSMANSHIP_INTERROGATION_TEST
+    uint32 identity=0;
+    auto GetConversationData(uint32 entry){return identity==entry?&lines:nullptr;}
+    auto GetConversationCreature(uint32 entry){return identity==entry?&creatures:nullptr;}
+    auto GetConversationActor(uint32 entry){return identity==entry?&actors:nullptr;}
+#else
     auto GetConversationData(uint32){return &lines;}auto GetConversationCreature(uint32){return &creatures;}auto GetConversationActor(uint32){return &actors;}
+#endif
 } store;
 auto sConversationDataStore=&store;
 struct ConversationDynamicFieldActors {uint32 actorId,creatureId,displayId,unk1,unk2,unk3;};
@@ -38,7 +45,12 @@ struct Conversation {
     uint32 entry=1072,deadline=0,lifetime=0,casterGUID=42;bool questExpired=false,removed=false;
     std::map<uint32,uint32> playing{{42,100}};
     std::map<uint32,ConversationDynamicFieldCreatures> creatures;std::map<uint32,ConversationDynamicFieldLines> lines;
+#ifdef MARKSMANSHIP_INTERROGATION_TEST
+    std::map<uint32,ConversationDynamicFieldActors> actors;
+    void SetActor(ConversationDynamicFieldActors* value,uint32 index,bool){actors[index]=*value;}
+#else
     void SetActor(ConversationDynamicFieldActors*,uint32,bool){assert(false);}
+#endif
     void SetCreature(ConversationDynamicFieldCreatures* value,uint32 index,bool){creatures[index]=*value;}
     void SetLine(ConversationDynamicFieldLines* value,uint32 index,bool){lines[index]=*value;}
     void SetUInt32Value(uint32 field,uint32 value){assert(field==7);deadline=value;}
@@ -56,6 +68,7 @@ struct Conversation {
 #include "ConversationData.inc"
 #include "Update.inc"
 #include "Playback.inc"
+#ifndef MARKSMANSHIP_INTERROGATION_TEST
 int main(int argc,char** argv){
     _set_abort_behavior(0,_CALL_REPORTFAULT);assert(argc==2);std::ifstream input(argv[1]);std::string text;
     while(std::getline(input,text)){std::istringstream row(text);std::string kind;row>>kind;
@@ -100,3 +113,4 @@ int main(int argc,char** argv){
     }
     std::cout<<"PASS: actual conversation payload/lifetime/update bodies reproduce12950ms expiry before3 lines; configured"<<fixedDeadline<<"ms lifetime retains all6 native slots, player sentinel and live actor GUIDs, then expires normally or on scope expiry. Missing actors reject creation; map/clock/visibility remain controlled hosts.\n";
 }
+#endif
