@@ -13,6 +13,7 @@ struct Unit;
 struct Creature;
 struct CreatureAI {
     virtual ~CreatureAI()=default;
+    virtual void Reset() { }
     virtual void DamageTakenAfterScaling(Unit*,uint32&,DamageEffectType) { }
 };
 struct InstanceScript { void OnCreatureDamageTaken(Creature*,Unit*,uint32&) { } };
@@ -63,6 +64,7 @@ struct SmartAI : CreatureAI {
     Script script;
     explicit SmartAI(Creature* actor):me(actor) { }
     Script* GetScript() { return &script; }
+    void Reset() override { }
     void DamageTaken(Unit*,uint32&,DamageEffectType);
 };
 #include "SmartDamage.inc"

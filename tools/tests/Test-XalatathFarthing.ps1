@@ -5,7 +5,7 @@ $out="$repo/build-extractors/runtime-test/xalatath-farthing"
 New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-[IO.File]::WriteAllText("$out/Farthing.inc",(Section $source 'namespace XalatathFarthing' 'namespace XalatathPresentation'))
+[IO.File]::WriteAllText("$out/Farthing.inc",(Section $source 'namespace XalatathFarthing' 'namespace XalatathSoulAttack'))
 if(!$source.Contains('RegisterCreatureAI(npc_xalatath_farthing);')){throw 'Missing creature registration'}
 $source=Get-Content "$repo/src/server/game/AI/SmartScripts/SmartAI.cpp" -Raw
 [IO.File]::WriteAllText("$out/SmartDamage.inc",(Section $source 'void SmartAI::DamageTaken(' 'void SmartAI::HealReceived('))

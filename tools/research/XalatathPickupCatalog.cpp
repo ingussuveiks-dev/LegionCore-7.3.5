@@ -40,6 +40,19 @@ int main(int argc,char** argv){
     for (auto effect : effects)
         if (!effect->DifficultyID && (effect->SpellID == 201791 || effect->SpellID == 201899))
             std::cout << "TARGET\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+    DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    if (!miscellaneous.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
+        return 14;
+    miscellaneous.LoadFromDB(); castTimes.LoadFromDB();
+    for (auto entry : miscellaneous)
+        if (!entry->DifficultyID && entry->SpellID == 201899)
+        {
+            auto castTime = castTimes.LookupEntry(entry->CastingTimeIndex);
+            if (!castTime)
+                return 15;
+            std::cout << "CAST\t" << entry->SpellID << '\t' << castTime->Base << '\t' << entry->Speed << '\t' << entry->LaunchDelay << '\n';
+        }
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
     DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     if (!items.Load(argv[1], 0) || !children.Load(argv[1], 0))

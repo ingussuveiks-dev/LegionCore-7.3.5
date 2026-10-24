@@ -1441,6 +1441,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "soul_attack_retry_repair_audit": "docs/audits/xalatath-soul-attack-retry-2026-10-24.json",
+      "soul_attack_retry_review": "43 scopes102247's original201899 to its actual Farthing summoner via native invoker7 and a selected SmartAI wrapper; retries normal failed/unacknowledged casts every5s only in live1539/991/7/61204/HP<=1% owner context, stopping on actual own-target SpellHitTarget rather than CastSpell acceptance. Farthing reset generations cancel old future retries without custom SetData slots or fabricated progression. Guarded TEMP14 variants, native callback/policy/lifecycle fixture, actual canonical vtables/branches, final Release and own clean startup checked. Missing child creation, other finale casts, nearest-player credit, full abandonment/re-entry, full video/audio and client visuals/loot/equip remain pending.",
       "map_insertion_repair_audit": "docs/audits/gameobject-summon-insertion-2026-10-24.json",
       "map_insertion_review": "Shared WorldObject/Map summon APIs now clean rejected allocations through native owner/transport-aware virtual cleanup and return null on AddToMap(false), allowing42's existing retry to retain Farthing. Controlled native baseline/matrix, actual StaticTransport cleanup vtable and canonical return branches checked; no live grid failure injected or client visibility/loot certified. Native map ASSERT remains intact; full chain remains unfinished.",
       "weapon_summon_retry_repair_audit": "docs/audits/xalatath-weapon-summon-retry-2026-10-24.json",

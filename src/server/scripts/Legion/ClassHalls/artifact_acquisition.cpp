@@ -1406,11 +1406,94 @@ void Protect(Creature* actor, Unit* attacker, uint32& damage)
 struct npc_xalatath_farthing : SmartAI
 {
     explicit npc_xalatath_farthing(Creature* actor) : SmartAI(actor) { }
+    void Reset() override
+    {
+        ++finaleGeneration;
+        SmartAI::Reset();
+    }
+    uint32 GetFinaleGeneration() const { return finaleGeneration; }
     void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
     {
         SmartAI::DamageTakenAfterScaling(attacker, damage, type);
         XalatathFarthing::Protect(me, attacker, damage);
     }
+
+private:
+    uint32 finaleGeneration = 0;
+};
+
+namespace XalatathSoulAttack
+{
+Creature* Target(Creature* actor)
+{
+    if (!actor || actor->GetEntry() != 102247 || !actor->IsInWorld() || !actor->IsAlive() || actor->GetMapId() != 1539)
+        return nullptr;
+    TempSummon* summon = actor->ToTempSummon();
+    Unit* summoner = summon ? summon->GetSummoner() : nullptr;
+    Creature* owner = summoner ? summoner->ToCreature() : nullptr;
+    if (!owner || owner->GetEntry() != 101148 || !owner->IsInWorld() || !owner->IsAlive() ||
+        owner->GetMap() != actor->GetMap() || !owner->InSamePhase(actor) || !actor->IsWithinDistInMap(owner, 30.0f) ||
+        !owner->HasAura(61204) || owner->GetHealthPct() > 1.0f || !owner->IsAIEnabled ||
+        !dynamic_cast<npc_xalatath_farthing*>(owner->AI()))
+        return nullptr;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 991 && scenario->GetCurrentStep() == 7 ? owner : nullptr;
+}
+}
+
+struct npc_xalatath_soul_attack : SmartAI
+{
+    explicit npc_xalatath_soul_attack(Creature* actor) : SmartAI(actor) { }
+
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (summoner && summoner == XalatathSoulAttack::Target(me))
+        {
+            generation = static_cast<npc_xalatath_farthing*>(summoner->ToCreature()->AI())->GetFinaleGeneration();
+            activated = true;
+            SmartAI::IsSummonedBy(summoner);
+        }
+    }
+
+    void SpellHitTarget(Unit* target, SpellInfo const* spell) override
+    {
+        SmartAI::SpellHitTarget(target, spell);
+        if (activated && spell && spell->Id == 201899 && target && target == XalatathSoulAttack::Target(me) &&
+            generation == static_cast<npc_xalatath_farthing*>(target->ToCreature()->AI())->GetFinaleGeneration())
+            acknowledged = true;
+    }
+
+    void UpdateAI(uint32 diff) override
+    {
+        SmartAI::UpdateAI(diff);
+        if (!activated || acknowledged)
+            return;
+        if (retryTimer > diff)
+        {
+            retryTimer -= diff;
+            return;
+        }
+        retryTimer = 5000;
+        Creature* owner = XalatathSoulAttack::Target(me);
+        if (!owner)
+            return;
+        if (generation != static_cast<npc_xalatath_farthing*>(owner->AI())->GetFinaleGeneration())
+        {
+            activated = false;
+            return;
+        }
+        if (me->IsNonMeleeSpellCast(false))
+            return;
+        SpellCastResult result = me->CastSpell(owner, 201899, false);
+        if (result != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts.ai", "Xalatath: soul attack 201899 failed with result %u; retain Farthing and retry the native cast", uint32(result));
+    }
+
+private:
+    bool acknowledged = false;
+    bool activated = false;
+    uint32 generation = 0;
+    uint32 retryTimer = 5000;
 };
 
 namespace XalatathPresentation
@@ -1500,6 +1583,7 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_ambush_event();
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterCreatureAI(npc_xalatath_farthing);
+    RegisterCreatureAI(npc_xalatath_soul_attack);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);
     new go_artifact_acquisition();
