@@ -602,6 +602,8 @@
       "weapon_visuals_repair_audit": "docs/audits/titanstrike-weapon-visuals-2026-10-23.json",
       "pickup_admission_repair_audit": "docs/audits/titanstrike-pickup-admission-2026-10-24.json",
       "huey_return_admission_repair_audit": "docs/audits/titanstrike-huey-return-admission-2026-10-24.json",
+      "pickup_cast_admission_repair_audit": "docs/audits/titanstrike-pickup-cast-admission-2026-10-24.json",
+      "pickup_cast_review": "Native source17 now rechecks active owned Hunter42185/map1609/1099/4-5 and life when212010 executes after action85's200ms queue. Original24 event gates remain; late cast has28 conditions. Predicate and delayed native consumer boundaries verified separately; actual visual/equip and consumed-chest retry remain pending.",
       "huey_return_review": "Final106854 source18 now admits the actual active42185/owned128861 Hunter at1099/5 rather than demanding rewarded41574. Independent source22 final root validates claimant/actor; both outgoing scopes exclude final actor1609 to prevent early/repeated wrong1495 teleports. Native click/condition/PE and SQL evidence is not actual flight/client verification.",
       "start": 41541,
       "status": "partial: inherit earlier workshop/runes/wind/weapon/final42185 pickup repairs in linked audits.249812 now requires actual map1609/scenario1099/4-5 for opening/owned replay; real loot20 and completed-loot root24 conditions retain active Hunter42185 and actual ownership before native scene/50923/bird/cleanup. Native/SQL/deployed guards verified; final delayed-cast/equip/visual/exit retry, prerequisites, re-entry and full client traversal/video remain pending",

@@ -2,6 +2,7 @@
   "date": "2026-10-24",
   "build": "7.3.5.26972",
   "huey_return_followup": "docs/audits/titanstrike-huey-return-admission-2026-10-24.json",
+  "delayed_cast_followup": "docs/audits/titanstrike-pickup-cast-admission-2026-10-24.json",
   "scope": "Never Hunt Alone42185/scenario1099: final Titanstrike opening, real loot and completed-loot root admission. Partial repair, not full scenario, delayed-cast, visual, inventory or client certification.",
   "inherited": [
     "docs/audits/titanstrike-final-pickup-2026-10-23.json",

@@ -13,7 +13,7 @@ using QuestStatus = uint32;
 uint32 expectedQuest = 40385, expectedMap = 1511, expectedScenario = 973, firstStage = 12, expectedItem = 128808;
 uint32 lastStage = 13, eventEntry = 248419, eventSource = 1;
 enum { CONDITION_ITEM = 2, CONDITION_CLASS = 15, CONDITION_MAPID = 22, CONDITION_SCENARION_STEP = 44,
-    CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8,
+    CONDITION_QUESTTAKEN = 9, CONDITION_QUEST_COMPLETE = 28, CONDITION_QUESTREWARDED = 8, CONDITION_ALIVE = 36,
     QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1, QUEST_STATUS_REWARDED = 6 };
 #define TC_LOG_DEBUG(...) ((void)0)
 #define ASSERT(value) assert(value)
@@ -23,6 +23,8 @@ struct Map { bool instanced = true; InstanceMap* ToInstanceMap() { return instan
 struct Unit {
     virtual ~Unit() = default;
     uint32 mapId = expectedMap, classMask = 4;
+    bool alive = true;
+    bool IsAlive() const { return alive; }
     virtual Player* ToPlayer() { return nullptr; }
     Unit* ToUnit() { return this; }
     bool IsCreature() const { return false; }
@@ -106,6 +108,7 @@ int main(int argc, char** argv) {
     assert(argc == 2 || argc == 3);
     if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; lastStage = 8; expectedItem = 128826; scenarioManager = {}; }
     bool titanstrike = argc == 3 && std::string(argv[2]).find("titanstrike-") == 0;
+    bool castAdmission = argc == 3 && std::string(argv[2]) == "titanstrike-cast";
     if (titanstrike) { expectedQuest = 42185; expectedMap = 1609; expectedScenario = 1099; firstStage = 4; lastStage = 5; expectedItem = 128861; eventEntry = 249812; scenarioManager = {}; }
     bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot";
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
@@ -113,7 +116,7 @@ int main(int argc, char** argv) {
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
-    std::ifstream input(argv[1]); std::vector<Condition> rows(returnEvent ? 12 : ownedReplay ? 24 : 20);
+    std::ifstream input(argv[1]); std::vector<Condition> rows(castAdmission ? 28 : returnEvent ? 12 : ownedReplay ? 24 : 20);
     for (Condition& condition : rows) {
         uint32 target = 0;
         assert(input >> condition.ElseGroup >> condition.ConditionType >> target >> condition.ConditionValue1 >> condition.ConditionValue2 >> condition.ConditionValue3 >> condition.NegativeCondition);
@@ -165,6 +168,11 @@ int main(int argc, char** argv) {
         assert(!item.AllowedForPlayer(&player) && !cache.Read(&player, &item));
     }
     worldMap.instanced = true; instanceMap.id = 42; scenarioManager = {};
+    if (castAdmission) {
+        Player dead; dead.alive = false;
+        assert(!item.AllowedForPlayer(&dead) && !cache.Read(&dead, &item));
+        assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &dead, &dead));
+    }
     Player player; player.status = QUEST_STATUS_COMPLETE; player.rewarded = true;
     assert(!item.AllowedForPlayer(&player));
     LootItem unrelated; assert(unrelated.AllowedForPlayer(&player));

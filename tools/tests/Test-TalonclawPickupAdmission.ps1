@@ -1,4 +1,4 @@
-param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot)
+param([switch]$VerifyReleaseBinary,[string]$MarksmanshipRowsPath,[switch]$MarksmanshipLoot,[switch]$MarksmanshipRoot,[switch]$MarksmanshipReturn,[switch]$MarksmanshipDialogue,[string]$TitanstrikeRowsPath,[switch]$TitanstrikeRoot,[switch]$TitanstrikeCast)
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/talonclaw-pickup-admission"
@@ -55,6 +55,7 @@ if($other -ne $saved){throw 'Unrelated loot conditions changed'}
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,$first);if($first -lt 0 -or $last -le $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/game/Conditions/ConditionMgr.cpp" -Raw
 $cases=(Section $source '        case CONDITION_ITEM:' '        case CONDITION_ITEM_EQUIPPED:')+(Section $source '        case CONDITION_CLASS:' '        case CONDITION_RACE:')+(Section $source '        case CONDITION_QUESTREWARDED:' '        case CONDITION_QUEST_NONE:')+(Section $source '        case CONDITION_MAPID:' '        case CONDITION_AREAID:')+(Section $source '        case CONDITION_SCENARION_STEP:' '        case CONDITION_REALM_ACHIEVEMENT:')
+$cases+=(Section $source '        case CONDITION_ALIVE:' '        case CONDITION_HP_VAL:')
 [IO.File]::WriteAllText("$out/Conditions.inc",$cases)
 [IO.File]::WriteAllText("$out/ElseGroups.inc",(Section $source 'bool ConditionMgr::IsObjectMeetToConditionList(' 'bool ConditionMgr::IsObjectMeetToConditions(WorldObject* object,'))
 [IO.File]::WriteAllText("$out/SmartEventConditions.inc",(Section $source 'bool ConditionMgr::IsObjectMeetingSmartEventConditions(' 'bool Condition::isLoaded() const'))
@@ -71,7 +72,7 @@ if($send.IndexOf('sScriptMgr->OnGossipHello(') -lt 0 -or $send.IndexOf('player->
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($MarksmanshipLoot){'marksmanship-loot'}elseif($MarksmanshipRoot){'marksmanship-root'}elseif($MarksmanshipDialogue){'marksmanship-dialogue'}elseif($MarksmanshipReturn){'marksmanship-return'}else{'marksmanship'}
 $fixture=if($MarksmanshipRowsPath){"`"$MarksmanshipRowsPath`" $mode"}else{"`"$out/conditions.tsv`""}
-if($TitanstrikeRowsPath){$mode=if($TitanstrikeRoot){'titanstrike-root'}else{'titanstrike-loot'};$fixture="`"$TitanstrikeRowsPath`" $mode"}
+if($TitanstrikeRowsPath){$mode=if($TitanstrikeCast){'titanstrike-cast'}elseif($TitanstrikeRoot){'titanstrike-root'}else{'titanstrike-loot'};$fixture="`"$TitanstrikeRowsPath`" $mode"}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/TalonclawPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" $fixture`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Native Talonclaw pickup admission failed'}
