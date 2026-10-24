@@ -8,7 +8,8 @@ $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisi
 $acquisition=Section $source 'namespace ArtifactAcquisition' 'namespace DarkRidersCompletion'
 $acquisition=$acquisition.Substring($acquisition.IndexOf('{')+1)
 [IO.File]::WriteAllText("$out/Acquisition.inc",$acquisition.Substring(0,$acquisition.LastIndexOf('}')))
-$binding=Section $source 'namespace XalatathPickup' 'void AddSC_artifact_acquisition()'
+$end=if($source.Contains('namespace StromkarPresentation')){'namespace StromkarPresentation'}else{'void AddSC_artifact_acquisition()'}
+$binding=Section $source 'namespace XalatathPickup' $end
 if($Baseline){$binding='class go_xalatath_pickup : public GameObjectScript { public: go_xalatath_pickup() : GameObjectScript("baseline_no_binding") {} };'}
 [IO.File]::WriteAllText("$out/Binding.inc",$binding)
 [IO.File]::WriteAllText("$out/BindingChoice.inc",'using PickupBinding = go_xalatath_pickup;')

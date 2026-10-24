@@ -1575,6 +1575,43 @@ public:
     GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
 };
 
+namespace StromkarPresentation
+{
+bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+{
+    if (!scene || scene->MiscValue != 1225 || scene->SceneScriptPackageID != 1590)
+        return false;
+    if (trigger != "complete" || !player || !player->HasSceneStatus(1225, SCENE_COMPLETE) ||
+        !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_WARRIOR || player->GetMapId() != 1539 ||
+        !ArtifactAcquisition::Active(player, 41105) || !player->GetItemByEntry(128910))
+        return true;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() != 9)
+        return true;
+    SpellCastResult result = player->CastSpell(player, 206439, true);
+    if (result != SPELL_CAST_OK)
+    {
+        TC_LOG_WARN("scripts", "Stromkar pickup: native equip 206439 failed with result %u for player %u; existing item retained", uint32(result), player->GetGUIDLow());
+        return true;
+    }
+    Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+    if (!weapon || weapon->GetEntry() != 128910)
+        TC_LOG_WARN("scripts", "Stromkar pickup: native equip 206439 accepted but blade is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
+    return true;
+}
+}
+
+class scene_stromkar_pickup : public SceneTriggerScript
+{
+public:
+    scene_stromkar_pickup() : SceneTriggerScript("scene_stromkar_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return StromkarPresentation::Complete(player, scene, trigger);
+    }
+};
+
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
@@ -1596,5 +1633,6 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
     new scene_xalatath_pickup();
+    new scene_stromkar_pickup();
     new go_xalatath_pickup();
 }

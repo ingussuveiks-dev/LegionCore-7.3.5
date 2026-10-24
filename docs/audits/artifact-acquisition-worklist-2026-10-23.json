@@ -55,6 +55,8 @@
       "specialization": "Arms",
       "weapon": "Strom'kar, the Warbreaker",
       "real_acquisition_repair_audit": "docs/audits/stromkar-real-acquisition-2026-10-24.json",
+      "presentation_equip_audit": "docs/audits/stromkar-scene-equip-2026-10-24.json",
+      "presentation_equip_review": "46 connects completed1225/package1590 to native206439 only for a living active Warrior41105/map1539/scenario1037/exact9 with genuine nonbank128910. Native scene text proves clone-only brandish; real equip callback/packet lifecycle/guarded SQL/native force-equip and new canonical helper are checked. Ability push81 maps EffectNULL, completed10/retry ordering/full spell/client/equip-save still pending; no full-route or visual certification.",
       "real_acquisition_review": "45 binds missing chest247877 Data1 to existing genuine128910 loot and adds52 source4/source22/source17 rules: active nonrewarded Warrior41105/map1539/scenario1037/exact9; living nonbank owner additionally required before existing progression and deferred206436/206448. TEMP/idempotence20 custom variants, native loot/root/cached/delayed matrices, typed26972 stages/spells/item, same-map991/1092 rejection, live hash/rows/canonical consumers and own clean startup checked. Partial muted ZaFrostPet17:03/23/28/33/38/43/53 frames reviewed, not full video/audio. Scene1225/package1590 ->206439 actual equip/ability, physical opening, boss scaling/credit/retry and full client chain remain unfinished.",
       "item": 128910,
       "start": 41105,

@@ -25,6 +25,8 @@ struct ChildGuid { uint32 value = 0; bool IsEmpty() const { return value == 0; }
 struct Item {
 #ifdef XALATATH_PRESENTATION_TEST
     uint32 entry = 128827;
+#elif defined(STROMKAR_PRESENTATION_TEST)
+    uint32 entry = 128910;
 #else
     uint32 entry = 128826;
 #endif
@@ -46,6 +48,8 @@ struct SpellInfo {
     struct Effect { uint32 MiscValue =
 #ifdef XALATATH_PRESENTATION_TEST
         128827
+#elif defined(STROMKAR_PRESENTATION_TEST)
+        128910
 #else
         128826
 #endif
@@ -193,6 +197,9 @@ struct Player : Unit {
         if (spell == 200262 && forceEquip) forceEquip();
 #ifdef XALATATH_PRESENTATION_TEST
         if (spell == 201778 && forceEquip) forceEquip();
+#endif
+#ifdef STROMKAR_PRESENTATION_TEST
+        if (spell == 206439 && forceEquip) forceEquip();
 #endif
 #endif
         auras.insert(spell);
