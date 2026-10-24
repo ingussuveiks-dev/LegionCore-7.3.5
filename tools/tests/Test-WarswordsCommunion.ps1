@@ -10,6 +10,8 @@ if($LASTEXITCODE){throw 'Pinned conversation failure baseline failed'}
 if($LASTEXITCODE){throw 'Pinned premature dialogue engagement baseline failed'}
 & "$PSScriptRoot/Test-WarswordsFinalIntro.ps1" -CleanupBaseline
 if($LASTEXITCODE){throw 'Pinned overlapping dialogue baseline failed'}
+& "$PSScriptRoot/Test-WarswordsFinalIntro.ps1" -BlessingBaseline
+if($LASTEXITCODE){throw 'Pinned early blessing implementation regression failed'}
 & "$PSScriptRoot/Test-WarswordsFinalAdmission.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary
 if($LASTEXITCODE){throw 'Repaired communion admission failed'}
 & "$PSScriptRoot/Test-WarswordsFinalIntro.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary

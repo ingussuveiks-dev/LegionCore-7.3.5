@@ -16,8 +16,15 @@ conversation = '?StartIntroConversation@' + actor
 if not any(name.startswith(conversation) for name in native['symbols']):
     conversation = opening
 callbacks = [name for name in native['symbols'] if name.startswith('?_Do_call') and 'MoveInLineOfSight@' + actor in name]
-assert len(callbacks) == 1, 'Delayed final intro callback is missing or ambiguous'
-callback = callbacks[0]
+assert len(callbacks) == 2, 'Late blessing and engagement callbacks are missing or ambiguous'
+outer_wrapper = next(name for name in callbacks if '???R' not in name)
+callback = next(name for name in callbacks if '???R' in name)
+outer = next(name for name in native['symbols'] if name.startswith('??R') and 'MoveInLineOfSight@' + actor in name)
+wrapper_address = native['symbol'](outer_wrapper)
+wrapper_decoder = Cs(CS_ARCH_X86, CS_MODE_64)
+wrapper_decoder.detail = True
+wrapper = list(wrapper_decoder.disasm(native['binary'][native['offset'](wrapper_address):native['offset'](wrapper_address) + 16], wrapper_address))
+assert wrapper[0].mnemonic == 'add' and wrapper[0].op_str == 'rcx, 8' and wrapper[1].mnemonic == 'jmp' and wrapper[1].operands[0].imm == native['symbol'](outer), 'Installed late callback does not execute the verified closure'
 
 
 def reachable(body, start):
@@ -43,42 +50,44 @@ values = {operand.imm for entry in instructions(helper) for operand in entry.ope
 assert {1511, 40043, 944, 5} <= values, 'Final intro lost exact map/quest/scenario/stage'
 for dependency in ('?CanContact@Player@@', '?GetQuestStatus@Player@@', '?GetQuestRewardStatus@Player@@', '?GetScenario@ScenarioMgr@@', '?GetScenarioId@Scenario@@', '?GetCurrentStep@Scenario@@'):
     assert native['symbol'](dependency) in native['calls'](helper), f'Missing live intro dependency: {dependency}'
-assert native['symbol'](helper) in native['calls'](opening) and native['symbol'](helper) in native['calls'](callback), 'Missing initial or delayed live admission'
-assert native['symbol']('?GetPlayer@ObjectAccessor@@') in native['calls'](callback), 'Delayed target is not resolved by captured identity'
-assert native['symbol']('?FindNearestPlayer@WorldObject@@') not in native['calls'](callback), 'Delayed intro still adopts a nearby bystander'
+for consumer in (opening, outer, callback):
+    assert native['symbol'](helper) in native['calls'](consumer), 'Missing initial or delayed live admission'
+for consumer in (outer, callback):
+    assert native['symbol']('?GetPlayer@ObjectAccessor@@') in native['calls'](consumer), 'Delayed target is not resolved by captured identity'
+    assert native['symbol']('?GetCreature@ObjectAccessor@@') in native['calls'](consumer), 'Delayed Helya is not resolved by captured identity'
+    assert native['symbol']('?FindNearestPlayer@WorldObject@@') not in native['calls'](consumer), 'Delayed intro still adopts a nearby bystander'
 assert conversation == opening or native['symbol'](conversation) in native['calls'](opening), 'Intro does not consume acknowledged conversation creation'
 assert native['symbol']('?CreateConversation@Conversation@@') in native['calls'](conversation), 'Missing actual native conversation factory'
 assert native['symbol']('?Remove@Conversation@@') in native['calls'](conversation), 'Canceled successful introduction is not removed'
 assert native['symbol']('?CreateConversation@Unit@@') not in native['calls'](opening), 'Intro still discards the void creation result'
 conversation_body = instructions(conversation)
 creation = next(index for index, entry in enumerate(conversation_body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?CreateConversation@Conversation@@'))
-assert conversation_body[creation - 2].op_str == 'r8d, 0x34b' and conversation_body[creation - 3].op_str == 'r9, r15', 'Native843 is not created for the captured Player'
+assert conversation_body[creation - 2].op_str == 'r8d, 0x34b' and conversation_body[creation - 3].op_str == 'r9, r14' and conversation_body[creation - 1].op_str == 'rcx, r15', 'Native843 is not created for the captured Player'
 assert conversation_body[creation + 1].op_str == 'al, al' and conversation_body[creation + 2].mnemonic == 'jne', 'Native factory result is discarded'
 success_address = conversation_body[creation + 2].operands[0].imm
 success = next(index for index, entry in enumerate(conversation_body) if entry.address == success_address)
 failed = conversation_body[creation + 3:success]
 assert any(entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax]' for entry in failed) and any(entry.op_str == 'edx, 1' for entry in failed), 'Failed construction does not delete the unowned object'
 deletion = next(index for index, entry in enumerate(failed) if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax]')
-assert [entry.op_str for entry in failed[deletion - 3:deletion]] == ['rax, qword ptr [r14]', 'edx, 1', 'rcx, r14'], 'Failed factory deletes a different allocation'
-failure = next(index for index, entry in enumerate(conversation_body[creation + 3:success], start=creation + 3) if entry.op_str == 'byte ptr [rdi + 0xc6], 0' and entry.mnemonic == 'mov')
-rollback = conversation_body[failure - 6:failure + 2]
-assert any(entry.op_str == 'byte ptr [rdi + 0xc6], 0' for entry in rollback) and any(entry.op_str == 'byte ptr [r12], 0' for entry in rollback), 'Factory failure does not reopen retry'
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'ebx, dword ptr [rax]' and rollback[index + 1].mnemonic == 'jne' for index, entry in enumerate(rollback[:-1])), 'Old failure can clear a newer generation'
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [r12], 0' and rollback[index + 1].mnemonic == 'je' for index, entry in enumerate(rollback[:-1])), 'Inactive failure rolls back newer intro state'
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'ebx, dword ptr [rax]' and conversation_body[index + 1].mnemonic == 'jne' for index, entry in enumerate(conversation_body[success:success + 8], start=success)), 'Successful creation lacks post-construction epoch guard'
-timer = next(entry.address for entry in conversation_body if entry.mnemonic == 'mov' and entry.op_str == 'edx, 0x7918')
+assert [entry.op_str for entry in failed[deletion - 3:deletion]] == ['rax, qword ptr [r15]', 'edx, 1', 'rcx, r15'], 'Failed factory deletes a different allocation'
+failure = next(index for index, entry in enumerate(conversation_body) if entry.op_str == 'word ptr [rdi + 0xc6], 0' and entry.mnemonic == 'mov')
+rollback = conversation_body[failure - 4:failure + 1]
+assert [entry.op_str for entry in rollback[::2]] == ['r12d, dword ptr [rdi + 0xc8]', 'byte ptr [rdi + 0xc7], 0', 'word ptr [rdi + 0xc6], 0'], 'Factory rollback lost captured epoch, pending or both state bytes'
+assert rollback[1].mnemonic == 'jne' and rollback[3].mnemonic == 'je' and all(entry.operands[0].imm > conversation_body[failure].address for entry in (rollback[1], rollback[3])), 'Obsolete/inactive failure can clear newer intro state'
+assert conversation_body[success].op_str == 'r12d, dword ptr [rdi + 0xc8]' and conversation_body[success + 1].mnemonic == 'jne', 'Successful creation lacks post-construction epoch guard'
+timer = next(entry.address for entry in conversation_body if entry.mnemonic == 'mov' and entry.op_str == 'edx, 0x5dc0')
 failed_flow = reachable(conversation_body, conversation_body[creation + 3].address)
 assert success_address < timer and timer not in failed_flow and success_address not in failed_flow, 'Failed factory still reaches successful creation/timer installation'
 remove = next(index for index, entry in enumerate(conversation_body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?Remove@Conversation@@'))
 cancel_address = conversation_body[remove - 1].address
 post_create = conversation_body[success:success + 16]
 assert sum(entry.mnemonic in ('je', 'jne') and entry.operands[0].imm == cancel_address for entry in post_create) == 3, 'Post-create epoch/pending/eligible-player failures do not all remove the obsolete conversation'
-for prefix, expected in ((opening, {195062, 31000}), (conversation, {843}), (callback, {205424})):
+for prefix, expected in ((opening, {24000}), (conversation, {843}), (outer, {195062, 7000}), (callback, {205424})):
     literals = {operand.imm for entry in instructions(prefix) for operand in entry.operands if operand.type == CS_OP_IMM}
     assert expected <= literals, f'Original intro actions changed: {prefix}'
 decoded = instructions(callback)
 assert any(entry.mnemonic == 'mov' and entry.op_str == 'eax, dword ptr [rcx + 0xc8]' for entry in decoded), 'Generation capture lost'
-assert any(entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0x10], eax' and decoded[index + 1].mnemonic == 'jne' for index, entry in enumerate(decoded[:-1])), 'Stale generation can engage'
+assert any(entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rdi + 0x10], eax' and decoded[index + 1].mnemonic == 'jne' for index, entry in enumerate(decoded[:-1])), 'Stale generation can engage'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rcx + 0xc7], 0' and decoded[index + 1].mnemonic == 'je' for index, entry in enumerate(decoded[:-1])), 'Inactive intro callback is admitted'
 assert any(entry.mnemonic == 'inc' and entry.op_str == 'dword ptr [rcx + 0xc8]' for entry in instructions(reset)), 'Reset does not invalidate old callbacks'
 tables = []
@@ -111,9 +120,17 @@ for entry in instructions(opening):
     for operand in entry.operands:
         if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
             offset = native['offset'](entry.address + entry.size + operand.mem.disp)
+            if struct.unpack_from('<Q', native['binary'], offset + 0x10)[0] == native['symbol'](outer_wrapper):
+                installed.append(offset)
+assert len(installed) == 1, 'LOS does not install the verified late blessing closure'
+installed = []
+for entry in instructions(outer):
+    for operand in entry.operands:
+        if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
+            offset = native['offset'](entry.address + entry.size + operand.mem.disp)
             if struct.unpack_from('<Q', native['binary'], offset + 0x10)[0] == native['symbol'](callback):
                 installed.append(offset)
-assert len(installed) == 1, 'LOS does not install the verified delayed closure'
+assert len(installed) == 1, 'Acknowledged blessing does not install the verified engagement closure'
 cleanup = '?RemoveIntroConversation@' + actor
 cleanup_body = instructions(cleanup)
 lookup = next(index for index, entry in enumerate(cleanup_body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?GetConversation@ObjectAccessor@@'))
@@ -131,11 +148,17 @@ assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and 
 decoded_constructor = list(Cs(CS_ARCH_X86, CS_MODE_64).disasm(native['binary'][native['offset'](constructor):native['offset'](constructor) + 16], constructor))
 assert [entry.mnemonic + ' ' + entry.op_str for entry in decoded_constructor[:4]] == ['xor eax, eax', 'mov qword ptr [rcx], rax', 'mov qword ptr [rcx + 8], rax', 'mov rax, rcx'] and decoded_constructor[4].mnemonic == 'ret', 'Native default GUID is not empty'
 store = next(index for index, entry in enumerate(conversation_body) if entry.op_str == 'xmmword ptr [rdi + 0x105], xmm0' and entry.mnemonic == 'movups')
-assert conversation_body[success].address < conversation_body[store].address < timer and conversation_body[store].address not in failed_flow and conversation_body[store - 3].op_str == 'rcx, r14' and conversation_body[store - 4].op_str == 'edx, edx', 'Successful captured843 GUID is not tracked after post-create guards'
+assert conversation_body[success].address < conversation_body[store].address < timer and conversation_body[store].address not in failed_flow and conversation_body[store - 3].op_str == 'rcx, r15' and conversation_body[store - 4].op_str == 'edx, edx', 'Successful captured843 GUID is not tracked after post-create guards'
 assert conversation_body[store - 2].mnemonic == 'call' and native['resolve'](conversation_body[store - 2].operands[0].imm) == native['symbol']('?GetGuidValue@Object@@'), 'Tracked identity does not come from the successful native conversation'
-for consumer in (reset, callback, '?JustDied@' + actor, '?UpdateLifecycle@' + actor):
+for consumer in (reset, outer, callback, '?JustDied@' + actor, '?UpdateLifecycle@' + actor):
     assert native['symbol'](cleanup) in native['calls'](consumer), 'Missing selected dialogue cleanup consumer: ' + consumer
-cleanup_edge = next(entry for entry in decoded if entry.mnemonic == 'jmp' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](cleanup))
+cleanup_edge = next(entry for entry in decoded if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](cleanup))
 admission = next(index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](helper))
-assert decoded[admission + 2].mnemonic == 'jne' and cleanup_edge.address < decoded[admission + 2].operands[0].imm, 'Successful delayed admission can cancel the dialogue'
-print('PASS: canonical selected intro retains843 factory acknowledgement/guarded31s handoff; success stores the actual128-bit conversation GUID after eligibility checks. Reset, invalid handoff and selected death/lifecycle consumers resolve only that map-local identity, clear before native Remove and preserve null/empty guards. Full combat, channel/rise/pose, audio and client traversal remain separate.')
+assert decoded[admission + 2].mnemonic == 'je' and decoded[admission + 2].operands[0].imm < cleanup_edge.address, 'Invalid delayed admission bypasses cancellation'
+engagement = next(entry for entry in decoded if entry.mnemonic == 'jmp' and entry.op_str == 'qword ptr [rax + 0x10]')
+helya_check = next(index for index, entry in enumerate(decoded) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?IsIntroHelya@' + actor))
+helya_branch = next(index for index in range(helya_check + 1, helya_check + 5) if decoded[index].mnemonic.startswith('j'))
+assert decoded[helya_branch].mnemonic == 'je' and decoded[helya_branch].operands[0].imm == decoded[admission + 2].operands[0].imm, 'Participant/Helya failures do not share guarded cancellation'
+success_flow = reachable(decoded, decoded[helya_branch + 1].address)
+assert engagement.address in success_flow and cleanup_edge.address not in success_flow, 'Successful engagement can fall through into cancellation'
+print('PASS: selected843 factory acknowledgement and128-bit ownership survive the two installed24000/7000ms closures. Captured player/Helya identities and epoch/pending gates are retained; Reset, both cancellation paths and death/lifecycle remove only the tracked map-local conversation. Client timing/rendering and full traversal remain separate.')

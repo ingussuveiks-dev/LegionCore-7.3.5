@@ -92,6 +92,7 @@ struct Conversation
 };
 struct Creature : Unit
 {
+    float distanceFromActor = 1;
     uint32 entry = 98602, mapId = 1511, instance = 42, auraRemovals = 0, casts = 0;
     Creature* helya = nullptr;
     Player* nearest = nullptr;
@@ -118,7 +119,7 @@ struct Creature : Unit
     bool HasUnitState(uint32 state) const { assert(state == UNIT_STATE_SIGHTLESS); return sightless; }
     bool HasReactState(uint32 state) const { assert(state == REACT_AGGRESSIVE); return aggressive; }
     bool canSeeOrDetect(Player* player, bool ignoreStealth, bool distanceCheck) { assert(!ignoreStealth && distanceCheck); return player->detectable; }
-    float GetExactDist2d(Unit* unit) const { auto* player = unit->ToPlayer(); assert(player); return player->distance; }
+    float GetExactDist2d(Unit* unit) const { if (auto* player = unit->ToPlayer()) return player->distance; auto* creature = dynamic_cast<Creature*>(unit); assert(creature); return creature->distanceFromActor; }
     Creature* FindNearestCreature(uint32 identity, float distance, bool aliveOnly) { assert(identity == 99043 && distance == 100 && aliveOnly); return helya; }
     Player* FindNearestPlayer(float distance, bool aliveOnly) { assert(distance == 100 && aliveOnly); return nearest; }
     void GetPlayerListInGrid(std::list<Player*>& players, float distance) { assert(distance == 40); ++playerScans; players = nearbyPlayers; }
@@ -127,7 +128,15 @@ struct Creature : Unit
     bool HasAura(uint32 identity) const { assert(identity == 205424); return bubble; }
     ObjectGuid GetGUID() const { return guid; }
     bool InSamePhase(Creature*) const { return phase; }
-    void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == IntroDelay); callbacks.push_back({elapsed + delay, std::move(callback)}); }
+    void AddDelayedEvent(uint32 delay, std::function<void()> callback)
+    {
+#ifdef WARSWORDS_LATE_BLESSING
+        assert(delay == 24000 || delay == 7000);
+#else
+        assert(delay == IntroDelay);
+#endif
+        callbacks.push_back({elapsed + delay, std::move(callback)});
+    }
     void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) { ++auraRemovals; bubble = false; } }
     void RemoveFlag(uint32, uint32) { }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
@@ -154,6 +163,7 @@ auto* sScenarioMgr = &scenarioManager;
 struct ObjectAccessor
 {
     static std::unordered_map<ObjectGuid, Player*> players;
+    static std::unordered_map<ObjectGuid, Creature*> creatures;
     template<class Target> static Target* GetObjectInWorld(ObjectGuid guid, Target*)
     {
         if constexpr (std::is_same_v<Target, Conversation>)
@@ -161,6 +171,11 @@ struct ObjectAccessor
             for (auto conversation : Conversation::objects)
                 if (conversation->guid == guid && conversation->world) return conversation;
             return nullptr;
+        }
+        else if constexpr (std::is_same_v<Target, Creature>)
+        {
+            auto found = creatures.find(guid);
+            return found == creatures.end() || !found->second->world ? nullptr : found->second;
         }
         else
         {
@@ -171,10 +186,13 @@ struct ObjectAccessor
 #include "ObjectInMap.inc"
     static Player* GetPlayer(WorldObject const&, ObjectGuid);
     static Conversation* GetConversation(WorldObject const&, ObjectGuid);
+    static Creature* GetCreature(WorldObject const&, ObjectGuid);
 };
 std::unordered_map<ObjectGuid, Player*> ObjectAccessor::players;
+std::unordered_map<ObjectGuid, Creature*> ObjectAccessor::creatures;
 #include "GetPlayer.inc"
 #include "GetConversation.inc"
+#include "GetCreature.inc"
 struct EventMap { void Reset() { } };
 struct SummonList { explicit SummonList(Creature*) { } void DespawnAll() { } };
 struct ScriptedAI
@@ -199,6 +217,8 @@ struct IntroAI : ScriptedAI
 #include "IsIntroTarget.inc"
 #include "StartConversation.inc"
 #include "RemoveConversation.inc"
+#include "IsIntroHelya.inc"
+#include "CancelIntro.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
 #include "UpdateLifecycle.inc"
@@ -221,8 +241,8 @@ struct Fixture
     Player owner, intruder;
     Creature actor, helya;
     IntroAI ai{&actor};
-    Fixture() { intruder.guid = 2; intruder.status = 0; actor.guid = 98; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = Conversation::deleted = Conversation::removed = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
-    ~Fixture() { ObjectAccessor::players.clear(); while (!Conversation::objects.empty()) delete Conversation::objects.back(); }
+    Fixture() { intruder.guid = 2; intruder.status = 0; actor.guid = 98; helya.entry = 99043; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; ObjectAccessor::creatures = {{helya.guid, &helya}}; warningRequests = recoveryRequests = Conversation::deleted = Conversation::removed = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
+    ~Fixture() { ObjectAccessor::players.clear(); ObjectAccessor::creatures.clear(); while (!Conversation::objects.empty()) delete Conversation::objects.back(); }
     void Start() { ai.MoveInLineOfSight(&owner); }
 };
 void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
@@ -249,6 +269,7 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
     if (invalid == 19) ObjectAccessor::players.erase(1);
     if (invalid == 20) fixture.owner.predelete = true;
 }
+#ifndef WARSWORDS_LATE_BLESSING
 int main()
 {
 #ifdef CLEANUP_BASELINE
@@ -315,6 +336,16 @@ int main()
     assert(fixture.helya.aura && !fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     std::cout << "BASELINE: pinned f6b173ea acknowledges195062 on Helya herself, not Vigfus, and still starts843/8s. Controlled services; real native Spell/Aura recipient comparison runs separately.\n";
 #else
+#ifdef BLESSING_BASELINE
+    {
+        Fixture fixture; fixture.Start();
+        assert(fixture.helya.casts == 1 && fixture.actor.aura && fixture.actor.elapsed == 0 && fixture.owner.acceptedConversations == 1);
+        fixture.actor.onElapsed = [&](uint32 diff) { fixture.ai.TickVisual(diff); if (fixture.actor.elapsed >= 7000) fixture.actor.aura = false; };
+        fixture.actor.Advance(7000);
+        assert(!fixture.actor.aura && !fixture.ai.attacks && fixture.ai.introPending && fixture.actor.elapsed < 12150);
+        std::cout << "BASELINE: pinned20ce5e37 applies195062 at dialogue0; its modeled native7000ms expiry precedes the second line12150ms. Existing pinned31s/cleanup regressions also execute below. Not client playback.\n";
+    }
+#endif
     {
         Fixture fixture; fixture.Start();
         auto original = Conversation::objects.back();
@@ -631,3 +662,4 @@ int main()
     std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5, acknowledged Helya195062 and843; timed callbacks keep sphere/combat closed through8000/12150/30974/30999ms and open once at31000ms. Tracked843 GUID clears before native removal; Reset/retry,21 terminal-invalid contexts and dead lifecycle remove only that object, skip missing/predelete/other-map/null-map and preserve reentrant replacements/unrelated conversations.56 stage/status,19 initial/21 delayed invalid contexts, failed construction/cast, old-epoch callbacks and1s retry retained. World/timer services controlled; not native client playback or channel/rise/pose certification.\n";
 #endif
 }
+#endif
