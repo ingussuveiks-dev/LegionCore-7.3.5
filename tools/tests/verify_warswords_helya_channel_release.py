@@ -49,4 +49,4 @@ assert tick < retry, 'No-victim stationary retry does not tick the visual thrott
 strings = native['binary']
 for diagnostic in (b'Warswords intro waiting for live same-phase Helya99043', b'Warswords intro waiting for native Helya195062 aura', b'Warswords intro recovered native Helya195062 aura'):
     assert diagnostic in strings, 'Visual failure/recovery diagnostic absent'
-print('PASS: canonical selected final intro checks live Helya/phase and her195062 aura on actual Vigfus before843/original8s, normal Helya-to-Vigfus cast plus post-cast recipient/caster acknowledgement, rollback and post-dialogue epoch guard, bounded pre-retry countdown and visible diagnostics. Native spell rendering, full combat/cinematic/client traversal remain separate.')
+print('PASS: canonical selected final intro checks live Helya/phase and her195062 aura on actual Vigfus before843/31s handoff, normal Helya-to-Vigfus cast plus post-cast recipient/caster acknowledgement, rollback and post-dialogue epoch guard, bounded pre-retry countdown and visible diagnostics. Native spell rendering, full combat/cinematic/client traversal remain separate.')

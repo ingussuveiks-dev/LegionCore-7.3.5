@@ -9,6 +9,11 @@
 using uint32 = uint32_t;
 using ObjectGuid = uint32;
 using SpellCastResult = uint32;
+#if defined(BASELINE) || defined(HELYA_BASELINE) || defined(TARGET_BASELINE) || defined(BUBBLE_BASELINE) || defined(COMMUNION_BASELINE) || defined(CONVERSATION_BASELINE) || defined(TIMING_BASELINE)
+constexpr uint32 IntroDelay = 8000;
+#else
+constexpr uint32 IntroDelay = 31000;
+#endif
 uint32 warningRequests = 0, recoveryRequests = 0;
 #define TC_LOG_WARN(...) (++warningRequests)
 #define TC_LOG_INFO(...) (++recoveryRequests)
@@ -90,7 +95,14 @@ struct Creature : Unit
     std::function<void(uint32)> onElapsed;
     bool sightless = false, aggressive = true;
     uint32 acceptedCasts = 0;
-    std::vector<std::function<void()>> callbacks;
+    struct Delayed
+    {
+        uint64_t due;
+        std::function<void()> callback;
+        void operator()() { callback(); }
+    };
+    uint64_t elapsed = 0;
+    std::vector<Delayed> callbacks;
     uint32 GetMapId() const { return mapId; }
     uint32 GetEntry() const { return entry; }
     uint32 GetInstanceId() const { return instance; }
@@ -106,11 +118,26 @@ struct Creature : Unit
     bool HasAura(uint32 identity) const { assert(identity == 205424); return bubble; }
     ObjectGuid GetGUID() const { return guid; }
     bool InSamePhase(Creature*) const { return phase; }
-    void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == 8000); callbacks.push_back(std::move(callback)); }
+    void AddDelayedEvent(uint32 delay, std::function<void()> callback) { assert(delay == IntroDelay); callbacks.push_back({elapsed + delay, std::move(callback)}); }
     void RemoveAura(uint32 identity) { assert(identity == 205424 || identity == 195996); if (identity == 205424) { ++auraRemovals; bubble = false; } }
     void RemoveFlag(uint32, uint32) { }
     void SetReactState(uint32 state) { assert(state == REACT_AGGRESSIVE); }
-    void Flush() { if (onElapsed) onElapsed(8000); auto pending = std::move(callbacks); callbacks.clear(); for (auto& callback : pending) callback(); }
+    void Advance(uint32 diff)
+    {
+        elapsed += diff;
+        if (onElapsed) onElapsed(diff);
+        auto pending = std::move(callbacks);
+        callbacks.clear();
+        for (auto& callback : pending)
+            if (callback.due <= elapsed) callback();
+            else callbacks.push_back(std::move(callback));
+    }
+    void Flush()
+    {
+        if (callbacks.empty()) return;
+        auto deadline = std::max_element(callbacks.begin(), callbacks.end(), [](Delayed const& left, Delayed const& right) { return left.due < right.due; })->due;
+        Advance(uint32(deadline - elapsed));
+    }
 };
 struct Scenario { uint32 identity = 944, step = 5; uint32 GetScenarioId() const { return identity; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario scenario; bool present = true; Scenario* GetScenario(uint32 instance) { return present && instance == 42 ? &scenario : nullptr; } } scenarioManager;
@@ -199,7 +226,14 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
 }
 int main()
 {
-#ifdef CONVERSATION_BASELINE
+#ifdef TIMING_BASELINE
+    Fixture fixture; fixture.Start();
+    fixture.actor.Advance(7999); assert(!fixture.ai.attacks && fixture.actor.bubble && fixture.ai.introPending);
+    fixture.actor.Advance(1); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble && !fixture.ai.introPending);
+    assert(fixture.actor.elapsed < 12150);
+    std::cout << "BASELINE: pinned46ae22fd removes the sphere and engages at8000ms, before Helya's native843 line starts at12150ms and before even the first measured8481ms voice finishes. Controlled elapsed timer/cast/world, not client playback.\n";
+    return 0;
+#elif defined(CONVERSATION_BASELINE)
     Fixture fixture; fixture.owner.conversationWorks = false;
     fixture.Start(); assert(fixture.owner.conversations == 1 && !fixture.owner.acceptedConversations && fixture.ai.introDone && fixture.ai.introPending);
     fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble);
@@ -249,6 +283,38 @@ int main()
     assert(fixture.helya.aura && !fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     std::cout << "BASELINE: pinned f6b173ea acknowledges195062 on Helya herself, not Vigfus, and still starts843/8s. Controlled services; real native Spell/Aura recipient comparison runs separately.\n";
 #else
+    {
+        Fixture fixture; fixture.Start();
+        constexpr uint32 voiceEnd = 12150 + 17824;
+        constexpr uint32 paddedEnd = voiceEnd + 1000;
+        static_assert(paddedEnd == 30974 && IntroDelay >= paddedEnd && IntroDelay - paddedEnd < 1000);
+        fixture.actor.onElapsed = [&](uint32 diff) { fixture.ai.TickVisual(diff); if (fixture.actor.elapsed >= 7000) fixture.actor.aura = false; };
+        for (uint32 deadline : {7999u, 8000u, 12150u, voiceEnd, paddedEnd, 30999u})
+        {
+            fixture.actor.Advance(uint32(deadline - fixture.actor.elapsed));
+            fixture.ai.TickCombat(0); fixture.ai.AttackStart(&fixture.owner);
+            assert(!fixture.ai.attacks && fixture.actor.bubble && fixture.ai.introPending && !fixture.ai.IsEncounterReady());
+            assert(!fixture.ai.victimChecks && !fixture.ai.combatTicks);
+            assert(!fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.acceptedConversations == 1);
+        }
+        fixture.actor.Advance(1);
+        assert(fixture.actor.elapsed == 31000 && fixture.ai.attacks == 1 && !fixture.actor.bubble && fixture.ai.IsEncounterReady());
+        fixture.actor.Advance(10000); assert(fixture.ai.attacks == 1 && fixture.owner.acceptedConversations == 1);
+    }
+    for (uint32 invalid = 0; invalid < 21; ++invalid)
+    {
+        Fixture fixture; fixture.Start(); fixture.actor.Advance(12150);
+        Invalidate(fixture, invalid, true); fixture.actor.Advance(18850);
+        assert(!fixture.ai.attacks && fixture.actor.bubble && !fixture.ai.introDone && !fixture.ai.introPending);
+    }
+    for (uint32 deadline : {8000u, 12150u, 30999u})
+    {
+        Fixture fixture; fixture.Start(); fixture.actor.Advance(deadline);
+        fixture.ai.Reset(); fixture.Start(); fixture.actor.Advance(31000 - deadline);
+        assert(!fixture.ai.attacks && fixture.actor.bubble && fixture.ai.introPending);
+        fixture.actor.Advance(deadline - 1); assert(!fixture.ai.attacks && fixture.actor.bubble);
+        fixture.actor.Advance(1); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble);
+    }
     {
         Fixture fixture; fixture.owner.conversationWorks = false;
         fixture.Start(); assert(!fixture.ai.introDone && !fixture.ai.introPending && fixture.actor.callbacks.empty());
@@ -496,6 +562,6 @@ int main()
         fixture.ai.UpdateLifecycle(1);
         assert(fixture.actor.bubble);
     }
-    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5 plus live same-phase Helya and her actual195062 aura on Vigfus before dialogue/original8s;56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry without duplicate aura refresh checked. Actual IsEncounterReady/AttackStart/UpdateAI prefix excludes victim dispatch during missing/failed/pending intro; actual8s eligible callback opens combat, completed Reset preserves retry. Pending Reset retains initial bubble; completed intro clears native-evade or late-respawn addon reapplication without repeated removals; dead-only lifecycle clears a surviving corpse aura, only98602/1511. Speech failures, native combat/world/aura/timer services and client visual/audio fidelity remain separate.\n";
+    std::cout << "PASS: actual final intro requires live40043 Warrior/1511/944/5, acknowledged Helya195062 and843; timed callbacks keep sphere/combat closed through8000/12150/30974/30999ms and open once at31000ms. Mid-dialogue21 invalid contexts cancel; Reset at8000/12150/30999 rejects old callbacks and restarts the full budget.56 stage/status,19 initial/21 delayed invalid contexts, wrong caster/self recipient, missing/failed/unapplied/reentrant/reset and1s retry retained. Completed Reset/late addon/corpse cleanup remain scoped. Timers/casts/world controlled; measured English voice budget is not all-locales, channel/rise/pose, audio playback or client traversal proof.\n";
 #endif
 }

@@ -44,14 +44,14 @@ assert any(entry.op_str == 'byte ptr [rdi + 0xc6], 0' for entry in rollback) and
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'eax, dword ptr [rcx]' and rollback[index + 1].mnemonic == 'jne' for index, entry in enumerate(rollback[:-1])), 'Old failure can clear a newer generation'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [r12], 0' and rollback[index + 1].mnemonic == 'je' for index, entry in enumerate(rollback[:-1])), 'Inactive failure rolls back newer intro state'
 assert any(entry.mnemonic == 'cmp' and entry.op_str == 'eax, dword ptr [rcx]' and conversation_body[index + 1].mnemonic == 'jne' for index, entry in enumerate(conversation_body[success:success + 8], start=success)), 'Successful creation lacks post-construction epoch guard'
-timer = next(entry.address for entry in conversation_body if entry.mnemonic == 'mov' and entry.op_str == 'edx, 0x1f40')
-assert success_address < timer < failure_jump.operands[0].imm, 'Failed factory still reaches the8s handoff'
+timer = next(entry.address for entry in conversation_body if entry.mnemonic == 'mov' and entry.op_str == 'edx, 0x7918')
+assert success_address < timer < failure_jump.operands[0].imm, 'Failed factory still reaches the31s handoff'
 assert not any(entry.mnemonic.startswith('j') and entry.operands[0].type == CS_OP_IMM and success_address <= entry.operands[0].imm <= timer for entry in conversation_body[failure:]), 'Factory failure branches back into timer installation'
 remove = next(index for index, entry in enumerate(conversation_body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol']('?Remove@Conversation@@'))
 cancel_address = conversation_body[remove - 1].address
 post_create = conversation_body[success:success + 16]
 assert sum(entry.mnemonic in ('je', 'jne') and entry.operands[0].imm == cancel_address for entry in post_create) == 3, 'Post-create epoch/pending/eligible-player failures do not all remove the obsolete conversation'
-for prefix, expected in ((opening, {195062, 8000}), (conversation, {843}), (callback, {205424})):
+for prefix, expected in ((opening, {195062, 31000}), (conversation, {843}), (callback, {205424})):
     literals = {operand.imm for entry in instructions(prefix) for operand in entry.operands if operand.type == CS_OP_IMM}
     assert expected <= literals, f'Original intro actions changed: {prefix}'
 decoded = instructions(callback)
@@ -92,4 +92,4 @@ for entry in instructions(opening):
             if struct.unpack_from('<Q', native['binary'], offset + 0x10)[0] == native['symbol'](callback):
                 installed.append(offset)
 assert len(installed) == 1, 'LOS does not install the verified delayed closure'
-print('PASS: canonical final boss selects guarded LOS/reset, actual1511/944/5/40043 scope, captured-GUID lookup/live recheck, generation/pending rejection and 1s stationary retry before victim gate; native843/195062/205424/8s retained. Not full combat, early visibility, voice/visual or client proof.')
+print('PASS: canonical final boss selects guarded LOS/reset, actual1511/944/5/40043 scope, captured-GUID lookup/live recheck, generation/pending rejection and 1s stationary retry before victim gate; acknowledged843/195062/205424 with31s handoff. Not full combat, channel/rise/pose, voice/visual or client proof.')

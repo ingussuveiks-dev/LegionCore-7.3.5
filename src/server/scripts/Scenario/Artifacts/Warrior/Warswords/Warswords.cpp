@@ -605,7 +605,7 @@ public:
                 helya->GetMap() != me->GetMap() || !helya->InSamePhase(me))
             {
                 if (!introVisualWarned)
-                    TC_LOG_WARN("scripts", "Warswords intro waiting for live same-phase Helya99043; original dialogue and 8-second transition not started");
+                    TC_LOG_WARN("scripts", "Warswords intro waiting for live same-phase Helya99043; dialogue and 31-second transition not started");
                 introVisualWarned = true;
                 return;
             }
@@ -624,7 +624,7 @@ public:
                     introDone = false;
                     introPending = false;
                     if (!introVisualWarned)
-                        TC_LOG_WARN("scripts", "Warswords intro waiting for native Helya195062 aura (cast result %u); original dialogue and 8-second transition not started", uint32(result));
+                        TC_LOG_WARN("scripts", "Warswords intro waiting for native Helya195062 aura (cast result %u); dialogue and 31-second transition not started", uint32(result));
                     introVisualWarned = true;
                     return;
                 }
@@ -642,17 +642,17 @@ public:
                     introDone = false;
                     introPending = false;
                     if (!introVisualWarned)
-                        TC_LOG_WARN("scripts", "Warswords intro waiting for conversation843 creation; 8-second transition not started");
+                        TC_LOG_WARN("scripts", "Warswords intro waiting for conversation843 creation; 31-second transition not started");
                     introVisualWarned = true;
                 }
                 return;
             }
             if (introVisualWarned)
-                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura and conversation843; starting original 8-second transition");
+                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura and conversation843; starting 31-second dialogue transition");
             introVisualWarned = false;
             if (generation != introGeneration || !introPending)
                 return;
-            me->AddDelayedEvent(8000, [this, generation, playerGuid]() -> void
+            me->AddDelayedEvent(31000, [this, generation, playerGuid]() -> void
             {
                 if (generation != introGeneration || !introPending)
                     return;
