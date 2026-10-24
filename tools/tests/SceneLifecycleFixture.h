@@ -16,7 +16,27 @@ enum SceneEventStatus { SCENE_NONE, SCENE_LAUNCH, SCENE_TRIGER, SCENE_COMPLETE }
 enum { SPELL_AURA_ACTIVATE_SCENE = 430, PHASE_UPDATE_FLAG_ZONE_UPDATE = 1 };
 #define TC_LOG_DEBUG(...) ((void)0)
 struct Position { int GetPosition() const { return 0; } };
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+enum { INVENTORY_SLOT_BAG_0 = 255, EQUIPMENT_SLOT_MAINHAND = 15, NULL_SLOT = 255, SPELL_EFFECT_HANDLE_HIT_TARGET = 1 };
+enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_CANT_EQUIP, EQUIP_ERR_BAG_FULL };
+using SpellEffIndex = uint32;
+using uint16 = uint16_t;
+struct ChildGuid { bool IsEmpty() const { return true; } };
+struct Item {
+    uint32 entry = 128826;
+    uint16 position = 0xFF20;
+    uint32 GetEntry() const { return entry; }
+    uint16 GetPos() const { return position; }
+    bool IsEquipped() const { return position == 0xFF0F; }
+    ChildGuid GetChildItem() const { return {}; }
+};
+struct SpellInfo {
+    struct Effect { uint32 MiscValue = 128826; } effect;
+    Effect const* GetEffect(SpellEffIndex, uint32) const { return &effect; }
+};
+#else
 struct SpellInfo {};
+#endif
 struct SpellScene { uint32 PlaybackFlags = 21, SceneScriptPackageID = 1583; };
 struct SceneTriggerEvent { std::string Event; uint32 trigerSpell = 0, MonsterCredit = 0, MiscValue = 1220; };
 struct Message { uint32 instance; bool cancel; };
@@ -76,6 +96,29 @@ struct Player : Unit {
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
     uint32 expectedQuest = 40385, expectedItem = 128808, expectedCriterion = 47689, castResult = 0;
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+    Item artifact, previousWeapon{12345, 0xFF0F};
+    Item* mainhand = &previousWeapon;
+    bool bankOnly = false, swapBlocked = false;
+    InventoryResult equipResult = EQUIP_ERR_OK;
+    uint32 equipErrors = 0, swaps = 0;
+    std::function<void()> forceEquip;
+    Item* GetItemByEntry(uint32 entry) { assert(entry == 128826); return owned && !bankOnly ? &artifact : nullptr; }
+    Item* GetItemByPos(uint32 bag, uint32 slot) {
+        assert(bag == INVENTORY_SLOT_BAG_0 && slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
+    }
+    InventoryResult CanEquipItem(uint32 slot, uint16& destination, Item* item, bool swap) {
+        assert(slot == NULL_SLOT && item == &artifact && swap); destination = 0xFF0F; return equipResult;
+    }
+    InventoryResult CanEquipChildItem(Item*) { assert(false); return EQUIP_ERR_OK; }
+    void SendEquipError(InventoryResult result, Item* item) { assert(result != EQUIP_ERR_OK && item == &artifact); ++equipErrors; }
+    void SwapItem(uint16 source, uint16 destination) {
+        assert(source == artifact.position && destination == 0xFF0F); ++swaps;
+        if (swapBlocked) return;
+        if (mainhand) mainhand->position = source;
+        artifact.position = destination; mainhand = &artifact;
+    }
+#endif
     Player* ToPlayer() override { return this; }
     uint32 GetMap(){return map;}
     bool InSamePhase(Player*){return true;}bool IsWithinDistInMap(Player*,float){return true;}
@@ -108,6 +151,9 @@ struct Player : Unit {
     uint32 CastSpell(Unit* target, uint32 spell, bool triggered) {
         assert(target == this && (triggered || spell == 205589 || spell == 200279)); casts.push_back(spell);
         if (castResult) return castResult;
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+        if (spell == 200262 && forceEquip) forceEquip();
+#endif
         auras.insert(spell);
         if (cast) cast(spell);
         return 0;

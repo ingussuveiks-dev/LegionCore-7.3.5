@@ -11,6 +11,10 @@ $begin=if($Marksmanship){'namespace MarksmanshipPresentation'}else{'namespace Ta
 $end=if(!$Marksmanship -and $source.Contains('namespace MarksmanshipPresentation')){'namespace MarksmanshipPresentation'}else{'namespace TalonclawReturn'}
 [IO.File]::WriteAllText("$out/Presentation.inc",(Section $source $begin $end))
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))
+if($Marksmanship){
+ $effects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
+ [IO.File]::WriteAllText("$out/ForceEquip.inc",(Section $effects 'void Spell::EffectForceEquipItem(' 'void Spell::EffectGiveArtifactPower('))
+}
 if($BaselineScene){$source=(& git -C $repo show 4449e4cc:src/server/game/Entities/Player/Player.cpp) -join "`n"}else{$source=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw}
 [IO.File]::WriteAllText("$out/Lifecycle.inc",(Section $source 'void Player::SendSpellScene(' 'void Player::HandleArenaDeserter()'))
 $source=Get-Content "$repo/src/server/game/Handlers/SceneHandler.cpp" -Raw

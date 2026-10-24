@@ -92,6 +92,16 @@ struct AuraScript {
     void Remove() { remove(); }
 };
 #include "Owner.inc"
+
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+struct Spell {
+    uint32 effectHandleMode = SPELL_EFFECT_HANDLE_HIT_TARGET, m_diffMode = 0;
+    Unit* m_caster;
+    SpellInfo* m_spellInfo;
+    void EffectForceEquipItem(SpellEffIndex);
+};
+#include "ForceEquip.inc"
+#endif
 template<class Script> ApplyHook MakeApply(void(Script::*function)(AuraEffect const*, AuraEffectHandleModes), int effect, int aura, int mode) {
     assert(effect == SceneEffect && aura == 430 && mode == 1);
     return {[function](AuraScript* script, AuraEffect const* value, int handle) { (static_cast<Script*>(script)->*function)(value, handle); }};
@@ -128,6 +138,13 @@ struct Pickup {
         player.expectedCriterion = PickupCriterion; effect.scene = PresentationScene; effect.spell = PresentationSpell;
         spellManager.scene.SceneScriptPackageID = ScenePackage; spellManager.scene.PlaybackFlags = SceneFlags;
         script.Register(); assert(script.Validate(nullptr));
+#ifdef MARKSMANSHIP_PRESENTATION_TEST
+        player.forceEquip = [this]() {
+            SpellInfo info;
+            Spell spell{SPELL_EFFECT_HANDLE_HIT_TARGET, 0, &player, &info};
+            spell.EffectForceEquipItem(0);
+        };
+#endif
         player.removed = [this](uint32 spell) {
             if (spell == PresentationSpell) script.AfterEffectRemove.function(&script, &effect, 1);
         };
@@ -150,6 +167,57 @@ int main() {
         Pickup pickup;pickup.player.castResult=5;pickup.Begin();pickup.Finish();
         assert(MarksmanshipClaim::notices.empty());
     }
+    for (uint32 failure = 0; failure < 5; ++failure) {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup;
+        if (failure == 0) pickup.player.equipResult = EQUIP_ERR_CANT_EQUIP;
+        if (failure == 1) pickup.player.equipResult = EQUIP_ERR_BAG_FULL;
+        if (failure == 2) pickup.player.bankOnly = true;
+        if (failure == 3) pickup.player.swapBlocked = true;
+        if (failure == 4) { pickup.player.mainhand = nullptr; pickup.player.swapBlocked = true; }
+        int before = warnings;
+        pickup.Begin(); pickup.Finish(); pickup.Finish(); pickup.Tick(UINT32_MAX);
+        assert(pickup.player.castResult == SPELL_CAST_OK && pickup.player.casts == std::vector<uint32>{EquipSpell});
+        if (!MarksmanshipClaim::notices.empty()) {
+            std::cerr << "FAIL: accepted native cast announced a bow that was not actually equipped, case " << failure << '\n';
+            return 1;
+        }
+        assert(warnings == before + 1 && pickup.player.effects.empty());
+        assert(pickup.player.equipErrors == (failure < 2 ? 1u : 0u));
+        assert(pickup.player.mainhand != &pickup.player.artifact);
+        assert(pickup.player.owned && pickup.player.credits.empty());
+        pickup.player.equipResult = EQUIP_ERR_OK; pickup.player.bankOnly = false; pickup.player.swapBlocked = false;
+        PresentationScript retry; retry.m_aura = &pickup.aura; retry.Register();
+        pickup.player.removed = [&](uint32 spell) { if (spell == PresentationSpell) retry.AfterRemove(&pickup.effect, 1); };
+        uint32 scene = pickup.player.Start(pickup.effect); retry.AfterApply(&pickup.effect, 1);
+        pickup.player.SceneCompleted(scene); pickup.player.SceneCompleted(scene);
+        assert(pickup.player.mainhand == &pickup.player.artifact);
+        assert(MarksmanshipClaim::notices == std::vector<Player*>{&pickup.player});
+        assert(pickup.player.casts == (std::vector<uint32>{EquipSpell, EquipSpell}));
+    }
+    {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup; pickup.player.artifact.position = 0xFF0F; pickup.player.mainhand = &pickup.player.artifact;
+        pickup.Begin(); pickup.Finish(); pickup.Finish();
+        assert(!pickup.player.swaps && MarksmanshipClaim::notices == std::vector<Player*>{&pickup.player});
+    }
+    {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup; pickup.player.mainhand = nullptr;
+        pickup.Begin(); pickup.Finish();
+        assert(pickup.player.swaps == 1 && pickup.player.mainhand == &pickup.player.artifact);
+        assert(MarksmanshipClaim::notices == std::vector<Player*>{&pickup.player});
+    }
+    {
+        MarksmanshipClaim::notices.clear();
+        Pickup pickup; pickup.player.swapBlocked = true;
+        int before = warnings;
+        pickup.Begin(); pickup.Tick(20000); pickup.Finish(); pickup.Tick(UINT32_MAX);
+        assert(pickup.player.mainhand == &pickup.player.previousWeapon && MarksmanshipClaim::notices.empty());
+        assert(pickup.player.casts == std::vector<uint32>{EquipSpell} && warnings == before + 2);
+        assert(pickup.player.effects.empty());
+    }
+    std::cout << "PASS: actual effect249 -> controlled inventory host -> mainhand128826 verification before claim; accepted equip/late-swap/bank failures retain diagnostics and owned replay, empty/occupied/already-equipped slots and20s fallback covered\n";
     #endif
     {
         Pickup pickup;

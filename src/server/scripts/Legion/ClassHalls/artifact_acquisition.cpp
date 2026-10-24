@@ -1,5 +1,6 @@
 #include "ScriptMgr.h"
 #include "Player.h"
+#include "Item.h"
 #include "GameObject.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
@@ -409,9 +410,17 @@ struct State
         finished = true;
         SpellCastResult result = player->CastSpell(player, 200262, true);
         if (result != SPELL_CAST_OK)
+        {
             TC_LOG_WARN("scripts", "Thas'dorah pickup: native equip 200262 failed with result %u for player %u; owned pickup replay remains available", uint32(result), player->GetGUIDLow());
-        else
-            MarksmanshipClaim::Queue(player);
+            return;
+        }
+        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+        if (!weapon || weapon->GetEntry() != 128826)
+        {
+            TC_LOG_WARN("scripts", "Thas'dorah pickup: native equip 200262 was accepted but item 128826 is not equipped for player %u; owned pickup replay remains available", player->GetGUIDLow());
+            return;
+        }
+        MarksmanshipClaim::Queue(player);
     }
 };
 }

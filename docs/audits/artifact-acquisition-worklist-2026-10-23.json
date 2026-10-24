@@ -849,6 +849,8 @@
       "bow_reveal_repair_audit": "docs/audits/marksmanship-bow-reveal-2026-10-24.json",
       "bow_summon_retry_repair_audit": "docs/audits/marksmanship-bow-summon-retry-2026-10-24.json",
       "final_stage_cue_repair_audit": "docs/audits/marksmanship-final-stage-cue-2026-10-24.json",
+      "equipped_outcome_repair_audit": "docs/audits/marksmanship-equipped-outcome-2026-10-24.json",
+      "equipped_outcome_review": "After instant native200262, claim dialogue now requires actual mainhand128826, not only SPELL_CAST_OK. Bank-only/equip/late-swap rejection retains diagnostics and owned replay; native scene+effect249 controlled-inventory regressions and deployed slot/entry branches verified. Real inventory/client traversal remains pending.",
       "start": 41540,
       "status": "partial: preceding repairs retained in linked audits. Discovery19 arms phase2;62 retains native bow creation retry at972/6-7 in phases2/3. Actual text22/15000 expiry now arms phase3; unused63 retries original47846 until native6->7 advancement, then51 search credit is allowed and poll stops. No repeated Take speech, synthetic timer, item grant or changed closest-player/group policy. Pickup/report-use/loot remain blocked until7/8. Sparse muted16:42..18:07 footage is not full sequence/exact timing. Group7, voice/rendering/per-point timing, recipient-policy limits, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
       "quests": [

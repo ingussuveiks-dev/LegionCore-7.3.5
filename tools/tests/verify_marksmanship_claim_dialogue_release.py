@@ -33,11 +33,21 @@ assert len(cast_at) == 1, 'Expected exactly one native equip attempt'
 result = finish[cast_at[0] + 1:cast_at[0] + 5]
 assert [entry.mnemonic for entry in result] == ['mov', 'test', 'je', 'call'], 'Reinspect equip-result branch'
 success = result[2].operands[0].imm
-success_entries = [entry for entry in finish if success <= entry.address <= success + 20]
-assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](retry_name) for entry in success_entries), 'Success branch does not call bounded retry'
+success_index = next(index for index, entry in enumerate(finish) if entry.address == success)
+equipment = finish[success_index:success_index + 16]
+assert [entry.mnemonic for entry in equipment] == ['mov', 'mov', 'mov', 'call', 'test', 'je', 'mov', 'mov', 'call', 'cmp', 'jne', 'xor', 'mov', 'mov', 'call', 'jmp'], 'Reinspect actual equipment verification before claim'
+assert equipment[0].op_str == 'r8b, 0xf' and equipment[1].op_str == 'dl, 0xff', 'Not checking native mainhand slot15/bag255'
+assert native['resolve'](equipment[3].operands[0].imm) == native['symbol']('?GetItemByPos@Player@@QEBAPEAVItem@@EE@Z'), 'Slot lookup replaced by ownership check'
+assert equipment[4].op_str == 'rax, rax', 'Missing empty-slot test'
+assert equipment[6].op_str == 'edx, 9' and native['resolve'](equipment[8].operands[0].imm) == native['symbol']('?GetUInt32Value@Object@@'), 'Missing native item-entry field read'
+assert equipment[9].op_str == 'eax, 0x1f73a', 'Wrong equipped item; expected128826'
+assert equipment[5].operands[0].imm == equipment[10].operands[0].imm, 'Empty/wrong-slot outcomes must both skip claim'
+assert native['resolve'](equipment[14].operands[0].imm) == native['symbol'](retry_name), 'Verified equipment does not queue bounded retry'
+assert equipment[5].operands[0].imm > equipment[15].address, 'Equipment-failure branch can enter success callback'
 assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == native['symbol'](retry_name) for entry in finish) == 1, 'Unexpected additional claim callback'
 for displacement, size in [(0x124, 4), (0x138, 4), (0x13c, 1), (0x99, 1)]:
     assert any(operand.type == CS_OP_MEM and operand.size == size and operand.mem.disp == displacement for entry in retry for operand in entry.operands), 'Missing inlined text-timer/runOnce reader; reinspect layout'
 assert native['symbol']('?GetConditionsForSmartEvent@ConditionMgr@@') in native['calls']('?ProcessEvent@SmartScript@@'), 'Native replay omits condition lookup'
 assert b'native Vereesa claim dialogue unavailable after 60000ms' in native['binary'], 'Retry diagnostic missing'
-print('PASS: canonical Release queues claim dialogue only on native equip-cast success, revalidates owner/scenario/custom actor, reads native text-timer/runOnce, dispatches real TEXT_OVER and bounds delayed retries to60000ms')
+assert b'was accepted but item 128826 is not equipped' in native['binary'], 'Accepted-but-unequipped diagnostic missing'
+print('PASS: canonical Release requires accepted200262 AND actual mainhand128826 before claim; verifies native slot/entry reads, empty/wrong-item failure branches, retained diagnostics and scoped60000ms dialogue retry')

@@ -2,6 +2,7 @@
   "date": "2026-10-23",
   "completed_local_date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "equipment_outcome_followup": "docs/audits/marksmanship-equipped-outcome-2026-10-24.json",
   "scope": "Acquisition-driven Vereesa speech and Gorich conversation request after Thas'dorah presentation. Partial Marksmanship repair, not whole-chain, actual equip or client visual certification.",
   "findings": {
     "early_dialogue": "Native100397 TEXT_OVER22 event52 starts speech23 and LINK53 conversation1654 after the preceding15-second speech timer, regardless of actual bow acquisition. TEXT_OVER23 then starts speech24 and LINK55 enables gossip. The old condition-free timer can therefore announce the bow in the right hands and the departure before the player takes it.",
