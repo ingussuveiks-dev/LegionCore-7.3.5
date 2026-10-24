@@ -1384,6 +1384,35 @@ void Queue(Player* player)
 }
 }
 
+namespace XalatathFarthing
+{
+void Protect(Creature* actor, Unit* attacker, uint32& damage)
+{
+    if (!actor || !attacker || !damage || !actor->IsAlive() || actor->GetEntry() != 101148 || actor->GetMapId() != 1539)
+        return;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    if (!scenario || scenario->GetScenarioId() != 991 || scenario->GetCurrentStep() < 7 || scenario->GetCurrentStep() > 8 ||
+        damage < actor->GetHealth(attacker))
+        return;
+    damage = 0;
+    if (actor->GetHealth() > 1)
+    {
+        actor->SetHealth(1);
+        TC_LOG_INFO("scripts.ai", "Xalatath: protected Farthing's native finale from a scaled killing blow");
+    }
+}
+}
+
+struct npc_xalatath_farthing : SmartAI
+{
+    explicit npc_xalatath_farthing(Creature* actor) : SmartAI(actor) { }
+    void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        SmartAI::DamageTakenAfterScaling(attacker, damage, type);
+        XalatathFarthing::Protect(me, attacker, damage);
+    }
+};
+
 namespace XalatathPresentation
 {
 bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
@@ -1470,6 +1499,7 @@ void AddSC_artifact_acquisition()
     new eventobject_talonclaw_ambush();
     new player_talonclaw_ambush_event();
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
+    RegisterCreatureAI(npc_xalatath_farthing);
     RegisterSpellScript(spell_titanstrike_aftermath);
     RegisterSpellScript(spell_titanstrike_combat_dialogue);
     new go_artifact_acquisition();

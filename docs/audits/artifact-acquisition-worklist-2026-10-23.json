@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "farthing_finale_repair_audit": "docs/audits/xalatath-farthing-finale-2026-10-24.json",
+      "farthing_finale_review": "41 preserves native101148 SmartAI finale while adding actual post-scaling killing-blow protection scoped to map1539/scenario991/steps7-8. Original invincibility runs before scaling; native raw2/scaled-lethal baseline dies before HP0..1/casts/201899/timed-list/GO. Fixed production wrapper, native scaling/HP-case/DIE host, controlled player/pet/guardian and suspended-AI paths,12 custom SQL variants and canonical vtable/branch/build/startup checked. No quest credit or item fabricated. Native nearest-player credit eligibility, failed actors/casts/summon/re-entry, full fight/video/client visuals and pickup replay remain unfinished.",
       "pickup_cast_repair_audit": "docs/audits/xalatath-pickup-cast-admission-2026-10-24.json",
       "pickup_cast_review": "40 copies28 exact native root predicates to source17 for delayed201780: actual nonbank blade, living active nonrewarded Priest40710/map1539/scenario991/exact8-9 rechecked at execution. TEMP/idempotence16 custom variants, actual predicate matrix and separately extracted native200ms/source17 consumer, live hash/rows, canonical PE and own startup checked. No production C++ change. Immediate48493 and delayed204919/201917, phase/source-GUID races, consumed-gossip retry and full client/video chain remain unfinished; not a successful-scene controller or whole-chain certification.",
       "opening_admission_repair_audit": "docs/audits/xalatath-opening-admission-2026-10-24.json",
