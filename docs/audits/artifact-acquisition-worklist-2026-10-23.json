@@ -56,11 +56,13 @@
       "weapon": "Strom'kar, the Warbreaker",
       "real_acquisition_repair_audit": "docs/audits/stromkar-real-acquisition-2026-10-24.json",
       "presentation_equip_audit": "docs/audits/stromkar-scene-equip-2026-10-24.json",
+      "opening_admission_audit": "docs/audits/stromkar-opening-admission-2026-10-24.json",
+      "opening_admission_review": "47 guards physical normal/open-lock/report-use before loot/gossip with selected SmartAI delegate: active living Warrior41105/map1539/scenario1037/exact9 plus actual object/spatial state. Native baseline,26 invalid contexts, stage/status/ownership matrix,12 custom SQL variants, unchanged45/46 predicates and new canonical vtable/gate checked. No visibility change or invented owned replay; three-row graph has no64 replay, and scene/cast/full-bag/re-entry/ability/boss paths remain open.",
       "presentation_equip_review": "46 connects completed1225/package1590 to native206439 only for a living active Warrior41105/map1539/scenario1037/exact9 with genuine nonbank128910. Native scene text proves clone-only brandish; real equip callback/packet lifecycle/guarded SQL/native force-equip and new canonical helper are checked. Ability push81 maps EffectNULL, completed10/retry ordering/full spell/client/equip-save still pending; no full-route or visual certification.",
       "real_acquisition_review": "45 binds missing chest247877 Data1 to existing genuine128910 loot and adds52 source4/source22/source17 rules: active nonrewarded Warrior41105/map1539/scenario1037/exact9; living nonbank owner additionally required before existing progression and deferred206436/206448. TEMP/idempotence20 custom variants, native loot/root/cached/delayed matrices, typed26972 stages/spells/item, same-map991/1092 rejection, live hash/rows/canonical consumers and own clean startup checked. Partial muted ZaFrostPet17:03/23/28/33/38/43/53 frames reviewed, not full video/audio. Scene1225/package1590 ->206439 actual equip/ability, physical opening, boss scaling/credit/retry and full client chain remain unfinished.",
       "item": 128910,
       "start": 41105,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "in progress: real loot, scene equip and opening admission repaired; full lifecycle/visual/client traversal pending",
       "quests": [
         {
           "id": 41105,
@@ -101,7 +103,8 @@
           "expected_loot_entries": [
             247877
           ],
-          "script": "",
+          "inventory_script_2026_10_23": "",
+          "script": "go_stromkar_pickup",
           "sai_spells": [
             206436,
             206448
@@ -140,7 +143,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Resolve native root/deferred scene and extra-bar ordering, failed/owned replay and completed10 context; then104276 scaling/credit/summon/earlier sequence and full relevant video. Keep client checks pending."
     },
     {
       "class_id": 1,

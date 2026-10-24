@@ -1575,6 +1575,45 @@ public:
     GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
 };
 
+namespace StromkarPickup
+{
+bool Denied(Player* player, GameObject* object)
+{
+    if (!object)
+        return true;
+    if (object->GetEntry() != 247877)
+        return false;
+    if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_WARRIOR || !ArtifactAcquisition::Active(player, 41105) ||
+        !object->IsInWorld() || !object->isSpawned() || object->GetMapId() != 1539 ||
+        object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+        object->getLootState() == GO_JUST_DEACTIVATED || player->GetMap() != object->GetMap() ||
+        !player->InSamePhase(object) || !player->canSeeOrDetect(object) || !player->IsWithinLOSInMap(object) ||
+        player->GetExactDist(object) > 5.0f)
+        return true;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return !scenario || scenario->GetScenarioId() != 1037 || scenario->GetCurrentStep() != 9;
+}
+}
+
+class go_stromkar_pickup : public GameObjectScript
+{
+    struct AI : SmartGameObjectAI
+    {
+        explicit AI(GameObject* object) : SmartGameObjectAI(object) { }
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            if (StromkarPickup::Denied(player, go))
+                return true;
+            return SmartGameObjectAI::GossipHello(player, isUse);
+        }
+    };
+public:
+    go_stromkar_pickup() : GameObjectScript("go_stromkar_pickup") { }
+    bool OnGossipHello(Player* player, GameObject* object) override { return StromkarPickup::Denied(player, object); }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+};
+
 namespace StromkarPresentation
 {
 bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
@@ -1634,5 +1673,6 @@ void AddSC_artifact_acquisition()
     new go_talonclaw_return_portal();
     new scene_xalatath_pickup();
     new scene_stromkar_pickup();
+    new go_stromkar_pickup();
     new go_xalatath_pickup();
 }
