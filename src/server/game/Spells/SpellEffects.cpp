@@ -1955,6 +1955,7 @@ void Spell::EffectJumpDest(SpellEffIndex effIndex)
     {
         case 192085: // Jump to Skyhold
             z += 20.0f;
+            destTarget->Relocate(x, y, z);
             break;
         case 197619: // Sundering
             o = m_caster->GetOrientation();

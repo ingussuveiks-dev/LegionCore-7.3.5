@@ -76,7 +76,18 @@ int main(int argc, char** argv)
         return 5;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 201905, 207454, 206455, 206456, 204394, 202014, 63048, 204093};
+    DB2Storage<QuestObjectiveEntry> objectives("QuestObjective.db2", QuestObjectiveLoadInfo::Instance());
+    if (!objectives.Load(argv[1], 0))
+        return 25;
+    objectives.LoadFromDB();
+    std::cout << "NATIVE_OBJECTIVE_INDEX_SIZE\t" << objectives.GetNumRows() << '\n';
+    for (auto objective : objectives)
+        if (objective->QuestID == 41105)
+            std::cout << "NATIVE_OBJECTIVE\t" << objective->ID << '\t' << unsigned(objective->Type) << '\t' << unsigned(objective->OrderIndex) << '\t'
+                << unsigned(objective->StorageIndex) << '\t' << objective->ObjectID << '\t' << objective->Amount << '\t' << unsigned(objective->Flags) << '\t'
+                << objective->Description->Str[0] << '\n';
+    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 201905, 207454, 206455, 206456, 204394, 202014, 63048, 204093,
+        185674, 192084, 192085, 215997, 216016, 221509, 231348};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -87,11 +98,11 @@ int main(int argc, char** argv)
     for (auto spell : spells)
     {
         std::string name = spell->Name->Str[0];
-        if (name.find("Danica") != std::string::npos || name.find("Thoradin") != std::string::npos || name.find("Skyhold") != std::string::npos)
+        if (name.find("Danica") != std::string::npos || name.find("Thoradin") != std::string::npos || name.find("Skyhold") != std::string::npos || name == "Odyn's Gaze")
             std::cout << "FAREWELL_SPELL\t" << spell->ID << '\t' << name << '\n';
     }
     for (auto effect : effects)
-        if (!effect->DifficultyID && effect->Effect == 28 && (effect->EffectMiscValue[0] == 93818 || effect->EffectMiscValue[0] == 93823 ||
+        if (!effect->DifficultyID && effect->Effect == 28 && (effect->EffectMiscValue[0] == 93818 || effect->EffectMiscValue[0] == 93819 || effect->EffectMiscValue[0] == 93823 ||
             effect->EffectMiscValue[0] == 96549 || effect->EffectMiscValue[0] == 100622 || effect->EffectMiscValue[0] == 103608 ||
             effect->EffectMiscValue[0] == 105507 || effect->EffectMiscValue[0] == 112663 || effect->EffectMiscValue[0] == 116858))
             std::cout << "FAREWELL_SUMMON\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->EffectMiscValue[0] << '\t'
@@ -150,6 +161,22 @@ int main(int argc, char** argv)
     for (uint32 slot = 0; slot < 10; ++slot)
         if (execution->Spells[slot])
             std::cout << "OVERRIDE\t684\t" << slot << '\t' << execution->Spells[slot] << '\n';
+    auto skyhold = overrides.LookupEntry(730);
+    if (!skyhold)
+        return 26;
+    for (uint32 slot = 0; slot < 10; ++slot)
+        if (skyhold->Spells[slot])
+            std::cout << "SKYHOLD_OVERRIDE\t730\t" << slot << '\t' << skyhold->Spells[slot] << '\n';
+    DB2Storage<AreaTriggerEntry> staticTriggers("AreaTrigger.db2", AreaTriggerLoadInfo::Instance());
+    if (!staticTriggers.Load(argv[1], 0))
+        return 27;
+    staticTriggers.LoadFromDB();
+    auto staticGaze = staticTriggers.LookupEntry(11869);
+    if (staticGaze)
+        std::cout << "STATIC_GAZE\t" << staticGaze->ID << '\t' << staticGaze->ContinentID << '\t' << staticGaze->Pos.X << '\t'
+            << staticGaze->Pos.Y << '\t' << staticGaze->Pos.Z << '\t' << staticGaze->Radius << '\n';
+    else
+        std::cout << "STATIC_GAZE_MISSING\t11869\n";
     for (auto entry : overrides)
         for (int32 spell : entry->Spells)
             if (spell == 206455)
@@ -249,7 +276,7 @@ int main(int argc, char** argv)
         return 23;
     durations.LoadFromDB();
     for (auto entry : miscellaneous)
-        if (!entry->DifficultyID && (entry->SpellID == 201904 || entry->SpellID == 201905))
+        if (!entry->DifficultyID && (entry->SpellID == 201904 || entry->SpellID == 201905 || entry->SpellID == 192084 || entry->SpellID == 192085))
         {
             auto duration = durations.LookupEntry(entry->DurationIndex);
             auto range = ranges.LookupEntry(entry->RangeIndex);
