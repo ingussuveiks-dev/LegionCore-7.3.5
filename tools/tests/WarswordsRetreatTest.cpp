@@ -110,6 +110,8 @@ struct MotionMaster
     {
         if (identity == 1)
             assert(std::abs(positionX - 3444.66f) < .001f && std::abs(positionY - 1703.69f) < .001f && std::abs(positionZ - .43f) < .001f);
+        else if (identity == 0)
+            assert(std::abs(positionX - 3515.14f) < .001f && std::abs(positionY - 1800.60f) < .001f && std::abs(positionZ - .54f) < .001f);
         else
             assert(identity == 2 && std::abs(positionX - 3514.32f) < .001f && std::abs(positionY - 1800.86f) < .001f && std::abs(positionZ - .6f) < .001f);
         points.push_back(identity);

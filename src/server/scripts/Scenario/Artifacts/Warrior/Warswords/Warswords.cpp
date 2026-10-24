@@ -601,18 +601,29 @@ public:
             }
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
         {
-            if (me->HealthBelowPct(15) && !phase1)
+            if (!attacker || !damage || !me->IsAlive() || me->GetEntry() != 98602 || me->GetMapId() != 1511)
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() != 5)
+                return;
+            uint64 health = me->GetHealth(attacker);
+            uint64 remaining = damage >= health ? 0 : health - damage;
+            uint32 generation = introGeneration;
+            if (!phase1 && remaining < me->CountPctFromMaxHealth(15, attacker))
             {
-                Talk(0);
                 phase1 = true;
+                Talk(0);
             }
-
-            if (me->HealthBelowPct(7) && !phase2)
+            if (generation != introGeneration || !me->IsAlive())
+                return;
+            if (!phase2 && remaining < me->CountPctFromMaxHealth(7, attacker))
             {
-                Talk(1);
                 phase2 = true;
+                Talk(1);
+                if (generation != introGeneration || !me->IsAlive())
+                    return;
                 me->StopAttack();
                 me->GetMotionMaster()->MovePoint(0, 3515.14f, 1800.60f, 0.54f);
             }

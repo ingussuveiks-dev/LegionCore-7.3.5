@@ -60,6 +60,36 @@ int main(int argc, char** argv)
         return 17;
     misc.LoadFromDB();
     castTimes.LoadFromDB();
+    DB2Storage<BroadcastTextEntry> textsStore("BroadcastText.db2", BroadcastTextLoadInfo::Instance());
+    DB2Storage<SoundKitEntry> soundKits("SoundKit.db2", SoundKitLoadInfo::Instance());
+    DB2Storage<SoundKitEntryEntry> soundFiles("SoundKitEntry.db2", SoundKitEntryLoadInfo::Instance());
+    if (!textsStore.Load(argv[1], 0) || !soundKits.Load(argv[1], 0) || !soundFiles.Load(argv[1], 0))
+        return 18;
+    textsStore.LoadFromDB();
+    soundKits.LoadFromDB();
+    soundFiles.LoadFromDB();
+    for (uint32 identity : {100374, 106338, 100375})
+    {
+        auto text = textsStore.LookupEntry(identity);
+        if (!text)
+            return 19;
+        std::cout << "BROADCAST\t" << identity << '\t' << text->SoundEntriesID[0] << '\t' << text->SoundEntriesID[1] << '\n';
+        for (uint32 kit : text->SoundEntriesID)
+            if (kit)
+            {
+                if (!soundKits.LookupEntry(kit))
+                    return 20;
+                bool found = false;
+                for (auto sound : soundFiles)
+                    if (uint32(sound->SoundKitID) == kit && sound->FileDataID && sound->Frequency && sound->Volume > 0)
+                    {
+                        found = true;
+                        std::cout << "AUDIO_FILE\t" << identity << '\t' << kit << '\t' << sound->FileDataID << '\n';
+                    }
+                if (!found)
+                    return 21;
+            }
+    }
     dungeons.LoadFromDB();
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     if (!maps.Load(argv[1], 0))
