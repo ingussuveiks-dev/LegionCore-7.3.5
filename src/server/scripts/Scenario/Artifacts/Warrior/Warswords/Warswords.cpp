@@ -336,10 +336,10 @@ public:
         void JustDied(Unit* who) override
         {
             Talk(2);
-            if (who->GetTypeId() == TYPEID_PLAYER)
+            if (Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
             {
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46987);
-                who->CreateConversation(848);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46987);
+                player->CreateConversation(848);
             }
         }
 
