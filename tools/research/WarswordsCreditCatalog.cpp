@@ -97,6 +97,17 @@ int main(int argc, char** argv)
     if (!maps.Load(argv[1], 0))
         return 11;
     maps.LoadFromDB();
+    DB2Storage<WorldMapAreaEntry> worldAreas("WorldMapArea.db2", WorldMapAreaLoadInfo::Instance());
+    if (!worldAreas.Load(argv[1], 0))
+        return 22;
+    worldAreas.LoadFromDB();
+    auto areaPrecision = std::cout.precision(9);
+    for (auto area : worldAreas)
+        if (area->MapID == 1511 || area->AreaID == 7541)
+            std::cout << "WORLD_AREA\t" << area->ID << '\t' << area->AreaID << '\t' << area->LocLeft << '\t'
+                << area->LocRight << '\t' << area->LocTop << '\t' << area->LocBottom << '\t'
+                << area->MapID << '\t' << area->ParentWorldMapID << '\n';
+    std::cout.precision(areaPrecision);
     DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
     if (!locks.Load(argv[1], 0))
         return 15;
