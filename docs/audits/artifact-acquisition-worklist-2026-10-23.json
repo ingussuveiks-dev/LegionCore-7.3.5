@@ -595,8 +595,14 @@
       "specialization": "Beast Mastery",
       "weapon": "Titanstrike",
       "item": 128861,
+      "prior_pickup_quest_repair_audit": "docs/audits/titanstrike-final-pickup-2026-10-23.json",
+      "workshop_repair_audit": "docs/audits/titanstrike-workshop-2026-10-23.json",
+      "rune_wave_repair_audit": "docs/audits/titanstrike-rune-waves-2026-10-23.json",
+      "spirit_winds_repair_audit": "docs/audits/titanstrike-spirit-winds-2026-10-23.json",
+      "weapon_visuals_repair_audit": "docs/audits/titanstrike-weapon-visuals-2026-10-23.json",
+      "pickup_admission_repair_audit": "docs/audits/titanstrike-pickup-admission-2026-10-24.json",
       "start": 41541,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: inherit earlier workshop/runes/wind/weapon/final42185 pickup repairs in linked audits.249812 now requires actual map1609/scenario1099/4-5 for opening/owned replay; real loot20 and completed-loot root24 conditions retain active Hunter42185 and actual ownership before native scene/50923/bird/cleanup. Native/SQL/deployed guards verified; final delayed-cast/equip/visual/exit retry, prerequisites, re-entry and full client traversal/video remain pending",
       "quests": [
         {
           "id": 41541,

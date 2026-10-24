@@ -143,6 +143,13 @@ bool Use(Player* p,GameObject* go)
                 go->HasFlag(GAMEOBJECT_FIELD_FLAGS,GO_FLAG_IN_USE|GO_FLAG_NOT_SELECTABLE) ||
                 p->GetMap()!=go->GetMap() || !p->InSamePhase(go) || !p->canSeeOrDetect(go) || !p->IsWithinLOSInMap(go) ||
                 p->GetExactDist(go)>5.0f || go->getLootState()==GO_JUST_DEACTIVATED) return true;
+            if (row.object == 249812)
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(p->GetInstanceId());
+                if (go->GetMapId() != 1609 || !scenario || scenario->GetScenarioId() != 1099 ||
+                    scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() > 5)
+                    return true;
+            }
             if (row.object == 248834)
             {
                 Scenario* scenario = sScenarioMgr->GetScenario(p->GetInstanceId());

@@ -51,6 +51,7 @@ void PreparePickup(GameObject& object, uint32 entry)
 {
  scenarioManager={};object.entry=entry;
  if(entry==248419){scenarioManager.scenario.id=972;scenarioManager.scenario.step=7;object.mapId=1489;}
+ if(entry==249812){scenarioManager.scenario.id=1099;scenarioManager.scenario.step=4;object.mapId=1609;}
 }
 int main()
 {
@@ -108,7 +109,7 @@ int main()
  // prerequisite (which has already been rewarded at the Temple of Storms).
  for(uint32 status:{uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)}){
   Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=42185;hunter.status=status;
-  GameObject rifle;rifle.entry=249812;
+  GameObject rifle;PreparePickup(rifle,249812);
   assert(!ArtifactAcquisition::Use(&hunter,&rifle)); // actual loot permitted
   hunter.bank=true;assert(ArtifactAcquisition::Use(&hunter,&rifle));
   assert(rifle.ai.script.calls==1&&hunter.lastItem==128861);
@@ -116,7 +117,25 @@ int main()
  }
  for(uint32 wrongQuest:{41574u,42158u}){
   Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=wrongQuest;hunter.owned=true;
-  GameObject rifle;rifle.entry=249812;
+  GameObject rifle;PreparePickup(rifle,249812);
+  assert(ArtifactAcquisition::Use(&hunter,&rifle)&&!rifle.ai.script.calls&&!hunter.ownItemEvents);
+ }
+ for(uint32 stage=0;stage<9;++stage) for(uint32 ownership=0;ownership<3;++ownership){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=42185;hunter.owned=ownership==1;hunter.bank=ownership==2;
+  GameObject rifle;PreparePickup(rifle,249812);scenarioManager.scenario.step=stage;
+  bool allowed=stage==4||stage==5;
+  bool handled=ArtifactAcquisition::Use(&hunter,&rifle);
+  if((!allowed&&!handled)||rifle.ai.script.calls!=uint32(allowed&&ownership!=0)){
+   std::cerr<<"FAIL: Titanstrike opening/replay crossed native1099 stage boundary at stage "<<stage<<" ownership "<<ownership<<'\n';return 1;
+  }
+  assert(hunter.ownItemEvents==uint32(allowed&&ownership!=0));
+  assert(rifle.getLootState()==uint32(allowed&&ownership!=0?GO_JUST_DEACTIVATED:0));
+ }
+ for(uint32 missing=0;missing<4;++missing){
+  Player hunter;hunter.cls=CLASS_HUNTER;hunter.quest=42185;hunter.owned=true;
+  GameObject rifle;PreparePickup(rifle,249812);
+  if(missing==0)scenarioManager.present=false;if(missing==1)scenarioManager.scenario.id=1068;
+  if(missing==2)hunter.instance=43;if(missing==3)rifle.mapId=1495;
   assert(ArtifactAcquisition::Use(&hunter,&rifle)&&!rifle.ai.script.calls&&!hunter.ownItemEvents);
  }
  for(auto row:ArtifactAcquisition::Pickups){

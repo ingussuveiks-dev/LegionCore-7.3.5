@@ -105,8 +105,11 @@ int main(int argc, char** argv) {
     _set_abort_behavior(0, _CALL_REPORTFAULT);
     assert(argc == 2 || argc == 3);
     if (argc == 3) { expectedQuest = 40419; expectedMap = 1489; expectedScenario = 972; firstStage = 7; lastStage = 8; expectedItem = 128826; scenarioManager = {}; }
-    bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot";
+    bool titanstrike = argc == 3 && std::string(argv[2]).find("titanstrike-") == 0;
+    if (titanstrike) { expectedQuest = 42185; expectedMap = 1609; expectedScenario = 1099; firstStage = 4; lastStage = 5; expectedItem = 128861; eventEntry = 249812; scenarioManager = {}; }
+    bool ownedReplay = argc == 3 && std::string(argv[2]) != "marksmanship-loot" && std::string(argv[2]) != "titanstrike-loot";
     uint32 eventId = argc == 3 && std::string(argv[2]) == "marksmanship-root" ? 0 : 2;
+    if (titanstrike) eventId = 0;
     bool dialogueEvent = argc == 3 && std::string(argv[2]) == "marksmanship-dialogue";
     bool returnEvent = argc == 3 && (std::string(argv[2]) == "marksmanship-return" || dialogueEvent);
     if (returnEvent) { firstStage = lastStage = 8; eventEntry = 100397; eventSource = 0; eventId = dialogueEvent ? 52 : 59; scenarioManager = {}; }
@@ -123,6 +126,16 @@ int main(int argc, char** argv) {
         ConditionMgr original;
         assert(original.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
         assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+    }
+    if (titanstrike) {
+        Player owner; scenarioManager.scenario.step = 3;
+        ConditionMgr original; LootItem unguarded;
+        assert(unguarded.AllowedForPlayer(&owner) && !item.AllowedForPlayer(&owner));
+        if (ownedReplay) {
+            assert(original.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+            assert(!conditionManager.IsObjectMeetingSmartEventConditions(eventEntry, eventId, eventSource, &owner, &owner));
+        }
+        std::cout << "BASELINE: missing native conditions admitted early Titanstrike loot/root; supplied source4/22 rows reject the same1099/3 owner\n";
     }
     CachedLoot cache;
     {
