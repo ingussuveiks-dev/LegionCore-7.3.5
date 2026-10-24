@@ -53,7 +53,8 @@ struct SmartGameObjectAI : GameObjectAI {
 };
 struct GameObject {
     uint32 entry=248419,flags=0,lootState=0,mapId=1489,scriptId=1;
-    bool spawned=true;Map* map=&worldMap;GameObjectAI* ai=nullptr;
+    bool spawned=true,world=true;Map* map=&worldMap;GameObjectAI* ai=nullptr;
+    bool IsInWorld() const{return world;}
     uint32 GetEntry() const{return entry;}uint32 GetMapId() const{return mapId;}
     uint32 GetScriptId() const{return scriptId;}uint32 GetGUIDLow() const{return 10;}
     Map* GetMap() const{return map;}bool isSpawned() const{return spawned;}
@@ -66,6 +67,7 @@ struct GameObject {
     float GetInteractionDistance() const{return 10;}
     struct Info {uint32 type=GAMEOBJECT_TYPE_CHEST;bool IsUsableMounted()const{return false;}} info;
     Info const* GetGOInfo() const{return &info;}
+    uint32 GetGoType() const{return info.type;}
     void Use(Player*){assert(false);}
 };
 GameObject* Map::GetGameObject(uint32 guid){return guid==10?object:nullptr;}
@@ -73,6 +75,9 @@ struct Player {
     uint32 cls=CLASS_HUNTER,quest=40419,status=QUEST_STATUS_INCOMPLETE,instance=42,uses=0,owns=0,auraRemovals=0;
     bool alive=true,teleport=false,rewarded=false,owned=true,bank=false,phase=true,visible=true,los=true;
     bool remote=false,mounted=false,vehicle=false;float distance=2;Map* map=&worldMap;
+    bool world=true,contact=true;
+    bool IsInWorld() const{return world;}bool CanContact() const{return contact;}
+    bool isGameMaster() const{return false;}Player* ToPlayer(){return this;}
     bool IsAlive() const{return alive;}bool IsBeingTeleported() const{return teleport;}
     uint32 getClass() const{return cls;}uint32 GetInstanceId() const{return instance;}uint32 GetGUIDLow() const{return 7;}
     uint32 GetQuestStatus(uint32 id) const{return id==quest?status:0;}
@@ -80,7 +85,7 @@ struct Player {
     Map* GetMap() const{return map;}
     bool InSamePhase(GameObject*) const{return phase;}bool canSeeOrDetect(GameObject*) const{return visible;}
     bool IsWithinLOSInMap(GameObject*) const{return los;}float GetExactDist(GameObject*) const{return distance;}
-    bool HasItemCount(uint32,uint32,bool) const{return owned||bank;}
+    bool HasItemCount(uint32,uint32,bool includeBank) const{return owned||(includeBank&&bank);}
     Player* GetUnitBeingMoved(){return remote?nullptr:this;}
     bool IsOnVehicle(Player*) const{return vehicle;}bool IsMounted() const{return mounted;}bool NeedDismount() const{return false;}
     void CastSpell(GameObject*,uint32,bool){assert(false);}
@@ -106,7 +111,10 @@ struct GameObjectScript {
 #include "Binding.inc"
 #include "BindingChoice.inc"
 PickupBinding binding;
-struct ScriptManager {GameObjectAI* GetGameObjectAI(GameObject* object){return object->scriptId?binding.GetAI(object):nullptr;}} scriptManager;
+struct ScriptManager {
+    GameObjectAI* GetGameObjectAI(GameObject* object){return object->scriptId?binding.GetAI(object):nullptr;}
+    bool OnGossipHello(Player* player,GameObject* object){return binding.OnGossipHello(player,object);}
+} scriptManager;
 auto* sScriptMgr=&scriptManager;
 struct Factory {
     std::string key()const{return "SmartGameObjectAI";}

@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "opening_admission_repair_audit": "docs/audits/xalatath-opening-admission-2026-10-24.json",
+      "opening_admission_review": "39 binds selected SmartAI wrapper and common physical gate for ordinary/open-lock/direct report-use before native gossip/loot: live active Priest40710/map1539/scenario991/exact8-9, phase/visibility/LOS/5yd/spawn/flags/state. Actual nonbank-owner gossip stops duplicate unique re-loot without forced deactivation/credit; new owners retain genuine loot. Native factory/packet/open-lock-prefix host,25 invalid contexts,12 custom SQL variants, canonical vtable/branch/build/startup checked. Client presentation, delayed-cast and failed replay controller still pending; not a whole-chain certification.",
       "progression_admission_repair_audit": "docs/audits/xalatath-progression-admission-2026-10-24.json",
       "progression_admission_review": "38 gates both state70/id0 and gossip64/id2 before LINK/scene/48493/extra-action on living active nonrewarded Priest40710/map1539/scenario991/exact8-9 and nonbank128827.56 native source22 rules preserve five actions and source4 loot. Old empty state and item-only early gossip baselines fail denial; native root dispatch/condition/ElseGroup fixture and14 custom variants pass, live hash/rows and deployed consumers checked. Physical early opening/despawn, delayed-cast failure/abandon races and retry/dedup remain separate; not full client verification.",
       "scene_equip_repair_audit": "docs/audits/xalatath-scene-equip-2026-10-24.json",

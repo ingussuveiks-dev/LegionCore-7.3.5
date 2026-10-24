@@ -6,7 +6,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_36_xalatath_real_loot.sql" -Raw
 $reset=@'
 DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object;
-UPDATE gameobject_template SET Data1=0 WHERE entry=247690;
+UPDATE gameobject_template SET Data1=0,ScriptName='' WHERE entry=247690;
 DELETE FROM gameobject_loot_template; INSERT INTO gameobject_loot_template SELECT * FROM saved_loot;
 DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart;
 DELETE FROM conditions; INSERT INTO conditions SELECT * FROM saved_conditions;
@@ -46,7 +46,7 @@ $variants=[ordered]@{
  'custom-script'="UPDATE gameobject_template SET ScriptName='custom_blade';"
  'custom-type'='UPDATE gameobject_template SET type=10;'
  'custom-lock'='UPDATE gameobject_template SET Data0=1;'
- 'custom-quest'='UPDATE gameobject_template SET Data14=1;'
+ 'custom-open-text'='UPDATE gameobject_template SET Data14=1;'
  'existing-binding'='UPDATE gameobject_template SET Data1=247690;'
  'custom-binding'='UPDATE gameobject_template SET Data1=1;'
  'missing-loot'='DELETE FROM gameobject_loot_template;'

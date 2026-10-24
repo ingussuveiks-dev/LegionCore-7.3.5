@@ -6,6 +6,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 $migration=Get-Content "$repo/sql/updates/world/2026_10_24_38_xalatath_progression_admission.sql" -Raw
 $reset=@'
 DELETE FROM gameobject_template; INSERT INTO gameobject_template SELECT * FROM saved_object;
+UPDATE gameobject_template SET ScriptName='' WHERE entry=247690;
 DELETE FROM smart_scripts; INSERT INTO smart_scripts SELECT * FROM saved_smart;
 DELETE FROM conditions; INSERT INTO conditions SELECT * FROM saved_conditions;
 DELETE FROM conditions WHERE SourceTypeOrReferenceId=22 AND SourceEntry=247690 AND SourceId=1;

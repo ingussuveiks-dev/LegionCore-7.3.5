@@ -1422,6 +1422,47 @@ public:
     }
 };
 
+namespace XalatathPickup
+{
+bool Denied(Player* player, GameObject* object)
+{
+    if (!object)
+        return true;
+    if (object->GetEntry() != 247690)
+        return false;
+    if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+        player->getClass() != CLASS_PRIEST || !ArtifactAcquisition::Active(player, 40710) ||
+        !object->IsInWorld() || !object->isSpawned() || object->GetMapId() != 1539 ||
+        object->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_IN_USE | GO_FLAG_NOT_SELECTABLE) ||
+        object->getLootState() == GO_JUST_DEACTIVATED || player->GetMap() != object->GetMap() ||
+        !player->InSamePhase(object) || !player->canSeeOrDetect(object) || !player->IsWithinLOSInMap(object) ||
+        player->GetExactDist(object) > 5.0f)
+        return true;
+    Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+    return !scenario || scenario->GetScenarioId() != 991 || scenario->GetCurrentStep() < 8 || scenario->GetCurrentStep() > 9;
+}
+}
+
+class go_xalatath_pickup : public GameObjectScript
+{
+    struct AI : SmartGameObjectAI
+    {
+        explicit AI(GameObject* object) : SmartGameObjectAI(object) { }
+        bool GossipHello(Player* player, bool isUse) override
+        {
+            if (XalatathPickup::Denied(player, go))
+                return true;
+            bool owned = go->GetEntry() == 247690 && player && player->HasItemCount(128827, 1, false);
+            bool handled = SmartGameObjectAI::GossipHello(player, isUse);
+            return owned || handled;
+        }
+    };
+public:
+    go_xalatath_pickup() : GameObjectScript("go_xalatath_pickup") { }
+    bool OnGossipHello(Player* player, GameObject* object) override { return XalatathPickup::Denied(player, object); }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+};
+
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
@@ -1441,4 +1482,5 @@ void AddSC_artifact_acquisition()
     new player_talonclaw_departure();
     new go_talonclaw_return_portal();
     new scene_xalatath_pickup();
+    new go_xalatath_pickup();
 }
