@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -51,6 +52,30 @@ struct Player : Unit
     void CreateConversation(uint32 identity) { assert(identity == 843); ++conversations; if (conversationWorks) { ++acceptedConversations; if (onConversation) onConversation(); } }
 };
 void Unit::CreateConversation(uint32 identity) { assert(ToPlayer()); ToPlayer()->CreateConversation(identity); }
+enum class HighGuid { Conversation };
+struct ObjectManager
+{
+    struct Generator { uint32 Generate() { return 1; } } generator;
+    template<HighGuid> Generator* GetGenerator() { return &generator; }
+} objectManager;
+auto* sObjectMgr = &objectManager;
+struct Conversation
+{
+    static inline uint32 deleted = 0, removed = 0;
+    static inline std::vector<Conversation*> objects;
+    bool world = false;
+    Conversation() { objects.push_back(this); }
+    ~Conversation() { ++deleted; objects.erase(std::find(objects.begin(), objects.end(), this)); }
+    bool CreateConversation(uint32, uint32 identity, Player* player, void*, Player& pose)
+    {
+        assert(identity == 843 && player == &pose);
+        bool result = player->conversationWorks;
+        player->CreateConversation(identity);
+        world = result;
+        return result;
+    }
+    void Remove() { assert(world); world = false; ++removed; }
+};
 struct Creature : Unit
 {
     uint32 entry = 98602, mapId = 1511, instance = 42, auraRemovals = 0, casts = 0;
@@ -121,6 +146,7 @@ struct IntroAI : ScriptedAI
 #include "Fields.inc"
 #include "Reset.inc"
 #include "IsIntroTarget.inc"
+#include "StartConversation.inc"
 #include "MoveInLineOfSight.inc"
 #include "UpdateIntro.inc"
 #include "UpdateLifecycle.inc"
@@ -143,8 +169,8 @@ struct Fixture
     Player owner, intruder;
     Creature actor, helya;
     IntroAI ai{&actor};
-    Fixture() { intruder.guid = 2; intruder.status = 0; actor.guid = 98; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
-    ~Fixture() { ObjectAccessor::players.clear(); }
+    Fixture() { intruder.guid = 2; intruder.status = 0; actor.guid = 98; actor.helya = &helya; actor.nearest = &intruder; actor.nearbyPlayers = {&intruder, &owner}; scenarioManager = {}; ObjectAccessor::players = {{1, &owner}, {2, &intruder}}; warningRequests = recoveryRequests = Conversation::deleted = Conversation::removed = 0; actor.onElapsed = [this](uint32 diff) { ai.TickVisual(diff); }; ai.Reset(); }
+    ~Fixture() { ObjectAccessor::players.clear(); while (!Conversation::objects.empty()) delete Conversation::objects.back(); }
     void Start() { ai.MoveInLineOfSight(&owner); }
 };
 void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
@@ -173,7 +199,13 @@ void Invalidate(Fixture& fixture, uint32 invalid, bool delayed)
 }
 int main()
 {
-#ifdef COMMUNION_BASELINE
+#ifdef CONVERSATION_BASELINE
+    Fixture fixture; fixture.owner.conversationWorks = false;
+    fixture.Start(); assert(fixture.owner.conversations == 1 && !fixture.owner.acceptedConversations && fixture.ai.introDone && fixture.ai.introPending);
+    fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble);
+    std::cout << "BASELINE: pinned638dfa31 consumes the intro and engages after failed conversation843 creation. Controlled conversation/cast/timer services.\n";
+    return 0;
+#elif defined(COMMUNION_BASELINE)
     Fixture fixture;
     fixture.ai.TickCombat(1); assert(fixture.ai.victimChecks == 1 && fixture.ai.combatTicks == 1);
     fixture.Start(); assert(fixture.ai.introPending);
@@ -217,6 +249,35 @@ int main()
     assert(fixture.helya.aura && !fixture.actor.aura && fixture.helya.casts == 1 && fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1);
     std::cout << "BASELINE: pinned f6b173ea acknowledges195062 on Helya herself, not Vigfus, and still starts843/8s. Controlled services; real native Spell/Aura recipient comparison runs separately.\n";
 #else
+    {
+        Fixture fixture; fixture.owner.conversationWorks = false;
+        fixture.Start(); assert(!fixture.ai.introDone && !fixture.ai.introPending && fixture.actor.callbacks.empty());
+        assert(Conversation::objects.empty() && Conversation::deleted == 1 && !Conversation::removed && warningRequests == 1);
+        for (uint32 repeat = 0; repeat < 3; ++repeat)
+        {
+            fixture.ai.TickVisual(1000); fixture.Start();
+            assert(!fixture.ai.IsEncounterReady() && fixture.actor.callbacks.empty() && warningRequests == 1 && !fixture.ai.attacks && fixture.actor.bubble);
+        }
+        assert(fixture.owner.conversations == 4 && Conversation::deleted == 4 && fixture.helya.casts == 1);
+        fixture.owner.conversationWorks = true; fixture.ai.TickVisual(1000); fixture.Start();
+        assert(fixture.owner.acceptedConversations == 1 && fixture.ai.introPending && fixture.actor.callbacks.size() == 1 && recoveryRequests == 1);
+        fixture.actor.Flush(); assert(fixture.ai.attacks == 1 && !fixture.actor.bubble && fixture.helya.casts == 1);
+    }
+    for (bool reset : {false, true})
+    {
+        Fixture fixture;
+        fixture.owner.onConversation = [&]() { if (reset) fixture.ai.Reset(); else fixture.owner.status = 0; };
+        fixture.Start();
+        assert(!fixture.ai.introDone && !fixture.ai.introPending && fixture.actor.callbacks.empty() && Conversation::removed == 1);
+        assert(!fixture.ai.attacks && fixture.actor.bubble);
+    }
+    {
+        Fixture fixture;
+        fixture.owner.onConversation = [&]() { if (fixture.owner.conversations == 1) { fixture.ai.Reset(); fixture.Start(); } };
+        fixture.Start();
+        assert(fixture.owner.acceptedConversations == 2 && Conversation::removed == 1 && fixture.ai.introDone && fixture.ai.introPending && fixture.actor.callbacks.size() == 1);
+        fixture.actor.Flush(); assert(fixture.ai.attacks == 1);
+    }
     for (bool missing : {false, true})
     {
         Fixture fixture;
@@ -259,13 +320,13 @@ int main()
         if (waiting)
         {
             assert(!fixture.ai.introDone && !fixture.ai.introPending && warningRequests == 1);
-            fixture.actor.helya = &fixture.helya; fixture.helya.castWorks = true;
+            fixture.actor.helya = &fixture.helya; fixture.helya.castWorks = fixture.owner.conversationWorks = true;
             fixture.ai.TickVisual(999); fixture.Start(); assert(!fixture.owner.conversations);
             fixture.ai.TickVisual(1); fixture.Start();
             assert(recoveryRequests == 1 && warningRequests == 1);
         }
         assert(fixture.owner.conversations == 1 && fixture.actor.callbacks.size() == 1 && fixture.actor.aura && !fixture.helya.aura);
-        assert(fixture.owner.acceptedConversations == uint32(presentationWorks));
+        assert(fixture.owner.acceptedConversations == 1);
         fixture.owner.distance = 100; fixture.actor.Flush(); fixture.actor.Flush();
         assert(fixture.ai.attacks == 1 && fixture.ai.attacked == &fixture.owner && fixture.actor.auraRemovals == 1 && !fixture.ai.introPending);
         fixture.ai.Reset(); fixture.Start(); assert(fixture.owner.conversations == 1);

@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Conversation.h"
 #include "Item.h"
 #include "ObjectAccessor.h"
 #include "Scenario.h"
@@ -577,6 +578,22 @@ public:
             return scenario && scenario->GetScenarioId() == 944 && scenario->GetCurrentStep() == 5;
         }
 
+        bool StartIntroConversation(Player* player, uint32 generation)
+        {
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 843, player, nullptr, *player))
+            {
+                delete conversation;
+                return false;
+            }
+            if (generation != introGeneration || !introPending || !IsIntroTarget(player, 40.0f))
+            {
+                conversation->Remove();
+                return false;
+            }
+            return true;
+        }
+
         void MoveInLineOfSight(Unit* who) override
         {
             Player* player = who ? who->ToPlayer() : nullptr;
@@ -618,10 +635,21 @@ public:
                 introPending = false;
                 return;
             }
+            if (!StartIntroConversation(player, generation))
+            {
+                if (generation == introGeneration && introPending)
+                {
+                    introDone = false;
+                    introPending = false;
+                    if (!introVisualWarned)
+                        TC_LOG_WARN("scripts", "Warswords intro waiting for conversation843 creation; 8-second transition not started");
+                    introVisualWarned = true;
+                }
+                return;
+            }
             if (introVisualWarned)
-                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura; starting original dialogue and 8-second transition");
+                TC_LOG_INFO("scripts", "Warswords intro recovered native Helya195062 aura and conversation843; starting original 8-second transition");
             introVisualWarned = false;
-            player->CreateConversation(843);
             if (generation != introGeneration || !introPending)
                 return;
             me->AddDelayedEvent(8000, [this, generation, playerGuid]() -> void
