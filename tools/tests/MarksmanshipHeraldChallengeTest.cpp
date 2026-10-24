@@ -108,6 +108,9 @@ struct SmartScriptHolder {
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
         struct {uint32 run=0,pathID=0,repeat=0,quest=0,despawnTime=0,reactState=0;}wpStart;
 #endif
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+        struct {uint32 phase=0;}setEventPhase;
+#endif
     }action;
     struct {struct {uint32 entry=0,dist=0,dead=0;}closest;}target;
     uint32 GetEventType()const{return type;}uint32 GetActionType()const{return actionType;}uint32 GetTargetType()const{return targetType;}uint32 GetScriptType()const{return source_type;}
@@ -117,7 +120,12 @@ uint32 urand(uint32 minimum,uint32 maximum){assert(minimum==maximum);return mini
 struct SmartScript {
     Creature* me=nullptr;SmartAIEventList mEvents,mTimedActionList;ObjectGuid mLastInvoker,mTextGUID;
     uint32 mTalkerEntry=0,mLastTextID=0,mTextTimer=0;bool mUseTextTimer=false;
-    WorldObject* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker.unit;}bool IsInPhase(uint32){return false;}
+    WorldObject* GetBaseObject(){return me;}Unit* GetLastInvoker(){return mLastInvoker.unit;}
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+    uint32 mEventPhase=0;bool IsInPhase(uint32)const;void SetPhase(uint32);
+#else
+    bool IsInPhase(uint32){return false;}
+#endif
     bool IsCreature(WorldObject* object){return object&&object->ToCreature();}bool IsPlayer(WorldObject* object){return object&&object->ToPlayer();}bool IsGameObject(WorldObject*){return false;}
     ObjectList* GetWorldObjectsInDist(float){auto* result=new ObjectList;for(auto* actor:me->nearby)result->push_back(actor);return result;}
     ObjectList* GetTargets(SmartScriptHolder const& row,Unit*){auto* targets=new ObjectList;
@@ -145,9 +153,12 @@ struct SmartScript {
 #include "TimedUpdate.inc"
 #include "DataEvent.inc"
 #include "TextOver.inc"
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+            case SMART_EVENT_LINK:ProcessAction(nativeEvent,unit);break;
+#endif
         }
     }
-    void ProcessAction(SmartScriptHolder& nativeEvent,Unit* unit=nullptr,uint32=0,uint32=0,bool=false,SpellInfo const* =nullptr,GameObject* =nullptr){
+    void ProcessAction(SmartScriptHolder& nativeEvent,Unit* unit=nullptr,uint32 var0=0,uint32 var1=0,bool bvar=false,SpellInfo const* spell=nullptr,GameObject* gob=nullptr){
         if(GetBaseObject()&&GetBaseObject()->IsQuestObjectExpired())return;
 #include "ActionStart.inc"
         switch(nativeEvent.GetActionType()){
@@ -156,13 +167,23 @@ struct SmartScript {
 #ifdef MARKSMANSHIP_INQUISITOR_TEST
 #include "WaypointAction.inc"
 #endif
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+#include "SetPhase.inc"
+#endif
             default:assert(false);
         }
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+#include "SearchLinkTail.inc"
+#else
     }
+#endif
 #undef e
     void TextTick(uint32 diff){
 #include "TextTimer.inc"
     }
+#ifdef MARKSMANSHIP_SEARCH_PATH_TEST
+    SmartScriptHolder FindLinkedEvent(uint32);
+#endif
 };
 #include "Dispatch.inc"
 #include "RecalcTimer.inc"

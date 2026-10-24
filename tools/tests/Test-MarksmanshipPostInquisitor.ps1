@@ -11,6 +11,9 @@ $reset="DELETE FROM conditions WHERE $scope; DELETE FROM smart_scripts; INSERT I
 $sql=@"
 CREATE TEMPORARY TABLE saved_smart LIKE smart_scripts;
 INSERT INTO saved_smart SELECT * FROM smart_scripts WHERE entryorguid IN(100397,101269) AND NOT(entryorguid=100397 AND source_type=0 AND id=60);
+UPDATE saved_smart SET action_type=53,action_param2=10039704,comment='Link - Start WP'
+WHERE entryorguid=100397 AND source_type=0 AND id=43 AND action_type=22 AND action_param1=1 AND action_param2=0
+AND comment='Marksmanship: retain pending search path after the original Enough dialogue';
 CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 INSERT INTO smart_scripts SELECT * FROM saved_smart;
 CREATE TEMPORARY TABLE saved_actor LIKE creature_template;
