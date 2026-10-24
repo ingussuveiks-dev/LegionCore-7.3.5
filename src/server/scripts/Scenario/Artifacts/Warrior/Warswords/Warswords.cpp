@@ -6,6 +6,9 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include <algorithm>
 
 // 245188
 class go_mystic_bonfire : public GameObjectScript
@@ -111,11 +114,13 @@ public:
         SummonList summons;
         uint32 count_adds;
         bool phase, check_first_rephase;
+        bool secondRetreatStarted;
 
         void Reset() override
         {
             phase = false;
             check_first_rephase = false;
+            secondRetreatStarted = false;
 
             events.Reset();
             summons.DespawnAll();
@@ -159,6 +164,7 @@ public:
             if (check_first_rephase)
             {
                 check_first_rephase = false;
+                secondRetreatStarted = true;
                 Talk(7);
                 me->RemoveAura(128264);
                 std::list<Creature*> adds;
@@ -172,19 +178,43 @@ public:
                 me->GetMotionMaster()->MovePoint(2, 3514.32f, 1800.86f, 0.6f);
                 me->DespawnOrUnsummon(7000);
             }
+        }
 
-            if (me->HealthBelowPct(50) && !phase)
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+        {
+            if (!attacker || !damage || !me->IsAlive() || me->GetEntry() != 98007 || me->GetMapId() != 1511)
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 944 || scenario->GetCurrentStep() < 4 || scenario->GetCurrentStep() > 5)
+                return;
+            if (phase)
             {
-                Talk(5);
-                phase = true;
-                if (Player* pl = me->FindNearestPlayer(100.0f))
-                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46982);
-                me->StopAttack();
-                me->SetReactState(REACT_PASSIVE);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
-                me->GetMotionMaster()->MovePoint(1, 3444.66f, 1703.69f, 0.43f);
-                events.Reset();
+                damage = 0;
+                return;
             }
+            if (scenario->GetCurrentStep() != 4)
+                return;
+            uint64 health = me->GetHealth(attacker);
+            if (damage < health && health - damage >= me->CountPctFromMaxHealth(50, attacker))
+                return;
+            damage = 0;
+            uint64 retreatHealth = std::max<uint64>(1, me->CountPctFromMaxHealth(50));
+            if (me->GetHealth() > retreatHealth)
+                me->SetHealth(retreatHealth);
+            Player* player = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (!player || !player->IsAlive() || !player->CanContact() || player->getClass() != CLASS_WARRIOR ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) || !player->IsWithinDistInMap(me, 100.0f) ||
+                player->GetQuestRewardStatus(40043) ||
+                (player->GetQuestStatus(40043) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40043) != QUEST_STATUS_COMPLETE))
+                return;
+            phase = true;
+            Talk(5);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46982);
+            me->StopAttack();
+            me->SetReactState(REACT_PASSIVE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
+            me->GetMotionMaster()->MovePoint(1, 3444.66f, 1703.69f, 0.43f);
+            events.Reset();
         }
 
         void MovementInform(uint32 type, uint32 id) override
@@ -192,10 +222,10 @@ public:
             if (type != POINT_MOTION_TYPE)
                 return;
 
-            if (id == 1)
+            if (id == 1 && phase && !check_first_rephase && !secondRetreatStarted)
             {
-                DoCast(128264);
                 check_first_rephase = true;
+                DoCast(128264);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             }
         }

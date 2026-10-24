@@ -28,11 +28,39 @@ int main(int argc, char** argv)
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
-    if (!steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0))
+    DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
+    DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
+    DB2Storage<LFGDungeonsEntry> dungeons("LFGDungeons.db2", LfgDungeonsLoadInfo::Instance());
+    if (!steps.Load(argv[1], 0) || !trees.Load(argv[1], 0) || !criteria.Load(argv[1], 0) || !spells.Load(argv[1], 0) || !effects.Load(argv[1], 0) || !dungeons.Load(argv[1], 0))
         return 5;
     steps.LoadFromDB();
     trees.LoadFromDB();
     criteria.LoadFromDB();
+    spells.LoadFromDB();
+    effects.LoadFromDB();
+    dungeons.LoadFromDB();
+    bool foundDungeon = false;
+    for (auto dungeon : dungeons)
+        if (dungeon->ScenarioID == 944)
+        {
+            foundDungeon = true;
+            std::cout << "DUNGEON\t" << dungeon->ID << '\t' << dungeon->MapID << '\t' << unsigned(dungeon->DifficultyID)
+                << '\t' << int(dungeon->Faction) << '\t' << dungeon->GetMinGroupSize() << '\t' << dungeon->GetMaxGroupSize() << '\n';
+        }
+    if (!foundDungeon)
+        std::cout << "NO_NATIVE_DUNGEON\t944\n";
+    for (uint32 identity : {128264, 195996})
+    {
+        auto spell = spells.LookupEntry(identity);
+        if (!spell)
+            return 7;
+        std::cout << "SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
+        for (auto effect : effects)
+            if (!effect->DifficultyID && effect->SpellID == identity)
+                std::cout << "EFFECT\t" << identity << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
+                    << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
+                    << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+    }
     for (auto step : steps)
         if (step->ScenarioID == 944)
         {
