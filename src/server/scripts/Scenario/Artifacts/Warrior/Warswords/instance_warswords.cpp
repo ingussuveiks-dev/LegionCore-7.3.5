@@ -61,6 +61,10 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
+            auto finalActor = objects.find(98602);
+            if (finalActor != objects.end())
+                if (Creature* creature = instance->GetCreature(finalActor->second))
+                    creature->UpdateObjectVisibility();
             if (!myscenario)
                 return;
 
@@ -132,6 +136,8 @@ public:
 
         void OnCreatureCreate(Creature* creature) override
         {
+            if (creature->GetEntry() == 98602)
+                objects[98602] = creature->GetGUID();
             if (!myscenario)
                 return;
 
@@ -140,6 +146,14 @@ public:
 
             if (Player* pl = creature->FindNearestPlayer(100.0f, true))
                 creature->AI()->AttackStart(pl);
+        }
+
+        void OnCreatureRemove(Creature* creature) override
+        {
+            InstanceScript::OnCreatureRemove(creature);
+            auto finalActor = objects.find(98602);
+            if (creature->GetEntry() == 98602 && finalActor != objects.end() && finalActor->second == creature->GetGUID())
+                objects.erase(finalActor);
         }
 
         void OnUnitDeath(Unit* creature) override

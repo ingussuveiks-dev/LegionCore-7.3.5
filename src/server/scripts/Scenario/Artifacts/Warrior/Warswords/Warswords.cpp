@@ -443,6 +443,15 @@ public:
             return IsEncounterReady();
         }
 
+        bool CanBeVisibleFor(WorldObject const*) const override
+        {
+            if (me->GetEntry() != 98602 || me->GetMapId() != 1511)
+                return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 944 &&
+                scenario->GetCurrentStep() >= 5 && scenario->GetCurrentStep() <= 7;
+        }
+
         void AttackStart(Unit* target) override
         {
             if (IsEncounterReady())
