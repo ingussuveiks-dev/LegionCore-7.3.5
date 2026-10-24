@@ -18,6 +18,11 @@ struct StromkarKitEffectRecord
     SpellVisualKitEffectEntry effect;
     int32 kit;
 };
+struct StromkarVisualEventRecord
+{
+    SpellVisualEventEntry event;
+    int32 visual;
+};
 struct StromkarKitAttachmentRecord
 {
     SpellVisualKitModelAttachEntry attachment;
@@ -95,6 +100,24 @@ int main(int argc, char** argv)
             return 6;
         std::cout << "SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
     }
+    auto gazeVisualSpell = spells.LookupEntry(57404);
+    std::cout << "GAZE_VISUAL_SPELL_COLLISION\t57404\t" << (gazeVisualSpell ? gazeVisualSpell->Name->Str[0] : "ABSENT") << '\n';
+    DB2Storage<SpellXSpellVisualEntry> gazeVisuals("SpellXSpellVisual.db2", SpellXSpellVisualLoadInfo::Instance());
+    if (!gazeVisuals.Load(argv[1], 0))
+        return 28;
+    gazeVisuals.LoadFromDB();
+    for (auto visual : gazeVisuals)
+        if (visual->SpellVisualID == 57404 || visual->SpellID == 57404 || visual->SpellID == 230829)
+        {
+            auto owner = spells.LookupEntry(visual->SpellID);
+            std::cout << "GAZE_VISUAL_REFERENCE\t" << visual->ID << '\t' << visual->SpellVisualID << '\t' << visual->SpellID << '\t'
+                << unsigned(visual->DifficultyID) << '\t' << visual->CasterPlayerConditionID << '\t' << visual->ViewerPlayerConditionID << '\t'
+                << (owner ? owner->Name->Str[0] : "ABSENT") << '\n';
+            std::cout << "GAZE_VISUAL_ROW\t" << visual->ID << '\t' << visual->SpellVisualID << '\t' << visual->SpellID << '\t'
+                << unsigned(visual->DifficultyID) << '\t' << visual->CasterPlayerConditionID << '\t' << visual->ViewerPlayerConditionID << '\t'
+                << visual->CasterUnitConditionID << '\t' << visual->ViewerUnitConditionID << '\t' << visual->Probability << '\t'
+                << unsigned(visual->Priority) << '\t' << unsigned(visual->Flags) << '\n';
+        }
     for (auto spell : spells)
     {
         std::string name = spell->Name->Str[0];
@@ -218,6 +241,21 @@ int main(int argc, char** argv)
     if (sizeof(StromkarKitEffectRecord) != fullKitInfo.Meta->GetRecordSize() || !actorKits.Load(argv[1], 0) || !actorKitEffects.Load(argv[1], 0))
         return 18;
     actorKits.LoadFromDB();
+    auto eventInfo = SpellVisualEventLoadInfo::Instance();
+    std::vector<DB2FieldMeta> eventFields(eventInfo->Fields, eventInfo->Fields + eventInfo->FieldCount);
+    eventFields.push_back({true, FT_INT, "SpellVisualID"});
+    DB2LoadInfo fullEventInfo(eventFields.data(), eventFields.size(), SpellVisualEventMeta::Instance(), HOTFIX_SEL_SPELL_VISUAL_EVENT);
+    DB2Storage<StromkarVisualEventRecord> gazeEvents("SpellVisualEvent.db2", &fullEventInfo);
+    if (sizeof(StromkarVisualEventRecord) != fullEventInfo.Meta->GetRecordSize() || !gazeEvents.Load(argv[1], 0))
+        return 29;
+    std::set<uint32> gazeKits;
+    for (auto event : gazeEvents)
+        if (event->visual == 57404)
+        {
+            gazeKits.insert(event->event.SpellVisualKitID);
+            std::cout << "GAZE_EVENT\t" << event->event.ID << '\t' << event->visual << '\t' << event->event.StartEvent << '\t'
+                << event->event.EndEvent << '\t' << event->event.SpellVisualKitID << '\n';
+        }
     auto thoradinKit = actorKits.LookupEntry(thoradinDisplay->StateSpellVisualKitID);
     if (!thoradinKit)
         return 19;
@@ -242,9 +280,10 @@ int main(int argc, char** argv)
         return 20;
     actorProcedures.LoadFromDB();
     for (auto effect : actorKitEffects)
-        if (effect->kit == thoradinKit->ID)
+        if (effect->kit == thoradinKit->ID || gazeKits.count(effect->kit))
         {
-            std::cout << "THORADIN_KIT_EFFECT\t" << effect->effect.ID << '\t' << effect->effect.EffectType << '\t' << effect->effect.Effect << '\n';
+            std::string tag = effect->kit == thoradinKit->ID ? "THORADIN" : "GAZE";
+            std::cout << tag << "_KIT_EFFECT\t" << effect->effect.ID << '\t' << effect->effect.EffectType << '\t' << effect->effect.Effect << '\n';
             if (effect->effect.EffectType == 2)
             {
                 auto attachment = actorAttachments.LookupEntry(effect->effect.Effect);
@@ -252,7 +291,7 @@ int main(int argc, char** argv)
                 if (!name)
                     return 21;
                 auto const& visual = attachment->attachment;
-                std::cout << "THORADIN_ATTACHMENT\t" << visual.ID << '\t' << visual.SpellVisualEffectNameID << '\t' << unsigned(visual.AttachmentID) << '\t'
+                std::cout << tag << "_ATTACHMENT\t" << visual.ID << '\t' << visual.SpellVisualEffectNameID << '\t' << unsigned(visual.AttachmentID) << '\t'
                     << visual.Scale << '\t' << visual.AnimKitID << '\t' << name->model << '\t' << name->alpha << '\t' << unsigned(name->type) << '\n';
             }
             if (effect->effect.EffectType == 1)
@@ -260,7 +299,7 @@ int main(int argc, char** argv)
                 auto procedure = actorProcedures.LookupEntry(effect->effect.Effect);
                 if (!procedure)
                     return 22;
-                std::cout << "THORADIN_PROCEDURE\t" << procedure->ID << '\t' << unsigned(procedure->Type);
+                std::cout << tag << "_PROCEDURE\t" << procedure->ID << '\t' << unsigned(procedure->Type);
                 for (float value : procedure->Value)
                     std::cout << '\t' << value;
                 std::cout << '\n';
