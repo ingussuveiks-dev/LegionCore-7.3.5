@@ -1433,6 +1433,8 @@
       "class_id": 5,
       "specialization": "Shadow",
       "weapon": "Xal'atath, Blade of the Black Empire",
+      "pickup_cast_repair_audit": "docs/audits/xalatath-pickup-cast-admission-2026-10-24.json",
+      "pickup_cast_review": "40 copies28 exact native root predicates to source17 for delayed201780: actual nonbank blade, living active nonrewarded Priest40710/map1539/scenario991/exact8-9 rechecked at execution. TEMP/idempotence16 custom variants, actual predicate matrix and separately extracted native200ms/source17 consumer, live hash/rows, canonical PE and own startup checked. No production C++ change. Immediate48493 and delayed204919/201917, phase/source-GUID races, consumed-gossip retry and full client/video chain remain unfinished; not a successful-scene controller or whole-chain certification.",
       "opening_admission_repair_audit": "docs/audits/xalatath-opening-admission-2026-10-24.json",
       "opening_admission_review": "39 binds selected SmartAI wrapper and common physical gate for ordinary/open-lock/direct report-use before native gossip/loot: live active Priest40710/map1539/scenario991/exact8-9, phase/visibility/LOS/5yd/spawn/flags/state. Actual nonbank-owner gossip stops duplicate unique re-loot without forced deactivation/credit; new owners retain genuine loot. Native factory/packet/open-lock-prefix host,25 invalid contexts,12 custom SQL variants, canonical vtable/branch/build/startup checked. Client presentation, delayed-cast and failed replay controller still pending; not a whole-chain certification.",
       "progression_admission_repair_audit": "docs/audits/xalatath-progression-admission-2026-10-24.json",

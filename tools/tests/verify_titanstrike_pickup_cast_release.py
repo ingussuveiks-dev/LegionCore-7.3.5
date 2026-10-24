@@ -18,4 +18,4 @@ assert native['symbol']('?IsObjectMeetToConditions@ConditionMgr@@QEBA_NAEAUCondi
 assert native['symbol'](check) in native['calls']('?prepare@Spell@@'), 'Ordinary pickup preparation bypasses cast admission'
 assert native['symbol']('?AddDelayedEvent@Unit@@') in native['calls']('?ProcessAction@SmartScript@@'), 'SmartAI no longer uses the Unit-owned delayed queue'
 assert native['symbol']('?AddDelayedEvent@FunctionProcessor@@') in native['calls']('?AddDelayedEvent@Unit@@'), 'Unit queue bypasses the native FunctionProcessor'
-print('PASS: canonical Spell::prepare calls CheckCast, whose actual source17 lookup/evaluator consumes delayed212010 eligibility; source17 SQL records and200ms timing are verified by separate native fixtures')
+print('PASS: canonical Spell::prepare calls CheckCast, whose actual source17 lookup/evaluator uses the real spell ID; source17 pickup SQL records and200ms timing are verified by separate native fixtures')
