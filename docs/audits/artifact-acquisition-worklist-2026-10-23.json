@@ -61,6 +61,8 @@
       "execute_target_audit": "docs/audits/stromkar-execute-target-2026-10-24.json",
       "execute_landing_audit": "docs/audits/stromkar-execute-landing-2026-10-24.json",
       "thoradin_presence_audit": "docs/audits/stromkar-thoradin-presence-2026-10-24.json",
+      "thoradin_dialogue_audit": "docs/audits/stromkar-thoradin-dialogue-order-2026-10-24.json",
+      "thoradin_dialogue_review": "53 fixes native early1/1 overwriting the single Thoradin intro timer: captured1037/9 SmartAI wrapper queues finale until real TEXT_OVER1, preserving existing0/1/2/3 texts/durations and waypoint with exactly-once native dispatch. Baseline0/2/3 reproduces lost prompt; boundary/reset/duplicate/pet-invoker/native/TEMP/PE/Release/startup checked. Sparse muted video/captions through18:33 show ordered farewell, winged light/return and Thoradin/body still present; no full video/audio/client parity.201905 has priest48528/101364 progression and must not be blindly expanded as an Arms visual fix.",
       "thoradin_presence_review": "Combined51/52 creates missing final104307 only at1539/1037/9/HP<=1 using existing waypoint/model/Smart dialogue, and native206456 waits for a live phase-near receiver. Real summon callback GUID cache plus native condition-script conjunction prevents moved-boss duplicate spawns; null/dead/uninserted receiver retries and custom-data guards tested. Native68038/state59520 ->attachment310837/model166237/alpha0.4/procedure8357 traced; new canonical Release/cache vtable/source22/17/model/guard/startup checks pass. Actual child hit/credits/facing/farewell/cleanup/travel/client VFX and full video remain pending;51 alone is not sufficient.",
       "linked_finale_followup": "docs/audits/stromkar-linked-finale-2026-10-24.json",
       "linked_finale_correction": "Existing spell_linked_spell206456 ->201904 type0 was omitted from48-50 reverse searches; their disconnected-chain inference is withdrawn. Native positive linked action/live shape/target alternatives/SpellHit-list/SetData graph and canonical immediate-phase ->type0 bridge now tested. Actual child hit/list remains unproven; no examined spawn for final104307 found.103151 is shared Effects Bunny, not an identified winged/return actor. No new production/visual/client fix in this follow-up.",
@@ -153,7 +155,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "With combined51/52 receiver creation in place, prove actual201904 target/hit/list/dissolve/credit order and Thoradin speech/facing/cleanup/departure, including kited-boss travel, AI reset/re-entry and shared103151 visuals. Preserve existing linked request. Continue original actor/physical arrival, chest-deletion-safe replay, completed10/ability/earlier sequence and full relevant video; keep client checks pending."
+      "next_action": "With51/52 receiver creation and53 intro/finale ordering in place, prove actual201904 target/hit/list/channel/credit order and identify winged actor/real Skyhold return, including kited-boss travel, AI replacement/re-entry and shared103151 visuals. Preserve existing link and priest201905; sampled18:33 retains Thoradin/body, so do not guess immediate cleanup. Continue original actor/physical arrival, chest-deletion-safe replay, completed10/ability/earlier sequence and full relevant video; keep client checks pending."
     },
     {
       "class_id": 1,

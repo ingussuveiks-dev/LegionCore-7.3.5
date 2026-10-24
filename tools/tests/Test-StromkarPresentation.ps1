@@ -6,7 +6,7 @@ $out="$repo/build-extractors/runtime-test/stromkar-presentation"
 New-Item -ItemType Directory -Force $out | Out-Null
 function Section([string]$source,[string]$start,[string]$end){$first=$source.IndexOf($start);$last=$source.IndexOf($end,[Math]::Max(0,$first));if($first -lt 0 -or $last -le $first){throw "Missing native section $start"};$source.Substring($first,$last-$first)}
 $source=Get-Content "$repo/src/server/scripts/Legion/ClassHalls/artifact_acquisition.cpp" -Raw
-$presentation=Section $source 'namespace StromkarPresentation' 'void AddSC_artifact_acquisition()'
+$presentation=Section $source 'namespace StromkarPresentation' 'struct npc_stromkar_thoradin : SmartAI'
 if($Baseline){$presentation=$presentation.Replace('return StromkarPresentation::Complete(player, scene, trigger);','return false;')}
 [IO.File]::WriteAllText("$out/Presentation.inc",$presentation)
 [IO.File]::WriteAllText("$out/Active.inc",(Section $source 'bool Active(Player*' 'bool Use(Player*'))

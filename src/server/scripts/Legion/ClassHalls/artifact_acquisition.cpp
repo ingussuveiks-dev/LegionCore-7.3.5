@@ -1717,6 +1717,44 @@ public:
     }
 };
 
+struct npc_stromkar_thoradin : SmartAI
+{
+    explicit npc_stromkar_thoradin(Creature* actor) : SmartAI(actor) { }
+    bool initialized = false;
+    bool preserveIntro = false;
+    bool introFinished = false;
+    bool finalePending = false;
+    bool finaleDispatched = false;
+    void IsSummonedBy(Unit* summoner) override
+    {
+        if (!initialized)
+        {
+            initialized = true;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            preserveIntro = me->GetEntry() == 104307 && me->GetMapId() == 1539 && scenario &&
+                scenario->GetScenarioId() == 1037 && scenario->GetCurrentStep() == 9;
+        }
+        SmartAI::IsSummonedBy(summoner);
+    }
+    void SetData(uint32 id, uint32 value) override
+    {
+        if (!preserveIntro || value != 1 || (id != 1 && id != 2))
+        {
+            SmartAI::SetData(id, value);
+            return;
+        }
+        if (id == 2)
+            introFinished = true;
+        else
+            finalePending = true;
+        if (introFinished && finalePending && !finaleDispatched)
+        {
+            finaleDispatched = true;
+            SmartAI::SetData(1, 1);
+        }
+    }
+};
+
 void AddSC_artifact_acquisition()
 {
     RegisterCreatureAI(npc_talonclaw_dakarr);
@@ -1726,6 +1764,7 @@ void AddSC_artifact_acquisition()
     RegisterCreatureAI(npc_titanstrike_final_prustaga);
     RegisterCreatureAI(npc_xalatath_farthing);
     RegisterCreatureAI(npc_stromkar_zakajz);
+    RegisterCreatureAI(npc_stromkar_thoradin);
     new condition_stromkar_thoradin_absence();
     RegisterCreatureAI(npc_xalatath_soul_attack);
     RegisterSpellScript(spell_titanstrike_aftermath);

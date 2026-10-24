@@ -1,6 +1,7 @@
 {
   "date": "2026-10-24 Europe/Riga",
   "build": "7.3.5.26972",
+  "dialogue_followup": "docs/audits/stromkar-thoradin-dialogue-order-2026-10-24.json records53's scoped ghost wrapper and native TEXT_OVER1 ready row, preventing an early final request from overwriting its intro timer.51/52 bytes remain unchanged; actor existence/cache checks do not certify complete dialogue/visual/travel playback.",
   "scope": "Combined51/52 restores the missing final Thoradin creation/presence dependency and deduplicates genuine summons by GUID. Not a complete Arms/all36 chain, full farewell/cleanup/credit traversal or observed client VFX repair.",
   "inherited": "Clean2ccf36f3/main=origin/main; actual worklist, route, donor and48-50/linked-finale audits read. Preserve the proven existing206456 ->201904 type0 bridge; do not manufacture SpellHit or duplicate final credit to replace it.",
   "local_evidence": {

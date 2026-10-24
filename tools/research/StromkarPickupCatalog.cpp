@@ -76,7 +76,7 @@ int main(int argc, char** argv)
         return 5;
     spells.LoadFromDB(); effects.LoadFromDB(); items.LoadFromDB(); children.LoadFromDB();
     steps.LoadFromDB(); trees.LoadFromDB(); criteria.LoadFromDB();
-    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 207454, 206455, 206456, 204394, 202014, 63048, 204093};
+    std::set<uint32> selected{206436, 206439, 206448, 225891, 201904, 201905, 207454, 206455, 206456, 204394, 202014, 63048, 204093};
     for (uint32 identity : selected)
     {
         auto spell = spells.LookupEntry(identity);
@@ -84,10 +84,27 @@ int main(int argc, char** argv)
             return 6;
         std::cout << "SPELL\t" << identity << '\t' << spell->Name->Str[0] << '\n';
     }
+    for (auto spell : spells)
+    {
+        std::string name = spell->Name->Str[0];
+        if (name.find("Danica") != std::string::npos || name.find("Thoradin") != std::string::npos || name.find("Skyhold") != std::string::npos)
+            std::cout << "FAREWELL_SPELL\t" << spell->ID << '\t' << name << '\n';
+    }
+    for (auto effect : effects)
+        if (!effect->DifficultyID && effect->Effect == 28 && (effect->EffectMiscValue[0] == 93818 || effect->EffectMiscValue[0] == 93823 ||
+            effect->EffectMiscValue[0] == 96549 || effect->EffectMiscValue[0] == 100622 || effect->EffectMiscValue[0] == 103608 ||
+            effect->EffectMiscValue[0] == 105507 || effect->EffectMiscValue[0] == 112663 || effect->EffectMiscValue[0] == 116858))
+            std::cout << "FAREWELL_SUMMON\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->EffectMiscValue[0] << '\t'
+                << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
     for (auto effect : effects)
         if (!effect->DifficultyID && selected.count(effect->SpellID))
+        {
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t' << effect->EffectAura << '\t'
                 << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t' << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+            if (effect->SpellID == 201904 || effect->SpellID == 201905)
+                std::cout << "DRAIN_EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->EffectAuraPeriod << '\t'
+                    << effect->EffectBasePoints << '\t' << effect->EffectRadiusIndex[0] << '\t' << effect->EffectRadiusIndex[1] << '\n';
+        }
     auto item = items.LookupEntry(128910);
     if (!item)
         return 7;
@@ -227,6 +244,23 @@ int main(int argc, char** argv)
     if (!miscellaneous.Load(argv[1], 0) || !ranges.Load(argv[1], 0))
         return 14;
     miscellaneous.LoadFromDB(); ranges.LoadFromDB();
+    DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
+    if (!durations.Load(argv[1], 0))
+        return 23;
+    durations.LoadFromDB();
+    for (auto entry : miscellaneous)
+        if (!entry->DifficultyID && (entry->SpellID == 201904 || entry->SpellID == 201905))
+        {
+            auto duration = durations.LookupEntry(entry->DurationIndex);
+            auto range = ranges.LookupEntry(entry->RangeIndex);
+            if ((!duration && entry->DurationIndex) || !range)
+                return 24;
+            std::cout << "DRAIN_MISC\t" << entry->SpellID << '\t' << (duration ? duration->Duration : 0) << '\t' << (duration ? duration->MaxDuration : 0) << '\t'
+                << entry->Speed << '\t' << range->RangeMax[0] << '\t' << range->RangeMax[1];
+            for (int32 attribute : entry->Attributes)
+                std::cout << '\t' << uint32(attribute);
+            std::cout << '\n';
+        }
     for (auto entry : miscellaneous)
         if (!entry->DifficultyID && entry->SpellID == 206455)
         {

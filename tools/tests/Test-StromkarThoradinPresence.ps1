@@ -22,6 +22,20 @@ CREATE TEMPORARY TABLE saved_spell_linked_spell LIKE spell_linked_spell;INSERT I
 CREATE TEMPORARY TABLE sample_creature LIKE creature;INSERT INTO sample_creature SELECT * FROM creature WHERE id=103144 LIMIT 1;
 CREATE TEMPORARY TABLE sample_group LIKE creature_summon_groups;INSERT INTO sample_group SELECT * FROM creature_summon_groups LIMIT 1;
 '@
+ $dialoguePath="$repo/sql/updates/world/2026_10_24_53_stromkar_thoradin_dialogue_order.sql"
+ if(Test-Path $dialoguePath){
+  $dialogueHash=(Get-FileHash $dialoguePath -Algorithm SHA1).Hash
+  $sql+=@"
+
+UPDATE saved_creature_template SET ScriptName='' WHERE entry=104307 AND ScriptName='npc_stromkar_thoradin'
+AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_24_53_stromkar_thoradin_dialogue_order.sql' AND hash='$dialogueHash' AND state='RELEASED');
+DELETE FROM saved_smart_scripts WHERE entryorguid=104307 AND source_type=0 AND id=5 AND link=0 AND event_type=52 AND event_phase_mask=0 AND event_chance=100 AND event_flags=1
+AND event_param1=1 AND event_param2=104307 AND event_param3=0 AND event_param4=0 AND action_type=45 AND action_param1=2 AND action_param2=1
+AND action_param3=0 AND action_param4=0 AND action_param5=0 AND action_param6=0 AND target_type=1 AND target_param1=0 AND target_param2=0 AND target_param3=0
+AND target_x=0 AND target_y=0 AND target_z=0 AND target_o=0
+AND EXISTS(SELECT 1 FROM updates WHERE name='2026_10_24_53_stromkar_thoradin_dialogue_order.sql' AND hash='$dialogueHash' AND state='RELEASED');
+"@
+ }
 foreach($table in $tables){$sql+="`nCREATE TEMPORARY TABLE $table LIKE saved_$table;"}
 $sql+="$reset`nSELECT 'old-before',smart_scripts.* FROM smart_scripts ORDER BY entryorguid,source_type,id;SELECT 'conditions-before',conditions.* FROM conditions ORDER BY SourceTypeOrReferenceId,SourceGroup,ElseGroup,ConditionTypeOrReference;`n$migration`nSELECT 'first',smart_scripts.* FROM smart_scripts ORDER BY entryorguid,source_type,id;SELECT 'first-gates',conditions.* FROM conditions ORDER BY SourceTypeOrReferenceId,SourceGroup,ElseGroup,ConditionTypeOrReference;`n$migration`nSELECT 'second',smart_scripts.* FROM smart_scripts ORDER BY entryorguid,source_type,id;SELECT 'second-gates',conditions.* FROM conditions ORDER BY SourceTypeOrReferenceId,SourceGroup,ElseGroup,ConditionTypeOrReference;`nSELECT 'old-after',smart_scripts.* FROM smart_scripts WHERE NOT(entryorguid=104276 AND source_type=0 AND id=9) ORDER BY entryorguid,source_type,id;SELECT 'conditions-after',conditions.* FROM conditions WHERE NOT(($gate) OR ($near)) ORDER BY SourceTypeOrReferenceId,SourceGroup,ElseGroup,ConditionTypeOrReference;`nSELECT 'row',entryorguid,source_type,id,link,event_type,event_phase_mask,event_flags,event_param1,event_param2,event_param3,event_param4,action_type,action_param1,action_param2,action_param3,target_type,target_x,target_y,target_z,target_o FROM smart_scripts WHERE entryorguid=104276 AND source_type=0 AND id=9;SELECT 'gate',ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE $gate ORDER BY ElseGroup,ConditionTypeOrReference;SELECT 'cast',ElseGroup,ConditionTypeOrReference,ConditionTarget,ConditionValue1,ConditionValue2,ConditionValue3,NegativeCondition FROM conditions WHERE $cast ORDER BY ElseGroup,ConditionTypeOrReference;`n"
 $variants=[ordered]@{
