@@ -69,6 +69,8 @@ struct CreatureScript {explicit CreatureScript(const char*){}virtual CreatureAI*
 struct Instance {std::map<uint64_t,Creature*> creatures;uint32 GetInstanceId(){return 1;}Creature* GetCreature(ObjectGuid g){return creatures[g.n];}};
 struct BaseInstance {virtual void Update(uint32){}};
 struct FloorInstance:BaseInstance {Instance* instance;std::vector<ObjectGuid> trashList;uint8 windshaperDiedCount=0;
+ uint32 guardAdvanceAttempts=0;
+ void TryAdvanceMagnarGuards(){++guardAdvanceAttempts;}
 #include "TitanstrikeStormFloor.inc"
 };
 int main(){
@@ -105,7 +107,7 @@ int main(){
  // released tornado. It keeps the floor until all three guardians are dead.
  Instance map;Creature lower,upper,rune,tornado;lower.dbguid=365439;upper.dbguid=365440;rune.dbguid=123;tornado.dbguid=456;
  map.creatures={{1,&lower},{2,&upper},{3,&rune},{4,&tornado}};FloorInstance floor;floor.instance=&map;floor.trashList={{1},{2},{3},{4}};
- floor.Update(500);assert(lower.casts==1&&upper.casts==1&&!rune.casts&&!tornado.casts);floor.Update(500);assert(lower.casts==1);
+ floor.Update(500);assert(lower.casts==1&&upper.casts==1&&!rune.casts&&!tornado.casts&&floor.guardAdvanceAttempts==1);floor.Update(499);assert(floor.guardAdvanceAttempts==1);floor.Update(1);assert(lower.casts==1&&floor.guardAdvanceAttempts==2);
  floor.windshaperDiedCount=2;floor.Update(500);assert(lower.hasAura);floor.windshaperDiedCount=3;floor.Update(500);assert(!lower.hasAura&&lower.areasRemoved==1&&!tornado.areasRemoved);
  floor.windshaperDiedCount=0;floor.Update(500);progress.step=2;floor.Update(500);assert(!upper.hasAura);progress.step=1;
  // Each native lane supplies an explicit destination despite target106's
