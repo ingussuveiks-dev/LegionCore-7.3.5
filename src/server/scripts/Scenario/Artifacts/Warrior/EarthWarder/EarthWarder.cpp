@@ -10,6 +10,7 @@
 #include "ConversationData.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "SpellMgr.h"
 #include <memory>
 #include <set>
 
@@ -92,12 +93,24 @@ public:
             // me->SetReactState(REACT_DEFENSIVE);
         }
 
+        ~npc_hrutnirAI() override
+        {
+            CancelMagnarIntro();
+        }
+
         EventMap events;
         bool _introDone, firstfighting, secondfighting, thirdfighting, fourfighting;
         bool magnarArrivalPending = false;
         std::shared_ptr<bool> magnarStartToken;
         uint32 magnarStartInstance = 0;
         std::shared_ptr<bool> magnarOfferToken;
+        bool magnarIntroPending = false;
+        bool magnarIntroFinished = false;
+        bool magnarIntroFailureReported = false;
+        ObjectGuid magnarIntroPlayer;
+        uint32 magnarIntroTimer = 0;
+        uint32 magnarIntroGeneration = 0;
+        bool magnarIntroCasting = false;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -120,6 +133,7 @@ public:
 
         void Reset() override
         {
+            CancelMagnarIntro();
             events.Reset();
             magnarArrivalPending = false;
             magnarStartToken.reset();
@@ -135,6 +149,108 @@ public:
                 return false;
             Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
             return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3;
+        }
+
+        bool IsMagnarIntroPlayer(Player* player) const
+        {
+            return player && player->IsInWorld() && player->CanContact() && player->IsAlive() &&
+                !player->isGameMaster() && !player->IsBeingTeleported() && player->getClass() == CLASS_WARRIOR &&
+                player->GetMap() == me->GetMap() && player->GetInstanceId() == me->GetInstanceId() &&
+                player->InSamePhase(me) && player->IsWithinDistInMap(me, 150.0f) &&
+                !player->GetQuestRewardStatus(39191) &&
+                (player->GetQuestStatus(39191) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(39191) == QUEST_STATUS_COMPLETE);
+        }
+
+        void CancelMagnarIntro()
+        {
+            ObjectGuid playerGuid = magnarIntroPlayer;
+            magnarIntroPlayer.Clear();
+            magnarIntroTimer = 0;
+            magnarIntroCasting = false;
+            ++magnarIntroGeneration;
+            if (me->IsInWorld())
+                if (Player* player = ObjectAccessor::GetPlayer(*me, playerGuid))
+                    player->RemoveAurasDueToSpell(189721);
+        }
+
+        void UpdateMagnarIntro(uint32 diff)
+        {
+            if (!magnarIntroPending || magnarIntroCasting)
+                return;
+            if (!IsMagnarOfferContext(me->GetInstanceId()))
+            {
+                magnarIntroPending = false;
+                CancelMagnarIntro();
+                return;
+            }
+            if (magnarIntroTimer > diff)
+            {
+                magnarIntroTimer -= diff;
+                return;
+            }
+            magnarIntroTimer = 500;
+            Player* player = ObjectAccessor::GetPlayer(*me, magnarIntroPlayer);
+            if (IsMagnarIntroPlayer(player))
+            {
+                if (player->HasSceneStatus(1059, SCENE_COMPLETE))
+                {
+                    magnarIntroPending = false;
+                    magnarIntroFinished = true;
+                    magnarIntroPlayer.Clear();
+                    Talk(14);
+                    me->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
+                    return;
+                }
+                if (player->HasAura(189721))
+                    return;
+            }
+            if (!magnarIntroPlayer.IsEmpty())
+                CancelMagnarIntro();
+            magnarIntroTimer = 500;
+            player = nullptr;
+            for (auto const& reference : me->GetMap()->GetPlayers())
+                if (IsMagnarIntroPlayer(reference.getSource()) &&
+                    (!player || me->GetDistance(reference.getSource()) < me->GetDistance(player)))
+                    player = reference.getSource();
+            if (!player)
+                return;
+            if (player->HasAura(189721))
+                return;
+            SpellScene const* scene = sSpellMgr->GetSpellScene(1059);
+            if (!scene || scene->SceneScriptPackageID != 1458 || scene->PlaybackFlags != 16 ||
+                scene->CustomDuration != 0 || scene->scriptID != 0 || sSpellMgr->GetSceneTriggerEvent(1059))
+            {
+                if (!magnarIntroFailureReported)
+                    TC_LOG_WARN("scripts", "Earthwarder intro: missing or incompatible1059/package1458 binding; chamber handoff retained for retry");
+                magnarIntroFailureReported = true;
+                return;
+            }
+            uint32 generation = magnarIntroGeneration;
+            magnarIntroPlayer = player->GetGUID();
+            magnarIntroCasting = true;
+            SpellCastResult result = player->CastSpell(player, 189721, true);
+            if (generation != magnarIntroGeneration)
+            {
+                if (magnarIntroPlayer.IsEmpty() && player->GetMap() == me->GetMap())
+                    player->RemoveAurasDueToSpell(189721);
+                return;
+            }
+            magnarIntroCasting = false;
+            if (!magnarIntroPending || !IsMagnarOfferContext(me->GetInstanceId()) || !IsMagnarIntroPlayer(player))
+            {
+                CancelMagnarIntro();
+                return;
+            }
+            if (result != SPELL_CAST_OK || !player->HasAura(189721) || !player->HasSceneStatus(1059, SCENE_LAUNCH))
+            {
+                CancelMagnarIntro();
+                magnarIntroTimer = 500;
+                if (!magnarIntroFailureReported)
+                    TC_LOG_WARN("scripts", "Earthwarder intro:189721 did not launch (result %u); chamber handoff retained for retry", uint32(result));
+                magnarIntroFailureReported = true;
+                return;
+            }
+            magnarIntroFailureReported = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -208,11 +324,13 @@ public:
                     Talk(10);
                     break;
                 case 2:
-                    Talk(14);
+                    if (magnarIntroPending || magnarIntroFinished || !IsMagnarOfferContext(me->GetInstanceId()))
+                        break;
+                    magnarIntroPending = true;
+                    magnarIntroTimer = 0;
                     me->StopAttack();
                     me->SetReactState(REACT_PASSIVE);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    me->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
                     break;
             }
         }
@@ -374,7 +492,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
-
+            UpdateMagnarIntro(diff);
             if (!UpdateVictim())
                 return;
 

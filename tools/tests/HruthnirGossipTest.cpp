@@ -218,6 +218,8 @@ struct HruthnirScript : CreatureScript
 };
 struct HruthnirAI : CreatureAI
 {
+    void CancelMagnarIntro() { }
+    void UpdateMagnarIntro(uint32) { }
     Creature* me;
     struct EventMap
     {

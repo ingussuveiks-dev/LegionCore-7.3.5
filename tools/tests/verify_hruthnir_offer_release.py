@@ -84,6 +84,8 @@ selection = instructions('?sGossipSelect' + suffix)
 retire = positions(selection, '?reset@?$shared_ptr@_N@std@@')[0]
 assert selection[retire - 1].op_str == 'rcx, [rsi + 0x78]' and retire < positions(selection, '?RemoveFlag@Object@@')[0]
 destructor = instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@')
-assert any(entry.op_str == 'rbx, qword ptr [rcx + 0x80]' for entry in destructor)
+cleanup = positions(destructor, '?CancelMagnarIntro' + suffix)[0]
+assert any(entry.op_str == 'rdi, rcx' for entry in destructor[:cleanup])
+assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x80]' for entry in destructor[cleanup:])
 assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in destructor) == 2
 print('PASS: installed native6500ms offer queue owns only weak point6 token; existing offer/start claims block duplicates. Actual callback validates live96468/1495/original-instance/AI/909-3 and token identity before/after Talk16, preserves unrelated flags, and Reset/destructor/selection retire only its token. Motion/arrival/re-entry routing and client visibility remain separate.')
