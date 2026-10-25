@@ -16,7 +16,8 @@
       "handler": "KilledMonsterCredit / shared Skyhold93823 periodic103739",
       "problem": "QuestObjective flags2 defer client display, not native preceding-objective admission. The matching-entry monster-credit loop can record a final return slot before earlier objectives;93823's nearby2s action33 has no target progression gate. Deleting an artifact callback's attempted-jump credit does not repair this separate receiver scope.",
       "investigation_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
-      "limit": "Source-contract finding, not a live early-credit reproduction. Trace every103739 quest/prior objective/item and legitimate group recipient before a separate focused fix; existing SmartAI dispatcher tests shim the Player credit sink and do not prove native objective sequencing. No character changed."
+      "repair_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
+      "limit": "Pinned18033742 native quest loop now reproduces early counters; repaired per-recipient sink requires actual1479/Warrior/parent and all required native objectives for39191/40043/41105, preserving optional goals/native group rules/other quests. Native counter/get/set/completion/group and deployed inlined branches checked, not live client arrival. Old saved early counters are not reset; actual transport/visibility, loot/equip and full traversal remain separate."
     },
     {
       "path": "src/server/game/Entities/Conversation/Conversation.cpp",
@@ -75,6 +76,7 @@
       "class_id": 1,
       "specialization": "Arms",
       "weapon": "Strom'kar, the Warbreaker",
+      "return_prerequisites_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
       "real_acquisition_repair_audit": "docs/audits/stromkar-real-acquisition-2026-10-24.json",
       "presentation_equip_audit": "docs/audits/stromkar-scene-equip-2026-10-24.json",
       "opening_admission_audit": "docs/audits/stromkar-opening-admission-2026-10-24.json",
@@ -188,6 +190,7 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "return_prerequisites_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
       "return_admission_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
       "return_admission_review": "Existing12s callback now revalidates original-instance live Warrior/map1495/active39191/owned128289/native completed909 before192085; removes attempted-cast103739 and retains actual Skyhold receiver. Pinned baseline18 invalid contexts,16 current combinations, failed storage and deployed closure/guards/native six steps checked. GO_ACTIVATED/direct AddItem/early94851 and loot_link0 remain UNFIXED; this is not real acquisition/equip or whole-route certification. Partial muted video samples show loot/equipment before golden winged return light, manual Jump to Skyhold and0/1 at14:56, then loading and Ready for turn-in in Skyhold/15:12. Full footage/audio/local client remain pending.",
       "item": 128289,
@@ -274,11 +277,12 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair real248831 acquisition before claiming pickup safety: activation/direct AddItem and early94851/scenario events still run on failed storage, loot_link0 remains. Trace report-use/open-lock/loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability. Separately scope shared93823/103739 return recipients: flags2 only defer display, not server preceding-objective admission; dispatcher hosts do not test real quest counters. Restore scoped winged actor/beam/215997 manual return button rather than automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-EarthwarderReturn -Baseline and -VerifyReleaseBinary plus shared19-check Warswords suite."
+      "next_action": "Repair real248831 acquisition before claiming pickup safety: activation/direct AddItem and early94851/scenario events still run on failed storage, loot_link0 remains. Trace report-use/open-lock/loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability. Retain repaired per-recipient103739 prerequisites and distinguish prevention from recovery of old saved early counters. Restore scoped winged actor/beam/215997 manual return button rather than automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-SkyholdArtifactReturn -Baseline/-VerifyReleaseBinary, Test-EarthwarderReturn and shared19-check Warswords suite."
     },
     {
       "class_id": 1,
       "specialization": "Fury",
+      "return_prerequisites_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
       "arrival_admission_audit": "docs/audits/warswords-arrival-admission-2026-10-25.json",
       "arrival_admission_review": "Scoped real entry repair: capture original instance and check current Player/script/world/life/class/active40043/live944 before touching captured instance; unrelated entrants no longer clear myscenario. Valid later stages still bootstrap but no longer replay the entrance. Both entrance/late landing require actual step0, while fresh owned-item replay remains allowed. Native205534/189695/205744 requests/coordinates and3s+5s timing remain unchanged. Pinned9fe2be7b and actual-policy host cover14 stale starts/16 stale finishes/18 stage+ownership cases; flight cleanup, shared staggered-group timer, failed-cast retry, persistence and client traversal remain open. Use19-check Test-WarswordsAcquisition -VerifyReleaseBinary; final evidence is in the linked audit.",
       "return_spatial_audit": "docs/audits/warswords-return-spatial-2026-10-25.json",
