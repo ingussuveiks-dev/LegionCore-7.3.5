@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "handler": "Third Travard pending1s entry AI ownership/Reset",
+      "problem": "Unit-owned callback captured raw AI this and survived native AIM_Destroy; a replacement AI could receive stale entry effects.",
+      "repair_audit": "docs/audits/silver-hand-entry-lifetime-2026-10-25.json",
+      "limit": "Third entry now owns its dedicated queue serviced by locked primary/disabled Lifecycle. Initialized pending/generation plus pending-only Reset cancel stale work without consuming a fresh LOS retry or replaying accepted10993807; selected destructor drops its queue. Full original GUID/live/path/1000ms/follower behavior retained, no credit/item/HP. Other raw-AI timers and downstream movement/ritual/client/VFX remain OPEN."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
       "handler": "Four companion40pct wound recovery hooks / six native entries",
       "problem": "HealReceived precedes caster HealDone/actual ModifyHealth, so recovery from a threshold-crossing heal waited for an unnecessary additional heal.",
       "repair_audit": "docs/audits/silver-hand-companion-post-heal-2026-10-25.json",
@@ -579,7 +586,7 @@
       "weapon": "The Silver Hand",
       "item": 128823,
       "start": 42231,
-      "status": "partial: six companion guards and four-AI post-heal40pct recovery,1267 existing-item equip, real loot/claim,1268 native211867 exit, first delayed GUID/POINT1, first/second gossip/path admission, second waypoint14 original-recipient50897, third GUID-bound1s entry/native-phase/missing-path retry, scoped one-shot aberration50896 and fallen90pct post-heal/eligible recipient/AI-owned lifecycle repaired; later credit ownership/motion recovery/outro/Dalaran/late-scene/half-health ritual/full client traversal remain open",
+      "status": "partial: six companion guards and four-AI post-heal40pct recovery,1267 existing-item equip, real loot/claim,1268 native211867 exit, first delayed GUID/POINT1, first/second gossip/path admission, second waypoint14 original-recipient50897, third GUID-bound/AI-owned1s entry/pending-reset/native-phase/missing-path retry, scoped one-shot aberration50896 and fallen90pct post-heal/eligible recipient/AI-owned lifecycle repaired; later credit ownership/motion recovery/outro/Dalaran/late-scene/half-health ritual/full client traversal remain open",
       "ally_damage_audit": "docs/audits/silver-hand-ally-damage-2026-10-25.json",
       "scene_equip_audit": "docs/audits/silver-hand-scene-equip-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/silver-hand-pickup-admission-2026-10-25.json",
@@ -591,6 +598,8 @@
       "second_gossip_audit": "docs/audits/silver-hand-second-gossip-admission-2026-10-25.json",
       "second_procession_audit": "docs/audits/silver-hand-procession-recipient-2026-10-25.json",
       "third_entry_audit": "docs/audits/silver-hand-ritual-entry-2026-10-25.json",
+      "third_entry_lifetime_audit": "docs/audits/silver-hand-entry-lifetime-2026-10-25.json",
+      "third_entry_lifetime_review": "Pending1s entry now uses AI-owned dedicated FunctionProcessor, not Unit-owned raw-this work. Native locked primary/disabled Lifecycle retains40pct recovery then services entry; destruction drops closure. Pending-only Reset increments generation/reopens intro; stale old generation cannot consume a newer pending retry, while accepted intro remains latched to avoid route replay. Full original GUID/live42120/1092 steps5..8/20yd/path preflight/Talk0/30yd followers retained. Native queue/GUID/accessor/AIM_Destroy/lock/timing/reset/replacement and selected Release checked; other Unit timers/downstream ritual/rapid-retake/client remain OPEN.",
       "aberration_credit_audit": "docs/audits/silver-hand-aberration-credit-2026-10-25.json",
       "rescue_post_heal_audit": "docs/audits/silver-hand-rescue-post-heal-2026-10-25.json",
       "companion_recovery_audit": "docs/audits/silver-hand-companion-post-heal-2026-10-25.json",
@@ -679,7 +688,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Preserve scoped entrance/gossip/procession/aberration/rescue/companion/genuine-loot/scene/equip/exit guards in their linked audits. Next trace still-pre-scaling pre-hit50pct/1s aberration companion deaths: one-hit/lethal-before-EVENT3 can bypass later rescue prerequisites. Review full relevant footage before guessing a clamp, corpses or timing. Fallen90pct rescue and four-AI40pct companion recovery now check actual post-heal HP from locked lifecycle; verify real spell admission/scaling and rendered combat separately. Inspect third downstream neighborhood50877/50912/50915 and unbound DoAction, other first waypoint/evade recipients, actual-GUID/re-entry/reset/accepted-motion recovery and recreated-actor per-GUID dedup without endpoint route replay. Native7002 steps5..8 visibility is not replay choreography. Verify real entrance arrival/outro phase/companions/portal/true105892 Dalaran arrival; collapse native211867 returns to1539, not Dalaran. Native210360 awards105892 before teleport1220; investigate destination/ACK-scoped credit across Protection and232945/232946 skip variants. Original12s return misses late1267/equip; failed exit requires a fresh issued scene and cast acceptance is not actual arrival. Preserve intentional Mordoth deaths, genuine four-actor2+2 and native shared criteria, never invent item/credit/HP to bypass chains. Native225877/81 is not a server action-bar implementation. Full spell/faction/party/VFX/client traversal remains pending."
+      "next_action": "Preserve scoped entrance/gossip/procession/aberration/rescue/companion/third-entry-lifetime/genuine-loot/scene/equip/exit guards in their linked audits. Third pending1s is now AI-owned and Reset-generation guarded; trace first pending5s and other Unit-owned raw-AI timers separately without clearing all Unit jobs or replaying accepted routes. Next trace still-pre-scaling pre-hit50pct/1s aberration companion deaths: one-hit/lethal-before-EVENT3 can bypass later rescue prerequisites. Review full relevant footage before guessing a clamp, corpses or timing. Fallen90pct rescue and four-AI40pct companion recovery now check actual post-heal HP from locked lifecycle; verify real spell admission/scaling and rendered combat separately. Inspect third downstream neighborhood50877/50912/50915 and unbound DoAction, other first waypoint/evade recipients, actual-GUID/re-entry/reset/accepted-motion recovery and recreated-actor per-GUID dedup without endpoint route replay. Native7002 steps5..8 visibility is not replay choreography. Verify real entrance arrival/outro phase/companions/portal/true105892 Dalaran arrival; collapse native211867 returns to1539, not Dalaran. Native210360 awards105892 before teleport1220; investigate destination/ACK-scoped credit across Protection and232945/232946 skip variants. Original12s return misses late1267/equip; failed exit requires a fresh issued scene and cast acceptance is not actual arrival. Preserve intentional Mordoth deaths, genuine four-actor2+2 and native shared criteria, never invent item/credit/HP to bypass chains. Native225877/81 is not a server action-bar implementation. Full spell/faction/party/VFX/client traversal remains pending."
     },
     {
       "class_id": 2,

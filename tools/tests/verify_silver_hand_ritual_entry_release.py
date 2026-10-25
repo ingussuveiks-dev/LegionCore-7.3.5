@@ -76,7 +76,9 @@ assert any(entry.op_str == 'edx, 0x3e8' for entry in body[arm - 3:arm])
 assert any(entry.op_str == 'edx, edx' and entry.mnemonic == 'xor' for entry in body[guid - 3:guid])
 assert any(entry.op_str == 'xmm0, xmmword ptr [rax]' for entry in body[guid:arm])
 assert all(any(entry.op_str == operands for entry in body[guid:arm]) for operands in
-           ('qword ptr [rsp + 0x48], xmm0', 'qword ptr [rsp + 0x50], rax', 'qword ptr [rsp + 0x58], rdi'))
+           ('qword ptr [rsp + 0x48], xmm0', 'qword ptr [rsp + 0x50], rax', 'rax, qword ptr [rdi + 0x160]',
+            'qword ptr [rsp + 0x58], rax', 'qword ptr [rsp + 0x60], rdi', 'rcx, [rdi + 0xe0]'))
+assert any(entry.op_str == 'byte ptr [rdi + 0x168], 1' for entry in body[gate:guid])
 closure, = [name for name in native['symbols'] if name.startswith('?_Do_call@') and 'MoveInLineOfSight@npc_travar_thirdAI@npc_travar_third@@' in name]
 operation, = [name for name in native['symbols'] if name.startswith('??R<lambda_1>') and 'MoveInLineOfSight@npc_travar_thirdAI@npc_travar_third@@' in name]
 installed = []
@@ -98,8 +100,15 @@ valid, = sites(delayed, helper)
 talk, = sites(delayed, '?Talk@CreatureAI@@QEAAXE')
 move, = sites(delayed, '?MovePath@MotionMaster@@')
 assert lookup < valid < talk < move
-assert any(entry.op_str == 'xmm0, xmmword ptr [rcx]' for entry in delayed[:lookup])
-assert any(entry.op_str == 'rcx, qword ptr [rcx + 0x10]' for entry in delayed[:lookup])
+assert any(entry.op_str == 'xmm0, xmmword ptr [rbx]' for entry in delayed[:lookup])
+assert any(entry.op_str == 'rcx, qword ptr [rbx + 0x18]' for entry in delayed[:lookup])
+pending = next(index for index, entry in enumerate(delayed) if entry.op_str == 'byte ptr [rcx + 0x168], 0' and entry.mnemonic == 'cmp')
+generation = next(index for index, entry in enumerate(delayed) if entry.op_str == 'qword ptr [rbx + 0x10], rax' and entry.mnemonic == 'cmp')
+assert pending < generation < lookup
+assert any(entry.op_str == 'rax, qword ptr [rcx + 0x160]' for entry in delayed[pending:generation])
+for position, branch in ((pending, 'je'), (generation, 'jne')):
+    assert delayed[position + 1].mnemonic == branch and not reaches(delayed, delayed[position + 1].operands[0].imm, delayed[talk].address)
+assert any(entry.op_str == 'byte ptr [rcx + 0x168], 0' and entry.mnemonic == 'mov' for entry in delayed[generation:lookup])
 assert delayed[valid - 1].op_str == 'rcx, rax'
 assert delayed[valid + 1].op_str == 'al, al' and delayed[valid + 2].mnemonic == 'jne'
 assert delayed[valid + 4].op_str == 'byte ptr [rax + 0x59], 0'
@@ -134,4 +143,41 @@ for entry in instructions('?GetAI@npc_travar_third@@'):
         if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x270)[0] == native['symbol'](los):
             selected.append(address)
 assert len(selected) == 1
-print('PASS: selected third-Travard LOS slot0x270 requires live Holy42120/1092/native5..8/20yd and intro admission before actual1s timer. Installed GUID0/full128-bit closure adapter resolves original map/world/predelete Player and revalidates before native10993807, Talk0 and original30yd followers. Invalid recipient or missing/empty path resets only intro latch with retained diagnostics/retry; no Player pointer capture, nearby substitute or direct progression. Later ritual/motion/group/faction/client traversal remains separate.')
+slots = struct.unpack_from('<80Q', native['binary'], native['offset'](selected[0]))
+reset_name = '?Reset@npc_travar_thirdAI@'
+lifecycle_name = '?UpdateLifecycle@npc_travar_thirdAI@'
+destructor_name = '??_Gnpc_travar_thirdAI@'
+assert slots[0x28 // 8] == native['symbol'](reset_name) and slots[0x110 // 8] == native['symbol'](lifecycle_name)
+assert slots[0] == native['symbol'](destructor_name)
+factory = instructions('?GetAI@npc_travar_third@@')
+constructors = sites(factory, '??0FunctionProcessor@@')
+assert len(constructors) == 2
+assert [factory[position - 1].op_str for position in constructors] == ['rcx, [rsi + 0x60]', 'rcx, [rsi + 0xe0]']
+assert any(entry.op_str == 'qword ptr [rsi + 0x160], rbp' for entry in factory)
+assert any(entry.op_str == 'byte ptr [rsi + 0x168], bpl' for entry in factory)
+assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in factory)
+reset_body = instructions(reset_name)
+guard = next(index for index, entry in enumerate(reset_body) if entry.op_str == 'byte ptr [rbx + 0x168], 0' and entry.mnemonic == 'cmp')
+assert reset_body[guard + 2].mnemonic == 'je'
+assert [entry.op_str for entry in reset_body[guard + 3:guard + 6]] == [
+    'qword ptr [rbx + 0x160]', 'byte ptr [rbx + 0x168], 0', 'byte ptr [rbx + 0x59], 0']
+assert reset_body[guard + 3].mnemonic == 'inc'
+assert not reaches(reset_body, reset_body[guard + 2].operands[0].imm, reset_body[guard + 3].address)
+assert not sites(reset_body, '?KillAllFunctions@FunctionProcessor@@')
+lifecycle_body = instructions(lifecycle_name)
+recover, = sites(lifecycle_body, '?Recover@SilverHandCompanion@@')
+assert any(entry.op_str == 'rcx, [rbx + 0xe0]' for entry in lifecycle_body[recover + 1:])
+assert lifecycle_body[-1].mnemonic == 'jmp' and native['resolve'](lifecycle_body[-1].operands[0].imm) == native['symbol']('?Update@FunctionProcessor@@')
+destroy_body = instructions(destructor_name)
+destructors = sites(destroy_body, '??1FunctionProcessor@@')
+assert len(destructors) == 2 and destroy_body[destructors[0] - 1].op_str == 'rcx, 0xe0'
+assert destroy_body[destructors[1] - 1].op_str == 'rcx, [rdi + 0x60]'
+creature = instructions('?Update@Creature@@')
+ticks = [index for index, entry in enumerate(creature) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x110]
+assert len(ticks) == 2
+assert any(entry.op_str == 'byte ptr [rsi + 0x3a9d], 1' for entry in creature[ticks[0] - 10:ticks[0]])
+assert creature[ticks[1] + 1].op_str == 'byte ptr [rsi + 0x3a9d], 0'
+assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[ticks[0] - 8:ticks[0]])
+assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
+assert min(sites(creature, '?Update@Unit@@')) > ticks[1]
+print('PASS: selected third-Travard LOS0x270 owns its1s queue atAI+0xe0, captures full128-bit original GUID/64-bit generation and arms pending state. Selected locked lifecycle0x110 services it independently of stunned/combat AI; selected destructor destroys both queues. Pending-only Reset increments generation/reopens admission without replaying an accepted route or deferred KillAllFunctions eating a fresh retry. Actual closure rejects stale generation, consumes pending before native original lookup/live1092 steps5..8/20yd/path10993807 preflight and original Talk0/30yd followers. No Unit-owned AI callback, Player pointer, nearby substitute or direct credit. Other script timers/downstream rituals/client traversal remain separate.')

@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Holy Paladin42120/scenario1092 third Travard106676 pending1s entry ownership/reset; not all Silver Hand timers, downstream ritual or client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp, Unit::AddDelayedEvent/FunctionProcessor, Creature::AIM_Destroy/Update/charm",
+      "review": "Current third LOS already captures full128-bit original Player GUID and revalidates live eligibility/path, but queues a raw this callback on its Creature/Unit. Native AIM_Destroy deletes AI without clearing that Unit-owned queue. A later callback can dereference a destroyed AI or affect a replacement at the same address. Original third _functions is AI-owned but its UpdateAI drain is after stunned early return; simply reusing it would change entry timing. Native locked primary/disabled UpdateLifecycle is before stunned/combat branches. Native KillAllFunctions sets deferred clean, so clearing it during Reset may also swallow an immediately queued fresh retry; use a generation instead."
+    },
+    {
+      "source": "Matching local DB2/hotfix catalog and read-only MariaDB",
+      "review": "Fresh native SilverHandPickupCatalog retains1092 steps5/6/8 criteria92+50896/50877/50912/50915, without claiming credit from entry. Sole binding106676/spawn362006/map1539/phase7002, positive native condition44/1092 steps5..8 and actual10993807 path22points/1..22 verified. Full GUID lookup/live42120/Paladin/same map-instance/phase/visibility/LOS/20yd envelope and original1000ms/30yd followers/path preserved."
+    },
+    {
+      "source": "Local TrinityCore era tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c scripts tree contains unrelated Stratholme boss_order_of_silver_hand, not this acquisition implementation. No exhaustive historical search claim."
+    },
+    {
+      "source": "Pinned Titans donor",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Fresh relevant408..569 read retains Unit-owned this-only1s entry callback and stunned-before-_functions drain. No compatible lifetime correction imported; current local GUID/live/path guards remain authoritative."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. This is native queue/AI lifetime repair, not guessed ritual timing or a reconstruction of the separate aberration50pct sequence."
+    }
+  ],
+  "repair": {
+    "ownership": "New _entryFunctions belongs to third AI only and receives original1000ms entry callback. New initialized64-bit _entryGeneration and _entryPending accompany existing intro latch. Capture original full GUID, generation and this only within its owning AI queue; no delayed Player pointer. Native locked lifecycle runs companion40pct recovery first, then this entry queue independently of stunned/combat UpdateAI. Existing action/combat _functions drain is not moved.",
+    "reset": "Only a pending entry Reset increments generation, clears pending and reopens intro for fresh LOS. Old queued work rejects stale generation before touching the newer pending attempt. Do not use deferred KillAllFunctions, which would eat a fresh retry. Once entry has been consumed/accepted, Reset leaves intro latched and does not replay10993807; accepted-motion recovery remains separate.",
+    "execution": "At due time require pending and matching generation, consume pending before native original Player lookup/revalidation/path preflight and original Talk0/alive30yd Efrin/Duval follow/path10993807. Invalid original or missing/empty path keeps prior diagnostic/intro retry. AI destruction destroys queue and cancels closure; selected destructor, native AIM_Destroy and lock rejection independently traced/tested.",
+    "preserved": "No direct credit/item/quest/HP or manual group/faction grant, actor summon, spell or new presentation delay. Native5..8 visibility is not later-stage replay permission. Companion recovery/lethal guards, source-bound GUID admission, second procession and genuine loot/equip/scenes remain selected. Whole third class compared to4bc7b7e6 allowing only entry members/reset/lifecycle/LOS; older healing/damage normalization remains active."
+  },
+  "validation": {
+    "baseline": "PASS -LifetimeBaseline pins4bc7b7e6: actual old Unit-owned callback remains after destruction and transparent same-type placement reconstruction at the same AI address, then starts an unsolicited path on replacement. Controlled defined same-address replacement, not dereferencing freed storage or claiming a live ACCESS_VIOLATION/client reproduction. Original -Baseline952c2ad5 eligibility regression also retained.",
+    "host": "PASS actual LOS/helper/reset/lifecycle with native FunctionProcessor constructor/queue/drain/update/destructor, full128-bit GUID/ObjectAccessor and locked Creature primary/disabled/alias lifecycle plus actual AIM_Destroy. Existing26 invalid initial/delayed contexts,5..8/20yd, deleted/predelete Player, missing/empty path warning/retry, optional absent followers and duplicate/reentrant admission retained. New999+1ms timing, pending-only Reset/new original/stale generation at1000ms/fresh retry1500ms, accepted Reset without replay, native destroyed AI/new AI/fresh LOS and lock-protected destruction rejection covered. World/health/geometry/motion services and companion recovery stub controlled; actual companion recovery is independently checked by1536-case AllyDamage suite.",
+    "installed": "PASS canonical selected LOS0x270 queues FunctionProcessor atAI+0xe0 rather than Unit queue; actual full GUID/64-bit generation/AI capture and pending arm are executable. Selected Reset0x28 increments+0x160 only when pending+0x168 and clears intro+0x59 for retry; no deferred clean call. Selected Lifecycle0x110 retains companion Recover then updates entry queue under native primary/disabled Creature lock. Factory initializes both queues/state and selected deleting destructor destroys+0xe0 then+0x60. Closure adapter9bytes reaches actual pending/generation rejection and pending consumption before native original lookup/live/path/original effects. Existing no-credit checks preserved.",
+    "diagnostics": "Initial AllyDamage fixture lacked _introDone for the now-extracted third Reset; added the controlled field, without modifying production or weakening tests. Native FunctionProcessor Size/SizeQueue size_t->uint32 warnings retained. Third lifecycle now has real unwind-bounded Recover+queue-tail body rather than its previous17-byte leaf; checker validates both real calls/setup while other three leaf proofs remain intact. No production noinline or logging suppression.",
+    "regressions": "PASS final30-suite serial PowerShell7 batch:13 installed suites Rescue, AberrationCredit, RitualEntry with new queue/lifetime proof, Procession, second Gossip, Entrance including POINT1, first Gossip, Collapse, RealLootData, Presentation, AllyDamage1536 with40pct recovery, StromkarPresentation and ScepterLogin;6 native/data suites DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, WarlockRegression, SceneLifecycle, ArtifactForceEquip55 records/39 items, MapObjectArrival and DalaranPortalLanding native WMO;11 pinned baselines including new entry-lifetime4bc7b7e6, companion-heal877ad851 and all prior rescue/aberration/ritual/procession/second-gossip/arrival/LOS/first-gossip/damage checks. Ledger .codex/silver-hand-entry-lifetime-regressions.tsv has30PASS rows. Catalogs/builds serialized. Existing diagnostics, native counts and older callback/guard assertions retained, not weakened. Not actual client traversal.",
+    "evidence": ".codex/silver-hand-entry-lifetime-* ignored logs and runtime-test/silver-hand-ritual-entry; source/tests/audit/worklist only. No runtime/password/character/media data."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "D68148C5DC163F1907C0821B3B64125002B7AF99D28428A59E689AA56C067B47",
+    "bnet_sha256": "F5EDB46D4F3DE017CB14B16A04BB1225FFFA2BDD472CECAD386A5938F61DC121",
+    "build": "Release worldserver+bnetserver17.63s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link output canonical worldserver.exe with original existing scripts/game/shared/common Release libraries checked. Selected installed implementation proof separate from hash/link/startup.",
+    "runtime": "No user/unknown server before build/start. Own hidden canonical PID38744 fresh ready, own stdin shutdown0/exit0, new DBErrors0/stderr empty, protected conf/certificate hashes unchanged and gone. No user/unknown process stopped or own background server left."
+  },
+  "remaining": [
+    "First Travard5s and other existing Unit-owned raw-AI timers were not globally rewritten. Investigate their own lifecycle and semantics separately; do not clear all Unit jobs in AIM_Destroy to mask this per-script ownership defect.",
+    "Current live5..8/quest revalidation is not a persisted abandon/rapid-retake epoch. Reset cancels only still-pending entry; interrupted accepted path, later nearby-player50877/50912/50915/DoAction and first eligible instance participant selection remain open. No native counter or party/faction/client traversal newly certified.",
+    "Full relevant footage is still required for aberration pre-hit50pct/one-hit/1s intentional companion deaths and rescue prerequisites. Real spell admission, VFX/pose/voice/camera, completed outro/true Dalaran return, late scenes, genuine loot/equip/save/relog and all36 chains remain unfinished; client testing stays with user."
+  ]
+}

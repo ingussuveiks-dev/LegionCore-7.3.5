@@ -99,12 +99,17 @@ CreatureAI* Unit::GetAI(){auto creature=const_cast<Creature*>(ToCreature());retu
 #include "Multiplier.inc"
 #include "Recovery.inc"
 struct EventMap {void Reset(){}};
+struct FunctionProcessor {void Update(uint32){}};
 struct Companion : CreatureAI
 {
     Creature* me=nullptr;
     bool wait_heal=false;
     bool _pendingHealRecovery=false;
     EventMap events;
+    FunctionProcessor _entryFunctions;
+    uint64 _entryGeneration=0;
+    bool _entryPending=false;
+    bool _introDone=false;
     std::vector<uint32> speech;
     void Talk(uint32 text){speech.push_back(text);}
 };

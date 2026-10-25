@@ -1,12 +1,18 @@
 #include <cassert>
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <new>
 #include <vector>
 using uint32=uint32_t;
 using uint64=uint64_t;
+using FunctionList=std::multimap<uint64,std::function<void()>>;
+#include "FunctionClass.inc"
+#include "FunctionMethods.inc"
 enum {CLASS_PALADIN=2,QUEST_STATUS_INCOMPLETE=3,TYPEID_PLAYER=4,MOTION_SLOT_IDLE=0};
 constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=1.57f;
 struct ObjectGuid
@@ -31,6 +37,12 @@ struct WorldObject
 };
 struct Player;
 struct Creature;
+struct CreatureAI
+{
+    virtual ~CreatureAI()=default;
+    virtual void Reset(){}
+    virtual void UpdateLifecycle(uint32){}
+};
 struct Unit : WorldObject
 {
     virtual Player* ToPlayer(){return nullptr;}
@@ -70,6 +82,9 @@ struct Motion
 struct Creature : WorldObject
 {
     bool alive=true;
+    bool m_AI_locked=false,IsAIEnabled=true;
+    CreatureAI* i_AI=nullptr;
+    CreatureAI* i_disabledAI=nullptr;
     uint32 entry=106676,mapId=1539,instance=42;
     Creature* efrin=nullptr;
     Creature* duval=nullptr;
@@ -84,8 +99,18 @@ struct Creature : WorldObject
     Creature* FindNearestCreature(uint32 identity,float radius,bool live)
     {assert(radius==30 && live && (identity==106371 || identity==106370));return identity==106371?efrin:duval;}
     void AddDelayedEvent(uint32 delay,std::function<void()> callback){assert(delay==1000);pending.push_back(std::move(callback));}
-    void Run(){auto callbacks=std::move(pending);pending.clear();for(auto& callback:callbacks)callback();}
+    CreatureAI* AI(){return i_AI;}
+    bool AIM_Destroy();
+    void Run(uint32 diff=1000)
+    {
+        auto callbacks=std::move(pending);pending.clear();for(auto& callback:callbacks)callback();
+#include "LifecycleBridge.inc"
+    }
 };
+uint32 debugMessages=0;
+#define TC_LOG_DEBUG(...) ++debugMessages
+#define ASSERT(value,...) assert(value)
+#include "DestroyAI.inc"
 template<class Object>struct HashMapHolder
 {
     static std::map<ObjectGuid,Object*> objects;
@@ -120,13 +145,23 @@ uint32 warnings=0;
 template<class... Values>void Warning(Values const&...){++warnings;}
 #define TC_LOG_WARN(...) Warning(__VA_ARGS__)
 #include "RitualPolicy.inc"
-struct RitualAI
+struct EventMap {void Reset(){}};
+namespace SilverHandCompanion {void Recover(Creature*,bool&,bool&) {}}
+struct RitualAI : CreatureAI
 {
     Creature* me;
     bool _introDone=false;
+    bool wait_heal=false,_pendingHealRecovery=false;
+    FunctionProcessor _entryFunctions;
+    uint64 _entryGeneration=0;
+    bool _entryPending=false;
+    EventMap events;
     uint32 talks=0;
+    explicit RitualAI(Creature* actor):me(actor){actor->i_AI=this;}
     void Talk(uint32 line){assert(line==0);++talks;}
 #include "RitualLos.inc"
+#include "RitualReset.inc"
+#include "RitualLifecycle.inc"
 };
 struct Fixture
 {
@@ -134,6 +169,7 @@ struct Fixture
     Creature actor,efrin,duval;
     RitualAI ai{&actor};
     Fixture(){manager={};waypoints={};warnings=0;other.guid._high=457;actor.efrin=&efrin;actor.duval=&duval;HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};}
+    uint32 Pending(){return uint32(actor.pending.size())+ai._entryFunctions.Size()+ai._entryFunctions.SizeQueue();}
 };
 void Invalidate(uint32 invalid,Fixture& fixture)
 {
@@ -157,12 +193,21 @@ int main()
     for(uint32 invalid:{0u,10u,18u,25u})
     {Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.player);Invalidate(invalid,fixture);fixture.actor.Run();assert(fixture.actor.motion.paths==1 && fixture.ai._introDone && fixture.ai.talks==1);}
     std::cout<<"PASS pinned952c2ad5: actual old1s callback starts10993807 after original logout/foreign map/abandon/completed scenario without revalidating a recipient. Controlled services, not client proof.\n";
+#elif defined(LIFETIME_BASELINE)
+    Fixture fixture;
+    alignas(RitualAI) unsigned char storage[sizeof(RitualAI)];
+    auto original=new(storage) RitualAI(&fixture.actor);
+    original->MoveInLineOfSight(&fixture.player);assert(fixture.actor.pending.size()==1);
+    original->~RitualAI();auto replacement=new(storage) RitualAI(&fixture.actor);
+    fixture.actor.Run();assert(fixture.actor.motion.paths==1 && replacement->talks==1 && !replacement->_introDone);
+    replacement->~RitualAI();fixture.actor.i_AI=nullptr;
+    std::cout<<"PASS pinned4bc7b7e6: actual Unit-owned1s callback survives destruction/reconstruction of AI at same address and starts an unsolicited path on replacement AI. Controlled transparent same-type replacement avoids dereferencing freed storage; not a live crash/client reproduction.\n";
 #else
     for(uint32 invalid=0;invalid<26;++invalid)for(bool delayed:{false,true})
     {
         Fixture fixture;if(delayed)fixture.ai.MoveInLineOfSight(&fixture.player);Invalidate(invalid,fixture);
         if(delayed)fixture.actor.Run();else fixture.ai.MoveInLineOfSight(&fixture.player);
-        assert(!fixture.actor.motion.paths && !fixture.efrin.motion.follows && !fixture.duval.motion.follows && !fixture.ai.talks && !fixture.ai._introDone && fixture.actor.pending.empty());
+        assert(!fixture.actor.motion.paths && !fixture.efrin.motion.follows && !fixture.duval.motion.follows && !fixture.ai.talks && !fixture.ai._introDone && fixture.Pending()==0);
     }
     for(uint32 step:{5u,6u,7u,8u})for(uint32 faction:{0u,1u})
     {
@@ -170,7 +215,7 @@ int main()
         fixture.ai.MoveInLineOfSight(nullptr);fixture.ai.MoveInLineOfSight(&pet);fixture.ai.MoveInLineOfSight(&guardian);assert(!fixture.ai._introDone);
         fixture.actor.motion.onMove=[&fixture]{fixture.ai.MoveInLineOfSight(&fixture.player);};
         fixture.efrin.motion.onFollow=[&fixture]{fixture.ai.MoveInLineOfSight(&fixture.player);};
-        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.ai.MoveInLineOfSight(&fixture.other);assert(fixture.actor.pending.size()==1 && !fixture.ai.talks);
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.ai.MoveInLineOfSight(&fixture.other);assert(fixture.Pending()==1 && fixture.actor.pending.empty() && !fixture.ai.talks);
         fixture.actor.Run();fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run();
         assert(fixture.actor.motion.paths==1 && fixture.ai.talks==1 && fixture.efrin.motion.follows==1 && fixture.duval.motion.follows==1);
         assert(fixture.efrin.motion.followed==&fixture.actor && fixture.duval.motion.followed==&fixture.actor && fixture.efrin.motion.followAngle==-PET_FOLLOW_ANGLE && fixture.duval.motion.followAngle==PET_FOLLOW_ANGLE);
@@ -186,6 +231,38 @@ int main()
     {Fixture fixture;if(missing)waypoints.present=false;else waypoints.path.clear();fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run();assert(!fixture.ai._introDone && !fixture.ai.talks && warnings==1);waypoints={};fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run();assert(fixture.actor.motion.paths==1);}
     {Fixture fixture;fixture.actor.efrin=nullptr;fixture.actor.duval=nullptr;fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run();assert(fixture.actor.motion.paths==1);}
     {Fixture fixture;auto player=std::make_unique<Player>();HashMapHolder<Player>::objects[player->guid]=player.get();fixture.ai.MoveInLineOfSight(player.get());HashMapHolder<Player>::objects.erase(player->guid);player.reset();fixture.actor.Run();assert(!fixture.ai._introDone && !fixture.actor.motion.paths);}
-    std::cout<<"PASS: actual LOS/helper and native128-bit GUID/ObjectAccessor lifecycle;26 invalid admission/delayed contexts, null/pet/guardian, native5..8 phase envelope,20yd, same-low/different-high neighbor, deleted/predelete original, missing/empty-path retry, missing companions and reentrant/duplicate start checked. Controlled world/motion/faction labels, not later credits, accepted-motion recovery or client proof.\n";
+    for(uint32 mode:{0u,1u,2u,3u})
+    {
+        Fixture fixture;CreatureAI temporary;
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run(999);
+        assert(!fixture.actor.motion.paths && fixture.ai._entryPending);
+        if(mode==1 || mode==3){fixture.actor.i_AI=mode==1?&temporary:nullptr;fixture.actor.i_disabledAI=&fixture.ai;}
+        if(mode==2)fixture.actor.i_disabledAI=&fixture.ai;
+        fixture.actor.motion.onMove=[&]{assert(fixture.actor.m_AI_locked);fixture.ai.Reset();};
+        fixture.actor.Run(1);assert(fixture.actor.motion.paths==1 && !fixture.ai._entryPending && fixture.ai._introDone);
+        fixture.actor.Run(1000);assert(fixture.actor.motion.paths==1);
+        fixture.actor.i_disabledAI=nullptr;
+    }
+    {
+        Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run(500);fixture.ai.Reset();
+        assert(!fixture.ai._entryPending && !fixture.ai._introDone && fixture.ai._entryGeneration==1);
+        fixture.ai.MoveInLineOfSight(&fixture.other);fixture.actor.Run(500);
+        assert(!fixture.actor.motion.paths && fixture.ai._entryPending && fixture.ai._introDone);
+        fixture.actor.Run(500);assert(fixture.actor.motion.paths==1 && !fixture.ai._entryPending);
+        fixture.ai.Reset();assert(fixture.ai._introDone && fixture.ai._entryGeneration==1);
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run();assert(fixture.actor.motion.paths==1);
+    }
+    {
+        Fixture fixture;auto original=new RitualAI(&fixture.actor);original->MoveInLineOfSight(&fixture.player);
+        assert(fixture.actor.pending.empty() && fixture.actor.AIM_Destroy() && !fixture.actor.i_AI);
+        fixture.actor.Run();assert(!fixture.actor.motion.paths);
+        auto replacement=std::make_unique<RitualAI>(&fixture.actor);
+        fixture.actor.Run();assert(!fixture.actor.motion.paths);
+        replacement->MoveInLineOfSight(&fixture.player);
+        fixture.actor.motion.onMove=[&]{auto before=debugMessages;assert(!fixture.actor.AIM_Destroy() && debugMessages==before+1);};
+        fixture.actor.Run();assert(fixture.actor.motion.paths==1);
+        fixture.actor.i_AI=nullptr;
+    }
+    std::cout<<"PASS: actual LOS/helper/reset/lifecycle, native FunctionProcessor/GUID/ObjectAccessor/locked Creature bridge/AIM_Destroy;26 invalid initial/delayed contexts, native5..8/20yd, missing-path/companions/deleted-player and reentrant admission retained. AI-owned999+1ms queue, primary/disabled/alias, stale Reset generation with fresh pending retry, accepted Reset without replay, native destruction/replacement and locked destruction rejection checked. Controlled world/motion/faction labels and companion-heal stub, not later credits, accepted-motion recovery or client proof.\n";
 #endif
 }

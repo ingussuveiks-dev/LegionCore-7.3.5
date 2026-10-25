@@ -597,11 +597,20 @@ public:
         bool wait_heal, _introDone;
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
+        FunctionProcessor _entryFunctions;
+        uint64 _entryGeneration = 0;
+        bool _entryPending = false;
 
         void Reset() override
         {
             events.Reset();
             _pendingHealRecovery = false;
+            if (_entryPending)
+            {
+                ++_entryGeneration;
+                _entryPending = false;
+                _introDone = false;
+            }
         }
 
         void EnterCombat(Unit* who) override
@@ -624,9 +633,10 @@ public:
                 _pendingHealRecovery = true;
         }
 
-        void UpdateLifecycle(uint32) override
+        void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            _entryFunctions.Update(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -683,9 +693,14 @@ public:
             if (_introDone || !SilverHandRitualEntry::CanEnter(player, me))
                 return;
             _introDone = true;
+            _entryPending = true;
             ObjectGuid guid = player->GetGUID();
-            me->AddDelayedEvent(1000, [guid, this]() -> void
+            uint64 generation = _entryGeneration;
+            _entryFunctions.AddDelayedEvent(1000, [guid, generation, this]() -> void
             {
+                if (!_entryPending || generation != _entryGeneration)
+                    return;
+                _entryPending = false;
                 Player* player = ObjectAccessor::GetPlayer(*me, guid);
                 if (!SilverHandRitualEntry::CanEnter(player, me))
                 {

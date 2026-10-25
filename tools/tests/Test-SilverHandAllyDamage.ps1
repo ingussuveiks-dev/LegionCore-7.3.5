@@ -10,12 +10,21 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp'
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Silver Hand source missing'}
 $healPinned=(& git -C $repo show "877ad851:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned companion healing source missing'}
+$entryPinned=(& git -C $repo show "4bc7b7e6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entry lifetime source missing'}
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
 foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','npc_efrin_and_duval')){
  if(!$Baseline -and !$HealBaseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
+  if($script -eq 'npc_travar_third'){
+   $beforeEntry=Block $entryPinned "class $script : public CreatureScript"
+   $entryNormalized=$actual
+   foreach($method in @('void Reset(','void UpdateLifecycle(','void MoveInLineOfSight(')){$entryNormalized=$entryNormalized.Replace((Block $entryNormalized $method),(Block $beforeEntry $method))}
+   foreach($field in @('FunctionProcessor _entryFunctions;','uint64 _entryGeneration = 0;','bool _entryPending = false;')){$entryNormalized=$entryNormalized.Replace("        $field`n",'')}
+   if($entryNormalized -cne $beforeEntry){throw 'Third companion changed beyond separately tested entry queue lifetime'}
+   $actual=$entryNormalized
+  }
   $beforeHeal=Block $healPinned "class $script : public CreatureScript"
   $normalized=$actual.Replace("        bool _pendingHealRecovery = false;`n",'').Replace("                    _pendingHealRecovery = false;`n",'').Replace("            _pendingHealRecovery = false;`n",'')
   $normalized=$normalized.Replace("        "+(Block $normalized 'void UpdateLifecycle(')+"`n`n",'')

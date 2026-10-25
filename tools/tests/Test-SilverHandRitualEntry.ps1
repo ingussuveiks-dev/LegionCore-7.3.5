@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$LifetimeBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Pinned baseline cannot certify fixed Release'}
+if(($Baseline -and $LifetimeBaseline) -or (($Baseline -or $LifetimeBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ritual-entry"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,9 +8,18 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "952c2ad5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned ritual entry baseline missing'}}
+if($LifetimeBaseline){$source=(& git -C $repo show "4bc7b7e6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entry lifetime baseline missing'}}
 [IO.File]::WriteAllText("$out/RitualPolicy.inc",$(if($Baseline){''}else{Block $source 'namespace SilverHandRitualEntry'}))
 $actor=Block $source 'struct npc_travar_thirdAI : ScriptedAI'
 [IO.File]::WriteAllText("$out/RitualLos.inc",(Block $actor 'void MoveInLineOfSight(').Replace(' override',''))
+[IO.File]::WriteAllText("$out/RitualReset.inc",$(if($Baseline -or $LifetimeBaseline){''}else{Block $actor 'void Reset('}))
+[IO.File]::WriteAllText("$out/RitualLifecycle.inc",$(if($Baseline -or $LifetimeBaseline){''}else{Block $actor 'void UpdateLifecycle('}))
+$functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
+[IO.File]::WriteAllText("$out/FunctionClass.inc",(Block (Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw) 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';')
+$methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(','uint32 FunctionProcessor::Size() const','uint32 FunctionProcessor::SizeQueue() const')
+[IO.File]::WriteAllText("$out/FunctionMethods.inc",(($methods|ForEach-Object{Block $functions $_}) -join "`n"))
+[IO.File]::WriteAllText("$out/LifecycleBridge.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'if (i_AI || i_disabledAI)'))
+[IO.File]::WriteAllText("$out/DestroyAI.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'bool Creature::AIM_Destroy()'))
 $guid=Get-Content "$repo/src/server/game/Entities/Object/ObjectGuid.cpp" -Raw
 [IO.File]::WriteAllText("$out/GuidLifecycle.inc",((@('ObjectGuid::ObjectGuid()','void ObjectGuid::Clear()','bool ObjectGuid::IsEmpty() const')|ForEach-Object{Block $guid $_}) -join "`n"))
 $header=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
@@ -18,10 +27,10 @@ $header=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
 [IO.File]::WriteAllText("$out/MapPlayer.inc",(Block $header 'template<class T> static T* GetObjectInMap('))
 [IO.File]::WriteAllText("$out/AccessorPlayer.inc",(Block (Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw) 'Player* ObjectAccessor::GetPlayer('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($LifetimeBaseline){'/DLIFETIME_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandRitualEntryTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native ritual entry lifecycle failed'}
-if($Baseline){return}
+if($Baseline -or $LifetimeBaseline){return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile SilverHandPickupCatalog.cpp -ProbeName SilverHandPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native ritual metadata failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 foreach($expected in @("CRITERION`t5`t30080`t92`t50896`t0","CRITERION`t5`t30074`t92`t50877`t0","CRITERION`t6`t30086`t92`t50912`t0","CRITERION`t8`t30089`t92`t50915`t0")){if((Get-Content "$out/native.tsv") -notcontains $expected){throw "Native ritual criteria changed: $expected"}}
