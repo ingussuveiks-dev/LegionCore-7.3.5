@@ -2,7 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
-from capstone import CS_OP_MEM
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_entrance_release.py')))
@@ -27,9 +27,9 @@ def reject(operands, branch):
 
 for operands, branch in (('r9d, r9d', 'jne'), ('byte ptr [rcx + 0x5a], r9b', 'je'),
                          ('rax, rax', 'je'), ('eax, 1', 'jne'), ('eax, 0x4c7c', 'jne'),
-                         ('rdi, rdi', 'je'), ('byte ptr [rdi], 0', 'jne'),
-                         ('dword ptr [rdi + 4], 0', 'jne'), ('dword ptr [rdi + 8], 0', 'jne'),
-                         ('byte ptr [rdi + 0x50], 0', 'jne')):
+                         ('rsi, rsi', 'je'), ('byte ptr [rsi], 0', 'jne'),
+                         ('dword ptr [rsi + 4], 0', 'jne'), ('dword ptr [rsi + 8], 0', 'jne'),
+                         ('byte ptr [rsi + 0x50], 0', 'jne')):
     reject(operands, branch)
 for method in ('?CanArrive@SilverHandEntrance@@', '?HasFlag@Object@@', '?IsWithinDistInMap@WorldObject@@'):
     position, = sites(body, method)
@@ -48,24 +48,46 @@ item, = sites(body, '?GetItem@GossipMenu@@')
 assert any(entry.op_str == 'edx, edx' and entry.mnemonic == 'xor' for entry in body[item - 4:item])
 step, = sites(body, '?GetCurrentStep@Scenario@@')
 assert body[step + 1].op_str == 'eax, 1' and body[step + 2].mnemonic == 'jne'
-waypoints, = sites(body, '?instance@WaypointMgr@@')
-assert waypoints < remove and body[waypoints + 2].op_str == 'ebx, 0xa7c08c'
-path_empty = next(index for index, entry in enumerate(body[:remove]) if entry.op_str == 'qword ptr [rcx], rax')
-assert body[path_empty + 1].mnemonic == 'je'
-warning = body[path_empty + 1].operands[0].imm
-assert not reaches(body, warning, body[remove].address)
-for operands in ('qword ptr [rax + 0x50], 0', 'rcx, rcx'):
-    positions = [index for index, entry in enumerate(body[waypoints:remove], waypoints) if entry.op_str == operands and entry.mnemonic in ('cmp', 'test')]
-    assert len(positions) == 1
-    assert body[positions[0] + 1].mnemonic == 'je' and body[positions[0] + 1].operands[0].imm == warning
-sentinels = [index for index, entry in enumerate(body[waypoints:remove], waypoints) if entry.op_str == 'rcx, qword ptr [r8 + 0x48]' and entry.mnemonic == 'cmp']
-assert len(sentinels) == 2
-assert body[sentinels[1] + 1].mnemonic == 'je' and body[sentinels[1] + 1].operands[0].imm == warning
-assert body[sentinels[0] + 1].mnemonic == 'je'
-empty_bucket = next(index for index, entry in enumerate(body) if entry.address == body[sentinels[0] + 1].operands[0].imm)
-assert body[empty_bucket].mnemonic == 'xor' and body[empty_bucket].op_str == 'ecx, ecx'
-assert body[empty_bucket + 1].op_str == 'rcx, rcx' and body[empty_bucket + 2].operands[0].imm == warning
-assert any(entry.op_str == 'edx, ebx' for entry in body[move - 5:move])
+def verify_script_path(decoded, path_id, consume):
+    waypoints, = sites(decoded, '?instance@WaypointMgr@@')
+    lookup, = sites(decoded, '?GetPathScript@WaypointMgr@@')
+    assert waypoints < lookup < consume
+    assert any(entry.op_str == f'edx, {path_id:#x}' for entry in decoded[waypoints:lookup])
+    assert decoded[lookup + 1].op_str == 'rax, rax' and decoded[lookup + 2].mnemonic == 'je'
+    warning = decoded[lookup + 2].operands[0].imm
+    assert not reaches(decoded, warning, decoded[consume].address)
+    assert decoded[lookup + 3].op_str == 'rcx, qword ptr [rax + 8]'
+    assert decoded[lookup + 4].op_str == 'qword ptr [rax], rcx'
+    assert decoded[lookup + 5].mnemonic == 'je' and decoded[lookup + 5].operands[0].imm == warning
+    address = native['symbol']('?GetPathScript@WaypointMgr@@')
+    end = min(value for value in native['symbols'].values() if value > address)
+    assert 0 < end - address < 512
+    decoder = Cs(CS_ARCH_X86, CS_MODE_64)
+    decoder.detail = True
+    leaf = list(decoder.disasm(native['binary'][native['offset'](address):native['offset'](end)], address))
+    assert leaf[0].op_str == 'qword ptr [rcx + 0x50], 0'
+    assert leaf[1].op_str == 'r9, rcx' and leaf[2].op_str == 'r8d, edx'
+    assert leaf[3].mnemonic == 'je'
+    deny = leaf[3].operands[0].imm
+    terminal = next(index for index, entry in enumerate(leaf) if entry.address == deny)
+    assert leaf[terminal].mnemonic == 'xor' and leaf[terminal].op_str == 'eax, eax'
+    assert leaf[terminal + 1].mnemonic == 'ret'
+    assert all(any(entry.op_str == operands for entry in leaf) for operands in
+               ('rdx, qword ptr [r9 + 0x48]', 'rcx, qword ptr [r9 + 0x70]',
+                'rcx, qword ptr [r9 + 0x58]', 'r8d, dword ptr [rax + 0x10]'))
+    sentinel = next(index for index, entry in enumerate(leaf) if entry.op_str == 'rax, rdx' and entry.mnemonic == 'cmp')
+    assert leaf[sentinel + 1].mnemonic == 'je'
+    bucket = next(index for index, entry in enumerate(leaf) if entry.address == leaf[sentinel + 1].operands[0].imm)
+    assert leaf[bucket].mnemonic == 'xor' and leaf[bucket].op_str == 'eax, eax'
+    assert leaf[bucket + 1].op_str == 'rax, rax' and leaf[bucket + 2].op_str == 'rax, rdx'
+    assert leaf[bucket + 2].mnemonic == 'cmove'
+    assert leaf[bucket + 3].op_str == 'rax, rdx' and leaf[bucket + 4].operands[0].imm == deny
+    assert leaf[bucket + 4].mnemonic == 'je'
+    assert leaf[bucket + 5].op_str == 'rax, 0x18' and leaf[bucket + 6].mnemonic == 'ret'
+
+
+verify_script_path(body, 10993804, remove)
+assert any(entry.op_str == 'edx, 0xa7c08c' for entry in body[move - 5:move])
 assert any(entry.op_str == 'r8d, r8d' and entry.mnemonic == 'xor' for entry in body[move - 5:move])
 assert not any(name.startswith('?OnGossipSelect@npc_travar_first@@') for name in native['symbols']), 'Legacy unvalidated CreatureScript override remains'
 for method in ('?SetUInt32Value@Object@@', '?KilledMonsterCredit@Player@@', '?UpdateAchievementCriteria@Player@@', '?AddItem@Player@@'):

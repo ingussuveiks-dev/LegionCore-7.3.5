@@ -9,6 +9,15 @@ using uint32=uint32_t;
 enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, UNIT_FIELD_NPC_FLAGS=1, UNIT_NPC_FLAG_NONE=0,
     UNIT_NPC_FLAG_GOSSIP=1, UNIT_STATE_DIED=8, SPELL_AURA_FEIGN_DEATH=1 };
 constexpr float INTERACTION_DISTANCE=5.0f;
+constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=1.57f;
+enum { MOTION_SLOT_IDLE=0 };
+#ifdef SECOND_TRAVARD
+constexpr uint32 ExpectedEntry=106639,ExpectedMenu=19599,ExpectedStep=4,ExpectedPath=10993806,ExpectedPoints=15;
+constexpr bool SecondActor=true;
+#else
+constexpr uint32 ExpectedEntry=106429,ExpectedMenu=19580,ExpectedStep=1,ExpectedPath=10993804,ExpectedPoints=11;
+constexpr bool SecondActor=false;
+#endif
 enum class GossipOptionNpc : uint8_t { None=0, Vendor=1 };
 struct GossipMenuItem {GossipOptionNpc OptionNpc=GossipOptionNpc::None;uint32 Sender=0,Action=0;bool IsCoded=false;};
 using GossipMenuItemContainer=std::map<uint32,GossipMenuItem>;
@@ -16,7 +25,7 @@ struct GossipMenu
 {
     GossipMenuItemContainer _menuItems;
     std::map<uint32,uint32> _menuItemData;
-    uint32 _menuId=19580;
+    uint32 _menuId=ExpectedMenu;
     uint32 GetMenuId() const {return _menuId;}
     GossipMenuItem const* GetItem(uint32) const;
     uint32 GetMenuItemSender(uint32) const;
@@ -39,7 +48,7 @@ struct PlayerMenu
 #include "MenuNative.inc"
 struct ObjectGuid
 {
-    uint32 kind=1,counter=106429;
+    uint32 kind=1,counter=ExpectedEntry;
     bool IsCreatureOrVehicle() const {return kind==1;}
     bool IsGameObject() const {return kind==2;}
     std::string ToString() const {return "controlled-guid";}
@@ -60,20 +69,28 @@ struct WorldObject
 };
 struct CreatureAI
 {
+    uint32 talks=0;
     virtual ~CreatureAI()=default;
     virtual void sGossipSelect(Player*,uint32,uint32) {}
     virtual void sGossipSelectCode(Player*,uint32,uint32,char const*) {}
+    virtual void Talk(uint32 line) {assert(line==0);++talks;}
 };
 struct Motion
 {
-    uint32 paths=0;
-    std::function<void()> onMove;
-    void MovePath(uint32 path,bool repeat) {assert(path==10993804 && !repeat);++paths;if(onMove)onMove();}
+    uint32 paths=0,follows=0;
+    Creature* followed=nullptr;
+    float followAngle=0;
+    std::function<void()> onMove,onFollow;
+    void MovePath(uint32 path,bool repeat) {assert(path==ExpectedPath && !repeat);++paths;if(onMove)onMove();}
+    void MoveFollow(Creature* actor,float distance,float angle,uint32 slot)
+    {assert(distance==PET_FOLLOW_DIST && slot==MOTION_SLOT_IDLE);++follows;followed=actor;followAngle=angle;if(onFollow)onFollow();}
 };
 struct Creature : WorldObject
 {
     struct Template {uint32 ScriptID=1;} definition;
-    uint32 entry=106429,mapId=1539,flags=0x203,LastUsedScriptID=1;
+    uint32 entry=ExpectedEntry,mapId=1539,flags=0x203,LastUsedScriptID=1;
+    Creature* efrin=nullptr;
+    Creature* duval=nullptr;
     CreatureAI* ai=nullptr;
     Motion motion;
     uint32 GetEntry() const {return entry;}
@@ -84,6 +101,8 @@ struct Creature : WorldObject
     Motion* GetMotionMaster() {return &motion;}
     CreatureAI* AI() {return ai;}
     Template* GetCreatureTemplate() {return &definition;}
+    Creature* FindNearestCreature(uint32 identity,float radius,bool live)
+    {assert(radius==30 && live && (identity==106371 || identity==106370));return identity==106371?efrin:duval;}
 };
 struct Player : WorldObject
 {
@@ -104,10 +123,10 @@ struct Player : WorldObject
     bool HasUnitState(uint32) const {return false;}
     void RemoveAurasByType(uint32) {}
     Creature* GetNPCIfCanInteractWith(ObjectGuid guid,uint32 mask)
-    {lastMask=mask;return interaction && guid.counter==106429 && distance<=INTERACTION_DISTANCE?actor:nullptr;}
+    {lastMask=mask;return interaction && guid.counter==ExpectedEntry && distance<=INTERACTION_DISTANCE?actor:nullptr;}
     void OnGossipSelect(WorldObject*,uint32,uint32) {++fallbacks;}
 };
-struct Scenario {uint32 id=1092,step=1;uint32 GetScenarioId() const{return id;}uint32 GetCurrentStep() const{return step;}};
+struct Scenario {uint32 id=1092,step=ExpectedStep;uint32 GetScenarioId() const{return id;}uint32 GetCurrentStep() const{return step;}};
 struct ScenarioManager
 {
     bool present=true;
@@ -119,8 +138,8 @@ using WaypointPath=std::vector<uint32>;
 struct WaypointManager
 {
     bool present=true;
-    WaypointPath path={1,2,3,4,5,6,7,8,9,10,11};
-    WaypointPath const* GetPathScript(uint32 identity) {assert(identity==10993804);return present?&path:nullptr;}
+    WaypointPath path=WaypointPath(ExpectedPoints,1);
+    WaypointPath const* GetPathScript(uint32 identity) {assert(identity==ExpectedPath);return present?&path:nullptr;}
 } waypoints;
 auto* sWaypointMgr=&waypoints;
 uint32 warnings=0,debugs=0;
@@ -164,7 +183,7 @@ struct Logger {template<class... Values>void outDiff(Values const&...){}} logger
 auto* sLog=&logger;
 uint32 getMSTime(){return 0;}
 uint32 GetMSTimeDiffToNow(uint32){return 0;}
-namespace WorldPackets {namespace NPC {struct GossipSelectOption {ObjectGuid GossipUnit;uint32 GossipID=19580,GossipIndex=0;std::string PromotionCode;};}}
+namespace WorldPackets {namespace NPC {struct GossipSelectOption {ObjectGuid GossipUnit;uint32 GossipID=ExpectedMenu,GossipIndex=0;std::string PromotionCode;};}}
 struct WorldSession
 {
     Player* currentPlayer=nullptr;
@@ -176,11 +195,11 @@ struct Fixture
 {
     PlayerMenu menu;
     Player player;
-    Creature actor;
+    Creature actor,efrin,duval;
     EntranceAI ai;
     WorldSession session;
     WorldPackets::NPC::GossipSelectOption packet;
-    Fixture(){manager={};waypoints={};warnings=0;player.PlayerTalkClass=&menu;player.actor=&actor;ai.me=&actor;actor.ai=&ai;session.currentPlayer=&player;menu._gossipMenu._menuItems[0]={};}
+    Fixture(){manager={};waypoints={};warnings=0;player.PlayerTalkClass=&menu;player.actor=&actor;ai.me=&actor;actor.ai=&ai;actor.efrin=&efrin;actor.duval=&duval;session.currentPlayer=&player;menu._gossipMenu._menuItems[0]={};}
     void Send(){session.HandleGossipSelectOption(packet);}
 };
 void Invalidate(uint32 invalid,Fixture& fixture)
@@ -196,8 +215,9 @@ void Invalidate(uint32 invalid,Fixture& fixture)
         case 15:player.los=false;break;case 16:player.distance=5.01f;break;case 17:player.rewarded=true;break;
         case 18:player.status=0;break;case 19:player.status=1;break;case 20:player.status=5;break;
         case 21:manager.present=false;break;case 22:manager.scenario.id=991;break;case 23:manager.scenario.id=1037;break;
-        case 24:manager.scenario.step=0;break;case 25:manager.scenario.step=2;break;case 26:manager.scenario.step=11;break;
-        case 27:fixture.ai.firstwp=false;break;case 28:actor.flags&=~1u;break;case 29:menu._menuId=123;break;
+        case 24:manager.scenario.step=ExpectedStep-1;break;case 25:manager.scenario.step=ExpectedStep+1;break;case 26:manager.scenario.step=11;break;
+        case 27:if(SecondActor)manager.scenario.step=0;else fixture.ai.firstwp=false;break;
+        case 28:actor.flags&=~1u;break;case 29:menu._menuId=123;break;
         case 30:menu._menuItems.clear();break;case 31:menu._menuItems[0].OptionNpc=GossipOptionNpc::Vendor;break;
         case 32:menu._menuItems[0].Sender=1;break;case 33:menu._menuItems[0].Action=1;break;
         case 34:menu._menuItems[0].IsCoded=true;break;case 35:fixture.packet.GossipID=123;break;
@@ -215,12 +235,12 @@ int main()
         assert(fixture.player.lastMask==UNIT_NPC_FLAG_NONE && fixture.actor.motion.paths==1 && fixture.actor.flags==0);
     }
     Fixture repeated;repeated.Send();repeated.Send();assert(repeated.actor.motion.paths==2);
-    std::cout<<"PASS pinned357347d7: actual packet dispatch/zero-default missing option calls old unguarded CreatureScript and starts path for7 invalid contexts; repeated packet restarts path and clears unrelated flags. Controlled world/motion, not client traversal.\n";
+    std::cout<<"PASS pinned "<<(SecondActor?"cf8ab051 second":"357347d7 first")<<": actual packet dispatch/zero-default missing option calls old unguarded CreatureScript and starts path for7 invalid contexts; repeated packet restarts path and clears unrelated flags. Controlled world/motion, not client traversal.\n";
 #else
     for(uint32 invalid=0;invalid<41;++invalid)
-    {Fixture fixture;Invalidate(invalid,fixture);fixture.Send();assert(!fixture.actor.motion.paths);}
-    {Fixture fixture;fixture.ai.sGossipSelect(nullptr,19580,0);assert(!fixture.actor.motion.paths);}
-    {Fixture fixture;fixture.player.distance=5.01f;fixture.ai.sGossipSelect(&fixture.player,19580,0);assert(!fixture.actor.motion.paths);}
+    {Fixture fixture;Invalidate(invalid,fixture);fixture.Send();assert(!fixture.actor.motion.paths && !fixture.ai.talks && !fixture.efrin.motion.follows && !fixture.duval.motion.follows);}
+    {Fixture fixture;fixture.ai.sGossipSelect(nullptr,ExpectedMenu,0);assert(!fixture.actor.motion.paths);}
+    {Fixture fixture;fixture.player.distance=5.01f;fixture.ai.sGossipSelect(&fixture.player,ExpectedMenu,0);assert(!fixture.actor.motion.paths);}
     for(bool missing:{false,true})
     {
         Fixture fixture;if(missing)waypoints.present=false;else waypoints.path.clear();fixture.Send();
@@ -230,9 +250,13 @@ int main()
     for(uint32 faction:{0u,1u})
     {
         Fixture fixture;fixture.player.faction=faction;fixture.player.distance=5;
-        fixture.actor.motion.onMove=[&fixture]{fixture.Send();};fixture.Send();fixture.Send();
+        fixture.actor.motion.onMove=[&fixture]{fixture.Send();};
+        fixture.efrin.motion.onFollow=[&fixture]{fixture.Send();};fixture.duval.motion.onFollow=[&fixture]{fixture.Send();};
+        fixture.Send();fixture.Send();
         assert(fixture.actor.motion.paths==1 && fixture.actor.flags==0x202 && fixture.ai.firstwp);
         assert(!fixture.menu._gossipMenu.GetItem(0) && fixture.menu.closes==1);
+        assert(fixture.ai.talks==uint32(SecondActor) && fixture.efrin.motion.follows==uint32(SecondActor) && fixture.duval.motion.follows==uint32(SecondActor));
+        if(SecondActor){assert(fixture.efrin.motion.followed==&fixture.actor && fixture.duval.motion.followed==&fixture.actor);assert(fixture.efrin.motion.followAngle==-PET_FOLLOW_ANGLE && fixture.duval.motion.followAngle==PET_FOLLOW_ANGLE);}
     }
     {
         Fixture fixture;fixture.player.status=0;fixture.Send();assert(!fixture.actor.motion.paths && fixture.actor.flags==0x203);
@@ -240,6 +264,7 @@ int main()
         PlayerMenu otherMenu;Player other;other.PlayerTalkClass=&otherMenu;other.actor=&fixture.actor;otherMenu._gossipMenu._menuItems[0]={};
         fixture.session.currentPlayer=&other;fixture.Send();assert(fixture.actor.motion.paths==1);
     }
-    std::cout<<"PASS: actual native packet handler and menu lookup/clear plus production first-Travard AI selection;41 invalid contexts, missing/empty-path diagnostic+retry, direct null, exact5yd, reentrant/replayed/other-player selection and unrelated flags checked. Native interaction/world/path services controlled; no actual movement, group story or client proof.\n";
+    {Fixture fixture;fixture.actor.efrin=nullptr;fixture.actor.duval=nullptr;fixture.Send();assert(fixture.actor.motion.paths==1);}
+    std::cout<<"PASS: actual native packet handler/menu lookup+clear and production "<<(SecondActor?"second":"first")<<" Travard AI selection;41 invalid contexts, missing/empty-path retry, direct null/5.01yd, exact5yd, reentrant follower/movement/replayed/other-player selection, original roles and unrelated flags checked. Native interaction/world/path services controlled; no physical movement, group story or client proof.\n";
 #endif
 }

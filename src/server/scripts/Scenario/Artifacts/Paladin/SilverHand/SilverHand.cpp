@@ -31,6 +31,23 @@ namespace SilverHandEntrance
     }
 }
 
+namespace SilverHandProcession
+{
+    bool CanStart(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106639 || actor->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, INTERACTION_DISTANCE) || player->GetQuestRewardStatus(42120) ||
+            player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 4;
+    }
+}
+
 // 106429
 class npc_travar_first : public CreatureScript
 {
@@ -353,20 +370,6 @@ class npc_travar_second : public CreatureScript
 public:
     npc_travar_second() : CreatureScript("npc_travar_second") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
-    {
-        if (Creature* efrin = creature->FindNearestCreature(106371, 30.0f, true))
-            efrin->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-        if (Creature* duval = creature->FindNearestCreature(106370, 30.0f, true))
-            duval->GetMotionMaster()->MoveFollow(creature, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-
-        creature->GetMotionMaster()->MovePath(10993806, false);
-        creature->AI()->Talk(0);
-        player->CLOSE_GOSSIP_MENU();
-        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
-        return true;
-    }
-
     CreatureAI* GetAI(Creature* creature) const override
     {
         return new npc_travar_secondAI(creature);
@@ -383,6 +386,33 @@ public:
         EventMap events;
         bool wait_heal;
         FunctionProcessor _functions;
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
+        {
+            if (menuId != 19599 || gossipListId != 0 || !SilverHandProcession::CanStart(player, me) ||
+                !me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+                return;
+            GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
+            GossipMenuItem const* option = menu.GetItem(gossipListId);
+            if (menu.GetMenuId() != menuId || !option || option->OptionNpc != GossipOptionNpc::None ||
+                option->Sender || option->Action || option->IsCoded)
+                return;
+            WaypointPath const* path = sWaypointMgr->GetPathScript(10993806);
+            if (!path || path->empty())
+            {
+                TC_LOG_WARN("scripts", "Silver Hand procession path 10993806 is unavailable; retaining Travard gossip for retry");
+                return;
+            }
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            player->PlayerTalkClass->ClearMenus();
+            player->CLOSE_GOSSIP_MENU();
+            if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
+                efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
+                duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            me->GetMotionMaster()->MovePath(10993806, false);
+            Talk(0);
+        }
 
         void Reset() override
         {

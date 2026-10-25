@@ -24,7 +24,11 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
    $actual=$actual.Replace($movement,$movement.Replace((ArrivalCase $movement),(ArrivalCase (Block $expected 'void MovementInform('))))
    $expected=$expected.Replace("    "+(Block $expected 'bool OnGossipSelect(')+"`n`n",'')
   }
-  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance LOS/gossip/POINT1'}
+  elseif($script -eq 'npc_travar_second'){
+   $actual=$actual.Replace("        "+(Block $actual 'void sGossipSelect(')+"`n`n",'')
+   $expected=$expected.Replace("    "+(Block $expected 'bool OnGossipSelect(')+"`n`n",'')
+  }
+  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance/second gossip'}
  }
 }
 if($Baseline){$source=$pinned}
