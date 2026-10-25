@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Silver Hand1092/1539 step8 instance-to-third-Travard106676 dispatch when the first contactable participant has no nearby actor. Not direct action admission, all-missing retry, whole ritual or all36/client certification.",
+  "sources": [
+    {
+      "source": "Local instance_silver_hand.cpp/SilverHand.cpp and Scenario::SetCurrentStep/UpdateCurrentStep",
+      "review": "Both native transition paths set current step, call instance callback and then UpdatePhasing. Step8 callback skips null/uncontactable Player references but unconditionally breaks after first remaining participant even if live70yd106676 lookup returned null. Third DoAction(true) owns an existing1s _functions job; ordinary UpdateAI drains it after stunned guard but before victim check, requests original Talk8/MovePoint1, and actual POINT8/id1 later despawns/requests50915. Step10 separately has first-contactable break and remains unchanged."
+    },
+    {
+      "source": "Matching native DB2/hotfix SilverHandPickupCatalog and read-only MariaDB",
+      "review": "1539 instance_template selects instance_silver_hand;106676 sole binding npc_travar_third/spawn362006/map1539/phase7002. Source23 zone85 entry9 condition44/1092 admits5..8, so7-to8 remains same native phase before refresh. Native step8/2456/root48015/30089/type92/50915 retained; later9/30110/51838 and10/30111/50966 remain separate. Reviewed last106777/spawn362048/7003 and106719/spawn362044/7001 only to distinguish unrelated step10 actors. No spawn, phase, database or character writes."
+    },
+    {
+      "source": "Local TrinityCore26972 era scripts tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c tree again contains unrelated Stratholme silver_hand boss, not this acquisition instance callback. Existing artifact routes/donor/worklist audits read; no exhaustive history claim."
+    },
+    {
+      "source": "Pinned Titans instance donor",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "review": "Full93-line instance source returned/read, including both step8 and10 loops, creature visibility and graveyard. It retains same unconditional break after absent first actor; no compatible donor correction imported or unrelated step10 rewrite."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. This is existing actor dispatch recovery within one native callback, not inferred ritual timing, phase or VFX reconstruction."
+    }
+  ],
+  "repair": {
+    "implementation": "Move only step8 break into successful FindNearestCreature106676/DoAction(true) block. Missing first actor now continues actual Map::PlayerList search, while success exits once. No Player pointer retained, nearby credit substitute, expanded radius, aura, item, HP or scenario event added.",
+    "preserved": "Pinned e01a2c64 whole instance source comparison permits only this brace/break relocation, including unchanged OnCreatureCreate, graveyard and entire step10. Original null/CanContact/step8/live70yd search policy and third AI's independent GUID entry/lifetime/healing/movement/credit remain. All-missing returns without fabricated fallback; future explicit callback can find a newly available actor but no automatic timer/re-entry recovery is claimed."
+  },
+  "validation": {
+    "baseline": "PASS -Baseline extracts e01a2c64 full instance callback plus real current third DoAction/UpdateAI/MovementInform and native FunctionProcessor. First contactable participant lacks actor, later participant has actor, original stops first and never dispatches. No actual client failure/persisted counters claim.",
+    "host": "PASS actual full callback/native third handlers and queue: first missing then later found, null/uncontactable/absent prefixes, several participants finding same actor dispatch once per invocation, empty/all-missing/later explicit redispatch, unrelated steps, original step10 Talk3/215260/flags and break. Existing999+1ms, stunned pause, original MovePoint1 pose, no credit at request and existing50915/despawn only on actual mocked POINT1 callback exercised. Map references/nearby query/cast/motion/criteria services controlled; not live route/group/faction credit proof. Original unused-action diagnostic retained; fixture initializer-list compile failure corrected by exposing native vector base assignment, not production behavior.",
+    "installed": "PASS canonical factory selects instance callback0x118; actual step8 live70yd106676 lookup null fallthrough advances native linked participant references and loops back through contactability/search, successful branch calls selected third-AI action0x48(1) then exits. Both real Scenario transition methods dispatch slot0x118. True PE unwind/map timestamp bounds retained. Existing third entry release suite separately verifies its live admission/AI-owned queue/GUID/reset/lock, not this different _functions action's gating.",
+    "regressions": "PASS targeted10-suite serial PowerShell7 ledger .codex/silver-hand-ritual-dispatch-regressions.tsv: new pinned dispatch baseline, installed dispatch with nested complete RitualEntry admission/lifetime/native data/PE, installed lastWaveLifetime, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, SceneLifecycle, ArtifactForceEquip55 records/39 items; pinned third-entry lifetime baseline. Final host rerun additionally enforces unchanged whole instance outside the precise callback edit. Prior33-suite evidence remains in its own audit, not silently relabeled as this binary's rerun. Catalogs/build serialized, diagnostics/native counts retained; not client traversal.",
+    "evidence": ".codex/silver-hand-ritual-dispatch-* and runtime-test/silver-hand-ritual-dispatch ignored logs/probes only; no runtime/config/password/character/media data tracked."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "7068EE69AFA5FCA686DCEDF49F1AACB8C4F44BE448989165B3A672E721B37A01",
+    "bnet_sha256": "F836C2C9F52C803C5D2B0E0E532B088426051115CE05E2F34AA4D76AD7B42E66",
+    "build": "Release worldserver+bnetserver16.04s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link names canonical output and original scripts/game/shared/common Release libraries with INCREMENTAL:NO. Installed selected branch verified independently of hash/link/startup.",
+    "runtime": "Own hidden canonical PID32328 fresh ready, own stdin shutdown0/exit0/new DBErrors0/stderr empty/protected conf-certificate hashes unchanged/gone. No unknown/user server stopped and no own hidden process left running."
+  },
+  "remaining": [
+    "No nearby106676 from any participant still needs independent actor/spawn/re-entry recovery. Native transition is ordinarily one callback; a future explicit redispatch is not an implemented automatic retry. Separate repeated callbacks/direct DoAction can queue duplicates, ignore action value/live quest/stage and actor AI admission; these are unchanged OPEN paths, not exactly-once across persisted attempts.",
+    "Third _functions pauses while stunned; current motion replacement/arrival ownership and neighborhood50877/50912/50915 are separate. Step10 still stops at first contactable participant regardless of missing last Travard/Mordoth. Shared PlayerList traversal does not certify native group eligibility, owner/pet/guardian progression, both factions or actual physical arrival.",
+    "Abandon/rapid-retake epochs, firstfight/evade/50850, aberration one-hit/half-health/intentional companion deaths, last-wave death counts/periodic51838/retry, real loot/equip/save/relog, outro/true Dalaran and full36/client/VFX traversal remain OPEN."
+  ]
+}

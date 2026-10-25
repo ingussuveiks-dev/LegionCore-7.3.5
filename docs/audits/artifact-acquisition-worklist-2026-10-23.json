@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "handler": "Step8 third-Travard dispatch across native map participants",
+      "problem": "Unconditional break after first contactable participant skipped a later participant's actual live70yd106676 actor when the first lookup was empty.",
+      "repair_audit": "docs/audits/silver-hand-ritual-dispatch-2026-10-25.json",
+      "limit": "Break now follows successful native DoAction(true), so missing first lookup continues without duplicate dispatch in the same invocation. Null/contactability/radius/alive/step gates, original delayed action/POINT1, graveyard and step10 unchanged. All-missing actors, absent future callback, repeated separate invocations, direct unbound DoAction and full faction/group/client/VFX remain OPEN."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
       "handler": "Last Travard106777 five-second first-wave AI lifetime",
       "problem": "Unit-owned raw-this callback survived native AIM_Destroy and could summon the old attempt's first wave through a replacement AI.",
@@ -611,6 +618,8 @@
       "entrance_arrival_audit": "docs/audits/silver-hand-entrance-arrival-2026-10-25.json",
       "entrance_lifetime_audit": "docs/audits/silver-hand-entrance-lifetime-2026-10-25.json",
       "wave_lifetime_audit": "docs/audits/silver-hand-wave-lifetime-2026-10-25.json",
+      "ritual_dispatch_audit": "docs/audits/silver-hand-ritual-dispatch-2026-10-25.json",
+      "ritual_dispatch_review": "Native instance callback step8 no longer breaks after an empty first contactable participant's live70yd106676 lookup; it continues to a later participant and stops after one successful DoAction(true). Actual whole callback plus native third DoAction/FunctionProcessor/UpdateAI/MovementInform preserve1000ms, stun behavior, MovePoint1 and arrival-only existing50915; selected instance0x118 and third action0x48/loop backedge verified. Native7002 admits5..8, and both core transition paths call instance before phase refresh. No phase, credit, Player selection policy, direct action admission, repeated-invocation dedup, all-missing retry or step10 lookup repair introduced. Client traversal and actual party/faction counters remain OPEN.",
       "wave_lifetime_review": "Last106777 first-wave5000ms callback now belongs to AI-owned FunctionProcessor serviced by locked primary/disabled Lifecycle; actual destructor cancels pending wave. Native same-type replacement baseline reproduces unsolicited old wave without freed-pointer UB; fixed native queue handles4999+1ms, replacement/fresh retry, actual AIM_Destroy/locked rejection, primary/disabled/alias/disabled-only and original three-wave body/flags. Original Reset no-op, nearest50915/periodic51838, count_died and missing-defender/failed-summon no-retry remain unchanged and OPEN. No new credit/item/HP or proof of client wave traversal.",
       "entrance_lifetime_review": "First Travard5s entry and2s firstfight marker now use AI-owned locked primary/disabled Lifecycle queue, not Unit-owned raw-this work; selected destruction drops both. Snapshot original full GUID and64-bit entry epoch before immediate Talk0. Pending-only Reset reopens entry and invalidates stale work without erasing accepted arrivalGUID or replaying movement; firstfight Reset/timing behavior retained. Native queue/AIM_Destroy/4999+1 and1999+1ms/source-bound POINT1/reentrant Talk0/reset/AI replacement and selected Release checked. Actual fight/evade/one-hit-before-marker, late recipients, persisted group counters and full client/VFX remain OPEN.",
       "second_gossip_audit": "docs/audits/silver-hand-second-gossip-admission-2026-10-25.json",

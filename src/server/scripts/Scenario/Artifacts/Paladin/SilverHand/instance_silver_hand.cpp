@@ -64,8 +64,10 @@ public:
                         continue;
 
                     if (Creature* travar = player->FindNearestCreature(106676, 70.0f, true))
+                    {
                         travar->AI()->DoAction(true);
-                    break;
+                        break;
+                    }
                 }
             }
             if (newStep == 10)
