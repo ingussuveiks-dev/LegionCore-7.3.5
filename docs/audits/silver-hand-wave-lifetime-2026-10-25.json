@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Holy Paladin42120/scenario1092 last Travard106777 pending first-wave5000ms AI lifetime only. Not late-wave progression, complete acquisition or all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp, Unit::AddDelayedEvent/m_Functions and Creature::AIM_Destroy/Update",
+      "review": "Last AI schedules a Unit-owned raw-this SummonAdds(1) after5000ms. AIM_Destroy deletes AI without clearing Unit jobs. Native locked Lifecycle services distinct disabled/primary AI before Unit::Update and ordinary stunned/victim early returns. New dedicated queue uses that bridge, not an added UpdateAI drain or global Unit queue clear. First/third lifetime audits and their independent entry Reset semantics preserved."
+    },
+    {
+      "source": "Matching native SilverHandPickupCatalog and fresh read-only MariaDB",
+      "review": "Native late criteria remain step8/30089/type92/50915, step9/30110/type92/51838 quantity1, step10/30111/type92/50966. Sole last binding106777/spawn362048/map1539/phase7003, native positive44/1092 steps9 or10, addon215258. Initial query mistakenly requested nonexistent ID/CreatureID/SpellID addon columns and failed; helper threw without returning partial rows. Corrected explicit actor/phase and actual addon schema query succeeded. No database writes or secrets recorded. Phase admission alone does not prove actor visibility or correct wave progression."
+    },
+    {
+      "source": "Local TrinityCore era scripts tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c tree again has unrelated Stratholme boss_order_of_silver_hand, not this acquisition AI. Existing donor/routes audits read; no exhaustive historical claim."
+    },
+    {
+      "source": "Pinned Titans donor last Travard sequence",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Relevant last class790..913 read, including LOS/Unit-owned5000ms, death counter3/6, periodic51838 and three-wave body. It retains the same lifetime defect; no compatible donor correction imported. Original delay, actors, speech, summon/attack/flag and Reset behavior retained locally."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. No guessed wave choreography, completion gate or visual reconstruction."
+    }
+  ],
+  "repair": {
+    "ownership": "Append AI-owned _waveFunctions; selected native locked primary/disabled UpdateLifecycle drains it. Replace only last AI's Unit AddDelayedEvent with own queue for original5000ms SummonAdds(1). AI destruction discards old pending closure; no Player pointer, new progression, HP, item or global queue clear.",
+    "preserved": "Whole last AI compared with pinned e03ec0c8, allowing only queue field/lifecycle and exact timer owner replacement. Original LOS,50915/startCriteria/cast215258/Talk0/211502 visibility, count_died3/6, three-wave entries/positions/attacks/flags and periodic51838 remain unchanged. Base Reset is still no-op; ordinary Reset neither cancels an accepted wave nor reopens introduction. Missing defender or failed summon still consumes attempt without retry; not silently repaired or certified.",
+    "timing": "4999ms leaves pending, next1ms invokes one first-wave body even while ordinary AI is stunned or has a victim. Lifecycle occurs before Unit rather than inside Unit in the same native update, not an exact rendered timing proof. No direct lifecycle call outside native AI lock."
+  },
+  "validation": {
+    "baseline": "PASS -Baseline pins e03ec0c8 whole last AI and native FunctionProcessor. Actual original closure summons through a transparently reconstructed same-type AI at the same address without replacement introduction. Defined replacement avoids freed-storage UB; no actual live crash or persisted progress/client claim.",
+    "host": "PASS whole production last AI, native queue ctor/add/drain/update/destructor/Size/SizeQueue and native AIM_Destroy/locked distinct-disabled/primary bridge. Covers4999+1ms, repeated LOS/no second queued wave, pet/guardian LOS ignored, existing three waves/death3+3/attack targets/boss unrelated flag retained, stunned/victim, ordinary Reset, absent Player at completion, missing defender, failed spawn/no invented retry, destructor/same-address replacement/fresh legitimate retry, actual AIM_Destroy preserving an unrelated Unit-owned job, primary/distinct-disabled/alias/disabled-only queue service and rejection of destruction during real callbacks. World/cast/summon/player services controlled; these preserve original behavior, not validate permissive progression or actual summons/client combat.",
+    "installed": "PASS canonical factory selects LOS0x270/lifecycle0x110/deleting destructor0. Actual factory constructs queueAI+0x48; LOS captures this and arms own5000ms; selected11-byte no-unwind callback passes1 to actual SummonAdds. Selected9-byte no-unwind lifecycle tail-dispatches native FunctionProcessor::Update at+0x48, selected destructor releases same queue; actual Creature primary/disabled lifecycle lock precedes Unit. True unwind bounds used for nonleafs; bounded exact leaf instructions inspected without forced noinline/fake unwind. PE/map timestamp check retained.",
+    "diagnostics": "Ignored exploratory disassembler initially treated register-indirect call as immediate; corrected CS_OP_IMM filtering, no production change. Extracted native size_t->uint32 and original unused summon warnings retained, not suppressed.",
+    "regressions": "PASS final33-suite serial PowerShell7 ledger .codex/silver-hand-wave-lifetime-regressions.tsv:14 installed suites lastWaveLifetime, Rescue, AberrationCredit, RitualEntry, Procession, secondGossip, Entrance, firstGossip, Collapse, RealLootData, Presentation, AllyDamage1536/40pct, StromkarPresentation and ScepterLogin;6 native/data suites DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, WarlockRegression, SceneLifecycle, ArtifactForceEquip55 records/39 items, MapObjectArrival and DalaranPortalLanding native WMO;13 pinned baselines including last-wave e03ec0c8, first5s/2s lifetime, third lifetime and prior healing/rescue/aberration/ritual/procession/gossip/arrival/LOS/damage checks. Catalogs/build serialized and original native counts/diagnostics retained. Final focused baseline/installed rerun also checks that AI destruction preserves an unrelated Unit-owned job and pins the selected closure table's actual stack store. Not client traversal.",
+    "evidence": ".codex/silver-hand-wave-lifetime-* and runtime-test/silver-hand-wave-lifetime ignored evidence; no runtime/password/character/media data tracked."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "36DF530C975C885B85477E24DE0430C310C2ABFDAD7B48A42FA3F133FAEDF612",
+    "bnet_sha256": "7A53321C7430A4A7364A76F5A496CFFC61C24434D5D0E38818F175C7251CA6A1",
+    "build": "Release worldserver+bnetserver17.91s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 link inputs name canonical output and original scripts/game/shared/common Release libraries, INCREMENTAL:NO. Installed selected implementation checked independently of hash/link/startup.",
+    "runtime": "Own hidden canonical PID30016 fresh ready, own stdin shutdown0/exit0/new DBErrors0/stderr empty/protected conf-certificate hashes unchanged/gone. No unknown/user process stopped and no own hidden server left running."
+  },
+  "remaining": [
+    "Last LOS lacks live quest/scenario/spatial admission beyond Player type, uses nearest50915, and UpdateAI periodically requests51838 without tracked victory. SummonedCreatureDies counts untracked/repeated deaths rather than actual wave GUIDs; pet/guardian callbacks retain original counter but are not native group/faction credit certification. Missing defender/failed summons have no scoped retry; one-hit/rapid deaths and reentrant spawn callbacks require separate choreography repair. These independent defects remain OPEN.",
+    "Base Reset preserves old accepted attempt, not persisted abandon/retake or recreated-actor dedup. Native visibility/phase/spell success, actual actors/loot/equip/save/relog, full faction/group chain and VFX/camera/pet/client traversal remain unperformed. No direct event/item/HP grants introduced to conceal missing sequence.",
+    "Firstfight/EnterEvade/50850, aberration half-health/one-hit/intentional companion deaths, third downstream50877/50912/50915/DoAction, late scenes and true Dalaran return remain OPEN; all36 worklist is not complete."
+  ]
+}

@@ -1133,6 +1133,12 @@ public:
         bool _introDone, startCriteria;
         uint32 timer;
         uint8 count_died;
+        FunctionProcessor _waveFunctions;
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            _waveFunctions.Update(diff);
+        }
 
         void MoveInLineOfSight(Unit* who) override
         {
@@ -1159,7 +1165,7 @@ public:
                             count++;
                         }
                     }
-                me->AddDelayedEvent(5000, [this]() -> void
+                _waveFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
                     SummonAdds(1);
                 });
