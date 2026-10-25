@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "hruthnir_offer_lifetime_audit": "docs/audits/hruthnir-offer-lifetime-2026-10-25.json",
+      "hruthnir_offer_lifetime_review": "Point6 native6500ms offer now owns a separate weak single-use token, blocks duplicates during offer/point7 start and expires on Reset/destructor/selection. Callback checks same live96468/1495/original-instance/enabled AI/token/909-3 before and after Talk16; old Reset/replacement/new attempt cannot reopen gossip/release protection. Adds only gossip bit, retaining unrelated flags. Baseline/native/installed checks,9 serial regressions and owned32280 startup/shutdown passed; exact evidence/limits in linked audit. Actual arrival/request-generation/usable retry, earlier raw callbacks and Magnar walking/purple ascension remain open.",
       "magnar_surrender_controllers_audit": "docs/audits/magnar-surrender-controllers-2026-10-25.json",
       "magnar_surrender_controllers_review": "Acknowledged504 now arms its native pending state before actual StopAttack(true,true), clears active chase, explicitly selects idle and removes Penta-Strike191883 only in the same active Reset epoch. Final-duel Reset restores defensive reaction, retaining native flag/faction/roster rules. Native baseline/control, installed policies,11 serial checks and owned38388 startup/shutdown passed; exact scope/hashes/limits in linked audit. Additional sparse muted video stills and native193515/192085/216016 graphs do not identify or implement walking/purple ascension. No whole-chain/client/all36 certificate.",
       "magnar_finale_handoff_audit": "docs/audits/magnar-finale-handoff-2026-10-25.json",

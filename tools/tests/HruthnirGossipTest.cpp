@@ -7,11 +7,14 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <vector>
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 using int32 = int32_t;
 enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     UNIT_NPC_FLAG_NONE = 0, UNIT_NPC_FLAG_GOSSIP = 1, UNIT_FIELD_NPC_FLAGS = 10,
+    UNIT_FIELD_FLAGS = 11, UNIT_FLAG_NOT_SELECTABLE = 0x2000000, UNIT_FLAG_IMMUNE_TO_PC = 0x100,
+    UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80, REACT_DEFENSIVE = 1,
     UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
     EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6 };
 #include "FunctionsClass.inc"
@@ -70,6 +73,9 @@ struct CreatureAI
     virtual void Reset() { }
     virtual void UpdateAI(uint32) { }
     uint32 starts = 0;
+    std::vector<uint32> texts;
+    std::function<void()> onTalk;
+    void Talk(uint32 text) { texts.push_back(text); auto callback = onTalk; if (callback) callback(); }
     std::function<void()> reenterStart;
     virtual void DoAction(int32 action)
     {
@@ -107,7 +113,7 @@ struct ScenarioMgr
 {
     Scenario scenario;
     bool available = true;
-    Scenario* GetScenario(uint32 instance) { assert(instance == 42); return available ? &scenario : nullptr; }
+    Scenario* GetScenario(uint32 instance) { return available && instance == 42 ? &scenario : nullptr; }
 } scenarioManager;
 ScenarioMgr* sScenarioMgr = &scenarioManager;
 struct MotionMaster
@@ -131,6 +137,7 @@ struct Creature
     std::function<void()> reenterConversation;
     float distance = 4.0f;
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
+    uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;
     CreatureAI* ai = nullptr;
     Creature* boss = nullptr;
@@ -161,8 +168,10 @@ struct Creature
     }
 #include "AddDelayed.inc"
     MotionMaster* GetMotionMaster() { return &motion; }
-    void RemoveFlag(uint32 field, uint32 mask) { assert(field == UNIT_FIELD_NPC_FLAGS); flags &= ~mask; }
+    void RemoveFlag(uint32 field, uint32 mask) { if (field == UNIT_FIELD_NPC_FLAGS) flags &= ~mask; else { assert(field == UNIT_FIELD_FLAGS); unitFlags &= ~mask; } }
     void SetUInt32Value(uint32 field, uint32 value) { assert(field == UNIT_FIELD_NPC_FLAGS); flags = value; }
+    void SetFlag(uint32 field, uint32 mask) { assert(field == UNIT_FIELD_NPC_FLAGS); flags |= mask; }
+    void SetReactState(uint32 reaction) { react = reaction; }
 };
 struct Player
 {
@@ -227,6 +236,8 @@ struct HruthnirAI : CreatureAI
 #include "AIFields.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
+#include "OfferContext.inc"
+#include "Offer.inc"
 #include "Arrival.inc"
 #include "AIUpdate.inc"
 };
@@ -320,7 +331,128 @@ int main()
     replaced.actor.m_Functions.Update(6000);
     assert(replaced.bossAI.starts == 1);
     std::cout << "PASS cue baseline: native Unit FunctionProcessor retains point7 callback after AI Reset/replacement and duplicate arrivals request497/start twice. Old AI kept alive in host, not a reproduced freed-pointer crash.\n";
+#elif defined(OFFER_BASELINE)
+    Fixture reset;
+    reset.actor.flags = 0;
+    reset.ai.OfferArrive(); reset.ai.Reset(); reset.Tick(6500);
+    assert(reset.actor.flags == 1 && reset.actor.react == REACT_DEFENSIVE && !reset.actor.unitFlags);
+    assert(reset.ai.texts == std::vector<uint32>({15,16}));
+    Fixture replaced;
+    replaced.actor.flags = 0;
+    replaced.ai.OfferArrive();
+    HruthnirAI replacement(&replaced.actor);
+    replaced.actor.ai = &replacement; replacement.Reset(); replaced.Tick(6500);
+    assert(replaced.actor.flags == 1 && !replaced.actor.unitFlags && replaced.ai.texts == std::vector<uint32>({15,16}));
+    Fixture early;
+    early.actor.flags = 0; early.ai.OfferArrive(); scenarioManager.scenario.step = 4; early.Tick(6500);
+    assert(early.actor.flags == 1 && !early.actor.unitFlags);
+    std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    {
+        Fixture offer;
+        offer.actor.flags = 0;
+        offer.ai.OfferArrive(); offer.ai.OfferArrive();
+        auto replay = offer.actor.m_Functions.LastQueued();
+        offer.Tick(6499);
+        assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15}));
+        offer.Tick(1); replay();
+        assert(offer.actor.flags == 1 && !offer.actor.unitFlags && offer.actor.react == REACT_DEFENSIVE);
+        assert(offer.ai.texts == std::vector<uint32>({15,16}));
+        offer.ai.OfferArrive(); offer.Tick(6500);
+        assert(offer.ai.texts == std::vector<uint32>({15,16}));
+    }
+    {
+        Fixture offer;
+        offer.actor.flags = 0; offer.ai.OfferArrive();
+        auto stale = offer.actor.m_Functions.LastQueued();
+        offer.ai.Reset(); offer.ai.OfferArrive(); stale();
+        assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15,15}));
+        offer.Tick(6500);
+        assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,15,16}));
+    }
+    for (uint32 invalid = 0; invalid < 15; ++invalid)
+    {
+        Fixture offer;
+        offer.actor.flags = 0; offer.ai.OfferArrive();
+        HruthnirAI replacement(&offer.actor);
+        if (invalid == 0) offer.ai.Reset();
+        if (invalid == 1) offer.actor.world = false;
+        if (invalid == 2) offer.actor.alive = false;
+        if (invalid == 3) offer.actor.despawn = true;
+        if (invalid == 4) offer.actor.entry = 96469;
+        if (invalid == 5) offer.actor.mapId = 1479;
+        if (invalid == 6) offer.actor.instance = 43;
+        if (invalid == 7) offer.actor.map = nullptr;
+        if (invalid == 8) offer.actor.IsAIEnabled = false;
+        if (invalid == 9) offer.actor.ai = &replacement;
+        if (invalid == 10) scenarioManager.available = false;
+        if (invalid == 11) scenarioManager.scenario.step = 4;
+        if (invalid == 12) scenarioManager.scenario.identity = 944;
+        if (invalid == 13) scenarioManager.scenario.step = 2;
+        if (invalid == 14) offer.actor.ai = nullptr;
+        offer.actor.m_Functions.Update(6500);
+        assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15}));
+        offer.actor.world = offer.actor.alive = offer.actor.IsAIEnabled = true;
+        offer.actor.despawn = false; offer.actor.entry = 96468; offer.actor.mapId = 1495;
+        offer.actor.instance = 42; offer.actor.map = &instanceMap; offer.actor.ai = &offer.ai; scenarioManager = {};
+        offer.ai.Reset(); offer.ai.OfferArrive(); offer.Tick(6500);
+        assert(offer.actor.flags == 1 && !offer.actor.unitFlags && offer.ai.texts == std::vector<uint32>({15,15,16}));
+    }
+    for (bool replace : {false,true})
+    {
+        Fixture offer;
+        offer.actor.flags = 0; offer.ai.OfferArrive();
+        HruthnirAI replacement(&offer.actor);
+        offer.ai.onTalk = [&]() { if (replace) offer.actor.ai = &replacement; else offer.ai.Reset(); };
+        offer.Tick(6500);
+        assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15,16}));
+    }
+    {
+        Fixture offer;
+        offer.actor.flags = 0; offer.ai.OfferArrive();
+        offer.actor.flags = 1; offer.Select(); offer.ai.OfferArrive(); offer.Tick(6500);
+        assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15}));
+        assert(offer.actor.motion.moves == 1);
+    }
+    {
+        Fixture offer;
+        offer.actor.flags = 0;
+        auto oldAI = std::make_unique<HruthnirAI>(&offer.actor);
+        offer.actor.ai = oldAI.get(); oldAI->OfferArrive(); oldAI.reset(); offer.actor.ai = &offer.ai;
+        offer.Tick(6500);
+        assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts.empty());
+    }
+    for (uint32 moment : {15u,16u})
+    {
+        Fixture offer;
+        offer.actor.flags = 0;
+        offer.ai.onTalk = [&]() {
+            if (offer.ai.texts.back() != moment) return;
+            offer.ai.onTalk = nullptr; offer.ai.Reset(); offer.ai.OfferArrive();
+        };
+        offer.ai.OfferArrive();
+        if (moment == 16)
+        {
+            offer.Tick(6500);
+            assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380);
+        }
+        offer.Tick(6500);
+        assert(offer.actor.flags == 1 && !offer.actor.unitFlags);
+        assert(offer.ai.texts == (moment == 15 ? std::vector<uint32>({15,15,16}) : std::vector<uint32>({15,16,15,16})));
+    }
+    for (bool alliance : {false,true}) for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+    {
+        Fixture offer;
+        offer.player.faction = uint32(alliance); offer.player.status = status;
+        offer.actor.flags = 0x20; offer.actor.unitFlags |= 0x40000000;
+        offer.ai.OfferArrive(); offer.Tick(6500);
+        assert(offer.actor.flags == 0x21 && offer.actor.unitFlags == 0x40000000);
+        offer.Select();
+        offer.ai.OfferArrive(); offer.Tick(6500);
+        assert(offer.actor.flags == 0x20 && offer.actor.motion.moves == 1);
+        assert(offer.ai.texts == std::vector<uint32>({15,16}));
+    }
+    std::cout << "PASS: native6500ms point6 offer is weak/one-shot; duplicate/replayed events,15 revoked contexts with explicit Reset/readmission, deleted or retained old-AI, gossip selection and Talk15/16 Reset/new-attempt cannot reopen gossip/release protection. Four faction/status cases preserve unrelated NPC/unit flags. Unit FunctionProcessor extracted; path/arrival/re-entry routing/group/client traversal separate.\n";
     assert(!HruthnirGossip::CanStart(nullptr, nullptr));
     for (uint32 invalid = 0; invalid < 39; ++invalid)
     {

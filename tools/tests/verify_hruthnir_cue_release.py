@@ -13,24 +13,30 @@ suffix = '@npc_hrutnirAI@npc_hrutnir@@'
 movement = '?MovementInform' + suffix
 reset = '?Reset' + suffix
 destructor = '??_Gnpc_hrutnirAI@npc_hrutnir@@'
-callback = '??R<lambda_6>@?BJ@??MovementInform' + suffix
-bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_6>@?BJ@??MovementInform' + suffix
+callback = '??R<lambda_6>@?BM@??MovementInform' + suffix
+bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_6>@?BM@??MovementInform' + suffix
 
 selection = instructions('?sGossipSelect' + suffix)
 flag = positions(selection, '?RemoveFlag@Object@@')[0]
 instance = next(index for index, entry in enumerate(selection[:flag]) if entry.op_str == 'dword ptr [rsi + 0x70], ecx')
 assert selection[instance - 1].op_str == 'ecx, dword ptr [rax + 0x3b8]' and selection[instance - 2].op_str == 'rax, qword ptr [rsi + 0x20]', 'Original selection instance not retained'
 assert any(entry.op_str == 'byte ptr [rcx], 0' for entry in selection[:flag]), 'Fresh cue token must start unconsumed'
-assert any(entry.op_str == 'qword ptr [rsi + 0x60], rcx' for entry in selection[:flag])
-assert any(entry.op_str == 'qword ptr [rsi + 0x68], rax' for entry in selection[:flag])
+assignment = positions(selection, '??4?$shared_ptr@_N@std@@QEAAAEAV01@$$QEAV01@@Z')[0]
+assert any(entry.mnemonic == 'lea' and entry.op_str == 'rcx, [rsi + 0x60]' for entry in selection[instance:assignment]), 'Fresh cue token assignment lost actual owner field'
+assert any(entry.op_str == 'dword ptr [rax + 8], 1' for entry in selection[instance:assignment])
+assert any(entry.op_str == 'dword ptr [rax + 0xc], 1' for entry in selection[instance:assignment])
+transfer = instructions('??4?$shared_ptr@_N@std@@QEAAAEAV01@$$QEAV01@@Z')
+for operand in ('rax, qword ptr [rdx]', 'r8, qword ptr [rdx + 8]', 'qword ptr [rdi], rax', 'qword ptr [rdi + 8], r8'):
+    assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in transfer), 'Actual shared-owner assignment bridge changed'
 assert selection[flag - 1].op_str == 'byte ptr [rsi + 0x5d], 1', 'Movement not armed before external flag/motion calls'
 
 body = instructions(movement)
-pending = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rbx + 0x5d], 0' and entry.mnemonic == 'cmp')
 conversation = next(index for index in positions(body, '?CreateConversation@Unit@@') if body[index - 2].op_str == 'edx, 0x1f1')
+pending = max(index for index, entry in enumerate(body[:conversation]) if entry.op_str == 'byte ptr [rbx + 0x5d], r14b' and entry.mnemonic == 'cmp')
 queue = next(index for index in positions(body, '?AddDelayedEvent@FunctionProcessor@@') if body[index - 1].op_str == 'edx, 0x1770')
 assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm > body[queue].address
-assert body[pending + 2].op_str == 'byte ptr [rbx + 0x5d], 0'
+assert body[pending + 2].op_str == 'byte ptr [rbx + 0x5d], r14b'
+assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in body[:pending]), 'Arrival consume is not zero'
 assert pending < conversation < queue
 assert any(entry.op_str == 'r14, qword ptr [rbx + 0x20]' for entry in body[pending:conversation])
 assert any(entry.op_str == 'r15d, dword ptr [rbx + 0x70]' for entry in body[pending:conversation])
@@ -74,13 +80,13 @@ action = next(index for index, entry in enumerate(body) if entry.mnemonic == 'ca
 assert body[action - 1].op_str == 'edx, 1' and action > lookup > token
 
 body = instructions(reset)
-assert any(entry.op_str == 'byte ptr [rbx + 0x5d], 0' for entry in body)
-assert any(entry.op_str == 'qword ptr [rbx + 0x60], rbp' for entry in body)
-assert any(entry.op_str == 'qword ptr [rbx + 0x68], rbp' for entry in body)
-assert any(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rdi + 8], eax' for entry in body)
+assert any(entry.op_str == 'byte ptr [rsi + 0x5d], 0' for entry in body)
+assert any(entry.op_str == 'qword ptr [rsi + 0x60], rbp' for entry in body)
+assert any(entry.op_str == 'qword ptr [rsi + 0x68], rbp' for entry in body)
+assert any(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in body)
 assert not positions(body, '?KillAllFunctions@FunctionProcessor@@'), 'Reset must not cancel unrelated Unit delayed actions'
 body = instructions(destructor)
-assert any(entry.op_str == 'rbx, qword ptr [rcx + 0x68]' for entry in body)
+assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in body)
 assert any(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in body), 'Actual AI destructor retains token ownership'
 assert len(previous['selected_tables']('?GetAI@npc_hrutnir@@', ((0, destructor), (0x28, reset), (0x1a8, movement)))) == 1
 print('PASS: installed Hruthnir arrival claim, actual497/native6000ms std::function bridge and weak-token callback, original-instance/live/AI guards, consume-before-action1, Reset/destructor invalidation and real factory slots. No automatic recovery,497 delivery or client/VFX certification.')

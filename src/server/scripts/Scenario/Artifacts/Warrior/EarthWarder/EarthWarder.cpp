@@ -97,6 +97,7 @@ public:
         bool magnarArrivalPending = false;
         std::shared_ptr<bool> magnarStartToken;
         uint32 magnarStartInstance = 0;
+        std::shared_ptr<bool> magnarOfferToken;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -107,6 +108,7 @@ public:
             if (menu.GetMenuId() != menuId || !item || item->OptionNpc != GossipOptionNpc::None ||
                 item->Sender != 0 || item->Action != 0 || item->IsCoded || item->BoxMoney != 0)
                 return;
+            magnarOfferToken.reset();
             magnarStartInstance = me->GetInstanceId();
             magnarStartToken = std::make_shared<bool>(false);
             magnarArrivalPending = true;
@@ -122,6 +124,17 @@ public:
             magnarArrivalPending = false;
             magnarStartToken.reset();
             magnarStartInstance = 0;
+            magnarOfferToken.reset();
+        }
+
+        bool IsMagnarOfferContext(uint32 instanceId) const
+        {
+            if (!me->IsInWorld() || !me->IsAlive() || me->IsDespawn() || !me->GetMap() ||
+                me->GetEntry() != 96468 || me->GetMapId() != 1495 || me->GetInstanceId() != instanceId ||
+                !me->IsAIEnabled || me->AI() != this)
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3;
         }
 
         void EnterCombat(Unit* who) override
@@ -283,15 +296,32 @@ public:
                         });
                         break;
                     case 6:
+                    {
+                        if (magnarOfferToken || magnarArrivalPending || magnarStartToken || !IsMagnarOfferContext(me->GetInstanceId()))
+                            break;
+                        magnarOfferToken = std::make_shared<bool>(false);
+                        std::weak_ptr<bool> offerToken = magnarOfferToken;
+                        Creature* companion = me;
+                        auto* expectedAI = this;
+                        uint32 instanceId = me->GetInstanceId();
                         Talk(15);
-                        me->AddDelayedEvent(6500, [this]() -> void
+                        me->AddDelayedEvent(6500, [offerToken, companion, expectedAI, instanceId]() -> void
                         {
-                            Talk(16);
-                            me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1); // госсип
-                            me->SetReactState(REACT_DEFENSIVE);
-                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                            std::shared_ptr<bool> token = offerToken.lock();
+                            if (!token || *token || companion->AI() != expectedAI ||
+                                expectedAI->magnarOfferToken != token || !expectedAI->IsMagnarOfferContext(instanceId))
+                                return;
+                            *token = true;
+                            expectedAI->Talk(16);
+                            if (companion->AI() != expectedAI || expectedAI->magnarOfferToken != token ||
+                                !expectedAI->IsMagnarOfferContext(instanceId))
+                                return;
+                            companion->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                            companion->SetReactState(REACT_DEFENSIVE);
+                            companion->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                         });
                         break;
+                    }
                     case 7:
                     {
                         if (!magnarArrivalPending)
