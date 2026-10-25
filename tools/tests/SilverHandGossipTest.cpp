@@ -120,6 +120,7 @@ struct Player : WorldObject
     bool IsWithinDistInMap(Creature*,float radius) const {return distance<=radius;}
     bool GetQuestRewardStatus(uint32 quest) const {assert(quest==42120);return rewarded;}
     uint32 GetQuestStatus(uint32 quest) const {assert(quest==42120);return status;}
+    ObjectGuid GetGUID() const {return {1,42};}
     bool HasUnitState(uint32) const {return false;}
     void RemoveAurasByType(uint32) {}
     Creature* GetNPCIfCanInteractWith(ObjectGuid guid,uint32 mask)
@@ -153,6 +154,7 @@ struct EntranceAI : CreatureAI
 {
     Creature* me=nullptr;
     bool firstwp=true;
+    ObjectGuid _processionPlayerGuid;
 #include "GossipSelect.inc"
 };
 struct CreatureScript

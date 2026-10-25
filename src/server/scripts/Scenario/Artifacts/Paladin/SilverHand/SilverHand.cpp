@@ -33,14 +33,14 @@ namespace SilverHandEntrance
 
 namespace SilverHandProcession
 {
-    bool CanStart(Player* player, Creature* actor)
+    bool CanArrive(Player* player, Creature* actor)
     {
         if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
             player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
             !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106639 || actor->GetMapId() != 1539 ||
             !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
             !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
-            !player->IsWithinDistInMap(actor, INTERACTION_DISTANCE) || player->GetQuestRewardStatus(42120) ||
+            !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(42120) ||
             player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
             return false;
         Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
@@ -386,11 +386,12 @@ public:
         EventMap events;
         bool wait_heal;
         FunctionProcessor _functions;
+        ObjectGuid _processionPlayerGuid;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
-            if (menuId != 19599 || gossipListId != 0 || !SilverHandProcession::CanStart(player, me) ||
-                !me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+            if (menuId != 19599 || gossipListId != 0 || !SilverHandProcession::CanArrive(player, me) ||
+                !me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) || !player->IsWithinDistInMap(me, INTERACTION_DISTANCE))
                 return;
             GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
             GossipMenuItem const* option = menu.GetItem(gossipListId);
@@ -410,8 +411,21 @@ public:
                 efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
             if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
                 duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            _processionPlayerGuid = player->GetGUID();
             me->GetMotionMaster()->MovePath(10993806, false);
             Talk(0);
+        }
+
+        void CompleteProcession()
+        {
+            if (_processionPlayerGuid.IsEmpty())
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*me, _processionPlayerGuid);
+            _processionPlayerGuid.Clear();
+            if (!SilverHandProcession::CanArrive(player, me))
+                return;
+            Talk(5);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50897);
         }
 
         void Reset() override
@@ -467,11 +481,7 @@ public:
                     Talk(4);
                 }
                 if (id == 14)
-                {
-                    Talk(5);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50897);
-                }
+                    CompleteProcession();
             }
         }
 

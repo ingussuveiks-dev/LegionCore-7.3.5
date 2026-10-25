@@ -9,7 +9,7 @@ from capstone.x86_const import X86_REG_RIP
 previous = runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_arrival_release.py')))
 native, instructions = previous['native'], previous['instructions']
 sites, reaches = previous['sites'], previous['reaches']
-helper = '?CanStart@SilverHandProcession@@'
+helper = '?CanArrive@SilverHandProcession@@'
 body = instructions(helper)
 deny = next(entry.address for index, entry in enumerate(body[:-1]) if entry.op_str == 'rbx, qword ptr [rsp + 0x40]'
             and body[index + 1].op_str == 'al, al' and body[index + 1].mnemonic == 'xor')
@@ -65,7 +65,7 @@ def floats(decoded):
 
 
 distance, = sites(body, '?IsWithinDistInMap@WorldObject@@')
-assert floats(body[distance - 7:distance]) == [5.0]
+assert floats(body[distance - 7:distance]) == [100.0]
 prefix = '?sGossipSelect@npc_travar_secondAI@npc_travar_second@@'
 body = instructions(prefix)
 consume, = sites(body, '?RemoveFlag@Object@@')
@@ -82,10 +82,12 @@ for operands, branch in (('r9d, r9d', 'jne'), ('eax, 0x4c8f', 'jne'), ('rsi, rsi
     position = next(index for index, entry in enumerate(body[:consume]) if entry.op_str == operands and entry.mnemonic in ('cmp', 'test'))
     assert body[position + 1].mnemonic == branch
     assert not reaches(body, body[position + 1].operands[0].imm, body[consume].address)
-for method in (helper, '?HasFlag@Object@@'):
+for method in (helper, '?HasFlag@Object@@', '?IsWithinDistInMap@WorldObject@@'):
     position, = sites(body, method)
     assert body[position + 1].op_str == 'al, al' and body[position + 2].mnemonic == 'je'
     assert not reaches(body, body[position + 2].operands[0].imm, body[consume].address)
+distance, = sites(body, '?IsWithinDistInMap@WorldObject@@')
+assert floats(body[distance - 7:distance]) == [5.0]
 flag, = sites(body, '?HasFlag@Object@@')
 for position in (flag, consume):
     assert all(any(entry.op_str == operands for entry in body[position - 5:position]) for operands in ('edx, 0x7d', 'r8d, 1'))
