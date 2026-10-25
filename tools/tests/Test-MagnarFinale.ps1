@@ -9,7 +9,7 @@ $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "675d6f7a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar source missing'}}
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
-$first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
+$first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $source 'void Reset()'))
 [IO.File]::WriteAllText("$out/Eligible.inc",$(if($Baseline){''}else{(Block $source 'bool IsEncounterPlayer(')+(Block $source 'Player* GetEncounterPlayer(')}))

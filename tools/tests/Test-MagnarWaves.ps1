@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CreditBaseline,[switch]$StartBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CreditBaseline,[switch]$StartBaseline,[switch]$ResetBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CreditBaseline -or $StartBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
-if(@($Baseline,$CreditBaseline,$StartBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose only one pinned baseline'}
+if(($Baseline -or $CreditBaseline -or $StartBaseline -or $ResetBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
+if(@($Baseline,$CreditBaseline,$StartBaseline,$ResetBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-waves"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -11,6 +11,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "6e6d1715:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned wave source unavailable'}}
 if($CreditBaseline){$source=(& git -C $repo show "c0f8efce:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned credit source unavailable'}}
 if($StartBaseline){$source=(& git -C $repo show "5d5a1f24:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned start source unavailable'}}
+if($ResetBaseline){$source=(& git -C $repo show "6eb208cf:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned reset source unavailable'}}
 [IO.File]::WriteAllText("$out/Positions.inc",(Block $source 'Position const trashPos[12]')+';')
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
@@ -23,8 +24,12 @@ $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 $first=$source.IndexOf('        if (TempSummon* summon = creature->ToTempSummon())',$source.IndexOf('void Unit::Kill('));$last=$source.IndexOf('        // Call instance script.',$first)
 if($first -lt 0 -or $last -le $first){throw 'Missing native kill/summoner dispatch'}
 [IO.File]::WriteAllText("$out/NativeDeath.inc",$source.Substring($first,$last-$first))
+$source=Get-Content "$repo/src/server/game/AI/ScriptedAI/ScriptedCreature.cpp" -Raw
+[IO.File]::WriteAllText("$out/DespawnAll.inc",(Block $source 'void SummonList::DespawnAll()').Replace('SummonList::',''))
+$source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw
+[IO.File]::WriteAllText("$out/UnitTypeMask.inc",(Block $source 'enum UnitTypeMask')+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}elseif($StartBaseline){'/DSTART_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}elseif($StartBaseline){'/DSTART_BASELINE'}elseif($ResetBaseline){'/DRESET_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/MagnarWavesTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Magnar wave regression failed'}
 if($VerifyReleaseBinary){

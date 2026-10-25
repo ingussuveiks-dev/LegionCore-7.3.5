@@ -6,11 +6,13 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <vector>
 using uint8 = uint8_t;
 using uint32 = uint32_t;
 using int32 = int32_t;
+#include "UnitTypeMask.inc"
 enum { REACT_PASSIVE, REACT_DEFENSIVE, UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE = 0x2000000,
     UNIT_FLAG_IMMUNE_TO_PC = 0x100, UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80,
     UNIT_STATE_CASTING = 1, UNIT_STATE_STUNNED = 2, CRITERIA_TYPE_SCRIPT_EVENT_2 = 92,
@@ -53,6 +55,7 @@ struct Unit
     virtual Creature* ToCreature() { return nullptr; }
     ObjectGuid GetCharmerOrOwnerGUID() const { return {0, charmer ? charmer : owner}; }
     Player* GetCharmerOrOwnerPlayerOrPlayerItself() const;
+    static Creature* GetCreature(Unit const& source, ObjectGuid guid);
     bool IsAIEnabled = true;
     void NotifyDeath(Creature* creature);
 };
@@ -113,7 +116,8 @@ struct Creature : Unit
 {
     ObjectGuid guid{0};
     uint32 entry = 0, mapId = 1495, instance = 42, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0, unitState = 0;
-    bool alive = true, victim = true, world = true, despawning = false;
+    bool alive = true, victim = true, world = true, despawning = false, accessory = false;
+    uint32 despawns = 0;
     CreatureAI* ai = nullptr;
     Creature* ally = nullptr;
     Creature* marker = nullptr;
@@ -121,6 +125,7 @@ struct Creature : Unit
     Map* map = nullptr;
     MotionMaster motion;
     std::function<void(Creature*)> onActivation;
+    std::function<void(Creature*)> onDespawn;
     std::function<Creature*(uint32, Position const&)> spawn;
     Creature* ToCreature() override { return this; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
@@ -132,6 +137,8 @@ struct Creature : Unit
     bool IsAlive() const { return alive; }
     bool IsInWorld() const { return world; }
     bool IsDespawn() const { return despawning; }
+    bool HasUnitTypeMask(uint32 mask) const { assert(mask == UNIT_MASK_ACCESSORY); return accessory; }
+    void DespawnOrUnsummon() { assert(!despawning); ++despawns; despawning = true; world = false; map->actors.erase(guid); if (onDespawn) onDespawn(this); }
     Map* GetMap() const { return map; }
     float GetDistance(Player* target) const { return target->distance; }
     void SetReactState(uint32) { }
@@ -155,6 +162,11 @@ struct Creature : Unit
     void SetHealth(uint32 value) { health = value; }
     Creature* SummonCreature(uint32 identity, Position const& pose) { return spawn(identity, pose); }
 };
+Creature* Unit::GetCreature(Unit const& source, ObjectGuid guid)
+{
+    Creature* owner = const_cast<Unit&>(source).ToCreature();
+    return owner && owner->GetMap() ? owner->GetMap()->GetCreature(guid) : nullptr;
+}
 struct TempSummon : Creature
 {
     Unit* summoner = nullptr;
@@ -167,9 +179,16 @@ void Unit::NotifyDeath(Creature* creature)
 }
 struct SummonList
 {
+    explicit SummonList(Creature* owner = nullptr) : me(owner) { }
+    Creature* me;
+    std::recursive_mutex m_lock;
     std::set<ObjectGuid> actors;
+    bool empty() const { return actors.empty(); }
+    auto begin() { return actors.begin(); }
+    auto erase(std::set<ObjectGuid>::iterator position) { return actors.erase(position); }
     void Summon(Creature* actor) { actors.insert(actor->GetGUID()); }
     void Despawn(Creature* actor) { actors.erase(actor->GetGUID()); }
+#include "DespawnAll.inc"
 };
 struct EventMap
 {
@@ -190,7 +209,7 @@ struct EventMap
 struct Magnar : CreatureAI
 {
     Creature* me;
-    explicit Magnar(Creature* actor) : me(actor) { wave = 1; count_dies = 0; first_phase = true; Reset(); }
+    explicit Magnar(Creature* actor) : me(actor), summons(actor) { wave = 1; count_dies = 0; first_phase = true; Reset(); }
     bool UpdateVictim() const { return me->victim; }
     void DoCast(uint32) { }
     void DoMeleeAttackIfReady() { }
@@ -287,6 +306,15 @@ int main()
         assert(fixture.summons.size() == 12 && fixture.ai.events.events.at(EVENT_4) == 33000);
     }
     std::cout << "BASELINE: pinned5d5a1f24 duplicates12 existing summons and postpones wave timer on a repeated start; wrong action/missing companion still mutates the encounter, retry duplicates actors, and a premature scenario step can start combat. Controlled services, not client traversal.\n";
+#elif defined(RESET_BASELINE)
+    {
+        Fixture fixture; fixture.BeginWaves(); fixture.Die(0); fixture.ai.Reset();
+        assert(fixture.ai.wave == 2 && fixture.ai.trashList.size() == 11 && fixture.ai.summons.actors.size() == 11);
+        fixture.ai.DoAction(1); assert(fixture.summons.size() == 24 && fixture.ai.summons.actors.size() == 23 && fixture.summons[1]->world);
+        fixture.ai.events.events.clear(); fixture.ai.events.RescheduleEvent(EVENT_4, 0); fixture.ai.UpdateAI(0);
+        assert(fixture.ai.wave == 3 && fixture.ai.count_dies == 2);
+    }
+    std::cout << "BASELINE: pinned6eb208cf leaves wave2 and11 old owned/reserve actors on first-phase Reset, restart adds another12 and starts at wave2 instead of wave1. Native summon cleanup is available but never called. Controlled actor/map services.\n";
 #else
     for (uint32 source = 0; source < 3; ++source)
     {
@@ -412,7 +440,7 @@ int main()
         fixture.FinishWaves(&fixture.guardian); fixture.actor.victim = false;
         assert(fixture.ai.wave == 6 && !fixture.player.credits);
         fixture.ai.Reset(); fixture.map.players = {{&fixture.player}}; fixture.ai.UpdateAI(0);
-        assert(fixture.ai.wave == 6 && !fixture.player.credits && !fixture.ai.stop_combat);
+        assert(fixture.ai.wave == 1 && !fixture.player.credits && !fixture.ai.stop_combat);
     }
     {
         Fixture fixture; Player peer; peer.map = &fixture.map; fixture.map.players = {{&peer}};
@@ -495,8 +523,53 @@ int main()
         fixture.ai.DoAction(1); assert(fixture.summons.size() == 12 && fixture.player.credits == 1 && fixture.ai.wave == 7);
         fixture.ai.Reset(); assert(!fixture.ai.encounterStarted);
     }
+    for (bool alliance : {false, true}) for (uint32 status : {1u, 3u}) for (uint32 deaths = 0; deaths < 10; ++deaths)
+    {
+        Fixture fixture; fixture.player.alliance = alliance; fixture.player.status = status;
+        if (deaths) fixture.BeginWaves();
+        for (uint32 index = 0; index < deaths; ++index) fixture.Die(index, &fixture.pet);
+        for (uint32 index = deaths; index < 12; ++index)
+            fixture.summons[index]->onDespawn = [&](Creature* removed) {
+                assert(fixture.ai.encounterStarted && fixture.ai.releasingWave && fixture.ai.activeWave.empty() && !fixture.ai.count_dies && fixture.ai.wave == 1);
+                fixture.ai.DoAction(1); assert(fixture.summons.size() == 12);
+                removed->alive = false; fixture.guardian.NotifyDeath(removed);
+                assert(fixture.ai.encounterStarted && fixture.ai.releasingWave && fixture.ai.wave == 1 && !fixture.player.credits);
+            };
+        fixture.ai.Reset();
+        assert(fixture.ai.wave == 1 && fixture.ai.first_phase && !fixture.ai.stop_combat && !fixture.ai.encounterStarted && !fixture.ai.releasingWave);
+        assert(fixture.ai.trashList.empty() && fixture.ai.activeWave.empty() && fixture.ai.summons.actors.empty() && fixture.ai.events.events.empty() && !fixture.ai.count_dies);
+        for (uint32 index = deaths; index < 12; ++index) assert(fixture.summons[index]->despawns == 1 && !fixture.summons[index]->world);
+        fixture.ai.DoAction(1); assert(fixture.summons.size() == 24 && fixture.ai.summons.actors.size() == 12 && fixture.ai.trashList.size() == 12);
+        assert(fixture.ai.events.events.at(EVENT_4) == 33000); fixture.BeginWaves();
+        auto active = fixture.ai.activeWave;
+        for (uint32 index = 0; index < 12; ++index) fixture.ai.SummonedCreatureDies(fixture.summons[index].get(), &fixture.guardian);
+        assert(fixture.ai.activeWave == active && fixture.ai.wave == 2 && fixture.ai.count_dies == 2);
+        for (uint32 index = 12; index < 22; ++index) fixture.Die(index, &fixture.guardian);
+        assert(fixture.player.credits == 1 && fixture.ai.wave == 7 && !fixture.ai.first_phase && scenarioManager.scenario.step == 4);
+    }
+    {
+        Fixture fixture; Creature unrelated; unrelated.guid = {999}; unrelated.map = &fixture.map; fixture.map.actors[unrelated.guid] = &unrelated;
+        fixture.map.actors.erase(fixture.summons[0]->guid); fixture.summons[1]->accessory = true;
+        fixture.ai.Reset(); fixture.ai.Reset();
+        assert(fixture.ai.wave == 1 && fixture.ai.summons.actors.empty() && fixture.ai.trashList.empty());
+        assert(!fixture.summons[0]->despawns && !fixture.summons[1]->despawns && fixture.summons[1]->world && !unrelated.despawns && unrelated.world);
+        for (uint32 index = 2; index < 12; ++index) assert(fixture.summons[index]->despawns == 1);
+    }
+    {
+        Fixture fixture; fixture.FinishWaves(); fixture.ai.Reset();
+        assert(!fixture.ai.first_phase && fixture.ai.wave == 7 && !fixture.ai.encounterStarted);
+        assert(fixture.summons[10]->world && fixture.summons[11]->world && !fixture.summons[10]->despawns && !fixture.summons[11]->despawns);
+    }
+    {
+        Fixture fixture; fixture.BeginWaves(); fixture.actor.IsAIEnabled = false; fixture.Die(0); fixture.actor.IsAIEnabled = true;
+        assert(fixture.ai.count_dies == 2 && fixture.ai.summons.actors.size() == 12);
+        fixture.ai.Reset(); assert(fixture.ai.wave == 1 && fixture.ai.summons.actors.empty());
+        for (auto const& summon : fixture.summons) assert(summon->despawns == 1);
+        fixture.ai.DoAction(1); assert(fixture.summons.size() == 24 && fixture.ai.summons.actors.size() == 12);
+    }
     std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Combat-gated498 resumes once after waves/victim/casting gates and Reset clears its pending event. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
     std::cout << "PASS:40 faction/status/source wave-credit combinations prefer actual player/pet/guardian/charmer owner over eligible peers; dead owner remains eligible.19 invalid contexts retain the protected completed-wave state and retry before victim/cast/stun gates only after readmission. Missing/null/unavailable owner uses eligible native-map fallback, Reset cancels pending credit, and reentrant flag/credit/death/tick calls cannot duplicate46427. Shared scenario services controlled, not actual multiplayer/client traversal.\n";
-    std::cout << "PASS:28 invalid start requests do not spawn, move, change flags or consume a start; explicit readmitted retry succeeds. Four faction/status starts claim before reentrant summon/flag callbacks; duplicate requests cannot add12 actors, discard reserve/active GUIDs or postpone timers before/during/after waves. Reset clears only the start claim; full encounter rebuild, missing-spawn recovery and client traversal remain open.\n";
+    std::cout << "PASS:28 invalid start requests do not spawn, move, change flags or consume a start; explicit readmitted retry succeeds. Four faction/status starts claim before reentrant summon/flag callbacks; duplicate requests cannot add12 actors, discard reserve/active GUIDs or postpone timers before/during/after waves. Full encounter rebuild, missing-spawn recovery and client traversal remain open.\n";
+    std::cout << "PASS:40 first-phase reset/restart runs at0..9 counted deaths clean only the tracked remainder through actual native SummonList::DespawnAll, restore wave1 and protect cleanup against reentrant death/start. A fresh12-GUID roster completes all10 deaths; stale old GUIDs cannot consume it. Missing/accessory/unrelated actors and repeated Reset preserve native cleanup policy; final-phase Reset leaves its existing wave7/auxiliary behavior unchanged. Actual gossip/pose/health/final-despawn/re-entry recovery and client traversal remain separate.\n";
 #endif
 }

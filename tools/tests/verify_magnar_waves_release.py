@@ -116,6 +116,28 @@ assert updated[start - 2].op_str == 'eax, [rdx + 1]' and updated[start - 1].op_s
 reset = instructions('?Reset' + suffix)
 assert all(any(entry.op_str == f'byte ptr [rbx + {hex(displacement)}], 0' for entry in reset) for displacement in (0xd5, 0xd4))
 assert native['symbol']('?clear@?$_Tree@V?$_Tset_traits@VObjectGuid@@') in native['calls']('?Reset' + suffix)
+cleanup = calls_to(reset, '?DespawnAll@SummonList@@')[0]
+phase = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rbx + 0xd1], 0')
+assert reset[phase + 2].mnemonic == 'je' and reset[phase + 2].operands[0].imm == reset[cleanup + 1].address, 'Final phase is rewound or cleaned as an incomplete wave'
+assert reset[cleanup - 1].op_str == 'rcx, [rbx + 0x38]', 'Cleanup does not use Magnars actual owned SummonList'
+reserve = calls_to(reset, '?clear@?$list@VObjectGuid@@')[0]
+wave_one = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rbx + 0xd3], 1')
+assert phase < wave_one < reserve < cleanup
+for displacement in (0xe8, 0xd5):
+    claimed = next(index for index, entry in enumerate(reset) if entry.op_str == f'byte ptr [rbx + {hex(displacement)}], 1')
+    released_claim = next(index for index, entry in enumerate(reset) if entry.op_str == f'byte ptr [rbx + {hex(displacement)}], 0')
+    assert claimed < phase < cleanup < released_claim, 'Reset permits reentrant start/advance while despawning the old roster'
+assert reset[phase + 1].op_str == 'byte ptr [rbx + 0xd4], 0'
+despawn = instructions('?DespawnAll@SummonList@@')
+lookup = calls_to(despawn, '?GetCreature@Unit@@SAPEAVCreature@@AEAVWorldObject@@VObjectGuid@@')[0]
+unspawn = calls_to(despawn, '?DespawnOrUnsummon@Creature@@')[0]
+assert despawn[lookup - 1].op_str == 'rcx, qword ptr [rdi + 0x60]', 'Native list lost its owner lookup context'
+assert despawn[lookup + 1].op_str == 'rsi, rax' and despawn[lookup + 2].op_str == 'rax, rax'
+assert despawn[lookup + 3].mnemonic == 'je'
+assert despawn[lookup + 4].op_str == 'dword ptr [rax + 0x30e8], 0x200' and despawn[lookup + 5].mnemonic == 'jne'
+assert despawn[lookup + 3].operands[0].imm == despawn[lookup + 5].operands[0].imm, 'Native accessory/missing actor cleanup policy changed'
+assert any(entry.mnemonic == 'dec' and entry.op_str == 'qword ptr [rdi + 8]' for entry in despawn[lookup:unspawn]), 'Owned GUID is not erased before its actor callback'
+assert despawn[unspawn - 2].op_str == 'edx, edx' and despawn[unspawn - 1].op_str == 'rcx, rsi'
 tables = []
 for entry in instructions('?GetAI@npc_magnar_icebreaker@@'):
     for operand in entry.operands:
@@ -165,3 +187,4 @@ assert any(entry.op_str == 'byte ptr [rbx + 0xe8], 0' for entry in reset), 'Rese
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x158 for entry in instructions('?Kill@Unit@@'))
 print('PASS: canonical tracked death callback forwards actual killer after once-only GUID consumption; bounded wave6 completion uses eligible owner-first stage3 selection before duel claim/flag release/46427, missing recipient stays pending, and native UpdateAI retries before victim/cast gates. Independent snapshot/release barrier,2/2/1/2/3, Windwall/80pct and resumed498 retained. Full actor recovery/group criteria/client VFX not certified.')
 print('PASS: actual Magnar start slot0x48 admits only action1/live96034/map1495/eligible stage3 and live enabled companion96468 within70yd. The start byte is claimed before list/spawn/flag/jump/combat side effects and blocks duplicate requests without delaying timers; Reset clears the scoped claim. Missing actor automatic recovery/full reset/client visuals not certified.')
+print('PASS: installed first-phase Reset holds start/release claims, empties active/count/reserve and restores wave1 before native owned SummonList::DespawnAll; final phase bypasses that rewind. Actual native cleanup resolves owned GUIDs, skips accessories/missing actors and erases before immediate despawn. Not a gossip/pose/health/final-despawn or client recovery certificate.')

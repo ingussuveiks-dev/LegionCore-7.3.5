@@ -353,9 +353,17 @@ public:
             events.Reset();
             stop_combat = false;
             finaleStarted = false;
-            releasingWave = false;
+            encounterStarted = true;
+            releasingWave = true;
             activeWave.clear();
             count_dies = 0;
+            if (first_phase)
+            {
+                wave = 1;
+                trashList.clear();
+                summons.DespawnAll();
+            }
+            releasingWave = false;
             encounterStarted = false;
         }
 
