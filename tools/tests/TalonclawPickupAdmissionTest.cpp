@@ -154,7 +154,8 @@ int main(int argc, char** argv) {
     }
     bool stromkar = argc == 4 && std::string(argv[2]).find("stromkar-") == 0;
     bool stromkarRoot = stromkar && std::string(argv[2]) == "stromkar-root";
-    bool warswords = argc == 4 && std::string(argv[2]) == "warswords-loot";
+    bool earthwarder = argc == 4 && std::string(argv[2]) == "earthwarder-loot";
+    bool warswords = argc == 4 && (std::string(argv[2]) == "warswords-loot" || earthwarder);
     if (warswords) {
         playersOwnArtifactByDefault = false;
         expectedQuest = 40043; expectedMap = 1511; expectedScenario = 944; firstStage = lastStage = 6;
@@ -162,7 +163,8 @@ int main(int argc, char** argv) {
         GameObjectTemplate chest;
         assert(chest.GetLootId() == 0);
         chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
-        assert(chest.GetLootId() == 248832);
+        assert(chest.GetLootId() == (earthwarder ? 248831u : 248832u));
+        if (earthwarder) { expectedQuest = 39191; expectedMap = 1495; expectedScenario = 909; firstStage = lastStage = 5; expectedItem = 128289; }
     }
     if (stromkar) {
         expectedQuest = 41105; expectedMap = 1539; expectedScenario = 1037; firstStage = lastStage = 9;

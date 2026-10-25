@@ -563,7 +563,7 @@ namespace EarthwarderAcquisition
             !player->GetMap() || player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
             !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
             !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
-            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || weapon->getLootState() == GO_JUST_DEACTIVATED ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) ||
             player->GetQuestRewardStatus(39191) ||
             (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE))
             return false;
@@ -595,20 +595,30 @@ class go_art_earthwarder : public GameObjectScript
         explicit AI(GameObject* object) : GameObjectAI(object) { }
         bool GossipHello(Player* player, bool) override
         {
-            return !EarthwarderAcquisition::CanTake(player, go);
+            return !EarthwarderAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED;
         }
     };
 
 public:
     go_art_earthwarder() : GameObjectScript("go_art_earthwarder") {}
 
-    bool OnGossipHello(Player* player, GameObject* go) override { return !EarthwarderAcquisition::CanTake(player, go); }
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (!EarthwarderAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED)
+            return true;
+        if (player->HasItemCount(128289, 1, true))
+        {
+            go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true;
+        }
+        return false;
+    }
     GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
 
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && go && state == GO_ACTIVATED && go->getLootState() == GO_ACTIVATED &&
-            EarthwarderAcquisition::CanTake(target->ToPlayer(), go))
+        if (target && go && state == GO_JUST_DEACTIVATED && go->getLootState() == GO_JUST_DEACTIVATED &&
+            EarthwarderAcquisition::CanTake(target->ToPlayer(), go) && target->ToPlayer()->HasItemCount(128289, 1, true))
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
             {
@@ -616,9 +626,6 @@ public:
                 target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 909, 1);
                 if (Creature* trigger = go->FindNearestCreature(94854, 10.0f))
                     trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128289, 1))
-                    target->ToPlayer()->AddItem(128289, 1);
 
                 target->CastSpell(target, 205340, true);
 

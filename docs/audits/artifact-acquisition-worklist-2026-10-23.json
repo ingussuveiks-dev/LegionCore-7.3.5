@@ -190,14 +190,16 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "real_loot_audit": "docs/audits/earthwarder-real-loot-2026-10-25.json",
+      "real_loot_review": "Data1 now binds dormant248831/128289 native loot with14 source4 rules: live active Warrior39191,1495/exact909/5, unrewarded and no bank-inclusive owned copy. Activation no longer grants or progresses; stored GO_JUST_DEACTIVATED plus actual ownership gates claim. Native storage/consumption/release predicate and SetLootState dispatch cover full bags, null storage and successful retry. Existing-copy gossip replays through native state dispatcher without AddItem. Native source4/cached-slot and13 SQL custom-preservation variants checked; actual network/client loot, scene/equip, save/relog and whole route remain pending.",
       "opening_admission_audit": "docs/audits/earthwarder-pickup-admission-2026-10-25.json",
-      "opening_admission_review": "Actual script/AI opening and stored-state activation now require live visible/spatially eligible Warrior39191 in the same1495 instance and exact909/5. Native controlled27 invalid openings/28 activations, eight legitimate paths and installed factory/callsite branches checked. Existing phase_definitions7541/3 already requires909/5; premature client rendering was NOT reproduced. Report-use ignores its AI return and retains the ordinary USE_GAMEOBJECT achievement. Direct AddItem, failed-storage progression, loot_link0, scene/equip and full client visibility remain UNFIXED or unverified; see narrow audit.",
+      "opening_admission_review": "Actual script/AI opening and completed-loot claim require live visible/spatially eligible Warrior39191 in the same1495 instance and exact909/5.27 invalid openings/28 invalid or unowned completed callbacks, eight legitimate paths and installed factory/callsite branches checked. Existing7541/3 phase gate already requires909/5; premature client rendering was NOT reproduced. Report-use ignores AI return and retains native USE_GAMEOBJECT achievement. Superseding real_loot_audit removes activation/direct AddItem/failed-storage progression; scene/equip and client visibility remain unverified.",
       "return_prerequisites_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
       "return_admission_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
-      "return_admission_review": "Existing12s callback now revalidates original-instance live Warrior/map1495/active39191/owned128289/native completed909 before192085; removes attempted-cast103739 and retains actual Skyhold receiver. Pinned baseline18 invalid contexts,16 current combinations, failed storage and deployed closure/guards/native six steps checked. GO_ACTIVATED/direct AddItem/early94851 and loot_link0 remain UNFIXED; this is not real acquisition/equip or whole-route certification. Partial muted video samples show loot/equipment before golden winged return light, manual Jump to Skyhold and0/1 at14:56, then loading and Ready for turn-in in Skyhold/15:12. Full footage/audio/local client remain pending.",
+      "return_admission_review": "Existing12s callback revalidates original-instance live Warrior1495/active39191/owned128289/native completed909 before192085; no attempted-cast103739.18 invalid/16 legitimate combinations and deployed closure remain checked. Superseding real_loot_audit moves initial progress/scene/timer behind completed native loot and removes AddItem. Automatic12s still differs from partial muted video: loot/equipment, golden winged return light/manual Jump to Skyhold/final0/1 at14:56, then loading/Skyhold ready at15:12. Native equip, full footage/audio/client traversal remain pending.",
       "item": 128289,
       "start": 39191,
-      "status": "partial opening/AI/activation and delayed-return admission repairs; real pickup/equip, manual return and full client traversal pending",
+      "status": "native real-loot and opening/completed-claim/delayed-return repairs; scene/equip, manual return and full client traversal pending",
       "quests": [
         {
           "id": 39191,
@@ -205,7 +207,7 @@
           "prerequisites_any": [
             40580
           ],
-          "lifecycle_review": "Opening/AI/stored-state activation and delayed-return admission repaired; eligible activation still directly grants128289 and advances94851 even on failed storage. Real loot/equip, manual return and actual arrival remain unresolved. See opening_admission_audit and return_admission_audit.",
+          "lifecycle_review": "Native loot link/conditions and completed-state ownership now precede94851/scene/timer; no activation AddItem or failed-storage progression. Opening and delayed-return admission retained. Scene/equip, manual return, actual client loot and arrival remain unresolved. See real_loot_audit and existing admission audits.",
           "visual_review": "Sparse muted pickup/equipment/return samples14:25..15:12 only, not continuous/full footage, audio or local client parity."
         },
         {
@@ -233,7 +235,8 @@
         {
           "entry": 248831,
           "type": 3,
-          "loot_link": 0,
+          "inventory_loot_link_2026_10_23": 0,
+          "loot_link": 248831,
           "expected_loot_entries": [
             248831
           ],
@@ -279,7 +282,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain exact909/5 opening/activation admission and existing7541/3 phase gate; premature rendering has not been reproduced. Repair real248831 acquisition before claiming pickup safety: eligible activation/direct AddItem and94851/scenario events still run on failed storage, loot_link0 remains. Trace actual loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability, native final criterion28550/type92/45785/tree amount0 without inventing count1. Retain per-recipient103739 prerequisites; old saved early counters are not reset. Restore scoped winged actor/beam/215997 manual return button instead of automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-EarthwarderPickupAdmission -Baseline/-VerifyReleaseBinary, Test-SkyholdArtifactReturn, original Test-EarthwarderReturn and shared19-check Warswords suite."
+      "next_action": "Retain native real-loot248831/128289 source4 conditions and completed-state/ownership claim, exact909/5 admission and7541/3 phase gate. Trace scene1215 completion ->native188074/208562 equip/paired item, retry/save/ability and actual client loot/full-bag behavior; final28550/type92/45785/tree amount0 is native, not invented count1. Retain per-recipient103739 prerequisites; old saved early counters are not reset. Restore scoped winged actor/beam/215997 manual return button instead of automatic12s, without copying93819 Dalaran positions. Review full relevant video/audio and alternate/client paths. Run Test-EarthwarderRealLootData -Baseline/-VerifyReleaseBinary, admission/return/Skyhold and shared19-check Warswords suite."
     },
     {
       "class_id": 1,

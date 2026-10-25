@@ -54,9 +54,6 @@ assert any(item.op_str == 'edx, 0x11' for item in body[flags - 3:flags]) and any
 entry = calls('?GetUInt32Value@Object@@')[0]
 assert body[entry + 1].op_str == 'eax, 0x3cbff'
 reject(entry + 1, 'jne')
-state = calls('?getLootState@GameObject@@')[0]
-assert body[state + 1].op_str == 'eax, 3'
-reject(state + 1, 'je')
 statuses = calls('?GetQuestStatus@Player@@')
 assert len(statuses) == 2 and all(any(item.op_str == 'edx, 0x9917' for item in body[index - 2:index]) for index in statuses)
 assert body[statuses[0] + 1].op_str == 'eax, 3' and body[statuses[0] + 2].mnemonic == 'je'
@@ -77,15 +74,27 @@ for prefix in (gossip, ai_gossip):
     callback = instructions(prefix)
     gate = next(index for index, item in enumerate(callback) if item.mnemonic == 'call'
                 and item.operands[0].type == CS_OP_IMM and native['resolve'](item.operands[0].imm) == native['symbol'](helper))
-    assert callback[gate + 1].op_str == 'al, 1' and callback[gate + 1].mnemonic == 'xor'
+    assert callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'je'
+    rejected = callback[gate + 2].operands[0].imm
+    assert any(item.address == rejected and item.mnemonic == 'mov' and item.op_str == 'al, 1' for item in callback)
+    state = next(index for index, item in enumerate(callback) if item.mnemonic == 'call' and item.operands[0].type == CS_OP_IMM
+                 and native['resolve'](item.operands[0].imm) == native['symbol']('?getLootState@GameObject@@'))
+    assert callback[state + 1].op_str == 'eax, 3' and callback[state + 2].mnemonic == 'je' and callback[state + 2].operands[0].imm == rejected
 callback = instructions(loot)
 gate = next(index for index, item in enumerate(callback) if item.mnemonic == 'call' and item.operands[0].type == CS_OP_IMM
             and native['resolve'](item.operands[0].imm) == native['symbol'](helper))
 assert callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'je'
-assert any(item.op_str == 'r8d, 2' for item in callback[:gate]) and any(item.op_str == 'eax, 2' for item in callback[:gate])
+rejected = callback[gate + 2].operands[0].imm
+for operands in ('r8d, 3', 'eax, 3'):
+    position = next(index for index, item in enumerate(callback[:gate]) if item.mnemonic == 'cmp' and item.op_str == operands)
+    assert callback[position + 1].mnemonic == 'jne' and callback[position + 1].operands[0].imm == rejected
+owned = next(index for index, item in enumerate(callback) if item.mnemonic == 'call' and item.operands[0].type == CS_OP_IMM
+             and native['resolve'](item.operands[0].imm) == native['symbol']('?HasItemCount@Player@@'))
+assert callback[owned + 1].op_str == 'al, al' and callback[owned + 2].mnemonic == 'je' and callback[owned + 2].operands[0].imm == rejected
+assert all(any(item.op_str == value for item in callback[owned - 5:owned]) for value in ('edx, 0x1f521', 'r8d, 1', 'r9b, 1'))
 effects = [index for index, item in enumerate(callback) if item.mnemonic == 'call' and item.operands[0].type == CS_OP_IMM
            and native['resolve'](item.operands[0].imm) == native['symbol']('?UpdateAchievementCriteria@Player@@')]
-assert effects and min(effects) > gate
+assert effects and min(effects) > owned > gate
 tables = []
 for item in instructions('?AddSC_EarthWarder@@'):
     for operand in item.operands:
@@ -116,4 +125,4 @@ for prefix in ('?HandleGameobjectReportUse@WorldSession@@', '?SendLoot@Spell@@')
 dispatch = '?OnGossipHello@ScriptMgr@@QEAA_NPEAVPlayer@@PEAVGameObject@@'
 assert native['symbol'](dispatch) in native['calls']('?Use@GameObject@@QEAAXPEAVUnit@@')
 assert native['symbol']('?Use@GameObject@@QEAAXPEAVUnit@@') in native['calls']('?HandleGameObjectUse@WorldSession@@')
-print('PASS: canonical Protection registration selects gossip/activation/AI factory; native Use, opening and report-use dispatch reach live1495/909/5/39191 admission. All helper rejections, stored activation state and gate-before-progression checked. No real-loot/full-bag/equip, phase-rendering or client certification.')
+print('PASS: canonical Protection registration selects gossip/completed-loot/AI factory; native Use, opening and report-use reach live1495/909/5/39191 admission. Openings reject stored state3; only reported/stored state3 plus actual bank-inclusive128289 ownership reaches progression. Native loot storage, equip and rendered client remain separate checks.')

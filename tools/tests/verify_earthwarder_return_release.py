@@ -75,4 +75,4 @@ for item in callback:
         if struct.unpack_from('<Q', native['binary'], table + 0x10)[0] == native['symbol'](timer):
             installed.append(address)
 assert len(installed) == 1 and native['symbol']('?AddDelayedEvent@FunctionProcessor@@') in native['calls']('?OnLootStateChanged@go_art_earthwarder@@')
-print('PASS: canonical Earthwarder installs original Player/instance12000ms closure; live1495/39191/owned128289/completed909 admission dominates ordinary self192085 and every rejection reaches no-cast exit. No attempted-cast103739 credit. Existing direct grant/activation, real loot/equip, manual portal/button and client arrival remain separate.')
+print('PASS: canonical Earthwarder installs original Player/instance12000ms closure; live1495/39191/owned128289/completed909 admission dominates ordinary self192085 and every rejection reaches no-cast exit. No attempted-cast103739 credit. Actual loot/equip, manual portal/button and client arrival remain separate verification paths.')

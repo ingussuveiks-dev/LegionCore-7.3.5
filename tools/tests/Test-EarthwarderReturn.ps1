@@ -1,15 +1,17 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$PickupAdmission,[switch]$PickupBaseline)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$PickupAdmission,[switch]$PickupBaseline,[switch]$RealLoot,[switch]$LootBaseline)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $PickupBaseline) -and $VerifyReleaseBinary){throw 'Select baseline without current Release verification'}
-if($Baseline -and $PickupBaseline){throw 'Select one baseline'}
+if(($Baseline -or $PickupBaseline -or $LootBaseline) -and $VerifyReleaseBinary){throw 'Select baseline without current Release verification'}
+if(@($Baseline,$PickupBaseline,$LootBaseline|Where-Object {$_}).Count -gt 1){throw 'Select one baseline'}
 if($PickupBaseline){$PickupAdmission=$true}
+if($LootBaseline){$RealLoot=$true}
+if($RealLoot -and $PickupAdmission){throw 'Select pickup admission or real loot'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/earthwarder-return"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
-if($Baseline -or $PickupBaseline){$revision=if($PickupBaseline){'3a38903e'}else{'b5c32cab'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Earthwarder source unavailable'}}
+if($Baseline -or $PickupBaseline -or $LootBaseline){$revision=if($LootBaseline){'61117f3c'}elseif($PickupBaseline){'3a38903e'}else{'b5c32cab'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Earthwarder source unavailable'}}
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace EarthwarderReturn'}))
 [IO.File]::WriteAllText("$out/PickupPolicy.inc",$(if($source.Contains('namespace EarthwarderAcquisition')){Block $source 'namespace EarthwarderAcquisition'}else{''}))
 [IO.File]::WriteAllText("$out/Callback.inc",(Block $source 'class go_art_earthwarder')+';')
@@ -19,8 +21,25 @@ $scenario=Get-Content "$repo/src/server/game/Scenarios/Scenario.cpp" -Raw
 [IO.File]::WriteAllText("$out/Completed.inc",(Block $scenario 'bool Scenario::IsCompleted('))
 [IO.File]::WriteAllText("$out/Count.inc",(Block $scenario 'uint8 Scenario::GetStepCount('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline -or $PickupBaseline){'/DBASELINE'}else{''}
+$definition=if($Baseline -or $PickupBaseline -or $LootBaseline){'/DBASELINE'}else{''}
 if($PickupAdmission){$definition+=' /DPICKUP_ADMISSION'}
+if($RealLoot){$definition+=' /DREAL_LOOT'}
+$native=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
+$store=Block $native 'void Player::StoreLootItem('
+$first=$store.IndexOf('    ItemPosCountVec dest;');$last=$store.IndexOf('    if (qitem)',$first)
+if($first -lt 0 -or $last -le $first){throw 'Missing native storage fragment'}
+[IO.File]::WriteAllText("$out/NativeStoreInventory.inc",$store.Substring($first,$last-$first))
+$first=$store.IndexOf('    if (!item->freeforall)');$last=$store.IndexOf('    --loot->unlootedCount;',$first)
+[IO.File]::WriteAllText("$out/NativeConsumeLoot.inc",$store.Substring($first,$last-$first)+'    --loot->unlootedCount;')
+$native=Get-Content "$repo/src/server/game/Loot/LootMgr.h" -Raw
+[IO.File]::WriteAllText("$out/NativeIsLooted.inc",(Block $native 'bool isLooted() const'))
+$native=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
+$first=$native.IndexOf('void GameObject::SetLootState(');$last=$native.IndexOf('    if (m_model)',$first)
+[IO.File]::WriteAllText("$out/NativeSetLootState.inc",$native.Substring($first,$last-$first)+"}`n")
+$native=Get-Content "$repo/src/server/game/Handlers/LootHandler.cpp" -Raw
+$predicate=[regex]::Match($native,'else if \((loot->isLooted\(\) \|\| go->GetGoType\(\) == GAMEOBJECT_TYPE_FISHINGNODE)\)')
+if(!$predicate.Success -or !$native.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Missing completed-loot release'}
+[IO.File]::WriteAllText("$out/NativeCompleteLoot.inc",'return '+$predicate.Groups[1].Value+';')
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/EarthwarderReturnTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual Earthwarder return handler failed'}
 if($VerifyReleaseBinary){

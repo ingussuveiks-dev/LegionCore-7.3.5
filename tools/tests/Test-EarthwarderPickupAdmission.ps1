@@ -18,7 +18,7 @@ SELECT 'smart',COUNT(*) FROM smart_scripts WHERE source_type=1 AND entryorguid I
 SELECT 'scenario',ScenarioID,MapID,DifficultyID,Team,Class,LfgDungeonID FROM scenario_data WHERE MapID=1495 ORDER BY ScenarioID;
 '@|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Native Earthwarder binding/phase read failed'}}finally{$env:MYSQL_PWD=$previous}
  [IO.File]::WriteAllLines("$out/pickup-binding.tsv",[string[]]$rows)
- $expected=@("binding`t248831`t3`t9806`t2113536`t1691`t0`t107711`t`tgo_art_earthwarder","spawn`t134175`t248831`t1495`t6363 5048 7000","loot`t248831`t128289`t100`t0`t1`t0`t1`t1","phase`t44`t0`t909`t5`t0`t0","smart`t0","scenario`t909`t1495`t0`t0`t1`t0","scenario`t1068`t1495`t0`t0`t3`t0","scenario`t1082`t1495`t0`t0`t2`t0")
+ $expected=@("binding`t248831`t3`t9806`t2113536`t1691`t248831`t107711`t`tgo_art_earthwarder","spawn`t134175`t248831`t1495`t6363 5048 7000","loot`t248831`t128289`t100`t0`t1`t0`t1`t1","phase`t44`t0`t909`t5`t0`t0","smart`t0","scenario`t909`t1495`t0`t0`t1`t0","scenario`t1068`t1495`t0`t0`t3`t0","scenario`t1082`t1495`t0`t0`t2`t0")
  if(Compare-Object $expected $rows){throw "Native Earthwarder binding differs; inspect $out/pickup-binding.tsv"}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_earthwarder_pickup_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Earthwarder admission missing'}}finally{$env:PYTHONPATH=$previous}
