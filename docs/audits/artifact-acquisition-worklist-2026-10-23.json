@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Entities/Player/Player.cpp",
+      "handler": "KilledMonsterCredit / shared Skyhold93823 periodic103739",
+      "problem": "QuestObjective flags2 defer client display, not native preceding-objective admission. The matching-entry monster-credit loop can record a final return slot before earlier objectives;93823's nearby2s action33 has no target progression gate. Deleting an artifact callback's attempted-jump credit does not repair this separate receiver scope.",
+      "investigation_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
+      "limit": "Source-contract finding, not a live early-credit reproduction. Trace every103739 quest/prior objective/item and legitimate group recipient before a separate focused fix; existing SmartAI dispatcher tests shim the Player credit sink and do not prove native objective sequencing. No character changed."
+    },
+    {
       "path": "src/server/game/Entities/Conversation/Conversation.cpp",
       "handler": "BindToCaster/UnbindFromCaster",
       "problem": "Unit conversation-list registration/unregistration calls are commented out; existing list-removal APIs cannot be assumed to find ordinary factory-created conversations during quest retry. A nominal lifetime also requires a playing timestamp and is not a boss Reset cancellation contract.",
@@ -181,9 +188,11 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "return_admission_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
+      "return_admission_review": "Existing12s callback now revalidates original-instance live Warrior/map1495/active39191/owned128289/native completed909 before192085; removes attempted-cast103739 and retains actual Skyhold receiver. Pinned baseline18 invalid contexts,16 current combinations, failed storage and deployed closure/guards/native six steps checked. GO_ACTIVATED/direct AddItem/early94851 and loot_link0 remain UNFIXED; this is not real acquisition/equip or whole-route certification. Partial muted video samples show loot/equipment before golden winged return light, manual Jump to Skyhold and0/1 at14:56, then loading and Ready for turn-in in Skyhold/15:12. Full footage/audio/local client remain pending.",
       "item": 128289,
       "start": 39191,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial delayed-return admission repair; real pickup/equip, manual return and full client traversal pending",
       "quests": [
         {
           "id": 39191,
@@ -191,8 +200,8 @@
           "prerequisites_any": [
             40580
           ],
-          "lifecycle_review": "pending",
-          "visual_review": "pending"
+          "lifecycle_review": "Delayed return admission and attempted-cast credit repaired; initial activation/direct grant/94851 and actual arrival remain unresolved. See return_admission_audit.",
+          "visual_review": "Sparse muted pickup/equipment/return samples14:25..15:12 only, not continuous/full footage, audio or local client parity."
         },
         {
           "id": 39530,
@@ -245,9 +254,9 @@
       ],
       "broken_actor_links": [],
       "video": {
-        "url": null,
-        "reviewed_intervals": [],
-        "status": "not reviewed in this inventory"
+        "url": "https://www.youtube.com/watch?v=udzuLoDW1yc",
+        "reviewed_intervals": ["Sparse decoded samples14:25, equipment/bag frame at unestablished second,14:50,14:56, loading/Skyhold and paused15:12; unseen intervals not verified"],
+        "status": "partial muted visual samples, not full video/audio or client verification; see return_admission_audit"
       },
       "checkpoints": {
         "quest_admission_and_faction_variants": "pending",
@@ -265,7 +274,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Repair real248831 acquisition before claiming pickup safety: activation/direct AddItem and early94851/scenario events still run on failed storage, loot_link0 remains. Trace report-use/open-lock/loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability. Separately scope shared93823/103739 return recipients: flags2 only defer display, not server preceding-objective admission; dispatcher hosts do not test real quest counters. Restore scoped winged actor/beam/215997 manual return button rather than automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-EarthwarderReturn -Baseline and -VerifyReleaseBinary plus shared19-check Warswords suite."
     },
     {
       "class_id": 1,

@@ -199,7 +199,11 @@ int main(int argc, char** argv)
         }
     if (!foundDungeon)
         std::cout << "NO_NATIVE_DUNGEON\t944\n";
-    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424, 205534, 189695, 205744})
+    for (auto step : steps)
+        if (step->ScenarioID == 909)
+            std::cout << "EARTH_STEP\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t'
+                << step->IsBonusObjective() << '\t' << step->RewardQuestID << '\t' << step->Title->Str[0] << '\n';
+    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424, 205534, 189695, 205744, 205340, 188074, 208562})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)

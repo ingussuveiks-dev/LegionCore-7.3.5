@@ -6,6 +6,8 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 Position const trashPos[12] =
 {
@@ -551,6 +553,21 @@ public:
     };
 };
 
+namespace EarthwarderReturn
+{
+    bool CanReturn(Player* player, uint32 instanceId)
+    {
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR || !player->GetMap() ||
+            player->GetMapId() != 1495 || player->GetInstanceId() != instanceId || player->GetQuestRewardStatus(39191) ||
+            (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE) ||
+            !player->HasItemCount(128289, 1, true))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+        return scenario && scenario->GetScenarioId() == 909 && scenario->IsCompleted(false);
+    }
+}
+
 // 248831
 class go_art_earthwarder : public GameObjectScript
 {
@@ -575,10 +592,12 @@ public:
 
                 target->ToPlayer()->KilledMonsterCredit(94851);
 
-                target->AddDelayedEvent(12000, [target]() -> void
+                Player* player = target->ToPlayer();
+                uint32 instanceId = go->GetInstanceId();
+                target->AddDelayedEvent(12000, [player, instanceId]() -> void
                 {
-                    target->CastSpell(target, 192085);
-                    target->ToPlayer()->KilledMonsterCredit(103739);
+                    if (EarthwarderReturn::CanReturn(player, instanceId))
+                        player->CastSpell(player, 192085);
                 });
             }
         }
