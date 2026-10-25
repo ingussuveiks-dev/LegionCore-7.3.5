@@ -587,7 +587,7 @@
       "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry, duplicate travel requests, rider identity, rejected endpoint retry and source hide after actual boarding repaired; accepted effects/scene, orphaned ride cleanup and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry, duplicate travel requests, rider identity, endpoint retry, boarding acknowledgment and rejected empty-ride cleanup repaired; accepted effects/scene, accepted-but-unjoined ride cleanup and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
       "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
@@ -597,6 +597,7 @@
       "rider_audit": "docs/audits/truthguard-rider-2026-10-25.json",
       "endpoint_retry_audit": "docs/audits/truthguard-endpoint-retry-2026-10-25.json",
       "boarding_ack_audit": "docs/audits/truthguard-boarding-ack-2026-10-25.json",
+      "ride_cast_audit": "docs/audits/truthguard-ride-cast-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -679,7 +680,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Travel08 retains native empty-row click dispatch. Source now queues full Player GUID before its single summon request, suppresses pending/aboard repeats, and hides only after live matching original-summoner vehicle boarding;5000ms AI-time expiry retains source for another normal click. Missing/dead/abandoned/rewarded/map/phase-revoked requests erase without hide. This bounds requests, not orphaned/late bird creation or automatic ride52391 recovery; source visibility and actual join still need client evidence. Rider guard retains105886/map1220 or106205/map1495 and endpoint alive/active42017 gates, conditional selector rollback,1000ms retry, accepted latch and500ms cleanup. Native1333/1317 are CustomLoadScreen IDs; destinations1495/1220. Next inspect failed/late52391 summon lifetime/cleanup, complete source admission/class/scenario/faction, full abandon/death/dismount/re-entry cleanup, actual arrival/81040/credit and camera/pet checks. Pickup accepted effects and scene1259/package1614/flags21 completion/re-entry, real child creation/capacity,225876 effect81, shared/group fidelity and complete video/client traversal remain open. Never replay210133 from a stale scene flag."
+      "next_action": "Travel08 retains native empty-row click dispatch. Source queues full Player GUID before its single summon request, suppresses pending/aboard repeats, and hides only after live matching original-summoner vehicle boarding;5000ms AI-time expiry retains source for a normal retry. Missing/dead/abandoned/rewarded/map/phase-revoked requests erase without hide. Both native2061 ALLY/default/slot0 summon spells have base60000ms, not infinite lifetime or category4 automatic boarding. Rejected52391 now warns and requests1ms native deferred cleanup only for matching original-Player TempSummon with no boarded rider and absent kit or genuinely empty sole seat0; occupied/unresolved seat GUID or missing seat is retained conservatively. Accepted-but-unjoined/late casts, rapid quest-attempt replacement and source visibility remain open; no automatic ride recast. Rider guard retains105886/map1220 or106205/map1495 and endpoint alive/active42017 gates, conditional selector rollback,1000ms retry, accepted latch and500ms cleanup. Native1333/1317 are CustomLoadScreen IDs; destinations1495/1220. Next accepted-but-unjoined lifetime/vehicle-abort recovery, complete source class/scenario/faction admission, abandon/death/dismount/re-entry cleanup, actual arrival/81040/credit and camera/pet checks. Pickup accepted effects and scene1259/package1614/flags21 completion/re-entry, true child creation/capacity,225876 effect81, shared/group fidelity and full video/client traversal remain open. Never replay210133 from a stale scene flag."
     },
     {
       "class_id": 2,

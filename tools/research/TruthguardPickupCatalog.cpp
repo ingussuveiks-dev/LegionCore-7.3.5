@@ -66,19 +66,23 @@ int main(int argc, char** argv)
     DB2Storage<SpellEffectEntry> effects("SpellEffect.db2", SpellEffectLoadInfo::Instance());
     DB2Storage<SpellMiscEntry> misc("SpellMisc.db2", SpellMiscLoadInfo::Instance());
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
+    DB2Storage<SummonPropertiesEntry> summons("SummonProperties.db2", SummonPropertiesLoadInfo::Instance());
     DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     DB2Storage<VehicleEntry> vehicles("Vehicle.db2", VehicleLoadInfo::Instance());
     DB2Storage<VehicleSeatEntry> seats("VehicleSeat.db2", VehicleSeatLoadInfo::Instance());
     if (!items.Load(argv[1], 0) || !children.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
         !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !locks.Load(argv[1], 0) || !maps.Load(argv[1], 0) ||
-        !vehicles.Load(argv[1], 0) || !seats.Load(argv[1], 0))
+        !vehicles.Load(argv[1], 0) || !seats.Load(argv[1], 0) || !durations.Load(argv[1], 0) || !summons.Load(argv[1], 0))
         return 7;
     items.LoadFromDB();
     children.LoadFromDB();
     effects.LoadFromDB();
     misc.LoadFromDB();
     castTimes.LoadFromDB();
+    durations.LoadFromDB();
+    summons.LoadFromDB();
     locks.LoadFromDB();
     maps.LoadFromDB();
     vehicles.LoadFromDB();
@@ -113,6 +117,25 @@ int main(int argc, char** argv)
     }
     for (uint32 identity : {210132, 210133, 225876, 3365, 210036, 210043, 209884, 209908, 210358, 210360, 52391})
     {
+        if (identity == 209884 || identity == 210358)
+        {
+            for (auto effect : effects)
+                if (effect->SpellID == identity && !effect->DifficultyID && effect->Effect == 28)
+                {
+                    auto properties = summons.LookupEntry(effect->EffectMiscValue[1]);
+                    if (!properties)
+                        return 10;
+                    std::cout << "TRAVEL_SUMMON\t" << identity << '\t' << properties->ID << '\t' << properties->Control
+                        << '\t' << properties->Title << '\t' << properties->Flags << '\t' << properties->Slot << '\n';
+                }
+            for (auto data : misc)
+                if (data->SpellID == identity && !data->DifficultyID)
+                {
+                    auto duration = durations.LookupEntry(data->DurationIndex);
+                    std::cout << "TRAVEL_DURATION\t" << identity << '\t' << data->DurationIndex << '\t'
+                        << (duration ? duration->Duration : 0) << '\t' << (duration ? duration->MaxDuration : 0) << '\n';
+                }
+        }
         for (auto effect : effects)
             if (effect->SpellID == identity && !effect->DifficultyID)
                 std::cout << "EFFECT\t" << identity << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'

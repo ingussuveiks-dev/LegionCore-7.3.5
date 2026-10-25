@@ -8,6 +8,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "TemporarySummon.h"
+#include "Vehicle.h"
 #include "shields_rest.h"
 
 //Phases: 6363
@@ -1078,7 +1079,20 @@ public:
         void IsSummonedBy(Unit* summoner) override
         {
             SetFlyMode(true);
-            summoner->CastSpell(me, 52391, true); //Ride Veh
+            if (!summoner)
+                return;
+            SpellCastResult result = summoner->CastSpell(me, 52391, true);
+            if (result == SPELL_CAST_OK)
+                return;
+            TC_LOG_WARN("scripts", "Truthguard travel: ride cast 52391 rejected with result %u for bird %u", uint32(result), me->GetEntry());
+            TempSummon* summon = me->ToTempSummon();
+            if (!summon || !summoner->ToPlayer() || summon->GetSummoner() != summoner ||
+                !((me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM && me->GetMapId() == 1220) ||
+                  (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM && me->GetMapId() == 1495)))
+                return;
+            Vehicle* vehicleKit = me->GetVehicleKit();
+            if (!GetRider() && (!vehicleKit || vehicleKit->HasEmptySeat(0)))
+                me->DespawnOrUnsummon(1);
         }
 
         Player* GetRider()
