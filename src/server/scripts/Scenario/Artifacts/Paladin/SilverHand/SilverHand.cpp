@@ -48,6 +48,26 @@ namespace SilverHandProcession
     }
 }
 
+namespace SilverHandRitualEntry
+{
+    bool CanEnter(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106676 || actor->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, 20.0f) || player->GetQuestRewardStatus(42120) ||
+            player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1092)
+            return false;
+        uint32 step = scenario->GetCurrentStep();
+        return step >= 5 && step <= 8;
+    }
+}
+
 // 106429
 class npc_travar_first : public CreatureScript
 {
@@ -641,22 +661,33 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (_introDone || !SilverHandRitualEntry::CanEnter(player, me))
                 return;
-
-            if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
+            _introDone = true;
+            ObjectGuid guid = player->GetGUID();
+            me->AddDelayedEvent(1000, [guid, this]() -> void
             {
-                _introDone = true;
-                me->AddDelayedEvent(1000, [this]() -> void
+                Player* player = ObjectAccessor::GetPlayer(*me, guid);
+                if (!SilverHandRitualEntry::CanEnter(player, me))
                 {
-                    Talk(0);
-                    if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
-                        efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                    if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
-                        duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                    me->GetMotionMaster()->MovePath(10993807, false);
-                });
-            }
+                    _introDone = false;
+                    return;
+                }
+                WaypointPath const* path = sWaypointMgr->GetPathScript(10993807);
+                if (!path || path->empty())
+                {
+                    _introDone = false;
+                    TC_LOG_WARN("scripts", "Silver Hand ritual entry path 10993807 is unavailable; retaining entry for retry");
+                    return;
+                }
+                Talk(0);
+                if (Creature* efrin = me->FindNearestCreature(106371, 30.0f, true))
+                    efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+                if (Creature* duval = me->FindNearestCreature(106370, 30.0f, true))
+                    duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+                me->GetMotionMaster()->MovePath(10993807, false);
+            });
         }
 
         void UpdateAI(uint32 diff) override

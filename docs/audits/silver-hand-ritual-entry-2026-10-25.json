@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "status": "Third Travard LOS/1s entry now retains and revalidates its original eligible Player, with missing-path/recipient retry. Not later ritual progression, accepted-motion recovery, full Holy/all36 or client visual verification.",
+  "inherited": "Clean main=origin/main952c2ad5; git status/log,36-spec worklist, artifact-routes/donor-review and previous Silver Hand audits read. First/second recipient/gossip/arrival, real loot and scene bridges retained. Applicable nested AGENTS search empty. No migration/manual SQL write, runtime configuration/character/item/AP edit or replacement grant.",
+  "sources": [
+    {
+      "source": "Local third-Travard full AI, ObjectGuid/ObjectAccessor and matching runtime/MariaDB",
+      "review": "106676/npc_travar_third spawn362006/map1539/phase7002 has no gossip override. Its old LOS dereferenced who before null admission, admitted any nearby Player regardless of quest/class/scenario eligibility and armed1s using this only. Callback could still start path/talk/followers after original logout/abandon/map change. Read native GUID constructor/Clear/IsEmpty and original map/world/pre-delete GetPlayer lookup; no raw Player retained across the new timer. Live path10993807 has22 points1..22. Source23 phase85/9 uses positive44/1092 steps5,6,7,8 in separate ElseGroups0..3; preserve that native visibility envelope instead of inventing a stage5-only gate. Phase visibility is not proof that later-stage re-entry should replay the route."
+    },
+    {
+      "source": "Fresh typed26972 SilverHandPickupCatalog",
+      "review": "1092 step5 The Maw of the Beast uses30080/50896 and30074/50877, step6 Escaping the Prison uses30086/50912, step7 Aid to the Fallen uses30087/50913 and30088/50914 with quantity2, step8 Something is Coming uses30089/50915; all type92. Entry starts no criteria or item award. Later third waypoint9/19 and POINT1 neighborhood dispatch, unguarded DoAction and rescue/aberration flows remain separate."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c, then pinned Titans donor",
+      "review": "Targeted era tree again shows only unrelated Stratholme boss_order_of_silver_hand. Fresh pinned donor third actor408..569, especially504..519, retains Player-only proximity and an unbound1s callback with original follower/path roles; no donor correction imported or exhaustive history/modern API compatibility claimed.",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp"
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No video/transcript/client traversal reviewed this unit. Existing1s delay, Talk0, alive30yd Efrin/Duval follow roles and native path unchanged. No guessed motion, animation, audio/VFX kit, phase, summon or return timing. Source/host/installed/startup checks do not verify rendered movement, voices, door effects, party/faction or full ritual."
+    }
+  ],
+  "repair": {
+    "admission": "Only third LOS now resolves who?ToPlayer:null, rejects null/pet/guardian/ineligible invokers before consuming _introDone, and requires live contactable nonteleporting Paladin with nonrewarded incomplete42120, live actor106676/map1539, same actual map/instance, same phase/visibility/LOS/original20yd and current1092/native5..8. One valid pending attempt wins; unrelated nearby Players cannot replace its recipient.",
+    "delayed": "Preserve original1000ms timer but capture full128-bit GUID plus AI. Resolve original via native map/world/pre-delete lookup and repeat the full live gate before any Talk0/follow/path effect. Invalid/missing original resets only intro latch and returns; later legitimate LOS may retry, including another eligible Player after cancellation. Preflight real GetPathScript10993807; missing/empty path warns, resets only intro and permits explicit retry without speech or companion movement. No new timer loop, custom event-slot overwrite, progression, group broadcast or item grant.",
+    "preserved": "Original alive30yd Efrin106371 negative and Duval106370 positive PET_FOLLOW_ANGLE/PET_FOLLOW_DIST/IDLE followers, Talk0 then10993807(false); missing companions remain nonblocking. No production change to first/second actors, third constructor/Reset/DoAction/damage/heal/movement/door handlers, native pet/guardian final-damage guards or later credit dispatch."
+  },
+  "validation": {
+    "baseline": "PASS actual pinned952c2ad5 old LOS/timer: arm while eligible then logout, foreign map, abandoned quest or completed scenario still starts10993807/Talk0 after1s. Controlled world/motion, not actual persisted invalid progression or client proof. New null handling is exercised in fixed fixture, not claimed as a reproduced native crash.",
+    "host": "PASS compiled production helper/LOS with native ObjectGuid lifecycle and map/world/pre-delete ObjectAccessor.26 invalid contexts at admission and at delayed boundary; native5..8 envelope; exact20yd and outside; null/pet/guardian; original destroyed/unregistered/pre-delete with same-low/different-high neighbor; missing/empty path warning+fresh-LOS retry; missing companions; duplicate/pending/reentrant selection and both faction labels. Only one original valid path/Talk0/follower attempt. Services controlling geometry/motion/faction are not native counter, physical path or client evidence.",
+    "installed": "PASS selected third GetAI vtable LOS slot0x270, full live helper and native5..8 range before actual1000ms AddDelayedEvent. Native GUID0/full128-bit capture and selected std::function adapter reach real lambda, which resolves original map/world/pre-delete Player, revalidates and preflights actual script-path before Talk0/original followers/path. Failed recipient or missing/empty path clears only intro byte0x59 and cannot reach effects; no nearest-player replacement or direct progression/item. All inherited first/second and loot/scene/exit implementation checks remain selected and passing in the final batch.",
+    "diagnostic": "Initial disassembly helper assumed _Do_call had its own unwind range and failed. Actual installed _Do_call is a nine-byte leaf adapter (add rcx8, jump lambda operator). Verification now checks its precise bounded bytes, selected function-table slot and real operator's unwind-bounded body/full GUID layout, rather than adding noinline, inspecting an unused symbol or suppressing a production guard.",
+    "regressions": "PASS final24-run serial PowerShell7 batch:11 installed suites SilverHandRitualEntry, SilverHandProcession, second SilverHandGossip, SilverHandEntrance including first POINT1, first SilverHandGossip, SilverHandCollapse, SilverHandRealLootData, SilverHandPresentation, SilverHandAllyDamage1536, StromkarPresentation and ScepterLogin;6 native/data suites DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, WarlockRegression, SceneLifecycle, ArtifactForceEquip55 records/39 items, MapObjectArrival and DalaranPortalLanding native WMO;7 pinned baselines ritual entry952c2ad5, procession8c95a0ba, second gossipcf8ab051, arrivalc5eb41f3, LOS4685321c, first gossip357347d7 and allyd49e77d2. Native catalogs/builds serialized; whole-class comparison isolates only separately tested third LOS replacement in addition to prior entrance/procession changes, preserving other callbacks and all four actual combat hooks. No production diagnostic/check or native count assertion weakened; no actual client traversal claimed.",
+    "evidence": ".codex/silver-hand-ritual-entry-* ignored logs; build-extractors/runtime-test/silver-hand-ritual-entry. Commit source/tests/audit only, no runtime/password/character/media files."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "0D78CCD8AA6FD1F1401D1EC43ECC274411873DA7BF35C339E6F6547E2F20DAE6",
+    "bnet_sha256": "B75BBB4CDB06E021E8996E93293DD68240E24836616948DB45112ABCBE600D25",
+    "build": "Release worldserver+bnetserver17.37s/0 warnings/errors, LinkIncremental=false/no OutDir. Final-link inputs and installed implementation checked separately from hashes/startup.",
+    "runtime": "No unknown/user server before build/start. Only own hidden canonical PID31620 launched: fresh ready, own stdin shutdown0/exit0, new DBErrors0/stderr empty, protected configuration/certificate hashes unchanged and process gone. No unknown process stopped or hidden server left running."
+  },
+  "remaining": [
+    "A fresh eligible5..8 admission preserves existing phase-visible behavior, not verified later-stage re-entry choreography. Accepted-but-stuck/interrupted motion, Reset/evade, actor unload/re-entry and rapid same-instance abandon/retake generations remain OPEN. Successful start retains intro latch; no invented automatic whole-route replay or new corpse/party credit.",
+    "Later third waypoint9/19 and POINT1 still use neighborhood50877/50912/50915; DoAction still ignores action identity and schedules another move. Other first waypoint/evade recipients, horrific-aberration pet/guardian/scaled-one-hit/50896 and rescue2+2/native ritual order need separate review. Initial1s entry has no cast; failed combat/rescue casts remain separate, not simulated as repaired.",
+    "Actual path/pose/door/audio/VFX, companion heal/reset/failed210985, loot/equip/save/relog, late1267/equip, completed outro/portal/actual Dalaran arrival and all36 complete chains remain unfinished. Client tests remain with user."
+  ]
+}
