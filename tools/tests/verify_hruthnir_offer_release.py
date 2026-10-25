@@ -17,7 +17,7 @@ bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>@?BJ@??MovementInform' + su
 movement = instructions('?MovementInform' + suffix)
 context = positions(movement, context_name)[0]
 queue = next(index for index in positions(movement, '?AddDelayedEvent@FunctionProcessor@@')
-             if movement[index - 1].op_str == 'edx, 0x1964')
+             if movement[index - 1].op_str == 'edx, 0x32c8')
 assert context < queue
 deny = movement[context + 2].operands[0].imm
 assert movement[context + 1].op_str == 'al, al' and movement[context + 2].mnemonic == 'je'
@@ -88,4 +88,4 @@ cleanup = positions(destructor, '?CancelMagnarIntro' + suffix)[0]
 assert any(entry.op_str == 'rdi, rcx' for entry in destructor[:cleanup])
 assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x80]' for entry in destructor[cleanup:])
 assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in destructor) == 2
-print('PASS: installed native6500ms offer queue owns only weak point6 token; existing offer/start claims block duplicates. Actual callback validates live96468/1495/original-instance/AI/909-3 and token identity before/after Talk16, preserves unrelated flags, and Reset/destructor/selection retire only its token. Motion/arrival/re-entry routing and client visibility remain separate.')
+print('PASS: installed scoped13000ms offer queue owns only weak point6 token; existing offer/start claims block duplicates. Actual callback validates live96468/1495/original-instance/AI/909-3 and token identity before/after Talk16, preserves unrelated flags, and Reset/destructor/selection retire only its token. Native voice budget is checked separately; motion/arrival/re-entry and client playback remain unverified.')

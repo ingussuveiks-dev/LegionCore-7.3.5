@@ -477,7 +477,7 @@ public:
                         auto* expectedAI = this;
                         uint32 instanceId = me->GetInstanceId();
                         Talk(15);
-                        me->AddDelayedEvent(6500, [offerToken, companion, expectedAI, instanceId]() -> void
+                        me->AddDelayedEvent(13000, [offerToken, companion, expectedAI, instanceId]() -> void
                         {
                             std::shared_ptr<bool> token = offerToken.lock();
                             if (!token || *token || companion->AI() != expectedAI ||

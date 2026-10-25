@@ -298,7 +298,12 @@ struct Fixture
 };
 int main()
 {
-#ifdef STAGE_BASELINE
+#ifdef VOICE_BASELINE
+    Fixture offer; offer.actor.flags = 0; offer.ai.OfferArrive();
+    offer.Tick(6499); assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15}));
+    offer.Tick(1); assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,16}));
+    std::cout << "PASS voice baseline: pinned c7239252 sends Talk16 and releases gossip at6500ms, before the complete native60403 voice's12629ms boundary. Controlled text sender; actual audio mixing remains a client check.\n";
+#elif defined(STAGE_BASELINE)
     for (uint32 afterArrival = 0; afterArrival < 2; ++afterArrival)
     {
         Fixture fixture; fixture.Select();
@@ -365,12 +370,12 @@ int main()
         offer.actor.flags = 0;
         offer.ai.OfferArrive(); offer.ai.OfferArrive();
         auto replay = offer.actor.m_Functions.LastQueued();
-        offer.Tick(6499);
+        offer.Tick(12999);
         assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15}));
         offer.Tick(1); replay();
         assert(offer.actor.flags == 1 && !offer.actor.unitFlags && offer.actor.react == REACT_DEFENSIVE);
         assert(offer.ai.texts == std::vector<uint32>({15,16}));
-        offer.ai.OfferArrive(); offer.Tick(6500);
+        offer.ai.OfferArrive(); offer.Tick(13000);
         assert(offer.ai.texts == std::vector<uint32>({15,16}));
     }
     {
@@ -379,7 +384,7 @@ int main()
         auto stale = offer.actor.m_Functions.LastQueued();
         offer.ai.Reset(); offer.ai.OfferArrive(); stale();
         assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15,15}));
-        offer.Tick(6500);
+        offer.Tick(13000);
         assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,15,16}));
     }
     for (uint32 invalid = 0; invalid < 15; ++invalid)
@@ -402,12 +407,12 @@ int main()
         if (invalid == 12) scenarioManager.scenario.identity = 944;
         if (invalid == 13) scenarioManager.scenario.step = 2;
         if (invalid == 14) offer.actor.ai = nullptr;
-        offer.actor.m_Functions.Update(6500);
+        offer.actor.m_Functions.Update(13000);
         assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15}));
         offer.actor.world = offer.actor.alive = offer.actor.IsAIEnabled = true;
         offer.actor.despawn = false; offer.actor.entry = 96468; offer.actor.mapId = 1495;
         offer.actor.instance = 42; offer.actor.map = &instanceMap; offer.actor.ai = &offer.ai; scenarioManager = {};
-        offer.ai.Reset(); offer.ai.OfferArrive(); offer.Tick(6500);
+        offer.ai.Reset(); offer.ai.OfferArrive(); offer.Tick(13000);
         assert(offer.actor.flags == 1 && !offer.actor.unitFlags && offer.ai.texts == std::vector<uint32>({15,15,16}));
     }
     for (bool replace : {false,true})
@@ -416,13 +421,13 @@ int main()
         offer.actor.flags = 0; offer.ai.OfferArrive();
         HruthnirAI replacement(&offer.actor);
         offer.ai.onTalk = [&]() { if (replace) offer.actor.ai = &replacement; else offer.ai.Reset(); };
-        offer.Tick(6500);
+        offer.Tick(13000);
         assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts == std::vector<uint32>({15,16}));
     }
     {
         Fixture offer;
         offer.actor.flags = 0; offer.ai.OfferArrive();
-        offer.actor.flags = 1; offer.Select(); offer.ai.OfferArrive(); offer.Tick(6500);
+        offer.actor.flags = 1; offer.Select(); offer.ai.OfferArrive(); offer.Tick(13000);
         assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15}));
         assert(offer.actor.motion.moves == 1);
     }
@@ -431,7 +436,7 @@ int main()
         offer.actor.flags = 0;
         auto oldAI = std::make_unique<HruthnirAI>(&offer.actor);
         offer.actor.ai = oldAI.get(); oldAI->OfferArrive(); oldAI.reset(); offer.actor.ai = &offer.ai;
-        offer.Tick(6500);
+        offer.Tick(13000);
         assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts.empty());
     }
     for (uint32 moment : {15u,16u})
@@ -445,10 +450,10 @@ int main()
         offer.ai.OfferArrive();
         if (moment == 16)
         {
-            offer.Tick(6500);
+            offer.Tick(13000);
             assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380);
         }
-        offer.Tick(6500);
+        offer.Tick(13000);
         assert(offer.actor.flags == 1 && !offer.actor.unitFlags);
         assert(offer.ai.texts == (moment == 15 ? std::vector<uint32>({15,15,16}) : std::vector<uint32>({15,16,15,16})));
     }
@@ -457,14 +462,14 @@ int main()
         Fixture offer;
         offer.player.faction = uint32(alliance); offer.player.status = status;
         offer.actor.flags = 0x20; offer.actor.unitFlags |= 0x40000000;
-        offer.ai.OfferArrive(); offer.Tick(6500);
+        offer.ai.OfferArrive(); offer.Tick(13000);
         assert(offer.actor.flags == 0x21 && offer.actor.unitFlags == 0x40000000);
         offer.Select();
-        offer.ai.OfferArrive(); offer.Tick(6500);
+        offer.ai.OfferArrive(); offer.Tick(13000);
         assert(offer.actor.flags == 0x20 && offer.actor.motion.moves == 1);
         assert(offer.ai.texts == std::vector<uint32>({15,16}));
     }
-    std::cout << "PASS: native6500ms point6 offer is weak/one-shot; duplicate/replayed events,15 revoked contexts with explicit Reset/readmission, deleted or retained old-AI, gossip selection and Talk15/16 Reset/new-attempt cannot reopen gossip/release protection. Four faction/status cases preserve unrelated NPC/unit flags. Unit FunctionProcessor extracted; path/arrival/re-entry routing/group/client traversal separate.\n";
+    std::cout << "PASS: scoped13000ms point6 offer is weak/one-shot; duplicate/replayed events,15 revoked contexts with explicit Reset/readmission, deleted or retained old-AI, gossip selection and Talk15/16 Reset/new-attempt cannot reopen gossip/release protection. Four faction/status cases preserve unrelated NPC/unit flags. Unit FunctionProcessor extracted; path/arrival/re-entry routing/group/client traversal separate.\n";
     assert(!HruthnirGossip::CanStart(nullptr, nullptr));
     for (uint32 invalid = 0; invalid < 39; ++invalid)
     {
