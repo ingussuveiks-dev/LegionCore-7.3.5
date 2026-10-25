@@ -9,6 +9,7 @@ using uint32 = uint32_t;
 using uint64 = uint64_t;
 using uint8 = uint8_t;
 using int8 = int8_t;
+#include "Slots.inc"
 struct ObjectGuid
 {
     uint64 _high=0,_low=0;
@@ -23,7 +24,7 @@ using QuestStatus = uint32;
 #include "NativeData.inc"
 enum { NPC_HIPPOGRYPH_DALARAN=105883, NPC_HIPPOGRYPH_SCENARIO=106203, NPC_HIPPOGRYPH_DALARAN_SUM=105886, NPC_HIPPOGRYPH_SCENARIO_SUM=106205,
     SPELL_SUMMON_HIPPO=209884, SPELL_SUMMON_HIPPO_INST=210358,
-    QUEST_STATUS_NONE=0, QUEST_STATUS_COMPLETE=1, QUEST_STATUS_INCOMPLETE=3, UNIT_FIELD_NPC_FLAGS=0, UNIT_NPC_FLAG_SPELLCLICK=16777216,
+    QUEST_STATUS_NONE=0, QUEST_STATUS_COMPLETE=1, QUEST_STATUS_INCOMPLETE=3, CLASS_PALADIN=2, UNIT_FIELD_NPC_FLAGS=0, UNIT_NPC_FLAG_SPELLCLICK=16777216,
     NPC_CLICK_CAST_CASTER_CLICKER=1, NPC_CLICK_CAST_TARGET_CLICKER=2, NPC_CLICK_CAST_ORIG_CASTER_OWNER=4,
     MAX_SPELL_EFFECTS=32, SPELL_AURA_CONTROL_VEHICLE=236, SPELLVALUE_BASE_POINT0=0, MAX_EFFECT_MASK=0xffffffff };
 uint32 warnings=0;
@@ -40,6 +41,13 @@ struct SpellInfo
     Effect const* GetEffect(uint32,uint32) const { return &effect; }
 };
 struct InstanceScript { uint32 event=0; uint32 GetData(uint32 identity) { assert(identity==DATA_YRGRIM_EVENT); return event; } } scenarioInstance;
+struct Scenario { uint32 identity=1082,step=5; uint32 GetScenarioId() const { return identity; } } actualScenario;
+struct ScenarioManager
+{
+    std::map<uint32,Scenario*> scenarios{{99,&actualScenario}};
+    Scenario* GetScenario(uint32 instance) { auto found=scenarios.find(instance);return found==scenarios.end()?nullptr:found->second; }
+} scenarios;
+auto* sScenarioMgr=&scenarios;
 struct Cast { uint32 spell; void* target; bool triggered; };
 struct Unit
 {
@@ -68,30 +76,56 @@ struct Unit
     void CastCustomSpell(uint32,uint32,int,Unit*,bool,void*,void*,ObjectGuid) { assert(false); }
 };
 struct OutdoorPvP { void HandleSpellClick(Player*,Unit*) { assert(false); } };
+struct Item
+{
+    uint32 entry=128866,count=1;
+    bool trade=false;
+    uint32 GetEntry() const { return entry; }
+    uint32 GetCount() const { return count; }
+    bool IsInTrade() const { return trade; }
+};
+struct Bag { uint32 GetBagSize() const { return 1; } } bagFixture;
 struct Player : Unit
 {
-    uint32 quest=0,team=0;
+    uint32 quest=0,team=0,playerClass=2,selectedScenario=0;
     bool hasInstance=false;
     bool alive=true,rewarded=false;
+    bool ownedWeapon=true,bankWeapon=false;
+    bool bagWeapon=false,bankBagWeapon=false;
+    mutable Item weapon;
     Player* ToPlayer() override { return this; }
     QuestStatus GetQuestStatus(uint32 questId) const { assert(questId==42017); return quest; }
     InstanceScript* GetInstanceScript() { return hasInstance?&scenarioInstance:nullptr; }
     uint32 GetGUIDLow() const { return identity; }
     bool IsAlive() const { return alive; }
     bool GetQuestRewardStatus(uint32 questId) const { assert(questId==42017); return rewarded; }
+    uint32 getClass() const { return playerClass; }
+    bool HasItemCount(uint32 item,uint32 count,bool bank) const;
+    uint8 GetInventoryEndSlot() const { return INVENTORY_SLOT_ITEM_END; }
+    Item* GetItemByPos(uint32 bag,uint32 slot) const
+    {
+        if(bag==INVENTORY_SLOT_BAG_0 && ((ownedWeapon && slot==EQUIPMENT_SLOT_OFFHAND) || (bankWeapon && slot==BANK_SLOT_ITEM_START)))return &weapon;
+        if(slot==0 && ((bagWeapon && bag==INVENTORY_SLOT_BAG_START) || (bankBagWeapon && bag==BANK_SLOT_BAG_START)))return &weapon;
+        return nullptr;
+    }
+    Bag* GetBagByPos(uint8 slot) const { return (bagWeapon && slot==INVENTORY_SLOT_BAG_START) || (bankBagWeapon && slot==BANK_SLOT_BAG_START)?&bagFixture:nullptr; }
     OutdoorPvP* GetOutdoorPvP() { return nullptr; }
     bool canSeeSpellClickOn(Creature const*) const;
 };
+#include "ItemCount.inc"
 struct BaseAI { virtual ~BaseAI()=default; virtual void OnSpellClick(Unit*)=0; virtual void Reset()=0; };
 struct Creature : Unit
 {
     BaseAI* ai=nullptr;
     bool summoned=false,IsAIEnabled=true;
     uint32 hides=0;
+    uint32 mapId=1220,instance=99;
     std::vector<ObjectGuid> hidden;
     Creature* ToCreature() override { return this; }
     BaseAI* AI() { return ai; }
     bool isSummon() const { return summoned; }
+    uint32 GetMapId() const { return mapId; }
+    uint32 GetInstanceId() const { return instance; }
     bool HasFlag(uint32,uint32 flag) const { assert(flag==UNIT_NPC_FLAG_SPELLCLICK); return true; }
     void DestroyForPlayer(Player* player) { ++hides; hidden.push_back(player->GetGUID()); }
 };
@@ -171,8 +205,11 @@ int main(int argc,char** argv)
                                     player.quest=status; player.hasInstance=present; player.team=team; scenarioInstance.event=event;
                                     Unit* clicker=kind==0?static_cast<Unit*>(&player):kind==1?&pet:&guardian;
                                     clicker->result=result;
-                                    Creature actor; actor.entry=actorEntry; actor.summoned=summoned; Script script(&actor);
+                                    Creature actor; actor.entry=actorEntry; actor.mapId=actorEntry==105883?1220:1495; actor.summoned=summoned; Script script(&actor);
                                     bool admitted=kind==0 && !summoned && (actorEntry==105883?status==3:present && event==7);
+#if !defined(BASELINE) && !defined(BOARDING_BASELINE) && !defined(ADMISSION_BASELINE)
+                                    admitted=admitted && (status==3 || status==1);
+#endif
                                     warnings=0;
                                     assert(player.canSeeSpellClickOn(&actor));
                                     bool handled=actor.HandleSpellClick(clicker);
@@ -197,7 +234,7 @@ int main(int argc,char** argv)
     for(uint32 actorEntry : {105883u,106203u})
     {
         Player player; player.quest=3; player.hasInstance=true; scenarioInstance.event=7;
-        Creature actor; actor.entry=actorEntry; Script script(&actor);
+        Creature actor; actor.entry=actorEntry; actor.mapId=actorEntry==105883?1220:1495; Script script(&actor);
         player.result=SPELL_FAILED_DONT_REPORT;
         actor.HandleSpellClick(&player); assert(actor.hides==0 && player.casts.size()==1);
         player.quest=0; player.hasInstance=false;
@@ -219,7 +256,7 @@ int main(int argc,char** argv)
             {
                 Player player,stranger; player.quest=3; player.hasInstance=true; player.team=team; stranger.identity=18;
                 scenarioInstance.event=7;
-                Creature actor; actor.entry=actorEntry; Script script(&actor);
+                Creature actor; actor.entry=actorEntry; actor.mapId=actorEntry==105883?1220:1495; Script script(&actor);
                 TempSummon bird; bird.summoned=true; bird.entry=actorEntry==105883?105886:106205; bird.summoner=&player;
                 ObjectAccessor::players={{17,&player},{18,&stranger}};
                 player.castHook=[&] { actor.HandleSpellClick(&player); };
@@ -259,7 +296,7 @@ int main(int argc,char** argv)
     {
         Player player,stranger; player.quest=stranger.quest=3; player.hasInstance=stranger.hasInstance=true; stranger.identity=18;
         scenarioInstance.event=7;
-        Creature actor; actor.entry=actorEntry; Script script(&actor);
+        Creature actor; actor.entry=actorEntry; actor.mapId=actorEntry==105883?1220:1495; Script script(&actor);
         ObjectAccessor::players={{17,&player},{18,&stranger}};
         actor.HandleSpellClick(&player); actor.HandleSpellClick(&stranger);
         assert(script.boardingRequests.size()==2 && actor.hides==0);
@@ -277,12 +314,12 @@ int main(int argc,char** argv)
         player.quest=0; script.UpdateBoardingRequests(0); assert(script.boardingRequests.empty());
         player.quest=3; actor.HandleSpellClick(&player); assert(player.casts.size()==4 && actor.hides==2);
         {
-            Creature reentry; reentry.entry=actorEntry; Script fresh(&reentry);
+            Creature reentry; reentry.entry=actorEntry; reentry.mapId=actorEntry==105883?1220:1495; Script fresh(&reentry);
             reentry.HandleSpellClick(&player);
             assert(player.casts.size()==5 && fresh.boardingRequests.size()==1 && reentry.hides==0);
         }
         {
-            Creature shared; shared.entry=actorEntry; Script separate(&shared);
+            Creature shared; shared.entry=actorEntry; shared.mapId=actorEntry==105883?1220:1495; Script separate(&shared);
             Player first,second; first.quest=second.quest=3; first.hasInstance=second.hasInstance=true;
             first.guidHigh=1; second.guidHigh=2;
             ObjectAccessor::players={{first.GetGUID(),&first},{second.GetGUID(),&second}};
@@ -295,12 +332,79 @@ int main(int argc,char** argv)
         ++boardingCases;
     }
     std::cout << "PASS: " << boardingCases << " boarding identity/revocation/timeout/group-label cases; ";
+    uint32 admissionCases=0,earlyRequests=0;
+    for(uint32 actorEntry : {105883u,106203u})
+        for(uint32 variant=0;variant<24;++variant)
+            for(uint32 team : {0u,1u})
+            {
+                Player player;player.quest=3;player.hasInstance=true;player.team=team;
+                Creature actor;actor.entry=actorEntry;actor.mapId=actorEntry==105883?1220:1495;Script script(&actor);
+                scenarioInstance.event=7;actualScenario={1082,5};scenarios.scenarios={{99,&actualScenario}};
+                switch(variant)
+                {
+                    case 1: player.playerClass=1;break;
+                    case 2: player.playerClass=3;break;
+                    case 3: player.quest=0;break;
+                    case 4: player.quest=5;break;
+                    case 5: player.quest=6;break;
+                    case 6: player.rewarded=true;break;
+                    case 7: player.alive=false;break;
+                    case 8: player.map=2;break;
+                    case 9: player.phase=2;break;
+                    case 10: actor.mapId=1;break;
+                    case 11: scenarios.scenarios.clear();break;
+                    case 12: actualScenario.identity=909;break;
+                    case 13: actualScenario.identity=1068;break;
+                    case 14: player.quest=1;actualScenario.step=6;break;
+                    case 15: player.selectedScenario=909;break;
+                    case 16: actor.instance=100;break;
+                    case 17: player.ownedWeapon=false;break;
+                    case 18: player.ownedWeapon=false;player.bankWeapon=true;break;
+                    case 19: player.weapon.trade=true;break;
+                    case 20: player.weapon.entry=128867;break;
+                    case 21: player.weapon.count=0;break;
+                    case 22: player.ownedWeapon=false;player.bagWeapon=true;break;
+                    case 23: player.ownedWeapon=false;player.bankBagWeapon=true;break;
+                }
+                bool admitted=actorEntry==105883?(variant==0 || variant==11 || variant==12 || variant==13 || variant==15 || variant==16 || variant>=17):
+                    (variant==0 || variant==14 || variant==15 || variant==18 || variant==22 || variant==23);
+                bool legacy=actorEntry==105883?player.quest==3:true;
+                actor.HandleSpellClick(&player);
+#ifdef ADMISSION_BASELINE
+                assert(player.casts.size()==uint32(legacy));
+#else
+                assert(player.casts.size()==uint32(admitted));
+#endif
+                if(legacy && !admitted)++earlyRequests;
+                assert(actor.hides==0);
+                ++admissionCases;
+            }
+    actualScenario={1082,6};scenarios.scenarios={{99,&actualScenario}};
+    for(uint32 actorEntry : {105883u,106203u})
+        for(uint32 playerClass=1;playerClass<=12;++playerClass)
+            for(uint32 team : {0u,1u})
+            {
+                Player player;player.quest=3;player.hasInstance=true;player.playerClass=playerClass;player.team=team;
+                Creature actor;actor.entry=actorEntry;actor.mapId=actorEntry==105883?1220:1495;Script script(&actor);
+                scenarioInstance.event=7;
+                actor.HandleSpellClick(&player);
+#ifdef ADMISSION_BASELINE
+                assert(player.casts.size()==1);
+#else
+                assert(player.casts.size()==uint32(playerClass==2));
+#endif
+                if(playerClass!=2)++earlyRequests;
+                ++admissionCases;
+            }
+    std::cout << "PASS: " << admissionCases << " source admission cases and " << earlyRequests << " pinned early-request paths; ";
 #endif
     std::cout << "PASS: " << cases << " extracted native dispatch/visibility and actual AI admission cases; ";
 #ifdef BASELINE
     std::cout << "pinned edca8e77 pre-AI rows cast for ineligible/nonplayer clicks and double-cast eligible clicks; rejected AI summons still hide source.\n";
 #elif defined(BOARDING_BASELINE)
     std::cout << "pinned643bda5a accepts a summon request without a spawned/boarded actor yet immediately hides its source; no live vehicle/client proof.\n";
+#elif defined(ADMISSION_BASELINE)
+    std::cout << "pinned3460d7f6 accepts foreign/dead/inactive/rewarded/map/phase source requests and shared1495 event7 without actual1082; no native completed boarding or client proof.\n";
 #else
     std::cout << "pending requests suppress reentrant/repeated clicks, only actual matching owned vehicle acknowledgment hides source; rejected or timed-out requests retain retry. Native HandleSpellClick false return still dispatches AI; no live spawn, boarding, group/faction gameplay or client rendering proof.\n";
 #endif

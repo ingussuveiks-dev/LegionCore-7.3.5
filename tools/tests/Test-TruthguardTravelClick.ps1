@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$BoardingBaseline)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$BoardingBaseline,[switch]$AdmissionBaseline)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $BoardingBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
-if($Baseline -and $BoardingBaseline){throw 'Select only one pinned baseline'}
+if(($Baseline -or $BoardingBaseline -or $AdmissionBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if([int]$Baseline.IsPresent+[int]$BoardingBaseline.IsPresent+[int]$AdmissionBaseline.IsPresent -gt 1){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/truthguard-travel-click"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -66,6 +66,7 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cp
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "edca8e77:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned travel source missing'}}
 if($BoardingBaseline){$source=(& git -C $repo show "643bda5a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned boarding source missing'}}
+if($AdmissionBaseline){$source=(& git -C $repo show "3460d7f6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned source admission baseline missing'}}
 $actor=Block $source 'class npc_sr_argent_hippogryph'
 [IO.File]::WriteAllText("$out/Click.inc",(Block $actor 'void OnSpellClick('))
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $actor 'void Reset('))
@@ -74,18 +75,25 @@ $actor=Block $source 'class npc_sr_argent_hippogryph'
 [IO.File]::WriteAllText("$out/NativeCastResults.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/NativeData.inc",(Block (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.h" -Raw) 'enum Data')+';')
 [IO.File]::WriteAllText("$out/GuidCompare.inc",(Block (Get-Content "$repo/src/server/game/Entities/Object/ObjectGuid.cpp" -Raw) 'bool ObjectGuid::operator<('))
+$playerHeader=Get-Content "$repo/src/server/game/Entities/Player/Player.h" -Raw
+$slots=([regex]::Match($playerHeader,'(?m)^#define INVENTORY_SLOT_BAG_0[^\r\n]*').Value)+"`n"
+foreach($name in @('ChildEquipmentSlots','EquipmentSlots','InventorySlots','InventoryPackSlots','BankItemSlots','BankBagSlots','ReagentSlots')){$slots+=(Block $playerHeader "enum $name")+";`n"}
+[IO.File]::WriteAllText("$out/Slots.inc",$slots)
+[IO.File]::WriteAllText("$out/ItemCount.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'bool Player::HasItemCount('))
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'bool Unit::HandleSpellClick('))
 [IO.File]::WriteAllText("$out/Visibility.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'bool Player::canSeeSpellClickOn('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 if($BoardingBaseline){$mode='/DBOARDING_BASELINE'}
+if($AdmissionBaseline){$mode='/DADMISSION_BASELINE'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardTravelClickTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/click.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native travel click host failed'}
 if($VerifyReleaseBinary){
  $hash=(Get-FileHash "$repo/sql/updates/world/2026_10_25_08_truthguard_travel_click.sql" -Algorithm SHA1).Hash
- $live=Query "SET SESSION TRANSACTION READ ONLY; SELECT 'release',hash,state FROM updates WHERE name='2026_10_25_08_truthguard_travel_click.sql'; SELECT 'clicks',COUNT(*) FROM npc_spellclick_spells WHERE npc_entry IN(105883,106203); SELECT 'visible',COUNT(*) FROM creature_template WHERE entry IN(105883,106203) AND npcflag=16777216 AND VehicleId=0 AND AIName='' AND ScriptName='npc_sr_argent_hippogryph'; SELECT 'path',id,COUNT(*),MIN(point),MAX(point) FROM waypoint_data_script WHERE id IN(10588600,10620500) GROUP BY id;"
+ $live=Query "SET SESSION TRANSACTION READ ONLY; SELECT 'release',hash,state FROM updates WHERE name='2026_10_25_08_truthguard_travel_click.sql'; SELECT 'clicks',COUNT(*) FROM npc_spellclick_spells WHERE npc_entry IN(105883,106203); SELECT 'visible',COUNT(*) FROM creature_template WHERE entry IN(105883,106203) AND npcflag=16777216 AND VehicleId=0 AND AIName='' AND ScriptName='npc_sr_argent_hippogryph'; SELECT 'path',id,COUNT(*),MIN(point),MAX(point) FROM waypoint_data_script WHERE id IN(10588600,10620500) GROUP BY id; SELECT 'context',ScenarioID,MapID,Class FROM scenario_data WHERE MapID=1495 ORDER BY ScenarioID; SELECT 'quest',ID,AllowableClasses,PrevQuestID FROM quest_template_addon WHERE ID IN(42000,42002,42005,42017) ORDER BY ID;"
  [IO.File]::WriteAllLines("$out/live.tsv",[string[]]$live)
  foreach($expected in @("release`t$hash`tRELEASED","clicks`t0","visible`t2","path`t10588600`t5`t1`t5","path`t10620500`t5`t1`t5")){if($live -notcontains $expected){throw "Travel deployment mismatch: $expected"}}
+ foreach($expected in @("context`t909`t1495`t1","context`t1068`t1495`t3","context`t1082`t1495`t2","quest`t42000`t0`t40411","quest`t42002`t0`t42000","quest`t42005`t0`t42002","quest`t42017`t0`t42005")){if($live -notcontains $expected){throw "Source context/admission data changed: $expected"}}
  $previous=$env:LEGION_DIALOGUE_CONFIG
  try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile TruthguardPickupCatalog.cpp -ProbeName TruthguardPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if($LASTEXITCODE){throw 'Travel DB2 probe failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
  $native=Get-Content "$out/native.tsv"

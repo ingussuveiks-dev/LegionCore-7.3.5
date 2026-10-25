@@ -1205,16 +1205,23 @@ public:
 
             if (Player* player = clicker->ToPlayer())
             {
-                if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN)
+                QuestStatus status = player->GetQuestStatus(42017);
+                if (!player->IsAlive() || player->getClass() != CLASS_PALADIN || player->GetQuestRewardStatus(42017) ||
+                    (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE) ||
+                    !me->IsInMap(player) || !me->InSamePhase(player))
+                    return;
+                if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN && me->GetMapId() == 1220)
                 {
-                    QuestStatus status = player->GetQuestStatus(42017);
                     if (status == QUEST_STATUS_INCOMPLETE)
                     {
                         SummonForPlayer(player, SPELL_SUMMON_HIPPO);
                     }
                 }
-                if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO)
+                if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO && me->GetMapId() == 1495)
                 {
+                    Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+                    if (!scenario || scenario->GetScenarioId() != 1082 || !player->HasItemCount(128866, 1, true))
+                        return;
                     if (InstanceScript* instance = player->GetInstanceScript())
                         if (instance->GetData(DATA_YRGRIM_EVENT) == 7)
                         {

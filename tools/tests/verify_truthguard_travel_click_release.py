@@ -2,7 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
-from capstone import CS_OP_IMM, CS_OP_MEM
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_truthguard_credit_cast_release.py')))
@@ -64,9 +64,59 @@ assert len(helper_calls) == 2
 for index, spell in zip(helper_calls, (209884, 210358)):
     assert click[index - 3].op_str == f'r8d, {hex(spell)}'
     assert click[index - 2].op_str == 'rdx, rbx' and click[index - 1].op_str == 'rcx, rdi'
-for operand in ('byte ptr [rdx + 0x16], 4', 'eax, 0x19d9b', 'edx, 0xa421', 'eax, 3', 'eax, 0x19edb', 'edx, 6', 'eax, 7'):
+for operand in ('byte ptr [rdx + 0x16], 4', 'eax, 0x19d9b', 'edx, 0xa421', 'esi, 3', 'eax, 0x19edb', 'edx, 6', 'eax, 7'):
     assert any(entry.op_str == operand for entry in click), f'Original live player/entry/quest/event gate missing: {operand}'
 assert cast_target not in native['calls'](callback), 'A direct duplicate summon cast remains outside the helper'
+def click_find(operand, mnemonic=None):
+    return next(index for index, entry in enumerate(click) if entry.op_str == operand and (not mnemonic or entry.mnemonic == mnemonic))
+
+def click_call(prefix):
+    target = native['symbol'](prefix)
+    return next(index for index, entry in enumerate(click) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
+                and native['resolve'](entry.operands[0].imm) == target)
+
+quest = click_call('?GetQuestStatus@Player@@')
+player_class = click_call('?GetByteValue@Object@@')
+rewarded = click_call('?GetQuestRewardStatus@Player@@')
+same_map = click_call('?IsInMap@WorldObject@@')
+same_phase = click_call('?InSamePhase@WorldObject@@')
+assert quest < player_class < rewarded < same_map < same_phase < helper_calls[0]
+assert any(entry.op_str == 'edx, 0x35' for entry in click[quest:player_class]) and any(entry.op_str == 'r8b, 1' for entry in click[quest:player_class])
+rejected = click[player_class + 2].operands[0].imm
+assert click[player_class + 1].op_str == 'al, 2' and click[player_class + 2].mnemonic == 'jne'
+life = click_find('dword ptr [rbx + 0xa18], 0', 'cmp')
+assert click[life + 2].mnemonic == 'jne' and click[life + 2].operands[0].imm == rejected
+for gate in (rewarded + 1, click_find('eax, 0xfffffffd', 'test')):
+    assert click[gate + 1].mnemonic == 'jne' and click[gate + 1].operands[0].imm == rejected
+assert click_find('eax, [rsi - 1]', 'lea') < same_map
+for gate in (same_map, same_phase):
+    assert click[gate + 2].mnemonic == 'je' and click[gate + 2].operands[0].imm == rejected
+    assert [entry.op_str for entry in click[gate - 2:gate]] == ['rcx, qword ptr [rdi + 0x20]', 'rdx, rbx']
+assert same_phase < click_find('dword ptr [rax + 0xe0], 0x4c4', 'cmp') < helper_calls[0]
+registry = click_call('?GetScenario@ScenarioMgr@@')
+identity = click_call('?GetScenarioId@Scenario@@')
+assert helper_calls[0] < click_find('dword ptr [rax + 0xe0], 0x5d7', 'cmp') < click_call('?instance@ScenarioMgr@@') < registry < identity < helper_calls[1]
+assert [entry.op_str for entry in click[registry - 3:registry]] == ['rdx, qword ptr [rdi + 0x20]', 'rcx, rax', 'edx, dword ptr [rdx + 0x3b8]'], 'Registry key is not the actual clicked source instance'
+assert click[registry + 1].op_str == 'rax, rax' and click[registry + 2].mnemonic == 'je' and click[registry + 2].operands[0].imm == rejected
+assert click[identity + 1].op_str == 'eax, 0x43a' and click[identity + 2].mnemonic == 'jne' and click[identity + 2].operands[0].imm == rejected
+owned = click_call('?HasItemCount@Player@@')
+assert identity < owned < click_call('?GetInstanceScript@WorldObject@@')
+assert [entry.op_str for entry in click[owned - 4:owned]] == ['r9b, 1', 'edx, 0x1f762', 'r8d, 1', 'rcx, rbx']
+assert click[owned + 1].op_str == 'al, al' and click[owned + 2].mnemonic == 'je' and click[owned + 2].operands[0].imm == rejected
+assert click[click_find('eax, 7', 'cmp') + 1].operands[0].imm == rejected
+assert all(entry.mnemonic in ('mov', 'add', 'pop', 'ret') for entry in click if entry.address >= rejected), 'Admission rejection reaches a summon request'
+assert native['symbol']('?GetCurrentStep@Scenario@@') not in native['calls'](callback), 'Completion step6 is incorrectly fenced at pickup step5'
+assert not any(operand.type == CS_OP_MEM and operand.mem.disp == 0x6ba8 for entry in click for operand in entry.operands), 'Consumed Player selector substituted for actual scenario'
+decoder = Cs(CS_ARCH_X86, CS_MODE_64)
+lookup_address = native['symbol']('?GetScenario@ScenarioMgr@@')
+lookup = []
+for entry in decoder.disasm(native['binary'][native['offset'](lookup_address):native['offset'](lookup_address) + 160], lookup_address):
+    if entry.mnemonic == 'int3':
+        break
+    lookup.append(entry)
+assert lookup[0].op_str == 'qword ptr [rcx + 8], 0' and lookup[-2].op_str == 'eax, eax' and lookup[-2].mnemonic == 'xor' and lookup[-1].mnemonic == 'ret'
+assert any(entry.op_str == 'dword ptr [rax + 0x20], edx' for entry in lookup) and any(entry.op_str == 'edx, dword ptr [rcx + 0x20]' for entry in lookup)
+assert any(entry.op_str == 'rax, qword ptr [rcx + 0x28]' for entry in lookup), 'Native registry lookup no longer returns mapped Scenario or null'
 
 tables = []
 for entry in instructions('?GetAI@npc_sr_argent_hippogryph@@'):
@@ -169,4 +219,4 @@ target = next(entry for entry in visibility if entry.address == visibility[empty
 assert target.op_str == 'al, 1', 'Explicit static spellclick flag is hidden without DB rows'
 assert any(entry.op_str == 'r8d, 0x1000000' for entry in visibility[:empty]), 'Native visibility no longer checks the actual flag'
 assert native['symbol']('?HandleSpellClick@Unit@@') in native['calls']('?HandleSpellClick@WorldSession@@'), 'Packet handler bypasses native AI dispatch'
-print('PASS: canonical selected AI publishes5000ms per-GUID request before native cast, blocks pending/boarded repeats, and never hides on cast admission. Actual selected update resolves live Player and original summoned vehicle, map/phase/quest/life before erasing and hiding; revoked/waiting/timeout paths cannot hide that request. Native packet/empty-row dispatch retained; live boarding/rendering/flight remain separate.')
+print('PASS: selected click requires live active42017 Paladin in source map/phase, original route maps and actual source-instance1082 plus native bank-inclusive parent128866 ownership before return event7; consumed selector and pickup step5 are not reused. Native registry null/key path checked. Per-GUID5000ms boarding/packet dispatch retained; client visibility, boarding/flight/rendering remain separate.')
