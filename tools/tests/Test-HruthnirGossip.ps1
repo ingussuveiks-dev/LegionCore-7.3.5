@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
-if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
+if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
+if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-gossip"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -13,6 +13,7 @@ if($CueBaseline){$source=(& git -C $repo show "05d64caf:$path") -join "`n";if($L
 if($OfferBaseline){$source=(& git -C $repo show "bbf4455c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir offer source unavailable'}}
 if($StageBaseline){$source=(& git -C $repo show "c4c026d1:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir stage source unavailable'}}
 if($VoiceBaseline){$source=(& git -C $repo show "c7239252:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir voice source unavailable'}}
+if($ArrivalBaseline){$source=(& git -C $repo show "31d576d9:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir arrival source unavailable'}}
 $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace HruthnirGossip'}))
 [IO.File]::WriteAllText("$out/Select.inc",(Block $source 'bool OnGossipSelect('))
@@ -30,6 +31,9 @@ if($first -lt 0 -or $last -le $first){throw 'Native point6 branch missing'}
 $first=$movement.IndexOf('case 7:',$movement.IndexOf('if (type == POINT_MOTION_TYPE)'));$last=$movement.IndexOf('default:',$first)
 if($first -lt 0 -or $last -le $first){throw 'Native point7 branch missing'}
 [IO.File]::WriteAllText("$out/Arrival.inc",'void Arrive() { switch(7) {'+$movement.Substring($first,$last-$first)+'} }')
+$native=Get-Content "$repo/src/server/game/Movement/MovementGenerators/PointMovementGenerator.cpp" -Raw
+[IO.File]::WriteAllText("$out/PointFinalize.inc",'template<class T>'+(Block $native 'void PointMovementGenerator<T>::DoFinalize('))
+[IO.File]::WriteAllText("$out/PointInform.inc",'template<>'+(Block $native 'void PointMovementGenerator<Creature>::MovementInform('))
 $native=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw
 [IO.File]::WriteAllText("$out/FunctionsClass.inc",'using FunctionList = std::multimap<uint64, std::function<void()>>;'+(Block $native 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';')
 $native=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
@@ -42,7 +46,7 @@ $native=Get-Content "$repo/src/server/game/Entities/Creature/GossipDef.cpp" -Raw
 $methods=@('uint32 GossipMenu::GetMenuItemSender(','uint32 GossipMenu::GetMenuItemAction(','GossipMenuItem const* GossipMenu::GetItem(','uint32 GossipMenu::GetMenuId(','void GossipMenu::ClearMenu(')
 [IO.File]::WriteAllText("$out/Menu.inc",(($methods|ForEach-Object {Block $native $_}) -join "`n"))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CueBaseline){'/DCUE_BASELINE'}elseif($OfferBaseline){'/DOFFER_BASELINE'}elseif($StageBaseline){'/DSTAGE_BASELINE'}elseif($VoiceBaseline){'/DVOICE_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CueBaseline){'/DCUE_BASELINE'}elseif($OfferBaseline){'/DOFFER_BASELINE'}elseif($StageBaseline){'/DSTAGE_BASELINE'}elseif($VoiceBaseline){'/DVOICE_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/HruthnirGossipTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Extracted Hruthnir gossip regression failed'}

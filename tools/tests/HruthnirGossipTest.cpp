@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -16,6 +17,7 @@ enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1
     UNIT_FIELD_FLAGS = 11, UNIT_FLAG_NOT_SELECTABLE = 0x2000000, UNIT_FLAG_IMMUNE_TO_PC = 0x100,
     UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80, REACT_DEFENSIVE = 1,
     UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
+    UNIT_STATE_ROAMING = 16, UNIT_STATE_ROAMING_MOVE = 32, POINT_MOTION_TYPE = 8,
     EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6 };
 #include "FunctionsClass.inc"
 #include "Functions.inc"
@@ -72,6 +74,7 @@ struct CreatureAI
     virtual ~CreatureAI() = default;
     virtual void Reset() { }
     virtual void UpdateAI(uint32) { }
+    virtual void MovementInform(uint32, uint32) { }
     uint32 starts = 0;
     std::vector<uint32> texts;
     std::function<void()> onTalk;
@@ -129,6 +132,8 @@ struct MotionMaster
 };
 struct Creature
 {
+    struct Spline { bool finalized = true; bool Finalized() const { return finalized; } } spline;
+    Spline* movespline = &spline;
     struct Info { uint32 ScriptID = 7; } info;
     bool world = true, alive = true, despawn = false, phase = true, visible = true, los = true;
     bool controlled = false, hostile = false;
@@ -136,6 +141,7 @@ struct Creature
     uint32 state = 0, conversations = 0;
     std::function<void()> reenterConversation;
     float distance = 4.0f;
+    float arrivalDistanceSq = 0.0f;
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
     uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;
@@ -153,7 +159,13 @@ struct Creature
     ObjectGuid GetGUID() const { return {}; }
     Info* GetCreatureTemplate() { return &info; }
     CreatureAI* AI() { return ai; }
+    float GetExactDistSq(float positionX, float positionY, float positionZ) const
+    {
+        assert(positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f);
+        return arrivalDistanceSq;
+    }
     bool HasUnitState(uint32 mask) const { return (state & mask) != 0; }
+    void ClearUnitState(uint32 mask) { state &= ~mask; }
     Creature* FindNearestCreature(uint32 expected, float range, bool living)
     {
         assert(expected == 96034 && range == 60.0f && living);
@@ -241,8 +253,21 @@ struct HruthnirAI : CreatureAI
 #include "OfferContext.inc"
 #include "Offer.inc"
 #include "Arrival.inc"
+    void MovementInform(uint32 type, uint32 point) override
+    {
+        assert(type == POINT_MOTION_TYPE && point == 7);
+        Arrive();
+    }
 #include "AIUpdate.inc"
 };
+template<class T> struct PointMovementGenerator
+{
+    uint32 _movementId = 7;
+    void DoFinalize(T& owner);
+    void MovementInform(T& owner);
+};
+#include "PointFinalize.inc"
+#include "PointInform.inc"
 struct ScriptMgr
 {
     HruthnirScript script;
@@ -298,7 +323,13 @@ struct Fixture
 };
 int main()
 {
-#ifdef VOICE_BASELINE
+#ifdef ARRIVAL_BASELINE
+    Fixture stopped; stopped.Select(); stopped.actor.arrivalDistanceSq = 100.0f;
+    PointMovementGenerator<Creature> point;
+    point.DoFinalize(stopped.actor); stopped.Tick(6000);
+    assert(stopped.actor.conversations == 1 && stopped.bossAI.starts == 1);
+    std::cout << "PASS arrival baseline: native Point DoFinalize/MovementInform forwards a controlled finalized spline at10-yard separation; pinned31d576d9 consumes point7 and requests497/queued boss action. Spline/AI bridge/boss are controlled, not actual combat progression or a client stop reproduction.\n";
+#elif defined(VOICE_BASELINE)
     Fixture offer; offer.actor.flags = 0; offer.ai.OfferArrive();
     offer.Tick(6499); assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15}));
     offer.Tick(1); assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,16}));
@@ -365,6 +396,37 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    {
+        Fixture moving; moving.Select(); moving.actor.spline.finalized = false;
+        PointMovementGenerator<Creature> point;
+        moving.actor.state |= UNIT_STATE_ROAMING | UNIT_STATE_ROAMING_MOVE;
+        point.DoFinalize(moving.actor); moving.Tick(6000);
+        assert(!moving.actor.state && moving.ai.magnarArrivalPending && !moving.actor.conversations && !moving.bossAI.starts);
+    }
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            for (float distanceSq : {0.0f,3.96f,4.0f,4.04f,100.0f,
+                std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::infinity()})
+            {
+                Fixture arrival; arrival.player.faction = faction; arrival.player.status = status;
+                arrival.Select(); arrival.actor.arrivalDistanceSq = distanceSq;
+                auto token = arrival.ai.magnarStartToken;
+                PointMovementGenerator<Creature> point;
+                point.DoFinalize(arrival.actor); point.DoFinalize(arrival.actor);
+                if (!(distanceSq <= 4.0f))
+                {
+                    arrival.Tick(6000);
+                    assert(arrival.ai.magnarArrivalPending && arrival.ai.magnarStartToken == token && !*token);
+                    assert(!arrival.actor.conversations && !arrival.bossAI.starts);
+                    arrival.actor.arrivalDistanceSq = 0.0f;
+                    arrival.ai.Arrive(); arrival.ai.Arrive();
+                }
+                assert(!arrival.ai.magnarArrivalPending && arrival.actor.conversations == 1);
+                arrival.Tick(5999); assert(!arrival.bossAI.starts && !*token);
+                arrival.Tick(1); arrival.ai.Arrive(); arrival.Tick(6000);
+                assert(arrival.bossAI.starts == 1 && *token && arrival.actor.conversations == 1);
+            }
+    std::cout << "PASS arrival:28 faction/status/ordered-radius cases retain an invalid arrival claim and permit one later explicit valid arrival; native queue5999+1 and duplicate suppression remain. Controlled geometry; separate actual Position test required.\n";
     {
         Fixture offer;
         offer.actor.flags = 0;

@@ -43,6 +43,26 @@ assert pending < context < consume < conversation
 assert body[context - 2].op_str == 'edx, dword ptr [rbx + 0x70]'
 assert body[context + 1].op_str == 'al, al' and body[context + 2].mnemonic == 'je'
 assert body[context + 2].operands[0].imm == body[pending + 1].operands[0].imm
+geometry = body[context + 3:consume]
+expected_geometry = (
+    ('mov', 'rax, qword ptr [rbx + 0x20]'),
+    ('movss', 'xmm2, dword ptr [rax + 0xd8]'), ('subss', None),
+    ('movss', 'xmm0, dword ptr [rax + 0xd0]'), ('subss', None),
+    ('movss', 'xmm1, dword ptr [rax + 0xd4]'), ('subss', None),
+    ('mulss', 'xmm1, xmm1'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm1, xmm0'),
+    ('mulss', 'xmm2, xmm2'), ('addss', 'xmm1, xmm2'), ('movss', None),
+    ('comiss', 'xmm0, xmm1'), ('jb', None))
+assert len(geometry) == len(expected_geometry), 'Actual point7 geometry must precede claim/497'
+for entry, (mnemonic, operand) in zip(geometry, expected_geometry):
+    assert entry.mnemonic == mnemonic and (operand is None or entry.op_str == operand), 'Native3D distance flow changed'
+for index, register, value in ((2, 'xmm2', -37.71), (4, 'xmm0', 4720.80),
+                               (6, 'xmm1', 347.91), (12, 'xmm0', 4.0)):
+    entry = geometry[index]
+    assert entry.reg_name(entry.operands[0].reg) == register
+    assert entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP
+    address = entry.address + entry.size + entry.operands[1].mem.disp
+    assert native['binary'][native['offset'](address):native['offset'](address) + 4] == struct.pack('<f', value), 'Wrong endpoint/radius in deployed point7'
+assert geometry[-1].operands[0].imm == body[pending + 1].operands[0].imm, 'Ordered4>=distance must reject both outside and unordered before consume'
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in body[:pending]), 'Arrival consume is not zero'
 assert pending < conversation < queue
 assert any(entry.op_str == 'r14, qword ptr [rbx + 0x20]' for entry in body[pending:conversation])
@@ -108,4 +128,4 @@ context_deny = body[positions(body, '?IsInWorld@Object@@')[0] + 2].operands[0].i
 for operand in ('eax, 0x38d', 'eax, 3', 'dword ptr [rax + 0x3b8], edi'):
     check = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert body[check + 1].mnemonic == 'jne' and body[check + 1].operands[0].imm == context_deny
-print('PASS: installed Hruthnir original-instance909/3/live/AI context gates both arrival before497 and weak6000ms callback before boss dispatch. Actual factory/queue/claim/Reset/destructor checks remain; no automatic recovery,497 acknowledgement, physical arrival or client/VFX certificate.')
+print('PASS: installed Hruthnir original-instance909/3/live/AI context and ordered3D2-yard endpoint gate arrival before claim/497; weak6000ms callback rechecks context before boss dispatch. Actual coordinate operands/math/unordered-deny/queue/claim/Reset/destructor checked; no automatic recovery,497 acknowledgement, native spline traversal or client/VFX certificate.')

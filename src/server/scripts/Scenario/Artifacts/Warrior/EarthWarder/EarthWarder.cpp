@@ -496,7 +496,8 @@ public:
                     }
                     case 7:
                     {
-                        if (!magnarArrivalPending || !IsMagnarOfferContext(magnarStartInstance))
+                        if (!magnarArrivalPending || !IsMagnarOfferContext(magnarStartInstance) ||
+                            !(me->GetExactDistSq(4720.80f, 347.91f, -37.71f) <= 4.0f))
                             break;
                         magnarArrivalPending = false;
                         std::weak_ptr<bool> startToken = magnarStartToken;
