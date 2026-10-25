@@ -1,4 +1,5 @@
 {
+  "start_times_followup": "docs/audits/magnar-dialogue-start-times-2026-10-25.json later reconstructs only five line start offsets from full native voices/gaps. Historical03 evidence below retains original offsets; published budgets remain35300/54550. This does not repair actor6000ms removal or immediate final credit.",
   "creation_followup": "docs/audits/magnar-finale-creation-2026-10-25.json repairs only failed504 acknowledgement/epoch rollback. Published budgets remain unchanged; successful immediate45784/6000 removal, deposit/departure and other ownership limitations below remain open.",
   "date": "2026-10-25",
   "build": "7.3.5.26972",

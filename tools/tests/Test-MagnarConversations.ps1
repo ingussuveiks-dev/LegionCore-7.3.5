@@ -20,6 +20,10 @@ INSERT INTO saved_creatures SELECT * FROM conversation_creature;
 CREATE TEMPORARY TABLE conversation_creature LIKE saved_creatures;
 CREATE TEMPORARY TABLE saved_lines LIKE conversation_data;
 INSERT INTO saved_lines SELECT * FROM conversation_data;
+UPDATE saved_lines SET textId=CASE id WHEN 1336 THEN 2350 WHEN 1337 THEN 7300 ELSE textId END
+WHERE entry=498 AND ((id=1336 AND textId=5646) OR (id=1337 AND textId=19930));
+UPDATE saved_lines SET textId=CASE id WHEN 1342 THEN 3950 WHEN 1343 THEN 12900 WHEN 1344 THEN 21350 ELSE textId END
+WHERE entry=504 AND ((id=1342 AND textId=8618) OR (id=1343 AND textId=23424) OR (id=1344 AND textId=34064));
 CREATE TEMPORARY TABLE conversation_data LIKE saved_lines;
 CREATE TEMPORARY TABLE saved_actors LIKE conversation_actor;
 INSERT INTO saved_actors SELECT * FROM conversation_actor;

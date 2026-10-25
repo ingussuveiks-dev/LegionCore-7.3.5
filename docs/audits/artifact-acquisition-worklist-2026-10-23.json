@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "magnar_dialogue_start_times_audit": "docs/audits/magnar-dialogue-start-times-2026-10-25.json",
+      "magnar_dialogue_start_times_review": "Native16-byte line StartTime word copied unchanged from textId had five boundaries before prior full enUS voices/gaps. Guarded05 reconstructs498 starts0/5646/19930 and504 starts0/8618/23424/34064 from seven complete26972 voice decodes plus native500/1000 gaps. Exact IDs/packed flags/camera/actors and35300/54550 budgets retained; native payload baseline, independent/mixed/custom fixtures and installed producer checked. Conservative asset reconstruction, not retail sniff/frame-perfect/client mixing proof. Immediate45784/6000 removal, purple ascension and full staged handoff still open.",
       "weapon_beam_audit": "docs/audits/earthwarder-weapon-beam-2026-10-25.json",
       "weapon_beam_review": "94854 flags_extra0 chose random33225(no state kit) or64600(native58143). Guarded04 activates existing trigger selection for exact single1495/phased carrier/native models, retaining GM debug form. Native seed0 baseline,19 SQL custom guards, both fixed seeds/InitEntry/client field,58143 item128288/128289 attachments plus250007/253568 local models and canonical bridge checked. Corrects deterministic ordinary-player presentation, not rendered VFX or successful immediate45784/6000 timing. New14:01 video still distinctly shows purple Magnar departure before14:06/14:11 white weapon beam; ascension graph/full handoff remains priority.",
       "magnar_finale_creation_audit": "docs/audits/magnar-finale-creation-2026-10-25.json",
