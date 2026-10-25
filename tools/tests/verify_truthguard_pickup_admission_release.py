@@ -1,6 +1,7 @@
 """Verify registered Truthguard opening, AI and activation admission in Release."""
 from pathlib import Path
 import runpy
+import re
 import struct
 from capstone import CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
@@ -95,9 +96,19 @@ callback = instructions(loot)
 
 def clean_exit(address):
     first = next(index for index, item in enumerate(callback) if item.address == address)
-    for item in callback[first:]:
+    cookie = re.search(r'\s__security_check_cookie\s+([0-9a-fA-F]{16})\s+f',
+                       (native['args'].release / 'worldserver.map').read_text(errors='replace'))
+    for index in range(first, len(callback)):
+        item = callback[index]
         if item.mnemonic == 'ret':
             return
+        if item.mnemonic == 'xor' and item.op_str == 'rcx, rsp':
+            assert callback[index - 1].op_str.startswith('rcx, qword ptr [rsp + ')
+            continue
+        if item.mnemonic == 'call':
+            assert cookie and item.operands[0].type == CS_OP_IMM and native['resolve'](item.operands[0].imm) == int(cookie[1], 16)
+            assert callback[index - 1].mnemonic == 'xor' and callback[index - 1].op_str == 'rcx, rsp'
+            continue
         assert item.mnemonic in ('mov', 'add', 'pop', 'nop'), 'Rejected state reaches calls or non-epilogue instructions'
     raise AssertionError('Rejected state has no terminal return')
 

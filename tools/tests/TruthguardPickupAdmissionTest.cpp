@@ -1,18 +1,39 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <functional>
 #include <set>
 #include <vector>
 using uint32 = uint32_t;
+using uint16 = uint16_t;
+using uint8 = uint8_t;
 using LootState = uint32;
 enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, GO_READY=1, GO_ACTIVATED=2,
     GO_JUST_DEACTIVATED=3, GAMEOBJECT_FIELD_FLAGS=17, GO_FLAG_NOT_SELECTABLE=16, DATA_STAGE_FINAL=5,
     CRITERIA_TYPE_SCRIPT_EVENT_2=92, DATA_YRGRIM_EVENT=6, SPELL_TRUTHGUARD_CREDIT=210133,
     SPELL_TRUTHGUARD_SCENE=210132, NPC_TRUTHGUARD_OATHSEEKER=106190,
-    NULL_BAG=255, NULL_SLOT=255, GAMEOBJECT_TYPE_CHEST=3, GAMEOBJECT_TYPE_FISHINGNODE=17 };
+    NULL_BAG=255, NULL_SLOT=255, GAMEOBJECT_TYPE_CHEST=3, GAMEOBJECT_TYPE_FISHINGNODE=17,
+    INVENTORY_SLOT_BAG_0=255, EQUIPMENT_SLOT_MAINHAND=15, EQUIPMENT_SLOT_OFFHAND=16,
+    ITEM_FIELD_CREATOR=1, ITEM_FIELD_DYNAMIC_FLAGS=2, ITEM_FLAG_CHILD=4 };
 using ItemPosCountVec = std::vector<uint32>;
-enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
-struct Item { };
+enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL, EQUIP_ERR_CANT_EQUIP };
+uint32 warnings=0;
+#define TC_LOG_WARN(...) (++warnings)
+struct Item
+{
+    uint32 entry=128866,guid=1,creator=0,child=2;
+    uint16 position=0xFF20;
+    bool childFlag=false;
+    uint32 GetEntry() const { return entry; }
+    uint32 GetGUID() const { return guid; }
+    uint32 GetChildItem() const { return child; }
+    uint32 GetGuidValue(uint32 field) const { assert(field==ITEM_FIELD_CREATOR); return creator; }
+    bool HasFlag(uint32 field,uint32 flag) const { assert(field==ITEM_FIELD_DYNAMIC_FLAGS && flag==ITEM_FLAG_CHILD); return childFlag; }
+    bool IsEquipped() const { return position>=0xFF00 && position<0xFF13; }
+    uint16 GetPos() const { return position; }
+    uint8 GetBagSlot() const { return uint8(position>>8); }
+    uint8 GetSlot() const { return uint8(position&255); }
+};
 struct LootItem
 {
     struct
@@ -66,6 +87,10 @@ struct Player : Unit
     bool room=true,storeWorks=true;
     uint32 inventoryErrors=0;
     Item storedItem;
+    Item childItem{128867,2,1,0,0xFFCB,true};
+    bool childPresent=true,swapWorks=true,childSwapWorks=true;
+    InventoryResult equipResult=EQUIP_ERR_OK,childResult=EQUIP_ERR_OK;
+    uint32 swaps=0,childSwaps=0;
     uint32 klass=2,status=3,instanceId=42,casts=0,team=0;
     float distance=1;
     Map* map=&liveMap;
@@ -88,6 +113,33 @@ struct Player : Unit
         assert(item==128866 && count==1); return carried || (includeBank && bank);
     }
     InstanceScript* GetInstanceScript() { return instancePresent?&testInstance:nullptr; }
+    Item* GetItemByEntry(uint32 identity) { assert(identity==128866); return carried?&storedItem:nullptr; }
+    Item* GetChildItemByGuid(uint32 identity) { return childPresent && identity==childItem.guid?&childItem:nullptr; }
+    InventoryResult CanEquipItem(uint32 slot,uint16& destination,Item* item,bool swap)
+    {
+        assert(slot==NULL_SLOT && item==&storedItem && swap); destination=0xFF10; return equipResult;
+    }
+    InventoryResult CanEquipChildItem(Item* item) { assert(item==&storedItem); return childResult; }
+    void SendEquipError(InventoryResult result,Item* item)
+    {
+        assert(result!=EQUIP_ERR_OK && item==&storedItem); ++inventoryErrors;
+    }
+    void SwapItem(uint16 source,uint16 destination)
+    {
+        assert(source==storedItem.position && destination==0xFF10); ++swaps;
+        if(swapWorks) { storedItem.position=destination; if(childSwapWorks) childItem.position=0xFF0F; }
+    }
+    void EquipChildItem(uint8 bag,uint8 slot,Item* parent)
+    {
+        assert(bag==255 && slot==16 && parent==&storedItem); ++childSwaps;
+        if(childSwapWorks) childItem.position=0xFF0F;
+    }
+    Item* GetItemByPos(uint8 bag,uint8 slot)
+    {
+        assert(bag==255); uint16 position=uint16((bag<<8)|slot);
+        if(carried && storedItem.position==position) return &storedItem;
+        return childPresent && childItem.position==position?&childItem:nullptr;
+    }
     InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec& destination,uint32 identity,uint32 count,void*,bool quest)
     {
         assert(identity==128866 && count==1 && !quest);
@@ -122,6 +174,9 @@ struct GameObject
     uint32 entry=249420,mapId=1495,instanceId=42,m_lootState=2,deletes=0;
     bool world=true,spawned=true,notSelectable=false,actor=true;
     Map* map=&liveMap;
+    std::vector<std::function<void()>> delayed;
+    void AddDelayedEvent(uint32 delay,std::function<void()> callback) { assert(delay==1); delayed.push_back(callback); }
+    void Drain() { auto pending=std::move(delayed); delayed.clear(); for(auto& callback:pending) callback(); }
     bool IsInWorld() const { return world; }
     bool isSpawned() const { return spawned; }
     uint32 GetEntry() const { return entry; }
@@ -138,7 +193,7 @@ struct GameObject
     }
     void Delete() { ++deletes; }
     GameObjectAI* AI() const;
-    void SetLootState(uint32 state,Unit* player);
+    void SetLootState(uint32 state,Unit* player=nullptr);
 };
 struct GameObjectAI
 {
@@ -174,7 +229,7 @@ bool CompletedLoot(Loot* loot,GameObject* go)
 {
 #include "NativeCompleteLoot.inc"
 }
-void Reset() { manager={}; testInstance={}; testTrigger={}; }
+void Reset() { manager={}; testInstance={}; testTrigger={}; warnings=0; }
 int main()
 {
 #ifdef BASELINE
@@ -190,7 +245,71 @@ int main()
     script.OnLootStateChanged(&weapon,GO_ACTIVATED,&player);
     assert(testInstance.events==1 && player.casts==2);
     std::cout << "PASS pinnedaa988ac6 baseline: reported completion without128866 and mere activation with an owned item broadcast50545/cast both spells; wrong class/quest/scenario/map/phase admits the same callback. Controlled dispatch, not native off-route progression or client.\n";
+#elif defined(EQUIP_BASELINE)
+    for(uint32 failure=0;failure<3;++failure)
+    {
+        Reset(); Player player; player.carried=true; GameObject chest; go_sr_truthguard pickup;
+        if(failure==0) player.childPresent=false;
+        if(failure==1) player.equipResult=EQUIP_ERR_CANT_EQUIP;
+        if(failure==2) player.swapWorks=false;
+        assert(pickup.OnGossipHello(&player,&chest));
+        assert(testInstance.events==1 && testInstance.data==7 && player.casts==2 && testTrigger.despawns==1 && !player.swaps);
+        assert(!player.GetItemByPos(255,16) && !player.GetItemByPos(255,15));
+    }
+    std::cout << "PASS pinned667fbc74: carried parent alone advances/despawns/casts with missing child or failed equip/swap services; no equipped-pair acknowledgment. Cast service controlled, not a real spell/inventory/client replay.\n";
 #else
+    for(uint32 failure=0;failure<10;++failure)
+    {
+        Reset(); Player player; player.carried=true; GameObject chest; go_sr_truthguard pickup;
+        switch(failure)
+        {
+            case 0: player.childPresent=false; break;
+            case 1: player.storedItem.child=0; break;
+            case 2: player.childItem.entry=128288; break;
+            case 3: player.childItem.creator=7; break;
+            case 4: player.childItem.childFlag=false; break;
+            case 5: player.equipResult=EQUIP_ERR_CANT_EQUIP; break;
+            case 6: player.childResult=EQUIP_ERR_INVENTORY_FULL; break;
+            case 7: player.swapWorks=false; break;
+            case 8: player.childSwapWorks=false; break;
+            case 9: player.storedItem.position=0xFF0F; player.childItem.position=0xFF10; break;
+        }
+        assert(pickup.OnGossipHello(&player,&chest));
+        assert(!testInstance.events && testInstance.data==6 && !player.casts && !testTrigger.despawns && chest.delayed.size()==1);
+        assert(warnings==uint32(failure<5 || failure>=7) && player.inventoryErrors==uint32(failure==5 || failure==6));
+        player.status=0; chest.Drain(); assert(chest.m_lootState==GO_READY);
+        assert(pickup.OnGossipHello(&player,&chest) && !testInstance.events && !player.casts);
+        player.status=3; player.childPresent=true; player.storedItem.child=2;
+        player.storedItem.position=0xFF20; player.childItem={128867,2,1,0,0xFFCB,true};
+        player.equipResult=player.childResult=EQUIP_ERR_OK; player.swapWorks=player.childSwapWorks=true;
+        assert(pickup.OnGossipHello(&player,&chest));
+        assert(testInstance.events==1 && player.casts==2 && player.GetItemByPos(255,16)==&player.storedItem && player.GetItemByPos(255,15)==&player.childItem);
+        chest.Drain(); assert(chest.m_lootState==GO_JUST_DEACTIVATED);
+        chest.SetLootState(3,&player); assert(testInstance.events==1 && player.casts==2);
+    }
+    for(bool childEquipped : {false,true})
+    {
+        Reset(); Player player; player.carried=true; player.storedItem.position=0xFF10;
+        if(childEquipped) player.childItem.position=0xFF0F;
+        assert(TruthguardAcquisition::EquipPair(&player));
+        assert(!player.swaps && player.childSwaps==uint32(!childEquipped));
+    }
+    for(bool rejected : {false,true})
+    {
+        Reset(); Player player; player.carried=true; player.storedItem.position=0xFF10;
+        player.childResult=rejected?EQUIP_ERR_INVENTORY_FULL:EQUIP_ERR_OK;
+        player.childSwapWorks=false; GameObject chest; go_sr_truthguard pickup;
+        assert(pickup.OnGossipHello(&player,&chest) && !testInstance.events && !player.casts && !player.swaps);
+        assert(player.childSwaps==uint32(!rejected) && player.inventoryErrors==uint32(rejected) && warnings==uint32(!rejected));
+        chest.Drain(); player.childResult=EQUIP_ERR_OK; player.childSwapWorks=true;
+        assert(pickup.OnGossipHello(&player,&chest) && testInstance.events==1 && player.casts==2);
+    }
+    Reset(); Player missingParent; assert(!TruthguardAcquisition::EquipPair(&missingParent) && warnings==1);
+    Reset(); Player deferred; deferred.carried=true; deferred.childPresent=false; GameObject changed; go_sr_truthguard deferredPickup;
+    assert(deferredPickup.OnGossipHello(&deferred,&changed) && changed.delayed.size()==1);
+    changed.SetLootState(GO_ACTIVATED,&deferred); changed.Drain();
+    assert(changed.getLootState()==GO_ACTIVATED && !testInstance.events && !deferred.casts);
+    std::cout << "PASS: ten missing/corrupt child/equip/swap failures produce no progression/cast/despawn; deferred scoped ready reset, revoked-quest rejection and repaired-existing-pair retry; already equipped and hidden-child recovery. Native inventory services controlled; no item creation.\n";
     for(uint32 invalid=0;invalid<27;++invalid)
     {
         Reset(); Player player; GameObject weapon; go_sr_truthguard script;

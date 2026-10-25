@@ -1143,6 +1143,51 @@ public:
 
 namespace TruthguardAcquisition
 {
+    bool EquipPair(Player* player)
+    {
+        Item* weapon = player->GetItemByEntry(128866);
+        Item* child = weapon ? player->GetChildItemByGuid(weapon->GetChildItem()) : nullptr;
+        if (!weapon || !child || child->GetEntry() != 128867 ||
+            child->GetGuidValue(ITEM_FIELD_CREATOR) != weapon->GetGUID() ||
+            !child->HasFlag(ITEM_FIELD_DYNAMIC_FLAGS, ITEM_FLAG_CHILD))
+        {
+            TC_LOG_WARN("scripts", "Truthguard pickup: missing or invalid native parent/child for player %u; no progression or replacement item", player->GetGUIDLow());
+            return false;
+        }
+        if (!weapon->IsEquipped())
+        {
+            uint16 destination;
+            InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, weapon, true);
+            if (result == EQUIP_ERR_OK)
+                result = player->CanEquipChildItem(weapon);
+            if (result != EQUIP_ERR_OK)
+            {
+                player->SendEquipError(result, weapon);
+                return false;
+            }
+            if (destination != weapon->GetPos())
+                player->SwapItem(weapon->GetPos(), destination);
+        }
+        else if (weapon->GetPos() == ((INVENTORY_SLOT_BAG_0 << 8) | EQUIPMENT_SLOT_OFFHAND) &&
+            child->GetPos() != ((INVENTORY_SLOT_BAG_0 << 8) | EQUIPMENT_SLOT_MAINHAND))
+        {
+            InventoryResult result = player->CanEquipChildItem(weapon);
+            if (result != EQUIP_ERR_OK)
+            {
+                player->SendEquipError(result, weapon);
+                return false;
+            }
+            player->EquipChildItem(weapon->GetBagSlot(), weapon->GetSlot(), weapon);
+        }
+        if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) != weapon ||
+            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != child)
+        {
+            TC_LOG_WARN("scripts", "Truthguard pickup: native swap did not equip the linked pair for player %u; progression retained for retry", player->GetGUIDLow());
+            return false;
+        }
+        return true;
+    }
+
     bool CanTake(Player* player, GameObject* weapon)
     {
         if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
@@ -1201,18 +1246,22 @@ public:
             if (InstanceScript* instance = player->GetInstanceScript())
                 if (instance->getScenarionStep() == DATA_STAGE_FINAL)
                 {
+                    if (!TruthguardAcquisition::EquipPair(player))
                     {
-                        instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50545); //Step End
-                        if (instance->GetData(DATA_YRGRIM_EVENT) == 6)
-                            instance->SetData(DATA_YRGRIM_EVENT, 7);
-                        player->CastSpell(player, SPELL_TRUTHGUARD_CREDIT, true);
-                        player->CastSpell(player, SPELL_TRUTHGUARD_SCENE, true);
-                        if (Creature* trigger = go->FindNearestCreature(NPC_TRUTHGUARD_OATHSEEKER, 20.0f, true))
-                            trigger->DespawnOrUnsummon();
-
-                        if (state == GO_ACTIVATED)
-                            go->Delete();
+                        go->AddDelayedEvent(1, [go]()
+                        {
+                            if (go->getLootState() == GO_JUST_DEACTIVATED)
+                                go->SetLootState(GO_READY);
+                        });
+                        return;
                     }
+                    instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50545); //Step End
+                    if (instance->GetData(DATA_YRGRIM_EVENT) == 6)
+                        instance->SetData(DATA_YRGRIM_EVENT, 7);
+                    player->CastSpell(player, SPELL_TRUTHGUARD_CREDIT, true);
+                    player->CastSpell(player, SPELL_TRUTHGUARD_SCENE, true);
+                    if (Creature* trigger = go->FindNearestCreature(NPC_TRUTHGUARD_OATHSEEKER, 20.0f, true))
+                        trigger->DespawnOrUnsummon();
                 }
         }
     }

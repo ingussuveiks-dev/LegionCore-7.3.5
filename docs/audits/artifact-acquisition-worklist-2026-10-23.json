@@ -578,10 +578,11 @@
       "weapon": "Truthguard",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim surrender, pickup admission and guarded native real-loot link repaired; paired equip/credit acknowledgment and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission, native real-loot link and linked-pair equip gate/retry repaired; cast/scene acknowledgment and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
       "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
+      "equipped_pair_audit": "docs/audits/truthguard-equipped-pair-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -657,14 +658,14 @@
         "npc_weapon_pickup_departure_visuals": "pending",
         "weapon_visibility_and_no_early_interaction": "249420 use/open/report requires live nearby phase-visible Paladin with active42017/current1082step5; rendered visibility still pending",
         "actual_loot_and_full_bags_retry": "native249420 link and fourteen source4/cached-slot gates deployed; actual native storage fragments keep full-bag/null-store failure unconsumed and retryable before one modeled claim; real paired-child storage/network/client remains pending",
-        "equip_parent_and_paired_item": "typed26972 parent128866/artifact49/shield14 and child128867/mainhand15 verified; native effect249 regression passes, but real paired creation/equip and210133 credit acknowledgment remain pending",
+        "equip_parent_and_paired_item": "actual carried128866 with native linked128867/creator/CHILD required; CanEquipItem/CanEquipChildItem/SwapItem and exact offhand/mainhand pointers gate progression, with deferred READY retry on failure; real child creation/full hidden slots, casts and client remain pending",
         "artifact_power_and_save_relog": "pending",
         "failed_cast_or_missing_actor_retry": "pending",
         "abandon_reentry_cleanup": "pending",
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Now trace actual parent/child creation and equip/credit acknowledgment: matching210133 is NOT pure equip; effects0/1/2/3 are SEND_EVENT50545, FORCE_EQUIP128866, personal credit105891 and trigger225876. Do not blindly move this whole spell before explicit50545 and assume failure is safe. Instance event50545 dispatches companion DoAction, not scenario advancement, and event_scripts50545 has0 rows. Check missing child/failed equip/cast/scene retry, paired slots/creator linkage, scene210132 aura430/1259 and client-facing225876 effect81. Native shared/group loot/security fields remain unchanged; full video/client/faction/group traversal still open."
+      "next_action": "Equipped-pair acknowledgment now precedes explicit50545/event7 and all210133 effects; no replacement items are created. Next address cast/scene failure and re-entry:210133 is NOT pure equip, with SEND_EVENT50545, FORCE_EQUIP128866, personal105891 credit and trigger225876. Do not blindly reorder the whole spell; instance50545 dispatches companion DoAction, not scenario advancement, with event_scripts count0. Real hidden-child creation/capacity, scene210132 aura430/1259, client-facing225876 effect81, shared/group/faction loot, complete relevant video and26972 client traversal remain open."
     },
     {
       "class_id": 2,
