@@ -8,6 +8,7 @@
 #include "GameObjectAI.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include <memory>
 #include <set>
 
 Position const trashPos[12] =
@@ -91,6 +92,9 @@ public:
 
         EventMap events;
         bool _introDone, firstfighting, secondfighting, thirdfighting, fourfighting;
+        bool magnarArrivalPending = false;
+        std::shared_ptr<bool> magnarStartToken;
+        uint32 magnarStartInstance = 0;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -101,6 +105,9 @@ public:
             if (menu.GetMenuId() != menuId || !item || item->OptionNpc != GossipOptionNpc::None ||
                 item->Sender != 0 || item->Action != 0 || item->IsCoded || item->BoxMoney != 0)
                 return;
+            magnarStartInstance = me->GetInstanceId();
+            magnarStartToken = std::make_shared<bool>(false);
+            magnarArrivalPending = true;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
@@ -110,6 +117,9 @@ public:
         void Reset() override
         {
             events.Reset();
+            magnarArrivalPending = false;
+            magnarStartToken.reset();
+            magnarStartInstance = 0;
         }
 
         void EnterCombat(Unit* who) override
@@ -281,13 +291,32 @@ public:
                         });
                         break;
                     case 7:
+                    {
+                        if (!magnarArrivalPending)
+                            break;
+                        magnarArrivalPending = false;
+                        std::weak_ptr<bool> startToken = magnarStartToken;
+                        Creature* companion = me;
+                        uint32 instanceId = magnarStartInstance;
+                        CreatureAI* expectedAI = this;
                         me->CreateConversation(497);
-                        me->AddDelayedEvent(6000, [this]() -> void
+                        me->AddDelayedEvent(6000, [startToken, companion, instanceId, expectedAI]() -> void
                         {
-                            if (Creature* boss = me->FindNearestCreature(96034, 60.0f, true))
-                                boss->AI()->DoAction(true);
+                            std::shared_ptr<bool> token = startToken.lock();
+                            if (!token || *token)
+                                return;
+                            *token = true;
+                            if (!companion->IsInWorld() || !companion->IsAlive() || companion->IsDespawn() ||
+                                companion->GetEntry() != 96468 || companion->GetMapId() != 1495 || companion->GetInstanceId() != instanceId)
+                                return;
+                            if (!companion->IsAIEnabled || companion->AI() != expectedAI)
+                                return;
+                            if (Creature* boss = companion->FindNearestCreature(96034, 60.0f, true))
+                                if (boss->IsAIEnabled && boss->AI() && !boss->IsDespawn())
+                                    boss->AI()->DoAction(1);
                         });
                         break;
+                    }
                     default:
                         break;
                 }

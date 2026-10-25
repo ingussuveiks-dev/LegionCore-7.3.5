@@ -30,15 +30,29 @@ int main(int argc, char** argv)
     if (!lines.Load(argv[1], 0) || !texts.Load(argv[1], 0) || !sounds.Load(argv[1], 0))
         return 5;
     lines.LoadFromDB(); texts.LoadFromDB(); sounds.LoadFromDB();
-    for (uint32 identity : {2066u, 2067u, 1335u, 1336u, 1337u})
+    for (uint32 identity : {2066u, 2067u, 1324u, 1325u, 1326u, 1327u, 1328u, 1329u, 1330u, 1331u, 1332u, 1334u, 1335u, 1336u, 1337u})
     {
         auto line = lines.LookupEntry(identity);
         auto text = line ? texts.LookupEntry(line->BroadcastTextID) : nullptr;
-        if (!line || !text)
+        if (!line)
+        {
+            std::cerr << "Missing ConversationLine " << identity << '\n';
             return 6;
+        }
         std::cout << "LINE\t" << line->ID << '\t' << line->BroadcastTextID << '\t' << line->SpellVisualKitID << '\t'
             << line->AdditionalDuration << '\t' << line->NextConversationLineID << '\t' << line->AnimKitID << '\t'
             << unsigned(line->SpeechType) << '\t' << unsigned(line->StartAnimation) << '\t' << unsigned(line->EndAnimation) << '\n';
+        if (identity == 1334 && !line->BroadcastTextID && !line->SpellVisualKitID && !line->AdditionalDuration &&
+            !line->NextConversationLineID && !line->AnimKitID && !line->SpeechType && line->StartAnimation == 60 && line->EndAnimation == 60)
+        {
+            std::cout << "NONVERBAL\t" << identity << '\n';
+            continue;
+        }
+        if (!text)
+        {
+            std::cerr << "Missing BroadcastText " << line->BroadcastTextID << " for ConversationLine " << identity << '\n';
+            return 6;
+        }
         std::cout << "TEXT\t" << text->ID << '\t' << text->Text->Str[0] << '\t' << text->Text1->Str[0] << '\n';
         for (uint32 kit : text->SoundEntriesID)
             if (kit)

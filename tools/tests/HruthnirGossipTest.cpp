@@ -1,13 +1,25 @@
 #include <cassert>
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <string>
 using uint32 = uint32_t;
+using uint64 = uint64_t;
+using int32 = int32_t;
 enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     UNIT_NPC_FLAG_NONE = 0, UNIT_NPC_FLAG_GOSSIP = 1, UNIT_FIELD_NPC_FLAGS = 10,
-    UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2 };
+    UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
+    EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6 };
+#include "FunctionsClass.inc"
+#include "Functions.inc"
+struct InspectableFunctions : FunctionProcessor
+{
+    std::function<void()> LastQueued() const { assert(!m_functions_queue.empty()); return m_functions_queue.rbegin()->second; }
+};
 enum class GossipOptionNpc { None, Vendor };
 struct GossipMenuItem
 {
@@ -55,6 +67,16 @@ struct Player;
 struct CreatureAI
 {
     virtual ~CreatureAI() = default;
+    virtual void Reset() { }
+    virtual void UpdateAI(uint32) { }
+    uint32 starts = 0;
+    std::function<void()> reenterStart;
+    virtual void DoAction(int32 action)
+    {
+        assert(action == 1);
+        ++starts;
+        if (reenterStart) { auto callback = std::move(reenterStart); callback(); }
+    }
     virtual void sGossipSelect(Player*, uint32, uint32) { }
     virtual void sGossipSelectCode(Player*, uint32, uint32, char const*) { }
 };
@@ -104,11 +126,16 @@ struct Creature
     struct Info { uint32 ScriptID = 7; } info;
     bool world = true, alive = true, despawn = false, phase = true, visible = true, los = true;
     bool controlled = false, hostile = false;
+    bool IsAIEnabled = true;
+    uint32 state = 0, conversations = 0;
+    std::function<void()> reenterConversation;
     float distance = 4.0f;
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
     Map* map = &instanceMap;
     CreatureAI* ai = nullptr;
+    Creature* boss = nullptr;
     MotionMaster motion;
+    InspectableFunctions m_Functions;
     bool IsInWorld() const { return world; }
     bool IsAlive() const { return alive; }
     bool IsDespawn() const { return despawn; }
@@ -119,6 +146,20 @@ struct Creature
     ObjectGuid GetGUID() const { return {}; }
     Info* GetCreatureTemplate() { return &info; }
     CreatureAI* AI() { return ai; }
+    bool HasUnitState(uint32 mask) const { return (state & mask) != 0; }
+    Creature* FindNearestCreature(uint32 expected, float range, bool living)
+    {
+        assert(expected == 96034 && range == 60.0f && living);
+        return boss && boss->world && boss->alive && boss->distance <= range && boss->phase &&
+            boss->map == map && boss->instance == instance ? boss : nullptr;
+    }
+    void CreateConversation(uint32 conversation)
+    {
+        assert(conversation == 497);
+        ++conversations;
+        if (reenterConversation) { auto callback = std::move(reenterConversation); callback(); }
+    }
+#include "AddDelayed.inc"
     MotionMaster* GetMotionMaster() { return &motion; }
     void RemoveFlag(uint32 field, uint32 mask) { assert(field == UNIT_FIELD_NPC_FLAGS); flags &= ~mask; }
     void SetUInt32Value(uint32 field, uint32 value) { assert(field == UNIT_FIELD_NPC_FLAGS); flags = value; }
@@ -169,8 +210,25 @@ struct HruthnirScript : CreatureScript
 struct HruthnirAI : CreatureAI
 {
     Creature* me;
+    struct EventMap
+    {
+        uint32 updates = 0;
+        void Reset() { updates = 0; }
+        void Update(uint32) { ++updates; }
+        uint32 ExecuteEvent() { return 0; }
+        void RescheduleEvent(uint32, uint32) { }
+    };
+    bool victim = false;
+    uint32 casts = 0, melees = 0;
     explicit HruthnirAI(Creature* creature) : me(creature) { }
+    bool UpdateVictim() { return victim; }
+    void DoCast(uint32) { ++casts; }
+    void DoMeleeAttackIfReady() { ++melees; }
+#include "AIFields.inc"
 #include "AISelect.inc"
+#include "AIReset.inc"
+#include "Arrival.inc"
+#include "AIUpdate.inc"
 };
 struct ScriptMgr
 {
@@ -207,6 +265,8 @@ struct Fixture
 {
     Creature actor;
     HruthnirAI ai{&actor};
+    Creature boss;
+    CreatureAI bossAI;
     Player player;
     WorldSession session{&player};
     WorldPackets::NPC::GossipSelectOption packet;
@@ -215,9 +275,13 @@ struct Fixture
         scenarioManager = {};
         player.actor = &actor;
         actor.ai = &ai;
+        actor.boss = &boss;
+        boss.entry = 96034;
+        boss.ai = &bossAI;
         player.talk.menu._menuItems[0] = {};
     }
     void Select() { session.HandleGossipSelectOption(packet); }
+    void Tick(uint32 diff) { actor.m_Functions.Update(diff); actor.ai->UpdateAI(diff); }
 };
 int main()
 {
@@ -238,6 +302,24 @@ int main()
     assert(duplicate.actor.motion.moves == 2);
     assert(duplicate.player.talk.menu.GetItem(0));
     std::cout << "PASS baseline: actual native dispatch reaches unguarded movement for gossip-off, early stage, absent quest, invalid raw index/menu and repeated selection; menu remains cached.\n";
+#elif defined(CUE_BASELINE)
+    Fixture reset;
+    reset.Select(); reset.ai.Arrive();
+    reset.ai.Reset();
+    reset.actor.m_Functions.Update(6000);
+    assert(reset.bossAI.starts == 1 && reset.actor.conversations == 1);
+    Fixture duplicate;
+    duplicate.Select(); duplicate.ai.Arrive(); duplicate.ai.Arrive();
+    duplicate.actor.m_Functions.Update(6000);
+    assert(duplicate.bossAI.starts == 2 && duplicate.actor.conversations == 2);
+    Fixture replaced;
+    replaced.Select(); replaced.ai.Arrive();
+    HruthnirAI replacement(&replaced.actor);
+    replaced.actor.ai = &replacement;
+    replacement.Reset();
+    replaced.actor.m_Functions.Update(6000);
+    assert(replaced.bossAI.starts == 1);
+    std::cout << "PASS cue baseline: native Unit FunctionProcessor retains point7 callback after AI Reset/replacement and duplicate arrivals request497/start twice. Old AI kept alive in host, not a reproduced freed-pointer crash.\n";
 #else
     assert(!HruthnirGossip::CanStart(nullptr, nullptr));
     for (uint32 invalid = 0; invalid < 39; ++invalid)
@@ -339,6 +421,105 @@ int main()
     stale.player.talk.menu._menuItems[0] = {};
     stale.Select();
     assert(stale.actor.motion.moves == 1);
+    for (uint32 faction = 0; faction < 2; ++faction)
+    for (uint32 status : {uint32(1), uint32(3)})
+    for (uint32 combat = 0; combat < 4; ++combat)
+    {
+        Fixture fixture;
+        fixture.player.faction = faction;
+        fixture.player.status = status;
+        fixture.ai.victim = (combat & 1) != 0;
+        fixture.actor.state = (combat & 2) ? UNIT_STATE_CASTING | UNIT_STATE_STUNNED : 0;
+        fixture.ai.Arrive();
+        assert(!fixture.actor.conversations && !fixture.ai.magnarStartToken);
+        fixture.Select();
+        assert(fixture.ai.magnarArrivalPending && fixture.ai.magnarStartInstance == 42);
+        fixture.actor.reenterConversation = [&fixture]() { fixture.ai.Arrive(); };
+        fixture.ai.Arrive(); fixture.ai.Arrive();
+        assert(!fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken && fixture.actor.conversations == 1);
+        assert(fixture.ai.magnarStartToken.use_count() == 1 && !*fixture.ai.magnarStartToken);
+        auto callback = fixture.actor.m_Functions.LastQueued();
+        fixture.Tick(0); fixture.Tick(5999);
+        assert(!fixture.bossAI.starts && !*fixture.ai.magnarStartToken);
+        fixture.bossAI.reenterStart = [&fixture, callback]() { callback(); fixture.ai.Arrive(); };
+        fixture.Tick(1); fixture.Tick(6000); fixture.ai.Arrive(); callback();
+        assert(fixture.bossAI.starts == 1 && *fixture.ai.magnarStartToken && fixture.actor.conversations == 1);
+    }
+    for (uint32 afterArrival = 0; afterArrival < 2; ++afterArrival)
+    {
+        Fixture fixture;
+        fixture.Select();
+        if (afterArrival) { fixture.ai.Arrive(); fixture.Tick(5999); }
+        uint32 unrelated = 0;
+        fixture.actor.AddDelayedEvent(1, [&unrelated]() { ++unrelated; });
+        fixture.ai.Reset(); fixture.ai.Arrive(); fixture.Tick(6000);
+        assert(!fixture.bossAI.starts && unrelated == 1 && fixture.actor.conversations == afterArrival);
+        assert(!fixture.ai.magnarArrivalPending && !fixture.ai.magnarStartToken && !fixture.ai.magnarStartInstance);
+    }
+    for (uint32 invalid = 0; invalid < 17; ++invalid)
+    {
+        Fixture fixture;
+        fixture.Select(); fixture.ai.Arrive();
+        if (invalid == 0) fixture.actor.world = false;
+        if (invalid == 1) fixture.actor.alive = false;
+        if (invalid == 2) fixture.actor.despawn = true;
+        if (invalid == 3) fixture.actor.entry = 96469;
+        if (invalid == 4) fixture.actor.mapId = 1511;
+        if (invalid == 5) fixture.actor.instance = 43;
+        if (invalid == 6) fixture.actor.boss = nullptr;
+        if (invalid == 7) fixture.boss.IsAIEnabled = false;
+        if (invalid == 8) fixture.boss.ai = nullptr;
+        if (invalid == 9) fixture.boss.despawn = true;
+        if (invalid == 10) fixture.boss.distance = 60.01f;
+        if (invalid == 11) fixture.boss.world = false;
+        if (invalid == 12) fixture.boss.alive = false;
+        if (invalid == 13) fixture.boss.phase = false;
+        if (invalid == 14) fixture.boss.map = &otherMap;
+        if (invalid == 15) fixture.boss.instance = 43;
+        if (invalid == 16) fixture.actor.IsAIEnabled = false;
+        fixture.Tick(6000);
+        assert(!fixture.bossAI.starts && *fixture.ai.magnarStartToken);
+    }
+    Fixture replaced;
+    auto oldAI = std::make_unique<HruthnirAI>(&replaced.actor);
+    replaced.actor.ai = oldAI.get();
+    replaced.Select(); oldAI->Arrive();
+    oldAI.reset();
+    auto newAI = std::make_unique<HruthnirAI>(&replaced.actor);
+    replaced.actor.ai = newAI.get();
+    newAI->Reset(); newAI->Arrive(); replaced.Tick(6000);
+    assert(!replaced.bossAI.starts && replaced.actor.conversations == 1);
+    assert(!replaced.actor.m_Functions.SizeQueue() && !replaced.actor.m_Functions.Size());
+    Fixture suspended;
+    suspended.Select(); suspended.ai.Arrive();
+    HruthnirAI temporary(&suspended.actor);
+    suspended.actor.ai = &temporary;
+    suspended.Tick(6000);
+    assert(!suspended.bossAI.starts && *suspended.ai.magnarStartToken);
+    Fixture restored;
+    restored.Select(); restored.ai.Arrive();
+    HruthnirAI restoredTemporary(&restored.actor);
+    restored.actor.ai = &restoredTemporary;
+    restored.Tick(1000);
+    restored.actor.ai = &restored.ai;
+    restored.Tick(5000);
+    assert(restored.bossAI.starts == 1);
+    Fixture restarted;
+    restarted.Select(); restarted.ai.Arrive(); restarted.Tick(1000);
+    restarted.ai.Reset();
+    restarted.actor.flags |= 1;
+    restarted.player.talk.menu._menuItems[0] = {};
+    restarted.Select(); restarted.ai.Arrive();
+    restarted.Tick(5000);
+    assert(!restarted.bossAI.starts);
+    restarted.Tick(1000);
+    assert(restarted.bossAI.starts == 1 && restarted.actor.conversations == 2);
+    Fixture duringConversation;
+    duringConversation.Select();
+    duringConversation.actor.reenterConversation = [&duringConversation]() { duringConversation.ai.Reset(); };
+    duringConversation.ai.Arrive(); duringConversation.Tick(6000);
+    assert(!duringConversation.bossAI.starts);
+    std::cout << "PASS:16 faction/status/combat cue paths, native6000ms boundary, duplicate/reentrant arrival/consumption, Reset before/after arrival/during497,17 invalid actor/instance/boss contexts, unrelated callback retention, deleted and retained old-AI replacement and fresh-attempt timing. Explicit retry/497 factory acknowledgement not certified.\n";
     std::cout << "PASS: actual packet dispatch, native cached-menu getters/clear,39 rejected and explicitly readmitted contexts, both factions/statuses, stale-menu and reentrant/duplicate selection; gossip bit claimed before motion, other flags preserved. Controlled services, not client traversal.\n";
 #endif
 }
