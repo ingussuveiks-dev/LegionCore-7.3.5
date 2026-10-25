@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     if (!lines.Load(argv[1], 0) || !texts.Load(argv[1], 0) || !sounds.Load(argv[1], 0))
         return 5;
     lines.LoadFromDB(); texts.LoadFromDB(); sounds.LoadFromDB();
-    for (uint32 identity : {2066u, 2067u, 1324u, 1325u, 1326u, 1327u, 1328u, 1329u, 1330u, 1331u, 1332u, 1334u, 1335u, 1336u, 1337u})
+    for (uint32 identity : {2066u, 2067u, 1324u, 1325u, 1326u, 1327u, 1328u, 1329u, 1330u, 1331u, 1332u, 1334u, 1335u, 1336u, 1337u, 1341u, 1342u, 1343u, 1344u})
     {
         auto line = lines.LookupEntry(identity);
         auto text = line ? texts.LookupEntry(line->BroadcastTextID) : nullptr;

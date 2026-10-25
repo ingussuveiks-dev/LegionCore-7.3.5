@@ -2,6 +2,7 @@
   "date": "2026-10-25",
   "build": "7.3.5.26972",
   "scope": "Protection39191 / Hruthnir96468 / conversation497: repair the published per-player dialogue deadline only. Not full Magnar timing, NPC-caster cleanup, all dialogue/VFX or client traversal certification.",
+  "magnar_followup": "docs/audits/magnar-conversation-budgets-2026-10-25.json repairs the separate498/504 published deadlines after seven full native voice decodes. New sampled video exposes final504 actor/deposit/45784 staging as the next priority; it is not repaired by either budget migration. Original remaining findings below remain historical/open except those specific deadlines.",
   "inherited": "Clean main=origin/main fd9803fb; git status/log,36-route worklist, artifact-routes, donor review and Hruthnir cue audit reviewed. No server existed before this unit's canonical startup. Root AGENTS.md applies; no deeper applicable file found.",
   "cause": "All three497 conversation_creature durations were0. Actual GenerateDynamicFieldData therefore returns duration0, and CreateConversation's30000 fallback plus5000 padding publishes35000. Native CanNeverSee2 hides the conversation for a Player at35001ms after their own first visibility timestamp, before line1332's40000ms offset and blank terminal1334's41000ms. Actual NPC caster96468 is never added to playing by that Player-only method; Update need not remove the object itself. The native host reproduces both the per-player truncation and unchanged NPC-caster persistence, not an asserted live client disappearance.",
   "sources_in_order": {

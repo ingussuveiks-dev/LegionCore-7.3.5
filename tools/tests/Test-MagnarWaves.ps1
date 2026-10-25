@@ -56,7 +56,7 @@ SELECT 'start-smart',COUNT(*) FROM smart_scripts WHERE source_type=0 AND entryor
   if($LASTEXITCODE){throw 'Live wave actor metadata failed'}
  }finally{$env:MYSQL_PWD=$previous}
  foreach($expected in @("actor`t94707`tIcebreaker Tombguard`t`t","actor`t94813`tSpectral Windshaper`tSmartAI`t","actor`t97123`tIcebreaker Champion`t`t","sai`t94813`t0`t0`t11`t191038`t2","addon`t94707`t165114 191821","addon`t97123`t165114 191821")){if($rows -notcontains $expected){throw "Live wave actor differs: $expected"}}
- foreach($expected in @("dialogue-line`t1335`t0`t0`t0","dialogue-line`t1336`t1`t2350`t1","dialogue-line`t1337`t2`t7300`t0","dialogue-actor`t0`t96034`t4300","dialogue-actor`t1`t96468`t4300","dialogue-models`t0")){if($rows -notcontains $expected){throw "Live498 dialogue differs: $expected"}}
+ foreach($expected in @("dialogue-line`t1335`t0`t0`t0","dialogue-line`t1336`t1`t2350`t1","dialogue-line`t1337`t2`t7300`t0","dialogue-actor`t0`t96034`t26000","dialogue-actor`t1`t96468`t4300","dialogue-models`t0")){if($rows -notcontains $expected){throw "Live498 dialogue differs: $expected"}}
  foreach($expected in @("start-binding`t96468`t`tnpc_hrutnir","start-spawn`t361306`t96468`t1495`t6999","start-smart`t0")){if($rows -notcontains $expected){throw "Native start companion differs: $expected"}}
  if($rows.Count -ne 15){throw 'Unexpected wave actor/script/addon/dialogue/start rows'}
  $previous=$env:LEGION_DIALOGUE_CONFIG
