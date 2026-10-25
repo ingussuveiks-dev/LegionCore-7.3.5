@@ -4,6 +4,9 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 #include "shields_rest.h"
 
 //Phases: 6363
@@ -1138,15 +1141,59 @@ public:
     }
 };
 
+namespace TruthguardAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 249420 || weapon->GetMapId() != 1495 ||
+            !player->GetMap() || player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) ||
+            player->GetQuestRewardStatus(42017) ||
+            (player->GetQuestStatus(42017) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42017) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1082 && scenario->GetCurrentStep() == DATA_STAGE_FINAL;
+    }
+}
+
 //249420
 class go_sr_truthguard : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        bool GossipHello(Player* player, bool) override
+        {
+            return !TruthguardAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED ||
+                player->HasItemCount(128866, 1, true);
+        }
+    };
+
 public:
     go_sr_truthguard() : GameObjectScript("go_sr_truthguard") {}
 
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (!TruthguardAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED)
+            return true;
+        if (player->HasItemCount(128866, 1, true))
+        {
+            if (player->HasItemCount(128866))
+                go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true;
+        }
+        return false;
+    }
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (!target)
+        if (!target || !go || state != GO_JUST_DEACTIVATED || go->getLootState() != GO_JUST_DEACTIVATED ||
+            !TruthguardAcquisition::CanTake(target->ToPlayer(), go) || !target->ToPlayer()->HasItemCount(128866))
             return;
 
         if (Player* player = target->ToPlayer())
@@ -1154,7 +1201,6 @@ public:
             if (InstanceScript* instance = player->GetInstanceScript())
                 if (instance->getScenarionStep() == DATA_STAGE_FINAL)
                 {
-                    if (state == GO_JUST_DEACTIVATED || player->HasItemCount(128866))
                     {
                         instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50545); //Step End
                         if (instance->GetData(DATA_YRGRIM_EVENT) == 6)
