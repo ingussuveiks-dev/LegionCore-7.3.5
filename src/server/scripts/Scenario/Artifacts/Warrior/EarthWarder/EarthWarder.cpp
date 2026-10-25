@@ -365,7 +365,7 @@ public:
             events.RescheduleEvent(EVENT_4, 33000); // event
         }
 
-        bool IsFinalePlayer(Player* player) const
+        bool IsEncounterPlayer(Player* player, uint32 step) const
         {
             if (!player || !player->IsInWorld() || !player->CanContact() || player->getClass() != CLASS_WARRIOR ||
                 !me->GetMap() || player->GetMap() != me->GetMap() || player->GetInstanceId() != me->GetInstanceId() ||
@@ -373,13 +373,13 @@ public:
                 (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE))
                 return false;
             Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
-            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 4;
+            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == step;
         }
 
-        Player* GetFinalePlayer(Unit* attacker) const
+        Player* GetEncounterPlayer(Unit* attacker, uint32 step) const
         {
             Player* owner = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
-            if (IsFinalePlayer(owner))
+            if (IsEncounterPlayer(owner, step))
                 return owner;
             Player* candidate = nullptr;
             if (!me->GetMap())
@@ -387,7 +387,7 @@ public:
             for (auto const& reference : me->GetMap()->GetPlayers())
             {
                 Player* player = reference.getSource();
-                if (IsFinalePlayer(player) && (!candidate || me->GetDistance(player) < me->GetDistance(candidate)))
+                if (IsEncounterPlayer(player, step) && (!candidate || me->GetDistance(player) < me->GetDistance(candidate)))
                     candidate = player;
             }
             return candidate;
@@ -407,7 +407,7 @@ public:
             damage = 0;
             if (first_phase)
                 return;
-            Player* player = GetFinalePlayer(attacker);
+            Player* player = GetEncounterPlayer(attacker, 4);
             if (!player)
                 return;
             finaleStarted = true;
@@ -428,7 +428,7 @@ public:
             summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
         }
 
-        void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
+        void SummonedCreatureDies(Creature* summon, Unit* killer) override
         {
             if (!summon || summon->IsAlive())
                 return;
@@ -437,13 +437,30 @@ public:
             if (!activeWave.erase(summon->GetGUID()) || !count_dies)
                 return;
             --count_dies;
-            AdvanceWaveIfReady();
+            AdvanceWaveIfReady(killer);
         }
 
-        void AdvanceWaveIfReady()
+        void AdvanceWaveIfReady(Unit* killer = nullptr)
         {
             if (!releasingWave && !count_dies && first_phase && stop_combat && wave > 1 && wave <= 6)
-                LaunchEventWave(wave++);
+            {
+                if (wave < 6)
+                    LaunchEventWave(wave++);
+                else
+                {
+                    if (me->GetEntry() != 96034 || me->GetMapId() != 1495)
+                        return;
+                    Player* player = GetEncounterPlayer(killer, 3);
+                    if (!player)
+                        return;
+                    ++wave;
+                    first_phase = false;
+                    stop_combat = false;
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                    me->SetReactState(REACT_DEFENSIVE);
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46427);
+                }
+            }
         }
 
         void DoAction(int32 const action) override
@@ -463,6 +480,9 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            if (wave == 6)
+                AdvanceWaveIfReady();
+
             if (!UpdateVictim())
                 return;
 
@@ -531,17 +551,6 @@ public:
                     count = 3;
                     end = true;
                     break;
-                case 6:
-                {
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46427);
-
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    me->SetReactState(REACT_DEFENSIVE);
-                    first_phase = false;
-                    stop_combat = false;
-                    return;
-                }
                 default:
                     return;
             }

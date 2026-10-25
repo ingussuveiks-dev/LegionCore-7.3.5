@@ -1,6 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CreditBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
+if(($Baseline -or $CreditBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify deployed waves'}
+if($Baseline -and $CreditBaseline){throw 'Choose only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-waves"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,18 +9,21 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "6e6d1715:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned wave source unavailable'}}
+if($CreditBaseline){$source=(& git -C $repo show "c0f8efce:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned credit source unavailable'}}
 [IO.File]::WriteAllText("$out/Positions.inc",(Block $source 'Position const trashPos[12]')+';')
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 foreach($entry in @(@('Reset','void Reset()'),@('EnterCombat','void EnterCombat('),@('JustSummoned','void JustSummoned('),@('Death','void SummonedCreatureDies('),@('Start','void DoAction('),@('Update','void UpdateAI('),@('Launch','void LaunchEventWave('),@('Summon','void SummonTrash('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
-[IO.File]::WriteAllText("$out/Advance.inc",$(if($Baseline){''}else{Block $source 'void AdvanceWaveIfReady()'}))
+[IO.File]::WriteAllText("$out/Advance.inc",$(if($Baseline){''}else{Block $source 'void AdvanceWaveIfReady('}))
+[IO.File]::WriteAllText("$out/Eligible.inc",$(if($Baseline -or $CreditBaseline){''}else{(Block $source 'bool IsEncounterPlayer(')+(Block $source 'Player* GetEncounterPlayer(')}))
 $source=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
+[IO.File]::WriteAllText("$out/OwnerPlayer.inc",(Block $source 'Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself() const'))
 $first=$source.IndexOf('        if (TempSummon* summon = creature->ToTempSummon())',$source.IndexOf('void Unit::Kill('));$last=$source.IndexOf('        // Call instance script.',$first)
 if($first -lt 0 -or $last -le $first){throw 'Missing native kill/summoner dispatch'}
 [IO.File]::WriteAllText("$out/NativeDeath.inc",$source.Substring($first,$last-$first))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/MagnarWavesTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Magnar wave regression failed'}
 if($VerifyReleaseBinary){

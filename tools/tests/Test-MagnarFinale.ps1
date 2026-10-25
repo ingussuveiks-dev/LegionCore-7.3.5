@@ -12,7 +12,7 @@ $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $source 'void Reset()'))
-[IO.File]::WriteAllText("$out/Eligible.inc",$(if($Baseline){''}else{(Block $source 'bool IsFinalePlayer(')+(Block $source 'Player* GetFinalePlayer(')}))
+[IO.File]::WriteAllText("$out/Eligible.inc",$(if($Baseline){''}else{(Block $source 'bool IsEncounterPlayer(')+(Block $source 'Player* GetEncounterPlayer(')}))
 [IO.File]::WriteAllText("$out/Before.inc",$(if($Baseline){Block $source 'void DamageTaken('}else{''}))
 [IO.File]::WriteAllText("$out/After.inc",$(if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}))
 $source=Get-Content "$PSScriptRoot/WarswordsRetreatTest.cpp" -Raw

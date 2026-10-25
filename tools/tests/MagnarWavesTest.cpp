@@ -14,10 +14,15 @@ using int32 = int32_t;
 enum { REACT_PASSIVE, REACT_DEFENSIVE, UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE = 0x2000000,
     UNIT_FLAG_IMMUNE_TO_PC = 0x100, UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80,
     UNIT_STATE_CASTING = 1, UNIT_STATE_STUNNED = 2, CRITERIA_TYPE_SCRIPT_EVENT_2 = 92,
+    CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5 };
+struct Unit;
+struct Player;
 struct ObjectGuid
 {
     uint32 identity;
+    Unit* unit = nullptr;
+    bool IsPlayer() const;
     bool operator==(ObjectGuid const& other) const { return identity == other.identity; }
     bool operator<(ObjectGuid const& other) const { return identity < other.identity; }
 };
@@ -40,16 +45,57 @@ struct CreatureAI
 struct Unit
 {
     virtual ~Unit() = default;
+    Unit* owner = nullptr;
+    Unit* charmer = nullptr;
+    bool available = true;
+    virtual Player* ToPlayer() { return nullptr; }
+    virtual Player const* ToPlayer() const { return nullptr; }
     virtual Creature* ToCreature() { return nullptr; }
+    ObjectGuid GetCharmerOrOwnerGUID() const { return {0, charmer ? charmer : owner}; }
+    Player* GetCharmerOrOwnerPlayerOrPlayerItself() const;
     bool IsAIEnabled = true;
     void NotifyDeath(Creature* creature);
 };
+struct Scenario
+{
+    uint32 identity = 909, step = 3;
+    uint32 GetScenarioId() const { return identity; }
+    uint32 GetCurrentStep() const { return step; }
+};
+struct ScenarioMgr
+{
+    Scenario scenario;
+    bool available = true;
+    Scenario* GetScenario(uint32 identity) { return available && identity == 42 ? &scenario : nullptr; }
+} scenarioManager;
+auto* sScenarioMgr = &scenarioManager;
+struct Map;
 struct Player : Unit
 {
-    uint32 credits = 0;
+    uint32 credits = 0, status = QUEST_STATUS_INCOMPLETE, playerClass = CLASS_WARRIOR, instance = 42;
+    bool world = true, contact = true, phase = true, rewarded = false, alliance = false, alive = true;
+    float distance = 25;
+    Map* map = nullptr;
+    Player* ToPlayer() override { return this; }
+    Player const* ToPlayer() const override { return this; }
+    bool IsInWorld() const { return world; }
+    bool CanContact() const { return contact; }
+    uint32 getClass() const { return playerClass; }
+    Map* GetMap() const { return map; }
+    uint32 GetInstanceId() const { return instance; }
+    bool InSamePhase(Creature*) const { return phase; }
+    bool IsWithinDistInMap(Creature*, float range) const { assert(range == 100.f); return distance <= range; }
+    bool GetQuestRewardStatus(uint32 identity) const { assert(identity == 39191); return rewarded; }
+    uint32 GetQuestStatus(uint32 identity) const { assert(identity == 39191); return status; }
     std::function<void()> onCredit;
-    void UpdateAchievementCriteria(uint32 type, uint32 event) { assert(type == 92 && event == 46427); ++credits; if (onCredit) onCredit(); }
+    void UpdateAchievementCriteria(uint32 type, uint32 event) { assert(type == 92 && event == 46427); ++credits; if (onCredit) onCredit(); scenarioManager.scenario.step = 4; }
 };
+bool ObjectGuid::IsPlayer() const { return unit && unit->ToPlayer(); }
+struct ObjectAccessor
+{
+    static Player* GetPlayer(Unit const&, ObjectGuid guid) { return guid.unit && guid.unit->available ? guid.unit->ToPlayer() : nullptr; }
+};
+#include "OwnerPlayer.inc"
 struct MotionMaster
 {
     uint32 jumps = 0;
@@ -57,13 +103,16 @@ struct MotionMaster
 };
 struct Map
 {
+    struct Reference { Player* player; Player* getSource() const { return player; } };
+    std::vector<Reference> players;
+    auto const& GetPlayers() const { return players; }
     std::map<ObjectGuid, Creature*> actors;
     Creature* GetCreature(ObjectGuid guid) { auto found = actors.find(guid); return found == actors.end() ? nullptr : found->second; }
 };
 struct Creature : Unit
 {
     ObjectGuid guid{0};
-    uint32 entry = 0, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0, unitState = 0;
+    uint32 entry = 0, mapId = 1495, instance = 42, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0, unitState = 0;
     bool alive = true, victim = true;
     CreatureAI* ai = nullptr;
     Creature* ally = nullptr;
@@ -78,8 +127,11 @@ struct Creature : Unit
     CreatureAI* AI() const { return ai; }
     ObjectGuid GetGUID() const { return guid; }
     uint32 GetEntry() const { return entry; }
+    uint32 GetMapId() const { return mapId; }
+    uint32 GetInstanceId() const { return instance; }
     bool IsAlive() const { return alive; }
     Map* GetMap() const { return map; }
+    float GetDistance(Player* target) const { return target->distance; }
     void SetReactState(uint32) { }
     void SetFlag(uint32, uint32 mask) { flags |= mask; }
     void RemoveFlag(uint32, uint32 mask) { flags &= ~mask; if (onActivation) onActivation(this); }
@@ -146,6 +198,7 @@ struct Magnar : CreatureAI
 #include "JustSummoned.inc"
 #include "Death.inc"
 #include "Advance.inc"
+#include "Eligible.inc"
 #include "Start.inc"
 #include "Update.inc"
 #include "Launch.inc"
@@ -162,6 +215,8 @@ struct Fixture
     std::vector<std::unique_ptr<TempSummon>> summons;
     Fixture()
     {
+        scenarioManager = {}; player.map = &map; pet.owner = guardian.owner = &player;
+        map.players = {{nullptr}, {&player}};
         actor.entry = 96034; actor.map = &map; actor.ai = &ai; actor.player = &player; actor.ally = &ally;
         ally.ai = &allyAI;
         actor.spawn = [&](uint32 identity, Position const&) {
@@ -184,6 +239,11 @@ struct Fixture
     {
         summons[index]->alive = false; (killer ? killer : &player)->NotifyDeath(summons[index].get());
     }
+    void FinishWaves(Unit* killer = nullptr)
+    {
+        BeginWaves();
+        for (uint32 index = 0; index < 10; ++index) Die(index, killer);
+    }
 };
 int main()
 {
@@ -192,6 +252,19 @@ int main()
     { Fixture fixture; fixture.BeginWaves(); fixture.Die(0); fixture.Die(0); assert(fixture.ai.wave == 3 && fixture.summons[1]->alive); }
     { Fixture fixture; fixture.BeginWaves(); fixture.Die(10); fixture.Die(11); assert(fixture.ai.wave == 3 && fixture.summons[0]->alive && fixture.summons[1]->alive); }
     std::cout << "BASELINE: pinned6e6d1715 underflows before waves and advances from a duplicate or two unselected deaths while both intended opponents can remain alive. Native death notification body, controlled actors/clock.\n";
+#elif defined(CREDIT_BASELINE)
+    {
+        Fixture fixture; Player bystander; bystander.playerClass = 2; bystander.status = 0; bystander.map = &fixture.map;
+        fixture.actor.player = &bystander; fixture.FinishWaves(&fixture.pet);
+        assert(bystander.credits == 1 && !fixture.player.credits && !fixture.ai.first_phase && fixture.ai.wave == 7);
+    }
+    {
+        Fixture fixture; fixture.actor.player = nullptr; fixture.map.players.clear(); fixture.FinishWaves(&fixture.ally);
+        assert(!fixture.player.credits && !fixture.ai.first_phase && !fixture.ai.stop_combat && fixture.ai.wave == 7);
+        fixture.actor.player = &fixture.player; fixture.map.players = {{&fixture.player}}; fixture.ai.UpdateAI(1000);
+        assert(!fixture.player.credits && fixture.ai.wave == 7);
+    }
+    std::cout << "BASELINE: pinnedc0f8efce sends46427 to an unrelated nearest non-Warrior despite a pet owner, and permanently opens the final duel without credit when no recipient is present. Controlled scenario/map services.\n";
 #else
     for (uint32 source = 0; source < 3; ++source)
     {
@@ -262,6 +335,82 @@ int main()
         assert(fixture.actor.conversations == 1);
     }
     { Fixture fixture; fixture.BeginWaves(); fixture.ai.Reset(); fixture.ai.UpdateAI(60000); assert(!fixture.actor.conversations && !fixture.ai.events.events.count(EVENT_5)); }
+    for (bool alliance : {false, true}) for (uint32 status : {1u, 3u}) for (uint32 source = 0; source < 5; ++source)
+    {
+        Fixture fixture; Player peer, bystander; Unit charmed;
+        fixture.player.alliance = alliance; fixture.player.status = status; fixture.player.alive = false;
+        peer.map = bystander.map = &fixture.map; peer.distance = 5; bystander.distance = 1; bystander.playerClass = 2;
+        fixture.map.players = {{&bystander}, {nullptr}, {&peer}, {&fixture.player}}; fixture.actor.player = &bystander;
+        charmed.charmer = &fixture.player;
+        Unit* killer = source == 0 ? static_cast<Unit*>(&fixture.player) : source == 1 ? &fixture.pet : source == 2 ? &fixture.guardian : source == 3 ? &charmed : &fixture.ally;
+        fixture.FinishWaves(killer);
+        assert(!bystander.credits && fixture.player.credits == uint32(source != 4) && peer.credits == uint32(source == 4));
+        assert(scenarioManager.scenario.step == 4 && fixture.ai.wave == 7 && !fixture.ai.first_phase && !fixture.ai.stop_combat);
+        for (uint32 retry = 0; retry < 3; ++retry) { fixture.ai.AdvanceWaveIfReady(killer); fixture.ai.UpdateAI(0); fixture.Die(9, killer); }
+        assert(fixture.player.credits + peer.credits == 1);
+    }
+    for (uint32 invalid = 0; invalid < 19; ++invalid)
+    {
+        Fixture fixture; Map unrelated;
+        if (invalid == 0) fixture.player.world = false;
+        if (invalid == 1) fixture.player.contact = false;
+        if (invalid == 2) fixture.player.playerClass = 2;
+        if (invalid == 3) fixture.player.map = &unrelated;
+        if (invalid == 4) fixture.player.instance = 43;
+        if (invalid == 5) fixture.player.phase = false;
+        if (invalid == 6) fixture.player.distance = 101;
+        if (invalid == 7) fixture.player.rewarded = true;
+        if (invalid == 8) fixture.player.status = 0;
+        if (invalid == 9) fixture.player.status = 5;
+        if (invalid == 10) fixture.player.status = 6;
+        if (invalid == 11) scenarioManager.available = false;
+        if (invalid == 12) scenarioManager.scenario.identity = 944;
+        if (invalid == 13) scenarioManager.scenario.step = 2;
+        if (invalid == 14) scenarioManager.scenario.step = 4;
+        if (invalid == 15) scenarioManager.scenario.step = 5;
+        if (invalid == 16) fixture.actor.entry = 96035;
+        if (invalid == 17) fixture.actor.mapId = 1220;
+        if (invalid == 18) fixture.actor.instance = 43;
+        fixture.FinishWaves(&fixture.pet);
+        assert(!fixture.player.credits && fixture.ai.first_phase && fixture.ai.stop_combat && fixture.ai.wave == 6 && !fixture.ai.count_dies);
+        assert((fixture.actor.flags & UNIT_FLAG_IMMUNE_TO_PC) && (fixture.actor.flags & UNIT_FLAG_NOT_SELECTABLE));
+        fixture.actor.victim = false; fixture.actor.unitState = UNIT_STATE_CASTING | UNIT_STATE_STUNNED;
+        fixture.ai.UpdateAI(30000); assert(!fixture.player.credits && fixture.ai.first_phase && fixture.ai.wave == 6);
+        fixture.player.world = fixture.player.contact = fixture.player.phase = true;
+        fixture.player.playerClass = CLASS_WARRIOR; fixture.player.map = &fixture.map; fixture.player.instance = 42;
+        fixture.player.distance = 100; fixture.player.rewarded = false; fixture.player.status = QUEST_STATUS_INCOMPLETE;
+        fixture.actor.entry = 96034; fixture.actor.mapId = 1495; fixture.actor.instance = 42; scenarioManager = {};
+        fixture.ai.UpdateAI(0);
+        assert(fixture.player.credits == 1 && !fixture.ai.first_phase && !fixture.ai.stop_combat && fixture.ai.wave == 7);
+        assert((fixture.actor.flags & UNIT_FLAG_IMMUNE_TO_NPC) && !(fixture.actor.flags & (UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_1)));
+        fixture.ai.UpdateAI(30000); assert(fixture.player.credits == 1);
+    }
+    {
+        Fixture fixture; fixture.map.players.clear(); fixture.player.available = false; fixture.actor.player = nullptr;
+        fixture.FinishWaves(&fixture.guardian); fixture.actor.victim = false;
+        assert(fixture.ai.wave == 6 && !fixture.player.credits);
+        fixture.ai.Reset(); fixture.map.players = {{&fixture.player}}; fixture.ai.UpdateAI(0);
+        assert(fixture.ai.wave == 6 && !fixture.player.credits && !fixture.ai.stop_combat);
+    }
+    {
+        Fixture fixture; Player peer; peer.map = &fixture.map; fixture.map.players = {{&peer}};
+        fixture.player.available = false; fixture.FinishWaves(&fixture.guardian);
+        assert(!fixture.player.credits && peer.credits == 1);
+    }
+    {
+        Fixture fixture;
+        fixture.player.onCredit = [&]() {
+            assert(fixture.ai.wave == 7 && !fixture.ai.first_phase && !fixture.ai.stop_combat);
+            fixture.ai.AdvanceWaveIfReady(&fixture.pet); fixture.ai.UpdateAI(0); fixture.Die(9, &fixture.guardian);
+        };
+        fixture.actor.onActivation = [&](Creature*) { fixture.ai.AdvanceWaveIfReady(&fixture.pet); };
+        fixture.FinishWaves(); assert(fixture.player.credits == 1);
+    }
+    {
+        Fixture fixture; fixture.map.players.clear(); fixture.FinishWaves(&fixture.ally); fixture.actor.victim = false;
+        fixture.map.players = {{&fixture.player}}; fixture.ai.UpdateAI(0); assert(fixture.player.credits == 1);
+    }
     std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Combat-gated498 resumes once after waves/victim/casting gates and Reset clears its pending event. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
+    std::cout << "PASS:40 faction/status/source wave-credit combinations prefer actual player/pet/guardian/charmer owner over eligible peers; dead owner remains eligible.19 invalid contexts retain the protected completed-wave state and retry before victim/cast/stun gates only after readmission. Missing/null/unavailable owner uses eligible native-map fallback, Reset cancels pending credit, and reentrant flag/credit/death/tick calls cannot duplicate46427. Shared scenario services controlled, not actual multiplayer/client traversal.\n";
 #endif
 }
