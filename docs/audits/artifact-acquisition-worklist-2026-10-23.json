@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "weapon_beam_audit": "docs/audits/earthwarder-weapon-beam-2026-10-25.json",
+      "weapon_beam_review": "94854 flags_extra0 chose random33225(no state kit) or64600(native58143). Guarded04 activates existing trigger selection for exact single1495/phased carrier/native models, retaining GM debug form. Native seed0 baseline,19 SQL custom guards, both fixed seeds/InitEntry/client field,58143 item128288/128289 attachments plus250007/253568 local models and canonical bridge checked. Corrects deterministic ordinary-player presentation, not rendered VFX or successful immediate45784/6000 timing. New14:01 video still distinctly shows purple Magnar departure before14:06/14:11 white weapon beam; ascension graph/full handoff remains priority.",
       "magnar_finale_creation_audit": "docs/audits/magnar-finale-creation-2026-10-25.json",
       "magnar_finale_creation_review": "Pinned65f7a845/native void Unit wrapper reproduces failed504 still granting45784/despawn and consuming retry. Local bool-factory helper now requires acknowledged504 before flags/faction/credit/removal; failures delete/log/release same epoch for later lethal retry. Reset/context revalidation retires only its new object and cannot clear a newer successful claim.20 failure/retry,22 revoked contexts, nested old-success/old-failure Reset plus existing80 scaled/16 invalid cases and actual canonical operands checked. No automatic tick retry or full final handoff repair: successful504 still immediately45784/6000; actual actor/deposit/beam/stage timing stays priority.",
       "magnar_conversation_budgets_audit": "docs/audits/magnar-conversation-budgets-2026-10-25.json",

@@ -8,6 +8,12 @@
 using uint8 = uint8_t;
 using uint32 = uint32_t;
 using int32 = int32_t;
+#ifndef ARTIFACT_MODEL_ENTRY
+#define ARTIFACT_MODEL_ENTRY 100310
+#endif
+#ifndef ARTIFACT_MODEL_DISPLAY
+#define ARTIFACT_MODEL_DISPLAY 66609
+#endif
 uint32 randomModel = 0;
 uint32 urand(uint32 minimum, uint32 maximum) { assert(maximum >= minimum); return minimum + randomModel % (maximum - minimum + 1); }
 constexpr uint32 CREATURE_FLAG_EXTRA_TRIGGER = 128, UNIT_FIELD_FLAGS_2 = 0, UNIT_FLAG2_MIRROR_IMAGE = 0;
@@ -27,8 +33,8 @@ CreatureModelInfo Classify(uint32 model) {
     return modelInfo;
 }
 struct CreatureTemplate {
-    uint32 Entry = 100310, flags_extra = 0;
-    int32 Modelid[4] = {33225, 66609, 0, 0};
+    uint32 Entry = ARTIFACT_MODEL_ENTRY, flags_extra = 0;
+    int32 Modelid[4] = {33225, ARTIFACT_MODEL_DISPLAY, 0, 0};
     int32 GetRandomValidModelId() const;
     int32 GetFirstValidModelId() const;
     uint32 GetFirstInvisibleModel() const;
@@ -36,7 +42,7 @@ struct CreatureTemplate {
 };
 struct CreatureData { uint32 displayid; };
 struct ObjectMgr {
-    std::map<uint32, CreatureModelInfo> models{{33225, Classify(53)}, {66609, Classify(3923)}};
+    std::map<uint32, CreatureModelInfo> models{{33225, Classify(53)}, {ARTIFACT_MODEL_DISPLAY, Classify(3923)}};
     CreatureModelInfo const* GetCreatureModelInfo(uint32 id) { auto found = models.find(id); return found == models.end() ? nullptr : &found->second; }
     uint32 GetCreatureDisplay(int32 id) const { return id; }
     CreatureTemplate const* GetCreatureTemplate(uint32) const { return nullptr; }
@@ -98,8 +104,8 @@ int main(int argc, char** argv) {
     Player normal, gm{true};
     for (randomModel = 0; randomModel != 2; ++randomModel) {
         assert(actor.InitModel());
-        assert(actor.display == 66609 && actor.native == 66609);
-        assert(actor.ClientDisplay(&normal) == 66609);
+        assert(actor.display == ARTIFACT_MODEL_DISPLAY && actor.native == ARTIFACT_MODEL_DISPLAY);
+        assert(actor.ClientDisplay(&normal) == ARTIFACT_MODEL_DISPLAY);
         assert(actor.ClientDisplay(&gm) == 33225);
     }
     CreatureTemplate unrelated;
@@ -113,5 +119,6 @@ int main(int argc, char** argv) {
     CreatureData overrideModel{33225};
     actor.definition = &definition;
     assert(actor.InitModel(&overrideModel) && actor.display == 33225);
-    std::cout << "PASS: production selection, InitEntry and client display field retain native Talonclaw66609 for normal players, GM debug model and unrelated model/override behavior\n";
+    std::cout << "PASS: production selection, InitEntry and client display field retain native artifact display " << ARTIFACT_MODEL_DISPLAY
+        << " for normal players, GM debug model and unrelated model/override behavior\n";
 }
