@@ -7,13 +7,20 @@
 #include <vector>
 using uint32=uint32_t;
 using uint64=uint64_t;
-enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, TYPEID_PLAYER=4 };
+enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, TYPEID_PLAYER=4, UNIT_FIELD_NPC_FLAGS=1,
+    UNIT_NPC_FLAG_GOSSIP=1, CRITERIA_TYPE_SCRIPT_EVENT_2=92, MOTION_SLOT_IDLE=0 };
+constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=1.57f;
 struct ObjectGuid
 {
-    uint64 low=1,high=7;
-    bool operator<(ObjectGuid const& other) const {return high<other.high || (high==other.high && low<other.low);}
-    bool operator==(ObjectGuid const& other) const {return high==other.high && low==other.low;}
+    uint64 _low,_high;
+    ObjectGuid();
+    ObjectGuid(uint64 low,uint64 high):_low(low),_high(high){}
+    void Clear();
+    bool IsEmpty() const;
+    bool operator<(ObjectGuid const& other) const {return _high<other._high || (_high==other._high && _low<other._low);}
+    bool operator==(ObjectGuid const& other) const {return _high==other._high && _low==other._low;}
 };
+#include "GuidLifecycle.inc"
 struct Map {} liveMap,otherMap;
 struct WorldObject
 {
@@ -33,10 +40,11 @@ struct Unit : WorldObject
 };
 struct Player : Unit
 {
-    ObjectGuid guid;
+    ObjectGuid guid{1,7};
     bool contact=true,alive=true,teleport=false,phase=true,visible=true,los=true,rewarded=false;
-    uint32 klass=2,status=3,instance=42,credits=0;
+    uint32 klass=2,status=3,instance=42,credits=0,arrivalCredits=0;
     float distance=1;
+    std::function<void()> onCriteria;
     Player* ToPlayer() override {return this;}
     uint32 GetTypeId() const override {return TYPEID_PLAYER;}
     bool CanContact() const {return contact;}
@@ -52,17 +60,25 @@ struct Player : Unit
     uint32 GetQuestStatus(uint32 quest) const {assert(quest==42120);return status;}
     ObjectGuid GetGUID() const {return guid;}
     void KilledMonsterCredit(uint32 entry) {assert(entry==106416);++credits;}
+    void UpdateAchievementCriteria(uint32 type,uint32 event) {assert(type==92 && event==50765);++arrivalCredits;if(onCriteria)onCriteria();}
 };
 struct Motion
 {
-    uint32 moves=0;
+    uint32 moves=0,follows=0;
+    Creature* followed=nullptr;
+    float followAngle=0;
     void MovePoint(uint32 point,float positionX,float positionY,float positionZ)
     {assert(point==1 && positionX==2137.70f && positionY==2397.60f && positionZ==118.54f);++moves;}
+    void MoveFollow(Creature* actor,float distance,float angle,uint32 slot)
+    {assert(distance==PET_FOLLOW_DIST && slot==MOTION_SLOT_IDLE);++follows;followed=actor;followAngle=angle;}
 };
 struct Creature : WorldObject
 {
     bool alive=true;
-    uint32 entry=106429,mapId=1539,instance=42;
+    uint32 entry=106429,mapId=1539,instance=42,flags=0x200;
+    Player* nearestPlayer=nullptr;
+    Creature* efrin=nullptr;
+    Creature* duval=nullptr;
     Motion motion;
     std::vector<std::function<void()>> pending;
     bool IsAlive() const {return alive;}
@@ -71,6 +87,11 @@ struct Creature : WorldObject
     uint32 GetInstanceId() const {return instance;}
     bool IsWithinDistInMap(Unit* who,float radius) const {return static_cast<Player*>(who)->distance<=radius;}
     Motion* GetMotionMaster() {return &motion;}
+    Player* FindNearestPlayer(float radius) {assert(radius==100.0f);return nearestPlayer;}
+    Creature* FindNearestCreature(uint32 identity,float radius,bool live)
+    {assert(radius==50 && live && (identity==106371 || identity==106370));return identity==106371?efrin:duval;}
+    void SetFlag(uint32 field,uint32 mask) {assert(field==UNIT_FIELD_NPC_FLAGS);flags|=mask;}
+    void SetUInt32Value(uint32 field,uint32 value) {assert(field==UNIT_FIELD_NPC_FLAGS);flags=value;}
     void AddDelayedEvent(uint32 delay,std::function<void()> callback) {assert(delay==5000);pending.push_back(std::move(callback));}
     void Run() {auto callbacks=std::move(pending);pending.clear();for(auto& callback:callbacks)callback();}
 };
@@ -105,10 +126,12 @@ auto* sScenarioMgr=&manager;
 struct EntranceAI
 {
     Creature* me;
-    bool _introDone=false;
+    bool _introDone=false,firstwp=false;
+    ObjectGuid _arrivalPlayerGuid;
     std::vector<uint32> talks;
     void Talk(uint32 line) {talks.push_back(line);}
 #include "EntranceLos.inc"
+#include "EntranceArrival.inc"
 };
 
 void Invalidate(uint32 invalid,Player& player,Creature& actor)
@@ -128,7 +151,16 @@ void Invalidate(uint32 invalid,Player& player,Creature& actor)
 }
 int main()
 {
-#ifdef BASELINE
+#if defined(ARRIVAL_BASELINE)
+    for(uint32 invalid:{4u,18u,19u,25u})
+    {
+        manager={};Player player;Creature actor;EntranceAI ai{&actor};actor.nearestPlayer=&player;
+        Invalidate(invalid,player,actor);ai.CompleteEntranceArrival();
+        assert(player.arrivalCredits==1 && ai.firstwp && actor.flags==1);
+    }
+    {manager={};Creature actor;EntranceAI ai{&actor};ai.CompleteEntranceArrival();assert(ai.firstwp && actor.flags==1);}
+    std::cout<<"PASS pinnedc5eb41f3: actual old POINT1 publishes ready flags/firstwp without a valid original recipient and attempts50765 on its controlled nearest player in4 invalid contexts, even publishes without any player. No native persisted-counter/client proof.\n";
+#elif defined(BASELINE)
     for(uint32 invalid:{0u,10u,18u,25u})
     {
         manager={};Player player;Creature actor;EntranceAI ai{&actor};ai.MoveInLineOfSight(&player);
@@ -156,7 +188,7 @@ int main()
     }
     for(bool preDelete:{false,true})
     {
-        manager={};Player player,other;other.guid.low=2;Creature actor;EntranceAI ai{&actor};
+        manager={};Player player,other;other.guid._low=2;Creature actor;EntranceAI ai{&actor};
         HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};ai.MoveInLineOfSight(&player);
         if(preDelete)player.preDelete=true;else HashMapHolder<Player>::objects.erase(player.guid);
         actor.Run();assert(!player.credits && !other.credits && !ai._introDone);
@@ -169,6 +201,40 @@ int main()
         HashMapHolder<Player>::objects.clear();player.reset();actor.Run();assert(!ai._introDone && !actor.motion.moves);
         Player retry;HashMapHolder<Player>::objects={{retry.guid,&retry}};ai.MoveInLineOfSight(&retry);actor.Run();assert(retry.credits==1);
     }
-    std::cout<<"PASS: extracted first-Travard LOS/policy and native GUID/world/pre-delete/map lookup;26 invalid contexts before/after5s, destroyed/unregistered invoker, no nearest-player substitution, null/pet/guardian, retry and exactly-once valid boundary checked. Native quest persistence, later movement/gossip/group storyline and client traversal remain separate.\n";
+    for(uint32 invalid=0;invalid<26;++invalid)
+    {
+        manager={};Player player,other;other.guid._low=2;Creature actor;EntranceAI ai{&actor};actor.nearestPlayer=&other;
+        HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};ai.MoveInLineOfSight(&player);actor.Run();
+        Invalidate(invalid,player,actor);ai.CompleteEntranceArrival();ai.CompleteEntranceArrival();
+        assert(!player.arrivalCredits && !other.arrivalCredits && !ai.firstwp && !ai._introDone && ai._arrivalPlayerGuid.IsEmpty());
+        assert(actor.flags==0x200 && ai.talks==std::vector<uint32>({0,1}));
+    }
+    for(uint32 step:{0u,1u})
+    {
+        manager={};manager.scenario.step=step;Player player,other;other.guid._low=2;player.distance=20;
+        Creature actor,efrin,duval;actor.efrin=&efrin;actor.duval=&duval;actor.nearestPlayer=&other;EntranceAI ai{&actor};
+        HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};
+        ai.CompleteEntranceArrival();assert(!ai.firstwp && actor.flags==0x200);
+        ai.MoveInLineOfSight(&player);actor.Run();assert(ai._arrivalPlayerGuid==player.guid);
+        player.onCriteria=[&ai]{ai.CompleteEntranceArrival();};ai.CompleteEntranceArrival();ai.CompleteEntranceArrival();
+        assert(player.arrivalCredits==1 && !other.arrivalCredits && ai.firstwp && ai._arrivalPlayerGuid.IsEmpty());
+        assert(actor.flags==0x201 && ai.talks==std::vector<uint32>({0,1,2}));
+        assert(efrin.motion.follows==1 && duval.motion.follows==1 && efrin.motion.followed==&actor && duval.motion.followed==&actor);
+        assert(efrin.motion.followAngle==-PET_FOLLOW_ANGLE && duval.motion.followAngle==PET_FOLLOW_ANGLE);
+    }
+    for(bool preDelete:{false,true})
+    {
+        manager={};Player player,other;other.guid._low=2;Creature actor;actor.nearestPlayer=&other;EntranceAI ai{&actor};
+        HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};ai.MoveInLineOfSight(&player);actor.Run();
+        if(preDelete)player.preDelete=true;else HashMapHolder<Player>::objects.erase(player.guid);
+        ai.CompleteEntranceArrival();assert(!player.arrivalCredits && !other.arrivalCredits && !ai.firstwp && !ai._introDone);
+        ai.MoveInLineOfSight(&other);actor.Run();ai.CompleteEntranceArrival();assert(other.arrivalCredits==1 && ai.firstwp);
+    }
+    {
+        manager={};auto player=std::make_unique<Player>();Creature actor;EntranceAI ai{&actor};
+        HashMapHolder<Player>::objects={{player->guid,player.get()}};ai.MoveInLineOfSight(player.get());actor.Run();
+        HashMapHolder<Player>::objects.clear();player.reset();ai.CompleteEntranceArrival();assert(!ai.firstwp && !ai._introDone && actor.flags==0x200);
+    }
+    std::cout<<"PASS: extracted LOS/arrival/policy and native GUID lifecycle/world/pre-delete/map lookup;26 invalid contexts before/after5s and at POINT1, destroyed/unregistered recipient at both boundaries, no nearest substitution, exact20yd/steps0-1, null/pet/guardian, retry, duplicate/reentrant exactly-once readiness/50765 and original follower roles checked. Native quest/scenario persistence, later paths/group story and client traversal remain separate.\n";
 #endif
 }

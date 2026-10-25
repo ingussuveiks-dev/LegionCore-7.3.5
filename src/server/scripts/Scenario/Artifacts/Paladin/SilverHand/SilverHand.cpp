@@ -56,6 +56,7 @@ public:
         EventMap events;
         bool _introDone, wait_heal, firstwp, secondwp, firstfight;
         FunctionProcessor _functions;
+        ObjectGuid _arrivalPlayerGuid;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -81,6 +82,27 @@ public:
             player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
             me->GetMotionMaster()->MovePath(10993804, false);
+        }
+
+        void CompleteEntranceArrival()
+        {
+            if (_arrivalPlayerGuid.IsEmpty())
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*me, _arrivalPlayerGuid);
+            _arrivalPlayerGuid.Clear();
+            if (!SilverHandEntrance::CanArrive(player, me))
+            {
+                _introDone = false;
+                return;
+            }
+            Talk(2);
+            me->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50765);
+            firstwp = true;
+            if (Creature* efrin = me->FindNearestCreature(106371, 50.0f, true))
+                efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            if (Creature* duval = me->FindNearestCreature(106370, 50.0f, true))
+                duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
         }
 
         void Reset() override
@@ -191,15 +213,7 @@ public:
                 switch (id)
                 {
                     case 1:
-                        Talk(2);
-                        me->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 1); // gossip
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50765);
-                        firstwp = true;
-                        if (Creature* efrin = me->FindNearestCreature(106371, 50.0f, true))
-                            efrin->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(- PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                        if (Creature* duval = me->FindNearestCreature(106370, 50.0f, true))
-                            duval->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+                        CompleteEntranceArrival();
                         break;
                     case 2:
                     {
@@ -277,6 +291,7 @@ public:
                     return;
                 }
                 Talk(1);
+                _arrivalPlayerGuid = playerGuid;
                 me->GetMotionMaster()->MovePoint(1, 2137.70f, 2397.60f, 118.54f);
                 player->KilledMonsterCredit(106416);
             });

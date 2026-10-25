@@ -5,6 +5,7 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ally-damage"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
+function ArrivalCase([string]$movement){$first=$movement.IndexOf('case 1:');$last=$movement.IndexOf('case 2:',$first);if($first -lt 0 -or $last -le $first){throw 'POINT1 block missing'};$movement.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp'
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Silver Hand source missing'}
@@ -18,9 +19,12 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
   if($script -eq 'npc_travar_first'){
    $actual=$actual.Replace((Block $actual 'void MoveInLineOfSight('),(Block $expected 'void MoveInLineOfSight('))
    $actual=$actual.Replace("        "+(Block $actual 'void sGossipSelect(')+"`n`n",'')
+   $actual=$actual.Replace("        "+(Block $actual 'void CompleteEntranceArrival(')+"`n`n",'').Replace("        ObjectGuid _arrivalPlayerGuid;`n",'')
+   $movement=Block $actual 'void MovementInform('
+   $actual=$actual.Replace($movement,$movement.Replace((ArrivalCase $movement),(ArrivalCase (Block $expected 'void MovementInform('))))
    $expected=$expected.Replace("    "+(Block $expected 'bool OnGossipSelect(')+"`n`n",'')
   }
-  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance LOS/gossip'}
+  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance LOS/gossip/POINT1'}
  }
 }
 if($Baseline){$source=$pinned}
