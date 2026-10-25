@@ -17,8 +17,8 @@ assert [(entry.mnemonic, entry.op_str) for entry in (gate[0], gate[2], gate[3])]
 assert gate[1].mnemonic == 'jne' and gate[1].operands[0].imm == body[first].address
 assert gate[4].mnemonic == 'jbe' and body[legacy].address < gate[4].operands[0].imm < body[offer].address
 dispatch = next(index for index, entry in enumerate(body) if entry.address == gate[4].operands[0].imm)
-assert body[dispatch].mnemonic == 'dec' and body[dispatch].op_str == 'edi', 'Only point6/7 may skip legacy home before native switch'
-assert body[dispatch + 1].op_str == 'edi, 6' and body[dispatch + 2].mnemonic == 'ja'
+assert body[dispatch].mnemonic == 'dec' and body[dispatch].op_str == 'ebx', 'Only point6/7 may skip legacy home before native switch'
+assert body[dispatch + 1].op_str == 'ebx, 6' and body[dispatch + 2].mnemonic == 'ja'
 for index in homes:
     expected_operands = [
         'dword ptr [rsp + 0x20], xmm0', 'xmm3, dword ptr [rcx + 0xd8]',
@@ -30,8 +30,8 @@ for index in homes:
         assert body[index - 5].op_str == 'xmm0, dword ptr [rcx + 0xdc]'
     assert all(entry.mnemonic == 'movss' for entry in body[index - 4:index])
 contexts = positions(body, '?IsMagnarOfferContext@npc_hrutnirAI@npc_hrutnir@@')
-assert len(contexts) == 2 and legacy < contexts[0] < offer < contexts[1] < arrival
-for context, home in zip(contexts, (offer, arrival)):
+assert len(contexts) == 4 and legacy < contexts[0] < offer < contexts[1] < arrival < contexts[2] < contexts[3]
+for context, home in zip(contexts[:2], (offer, arrival)):
     comparison = next(index for index, entry in enumerate(body) if index > context and entry.mnemonic == 'comiss')
     assert body[comparison + 1].mnemonic == 'jb' and home == comparison + 6
     assert body[comparison + 1].operands[0].imm > body[arrival].address, 'Rejected endpoint can still write home'

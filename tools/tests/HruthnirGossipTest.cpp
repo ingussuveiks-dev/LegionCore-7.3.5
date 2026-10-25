@@ -66,6 +66,7 @@ struct PlayerMenu
 };
 struct ObjectGuid
 {
+    using LowType = uint64;
     uint32 identity = 1, kind = 1;
     bool IsCreatureOrVehicle() const { return kind == 1; }
     bool IsGameObject() const { return kind == 2; }
@@ -73,6 +74,29 @@ struct ObjectGuid
     std::string ToString() const { return std::to_string(identity); }
 };
 struct Player;
+struct Creature;
+enum class HighGuid { Conversation };
+struct GuidGenerator { uint64 current = 0; uint64 Generate() { return ++current; } } guidGenerator;
+struct ObjectManager { template<HighGuid> GuidGenerator* GetGenerator() { return &guidGenerator; } } objectManager;
+auto* sObjectMgr = &objectManager;
+struct Conversation;
+struct ConversationPool
+{
+    std::vector<Conversation*> objects;
+    ~ConversationPool();
+} conversationPool;
+struct Conversation
+{
+    bool m_isUpdate = false, world = false;
+    inline static uint32 attempts = 0, deletions = 0, removals = 0, queued = 0;
+    ~Conversation() { ++deletions; }
+    bool CreateConversation(uint64, uint32, Creature*, std::nullptr_t, Creature const&);
+    bool IsInWorld() const { return world; }
+    void RemoveFromWorld() { assert(world); world = false; ++removals; }
+    void AddObjectToRemoveList() { ++queued; }
+#include "ConversationRemove.inc"
+};
+ConversationPool::~ConversationPool() { for (auto* conversation : objects) delete conversation; }
 struct CreatureAI
 {
     virtual ~CreatureAI() = default;
@@ -169,6 +193,7 @@ struct Creature
     bool IsAIEnabled = true;
     uint32 state = 0, conversations = 0;
     std::function<void()> reenterConversation;
+    bool conversationSucceeds = true;
     float distance = 4.0f;
     float arrivalDistanceSq = 0.0f;
     float offerDistanceSq = 0.0f;
@@ -212,12 +237,7 @@ struct Creature
         return boss && boss->world && boss->alive && boss->distance <= range && boss->phase &&
             boss->map == map && boss->instance == instance ? boss : nullptr;
     }
-    void CreateConversation(uint32 conversation)
-    {
-        assert(conversation == 497);
-        ++conversations;
-        if (reenterConversation) { auto callback = std::move(reenterConversation); callback(); }
-    }
+    void CreateConversation(uint32 conversation);
 #include "AddDelayed.inc"
     MotionMaster* GetMotionMaster() { return &motion; }
     void RemoveFlag(uint32 field, uint32 mask) { if (field == UNIT_FIELD_NPC_FLAGS) flags &= ~mask; else { assert(field == UNIT_FIELD_FLAGS); unitFlags &= ~mask; } }
@@ -265,6 +285,18 @@ struct CreatureScript
     virtual bool OnGossipSelect(Player*, Creature*, uint32, uint32) = 0;
     virtual bool OnGossipHello(Player*, Creature*) = 0;
 };
+bool Conversation::CreateConversation(uint64, uint32 identity, Creature* caster, std::nullptr_t, Creature const& position)
+{
+    assert(identity == 497 && caster == &position);
+    ++attempts;
+    if (!caster->conversationSucceeds) return false;
+    world = true;
+    conversationPool.objects.push_back(this);
+    ++caster->conversations;
+    if (caster->reenterConversation) { auto callback = std::move(caster->reenterConversation); callback(); }
+    return true;
+}
+#include "UnitConversation.inc"
 struct HruthnirScript : CreatureScript
 {
 #include "Select.inc"
@@ -297,6 +329,7 @@ struct HruthnirAI : CreatureAI
 #include "OfferPosition.inc"
 #include "Request.inc"
 #include "Ready.inc"
+#include "Conversation.inc"
 #include "IntroContext.inc"
 #include "Chamber.inc"
 #include "Offer.inc"
@@ -381,7 +414,23 @@ struct Fixture
 };
 int main()
 {
-#ifdef READY_BASELINE
+#ifdef CONVERSATION_BASELINE
+    {
+        Fixture fixture; fixture.Select(); fixture.actor.conversationSucceeds = false;
+        uint32 deleted = Conversation::deletions;
+        fixture.ai.Arrive(); fixture.Tick(6000);
+        assert(!fixture.actor.conversations && Conversation::deletions == deleted + 1);
+        assert(!fixture.ai.magnarArrivalPending && fixture.bossAI.starts == 1);
+    }
+    {
+        Fixture fixture; fixture.Select();
+        uint32 removed = Conversation::removals;
+        fixture.actor.reenterConversation = [&]() { fixture.ai.Reset(); };
+        fixture.ai.Arrive(); fixture.Tick(6000);
+        assert(conversationPool.objects.back()->world && Conversation::removals == removed && !fixture.bossAI.starts);
+    }
+    std::cout << "PASS conversation baseline: pinned688c16b9/native Unit void wrapper deletes a failed497 allocation but still consumes point7 and starts boss at6000ms. Reset during successful factory insertion leaves that object registered. Controlled factory/world services, not a live/client failure reproduction.\n";
+#elif defined(READY_BASELINE)
     for (uint32 invalid = 0; invalid < 5; ++invalid)
     {
         Fixture fixture;
@@ -511,6 +560,58 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+        {
+            Fixture fixture; fixture.player.faction = faction; fixture.player.status = status; fixture.Select();
+            fixture.actor.conversationSucceeds = false;
+            uint32 attempts = Conversation::attempts, deleted = Conversation::deletions;
+            auto token = fixture.ai.magnarStartToken;
+            fixture.ai.Arrive(); fixture.ai.Arrive(); fixture.Tick(6000);
+            assert(fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken == token && !*token);
+            assert(!fixture.actor.conversations && !fixture.bossAI.starts && !fixture.actor.m_Functions.SizeQueue() && !fixture.actor.m_Functions.Size());
+            assert(Conversation::attempts == attempts + 2 && Conversation::deletions == deleted + 2);
+            fixture.actor.conversationSucceeds = true; fixture.ai.Arrive(); fixture.ai.Arrive();
+            assert(fixture.actor.conversations == 1 && !fixture.ai.magnarArrivalPending && Conversation::attempts == attempts + 3);
+            fixture.Tick(5999); assert(!fixture.bossAI.starts);
+            fixture.Tick(1); fixture.ai.Arrive(); fixture.Tick(6000);
+            assert(fixture.bossAI.starts == 1 && Conversation::attempts == attempts + 3);
+        }
+    for (uint32 invalid = 0; invalid < 8; ++invalid)
+    {
+        Fixture fixture; fixture.Select();
+        HruthnirAI replacement(&fixture.actor);
+        uint32 removed = Conversation::removals, queued = Conversation::queued;
+        fixture.actor.reenterConversation = [&]() {
+            if (invalid == 0) fixture.ai.Reset();
+            if (invalid == 1) fixture.actor.ai = &replacement;
+            if (invalid == 2) scenarioManager.scenario.step = 4;
+            if (invalid == 3) fixture.actor.world = false;
+            if (invalid == 4) fixture.actor.instance = 43;
+            if (invalid == 5) *fixture.ai.magnarStartToken = true;
+            if (invalid == 6) fixture.ai.magnarStartToken = std::make_shared<bool>(false);
+            if (invalid == 7) conversationPool.objects.back()->Remove();
+        };
+        fixture.ai.Arrive(); fixture.actor.m_Functions.Update(6000);
+        assert(fixture.ai.magnarArrivalPending == (invalid == 7) && !fixture.bossAI.starts && !conversationPool.objects.back()->world);
+        assert(Conversation::removals == removed + 1 && Conversation::queued == queued + 1);
+        if (invalid == 7) { fixture.ai.Arrive(); fixture.Tick(6000); assert(fixture.bossAI.starts == 1); }
+    }
+    {
+        Fixture fixture; fixture.Select();
+        std::size_t first = conversationPool.objects.size();
+        fixture.actor.reenterConversation = [&]() {
+            fixture.ai.Reset(); fixture.actor.flags = 1; fixture.player.talk.menu._menuItems[0] = {};
+            fixture.Select(); fixture.ai.Arrive();
+        };
+        fixture.ai.Arrive();
+        assert(conversationPool.objects.size() == first + 2);
+        assert(!conversationPool.objects[first]->world && conversationPool.objects[first + 1]->world);
+        assert(!fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken && !*fixture.ai.magnarStartToken);
+        fixture.Tick(5999); assert(!fixture.bossAI.starts);
+        fixture.Tick(1); assert(fixture.bossAI.starts == 1);
+    }
+    std::cout << "PASS497:4 faction/status two-failure/deletion/no-cue paths retain the same unconsumed claim for explicit successful retry/full5999+1ms cue. Seven creation-time state revocations and an already-removed object roll back through actual Remove; reentrant fresh-token success survives old rollback. Controlled factory/insertion/world services; no automatic retry, already-running conversation lifetime or client delivery certificate.\n";
     for (uint32 faction : {0u,1u})
         for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
             for (uint32 invalid = 0; invalid < 15; ++invalid)
@@ -1081,7 +1182,7 @@ int main()
     duringConversation.actor.reenterConversation = [&duringConversation]() { duringConversation.ai.Reset(); };
     duringConversation.ai.Arrive(); duringConversation.Tick(6000);
     assert(!duringConversation.bossAI.starts);
-    std::cout << "PASS:16 faction/status/combat cue paths, native6000ms boundary, duplicate/reentrant arrival/consumption, Reset before/after arrival/during497,17 invalid actor/instance/boss contexts, unrelated callback retention, deleted and retained old-AI replacement and fresh-attempt timing. Explicit retry/497 factory acknowledgement not certified.\n";
+    std::cout << "PASS:16 faction/status/combat cue paths, native6000ms boundary, duplicate/reentrant arrival/consumption, Reset before/after arrival/during497,17 invalid actor/instance/boss contexts, unrelated callback retention, deleted and retained old-AI replacement and fresh-attempt timing. Native497 factory rollback/retry covered separately; rendered delivery and existing-object lifetime remain open.\n";
     std::cout << "PASS: actual packet dispatch, native cached-menu getters/clear,39 rejected and explicitly readmitted contexts, both factions/statuses, stale-menu and reentrant/duplicate selection; gossip bit claimed before motion, other flags preserved. Controlled services, not client traversal.\n";
 #endif
 }

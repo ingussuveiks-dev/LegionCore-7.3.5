@@ -153,6 +153,27 @@ public:
                 IsMagnarOfferContext(me->GetInstanceId()) && HasMagnarChamberRequest() && IsMagnarOfferPosition();
         }
 
+        bool StartMagnarConversation()
+        {
+            Creature* companion = me;
+            uint32 instanceId = magnarStartInstance;
+            std::shared_ptr<bool> token = magnarStartToken;
+            if (!token || *token)
+                return false;
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 497, companion, nullptr, *companion))
+            {
+                delete conversation;
+                return false;
+            }
+            if (companion->AI() != this || magnarStartToken != token || *token || !IsMagnarOfferContext(instanceId) || !conversation->IsInWorld())
+            {
+                conversation->Remove();
+                return false;
+            }
+            return true;
+        }
+
         bool IsMagnarOfferContext(uint32 instanceId) const
         {
             if (!me->IsInWorld() || !me->IsAlive() || me->IsDespawn() || !me->GetMap() ||
@@ -554,7 +575,14 @@ public:
                         Creature* companion = me;
                         uint32 instanceId = magnarStartInstance;
                         auto* expectedAI = this;
-                        me->CreateConversation(497);
+                        if (!StartMagnarConversation())
+                        {
+                            std::shared_ptr<bool> token = startToken.lock();
+                            if (token && !*token && companion->AI() == expectedAI && expectedAI->magnarStartToken == token &&
+                                expectedAI->IsMagnarOfferContext(instanceId))
+                                expectedAI->magnarArrivalPending = true;
+                            break;
+                        }
                         me->AddDelayedEvent(6000, [startToken, companion, instanceId, expectedAI]() -> void
                         {
                             std::shared_ptr<bool> token = startToken.lock();
