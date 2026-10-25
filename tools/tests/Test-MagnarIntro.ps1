@@ -12,6 +12,7 @@ $first=$source.IndexOf('        bool magnarIntroPending');$last=$source.IndexOf(
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Context.inc",(Block $source 'bool IsMagnarOfferContext('))
 $intro=(Block $source 'bool IsMagnarIntroPlayer(')+(Block $source 'bool IsMagnarIntroContext(')+(Block $source 'uint32 GetData(').Replace(' override','')+(Block $source 'void CancelMagnarIntro(')+(Block $source 'void UpdateMagnarIntro(')
+if($source.Contains('bool IsMagnarOfferReady(')){$intro+=(Block $source 'bool IsMagnarOfferReady(')+(Block $source 'bool IsMagnarOfferPosition(')+(Block $source 'bool HasMagnarChamberRequest(')}
 if($Baseline){$source=(& git -C $repo show "8e9a0d6e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned no-scene source unavailable'};$intro='void UpdateMagnarIntro(uint32){} uint32 GetData(uint32) const { return 0; }'}
 [IO.File]::WriteAllText("$out/Intro.inc",$intro)
 $action=Block $source 'void DoAction('

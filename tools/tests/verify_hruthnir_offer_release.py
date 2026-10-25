@@ -69,7 +69,11 @@ assert movement[request[0] + 1].op_str == 'al, al' and movement[request[0] + 2].
 verify_endpoint(movement[request[0] + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
 assert movement[comparison + 1].mnemonic == 'jb' and movement[comparison + 1].operands[0].imm == deny
 home = next(index for index in positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM') if context < index < queue)
-assert comparison < home and movement[home + 1].op_str == 'ecx, 0x18', 'Arrival must precede home and offer-token allocation'
+allocation = next(index for index, entry in enumerate(movement) if home < index < queue and entry.op_str == 'ecx, 0x18')
+assert comparison < home < allocation, 'Arrival must precede home and offer-token allocation'
+assert any(entry.op_str == 'byte ptr [rbx + 0xac], r14b' for entry in movement[home:allocation])
+assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in movement[:context])
+assert len(positions(movement[home:allocation], '?RemoveFlag@Object@@')) == 1
 for operand in ('qword ptr [rbx + 0x78], r14', 'byte ptr [rbx + 0x5d], r14b', 'qword ptr [rbx + 0x60], r14'):
     check = next(index for index, entry in enumerate(movement[:context]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert movement[check + 1].mnemonic == 'jne' and movement[check + 1].operands[0].imm == deny
@@ -121,7 +125,7 @@ for number, check in enumerate(checks):
     comparison = next(index for index, entry in enumerate(body) if index > first and entry.mnemonic == 'comiss')
     verify_endpoint(body[first + 1:comparison + 1], 'rax, qword ptr [rcx + 0x20]', 'xmm9', number == 0, swapped_xy=number == 0)
     assert body[comparison + 1].mnemonic == 'jae', 'Outside/unordered must not reach readiness release'
-    assert body[comparison + 1].operands[0].imm == body[claim if number == 0 else flag - 3].address
+    assert body[comparison + 1].operands[0].imm == body[claim if number == 0 else flag - 4].address
     retire = retirements[number]
     assert body[comparison + 2].op_str == 'rcx, 0x78' and body[comparison + 2].mnemonic == 'add'
     assert retire == comparison + 3 and body[retire + 1].mnemonic == 'jmp' and body[retire + 1].operands[0].imm == deny
@@ -146,11 +150,11 @@ for operand, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx +
     check = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == deny, f'Missing point6 context {operand}'
 reset = instructions('?Reset' + suffix)
-assert all(any(entry.op_str == f'qword ptr [rsi + {hex(offset)}], rbp' for entry in reset) for offset in (0x78,0x80))
+assert all(any(entry.op_str == f'qword ptr [rdi + {hex(offset)}], rbp' for entry in reset) for offset in (0x78,0x80))
 assert sum(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in reset) == 2
 selection = instructions('?sGossipSelect' + suffix)
 retire = positions(selection, '?reset@?$shared_ptr@_N@std@@')[0]
-assert selection[retire - 1].op_str == 'rcx, [rsi + 0x78]' and retire < positions(selection, '?RemoveFlag@Object@@')[0]
+assert selection[retire - 2].op_str == 'rcx, [rsi + 0x78]' and selection[retire - 1].op_str == 'byte ptr [rsi + 0xac], 0' and retire < positions(selection, '?RemoveFlag@Object@@')[0]
 destructor = instructions('??_Gnpc_hrutnirAI@npc_hrutnir@@')
 cleanup = positions(destructor, '?CancelMagnarIntro' + suffix)[0]
 assert any(entry.op_str == 'rdi, rcx' for entry in destructor[:cleanup])

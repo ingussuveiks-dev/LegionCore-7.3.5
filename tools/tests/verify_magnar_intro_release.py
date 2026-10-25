@@ -25,7 +25,7 @@ assert len(tables('?GetAI@npc_hrutnir@@', ((0x48, '?DoAction' + suffix), (0x18, 
 action = instructions('?DoAction' + suffix)
 admit = positions(action, context_name)[0]
 claim = find(action, 'byte ptr [rbp], 1', 'mov')
-for operand in ('byte ptr [r14], 0', 'byte ptr [rbx + 0x89], 0', 'byte ptr [rbx + 0xa5], 0'):
+for operand in ('byte ptr [r15], 0', 'byte ptr [rbx + 0x89], 0', 'byte ptr [rbx + 0xa5], 0'):
     gate = max(index for index, entry in enumerate(action[:admit]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert gate < admit < claim and action[gate + 1].mnemonic == 'jne'
 assert claim < positions(action, '?StopAttack@Creature@@')[0]
@@ -49,12 +49,12 @@ assert cancel < find(action, 'dword ptr [rbx + 0x70], 0', 'mov') < epoch_store
 assert generation < epoch < cancel < epoch_store < positions(action, offer_name)[0] < handoff < chamber < talk < move < admit < claim
 assert action[epoch + 1].mnemonic == 'je'
 assert find(action, 'byte ptr [rbx + 0xa5], 0', 'mov') < epoch_store
-assert find(action, 'byte ptr [r14], 0', 'mov') < epoch_store
+assert find(action, 'byte ptr [r15], 0', 'mov') < epoch_store
 assert action[handoff - 2].op_str == 'edx, 0x423' and action[handoff + 2].mnemonic == 'je'
 assert any(entry.op_str == 'edx, 0x424' for entry in action[:generation])
 assert action[generation - 2].op_str == 'r8, qword ptr [rcx + 0xb0]'
-assert any(entry.op_str == 'r14, [rbx + 0x88]' for entry in action[:admit])
-assert find(action, 'rbp, r14', 'mov') < admit
+assert any(entry.op_str == 'r15, [rbx + 0x88]' for entry in action[:admit])
+assert find(action, 'rbp, r15', 'mov') < admit
 assert any(entry.op_str == 'dl, 0xe' for entry in action[chamber:talk])
 assert any(entry.op_str == 'edx, 6' for entry in action[talk:move])
 coordinates = []

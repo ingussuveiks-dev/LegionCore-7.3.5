@@ -30,7 +30,7 @@ retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
 assert len(retirements) == 2 and cancel < retirements[0] < retirements[1]
 assert [action[index - 1].op_str for index in retirements] == ['rcx, [rbx + 0x78]', 'rcx, [rbx + 0x60]']
 epoch_store = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
-for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte ptr [rbx + 0xa5], 0', 'byte ptr [r14], 0'):
+for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte ptr [rbx + 0xa5], 0', 'byte ptr [r15], 0'):
     assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in action[retirements[1]:epoch_store])
 epoch_compare = next(index for index, entry in enumerate(action) if entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0xa8], eax')
 assert epoch_compare < cancel < epoch_store < positions(action, '?IsMagnarOfferContext' + suffix)[0]

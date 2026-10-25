@@ -117,9 +117,9 @@ action = next(index for index, entry in enumerate(body) if entry.mnemonic == 'ca
 assert body[action - 1].op_str == 'edx, 1' and action > lookup > context > token
 
 body = instructions(reset)
-assert any(entry.op_str == 'byte ptr [rsi + 0x5d], 0' for entry in body)
-assert any(entry.op_str == 'qword ptr [rsi + 0x60], rbp' for entry in body)
-assert any(entry.op_str == 'qword ptr [rsi + 0x68], rbp' for entry in body)
+assert any(entry.op_str == 'byte ptr [rdi + 0x5d], 0' for entry in body)
+assert any(entry.op_str == 'qword ptr [rdi + 0x60], rbp' for entry in body)
+assert any(entry.op_str == 'qword ptr [rdi + 0x68], rbp' for entry in body)
 assert any(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in body)
 assert not positions(body, '?KillAllFunctions@FunctionProcessor@@'), 'Reset must not cancel unrelated Unit delayed actions'
 body = instructions(destructor)

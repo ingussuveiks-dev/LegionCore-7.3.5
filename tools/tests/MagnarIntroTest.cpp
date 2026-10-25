@@ -16,6 +16,7 @@ struct ObjectGuid
 constexpr uint32 CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1;
 constexpr uint32 SCENE_LAUNCH = 1, SCENE_COMPLETE = 3;
 constexpr uint32 REACT_PASSIVE = 0, UNIT_FIELD_FLAGS = 0, UNIT_FLAG_NOT_SELECTABLE = 1;
+constexpr uint32 UNIT_FIELD_NPC_FLAGS = 1, UNIT_NPC_FLAG_GOSSIP = 1;
 constexpr uint32 UNIT_FLAG_IMMUNE_TO_PC = 2, UNIT_FLAG_IMMUNE_TO_NPC = 4, UNIT_FLAG_NOT_ATTACKABLE_1 = 8;
 enum SpellCastResult { SPELL_CAST_OK, SPELL_FAILED_ERROR };
 uint32 warnings = 0;
@@ -90,6 +91,8 @@ struct Creature
     InstanceScript* instanceScript = nullptr;
     bool world = true, alive = true, despawn = false, IsAIEnabled = true;
     uint32 entry = 96468, phase = 6999, stops = 0;
+    uint32 gossipFlags = 0;
+    float offerDistanceSq = 0;
     void* ai = nullptr;
     Motion motion;
     Map* GetMap() const { return map; }
@@ -104,6 +107,12 @@ struct Creature
     void StopAttack() { ++stops; }
     void SetReactState(uint32) { }
     void SetFlag(uint32, uint32) { }
+    void RemoveFlag(uint32 field, uint32 mask) { if (field != UNIT_FIELD_NPC_FLAGS || mask != UNIT_NPC_FLAG_GOSSIP) std::abort(); gossipFlags &= ~mask; }
+    float GetExactDistSq(float coordinateX, float coordinateY, float coordinateZ) const
+    {
+        if (coordinateX != 4763.73f || coordinateY != 340.87f || coordinateZ != -37.19f) std::abort();
+        return offerDistanceSq;
+    }
     Motion* GetMotionMaster() { return &motion; }
     InstanceScript* GetInstanceScript() const { return instanceScript; }
 };

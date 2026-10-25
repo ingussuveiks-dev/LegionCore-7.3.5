@@ -64,7 +64,7 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
-        if (HruthnirGossip::CanStart(player, creature))
+        if (HruthnirGossip::CanStart(player, creature) && creature->IsAIEnabled && creature->AI() && creature->AI()->GetData(1061))
             return false;
         player->PlayerTalkClass->ClearMenus();
         player->CLOSE_GOSSIP_MENU();
@@ -113,16 +113,18 @@ public:
         bool magnarIntroCasting = false;
         bool magnarChamberStarted = false;
         uint32 magnarIntroInstanceGeneration = 0;
+        bool magnarOfferReady = false;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
-            if (menuId != 18743 || gossipListId != 0 || !HruthnirGossip::CanStart(player, me))
+            if (menuId != 18743 || gossipListId != 0 || !HruthnirGossip::CanStart(player, me) || !IsMagnarOfferReady())
                 return;
             GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
             GossipMenuItem const* item = menu.GetItem(0);
             if (menu.GetMenuId() != menuId || !item || item->OptionNpc != GossipOptionNpc::None ||
                 item->Sender != 0 || item->Action != 0 || item->IsCoded || item->BoxMoney != 0)
                 return;
+            magnarOfferReady = false;
             magnarOfferToken.reset();
             magnarStartInstance = me->GetInstanceId();
             magnarStartToken = std::make_shared<bool>(false);
@@ -141,6 +143,14 @@ public:
             magnarStartToken.reset();
             magnarStartInstance = 0;
             magnarOfferToken.reset();
+            magnarOfferReady = false;
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        }
+
+        bool IsMagnarOfferReady() const
+        {
+            return magnarOfferReady && magnarOfferToken && *magnarOfferToken && !magnarArrivalPending && !magnarStartToken &&
+                IsMagnarOfferContext(me->GetInstanceId()) && HasMagnarChamberRequest() && IsMagnarOfferPosition();
         }
 
         bool IsMagnarOfferContext(uint32 instanceId) const
@@ -187,6 +197,10 @@ public:
 
         uint32 GetData(uint32 type) const override
         {
+            if (type == 1061)
+            {
+                return IsMagnarOfferReady();
+            }
             if (type != 1059 || !magnarIntroFinished || magnarChamberStarted || !IsMagnarIntroContext())
                 return 0;
             InstanceScript* instance = me->GetInstanceScript();
@@ -378,6 +392,8 @@ public:
                         magnarStartToken.reset();
                         magnarArrivalPending = false;
                         magnarStartInstance = 0;
+                        magnarOfferReady = false;
+                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                         magnarIntroPending = false;
                         magnarChamberStarted = false;
                         magnarIntroInstanceGeneration = generation;
@@ -491,6 +507,8 @@ public:
                             !IsMagnarOfferContext(me->GetInstanceId()) || !HasMagnarChamberRequest() || !IsMagnarOfferPosition())
                             break;
                         me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+                        magnarOfferReady = false;
+                        me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                         magnarOfferToken = std::make_shared<bool>(false);
                         std::weak_ptr<bool> offerToken = magnarOfferToken;
                         Creature* companion = me;
@@ -518,6 +536,7 @@ public:
                                 expectedAI->magnarOfferToken.reset();
                                 return;
                             }
+                            expectedAI->magnarOfferReady = true;
                             companion->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             companion->SetReactState(REACT_DEFENSIVE);
                             companion->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);

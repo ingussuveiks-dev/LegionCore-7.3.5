@@ -79,6 +79,7 @@ struct CreatureAI
     virtual void Reset() { }
     virtual void UpdateAI(uint32) { }
     virtual void MovementInform(uint32, uint32) { }
+    virtual uint32 GetData(uint32) const { return 0; }
     uint32 starts = 0;
     std::vector<uint32> texts;
     std::function<void()> onTalk;
@@ -295,6 +296,7 @@ struct HruthnirAI : CreatureAI
 #include "OfferContext.inc"
 #include "OfferPosition.inc"
 #include "Request.inc"
+#include "Ready.inc"
 #include "IntroContext.inc"
 #include "Chamber.inc"
 #include "Offer.inc"
@@ -364,12 +366,35 @@ struct Fixture
         boss.ai = &bossAI;
         player.talk.menu._menuItems[0] = {};
     }
-    void Select() { session.HandleGossipSelectOption(packet); }
+    void PrepareSelection()
+    {
+#ifdef CURRENT_READY
+        if (!ai.magnarOfferToken && !ai.magnarStartToken && !ai.magnarArrivalPending && ai.texts.empty())
+        {
+            ai.magnarOfferToken = std::make_shared<bool>(true);
+            ai.magnarOfferReady = true;
+        }
+#endif
+    }
+    void Select(bool prepare = true) { if (prepare) PrepareSelection(); session.HandleGossipSelectOption(packet); }
     void Tick(uint32 diff) { actor.m_Functions.Update(diff); actor.ai->UpdateAI(diff); }
 };
 int main()
 {
-#ifdef REQUEST_BASELINE
+#ifdef READY_BASELINE
+    for (uint32 invalid = 0; invalid < 5; ++invalid)
+    {
+        Fixture fixture;
+        if (invalid == 1) { fixture.ai.OfferArrive(); fixture.actor.flags = 1; }
+        if (invalid == 2) { fixture.ai.OfferArrive(); fixture.Tick(13000); fixture.ai.Reset(); fixture.actor.flags = 1; }
+        if (invalid == 3) ++fixture.actor.request.generation;
+        if (invalid == 4) fixture.actor.IsAIEnabled = false;
+        assert(!scriptManager.script.OnGossipHello(&fixture.player,&fixture.actor));
+        fixture.Select(false);
+        assert(fixture.actor.motion.moves == 1 && fixture.ai.magnarStartToken);
+    }
+    std::cout << "PASS ready baseline: pinnedda79baae accepts flag/cached-menu selection without offer, during pending voice, after Reset, on new epoch or disabled AI. Native menu dispatch, controlled actor services; no live packet exploit claimed.\n";
+#elif defined(REQUEST_BASELINE)
     for (uint32 invalid = 0; invalid < 4; ++invalid)
     {
         Fixture offer; offer.actor.flags = 0;
@@ -486,6 +511,67 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            for (uint32 invalid = 0; invalid < 15; ++invalid)
+            {
+                Fixture fixture; fixture.player.faction = faction; fixture.player.status = status;
+                fixture.actor.flags = 0x80; fixture.ai.OfferArrive(); fixture.Tick(13000);
+                assert(fixture.ai.GetData(1061) == 1);
+                HruthnirAI replacement(&fixture.actor);
+                if (invalid == 0) fixture.ai.magnarOfferReady = false;
+                if (invalid == 1) fixture.ai.magnarOfferToken.reset();
+                if (invalid == 2) *fixture.ai.magnarOfferToken = false;
+                if (invalid == 3) fixture.ai.magnarChamberStarted = false;
+                if (invalid == 4) fixture.actor.instanceScript = nullptr;
+                if (invalid == 5) fixture.actor.request.credit = false;
+                if (invalid == 6) ++fixture.actor.request.generation;
+                if (invalid == 7) fixture.actor.IsAIEnabled = false;
+                if (invalid == 8) fixture.actor.offerDistanceSq = std::numeric_limits<float>::infinity();
+                if (invalid == 9) fixture.actor.offerDistanceSq = 4.04f;
+                if (invalid == 10) fixture.actor.offerDistanceSq = std::numeric_limits<float>::quiet_NaN();
+                if (invalid == 11) fixture.ai.magnarArrivalPending = true;
+                if (invalid == 12) fixture.ai.magnarStartToken = std::make_shared<bool>(false);
+                if (invalid == 13) fixture.actor.ai = &replacement;
+                if (invalid == 14) { fixture.ai.Reset(); assert(fixture.actor.flags == 0x80); fixture.actor.flags |= 1; }
+                assert(!fixture.ai.GetData(1061));
+                auto start = fixture.ai.magnarStartToken;
+                assert(scriptManager.script.OnGossipHello(&fixture.player,&fixture.actor));
+                assert(!fixture.player.talk.menu.GetItem(0));
+                fixture.player.talk.menu._menuItems[0] = {};
+                fixture.Select(false);
+                assert(!fixture.actor.motion.moves && fixture.ai.magnarStartToken == start && fixture.actor.flags == 0x81);
+                fixture.actor.instanceScript = &fixture.actor.request; fixture.actor.request.credit = true;
+                fixture.actor.IsAIEnabled = true; fixture.actor.ai = &fixture.ai; fixture.actor.offerDistanceSq = 0;
+                fixture.ai.Reset(); fixture.ai.magnarChamberStarted = false; fixture.ai.StartChamber();
+                assert(fixture.actor.flags == 0x80 && !fixture.ai.GetData(1061));
+                fixture.ai.OfferArrive(); fixture.Tick(12999); assert(!fixture.ai.GetData(1061));
+                fixture.Tick(1); assert(fixture.ai.GetData(1061) == 1 && fixture.actor.flags == 0x81);
+                assert(!scriptManager.script.OnGossipHello(&fixture.player,&fixture.actor));
+                fixture.player.talk.menu._menuItems[0] = {}; fixture.Select(false);
+                assert(fixture.actor.motion.moves == 2 && fixture.actor.flags == 0x80 && !fixture.ai.GetData(1061));
+                fixture.actor.flags |= 1; fixture.player.talk.menu._menuItems[0] = {}; fixture.Select(false);
+                assert(fixture.actor.motion.moves == 2);
+            }
+    {
+        Fixture fixture; fixture.actor.flags = 0x80;
+        fixture.ai.onTalk = [&]() {
+            if (fixture.ai.texts.back() != 16) return;
+            fixture.actor.flags |= 1;
+            assert(!fixture.ai.GetData(1061));
+            fixture.Select(false); assert(!fixture.actor.motion.moves);
+        };
+        fixture.ai.OfferArrive(); fixture.Tick(13000);
+        assert(fixture.ai.GetData(1061) == 1 && fixture.actor.flags == 0x81);
+        ++fixture.actor.request.generation; fixture.ai.StartChamber();
+        assert(!fixture.ai.magnarOfferReady && fixture.actor.flags == 0x80);
+    }
+    std::cout << "PASS readiness:60 faction/status/authority revocations close hello and reject independently restored cached selection; actual action2/point6/full13000ms reoffers once, preserving other flag bits. Talk16 reentrant selection precedes ready publication; epoch/Reset clear readiness/gossip. Ordinary positive selection fixtures project an already-ready offer; these new cases use the actual producer. Client visibility/traversal remains separate.\n";
+    {
+        Fixture missing; missing.actor.ai = nullptr;
+        assert(scriptManager.script.OnGossipHello(&missing.player,&missing.actor));
+        assert(!missing.player.talk.menu.GetItem(0));
+    }
     for (uint32 faction : {0u,1u})
         for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
             for (uint32 invalid = 0; invalid < 4; ++invalid)
@@ -712,8 +798,8 @@ int main()
         Fixture offer;
         offer.actor.flags = 0; offer.ai.OfferArrive();
         offer.actor.flags = 1; offer.Select(); offer.ai.OfferArrive(); offer.Tick(13000);
-        assert(!offer.actor.flags && offer.ai.texts == std::vector<uint32>({15}));
-        assert(offer.actor.motion.moves == 1);
+        assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,16}));
+        assert(!offer.actor.motion.moves);
     }
     {
         Fixture offer;
@@ -831,6 +917,7 @@ int main()
         fixture.player.status = status;
         fixture.actor.flags = 0x81;
         fixture.actor.distance = 5.0f;
+        fixture.PrepareSelection();
         assert(!scriptManager.script.OnGossipHello(&fixture.player, &fixture.actor));
         fixture.actor.motion.reenter = [&fixture]() { fixture.Select(); };
         fixture.Select(); fixture.Select();
@@ -841,7 +928,7 @@ int main()
         fixture.player.talk.menu._menuId = 18743;
         fixture.player.talk.menu._menuItems[0] = {};
         fixture.Select();
-        assert(fixture.actor.motion.moves == 2);
+        assert(fixture.actor.motion.moves == 1);
     }
     Fixture stale;
     scenarioManager.scenario.step = 2;
@@ -957,7 +1044,8 @@ int main()
     Fixture replaced;
     auto oldAI = std::make_unique<HruthnirAI>(&replaced.actor);
     replaced.actor.ai = oldAI.get();
-    replaced.Select(); oldAI->Arrive();
+    oldAI->magnarChamberStarted = true; oldAI->magnarIntroInstanceGeneration = replaced.actor.request.generation;
+    oldAI->OfferArrive(); replaced.Tick(13000); replaced.Select(false); oldAI->Arrive();
     oldAI.reset();
     auto newAI = std::make_unique<HruthnirAI>(&replaced.actor);
     replaced.actor.ai = newAI.get();
@@ -981,7 +1069,7 @@ int main()
     Fixture restarted;
     restarted.Select(); restarted.ai.Arrive(); restarted.Tick(1000);
     restarted.ai.Reset();
-    restarted.actor.flags |= 1;
+    restarted.ai.OfferArrive(); restarted.Tick(13000);
     restarted.player.talk.menu._menuItems[0] = {};
     restarted.Select(); restarted.ai.Arrive();
     restarted.Tick(5000);
