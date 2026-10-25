@@ -22,9 +22,10 @@ struct Unit;
 struct Player;
 struct ObjectGuid
 {
-    uint32 identity;
+    uint32 identity = 0;
     Unit* unit = nullptr;
     bool IsPlayer() const;
+    void Clear() { identity = 0; unit = nullptr; }
     bool operator==(ObjectGuid const& other) const { return identity == other.identity; }
     bool operator<(ObjectGuid const& other) const { return identity < other.identity; }
 };
@@ -91,11 +92,13 @@ struct Player : Unit
     bool GetQuestRewardStatus(uint32 identity) const { assert(identity == 39191); return rewarded; }
     uint32 GetQuestStatus(uint32 identity) const { assert(identity == 39191); return status; }
     std::function<void()> onCredit;
-    void UpdateAchievementCriteria(uint32 type, uint32 event) { assert(type == 92 && event == 46427); ++credits; if (onCredit) onCredit(); scenarioManager.scenario.step = 4; }
+    void UpdateAchievementCriteria(uint32 type, uint32 event) { assert(type == 92 && (event == 46427 || event == 45784)); ++credits; if (onCredit) onCredit(); scenarioManager.scenario.step = event == 46427 ? 4 : 5; }
 };
 bool ObjectGuid::IsPlayer() const { return unit && unit->ToPlayer(); }
+struct Conversation { void Remove() { assert(false); } };
 struct ObjectAccessor
 {
+    static Conversation* GetConversation(Unit const&, ObjectGuid) { return nullptr; }
     static Player* GetPlayer(Unit const&, ObjectGuid guid) { return guid.unit && guid.unit->available ? guid.unit->ToPlayer() : nullptr; }
 };
 #include "OwnerPlayer.inc"
@@ -214,6 +217,7 @@ struct Magnar : CreatureAI
     void DoCast(uint32) { }
     void DoMeleeAttackIfReady() { }
 #include "Fields.inc"
+#include "Handoff.inc"
 #include "Reset.inc"
 #include "EnterCombat.inc"
 #include "JustSummoned.inc"
@@ -315,7 +319,40 @@ int main()
         assert(fixture.ai.wave == 3 && fixture.ai.count_dies == 2);
     }
     std::cout << "BASELINE: pinned6eb208cf leaves wave2 and11 old owned/reserve actors on first-phase Reset, restart adds another12 and starts at wave2 instead of wave1. Native summon cleanup is available but never called. Controlled actor/map services.\n";
+#elif defined(RETRY_BASELINE)
+    Fixture fixture(false);
+    fixture.ai.first_phase = false; fixture.ai.wave = 7; scenarioManager.scenario.step = 4;
+    fixture.ai.EnterCombat(&fixture.player);
+    for (uint32 frame = 0; frame < 6; ++frame) fixture.ai.UpdateAI(frame ? 1 : 33000);
+    assert(fixture.ai.wave == 8 && fixture.ai.stop_combat && fixture.actor.motion.jumps == 1 && fixture.ai.count_dies == 0);
+    std::cout << "BASELINE: pinnedf91fbfc7 final-duel re-entry re-arms first-phase33000ms transition, jumps/protects the boss and advances nonexistent wave7 to8 with no tracked opponent able to release it. Controlled combat/event services, not a live client replay.\n";
 #else
+    {
+        Fixture fixture(false);
+        fixture.ai.first_phase = false; fixture.ai.wave = 7;
+        fixture.ai.finaleStarted = fixture.ai.finalePending = fixture.ai.stop_combat = true;
+        fixture.ai.finaleTimer = 34064; fixture.actor.faction = 35;
+        fixture.actor.flags = UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1;
+        fixture.ai.Reset();
+        assert(!fixture.ai.finalePending && !fixture.ai.finaleTimer && fixture.actor.flags == UNIT_FLAG_IMMUNE_TO_NPC && fixture.actor.faction == 14);
+        fixture.ai.EnterCombat(&fixture.player);
+        for (uint32 frame = 0; frame < 6; ++frame) fixture.ai.UpdateAI(frame ? 1 : 33000);
+        assert(fixture.ai.wave == 7 && !fixture.ai.stop_combat && !fixture.actor.motion.jumps && !fixture.actor.conversations);
+        std::cout << "PASS: final-duel re-entry retains combat spells without re-arming the first-phase33000ms jump/protection/nonexistent-wave softlock.\n";
+    }
+    for (bool victim : {false, true}) for (uint32 state : {0u, 1u, 2u, 3u})
+    {
+        Fixture fixture(false);
+        fixture.ai.first_phase = false; fixture.ai.wave = 7;
+        fixture.ai.finaleStarted = fixture.ai.finalePending = fixture.ai.stop_combat = true;
+        fixture.ai.finaleInstanceId = 42; fixture.ai.finalePlayer = {0, &fixture.player}; fixture.ai.finaleTimer = 34064;
+        scenarioManager.scenario.step = 4;
+        fixture.actor.victim = victim; fixture.actor.unitState = state;
+        fixture.ai.UpdateAI(34063); assert(!fixture.player.credits && !fixture.actor.despawns);
+        fixture.ai.UpdateAI(1); assert(fixture.player.credits == 1 && !fixture.actor.despawns);
+        fixture.ai.UpdateAI(5999); assert(!fixture.actor.despawns);
+        fixture.ai.UpdateAI(1); assert(fixture.actor.despawns == 1 && !fixture.actor.conversations);
+    }
     for (uint32 source = 0; source < 3; ++source)
     {
         Fixture fixture; Unit* killer = source == 0 ? static_cast<Unit*>(&fixture.player) : source == 1 ? &fixture.pet : &fixture.guardian;

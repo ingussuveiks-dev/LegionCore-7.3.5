@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "Conversation.h"
+#include "ConversationData.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <memory>
@@ -420,10 +421,30 @@ public:
         std::set<ObjectGuid> activeWave;
         bool encounterStarted = false;
         uint32 finaleGeneration = 0;
+        ObjectGuid finaleConversation;
+        ObjectGuid finalePlayer;
+        uint32 finaleTimer = 0;
+        uint32 finaleInstanceId = 0;
+        bool finalePending = false;
+        bool finaleDeparting = false;
 
         void Reset() override
         {
             ++finaleGeneration;
+            ObjectGuid conversationGuid = finaleConversation;
+            finaleConversation.Clear();
+            finalePlayer.Clear();
+            finaleTimer = 0;
+            finaleInstanceId = 0;
+            finalePending = false;
+            finaleDeparting = false;
+            if (Conversation* conversation = ObjectAccessor::GetConversation(*me, conversationGuid))
+                conversation->Remove();
+            if (finaleStarted && !first_phase)
+            {
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                me->setFaction(14);
+            }
             events.Reset();
             stop_combat = false;
             finaleStarted = false;
@@ -446,7 +467,8 @@ public:
             events.RescheduleEvent(EVENT_1, 7000); // 191883
             events.RescheduleEvent(EVENT_2, 14000); // 191885
             events.RescheduleEvent(EVENT_3, 15000); // 128749
-            events.RescheduleEvent(EVENT_4, 33000); // event
+            if (first_phase)
+                events.RescheduleEvent(EVENT_4, 33000); // event
         }
 
         bool IsEncounterPlayer(Player* player, uint32 step) const
@@ -499,7 +521,84 @@ public:
                     finaleStarted = false;
                 return false;
             }
+            finaleConversation = conversation->GetGUID();
             return true;
+        }
+
+        uint32 GetFinaleHandoffDelay() const
+        {
+            auto const* lines = sConversationDataStore->GetConversationData(uint32(504));
+            if (!lines || lines->size() != 4)
+                return 0;
+            uint32 previousStart = 0;
+            for (uint32 index = 0; index < 4; ++index)
+            {
+                auto const& line = (*lines)[index];
+                if (line.id != 1341 + index || line.idx != index || line.unk1 || line.unk2 != index % 2 ||
+                    (index == 0 ? line.textId != 0 : line.textId <= previousStart))
+                    return 0;
+                previousStart = line.textId;
+            }
+            return previousStart;
+        }
+
+        void UpdateFinale(uint32 diff)
+        {
+            if (!finalePending && !finaleDeparting)
+                return;
+            if (first_phase || !finaleStarted || !me->IsInWorld() || !me->IsAlive() || me->IsDespawn() ||
+                me->GetEntry() != 96034 || me->GetMapId() != 1495 || !me->GetMap())
+                return;
+            if (me->GetInstanceId() != finaleInstanceId)
+                return;
+            if (finaleTimer > diff)
+            {
+                finaleTimer -= diff;
+                return;
+            }
+            finaleTimer = 0;
+            if (finaleDeparting)
+            {
+                finaleDeparting = false;
+                finaleConversation.Clear();
+                finalePlayer.Clear();
+                me->DespawnOrUnsummon();
+                return;
+            }
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 5)
+            {
+                finalePending = false;
+                finaleDeparting = true;
+                finaleTimer = 6000;
+                return;
+            }
+            Player* player = ObjectAccessor::GetPlayer(*me, finalePlayer);
+            if (!IsEncounterPlayer(player, 4))
+                player = GetEncounterPlayer(nullptr, 4);
+            if (!player)
+                return;
+            uint32 generation = finaleGeneration;
+            Map* map = me->GetMap();
+            finalePending = false;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 45784);
+            if (generation != finaleGeneration || !finaleStarted)
+                return;
+            if (first_phase || !me->IsInWorld() ||
+                !me->IsAlive() || me->IsDespawn() || me->GetEntry() != 96034 || me->GetMapId() != 1495 ||
+                me->GetMap() != map || me->GetInstanceId() != finaleInstanceId)
+            {
+                finalePending = true;
+                return;
+            }
+            scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 5)
+            {
+                finaleDeparting = true;
+                finaleTimer = 6000;
+            }
+            else
+                finalePending = true;
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
@@ -519,6 +618,12 @@ public:
             Player* player = GetEncounterPlayer(attacker, 4);
             if (!player)
                 return;
+            uint32 delay = GetFinaleHandoffDelay();
+            if (!delay)
+            {
+                TC_LOG_WARN("scripts", "Magnar finale: invalid conversation 504 handoff data in instance %u; defeat remains retryable", me->GetInstanceId());
+                return;
+            }
             finaleStarted = true;
             if (!StartFinaleConversation(player, finaleGeneration))
                 return;
@@ -526,8 +631,10 @@ public:
             me->RemoveAura(128749);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->setFaction(35);
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 45784);
-            me->DespawnOrUnsummon(6000);
+            finalePlayer = player->GetGUID();
+            finaleTimer = delay;
+            finaleInstanceId = me->GetInstanceId();
+            finalePending = true;
         }
 
         void JustSummoned(Creature* summon) override
@@ -594,6 +701,9 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            UpdateFinale(diff);
+            if (finaleStarted)
+                return;
             if (wave == 6)
                 AdvanceWaveIfReady();
 

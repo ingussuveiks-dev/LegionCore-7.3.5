@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CreationBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CreationBaseline,[switch]$HandoffBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CreationBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify current Release'}
-if($Baseline -and $CreationBaseline){throw 'Choose one baseline'}
+if(($Baseline -or $CreationBaseline -or $HandoffBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify current Release'}
+if(@($Baseline,$CreationBaseline,$HandoffBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose one baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-finale"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -10,6 +10,7 @@ $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "675d6f7a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar source missing'}}
 if($CreationBaseline){$source=(& git -C $repo show "65f7a845:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar creation source missing'}}
+if($HandoffBaseline){$source=(& git -C $repo show "f91fbfc7:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar handoff source missing'}}
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
@@ -18,10 +19,13 @@ $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('   
 [IO.File]::WriteAllText("$out/Before.inc",$(if($Baseline){Block $source 'void DamageTaken('}else{''}))
 [IO.File]::WriteAllText("$out/After.inc",$(if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}))
 [IO.File]::WriteAllText("$out/Conversation.inc",$(if($Baseline -or $CreationBaseline){''}else{Block $source 'bool StartFinaleConversation('}))
+[IO.File]::WriteAllText("$out/Handoff.inc",$(if($source.Contains('void UpdateFinale(')){(Block $source 'uint32 GetFinaleHandoffDelay(')+(Block $source 'void UpdateFinale(')}else{''}))
 $source=Get-Content "$PSScriptRoot/WarswordsRetreatTest.cpp" -Raw
 $header=$source.Substring(0,$source.IndexOf('struct FirstBoss :'))
 $header="#include <set>`n"+$header.Replace('bool IsPlayer() const;','bool IsPlayer() const; bool operator<(ObjectGuid const& other) const { return std::less<Unit*>{}(unit,other.unit); }')
 $header=$header.Replace('uint32 Deal(Creature* victim, uint32 damage);','uint32 Deal(Creature* victim, uint32 damage); void CreateConversation(uint32 identity);')
+$header=$header.Replace('bool IsPlayer() const;', 'void Clear() { unit = nullptr; } bool IsPlayer() const;')
+$header=$header.Replace('ObjectGuid GetCharmerOrOwnerGUID() const', 'ObjectGuid GetGUID() const { return {const_cast<Unit*>(this)}; } ObjectGuid GetCharmerOrOwnerGUID() const')
 $header=$header.Replace('struct Map { } instanceMap, unrelatedMap;',@'
 struct Player;
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };
@@ -34,7 +38,10 @@ $header=$header.Replace('    bool CanContact() { return contact; }','    bool wo
 $header=$header.Replace('uint32 entry = 98007, mapId = 1511','uint32 entry = 96034, mapId = 1495')
 $header=$header.Replace('Map* GetMap() const { return &instanceMap; }','Map* map = &instanceMap; Map* GetMap() const { return map; } float GetDistance(Player* player) const { return player->distance; }')
 $header=$header.Replace('void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996 || identity == 205424); if (identity == 128264) ++removed; }','void RemoveAura(uint32 identity) { assert(identity == 128749); ++removed; }')
-$header=$header.Replace('assert(delay == 7000);','assert(delay == 6000);')
+$header=$header.Replace('void DespawnOrUnsummon(uint32 delay) { assert(delay == 7000); ++despawns; }','void DespawnOrUnsummon(uint32 delay = 0) { assert(delay == 0 || delay == 6000); ++despawns; }')
+$header=$header.Replace('struct ObjectAccessor', 'struct Conversation; struct ObjectAccessor').Replace('    static Player* GetPlayer(', '    static Conversation* GetConversation(Unit const&, ObjectGuid guid); static Player* GetPlayer(')
+$header=$header.Replace('    bool contact = true,', '    bool creditWorks = true; std::function<void()> onCredit; bool contact = true,')
+$header=$header.Replace('        ++credits;', '        ++credits; if (onCredit) onCredit(); if (!creditWorks) return;')
 $header=$header.Replace('    Player* FindNearestPlayer(float range)',@'
     uint32 conversations = 0, conversationAttempts = 0, retiredConversations = 0, faction = 14;
     bool conversationWorks = true, world = true, despawning = false;
@@ -58,6 +65,7 @@ struct Conversation
     inline static uint32 failedDeletes = 0;
     Creature* actor = nullptr;
     bool created = false, removed = false;
+    ObjectGuid GetGUID() const { return {reinterpret_cast<Unit*>(const_cast<Conversation*>(this))}; }
     Conversation() { allocations.insert(this); }
     ~Conversation() { if (!created) ++failedDeletes; allocations.erase(this); }
     bool CreateConversation(uint32, uint32 identity, Unit* caster, void*, Unit const&)
@@ -81,6 +89,20 @@ struct Conversation
     void Remove() { assert(created && !removed); removed = true; ++actor->retiredConversations; }
     static void Cleanup() { while (!allocations.empty()) delete *allocations.begin(); }
 };
+Conversation* ObjectAccessor::GetConversation(Unit const&, ObjectGuid guid)
+{
+    auto* candidate = reinterpret_cast<Conversation*>(guid.unit);
+    return Conversation::allocations.count(candidate) && !candidate->removed ? candidate : nullptr;
+}
+struct ConversationData { uint32 entry, id, idx, textId, unk1, unk2; };
+struct ConversationDataStore
+{
+    bool available = true;
+    std::vector<ConversationData> lines;
+    auto const* GetConversationData(uint32 entry) const { assert(entry == 504); return available ? &lines : nullptr; }
+    void Reset() { available = true; lines = {{504,1341,0,0,0,0},{504,1342,1,8618,0,1},{504,1343,2,23424,0,0},{504,1344,3,34064,0,1}}; }
+} conversationDataStore;
+auto* sConversationDataStore = &conversationDataStore;
 #include "UnitConversation.inc"
 '@
 [IO.File]::WriteAllText("$out/Harness.inc",$header)
@@ -98,7 +120,7 @@ $source=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block $source 'enum CriteriaTypes')+';')
 
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}elseif($HandoffBaseline){'/DHANDOFF_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/MagnarFinaleTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Magnar native finale failed'}
 if($VerifyReleaseBinary){
@@ -111,10 +133,13 @@ SELECT 'binding',entry,AIName,ScriptName FROM creature_template WHERE entry=9603
 SELECT 'spawn',guid,id,map,phaseId FROM creature WHERE id=96034;
 SELECT 'scaling',Entry,LevelScalingMin,LevelScalingMax,LevelScalingDeltaMin,LevelScalingDeltaMax,LevelScalingDuration FROM creature_template_scaling WHERE Entry=96034;
 SELECT 'smart',COUNT(*) FROM smart_scripts WHERE source_type=0 AND entryorguid IN (96034,-361400);
+SELECT 'handoff',id,idx,textId,unk1,unk2 FROM conversation_data WHERE entry=504 ORDER BY idx;
 '@|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
   if($LASTEXITCODE){throw 'Magnar live metadata read failed'}
  }finally{$env:MYSQL_PWD=$previous}
  foreach($expected in @("binding`t96034`t`tnpc_magnar_icebreaker","spawn`t361400`t96034`t1495`t6999","scaling`t96034`t98`t110`t0`t0`t100","smart`t0")){if($rows -notcontains $expected){throw "Magnar live metadata differs: $expected"}}
+ foreach($expected in @("handoff`t1341`t0`t0`t0`t0","handoff`t1342`t1`t8618`t0`t1","handoff`t1343`t2`t23424`t0`t0","handoff`t1344`t3`t34064`t0`t1")){if($rows -notcontains $expected){throw "Magnar live handoff schedule differs: $expected"}}
+ if(@($rows | Where-Object {$_ -like "handoff`t*"}).Count -ne 4){throw 'Magnar live handoff requires exactly four indexed lines'}
  $previous=$env:LEGION_DIALOGUE_CONFIG
  try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile WarswordsCreditCatalog.cpp -ProbeName WarswordsCreditCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native Magnar criteria catalog failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
  $native=Get-Content "$out/native.tsv"

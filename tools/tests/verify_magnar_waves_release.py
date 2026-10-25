@@ -99,12 +99,22 @@ assert released[switch + 8].op_str == 'edx, 1' and released[switch + 8].mnemonic
 assert released[switch + 9].mnemonic == 'jne' and released[switch + 10].op_str == 'r12b, 3'
 assert released[switch + 11].op_str == 'byte ptr [rbp + 0x6f], dl', 'Fifth wave no longer enables Windwall/health work'
 
+combat = instructions('?EnterCombat' + suffix)
+schedules = calls_to(combat, '?ScheduleEvent@EventMap@@QEAAXIIGG@Z')
+assert len(schedules) == 4
+for position, identity, delay in zip(schedules, (1, 2, 3, 4), (7000, 14000, 15000, 33000)):
+    assert any(entry.op_str == f'edx, {identity}' for entry in combat[position - 7:position])
+    assert any(entry.op_str == f'r8d, {hex(delay)}' for entry in combat[position - 7:position])
+phase_gate = next(index for index, entry in enumerate(combat) if entry.op_str == 'byte ptr [rbx + 0xd1], sil')
+assert schedules[2] < phase_gate < schedules[3] and combat[phase_gate + 1].mnemonic == 'je'
+assert combat[phase_gate + 1].operands[0].imm == combat[schedules[3] + 1].address, 'Final-duel re-entry still arms the first-phase33000ms protection/jump'
+
 updated = instructions('?UpdateAI' + suffix)
 victim = calls_to(updated, '?UpdateVictim@CreatureAI@@')[0]
 retry = calls_to(updated, advance)[0]
-pending = next(index for index, entry in enumerate(updated) if entry.op_str == 'byte ptr [rcx + 0xd3], 6')
-assert pending < retry < victim and updated[pending + 3].mnemonic == 'jne'
-assert updated[pending + 3].operands[0].imm == updated[retry + 1].address and updated[retry - 1].op_str == 'edx, edx', 'Tick retry must be pending-wave-only with no retained raw killer pointer'
+pending = next(index for index, entry in enumerate(updated) if entry.op_str == 'byte ptr [rbx + 0xd3], 6')
+assert pending < retry < victim and updated[pending + 1].mnemonic == 'jne'
+assert updated[pending + 1].operands[0].imm == updated[retry + 1].address and updated[retry - 2].op_str == 'edx, edx', 'Tick retry must be pending-wave-only with no retained raw killer pointer'
 assert updated[victim + 1].op_str == 'al, al' and updated[victim + 2].mnemonic == 'je'
 assert updated[victim + 3].op_str == 'byte ptr [rbx + 0xd0], 0' and updated[victim + 4].mnemonic == 'jne'
 assert updated[victim + 2].operands[0].imm == updated[victim + 4].operands[0].imm
@@ -117,7 +127,7 @@ reset = instructions('?Reset' + suffix)
 assert all(any(entry.op_str == f'byte ptr [rbx + {hex(displacement)}], 0' for entry in reset) for displacement in (0xd5, 0xd4))
 assert native['symbol']('?clear@?$_Tree@V?$_Tset_traits@VObjectGuid@@') in native['calls']('?Reset' + suffix)
 cleanup = calls_to(reset, '?DespawnAll@SummonList@@')[0]
-phase = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rbx + 0xd1], 0')
+phase = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rbx + 0xd1], 0' and reset[index + 1].op_str == 'byte ptr [rbx + 0xd4], 0')
 assert reset[phase + 2].mnemonic == 'je' and reset[phase + 2].operands[0].imm == reset[cleanup + 1].address, 'Final phase is rewound or cleaned as an incomplete wave'
 assert reset[cleanup - 1].op_str == 'rcx, [rbx + 0x38]', 'Cleanup does not use Magnars actual owned SummonList'
 reserve = calls_to(reset, '?clear@?$list@VObjectGuid@@')[0]
