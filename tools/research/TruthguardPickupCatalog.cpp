@@ -68,8 +68,11 @@ int main(int argc, char** argv)
     DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
     DB2Storage<LockEntry> locks("Lock.db2", LockLoadInfo::Instance());
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
+    DB2Storage<VehicleEntry> vehicles("Vehicle.db2", VehicleLoadInfo::Instance());
+    DB2Storage<VehicleSeatEntry> seats("VehicleSeat.db2", VehicleSeatLoadInfo::Instance());
     if (!items.Load(argv[1], 0) || !children.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
-        !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !locks.Load(argv[1], 0) || !maps.Load(argv[1], 0))
+        !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !locks.Load(argv[1], 0) || !maps.Load(argv[1], 0) ||
+        !vehicles.Load(argv[1], 0) || !seats.Load(argv[1], 0))
         return 7;
     items.LoadFromDB();
     children.LoadFromDB();
@@ -78,6 +81,21 @@ int main(int argc, char** argv)
     castTimes.LoadFromDB();
     locks.LoadFromDB();
     maps.LoadFromDB();
+    vehicles.LoadFromDB();
+    seats.LoadFromDB();
+    auto vehicle = vehicles.LookupEntry(4726);
+    if (!vehicle)
+        return 10;
+    std::cout << "VEHICLE\t" << vehicle->ID << '\t' << vehicle->Flags << '\n';
+    for (uint32 index = 0; index < 8; ++index)
+        if (vehicle->SeatID[index])
+        {
+            auto seat = seats.LookupEntry(vehicle->SeatID[index]);
+            if (!seat)
+                return 11;
+            std::cout << "SEAT\t4726\t" << index << '\t' << seat->ID << '\t' << seat->Flags << '\t' << seat->FlagsB
+                << '\t' << seat->FlagsC << '\t' << seat->EnterUISoundID << '\t' << seat->ExitUISoundID << '\n';
+        }
     std::set<uint32> equipment{128866};
     for (auto child : children)
         if (child->ItemID == 128866)

@@ -7,6 +7,7 @@
 #include "GameObjectAI.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "TemporarySummon.h"
 #include "shields_rest.h"
 
 //Phases: 6363
@@ -1075,32 +1076,41 @@ public:
             summoner->CastSpell(me, 52391, true); //Ride Veh
         }
 
+        Player* GetRider()
+        {
+            if (!((me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM && me->GetMapId() == 1220) ||
+                (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM && me->GetMapId() == 1495)))
+                return nullptr;
+            TempSummon* summon = me->ToTempSummon();
+            if (!summon)
+                return nullptr;
+            Unit* summoner = summon->GetSummoner();
+            if (!summoner)
+                return nullptr;
+            Player* player = summoner->ToPlayer();
+            return player && player->GetVehicleBase() == me ? player : nullptr;
+        }
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            if (apply && (me->GetMapId() == 1220 || me->GetMapId() == 1495))
+            if (apply && who && who == GetRider())
                 me->GetMotionMaster()->MovePath(me->GetEntry() * 100, false);
         }
 
         void MovementInform(uint32 type, uint32 id) override
         {
-            if (type != WAYPOINT_MOTION_TYPE)
+            if (type != WAYPOINT_MOTION_TYPE || id != 4)
                 return;
 
-            if (id == 4 && me->GetAnyOwner())
+            if (Player* owner = GetRider())
             {
-                if (Player* owner = me->GetAnyOwner()->ToPlayer())
+                if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM)
                 {
-                    if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM)
-                    {
-                        owner->SetScenarioId(1082);
-                        owner->CastSpell(owner, SPELL_FLY_TO_STORMHEIM, true);
-                    }
-                    if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM)
-                    {
-                        owner->CastSpell(owner, SPELL_RETURN_TO_DALARAN, true);
-                    }
-                    me->DespawnOrUnsummon(500);
+                    owner->SetScenarioId(1082);
+                    owner->CastSpell(owner, SPELL_FLY_TO_STORMHEIM, true);
                 }
+                if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM)
+                    owner->CastSpell(owner, SPELL_RETURN_TO_DALARAN, true);
+                me->DespawnOrUnsummon(500);
             }
         }
 

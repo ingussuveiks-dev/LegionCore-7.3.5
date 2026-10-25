@@ -587,13 +587,14 @@
       "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry and duplicate travel-click requests repaired; accepted effects/scene, boarding and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry, duplicate travel-click requests and travel rider identity repaired; accepted effects/scene, travel recovery and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
       "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
       "equipped_pair_audit": "docs/audits/truthguard-equipped-pair-2026-10-25.json",
       "credit_cast_audit": "docs/audits/truthguard-credit-cast-admission-2026-10-25.json",
       "travel_click_audit": "docs/audits/truthguard-travel-click-2026-10-25.json",
+      "rider_audit": "docs/audits/truthguard-rider-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -676,7 +677,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Known duplicate pre-AI209884/210358 click rows removed by guarded migration08; static explicit flags/native AI dispatch retained. Each eligible click now requests its original player-self summon once, retaining the source on non-OK admission. This does not acknowledge a live summon or boarding, suppress repeated packets, or repair stale-owner waypoint/failed arrival casts. Next verify actual4726 seats, owner/passenger identity, missing summon/ride retry, abandonment/re-entry and both flight endpoints. Also trace accepted pickup effects and scene failure/completion/re-entry: actual linked pair precedes210133 and only OK permits explicit50545/event7/210132. That admission does not prove all four effects delivered; never replay the whole credit spell from a stale scene flag. Scene1259/package1614/flags21 has no scene_event rows. Real child creation/capacity,225876 effect81, shared/group/faction loot and complete relevant video/client traversal remain open."
+      "next_action": "Travel08 keeps one guarded summon request per eligible click and retains the source on rejected admission. Native4726 has only seat0/16558, no CAN_CONTROL; selected boarding and final waypoint now resolve the immutable TempSummon Player summoner actually aboard the matching105886/map1220 or106205/map1495 bird, not mutable GetAnyOwner or a foreign passenger. No unboarded owner receives endpoint requests. This is server identity admission, not rendered/completed boarding, an exactly-once flight latch or successful arrival. Next repair accepted-summon/missing-ride recovery, repeated packets/callbacks, abandon/death/re-entry and rejected endpoint casts before claiming full travel complete. Also trace accepted pickup effects and scene failure/completion/re-entry: actual linked pair precedes210133 and only OK permits explicit50545/event7/210132, not proof of all four effects. Never replay the whole credit spell from a stale scene flag. Scene1259/package1614/flags21 has no scene_event rows. Real child creation/capacity,225876 effect81, shared/group/faction loot and full relevant video/client traversal remain open."
     },
     {
       "class_id": 2,

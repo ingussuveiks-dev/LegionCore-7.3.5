@@ -47,8 +47,8 @@ SELECT 'objective',ID,Type,StorageIndex,ObjectID,Amount,Flags FROM quest_objecti
  $previousPassword=$env:MYSQL_PWD
  try{$env:MYSQL_PWD=$connection[3];$rows=@($query|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Truthguard binding metadata read failed'}}finally{$env:MYSQL_PWD=$previousPassword}
  $expected=@("binding`t249420`t3`t9806`t2113536`t1691`t249420`t23645`t0`t0`t`tgo_sr_truthguard","spawn`t140818`t249420`t1495`t6383","loot`t249420`t128866`t100`t0`t1`t0`t1`t1","gates`t14","smart`t0","objective`t283388`t0`t0`t105889`t1`t0","objective`t283389`t0`t1`t105891`t1`t34","objective`t283477`t0`t2`t105892`t1`t2")
- if(Compare-Object $expected $rows){throw 'Truthguard metadata changed; review native real-loot/admission contract'}
  $rows|Set-Content -Encoding utf8 "$out/live.tsv"
+ if(Compare-Object $expected $rows){throw 'Truthguard metadata changed; review native real-loot/admission contract'}
  & "$PSScriptRoot/Test-TruthguardSurrender.ps1" -VerifyReleaseBinary
  if($LASTEXITCODE){throw 'Truthguard stage/native/installed surrender changed'}
  $previous=$env:PYTHONPATH
