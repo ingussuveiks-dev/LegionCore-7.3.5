@@ -1020,29 +1020,41 @@ VehicleJoinEvent::~VehicleJoinEvent()
  * @author Machiavelli
  * @date 17-2-2013
  *
- * @param parameter1 Unused
+ * @param eventTime Current event processor time.
  * @param parameter2 Unused.
  *
- * @return true, cannot fail.
+ * @return true when finished; false retains event ownership.
  *
  */
 
-bool VehicleJoinEvent::Execute(uint64, uint32)
+bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
 {
     if (!Passenger->IsInWorld())
-        return false;
+    {
+        Abort(eventTime);
+        return true;
+    }
     Target = ObjectAccessor::GetUnit(*Passenger, targetGuid);
 
     if (!Target || !Target->IsInWorld())
-        return false;
+    {
+        Abort(eventTime);
+        return true;
+    }
 
     vehicle = Target->GetVehicleKit();
 
     if (!vehicle)
-        return false;
+    {
+        Abort(eventTime);
+        return true;
+    }
 
     if (!vehicle->GetRecAura() && !Target->HasAuraTypeWithCaster(SPELL_AURA_CONTROL_VEHICLE, Passenger->GetGUID()))
-        return false;
+    {
+        Abort(eventTime);
+        return true;
+    }
 
     Player* player = Passenger->ToPlayer();
     vehicle->RemovePendingEventsForSeat(Seat->first);
@@ -1217,7 +1229,7 @@ void VehicleJoinEvent::Abort(uint64)
         targetBase->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE, Passenger->GetGUID());
     }
     else if (Passenger)
-        TC_LOG_DEBUG("entities.vehicle", "Passenger GuidLow: %u, Entry: %u, board on uninstalled vehicle SeatId: %d cancelled", Passenger->GetGUIDLow(), Passenger->GetEntry(), static_cast<int32>(Seat->first));
+        TC_LOG_DEBUG("entities.vehicle", "Passenger GuidLow: %u, Entry: %u, board on unavailable vehicle GuidLow: %u cancelled", Passenger->GetGUIDLow(), Passenger->GetEntry(), targetGuid.GetGUIDLow());
     else
         TC_LOG_ERROR("entities.vehicle", " WARNING!!! VehicleJoinEvent Abort with non existen Passanger");
 
