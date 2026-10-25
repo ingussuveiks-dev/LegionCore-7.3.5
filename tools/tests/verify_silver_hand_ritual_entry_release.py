@@ -154,7 +154,7 @@ constructors = sites(factory, '??0FunctionProcessor@@')
 assert len(constructors) == 2
 assert [factory[position - 1].op_str for position in constructors] == ['rcx, [rsi + 0x60]', 'rcx, [rsi + 0xe0]']
 assert any(entry.op_str == 'qword ptr [rsi + 0x160], rbp' for entry in factory)
-assert any(entry.op_str == 'byte ptr [rsi + 0x168], bpl' for entry in factory)
+assert any(entry.op_str in ('byte ptr [rsi + 0x168], bpl', 'word ptr [rsi + 0x168], bp') for entry in factory)
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in factory)
 reset_body = instructions(reset_name)
 guard = next(index for index, entry in enumerate(reset_body) if entry.op_str == 'byte ptr [rbx + 0x168], 0' and entry.mnemonic == 'cmp')

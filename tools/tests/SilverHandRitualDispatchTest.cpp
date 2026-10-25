@@ -46,11 +46,20 @@ struct Creature
     CreatureAI* ai=nullptr;
     Motion motion;
     bool stunned=false,casting=false;
+    bool world=true,preDelete=false,alive=true,mapPresent=true;
+    uint32 entry=106676,mapId=1539,instanceId=42;
     uint32 despawn=0,flags=16;
     uint32 castResult=0;
     Player* nearby=nullptr;
     std::vector<uint32> casts;
     CreatureAI* AI(){return ai;}
+    bool IsInWorld() const{return world;}
+    bool IsPreDelete() const{return preDelete;}
+    bool IsAlive() const{return alive;}
+    uint32 GetEntry() const{return entry;}
+    uint32 GetMapId() const{return mapId;}
+    uint32 GetInstanceId() const{return instanceId;}
+    Creature* GetMap(){return mapPresent?this:nullptr;}
     Motion* GetMotionMaster(){return &motion;}
     bool HasUnitState(uint32 state) const{return state==UNIT_STATE_STUNNED?stunned:casting;}
     float GetPositionX() const{return 1;}
@@ -64,8 +73,26 @@ struct Creature
     uint32 CastSpell(Creature* target,uint32 spell){assert(target==this && spell==215260);casts.push_back(spell);return castResult;}
     void SetFlag(uint32 field,uint32 mask){assert(field==UNIT_FIELD_FLAGS);flags|=mask;}
 };
+struct Scenario
+{
+    uint32 id=1092,step=8;
+    uint32 GetScenarioId() const{return id;}
+    uint32 GetCurrentStep() const{return step;}
+};
+struct ScenarioManager
+{
+    Scenario scenario;
+    bool present=true;
+    Scenario* GetScenario(uint32 instanceId){return present && instanceId==42?&scenario:nullptr;}
+} scenarioManager;
+auto* sScenarioMgr=&scenarioManager;
+namespace SilverHandRitualEntry
+{
+#include "ActionPolicy.inc"
+}
 struct EventMap
 {
+    void Reset(){}
     void Update(uint32){}
     void RescheduleEvent(uint32,uint32){}
     uint32 ExecuteEvent() const{return 0;}
@@ -75,13 +102,17 @@ struct ThirdAI : CreatureAI
     Creature* me;
     FunctionProcessor _functions;
     EventMap events;
+    bool _ritualStarted=false,_pendingHealRecovery=false,_entryPending=false,_introDone=false;
+    uint64 _entryGeneration=0;
     std::vector<uint32> talks;
+    std::function<void()> onTalk;
     explicit ThirdAI(Creature* actor):me(actor){actor->ai=this;}
-    void Talk(uint32 line) override{talks.push_back(line);}
+    void Talk(uint32 line) override{talks.push_back(line);if(onTalk)onTalk();}
     bool UpdateVictim() const{return false;}
     void DoCast(uint32){assert(false);}
     void DoMeleeAttackIfReady(){assert(false);}
 #include "Action.inc"
+#include "Reset.inc"
 #include "Update.inc"
 #include "Movement.inc"
 };
@@ -112,6 +143,74 @@ struct Instance
 };
 int main()
 {
+    {
+        Creature actor;ThirdAI ai(&actor);
+        ai.DoAction(0);ai.DoAction(1);ai.DoAction(1);
+        ai.UpdateAI(1000);
+#ifdef ACTION_BASELINE
+        assert(actor.motion.points==3 && ai.talks==std::vector<uint32>({8,8,8}));
+        std::cout<<"PASS action baseline: actual old DoAction accepts wrong action0 and repeated1, queues three overlapping ritual departures\n";
+        return 0;
+#else
+        assert(actor.motion.points==1 && ai.talks==std::vector<uint32>{8});
+        ai.DoAction(1);ai.Reset();ai.DoAction(1);ai.UpdateAI(1000);
+        assert(actor.motion.points==1 && ai._ritualStarted);
+#endif
+    }
+#ifndef ACTION_BASELINE
+    assert(!SilverHandRitualEntry::CanAdvance(nullptr));
+    {
+        Creature actor;ThirdAI ai(&actor);
+        for(int32 action:{-1,0,2,8})ai.DoAction(action);
+        ai.UpdateAI(1000);assert(actor.motion.points==0 && !ai._ritualStarted);
+        ai.DoAction(1);ai.Reset();ai.DoAction(1);
+        ai.onTalk=[&ai]{ai.DoAction(1);};
+        ai.UpdateAI(999);assert(actor.motion.points==0);
+        ai.UpdateAI(1);ai.UpdateAI(1000);assert(actor.motion.points==1);
+    }
+    {
+        Creature actor;
+        {ThirdAI ai(&actor);ai.DoAction(1);}
+        actor.ai=nullptr;ThirdAI replacement(&actor);replacement.UpdateAI(1000);
+        assert(actor.motion.points==0 && !replacement._ritualStarted);
+        replacement.DoAction(1);replacement.UpdateAI(1000);assert(actor.motion.points==1);
+    }
+    for(uint32 invalid=0;invalid<11;++invalid)
+    {
+        for(bool delayed:{false,true})
+        {
+            Creature actor;ThirdAI ai(&actor);
+            scenarioManager=ScenarioManager{};
+            if(delayed)ai.DoAction(1);
+            switch(invalid)
+            {
+                case 0:actor.world=false;break;
+                case 1:actor.preDelete=true;break;
+                case 2:actor.alive=false;break;
+                case 3:actor.entry=106777;break;
+                case 4:actor.mapId=1220;break;
+                case 5:actor.mapPresent=false;break;
+                case 6:actor.instanceId=43;break;
+                case 7:scenarioManager.present=false;break;
+                case 8:scenarioManager.scenario.id=991;break;
+                case 9:scenarioManager.scenario.id=1037;break;
+                case 10:scenarioManager.scenario.step=7;break;
+            }
+            if(!delayed)ai.DoAction(1);
+            ai.UpdateAI(1000);assert(actor.motion.points==0 && ai.talks.empty() && !ai._ritualStarted);
+            actor.world=true;actor.preDelete=false;actor.alive=true;actor.entry=106676;actor.mapId=1539;actor.mapPresent=true;actor.instanceId=42;
+            scenarioManager=ScenarioManager{};
+            ai.DoAction(1);ai.UpdateAI(999);assert(actor.motion.points==0);
+            ai.UpdateAI(1);assert(actor.motion.points==1);
+        }
+    }
+    for(uint32 step=0;step<12;++step)
+    {
+        Creature actor;ThirdAI ai(&actor);scenarioManager=ScenarioManager{};
+        scenarioManager.scenario.step=step;ai.DoAction(1);ai.UpdateAI(1000);
+        assert(actor.motion.points==(step==8?1u:0u));
+    }
+    scenarioManager=ScenarioManager{};
     {
         Creature actor;
         ThirdAI ai(&actor);
@@ -228,6 +327,7 @@ int main()
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
     std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 #endif
 }

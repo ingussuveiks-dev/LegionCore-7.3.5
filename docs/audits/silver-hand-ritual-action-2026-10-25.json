@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Silver Hand third-Travard106676 direct DoAction ritual departure admission/duplicate1s requests. Not downstream waypoint credit, persisted quest attempt, accepted-motion recovery or full36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp and instance_silver_hand.cpp",
+      "review": "Only examined source caller supplies DoAction(true) from native instance step8. Old third DoAction ignores parameter and scenario and queues another Talk8/MovePoint1 at every invocation. Existing _functions belongs to AI and drains after stunned guard/before victim check; retain this schedule, not move it to independent entry Lifecycle. Reset clears combat/heal-pending and pending LOS-entry generation, not this existing action queue. POINT1 credit/despawn still has its separate neighborhood-recipient limitation."
+    },
+    {
+      "source": "Matching native SilverHandPickupCatalog and fresh read-only MariaDB",
+      "review": "Sole binding106676 npc_travar_third/spawn362006/map1539/phase7002; native source23 zone85entry9 condition44/1092 admits5..8. scenario_data map1539 is shared:991/class5,1037/class1,1092/class2; map match alone is not Holy admission. Native8/2456/root48015/30089/type92/50915 unchanged. Targeted smart_scripts query for entryorguid or target_param1=106676 returned no rows; this is not exhaustive dynamic SmartAI-target analysis. No database/spawn/phase/character writes."
+    },
+    {
+      "source": "Local TrinityCore26972 era scripts tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c tree again contains unrelated Stratholme silver_hand boss, not acquisition actor. Existing route/worklist/donor audits read; no exhaustive historical claim."
+    },
+    {
+      "source": "Pinned Titans third-Travard sequence",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Relevant third class408..568 returned/read with direct action,1s native own queue, stunned-before-drain and later POINT1/waypoints. It retains unbound/repeated action; no compatible donor correction imported. No guessed actor motion, dialogue or phase data."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. This limits existing action to its examined native caller stage and coalesces duplicate requests; it does not reconstruct ritual choreography or render timing."
+    }
+  ],
+  "repair": {
+    "admission": "SilverHandRitualEntry::CanAdvance requires actual live/nonpredeleted106676/map1539/non-null map and native instance scenario1092/exact8. DoAction accepts only1, rejects initialized _ritualStarted, latches before existing _functions AddFunction/CalculateTime1000. No Player eligibility inferred from map alone; no Player pointer, proximity substitute, event, item or HP grant introduced.",
+    "execution": "Existing selected AI-owned callback rechecks same live actor/scenario/step before original Talk8/MovePoint1(1914.39,2335.43,75.56). Invalid context clears only action latch for a future explicit legitimate action; accepted request retains latch, including reentrant speech or ordinary Reset, so repeated hooks do not replay movement. Queue destruction cancels pending work. No automatic retry, missing-motion replay, quest epoch or action Reset cancellation invented.",
+    "preserved": "No native stun pause, existing combat Reset/heal recovery, LOS GUID-entry generation/lifetime, instance8/10 dispatch, cast215260, real loot/equip/scene or downstream MovementInform change. Whole companion preservation test normalizes only new action field/body before its previous entry/heal/1536-guard comparisons; specific action tests/selected PE independently exercise the intentional difference. Existing entry PE accepts actual coalesced zero word for adjacent entry/action bools, retaining proven zero source and both native queue constructors/destructor/entry generation checks."
+  },
+  "validation": {
+    "baseline": "PASS -ActionBaseline pins41ce375b actual third action/UpdateAI/native FunctionProcessor: wrong0 plus repeated1 requests produce three Talk8/MovePoint1 calls. Older controller step8 and step10 baselines retained separately. Controlled defined host, no claimed actual client failure or persisted counter.",
+    "host": "PASS actual policy/action/reset/update/movement with native queue. Wrong -1/0/2/8, duplicate pending and accepted requests, reentrant Talk8, pending/accepted Reset,999+1ms, destruction/replacement/fresh valid retry and all12 scenario steps.22 invalid initial/delayed contexts: world/predelete/alive/entry/map/null-map/instance/missing scenario/Priest991/Warrior1037/wrong step, each followed by restored legitimate explicit retry. Existing controller split/missing actors, one per invocation, final failed-cast semantics, native stun pause and actual mocked POINT1/no early50915 retained. Core does not ordinarily tick out-of-world/predeleted actors; direct host invocation tests defensive predicate, not a claim otherwise. Map/cast/motion/player/criteria services controlled, not client proof.",
+    "installed": "PASS native selected third action0x48 non1/started exits, actual CanAdvance null/world/predelete/deathstate/entry/map/instance/1092/exact8 denials, initialized actionAI+0x169 latched before own queueAI+0x60/time1000. Actual stored callback table/capturedAI/full PDATA closure rechecks same helper before original Talk8/MovePoint, invalid branch resets action latch and returns before effects. Selected factory zero-initializes adjacent entry/action bools via wordAI+0x168 with xorEBP, size0x170 unchanged; existing selected entry/lifecycle/destructor and native instance dispatch proofs retained. No symbol-only/noinline/fake-unwind certification.",
+    "regressions": "PASS12-suite serial PowerShell7 ledger .codex/silver-hand-ritual-action-regressions.tsv: new41ce375b action baseline plus retained7680556f final/e01a2c64 step8 baselines, installed full dispatch/action with nested RitualEntry admission/lifetime/data/PE and native215258/215260 metadata, installed lastWaveLifetime, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, SceneLifecycle, ArtifactForceEquip55 records/39 items; pinned third-entry lifetime baseline. Catalogs/build serialized, native counts/diagnostics retained. Previous11/10/33 ledgers remain separate, not relabeled as current binary reruns. Not client traversal.",
+    "evidence": ".codex/silver-hand-ritual-action-* and runtime-test/silver-hand-ritual-dispatch ignored logs/probes only, no runtime/config/password/character/media data tracked."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "43893084EDFE4059858226C2F4562467C67FB253E7CF7F1140E33CEF36BA966E",
+    "bnet_sha256": "2E22495DD880752E3F77A591208D70FEC8A1521CCB998F7E726DA2E871F27A57",
+    "build": "Release worldserver+bnetserver17.25s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link names canonical output and original scripts/game/shared/common Release libraries, INCREMENTAL:NO. Native catalogs serialized separately; selected installed behavior independently checked.",
+    "runtime": "Own hidden canonical PID36896 fresh ready, own stdin shutdown0/exit0/new DBErrors0/stderr empty/protected conf-certificate hashes unchanged/gone. No unknown/user server stopped or own hidden process left running."
+  },
+  "remaining": [
+    "Actor/scenario/action scope is not an active quest/Player reference. Abandon or rapid retake leaving same1092/step8 can still look like original attempt. Ordinary Reset retains existing action job/latch, not a persisted quest epoch; accepted-motion interruption/re-entry and recreated actor dedup remain OPEN. Invalid callback permits only explicit fresh action, not an implemented automatic redispatch.",
+    "MovementInform waypoint50877/50912/POINT50915 still has independent nearby-player/repeated-callback ownership. No exactly-once persisted scenario/group/faction/pet/guardian credit claim follows from coalescing motion requests. Spell targeting, physical movement/stun/heal recovery, speech/VFX/camera/pet behavior still require actual client traversal.",
+    "Firstfight/evade/50850, aberration half-health/one-hit/intentional companion deaths, last-wave admission/death counts/periodic51838/retry, failed215260 recovery, genuine loot/equip/save/relog/outro/true Dalaran and all36 complete chains remain OPEN."
+  ]
+}

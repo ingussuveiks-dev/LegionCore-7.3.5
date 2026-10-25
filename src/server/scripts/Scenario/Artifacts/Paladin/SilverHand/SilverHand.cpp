@@ -65,6 +65,15 @@ namespace SilverHandProcession
 
 namespace SilverHandRitualEntry
 {
+    bool CanAdvance(Creature* actor)
+    {
+        if (!actor || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 106676 || actor->GetMapId() != 1539 || !actor->GetMap())
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 8;
+    }
+
     bool CanEnter(Player* player, Creature* actor)
     {
         if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
@@ -615,6 +624,7 @@ public:
         FunctionProcessor _entryFunctions;
         uint64 _entryGeneration = 0;
         bool _entryPending = false;
+        bool _ritualStarted = false;
 
         void Reset() override
         {
@@ -636,8 +646,16 @@ public:
 
         void DoAction(int32 const action) override
         {
+            if (action != 1 || _ritualStarted || !SilverHandRitualEntry::CanAdvance(me))
+                return;
+            _ritualStarted = true;
             _functions.AddFunction([this]() -> void
             {
+                if (!SilverHandRitualEntry::CanAdvance(me))
+                {
+                    _ritualStarted = false;
+                    return;
+                }
                 Talk(8);
                 me->GetMotionMaster()->MovePoint(1, 1914.39f, 2335.43f, 75.56f);
             }, _functions.CalculateTime(1000));

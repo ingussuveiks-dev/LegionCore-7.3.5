@@ -29,7 +29,8 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
   }
   if($script -eq 'npc_travar_third'){
    $beforeEntry=Block $entryPinned "class $script : public CreatureScript"
-   $entryNormalized=$actual
+   $entryNormalized=$actual.Replace("        bool _ritualStarted = false;`n",'')
+   $entryNormalized=$entryNormalized.Replace((Block $entryNormalized 'void DoAction('),(Block $beforeEntry 'void DoAction('))
    foreach($method in @('void Reset(','void UpdateLifecycle(','void MoveInLineOfSight(')){$entryNormalized=$entryNormalized.Replace((Block $entryNormalized $method),(Block $beforeEntry $method))}
    foreach($field in @('FunctionProcessor _entryFunctions;','uint64 _entryGeneration = 0;','bool _entryPending = false;')){$entryNormalized=$entryNormalized.Replace("        $field`n",'')}
    if($entryNormalized -cne $beforeEntry){throw 'Third companion changed beyond separately tested entry queue lifetime'}
