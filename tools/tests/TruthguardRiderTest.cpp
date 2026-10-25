@@ -12,9 +12,9 @@ using int8=int8_t;
 #include "CastResults.inc"
 uint32 endpointWarnings=0;
 #define TC_LOG_WARN(...) (++endpointWarnings)
-enum { NPC_HIPPOGRYPH_DALARAN_SUM=105886, NPC_HIPPOGRYPH_SCENARIO_SUM=106205,
+enum { NPC_HIPPOGRYPH_DALARAN=105883, NPC_HIPPOGRYPH_SCENARIO=106203, NPC_HIPPOGRYPH_DALARAN_SUM=105886, NPC_HIPPOGRYPH_SCENARIO_SUM=106205,
     SPELL_FLY_TO_STORMHEIM=209908, SPELL_RETURN_TO_DALARAN=210360,
-    QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1 };
+    QUEST_STATUS_NONE=0, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1 };
 using QuestStatus=uint32;
 struct Unit;
 struct Player;
@@ -24,6 +24,7 @@ struct ObjectGuid
     uint32 value=0;
     bool IsEmpty() const { return value==0; }
     explicit operator bool() const { return !IsEmpty(); }
+    bool operator<(ObjectGuid const& other) const { return value<other.value; }
 };
 struct Vehicle { Unit* base=nullptr; Unit* GetBase() const { return base; } } vehicle,otherVehicle;
 struct Unit
@@ -35,6 +36,8 @@ struct Unit
     Unit* parent=nullptr;
     Vehicle* m_vehicle=nullptr;
     bool isSummon() const { return summoned; }
+    bool IsInMap(Unit const*) const { return true; }
+    bool InSamePhase(Unit const*) const { return true; }
     ObjectGuid GetCharmerGUID() const { return {charmer?1u:0u}; }
     Unit* GetCharmer() const { return charmer; }
     Unit* GetOwner() const { return parent; }
@@ -68,6 +71,7 @@ struct Creature : Unit
     uint32 GetMapId() const { return map; }
     Motion* GetMotionMaster() { return &motion; }
     void DespawnOrUnsummon(uint32 delay) { assert(delay==500); ++despawns; }
+    void DestroyForPlayer(Player*) { assert(false); }
 };
 struct TempSummon : Creature
 {
@@ -78,6 +82,7 @@ namespace ObjectAccessor
 {
     std::map<uint32,Unit*> objects;
     Unit* GetUnit(TempSummon const&,ObjectGuid identity) { auto found=objects.find(identity.value); return found==objects.end()?nullptr:found->second; }
+    Player* GetPlayer(Creature const&,ObjectGuid identity) { auto found=objects.find(identity.value); return found==objects.end()?nullptr:found->second->ToPlayer(); }
 }
 #include "Summoner.inc"
 #include "AnyOwner.inc"
@@ -95,6 +100,7 @@ struct Script : BaseAI
     Creature* me;
     explicit Script(Creature* actor):me(actor) {}
 #include "State.inc"
+#include "BoardingRequests.inc"
 #include "Rider.inc"
 #include "Boarded.inc"
 #include "Arrived.inc"

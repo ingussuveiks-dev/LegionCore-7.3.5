@@ -1,6 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$BoardingBaseline)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if(($Baseline -or $BoardingBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if($Baseline -and $BoardingBaseline){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/truthguard-travel-click"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -64,15 +65,20 @@ $prefix=if($Baseline){'baseline'}else{'fixed'}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "edca8e77:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned travel source missing'}}
+if($BoardingBaseline){$source=(& git -C $repo show "643bda5a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned boarding source missing'}}
 $actor=Block $source 'class npc_sr_argent_hippogryph'
 [IO.File]::WriteAllText("$out/Click.inc",(Block $actor 'void OnSpellClick('))
+[IO.File]::WriteAllText("$out/Reset.inc",(Block $actor 'void Reset('))
 [IO.File]::WriteAllText("$out/Summon.inc",$(if($Baseline){''}else{Block $actor 'void SummonForPlayer('}))
+[IO.File]::WriteAllText("$out/BoardingRequests.inc",$(if($Baseline -or $BoardingBaseline){''}else{'std::map<ObjectGuid, uint32> boardingRequests;'+(Block $actor 'void UpdateBoardingRequests(')}))
 [IO.File]::WriteAllText("$out/NativeCastResults.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/NativeData.inc",(Block (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.h" -Raw) 'enum Data')+';')
+[IO.File]::WriteAllText("$out/GuidCompare.inc",(Block (Get-Content "$repo/src/server/game/Entities/Object/ObjectGuid.cpp" -Raw) 'bool ObjectGuid::operator<('))
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'bool Unit::HandleSpellClick('))
 [IO.File]::WriteAllText("$out/Visibility.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'bool Player::canSeeSpellClickOn('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
+if($BoardingBaseline){$mode='/DBOARDING_BASELINE'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardTravelClickTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/click.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native travel click host failed'}
 if($VerifyReleaseBinary){

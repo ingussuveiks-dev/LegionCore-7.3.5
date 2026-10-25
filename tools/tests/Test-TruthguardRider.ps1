@@ -13,6 +13,7 @@ if($EndpointBaseline){$source=(& git -C $repo show "618afd7c:$path") -join "`n";
 $actor=Block $source 'class npc_sr_argent_hippogryph'
 foreach($pair in @(@('Boarded','void PassengerBoarded('),@('Arrived','void MovementInform('),@('Update','void UpdateAI('),@('Reset','void Reset('))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $actor $pair[1]))}
 [IO.File]::WriteAllText("$out/State.inc",[regex]::Match($actor,'bool arrivalAccepted = false;\s*bool arrivalInProgress = false;\s*uint32 arrivalRetryTimer = 0;').Value)
+[IO.File]::WriteAllText("$out/BoardingRequests.inc",$(if($Baseline -or $EndpointBaseline){''}else{'std::map<ObjectGuid, uint32> boardingRequests;'+(Block $actor 'void UpdateBoardingRequests(')}))
 [IO.File]::WriteAllText("$out/CastResults.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/Rider.inc",$(if($Baseline){''}else{Block $actor 'Player* GetRider('}))
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw

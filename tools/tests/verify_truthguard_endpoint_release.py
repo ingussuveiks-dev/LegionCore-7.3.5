@@ -1,7 +1,7 @@
 """Verify installed native-result retry/latches rather than an assumed successful teleport."""
 from pathlib import Path
 import runpy
-from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM
+from capstone import CS_OP_IMM
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_truthguard_rider_release.py')))
 native = previous['native']
@@ -59,18 +59,12 @@ while pending:
             continue
     pending.append(entry.address + entry.size)
 assert body[destroy].address not in seen and accepted not in seen, 'Rejected admission reaches success/despawn'
-decoder = Cs(CS_ARCH_X86, CS_MODE_64)
 address = native['symbol']('?UpdateAI' + suffix)
-offset = native['offset'](address)
-update = []
-for entry in decoder.disasm(native['binary'][offset:offset + 80], address):
-    if entry.mnemonic == 'int3':
-        break
-    update.append(entry)
-assert update[0].op_str == 'eax, dword ptr [rcx + 0x3c]'
-assert find(update, 'eax, edx', 'cmp') < find(update, 'eax, edx', 'sub') < find(update, 'dword ptr [rcx + 0x3c], 0', 'mov')
-tail = next(index for index, entry in enumerate(update) if entry.mnemonic == 'jmp' and entry.op_str == 'qword ptr [rax + 0x1a8]')
-assert update[tail - 1].op_str == 'dword ptr [rcx + 0x3c], 0'
+update = instructions('?UpdateAI' + suffix)
+assert call_index(update, '?UpdateBoardingRequests' + suffix) < find(update, 'eax, dword ptr [rbx + 0x3c]', 'mov')
+assert find(update, 'eax, edi', 'cmp') < find(update, 'eax, edi', 'sub') < find(update, 'dword ptr [rbx + 0x3c], 0', 'mov')
+tail = next(index for index, entry in enumerate(update) if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax + 0x1a8]')
+assert update[tail - 2].op_str == 'dword ptr [rbx + 0x3c], 0' and update[tail - 1].op_str == 'rcx, rbx'
 assert any(entry.op_str == 'edx, 2' for entry in update[:tail]) and any(entry.op_str == 'r8d, 4' for entry in update[:tail])
 slots = previous['tables'][0]
 assert slots.count(address) == 1 and slots[0x18 // 8] == address
@@ -78,5 +72,7 @@ tick = instructions('?Update@Creature@@')
 dispatch = next(index for index, entry in enumerate(tick) if entry.mnemonic == 'call' and entry.op_str == 'qword ptr [rax + 0x18]')
 assert [entry.op_str for entry in tick[dispatch - 3:dispatch]] == ['rcx, qword ptr [rsi + 0x9c0]', 'rax, qword ptr [rcx]', 'edx, r15d'], 'Native Creature update does not dispatch selected retry AI'
 factory = instructions('?GetAI@npc_sr_argent_hippogryph@@')
-assert any(entry.op_str == 'word ptr [rdi + 0x38], 0' for entry in factory) and any(entry.op_str == 'dword ptr [rdi + 0x3c], 0' for entry in factory)
-print('PASS: installed selected AI publishes in-progress before native self-casts, branches on their real result, conditionally rolls back selector and queues1000ms retry without despawn; accepted admission latches once. Leaf UpdateAI clears timer before reentering the selected waypoint slot; actual teleport/credit delivery and client remain separate.')
+assert any(entry.op_str == 'word ptr [rdi + 0x38], 0' for entry in factory)
+timer = find(factory, 'dword ptr [rdi + 0x3c], eax', 'mov')
+assert factory[timer - 1].op_str == 'eax, eax' and factory[timer - 1].mnemonic == 'xor'
+print('PASS: installed selected AI publishes in-progress before native self-casts, branches on their real result, conditionally rolls back selector and queues1000ms retry without despawn; accepted admission latches once. Runtime-bounded UpdateAI polls boarding and clears timer before the selected waypoint slot; actual teleport/credit delivery and client remain separate.')

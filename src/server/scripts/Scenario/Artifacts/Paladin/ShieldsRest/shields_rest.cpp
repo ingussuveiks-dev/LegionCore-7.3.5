@@ -1071,6 +1071,7 @@ public:
         bool arrivalAccepted = false;
         bool arrivalInProgress = false;
         uint32 arrivalRetryTimer = 0;
+        std::map<ObjectGuid, uint32> boardingRequests;
 
         void Reset() override {}
 
@@ -1138,13 +1139,50 @@ public:
 
         void SummonForPlayer(Player* player, uint32 spell)
         {
+            if (player->GetVehicleBase() || !boardingRequests.emplace(player->GetGUID(), 5000).second)
+                return;
             SpellCastResult result = player->CastSpell(player, spell, true);
             if (result != SPELL_CAST_OK)
             {
+                boardingRequests.erase(player->GetGUID());
                 TC_LOG_WARN("scripts", "Truthguard travel: summon cast %u rejected with result %u for player %u; source retained for retry", spell, uint32(result), player->GetGUIDLow());
                 return;
             }
-            me->DestroyForPlayer(player);
+        }
+
+        void UpdateBoardingRequests(uint32 diff)
+        {
+            for (auto request = boardingRequests.begin(); request != boardingRequests.end();)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, request->first);
+                QuestStatus status = player ? player->GetQuestStatus(42017) : QUEST_STATUS_NONE;
+                if (!player || !player->IsAlive() || !me->IsInMap(player) || !me->InSamePhase(player) ||
+                    player->GetQuestRewardStatus(42017) || (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE))
+                {
+                    request = boardingRequests.erase(request);
+                    continue;
+                }
+                Unit* vehicleBase = player->GetVehicleBase();
+                TempSummon* summon = vehicleBase ? vehicleBase->ToTempSummon() : nullptr;
+                bool boarded = summon && summon->GetSummoner() == player && me->IsInMap(summon) && me->InSamePhase(summon) &&
+                    ((me->GetEntry() == NPC_HIPPOGRYPH_DALARAN && summon->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM) ||
+                     (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO && summon->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM));
+                if (boarded)
+                {
+                    request = boardingRequests.erase(request);
+                    me->DestroyForPlayer(player);
+                }
+                else if (request->second <= diff)
+                {
+                    request = boardingRequests.erase(request);
+                    TC_LOG_WARN("scripts", "Truthguard travel: boarding not observed for player %u at source %u; source retained for retry", player->GetGUIDLow(), me->GetEntry());
+                }
+                else
+                {
+                    request->second -= diff;
+                    ++request;
+                }
+            }
         }
         void OnSpellClick(Unit* clicker) override
         {
@@ -1174,6 +1212,7 @@ public:
 
         void UpdateAI(uint32 diff) override
         {
+            UpdateBoardingRequests(diff);
             if (!arrivalRetryTimer)
                 return;
             if (arrivalRetryTimer > diff)
