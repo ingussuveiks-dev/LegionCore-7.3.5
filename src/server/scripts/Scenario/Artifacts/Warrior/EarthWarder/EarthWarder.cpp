@@ -340,6 +340,7 @@ public:
         EventMap events;
         bool stop_combat;
         bool first_phase;
+        bool finaleStarted = false;
         uint8 wave;
         uint8 count_dies;
 
@@ -347,6 +348,7 @@ public:
         {
             events.Reset();
             stop_combat = false;
+            finaleStarted = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -357,25 +359,59 @@ public:
             events.RescheduleEvent(EVENT_4, 33000); // event
         }
 
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        bool IsFinalePlayer(Player* player) const
         {
-            if (damage >= me->GetHealth())
+            if (!player || !player->IsInWorld() || !player->CanContact() || player->getClass() != CLASS_WARRIOR ||
+                !me->GetMap() || player->GetMap() != me->GetMap() || player->GetInstanceId() != me->GetInstanceId() ||
+                !player->InSamePhase(me) || !player->IsWithinDistInMap(me, 100.0f) || player->GetQuestRewardStatus(39191) ||
+                (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE))
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 4;
+        }
+
+        Player* GetFinalePlayer(Unit* attacker) const
+        {
+            Player* owner = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (IsFinalePlayer(owner))
+                return owner;
+            Player* candidate = nullptr;
+            if (!me->GetMap())
+                return nullptr;
+            for (auto const& reference : me->GetMap()->GetPlayers())
             {
-                if (!first_phase)
-                {
-                    me->RemoveAura(128749);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    me->setFaction(35);
-                    me->CreateConversation(504);
-                    // me->AddDelayedEvent(6000, [this]() -> void
-                    // {
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 45784);
-                        me->DespawnOrUnsummon(6000);
-                    // });
-                }
-                damage = 0;
+                Player* player = reference.getSource();
+                if (IsFinalePlayer(player) && (!candidate || me->GetDistance(player) < me->GetDistance(candidate)))
+                    candidate = player;
             }
+            return candidate;
+        }
+
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
+        {
+            if (!damage || !me->IsAlive() || me->GetEntry() != 96034 || me->GetMapId() != 1495)
+                return;
+            if (finaleStarted)
+            {
+                damage = 0;
+                return;
+            }
+            if (damage < me->GetHealth(attacker))
+                return;
+            damage = 0;
+            if (first_phase)
+                return;
+            Player* player = GetFinalePlayer(attacker);
+            if (!player)
+                return;
+            finaleStarted = true;
+            stop_combat = true;
+            me->RemoveAura(128749);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            me->setFaction(35);
+            me->CreateConversation(504);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 45784);
+            me->DespawnOrUnsummon(6000);
         }
 
         void JustSummoned(Creature* summon) override

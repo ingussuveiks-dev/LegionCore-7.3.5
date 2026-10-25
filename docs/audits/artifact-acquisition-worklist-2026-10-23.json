@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "magnar_finale_audit": "docs/audits/magnar-finale-2026-10-25.json",
+      "magnar_finale_review": "Pinned675d6f7a native host reproduces scaled one-shot deaths in both phases and unrelated/repeated nearest-player finale credit. Magnar96034 now checks final scaled damage against actual attacker-relative health, protects the first phase, and at909/4 selects eligible39191 player/owner or native Map participant before once-only504/45784/6000.80 source/faction/status/AI/phase combinations and16 invalid contexts checked; actual canonical factory/operands and fresh scaling/criteria metadata verified. Full waves/reset/re-entry, conversation failure, video combat and client VFX remain open.",
       "presentation_audit": "docs/audits/earthwarder-presentation-2026-10-25.json",
       "presentation_review": "Native1215/package1575 lacked server completion binding. Guarded scene handler now waits for actual native SCENE_COMPLETE, live Warrior39191/1495/scenario909/5-6 and existing nonbank128289, then self-casts208562. Native parent shield is OFFHAND16, linked Scaleshard128288 MAINHAND15; both slots/relationship and failed casts/equip errors are checked without item grants. Actual scene/packet/force-equip bodies and controlled inventory swap pass; full208562 progression/group/ability effects and real client equipment/VFX remain separate. Native13960 retains original128288/128289 presentation,60494 visual and77359/64464 sound references, not a new invented effect.",
       "real_loot_audit": "docs/audits/earthwarder-real-loot-2026-10-25.json",
@@ -201,7 +203,7 @@
       "return_admission_review": "Existing12s callback revalidates original-instance live Warrior1495/active39191/owned128289/native completed909 before192085; no attempted-cast103739.18 invalid/16 legitimate combinations and deployed closure remain checked. Superseding real_loot_audit moves initial progress/scene/timer behind completed native loot and removes AddItem. Automatic12s still differs from partial muted video: loot/equipment, golden winged return light/manual Jump to Skyhold/final0/1 at14:56, then loading/Skyhold ready at15:12. Native equip, full footage/audio/client traversal remain pending.",
       "item": 128289,
       "start": 39191,
-      "status": "native real-loot, scoped scene/equip bridge and admission repairs; live equipment/VFX, retry/manual return and full client traversal pending",
+      "status": "native Magnar scaled-finale, real-loot, scene/equip and admission repairs; whole waves/recovery, live equipment/VFX, manual return and full client traversal pending",
       "quests": [
         {
           "id": 39191,
@@ -271,9 +273,9 @@
       "checkpoints": {
         "quest_admission_and_faction_variants": "pending",
         "actor_initial_pose_and_visibility": "pending",
-        "stage_transitions_and_exactly_once_credit": "pending",
-        "player_pet_guardian_group_credit": "pending",
-        "scaled_one_hit_surrender_or_death": "pending",
+        "stage_transitions_and_exactly_once_credit": "Magnar final45784 native scoped once guard checked; whole waves/reset/despawn/conversation recovery pending",
+        "player_pet_guardian_group_credit": "Magnar native owner/charmer resolution and eligible shared-instance recipient checked; actual group criteria, attack admission and full route pending",
+        "scaled_one_hit_surrender_or_death": "Magnar first/final phases: native post-scaled health comparison and canonical dispatcher verified; actual client combat and other actors pending",
         "npc_weapon_pickup_departure_visuals": "pending",
         "weapon_visibility_and_no_early_interaction": "pending",
         "actual_loot_and_full_bags_retry": "pending",
@@ -284,7 +286,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain real-loot/source4/completed-claim and scoped1215/1575 ->208562 bridge, native shield OFFHAND16/linked128288 MAINHAND15 and exact909/5 phase admission. Verify live equipment/paired storage, full208562 progression/group effects,203524 ability/save/relog and actual loot/full bags.225889 effect81 is mapped to EffectNULL server-side; do not infer failure or invent a server replacement without checking native client relocation behavior. Add missing-completion/failed-cast/re-entry recovery and restore scoped winged actor/beam/215997 manual button instead of automatic12s, without93819 Dalaran coordinates. Native final28550/45785/tree amount0 remains; old saved early counters are not reset. Review full relevant video/audio and client paths. Run Test-EarthwarderPresentation -Baseline/-VerifyReleaseBinary, real-loot/admission/return/Skyhold and shared19-check Warswords suite."
+      "next_action": "Retain Magnar post-scaled first/final lethal protection and owner-first909/4 final45784 recipient. Audit whole waves/tracked summons/missing-spawn/count/reset and46427 recipient, failed504 creation/despawn cancellation and continuous combat footage before claiming full boss lifecycle. Retain real-loot/source4/completed-claim and scoped1215/1575 ->208562 bridge, native shield OFFHAND16/linked128288 MAINHAND15 and exact909/5 phase admission. Verify live equipment/paired storage, full208562 progression/group effects,203524 ability/save/relog and actual loot/full bags.225889 effect81 is mapped to EffectNULL server-side; do not infer failure or invent a server replacement without checking native client relocation behavior. Add missing-completion/failed-cast/re-entry recovery and restore scoped winged actor/beam/215997 manual button instead of automatic12s, without93819 Dalaran coordinates. Native final28550/45785/tree amount0 remains; old saved early counters are not reset. Review full relevant video/audio and client paths. Run Magnar baseline/Release, Earthwarder presentation/real-loot/admission/return/Skyhold and shared19-check Warswords suite."
     },
     {
       "class_id": 1,
