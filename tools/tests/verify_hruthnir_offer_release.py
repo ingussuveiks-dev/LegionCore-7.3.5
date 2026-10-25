@@ -11,10 +11,10 @@ instructions = previous['instructions']
 positions = previous['positions']
 suffix = '@npc_hrutnirAI@npc_hrutnir@@'
 context_name = '?IsMagnarOfferContext' + suffix
-callback = '??R<lambda_5>@?BJ@??MovementInform' + suffix
-bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>@?BJ@??MovementInform' + suffix
+callback = '??R<lambda_5>@?BL@??MovementInform' + suffix
+bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>@?BL@??MovementInform' + suffix
 
-def verify_endpoint(entries, owner_operand, radius_register, load_radius=True):
+def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, retain_home_x=False):
     expected = [
         ('mov', owner_operand),
         ('movss', 'xmm2, dword ptr [rax + 0xd8]'), ('subss', None),
@@ -23,10 +23,21 @@ def verify_endpoint(entries, owner_operand, radius_register, load_radius=True):
         ('mulss', 'xmm1, xmm1'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm1, xmm0'),
         ('mulss', 'xmm2, xmm2'), ('addss', 'xmm1, xmm2')]
     constants = [(2, 'xmm2', -37.19), (4, 'xmm0', 4763.73), (6, 'xmm1', 340.87)]
+    result_register = 'xmm1'
+    if retain_home_x:
+        expected = [
+            ('mov', owner_operand),
+            ('movss', 'xmm3, dword ptr [rcx + 0xd8]'), ('subss', None),
+            ('movss', 'xmm1, dword ptr [rcx + 0xd0]'), ('movaps', 'xmm0, xmm1'), ('subss', None),
+            ('movss', 'xmm2, dword ptr [rcx + 0xd4]'), ('subss', None),
+            ('mulss', 'xmm2, xmm2'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm2, xmm0'),
+            ('mulss', 'xmm3, xmm3'), ('addss', 'xmm2, xmm3')]
+        constants = [(2, 'xmm3', -37.19), (5, 'xmm0', 4763.73), (7, 'xmm2', 340.87)]
+        result_register = 'xmm2'
     if load_radius:
         expected.append(('movss', None))
-        constants.append((12, radius_register, 4.0))
-    expected.append(('comiss', radius_register + ', xmm1'))
+        constants.append((len(expected) - 1, radius_register, 4.0))
+    expected.append(('comiss', radius_register + ', ' + result_register))
     assert len(entries) == len(expected), 'Point6 actual3D endpoint gate changed'
     for entry, (mnemonic, operand) in zip(entries, expected):
         assert entry.mnemonic == mnemonic and (operand is None or entry.op_str == operand), 'Point6 native coordinate flow changed'
@@ -45,9 +56,10 @@ assert context < queue
 deny = movement[context + 2].operands[0].imm
 assert movement[context + 1].op_str == 'al, al' and movement[context + 2].mnemonic == 'je'
 comparison = next(index for index, entry in enumerate(movement) if index > context and entry.mnemonic == 'comiss')
-verify_endpoint(movement[context + 3:comparison + 1], 'rax, qword ptr [rbx + 0x20]', 'xmm0')
+verify_endpoint(movement[context + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
 assert movement[comparison + 1].mnemonic == 'jb' and movement[comparison + 1].operands[0].imm == deny
-assert movement[comparison + 2].op_str == 'ecx, 0x18' and comparison < queue, 'Arrival must precede offer-token allocation'
+home = next(index for index in positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM') if context < index < queue)
+assert comparison < home and movement[home + 1].op_str == 'ecx, 0x18', 'Arrival must precede home and offer-token allocation'
 for operand in ('qword ptr [rbx + 0x78], r14', 'byte ptr [rbx + 0x5d], r14b', 'qword ptr [rbx + 0x60], r14'):
     check = next(index for index, entry in enumerate(movement[:context]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert movement[check + 1].mnemonic == 'jne' and movement[check + 1].operands[0].imm == deny

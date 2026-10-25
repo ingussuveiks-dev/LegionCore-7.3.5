@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
-if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
+if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline -or $HomeBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
+if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-gossip"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -15,6 +15,7 @@ if($StageBaseline){$source=(& git -C $repo show "c4c026d1:$path") -join "`n";if(
 if($VoiceBaseline){$source=(& git -C $repo show "c7239252:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir voice source unavailable'}}
 if($ArrivalBaseline){$source=(& git -C $repo show "31d576d9:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir arrival source unavailable'}}
 if($OfferArrivalBaseline){$source=(& git -C $repo show "9a0e4426:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir offer arrival source unavailable'}}
+if($HomeBaseline){$source=(& git -C $repo show "5e944704:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir home source unavailable'}}
 $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace HruthnirGossip'}))
 [IO.File]::WriteAllText("$out/Select.inc",(Block $source 'bool OnGossipSelect('))
@@ -27,6 +28,7 @@ $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf($(if($B
 [IO.File]::WriteAllText("$out/OfferContext.inc",$(if($source.Contains('bool IsMagnarOfferContext(')){Block $source 'bool IsMagnarOfferContext('}else{''}))
 [IO.File]::WriteAllText("$out/OfferPosition.inc",$(if($source.Contains('bool IsMagnarOfferPosition(')){Block $source 'bool IsMagnarOfferPosition('}else{''}))
 $movement=Block $source 'void MovementInform('
+[IO.File]::WriteAllText("$out/Movement.inc",$movement)
 $first=$movement.IndexOf('case 6:',$movement.IndexOf('if (type == POINT_MOTION_TYPE)'));$last=$movement.IndexOf('case 7:',$first)
 if($first -lt 0 -or $last -le $first){throw 'Native point6 branch missing'}
 [IO.File]::WriteAllText("$out/Offer.inc",'void OfferArrive() { switch(6) {'+$movement.Substring($first,$last-$first)+'} }')
@@ -42,13 +44,15 @@ $native=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/Functions.inc",$native.Substring($native.IndexOf('FunctionProcessor::FunctionProcessor()')))
 $native=Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw
 [IO.File]::WriteAllText("$out/AddDelayed.inc",(Block $native 'void AddDelayedEvent('))
+$native=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
+[IO.File]::WriteAllText("$out/SetHome.inc",(Block $native 'void Creature::SetHomePosition(float').Replace('void Creature::','void '))
 $native=Get-Content "$repo/src/server/game/Handlers/NPCHandler.cpp" -Raw
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block $native 'void WorldSession::HandleGossipSelectOption('))
 $native=Get-Content "$repo/src/server/game/Entities/Creature/GossipDef.cpp" -Raw
 $methods=@('uint32 GossipMenu::GetMenuItemSender(','uint32 GossipMenu::GetMenuItemAction(','GossipMenuItem const* GossipMenu::GetItem(','uint32 GossipMenu::GetMenuId(','void GossipMenu::ClearMenu(')
 [IO.File]::WriteAllText("$out/Menu.inc",(($methods|ForEach-Object {Block $native $_}) -join "`n"))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CueBaseline){'/DCUE_BASELINE'}elseif($OfferBaseline){'/DOFFER_BASELINE'}elseif($StageBaseline){'/DSTAGE_BASELINE'}elseif($VoiceBaseline){'/DVOICE_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($OfferArrivalBaseline){'/DOFFER_ARRIVAL_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CueBaseline){'/DCUE_BASELINE'}elseif($OfferBaseline){'/DOFFER_BASELINE'}elseif($StageBaseline){'/DSTAGE_BASELINE'}elseif($VoiceBaseline){'/DVOICE_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($OfferArrivalBaseline){'/DOFFER_ARRIVAL_BASELINE'}elseif($HomeBaseline){'/DHOME_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/HruthnirGossipTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd"
 if($LASTEXITCODE){throw 'Extracted Hruthnir gossip regression failed'}
@@ -79,5 +83,5 @@ SELECT 'cue-models',COUNT(*) FROM conversation_actor WHERE entry=497;
  $native=Get-Content "$repo/build-extractors/runtime-test/magnar-waves/dialogue.tsv"
  foreach($expected in @("LINE`t1324`t98326`t0`t500`t1325`t0`t0`t60`t60","LINE`t1325`t98336`t0`t500`t1331`t0`t0`t60`t60","LINE`t1326`t98329`t0`t500`t1327`t0`t0`t60`t60","LINE`t1327`t98327`t0`t0`t1328`t0`t0`t60`t60","LINE`t1328`t98330`t0`t500`t1329`t0`t0`t60`t60","LINE`t1329`t98331`t0`t500`t1330`t0`t0`t60`t60","LINE`t1330`t98332`t0`t500`t1332`t0`t0`t60`t60","LINE`t1331`t98799`t0`t500`t1326`t0`t1`t60`t60","LINE`t1332`t98800`t0`t500`t1334`t0`t1`t60`t60","LINE`t1334`t0`t0`t0`t0`t0`t0`t60`t60","NONVERBAL`t1334","SOUND`t98326`t60405`t1370060","SOUND`t98336`t60407`t1370062","SOUND`t98329`t60409`t1370064","SOUND`t98327`t60410`t1370065","SOUND`t98330`t60411`t1370066","SOUND`t98331`t60412`t1370067","SOUND`t98332`t60413`t1370068","SOUND`t98799`t60408`t1370063","SOUND`t98800`t60414`t1370069")){if($native -notcontains $expected){throw "Native497 metadata differs: $expected"}}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_hruthnir_offer_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Hruthnir policy missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_hruthnir_home_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical Hruthnir policy missing'}}finally{$env:PYTHONPATH=$previous}
 }

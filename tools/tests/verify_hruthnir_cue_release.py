@@ -13,8 +13,8 @@ suffix = '@npc_hrutnirAI@npc_hrutnir@@'
 movement = '?MovementInform' + suffix
 reset = '?Reset' + suffix
 destructor = '??_Gnpc_hrutnirAI@npc_hrutnir@@'
-callback = '??R<lambda_6>@?BM@??MovementInform' + suffix
-bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_6>@?BM@??MovementInform' + suffix
+callback = '??R<lambda_6>@?BO@??MovementInform' + suffix
+bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_6>@?BO@??MovementInform' + suffix
 
 selection = instructions('?sGossipSelect' + suffix)
 flag = positions(selection, '?RemoveFlag@Object@@')[0]
@@ -43,26 +43,29 @@ assert pending < context < consume < conversation
 assert body[context - 2].op_str == 'edx, dword ptr [rbx + 0x70]'
 assert body[context + 1].op_str == 'al, al' and body[context + 2].mnemonic == 'je'
 assert body[context + 2].operands[0].imm == body[pending + 1].operands[0].imm
-geometry = body[context + 3:consume]
+comparison = next(index for index, entry in enumerate(body) if index > context and entry.mnemonic == 'comiss')
+geometry = body[context + 3:comparison + 2]
 expected_geometry = (
-    ('mov', 'rax, qword ptr [rbx + 0x20]'),
-    ('movss', 'xmm2, dword ptr [rax + 0xd8]'), ('subss', None),
-    ('movss', 'xmm0, dword ptr [rax + 0xd0]'), ('subss', None),
-    ('movss', 'xmm1, dword ptr [rax + 0xd4]'), ('subss', None),
-    ('mulss', 'xmm1, xmm1'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm1, xmm0'),
-    ('mulss', 'xmm2, xmm2'), ('addss', 'xmm1, xmm2'), ('movss', None),
-    ('comiss', 'xmm0, xmm1'), ('jb', None))
+    ('mov', 'rcx, qword ptr [rbx + 0x20]'),
+    ('movss', 'xmm3, dword ptr [rcx + 0xd8]'), ('subss', None),
+    ('movss', 'xmm1, dword ptr [rcx + 0xd0]'), ('movaps', 'xmm0, xmm1'), ('subss', None),
+    ('movss', 'xmm2, dword ptr [rcx + 0xd4]'), ('subss', None),
+    ('mulss', 'xmm2, xmm2'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm2, xmm0'),
+    ('mulss', 'xmm3, xmm3'), ('addss', 'xmm2, xmm3'), ('movss', None),
+    ('comiss', 'xmm0, xmm2'), ('jb', None))
 assert len(geometry) == len(expected_geometry), 'Actual point7 geometry must precede claim/497'
 for entry, (mnemonic, operand) in zip(geometry, expected_geometry):
     assert entry.mnemonic == mnemonic and (operand is None or entry.op_str == operand), 'Native3D distance flow changed'
-for index, register, value in ((2, 'xmm2', -37.71), (4, 'xmm0', 4720.80),
-                               (6, 'xmm1', 347.91), (12, 'xmm0', 4.0)):
+for index, register, value in ((2, 'xmm3', -37.71), (5, 'xmm0', 4720.80),
+                               (7, 'xmm2', 347.91), (13, 'xmm0', 4.0)):
     entry = geometry[index]
     assert entry.reg_name(entry.operands[0].reg) == register
     assert entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP
     address = entry.address + entry.size + entry.operands[1].mem.disp
     assert native['binary'][native['offset'](address):native['offset'](address) + 4] == struct.pack('<f', value), 'Wrong endpoint/radius in deployed point7'
 assert geometry[-1].operands[0].imm == body[pending + 1].operands[0].imm, 'Ordered4>=distance must reject both outside and unordered before consume'
+home = max(index for index in positions(body, '?SetHomePosition@Creature@@QEAAXMMMM') if index < consume)
+assert comparison < home and consume == home + 1, 'Point7 home must follow admission and precede claim'
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in body[:pending]), 'Arrival consume is not zero'
 assert pending < conversation < queue
 assert any(entry.op_str == 'r14, qword ptr [rbx + 0x20]' for entry in body[pending:conversation])

@@ -1,9 +1,11 @@
 #include <cassert>
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <limits>
+#include <list>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -17,7 +19,8 @@ enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1
     UNIT_FIELD_FLAGS = 11, UNIT_FLAG_NOT_SELECTABLE = 0x2000000, UNIT_FLAG_IMMUNE_TO_PC = 0x100,
     UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80, REACT_DEFENSIVE = 1,
     UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
-    UNIT_STATE_ROAMING = 16, UNIT_STATE_ROAMING_MOVE = 32, POINT_MOTION_TYPE = 8,
+    UNIT_STATE_ROAMING = 16, UNIT_STATE_ROAMING_MOVE = 32, POINT_MOTION_TYPE = 8, WAYPOINT_MOTION_TYPE = 2,
+    CRITERIA_TYPE_SCRIPT_EVENT_2 = 92,
     EVENT_1 = 1, EVENT_2, EVENT_3, EVENT_4, EVENT_5, EVENT_6 };
 #include "FunctionsClass.inc"
 #include "Functions.inc"
@@ -101,7 +104,9 @@ struct GameObject
     uint32 LastUsedScriptID = 7;
     Info* GetGOInfo() { return &info; }
     GameObjectAI* AI() { return &ai; }
+    ObjectGuid GetGUID() const { assert(false); return {}; }
 };
+struct InstanceScript { void HandleGameObject(ObjectGuid, bool) { assert(false); } };
 struct Map
 {
     GameObject* GetGameObject(ObjectGuid) { return nullptr; }
@@ -132,6 +137,21 @@ struct MotionMaster
 };
 struct Creature
 {
+    struct HomeRecord
+    {
+        std::array<float,4> values{1.0f,2.0f,3.0f,0.5f};
+        uint32 updates = 0;
+        void Relocate(float positionX, float positionY, float positionZ, float orientation)
+        {
+            values = {positionX,positionY,positionZ,orientation}; ++updates;
+        }
+    } m_homePosition;
+    std::array<float,4> pose{10.0f,20.0f,30.0f,1.25f};
+    float GetPositionX() const { return pose[0]; }
+    float GetPositionY() const { return pose[1]; }
+    float GetPositionZ() const { return pose[2]; }
+    float GetOrientation() const { return pose[3]; }
+#include "SetHome.inc"
     struct Spline { bool finalized = true; bool Finalized() const { return finalized; } } spline;
     Spline* movespline = &spline;
     struct Info { uint32 ScriptID = 7; } info;
@@ -160,6 +180,11 @@ struct Creature
     ObjectGuid GetGUID() const { return {}; }
     Info* GetCreatureTemplate() { return &info; }
     CreatureAI* AI() { return ai; }
+    GameObject* FindNearestGameObject(uint32, float) { assert(false); return nullptr; }
+    InstanceScript* GetInstanceScript() { assert(false); return nullptr; }
+    Player* FindNearestPlayer(float) { assert(false); return nullptr; }
+    void Kill(Creature*) { assert(false); }
+    void DespawnOrUnsummon(uint32) { assert(false); }
     float GetExactDistSq(float positionX, float positionY, float positionZ) const
     {
         if (positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f)
@@ -218,7 +243,9 @@ struct Player
     void RemoveAurasByType(uint32) { }
     void OnGossipSelect(Creature*, uint32, uint32) { ++genericCalls; }
     void OnGossipSelect(GameObject*, uint32, uint32) { ++genericCalls; }
+    template<typename... Args> void UpdateAchievementCriteria(Args...) { assert(false); }
 };
+void GetCreatureListWithEntryInGrid(std::list<Creature*>&, Creature*, uint32, float) { assert(false); }
 #include "Policy.inc"
 struct CreatureScript
 {
@@ -250,6 +277,7 @@ struct HruthnirAI : CreatureAI
     bool UpdateVictim() { return victim; }
     void DoCast(uint32) { ++casts; }
     void DoMeleeAttackIfReady() { ++melees; }
+    void AttackStart(Creature*) { assert(false); }
 #include "AIFields.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
@@ -257,11 +285,7 @@ struct HruthnirAI : CreatureAI
 #include "OfferPosition.inc"
 #include "Offer.inc"
 #include "Arrival.inc"
-    void MovementInform(uint32 type, uint32 point) override
-    {
-        assert(type == POINT_MOTION_TYPE && (point == 6 || point == 7));
-        if (point == 6) OfferArrive(); else Arrive();
-    }
+#include "Movement.inc"
 #include "AIUpdate.inc"
 };
 template<class T> struct PointMovementGenerator
@@ -327,7 +351,20 @@ struct Fixture
 };
 int main()
 {
-#ifdef OFFER_ARRIVAL_BASELINE
+#ifdef HOME_BASELINE
+    for (uint32 point : {6u,7u})
+        for (uint32 invalid = 0; invalid < 3; ++invalid)
+        {
+            Fixture fixture; if (point == 7) fixture.Select();
+            if (invalid == 0) fixture.actor.offerDistanceSq = fixture.actor.arrivalDistanceSq = 100.0f;
+            if (invalid == 1) scenarioManager.scenario.step = 2;
+            if (invalid == 2) fixture.actor.IsAIEnabled = false;
+            fixture.ai.MovementInform(POINT_MOTION_TYPE,point);
+            assert(fixture.actor.m_homePosition.updates == 1 && fixture.actor.m_homePosition.values == fixture.actor.pose);
+            assert(!fixture.ai.magnarOfferToken && !fixture.actor.conversations);
+        }
+    std::cout << "PASS home baseline: pinned5e944704 full MovementInform writes the home pose before rejecting point6/7 endpoint, stage or disabled-AI contexts. Actual setter body; Relocate/actor pose controlled, not a live evade/pathfinding reproduction.\n";
+#elif defined(OFFER_ARRIVAL_BASELINE)
     for (uint32 moment = 0; moment < 3; ++moment)
     {
         Fixture offer; offer.actor.flags = 0;
@@ -413,6 +450,44 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 point : {6u,7u})
+        for (uint32 faction : {0u,1u})
+            for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            {
+                for (uint32 invalid = 0; invalid < 8; ++invalid)
+                {
+                    Fixture fixture; fixture.player.faction = faction; fixture.player.status = status;
+                    if (point == 7 && invalid != 7) fixture.Select();
+                    auto home = fixture.actor.m_homePosition.values;
+                    if (invalid == 0) fixture.actor.offerDistanceSq = fixture.actor.arrivalDistanceSq = 100.0f;
+                    if (invalid == 1) fixture.actor.offerDistanceSq = fixture.actor.arrivalDistanceSq = std::numeric_limits<float>::quiet_NaN();
+                    if (invalid == 2) fixture.actor.offerDistanceSq = fixture.actor.arrivalDistanceSq = std::numeric_limits<float>::infinity();
+                    if (invalid == 3) scenarioManager.scenario.step = 2;
+                    if (invalid == 4) fixture.actor.world = false;
+                    if (invalid == 5) fixture.actor.IsAIEnabled = false;
+                    if (invalid == 6) fixture.actor.instance = 43;
+                    if (invalid == 7 && point == 6) fixture.ai.magnarOfferToken = std::make_shared<bool>(false);
+                    fixture.ai.MovementInform(POINT_MOTION_TYPE,point);
+                    assert(!fixture.actor.m_homePosition.updates && fixture.actor.m_homePosition.values == home);
+                    assert(fixture.ai.texts.empty() && !fixture.actor.conversations);
+                }
+                Fixture fixture; fixture.player.faction = faction; fixture.player.status = status;
+                fixture.actor.pose = point == 6 ? std::array<float,4>{4763.73f,340.87f,-37.19f,1.25f} :
+                    std::array<float,4>{4720.80f,347.91f,-37.71f,1.25f};
+                if (point == 7) fixture.Select();
+                fixture.ai.MovementInform(POINT_MOTION_TYPE,point);
+                auto home = fixture.actor.m_homePosition.values;
+                assert(fixture.actor.m_homePosition.updates == 1 && home == fixture.actor.pose);
+                fixture.actor.pose[3] = 2.5f;
+                fixture.ai.MovementInform(POINT_MOTION_TYPE,point);
+                assert(fixture.actor.m_homePosition.updates == 1 && fixture.actor.m_homePosition.values == home);
+            }
+    for (auto notification : {std::array<uint32,2>{POINT_MOTION_TYPE,99u},std::array<uint32,2>{WAYPOINT_MOTION_TYPE,99u},std::array<uint32,2>{123u,6u}})
+    {
+        Fixture legacy; legacy.ai.MovementInform(notification[0],notification[1]);
+        assert(legacy.actor.m_homePosition.updates == 1 && legacy.actor.m_homePosition.values == legacy.actor.pose);
+    }
+    std::cout << "PASS home: full native MovementInform/setter preserve home across64 point6/7 rejections;8 admitted faction/status paths copy actual pose/orientation once, duplicates retain it;3 legacy notification kinds retain their prior home update. Pose/Relocate services controlled; no native evade/client motion claim.\n";
     for (uint32 faction : {0u,1u})
         for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
             for (float distanceSq : {0.0f,3.96f,4.0f,4.04f,100.0f,

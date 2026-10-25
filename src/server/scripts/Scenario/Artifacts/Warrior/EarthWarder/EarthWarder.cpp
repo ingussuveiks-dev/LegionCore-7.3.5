@@ -396,7 +396,8 @@ public:
 
         void MovementInform(uint32 type, uint32 id) override
         {
-            me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+            if (type != POINT_MOTION_TYPE || (id != 6 && id != 7))
+                me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == WAYPOINT_MOTION_TYPE)
             {
                 if (id == 6)
@@ -477,6 +478,7 @@ public:
                         if (magnarOfferToken || magnarArrivalPending || magnarStartToken ||
                             !IsMagnarOfferContext(me->GetInstanceId()) || !IsMagnarOfferPosition())
                             break;
+                        me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                         magnarOfferToken = std::make_shared<bool>(false);
                         std::weak_ptr<bool> offerToken = magnarOfferToken;
                         Creature* companion = me;
@@ -515,6 +517,7 @@ public:
                         if (!magnarArrivalPending || !IsMagnarOfferContext(magnarStartInstance) ||
                             !(me->GetExactDistSq(4720.80f, 347.91f, -37.71f) <= 4.0f))
                             break;
+                        me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                         magnarArrivalPending = false;
                         std::weak_ptr<bool> startToken = magnarStartToken;
                         Creature* companion = me;
