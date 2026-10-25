@@ -17,6 +17,7 @@ $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('      
 [IO.File]::WriteAllText("$out/After.inc",$(if($Baseline){''}else{Block $source 'void DamageTakenAfterScaling('}))
 $source=Get-Content "$PSScriptRoot/WarswordsRetreatTest.cpp" -Raw
 $header=$source.Substring(0,$source.IndexOf('struct FirstBoss :'))
+$header="#include <set>`n"+$header.Replace('bool IsPlayer() const;','bool IsPlayer() const; bool operator<(ObjectGuid const& other) const { return std::less<Unit*>{}(unit,other.unit); }')
 $header=$header.Replace('struct Map { } instanceMap, unrelatedMap;',@'
 struct Player;
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };

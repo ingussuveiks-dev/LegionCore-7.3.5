@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "magnar_wave_deaths_audit": "docs/audits/magnar-wave-deaths-2026-10-25.json",
+      "magnar_wave_deaths_review": "Pinned6e6d1715 reproduces count underflow and premature waves from duplicate/unselected deaths. Actual selected live GUIDs now register before activation and count once; independent reserve snapshot/release barrier plus pre-incremented wave IDs handle synchronous deaths without iterator invalidation. Original counted2/2/1/2/3 and auxiliary Windwall preserved, not asserted as video-certified counts. Native-method counted-wave player/pet/guardian sequence and installed death slot/switch/guards checked; failed-spawn/full-reset/498 delivery/46427 recipient and client visuals remain open.",
       "magnar_finale_audit": "docs/audits/magnar-finale-2026-10-25.json",
       "magnar_finale_review": "Pinned675d6f7a native host reproduces scaled one-shot deaths in both phases and unrelated/repeated nearest-player finale credit. Magnar96034 now checks final scaled damage against actual attacker-relative health, protects the first phase, and at909/4 selects eligible39191 player/owner or native Map participant before once-only504/45784/6000.80 source/faction/status/AI/phase combinations and16 invalid contexts checked; actual canonical factory/operands and fresh scaling/criteria metadata verified. Full waves/reset/re-entry, conversation failure, video combat and client VFX remain open.",
       "presentation_audit": "docs/audits/earthwarder-presentation-2026-10-25.json",
@@ -267,13 +269,13 @@
       "broken_actor_links": [],
       "video": {
         "url": "https://www.youtube.com/watch?v=udzuLoDW1yc",
-        "reviewed_intervals": ["Sparse decoded samples14:25, equipment/bag frame at unestablished second,14:50,14:56, loading/Skyhold and paused15:12; unseen intervals not verified"],
-        "status": "partial muted visual samples, not full video/audio or client verification; see return_admission_audit"
+        "reviewed_intervals": ["Sparse decoded samples14:25, equipment/bag frame at unestablished second,14:50,14:56, loading/Skyhold and paused15:12; unseen intervals not verified", "New settled muted combat stills11:51/12:16 Defend Hruthnir and12:31/12:41 plus12:49 sample Defeat Magnar; not continuous wave-count/timing/audio proof. Weapon frame after seek-to11:11 has unverified decoded timestamp and is not early-appearance evidence; see magnar_wave_deaths_audit."],
+        "status": "partial muted visual samples, not full video/audio or client verification; see return_admission_audit and magnar_wave_deaths_audit"
       },
       "checkpoints": {
         "quest_admission_and_faction_variants": "pending",
         "actor_initial_pose_and_visibility": "pending",
-        "stage_transitions_and_exactly_once_credit": "Magnar final45784 native scoped once guard checked; whole waves/reset/despawn/conversation recovery pending",
+        "stage_transitions_and_exactly_once_credit": "Magnar selected-wave GUID deaths and final45784 native scoped once guard checked; failed-spawn/full-reset/46427 recipient/498 delivery/despawn recovery pending",
         "player_pet_guardian_group_credit": "Magnar native owner/charmer resolution and eligible shared-instance recipient checked; actual group criteria, attack admission and full route pending",
         "scaled_one_hit_surrender_or_death": "Magnar first/final phases: native post-scaled health comparison and canonical dispatcher verified; actual client combat and other actors pending",
         "npc_weapon_pickup_departure_visuals": "pending",
@@ -286,7 +288,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain Magnar post-scaled first/final lethal protection and owner-first909/4 final45784 recipient. Audit whole waves/tracked summons/missing-spawn/count/reset and46427 recipient, failed504 creation/despawn cancellation and continuous combat footage before claiming full boss lifecycle. Retain real-loot/source4/completed-claim and scoped1215/1575 ->208562 bridge, native shield OFFHAND16/linked128288 MAINHAND15 and exact909/5 phase admission. Verify live equipment/paired storage, full208562 progression/group effects,203524 ability/save/relog and actual loot/full bags.225889 effect81 is mapped to EffectNULL server-side; do not infer failure or invent a server replacement without checking native client relocation behavior. Add missing-completion/failed-cast/re-entry recovery and restore scoped winged actor/beam/215997 manual button instead of automatic12s, without93819 Dalaran coordinates. Native final28550/45785/tree amount0 remains; old saved early counters are not reset. Review full relevant video/audio and client paths. Run Magnar baseline/Release, Earthwarder presentation/real-loot/admission/return/Skyhold and shared19-check Warswords suite."
+      "next_action": "Retain Magnar selected-wave GUID accounting/snapshot/release barrier/pre-increment, original2/2/1/2/3 counted opponents and auxiliary Windwall, post-scaled lethal protection and owner-first909/4 final45784. Investigate498: stop_combat returns before scheduled EVENT_5 can run. Repair stage3/46427 recipient, failed/missing summon replacement, repeated-start/full-reset lifecycle and504/despawn cancellation before claiming full boss recovery. Settled muted11:51/12:16 ->12:31/12:41 samples do not certify complete waves/counts/audio. Retain real-loot/source4/completed-claim and scoped1215/1575 ->208562 bridge, native shield OFFHAND16/linked128288 MAINHAND15 and exact909/5 admission. Verify live equipment/paired storage, full208562/group effects,203524 ability/save/relog and actual loot/full bags.225889 effect81 is mapped to EffectNULL server-side; do not infer failure or invent a replacement without native client-relocation evidence. Add scene/re-entry recovery and restore scoped winged actor/beam/215997 manual return instead of automatic12s, without93819 Dalaran coordinates. Native final28550/45785/tree amount0 remains; old early counters are not reset. Review full relevant video/audio/client paths. Run Magnar waves/finale baseline+Release, Earthwarder loot/presentation/admission/return/Skyhold and shared19 Warswords checks."
     },
     {
       "class_id": 1,

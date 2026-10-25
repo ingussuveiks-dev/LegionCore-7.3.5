@@ -8,6 +8,7 @@
 #include "GameObjectAI.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include <set>
 
 Position const trashPos[12] =
 {
@@ -343,12 +344,17 @@ public:
         bool finaleStarted = false;
         uint8 wave;
         uint8 count_dies;
+        bool releasingWave = false;
+        std::set<ObjectGuid> activeWave;
 
         void Reset() override
         {
             events.Reset();
             stop_combat = false;
             finaleStarted = false;
+            releasingWave = false;
+            activeWave.clear();
+            count_dies = 0;
         }
 
         void EnterCombat(Unit* who) override
@@ -424,16 +430,21 @@ public:
 
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
+            if (!summon || summon->IsAlive())
+                return;
             summons.Despawn(summon);
             trashList.remove(summon->GetGUID());
-            count_dies--;
-            if (count_dies == 0)
-            {
-                LaunchEventWave(wave);
-                wave++;
-            }
+            if (!activeWave.erase(summon->GetGUID()) || !count_dies)
+                return;
+            --count_dies;
+            AdvanceWaveIfReady();
         }
 
+        void AdvanceWaveIfReady()
+        {
+            if (!releasingWave && !count_dies && first_phase && stop_combat && wave > 1 && wave <= 6)
+                LaunchEventWave(wave++);
+        }
 
         void DoAction(int32 const action) override
         {
@@ -487,8 +498,7 @@ public:
                         if (Creature* targ = me->FindNearestCreature(96468, 100.0f, true))
                             targ->AttackStop();
                         me->GetMotionMaster()->MoveJump(4686.67f, 354.12f, -27.10f, me->GetOrientation(), 5.0f, 5.0f);
-                        LaunchEventWave(wave);
-                        wave++;
+                        LaunchEventWave(wave++);
                         events.RescheduleEvent(EVENT_5, 1000);
                         break;
                     case EVENT_5:
@@ -537,13 +547,19 @@ public:
             }
 
             count_dies = count;
+            activeWave.clear();
+            releasingWave = true;
+            auto pendingTrash = trashList;
 
-            for (auto trashGuid : trashList)
+            for (auto trashGuid : pendingTrash)
             {
                 if (!count)
                     break;
                 if (Creature* summon = me->GetMap()->GetCreature(trashGuid))
                 {
+                    if (!summon->IsAlive())
+                        continue;
+                    activeWave.insert(trashGuid);
                     summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                     summon->SetReactState(REACT_DEFENSIVE);
                     summon->RemoveAura(191821);
@@ -556,21 +572,25 @@ public:
                 }
             }
 
-            if (end == false)
-                return;
-
-            for (auto trashGuid : trashList)
+            if (end)
             {
-                if (Creature* summon = me->GetMap()->GetCreature(trashGuid))
+                for (auto trashGuid : pendingTrash)
                 {
-                    summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    if (Creature* targ = summon->FindNearestCreature(64367, 30.0f, true))
-                        summon->GetMotionMaster()->MoveJump(targ->GetPositionX(), targ->GetPositionY(), targ->GetPositionZ(), summon->GetOrientation(), 5.0f, 5.0f);
-                    summon->CastSpell(summon, 191032);
+                    if (Creature* summon = me->GetMap()->GetCreature(trashGuid))
+                    {
+                        if (!summon->IsAlive())
+                            continue;
+                        summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        if (Creature* targ = summon->FindNearestCreature(64367, 30.0f, true))
+                            summon->GetMotionMaster()->MoveJump(targ->GetPositionX(), targ->GetPositionY(), targ->GetPositionZ(), summon->GetOrientation(), 5.0f, 5.0f);
+                        summon->CastSpell(summon, 191032);
+                    }
                 }
+                trashList.clear();
+                me->SetHealth(me->CountPctFromMaxHealth(80));
             }
-            trashList.clear();
-            me->SetHealth(me->CountPctFromMaxHealth(80));
+            releasingWave = false;
+            AdvanceWaveIfReady();
         }
 
         void SummonTrash()
