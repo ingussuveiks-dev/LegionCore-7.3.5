@@ -190,12 +190,14 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "opening_admission_audit": "docs/audits/earthwarder-pickup-admission-2026-10-25.json",
+      "opening_admission_review": "Actual script/AI opening and stored-state activation now require live visible/spatially eligible Warrior39191 in the same1495 instance and exact909/5. Native controlled27 invalid openings/28 activations, eight legitimate paths and installed factory/callsite branches checked. Existing phase_definitions7541/3 already requires909/5; premature client rendering was NOT reproduced. Report-use ignores its AI return and retains the ordinary USE_GAMEOBJECT achievement. Direct AddItem, failed-storage progression, loot_link0, scene/equip and full client visibility remain UNFIXED or unverified; see narrow audit.",
       "return_prerequisites_audit": "docs/audits/skyhold-artifact-return-prerequisites-2026-10-25.json",
       "return_admission_audit": "docs/audits/earthwarder-return-admission-2026-10-25.json",
       "return_admission_review": "Existing12s callback now revalidates original-instance live Warrior/map1495/active39191/owned128289/native completed909 before192085; removes attempted-cast103739 and retains actual Skyhold receiver. Pinned baseline18 invalid contexts,16 current combinations, failed storage and deployed closure/guards/native six steps checked. GO_ACTIVATED/direct AddItem/early94851 and loot_link0 remain UNFIXED; this is not real acquisition/equip or whole-route certification. Partial muted video samples show loot/equipment before golden winged return light, manual Jump to Skyhold and0/1 at14:56, then loading and Ready for turn-in in Skyhold/15:12. Full footage/audio/local client remain pending.",
       "item": 128289,
       "start": 39191,
-      "status": "partial delayed-return admission repair; real pickup/equip, manual return and full client traversal pending",
+      "status": "partial opening/AI/activation and delayed-return admission repairs; real pickup/equip, manual return and full client traversal pending",
       "quests": [
         {
           "id": 39191,
@@ -203,7 +205,7 @@
           "prerequisites_any": [
             40580
           ],
-          "lifecycle_review": "Delayed return admission and attempted-cast credit repaired; initial activation/direct grant/94851 and actual arrival remain unresolved. See return_admission_audit.",
+          "lifecycle_review": "Opening/AI/stored-state activation and delayed-return admission repaired; eligible activation still directly grants128289 and advances94851 even on failed storage. Real loot/equip, manual return and actual arrival remain unresolved. See opening_admission_audit and return_admission_audit.",
           "visual_review": "Sparse muted pickup/equipment/return samples14:25..15:12 only, not continuous/full footage, audio or local client parity."
         },
         {
@@ -277,7 +279,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair real248831 acquisition before claiming pickup safety: activation/direct AddItem and early94851/scenario events still run on failed storage, loot_link0 remains. Trace report-use/open-lock/loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability. Retain repaired per-recipient103739 prerequisites and distinguish prevention from recovery of old saved early counters. Restore scoped winged actor/beam/215997 manual return button rather than automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-SkyholdArtifactReturn -Baseline/-VerifyReleaseBinary, Test-EarthwarderReturn and shared19-check Warswords suite."
+      "next_action": "Retain exact909/5 opening/activation admission and existing7541/3 phase gate; premature rendering has not been reproduced. Repair real248831 acquisition before claiming pickup safety: eligible activation/direct AddItem and94851/scenario events still run on failed storage, loot_link0 remains. Trace actual loot and scene1215 ->native188074/208562 equip/paired item, retry/save/ability, native final criterion28550/type92/45785/tree amount0 without inventing count1. Retain per-recipient103739 prerequisites; old saved early counters are not reset. Restore scoped winged actor/beam/215997 manual return button instead of automatic12s, without copying93819 Dalaran positions. Validate alternative paths and full relevant video/client traversal. Run Test-EarthwarderPickupAdmission -Baseline/-VerifyReleaseBinary, Test-SkyholdArtifactReturn, original Test-EarthwarderReturn and shared19-check Warswords suite."
     },
     {
       "class_id": 1,

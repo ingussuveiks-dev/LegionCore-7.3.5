@@ -1,14 +1,17 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$PickupAdmission,[switch]$PickupBaseline)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Select baseline without current Release verification'}
+if(($Baseline -or $PickupBaseline) -and $VerifyReleaseBinary){throw 'Select baseline without current Release verification'}
+if($Baseline -and $PickupBaseline){throw 'Select one baseline'}
+if($PickupBaseline){$PickupAdmission=$true}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/earthwarder-return"
 New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp'
 $source=Get-Content "$repo/$path" -Raw
-if($Baseline){$source=(& git -C $repo show "b5c32cab:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Earthwarder source unavailable'}}
+if($Baseline -or $PickupBaseline){$revision=if($PickupBaseline){'3a38903e'}else{'b5c32cab'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Earthwarder source unavailable'}}
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace EarthwarderReturn'}))
+[IO.File]::WriteAllText("$out/PickupPolicy.inc",$(if($source.Contains('namespace EarthwarderAcquisition')){Block $source 'namespace EarthwarderAcquisition'}else{''}))
 [IO.File]::WriteAllText("$out/Callback.inc",(Block $source 'class go_art_earthwarder')+';')
 $shared=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block $shared 'enum CriteriaTypes')+';')
@@ -16,7 +19,8 @@ $scenario=Get-Content "$repo/src/server/game/Scenarios/Scenario.cpp" -Raw
 [IO.File]::WriteAllText("$out/Completed.inc",(Block $scenario 'bool Scenario::IsCompleted('))
 [IO.File]::WriteAllText("$out/Count.inc",(Block $scenario 'uint8 Scenario::GetStepCount('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline -or $PickupBaseline){'/DBASELINE'}else{''}
+if($PickupAdmission){$definition+=' /DPICKUP_ADMISSION'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/EarthwarderReturnTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Actual Earthwarder return handler failed'}
 if($VerifyReleaseBinary){

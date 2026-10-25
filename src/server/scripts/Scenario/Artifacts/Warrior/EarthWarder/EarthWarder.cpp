@@ -553,6 +553,25 @@ public:
     };
 };
 
+namespace EarthwarderAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_WARRIOR ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 248831 || weapon->GetMapId() != 1495 ||
+            !player->GetMap() || player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || weapon->getLootState() == GO_JUST_DEACTIVATED ||
+            player->GetQuestRewardStatus(39191) ||
+            (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 5;
+    }
+}
+
 namespace EarthwarderReturn
 {
     bool CanReturn(Player* player, uint32 instanceId)
@@ -571,12 +590,25 @@ namespace EarthwarderReturn
 // 248831
 class go_art_earthwarder : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        bool GossipHello(Player* player, bool) override
+        {
+            return !EarthwarderAcquisition::CanTake(player, go);
+        }
+    };
+
 public:
     go_art_earthwarder() : GameObjectScript("go_art_earthwarder") {}
 
+    bool OnGossipHello(Player* player, GameObject* go) override { return !EarthwarderAcquisition::CanTake(player, go); }
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED)
+        if (target && go && state == GO_ACTIVATED && go->getLootState() == GO_ACTIVATED &&
+            EarthwarderAcquisition::CanTake(target->ToPlayer(), go))
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
             {
