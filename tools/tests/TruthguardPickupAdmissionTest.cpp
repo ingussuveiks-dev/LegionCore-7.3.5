@@ -1,12 +1,35 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <set>
+#include <vector>
 using uint32 = uint32_t;
 using LootState = uint32;
 enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, GO_READY=1, GO_ACTIVATED=2,
     GO_JUST_DEACTIVATED=3, GAMEOBJECT_FIELD_FLAGS=17, GO_FLAG_NOT_SELECTABLE=16, DATA_STAGE_FINAL=5,
     CRITERIA_TYPE_SCRIPT_EVENT_2=92, DATA_YRGRIM_EVENT=6, SPELL_TRUTHGUARD_CREDIT=210133,
-    SPELL_TRUTHGUARD_SCENE=210132, NPC_TRUTHGUARD_OATHSEEKER=106190 };
+    SPELL_TRUTHGUARD_SCENE=210132, NPC_TRUTHGUARD_OATHSEEKER=106190,
+    NULL_BAG=255, NULL_SLOT=255, GAMEOBJECT_TYPE_CHEST=3, GAMEOBJECT_TYPE_FISHINGNODE=17 };
+using ItemPosCountVec = std::vector<uint32>;
+enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL };
+struct Item { };
+struct LootItem
+{
+    struct
+    {
+        uint32 ItemID=128866, RandomPropertiesID=0;
+        struct { std::vector<uint32> BonusListIDs; uint32 Context=0; } ItemBonus;
+    } item;
+    uint32 count=1;
+    bool freeforall=false, is_looted=false;
+    std::set<uint32> GetAllowedLooters() const { return {}; }
+};
+struct Loot
+{
+    LootItem item;
+    uint32 gold=0, unlootedCount=1;
+#include "NativeIsLooted.inc"
+};
 struct Map { } liveMap, otherMap;
 struct Scenario
 {
@@ -40,6 +63,9 @@ struct Player : Unit
 {
     bool world=true,contact=true,alive=true,teleport=false,phase=true,visible=true,los=true,rewarded=false;
     bool carried=false,bank=false,instancePresent=true;
+    bool room=true,storeWorks=true;
+    uint32 inventoryErrors=0;
+    Item storedItem;
     uint32 klass=2,status=3,instanceId=42,casts=0,team=0;
     float distance=1;
     Map* map=&liveMap;
@@ -62,6 +88,29 @@ struct Player : Unit
         assert(item==128866 && count==1); return carried || (includeBank && bank);
     }
     InstanceScript* GetInstanceScript() { return instancePresent?&testInstance:nullptr; }
+    InventoryResult CanStoreNewItem(uint32,uint32,ItemPosCountVec& destination,uint32 identity,uint32 count,void*,bool quest)
+    {
+        assert(identity==128866 && count==1 && !quest);
+        if(!room) return EQUIP_ERR_INVENTORY_FULL;
+        destination.push_back(1); return EQUIP_ERR_OK;
+    }
+    Item* StoreNewItem(ItemPosCountVec const&,uint32 identity,bool,uint32,std::set<uint32> const&,std::vector<uint32> const&,uint32)
+    {
+        assert(identity==128866);
+        if(!storeWorks) return nullptr;
+        carried=true; return &storedItem;
+    }
+    void SendEquipError(InventoryResult result,void*,void*,uint32 identity)
+    {
+        assert(result==EQUIP_ERR_INVENTORY_FULL && identity==128866); ++inventoryErrors;
+    }
+    void StoreLootItem(Loot* loot)
+    {
+        LootItem* item=&loot->item;
+        void* qitem=nullptr;
+#include "NativeStoreInventory.inc"
+#include "NativeConsumeLoot.inc"
+    }
     void CastSpell(Player* target,uint32 spell,bool triggered)
     {
         assert(target==this && triggered && (spell==210132 || spell==210133)); ++casts;
@@ -78,6 +127,7 @@ struct GameObject
     uint32 GetEntry() const { return entry; }
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instanceId; }
+    uint32 GetGoType() const { return GAMEOBJECT_TYPE_CHEST; }
     Map* GetMap() const { return map; }
     float GetInteractionDistance() const { return 5; }
     bool HasFlag(uint32 field,uint32 flag) const { assert(field==17 && flag==16); return notSelectable; }
@@ -120,6 +170,10 @@ struct ScriptMgr
 auto* sScriptMgr=&scriptManager;
 GameObjectAI* GameObject::AI() const { static GameObjectAI defaultAI(nullptr); return &defaultAI; }
 #include "NativeSetLootState.inc"
+bool CompletedLoot(Loot* loot,GameObject* go)
+{
+#include "NativeCompleteLoot.inc"
+}
 void Reset() { manager={}; testInstance={}; testTrigger={}; }
 int main()
 {
@@ -201,6 +255,21 @@ int main()
     assert(!testInstance.events && !stopped.casts);
     Reset(); Player bankOnly; bankOnly.bank=true; script.OnLootStateChanged(&deactivated,3,&bankOnly);
     assert(!testInstance.events && !bankOnly.casts);
+    for(uint32 failure : {0u,1u})
+    {
+        Reset(); Player trainee; GameObject chest; go_sr_truthguard pickup; Loot loot;
+        trainee.room=failure!=0; trainee.storeWorks=failure!=1;
+        assert(!pickup.OnGossipHello(&trainee,&chest));
+        chest.SetLootState(2,&trainee); trainee.StoreLootItem(&loot);
+        assert(!trainee.carried && !loot.isLooted() && !loot.item.is_looted && loot.unlootedCount==1);
+        assert(!CompletedLoot(&loot,&chest) && !testInstance.events && !trainee.casts);
+        assert(trainee.inventoryErrors==uint32(failure==0));
+        trainee.room=trainee.storeWorks=true; trainee.StoreLootItem(&loot);
+        assert(trainee.carried && loot.isLooted() && loot.item.is_looted && !loot.unlootedCount && CompletedLoot(&loot,&chest));
+        chest.SetLootState(3,&trainee); chest.SetLootState(3,&trainee);
+        assert(testInstance.events==1 && trainee.casts==2);
+    }
+    std::cout << "PASS: extracted native inventory-space/store/consume/isLooted/release predicate leaves full-bag/null-store failures unconsumed/uncredited; retry stores128866 before one completed claim. Storage services controlled; paired-item/native equip/network/client remain separate.\n";
     std::cout << "PASS:27 invalid use/open/report contexts denied by extracted script/AI;18 reported/stored/carried combinations;16 active-status/team-label/bank/missing-actor replays. Bank-only opening/report/callback cannot claim; projected withdrawal retries without grant. Native SetLootState dispatch, null/nonplayer and revoked-context retry checked; duplicate claim exits after modeled stage advance. Storage/equip/failed casts/group/client not certified.\n";
 #endif
 }

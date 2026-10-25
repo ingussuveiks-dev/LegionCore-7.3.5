@@ -578,9 +578,10 @@
       "weapon": "Truthguard",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim final-scaled surrender and pickup runtime/owned-completion admission repaired; native loot link/equip and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission and guarded native real-loot link repaired; paired equip/credit acknowledgment and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
+      "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -623,7 +624,7 @@
         {
           "entry": 249420,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 249420,
           "expected_loot_entries": [
             249420
           ],
@@ -655,15 +656,15 @@
         "scaled_one_hit_surrender_or_death": "Yrgrim105695/106202 post-scaling/attacker-health callback and installed primary/suspended dispatch checked; controlled killer labels, not native pet/group or client encounter",
         "npc_weapon_pickup_departure_visuals": "pending",
         "weapon_visibility_and_no_early_interaction": "249420 use/open/report requires live nearby phase-visible Paladin with active42017/current1082step5; rendered visibility still pending",
-        "actual_loot_and_full_bags_retry": "still blocked: Data1=0/no source4 rules; callback now requires carried128866 and reported/stored completed state; bank-only opening/report is blocked without claiming, but no real storage/full-bag certification",
-        "equip_parent_and_paired_item": "pending; a carried parent is not proof of successful210133 equip or paired-item creation",
+        "actual_loot_and_full_bags_retry": "native249420 link and fourteen source4/cached-slot gates deployed; actual native storage fragments keep full-bag/null-store failure unconsumed and retryable before one modeled claim; real paired-child storage/network/client remains pending",
+        "equip_parent_and_paired_item": "typed26972 parent128866/artifact49/shield14 and child128867/mainhand15 verified; native effect249 regression passes, but real paired creation/equip and210133 credit acknowledgment remain pending",
         "artifact_power_and_save_relog": "pending",
         "failed_cast_or_missing_actor_retry": "pending",
         "abandon_reentry_cleanup": "pending",
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "With executable use/open/report/completed-state carried-item guards deployed, repair the separate native loot root:249420 Data1=0 still leaves128866 dormant and source4/cached-slot admission is absent. Add guarded native link/conditions and test real store/full-bags/retry without AddItem; verify parent/child and210133 cast/equip acknowledgment before credit. Preserve bank-only duplicate blocking without a claim until actual withdrawal, original scene order and native shared-vs-personal chest/group behavior; full26972 video/client traversal remains open."
+      "next_action": "Now trace actual parent/child creation and equip/credit acknowledgment: matching210133 is NOT pure equip; effects0/1/2/3 are SEND_EVENT50545, FORCE_EQUIP128866, personal credit105891 and trigger225876. Do not blindly move this whole spell before explicit50545 and assume failure is safe. Instance event50545 dispatches companion DoAction, not scenario advancement, and event_scripts50545 has0 rows. Check missing child/failed equip/cast/scene retry, paired slots/creator linkage, scene210132 aura430/1259 and client-facing225876 effect81. Native shared/group loot/security fields remain unchanged; full video/client/faction/group traversal still open."
     },
     {
       "class_id": 2,

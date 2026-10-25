@@ -149,4 +149,4 @@ for prefix in ('?HandleGameobjectReportUse@WorldSession@@', '?SendLoot@Spell@@')
 dispatch = '?OnGossipHello@ScriptMgr@@QEAA_NPEAVPlayer@@PEAVGameObject@@'
 assert native['symbol'](dispatch) in native['calls']('?Use@GameObject@@QEAAXPEAVUnit@@')
 assert native['symbol']('?Use@GameObject@@QEAAXPEAVUnit@@') in native['calls']('?HandleGameObjectUse@WorldSession@@')
-print('PASS: installed Truthguard use/open/report factory and callback require live1495/1082/5/42017 Paladin context and reported/stored completed state plus carried128866. No grant; real loot link, equip acknowledgment and client remain pending.')
+print('PASS: installed Truthguard use/open/report factory and callback require live1495/1082/5/42017 Paladin context and reported/stored completed state plus carried128866. No script grant; source4/live loot data checked separately, equip acknowledgment and client remain pending.')
