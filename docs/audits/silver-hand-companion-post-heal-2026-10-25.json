@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Holy Paladin42120/scenario1092: post-heal40pct wound recovery in four companion AIs bound to six entries; not full acquisition or visual/client certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp and native Unit::HealBySpell/DealHeal/ModifyHealth; Creature::Update/AI destruction",
+      "review": "HealBySpell applies absorption before DealHeal. Native recipient HealReceived precedes caster HealDone, which may cancel/change healing, and actual ModifyHealth. Four wound callbacks tested old HP inside HealReceived and needed an extra heal after crossing40pct. Native Creature::Update calls distinct disabled and primary UpdateLifecycle under m_AI_locked before stunned/combat UpdateAI. AI destruction drops ordinary member state; no Unit-owned delayed this callback is needed."
+    },
+    {
+      "source": "Matching local DB2/hotfix native SilverHandAllyCatalog and read-only MariaDB",
+      "review": "Native210985 effect0=6/aura226/misc0/trigger0/self1/target2=0 retained, without assuming rendered pose from record existence. Fresh native scenario criteria including92/50896, rescue2+2 and later steps retained. Six sole script bindings106429/106639/106676/106370/106371/106774, scaling98..110, SmartScript count0 and shared1539 Holy1092/Priest991/Warrior1037 verified by suite. Recovery remains a native accepted-heal reaction, not a new class/quest/proximity/group credit gate."
+    },
+    {
+      "source": "Local TrinityCore era tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c scripts tree again yields unrelated Stratholme boss_order_of_silver_hand, not this acquisition AI; not exhaustive historical search."
+    },
+    {
+      "source": "Pinned Titans donor",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Fresh source read includes first and second companion40pct callbacks. Both still inspect old health directly in HealReceived; no compatible correction imported. Current local four implementations, not an inferred modern version, determine repair scope."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed this unit. Original40pct threshold, wound aura, stun removal, spell/speech/movement routines and intentional scripted companion deaths retained. Full relevant footage is still required before reconstructing the separate half-health aberration choreography."
+    }
+  ],
+  "repair": {
+    "admission": "Only a positive incoming heal while already waiting for healing sets initialized per-AI pending state. Do not predict final HP from requested healing or select a nearby Player; the native accepted-heal dispatch already identifies its victim. Player/pet/guardian/NPC sources share this no-credit behavior. No new player/class/faction/party admission changes.",
+    "completion": "Next native locked primary/disabled lifecycle consumes pending state once, then requires existing wound wait state and live/in-world/nonpredeleted actor with actual post-operation HP>=40. Clear wait state before original stun/aura210985 cleanup so reentrant notifications cannot repeat it. Multiple heals coalesce. Canceled/subthreshold heals and intervening damage do not fabricate health or resume the actor below40.",
+    "lifetime": "Reset invalidates pending work but preserves existing wound wait state. Entering a fresh wound clears stale pending work before its original aura/speech/stun actions. Pending state belongs to AI and disappears on destruction/replacement; no captured Player, raw delayed AI pointer, scheduler, guessed timer, route replay or permanent completion latch is added. Invalid dead/unloaded/predeleted checks consume the request; later valid positive healing can retry.",
+    "preserved": "Post-scaling lethal guards, native attacker-relative health, exactly-once wound speech9/10,1/2,2/3,0/1, attempted210985 self aura, actual damage0 and stunned state remain unchanged. Unit::Kill intentional aberration/Mordoth deaths still bypass ordinary damage guards. Whole four classes compared to877ad851 allowing only new pending member/reset/wound invalidation/heal/lifecycle; older pinned damage/route corrections retained. Rescue90pct/shared native criteria, genuine loot/equip/scenes and other scripts untouched."
+  },
+  "validation": {
+    "baseline": "PASS -HealBaseline pins877ad851 four actual handlers through extracted native DealHeal prefix/ModifyHealth: first heal1->400/1000 leaves wound/stun; another positive heal releases. Original -Baseline pinsd49e77d2 and still reproduces separate raw/scaled damage failure. Controlled host reproduction, not client.",
+    "host": "PASS original1536 damage/health/scaling dispatcher cases retained plus four actual heal/lifecycle/reset handlers and shared recovery helper through native DealHeal prefix/ModifyHealth and locked Creature primary/disabled/alias lifecycle bridge. Per-AI16 source-label/lifecycle-mode threshold crossings,9 invalid/canceled/zero/subthreshold/intervening damage/dead/unloaded/predelete/reset/zero-max cases with fresh-heal retry, healthy-heal/new-wound invalidation, concurrent/reentrant dedup and pending-AI replacement. Health/scaling getters, actor/services and healer labels are controlled; no native pet spell/targeting or persisted group counter claim.",
+    "installed": "PASS canonical selected four factories retain raw empty0xa0/final-damage0xa8 and select positive-heal0xb0/locked-lifecycle0x110/Reset0x28. Actual bounded17-byte heal leaf gates wound/positive amount then sets pending; bounded17-byte lifecycle adapters pass their actual wound/pending fields to shared Recover. Pending initialization/reset/re-wound verified including compiler-coalesced word stores. Live/death/actual40pct/no-wait early returns, latch-before-stun/aura removal and no extra calls checked. Native DealHeal received/done/application order and Creature primary/disabled locked dispatch verified. Hash/link/startup alone not used as implementation proof.",
+    "diagnostics": "Initial patch failed atomically because repeated class hunks were out of order; ordered hunks applied without partial edits. Initial diagnostic disassembler assumed lifecycle had unwind bounds; actual17-byte tail adapter verified without noinline or production change. Native extracted narrowing and unused-parameter warnings retained, not suppressed/fixed as unrelated. Pending/wound adjacent bytes combine into word stores for second/follower AIs; checker verifies the actual writes instead of requiring obsolete byte encoding.",
+    "regressions": "PASS final29-suite serial PowerShell7 batch:13 installed suites Rescue, AberrationCredit, RitualEntry, Procession, second Gossip, Entrance including POINT1, first Gossip, Collapse, RealLootData, Presentation, AllyDamage with new recovery proof, StromkarPresentation and ScepterLogin;6 native/data suites DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, WarlockRegression, SceneLifecycle, ArtifactForceEquip55 records/39 items, MapObjectArrival and DalaranPortalLanding native WMO;10 pinned baselines including new companion-heal877ad851 and all prior rescue/aberration/ritual/procession/second-gossip/arrival/LOS/first-gossip/damage regressions. Ledger .codex/silver-hand-companion-regressions.tsv has29PASS rows. Catalogs/builds serialized. No old test assertion, native count, diagnostic or unrelated production behavior weakened. Not actual client traversal.",
+    "evidence": ".codex/silver-hand-companion-* ignored logs and build-extractors/runtime-test/silver-hand-ally-damage. Only implementation/tests/audit/worklist tracked; no runtime/password/character/media data."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "D11D7E6E700D138A5032F49534CAD84C4B95BF6A2593E2AA5EA63A3FC147DF61",
+    "bnet_sha256": "4EEAF54E53B24FC8E0227482C6D83DEF8CDD29F8E3BCB0402D7CE1772B7A139B",
+    "build": "Release worldserver+bnetserver17.55s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link command names canonical worldserver and original scripts/Release/scripts.lib, game/Release/game.lib, shared/Release/shared.lib and common/Release/common.lib, all existing; deployed selected implementations separately checked.",
+    "runtime": "No unknown/user server before build/start. Own hidden canonical PID36972 fresh ready, own stdin shutdown0/exit0, new DBErrors0/stderr empty, protected configuration/certificate hashes unchanged and gone. No user/unknown process stopped or own background server left."
+  },
+  "remaining": [
+    "Native40pct recovery is checked on the next ordinary locked lifecycle after heal application, not proof a real HealBySpell passed target admission/absorption or that actual dynamic health scaling, wound pose/aura/voice/rotation/combat movement rendered correctly. No arbitrary timer or artificial heal added.",
+    "Reset discards an already pending heal request; a fresh positive heal/overheal is the explicit retry. No actor recreation persistence, quest abandon/rapid retake epoch or accepted-motion recovery is claimed. Temporary disabled AI is serviced only once original HealReceived has observed a heal; this does not invent charm/assistance target admission.",
+    "Recovery awards no progression at all; group/faction eligibility, pet/guardian spells/kill credit and shared-instance advancement remain governed by existing native systems and separate audits. No Player reference is needed or manually broadcast. All actual client party/faction paths remain pending.",
+    "Aberration pre-hit50pct/one-hit/1s intentional companion deaths, third neighborhood movement/DoAction credits, later full rescue prerequisites/outro/true Dalaran return, late scenes/re-entry, genuine loot/equip/save/relog and VFX/all36 full acquisition chains remain unfinished; client testing stays with the user."
+  ]
+}

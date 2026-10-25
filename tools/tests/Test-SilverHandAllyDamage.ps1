@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$HealBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if(($Baseline -and $HealBaseline) -or (($Baseline -or $HealBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baseline modes are mutually exclusive and cannot verify current Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ally-damage"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -9,12 +9,19 @@ function ArrivalCase([string]$movement){$first=$movement.IndexOf('case 1:');$las
 $path='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp'
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Silver Hand source missing'}
+$healPinned=(& git -C $repo show "877ad851:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned companion healing source missing'}
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
 foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','npc_efrin_and_duval')){
- if(!$Baseline){
+ if(!$Baseline -and !$HealBaseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
+  $beforeHeal=Block $healPinned "class $script : public CreatureScript"
+  $normalized=$actual.Replace("        bool _pendingHealRecovery = false;`n",'').Replace("                    _pendingHealRecovery = false;`n",'').Replace("            _pendingHealRecovery = false;`n",'')
+  $normalized=$normalized.Replace("        "+(Block $normalized 'void UpdateLifecycle(')+"`n`n",'')
+  $normalized=$normalized.Replace((Block $normalized 'void HealReceived('),(Block $beforeHeal 'void HealReceived('))
+  if($normalized -cne $beforeHeal){throw 'Companion changed beyond pending state, reset/wound invalidation and post-heal lifecycle'}
+  $actual=$normalized
   $expected=(Block $pinned "class $script : public CreatureScript").Replace($old,$new)
   if($script -eq 'npc_travar_first'){
    $actual=$actual.Replace((Block $actual 'void MoveInLineOfSight('),(Block $expected 'void MoveInLineOfSight('))
@@ -37,12 +44,24 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
  }
 }
 if($Baseline){$source=$pinned}
+if($HealBaseline){$source=$healPinned}
+[IO.File]::WriteAllText("$out/Recovery.inc",$(if($Baseline -or $HealBaseline){''}else{Block $source 'namespace SilverHandCompanion'}))
 foreach($pair in @(@('First','npc_travar_firstAI'),@('Second','npc_travar_secondAI'),@('Third','npc_travar_thirdAI'),@('Allies','npc_efrin_and_duvalAI'))){
  $actor=Block $source "struct $($pair[1]) : ScriptedAI"
  [IO.File]::WriteAllText("$out/$($pair[0])Damage.inc",(Block $actor $(if($Baseline){'void DamageTaken('}else{'void DamageTakenAfterScaling('})))
  [IO.File]::WriteAllText("$out/$($pair[0])Heal.inc",(Block $actor 'void HealReceived('))
+ [IO.File]::WriteAllText("$out/$($pair[0])Lifecycle.inc",$(if($Baseline -or $HealBaseline){''}else{Block $actor 'void UpdateLifecycle('}))
+ [IO.File]::WriteAllText("$out/$($pair[0])Reset.inc",(Block $actor 'void Reset('))
 }
 $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
+$heal=Block $core 'int32 Unit::DealHeal('
+$last=$heal.IndexOf('    Unit* unit = this;')
+if($last -lt 0){throw 'Native heal suffix boundary missing'}
+$prefix=$heal.Substring(0,$last).Replace(', SpellInfo const* spellProto','')+"    return gain;`n}"
+if($prefix.IndexOf('HealReceived(this, addhealth)') -gt $prefix.IndexOf('HealDone(victim, addhealth)') -or $prefix.IndexOf('HealDone(victim, addhealth)') -gt $prefix.IndexOf('ModifyHealth(int32(addhealth), this)')){throw 'Native heal callback/application order changed'}
+[IO.File]::WriteAllText("$out/DealHealPrefix.inc",$prefix)
+[IO.File]::WriteAllText("$out/ModifyHealth.inc",(Block $core 'int64 Unit::ModifyHealth('))
+[IO.File]::WriteAllText("$out/LifecycleBridge.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'if (i_AI || i_disabledAI)'))
 $first=$core.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);')
 $bridge=Block $core.Substring($first) '    if (Creature* creature = victim->ToCreature())'
 if($first -lt 0 -or $core.IndexOf('    if (health <= damage)',$first) -lt $first+$bridge.Length){throw 'Native scaling/protection/death order changed'}
@@ -52,10 +71,10 @@ $kill=Block $core 'void Unit::Kill('
 if(!$kill.Contains('victim->setDeathState(JUST_DIED);') -or $kill.Contains('DamageTakenAfterScaling')){throw 'Direct scripted Kill no longer bypasses the ordinary damage guard'}
 [IO.File]::WriteAllText("$out/Multiplier.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'float Creature::GetHealthMultiplierForTarget('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$mode=if($Baseline){'/DSILVER_HAND_ALLY_BASELINE'}else{''}
+$mode=if($Baseline){'/DSILVER_HAND_ALLY_BASELINE'}elseif($HealBaseline){'/DSILVER_HAND_HEAL_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/SilverHandAllyDamageTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Silver Hand ally protection failed'}
-if($Baseline){return}
+if($Baseline -or $HealBaseline){return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile SilverHandAllyCatalog.cpp -ProbeName SilverHandAllyCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native Silver Hand metadata failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 $native=Get-Content "$out/native.tsv"

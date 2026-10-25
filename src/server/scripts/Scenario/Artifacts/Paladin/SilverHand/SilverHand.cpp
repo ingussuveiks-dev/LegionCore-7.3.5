@@ -14,6 +14,21 @@
 #include "WaypointManager.h"
 
 
+namespace SilverHandCompanion
+{
+    void Recover(Creature* actor, bool& pendingHeal, bool& waitHeal)
+    {
+        if (!pendingHeal)
+            return;
+        pendingHeal = false;
+        if (!waitHeal || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetHealthPct() < 40)
+            return;
+        waitHeal = false;
+        actor->ClearUnitState(UNIT_STATE_STUNNED);
+        actor->RemoveAura(210985);
+    }
+}
+
 namespace SilverHandEntrance
 {
     bool CanArrive(Player* player, Creature* actor)
@@ -92,6 +107,7 @@ public:
 
         EventMap events;
         bool _introDone, wait_heal, firstwp, secondwp, firstfight;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
         ObjectGuid _arrivalPlayerGuid;
 
@@ -145,6 +161,7 @@ public:
         void Reset() override
         {
             events.Reset();
+            _pendingHealRecovery = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -169,17 +186,15 @@ public:
             }, _functions.CalculateTime(1000));
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit*, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(210985);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -189,6 +204,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(210985, me);
                     Talk(9);
@@ -405,6 +421,7 @@ public:
 
         EventMap events;
         bool wait_heal;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
         ObjectGuid _processionPlayerGuid;
 
@@ -451,6 +468,7 @@ public:
         void Reset() override
         {
             events.Reset();
+            _pendingHealRecovery = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -459,17 +477,15 @@ public:
             events.RescheduleEvent(EVENT_2, 8000); // 210371
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit*, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(210985);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -479,6 +495,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(210985, me);
                     Talk(1);
@@ -578,11 +595,13 @@ public:
 
         EventMap events;
         bool wait_heal, _introDone;
+        bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
 
         void Reset() override
         {
             events.Reset();
+            _pendingHealRecovery = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -599,17 +618,15 @@ public:
                 me->GetMotionMaster()->MovePoint(1, 1914.39f, 2335.43f, 75.56f);
             }, _functions.CalculateTime(1000));
         }
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit*, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(210985);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -619,6 +636,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(210985, me);
                     Talk(2);
@@ -888,10 +906,12 @@ public:
 
         EventMap events;
         bool wait_heal;
+        bool _pendingHealRecovery = false;
 
         void Reset() override
         {
             events.Reset();
+            _pendingHealRecovery = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -901,17 +921,15 @@ public:
             events.RescheduleEvent(EVENT_3, 7000); // 210371
         }
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void HealReceived(Unit*, uint32& addhealth) override
         {
-            if (wait_heal)
-            {
-                if (me->GetHealthPct() >= 40)
-                {
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(210985);
-                    wait_heal = false;
-                }
-            }
+            if (wait_heal && addhealth)
+                _pendingHealRecovery = true;
+        }
+
+        void UpdateLifecycle(uint32) override
+        {
+            SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -921,6 +939,7 @@ public:
                 damage = 0;
                 if (!wait_heal)
                 {
+                    _pendingHealRecovery = false;
                     wait_heal = true;
                     me->AddAura(210985, me);
                     Talk(0);
