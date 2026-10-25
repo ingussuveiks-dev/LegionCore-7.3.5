@@ -47,6 +47,7 @@ struct Creature
     Motion motion;
     bool stunned=false,casting=false;
     uint32 despawn=0,flags=16;
+    uint32 castResult=0;
     Player* nearby=nullptr;
     std::vector<uint32> casts;
     CreatureAI* AI(){return ai;}
@@ -60,7 +61,7 @@ struct Creature
     {assert(positionX==1 && positionY==2 && positionZ==3 && facing==4);}
     Player* FindNearestPlayer(float radius){assert(radius==100);return nearby;}
     void DespawnOrUnsummon(uint32 delay){assert(delay==1000);despawn=delay;}
-    void CastSpell(Creature* target,uint32 spell){assert(target==this && spell==215260);casts.push_back(spell);}
+    uint32 CastSpell(Creature* target,uint32 spell){assert(target==this && spell==215260);casts.push_back(spell);return castResult;}
     void SetFlag(uint32 field,uint32 mask){assert(field==UNIT_FIELD_FLAGS);flags|=mask;}
 };
 struct EventMap
@@ -133,6 +134,56 @@ int main()
 #endif
     }
 #ifndef BASELINE
+    {
+        Creature last,boss;
+        OtherAI lastAI,bossAI;last.ai=&lastAI;boss.ai=&bossAI;
+        Player first,second;second.last=&last;second.boss=&boss;
+        Map map;map.players={{&first},{&second}};Instance script{&map};
+        script.onScenarionNextStep(10);
+#ifdef FINAL_BASELINE
+        assert(lastAI.talks==0 && boss.casts.empty() && second.lookups==0);
+        std::cout<<"PASS final baseline: step10 first contactable participant lacks both actors; original misses later Travard/Mordoth and exits without effects\n";
+        return 0;
+#else
+        assert(lastAI.talks==1 && boss.casts==std::vector<uint32>{215260} && boss.flags==31);
+        assert(first.lookups==2 && second.lookups==2);
+#endif
+    }
+#ifndef FINAL_BASELINE
+    for(bool bossFirst:{false,true})
+    {
+        Creature last,boss,otherLast,otherBoss;
+        OtherAI lastAI,bossAI,otherLastAI,otherBossAI;
+        last.ai=&lastAI;boss.ai=&bossAI;otherLast.ai=&otherLastAI;otherBoss.ai=&otherBossAI;
+        Player first,second,duplicate;
+        if(bossFirst){first.boss=&boss;second.last=&last;second.boss=&otherBoss;}
+        else{first.last=&last;second.boss=&boss;second.last=&otherLast;}
+        duplicate.last=&otherLast;duplicate.boss=&otherBoss;
+        Map map;map.players={{&first},{&second},{&duplicate}};Instance script{&map};
+        script.onScenarionNextStep(10);
+        assert(first.lookups==2 && second.lookups==1 && duplicate.lookups==0);
+        assert(lastAI.talks==1 && otherLastAI.talks==0 && boss.casts==std::vector<uint32>{215260} && otherBoss.casts.empty());
+    }
+    for(bool onlyBoss:{false,true})
+    {
+        Creature actor;OtherAI ai;actor.ai=&ai;
+        Player first,second,offline;offline.contact=false;
+        if(onlyBoss){first.boss=&actor;second.boss=&actor;}else{first.last=&actor;second.last=&actor;}
+        Map map;map.players={{nullptr},{&offline},{&first},{&second}};Instance script{&map};
+        script.onScenarionNextStep(10);
+        assert(offline.lookups==0 && first.lookups==2 && second.lookups==1);
+        assert(onlyBoss?(actor.casts==std::vector<uint32>{215260} && ai.talks==0):(ai.talks==1 && actor.casts.empty()));
+    }
+    {
+        Player first,second;
+        Map map;Instance script{&map};script.onScenarionNextStep(10);
+        map.players={{&first},{&second}};script.onScenarionNextStep(10);
+        assert(first.lookups==2 && second.lookups==2);
+        Creature last,boss;OtherAI lastAI,bossAI;last.ai=&lastAI;boss.ai=&bossAI;
+        second.last=&last;second.boss=&boss;boss.castResult=7;
+        script.onScenarionNextStep(10);
+        assert(lastAI.talks==1 && boss.casts==std::vector<uint32>{215260} && boss.flags==31);
+    }
     for(uint32 prefix=0;prefix<4;++prefix)
     {
         Creature actor;
@@ -176,6 +227,7 @@ int main()
         assert(lastAI.talks==1 && boss.casts==std::vector<uint32>{215260} && boss.flags==31);
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
-    std::cout<<"PASS: full native instance callback and third DoAction/UpdateAI/MovementInform with native FunctionProcessor; absent first actor continues to later participant, one dispatch per call, empty/null/uncontactable/all-missing/later explicit retry, original1000ms/stun and actual POINT1 credit, unrelated steps and step10 preserved. Controlled map/motion/criteria services, not client traversal\n";
+    std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 }

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Silver Hand1092/map1539 step10 final last-Travard106777 and Mordoth106719 dispatch across native map participants. Not scenario9 victory repair, persistent retry, genuine loot completion or full36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local instance_silver_hand.cpp, SilverHand.cpp and Scenario transitions",
+      "review": "Step10 originally searched last Travard and Mordoth only from first contactable Player and then broke even if either was absent. Last Travard wave3 also summons106719, distinct from static corpse-stage actor. Both native transition methods call instance before UpdatePhasing. Preserve found actors' immediate original Talk3 then215260/flags order within one view; across split views each effect occurs when its own actor is found, not a new both-actors prerequisite or reconstructed cinematic."
+    },
+    {
+      "source": "Matching26972 native SilverHandPickupCatalog/SilverHandFinalCatalog and read-only MariaDB",
+      "review": "1539 binding instance_silver_hand, last106777 npc_travar_last/spawn362048/phase7003 with source23zone85entry10 positive44/1092 steps9 or10. Static106719/spawn362044 is phase7001/exact7, not evidence that the later summoned boss exists. Phase7004/exact10 remains separate. Native step9/2457/root48055/30110/type92/51838 amount1 and step10/2458/root48057/30111/type92/50966 unchanged. No spawn, phase, database or character writes."
+    },
+    {
+      "source": "Native215258/215260 metadata and visual-link probe",
+      "review": "Read-only DB2/hotfix Spell, SpellEffect, SpellMisc, SpellXSpellVisual and SpellVisual through real C++ loader.215258 Bringing the Light... has effect0/6/aura226/self1, durationIndex25/castIndex1 and existing visual55978.215260 Blinding Light has effects0/6/aura60 and1/6/aura5 with targets22/7, effect2/61/self1, durationIndex21/castIndex1 and existing visual57625; no trigger spell in these effects, caster/viewer PlayerCondition0. Tests retain exact native rows. These are IDs/links and target metadata only, not visual kit/model attachment/animation/rendered behavior verification; no spell or VFX data altered."
+    },
+    {
+      "source": "Local TrinityCore26972 era scripts tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c tree again yields unrelated Stratholme silver_hand boss, not this acquisition instance. Existing routes/worklist/donor audits reviewed; no exhaustive history claim."
+    },
+    {
+      "source": "Pinned Titans instance donor",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "review": "Returned93-line source read, including both step loops/graveyard/visibility; step10 retains same first-contactable break, original Talk3/215260/flags. No compatible donor correction imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. No guessed ritual victory, timing, model or cinematic reconstruction."
+    }
+  ],
+  "repair": {
+    "implementation": "Two invocation-local booleans track independently found Travard/Mordoth. Search unresolved actor only; latch before original speech or cast/flag effects. Continue across absent/null/uncontactable views until both handled or native list exhausted. No persistent player pointer, new actor summon, expanded radius, event, item, HP or party-credit broadcast.",
+    "preserved": "Step8 exact callback and whole instance outside intentional step10 block remain pinned by source comparison; previous step8 baseline e01a2c64 and new step10 baseline7680556f remain separate. Original CanContact/alive70yd search, actor identities, Talk3,215260 and native flag mask/unrelated bits retained. A rejected cast still receives original flag behavior and does not become retry at another participant; this is not a failed-cast repair. Invocation-local flags do not deduplicate a distinct/reentrant native callback."
+  },
+  "validation": {
+    "baseline": "PASS -FinalBaseline pins7680556f actual full callback: first contactable view has neither actor, later participant has both, original skips both effects and never searches later participant. Older -Baseline still pins original step8 failure. Defined fixtures, not actual live-client failure or persisted counters.",
+    "host": "PASS full extracted callback plus existing real third DoAction/UpdateAI/MovementInform/native FunctionProcessor. Step10 covers both actors later, split actor views in either order, already found actor replaced by a different later candidate without duplicate/substitution, duplicate final participant never reached, only one actor available across multiple views without repeated effect, empty/null/uncontactable/all-missing and later explicit redispatch, failed215260 cast preserving original flags. Prior step8 missing-first/one-action/999+1ms/stun/POINT1/no early50915 and unrelated steps retained. Map/nearby/cast/criteria/motion services controlled, not physical actor/phase, combat, faction or party proof. Baseline-only unreachable fixed tests excluded at preprocessing; native unused-action/qualifier and size conversion diagnostics retained, not suppressed.",
+    "installed": "PASS existing selected instance0x118/step8 loop/third action0x48/native Scenario transition proof retained. New selected step10 checks initializes bpl/r14b invocation state, live70yd106777/106719 lookups, skip-only-own-found branches, latch-before original Talk3/215260/flag mask, independent null branches and both-found versus list backedge. No Player achievement/kill/item dependency added. Canonical PE/map/unwind verified; not mere symbol presence.",
+    "regressions": "PASS11-suite serial PowerShell7 ledger .codex/silver-hand-final-dispatch-regressions.tsv: new final7680556f baseline and retained original step8 baseline, installed full dispatch with nested RitualEntry admission/lifetime/data/PE plus new final native spell/visual-link catalog, installed lastWaveLifetime, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, SceneLifecycle, ArtifactForceEquip55 records/39 items; pinned third-entry lifetime baseline. Old selected step8 PE assertions unchanged, new final proof runs afterward. Catalogs/build serialized and native diagnostics/counts retained. Older10/33-suite evidence remains in its own audit, not relabeled as a current binary rerun. Not client traversal.",
+    "evidence": ".codex/silver-hand-final-dispatch-* and runtime-test/silver-hand-ritual-dispatch ignored logs/probes; new reusable native catalog source tracked, no runtime/config/password/character/media data."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "821A515561EF173079EB79B7828F62BF50D83C93EA4B850109F7473DE627BAE5",
+    "bnet_sha256": "FE7B0E5BC4E6C849EAB2BE138EA3BF35090C26C5A9A1C1DB22A85DF7F4E859BA",
+    "build": "Release worldserver+bnetserver15.66s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link canonical output, original scripts/game/shared/common Release libraries, INCREMENTAL:NO. Native standalone catalog serialized separately; no alternate deployment directory. Selected installed code proof independent of hash/link/startup.",
+    "runtime": "Own hidden canonical PID14972 fresh ready, own stdin shutdown0/exit0/new DBErrors0/stderr empty/protected conf-certificate hashes unchanged/gone. No unknown/user server stopped or own hidden process left running."
+  },
+  "remaining": [
+    "One or both actors absent from every participant still needs separate spawn/re-entry recovery. Invocation search is not automatic future retry or persisted actor dedup. Repeated/reentrant whole callbacks may repeat effects. Failed215260 cast remains original unchecked behavior, and native flag application is not actual aura/rendering success.",
+    "Static phase7001 Mordoth is not the later wave3 summon; actual step9 wave spawning, one-hit/duplicate deaths, periodic51838 victory, admission and failure retry remain OPEN. Native visual links do not establish rendered blinding/ritual, timing across split views or eventual loot/equip/return.",
+    "Third direct DoAction/admission/neighborhood credits and accepted motion, firstfight/evade/50850, aberration half-health/intentional companion deaths, abandon/rapid-retake/re-entry, party/faction/pet/guardian chains, real save/relog and true Dalaran/all36/client/VFX remain OPEN."
+  ]
+}

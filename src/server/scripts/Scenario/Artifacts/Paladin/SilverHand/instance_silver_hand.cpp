@@ -76,21 +76,34 @@ public:
 
                 if (PlList.isEmpty())
                     return;
-                
+
+                bool travardFound = false;
+                bool mordothFound = false;
                 for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
                 {
                     Player* player = i->getSource();
                     if (!player || !player->CanContact())
                         continue;
 
-                    if (Creature* travar = player->FindNearestCreature(106777, 70.0f, true))
-                        travar->AI()->Talk(3);
-                    if (Creature* boss = player->FindNearestCreature(106719, 70.0f, true))
+                    if (!travardFound)
                     {
-                        boss->CastSpell(boss, 215260);
-                        boss->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC| UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        if (Creature* travar = player->FindNearestCreature(106777, 70.0f, true))
+                        {
+                            travardFound = true;
+                            travar->AI()->Talk(3);
+                        }
                     }
-                    break;
+                    if (!mordothFound)
+                    {
+                        if (Creature* boss = player->FindNearestCreature(106719, 70.0f, true))
+                        {
+                            mordothFound = true;
+                            boss->CastSpell(boss, 215260);
+                            boss->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC| UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                        }
+                    }
+                    if (travardFound && mordothFound)
+                        break;
                 }
             }
         }
