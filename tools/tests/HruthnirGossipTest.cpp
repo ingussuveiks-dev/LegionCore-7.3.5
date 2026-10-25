@@ -142,6 +142,7 @@ struct Creature
     std::function<void()> reenterConversation;
     float distance = 4.0f;
     float arrivalDistanceSq = 0.0f;
+    float offerDistanceSq = 0.0f;
     uint32 entry = 96468, mapId = 1495, instance = 42, flags = 1, LastUsedScriptID = 7;
     uint32 unitFlags = 0x2000380, react = 0;
     Map* map = &instanceMap;
@@ -161,6 +162,8 @@ struct Creature
     CreatureAI* AI() { return ai; }
     float GetExactDistSq(float positionX, float positionY, float positionZ) const
     {
+        if (positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f)
+            return offerDistanceSq;
         assert(positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f);
         return arrivalDistanceSq;
     }
@@ -251,12 +254,13 @@ struct HruthnirAI : CreatureAI
 #include "AISelect.inc"
 #include "AIReset.inc"
 #include "OfferContext.inc"
+#include "OfferPosition.inc"
 #include "Offer.inc"
 #include "Arrival.inc"
     void MovementInform(uint32 type, uint32 point) override
     {
-        assert(type == POINT_MOTION_TYPE && point == 7);
-        Arrive();
+        assert(type == POINT_MOTION_TYPE && (point == 6 || point == 7));
+        if (point == 6) OfferArrive(); else Arrive();
     }
 #include "AIUpdate.inc"
 };
@@ -323,7 +327,20 @@ struct Fixture
 };
 int main()
 {
-#ifdef ARRIVAL_BASELINE
+#ifdef OFFER_ARRIVAL_BASELINE
+    for (uint32 moment = 0; moment < 3; ++moment)
+    {
+        Fixture offer; offer.actor.flags = 0;
+        PointMovementGenerator<Creature> point; point._movementId = 6;
+        if (moment == 0) offer.actor.offerDistanceSq = 100.0f;
+        point.DoFinalize(offer.actor);
+        if (moment == 1) offer.actor.offerDistanceSq = 100.0f;
+        if (moment == 2) offer.ai.onTalk = [&]() { offer.actor.offerDistanceSq = 100.0f; };
+        offer.Tick(13000);
+        assert(offer.actor.flags == 1 && !offer.actor.unitFlags && offer.ai.texts == std::vector<uint32>({15,16}));
+    }
+    std::cout << "PASS offer arrival baseline: pinned9a0e4426 opens gossip/releases protection at10-yard separation after early native point6 finalization, late drift or Talk16 drift. Spline/AI/text/position services controlled, not live client movement.\n";
+#elif defined(ARRIVAL_BASELINE)
     Fixture stopped; stopped.Select(); stopped.actor.arrivalDistanceSq = 100.0f;
     PointMovementGenerator<Creature> point;
     point.DoFinalize(stopped.actor); stopped.Tick(6000);
@@ -396,6 +413,50 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            for (float distanceSq : {0.0f,3.96f,4.0f,4.04f,100.0f,
+                std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::infinity()})
+            {
+                Fixture offer; offer.player.faction = faction; offer.player.status = status;
+                offer.actor.flags = 0; offer.actor.offerDistanceSq = distanceSq;
+                PointMovementGenerator<Creature> point; point._movementId = 6;
+                point.DoFinalize(offer.actor); point.DoFinalize(offer.actor);
+                if (!(distanceSq <= 4.0f))
+                {
+                    offer.Tick(13000);
+                    assert(!offer.ai.magnarOfferToken && offer.ai.texts.empty() && !offer.actor.flags && offer.actor.unitFlags == 0x2000380);
+                    offer.actor.offerDistanceSq = 0.0f;
+                    point.DoFinalize(offer.actor); point.DoFinalize(offer.actor);
+                }
+                auto token = offer.ai.magnarOfferToken;
+                assert(token && !*token && offer.ai.texts == std::vector<uint32>({15}));
+                offer.Tick(12999); assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380);
+                offer.Tick(1); point.DoFinalize(offer.actor); offer.Tick(13000);
+                assert(offer.actor.flags == 1 && !offer.actor.unitFlags && *token && offer.ai.texts == std::vector<uint32>({15,16}));
+            }
+    for (uint32 moment : {15u,0u,16u})
+        for (float distanceSq : {4.04f,std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::infinity()})
+        {
+            Fixture offer; offer.actor.flags = 0;
+            offer.ai.onTalk = [&]() { if (offer.ai.texts.back() == moment) offer.actor.offerDistanceSq = distanceSq; };
+            offer.ai.OfferArrive();
+            auto oldToken = offer.ai.magnarOfferToken;
+            auto replay = offer.actor.m_Functions.LastQueued();
+            if (!moment) offer.actor.offerDistanceSq = distanceSq;
+            offer.Tick(13000);
+            assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && !offer.ai.magnarOfferToken);
+            assert(offer.ai.texts.size() == (moment == 16 ? 2u : 1u));
+            offer.ai.onTalk = nullptr; offer.actor.offerDistanceSq = 0.0f;
+            offer.ai.OfferArrive();
+            auto newToken = offer.ai.magnarOfferToken;
+            assert(newToken && newToken != oldToken);
+            replay();
+            assert(offer.ai.magnarOfferToken == newToken && !*newToken && !offer.actor.flags);
+            offer.Tick(12999); assert(!offer.actor.flags);
+            offer.Tick(1); assert(offer.actor.flags == 1 && !offer.actor.unitFlags && *newToken);
+        }
+    std::cout << "PASS offer arrival:28 faction/status/ordered-radius cases reject early point6 outside its endpoint;9 Talk15/late/Talk16 drift paths retire only the old offer token and permit explicit fresh arrival with full12999+1ms budget. Replayed old callback cannot retire a new offer; controlled services, not automatic motion recovery.\n";
     {
         Fixture moving; moving.Select(); moving.actor.spline.finalized = false;
         PointMovementGenerator<Creature> point;

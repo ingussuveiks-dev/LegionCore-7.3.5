@@ -153,6 +153,11 @@ public:
             return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3;
         }
 
+        bool IsMagnarOfferPosition() const
+        {
+            return me->GetExactDistSq(4763.73f, 340.87f, -37.19f) <= 4.0f;
+        }
+
         bool IsMagnarIntroPlayer(Player* player) const
         {
             return player && player->IsInWorld() && player->CanContact() && player->IsAlive() &&
@@ -469,7 +474,8 @@ public:
                         break;
                     case 6:
                     {
-                        if (magnarOfferToken || magnarArrivalPending || magnarStartToken || !IsMagnarOfferContext(me->GetInstanceId()))
+                        if (magnarOfferToken || magnarArrivalPending || magnarStartToken ||
+                            !IsMagnarOfferContext(me->GetInstanceId()) || !IsMagnarOfferPosition())
                             break;
                         magnarOfferToken = std::make_shared<bool>(false);
                         std::weak_ptr<bool> offerToken = magnarOfferToken;
@@ -483,11 +489,21 @@ public:
                             if (!token || *token || companion->AI() != expectedAI ||
                                 expectedAI->magnarOfferToken != token || !expectedAI->IsMagnarOfferContext(instanceId))
                                 return;
+                            if (!expectedAI->IsMagnarOfferPosition())
+                            {
+                                expectedAI->magnarOfferToken.reset();
+                                return;
+                            }
                             *token = true;
                             expectedAI->Talk(16);
                             if (companion->AI() != expectedAI || expectedAI->magnarOfferToken != token ||
                                 !expectedAI->IsMagnarOfferContext(instanceId))
                                 return;
+                            if (!expectedAI->IsMagnarOfferPosition())
+                            {
+                                expectedAI->magnarOfferToken.reset();
+                                return;
+                            }
                             companion->SetFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                             companion->SetReactState(REACT_DEFENSIVE);
                             companion->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);

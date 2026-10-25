@@ -11,15 +11,15 @@ static void Require(bool condition)
         std::abort();
 }
 
-int main()
+static unsigned CheckDestination(Position const& destination)
 {
-    Position const destination(4720.80f, 347.91f, -37.71f);
-    auto admitted = [](Position const& actor)
+    unsigned checks = 0;
+    auto admitted = [&destination](Position const& actor)
     {
-        return actor.GetExactDistSq(4720.80f, 347.91f, -37.71f) <= 4.0f;
+        return actor.GetExactDistSq(destination.m_positionX, destination.m_positionY, destination.m_positionZ) <= 4.0f;
     };
     Require(admitted(destination));
-    unsigned checks = 1;
+    ++checks;
     for (unsigned axis = 0; axis < 3; ++axis)
         for (float direction : {-1.0f, 1.0f})
             for (float distance : {1.99f, 2.0f, 2.01f})
@@ -47,6 +47,14 @@ int main()
             Require(!admitted(actor));
             ++checks;
         }
-    Require(checks == 29);
-    std::puts("PASS native Position:29 actual3D squared-distance cases; inclusive2-yard boundary, six axis directions, diagonal and nonfinite rejection. Not a native spline traversal or retail radius measurement.");
+    return checks;
+}
+
+int main()
+{
+    unsigned checks = 0;
+    for (Position const& destination : {Position(4720.80f, 347.91f, -37.71f),Position(4763.73f, 340.87f, -37.19f)})
+        checks += CheckDestination(destination);
+    Require(checks == 58);
+    std::puts("PASS native Position:58 actual3D squared-distance cases at point6/7; inclusive2-yard boundary, six axis directions, diagonal and nonfinite rejection. Not a native spline traversal or retail radius measurement.");
 }
