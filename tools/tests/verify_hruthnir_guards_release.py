@@ -118,7 +118,7 @@ for operand in ('word ptr [rdi + 0x334], bp', 'word ptr [rdi + 0x356], bp', 'byt
 assert find(reset, 'dword ptr [rdi + 0x35c]', 'inc') >= 0
 update = instructions('?Update' + suffix)
 retry = positions(update, advance)[0]
-assert update[retry - 1].op_str == 'dword ptr [rcx + 0x364], 0x1f4'
+assert update[retry - 1].op_str == 'dword ptr [rcx + 0x360], 0x1f4'
 assert retry < find(update, 'eax, 0x42c', 'cmp')
 address = native['symbol']('?GetData' + suffix)
 assert slots[0xb0 // 8] == address

@@ -42,7 +42,6 @@ public:
         bool magnarGuardsDelivered;
         bool magnarGuardDispatching;
         uint32 magnarGuardGeneration = 0;
-        uint16 scenarioid;
 
         void Initialize() override
         {
@@ -62,18 +61,6 @@ public:
             magnarGuardsDelivered = false;
             magnarGuardDispatching = false;
             ++magnarGuardGeneration;
-            scenarioid = 0;
-        }
-
-        void OnPlyerEnter(Player* player)
-        {
-            if (!player)
-                return;
-
-            player->AddDelayedEvent(3000, [player, this]() -> void
-            {
-                scenarioid = player->GetScenarioId();
-            });
         }
 
         void OnCreatureCreate(Creature* creature) override
@@ -370,7 +357,8 @@ public:
 
         void onScenarionNextStep(uint32 newStep) override
         {
-            if (scenarioid && scenarioid != 1082)
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario || scenario->GetScenarioId() != 1082 || scenario->GetCurrentStep() != newStep)
                 return;
 
             switch (newStep)

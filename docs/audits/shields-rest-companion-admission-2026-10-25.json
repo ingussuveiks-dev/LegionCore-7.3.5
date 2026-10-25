@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Stop Truthguard's Paladin companion controller casts leaking into shared-map1495 Earthwarder909 and Titanstrike1068 transitions. This independent admission defect was found while tracing remaining pickup cast/scene recovery; that recovery and full client/VFX verification are not claimed complete.",
+  "inherited": "Clean main=origin/maindd021ddb after status/log,36-route worklist, artifact-routes, legion-artifact-donor-review and Truthguard loot/equipped-pair audits. Existing damage, guard/Hruthnir, wind/rune/workshop, native loot and equipped-pair repairs retained. No user/unknown server stopped, no character or item granted/edited.",
+  "sources": [
+    {
+      "source": "Local26972 native DB2/hotfix reader, live MariaDB mapping, InstanceScript.h/.cpp, Scenario.cpp, instance_shields_rest.cpp, ShieldsRest header, AuraEffect::HandleSummonController and Unit/Player cast/scene source",
+      "review": "Actually traced the real OnPlayerEnter virtual API versus unused OnPlyerEnter, zero initialized cache, both native Scenario step dispatches and all-player self-cast closure. Extended existing typed TruthguardPickupCatalog to enumerate all three shared scenario steps and the two companion controller effects; read-only hotfix/world queries, no character session. Native controller removal uses its own triggered-spell minion/object filter."
+    },
+    {
+      "source": "C:/wamp64/www/TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "review": "Targeted historical src/server/scripts search for instance_shields_rest and OnPlyerEnter found no matching implementation. Not exhaustive all-branch/history/SQL research and no modern implementation imported."
+    },
+    {
+      "source": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp",
+      "review": "Actually opened the full268-line pinned instance source, including Initialize, misspelled callback, SetData/ProcessEvent and final onScenarionNextStep. It has the same unregistered delayed cache and permissive zero test. No donor fix, runtime or full database imported."
+    },
+    {
+      "source": "YouTube / client",
+      "review": "No new footage/transcript or26972 client traversal reviewed. No claim that companion appearance, voice, movement, summon timing or complete three artifact chains were observed in the client."
+    }
+  ],
+  "cause": "InstanceScript defines OnPlayerEnter, but this instance declared unused OnPlyerEnter without override. Its only scenarioid assignment was inside that never-dispatched method's3s raw-player/instance callback; Initialize kept the cache0. onScenarionNextStep rejected only nonzero wrong IDs, so numerical DATA_STAGE_2=1 admitted both Paladin controllers for any scenario using this shared instance, including909 and1068. Merely fixing the spelling would leave a3s open admission window, stale single-player cache and raw lifetime dependency.",
+  "implementation": "Remove the unused cached field and misspelled delayed callback. Resolve the actual live Scenario from instance->GetInstanceId at each step notification; require nonnull ID1082 and GetCurrentStep()==newStep before the original step1 switch. Keep both original controller spells, order, native per-player dispatcher and cleanup. No new latch, timer, class/faction/group filter, summon replacement, scene change, SQL update or damage/progression credit change.",
+  "native_metadata": {
+    "mapping": "Live scenario_data:909/map1495/class1,1068/map1495/class3,1082/map1495/class2. Same numerical step1 does not identify an artifact route.",
+    "db2": "Typed shared step1:909 -> ScenarioStep1828/CriteriaTree45337;1068 ->2300/47215;1082 ->2391/47435. Existing Truthguard graph and128866/128867 metadata retained.",
+    "spells": "210036 and210043 are not pure summons: each native effect0 is6/apply-aura428 SUMMON_CONTROLLER, misc1/self target1, respectively triggering209945 and209953; cast index1/base0. Native real aura application self-casts its trigger; removal filters that trigger's minions and gameobjects. No mock invents a persistent marker for a pure summon, and this change does not alter the actual aura lifecycle.",
+    "dispatcher": "Both Scenario::SetCurrentStep and UpdateCurrentStep update currentStep, call instance setScenarioStep then onScenarionNextStep with that current value. Native DoCastSpellOnPlayers enumerates actual Map players through ApplyOnEveryPlayer; its selected std::function closure uses each Player as both caster and target. Existing native group/owner behavior is retained, not replaced with pet or arbitrary nearest-player credit."
+  },
+  "trace_and_limits": [
+    "Missing scenario, actual909/1068/other IDs, mismatched stale notification and wrong numerical step fail closed before any companion cast. Replacing/removing a Scenario is observed immediately, with no3s stale cache. Legitimate1082/current1 still requests210036 then210043 through the original player-self native path.",
+    "The handler does not award kill/scenario/quest credit or mutate Hunter winds/Warrior guards. Pet/guardian final blows and native advancement continue through their existing repaired encounter paths; modeled scenario IDs and virtual callbacks are not live group/faction combat tests.",
+    "Repeated legitimate same-step notifications retain native aura/cast behavior. No new exactly-once actor latch or forced re-summon policy is claimed. Failed companion casts, missing actors, player death/controller removal, abandonment, saved aura loading, re-entry at an already active step and controller refresh require their own lifecycle review/client traversal.",
+    "Existing incorrectly saved foreign companion auras are not stripped from user characters or globally swept. This repair prevents new off-route casts at the source. Do not interpret ready startup or no new DBErrors as proof that every previously affected character is clean.",
+    "Adjacent pickup investigation remains open:210133's SEND_EVENT50545 precedes effect249 and personal105891, while Player::SendSpellScene records launch only when actual scene metadata resolves. HasSceneStatus is an ordered status check (launch accepts later complete), not a fresh renderer acknowledgment. Merely checking CastSpell result or a remembered launch flag cannot certify the full retry/scene sequence; no speculative cast reordering is included here."
+  ],
+  "validation": {
+    "baseline": "Pinneddd021ddb actual onScenarionNextStep compiled with zero cache and virtual fixture dispatch: all490 identity/current-step/notification/presence combinations reproduce that any notified step1 casts both Paladin controllers, even Warrior/Hunter/missing contexts. Controlled cast collector, not actual actor rendering/native aura replay.",
+    "current": "Same extracted actual virtual handler checks490 combinations for IDs909/1068/1082/0/962, current and notified0..6, present/absent. Only actual1082/current1/notified1 casts the original pair; missing/replaced identities fail closed and the correct route can enter after a previously absent Scenario. No cached field in current fixture, no fabricated owner/group eligibility. Host W4 clean.",
+    "installed": "Canonical PE/map timestamps; actual GetInstanceScript-selected vtable slot0x118 points to the checked handler. Missing-scenario, ID1082, current-versus-notification and step1 branches all lead to clean call-free epilogue before either cast. Both native Scenario dispatchers call that actual slot. Native all-player Map iteration and selected closure/vtable call real player-self CastSpell. Existing Hruthnir guarded shared instance and scenario dependencies remain checked, not registration strings/hash alone.",
+    "regressions": "Final -VerifyReleaseBinary: Test-ShieldsRestCompanionAdmission, Test-HruthnirGuards, Test-MagnarFinale, Test-TitanstrikeStorms, Test-TitanstrikeRunes, Test-TitanstrikeWorkshop, Test-TruthguardEquippedPair, Test-EarthwarderRealLootData and Test-ScepterLogin, including invoked Truthguard admission/surrender. Serial native catalogue builds. Baseline and current controlled hosts retained separately; not all36 or full client traversal.",
+    "diagnostics": "Removing the dead2-byte cache moves the later hunterWindTimer from native offset0x364 to0x360. The existing installed Hruthnir guard verifier caught that layout change; update only its exact expected500ms timer field operand, retaining all guard/current-scenario/epoch/vtable assertions. Initial new checker wrongly expected a direct CastSpell call in DoCastSpellOnPlayers; inspected and checked its actual selected std::function closure and Map iteration instead, retaining self-caster/target checks. No production diagnostics suppressed or failing checks disabled.",
+    "evidence": ".codex/shields-rest-companion-baseline.log, host.log, build.log, disasm.log, cast-disasm.log, final.log, Test-*.log, startup-stdout/stderr.log and new-DBErrors.log. Native/live readback at ignored build-extractors/runtime-test/shields-rest-companion-admission. JSON36-entry inventory, PowerShell/Python syntax and staged whitespace checked before commit."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "F65B6CE4AD00E7969FDCCDE5DD8949F27B2E25E46C5B4A71955ECE8B33DD80F3",
+    "bnet_sha256": "969C9719A27797CEC9974E8B4D7A1793ECA28B18AD6E815B66CE99FEE7D78A8E",
+    "build": "Canonical Release worldserver+bnetserver build15.70s,0 warnings/errors, LinkIncremental=false and no OutDir. Actual original Release scripts/game/shared/database/proto/common library paths and canonical final-link output verified. Actual installed admission and native virtual/cast paths checked.",
+    "runtime": "Only task-owned hidden canonical worldserver PID7652 launched, reached ready, received server shutdown0 through owned stdin and exited0. Appended DBErrors0, empty stderr and unchanged protected config/certificate/key hashes. No bnetserver launched, no user/unknown server stopped or owned server left running."
+  },
+  "remaining": "Actual shared-map route traversal, old saved foreign auras, correct Paladin companions' death/re-entry/failed-cast/missing-actor lifecycle, group/faction fidelity and all visual/voice timing. Truthguard pickup cast/scene recovery and real hidden-child creation remain separate worklist items."
+}

@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp",
+      "handler": "onScenarionNextStep / dead OnPlyerEnter cache",
+      "problem": "Unregistered misspelled entry callback left scenarioid0; the permissive zero-cache check summoned Paladin Orik/Cato at numerical step1 in shared1495 Warrior909 and Hunter1068 too.",
+      "repair_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
+      "limit": "Actual live1082/current-step matching gate replaces dead delayed player cache;490 extracted virtual cases, native controllers/shared steps, selected instance slot118 and player-self dispatch checked. Does not remove old saved foreign auras, add Paladin re-entry recovery, certify actor visuals or complete cast/scene acknowledgment."
+    },
+    {
       "path": "src/server/game/Entities/Player/Player.cpp",
       "handler": "KilledMonsterCredit / shared Skyhold93823 periodic103739",
       "problem": "QuestObjective flags2 defer client display, not native preceding-objective admission. The matching-entry monster-credit loop can record a final return slot before earlier objectives;93823's nearby2s action33 has no target progression gate. Deleting an artifact callback's attempted-jump credit does not repair this separate receiver scope.",
@@ -190,6 +197,7 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "hruthnir_death_cleanup_audit": "docs/audits/hruthnir-death-cleanup-2026-10-25.json",
       "hruthnir_death_cleanup_review": "Supersedes the AI-enabled scripted-death omission only: native JustDied now routes to existing scoped Reset, revoking owned497/offer/start/pending/ready/gossip without consulting killer or giving progression. Ordinary damage remains0. Pinneda16f352b reproduces retained497/claim;64 controlled faction/status/phase/killer-label cases and actual Unit::Kill default-hook control versus extracted repaired lifecycle on a correctly typed isolated InstanceMap pass. EF71D44B actual selected slot130 ->Reset28 and prior factory/cleanup paths verified. No actual player/pet/guardian kill or client death/VFX claim; AI-disabled death, owner abandon/map unload and full scenario recovery remain open.",
       "hruthnir_death_cleanup_next_action": "Preserve new AI-enabled death cancellation and prior accepted497 GUID cleanup; do not repeat completed explicit Reset/epoch/destruction/death scopes. Trace actual selected-owner abandon/re-entry and invalidation without Reset, AI-disabled death/corpse lifetime, current-map unload and stopped-path/boss-disappearance recovery. A fast normal stage3 completion must not blindly truncate remaining497 lines. Client/audio/traversal and whole36 remain pending.",
@@ -576,6 +584,7 @@
       "class_id": 2,
       "specialization": "Protection",
       "weapon": "Truthguard",
+      "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128866,
       "start": 42000,
       "status": "Yrgrim surrender, pickup admission, native real-loot link and linked-pair equip gate/retry repaired; cast/scene acknowledgment and client chain remain pending",
@@ -786,6 +795,7 @@
       "class_id": 3,
       "specialization": "Beast Mastery",
       "weapon": "Titanstrike",
+      "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128861,
       "prior_pickup_quest_repair_audit": "docs/audits/titanstrike-final-pickup-2026-10-23.json",
       "workshop_repair_audit": "docs/audits/titanstrike-workshop-2026-10-23.json",

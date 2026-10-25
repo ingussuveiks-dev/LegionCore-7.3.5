@@ -34,6 +34,10 @@ int main(int argc, char** argv)
     trees.LoadFromDB();
     criteria.LoadFromDB();
     for (auto step : steps)
+        if (step->ScenarioID == 909 || step->ScenarioID == 1068 || step->ScenarioID == 1082)
+            std::cout << "SHARED_STEP\t" << step->ScenarioID << '\t' << unsigned(step->OrderIndex) << '\t'
+                << step->ID << '\t' << step->Criteriatreeid << '\n';
+    for (auto step : steps)
         if (step->ScenarioID == 1082)
         {
             std::cout << "STEP\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t'
@@ -89,7 +93,7 @@ int main(int argc, char** argv)
         std::cout << "ITEM\t" << identity << '\t' << unsigned(item->ArtifactID) << '\t' << unsigned(item->InventoryType)
             << '\t' << item->Display->Str[0] << '\n';
     }
-    for (uint32 identity : {210132, 210133, 225876, 3365})
+    for (uint32 identity : {210132, 210133, 225876, 3365, 210036, 210043})
     {
         for (auto effect : effects)
             if (effect->SpellID == identity && !effect->DifficultyID)
