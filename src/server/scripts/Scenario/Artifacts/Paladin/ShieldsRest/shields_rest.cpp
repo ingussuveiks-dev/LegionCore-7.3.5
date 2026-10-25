@@ -1143,6 +1143,17 @@ public:
 
 namespace TruthguardAcquisition
 {
+    bool CastCredit(Player* player)
+    {
+        SpellCastResult result = player->CastSpell(player, SPELL_TRUTHGUARD_CREDIT, true);
+        if (result != SPELL_CAST_OK)
+        {
+            TC_LOG_WARN("scripts", "Truthguard pickup: credit cast 210133 rejected with result %u for player %u; progression retained for retry", uint32(result), player->GetGUIDLow());
+            return false;
+        }
+        return true;
+    }
+
     bool EquipPair(Player* player)
     {
         Item* weapon = player->GetItemByEntry(128866);
@@ -1246,7 +1257,7 @@ public:
             if (InstanceScript* instance = player->GetInstanceScript())
                 if (instance->getScenarionStep() == DATA_STAGE_FINAL)
                 {
-                    if (!TruthguardAcquisition::EquipPair(player))
+                    if (!TruthguardAcquisition::EquipPair(player) || !TruthguardAcquisition::CastCredit(player))
                     {
                         go->AddDelayedEvent(1, [go]()
                         {
@@ -1258,7 +1269,6 @@ public:
                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50545); //Step End
                     if (instance->GetData(DATA_YRGRIM_EVENT) == 6)
                         instance->SetData(DATA_YRGRIM_EVENT, 7);
-                    player->CastSpell(player, SPELL_TRUTHGUARD_CREDIT, true);
                     player->CastSpell(player, SPELL_TRUTHGUARD_SCENE, true);
                     if (Creature* trigger = go->FindNearestCreature(NPC_TRUTHGUARD_OATHSEEKER, 20.0f, true))
                         trigger->DespawnOrUnsummon();

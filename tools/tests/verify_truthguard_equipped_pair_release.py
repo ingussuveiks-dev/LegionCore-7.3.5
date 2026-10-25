@@ -56,17 +56,25 @@ assert body[positions[1] + 3].op_str == 'al, 1', 'No true result after both exac
 callback = instructions('?OnLootStateChanged@go_sr_truthguard@@')
 gate = calls(helper, callback)[0]
 credit = calls('?DoUpdateAchievementCriteria@InstanceScript@@', callback)[0]
-assert gate < credit and callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'jne'
-accepted = callback[gate + 2].operands[0].imm
-assert callback[gate + 3].address < accepted < callback[credit].address
+cast_gate = calls('?CastCredit@TruthguardAcquisition@@', callback)[0]
+assert gate < cast_gate < credit
+for position in (gate, cast_gate):
+    assert callback[position + 1].op_str == 'al, al' and callback[position + 2].mnemonic == 'je'
+retry_address = callback[gate + 2].operands[0].imm
+assert callback[cast_gate + 2].operands[0].imm == retry_address
+assert retry_address > callback[credit].address
 delay = calls('?AddDelayedEvent@FunctionProcessor@@', callback)[0]
-assert gate < delay < credit and any(entry.op_str == 'edx, 1' for entry in callback[delay - 4:delay])
-assert any(entry.mnemonic == 'jmp' and entry.operands[0].imm > callback[credit].address
-           for entry in callback[delay + 1:credit]), 'Equip failure falls through into progression'
+assert credit < delay and any(entry.op_str == 'edx, 1' for entry in callback[delay - 4:delay])
+retry_start = next(index for index, entry in enumerate(callback) if entry.address == retry_address)
+prohibited = {native['symbol'](prefix) for prefix in ('?DoUpdateAchievementCriteria@InstanceScript@@',
+              '?CastCredit@TruthguardAcquisition@@', '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@I_N', '?DespawnOrUnsummon@Creature@@')}
+assert not any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
+               and native['resolve'](entry.operands[0].imm) in prohibited
+               for entry in callback[retry_start:]), 'Retry branch reaches progression/cast'
 lambdas = [name for name in native['symbols'] if name.startswith('?_Do_call@') and 'OnLootStateChanged@go_sr_truthguard@@' in name]
 assert len(lambdas) == 1
 tables = []
-for entry in callback[gate + 3:delay]:
+for entry in callback[retry_start:delay]:
     for operand in entry.operands:
         if entry.mnemonic == 'lea' and operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP:
             address = entry.address + entry.size + operand.mem.disp

@@ -17,6 +17,7 @@ enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, GO_R
     ITEM_FIELD_CREATOR=1, ITEM_FIELD_DYNAMIC_FLAGS=2, ITEM_FLAG_CHILD=4 };
 using ItemPosCountVec = std::vector<uint32>;
 enum InventoryResult { EQUIP_ERR_OK, EQUIP_ERR_INVENTORY_FULL, EQUIP_ERR_CANT_EQUIP };
+#include "NativeCastResults.inc"
 uint32 warnings=0;
 #define TC_LOG_WARN(...) (++warnings)
 struct Item
@@ -92,6 +93,8 @@ struct Player : Unit
     InventoryResult equipResult=EQUIP_ERR_OK,childResult=EQUIP_ERR_OK;
     uint32 swaps=0,childSwaps=0;
     uint32 klass=2,status=3,instanceId=42,casts=0,team=0;
+    SpellCastResult creditResult=SPELL_CAST_OK;
+    uint32 creditAttempts=0,sceneAttempts=0;
     float distance=1;
     Map* map=&liveMap;
     Player* ToPlayer() override { return this; }
@@ -163,9 +166,19 @@ struct Player : Unit
 #include "NativeStoreInventory.inc"
 #include "NativeConsumeLoot.inc"
     }
-    void CastSpell(Player* target,uint32 spell,bool triggered)
+    SpellCastResult CastSpell(Player* target,uint32 spell,bool triggered)
     {
         assert(target==this && triggered && (spell==210132 || spell==210133)); ++casts;
+        if(spell==210133)
+        {
+            ++creditAttempts;
+#if !defined(BASELINE) && !defined(EQUIP_BASELINE) && !defined(CREDIT_BASELINE)
+            assert(!testInstance.events && testInstance.data==6);
+#endif
+            return creditResult;
+        }
+        ++sceneAttempts;
+        return SPELL_CAST_OK;
     }
 };
 struct Creature { uint32 despawns=0; void DespawnOrUnsummon() { ++despawns; } } testTrigger;
@@ -257,7 +270,32 @@ int main()
         assert(!player.GetItemByPos(255,16) && !player.GetItemByPos(255,15));
     }
     std::cout << "PASS pinned667fbc74: carried parent alone advances/despawns/casts with missing child or failed equip/swap services; no equipped-pair acknowledgment. Cast service controlled, not a real spell/inventory/client replay.\n";
+#elif defined(CREDIT_BASELINE)
+    for(SpellCastResult rejected : {SPELL_FAILED_ERROR,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_DONT_REPORT})
+    {
+        Reset(); Player player; player.carried=true; player.creditResult=rejected;
+        GameObject chest; go_sr_truthguard pickup;
+        assert(pickup.OnGossipHello(&player,&chest));
+        assert(testInstance.events==1 && testInstance.data==7 && player.creditAttempts==1 && player.sceneAttempts==1 && testTrigger.despawns==1);
+    }
+    std::cout << "PASS pinnede5fee55b: three rejected native cast-result values still advance50545/event7, launch scene and despawn actor after equipped-pair delivery. Controlled cast service, not a client replay.\n";
 #else
+    for(uint32 status : {1u,3u}) for(uint32 team : {0u,1u})
+        for(SpellCastResult rejected : {SPELL_FAILED_ERROR,SPELL_FAILED_BAD_TARGETS,SPELL_FAILED_DONT_REPORT})
+        {
+            Reset(); Player player; player.carried=true; player.status=status; player.team=team; player.creditResult=rejected;
+            GameObject chest; go_sr_truthguard pickup;
+            assert(pickup.OnGossipHello(&player,&chest));
+            assert(!testInstance.events && testInstance.data==6 && player.creditAttempts==1 && !player.sceneAttempts && !testTrigger.despawns && warnings==1);
+            assert(chest.delayed.size()==1 && player.GetItemByPos(255,16)==&player.storedItem && player.GetItemByPos(255,15)==&player.childItem);
+            chest.Drain(); player.phase=false; assert(pickup.OnGossipHello(&player,&chest) && player.creditAttempts==1);
+            player.phase=true; player.status=0; assert(pickup.OnGossipHello(&player,&chest) && player.creditAttempts==1);
+            player.status=status; player.creditResult=SPELL_CAST_OK;
+            assert(pickup.OnGossipHello(&player,&chest));
+            assert(testInstance.events==1 && testInstance.data==7 && player.creditAttempts==2 && player.sceneAttempts==1 && testTrigger.despawns==1 && player.swaps==1);
+            chest.SetLootState(3,&player); assert(testInstance.events==1 && player.creditAttempts==2 && player.sceneAttempts==1);
+        }
+    std::cout << "PASS:12 active-status/team-label/native-rejection cases retain equipped items and state6 with no50545/scene/despawn; deferred READY and phase/abandon rejection precede successful existing-pair retry and modeled exactly-once completion. Accepted spell effects/rendering not instantiated.\n";
     for(uint32 failure=0;failure<10;++failure)
     {
         Reset(); Player player; player.carried=true; GameObject chest; go_sr_truthguard pickup;

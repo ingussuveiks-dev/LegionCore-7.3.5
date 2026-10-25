@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$EquipBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$EquipBaseline,[switch]$CreditBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $EquipBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
-if($Baseline -and $EquipBaseline){throw 'Select one pinned baseline'}
+if(($Baseline -or $EquipBaseline -or $CreditBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if(@($Baseline,$EquipBaseline,$CreditBaseline|Where-Object {$_}).Count -gt 1){throw 'Select one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/truthguard-pickup-admission"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -10,6 +10,8 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cp
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "aa988ac6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Truthguard callback unavailable'}}
 if($EquipBaseline){$source=(& git -C $repo show "667fbc74:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Truthguard equip baseline unavailable'}}
+if($CreditBaseline){$source=(& git -C $repo show "e5fee55b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Truthguard credit baseline unavailable'}}
+[IO.File]::WriteAllText("$out/NativeCastResults.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace TruthguardAcquisition'}))
 [IO.File]::WriteAllText("$out/Callback.inc",(Block $source 'class go_sr_truthguard')+';')
 $native=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
@@ -27,7 +29,7 @@ $predicate=[regex]::Match($release,'else if \((loot->isLooted\(\) \|\| go->GetGo
 if(!$predicate.Success -or !$release.Contains('go->SetLootState(GO_JUST_DEACTIVATED, static_cast<Unit*>(player));')){throw 'Native completed-loot release missing'}
 [IO.File]::WriteAllText("$out/NativeCompleteLoot.inc",'return '+$predicate.Groups[1].Value+';')
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$mode=if($Baseline){'/DBASELINE'}elseif($EquipBaseline){'/DEQUIP_BASELINE'}else{''}
+$mode=if($Baseline){'/DBASELINE'}elseif($EquipBaseline){'/DEQUIP_BASELINE'}elseif($CreditBaseline){'/DCREDIT_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardPickupAdmissionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Truthguard admission host failed'}
 if($Baseline){return}

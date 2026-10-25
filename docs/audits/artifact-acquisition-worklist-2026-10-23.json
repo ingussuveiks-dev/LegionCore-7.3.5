@@ -587,11 +587,12 @@
       "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim surrender, pickup admission, native real-loot link and linked-pair equip gate/retry repaired; cast/scene acknowledgment and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery and rejected credit-cast retry repaired; accepted effects/scene and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
       "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
       "equipped_pair_audit": "docs/audits/truthguard-equipped-pair-2026-10-25.json",
+      "credit_cast_audit": "docs/audits/truthguard-credit-cast-admission-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -674,7 +675,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Equipped-pair acknowledgment now precedes explicit50545/event7 and all210133 effects; no replacement items are created. Next address cast/scene failure and re-entry:210133 is NOT pure equip, with SEND_EVENT50545, FORCE_EQUIP128866, personal105891 credit and trigger225876. Do not blindly reorder the whole spell; instance50545 dispatches companion DoAction, not scenario advancement, with event_scripts count0. Real hidden-child creation/capacity, scene210132 aura430/1259, client-facing225876 effect81, shared/group/faction loot, complete relevant video and26972 client traversal remain open."
+      "next_action": "Actual linked-pair delivery now precedes210133; only its native OK admission permits explicit50545/event7, then original scene210132/despawn. Rejected casts keep equipment and READY retry with no scenario finalization. Next trace accepted effects and scene failure/completion/re-entry:210133 still contains companion SEND_EVENT50545, FORCE_EQUIP128866, personal105891 and225876. Do not replay this whole spell based on a stale scene flag or claim admission proves effect delivery. Scene1259/package1614/flags21 has no scene_event rows. Real child creation/capacity,225876 effect81, shared/group/faction loot, return flight and complete relevant video/client traversal remain open."
     },
     {
       "class_id": 2,
