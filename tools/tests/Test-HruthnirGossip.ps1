@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CueBaseline,[switch]$OfferBaseline,[switch]$StageBaseline,[switch]$VoiceBaseline,[switch]$ArrivalBaseline,[switch]$OfferArrivalBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$ReadyBaseline,[switch]$ConversationBaseline,[switch]$CleanupBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline -or $HomeBaseline -or $RequestBaseline -or $ReadyBaseline -or $ConversationBaseline -or $CleanupBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
-if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
+if(($Baseline -or $CueBaseline -or $OfferBaseline -or $StageBaseline -or $VoiceBaseline -or $ArrivalBaseline -or $OfferArrivalBaseline -or $HomeBaseline -or $RequestBaseline -or $ReadyBaseline -or $ConversationBaseline -or $CleanupBaseline -or $DeathBaseline) -and $VerifyReleaseBinary){throw 'Pinned gossip baseline cannot verify installed code'}
+if(@($Baseline,$CueBaseline,$OfferBaseline,$StageBaseline,$VoiceBaseline,$ArrivalBaseline,$OfferArrivalBaseline,$HomeBaseline,$RequestBaseline,$ReadyBaseline,$ConversationBaseline,$CleanupBaseline,$DeathBaseline | Where-Object {$_}).Count -gt 1){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-gossip"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -20,6 +20,7 @@ if($RequestBaseline){$source=(& git -C $repo show "3d445173:$path") -join "`n";i
 if($ReadyBaseline){$source=(& git -C $repo show "da79baae:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir readiness source unavailable'}}
 if($ConversationBaseline){$source=(& git -C $repo show "688c16b9:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir conversation source unavailable'}}
 if($CleanupBaseline){$source=(& git -C $repo show "127df428:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir cleanup source unavailable'}}
+if($DeathBaseline){$source=(& git -C $repo show "a16f352b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Hruthnir death source unavailable'}}
 $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 [IO.File]::WriteAllText("$out/Policy.inc",$(if($Baseline){''}else{Block $source 'namespace HruthnirGossip'}))
 [IO.File]::WriteAllText("$out/Select.inc",(Block $source 'bool OnGossipSelect('))
@@ -28,6 +29,8 @@ $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 $first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf($(if($Baseline){'        void Reset()'}else{'        void sGossipSelect('}),$first)
 [IO.File]::WriteAllText("$out/AIFields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/AIReset.inc",(Block $source 'void Reset()'))
+[IO.File]::WriteAllText("$out/AIDeath.inc",$(if($source.Contains('void JustDied(')){Block $source 'void JustDied('}else{''}))
+[IO.File]::WriteAllText("$out/AIDamage.inc",(Block $source 'void DamageTaken('))
 [IO.File]::WriteAllText("$out/AIDestructor.inc",$(if($source.Contains('~npc_hrutnirAI()')){(Block $source '~npc_hrutnirAI()').Replace('~npc_hrutnirAI()','~HruthnirAI()')}else{''}))
 [IO.File]::WriteAllText("$out/Cleanup.inc",$(if($source.Contains('void RemoveMagnarConversation(')){Block $source 'void RemoveMagnarConversation('}else{''}))
 [IO.File]::WriteAllText("$out/GetConversation.inc",(Block (Get-Content "$repo/src/server/game/Globals/ObjectAccessor.cpp" -Raw) 'Conversation* ObjectAccessor::GetConversation('))
@@ -76,6 +79,7 @@ if($source.Contains('bool HasMagnarChamberRequest(')){$definition+=' /DCURRENT_R
 if($ReadyBaseline){$definition+=' /DREADY_BASELINE'}
 if($ConversationBaseline){$definition+=' /DCONVERSATION_BASELINE'}
 if($CleanupBaseline){$definition+=' /DCLEANUP_BASELINE'}
+if($DeathBaseline){$definition+=' /DDEATH_BASELINE'}
 if($source.Contains('bool IsMagnarOfferReady(')){$definition+=' /DCURRENT_READY'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/HruthnirGossipTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd"

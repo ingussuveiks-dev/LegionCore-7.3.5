@@ -159,6 +159,11 @@ public:
                     conversation->Remove();
         }
 
+        void JustDied(Unit*) override
+        {
+            Reset();
+        }
+
         bool IsMagnarOfferReady() const
         {
             return magnarOfferReady && magnarOfferToken && *magnarOfferToken && !magnarArrivalPending && !magnarStartToken &&

@@ -4,9 +4,11 @@ $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-conversation-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force $out|Out-Null
 $source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp" -Raw
-$first=$source.IndexOf('void RemoveMagnarConversation(');if($first -lt 0){throw 'Native Hruthnir cleanup helper missing'}
-$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last}
-[IO.File]::WriteAllText("$out/HruthnirCleanup.inc",$source.Substring($first,$last-$first))
+function Block([string]$text,[string]$start){$first=$text.IndexOf($start);if($first -lt 0){throw "Native Hruthnir block missing: $start"};$last=$text.IndexOf('{',$first)+1;$depth=1;while($depth){if($text[$last] -eq '{'){++$depth};if($text[$last] -eq '}'){--$depth};++$last};$text.Substring($first,$last-$first)}
+foreach($entry in @(@('HruthnirCleanup','void RemoveMagnarConversation('),@('HruthnirReset','void Reset()'),@('HruthnirCancel','void CancelMagnarIntro('),@('HruthnirDeath','void JustDied('),@('HruthnirDamage','void DamageTaken('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]))}
+$first=$source.IndexOf('        EventMap events;');$last=$source.IndexOf('        void sGossipSelect(',$first)
+if($first -lt 0 -or $last -le $first){throw 'Native Hruthnir lifecycle fields missing'}
+[IO.File]::WriteAllText("$out/HruthnirFields.inc",$source.Substring($first,$last-$first))
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
 $originalHash=(Get-FileHash "$repo/build-extractors/bin/Release/worldserver.conf").Hash
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'"'))

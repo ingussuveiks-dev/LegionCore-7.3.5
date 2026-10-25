@@ -80,4 +80,14 @@ assert lookup[find + 4].op_str == 'qword ptr [rax + 8], rdi' and lookup[find + 5
 assert lookup[predelete - 1].op_str == 'rcx, rax'
 assert lookup[predelete + 1].op_str == 'al, al' and lookup[predelete + 2].mnemonic == 'jne'
 assert lookup[find + 3].operands[0].imm == lookup[find + 5].operands[0].imm == lookup[predelete + 2].operands[0].imm
-print('PASS: selected Hruthnir AI initializes an empty128-bit owned497 identity and publishes only successful creation. Reset, new1060 epoch and actual deleting destructor copy/clear before native map-local lookup and remove only the found object; empty/missing/foreign-map/predeleted guards and native Clear verified. No post-removal GUID clear clobbers a replacement; successful6000ms cue does not cut dialogue short. Implicit owner abandonment, death/map-unload and client playback remain separate.')
+death_name = '?JustDied' + suffix
+address = native['symbol'](death_name)
+decoded = list(Cs(CS_ARCH_X86, CS_MODE_64).disasm(binary[native['offset'](address):native['offset'](address) + 16], address))
+assert [entry.mnemonic + ' ' + entry.op_str for entry in decoded[:2]] == ['mov rax, qword ptr [rcx]', 'jmp qword ptr [rax + 0x28]']
+selection = previous
+while 'selected_tables' not in selection:
+    selection = selection['previous']
+assert len(selection['selected_tables']('?GetAI@npc_hrutnir@@', ((0x130, death_name), (0x28, '?Reset' + suffix)))) == 1
+kill = instructions('?Kill@Unit@@')
+assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x130 for entry in kill)
+print('PASS: selected Hruthnir AI initializes an empty128-bit owned497 identity and publishes only successful creation. Reset, new1060 epoch and actual deleting destructor copy/clear before native map-local lookup and remove only the found object; empty/missing/foreign-map/predeleted guards and native Clear verified. Native Unit::Kill slot130 selects the new killer-independent death hook, which tail-dispatches this selected Reset slot28. Successful6000ms cue does not cut dialogue short. Disabled-AI death, implicit owner abandonment/map-unload and client playback remain separate.')

@@ -79,6 +79,8 @@ struct ObjectGuid
 ObjectGuid const ObjectGuid::Empty{0,0};
 struct Player;
 struct Creature;
+using Unit = Creature;
+enum DamageEffectType { DIRECT_DAMAGE };
 struct Map;
 enum class HighGuid { Conversation };
 struct GuidGenerator { uint64 current = 0; uint64 Generate() { return ++current; } } guidGenerator;
@@ -113,6 +115,8 @@ struct CreatureAI
 {
     virtual ~CreatureAI() = default;
     virtual void Reset() { }
+    virtual void JustDied(Unit*) { }
+    virtual void DamageTaken(Unit*, uint32&, DamageEffectType) { }
     virtual void UpdateAI(uint32) { }
     virtual void MovementInform(uint32, uint32) { }
     virtual uint32 GetData(uint32) const { return 0; }
@@ -353,6 +357,8 @@ struct HruthnirAI : CreatureAI
 #include "AIFields.inc"
 #include "AISelect.inc"
 #include "AIReset.inc"
+#include "AIDeath.inc"
+#include "AIDamage.inc"
 #include "Cleanup.inc"
 #include "OfferContext.inc"
 #include "OfferPosition.inc"
@@ -443,7 +449,13 @@ struct Fixture
 };
 int main()
 {
-#ifdef CLEANUP_BASELINE
+#ifdef DEATH_BASELINE
+    Fixture fixture; fixture.Select(); fixture.ai.Arrive();
+    auto* owned = conversationPool.objects.back(); auto token = fixture.ai.magnarStartToken;
+    fixture.actor.alive = false; fixture.ai.JustDied(&fixture.boss);
+    assert(owned->world && fixture.ai.magnarConversation == owned->GetGUID() && fixture.ai.magnarStartToken == token);
+    std::cout << "PASS death baseline: pinneda16f352b/default empty CreatureAI death hook leaves accepted497 registered and retains the selected weak cue owner after companion death. Direct native-hook dispatch with controlled actor services, not a live ordinary combat death.\n";
+#elif defined(CLEANUP_BASELINE)
     for (uint32 cancel = 0; cancel < 3; ++cancel)
     {
         Fixture fixture; fixture.Select(); fixture.ai.Arrive();
@@ -605,6 +617,34 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            for (uint32 phase = 0; phase < 4; ++phase)
+                for (uint32 killer = 0; killer < 4; ++killer)
+                {
+                    Fixture fixture; fixture.player.faction = faction; fixture.player.status = status;
+                    if (phase == 0) fixture.ai.OfferArrive();
+                    else { fixture.Select(); if (phase >= 2) fixture.ai.Arrive(); if (phase == 3) fixture.Tick(6000); }
+                    Conversation* owned = phase >= 2 ? conversationPool.objects.back() : nullptr;
+                    auto* unrelated = new Conversation;
+                    assert(unrelated->CreateConversation(guidGenerator.Generate(),497,&fixture.actor,nullptr,fixture.actor));
+                    Unit playerKiller, petKiller, guardianKiller;
+                    Unit* killers[] = {&playerKiller,&petKiller,&guardianKiller,nullptr};
+                    uint32 damage = std::numeric_limits<uint32>::max(); fixture.ai.DamageTaken(killers[killer],damage,DIRECT_DAMAGE);
+                    assert(!damage && fixture.actor.alive);
+                    fixture.actor.alive = false; fixture.ai.JustDied(killers[killer]);
+                    assert(!fixture.ai.magnarStartToken && !fixture.ai.magnarOfferToken && !fixture.ai.magnarArrivalPending && !fixture.ai.magnarOfferReady);
+                    assert(!fixture.ai.magnarConversation && (!owned || !owned->world) && unrelated->world && !(fixture.actor.flags & UNIT_NPC_FLAG_GOSSIP));
+                    fixture.ai.JustDied(killers[killer]); fixture.Tick(20000);
+                    assert(fixture.bossAI.starts == uint32(phase == 3) && unrelated->world);
+                    unrelated->Remove();
+                    fixture.actor.alive = true; fixture.ai.Reset(); fixture.actor.flags |= 1;
+                    fixture.player.talk.menu._menuItems[0] = {}; fixture.ai.OfferArrive(); fixture.Tick(13000);
+                    fixture.Select(false); fixture.ai.Arrive(); fixture.Tick(5999);
+                    assert(fixture.bossAI.starts == uint32(phase == 3));
+                    fixture.Tick(1); assert(fixture.bossAI.starts == uint32(phase == 3) + 1);
+                }
+    std::cout << "PASS death:64 faction/status/offer-or-selected-or-accepted-or-started/killer-label cases retain ordinary zero-damage protection, revoke only owned dialogue/offer/cue on explicit death and preserve unrelated497. Explicitly reissued point6/selection/point7 after projected revival retains full13000/6000ms budgets, not automatic motion or actual boss Reset. Repeated/null/player/pet/guardian-pointer hooks do not credit anyone; killer labels/services controlled, not real native pet-owner combat.\n";
     for (uint32 faction : {0u,1u})
         for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
             for (uint32 cancel = 0; cancel < 2; ++cancel)
