@@ -791,9 +791,9 @@ public:
             }
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth() || me->HealthBelowPct(10))
+            if (damage >= me->GetHealth(attacker) || me->HealthBelowPct(10))
             {
                 damage = 0;
 

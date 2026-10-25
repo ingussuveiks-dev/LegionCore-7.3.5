@@ -578,7 +578,8 @@
       "weapon": "Truthguard",
       "item": 128866,
       "start": 42000,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "Yrgrim final-scaled lethal protection repaired; complete chain, real pickup and client visuals remain pending",
+      "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -650,7 +651,7 @@
         "actor_initial_pose_and_visibility": "pending",
         "stage_transitions_and_exactly_once_credit": "pending",
         "player_pet_guardian_group_credit": "pending",
-        "scaled_one_hit_surrender_or_death": "pending",
+        "scaled_one_hit_surrender_or_death": "Yrgrim105695/106202 post-scaling/attacker-health callback and installed primary/suspended dispatch checked; controlled killer labels, not native pet/group or client encounter",
         "npc_weapon_pickup_departure_visuals": "pending",
         "weapon_visibility_and_no_early_interaction": "pending",
         "actual_loot_and_full_bags_retry": "pending",
@@ -661,7 +662,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Repair native249420 real-loot admission: Data1=0 leaves128866's loot dormant, while210133 only equips an existing item and current pickup callback advances50545 before real equip. Trace actual open/loot/full-bags/paired-item/retry first; separately audit Yrgrim missing-spawn/evade/re-entry and full26972 video/client sequence. Do not treat scaled surrender as full Truthguard completion."
     },
     {
       "class_id": 2,
