@@ -7,6 +7,7 @@ struct Magnar : CreatureAI
 #include "Reset.inc"
 #include "Eligible.inc"
 #include "Before.inc"
+#include "Conversation.inc"
 #include "After.inc"
 };
 #include "Deal.inc"
@@ -23,6 +24,7 @@ struct Fixture
         actor.nearby = &bystander;
         instanceMap.players = {{&bystander}, {nullptr}, {&peer}, {&owner}};
     }
+    ~Fixture() { Conversation::Cleanup(); }
 };
 int main()
 {
@@ -38,6 +40,20 @@ int main()
         assert(fixture.actor.conversations == 2 && fixture.bystander.credits == 2 && !fixture.owner.credits);
     }
     std::cout << "BASELINE: pinned675d6f7a loses both phases to an actual scaled lethal hit; unscaled repeated finale credits unrelated nearest bystander twice. Controlled services, not client combat.\n";
+#elif defined(CREATION_BASELINE)
+    {
+        Fixture fixture;
+        fixture.actor.conversationWorks = false;
+        uint32 before = Conversation::failedDeletes;
+        assert(fixture.owner.Deal(&fixture.actor, 20) == 0);
+        assert(!fixture.actor.conversations && fixture.actor.conversationAttempts == 1);
+        assert(Conversation::failedDeletes == before + 1 && Conversation::allocations.empty());
+        assert(fixture.owner.credits == 1 && fixture.actor.despawns == 1 && fixture.ai.finaleStarted);
+        fixture.actor.conversationWorks = true;
+        fixture.owner.Deal(&fixture.actor, 20);
+        assert(!fixture.actor.conversations && fixture.actor.conversationAttempts == 1);
+    }
+    std::cout << "BASELINE: pinned65f7a845/native void Unit factory deletes failed504 but Magnar still credits45784, despawns and permanently consumes finale retry. Controlled factory result, not a live grid failure.\n";
 #else
     for (bool alliance : {false, true}) for (uint32 status : {1u, 3u}) for (uint32 kind = 0; kind < 5; ++kind)
         for (bool suspended : {false, true}) for (bool firstPhase : {false, true})
@@ -126,6 +142,86 @@ int main()
         damage = 100000; fixture.ai.DamageTakenAfterScaling(nullptr, damage, 0);
         assert(!damage && fixture.peer.credits == 1 && fixture.actor.conversations == 1);
     }
+    for (bool alliance : {false, true}) for (uint32 status : {1u, 3u}) for (uint32 kind = 0; kind < 5; ++kind)
+    {
+        Fixture fixture; fixture.owner.alliance = alliance; fixture.owner.status = status;
+        Unit pet, guardian, charmed, ally;
+        pet.owner = guardian.owner = &fixture.owner; charmed.charmer = &fixture.owner;
+        Unit* attacker = kind == 0 ? static_cast<Unit*>(&fixture.owner) : kind == 1 ? &pet : kind == 2 ? &guardian : kind == 3 ? &charmed : &ally;
+        fixture.actor.conversationWorks = false;
+        uint32 warnings = warningCount;
+        uint32 deletes = Conversation::failedDeletes;
+        for (uint32 attempt = 0; attempt < 2; ++attempt)
+        {
+            assert(attacker->Deal(&fixture.actor, 20) == 0 && fixture.actor.alive);
+            assert(!fixture.ai.finaleStarted && !fixture.ai.stop_combat && !fixture.actor.conversations);
+            assert(!fixture.owner.credits && !fixture.peer.credits && !fixture.actor.despawns);
+            assert(!fixture.actor.removed && !fixture.actor.flags && fixture.actor.faction == 14);
+            assert(scenarioManager.scenario.step == 4 && Conversation::allocations.empty());
+        }
+        assert(warningCount == warnings + 2 && Conversation::failedDeletes == deletes + 2);
+        fixture.actor.conversationWorks = true;
+        attacker->Deal(&fixture.actor, 20);
+        assert(fixture.ai.finaleStarted && fixture.actor.conversations == 1 && fixture.actor.conversationAttempts == 3);
+        assert(fixture.owner.credits + fixture.peer.credits == 1 && fixture.actor.despawns == 1);
+    }
+    for (uint32 invalid = 0; invalid < 22; ++invalid)
+    {
+        Fixture fixture;
+        fixture.actor.onConversation = [&]() {
+            if (invalid == 0) fixture.ai.Reset();
+            if (invalid == 1) fixture.actor.world = false;
+            if (invalid == 2) fixture.actor.alive = false;
+            if (invalid == 3) fixture.actor.despawning = true;
+            if (invalid == 4) fixture.actor.entry = 96035;
+            if (invalid == 5) fixture.actor.mapId = 1220;
+            if (invalid == 6) fixture.actor.map = &unrelatedMap;
+            if (invalid == 7) fixture.actor.instance = 43;
+            if (invalid == 8) fixture.owner.status = 0;
+            if (invalid == 9) fixture.owner.contact = false;
+            if (invalid == 10) fixture.owner.phase = false;
+            if (invalid == 11) scenarioManager.scenario.step = 5;
+            if (invalid == 12) scenarioManager.available = false;
+            if (invalid == 13) fixture.ai.first_phase = true;
+            if (invalid == 14) fixture.ai.finaleStarted = false;
+            if (invalid == 15) fixture.owner.world = false;
+            if (invalid == 16) fixture.owner.playerClass = 2;
+            if (invalid == 17) fixture.owner.map = &unrelatedMap;
+            if (invalid == 18) fixture.owner.instance = 43;
+            if (invalid == 19) fixture.owner.distance = 101;
+            if (invalid == 20) fixture.owner.rewarded = true;
+            if (invalid == 21) scenarioManager.scenario.identity = 944;
+        };
+        fixture.owner.Deal(&fixture.actor, 20);
+        assert(fixture.actor.conversations == 1 && fixture.actor.retiredConversations == 1);
+        assert(!fixture.ai.finaleStarted && !fixture.owner.credits && !fixture.actor.despawns && !fixture.actor.removed);
+    }
+    {
+        Fixture fixture;
+        fixture.actor.onConversation = [&]() {
+            fixture.actor.onConversation = nullptr;
+            fixture.ai.Reset();
+            fixture.owner.Deal(&fixture.actor, 20);
+        };
+        fixture.owner.Deal(&fixture.actor, 20);
+        assert(fixture.actor.conversations == 2 && fixture.actor.retiredConversations == 1);
+        assert(fixture.ai.finaleStarted && fixture.owner.credits == 1 && fixture.actor.despawns == 1);
+    }
+    {
+        Fixture fixture;
+        fixture.actor.conversationWorks = false;
+        fixture.actor.onCreationFailure = [&]() {
+            fixture.actor.onCreationFailure = nullptr;
+            fixture.actor.conversationWorks = true;
+            fixture.ai.Reset();
+            fixture.owner.Deal(&fixture.actor, 20);
+        };
+        uint32 deletes = Conversation::failedDeletes;
+        fixture.owner.Deal(&fixture.actor, 20);
+        assert(fixture.actor.conversationAttempts == 2 && fixture.actor.conversations == 1 && !fixture.actor.retiredConversations);
+        assert(Conversation::failedDeletes == deletes + 1 && fixture.ai.finaleStarted && fixture.owner.credits == 1 && fixture.actor.despawns == 1);
+    }
+    std::cout << "PASS:20 faction/status/killer contexts reject two failed504 attempts without flags/faction/credit/despawn, delete failed allocations with diagnostics and succeed once on later lethal retry.22 post-creation revoked contexts retire only that object; old successful or failed Reset epoch cannot clear a newer successful claim. Actual factory result/actor lookup controlled; no automatic tick retry or full visual handoff certificate.\n";
     std::cout << "PASS: actual native scale/health/owner/post-hook order protects80 faction/status/killer/suspended/phase combinations;16 ineligible contexts stay alive without finishing. Owner preference, eligible shared-instance fallback, missing recipient retry, reentrant-hit guard, partial/unscaled/missing-stats/null-source and unrelated actors checked. Shared scenario advancement controlled; full waves/reset/conversation/client remain separate.\n";
 #endif
 }

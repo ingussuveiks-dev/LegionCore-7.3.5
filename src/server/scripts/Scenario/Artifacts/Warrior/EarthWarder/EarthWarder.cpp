@@ -6,6 +6,7 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Conversation.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include <memory>
@@ -418,9 +419,11 @@ public:
         bool releasingWave = false;
         std::set<ObjectGuid> activeWave;
         bool encounterStarted = false;
+        uint32 finaleGeneration = 0;
 
         void Reset() override
         {
+            ++finaleGeneration;
             events.Reset();
             stop_combat = false;
             finaleStarted = false;
@@ -474,6 +477,31 @@ public:
             return candidate;
         }
 
+        bool StartFinaleConversation(Player* player, uint32 generation)
+        {
+            Map* map = me->GetMap();
+            uint32 instanceId = me->GetInstanceId();
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 504, me, nullptr, *me))
+            {
+                delete conversation;
+                if (generation == finaleGeneration)
+                    finaleStarted = false;
+                TC_LOG_WARN("scripts", "Magnar finale: conversation 504 creation failed in instance %u; defeat remains retryable", instanceId);
+                return false;
+            }
+            if (generation != finaleGeneration || !finaleStarted || first_phase || !me->IsInWorld() || !me->IsAlive() ||
+                me->IsDespawn() || me->GetEntry() != 96034 || me->GetMapId() != 1495 ||
+                me->GetMap() != map || me->GetInstanceId() != instanceId || !IsEncounterPlayer(player, 4))
+            {
+                conversation->Remove();
+                if (generation == finaleGeneration)
+                    finaleStarted = false;
+                return false;
+            }
+            return true;
+        }
+
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType) override
         {
             if (!damage || !me->IsAlive() || me->GetEntry() != 96034 || me->GetMapId() != 1495)
@@ -492,11 +520,12 @@ public:
             if (!player)
                 return;
             finaleStarted = true;
+            if (!StartFinaleConversation(player, finaleGeneration))
+                return;
             stop_combat = true;
             me->RemoveAura(128749);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->setFaction(35);
-            me->CreateConversation(504);
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 45784);
             me->DespawnOrUnsummon(6000);
         }
