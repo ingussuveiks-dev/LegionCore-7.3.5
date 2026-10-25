@@ -298,7 +298,17 @@ struct Fixture
 };
 int main()
 {
-#ifdef BASELINE
+#ifdef STAGE_BASELINE
+    for (uint32 afterArrival = 0; afterArrival < 2; ++afterArrival)
+    {
+        Fixture fixture; fixture.Select();
+        if (afterArrival) fixture.ai.Arrive();
+        scenarioManager.scenario.step = 4;
+        fixture.ai.Arrive(); fixture.Tick(6000);
+        assert(fixture.actor.conversations == 1 && fixture.bossAI.starts == 1);
+    }
+    std::cout << "PASS stage baseline: pinned c4c026d1 requests497 after leaving909/3 and dispatches the queued boss cue after a late stage change; boss acceptance is a controlled service, not actual combat progression.\n";
+#elif defined(BASELINE)
     for (uint32 invalid = 0; invalid < 5; ++invalid)
     {
         Fixture fixture;
@@ -579,6 +589,47 @@ int main()
         fixture.Tick(1); fixture.Tick(6000); fixture.ai.Arrive(); callback();
         assert(fixture.bossAI.starts == 1 && *fixture.ai.magnarStartToken && fixture.actor.conversations == 1);
     }
+    for (uint32 faction = 0; faction < 2; ++faction)
+    for (uint32 status : {uint32(1), uint32(3)})
+    for (uint32 invalid = 0; invalid < 13; ++invalid)
+    {
+        Fixture fixture; fixture.player.faction = faction; fixture.player.status = status;
+        fixture.Select();
+        if (invalid == 0) scenarioManager.available = false;
+        if (invalid == 1) scenarioManager.scenario.identity = 1068;
+        if (invalid == 2) scenarioManager.scenario.identity = 1082;
+        if (invalid == 3) scenarioManager.scenario.step = 2;
+        if (invalid == 4) scenarioManager.scenario.step = 4;
+        if (invalid == 5) fixture.actor.world = false;
+        if (invalid == 6) fixture.actor.alive = false;
+        if (invalid == 7) fixture.actor.despawn = true;
+        if (invalid == 8) fixture.actor.entry = 96469;
+        if (invalid == 9) fixture.actor.mapId = 1479;
+        if (invalid == 10) fixture.actor.instance = 43;
+        if (invalid == 11) fixture.actor.IsAIEnabled = false;
+        HruthnirAI replacement(&fixture.actor);
+        if (invalid == 12) fixture.actor.ai = &replacement;
+        fixture.ai.Arrive(); fixture.Tick(6000);
+        assert(!fixture.actor.conversations && !fixture.bossAI.starts && fixture.ai.magnarArrivalPending && fixture.ai.magnarStartToken && !*fixture.ai.magnarStartToken);
+        scenarioManager = {}; fixture.actor.world = fixture.actor.alive = fixture.actor.IsAIEnabled = true;
+        fixture.actor.despawn = false; fixture.actor.entry = 96468; fixture.actor.mapId = 1495; fixture.actor.instance = 42; fixture.actor.ai = &fixture.ai;
+        fixture.ai.Arrive(); fixture.Tick(5999);
+        assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts);
+        fixture.Tick(1); assert(fixture.bossAI.starts == 1);
+    }
+    for (uint32 invalid = 0; invalid < 5; ++invalid)
+    {
+        Fixture fixture; fixture.Select(); fixture.ai.Arrive(); fixture.Tick(5999);
+        if (invalid == 0) scenarioManager.available = false;
+        if (invalid == 1) scenarioManager.scenario.identity = 1068;
+        if (invalid == 2) scenarioManager.scenario.identity = 1082;
+        if (invalid == 3) scenarioManager.scenario.step = 2;
+        if (invalid == 4) scenarioManager.scenario.step = 4;
+        fixture.Tick(1); assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts && *fixture.ai.magnarStartToken);
+        scenarioManager = {}; fixture.Tick(6000); fixture.ai.Arrive();
+        assert(fixture.actor.conversations == 1 && !fixture.bossAI.starts);
+    }
+    std::cout << "PASS:52 pre-arrival stage/actor rejection-readmission paths and5 late scenario changes gate497 and the native6000ms boss dispatch independently; no automatic arrival replay,497 cleanup or client motion certification.\n";
     for (uint32 afterArrival = 0; afterArrival < 2; ++afterArrival)
     {
         Fixture fixture;

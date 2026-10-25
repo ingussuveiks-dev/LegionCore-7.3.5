@@ -496,13 +496,13 @@ public:
                     }
                     case 7:
                     {
-                        if (!magnarArrivalPending)
+                        if (!magnarArrivalPending || !IsMagnarOfferContext(magnarStartInstance))
                             break;
                         magnarArrivalPending = false;
                         std::weak_ptr<bool> startToken = magnarStartToken;
                         Creature* companion = me;
                         uint32 instanceId = magnarStartInstance;
-                        CreatureAI* expectedAI = this;
+                        auto* expectedAI = this;
                         me->CreateConversation(497);
                         me->AddDelayedEvent(6000, [startToken, companion, instanceId, expectedAI]() -> void
                         {
@@ -514,6 +514,8 @@ public:
                                 companion->GetEntry() != 96468 || companion->GetMapId() != 1495 || companion->GetInstanceId() != instanceId)
                                 return;
                             if (!companion->IsAIEnabled || companion->AI() != expectedAI)
+                                return;
+                            if (!expectedAI->IsMagnarOfferContext(instanceId))
                                 return;
                             if (Creature* boss = companion->FindNearestCreature(96034, 60.0f, true))
                                 if (boss->IsAIEnabled && boss->AI() && !boss->IsDespawn())

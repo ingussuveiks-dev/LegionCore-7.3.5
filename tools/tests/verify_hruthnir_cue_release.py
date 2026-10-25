@@ -35,7 +35,14 @@ conversation = next(index for index in positions(body, '?CreateConversation@Unit
 pending = max(index for index, entry in enumerate(body[:conversation]) if entry.op_str == 'byte ptr [rbx + 0x5d], r14b' and entry.mnemonic == 'cmp')
 queue = next(index for index in positions(body, '?AddDelayedEvent@FunctionProcessor@@') if body[index - 1].op_str == 'edx, 0x1770')
 assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm > body[queue].address
-assert body[pending + 2].op_str == 'byte ptr [rbx + 0x5d], r14b'
+context_name = '?IsMagnarOfferContext' + suffix
+context = max(index for index in positions(body, context_name) if index < conversation)
+consume = next(index for index, entry in enumerate(body[pending:conversation], start=pending)
+               if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rbx + 0x5d], r14b')
+assert pending < context < consume < conversation
+assert body[context - 2].op_str == 'edx, dword ptr [rbx + 0x70]'
+assert body[context + 1].op_str == 'al, al' and body[context + 2].mnemonic == 'je'
+assert body[context + 2].operands[0].imm == body[pending + 1].operands[0].imm
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in body[:pending]), 'Arrival consume is not zero'
 assert pending < conversation < queue
 assert any(entry.op_str == 'r14, qword ptr [rbx + 0x20]' for entry in body[pending:conversation])
@@ -61,23 +68,30 @@ assert body[token + 1].mnemonic == 'jne' and body[token + 2].op_str == 'byte ptr
 deny = body[token + 1].operands[0].imm
 assert body[token - 1].operands[0].imm == deny
 for operands, branch in (('dword ptr [rcx + 0xa18], 0', 'jne'), ('byte ptr [rcx + 0x39c5], 0', 'jne'),
-                         ('eax, 0x178d4', 'jne'), ('dword ptr [rcx + 0xe0], 0x5d7', 'jne'),
-                         ('dword ptr [rcx + 0x3b8], eax', 'jne'), ('rax, rax', 'je'),
-                         ('byte ptr [rcx + 0x858], 0', 'je'), ('qword ptr [rcx + 0x9c0], rax', 'jne'),
-                         ('byte ptr [rax + 0x858], 0', 'je'), ('rcx, rcx', 'je'), ('byte ptr [rax + 0x39c5], 0', 'jne')):
+                         ('eax, 0x178d4', 'jne'), ('dword ptr [rax + 0xe0], 0x5d7', 'jne'),
+                         ('dword ptr [rax + 0x3b8], edx', 'jne'), ('rax, rax', 'je'),
+                         ('byte ptr [rax + 0x858], 0', 'je'), ('qword ptr [rax + 0x9c0], rcx', 'jne'),
+                         ('rcx, rcx', 'je'), ('byte ptr [rax + 0x39c5], 0', 'jne')):
     check = next(index for index, entry in enumerate(body) if index > token and entry.mnemonic in ('cmp', 'test') and entry.op_str == operands)
     assert body[check + 1].mnemonic == branch and body[check + 1].operands[0].imm == deny, f'Missing cue lifetime gate: {operands}'
-identity = next(index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rcx + 0x9c0], rax')
-assert body[identity - 1].op_str == 'rax, qword ptr [rdi + 0x20]', 'Expected AI is not identity-only capture'
+identity = next(index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rax + 0x9c0], rcx')
+assert body[identity - 1].op_str == 'rcx, qword ptr [rdi + 0x20]', 'Expected AI capture changed'
+context = positions(body, context_name)[0]
+assert identity < context and body[context + 1].op_str == 'al, al'
+assert body[context + 2].mnemonic == 'je' and body[context + 2].operands[0].imm == deny
+assert any(entry.op_str == 'edx, dword ptr [rdi + 0x18]' for entry in body[token:identity])
 world = positions(body, '?IsInWorld@Object@@')[0]
 assert world > token and body[world + 2].mnemonic == 'je' and body[world + 2].operands[0].imm == deny
 lookup = positions(body, '?FindNearestCreature@WorldObject@@')[0]
-assert body[lookup - 1].op_str == 'edx, 0x17722' and body[lookup - 3].op_str == 'r9b, 1'
-distance = body[lookup - 2]
+boss_enabled = next(index for index, entry in enumerate(body) if index > lookup and entry.mnemonic == 'cmp' and entry.op_str == 'byte ptr [rax + 0x858], 0')
+assert body[boss_enabled + 1].mnemonic == 'je' and body[boss_enabled + 1].operands[0].imm == deny
+assert body[lookup - 2].op_str == 'edx, 0x17722' and body[lookup - 4].op_str == 'r9b, 1'
+assert body[lookup - 1].op_str == 'rcx, qword ptr [rdi + 0x10]'
+distance = body[lookup - 3]
 assert distance.mnemonic == 'movss' and distance.operands[1].type == CS_OP_MEM and distance.operands[1].mem.base == X86_REG_RIP
 assert struct.unpack_from('<f', native['binary'], native['offset'](distance.address + distance.size + distance.operands[1].mem.disp))[0] == 60.0
 action = next(index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x48)
-assert body[action - 1].op_str == 'edx, 1' and action > lookup > token
+assert body[action - 1].op_str == 'edx, 1' and action > lookup > context > token
 
 body = instructions(reset)
 assert any(entry.op_str == 'byte ptr [rsi + 0x5d], 0' for entry in body)
@@ -89,4 +103,9 @@ body = instructions(destructor)
 assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x68]' for entry in body)
 assert any(entry.mnemonic == 'lock xadd' and entry.op_str == 'dword ptr [rbx + 8], eax' for entry in body), 'Actual AI destructor retains token ownership'
 assert len(previous['selected_tables']('?GetAI@npc_hrutnir@@', ((0, destructor), (0x28, reset), (0x1a8, movement)))) == 1
-print('PASS: installed Hruthnir arrival claim, actual497/native6000ms std::function bridge and weak-token callback, original-instance/live/AI guards, consume-before-action1, Reset/destructor invalidation and real factory slots. No automatic recovery,497 delivery or client/VFX certification.')
+body = instructions(context_name)
+context_deny = body[positions(body, '?IsInWorld@Object@@')[0] + 2].operands[0].imm
+for operand in ('eax, 0x38d', 'eax, 3', 'dword ptr [rax + 0x3b8], edi'):
+    check = next(index for index, entry in enumerate(body) if entry.mnemonic == 'cmp' and entry.op_str == operand)
+    assert body[check + 1].mnemonic == 'jne' and body[check + 1].operands[0].imm == context_deny
+print('PASS: installed Hruthnir original-instance909/3/live/AI context gates both arrival before497 and weak6000ms callback before boss dispatch. Actual factory/queue/claim/Reset/destructor checks remain; no automatic recovery,497 acknowledgement, physical arrival or client/VFX certificate.')
