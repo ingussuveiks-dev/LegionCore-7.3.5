@@ -15,8 +15,12 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
  if(!$Baseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
   $expected=(Block $pinned "class $script : public CreatureScript").Replace($old,$new)
-  if($script -eq 'npc_travar_first'){$actual=$actual.Replace((Block $actual 'void MoveInLineOfSight('),(Block $expected 'void MoveInLineOfSight('))}
-  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance LOS'}
+  if($script -eq 'npc_travar_first'){
+   $actual=$actual.Replace((Block $actual 'void MoveInLineOfSight('),(Block $expected 'void MoveInLineOfSight('))
+   $actual=$actual.Replace("        "+(Block $actual 'void sGossipSelect(')+"`n`n",'')
+   $expected=$expected.Replace("    "+(Block $expected 'bool OnGossipSelect(')+"`n`n",'')
+  }
+  if($actual -cne $expected){throw 'Silver Hand ally class changed beyond its hook/health correction or separately tested first entrance LOS/gossip'}
  }
 }
 if($Baseline){$source=$pinned}

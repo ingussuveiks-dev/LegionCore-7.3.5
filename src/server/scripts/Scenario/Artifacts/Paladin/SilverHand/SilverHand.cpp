@@ -11,6 +11,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
+#include "WaypointManager.h"
 
 
 namespace SilverHandEntrance
@@ -36,14 +37,6 @@ class npc_travar_first : public CreatureScript
 public:
     npc_travar_first() : CreatureScript("npc_travar_first") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
-    {
-        creature->GetMotionMaster()->MovePath(10993804, false);
-        player->CLOSE_GOSSIP_MENU();
-        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
-        return true;
-    }
-
     CreatureAI* GetAI(Creature* creature) const override
     {
         return new npc_travar_firstAI(creature);
@@ -63,6 +56,32 @@ public:
         EventMap events;
         bool _introDone, wait_heal, firstwp, secondwp, firstfight;
         FunctionProcessor _functions;
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
+        {
+            if (menuId != 19580 || gossipListId != 0 || !firstwp || !SilverHandEntrance::CanArrive(player, me) ||
+                !me->HasFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) ||
+                !player->IsWithinDistInMap(me, INTERACTION_DISTANCE))
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!scenario || scenario->GetCurrentStep() != 1)
+                return;
+            GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
+            GossipMenuItem const* option = menu.GetItem(gossipListId);
+            if (menu.GetMenuId() != menuId || !option || option->OptionNpc != GossipOptionNpc::None ||
+                option->Sender || option->Action || option->IsCoded)
+                return;
+            WaypointPath const* path = sWaypointMgr->GetPathScript(10993804);
+            if (!path || path->empty())
+            {
+                TC_LOG_WARN("scripts", "Silver Hand entrance path 10993804 is unavailable; retaining Travard gossip for retry");
+                return;
+            }
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            player->PlayerTalkClass->ClearMenus();
+            player->CLOSE_GOSSIP_MENU();
+            me->GetMotionMaster()->MovePath(10993804, false);
+        }
 
         void Reset() override
         {
