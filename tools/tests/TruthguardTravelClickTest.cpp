@@ -10,6 +10,7 @@ using uint64 = uint64_t;
 using uint8 = uint8_t;
 using int8 = int8_t;
 #include "Slots.inc"
+#include "ContactConstants.inc"
 struct ObjectGuid
 {
     uint64 _high=0,_low=0;
@@ -17,6 +18,8 @@ struct ObjectGuid
     ObjectGuid(uint64 high,uint64 low):_high(high),_low(low) {}
     bool operator<(ObjectGuid const&) const;
     bool operator==(ObjectGuid const& other) const { return _high==other._high && _low==other._low; }
+    bool IsEmpty() const { return !_high && !_low; }
+    explicit operator bool() const { return !IsEmpty(); }
 };
 #include "GuidCompare.inc"
 using QuestStatus = uint32;
@@ -24,7 +27,7 @@ using QuestStatus = uint32;
 #include "NativeData.inc"
 enum { NPC_HIPPOGRYPH_DALARAN=105883, NPC_HIPPOGRYPH_SCENARIO=106203, NPC_HIPPOGRYPH_DALARAN_SUM=105886, NPC_HIPPOGRYPH_SCENARIO_SUM=106205,
     SPELL_SUMMON_HIPPO=209884, SPELL_SUMMON_HIPPO_INST=210358,
-    QUEST_STATUS_NONE=0, QUEST_STATUS_COMPLETE=1, QUEST_STATUS_INCOMPLETE=3, CLASS_PALADIN=2, UNIT_FIELD_NPC_FLAGS=0, UNIT_NPC_FLAG_SPELLCLICK=16777216,
+    QUEST_STATUS_NONE=0, QUEST_STATUS_COMPLETE=1, QUEST_STATUS_INCOMPLETE=3, CLASS_PALADIN=2, UNIT_FIELD_NPC_FLAGS=0, UNIT_FIELD_NPC_FLAGS2=1, UNIT_FIELD_FLAGS_2=2, UNIT_NPC_FLAG_SPELLCLICK=16777216,
     NPC_CLICK_CAST_CASTER_CLICKER=1, NPC_CLICK_CAST_TARGET_CLICKER=2, NPC_CLICK_CAST_ORIG_CASTER_OWNER=4,
     MAX_SPELL_EFFECTS=32, SPELL_AURA_CONTROL_VEHICLE=236, SPELLVALUE_BASE_POINT0=0, MAX_EFFECT_MASK=0xffffffff };
 uint32 warnings=0;
@@ -34,6 +37,22 @@ uint32 SpellValueMod(uint32 value) { return value; }
 struct Player;
 struct Creature;
 struct TempSummon;
+struct Unit;
+using WorldObject=Unit;
+struct Pose { float m_positionX=0,m_positionY=0,m_positionZ=0; };
+struct Transport { uint32 identity=1;uint32 GetGUIDLow() const {return identity;} };
+struct AreaTriggerContext
+{
+    struct Info { bool WithObjectSize=true; } info;
+    Info const& GetAreaTriggerInfo() const { return info; }
+} unusedAreaTrigger;
+struct FactionEntry { bool reputation=false;bool CanHaveReputation() const {return reputation;} } factionFixture;
+struct FactionTemplateEntry { uint32 Faction=0; } factionTemplateFixture;
+struct FactionStore { bool present=true;FactionEntry const* LookupEntry(uint32) const {return present?&factionFixture:nullptr;} } sFactionStore;
+struct FactionTemplateStore { bool present=true;FactionTemplateEntry const* LookupEntry(uint32) const {return present?&factionTemplateFixture:nullptr;} } sFactionTemplateStore;
+struct ReputationManager { ReputationRank rank=REP_NEUTRAL;ReputationRank GetRank(FactionEntry const*) const {return rank;} };
+struct Session {bool loading=false,logout=false;bool PlayerLoading() const {return loading;}bool PlayerLogout() const {return logout;}};
+namespace ObjectAccessor { Creature* GetCreatureOrPetOrVehicle(Player&,ObjectGuid); }
 struct SpellInfo
 {
     uint32 identity=0,EffectMask=0;
@@ -56,6 +75,10 @@ struct Unit
     virtual Creature* ToCreature() { return nullptr; }
     virtual TempSummon* ToTempSummon() { return nullptr; }
     uint32 entry=0,identity=17,map=1,phase=1;
+    bool inWorld=true;
+    float positionX=0,positionY=0,positionZ=0,objectSize=0.5f;
+    Transport* m_transport=nullptr;
+    struct Movement {struct Relative {Pose Pos;} transport;} m_movementInfo;
     uint64 guidHigh=0;
     Unit* vehicle=nullptr;
     SpellCastResult result=SPELL_CAST_OK;
@@ -67,9 +90,23 @@ struct Unit
     ObjectGuid GetGUID() const { return {guidHigh,identity}; }
     ObjectGuid GetOwnerGUID() const { return 0; }
     uint32 GetSpawnMode() const { return 0; }
-    bool IsInMap(Unit const* other) const { return map==other->map; }
+    bool IsInWorld() const {return inWorld;}
+    bool IsInMap(Unit const* other) const { return inWorld && other->inWorld && map==other->map; }
     bool InSamePhase(Unit const* other) const { return phase==other->phase; }
     Unit* GetVehicleBase() const { return vehicle; }
+    bool IsWithinDistInMap(WorldObject const*,float,bool=true,bool=false) const;
+    bool _IsWithinDist(WorldObject const*,float,bool,bool=false) const;
+    bool IsAreaTrigger() const {return false;}
+    bool IsUnit() const {return true;}
+    bool IsPlayer() const {return false;}
+    AreaTriggerContext const* ToAreaTrigger() const {return &unusedAreaTrigger;}
+    Unit const* ToUnit() const {return this;}
+    float GetObjectSize() const {return objectSize;}
+    float GetModelSize() const {return objectSize;}
+    float GetPositionX() const {return positionX;}
+    float GetPositionY() const {return positionY;}
+    float GetPositionZ() const {return positionZ;}
+    Transport* GetTransport() const {return m_transport;}
     bool HandleSpellClick(Unit*,int8=-1);
     SpellCastResult CastSpell(Unit* target,uint32 spell,bool triggered) { casts.push_back({spell,target,triggered}); if(castHook) castHook(); return result; }
     void CastSpell(Unit* target,SpellInfo const* spell,bool triggered,void*,void*,ObjectGuid) { CastSpell(target,spell->identity,triggered); }
@@ -93,6 +130,11 @@ struct Player : Unit
     bool ownedWeapon=true,bankWeapon=false;
     bool bagWeapon=false,bankBagWeapon=false;
     mutable Item weapon;
+    Session session;
+    Session* m_session=&session;
+    bool deleted=false,changingMap=false,flight=false,mSemaphoreTeleport_Near=false,mSemaphoreTeleport_Far=false;
+    bool visible=true,lineOfSight=true;
+    ReputationManager reputation;
     Player* ToPlayer() override { return this; }
     QuestStatus GetQuestStatus(uint32 questId) const { assert(questId==42017); return quest; }
     InstanceScript* GetInstanceScript() { return hasInstance?&scenarioInstance:nullptr; }
@@ -100,6 +142,15 @@ struct Player : Unit
     bool IsAlive() const { return alive; }
     bool GetQuestRewardStatus(uint32 questId) const { assert(questId==42017); return rewarded; }
     uint32 getClass() const { return playerClass; }
+    bool IsDelete() const {return deleted;}
+    bool IsChangeMap() const {return changingMap;}
+    bool isInFlight() const {return flight;}
+    ReputationManager const& GetReputationMgr() const {return reputation;}
+    Creature* GetNPCIfCanInteractWith(ObjectGuid,uint32,uint32=0);
+    bool CanContact();
+    bool canSeeOrDetect(Unit const*) const {return visible;}
+    bool IsWithinLOSInMap(Unit const*) const {return lineOfSight;}
+#include "Teleport.inc"
     bool HasItemCount(uint32 item,uint32 count,bool bank) const;
     uint8 GetInventoryEndSlot() const { return INVENTORY_SLOT_ITEM_END; }
     Item* GetItemByPos(uint32 bag,uint32 slot) const
@@ -120,13 +171,27 @@ struct Creature : Unit
     bool summoned=false,IsAIEnabled=true;
     uint32 hides=0;
     uint32 mapId=1220,instance=99;
+    bool alive=true,hostile=false,spellclick=true;
+    ObjectGuid charmer;
+    uint32 npcFlags2=0,unitFlags2=18432;
+    struct Template {uint32 TypeFlags[2]={0,0};} creatureTemplate;
     std::vector<ObjectGuid> hidden;
     Creature* ToCreature() override { return this; }
     BaseAI* AI() { return ai; }
     bool isSummon() const { return summoned; }
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instance; }
-    bool HasFlag(uint32,uint32 flag) const { assert(flag==UNIT_NPC_FLAG_SPELLCLICK); return true; }
+    bool IsAlive() const {return alive;}
+    Template const* GetCreatureTemplate() const {return &creatureTemplate;}
+    ObjectGuid GetCharmerGUID() const {return charmer;}
+    bool IsHostileTo(Player const*) const {return hostile;}
+    uint32 getFaction() const {return 35;}
+    bool HasFlag(uint32 field,uint32 flag) const
+    {
+        if(field==UNIT_FIELD_NPC_FLAGS){assert(flag==UNIT_NPC_FLAG_SPELLCLICK);return spellclick;}
+        if(field==UNIT_FIELD_NPC_FLAGS2)return (npcFlags2 & flag)!=0;
+        assert(field==UNIT_FIELD_FLAGS_2);return (unitFlags2 & flag)!=0;
+    }
     void DestroyForPlayer(Player* player) { ++hides; hidden.push_back(player->GetGUID()); }
 };
 struct TempSummon : Creature
@@ -137,13 +202,16 @@ struct TempSummon : Creature
 };
 namespace ObjectAccessor
 {
+    std::map<ObjectGuid,Creature*> creatures;
+    Creature* GetCreatureOrPetOrVehicle(Player&,ObjectGuid identity) {auto found=creatures.find(identity);return found==creatures.end()?nullptr:found->second;}
     std::map<ObjectGuid,Player*> players;
     Player* GetPlayer(Creature const&,ObjectGuid identity) { auto found=players.find(identity); return found==players.end()?nullptr:found->second; }
 }
+#include "Contact.inc"
 struct Script : BaseAI
 {
     Creature* me;
-    explicit Script(Creature* actor):me(actor) { actor->ai=this; }
+    explicit Script(Creature* actor):me(actor) { actor->ai=this;ObjectAccessor::creatures[actor->GetGUID()]=actor; }
 #include "BoardingRequests.inc"
 #include "Summon.inc"
 #include "Click.inc"
@@ -397,6 +465,97 @@ int main(int argc,char** argv)
                 ++admissionCases;
             }
     std::cout << "PASS: " << admissionCases << " source admission cases and " << earlyRequests << " pinned early-request paths; ";
+#if !defined(ADMISSION_BASELINE)
+    uint32 contactCases=0,remoteRequests=0;
+    for(uint32 actorEntry : {105883u,106203u})
+        for(uint32 variant=0;variant<47;++variant)
+            for(uint32 team : {0u,1u})
+            {
+                Player player;player.quest=3;player.hasInstance=true;player.team=team;
+                Creature actor,foreign;actor.entry=actorEntry;actor.mapId=actorEntry==105883?1220:1495;Script script(&actor);
+                Transport first,second;second.identity=2;
+                scenarioInstance.event=7;actualScenario={1082,6};scenarios.scenarios={{99,&actualScenario}};
+                factionTemplateFixture={31};factionFixture={false};sFactionStore.present=sFactionTemplateStore.present=true;
+                switch(variant)
+                {
+                    case 1: player.deleted=true;break;
+                    case 2: player.inWorld=false;break;
+                    case 3: player.changingMap=true;break;
+                    case 4: player.m_session=nullptr;break;
+                    case 5: player.session.loading=true;break;
+                    case 6: player.session.logout=true;break;
+                    case 7: player.mSemaphoreTeleport_Near=true;break;
+                    case 8: player.mSemaphoreTeleport_Far=true;break;
+                    case 9: player.flight=true;break;
+                    case 10: ObjectAccessor::creatures.clear();break;
+                    case 11: ObjectAccessor::creatures[actor.GetGUID()]=&foreign;break;
+                    case 12: actor.alive=false;break;
+                    case 13: actor.alive=false;actor.creatureTemplate.TypeFlags[0]=CREATURE_TYPEFLAGS_DEAD_INTERACT;break;
+                    case 14: actor.spellclick=false;break;
+                    case 15: actor.charmer=18;break;
+                    case 16: actor.hostile=true;actor.unitFlags2 &= ~UNIT_FLAG2_ALLOW_ENEMY_INTERACT;break;
+                    case 17: actor.hostile=true;actor.unitFlags2=UNIT_FLAG2_ALLOW_ENEMY_INTERACT;break;
+                    case 18: factionFixture.reputation=true;player.reputation.rank=REP_UNFRIENDLY;break;
+                    case 19: factionFixture.reputation=true;player.reputation.rank=REP_HOSTILE;break;
+                    case 20: factionFixture.reputation=true;player.reputation.rank=REP_NEUTRAL;break;
+                    case 21: player.reputation.rank=REP_HATED;break;
+                    case 22: sFactionTemplateStore.present=false;break;
+                    case 23: factionFixture.reputation=true;sFactionStore.present=false;break;
+                    case 24: player.visible=false;break;
+                    case 25: player.lineOfSight=false;break;
+                    case 26: player.positionX=5.999f;break;
+                    case 27: player.positionX=6;break;
+                    case 28: player.positionX=6.001f;break;
+                    case 29: player.positionZ=6;break;
+                    case 30: player.positionX=4;player.positionY=4;break;
+                    case 31: player.positionX=5;player.positionY=5;break;
+                    case 32: actor.objectSize=player.objectSize=0;player.positionX=4.999f;break;
+                    case 33: actor.objectSize=player.objectSize=0;player.positionX=5;break;
+                    case 34: actor.objectSize=2;player.objectSize=1;player.positionX=7.999f;break;
+                    case 35: actor.m_transport=player.m_transport=&first;player.positionX=1000;player.m_movementInfo.transport.Pos.m_positionX=2;break;
+                    case 36: actor.m_transport=player.m_transport=&first;player.m_movementInfo.transport.Pos.m_positionX=6;break;
+                    case 37: actor.m_transport=&first;player.m_transport=&second;player.positionX=1000;break;
+                    case 38: actor.m_transport=&first;player.m_transport=&second;player.m_movementInfo.transport.Pos.m_positionX=1000;player.positionX=1;break;
+                    case 39: actor.spellclick=false;actor.npcFlags2=UNIT_NPC_FLAG_SPELLCLICK;break;
+                    case 40: actor.inWorld=false;break;
+                    case 41: player.positionX=6;player.lineOfSight=false;break;
+                    case 42: actor.m_transport=&first;player.m_transport=&second;second.identity=first.identity;player.positionX=1000;player.m_movementInfo.transport.Pos.m_positionX=2;break;
+                    case 43: actor.m_transport=player.m_transport=&first;player.m_movementInfo.transport.Pos={3,4,3};break;
+                    case 44: actor.m_transport=player.m_transport=&first;player.m_movementInfo.transport.Pos.m_positionZ=6;break;
+                    case 45: player.positionZ=5.999f;break;
+                    case 46: player.mSemaphoreTeleport_Near=player.mSemaphoreTeleport_Far=true;break;
+                }
+                bool admitted=variant==0 || variant==13 || variant==17 || variant==20 || variant==21 || variant==22 || variant==23 ||
+                    variant==26 || variant==30 || variant==32 || variant==34 || variant==35 || variant==38 || variant==42 || variant==43 || variant==45;
+                bool legacy=variant!=2 && variant!=40;
+                actor.HandleSpellClick(&player);
+#ifdef CONTACT_BASELINE
+                assert(player.casts.size()==uint32(legacy));
+#else
+                assert(player.casts.size()==uint32(admitted));
+#endif
+                assert(actor.hides==0);
+                if(legacy && !admitted)++remoteRequests;
+                if(!admitted)
+                {
+                    player.inWorld=actor.inWorld=true;
+                    player.deleted=player.changingMap=player.flight=false;
+                    player.m_session=&player.session;player.session={};
+                    player.mSemaphoreTeleport_Near=player.mSemaphoreTeleport_Far=false;
+                    player.visible=player.lineOfSight=actor.alive=actor.spellclick=true;
+                    actor.charmer={};actor.hostile=false;actor.unitFlags2=18432;actor.npcFlags2=0;
+                    actor.objectSize=player.objectSize=0.5f;
+                    actor.positionX=actor.positionY=actor.positionZ=player.positionX=player.positionY=player.positionZ=0;
+                    actor.m_transport=player.m_transport=nullptr;
+                    factionTemplateFixture={31};factionFixture={false};sFactionStore.present=sFactionTemplateStore.present=true;
+                    ObjectAccessor::creatures[actor.GetGUID()]=&actor;
+                    actor.HandleSpellClick(&player);actor.HandleSpellClick(&player);
+                    assert(player.casts.size()==1 && script.boardingRequests.size()==1 && actor.hides==0);
+                }
+                ++contactCases;
+            }
+    std::cout << "PASS: " << contactCases << " native contact/NPC/distance cases and " << remoteRequests << " pinned unauthorized request paths; ";
+#endif
 #endif
     std::cout << "PASS: " << cases << " extracted native dispatch/visibility and actual AI admission cases; ";
 #ifdef BASELINE
@@ -405,6 +564,8 @@ int main(int argc,char** argv)
     std::cout << "pinned643bda5a accepts a summon request without a spawned/boarded actor yet immediately hides its source; no live vehicle/client proof.\n";
 #elif defined(ADMISSION_BASELINE)
     std::cout << "pinned3460d7f6 accepts foreign/dead/inactive/rewarded/map/phase source requests and shared1495 event7 without actual1082; no native completed boarding or client proof.\n";
+#elif defined(CONTACT_BASELINE)
+    std::cout << "pinnedb613d584 allows distant, hidden/occluded, transferring or native-ineligible NPC requests; no renderer, actual collision geometry or live faction gameplay proof.\n";
 #else
     std::cout << "pending requests suppress reentrant/repeated clicks, only actual matching owned vehicle acknowledgment hides source; rejected or timed-out requests retain retry. Native HandleSpellClick false return still dispatches AI; no live spawn, boarding, group/faction gameplay or client rendering proof.\n";
 #endif

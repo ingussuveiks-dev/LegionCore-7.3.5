@@ -1210,6 +1210,10 @@ public:
                     (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE) ||
                     !me->IsInMap(player) || !me->InSamePhase(player))
                     return;
+                if (!player->CanContact() || player->IsBeingTeleported() ||
+                    player->GetNPCIfCanInteractWith(me->GetGUID(), UNIT_NPC_FLAG_SPELLCLICK) != me ||
+                    !player->canSeeOrDetect(me) || !player->IsWithinLOSInMap(me))
+                    return;
                 if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN && me->GetMapId() == 1220)
                 {
                     if (status == QUEST_STATUS_INCOMPLETE)

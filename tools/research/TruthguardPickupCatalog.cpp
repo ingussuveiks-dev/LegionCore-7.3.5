@@ -72,9 +72,12 @@ int main(int argc, char** argv)
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     DB2Storage<VehicleEntry> vehicles("Vehicle.db2", VehicleLoadInfo::Instance());
     DB2Storage<VehicleSeatEntry> seats("VehicleSeat.db2", VehicleSeatLoadInfo::Instance());
+    DB2Storage<FactionTemplateEntry> factionTemplates("FactionTemplate.db2", FactionTemplateLoadInfo::Instance());
+    DB2Storage<FactionEntry> factions("Faction.db2", FactionLoadInfo::Instance());
     if (!items.Load(argv[1], 0) || !children.Load(argv[1], 0) || !effects.Load(argv[1], 0) ||
         !misc.Load(argv[1], 0) || !castTimes.Load(argv[1], 0) || !locks.Load(argv[1], 0) || !maps.Load(argv[1], 0) ||
-        !vehicles.Load(argv[1], 0) || !seats.Load(argv[1], 0) || !durations.Load(argv[1], 0) || !summons.Load(argv[1], 0))
+        !vehicles.Load(argv[1], 0) || !seats.Load(argv[1], 0) || !durations.Load(argv[1], 0) || !summons.Load(argv[1], 0) ||
+        !factionTemplates.Load(argv[1], 0) || !factions.Load(argv[1], 0))
         return 7;
     items.LoadFromDB();
     children.LoadFromDB();
@@ -87,6 +90,15 @@ int main(int argc, char** argv)
     maps.LoadFromDB();
     vehicles.LoadFromDB();
     seats.LoadFromDB();
+    factionTemplates.LoadFromDB();
+    factions.LoadFromDB();
+    auto factionTemplate = factionTemplates.LookupEntry(35);
+    auto faction = factionTemplate ? factions.LookupEntry(factionTemplate->Faction) : nullptr;
+    if (!factionTemplate || !faction)
+        return 12;
+    std::cout << "TRAVEL_FACTION\t35\t" << factionTemplate->Faction << '\t' << faction->ReputationIndex << '\t'
+        << faction->CanHaveReputation() << '\t' << unsigned(factionTemplate->FactionGroup) << '\t'
+        << unsigned(factionTemplate->FriendGroup) << '\t' << unsigned(factionTemplate->EnemyGroup) << '\n';
     auto vehicle = vehicles.LookupEntry(4726);
     if (!vehicle)
         return 10;

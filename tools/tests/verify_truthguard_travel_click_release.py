@@ -92,19 +92,50 @@ assert click_find('eax, [rsi - 1]', 'lea') < same_map
 for gate in (same_map, same_phase):
     assert click[gate + 2].mnemonic == 'je' and click[gate + 2].operands[0].imm == rejected
     assert [entry.op_str for entry in click[gate - 2:gate]] == ['rcx, qword ptr [rdi + 0x20]', 'rdx, rbx']
+contact = click_call('?CanContact@Player@@')
+npc = click_call('?GetNPCIfCanInteractWith@Player@@')
+visible = click_call('?canSeeOrDetect@WorldObject@@')
+los = click_call('?IsWithinLOSInMap@WorldObject@@')
+assert same_phase < contact < npc < visible < los < helper_calls[0]
+assert click[contact - 1].op_str == 'rcx, rbx' and click[contact + 1].op_str == 'al, al'
+assert click[contact + 2].mnemonic == 'je' and click[contact + 2].operands[0].imm == rejected
+for operand in ('byte ptr [rbx + 0x6848], 0', 'byte ptr [rbx + 0x6849], 0'):
+    gate = click_find(operand, 'cmp')
+    assert contact < gate < npc and click[gate + 1].mnemonic == 'jne' and click[gate + 1].operands[0].imm == rejected
+assert [entry.op_str for entry in click[npc - 7:npc]] == ['rbp, qword ptr [rdi + 0x20]', 'rdx, [rsp + 0x20]', 'r9d, r9d', 'r8d, 0x1000000', 'rcx, rbx', 'xmm0, xmmword ptr [rax]', 'xmmword ptr [rsp + 0x20], xmm0']
+assert click[npc + 1].op_str == 'rax, rbp' and click[npc + 2].mnemonic == 'jne'
+late_rejected = click[npc + 2].operands[0].imm
+assert [entry.op_str for entry in click[visible - 4:visible]] == ['r9d, r9d', 'r8d, r8d', 'rdx, rbp', 'rcx, rbx']
+assert [entry.op_str for entry in click[los - 3:los]] == ['rdx, qword ptr [rdi + 0x20]', 'r8d, r8d', 'rcx, rbx']
+for gate in (visible, los):
+    assert click[gate + 1].op_str == 'al, al' and click[gate + 2].mnemonic == 'je' and click[gate + 2].operands[0].imm == late_rejected
 assert same_phase < click_find('dword ptr [rax + 0xe0], 0x4c4', 'cmp') < helper_calls[0]
 registry = click_call('?GetScenario@ScenarioMgr@@')
 identity = click_call('?GetScenarioId@Scenario@@')
 assert helper_calls[0] < click_find('dword ptr [rax + 0xe0], 0x5d7', 'cmp') < click_call('?instance@ScenarioMgr@@') < registry < identity < helper_calls[1]
 assert [entry.op_str for entry in click[registry - 3:registry]] == ['rdx, qword ptr [rdi + 0x20]', 'rcx, rax', 'edx, dword ptr [rdx + 0x3b8]'], 'Registry key is not the actual clicked source instance'
-assert click[registry + 1].op_str == 'rax, rax' and click[registry + 2].mnemonic == 'je' and click[registry + 2].operands[0].imm == rejected
-assert click[identity + 1].op_str == 'eax, 0x43a' and click[identity + 2].mnemonic == 'jne' and click[identity + 2].operands[0].imm == rejected
+assert click[registry + 1].op_str == 'rax, rax' and click[registry + 2].mnemonic == 'je' and click[registry + 2].operands[0].imm == late_rejected
+assert click[identity + 1].op_str == 'eax, 0x43a' and click[identity + 2].mnemonic == 'jne' and click[identity + 2].operands[0].imm == late_rejected
 owned = click_call('?HasItemCount@Player@@')
 assert identity < owned < click_call('?GetInstanceScript@WorldObject@@')
 assert [entry.op_str for entry in click[owned - 4:owned]] == ['r9b, 1', 'edx, 0x1f762', 'r8d, 1', 'rcx, rbx']
-assert click[owned + 1].op_str == 'al, al' and click[owned + 2].mnemonic == 'je' and click[owned + 2].operands[0].imm == rejected
-assert click[click_find('eax, 7', 'cmp') + 1].operands[0].imm == rejected
-assert all(entry.mnemonic in ('mov', 'add', 'pop', 'ret') for entry in click if entry.address >= rejected), 'Admission rejection reaches a summon request'
+assert click[owned + 1].op_str == 'al, al' and click[owned + 2].mnemonic == 'je' and click[owned + 2].operands[0].imm == late_rejected
+assert click[click_find('eax, 7', 'cmp') + 1].operands[0].imm == late_rejected
+for target in (rejected, late_rejected):
+    assert all(entry.mnemonic in ('mov', 'add', 'pop', 'ret') for entry in click if entry.address >= target), 'Admission rejection reaches a summon request'
+interaction = instructions('?GetNPCIfCanInteractWith@Player@@')
+interaction_calls = native['calls']('?GetNPCIfCanInteractWith@Player@@')
+for prefix in ('?GetCreatureOrPetOrVehicle@ObjectAccessor@@', '?IsInWorld@Object@@', '?isInFlight@Unit@@', '?GetGuidValue@Object@@', '?IsHostileTo@Unit@@', '?IsWithinDistInMap@WorldObject@@', '?CanHaveReputation@FactionEntry@@', '?GetRank@ReputationMgr@@'):
+    assert native['symbol'](prefix) in interaction_calls, f'Native NPC admission lost {prefix}'
+distance = next(index for index, entry in enumerate(interaction) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
+                and native['resolve'](entry.operands[0].imm) == native['symbol']('?IsWithinDistInMap@WorldObject@@'))
+constant = interaction[distance - 5]
+assert constant.mnemonic == 'movss' and constant.operands[1].type == CS_OP_MEM and constant.operands[1].mem.base == X86_REG_RIP
+assert struct.unpack_from('<f', native['binary'], native['offset'](constant.address + constant.size + constant.operands[1].mem.disp))[0] == 5.0
+assert [entry.op_str for entry in interaction[distance - 4:distance]] == ['r9b, 1', 'rdx, rdi', 'byte ptr [rsp + 0x20], 0', 'rcx, rbx']
+assert interaction[distance + 3].mnemonic == 'cmove' and interaction[distance + 3].op_str == 'rbx, rcx'
+for operand in ('byte ptr [rcx + 0x1c1], 2', 'byte ptr [rax + 0x1c1], 0x80', 'edx, 0x7d', 'edx, 0x7e', 'edx, 0x18', 'r8d, 0x4000', 'eax, 2'):
+    assert any(entry.op_str == operand for entry in interaction), f'Native flags/death/reputation gate missing: {operand}'
 assert native['symbol']('?GetCurrentStep@Scenario@@') not in native['calls'](callback), 'Completion step6 is incorrectly fenced at pickup step5'
 assert not any(operand.type == CS_OP_MEM and operand.mem.disp == 0x6ba8 for entry in click for operand in entry.operands), 'Consumed Player selector substituted for actual scenario'
 decoder = Cs(CS_ARCH_X86, CS_MODE_64)
@@ -219,4 +250,4 @@ target = next(entry for entry in visibility if entry.address == visibility[empty
 assert target.op_str == 'al, 1', 'Explicit static spellclick flag is hidden without DB rows'
 assert any(entry.op_str == 'r8d, 0x1000000' for entry in visibility[:empty]), 'Native visibility no longer checks the actual flag'
 assert native['symbol']('?HandleSpellClick@Unit@@') in native['calls']('?HandleSpellClick@WorldSession@@'), 'Packet handler bypasses native AI dispatch'
-print('PASS: selected click requires live active42017 Paladin in source map/phase, original route maps and actual source-instance1082 plus native bank-inclusive parent128866 ownership before return event7; consumed selector and pickup step5 are not reused. Native registry null/key path checked. Per-GUID5000ms boarding/packet dispatch retained; client visibility, boarding/flight/rendering remain separate.')
+print('PASS: selected click retains source class/quest/map/phase/scenario/owned-parent admission, then checks native contact, near/far transfer, exact NPC/GUID primary spellclick admission, visibility and LOS before either summon. Native NPC path retains5-yard3D/object-size distance, flight/death/charm/hostility and reputation gates. Per-GUID boarding/packet paths retained; actual geometry, renderer, faction gameplay and vehicle/client traversal remain separate.')

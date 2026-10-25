@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$BoardingBaseline,[switch]$AdmissionBaseline)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$BoardingBaseline,[switch]$AdmissionBaseline,[switch]$ContactBaseline)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $BoardingBaseline -or $AdmissionBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
-if([int]$Baseline.IsPresent+[int]$BoardingBaseline.IsPresent+[int]$AdmissionBaseline.IsPresent -gt 1){throw 'Select only one pinned baseline'}
+if(($Baseline -or $BoardingBaseline -or $AdmissionBaseline -or $ContactBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify current Release'}
+if([int]$Baseline.IsPresent+[int]$BoardingBaseline.IsPresent+[int]$AdmissionBaseline.IsPresent+[int]$ContactBaseline.IsPresent -gt 1){throw 'Select only one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/truthguard-travel-click"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -67,6 +67,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "edca8e77:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned travel source missing'}}
 if($BoardingBaseline){$source=(& git -C $repo show "643bda5a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned boarding source missing'}}
 if($AdmissionBaseline){$source=(& git -C $repo show "3460d7f6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned source admission baseline missing'}}
+if($ContactBaseline){$source=(& git -C $repo show "b613d584:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned source contact baseline missing'}}
 $actor=Block $source 'class npc_sr_argent_hippogryph'
 [IO.File]::WriteAllText("$out/Click.inc",(Block $actor 'void OnSpellClick('))
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $actor 'void Reset('))
@@ -80,23 +81,41 @@ $slots=([regex]::Match($playerHeader,'(?m)^#define INVENTORY_SLOT_BAG_0[^\r\n]*'
 foreach($name in @('ChildEquipmentSlots','EquipmentSlots','InventorySlots','InventoryPackSlots','BankItemSlots','BankBagSlots','ReagentSlots')){$slots+=(Block $playerHeader "enum $name")+";`n"}
 [IO.File]::WriteAllText("$out/Slots.inc",$slots)
 [IO.File]::WriteAllText("$out/ItemCount.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'bool Player::HasItemCount('))
+$playerSource=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
+$objectSource=Get-Content "$repo/src/server/game/Entities/Object/Object.cpp" -Raw
+$contact=(Block $playerSource 'Creature* Player::GetNPCIfCanInteractWith(')+"`n"+(Block $playerSource 'bool Player::CanContact(')
+foreach($name in @('IsWithinDistInMap','_IsWithinDist')){$contact+="`n"+((Block $objectSource "bool WorldObject::$name(").Replace("WorldObject::$name", "Unit::$name"))}
+[IO.File]::WriteAllText("$out/Contact.inc",$contact)
+[IO.File]::WriteAllText("$out/Teleport.inc",(Block $playerHeader 'bool IsBeingTeleported() const'))
+$constants=([regex]::Match((Get-Content "$repo/src/server/game/Entities/Object/ObjectDefines.h" -Raw),'(?m)^#define INTERACTION_DISTANCE[^\r\n]*').Value)+"`n"
+$constants+=(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum ReputationRank')+";`n"
+foreach($name in @('CREATURE_TYPEFLAGS_GHOST','CREATURE_TYPEFLAGS_DEAD_INTERACT','UNIT_FLAG2_ALLOW_ENEMY_INTERACT')){
+ $headers=(Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw)+(Get-Content "$repo/src/server/game/Entities/Unit/UnitDefines.h" -Raw)
+ $value=[regex]::Match($headers,"(?m)^\s*$name\s*=\s*([^,]+),").Groups[1].Value
+ if(!$value){throw "Missing native constant $name"}
+ $constants+="constexpr uint32 $name=$value;`n"
+}
+[IO.File]::WriteAllText("$out/ContactConstants.inc",$constants)
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'bool Unit::HandleSpellClick('))
 [IO.File]::WriteAllText("$out/Visibility.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw) 'bool Player::canSeeSpellClickOn('))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
 if($BoardingBaseline){$mode='/DBOARDING_BASELINE'}
 if($AdmissionBaseline){$mode='/DADMISSION_BASELINE'}
+if($ContactBaseline){$mode='/DCONTACT_BASELINE'}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardTravelClickTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`" `"$out/click.tsv`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native travel click host failed'}
 if($VerifyReleaseBinary){
  $hash=(Get-FileHash "$repo/sql/updates/world/2026_10_25_08_truthguard_travel_click.sql" -Algorithm SHA1).Hash
- $live=Query "SET SESSION TRANSACTION READ ONLY; SELECT 'release',hash,state FROM updates WHERE name='2026_10_25_08_truthguard_travel_click.sql'; SELECT 'clicks',COUNT(*) FROM npc_spellclick_spells WHERE npc_entry IN(105883,106203); SELECT 'visible',COUNT(*) FROM creature_template WHERE entry IN(105883,106203) AND npcflag=16777216 AND VehicleId=0 AND AIName='' AND ScriptName='npc_sr_argent_hippogryph'; SELECT 'path',id,COUNT(*),MIN(point),MAX(point) FROM waypoint_data_script WHERE id IN(10588600,10620500) GROUP BY id; SELECT 'context',ScenarioID,MapID,Class FROM scenario_data WHERE MapID=1495 ORDER BY ScenarioID; SELECT 'quest',ID,AllowableClasses,PrevQuestID FROM quest_template_addon WHERE ID IN(42000,42002,42005,42017) ORDER BY ID;"
+ $live=Query "SET SESSION TRANSACTION READ ONLY; SELECT 'release',hash,state FROM updates WHERE name='2026_10_25_08_truthguard_travel_click.sql'; SELECT 'clicks',COUNT(*) FROM npc_spellclick_spells WHERE npc_entry IN(105883,106203); SELECT 'visible',COUNT(*) FROM creature_template WHERE entry IN(105883,106203) AND npcflag=16777216 AND VehicleId=0 AND AIName='' AND ScriptName='npc_sr_argent_hippogryph'; SELECT 'path',id,COUNT(*),MIN(point),MAX(point) FROM waypoint_data_script WHERE id IN(10588600,10620500) GROUP BY id; SELECT 'context',ScenarioID,MapID,Class FROM scenario_data WHERE MapID=1495 ORDER BY ScenarioID; SELECT 'quest',ID,AllowableClasses,PrevQuestID FROM quest_template_addon WHERE ID IN(42000,42002,42005,42017) ORDER BY ID; SELECT 'npc',entry,faction,npcflag2,unit_flags2 FROM creature_template WHERE entry IN(105883,106203) ORDER BY entry; SELECT 'type',Entry,TypeFlags,TypeFlags2 FROM creature_template_wdb WHERE Entry IN(105883,106203) ORDER BY Entry;"
  [IO.File]::WriteAllLines("$out/live.tsv",[string[]]$live)
  foreach($expected in @("release`t$hash`tRELEASED","clicks`t0","visible`t2","path`t10588600`t5`t1`t5","path`t10620500`t5`t1`t5")){if($live -notcontains $expected){throw "Travel deployment mismatch: $expected"}}
  foreach($expected in @("context`t909`t1495`t1","context`t1068`t1495`t3","context`t1082`t1495`t2","quest`t42000`t0`t40411","quest`t42002`t0`t42000","quest`t42005`t0`t42002","quest`t42017`t0`t42005")){if($live -notcontains $expected){throw "Source context/admission data changed: $expected"}}
+ foreach($expected in @("npc`t105883`t35`t0`t18432","npc`t106203`t35`t0`t18432","type`t105883`t0`t0","type`t106203`t0`t0")){if($live -notcontains $expected){throw "Native contact template changed: $expected"}}
  $previous=$env:LEGION_DIALOGUE_CONFIG
  try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile TruthguardPickupCatalog.cpp -ProbeName TruthguardPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if($LASTEXITCODE){throw 'Travel DB2 probe failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
  $native=Get-Content "$out/native.tsv"
+ if($native -notcontains "TRAVEL_FACTION`t35`t31`t-1`t0`t0`t1`t0"){throw 'Native35/31 friendly non-reputation faction changed'}
  foreach($expected in @("EFFECT`t209884`t0`t28`t0`t105886`t0`t46`t0","EFFECT`t209884`t1`t167`t0`t0`t0`t1`t0","EFFECT`t210358`t0`t28`t0`t106205`t0`t46`t0","EFFECT`t210358`t1`t6`t4`t0`t0`t1`t0","EFFECT`t52391`t0`t6`t236`t0`t0`t25`t0")){if($native -notcontains $expected){throw "Travel native metadata changed: $expected"}}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_truthguard_travel_click_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed travel click guard failed'}}finally{$env:PYTHONPATH=$previous}
