@@ -3,6 +3,10 @@ $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-conversation-native/$(Get-Date -Format yyyyMMdd-HHmmss-fff)"
 New-Item -ItemType Directory -Force $out|Out-Null
+$source=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Warrior/EarthWarder/EarthWarder.cpp" -Raw
+$first=$source.IndexOf('void RemoveMagnarConversation(');if($first -lt 0){throw 'Native Hruthnir cleanup helper missing'}
+$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last}
+[IO.File]::WriteAllText("$out/HruthnirCleanup.inc",$source.Substring($first,$last-$first))
 $config=Get-Content "$repo/build-extractors/bin/Release/worldserver.conf" -Raw
 $originalHash=(Get-FileHash "$repo/build-extractors/bin/Release/worldserver.conf").Hash
 $config=[regex]::Replace($config,'(?m)^LogsDir\s*=.*$',('LogsDir = "'+$out.Replace('\','/')+'"'))
@@ -11,7 +15,7 @@ $previous=$env:LEGION_DIALOGUE_CONFIG
 $previousCompiler=$env:CL
 try{
  $env:LEGION_DIALOGUE_CONFIG="$out/worldserver.conf"
- $env:CL="$previousCompiler /DNDEBUG /I`"$repo/src/server/scripts/Legion`""
+ $env:CL="$previousCompiler /DNDEBUG /I`"$repo/src/server/scripts/Legion`" /I`"$out`""
  Push-Location "$repo/build-extractors/bin/Release"
  try{& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile ../tests/HruthnirConversationNative.cpp -ProbeName HruthnirConversationNative -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw "Native497 execution failed: $out/catalog.log"}}finally{Pop-Location}
 }finally{$env:LEGION_DIALOGUE_CONFIG=$previous;$env:CL=$previousCompiler}

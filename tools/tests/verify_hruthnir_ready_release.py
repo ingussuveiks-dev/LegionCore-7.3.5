@@ -73,7 +73,7 @@ reset = instructions('?Reset' + suffix)
 zero = next(index for index, entry in enumerate(reset) if entry.op_str == 'byte ptr [rdi + 0xac], bpl')
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'ebp, ebp' for entry in reset[:zero])
 assert any(entry.op_str == 'edx, 0x7d' for entry in reset[:zero]) and reset[zero - 1].op_str == 'r8d, 1'
-assert reset[-1].mnemonic == 'jmp' and native['resolve'](reset[-1].operands[0].imm) == native['symbol']('?RemoveFlag@Object@@')
+assert len(positions(reset, '?RemoveFlag@Object@@')) == 1 and reset[-1].mnemonic == 'ret'
 action = instructions('?DoAction' + suffix)
 epoch = next(index for index, entry in enumerate(action) if entry.op_str == 'dword ptr [rbx + 0xa8], esi')
 erase = positions(action, '?RemoveFlag@Object@@')[0]

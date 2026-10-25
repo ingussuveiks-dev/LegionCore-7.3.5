@@ -5,6 +5,13 @@
 #include <filesystem>
 #include <cstdlib>
 
+struct HruthnirConversationOwner
+{
+    Creature* me;
+    ObjectGuid magnarConversation = ObjectGuid::Empty;
+#include "HruthnirCleanup.inc"
+};
+
 int main(int argc, char** argv)
 {
     try
@@ -54,11 +61,21 @@ int main(int argc, char** argv)
             Require(other && other->IsInWorld(), "Independent native497 creation failed");
             auto guid = conversation->GetGUID();
             Require(ObjectAccessor::GetConversation(caster, guid) == conversation, "Native497 map lookup failed");
-            conversation->Remove();
+            Map foreignMap(1495, 300, 9999992, DIFFICULTY_N_SCENARIO);
+            Actor foreignCaster(&foreignMap, 96468, 10003, {4720.80f, 347.91f, -37.71f, 0.0f});
+            HruthnirConversationOwner foreignOwner{&foreignCaster, guid};
+            foreignOwner.RemoveMagnarConversation();
+            Require(!foreignOwner.magnarConversation && conversation->IsInWorld(), "Foreign map cleanup removed497 or retained the claim");
+            HruthnirConversationOwner owner{&caster, guid};
+            owner.RemoveMagnarConversation();
+            Require(!owner.magnarConversation, "Actual cleanup helper retained native497 GUID");
             Require(!conversation->IsInWorld() && !ObjectAccessor::GetConversation(caster, guid) && other->IsInWorld(), "Scoped native497 removal failed or removed another object");
+            owner.RemoveMagnarConversation();
             map.RemoveAllObjectsInRemoveList();
+            owner.magnarConversation = guid; owner.RemoveMagnarConversation();
+            Require(!owner.magnarConversation && other->IsInWorld(), "Expired native497 lookup affected another conversation");
             other->Remove(); map.RemoveAllObjectsInRemoveList();
-            std::cout << "PASS: actual native497 fails with missing96034, then resolves real96468/96034 actors and creates10 lines/3 actor slots/73000ms lifetime after retry. Native Remove unregisters only its own object and queued map deletion succeeds. Isolated Creature/NullAI map, read-only world/hotfix, no Players/character saves; not Hruthnir traversal, player-sentinel delivery, audio or rendered client evidence.\n";
+            std::cout << "PASS: actual native497 fails with missing96034, then resolves real96468/96034 actors and creates10 lines/3 actor slots/73000ms lifetime after retry. Extracted production cleanup clears its GUID before native map-local removal; foreign-map, repeated/empty and expired lookups leave another497 intact. Native queued map deletion succeeds. Isolated Creature/NullAI map, read-only world/hotfix, no Players/character saves; not the full Hruthnir AI lifecycle/traversal, player-sentinel delivery, audio or rendered client evidence.\n";
         }
         WorldDatabase.Close(); HotfixDatabase.Close(); MySQL::Library_End();
     }

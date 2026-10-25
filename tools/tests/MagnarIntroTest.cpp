@@ -8,11 +8,13 @@
 using uint32 = uint32_t;
 struct ObjectGuid
 {
+    static ObjectGuid const Empty;
     uint32 value = 0;
     bool IsEmpty() const { return value == 0; }
     void Clear() { value = 0; }
     bool operator==(ObjectGuid other) const { return value == other.value; }
 };
+ObjectGuid const ObjectGuid::Empty{};
 constexpr uint32 CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1;
 constexpr uint32 SCENE_LAUNCH = 1, SCENE_COMPLETE = 3;
 constexpr uint32 REACT_PASSIVE = 0, UNIT_FIELD_FLAGS = 0, UNIT_FLAG_NOT_SELECTABLE = 1;
@@ -143,6 +145,7 @@ struct SpellManager
 auto* sSpellMgr = &spellManager;
 struct IntroAI
 {
+    void RemoveMagnarConversation() { }
     Creature* me;
     std::shared_ptr<bool> magnarOfferToken, magnarStartToken;
     bool magnarArrivalPending = false;

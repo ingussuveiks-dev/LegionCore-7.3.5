@@ -7,7 +7,15 @@ from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_magnar_waves_release.py')))
 native = previous['native']
-instructions = previous['instructions']
+
+
+def instructions(name):
+    body = previous['instructions'](name)
+    if name.startswith('?MovementInform@npc_hrutnirAI@npc_hrutnir@@'):
+        body = body[:max(index for index, entry in enumerate(body) if entry.mnemonic == 'ret') + 1]
+    return body
+
+
 helper = '?CanStart@HruthnirGossip@@'
 hello = '?OnGossipHello@npc_hrutnir@@'
 select = '?OnGossipSelect@npc_hrutnir@@'

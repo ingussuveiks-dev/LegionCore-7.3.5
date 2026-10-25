@@ -31,23 +31,23 @@ for operand in ('rax, qword ptr [rdx]', 'r8, qword ptr [rdx + 8]', 'qword ptr [r
 assert selection[flag - 1].op_str == 'byte ptr [rsi + 0x5d], 1', 'Movement not armed before external flag/motion calls'
 
 body = instructions(movement)
-conversation = positions(body, '?CreateConversation@Conversation@@')[0]
-assert body[conversation - 2].op_str == 'r8d, 0x1f1'
-pending = max(index for index, entry in enumerate(body[:conversation]) if entry.op_str == 'byte ptr [rdi + 0x5d], r14b' and entry.mnemonic == 'cmp')
+conversation = positions(body, '?StartMagnarConversation' + suffix)[0]
+assert body[conversation - 1].op_str == 'rcx, rbx'
+pending = max(index for index, entry in enumerate(body[:conversation]) if entry.op_str == 'byte ptr [rbx + 0x5d], r14b' and entry.mnemonic == 'cmp')
 queue = next(index for index in positions(body, '?AddDelayedEvent@FunctionProcessor@@') if body[index - 1].op_str == 'edx, 0x1770')
 assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm > body[queue].address
 context_name = '?IsMagnarOfferContext' + suffix
 context = max(index for index in positions(body, context_name) if index < conversation)
 consume = next(index for index, entry in enumerate(body[pending:conversation], start=pending)
-               if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rdi + 0x5d], r14b')
+               if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rbx + 0x5d], r14b')
 assert pending < context < consume < conversation
-assert body[context - 2].op_str == 'edx, dword ptr [rdi + 0x70]'
+assert body[context - 2].op_str == 'edx, dword ptr [rbx + 0x70]'
 assert body[context + 1].op_str == 'al, al' and body[context + 2].mnemonic == 'je'
 assert body[context + 2].operands[0].imm == body[pending + 1].operands[0].imm
 comparison = next(index for index, entry in enumerate(body) if index > context and entry.mnemonic == 'comiss')
 geometry = body[context + 3:comparison + 2]
 expected_geometry = (
-    ('mov', 'rcx, qword ptr [rdi + 0x20]'),
+    ('mov', 'rcx, qword ptr [rbx + 0x20]'),
     ('movss', 'xmm3, dword ptr [rcx + 0xd8]'), ('subss', None),
     ('movss', 'xmm1, dword ptr [rcx + 0xd0]'), ('movaps', 'xmm0, xmm1'), ('subss', None),
     ('movss', 'xmm2, dword ptr [rcx + 0xd4]'), ('subss', None),
@@ -69,15 +69,15 @@ home = max(index for index in positions(body, '?SetHomePosition@Creature@@QEAAXM
 assert comparison < home and consume == home + 1, 'Point7 home must follow admission and precede claim'
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in body[:pending]), 'Arrival consume is not zero'
 assert pending < conversation < queue
-assert any(entry.op_str == 'rbx, qword ptr [rdi + 0x20]' for entry in body[pending:conversation])
-assert any(entry.op_str == 'edx, dword ptr [rdi + 0x70]' for entry in body[pending:conversation])
-assert any(entry.op_str == 'dword ptr [rsp + 0x40], edx' for entry in body[pending:conversation])
-assert any(entry.op_str == 'r13d, dword ptr [rsp + 0x40]' for entry in body[conversation:queue])
-assert any(entry.op_str == 'qword ptr [rbp + 0x18], rbx' for entry in body[conversation:queue])
-assert any(entry.op_str == 'dword ptr [rbp + 0x20], r13d' for entry in body[conversation:queue])
-assert any(entry.op_str == 'qword ptr [rbp + 0x28], rdi' for entry in body[conversation:queue])
-assert any(entry.op_str == 'rcx, [rdx + 0x36a0]' for entry in body[conversation:queue]), 'Native Unit function queue replaced'
-assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [r14 + 0xc]' for entry in body[pending:conversation]), 'Capture lost weak-only ownership'
+assert any(entry.op_str == 'r14, qword ptr [rbx + 0x20]' for entry in body[pending:conversation])
+assert any(entry.op_str == 'r15d, dword ptr [rbx + 0x70]' for entry in body[pending:conversation])
+assert any(entry.op_str == 'qword ptr [rbp - 0x18], r14' for entry in body[conversation:queue])
+assert any(entry.op_str == 'dword ptr [rbp - 0x10], r15d' for entry in body[conversation:queue])
+assert any(entry.op_str == 'qword ptr [rbp - 8], rbx' for entry in body[conversation:queue])
+assert any(entry.op_str == 'rcx, 0x36a0' and entry.mnemonic == 'add' for entry in body[conversation:queue]), 'Native Unit function queue replaced'
+assert any(entry.op_str == 'rcx, qword ptr [rbx + 0x20]' for entry in body[conversation:queue])
+assert any(entry.op_str == 'rdi, qword ptr [rbx + 0x68]' for entry in body[pending:conversation])
+assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rdi + 0xc]' for entry in body[pending:conversation]), 'Capture lost weak-only ownership'
 tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in body[conversation:queue]
           if entry.mnemonic == 'lea' and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP]
 assert sum(struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x10)[0] == native['symbol'](bridge)

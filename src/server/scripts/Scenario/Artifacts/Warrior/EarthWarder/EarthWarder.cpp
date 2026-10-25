@@ -96,6 +96,7 @@ public:
         ~npc_hrutnirAI() override
         {
             CancelMagnarIntro();
+            RemoveMagnarConversation();
         }
 
         EventMap events;
@@ -114,6 +115,7 @@ public:
         bool magnarChamberStarted = false;
         uint32 magnarIntroInstanceGeneration = 0;
         bool magnarOfferReady = false;
+        ObjectGuid magnarConversation = ObjectGuid::Empty;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -145,6 +147,16 @@ public:
             magnarOfferToken.reset();
             magnarOfferReady = false;
             me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            RemoveMagnarConversation();
+        }
+
+        void RemoveMagnarConversation()
+        {
+            ObjectGuid guid = magnarConversation;
+            magnarConversation.Clear();
+            if (guid)
+                if (Conversation* conversation = ObjectAccessor::GetConversation(*me, guid))
+                    conversation->Remove();
         }
 
         bool IsMagnarOfferReady() const
@@ -171,6 +183,7 @@ public:
                 conversation->Remove();
                 return false;
             }
+            magnarConversation = conversation->GetGUID();
             return true;
         }
 
@@ -418,6 +431,7 @@ public:
                         magnarIntroPending = false;
                         magnarChamberStarted = false;
                         magnarIntroInstanceGeneration = generation;
+                        RemoveMagnarConversation();
                     }
                     if (!magnarChamberStarted && IsMagnarOfferContext(me->GetInstanceId()))
                     {

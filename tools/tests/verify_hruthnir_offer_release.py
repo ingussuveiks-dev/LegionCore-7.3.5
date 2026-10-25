@@ -64,24 +64,24 @@ assert movement[context + 1].op_str == 'al, al' and movement[context + 2].mnemon
 comparison = next(index for index, entry in enumerate(movement) if index > context and entry.mnemonic == 'comiss')
 request = positions(movement, '?HasMagnarChamberRequest' + suffix)
 assert len(request) == 1 and request[0] == context + 4
-assert movement[request[0] - 1].op_str == 'rcx, rdi'
+assert movement[request[0] - 1].op_str == 'rcx, rbx'
 assert movement[request[0] + 1].op_str == 'al, al' and movement[request[0] + 2].mnemonic == 'je' and movement[request[0] + 2].operands[0].imm == deny
-verify_endpoint(movement[request[0] + 3:comparison + 1], 'rcx, qword ptr [rdi + 0x20]', 'xmm0', retain_home_x=True)
+verify_endpoint(movement[request[0] + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
 assert movement[comparison + 1].mnemonic == 'jb' and movement[comparison + 1].operands[0].imm == deny
 home = next(index for index in positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM') if context < index < queue)
 allocation = next(index for index, entry in enumerate(movement) if home < index < queue and entry.op_str == 'ecx, 0x18')
 assert comparison < home < allocation, 'Arrival must precede home and offer-token allocation'
-assert any(entry.op_str == 'byte ptr [rdi + 0xac], r14b' for entry in movement[home:allocation])
+assert any(entry.op_str == 'byte ptr [rbx + 0xac], r14b' for entry in movement[home:allocation])
 assert any(entry.mnemonic == 'xor' and entry.op_str == 'r14d, r14d' for entry in movement[:context])
 assert len(positions(movement[home:allocation], '?RemoveFlag@Object@@')) == 1
-for operand in ('qword ptr [rdi + 0x78], r14', 'byte ptr [rdi + 0x5d], r14b', 'qword ptr [rdi + 0x60], r14'):
+for operand in ('qword ptr [rbx + 0x78], r14', 'byte ptr [rbx + 0x5d], r14b', 'qword ptr [rbx + 0x60], r14'):
     check = next(index for index, entry in enumerate(movement[:context]) if entry.mnemonic == 'cmp' and entry.op_str == operand)
     assert movement[check + 1].mnemonic == 'jne' and movement[check + 1].operands[0].imm == deny
 assert any(entry.op_str == 'byte ptr [rcx], r14b' for entry in movement[context:queue])
-assert any(entry.mnemonic == 'lea' and entry.op_str == 'rcx, [rdi + 0x78]' for entry in movement[context:queue])
-assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rbx + 0xc]' for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
-assert any(entry.op_str == 'r12d, dword ptr [r14 + 0x3b8]' for entry in movement[context:queue])
-assert any(entry.op_str == 'dword ptr [rbp - 0x60], r12d' for entry in movement[context:queue])
+assert any(entry.mnemonic == 'lea' and entry.op_str == 'rcx, [rbx + 0x78]' for entry in movement[context:queue])
+assert any(entry.mnemonic == 'lock inc' and entry.op_str == 'dword ptr [rdi + 0xc]' for entry in movement[context:queue]), 'Offer queue does not capture a weak owner'
+assert any(entry.op_str == 'r12d, dword ptr [r15 + 0x3b8]' for entry in movement[context:queue])
+assert any(entry.op_str == 'dword ptr [rbp - 0x48], r12d' for entry in movement[context:queue])
 assert any(entry.op_str == 'rcx, 0x36a0' for entry in movement[context:queue])
 assert any(entry.op_str == 'dl, 0xf' for entry in movement[context:queue]), 'Native Talk15 was lost'
 tables = [entry.address + entry.size + entry.operands[1].mem.disp for entry in movement[context:queue]

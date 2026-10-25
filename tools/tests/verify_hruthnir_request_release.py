@@ -34,5 +34,8 @@ for operand in ('byte ptr [rbx + 0x5d], 0', 'dword ptr [rbx + 0x70], 0', 'byte p
     assert any(entry.mnemonic == 'mov' and entry.op_str == operand for entry in action[retirements[1]:epoch_store])
 epoch_compare = next(index for index, entry in enumerate(action) if entry.mnemonic == 'cmp' and entry.op_str == 'dword ptr [rbx + 0xa8], eax')
 assert epoch_compare < cancel < epoch_store < positions(action, '?IsMagnarOfferContext' + suffix)[0]
-assert action[epoch_compare + 1].mnemonic == 'je' and action[epoch_compare + 1].operands[0].imm == action[epoch_store + 2].address
+assert action[epoch_compare + 1].mnemonic == 'je' and action[epoch_compare + 1].operands[0].imm == action[epoch_store + 3].address
+cleanup = positions(action, '?RemoveMagnarConversation' + suffix)[0]
+assert cleanup == epoch_store + 1 and action[epoch_store + 2].mnemonic == 'jmp'
+assert action[epoch_store + 2].operands[0].imm == action[epoch_store + 4].address
 print('PASS: installed point6 and both offer callbacks require the acknowledged native chamber request/current1060 epoch. Actual helper rejects absent claim/instance/1059 credit/epoch mismatch; epoch transition retires both weak queue owners and arrival snapshot before rearming. Same-epoch movement identity, created497 cleanup and client traversal remain separate.')
