@@ -14,7 +14,7 @@ context_name = '?IsMagnarOfferContext' + suffix
 callback = '??R<lambda_5>@?BL@??MovementInform' + suffix
 bridge = '?_Do_call@?$_Func_impl_no_alloc@V<lambda_5>@?BL@??MovementInform' + suffix
 
-def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, retain_home_x=False):
+def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, retain_home_x=False, swapped_xy=False):
     expected = [
         ('mov', owner_operand),
         ('movss', 'xmm2, dword ptr [rax + 0xd8]'), ('subss', None),
@@ -24,6 +24,12 @@ def verify_endpoint(entries, owner_operand, radius_register, load_radius=True, r
         ('mulss', 'xmm2, xmm2'), ('addss', 'xmm1, xmm2')]
     constants = [(2, 'xmm2', -37.19), (4, 'xmm0', 4763.73), (6, 'xmm1', 340.87)]
     result_register = 'xmm1'
+    if swapped_xy:
+        expected[3:10] = [
+            ('movss', 'xmm1, dword ptr [rax + 0xd0]'), ('subss', None),
+            ('movss', 'xmm0, dword ptr [rax + 0xd4]'), ('subss', None),
+            ('mulss', 'xmm1, xmm1'), ('mulss', 'xmm0, xmm0'), ('addss', 'xmm1, xmm0')]
+        constants = [(2, 'xmm2', -37.19), (4, 'xmm1', 4763.73), (6, 'xmm0', 340.87)]
     if retain_home_x:
         expected = [
             ('mov', owner_operand),
@@ -56,7 +62,11 @@ assert context < queue
 deny = movement[context + 2].operands[0].imm
 assert movement[context + 1].op_str == 'al, al' and movement[context + 2].mnemonic == 'je'
 comparison = next(index for index, entry in enumerate(movement) if index > context and entry.mnemonic == 'comiss')
-verify_endpoint(movement[context + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
+request = positions(movement, '?HasMagnarChamberRequest' + suffix)
+assert len(request) == 1 and request[0] == context + 4
+assert movement[request[0] - 1].op_str == 'rcx, rbx'
+assert movement[request[0] + 1].op_str == 'al, al' and movement[request[0] + 2].mnemonic == 'je' and movement[request[0] + 2].operands[0].imm == deny
+verify_endpoint(movement[request[0] + 3:comparison + 1], 'rcx, qword ptr [rbx + 0x20]', 'xmm0', retain_home_x=True)
 assert movement[comparison + 1].mnemonic == 'jb' and movement[comparison + 1].operands[0].imm == deny
 home = next(index for index in positions(movement, '?SetHomePosition@Creature@@QEAAXMMMM') if context < index < queue)
 assert comparison < home and movement[home + 1].op_str == 'ecx, 0x18', 'Arrival must precede home and offer-token allocation'
@@ -100,11 +110,16 @@ for check in checks:
 flag = positions(body, '?SetFlag@Object@@')[0]
 retirements = positions(body, '?reset@?$shared_ptr@_N@std@@')
 assert len(retirements) == 2 and checks[0] < retirements[0] < claim < talk < checks[1] < retirements[1] < flag
+requests = positions(body, '?HasMagnarChamberRequest' + suffix)
+assert len(requests) == 2
 for number, check in enumerate(checks):
-    first = check + 3
+    request = requests[number]
+    assert request == check + 4 and body[request - 1].op_str == 'rcx, qword ptr [rdi + 0x18]'
+    assert body[request + 1].op_str == 'al, al' and body[request + 2].mnemonic == 'je' and body[request + 2].operands[0].imm == deny
+    first = request + 3
     assert body[first].op_str == 'rcx, qword ptr [rdi + 0x18]'
     comparison = next(index for index, entry in enumerate(body) if index > first and entry.mnemonic == 'comiss')
-    verify_endpoint(body[first + 1:comparison + 1], 'rax, qword ptr [rcx + 0x20]', 'xmm9', number == 0)
+    verify_endpoint(body[first + 1:comparison + 1], 'rax, qword ptr [rcx + 0x20]', 'xmm9', number == 0, swapped_xy=number == 0)
     assert body[comparison + 1].mnemonic == 'jae', 'Outside/unordered must not reach readiness release'
     assert body[comparison + 1].operands[0].imm == body[claim if number == 0 else flag - 3].address
     retire = retirements[number]

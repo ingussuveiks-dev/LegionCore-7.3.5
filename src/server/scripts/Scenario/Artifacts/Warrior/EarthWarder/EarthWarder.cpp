@@ -158,6 +158,14 @@ public:
             return me->GetExactDistSq(4763.73f, 340.87f, -37.19f) <= 4.0f;
         }
 
+        bool HasMagnarChamberRequest() const
+        {
+            if (!magnarChamberStarted)
+                return false;
+            InstanceScript* instance = me->GetInstanceScript();
+            return instance && instance->GetData(1059) && instance->GetData(1060) == magnarIntroInstanceGeneration;
+        }
+
         bool IsMagnarIntroPlayer(Player* player) const
         {
             return player && player->IsInWorld() && player->CanContact() && player->IsAlive() &&
@@ -366,6 +374,10 @@ public:
                     if (magnarIntroInstanceGeneration != generation)
                     {
                         CancelMagnarIntro();
+                        magnarOfferToken.reset();
+                        magnarStartToken.reset();
+                        magnarArrivalPending = false;
+                        magnarStartInstance = 0;
                         magnarIntroPending = false;
                         magnarChamberStarted = false;
                         magnarIntroInstanceGeneration = generation;
@@ -476,7 +488,7 @@ public:
                     case 6:
                     {
                         if (magnarOfferToken || magnarArrivalPending || magnarStartToken ||
-                            !IsMagnarOfferContext(me->GetInstanceId()) || !IsMagnarOfferPosition())
+                            !IsMagnarOfferContext(me->GetInstanceId()) || !HasMagnarChamberRequest() || !IsMagnarOfferPosition())
                             break;
                         me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
                         magnarOfferToken = std::make_shared<bool>(false);
@@ -489,7 +501,7 @@ public:
                         {
                             std::shared_ptr<bool> token = offerToken.lock();
                             if (!token || *token || companion->AI() != expectedAI ||
-                                expectedAI->magnarOfferToken != token || !expectedAI->IsMagnarOfferContext(instanceId))
+                                expectedAI->magnarOfferToken != token || !expectedAI->IsMagnarOfferContext(instanceId) || !expectedAI->HasMagnarChamberRequest())
                                 return;
                             if (!expectedAI->IsMagnarOfferPosition())
                             {
@@ -499,7 +511,7 @@ public:
                             *token = true;
                             expectedAI->Talk(16);
                             if (companion->AI() != expectedAI || expectedAI->magnarOfferToken != token ||
-                                !expectedAI->IsMagnarOfferContext(instanceId))
+                                !expectedAI->IsMagnarOfferContext(instanceId) || !expectedAI->HasMagnarChamberRequest())
                                 return;
                             if (!expectedAI->IsMagnarOfferPosition())
                             {

@@ -38,7 +38,14 @@ move = positions(action, '?MovePoint@MotionMaster@@')[0]
 chamber = find(action, 'byte ptr [rbx + 0xa5], 1', 'mov')
 epoch = find(action, 'dword ptr [rbx + 0xa8], eax', 'cmp')
 cancel = positions(action, cancel_name)[0]
-epoch_store = find(action, 'dword ptr [rbx + 0xa8], edi', 'mov')
+epoch_store = find(action, 'dword ptr [rbx + 0xa8], esi', 'mov')
+assert action[generation + 1].op_str == 'esi, eax'
+retirements = positions(action, '?reset@?$shared_ptr@_N@std@@')
+assert len(retirements) == 2 and cancel < retirements[0] < retirements[1] < epoch_store
+assert action[retirements[0] - 1].op_str == 'rcx, [rbx + 0x78]'
+assert action[retirements[1] - 1].op_str == 'rcx, [rbx + 0x60]'
+assert cancel < find(action, 'byte ptr [rbx + 0x5d], 0', 'mov') < epoch_store
+assert cancel < find(action, 'dword ptr [rbx + 0x70], 0', 'mov') < epoch_store
 assert generation < epoch < cancel < epoch_store < positions(action, offer_name)[0] < handoff < chamber < talk < move < admit < claim
 assert action[epoch + 1].mnemonic == 'je'
 assert find(action, 'byte ptr [rbx + 0xa5], 0', 'mov') < epoch_store

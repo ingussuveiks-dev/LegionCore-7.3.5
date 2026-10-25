@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$OfferBaseline,[switch]$HomeBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$OfferBaseline,[switch]$HomeBaseline,[switch]$RequestBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $OfferBaseline -or $HomeBaseline) -and $VerifyReleaseBinary){throw 'Arrival baseline cannot certify installed code'}
-if(@($Baseline,$OfferBaseline,$HomeBaseline|Where-Object {$_}).Count -gt 1){throw 'Select only one arrival baseline'}
+if(($Baseline -or $OfferBaseline -or $HomeBaseline -or $RequestBaseline) -and $VerifyReleaseBinary){throw 'Arrival baseline cannot certify installed code'}
+if(@($Baseline,$OfferBaseline,$HomeBaseline,$RequestBaseline|Where-Object {$_}).Count -gt 1){throw 'Select only one arrival baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-arrival"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -13,5 +13,6 @@ $geometry
 if($Baseline){& "$PSScriptRoot/Test-HruthnirGossip.ps1" -ArrivalBaseline}
 elseif($OfferBaseline){& "$PSScriptRoot/Test-HruthnirGossip.ps1" -OfferArrivalBaseline}
 elseif($HomeBaseline){& "$PSScriptRoot/Test-HruthnirGossip.ps1" -HomeBaseline}
+elseif($RequestBaseline){& "$PSScriptRoot/Test-HruthnirGossip.ps1" -RequestBaseline}
 else{& "$PSScriptRoot/Test-HruthnirGossip.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary}
 if(!$? -or $LASTEXITCODE){throw 'Extracted Hruthnir arrival/queue failed'}

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <vector>
 using uint32 = uint32_t;
 struct ObjectGuid
@@ -134,6 +135,9 @@ auto* sSpellMgr = &spellManager;
 struct IntroAI
 {
     Creature* me;
+    std::shared_ptr<bool> magnarOfferToken, magnarStartToken;
+    bool magnarArrivalPending = false;
+    uint32 magnarStartInstance = 0;
     uint32 talks = 0;
     void Talk(uint32 identity) { if (identity != 14) std::abort(); ++talks; }
 #include "Fields.inc"
@@ -284,8 +288,13 @@ int main()
     }
     {
         Fixture fixture; fixture.Start(); fixture.Complete();
+        fixture.script.magnarOfferToken = std::make_shared<bool>(false);
+        fixture.script.magnarStartToken = std::make_shared<bool>(false);
+        std::weak_ptr<bool> offer = fixture.script.magnarOfferToken, start = fixture.script.magnarStartToken;
+        fixture.script.magnarArrivalPending = true; fixture.script.magnarStartInstance = 42;
         ++fixture.instance.generation; fixture.instance.introCreditSent = false; fixture.scenario.step = 2;
         fixture.Start(); Require(fixture.player.casts == 2 && fixture.actor.motion.moves == 1 && !fixture.script.magnarChamberStarted && fixture.script.GetData(1059) == 0, "new instance epoch also retires a previous chamber claim on the same AI, without replaying its movement before a fresh scene");
+        Require(offer.expired() && start.expired() && !fixture.script.magnarArrivalPending && fixture.script.magnarStartInstance == 0, "actual scene producer retires old offer/start owners and arrival snapshot before a new epoch");
     }
     {
         Fixture fixture; fixture.player.sceneStatus = SCENE_COMPLETE; fixture.Start();

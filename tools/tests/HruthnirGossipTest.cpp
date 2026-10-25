@@ -17,7 +17,7 @@ using int32 = int32_t;
 enum { CLASS_WARRIOR = 1, QUEST_STATUS_INCOMPLETE = 3, QUEST_STATUS_COMPLETE = 1,
     UNIT_NPC_FLAG_NONE = 0, UNIT_NPC_FLAG_GOSSIP = 1, UNIT_FIELD_NPC_FLAGS = 10,
     UNIT_FIELD_FLAGS = 11, UNIT_FLAG_NOT_SELECTABLE = 0x2000000, UNIT_FLAG_IMMUNE_TO_PC = 0x100,
-    UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80, REACT_DEFENSIVE = 1,
+    UNIT_FLAG_IMMUNE_TO_NPC = 0x200, UNIT_FLAG_NOT_ATTACKABLE_1 = 0x80, REACT_DEFENSIVE = 1, REACT_PASSIVE = 0,
     UNIT_STATE_DIED = 1, SPELL_AURA_FEIGN_DEATH = 2, UNIT_STATE_CASTING = 4, UNIT_STATE_STUNNED = 8,
     UNIT_STATE_ROAMING = 16, UNIT_STATE_ROAMING_MOVE = 32, POINT_MOTION_TYPE = 8, WAYPOINT_MOTION_TYPE = 2,
     CRITERIA_TYPE_SCRIPT_EVENT_2 = 92,
@@ -69,6 +69,7 @@ struct ObjectGuid
     uint32 identity = 1, kind = 1;
     bool IsCreatureOrVehicle() const { return kind == 1; }
     bool IsGameObject() const { return kind == 2; }
+    void Clear() { identity = 0; }
     std::string ToString() const { return std::to_string(identity); }
 };
 struct Player;
@@ -106,7 +107,13 @@ struct GameObject
     GameObjectAI* AI() { return &ai; }
     ObjectGuid GetGUID() const { assert(false); return {}; }
 };
-struct InstanceScript { void HandleGameObject(ObjectGuid, bool) { assert(false); } };
+struct InstanceScript
+{
+    bool credit = true;
+    uint32 generation = 1;
+    uint32 GetData(uint32 identity) const { assert(identity == 1059 || identity == 1060); return identity == 1059 ? uint32(credit) : generation; }
+    void HandleGameObject(ObjectGuid, bool) { assert(false); }
+};
 struct Map
 {
     GameObject* GetGameObject(ObjectGuid) { return nullptr; }
@@ -130,7 +137,8 @@ struct MotionMaster
     std::function<void()> reenter;
     void MovePoint(uint32 point, float positionX, float positionY, float positionZ)
     {
-        assert(point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f);
+        assert((point == 7 && positionX == 4720.80f && positionY == 347.91f && positionZ == -37.71f) ||
+            (point == 6 && positionX == 4763.73f && positionY == 340.87f && positionZ == -37.19f));
         ++moves;
         if (reenter) { auto callback = std::move(reenter); callback(); }
     }
@@ -168,6 +176,8 @@ struct Creature
     Map* map = &instanceMap;
     CreatureAI* ai = nullptr;
     Creature* boss = nullptr;
+    InstanceScript request;
+    InstanceScript* instanceScript = &request;
     MotionMaster motion;
     InspectableFunctions m_Functions;
     bool IsInWorld() const { return world; }
@@ -181,7 +191,8 @@ struct Creature
     Info* GetCreatureTemplate() { return &info; }
     CreatureAI* AI() { return ai; }
     GameObject* FindNearestGameObject(uint32, float) { assert(false); return nullptr; }
-    InstanceScript* GetInstanceScript() { assert(false); return nullptr; }
+    InstanceScript* GetInstanceScript() const { return instanceScript; }
+    void StopAttack() { }
     Player* FindNearestPlayer(float) { assert(false); return nullptr; }
     void Kill(Creature*) { assert(false); }
     void DespawnOrUnsummon(uint32) { assert(false); }
@@ -283,6 +294,9 @@ struct HruthnirAI : CreatureAI
 #include "AIReset.inc"
 #include "OfferContext.inc"
 #include "OfferPosition.inc"
+#include "Request.inc"
+#include "IntroContext.inc"
+#include "Chamber.inc"
 #include "Offer.inc"
 #include "Arrival.inc"
 #include "Movement.inc"
@@ -341,6 +355,10 @@ struct Fixture
         scenarioManager = {};
         player.actor = &actor;
         actor.ai = &ai;
+#ifdef CURRENT_REQUEST
+        ai.magnarChamberStarted = true;
+        ai.magnarIntroInstanceGeneration = actor.request.generation;
+#endif
         actor.boss = &boss;
         boss.entry = 96034;
         boss.ai = &bossAI;
@@ -351,7 +369,25 @@ struct Fixture
 };
 int main()
 {
-#ifdef HOME_BASELINE
+#ifdef REQUEST_BASELINE
+    for (uint32 invalid = 0; invalid < 4; ++invalid)
+    {
+        Fixture offer; offer.actor.flags = 0;
+        offer.ai.magnarChamberStarted = true; offer.ai.magnarIntroInstanceGeneration = 1;
+        if (invalid == 0) offer.ai.magnarChamberStarted = false;
+        if (invalid == 1) offer.actor.instanceScript = nullptr;
+        if (invalid == 2) offer.actor.request.credit = false;
+        if (invalid == 3) ++offer.actor.request.generation;
+        offer.ai.OfferArrive(); offer.Tick(13000);
+        assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({15,16}));
+    }
+    Fixture epoch; epoch.actor.flags = 0;
+    epoch.ai.magnarChamberStarted = true; epoch.ai.magnarIntroInstanceGeneration = 1;
+    epoch.ai.OfferArrive(); auto stale = epoch.actor.m_Functions.LastQueued();
+    ++epoch.actor.request.generation; epoch.ai.StartChamber(); stale();
+    assert(epoch.actor.flags == 1 && epoch.ai.texts == std::vector<uint32>({15,14,16}));
+    std::cout << "PASS request baseline: pinned3d445173 admits point6 without chamber request/current instance credit/epoch; native action2 rearm retains an old offer and its saved callback opens immediately in the new epoch. Controlled instance marker, not a live Initialize/scene replay.\n";
+#elif defined(HOME_BASELINE)
     for (uint32 point : {6u,7u})
         for (uint32 invalid = 0; invalid < 3; ++invalid)
         {
@@ -450,6 +486,56 @@ int main()
     assert(early.actor.flags == 1 && !early.actor.unitFlags);
     std::cout << "BASELINE: pinnedbbf4455c/native Unit queue executes raw-this point6 offer after Reset, AI replacement and phase advance, releasing gossip/protection on a revoked actor. Old AI kept alive in host; no freed-pointer crash or client visibility claim.\n";
 #else
+    for (uint32 faction : {0u,1u})
+        for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
+            for (uint32 invalid = 0; invalid < 4; ++invalid)
+            {
+                Fixture offer; offer.player.faction = faction; offer.player.status = status; offer.actor.flags = 0;
+                auto home = offer.actor.m_homePosition.values;
+                if (invalid == 0) offer.ai.magnarChamberStarted = false;
+                if (invalid == 1) offer.actor.instanceScript = nullptr;
+                if (invalid == 2) offer.actor.request.credit = false;
+                if (invalid == 3) ++offer.actor.request.generation;
+                offer.ai.MovementInform(POINT_MOTION_TYPE,6); offer.Tick(13000);
+                assert(!offer.ai.magnarOfferToken && offer.ai.texts.empty() && !offer.actor.flags && offer.actor.m_homePosition.values == home);
+                offer.actor.instanceScript = &offer.actor.request; offer.actor.request.credit = true;
+                offer.ai.magnarChamberStarted = false; offer.ai.StartChamber();
+                assert(offer.ai.HasMagnarChamberRequest() && offer.actor.motion.moves == 1 && offer.ai.texts == std::vector<uint32>({14}));
+                offer.ai.OfferArrive(); offer.Tick(12999); assert(!offer.actor.flags);
+                offer.Tick(1); assert(offer.actor.flags == 1 && offer.ai.texts == std::vector<uint32>({14,15,16}));
+            }
+    for (uint32 moment : {0u,16u})
+        for (uint32 invalid = 0; invalid < 4; ++invalid)
+        {
+            Fixture offer; offer.actor.flags = 0; offer.ai.OfferArrive();
+            auto revoke = [&]() {
+                if (invalid == 0) offer.ai.magnarChamberStarted = false;
+                if (invalid == 1) offer.actor.instanceScript = nullptr;
+                if (invalid == 2) offer.actor.request.credit = false;
+                if (invalid == 3) ++offer.actor.request.generation;
+            };
+            if (!moment) revoke(); else offer.ai.onTalk = revoke;
+            offer.Tick(13000);
+            assert(!offer.actor.flags && offer.actor.unitFlags == 0x2000380 && offer.ai.texts.size() == (moment ? 2u : 1u));
+        }
+    {
+        Fixture epoch; epoch.actor.flags = 0; epoch.ai.OfferArrive();
+        auto stale = epoch.actor.m_Functions.LastQueued();
+        auto oldToken = epoch.ai.magnarOfferToken;
+        ++epoch.actor.request.generation; epoch.ai.StartChamber();
+        assert(!epoch.ai.magnarOfferToken && !epoch.ai.magnarStartToken && !epoch.ai.magnarArrivalPending && epoch.ai.magnarStartInstance == 0);
+        epoch.ai.OfferArrive(); auto fresh = epoch.ai.magnarOfferToken; stale();
+        assert(fresh && fresh != oldToken && !*fresh && !epoch.actor.flags);
+        epoch.Tick(12999); assert(!epoch.actor.flags);
+        epoch.Tick(1); assert(epoch.actor.flags == 1 && epoch.ai.texts == std::vector<uint32>({15,14,15,16}));
+    }
+    {
+        Fixture epoch; epoch.Select(); epoch.ai.Arrive();
+        std::weak_ptr<bool> oldToken = epoch.ai.magnarStartToken;
+        ++epoch.actor.request.generation; epoch.ai.StartChamber(); epoch.Tick(6000);
+        assert(oldToken.expired() && !epoch.bossAI.starts && !epoch.ai.magnarArrivalPending && !epoch.ai.magnarStartToken && epoch.ai.magnarStartInstance == 0);
+    }
+    std::cout << "PASS request:16 initial request/instance/credit/epoch rejections with actual action2 readmission,8 late/Talk16 revocations, fresh epoch offer full12999+1ms budget/old callback isolation and old point7 cue cancellation. Controlled marker; same-epoch physical request identity/selected owner/client remain open.\n";
     for (uint32 point : {6u,7u})
         for (uint32 faction : {0u,1u})
             for (uint32 status : {uint32(QUEST_STATUS_INCOMPLETE),uint32(QUEST_STATUS_COMPLETE)})
