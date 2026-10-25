@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     effects.LoadFromDB();
     for (auto effect : effects)
         if (!effect->DifficultyID && (effect->SpellID == 210985 || effect->SpellID == 211838 ||
-            effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 225877))
+            effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 211867 || effect->SpellID == 225877))
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
@@ -113,6 +113,20 @@ int main(int argc, char** argv)
         return 15;
     durations.LoadFromDB();
     castTimes.LoadFromDB();
+    DB2Storage<SpellEntry> spells("Spell.db2", SpellLoadInfo::Instance());
+    if (!spells.Load(argv[1], 0))
+        return 19;
+    spells.LoadFromDB();
+    for (auto entry : miscellaneous)
+        if ((entry->SpellID == 211862 || entry->SpellID == 211867) && !entry->DifficultyID)
+        {
+            auto spell = spells.LookupEntry(entry->SpellID);
+            auto duration = durations.LookupEntry(entry->DurationIndex);
+            auto castTime = castTimes.LookupEntry(entry->CastingTimeIndex);
+            std::cout << "COLLAPSE_SPELL\t" << entry->SpellID << '\t' << (spell ? spell->Name->Str[0] : "missing") << '\t'
+                << entry->CastingTimeIndex << '\t' << (castTime ? castTime->Base : 0) << '\t'
+                << entry->DurationIndex << '\t' << (duration ? duration->Duration : 0) << '\t' << entry->Attributes[1] << '\n';
+        }
     auto pickupDuration = durations.LookupEntry(105);
     auto pickupCastTime = castTimes.LookupEntry(1);
     if (!pickupDuration || !pickupCastTime)

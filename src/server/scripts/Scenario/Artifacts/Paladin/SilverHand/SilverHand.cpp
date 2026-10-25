@@ -9,6 +9,7 @@
 #include "Item.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "SpellMgr.h"
 
 
 // 106429
@@ -1081,6 +1082,48 @@ public:
     }
 };
 
+namespace SilverHandCollapse
+{
+    bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+    {
+        if (!scene || scene->MiscValue != 1268 || scene->SceneScriptPackageID != 1619)
+            return false;
+        if (trigger != "complete" || !player || !player->HasSceneStatus(1268, SCENE_COMPLETE) ||
+            !player->HasSceneStatus(1267, SCENE_COMPLETE) || !player->HasAura(211862) ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+            player->getClass() != CLASS_PALADIN || !player->GetMap() || player->GetMapId() != 1539 ||
+            player->GetQuestRewardStatus(42120) ||
+            (player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42120) != QUEST_STATUS_COMPLETE))
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1092 || !scenario->IsCompleted(false))
+            return true;
+        Item* weapon = player->GetItemByEntry(128823);
+        if (!weapon || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+            return true;
+        SpellTargetPosition const* destination = sSpellMgr->GetSpellTargetPosition(211867);
+        if (!destination || destination->target_mapId != 1539)
+        {
+            TC_LOG_WARN("scripts", "Silver Hand collapse: missing or foreign-map 211867 destination for player %u; exit not cast", player->GetGUIDLow());
+            return true;
+        }
+        SpellCastResult result = player->CastSpell(player, 211867, true);
+        if (result != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts", "Silver Hand collapse: native exit 211867 failed with result %u for player %u; no Dalaran arrival credit granted", uint32(result), player->GetGUIDLow());
+        return true;
+    }
+}
+
+class scene_silver_hand_collapse : public SceneTriggerScript
+{
+public:
+    scene_silver_hand_collapse() : SceneTriggerScript("scene_silver_hand_collapse") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return SilverHandCollapse::Complete(player, scene, trigger);
+    }
+};
+
 namespace SilverHandPresentation
 {
     bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
@@ -1143,4 +1186,5 @@ void AddSC_SilverHand()
     new npc_travar_last();
     new go_art_silverhand();
     new scene_silver_hand_pickup();
+    new scene_silver_hand_collapse();
 };
