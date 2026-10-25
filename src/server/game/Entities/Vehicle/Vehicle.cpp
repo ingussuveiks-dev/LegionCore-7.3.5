@@ -619,7 +619,10 @@ bool Vehicle::AddPassenger(Unit* unit, int8 seatId)
 
         //ASSERT(!seat->second.Passenger);
         if (seat->second.Passenger.Guid)
+        {
+            e->to_Abort = true;
             return false;
+        }
     }
     if (seat->second.SeatInfo->Flags && !(seat->second.SeatInfo->Flags & VEHICLE_SEAT_FLAG_ALLOW_TURNING))
         if (!(_me->ToCreature() && _me->ToCreature()->GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS) &&

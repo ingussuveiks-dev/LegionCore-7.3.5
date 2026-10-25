@@ -11,12 +11,19 @@
 using int8=int8_t;
 static_assert(_ITERATOR_DEBUG_LEVEL==2,"Vehicle join regression requires checked iterators");
 #define TC_LOG_DEBUG(...) DebugLog(__VA_ARGS__)
+#ifndef TC_LOG_ERROR
 #define TC_LOG_ERROR(...) assert(false)
+#endif
 #define TC_LOG_FATAL(...) FatalLog(__VA_ARGS__)
 std::vector<std::vector<uint32>> debugMessages;
 std::vector<std::vector<uint32>> fatalMessages;
 template<typename... Arguments> void DebugLog(char const*,char const*,Arguments... arguments)
 {
+    debugMessages.push_back({uint32(arguments)...});
+}
+template<typename... Arguments> void DebugLog(char const*,char const*,char const* name,Arguments... arguments)
+{
+    assert(name);
     debugMessages.push_back({uint32(arguments)...});
 }
 template<typename... Arguments> void FatalLog(char const*,char const*,Arguments... arguments)
@@ -28,7 +35,7 @@ enum { SPELL_AURA_CONTROL_VEHICLE=236, SPELL_AURA_MOUNTED=78, UNIT_MASK_ACCESSOR
     UNIT_FIELD_FLAGS=0x61, UNIT_FIELD_NPC_FLAGS=0x7d, UNIT_FLAG_NOT_SELECTABLE=0x2000000, MOVEMENTFLAG_DISABLE_GRAVITY=0x200,
     UNIT_NPC_FLAG_PLAYER_VEHICLE=0x2000000, UNIT_NPC_FLAG_SPELLCLICK=0x1000000, VEHICLE_SEAT_FLAG_CAN_CONTROL=0x800,
     VEHICLE_SEAT_FLAG_DISABLE_GRAVITY=4, VEHICLE_SEAT_FLAG_HIDE_PASSENGER=0x200, VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE=0x100000,
-    VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT=0x2000000,
+    VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT=0x2000000, VEHICLE_SEAT_FLAG_ALLOW_TURNING=0x400,
     VEHICLE_SEAT_FLAG_B_KEEP_PET=0x20000, CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS=0x1000000, UNIT_STATE_ONVEHICLE=0x80000,
     UNIT_STATE_ROOT=0x400, CHARM_TYPE_VEHICLE=2, CHARM_TYPE_POSSESS=1 };
 using CharmType=uint32;
@@ -68,6 +75,9 @@ struct Unit : Object
     uint32 identity=17,despawns=0,exits=0,flags=0,states=0,movementFlags=0,interrupted=0,mountedRemoved=0;
     uint32 breakTargets=0,splines=0,visibilityUpdates=0,charmCalls=0,rootCalls=0;
     bool inWorld=true,accessory=false,charmResult=true;
+    bool waitOnSeat=false;
+    EventProcessor m_Events;
+    std::function<void()> onExit;
     Vehicle* kit=nullptr;
     Vehicle* m_vehicle=nullptr;
     ObjectGuid charmerGuid;
@@ -89,6 +99,7 @@ struct Unit : Object
     ObjectGuid GetGUID() const {return {identity};}
     uint32 GetGUIDLow() const {return identity;}
     uint32 GetEntry() const {return 105886;}
+    char const* GetName() const {return "passenger";}
     bool IsInWorld() const {return inWorld;}
     bool HasUnitTypeMask(uint32 mask) const {assert(mask==UNIT_MASK_ACCESSORY);return accessory;}
     bool HasFlag(uint32 field,uint32 flag) const {assert(field==UNIT_FIELD_FLAGS);return (flags&flag)!=0;}
@@ -102,6 +113,7 @@ struct Unit : Object
     void RemoveAurasByType(uint32 aura){if(aura==236)++removedAll;else {assert(aura==78);++mountedRemoved;}}
     void DespawnOrUnsummon(){++despawns;}
     void _ExitVehicle(){++exits;}
+    void ExitVehicle(){++exits;if(onExit)onExit();}
     void RemoveFlag(uint32 field,uint32 flag){assert(field==UNIT_FIELD_NPC_FLAGS);flags&=~flag;}
     void SetFlag(uint32 field,uint32 flag){assert(field==UNIT_FIELD_FLAGS);flags|=flag;}
     void InterruptNonMeleeSpells(bool delayed){assert(!delayed);++interrupted;}
@@ -121,6 +133,8 @@ struct Player : Unit
 {
     uint32 charmStopped=0,sightStopped=0,cancelSent=0,petUnsummoned=0,collisionSent=0;
     Battleground* battleground=nullptr;
+    std::set<ObjectGuid> extraLook;
+    void AddToExtraLook(ObjectGuid guid){extraLook.insert(guid);}
     Player* ToPlayer() override {return this;}
     Battleground* GetBattleground(){return battleground;}
     void* GetTransport(){return nullptr;}
@@ -152,11 +166,14 @@ namespace ObjectAccessor
     std::map<uint32,Unit*> units;
     Unit* GetUnit(Unit&,ObjectGuid guid){auto found=units.find(guid.value);return found==units.end()?nullptr:found->second;}
     Unit* FindUnit(ObjectGuid guid){auto found=units.find(guid.value);return found==units.end()?nullptr:found->second;}
+    Player* GetPlayer(Unit& context,ObjectGuid guid){Unit* unit=GetUnit(context,guid);return unit?unit->ToPlayer():nullptr;}
 }
 struct VehicleSeatEntry
 {
     uint32 ID=16558,Flags=0,FlagsB=0;
     bool usable=false;
+    bool overrideUsable=false;
+    bool IsUsableByOverride() const {return overrideUsable;}
     struct {float X=0,Y=0,Z=0;} AttachmentOffset;
 #ifdef VEHICLE_NATIVE_SEAT_PREDICATE
     bool CanEnterOrExit() const;
@@ -175,10 +192,13 @@ struct Vehicle
     Unit* _me;
     uint32 _status=0,_creatureEntry=105886,UsableSeatNum=0,recAura=0,resets=0;
     struct {uint32 ID=4726;} vehicleInfo;
+    decltype(vehicleInfo)* _vehicleInfo=&vehicleInfo;
     explicit Vehicle(Unit* base):_me(base){base->kit=this;Seats.emplace(int8(0),Seat{{},&seatInfo});Seats.emplace(int8(1),Seat{{},&seatInfo});}
     Unit* GetBase(){return _me;}
     uint32 GetRecAura(){return recAura;}
     auto GetVehicleInfo(){return &vehicleInfo;}
+    bool AddPassenger(Unit*,int8);
+    bool CheckCustomCanEnter(){return false;}
     void Reset(){++resets;}
     void AddPendingEvent(VehicleJoinEvent*);
     void RemovePendingEvent(VehicleJoinEvent*);

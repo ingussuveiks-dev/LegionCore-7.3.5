@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/game/Entities/Vehicle/Vehicle.cpp",
+      "handler": "Vehicle::AddPassenger occupied explicit seat / native queued join",
+      "problem": "A missing incumbent or refused exit left the explicit seat occupied. AddPassenger returned false but did not mark its already queued event for abort; Execute could overwrite the incumbent GUID and publish boarding anyway.",
+      "repair_audit": "docs/audits/vehicle-occupied-seat-admission-2026-10-25.json",
+      "limit": "Retained occupant now sets the actual event to_Abort before false, using native queued Abort/destruction and retaining incumbent/caster/other requests. Full extracted admission/Execute/Abort/queue and selected installed branch checked. No occupant removal, counter repair, new timeout or retry; earlier waitOnSeat/old-vehicle exit, later charm, actual world/client remain open."
+    },
+    {
+      "path": "src/server/game/Entities/Vehicle/Vehicle.cpp",
       "handler": "RemovePendingEvent / VehicleJoinEvent destruction",
       "problem": "Single-event destructor cleanup cleared all pending joins, hiding other queued or replacement-kit requests from native cancellation.",
       "repair_audit": "docs/audits/vehicle-pending-join-ownership-2026-10-25.json",
@@ -621,6 +628,7 @@
       "shared_vehicle_failure_audit": "docs/audits/vehicle-join-prepublication-failure-2026-10-25.json",
       "shared_vehicle_usable_seat_audit": "docs/audits/vehicle-usable-seat-admission-2026-10-25.json",
       "shared_vehicle_foreign_control_audit": "docs/audits/vehicle-foreign-control-admission-2026-10-25.json",
+      "shared_vehicle_occupied_seat_audit": "docs/audits/vehicle-occupied-seat-admission-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
