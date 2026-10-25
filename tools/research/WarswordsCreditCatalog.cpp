@@ -92,6 +92,20 @@ int main(int argc, char** argv)
                     return 21;
             }
     }
+    for (uint32 identity : {77359, 64464})
+    {
+        if (!soundKits.LookupEntry(identity))
+            return 24;
+        bool found = false;
+        for (auto sound : soundFiles)
+            if (uint32(sound->SoundKitID) == identity && sound->FileDataID && sound->Frequency && sound->Volume > 0)
+            {
+                found = true;
+                std::cout << "SCENE_SOUND_FILE\t" << identity << '\t' << sound->FileDataID << '\n';
+            }
+        if (!found)
+            return 25;
+    }
     dungeons.LoadFromDB();
     DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
     if (!maps.Load(argv[1], 0))
@@ -137,7 +151,11 @@ int main(int argc, char** argv)
     if (!items.Load(argv[1], 0))
         return 13;
     items.LoadFromDB();
-    for (uint32 identity : {128908, 134553})
+    std::set<uint32> equipment{128908, 134553, 128289};
+    for (auto child : children)
+        if (child->ItemID == 128289)
+            equipment.insert(child->ChildItemID);
+    for (uint32 identity : equipment)
     {
         auto item = items.LookupEntry(identity);
         if (!item)
@@ -146,9 +164,9 @@ int main(int argc, char** argv)
             << '\t' << item->ItemLevel << '\t' << item->Display->Str[0] << '\n';
     }
     for (auto child : children)
-        if (child->ItemID == 128908)
+        if (child->ItemID == 128908 || child->ItemID == 128289)
             std::cout << "CHILD\t" << child->ItemID << '\t' << child->ChildItemID << '\t' << unsigned(child->ChildItemEquipSlot) << '\n';
-    std::set<uint32> packages{1580}, seenPackages, pendingScripts, seenScripts;
+    std::set<uint32> packages{1580, 1575}, seenPackages, pendingScripts, seenScripts;
     while (!packages.empty())
     {
         uint32 package = *packages.begin();
@@ -158,6 +176,7 @@ int main(int argc, char** argv)
         for (auto member : members)
             if (member->SceneScriptPackageID == package)
             {
+                std::cout << "SCENE_MEMBER\t" << package << '\t' << member->SceneScriptID << '\t' << member->ChildSceneScriptPackageID << '\n';
                 if (member->ChildSceneScriptPackageID)
                     packages.insert(member->ChildSceneScriptPackageID);
                 if (member->SceneScriptID)
@@ -222,7 +241,7 @@ int main(int argc, char** argv)
                         pending.insert(descendant->ID);
             }
         }
-    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424, 205534, 189695, 205744, 205340, 188074, 208562})
+    for (uint32 identity : {128264, 195996, 197852, 195986, 197853, 205443, 194201, 208578, 192085, 225890, 195062, 205424, 205534, 189695, 205744, 205340, 188074, 208562, 225889})
     {
         auto spell = spells.LookupEntry(identity);
         if (!spell)

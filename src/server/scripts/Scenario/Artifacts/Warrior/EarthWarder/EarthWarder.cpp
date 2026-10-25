@@ -643,9 +643,49 @@ public:
     }
 };
 
+namespace EarthwarderPresentation
+{
+    bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+    {
+        if (!scene || scene->MiscValue != 1215 || scene->SceneScriptPackageID != 1575)
+            return false;
+        if (trigger != "complete" || !player || !player->HasSceneStatus(1215, SCENE_COMPLETE) ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+            player->getClass() != CLASS_WARRIOR || player->GetMapId() != 1495 || player->GetQuestRewardStatus(39191) ||
+            (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE) ||
+            !player->GetItemByEntry(128289))
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() < 5 || scenario->GetCurrentStep() > 6)
+            return true;
+        SpellCastResult result = player->CastSpell(player, 208562, true);
+        if (result != SPELL_CAST_OK)
+        {
+            TC_LOG_WARN("scripts", "Earthwarder pickup: native equip 208562 failed with result %u for player %u; existing items retained", uint32(result), player->GetGUIDLow());
+            return true;
+        }
+        Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+        if (!weapon || weapon->GetEntry() != 128289 || !child || child->GetEntry() != 128288 || weapon->GetChildItem() != child->GetGUID())
+            TC_LOG_WARN("scripts", "Earthwarder pickup: native equip 208562 accepted but parent/child is not equipped for player %u; retain native inventory errors", player->GetGUIDLow());
+        return true;
+    }
+}
+
+class scene_earthwarder_pickup : public SceneTriggerScript
+{
+public:
+    scene_earthwarder_pickup() : SceneTriggerScript("scene_earthwarder_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return EarthwarderPresentation::Complete(player, scene, trigger);
+    }
+};
+
 void AddSC_EarthWarder()
 {
     new npc_hrutnir();
     new npc_magnar_icebreaker();
     new go_art_earthwarder();
+    new scene_earthwarder_pickup();
 };

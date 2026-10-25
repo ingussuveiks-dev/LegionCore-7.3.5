@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "presentation_audit": "docs/audits/earthwarder-presentation-2026-10-25.json",
+      "presentation_review": "Native1215/package1575 lacked server completion binding. Guarded scene handler now waits for actual native SCENE_COMPLETE, live Warrior39191/1495/scenario909/5-6 and existing nonbank128289, then self-casts208562. Native parent shield is OFFHAND16, linked Scaleshard128288 MAINHAND15; both slots/relationship and failed casts/equip errors are checked without item grants. Actual scene/packet/force-equip bodies and controlled inventory swap pass; full208562 progression/group/ability effects and real client equipment/VFX remain separate. Native13960 retains original128288/128289 presentation,60494 visual and77359/64464 sound references, not a new invented effect.",
       "real_loot_audit": "docs/audits/earthwarder-real-loot-2026-10-25.json",
       "real_loot_review": "Data1 now binds dormant248831/128289 native loot with14 source4 rules: live active Warrior39191,1495/exact909/5, unrewarded and no bank-inclusive owned copy. Activation no longer grants or progresses; stored GO_JUST_DEACTIVATED plus actual ownership gates claim. Native storage/consumption/release predicate and SetLootState dispatch cover full bags, null storage and successful retry. Existing-copy gossip replays through native state dispatcher without AddItem. Native source4/cached-slot and13 SQL custom-preservation variants checked; actual network/client loot, scene/equip, save/relog and whole route remain pending.",
       "opening_admission_audit": "docs/audits/earthwarder-pickup-admission-2026-10-25.json",
@@ -199,7 +201,7 @@
       "return_admission_review": "Existing12s callback revalidates original-instance live Warrior1495/active39191/owned128289/native completed909 before192085; no attempted-cast103739.18 invalid/16 legitimate combinations and deployed closure remain checked. Superseding real_loot_audit moves initial progress/scene/timer behind completed native loot and removes AddItem. Automatic12s still differs from partial muted video: loot/equipment, golden winged return light/manual Jump to Skyhold/final0/1 at14:56, then loading/Skyhold ready at15:12. Native equip, full footage/audio/client traversal remain pending.",
       "item": 128289,
       "start": 39191,
-      "status": "native real-loot and opening/completed-claim/delayed-return repairs; scene/equip, manual return and full client traversal pending",
+      "status": "native real-loot, scoped scene/equip bridge and admission repairs; live equipment/VFX, retry/manual return and full client traversal pending",
       "quests": [
         {
           "id": 39191,
@@ -207,7 +209,7 @@
           "prerequisites_any": [
             40580
           ],
-          "lifecycle_review": "Native loot link/conditions and completed-state ownership now precede94851/scene/timer; no activation AddItem or failed-storage progression. Opening and delayed-return admission retained. Scene/equip, manual return, actual client loot and arrival remain unresolved. See real_loot_audit and existing admission audits.",
+          "lifecycle_review": "Native real-loot/completed-state ownership precedes94851/scene/timer. Actual1215/1575 completion now reaches native208562 equip for existing shield/linked sword, with live quest/scenario/ownership gates and diagnostics. No script item grant. Missing completion/retry/manual return, actual client loot/equipment/arrival remain unresolved. See presentation_audit, real_loot_audit and admission audits.",
           "visual_review": "Sparse muted pickup/equipment/return samples14:25..15:12 only, not continuous/full footage, audio or local client parity."
         },
         {
@@ -282,7 +284,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Retain native real-loot248831/128289 source4 conditions and completed-state/ownership claim, exact909/5 admission and7541/3 phase gate. Trace scene1215 completion ->native188074/208562 equip/paired item, retry/save/ability and actual client loot/full-bag behavior; final28550/type92/45785/tree amount0 is native, not invented count1. Retain per-recipient103739 prerequisites; old saved early counters are not reset. Restore scoped winged actor/beam/215997 manual return button instead of automatic12s, without copying93819 Dalaran positions. Review full relevant video/audio and alternate/client paths. Run Test-EarthwarderRealLootData -Baseline/-VerifyReleaseBinary, admission/return/Skyhold and shared19-check Warswords suite."
+      "next_action": "Retain real-loot/source4/completed-claim and scoped1215/1575 ->208562 bridge, native shield OFFHAND16/linked128288 MAINHAND15 and exact909/5 phase admission. Verify live equipment/paired storage, full208562 progression/group effects,203524 ability/save/relog and actual loot/full bags.225889 effect81 is mapped to EffectNULL server-side; do not infer failure or invent a server replacement without checking native client relocation behavior. Add missing-completion/failed-cast/re-entry recovery and restore scoped winged actor/beam/215997 manual button instead of automatic12s, without93819 Dalaran coordinates. Native final28550/45785/tree amount0 remains; old saved early counters are not reset. Review full relevant video/audio and client paths. Run Test-EarthwarderPresentation -Baseline/-VerifyReleaseBinary, real-loot/admission/return/Skyhold and shared19-check Warswords suite."
     },
     {
       "class_id": 1,

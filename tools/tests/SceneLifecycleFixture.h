@@ -27,6 +27,8 @@ struct Item {
     uint32 entry = 128827;
 #elif defined(STROMKAR_PRESENTATION_TEST)
     uint32 entry = 128910;
+#elif defined(EARTHWARDER_PRESENTATION_TEST)
+    uint32 entry = 128289;
 #elif defined(WARSWORDS_PRESENTATION_TEST)
     uint32 entry = 128908;
 #else
@@ -36,10 +38,18 @@ struct Item {
     uint32 identity = 0;
     uint32 GetEntry() const { return entry; }
     uint16 GetPos() const { return position; }
-    bool IsEquipped() const { return position == 0xFF0F; }
+    bool IsEquipped() const { return position ==
+#ifdef EARTHWARDER_PRESENTATION_TEST
+        0xFF10;
+#else
+        0xFF0F;
+#endif
+    }
     ChildGuid GetChildItem() const {
 #ifdef XALATATH_PRESENTATION_TEST
         return {entry == 128827 ? 133958u : 0u};
+#elif defined(EARTHWARDER_PRESENTATION_TEST)
+        return {entry == 128289 ? 128288u : 0u};
 #elif defined(WARSWORDS_PRESENTATION_TEST)
         return {entry == 128908 ? 134553u : 0u};
 #else
@@ -54,6 +64,8 @@ struct SpellInfo {
         128827
 #elif defined(STROMKAR_PRESENTATION_TEST)
         128910
+#elif defined(EARTHWARDER_PRESENTATION_TEST)
+        128289
 #elif defined(WARSWORDS_PRESENTATION_TEST)
         128908
 #else
@@ -134,8 +146,10 @@ struct Player : Unit {
     uint32 equipErrors = 0, swaps = 0;
     std::function<void()> forceEquip;
     Item* GetItemByEntry(uint32 entry) { assert(entry == artifact.entry); return owned && !bankOnly ? &artifact : nullptr; }
-#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
-#ifdef WARSWORDS_PRESENTATION_TEST
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST) || defined(EARTHWARDER_PRESENTATION_TEST)
+#ifdef EARTHWARDER_PRESENTATION_TEST
+    Item paired{128288, 0xFF40};
+#elif defined(WARSWORDS_PRESENTATION_TEST)
     Item paired{134553, 0xFF40};
 #else
     Item paired{133958, 0xFF40};
@@ -145,16 +159,22 @@ struct Player : Unit {
 #endif
     Item* GetItemByPos(uint32 bag, uint32 slot) {
         assert(bag == INVENTORY_SLOT_BAG_0);
-#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST) || defined(EARTHWARDER_PRESENTATION_TEST)
         if (slot == EQUIPMENT_SLOT_OFFHAND) return offhand;
 #endif
         assert(slot == EQUIPMENT_SLOT_MAINHAND); return mainhand;
     }
     InventoryResult CanEquipItem(uint32 slot, uint16& destination, Item* item, bool swap) {
-        assert(slot == NULL_SLOT && item == &artifact && swap); destination = 0xFF0F; return equipResult;
+        assert(slot == NULL_SLOT && item == &artifact && swap); destination =
+#ifdef EARTHWARDER_PRESENTATION_TEST
+            0xFF10;
+#else
+            0xFF0F;
+#endif
+        return equipResult;
     }
     InventoryResult CanEquipChildItem(Item*) {
-#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST) || defined(EARTHWARDER_PRESENTATION_TEST)
         return childResult;
 #else
         assert(false); return EQUIP_ERR_OK;
@@ -162,12 +182,20 @@ struct Player : Unit {
     }
     void SendEquipError(InventoryResult result, Item* item) { assert(result != EQUIP_ERR_OK && item == &artifact); ++equipErrors; }
     void SwapItem(uint16 source, uint16 destination) {
+#ifdef EARTHWARDER_PRESENTATION_TEST
+        assert(source == artifact.position && destination == 0xFF10); ++swaps;
+        if (swapBlocked) return;
+        if (mainhand) mainhand->position = source;
+        artifact.position = destination; offhand = &artifact;
+        paired.position = 0xFF0F; mainhand = &paired;
+#else
         assert(source == artifact.position && destination == 0xFF0F); ++swaps;
         if (swapBlocked) return;
         if (mainhand) mainhand->position = source;
         artifact.position = destination; mainhand = &artifact;
-#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST)
+#if defined(XALATATH_PRESENTATION_TEST) || defined(WARSWORDS_PRESENTATION_TEST) || defined(EARTHWARDER_PRESENTATION_TEST)
         paired.position = 0xFF10; offhand = &paired;
+#endif
 #endif
     }
 #endif
@@ -210,6 +238,9 @@ struct Player : Unit {
 #endif
 #ifdef STROMKAR_PRESENTATION_TEST
         if (spell == 206439 && forceEquip) forceEquip();
+#endif
+#ifdef EARTHWARDER_PRESENTATION_TEST
+        if (spell == 208562 && forceEquip) forceEquip();
 #endif
 #ifdef WARSWORDS_PRESENTATION_TEST
         if (spell == 194201 && forceEquip) forceEquip();
