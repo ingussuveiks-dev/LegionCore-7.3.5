@@ -742,6 +742,22 @@ public:
     };
 };
 
+namespace SilverHandAberration
+{
+    bool CanCredit(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || player->IsPreDelete() || !player->CanContact() || player->isGameMaster() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || actor->IsPreDelete() || actor->IsAlive() || actor->GetEntry() != 106669 || actor->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->IsWithinDistInMap(actor, 100.0f) ||
+            player->GetQuestRewardStatus(42120) || player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 5;
+    }
+}
+
 // 106669
 class npc_horrific_aberration : public CreatureScript
 {
@@ -759,11 +775,13 @@ public:
 
         EventMap events;
         bool outroDone;
+        bool _deathCreditDone = false;
 
         void Reset() override
         {
             events.Reset();
             outroDone = false;
+            _deathCreditDone = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -774,8 +792,23 @@ public:
 
         void JustDied(Unit* who) override
         {
-            if (Player* pl = me->FindNearestPlayer(100.0f))
-                pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50896);
+            if (_deathCreditDone || !who || !me->GetMap() || !who->IsInWorld() || who->GetMap() != me->GetMap())
+                return;
+            Player* player = who->GetCharmerOrOwnerPlayerOrPlayerItself();
+            if (!SilverHandAberration::CanCredit(player, me))
+            {
+                player = nullptr;
+                for (auto const& reference : me->GetMap()->GetPlayers())
+                    if (SilverHandAberration::CanCredit(reference.getSource(), me))
+                    {
+                        player = reference.getSource();
+                        break;
+                    }
+            }
+            if (!player)
+                return;
+            _deathCreditDone = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50896);
         }
 
         void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
