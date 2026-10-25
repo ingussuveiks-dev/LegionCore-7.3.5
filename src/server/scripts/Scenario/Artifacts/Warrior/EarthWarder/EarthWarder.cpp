@@ -346,6 +346,7 @@ public:
         uint8 count_dies;
         bool releasingWave = false;
         std::set<ObjectGuid> activeWave;
+        bool encounterStarted = false;
 
         void Reset() override
         {
@@ -355,6 +356,7 @@ public:
             releasingWave = false;
             activeWave.clear();
             count_dies = 0;
+            encounterStarted = false;
         }
 
         void EnterCombat(Unit* who) override
@@ -465,17 +467,21 @@ public:
 
         void DoAction(int32 const action) override
         {
+            if (action != 1 || encounterStarted || !me->IsInWorld() || !me->IsAlive() || me->IsDespawn() ||
+                me->GetEntry() != 96034 || me->GetMapId() != 1495 || !GetEncounterPlayer(nullptr, 3))
+                return;
+            Creature* companion = me->FindNearestCreature(96468, 70.0f, true);
+            if (!companion || !companion->IsAlive() || !companion->IsAIEnabled || !companion->AI())
+                return;
+            encounterStarted = true;
             trashList.clear();
             SummonTrash();
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
             me->SetReactState(REACT_DEFENSIVE);
             me->setFaction(14);
             me->GetMotionMaster()->MoveJump(4714.82f, 349.11f, -37.77f, me->GetOrientation(), 5.0f, 5.0f);
-            if (Creature* targ = me->FindNearestCreature(96468, 70.0f, true))
-            {
-                AttackStart(targ);
-                EnterCombat(targ);
-            }
+            AttackStart(companion);
+            EnterCombat(companion);
         }
 
         void UpdateAI(uint32 diff) override

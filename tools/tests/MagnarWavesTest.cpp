@@ -113,7 +113,7 @@ struct Creature : Unit
 {
     ObjectGuid guid{0};
     uint32 entry = 0, mapId = 1495, instance = 42, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0, unitState = 0;
-    bool alive = true, victim = true;
+    bool alive = true, victim = true, world = true, despawning = false;
     CreatureAI* ai = nullptr;
     Creature* ally = nullptr;
     Creature* marker = nullptr;
@@ -130,6 +130,8 @@ struct Creature : Unit
     uint32 GetMapId() const { return mapId; }
     uint32 GetInstanceId() const { return instance; }
     bool IsAlive() const { return alive; }
+    bool IsInWorld() const { return world; }
+    bool IsDespawn() const { return despawning; }
     Map* GetMap() const { return map; }
     float GetDistance(Player* target) const { return target->distance; }
     void SetReactState(uint32) { }
@@ -213,7 +215,7 @@ struct Fixture
     Unit pet, guardian;
     Magnar ai{&actor};
     std::vector<std::unique_ptr<TempSummon>> summons;
-    Fixture()
+    explicit Fixture(bool start = true)
     {
         scenarioManager = {}; player.map = &map; pet.owner = guardian.owner = &player;
         map.players = {{nullptr}, {&player}};
@@ -227,8 +229,11 @@ struct Fixture
             TempSummon* result = summon.get(); map.actors[result->guid] = result; summons.push_back(std::move(summon));
             ai.JustSummoned(result); return result;
         };
-        ai.DoAction(1);
-        assert(summons.size() == 12 && ai.trashList.size() == 12);
+        if (start)
+        {
+            ai.DoAction(1);
+            assert(summons.size() == 12 && ai.trashList.size() == 12);
+        }
     }
     void BeginWaves()
     {
@@ -265,6 +270,23 @@ int main()
         assert(!fixture.player.credits && fixture.ai.wave == 7);
     }
     std::cout << "BASELINE: pinnedc0f8efce sends46427 to an unrelated nearest non-Warrior despite a pet owner, and permanently opens the final duel without credit when no recipient is present. Controlled scenario/map services.\n";
+#elif defined(START_BASELINE)
+    {
+        Fixture fixture; fixture.ai.UpdateAI(1000); fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 24 && fixture.ai.trashList.size() == 12 && fixture.ai.summons.actors.size() == 24);
+        assert(fixture.ai.events.events.at(EVENT_4) == 34000);
+    }
+    {
+        Fixture fixture(false); fixture.actor.ally = nullptr; fixture.ai.DoAction(99);
+        assert(fixture.summons.size() == 12 && fixture.actor.motion.jumps == 1 && fixture.ai.events.events.empty());
+        fixture.actor.ally = &fixture.ally; fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 24 && fixture.ai.events.events.at(EVENT_4) == 33000);
+    }
+    {
+        Fixture fixture(false); scenarioManager.scenario.step = 2; fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 12 && fixture.ai.events.events.at(EVENT_4) == 33000);
+    }
+    std::cout << "BASELINE: pinned5d5a1f24 duplicates12 existing summons and postpones wave timer on a repeated start; wrong action/missing companion still mutates the encounter, retry duplicates actors, and a premature scenario step can start combat. Controlled services, not client traversal.\n";
 #else
     for (uint32 source = 0; source < 3; ++source)
     {
@@ -410,7 +432,71 @@ int main()
         Fixture fixture; fixture.map.players.clear(); fixture.FinishWaves(&fixture.ally); fixture.actor.victim = false;
         fixture.map.players = {{&fixture.player}}; fixture.ai.UpdateAI(0); assert(fixture.player.credits == 1);
     }
+    for (uint32 invalid = 0; invalid < 28; ++invalid)
+    {
+        Fixture fixture(false); Map unrelated; int32 action = 1;
+        fixture.actor.flags = UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1;
+        uint32 flags = fixture.actor.flags;
+        if (invalid == 0) action = 0;
+        if (invalid == 1) action = 2;
+        if (invalid == 2) action = -1;
+        if (invalid == 3) fixture.actor.world = false;
+        if (invalid == 4) fixture.actor.alive = false;
+        if (invalid == 5) fixture.actor.despawning = true;
+        if (invalid == 6) fixture.actor.entry = 96035;
+        if (invalid == 7) fixture.actor.mapId = 1511;
+        if (invalid == 8) fixture.player.status = 0;
+        if (invalid == 9) fixture.player.rewarded = true;
+        if (invalid == 10) fixture.player.playerClass = 2;
+        if (invalid == 11) fixture.player.phase = false;
+        if (invalid == 12) fixture.player.distance = 101;
+        if (invalid == 13) fixture.player.contact = false;
+        if (invalid == 14) fixture.player.instance = 43;
+        if (invalid == 15) fixture.player.map = &unrelated;
+        if (invalid == 16) scenarioManager.available = false;
+        if (invalid == 17) scenarioManager.scenario.identity = 944;
+        if (invalid == 18) scenarioManager.scenario.step = 2;
+        if (invalid == 19) scenarioManager.scenario.step = 4;
+        if (invalid == 20) scenarioManager.scenario.step = 5;
+        if (invalid == 21) fixture.actor.ally = nullptr;
+        if (invalid == 22) fixture.ally.alive = false;
+        if (invalid == 23) fixture.ally.IsAIEnabled = false;
+        if (invalid == 24) fixture.ally.ai = nullptr;
+        if (invalid == 25) fixture.map.players.clear();
+        if (invalid == 26) fixture.actor.map = nullptr;
+        if (invalid == 27) fixture.player.world = false;
+        fixture.ai.DoAction(action);
+        assert(!fixture.ai.encounterStarted && fixture.summons.empty() && fixture.ai.trashList.empty() && fixture.ai.events.events.empty());
+        assert(!fixture.actor.motion.jumps && fixture.actor.flags == flags);
+        fixture.actor.world = fixture.actor.alive = fixture.player.world = fixture.player.contact = fixture.player.phase = true;
+        fixture.actor.despawning = false; fixture.actor.entry = 96034; fixture.actor.mapId = 1495; fixture.actor.map = &fixture.map;
+        fixture.player.status = QUEST_STATUS_INCOMPLETE; fixture.player.rewarded = false; fixture.player.playerClass = CLASS_WARRIOR;
+        fixture.player.distance = 100; fixture.player.instance = 42; fixture.player.map = &fixture.map; scenarioManager = {};
+        fixture.actor.ally = &fixture.ally; fixture.ally.alive = fixture.ally.IsAIEnabled = true; fixture.ally.ai = &fixture.allyAI;
+        fixture.map.players = {{&fixture.player}}; fixture.ai.DoAction(1);
+        assert(fixture.ai.encounterStarted && fixture.summons.size() == 12 && fixture.ai.trashList.size() == 12 && fixture.actor.motion.jumps == 1);
+        assert(fixture.ai.events.events.at(EVENT_4) == 33000 && fixture.actor.flags == 0);
+    }
+    for (bool alliance : {false, true}) for (uint32 status : {1u, 3u})
+    {
+        Fixture fixture(false); fixture.player.alliance = alliance; fixture.player.status = status;
+        auto spawn = fixture.actor.spawn;
+        fixture.actor.spawn = [&](uint32 identity, Position const& pose) { fixture.ai.DoAction(1); return spawn(identity, pose); };
+        fixture.actor.onActivation = [&](Creature*) { fixture.ai.DoAction(1); };
+        fixture.ai.DoAction(1); fixture.ai.UpdateAI(1000);
+        auto reserve = fixture.ai.trashList; auto events = fixture.ai.events.events;
+        fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 12 && fixture.ai.summons.actors.size() == 12 && fixture.ai.trashList == reserve && fixture.ai.events.events == events);
+        assert(fixture.actor.motion.jumps == 1 && fixture.ai.events.events.at(EVENT_4) == 33000);
+        fixture.BeginWaves(); auto active = fixture.ai.activeWave; events = fixture.ai.events.events;
+        fixture.ai.DoAction(1);
+        assert(fixture.summons.size() == 12 && fixture.ai.activeWave == active && fixture.ai.count_dies == 2 && fixture.ai.wave == 2 && fixture.ai.events.events == events);
+        for (uint32 index = 0; index < 10; ++index) fixture.Die(index, &fixture.guardian);
+        fixture.ai.DoAction(1); assert(fixture.summons.size() == 12 && fixture.player.credits == 1 && fixture.ai.wave == 7);
+        fixture.ai.Reset(); assert(!fixture.ai.encounterStarted);
+    }
     std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Combat-gated498 resumes once after waves/victim/casting gates and Reset clears its pending event. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
     std::cout << "PASS:40 faction/status/source wave-credit combinations prefer actual player/pet/guardian/charmer owner over eligible peers; dead owner remains eligible.19 invalid contexts retain the protected completed-wave state and retry before victim/cast/stun gates only after readmission. Missing/null/unavailable owner uses eligible native-map fallback, Reset cancels pending credit, and reentrant flag/credit/death/tick calls cannot duplicate46427. Shared scenario services controlled, not actual multiplayer/client traversal.\n";
+    std::cout << "PASS:28 invalid start requests do not spawn, move, change flags or consume a start; explicit readmitted retry succeeds. Four faction/status starts claim before reentrant summon/flag callbacks; duplicate requests cannot add12 actors, discard reserve/active GUIDs or postpone timers before/during/after waves. Reset clears only the start claim; full encounter rebuild, missing-spawn recovery and client traversal remain open.\n";
 #endif
 }

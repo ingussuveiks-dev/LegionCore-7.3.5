@@ -123,5 +123,45 @@ for entry in instructions('?GetAI@npc_magnar_icebreaker@@'):
             offset = native['offset'](entry.address + entry.size + operand.mem.disp)
             if struct.unpack_from('<Q', native['binary'], offset + 0x158)[0] == native['symbol'](death): tables.append(offset)
 assert len(tables) == 1
+start_action = '?DoAction' + suffix
+assert struct.unpack_from('<Q', native['binary'], tables[0] + 0x48)[0] == native['symbol'](start_action), 'Magnar factory does not install guarded start'
+assert struct.unpack_from('<Q', native['binary'], tables[0] + 0x128)[0] == native['symbol']('?EnterCombat' + suffix)
+started = instructions(start_action)
+assert started[0].op_str == 'edx, 1' and started[1].mnemonic == 'jne' and started[1].operands[0].imm == started[-1].address
+duplicate = next(index for index, entry in enumerate(started) if entry.op_str == 'byte ptr [rcx + 0xe8], 0')
+assert started[duplicate + 2].mnemonic == 'jne'
+rejection = started[duplicate + 2].operands[0].imm
+world = calls_to(started, '?IsInWorld@Object@@')[0]
+assert started[world + 1].op_str == 'al, al' and started[world + 2].mnemonic == 'je' and started[world + 2].operands[0].imm == rejection
+for operand in ('dword ptr [rcx + 0xa18], 0', 'byte ptr [rcx + 0x39c5], 0', 'eax, 0x17722', 'dword ptr [rax + 0xe0], 0x5d7'):
+    position = next(index for index, entry in enumerate(started) if entry.mnemonic == 'cmp' and entry.op_str == operand)
+    assert started[position + 1].mnemonic == 'jne' and started[position + 1].operands[0].imm == rejection
+selection = calls_to(started, '?GetEncounterPlayer' + suffix)[0]
+assert started[selection - 3].op_str == 'edx, edx' and started[selection - 2].op_str == 'r8d, 3'
+assert started[selection + 1].op_str == 'rax, rax' and started[selection + 2].mnemonic == 'je' and started[selection + 2].operands[0].imm == rejection
+companion = calls_to(started, '?FindNearestCreature@WorldObject@@')[0]
+assert started[companion - 2].op_str == 'edx, 0x178d4'
+assert started[companion - 4].op_str == 'r9b, 1', 'Companion lookup no longer requests a living actor'
+assert started[companion + 1].op_str == 'r14, rax' and started[companion + 2].op_str == 'rax, rax'
+assert started[companion + 3].mnemonic == 'je'
+missing = started[companion + 3].operands[0].imm
+for offset, operand, branch in ((4, 'dword ptr [rax + 0xa18], 0', 'jne'), (6, 'byte ptr [rax + 0x858], 0', 'je'), (8, 'qword ptr [rax + 0x9c0], 0', 'je')):
+    assert started[companion + offset].op_str == operand and started[companion + offset + 1].mnemonic == branch
+    assert started[companion + offset + 1].operands[0].imm == missing
+claim = next(index for index, entry in enumerate(started) if entry.mnemonic == 'mov' and entry.op_str == 'byte ptr [rbx + 0xe8], 1')
+assert companion + 9 < claim < calls_to(started, '?clear@?$list@VObjectGuid@@')[0]
+summons = calls_to(started, '?SummonCreature@WorldObject@@QEBAPEAVTempSummon@@IAEBUPosition@@W4TempSummonType@@IHVObjectGuid@@')
+assert len(summons) == 6 and all(claim < position for position in summons)
+assert all(claim < calls_to(started, dependency)[0] for dependency in ('?RemoveFlag@Object@@', '?SetReactState@Creature@@', '?SetUInt32Value@Object@@', '?MoveJump@MotionMaster@@QEAAXMMMMMMI_NPEBUJumpArrivalCastArgs@@'))
+values = {operand.imm for entry in started for operand in entry.operands if operand.type == CS_OP_IMM}
+assert {97123, 94707, 94813} <= values
+assert len([entry for entry in started if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x10]) == 1
+combat = next(index for index, entry in enumerate(started) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x128)
+assert started[combat - 2].op_str == 'rdx, r14' and combat > summons[-1], 'Combat no longer uses prevalidated original companion'
+ranges = [struct.unpack_from('<f', native['binary'], native['offset'](entry.address + entry.size + operand.mem.disp))[0]
+          for entry in started if entry.mnemonic == 'movss' for operand in entry.operands if operand.type == CS_OP_MEM and operand.mem.base == X86_REG_RIP]
+assert any(abs(value - 70.0) < 0.001 for value in ranges), 'Native companion admission range changed'
+assert any(entry.op_str == 'byte ptr [rbx + 0xe8], 0' for entry in reset), 'Reset does not clear start claim'
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x158 for entry in instructions('?Kill@Unit@@'))
 print('PASS: canonical tracked death callback forwards actual killer after once-only GUID consumption; bounded wave6 completion uses eligible owner-first stage3 selection before duel claim/flag release/46427, missing recipient stays pending, and native UpdateAI retries before victim/cast gates. Independent snapshot/release barrier,2/2/1/2/3, Windwall/80pct and resumed498 retained. Full actor recovery/group criteria/client VFX not certified.')
+print('PASS: actual Magnar start slot0x48 admits only action1/live96034/map1495/eligible stage3 and live enabled companion96468 within70yd. The start byte is claimed before list/spawn/flag/jump/combat side effects and blocks duplicate requests without delaying timers; Reset clears the scoped claim. Missing actor automatic recovery/full reset/client visuals not certified.')
