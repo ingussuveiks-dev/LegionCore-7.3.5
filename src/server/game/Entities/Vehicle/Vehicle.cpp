@@ -875,13 +875,13 @@ uint8 Vehicle::GetAvailableSeatCount() const
  * @author Shauren
  * @date 22-2-2013
  *
- * @param [in] e The VehicleJoinEvent* to remove from pending event store.
+ * @param [in] joinEvent The VehicleJoinEvent* to remove from pending event store.
  */
 
-void Vehicle::RemovePendingEvent(VehicleJoinEvent* /*e*/)
+void Vehicle::RemovePendingEvent(VehicleJoinEvent* joinEvent)
 {
     _lock.lock();
-    _pendingJoinEvents.clear();
+    _pendingJoinEvents.remove(joinEvent);
     _lock.unlock();
 }
 
