@@ -26,15 +26,16 @@ kit = locate(body, 'rax, qword ptr [rsi + 0x30e0]', 'mov')
 rec_aura = locate(body, 'dword ptr [rax + 0x58], 0', 'cmp')
 aura = call(body, '?HasAuraTypeWithCaster@Unit@@')
 success = locate(body, 'r14, qword ptr [rdi + 0x50]', 'mov')
+seat_gate = call(body, '?CanEnterOrExit@VehicleSeatEntry@@')
 publication = locate(body, 'qword ptr [rcx + 0x30d8], rax', 'mov')
 assert save_time < save_this < passenger_world < lookup < target_world < kit < rec_aura < aura < success < publication
 assert body[passenger_world - 1].op_str == 'rcx, qword ptr [rcx + 0x50]'
 assert body[lookup + 1].op_str == 'qword ptr [rdi + 0x48], rax'
 assert body[aura - 2].op_str == 'edx, 0xec' and body[aura - 1].op_str == 'rcx, rsi'
-assert body[rec_aura + 1].mnemonic == 'jne' and body[rec_aura + 1].operands[0].imm == body[success].address
+assert body[rec_aura + 1].mnemonic == 'jne' and body[rec_aura + 1].operands[0].imm == body[seat_gate - 2].address
 failure = body[passenger_world + 2].operands[0].imm
 edges = [entry for entry in body[:success] if entry.mnemonic == 'je' and entry.operands[0].imm == failure]
-assert len(edges) == 5, 'All five passenger/target/kit/control-aura rejection edges must finish through Abort'
+assert len(edges) == 6, 'All passenger/target/kit/control-aura/usable-count rejection edges must finish through Abort'
 for gate in (passenger_world + 2, lookup + 3, target_world + 2, kit + 3, aura + 2):
     assert body[gate] in edges
 cleanup = next(index for index, entry in enumerate(body) if entry.address == failure)
@@ -68,4 +69,4 @@ assert sum(entry.mnemonic == 'call' for entry in queue[event:abort_flag]) == 2, 
 assert queue[dispatch + 1].op_str == 'al, al' and queue[dispatch + 2].mnemonic == 'je'
 assert queue[dispatch + 2].operands[0].imm == queue[destroy + 1].address, 'False must still skip destruction for explicitly requeued events'
 assert queue[destroy - 2].op_str == 'edx, 1' and queue[destroy - 1].op_str == 'rcx, rbx'
-print('PASS: selected native Execute sends all five prepublication rejection edges through existing virtual Abort(eventTime), returns true, and native EventProcessor destroys once; caster-scoped aura/accessory cleanup, saved-GUID diagnostic without Seat dereference and generic false/requeue semantics retained. Late postpublication failures and actual world/client boarding remain OPEN.')
+print('PASS: selected native Execute sends all six prepublication rejection edges through existing virtual Abort(eventTime), returns true, and native EventProcessor destroys once; caster-scoped aura/accessory cleanup, saved-GUID diagnostic without Seat dereference and generic false/requeue semantics retained. Late charm failure and actual world/client boarding remain OPEN.')

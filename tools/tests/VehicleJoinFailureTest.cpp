@@ -22,6 +22,7 @@ enum { SPELL_AURA_CONTROL_VEHICLE=236, SPELL_AURA_MOUNTED=78, UNIT_MASK_ACCESSOR
     UNIT_FIELD_FLAGS=0x61, UNIT_FIELD_NPC_FLAGS=0x7d, UNIT_FLAG_NOT_SELECTABLE=0x2000000, MOVEMENTFLAG_DISABLE_GRAVITY=0x200,
     UNIT_NPC_FLAG_PLAYER_VEHICLE=0x2000000, UNIT_NPC_FLAG_SPELLCLICK=0x1000000, VEHICLE_SEAT_FLAG_CAN_CONTROL=0x800,
     VEHICLE_SEAT_FLAG_DISABLE_GRAVITY=4, VEHICLE_SEAT_FLAG_HIDE_PASSENGER=0x200, VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE=0x100000,
+    VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT=0x2000000,
     VEHICLE_SEAT_FLAG_B_KEEP_PET=0x20000, CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS=0x1000000, UNIT_STATE_ONVEHICLE=0x80000,
     UNIT_STATE_ROOT=0x400, CHARM_TYPE_VEHICLE=2 };
 struct ObjectGuid
@@ -136,7 +137,11 @@ struct VehicleSeatEntry
     uint32 ID=16558,Flags=0,FlagsB=0;
     bool usable=false;
     struct {float X=0,Y=0,Z=0;} AttachmentOffset;
+#ifdef VEHICLE_NATIVE_SEAT_PREDICATE
+    bool CanEnterOrExit() const;
+#else
     bool CanEnterOrExit() const {return usable;}
+#endif
 };
 struct Vehicle
 {
@@ -245,6 +250,7 @@ struct RequeuedEvent : BasicEvent
         return true;
     }
 };
+#ifndef VEHICLE_JOIN_FAILURE_LIBRARY
 int main()
 {
     uint32 cases=0;
@@ -356,8 +362,16 @@ int main()
         if(lateFailure==0){vehicle.seatInfo.usable=true;vehicle.UsableSeatNum=0;}
         else {vehicle.seatInfo.Flags=VEHICLE_SEAT_FLAG_CAN_CONTROL;base->charmResult=false;}
         EventProcessor processor;auto* event=Queue(processor,vehicle,player,0,0);processor.Update(1);
-        assert(counters.destroyed==0 && processor.Size()==0 && processor.SizeQueue()==0);
-        assert(vehicle._pendingJoinEvents.empty() && player.m_vehicle==&vehicle && vehicle.Seats.at(0).Passenger.Guid.value==18);
+        assert(processor.Size()==0 && processor.SizeQueue()==0 && vehicle._pendingJoinEvents.empty());
+#ifndef BASELINE
+        if(lateFailure==0)
+        {
+            assert(counters.destroyed==1 && !player.m_vehicle && !vehicle.Seats.at(0).Passenger.Guid);
+            assert(base->removedCasters==std::vector<uint32>{18} && !player.petUnsummoned && !player.splines);
+            ++cases;continue;
+        }
+#endif
+        assert(counters.destroyed==0 && player.m_vehicle==&vehicle && vehicle.Seats.at(0).Passenger.Guid.value==18);
         assert(!player.splines && !scriptManager.added && !base->ai.boarded);
         assert(player.petUnsummoned==lateFailure && base->charmCalls==lateFailure);
         delete event;
@@ -374,6 +388,7 @@ int main()
 #ifdef BASELINE
     std::cout<<"pinned6355ef63 strands prepublication failures outside the native queue without abort or destruction.\n";
 #else
-    std::cout<<"early failures abort and finish once without publication or unrelated cancellation; success and explicit requeue semantics retained. Two late postpublication failures remain reproduced OPEN, not repaired; world/aura services/C_PTR/client are controlled or untested.\n";
+    std::cout<<"early/zero-usable failures abort and finish once without publication or unrelated cancellation; success and explicit requeue semantics retained. Late charm failure remains reproduced OPEN; world/aura services/C_PTR/client are controlled or untested.\n";
 #endif
 }
+#endif

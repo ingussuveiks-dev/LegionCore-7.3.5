@@ -1056,6 +1056,12 @@ bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
         return true;
     }
 
+    if (Seat->second.SeatInfo->CanEnterOrExit() && !vehicle->UsableSeatNum)
+    {
+        Abort(eventTime);
+        return true;
+    }
+
     Player* player = Passenger->ToPlayer();
     vehicle->RemovePendingEventsForSeat(Seat->first);
     vehicle->RemovePendingEventsForPassenger(Passenger);
@@ -1068,9 +1074,6 @@ bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
 
     if (Seat->second.SeatInfo->CanEnterOrExit())
     {
-        //ASSERT(vehicle->UsableSeatNum);
-        if (!vehicle->UsableSeatNum)
-            return false;
         --(vehicle->UsableSeatNum);
         if (!vehicle->UsableSeatNum)
         {
