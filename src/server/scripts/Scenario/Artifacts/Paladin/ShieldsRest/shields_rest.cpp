@@ -1068,6 +1068,10 @@ public:
     {
         npc_sr_argent_hippogryphAI(Creature* creature) : ScriptedAI(creature) {}
 
+        bool arrivalAccepted = false;
+        bool arrivalInProgress = false;
+        uint32 arrivalRetryTimer = 0;
+
         void Reset() override {}
 
         void IsSummonedBy(Unit* summoner) override
@@ -1092,24 +1096,42 @@ public:
         }
         void PassengerBoarded(Unit* who, int8 /*seatId*/, bool apply) override
         {
-            if (apply && who && who == GetRider())
+            if (!arrivalAccepted && !arrivalInProgress && !arrivalRetryTimer && apply && who && who == GetRider())
                 me->GetMotionMaster()->MovePath(me->GetEntry() * 100, false);
         }
 
         void MovementInform(uint32 type, uint32 id) override
         {
-            if (type != WAYPOINT_MOTION_TYPE || id != 4)
+            if (type != WAYPOINT_MOTION_TYPE || id != 4 || arrivalAccepted || arrivalInProgress || arrivalRetryTimer)
                 return;
 
             if (Player* owner = GetRider())
             {
+                QuestStatus status = owner->GetQuestStatus(42017);
+                if (!owner->IsAlive() || owner->GetQuestRewardStatus(42017) ||
+                    (status != QUEST_STATUS_INCOMPLETE && status != QUEST_STATUS_COMPLETE))
+                    return;
+                arrivalInProgress = true;
+                uint16 previousScenario = owner->GetScenarioId();
+                SpellCastResult result = SPELL_FAILED_ERROR;
                 if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM)
                 {
                     owner->SetScenarioId(1082);
-                    owner->CastSpell(owner, SPELL_FLY_TO_STORMHEIM, true);
+                    result = owner->CastSpell(owner, SPELL_FLY_TO_STORMHEIM, true);
                 }
                 if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO_SUM)
-                    owner->CastSpell(owner, SPELL_RETURN_TO_DALARAN, true);
+                    result = owner->CastSpell(owner, SPELL_RETURN_TO_DALARAN, true);
+                if (result != SPELL_CAST_OK)
+                {
+                    if (me->GetEntry() == NPC_HIPPOGRYPH_DALARAN_SUM && owner->GetScenarioId() == 1082)
+                        owner->SetScenarioId(previousScenario);
+                    arrivalInProgress = false;
+                    arrivalRetryTimer = 1000;
+                    TC_LOG_WARN("scripts", "Truthguard travel: endpoint cast rejected with result %u for player %u on bird %u; retaining rider for retry", uint32(result), owner->GetGUIDLow(), me->GetEntry());
+                    return;
+                }
+                arrivalAccepted = true;
+                arrivalInProgress = false;
                 me->DespawnOrUnsummon(500);
             }
         }
@@ -1150,7 +1172,18 @@ public:
             }
         }
 
-        void UpdateAI(uint32 diff) override {}
+        void UpdateAI(uint32 diff) override
+        {
+            if (!arrivalRetryTimer)
+                return;
+            if (arrivalRetryTimer > diff)
+            {
+                arrivalRetryTimer -= diff;
+                return;
+            }
+            arrivalRetryTimer = 0;
+            MovementInform(WAYPOINT_MOTION_TYPE, 4);
+        }
     };
 
     CreatureAI* GetAI(Creature* creature) const override

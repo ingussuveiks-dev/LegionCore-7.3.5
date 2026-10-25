@@ -587,7 +587,7 @@
       "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128866,
       "start": 42000,
-      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry, duplicate travel-click requests and travel rider identity repaired; accepted effects/scene, travel recovery and client chain remain pending",
+      "status": "Yrgrim surrender, pickup admission, native loot, linked-pair delivery, rejected credit-cast retry, duplicate travel-click requests, rider identity and rejected endpoint retry repaired; accepted effects/scene, initial boarding recovery and client chain remain pending",
       "surrender_audit": "docs/audits/truthguard-yrgrim-surrender-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/truthguard-pickup-admission-2026-10-25.json",
       "real_loot_audit": "docs/audits/truthguard-real-loot-2026-10-25.json",
@@ -595,6 +595,7 @@
       "credit_cast_audit": "docs/audits/truthguard-credit-cast-admission-2026-10-25.json",
       "travel_click_audit": "docs/audits/truthguard-travel-click-2026-10-25.json",
       "rider_audit": "docs/audits/truthguard-rider-2026-10-25.json",
+      "endpoint_retry_audit": "docs/audits/truthguard-endpoint-retry-2026-10-25.json",
       "quests": [
         {
           "id": 42000,
@@ -677,7 +678,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Travel08 keeps one guarded summon request per eligible click and retains the source on rejected admission. Native4726 has only seat0/16558, no CAN_CONTROL; selected boarding and final waypoint now resolve the immutable TempSummon Player summoner actually aboard the matching105886/map1220 or106205/map1495 bird, not mutable GetAnyOwner or a foreign passenger. No unboarded owner receives endpoint requests. This is server identity admission, not rendered/completed boarding, an exactly-once flight latch or successful arrival. Next repair accepted-summon/missing-ride recovery, repeated packets/callbacks, abandon/death/re-entry and rejected endpoint casts before claiming full travel complete. Also trace accepted pickup effects and scene failure/completion/re-entry: actual linked pair precedes210133 and only OK permits explicit50545/event7/210132, not proof of all four effects. Never replay the whole credit spell from a stale scene flag. Scene1259/package1614/flags21 has no scene_event rows. Real child creation/capacity,225876 effect81, shared/group/faction loot and full relevant video/client traversal remain open."
+      "next_action": "Travel08 retains one guarded summon request per click; rider guard requires actual original Player aboard matching105886/map1220 or106205/map1495. Endpoint now checks alive/active42017/not rewarded, rejects nested/duplicate requests, restores only its unchanged outgoing1082 selector on non-OK result, and retries from AI after1000ms without despawn/path restart. Re-resolve owner/vehicle/quest on each retry; revocation cancels queue, fresh re-entry may try again. Accepted admission latches once with original500ms cleanup, but is not proof of teleport/three effect delivery. Native1333/1317 are CustomLoadScreen IDs, not maps; destination maps are1495/1220. Next accepted-summon/missing-52391-ride recovery, full abandon/death/dismount/re-entry cleanup, actual arrival/81040/credit acknowledgment and camera/pet checks. Pickup accepted effects and scene1259/package1614/flags21 completion/re-entry, real child creation/capacity,225876 effect81, shared/group/faction fidelity and complete video/client traversal remain open. Never replay210133 from a stale scene flag."
     },
     {
       "class_id": 2,

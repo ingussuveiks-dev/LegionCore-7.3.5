@@ -1,6 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$VerifyReleaseBinary,[switch]$EndpointTest,[switch]$EndpointBaseline)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify Release'}
+if(($Baseline -or $EndpointBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify Release'}
+if(($Baseline -and $EndpointTest) -or ($EndpointBaseline -and !$EndpointTest)){throw 'Invalid rider baseline selection'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/truthguard-rider"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,8 +9,11 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/shields_rest.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "be077aa6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned rider baseline missing'}}
+if($EndpointBaseline){$source=(& git -C $repo show "618afd7c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned endpoint baseline missing'}}
 $actor=Block $source 'class npc_sr_argent_hippogryph'
-foreach($pair in @(@('Boarded','void PassengerBoarded('),@('Arrived','void MovementInform('))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $actor $pair[1]))}
+foreach($pair in @(@('Boarded','void PassengerBoarded('),@('Arrived','void MovementInform('),@('Update','void UpdateAI('),@('Reset','void Reset('))){[IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $actor $pair[1]))}
+[IO.File]::WriteAllText("$out/State.inc",[regex]::Match($actor,'bool arrivalAccepted = false;\s*bool arrivalInProgress = false;\s*uint32 arrivalRetryTimer = 0;').Value)
+[IO.File]::WriteAllText("$out/CastResults.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/Rider.inc",$(if($Baseline){''}else{Block $actor 'Player* GetRider('}))
 $unit=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
 [IO.File]::WriteAllText("$out/AnyOwner.inc",(Block $unit 'Unit* Unit::GetAnyOwner('))
@@ -25,7 +29,9 @@ $callback=$join.IndexOf('AI()->PassengerBoarded(Passenger, Seat->first, true)')
 if($assignment -lt 0 -or $seat -le $assignment -or $callback -le $seat){throw 'Vehicle callback precedes actual pointer/seat boarding'}
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 $mode=if($Baseline){'/DBASELINE'}else{''}
-[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/TruthguardRiderTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+if($EndpointBaseline){$mode='/DENDPOINT_BASELINE'}
+$testFile=if($EndpointTest){'TruthguardEndpointTest.cpp'}else{'TruthguardRiderTest.cpp'}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $mode /I`"$out`" `"$PSScriptRoot/$testFile`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Truthguard rider host failed'}
 if($VerifyReleaseBinary){
  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
@@ -39,5 +45,6 @@ if($VerifyReleaseBinary){
  foreach($expected in @("VEHICLE`t4726`t1073877039","SEAT`t4726`t0`t16558`t1073741831`t33554432`t768`t0`t0")){if($native -notcontains $expected){throw "Native vehicle/seat changed: $expected"}}
  if(@($native|Where-Object {$_ -like "SEAT`t4726`t*"}).Count -ne 1){throw 'Vehicle gained more seats; review identity admission'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_truthguard_rider_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed rider guard failed'}}finally{$env:PYTHONPATH=$previous}
+ $checker=if($EndpointTest){'verify_truthguard_endpoint_release.py'}else{'verify_truthguard_rider_release.py'}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/$checker" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed rider/endpoint guard failed'}}finally{$env:PYTHONPATH=$previous}
 }

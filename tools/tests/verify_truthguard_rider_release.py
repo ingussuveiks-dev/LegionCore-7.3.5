@@ -1,6 +1,7 @@
 """Check installed summoner/rider identity gates and native boarding dispatch order."""
 from pathlib import Path
 import runpy
+import re
 import struct
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
@@ -39,7 +40,7 @@ body = instructions(boarded)
 identity = call_index(body, rider)
 move = call_index(body, '?MovePath@MotionMaster@@QEAAXI_NMM')
 assert find(body, 'r9b, r9b', 'test') < find(body, 'rdx, rdx', 'test') < identity < move
-assert body[identity + 1].op_str == 'rbx, rax' and body[identity + 2].mnemonic == 'jne'
+assert body[identity + 1].op_str == 'rdi, rax' and body[identity + 2].mnemonic == 'jne'
 assert body[identity + 2].operands[0].imm > body[move].address
 assert find(body, 'edx, eax, 0x64', 'imul') < move and body[move - 1].op_str == 'r8d, r8d'
 body = instructions(arrived)
@@ -47,8 +48,13 @@ identity = call_index(body, rider)
 assert find(body, 'edx, 2', 'cmp') < find(body, 'r8d, 4', 'cmp') < identity
 assert body[identity + 2].op_str == 'rax, rax' and body[identity + 3].mnemonic == 'je'
 reject = body[identity + 3].operands[0].imm
-assert not any(entry.mnemonic == 'call' for entry in body if entry.address >= reject), 'Missing rider reaches endpoint side effects'
-for operand in ('word ptr [rbx + 0x6ba8], 0x43a', 'r8d, 0x333f4', 'r8d, 0x335b8', 'edx, 0x1f4'):
+cookie = re.search(r'\s__security_check_cookie\s+([0-9a-fA-F]{16})\s+f', (native['args'].release / 'worldserver.map').read_text(errors='replace'))
+for index, entry in enumerate(body):
+    if entry.address < reject or entry.mnemonic != 'call':
+        continue
+    assert cookie and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == int(cookie[1], 16), 'Missing rider reaches endpoint side effects'
+    assert body[index - 1].op_str == 'rcx, rsp' and body[index - 2].op_str.startswith('rcx, qword ptr [rsp + ')
+for operand in ('r14d, 0x43a', 'word ptr [rdi + 0x6ba8], r14w', 'r8d, 0x333f4', 'r8d, 0x335b8', 'edx, 0x1f4'):
     find(body, operand)
 assert native['symbol']('?GetAnyOwner@Unit@@') not in native['calls'](arrived)
 tables = []
