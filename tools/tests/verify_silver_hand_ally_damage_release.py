@@ -72,13 +72,14 @@ for script, speech in (('npc_travar_first', (9, 10)), ('npc_travar_second', (1, 
     assert all(heal[index].mnemonic == 'je' and heal[index].operands[0].imm == heal[-1].address for index in (1, 3))
     lifecycle = '?UpdateLifecycle@' + script + 'AI@'
     assert struct.unpack_from('<Q', native['binary'], tables[0] + 0x110)[0] == native['symbol'](lifecycle)
-    if script == 'npc_travar_third':
+    if script in ('npc_travar_first', 'npc_travar_third'):
         adapter = instructions(lifecycle)
         recover, = calls(adapter, '?Recover@SilverHandCompanion@@')
         for operands in (f'r8, [rcx + {hex(flag)}]', f'rdx, [rcx + {hex(pending)}]', 'rcx, qword ptr [rcx + 0x20]'):
             assert any(entry.op_str == operands for entry in adapter[:recover])
         assert adapter[-1].mnemonic == 'jmp' and native['resolve'](adapter[-1].operands[0].imm) == native['symbol']('?Update@FunctionProcessor@@')
-        assert any(entry.op_str == 'rcx, [rbx + 0xe0]' for entry in adapter[recover + 1:])
+        entry_offset = 0xf0 if script == 'npc_travar_first' else 0xe0
+        assert any(entry.op_str == f'rcx, [rbx + {entry_offset:#x}]' for entry in adapter[recover + 1:])
     else:
         adapter = leaf(lifecycle, 17)
         assert [(entry.mnemonic, entry.op_str) for entry in adapter[:3]] == [
@@ -133,4 +134,4 @@ assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c8]' for entry in creature[
 assert any(entry.op_str == 'rcx, qword ptr [rsi + 0x9c0]' for entry in creature[ticks[0]:ticks[1]])
 assert min(calls(creature, '?Update@Unit@@')) > ticks[1]
 
-print('PASS: all four installed Silver Hand factories retain native final-damage protection/speech/self210985/stun and select positive-heal17-byte leaf0xb0 plus lifecycle0x110 recovery (third also updates its separate entry queue). Heal pending state is initialized/reset/re-wound; shared recovery consumes it before live/death/actual40pct gates, clears wound latch before original aura/stun cleanup. Native DealHeal received/done/application order and locked primary/disabled lifecycle are executable. No heal-related delayed Player/AI callback, artificial healing, credit, rendering or full client traversal proof.')
+print('PASS: all four installed Silver Hand factories retain native final-damage protection/speech/self210985/stun and select positive-heal17-byte leaf0xb0 plus lifecycle0x110 recovery (first/third also update separate entry queues). Heal pending state is initialized/reset/re-wound; shared recovery consumes it before live/death/actual40pct gates, clears wound latch before original aura/stun cleanup. Native DealHeal received/done/application order and locked primary/disabled lifecycle are executable. No heal-related delayed Player/AI callback, artificial healing, credit, rendering or full client traversal proof.')

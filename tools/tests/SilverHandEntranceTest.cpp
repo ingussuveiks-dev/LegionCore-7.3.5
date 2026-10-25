@@ -1,12 +1,18 @@
 #include <cassert>
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <new>
 #include <vector>
 using uint32=uint32_t;
 using uint64=uint64_t;
+using FunctionList=std::multimap<uint64,std::function<void()>>;
+#include "FunctionClass.inc"
+#include "FunctionMethods.inc"
 enum { CLASS_PALADIN=2, QUEST_STATUS_INCOMPLETE=3, TYPEID_PLAYER=4, UNIT_FIELD_NPC_FLAGS=1,
     UNIT_NPC_FLAG_GOSSIP=1, CRITERIA_TYPE_SCRIPT_EVENT_2=92, MOTION_SLOT_IDLE=0 };
 constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=1.57f;
@@ -33,6 +39,12 @@ struct WorldObject
 };
 struct Player;
 struct Creature;
+struct CreatureAI
+{
+    virtual ~CreatureAI()=default;
+    virtual void Reset(){}
+    virtual void UpdateLifecycle(uint32){}
+};
 struct Unit : WorldObject
 {
     virtual Player* ToPlayer() {return nullptr;}
@@ -67,14 +79,18 @@ struct Motion
     uint32 moves=0,follows=0;
     Creature* followed=nullptr;
     float followAngle=0;
+    std::function<void()> onMove;
     void MovePoint(uint32 point,float positionX,float positionY,float positionZ)
-    {assert(point==1 && positionX==2137.70f && positionY==2397.60f && positionZ==118.54f);++moves;}
+    {assert(point==1 && positionX==2137.70f && positionY==2397.60f && positionZ==118.54f);++moves;if(onMove)onMove();}
     void MoveFollow(Creature* actor,float distance,float angle,uint32 slot)
     {assert(distance==PET_FOLLOW_DIST && slot==MOTION_SLOT_IDLE);++follows;followed=actor;followAngle=angle;}
 };
 struct Creature : WorldObject
 {
     bool alive=true;
+    bool m_AI_locked=false,IsAIEnabled=true;
+    CreatureAI* i_AI=nullptr;
+    CreatureAI* i_disabledAI=nullptr;
     uint32 entry=106429,mapId=1539,instance=42,flags=0x200;
     Player* nearestPlayer=nullptr;
     Creature* efrin=nullptr;
@@ -92,9 +108,19 @@ struct Creature : WorldObject
     {assert(radius==50 && live && (identity==106371 || identity==106370));return identity==106371?efrin:duval;}
     void SetFlag(uint32 field,uint32 mask) {assert(field==UNIT_FIELD_NPC_FLAGS);flags|=mask;}
     void SetUInt32Value(uint32 field,uint32 value) {assert(field==UNIT_FIELD_NPC_FLAGS);flags=value;}
-    void AddDelayedEvent(uint32 delay,std::function<void()> callback) {assert(delay==5000);pending.push_back(std::move(callback));}
-    void Run() {auto callbacks=std::move(pending);pending.clear();for(auto& callback:callbacks)callback();}
+    void AddDelayedEvent(uint32 delay,std::function<void()> callback) {assert(delay==5000 || delay==2000);pending.push_back(std::move(callback));}
+    CreatureAI* AI(){return i_AI;}
+    bool AIM_Destroy();
+    void Run(uint32 diff=5000)
+    {
+        auto callbacks=std::move(pending);pending.clear();for(auto& callback:callbacks)callback();
+#include "LifecycleBridge.inc"
+    }
 };
+uint32 debugMessages=0;
+#define TC_LOG_DEBUG(...) ++debugMessages
+#define ASSERT(value,...) assert(value)
+#include "DestroyAI.inc"
 template<class Object>struct HashMapHolder
 {
     static std::map<ObjectGuid,Object*> objects;
@@ -123,15 +149,28 @@ struct ScenarioManager
 } manager;
 auto* sScenarioMgr=&manager;
 #include "EntrancePolicy.inc"
-struct EntranceAI
+struct EventMap {void Reset(){}};
+namespace SilverHandCompanion {void Recover(Creature*,bool&,bool&) {}}
+struct EntranceAI : CreatureAI
 {
     Creature* me;
-    bool _introDone=false,firstwp=false;
+    bool _introDone=false,firstwp=false,firstfight=false;
     ObjectGuid _arrivalPlayerGuid;
+    bool wait_heal=false,_pendingHealRecovery=false;
+    FunctionProcessor _entryFunctions;
+    uint64 _entryGeneration=0;
+    bool _entryPending=false;
+    EventMap events;
     std::vector<uint32> talks;
-    void Talk(uint32 line) {talks.push_back(line);}
+    std::function<void(uint32)> onTalk;
+    explicit EntranceAI(Creature* actor):me(actor){actor->i_AI=this;}
+    void Talk(uint32 line) {talks.push_back(line);if(onTalk)onTalk(line);}
+    uint32 Pending(){return uint32(me->pending.size())+_entryFunctions.Size()+_entryFunctions.SizeQueue();}
 #include "EntranceLos.inc"
 #include "EntranceArrival.inc"
+#include "EntranceReset.inc"
+#include "EntranceLifecycle.inc"
+#include "EntranceFight.inc"
 };
 
 void Invalidate(uint32 invalid,Player& player,Creature& actor)
@@ -167,6 +206,19 @@ int main()
         Invalidate(invalid,player,actor);actor.Run();assert(player.credits==1 && actor.motion.moves==1 && ai._introDone);
     }
     std::cout<<"PASS pinned4685321c: delayed Travard callback retains raw invoker and attempts credit/movement after logout/foreign map/abandon/completed scenario in controlled services. Not a native UAF crash or proof of persisted invalid quest credit.\n";
+#elif defined(LIFETIME_BASELINE)
+    manager={};Player player;Creature actor;
+    HashMapHolder<Player>::objects={{player.guid,&player}};
+    alignas(EntranceAI) unsigned char storage[sizeof(EntranceAI)];
+    auto original=new(storage) EntranceAI(&actor);original->MoveInLineOfSight(&player);
+    assert(actor.pending.size()==1);original->~EntranceAI();
+    auto replacement=new(storage) EntranceAI(&actor);actor.Run();
+    assert(!replacement->_introDone && replacement->_arrivalPlayerGuid==player.guid && player.credits==1 && actor.motion.moves==1 && replacement->talks==std::vector<uint32>{1});
+    replacement->~EntranceAI();actor.i_AI=nullptr;
+    original=new(storage) EntranceAI(&actor);original->ArmFirstFight();assert(actor.pending.size()==1);
+    original->~EntranceAI();replacement=new(storage) EntranceAI(&actor);actor.Run(2000);
+    assert(replacement->firstfight);replacement->~EntranceAI();actor.i_AI=nullptr;
+    std::cout<<"PASS pinned1237db9f: Unit-owned5s and2s callbacks survive transparent same-address AI destruction/reconstruction: unsolicited arrival token/motion/106416 credit attempt and firstfight write affect replacement. Defined controlled replacement, not dereferencing freed storage or claiming a persisted-counter/client crash reproduction.\n";
 #else
     for(uint32 invalid=0;invalid<26;++invalid)for(bool delayed:{false,true})
     {
@@ -174,7 +226,7 @@ int main()
         if(delayed)ai.MoveInLineOfSight(&player);
         Invalidate(invalid,player,actor);
         if(delayed)actor.Run();else ai.MoveInLineOfSight(&player);
-        assert(!player.credits && !actor.motion.moves && !ai._introDone && actor.pending.empty());
+        assert(!player.credits && !actor.motion.moves && !ai._introDone && ai.Pending()==0);
         assert(ai.talks==(delayed?std::vector<uint32>{0}:std::vector<uint32>{}));
     }
     for(uint32 step:{0u,1u})
@@ -182,7 +234,7 @@ int main()
         manager={};manager.scenario.step=step;Player player;player.distance=20;Creature actor;EntranceAI ai{&actor};Unit pet,guardian;
         HashMapHolder<Player>::objects={{player.guid,&player}};
         ai.MoveInLineOfSight(nullptr);ai.MoveInLineOfSight(&pet);ai.MoveInLineOfSight(&guardian);assert(!ai._introDone);
-        ai.MoveInLineOfSight(&player);ai.MoveInLineOfSight(&player);assert(actor.pending.size()==1);
+        ai.MoveInLineOfSight(&player);ai.MoveInLineOfSight(&player);assert(ai.Pending()==1 && actor.pending.empty());
         actor.Run();ai.MoveInLineOfSight(&player);actor.Run();
         assert(player.credits==1 && actor.motion.moves==1 && ai.talks==std::vector<uint32>({0,1}));
     }
@@ -235,6 +287,57 @@ int main()
         HashMapHolder<Player>::objects={{player->guid,player.get()}};ai.MoveInLineOfSight(player.get());actor.Run();
         HashMapHolder<Player>::objects.clear();player.reset();ai.CompleteEntranceArrival();assert(!ai.firstwp && !ai._introDone && actor.flags==0x200);
     }
-    std::cout<<"PASS: extracted LOS/arrival/policy and native GUID lifecycle/world/pre-delete/map lookup;26 invalid contexts before/after5s and at POINT1, destroyed/unregistered recipient at both boundaries, no nearest substitution, exact20yd/steps0-1, null/pet/guardian, retry, duplicate/reentrant exactly-once readiness/50765 and original follower roles checked. Native quest/scenario persistence, later paths/group story and client traversal remain separate.\n";
+    for(uint32 mode:{0u,1u,2u,3u})
+    {
+        manager={};Player player;Creature actor;EntranceAI ai{&actor};CreatureAI temporary;
+        HashMapHolder<Player>::objects={{player.guid,&player}};ai.MoveInLineOfSight(&player);
+        actor.Run(4999);assert(ai._entryPending && !actor.motion.moves && !player.credits && ai._arrivalPlayerGuid.IsEmpty());
+        if(mode==1 || mode==3){actor.i_AI=mode==1?&temporary:nullptr;actor.i_disabledAI=&ai;}
+        if(mode==2)actor.i_disabledAI=&ai;
+        actor.motion.onMove=[&]{assert(actor.m_AI_locked);ai.Reset();};
+        actor.Run(1);assert(!ai._entryPending && ai._introDone && ai._arrivalPlayerGuid==player.guid && player.credits==1 && actor.motion.moves==1);
+        ai.CompleteEntranceArrival();actor.Run();assert(ai.firstwp && player.arrivalCredits==1 && player.credits==1);
+        actor.i_disabledAI=nullptr;
+    }
+    {
+        manager={};Player player,other;other.guid._high=8;Creature actor;EntranceAI ai{&actor};
+        HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};
+        ai.MoveInLineOfSight(&player);actor.Run(4000);ai.Reset();assert(!ai._entryPending && !ai._introDone && ai._entryGeneration==1);
+        ai.MoveInLineOfSight(&other);actor.Run(1000);assert(ai._entryPending && !player.credits && !other.credits && !actor.motion.moves);
+        actor.Run(4000);assert(!ai._entryPending && ai._arrivalPlayerGuid==other.guid && other.credits==1 && !player.credits);
+        ai.Reset();assert(ai._introDone && ai._entryGeneration==1 && ai._arrivalPlayerGuid==other.guid);
+        ai.CompleteEntranceArrival();ai.MoveInLineOfSight(&player);actor.Run();
+        assert(other.arrivalCredits==1 && !player.arrivalCredits && actor.motion.moves==1);
+    }
+    {
+        manager={};Player player,other;other.guid._high=8;Creature actor;EntranceAI ai{&actor};bool resetOnce=false;
+        HashMapHolder<Player>::objects={{player.guid,&player},{other.guid,&other}};
+        ai.onTalk=[&](uint32 line){if(line==0 && !resetOnce){resetOnce=true;ai.Reset();ai.MoveInLineOfSight(&other);}};
+        ai.MoveInLineOfSight(&player);assert(ai.Pending()==2 && ai._entryPending && ai._entryGeneration==1);
+        actor.Run();assert(!player.credits && other.credits==1 && actor.motion.moves==1 && ai._arrivalPlayerGuid==other.guid);
+    }
+    {
+        manager={};Player player;Creature actor;HashMapHolder<Player>::objects={{player.guid,&player}};
+        auto original=new EntranceAI(&actor);original->MoveInLineOfSight(&player);
+        assert(actor.pending.empty() && actor.AIM_Destroy() && !actor.i_AI);
+        actor.Run();assert(!player.credits && !actor.motion.moves);
+        auto replacement=std::make_unique<EntranceAI>(&actor);actor.Run();assert(!player.credits && replacement->_arrivalPlayerGuid.IsEmpty());
+        replacement->MoveInLineOfSight(&player);
+        actor.motion.onMove=[&]{auto before=debugMessages;assert(!actor.AIM_Destroy() && debugMessages==before+1);};
+        actor.Run();assert(player.credits==1 && actor.motion.moves==1 && replacement->_arrivalPlayerGuid==player.guid);
+        replacement->CompleteEntranceArrival();assert(player.arrivalCredits==1);
+        actor.i_AI=nullptr;
+    }
+    {
+        manager={};Creature actor;EntranceAI ai{&actor};ai.ArmFirstFight();ai.Reset();
+        actor.Run(1999);assert(!ai.firstfight);actor.Run(1);assert(ai.firstfight && !actor.motion.moves);
+    }
+    {
+        manager={};Creature actor;auto original=new EntranceAI(&actor);original->ArmFirstFight();
+        assert(actor.pending.empty() && actor.AIM_Destroy());auto replacement=std::make_unique<EntranceAI>(&actor);
+        actor.Run(2000);assert(!replacement->firstfight);replacement->ArmFirstFight();actor.Run(2000);assert(replacement->firstfight);
+        actor.i_AI=nullptr;
+    }
+    std::cout<<"PASS: actual entrance LOS/reset/lifecycle/POINT1/firstfight timer and native FunctionProcessor/GUID/ObjectAccessor/Creature lock/AIM_Destroy;26 invalid5s/POINT1 contexts and prior original-recipient/20yd/0..1/duplicate/reentrant/follower checks retained. New4999+1ms entry/1999+1ms firstfight, pending Reset/fresh generation retry, accepted Reset retaining POINT1 token, synchronous Talk0 Reset/re-entry, primary/disabled/alias, both timer destruction/replacement and locked destruction rejection covered. Firstfight Reset behavior retained. Controlled world/motion/companion-heal stub, not persisted quest/scenario/group counters or full client traversal.\n";
 #endif
 }

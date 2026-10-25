@@ -11,12 +11,22 @@ $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Silver Hand source missing'}
 $healPinned=(& git -C $repo show "877ad851:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned companion healing source missing'}
 $entryPinned=(& git -C $repo show "4bc7b7e6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entry lifetime source missing'}
+$entrancePinned=(& git -C $repo show "1237db9f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entrance lifetime source missing'}
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
 foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','npc_efrin_and_duval')){
  if(!$Baseline -and !$HealBaseline){
   $actual=(Block $source "class $script : public CreatureScript").Replace("`r",'')
+  if($script -eq 'npc_travar_first'){
+   $beforeEntrance=Block $entrancePinned "class $script : public CreatureScript"
+   $entranceNormalized=$actual
+   foreach($method in @('void Reset(','void UpdateLifecycle(','void MoveInLineOfSight(')){$entranceNormalized=$entranceNormalized.Replace((Block $entranceNormalized $method),(Block $beforeEntrance $method))}
+   foreach($field in @('FunctionProcessor _entryFunctions;','uint64 _entryGeneration = 0;','bool _entryPending = false;')){$entranceNormalized=$entranceNormalized.Replace("        $field`n",'')}
+   $entranceNormalized=$entranceNormalized.Replace('_entryFunctions.AddDelayedEvent(2000,','me->AddDelayedEvent(2000,')
+   if($entranceNormalized -cne $beforeEntrance){throw 'First companion changed beyond separately tested pending entrance lifetime'}
+   $actual=$entranceNormalized
+  }
   if($script -eq 'npc_travar_third'){
    $beforeEntry=Block $entryPinned "class $script : public CreatureScript"
    $entryNormalized=$actual

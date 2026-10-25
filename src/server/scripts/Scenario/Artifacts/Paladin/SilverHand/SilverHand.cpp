@@ -110,6 +110,9 @@ public:
         bool _pendingHealRecovery = false;
         FunctionProcessor _functions;
         ObjectGuid _arrivalPlayerGuid;
+        FunctionProcessor _entryFunctions;
+        uint64 _entryGeneration = 0;
+        bool _entryPending = false;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -162,6 +165,12 @@ public:
         {
             events.Reset();
             _pendingHealRecovery = false;
+            if (_entryPending)
+            {
+                ++_entryGeneration;
+                _entryPending = false;
+                _introDone = false;
+            }
         }
 
         void EnterCombat(Unit* who) override
@@ -192,9 +201,10 @@ public:
                 _pendingHealRecovery = true;
         }
 
-        void UpdateLifecycle(uint32) override
+        void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            _entryFunctions.Update(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -254,7 +264,7 @@ public:
                             AttackStart(gnorc);
                             gnorc->AI()->AttackStart(me);
                         }
-                        me->AddDelayedEvent(2000, [this]() -> void
+                        _entryFunctions.AddDelayedEvent(2000, [this]() -> void
                         {
                             firstfight = true;
                         });
@@ -333,10 +343,15 @@ public:
                 return;
 
             _introDone = true;
-            Talk(0);
+            _entryPending = true;
             ObjectGuid playerGuid = player->GetGUID();
-            me->AddDelayedEvent(5000, [this, playerGuid]() -> void
+            uint64 generation = _entryGeneration;
+            Talk(0);
+            _entryFunctions.AddDelayedEvent(5000, [this, playerGuid, generation]() -> void
             {
+                if (!_entryPending || generation != _entryGeneration)
+                    return;
+                _entryPending = false;
                 Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
                 if (!SilverHandEntrance::CanArrive(player, me))
                 {

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Holy Paladin42120/scenario1092 first Travard106429: AI ownership for pending5s entrance and2s firstfight marker, with original-GUID/POINT1/106416 sequence preserved. Not full entrance combat or all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp, Unit::AddDelayedEvent/m_Functions/Update and Creature::AIM_Destroy/Update",
+      "review": "First LOS already captures full original Player GUID, revalidates live context and stores its POINT1 token, but5s work lives on Unit while capturing raw AI this. Same first AI also schedules a2s firstfight write on Unit. Native AIM_Destroy deletes AI without clearing these Unit jobs. Existing AI-owned _functions drains only after stunned early return, so moving timers there would stall original Unit-time behavior. Native locked distinct-disabled/primary Lifecycle precedes ordinary stunned/combat AI. KillAllFunctions is a deferred clean and could discard fresh entry or independent firstfight work."
+    },
+    {
+      "source": "Matching native SilverHandPickupCatalog/hotfix and read-only MariaDB",
+      "review": "Sole first binding106429/spawn361895/map1539/phase5738+7005 retained; fresh phase7005 native condition44/1092 admits0..3, while existing CanArrive deliberately limits initial entry/POINT1 to0..1. Fresh native criterion29843/92/50765 and later30017/92/50766 retained. Native catalog's210360 Dalaran return metadata is separate research, not altered. No map/race admission claim substitutes actual actor visibility or travel."
+    },
+    {
+      "source": "Local TrinityCore era tree",
+      "review": "Targeted c2d61e05cf3dc555608e6b2a06772c27d207548c scripts tree again yields unrelated Stratholme boss_order_of_silver_hand, not this acquisition AI. No exhaustive historical search claim."
+    },
+    {
+      "source": "Pinned Titans donor",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Relevant first-AI source read retains Unit-owned5s raw invoker/AI and2s raw-AI firstfight timers, plus stunned-before-_functions drain. No compatible correction imported; current local GUID/arrival/gossip/lethal/heal guards remain authoritative."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. Original5000/2000ms delays, speeches, destinations and firstfight marker behavior retained; no guessed ritual/one-hit choreography or new VFX reconstruction."
+    }
+  ],
+  "repair": {
+    "ownership": "Both remaining raw-AI Unit timers in first AI now use dedicated AI-owned _entryFunctions, serviced from native locked primary/disabled Lifecycle after unchanged40pct companion recovery. AI destruction drops both closures. Existing combat/path _functions drain and other actors/core Unit jobs are not moved or globally cleared; test rejects any remaining me->AddDelayedEvent in this first AI.",
+    "entry_epoch": "Initialized64-bit generation and pending state accompany intro admission. Capture full original GUID and generation before immediate Talk0, so synchronous Talk0 Reset/re-entry cannot bind old work to a new generation. At5s reject stale/not-pending work, consume pending, resolve native original Player and repeat live42120/class2/1092/0..1/same map-instance/phase/visibility/LOS/20yd before original Talk1/full POINT1 token/MovePoint1/106416 attempt. No Player pointer retained or nearest participant substituted.",
+    "reset_arrival": "Only still-pending entrance Reset increments generation and reopens intro. Stale old callback cannot consume a new pending retry. Accepted Reset preserves intro and existing full128-bit arrival token, so actual POINT8/id1 remains responsible for one original50765/readiness/followers; no path replay or token clearing on ordinary accepted Reset. Missing/invalid original keeps prior retry behavior.",
+    "firstfight": "Actual existing MovementInform branch retains its2s firstfight=true callback, now on AI-owned queue. Reset does not newly cancel or advance this independent marker; no damage/surrender, event50850, NPC summon, speech or combat/evade choreography is changed. Lifetime cancellation on replacement is not a repair claim for one-hit-before-marker or other route races.",
+    "preserved": "Gossip admission, actual arrival callback, six post-scaling guards/four40pct recoveries, third entry lifetime, shared native criteria and genuine loot/equip/scenes remain selected. Whole first AI compared with1237db9f allowing only entry fields/reset/lifecycle/LOS and exact2s timer owner replacement; older whole-class preservation checks retained. No artificial HP/item/quest completion or manual group/faction credits."
+  },
+  "validation": {
+    "baseline": "PASS -LifetimeBaseline pins1237db9f actual5s/2s closures through defined transparent same-address AI destruction/reconstruction. Old Unit queue gives replacement unsolicited full arrival token/motion/106416 attempt, and separately writes firstfight on replacement. Controlled defined replacement avoids dereferencing freed storage; no actual server crash/persisted counter/client claim. Older -Baseline4685321c and -ArrivalBaselinec5eb41f3 retained.",
+    "host": "PASS actual LOS/reset/lifecycle/arrival and actual extracted2s callback with native FunctionProcessor constructor/queue/drain/update/destructor,128-bit GUID/ObjectAccessor, locked Creature distinct-disabled/primary/alias bridge and AIM_Destroy. Existing26 invalid contexts at initial5s/POINT1, deleted/predelete original,0..1/20yd, null/pet/guardian, exactly-once readiness/50765, reentrant arrival and original followers retained. New4999+1ms entry/1999+1ms marker, pending Reset/stale old job/new GUID retry, accepted Reset retaining POINT1, synchronous Talk0 Reset/re-entry, both timer destruction/replacement and locked destruction rejection covered. World/motion/health services and companion recovery stub controlled; separate1536-case AllyDamage runs actual healing/lethal handlers.",
+    "installed": "PASS selected LOS0x270 queuesAI+0xf0, captures native full GUID and64-bit+0x170 epoch before Talk0, arms pending+0x178 and retains original5000ms. Selected Reset0x28 conditionally increments epoch/reopens intro+0x58 without clearing arrivalGUID+0xe0 or deferred clean. Lifecycle0x110 retains real Recover then entry queue under native primary/disabled lock; selected constructor/destructor initialize/destroy both queues. Actual closure rejects stale pending/epoch before original lookup/live gate/Talk1/full token/MovePoint/106416. Actual MovementInform queues2000ms atsameAI+0xf0 and selected9-byte no-unwind closure only writes firstfight+0x5c; no symbol-presence-only or fabricated unwind proof. Inlined actual POINT1 bridge remains independently checked.",
+    "diagnostics": "Initial PE probe used broad Talk prefix matching two overloads; narrowed to actual native QEAAXE speech signature without changing production. Native FunctionProcessor size_t->uint32 host warnings retained. Source follow-up found same first AI's2s Unit-owned marker; interrupted only own preliminary regression runner, moved it into the same owned queue, extended baseline/host/selected PE coverage, rebuilt and restarted full serial batch. No server interrupted for revision. Preliminary successful5s-only ledger/binary/startup is not final evidence.",
+    "regressions": "PASS final31-suite serial PowerShell7 batch:13 installed suites Rescue, AberrationCredit, RitualEntry, Procession, second Gossip, Entrance including both owned timers and original POINT1, first Gossip, Collapse, RealLootData, Presentation, AllyDamage1536 with40pct recovery, StromkarPresentation and ScepterLogin;6 native/data suites DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, WarlockRegression, SceneLifecycle, ArtifactForceEquip55 records/39 items, MapObjectArrival and DalaranPortalLanding native WMO;12 pinned baselines including new first5s/2s lifetime1237db9f, third lifetime4bc7b7e6, companion healing877ad851 and all prior rescue/aberration/ritual/procession/second-gossip/arrival/LOS/first-gossip/damage checks. Ledger .codex/silver-hand-entrance-lifetime-regressions.tsv has31PASS rows from final both-timer binary. Catalogs/builds serialized; original diagnostics, native counts and existing guard/arrival assertions retained, not weakened. Not client traversal.",
+    "evidence": ".codex/silver-hand-entrance-lifetime-* ignored logs and runtime-test/silver-hand-entrance. Track implementation/tests/audit/worklist only; no runtime/password/character/media data."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "EB9E9E9D0CE5F1A5D9993C36FF9AC68C474AD6557A0F7170BEFFABA2022CD86E",
+    "bnet_sha256": "B26E8A2FBC49208CD62790F5B4D7EBFE7F55D7D86615AFCD9CB3C744F247BEEA",
+    "build": "Final both-timer Release worldserver+bnetserver15.67s/0 warnings/errors, LinkIncremental=false/no OutDir. Actual UTF16 final-link names canonical output and original scripts/game/shared/common Release libraries. Selected installed implementation proof separate from hash/link/startup.",
+    "runtime": "Final own hidden canonical PID38144 fresh ready, own stdin shutdown0/exit0/new DBErrors0/stderr empty/protected conf-certificate hashes unchanged/gone. Preliminary own5s-only PID37780 also shutdown0/exit0/gone. No unknown/user process stopped or own hidden server left running."
+  },
+  "remaining": [
+    "Preserving2s firstfight timing is not verification/repair of a one-hit or opponent death before the marker, missing Gnorc/failed summon, EnterEvade/50850 ownership, later waypoint recipients or combat/scenario choreography. Native actual movement and persisted106416/50765/group counters still require full relevant route/client checks.",
+    "Reset generation belongs to pending AI entry, not a persisted abandon/rapid-retake epoch. Accepted motion recovery, actor recreation while an old MovePoint is still physically running and native visibility/voice/camera/pet/faction/party behavior remain separate. No ready-marker is published merely from timer completion.",
+    "Other actors' Unit-owned AI timers, third downstream50877/50912/50915/DoAction, aberration50pct/one-hit/intentional companion deaths/rescue prerequisites, late scenes/outro/true Dalaran arrival, genuine loot/equip/save/relog and all36 full chains remain unfinished; client tests remain with user."
+  ]
+}
