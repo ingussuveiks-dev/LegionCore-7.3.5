@@ -1,0 +1,28 @@
+param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+$ErrorActionPreference='Stop'
+if($Baseline -and $VerifyReleaseBinary){throw 'Pinned failure baseline cannot verify Release'}
+$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
+$out="$repo/build-extractors/runtime-test/vehicle-foreign-control"
+New-Item -ItemType Directory -Force $out|Out-Null
+function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
+$path='src/server/game/Entities/Vehicle/Vehicle.cpp'
+$source=Get-Content "$repo/$path" -Raw
+[IO.File]::WriteAllText("$out/CanEnter.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DB2Structure.cpp" -Raw) 'bool VehicleSeatEntry::CanEnterOrExit('))
+if($Baseline){$source=(& git -C $repo show "30d6a929:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned failure source missing'}}
+foreach($pair in @(@('Remove','void Vehicle::RemovePendingEvent('),@('Add','void Vehicle::AddPendingEvent('),@('Seat','void Vehicle::RemovePendingEventsForSeat('),@('Passenger','void Vehicle::RemovePendingEventsForPassenger('),@('All','void Vehicle::RemoveAllPassengers('),@('Construct','VehicleJoinEvent::VehicleJoinEvent('),@('Destroy','VehicleJoinEvent::~VehicleJoinEvent('),@('Abort','void VehicleJoinEvent::Abort('),@('Execute','bool VehicleJoinEvent::Execute('))){
+ [IO.File]::WriteAllText("$out/$($pair[0]).inc",(Block $source ("`n"+$pair[1])))
+}
+$unit=Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'bool Unit::SetCharmedBy('
+$cut=$unit.IndexOf("    CastStop();")
+if($cut -lt 0){throw 'Native charm admission boundary missing'}
+$prefix=$unit.Substring(0,$cut)
+$prefix=$prefix.Insert($prefix.IndexOf('{')+1,"`n    ++charmCalls;")
+[IO.File]::WriteAllText("$out/CharmAdmission.inc",$prefix+"`n    (void)aurApp;`n    return charmResult;`n}")
+$vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+$mode=if($Baseline){'/DFOREIGN_CHARM_BASELINE'}else{''}
+[IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /MDd /std:c++17 /W4 $mode /I`"$out`" /I`"$repo/src/common`" /I`"$repo/src/common/Utilities`" `"$PSScriptRoot/VehicleForeignControlTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
+& "$out/run.cmd";if($LASTEXITCODE){throw 'Native vehicle join failure regression failed'}
+if($VerifyReleaseBinary){
+ $previous=$env:PYTHONPATH
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_vehicle_foreign_control_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed vehicle join failure cleanup failed'}}finally{$env:PYTHONPATH=$previous}
+}

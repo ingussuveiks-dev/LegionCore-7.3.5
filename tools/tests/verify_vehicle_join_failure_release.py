@@ -25,7 +25,7 @@ target_world = next(index for index in range(lookup + 1, len(body)) if body[inde
 kit = locate(body, 'rax, qword ptr [rsi + 0x30e0]', 'mov')
 rec_aura = locate(body, 'dword ptr [rax + 0x58], 0', 'cmp')
 aura = call(body, '?HasAuraTypeWithCaster@Unit@@')
-success = locate(body, 'r14, qword ptr [rdi + 0x50]', 'mov')
+success = locate(body, 'rsi, qword ptr [rdi + 0x50]', 'mov')
 seat_gate = call(body, '?CanEnterOrExit@VehicleSeatEntry@@')
 publication = locate(body, 'qword ptr [rcx + 0x30d8], rax', 'mov')
 assert save_time < save_this < passenger_world < lookup < target_world < kit < rec_aura < aura < success < publication
@@ -69,4 +69,4 @@ assert sum(entry.mnemonic == 'call' for entry in queue[event:abort_flag]) == 2, 
 assert queue[dispatch + 1].op_str == 'al, al' and queue[dispatch + 2].mnemonic == 'je'
 assert queue[dispatch + 2].operands[0].imm == queue[destroy + 1].address, 'False must still skip destruction for explicitly requeued events'
 assert queue[destroy - 2].op_str == 'edx, 1' and queue[destroy - 1].op_str == 'rcx, rbx'
-print('PASS: selected native Execute sends all six prepublication rejection edges through existing virtual Abort(eventTime), returns true, and native EventProcessor destroys once; caster-scoped aura/accessory cleanup, saved-GUID diagnostic without Seat dereference and generic false/requeue semantics retained. Late charm failure and actual world/client boarding remain OPEN.')
+print('PASS: selected native Execute sends the six world/kit/aura/count rejection edges through existing virtual Abort(eventTime), returns true, and native EventProcessor destroys once; caster-scoped aura/accessory cleanup, saved-GUID diagnostic without Seat dereference and generic false/requeue semantics retained. Foreign admission is checked separately; other late charm failures and actual world/client boarding remain OPEN.')

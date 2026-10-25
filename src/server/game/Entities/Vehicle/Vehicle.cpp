@@ -1063,6 +1063,17 @@ bool VehicleJoinEvent::Execute(uint64 eventTime, uint32)
     }
 
     Player* player = Passenger->ToPlayer();
+    if (Target->IsCreature() && player && (Seat->second.SeatInfo->Flags & VEHICLE_SEAT_FLAG_CAN_CONTROL))
+    {
+        ObjectGuid const charmerGuid = Target->GetCharmerGUID();
+        if (charmerGuid && charmerGuid != Passenger->GetGUID())
+        {
+            TC_LOG_FATAL("entities.unit", "Unit::SetCharmedBy: %u (GUID %u) has already been charmed but %u (GUID %u) is trying to charm it!", Target->GetEntry(), Target->GetGUIDLow(), Passenger->GetEntry(), Passenger->GetGUIDLow());
+            Abort(eventTime);
+            return true;
+        }
+    }
+
     vehicle->RemovePendingEventsForSeat(Seat->first);
     vehicle->RemovePendingEventsForPassenger(Passenger);
 

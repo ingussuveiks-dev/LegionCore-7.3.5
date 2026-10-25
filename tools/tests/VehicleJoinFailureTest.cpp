@@ -12,10 +12,16 @@ using int8=int8_t;
 static_assert(_ITERATOR_DEBUG_LEVEL==2,"Vehicle join regression requires checked iterators");
 #define TC_LOG_DEBUG(...) DebugLog(__VA_ARGS__)
 #define TC_LOG_ERROR(...) assert(false)
+#define TC_LOG_FATAL(...) FatalLog(__VA_ARGS__)
 std::vector<std::vector<uint32>> debugMessages;
+std::vector<std::vector<uint32>> fatalMessages;
 template<typename... Arguments> void DebugLog(char const*,char const*,Arguments... arguments)
 {
     debugMessages.push_back({uint32(arguments)...});
+}
+template<typename... Arguments> void FatalLog(char const*,char const*,Arguments... arguments)
+{
+    fatalMessages.push_back({uint32(arguments)...});
 }
 
 enum { SPELL_AURA_CONTROL_VEHICLE=236, SPELL_AURA_MOUNTED=78, UNIT_MASK_ACCESSORY=0x200, STATUS_UNINSTALLING=2,
@@ -24,13 +30,19 @@ enum { SPELL_AURA_CONTROL_VEHICLE=236, SPELL_AURA_MOUNTED=78, UNIT_MASK_ACCESSOR
     VEHICLE_SEAT_FLAG_DISABLE_GRAVITY=4, VEHICLE_SEAT_FLAG_HIDE_PASSENGER=0x200, VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE=0x100000,
     VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT=0x2000000,
     VEHICLE_SEAT_FLAG_B_KEEP_PET=0x20000, CREATURE_FLAG_EXTRA_VEHICLE_ATTACKABLE_PASSENGERS=0x1000000, UNIT_STATE_ONVEHICLE=0x80000,
-    UNIT_STATE_ROOT=0x400, CHARM_TYPE_VEHICLE=2 };
+    UNIT_STATE_ROOT=0x400, CHARM_TYPE_VEHICLE=2, CHARM_TYPE_POSSESS=1 };
+using CharmType=uint32;
+struct AuraApplication;
 struct ObjectGuid
 {
-    uint32 value=0;
+    uint32 value=0,high=0;
+    ObjectGuid(uint32 low=0,uint32 upper=0):value(low),high(upper){}
     uint32 GetGUIDLow() const {return value;}
-    explicit operator bool() const {return value!=0;}
-    void Clear(){value=0;}
+    explicit operator bool() const {return value!=0 || high!=0;}
+    bool operator==(ObjectGuid other) const {return value==other.value && high==other.high;}
+    bool operator!=(ObjectGuid other) const {return !(*this==other);}
+    bool operator<(ObjectGuid other) const {return high!=other.high?high<other.high:value<other.value;}
+    void Clear(){value=0;high=0;}
     static ObjectGuid const Empty;
 };
 ObjectGuid const ObjectGuid::Empty{};
@@ -58,9 +70,11 @@ struct Unit : Object
     bool inWorld=true,accessory=false,charmResult=true;
     Vehicle* kit=nullptr;
     Vehicle* m_vehicle=nullptr;
+    ObjectGuid charmerGuid;
     std::vector<uint32> removedCasters;
+    std::vector<ObjectGuid> removedCasterGuids;
     uint32 removedAll=0;
-    std::set<uint32> controlCasters;
+    std::set<ObjectGuid> controlCasters;
     std::function<void(Unit*,ObjectGuid)> onRemove;
     struct {struct {Position Pos;uint32 MoveTime=99;int8 VehicleSeatIndex=-1;ObjectGuid Guid;uint32 VehicleRecID=0;} transport;} m_movementInfo;
     Unit* ToUnit() override {return this;}
@@ -68,6 +82,8 @@ struct Unit : Object
     virtual Creature* ToCreature(){return nullptr;}
     bool IsCreature(){return ToCreature()!=nullptr;}
     bool IsPlayer(){return ToPlayer()!=nullptr;}
+    bool IsVehicle(){return kit!=nullptr;}
+    ObjectGuid GetCharmerGUID(){return charmerGuid;}
     std::shared_ptr<Object> get_ptr(){return shared_from_this();}
     Vehicle* GetVehicleKit(){return kit;}
     ObjectGuid GetGUID() const {return {identity};}
@@ -77,11 +93,11 @@ struct Unit : Object
     bool HasUnitTypeMask(uint32 mask) const {assert(mask==UNIT_MASK_ACCESSORY);return accessory;}
     bool HasFlag(uint32 field,uint32 flag) const {assert(field==UNIT_FIELD_FLAGS);return (flags&flag)!=0;}
     bool HasUnitMovementFlag(uint32 flag) const {return (movementFlags&flag)!=0;}
-    bool HasAuraTypeWithCaster(uint32 aura,ObjectGuid caster){assert(aura==236);return controlCasters.count(caster.value)!=0;}
+    bool HasAuraTypeWithCaster(uint32 aura,ObjectGuid caster){assert(aura==236);return controlCasters.count(caster)!=0;}
     void RemoveAurasByType(uint32 aura,ObjectGuid caster)
     {
-        assert(aura==236);removedCasters.push_back(caster.value);
-        if(controlCasters.erase(caster.value) && onRemove)onRemove(this,caster);
+        assert(aura==236);removedCasters.push_back(caster.value);removedCasterGuids.push_back(caster);
+        if(controlCasters.erase(caster) && onRemove)onRemove(this,caster);
     }
     void RemoveAurasByType(uint32 aura){if(aura==236)++removedAll;else {assert(aura==78);++mountedRemoved;}}
     void DespawnOrUnsummon(){++despawns;}
@@ -91,7 +107,11 @@ struct Unit : Object
     void InterruptNonMeleeSpells(bool delayed){assert(!delayed);++interrupted;}
     void SetDisableGravity(bool disabled){assert(disabled);movementFlags|=MOVEMENTFLAG_DISABLE_GRAVITY;}
     void AddUnitState(uint32 state){states|=state;}
+#ifdef VEHICLE_NATIVE_CHARM_ADMISSION
+    bool SetCharmedBy(Unit*,CharmType,AuraApplication const* =nullptr);
+#else
     bool SetCharmedBy(Unit* passenger,uint32 type){assert(passenger && type==CHARM_TYPE_VEHICLE);++charmCalls;return charmResult;}
+#endif
     void SendBreakTarget(Unit* target){assert(target);++breakTargets;}
     void SetControlled(bool apply,uint32 state){assert(apply && state==UNIT_STATE_ROOT);++rootCalls;states|=state;}
     void UpdateObjectVisibility(bool forced){assert(forced);++visibilityUpdates;}
@@ -103,6 +123,7 @@ struct Player : Unit
     Battleground* battleground=nullptr;
     Player* ToPlayer() override {return this;}
     Battleground* GetBattleground(){return battleground;}
+    void* GetTransport(){return nullptr;}
     void StopCastingCharm(){++charmStopped;}
     void StopCastingBindSight(){++sightStopped;}
     void SendOnCancelExpectedVehicleRideAura(){++cancelSent;}
@@ -235,7 +256,7 @@ static TrackedJoin* Queue(EventProcessor& processor,Vehicle& vehicle,Unit& passe
 }
 static void Reset()
 {
-    counters={};scriptManager={};objectManager={};ObjectAccessor::units.clear();debugMessages.clear();
+    counters={};scriptManager={};objectManager={};ObjectAccessor::units.clear();debugMessages.clear();fatalMessages.clear();
 }
 struct RequeuedEvent : BasicEvent
 {
