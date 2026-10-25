@@ -528,7 +528,10 @@
       "weapon": "The Silver Hand",
       "item": 128823,
       "start": 42231,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: post-scaling lethal protection repaired for six Holy companion entries; acquisition/ritual/recovery and full client traversal remain open",
+      "ally_damage_audit": "docs/audits/silver-hand-ally-damage-2026-10-25.json",
+      "native_scenario_review": "Fresh typed26972 scenario1092/map1539 has stages0..10;42120 follows42377 after42231/40410 and additional40408 admission. Six native98..110 scaled allies use four CPP AIs. New final-damage hooks retain existing wound/heal210985, speech and pre-heal40pct logic without awarding progression. Separate fallen90pct actors, Mordoth direct Kill, ritual waves and pickup remain unchanged/unverified.",
+      "real_acquisition_review": "Fresh live GO249824/type3/phase7004 still has Data1=0 despite existing genuine128823 loot249824. Current GO_ACTIVATED callback grants item and early completion/credits directly; this is NOT repaired by the companion guard. Native211838 scene1267 and211842 effect249 equip/event50966/credit106357/225877 must be traced through actual loot and scene delivery before replacing it. No character/item grant used by this review.",
       "quests": [
         {
           "id": 42231,
@@ -602,7 +605,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Continue Holy1092 executable lifecycle: repair actual249824 loot and pickup admission/equip/scene without AddItem or early completion; native final step10 is not merely map1539 (shared Priest991/Warrior1037). Trace all prerequisites/phase actors, Travard heal threshold before ModifyHealth, failed210985 presentation and reset/abandon/re-entry recovery; keep intentional Mordoth direct deaths. Audit aberration pet/guardian/group kill credit and one-hit50pct transition, fallen90pct/50913-50914 rescues and actual-GUID ritual wave retry/cleanup. The six-ally final-damage fix and controlled1536-case test do not verify these paths, retail pose/audio or full client traversal. Review relevant full video before reconstructing missing timing/visuals."
     },
     {
       "class_id": 2,
