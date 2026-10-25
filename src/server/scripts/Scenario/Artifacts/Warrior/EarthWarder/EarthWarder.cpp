@@ -444,6 +444,7 @@ public:
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NOT_ATTACKABLE_1);
                 me->setFaction(14);
+                me->SetReactState(REACT_DEFENSIVE);
             }
             events.Reset();
             stop_combat = false;
@@ -635,6 +636,13 @@ public:
             finaleTimer = delay;
             finaleInstanceId = me->GetInstanceId();
             finalePending = true;
+            uint32 generation = finaleGeneration;
+            me->StopAttack(true, true);
+            if (generation == finaleGeneration && finaleStarted)
+            {
+                me->GetMotionMaster()->MoveIdle();
+                me->RemoveAura(191883);
+            }
         }
 
         void JustSummoned(Creature* summon) override

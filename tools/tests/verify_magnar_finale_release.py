@@ -53,8 +53,34 @@ assert body[conversation + 2].operands[0].imm == no_effects, 'Failed conversatio
 assert any(entry.op_str == 'byte ptr [rsi + 0xd0], 1' for entry in body[conversation + 3:]), 'Combat stop must follow acknowledged creation'
 for dependency in ('?UpdateAchievementCriteria@Player@@', '?DespawnOrUnsummon@Creature@@'):
     assert not positions(body, dependency), 'Lethal-hit callback still advances/removes before dialogue'
-for operand in ('xmmword ptr [rsi + 0x100], xmm0', 'dword ptr [rsi + 0x110], edi', 'dword ptr [rsi + 0x114], ecx', 'byte ptr [rsi + 0x118], 1'):
+for operand in ('xmmword ptr [rsi + 0x100], xmm0', 'dword ptr [rsi + 0x110], edi', 'dword ptr [rsi + 0x114], eax', 'byte ptr [rsi + 0x118], 1'):
     assert any(entry.mnemonic in ('mov', 'movups') and entry.op_str == operand for entry in body[conversation + 3:]), f'Missing scoped handoff snapshot {operand}'
+stop = positions(body, '?StopAttack@Creature@@')[0]
+idle = positions(body, '?MoveIdle@MotionMaster@@')[0]
+assert body[stop - 3].op_str == 'ebx, dword ptr [rsi + 0xec]'
+assert [entry.op_str for entry in body[stop - 2:stop]] == ['r8b, 1', 'edx, r8b'], 'Surrender must clear active movement and interrupt delayed spells'
+assert any(entry.op_str == 'byte ptr [rsi + 0x118], 1' for entry in body[conversation:stop]), 'Interrupt hooks can run before pending state is armed'
+assert body[stop + 1].op_str == 'ebx, dword ptr [rsi + 0xec]' and body[stop + 2].mnemonic == 'jne'
+assert body[stop + 2].operands[0].imm == no_effects, 'Old interrupt epoch can mutate the next attempt'
+assert body[stop + 3].op_str == 'byte ptr [rsi + 0xd2], 0' and body[stop + 4].mnemonic == 'je'
+assert body[stop + 4].operands[0].imm == no_effects, 'Cancelled surrender can replace movement/remove auras'
+auras = positions(body, '?RemoveAura@Unit@@QEAAXIVObjectGuid@@IW4AuraRemoveMode@@@Z')
+assert len(auras) == 2 and conversation < auras[0] < stop < idle < auras[1]
+assert any(entry.op_str == 'edx, 0x1f6ed' for entry in body[conversation:auras[0]]), 'Whirlwind removal lost'
+assert body[auras[1] - 2].op_str == 'edx, 0x2ed8b', 'Penta-Strike191883 remains active during speech'
+assert body[idle - 1].op_str == 'rcx, 0x2f90', 'Idle must replace the actual boss motion after active Clear'
+stop_body = instructions('?StopAttack@Creature@@')
+stop_react = positions(stop_body, '?SetReactState@Creature@@')[0]
+attack_stop = positions(stop_body, '?AttackStop@Unit@@')[0]
+interrupt = positions(stop_body, '?InterruptNonMeleeSpells@Unit@@')[0]
+clear = positions(stop_body, '?Clear@MotionMaster@@QEAAX_N@Z')[0]
+assert stop_react < attack_stop < interrupt < clear
+assert [entry.op_str for entry in stop_body[stop_react - 3:stop_react]] == ['r8d, r8d', 'edx, edx', 'rcx, rbx'], 'Surrender helper lost passive state'
+assert stop_body[attack_stop + 1].op_str == 'sil, sil' and stop_body[attack_stop + 2].mnemonic == 'je'
+assert stop_body[attack_stop + 2].operands[0].imm == stop_body[interrupt + 1].address
+assert [entry.op_str for entry in stop_body[interrupt - 4:interrupt]] == ['r9b, 1', 'r8d, r8d', 'edx, r9b', 'rcx, rbx'], 'Native interruption excludes delayed/instant casts'
+assert stop_body[clear - 5].op_str == 'dil, dil' and stop_body[clear - 4].mnemonic == 'jne'
+assert stop_body[clear - 4].operands[0].imm == stop_body[clear - 1].address and stop_body[clear - 1].op_str == 'dl, 1'
 assert native['symbol']('?CreateConversation@Unit@@') not in native['calls'](post), 'Finale still uses the void creation wrapper'
 pending = next(index for index, entry in enumerate(body) if entry.op_str == 'byte ptr [rsi + 0xd2], 0')
 assert body[pending + 1].mnemonic == 'je' and body[pending + 1].operands[0].imm == body[health - 2].address
@@ -157,6 +183,8 @@ assert positions(reset_body, '?GetConversation@ObjectAccessor@@')[0] < retire < 
 assert any(entry.op_str == 'word ptr [rbx + 0x118], ax' for entry in reset_body[:retire]), 'Reset leaves a pending/removal timer active'
 assert any(entry.op_str == 'qword ptr [rbx + 0x110], rax' for entry in reset_body[:retire]), 'Reset leaves timer/instance state active'
 assert any(entry.op_str == 'r8d, 0x2000180' for entry in reset_body[retire:]), 'Finale cancellation does not restore native duel flags while retaining NPC immunity'
+react = positions(reset_body, '?SetReactState@Creature@@')[0]
+assert [entry.op_str for entry in reset_body[react - 2:react]] == ['r8d, r8d', 'dl, 1'], 'Cancelled passive surrender does not restore defensive final duel'
 updated = instructions('?UpdateAI' + suffix)
 tick = positions(updated, handoff)[0]
 victim = positions(updated, '?UpdateVictim@CreatureAI@@')[0]
@@ -217,4 +245,4 @@ assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and 
 assert damage[division + 1].mnemonic == 'cvttss2si' and damage[division + 2].op_str == 'dword ptr [rsp + 0x60], ecx'
 assert sum(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0xa8 for entry in damage[division + 3:division + 70]) == 2
 assert b'npc_magnar_icebreaker' in native['binary']
-print('PASS: canonical Magnar post-slot retains scaled/owner-first policy and acknowledged504, snapshots actual four-line handoff/recipient/instance, and cannot immediately credit/despawn. Installed pending clock precedes victim/evade gates, revalidates the recipient, credits45784 before actual909/5 arms its cancellable6000ms removal, and Reset retires only owned504. Native factory failure/epoch/cancellation policy retained; client speech/departure VFX remain separate.')
+print('PASS: canonical Magnar post-slot retains scaled/owner-first policy and acknowledged504; snapshots four-line handoff/recipient/instance without immediate credit/despawn. Surrender executes native passive/victim/delayed-cast/active-motion stop, then epoch-guarded idle/Penta-Strike removal; Reset restores defensive admission. Pending clock,45784/actual909/5/cancellable6000ms removal and scoped504 cleanup retained. Client speech/departure VFX remain separate.')

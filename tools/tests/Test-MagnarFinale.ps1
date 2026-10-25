@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CreationBaseline,[switch]$HandoffBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CreationBaseline,[switch]$HandoffBaseline,[switch]$SurrenderBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CreationBaseline -or $HandoffBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify current Release'}
-if(@($Baseline,$CreationBaseline,$HandoffBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose one baseline'}
+if(($Baseline -or $CreationBaseline -or $HandoffBaseline -or $SurrenderBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot verify current Release'}
+if(@($Baseline,$CreationBaseline,$HandoffBaseline,$SurrenderBaseline | Where-Object {$_}).Count -gt 1){throw 'Choose one baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/magnar-finale"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -11,6 +11,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "675d6f7a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar source missing'}}
 if($CreationBaseline){$source=(& git -C $repo show "65f7a845:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar creation source missing'}}
 if($HandoffBaseline){$source=(& git -C $repo show "f91fbfc7:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar handoff source missing'}}
+if($SurrenderBaseline){$source=(& git -C $repo show "fc099666:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Magnar surrender source missing'}}
 $source=$source.Substring($source.IndexOf('struct npc_magnar_icebreakerAI :'))
 $first=$source.IndexOf('        SummonList summons;');$last=$source.IndexOf('        void Reset()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
@@ -31,13 +32,23 @@ struct Player;
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };
 struct Map { std::vector<PlayerReference> players; auto const& GetPlayers() const { return players; } } instanceMap, unrelatedMap;
 '@)
-$header=$header.Replace('UNIT_FIELD_FLAGS = 0,','UNIT_FIELD_FLAGS = 0, UNIT_FLAG_NOT_SELECTABLE = 0x2000000,')
+$header=$header.Replace('UNIT_FIELD_FLAGS = 0,','UNIT_FIELD_FLAGS = 0, REACT_DEFENSIVE = 1, UNIT_FLAG_NOT_SELECTABLE = 0x2000000,')
 $header=$header.Replace('uint32 identity = 944, step = 4;','uint32 identity = 909, step = 4;')
 $header=$header.Replace('assert(identity == 40043);','assert(identity == 39191);').Replace('identity == 46982','identity == 45784')
 $header=$header.Replace('    bool CanContact() { return contact; }','    bool world = true; uint32 instance = 42; bool IsInWorld() const { return world; } uint32 GetInstanceId() const { return instance; } bool CanContact() { return contact; }')
 $header=$header.Replace('uint32 entry = 98007, mapId = 1511','uint32 entry = 96034, mapId = 1495')
 $header=$header.Replace('Map* GetMap() const { return &instanceMap; }','Map* map = &instanceMap; Map* GetMap() const { return map; } float GetDistance(Player* player) const { return player->distance; }')
-$header=$header.Replace('void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996 || identity == 205424); if (identity == 128264) ++removed; }','void RemoveAura(uint32 identity) { assert(identity == 128749); ++removed; }')
+$header=$header.Replace('void RemoveAura(uint32 identity) { assert(identity == 128264 || identity == 195996 || identity == 205424); if (identity == 128264) ++removed; }','void RemoveAura(uint32 identity) { assert(identity == 128749 || identity == 191883); if (identity == 128749) ++removed; else { ++pentaRemovals; penta = false; auto callback = onPentaRemoval; if (callback) callback(); } }')
+$header=$header.Replace('    std::vector<uint32> points;', '    uint32 clears = 0, idles = 0; bool chase = true; void Clear() { ++clears; chase = false; } void MoveIdle() { ++idles; } std::vector<uint32> points;')
+$header=$header.Replace('    void StopAttack() { ++stops; }', @'
+    bool moving = true, attacking = true, casting = true, delayedCast = true, penta = true;
+    uint32 interrupts = 0, splineStops = 0, pentaRemovals = 0;
+    std::function<void()> onInterrupt, onPentaRemoval;
+    bool isMoving() const { return moving; }
+    void AttackStop() { attacking = false; ++stops; }
+    void InterruptNonMeleeSpells(bool withDelayed) { assert(withDelayed); ++interrupts; casting = delayedCast = false; auto callback = onInterrupt; if (callback) callback(); }
+    void StopAttack(bool clearMove = false, bool interruptSpells = false);
+'@)
 $header=$header.Replace('void DespawnOrUnsummon(uint32 delay) { assert(delay == 7000); ++despawns; }','void DespawnOrUnsummon(uint32 delay = 0) { assert(delay == 0 || delay == 6000); ++despawns; }')
 $header=$header.Replace('struct ObjectAccessor', 'struct Conversation; struct ObjectAccessor').Replace('    static Player* GetPlayer(', '    static Conversation* GetConversation(Unit const&, ObjectGuid guid); static Player* GetPlayer(')
 $header=$header.Replace('    bool contact = true,', '    bool creditWorks = true; std::function<void()> onCredit; bool contact = true,')
@@ -53,6 +64,16 @@ $header=$header.Replace('    Player* FindNearestPlayer(float range)',@'
 '@)
 $header=$header.Replace('uint64 health = 100000, maximum','uint64 healthValue = 100000, maximum').Replace('return health;','return healthValue;').Replace('100.f * health / maximum','100.f * healthValue / maximum').Replace('health = value;','healthValue = value;')
 $header+=@'
+namespace Movement
+{
+    struct MoveSplineInit
+    {
+        Creature& actor;
+        explicit MoveSplineInit(Creature& target) : actor(target) { }
+        void Stop(bool first, bool second) { assert(!first && second); ++actor.splineStops; actor.moving = false; }
+    };
+}
+#include "StopAttack.inc"
 enum class HighGuid { Conversation };
 struct Generator { uint32 next = 0; uint32 Generate() { return ++next; } } generator;
 struct ObjectMgr { template<HighGuid> Generator* GetGenerator() { return &generator; } } objectManager;
@@ -113,6 +134,7 @@ foreach($entry in @(@('OwnerPlayer','Player* Unit::GetCharmerOrOwnerPlayerOrPlay
 $first=$source.IndexOf('    damage /= victim->GetHealthMultiplierForTarget(this);',$source.IndexOf('uint32 Unit::DealDamage('));$hook=$source.IndexOf('    if (Creature* creature = victim->ToCreature())',$first)
 [IO.File]::WriteAllText("$out/NativeScaledHook.inc",$source.Substring($first,$hook-$first)+(Block $source.Substring($hook) 'if (Creature* creature = victim->ToCreature())'))
 $source=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
+[IO.File]::WriteAllText("$out/StopAttack.inc",(Block $source 'void Creature::StopAttack('))
 [IO.File]::WriteAllText("$out/Multiplier.inc",(Block $source 'float Creature::GetHealthMultiplierForTarget('))
 $source=Get-Content "$repo/src/common/Utilities/Util.h" -Raw
 [IO.File]::WriteAllText("$out/CalculatePct.inc","template <class T, class U>`n"+(Block $source 'T CalculatePct('))
@@ -120,7 +142,7 @@ $source=Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block $source 'enum CriteriaTypes')+';')
 
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}elseif($HandoffBaseline){'/DHANDOFF_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}elseif($HandoffBaseline){'/DHANDOFF_BASELINE'}elseif($SurrenderBaseline){'/DSURRENDER_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/MagnarFinaleTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Magnar native finale failed'}
 if($VerifyReleaseBinary){

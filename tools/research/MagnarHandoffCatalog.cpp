@@ -124,12 +124,14 @@ int main(int argc, char** argv)
         }
     if (!foundBeam)
         return 11;
-    std::set<uint32> wanted{188067, 188068, 188074, 189718, 189721, 190588, 192065};
+    std::set<uint32> wanted{188067, 188068, 188074, 189718, 189721, 190588, 192065, 193515, 192085, 216016, 191883, 191884, 191885};
     for (auto spell : spells)
     {
         std::string name = spell->Name->Str[0];
         if (name.find("Magnar") != std::string::npos || name.find("Hruthnir") != std::string::npos ||
-            name.find("Valarjar") != std::string::npos || name.find("Blackwyrm") != std::string::npos)
+            name.find("Valarjar") != std::string::npos || name.find("Blackwyrm") != std::string::npos ||
+            name.find("Ascend") != std::string::npos || name.find("Ascension") != std::string::npos ||
+            name.find("Skyhold") != std::string::npos)
             std::cout << "CANDIDATE\t" << spell->ID << '\t' << name << '\n';
     }
     for (uint32 identity : wanted)

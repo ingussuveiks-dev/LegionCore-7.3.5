@@ -12,6 +12,13 @@
 #include <DbgHelp.h>
 #pragma comment(lib, "Dbghelp.lib")
 
+#ifndef ARTIFACT_VISUAL_ACTOR
+#define ARTIFACT_VISUAL_ACTOR 66238
+#endif
+#ifndef ARTIFACT_VISUAL_SPELLS
+#define ARTIFACT_VISUAL_SPELLS 195062u, 205424u
+#endif
+
 static LONG WINAPI ReportNativeFailure(EXCEPTION_POINTERS* exception)
 {
     auto process = GetCurrentProcess();
@@ -128,15 +135,15 @@ int main(int argc, char** argv)
         return 7;
     std::cout << "SOURCE\troot-tables-base-plus-hotfix\tclient-parent-records-base-only\n";
     std::set<int32> pendingVisuals, seenVisuals, pendingKits, seenKits;
-    auto display = displays.LookupEntry(66238);
+    auto display = displays.LookupEntry(ARTIFACT_VISUAL_ACTOR);
     auto model = display ? models.LookupEntry(display->ModelID) : nullptr;
     if (!model)
         return 8;
-    std::cout << "ACTOR\t66238\t" << display->ModelID << '\t' << model->FileDataID << '\t'
+    std::cout << "ACTOR\t" << ARTIFACT_VISUAL_ACTOR << '\t' << display->ModelID << '\t' << model->FileDataID << '\t'
         << display->StateSpellVisualKitID << '\t' << display->CreatureModelScale << '\t' << model->ModelScale << '\n';
     if (display->StateSpellVisualKitID)
         pendingKits.insert(display->StateSpellVisualKitID);
-    for (uint32 spell : {195062u, 205424u})
+    for (uint32 spell : {ARTIFACT_VISUAL_SPELLS})
     {
         for (auto entry : misc)
             if (entry->SpellID == spell && !entry->DifficultyID)

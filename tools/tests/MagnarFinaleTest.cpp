@@ -68,7 +68,69 @@ int main()
     assert(fixture.owner.Deal(&fixture.actor, 20) == 0);
     assert(fixture.actor.conversations == 1 && fixture.owner.credits == 1 && scenarioManager.scenario.step == 5 && fixture.actor.despawns == 1);
     std::cout << "BASELINE: pinnedf91fbfc7 credits45784/opens native final-stage phase immediately on acknowledged504, while its last dialogue starts34064ms later; Creature already owns6000ms removal. Controlled native handler/services, not an observed early client pickup.\n";
+#elif defined(SURRENDER_BASELINE)
+    Fixture fixture;
+    fixture.owner.Deal(&fixture.actor, 20);
+    assert(fixture.ai.finaleStarted && fixture.ai.finalePending && fixture.actor.conversations == 1);
+    assert(fixture.actor.attacking && fixture.actor.casting && fixture.actor.delayedCast && fixture.actor.motion.chase && fixture.actor.penta);
+    assert(!fixture.actor.stops && !fixture.actor.interrupts && !fixture.actor.motion.clears && fixture.actor.react == REACT_AGGRESSIVE);
+    std::cout << "BASELINE: pinnedfc099666 acknowledges504/protects the surrendered boss but never stops its victim, pending casts or chase generator. Controlled native handler, not a live client chase.\n";
 #else
+    for (bool moving : {false, true}) for (bool alliance : {false, true}) for (uint32 kind = 0; kind < 4; ++kind)
+    {
+        Fixture fixture;
+        fixture.actor.moving = moving; fixture.owner.alliance = alliance;
+        Unit pet, guardian, charmed;
+        pet.owner = guardian.owner = &fixture.owner; charmed.charmer = &fixture.owner;
+        Unit* attacker = kind == 0 ? static_cast<Unit*>(&fixture.owner) : kind == 1 ? &pet : kind == 2 ? &guardian : &charmed;
+        fixture.actor.onInterrupt = [&]() {
+            assert(fixture.ai.finaleStarted && fixture.ai.finalePending && fixture.ai.finaleTimer == 34064);
+            assert(!fixture.owner.credits && fixture.actor.conversations == 1 && fixture.actor.faction == 35);
+            uint32 damage = 100000;
+            fixture.ai.DamageTakenAfterScaling(attacker, damage, 0);
+            assert(!damage && fixture.actor.conversations == 1);
+        };
+        attacker->Deal(&fixture.actor, 20);
+        assert(!fixture.actor.attacking && !fixture.actor.casting && !fixture.actor.delayedCast && !fixture.actor.motion.chase);
+        assert(fixture.actor.stops == 1 && fixture.actor.interrupts == 1 && fixture.actor.motion.clears == 1 && fixture.actor.motion.idles == 1);
+        assert(fixture.actor.splineStops == uint32(!moving) && fixture.actor.react == REACT_PASSIVE);
+        assert(!fixture.actor.penta && fixture.actor.pentaRemovals == 1);
+        attacker->Deal(&fixture.actor, 20);
+        assert(fixture.actor.stops == 1 && fixture.actor.interrupts == 1);
+        assert(fixture.actor.pentaRemovals == 1);
+        fixture.Finish();
+        assert(fixture.owner.credits == 1 && fixture.actor.despawns == 1);
+    }
+    for (bool restart : {false, true})
+    {
+        Fixture fixture;
+        fixture.actor.onInterrupt = [&]() {
+            fixture.ai.Reset();
+            fixture.actor.onInterrupt = nullptr;
+            assert(!fixture.ai.finaleStarted && !fixture.ai.finalePending && fixture.actor.react == REACT_DEFENSIVE);
+            if (restart) fixture.owner.Deal(&fixture.actor, 20);
+        };
+        fixture.owner.Deal(&fixture.actor, 20);
+        fixture.Finish();
+        assert(fixture.owner.credits == uint32(restart) && fixture.actor.despawns == uint32(restart));
+        assert(fixture.actor.retiredConversations == 1 && fixture.actor.conversations == 1 + uint32(restart));
+        assert(fixture.actor.pentaRemovals == uint32(restart));
+        assert(fixture.actor.motion.idles == uint32(restart));
+        if (!restart)
+        {
+            assert(!fixture.ai.finaleStarted && !fixture.ai.finalePending && fixture.actor.faction == 14 && fixture.actor.react == REACT_DEFENSIVE);
+            fixture.owner.Deal(&fixture.actor, 20); fixture.Finish();
+            assert(fixture.owner.credits == 1 && fixture.actor.despawns == 1);
+        }
+    }
+    {
+        Fixture fixture;
+        fixture.actor.onPentaRemoval = [&]() { fixture.ai.Reset(); };
+        fixture.owner.Deal(&fixture.actor, 20); fixture.Finish();
+        assert(!fixture.ai.finaleStarted && !fixture.ai.finalePending && !fixture.owner.credits && !fixture.actor.despawns);
+        assert(fixture.actor.retiredConversations == 1 && fixture.actor.react == REACT_DEFENSIVE);
+    }
+    std::cout << "PASS:16 moving/faction/player-pet-guardian-charmer surrender cases execute native Creature::StopAttack(true,true) after504 acknowledgement/pending state: passive, victim stopped, delayed/nonmelee casts interrupted, active motion cleared once. Interrupt-hook Reset/new-attempt survives without old pending state resurrection; movement/network/spell services controlled, not client pathfinding.\n";
     {
         Fixture fixture;
         fixture.owner.Deal(&fixture.actor, 20);
@@ -227,7 +289,7 @@ int main()
         if (suspended) { fixture.actor.active = &temporary; fixture.actor.i_disabledAI = &fixture.ai; }
         assert(attacker->Deal(&fixture.actor, 20) == 0 && fixture.actor.alive);
         assert(fixture.bystander.credits == 0);
-        if (firstPhase) { assert(!fixture.actor.conversations && !fixture.owner.credits && !fixture.peer.credits && !fixture.ai.finaleStarted); }
+        if (firstPhase) { assert(!fixture.actor.conversations && !fixture.owner.credits && !fixture.peer.credits && !fixture.ai.finaleStarted && !fixture.actor.stops && !fixture.actor.interrupts && !fixture.actor.motion.clears); }
         else
         {
             assert(!fixture.actor.despawns && !fixture.owner.credits && !fixture.peer.credits && scenarioManager.scenario.step == 4);
@@ -259,6 +321,7 @@ int main()
         if (invalid == 15) fixture.actor.map = nullptr;
         assert(fixture.owner.Deal(&fixture.actor, 20) == 0 && fixture.actor.alive);
         assert(!fixture.actor.conversations && !fixture.actor.despawns && !fixture.ai.finaleStarted && !fixture.owner.credits);
+        assert(!fixture.actor.stops && !fixture.actor.interrupts && !fixture.actor.motion.clears);
     }
     {
         Fixture fixture; instanceMap.players.clear(); Unit ally;
@@ -324,6 +387,7 @@ int main()
             assert(!fixture.ai.finaleStarted && !fixture.ai.stop_combat && !fixture.actor.conversations);
             assert(!fixture.owner.credits && !fixture.peer.credits && !fixture.actor.despawns);
             assert(!fixture.actor.removed && !fixture.actor.flags && fixture.actor.faction == 14);
+            assert(!fixture.actor.stops && !fixture.actor.interrupts && !fixture.actor.motion.clears && fixture.actor.react == REACT_AGGRESSIVE);
             assert(scenarioManager.scenario.step == 4 && Conversation::allocations.empty());
         }
         assert(warningCount == warnings + 2 && Conversation::failedDeletes == deletes + 2);
