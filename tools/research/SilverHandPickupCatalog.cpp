@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "MySQLThreading.h"
+#include "SharedDefines.h"
 #include <cstdlib>
 #include <iostream>
 #include <set>
@@ -40,6 +41,14 @@ int main(int argc, char** argv)
     auto check = HotfixDatabase.Query("SELECT @@session.transaction_read_only");
     if (!check || !check->Fetch()[0].GetBool())
         return 4;
+    DB2Storage<MapEntry> maps("Map.db2", MapLoadInfo::Instance());
+    if (!maps.Load(argv[1], 0))
+        return 17;
+    maps.LoadFromDB();
+    auto acquisitionMap = maps.LookupEntry(1539);
+    if (!acquisitionMap || !acquisitionMap->IsDungeon())
+        return 18;
+    std::cout << "MAP_DUNGEON\t" << acquisitionMap->ID << '\t' << acquisitionMap->IsDungeon() << '\n';
     DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2", ScenarioStepLoadInfo::Instance());
     DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2", CriteriaTreeLoadInfo::Instance());
     DB2Storage<CriteriaEntry> criteria("Criteria.db2", CriteriaLoadInfo::Instance());
@@ -53,6 +62,7 @@ int main(int argc, char** argv)
         {
             std::cout << "STEP\t" << unsigned(step->OrderIndex) << '\t' << step->ID << '\t'
                 << step->Criteriatreeid << '\t' << step->IsBonusObjective() << '\t' << step->Title->Str[0] << '\n';
+            std::cout << "STEP_REWARD\t" << unsigned(step->OrderIndex) << '\t' << step->RewardQuestID << '\n';
             std::set<uint32> pending{uint32(step->Criteriatreeid)}, seen;
             while (!pending.empty())
             {
@@ -81,6 +91,36 @@ int main(int argc, char** argv)
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
+    DB2Storage<SpellMiscEntry> miscellaneous("SpellMisc.db2", SpellMiscLoadInfo::Instance());
+    if (!miscellaneous.Load(argv[1], 0))
+        return 12;
+    miscellaneous.LoadFromDB();
+    bool pickupMiscFound = false;
+    for (auto entry : miscellaneous)
+        if (entry->SpellID == 211838 && !entry->DifficultyID)
+        {
+            std::cout << "PICKUP_MISC\t" << entry->SpellID << '\t' << entry->CastingTimeIndex << '\t'
+                << entry->DurationIndex << '\t' << entry->Attributes[1] << '\n';
+            if (entry->Attributes[1] & (SPELL_ATTR1_CHANNELED_1 | SPELL_ATTR1_CHANNELED_2))
+                return 13;
+            pickupMiscFound = true;
+        }
+    if (!pickupMiscFound)
+        return 14;
+    DB2Storage<SpellDurationEntry> durations("SpellDuration.db2", SpellDurationLoadInfo::Instance());
+    DB2Storage<SpellCastTimesEntry> castTimes("SpellCastTimes.db2", SpellCastTimesLoadInfo::Instance());
+    if (!durations.Load(argv[1], 0) || !castTimes.Load(argv[1], 0))
+        return 15;
+    durations.LoadFromDB();
+    castTimes.LoadFromDB();
+    auto pickupDuration = durations.LookupEntry(105);
+    auto pickupCastTime = castTimes.LookupEntry(1);
+    if (!pickupDuration || !pickupCastTime)
+        return 16;
+    std::cout << "PICKUP_DURATION\t" << pickupDuration->ID << '\t' << pickupDuration->Duration << '\t'
+        << pickupDuration->MaxDuration << '\t' << pickupDuration->DurationPerLevel << '\n';
+    std::cout << "PICKUP_CAST_TIME\t" << pickupCastTime->ID << '\t' << pickupCastTime->Base << '\t'
+        << pickupCastTime->Minimum << '\t' << pickupCastTime->PerLevel << '\n';
     DB2Storage<ItemSparseEntry> items("ItemSparse.db2", ItemSparseLoadInfo::Instance());
     DB2Storage<ItemChildEquipmentEntry> children("ItemChildEquipment.db2", ItemChildEquipmentLoadInfo::Instance());
     DB2Storage<SceneScriptEntry> scripts("SceneScript.db2", SceneScriptLoadInfo::Instance());

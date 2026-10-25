@@ -528,12 +528,14 @@
       "weapon": "The Silver Hand",
       "item": 128823,
       "start": 42231,
-      "status": "partial: six companion guards,1267 existing-item equip and scoped pickup admission repaired; real loot/early/repeated credit/ritual/recovery/return/client traversal remain open",
+      "status": "partial: six companion guards,1267 existing-item equip, scoped pickup admission and genuine loot/completed-state claim repaired; late-scene recovery/1268 collapse/escape/return/ritual/full client traversal remain open",
       "ally_damage_audit": "docs/audits/silver-hand-ally-damage-2026-10-25.json",
       "scene_equip_audit": "docs/audits/silver-hand-scene-equip-2026-10-25.json",
       "pickup_admission_audit": "docs/audits/silver-hand-pickup-admission-2026-10-25.json",
-      "native_scenario_review": "Fresh typed26972 scenario1092/map1539 has stages0..10;42120 follows42377 after42231/40410 and additional40408 admission. Six native98..110 scaled allies use four CPP AIs. Final-damage hooks retain existing wound/heal210985, speech and pre-heal40pct logic without awarding progression. Separate fallen90pct actors, Mordoth direct Kill, ritual waves and original GO pickup/return remain unchanged/unverified; the new scene equip bridge is separately scoped by scene_equip_audit.",
-      "real_acquisition_review": "GO249824/type3/phase7004 still has Data1=0 despite genuine128823 loot249824. New script/AI opening and actual activation admission require live eligible Paladin/active42120/same map-instance/phase/LOS/range/scenario1092 fresh10 or carried-copy-only replay11; wrong-stage unowned/bank-only and shared991/1037 reject. Native ReportUse discards the AI bool, so generic USE_GAMEOBJECT/stealth effects are not blocked; actual artifact activation rechecks eligibility. Original eligible direct grant/early/repeated credits/12-second return remain OPEN.1267/1618 completion physically equips existing128823 before native211842;90 is PERSONAL (134 group),225877/81 remains NULL. No user character/item grant used by tests and no whole acquisition/client proof.",
+      "real_loot_audit": "docs/audits/silver-hand-real-loot-2026-10-25.json",
+      "collapse_scene_review": "Legacy211862 return naming does not prove teleport: native effects self scene1268/1619 and aura26; reviewed local14101 is Tomb Destroyed running/rocks/camera/EndScene. No1268 script or spell_scene_event rows. Trace collapse/escape credits and actual subsequent return separately. Expired/cancelled1267 leaves a LAUNCH marker natively; new duplicate admission checks the real211838 aura too, allowing carried-copy replay through a legitimate accessible actor after aura removal without a global reset or invented timeout.",
+      "native_scenario_review": "Fresh typed26972 scenario1092/map1539 has stages0..10 and all RewardQuestIDs0;42120 follows42377 after42231/40410 and additional40408 admission. Six native98..110 scaled allies use four CPP AIs. Final-damage hooks retain existing wound/heal210985, speech and pre-heal40pct logic without awarding progression. Separate fallen90pct actors, Mordoth direct Kill and ritual waves remain unchanged/unverified; scene equip and genuine pickup/guarded request are separately scoped by their audits, not full return verification.",
+      "real_acquisition_review": "Migration10 links genuine249824->128823 with14 native source4 conditions: active nonrewarded42120/Paladin/alive/map1539/exact1092 step10/no owned copy including bank. Completed-state3 claim revalidates previous live spatial/context policy and actual carried item; activation no longer creates an item or grants50966/106357/105892/manual scenario completion. Native storage failure keeps the unlooted slot; rejected211838 reopens READY and retains existing item. Active1267 and already-completed/equipped claims stop.1267/1618 physically equips existing128823 before native211842/61 event50966/90 PERSONAL106357; native Scenario Reward owns completion and final RewardQuestID is0. Native211838 has zero cast time/nonchannel/9s duration. Original12s return request now requires original instance/live active quest/completed1267/actual mainhand/native completed1092 and grants no105892, but late completion/equip failure/1268 completion and real arrival remain OPEN. ReportUse still discards its AI bool; generic effects are not blocked. No character grant or whole acquisition/client proof.",
       "quests": [
         {
           "id": 42231,
@@ -567,7 +569,7 @@
         {
           "entry": 249824,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 249824,
           "expected_loot_entries": [
             249824
           ],
@@ -607,7 +609,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Couple Holy249824 genuine loot link/conditions/native storage to claim and1267 equip; remove AddItem and early/repeated50966/105892/completion/unchecked12s return. Preserve new scoped opening/activation admission and carried-copy11 replay, but eliminate its legacy repeated credits through real once-only lifecycle, not a fake item/counter grant. ReportUse ignores its AI bool natively; do not claim its generic effects are blocked. Then full phase/actor/heal-threshold/failed210985/reset/abandon/re-entry, ritual actual-GUID retry, fallen90pct rescue and aberration one-hit/pet/guardian/group review while retaining intentional Mordoth deaths. Native225877/81 is not server action-bar implementation. All client rendering/faction traversal remain pending; review full footage before timing/VFX reconstruction."
+      "next_action": "Preserve genuine249824 loot/native storage and scene-gated211842 progress. Restore real1268 return/arrival105892 with late-scene/equip-failure retry, actual actor re-entry/abandonment and overlapping recovery timers before calling the final chain complete. Original12s guarded request is not a full return implementation; no early arrival credit or global1268-status gate that breaks abandon/retake. ReportUse ignores its AI bool natively. Then full phase/actor/heal-threshold/failed210985/reset, ritual actual-GUID retry, fallen90pct rescue and aberration one-hit/pet/guardian/group review while retaining intentional Mordoth deaths. Native225877/81 is not server action-bar implementation. All client rendering/faction traversal remain pending; review full footage before timing/VFX reconstruction."
     },
     {
       "class_id": 2,

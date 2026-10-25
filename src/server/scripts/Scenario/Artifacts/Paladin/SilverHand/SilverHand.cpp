@@ -998,6 +998,21 @@ namespace SilverHandAcquisition
         return scenario->GetCurrentStep() == 10 ||
             (scenario->GetCurrentStep() == 11 && player->GetItemByEntry(128823));
     }
+
+    bool CanReturn(Player* player, uint32 instanceId)
+    {
+        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN || !player->GetMap() || player->GetMapId() != 1539 ||
+            player->GetInstanceId() != instanceId || player->GetQuestRewardStatus(42120) ||
+            (player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42120) != QUEST_STATUS_COMPLETE) ||
+            !player->HasSceneStatus(1267, SCENE_COMPLETE))
+            return false;
+        Item* weapon = player->GetItemByEntry(128823);
+        if (!weapon || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(instanceId);
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->IsCompleted(false);
+    }
 }
 
 // 249824
@@ -1017,36 +1032,52 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* go) override
     {
-        return !SilverHandAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED;
+        if (!SilverHandAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED)
+            return true;
+        if (player->GetItemByEntry(128823))
+        {
+            go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true;
+        }
+        return false;
     }
     GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
 
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && go && state == GO_ACTIVATED && go->getLootState() == GO_ACTIVATED &&
-            SilverHandAcquisition::CanTake(target->ToPlayer(), go))
+        Player* player = target ? target->ToPlayer() : nullptr;
+        if (!go || state != GO_JUST_DEACTIVATED || go->getLootState() != GO_JUST_DEACTIVATED ||
+            !SilverHandAcquisition::CanTake(player, go))
+            return;
+        Item* weapon = player->GetItemByEntry(128823);
+        if (!weapon || (player->HasSceneStatus(1267, SCENE_LAUNCH) && !player->HasSceneStatus(1267, SCENE_COMPLETE) &&
+            player->HasAura(211838)))
+            return;
+        Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+        if (!scenario)
+            return;
+        if (scenario->IsCompleted(false) && player->HasSceneStatus(1267, SCENE_COMPLETE) &&
+            player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon)
+            return;
+        SpellCastResult result = player->CastSpell(player, 211838, true);
+        if (result != SPELL_CAST_OK)
         {
-            if (target->GetTypeId() == TYPEID_PLAYER)
-            {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50966);
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1092, 1);
-                if (Creature* trigger = go->FindNearestCreature(106781, 10.0f))
-                    trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128823, 1))
-                    target->ToPlayer()->AddItem(128823, 1);
-
-                target->CastSpell(target, 211838, true);
-
-                target->ToPlayer()->KilledMonsterCredit(106357);
-                target->ToPlayer()->KilledMonsterCredit(105892);
-
-                target->AddDelayedEvent(12000, [target]() -> void
-                {
-                    target->CastSpell(target, 211862);
-                });
-            }
+            TC_LOG_WARN("scripts", "Silver Hand pickup: scene 211838 failed with result %u for player %u; retain existing item and reopen object", uint32(result), player->GetGUIDLow());
+            go->SetLootState(GO_READY);
+            return;
         }
+        if (Creature* trigger = go->FindNearestCreature(106781, 10.0f))
+            trigger->DespawnOrUnsummon(1000);
+        uint32 instanceId = go->GetInstanceId();
+        player->AddDelayedEvent(12000, [player, instanceId]() -> void
+        {
+            if (SilverHandAcquisition::CanReturn(player, instanceId))
+            {
+                SpellCastResult result = player->CastSpell(player, 211862);
+                if (result != SPELL_CAST_OK)
+                    TC_LOG_WARN("scripts", "Silver Hand pickup: return scene 211862 failed with result %u for player %u; no arrival credit granted", uint32(result), player->GetGUIDLow());
+            }
+        });
     }
 };
 

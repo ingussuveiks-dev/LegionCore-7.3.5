@@ -1,4 +1,4 @@
-"""Verify actual Holy pickup opening, report-use and activation admission."""
+"""Verify actual Holy pickup opening, report-use and completed-claim admission."""
 from pathlib import Path
 import runpy
 import struct
@@ -87,12 +87,14 @@ gate = next(index for index, entry in enumerate(callback) if entry.mnemonic == '
             and native['resolve'](entry.operands[0].imm) == native['symbol'](helper))
 assert callback[gate + 1].op_str == 'al, al' and callback[gate + 2].mnemonic == 'je'
 rejected = callback[gate + 2].operands[0].imm
-for operands in ('r8d, 2', 'eax, 2'):
+for operands in ('r8d, 3', 'eax, 3'):
     position = next(index for index, entry in enumerate(callback[:gate]) if entry.mnemonic == 'cmp' and entry.op_str == operands)
     assert callback[position + 1].mnemonic == 'jne' and callback[position + 1].operands[0].imm == rejected
 effects = [index for index, entry in enumerate(callback) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
            and native['resolve'](entry.operands[0].imm) == native['symbol']('?UpdateAchievementCriteria@Player@@')]
-assert effects and min(effects) > gate, 'Legacy effects precede admission'
+assert not effects, 'Completed-loot callback still directly awards scenario progression'
+for forbidden in ('?AddItem@Player@@', '?KilledMonsterCredit@Player@@'):
+    assert native['symbol'](forbidden) not in native['calls'](loot), f'Completed claim bypasses native loot/presentation: {forbidden}'
 tables = []
 for entry in instructions('?AddSC_SilverHand@@'):
     for operand in entry.operands:
@@ -125,4 +127,4 @@ for prefix in ('?HandleGameobjectReportUse@WorldSession@@', '?SendLoot@Spell@@')
         assert dispatch[invocation + 1].op_str != 'al, al', 'ReportUse return handling changed; review its generic use criteria separately'
 assert native['symbol']('?OnGossipHello@ScriptMgr@@QEAA_NPEAVPlayer@@PEAVGameObject@@') in native['calls']('?Use@GameObject@@QEAAXPEAVUnit@@')
 assert native['symbol']('?Use@GameObject@@QEAAXPEAVUnit@@') in native['calls']('?HandleGameObjectUse@WorldSession@@')
-print('PASS: installed Silver Hand script/AI factories guard native Use/opening and activation with live Paladin1539/1092/active42120, phase/visibility/LOS/range/stored state; fresh10 or carried128823-only replay11. ReportUse selects the AI but natively discards its return. Admission only: eligible direct grant/early/repeated credits/return and real loot remain open.')
+print('PASS: installed Silver Hand script/AI factories guard native Use/opening and actual completed-state3 with live Paladin1539/1092/active42120, phase/visibility/LOS/range; fresh10 or carried128823-only replay11. ReportUse selects the AI but discards its bool. No direct AddItem/scenario/kill credit in the claim; real storage/presentation/return are separately checked.')
