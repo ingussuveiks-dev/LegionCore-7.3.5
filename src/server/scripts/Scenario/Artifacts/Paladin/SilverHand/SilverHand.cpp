@@ -7,10 +7,28 @@
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
 #include "Item.h"
+#include "ObjectAccessor.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
 
+
+namespace SilverHandEntrance
+{
+    bool CanArrive(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106429 || actor->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, 20.0f) || player->GetQuestRewardStatus(42120) ||
+            player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() <= 1;
+    }
+}
 
 // 106429
 class npc_travar_first : public CreatureScript
@@ -224,20 +242,25 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (_introDone || !SilverHandEntrance::CanArrive(player, me))
                 return;
 
-            if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
+            _introDone = true;
+            Talk(0);
+            ObjectGuid playerGuid = player->GetGUID();
+            me->AddDelayedEvent(5000, [this, playerGuid]() -> void
             {
-                _introDone = true;
-                Talk(0);
-                me->AddDelayedEvent(5000, [this, who]() -> void
+                Player* player = ObjectAccessor::GetPlayer(*me, playerGuid);
+                if (!SilverHandEntrance::CanArrive(player, me))
                 {
-                    Talk(1);
-                    me->GetMotionMaster()->MovePoint(1, 2137.70f, 2397.60f, 118.54f);
-                    who->ToPlayer()->KilledMonsterCredit(106416);
-                });
-            }
+                    _introDone = false;
+                    return;
+                }
+                Talk(1);
+                me->GetMotionMaster()->MovePoint(1, 2137.70f, 2397.60f, 118.54f);
+                player->KilledMonsterCredit(106416);
+            });
         }
 
         void UpdateAI(uint32 diff) override

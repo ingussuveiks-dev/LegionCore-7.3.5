@@ -87,7 +87,8 @@ int main(int argc, char** argv)
     effects.LoadFromDB();
     for (auto effect : effects)
         if (!effect->DifficultyID && (effect->SpellID == 210985 || effect->SpellID == 211838 ||
-            effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 211867 || effect->SpellID == 225877))
+            effect->SpellID == 211842 || effect->SpellID == 211862 || effect->SpellID == 211867 ||
+            effect->SpellID == 210360 || effect->SpellID == 232945 || effect->SpellID == 232946 || effect->SpellID == 225877))
             std::cout << "EFFECT\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t' << effect->Effect << '\t'
                 << effect->EffectAura << '\t' << effect->EffectMiscValue[0] << '\t' << effect->EffectTriggerSpell << '\t'
                 << effect->ImplicitTarget[0] << '\t' << effect->ImplicitTarget[1] << '\n';
@@ -117,6 +118,13 @@ int main(int argc, char** argv)
     if (!spells.Load(argv[1], 0))
         return 19;
     spells.LoadFromDB();
+    for (auto effect : effects)
+        if (!effect->DifficultyID && (effect->Effect == 90 || effect->Effect == 134) && effect->EffectMiscValue[0] == 105892)
+        {
+            auto spell = spells.LookupEntry(effect->SpellID);
+            std::cout << "DALARAN_CREDIT_SPELL\t" << effect->SpellID << '\t' << effect->EffectIndex << '\t'
+                << effect->Effect << '\t' << (spell ? spell->Name->Str[0] : "missing") << '\n';
+        }
     for (auto entry : miscellaneous)
         if ((entry->SpellID == 211862 || entry->SpellID == 211867) && !entry->DifficultyID)
         {
