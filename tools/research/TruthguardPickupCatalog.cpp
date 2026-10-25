@@ -93,7 +93,7 @@ int main(int argc, char** argv)
         std::cout << "ITEM\t" << identity << '\t' << unsigned(item->ArtifactID) << '\t' << unsigned(item->InventoryType)
             << '\t' << item->Display->Str[0] << '\n';
     }
-    for (uint32 identity : {210132, 210133, 225876, 3365, 210036, 210043})
+    for (uint32 identity : {210132, 210133, 225876, 3365, 210036, 210043, 209884, 209908, 210358, 210360, 52391})
     {
         for (auto effect : effects)
             if (effect->SpellID == identity && !effect->DifficultyID)

@@ -1104,6 +1104,16 @@ public:
             }
         }
 
+        void SummonForPlayer(Player* player, uint32 spell)
+        {
+            SpellCastResult result = player->CastSpell(player, spell, true);
+            if (result != SPELL_CAST_OK)
+            {
+                TC_LOG_WARN("scripts", "Truthguard travel: summon cast %u rejected with result %u for player %u; source retained for retry", spell, uint32(result), player->GetGUIDLow());
+                return;
+            }
+            me->DestroyForPlayer(player);
+        }
         void OnSpellClick(Unit* clicker) override
         {
             if (me->isSummon())
@@ -1116,8 +1126,7 @@ public:
                     QuestStatus status = player->GetQuestStatus(42017);
                     if (status == QUEST_STATUS_INCOMPLETE)
                     {
-                        player->CastSpell(player, SPELL_SUMMON_HIPPO, true);
-                        me->DestroyForPlayer(player);
+                        SummonForPlayer(player, SPELL_SUMMON_HIPPO);
                     }
                 }
                 if (me->GetEntry() == NPC_HIPPOGRYPH_SCENARIO)
@@ -1125,8 +1134,7 @@ public:
                     if (InstanceScript* instance = player->GetInstanceScript())
                         if (instance->GetData(DATA_YRGRIM_EVENT) == 7)
                         {
-                            player->CastSpell(player, SPELL_SUMMON_HIPPO_INST, true);
-                            me->DestroyForPlayer(player);
+                            SummonForPlayer(player, SPELL_SUMMON_HIPPO_INST);
                         }
                 }
             }
