@@ -971,6 +971,35 @@ public:
     };
 };
 
+namespace SilverHandRescue
+{
+    bool CanCredit(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || player->IsPreDelete() || !player->CanContact() || player->isGameMaster() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetMapId() != 1539 ||
+            (actor->GetEntry() != 106933 && actor->GetEntry() != 106721 && actor->GetEntry() != 106722) ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->IsWithinDistInMap(actor, 100.0f) ||
+            player->GetQuestRewardStatus(42120) || player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 7;
+    }
+
+    Player* SelectPlayer(Player* preferred, Creature* actor)
+    {
+        if (CanCredit(preferred, actor))
+            return preferred;
+        if (!actor || !actor->GetMap())
+            return nullptr;
+        for (auto const& reference : actor->GetMap()->GetPlayers())
+            if (CanCredit(reference.getSource(), actor))
+                return reference.getSource();
+        return nullptr;
+    }
+}
+
 // 106933, 106721, 106722
 class npc_silverhand_events : public CreatureScript
 {
@@ -990,21 +1019,43 @@ public:
         }
 
         bool wait_heal;
+        uint64 _healGeneration = 0;
+        FunctionProcessor _healFunctions;
 
-        void HealReceived(Unit* who, uint32& /*addhealth*/) override
+        void Reset() override
         {
-            if (!wait_heal)
-                if (me->GetHealthPct() >= 90)
-                {
-                    wait_heal = true;
-                    me->ClearUnitState(UNIT_STATE_STUNNED);
-                    me->RemoveAura(211699);
-                    me->RemoveAura(211698);
-                    me->DespawnOrUnsummon(3000);
-                    me->GetMotionMaster()->MovePoint(0, 1875.49f, 2329.93f, 49.64f);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, (me->GetEntry() == 106933 ? 50913 : 50914)); // Вариации
-                }
+            ++_healGeneration;
+        }
+
+        void UpdateLifecycle(uint32 diff) override
+        {
+            _healFunctions.Update(diff);
+        }
+
+        void HealReceived(Unit* who, uint32& addhealth) override
+        {
+            if (wait_heal || !addhealth || !who || !who->IsInWorld() || who->GetMap() != me->GetMap())
+                return;
+            Player* player = SilverHandRescue::SelectPlayer(who->GetCharmerOrOwnerPlayerOrPlayerItself(), me);
+            if (!player)
+                return;
+            ObjectGuid guid = player->GetGUID();
+            uint64 generation = _healGeneration;
+            _healFunctions.AddDelayedEvent(0, [guid, generation, this]() -> void
+            {
+                if (wait_heal || generation != _healGeneration || me->GetHealthPct() < 90)
+                    return;
+                Player* player = SilverHandRescue::SelectPlayer(ObjectAccessor::GetPlayer(*me, guid), me);
+                if (!player)
+                    return;
+                wait_heal = true;
+                me->ClearUnitState(UNIT_STATE_STUNNED);
+                me->RemoveAura(211699);
+                me->RemoveAura(211698);
+                me->DespawnOrUnsummon(3000);
+                me->GetMotionMaster()->MovePoint(0, 1875.49f, 2329.93f, 49.64f);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, (me->GetEntry() == 106933 ? 50913 : 50914));
+            });
         }
     };
 };
