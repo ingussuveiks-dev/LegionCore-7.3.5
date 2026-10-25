@@ -27,6 +27,8 @@ struct Item {
     uint32 entry = 128827;
 #elif defined(STROMKAR_PRESENTATION_TEST)
     uint32 entry = 128910;
+#elif defined(SILVER_HAND_PRESENTATION_TEST)
+    uint32 entry = 128823;
 #elif defined(EARTHWARDER_PRESENTATION_TEST)
     uint32 entry = 128289;
 #elif defined(WARSWORDS_PRESENTATION_TEST)
@@ -64,6 +66,8 @@ struct SpellInfo {
         128827
 #elif defined(STROMKAR_PRESENTATION_TEST)
         128910
+#elif defined(SILVER_HAND_PRESENTATION_TEST)
+        128823
 #elif defined(EARTHWARDER_PRESENTATION_TEST)
         128289
 #elif defined(WARSWORDS_PRESENTATION_TEST)
@@ -238,6 +242,9 @@ struct Player : Unit {
 #endif
 #ifdef STROMKAR_PRESENTATION_TEST
         if (spell == 206439 && forceEquip) forceEquip();
+#endif
+#ifdef SILVER_HAND_PRESENTATION_TEST
+        if (spell == 211842 && forceEquip) forceEquip();
 #endif
 #ifdef EARTHWARDER_PRESENTATION_TEST
         if (spell == 208562 && forceEquip) forceEquip();

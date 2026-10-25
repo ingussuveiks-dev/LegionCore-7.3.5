@@ -11,7 +11,9 @@ $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){thro
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
-if(!$Baseline -and $source.Replace("`r",'').TrimEnd() -cne $pinned.Replace($old,$new).TrimEnd()){throw 'Silver Hand changed beyond the four hook/health corrections'}
+foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','npc_efrin_and_duval')){
+ if(!$Baseline -and (Block $source "class $script : public CreatureScript").Replace("`r",'') -cne (Block $pinned "class $script : public CreatureScript").Replace($old,$new)){throw 'Silver Hand ally class changed beyond its hook/health correction'}
+}
 if($Baseline){$source=$pinned}
 foreach($pair in @(@('First','npc_travar_firstAI'),@('Second','npc_travar_secondAI'),@('Third','npc_travar_thirdAI'),@('Allies','npc_efrin_and_duvalAI'))){
  $actor=Block $source "struct $($pair[1]) : ScriptedAI"

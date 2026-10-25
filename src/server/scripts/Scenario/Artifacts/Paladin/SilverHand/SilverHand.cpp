@@ -6,6 +6,9 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Item.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 
 // 106429
@@ -1010,6 +1013,57 @@ public:
     }
 };
 
+namespace SilverHandPresentation
+{
+    bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+    {
+        if (!scene || scene->MiscValue != 1267 || scene->SceneScriptPackageID != 1618)
+            return false;
+        if (trigger != "complete" || !player || !player->HasSceneStatus(1267, SCENE_COMPLETE) ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->IsBeingTeleported() ||
+            player->getClass() != CLASS_PALADIN || player->GetMapId() != 1539 || player->GetQuestRewardStatus(42120) ||
+            (player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42120) != QUEST_STATUS_COMPLETE))
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() < 10 || scenario->GetCurrentStep() > 11)
+            return true;
+        Item* weapon = player->GetItemByEntry(128823);
+        if (!weapon)
+            return true;
+        if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+        {
+            uint16 destination;
+            InventoryResult result = player->CanEquipItem(NULL_SLOT, destination, weapon, true);
+            if (result != EQUIP_ERR_OK)
+            {
+                player->SendEquipError(result, weapon);
+                return true;
+            }
+            if (destination != weapon->GetPos())
+                player->SwapItem(weapon->GetPos(), destination);
+            if (player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) != weapon)
+            {
+                TC_LOG_WARN("scripts", "Silver Hand pickup: native swap did not equip existing 128823 for player %u; presentation credit retained", player->GetGUIDLow());
+                return true;
+            }
+        }
+        SpellCastResult result = player->CastSpell(player, 211842, true);
+        if (result != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts", "Silver Hand pickup: native 211842 failed with result %u for player %u; existing equipped item retained", uint32(result), player->GetGUIDLow());
+        return true;
+    }
+}
+
+class scene_silver_hand_pickup : public SceneTriggerScript
+{
+public:
+    scene_silver_hand_pickup() : SceneTriggerScript("scene_silver_hand_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return SilverHandPresentation::Complete(player, scene, trigger);
+    }
+};
+
 void AddSC_SilverHand()
 {
     new npc_travar_first();
@@ -1020,4 +1074,5 @@ void AddSC_SilverHand()
     new npc_silverhand_events();
     new npc_travar_last();
     new go_art_silverhand();
+    new scene_silver_hand_pickup();
 };

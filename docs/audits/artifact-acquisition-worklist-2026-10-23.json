@@ -528,10 +528,11 @@
       "weapon": "The Silver Hand",
       "item": 128823,
       "start": 42231,
-      "status": "partial: post-scaling lethal protection repaired for six Holy companion entries; acquisition/ritual/recovery and full client traversal remain open",
+      "status": "partial: six companion final-damage guards and1267/1618 existing-item equip bridge repaired; real loot/ritual/recovery/return and client traversal remain open",
       "ally_damage_audit": "docs/audits/silver-hand-ally-damage-2026-10-25.json",
-      "native_scenario_review": "Fresh typed26972 scenario1092/map1539 has stages0..10;42120 follows42377 after42231/40410 and additional40408 admission. Six native98..110 scaled allies use four CPP AIs. New final-damage hooks retain existing wound/heal210985, speech and pre-heal40pct logic without awarding progression. Separate fallen90pct actors, Mordoth direct Kill, ritual waves and pickup remain unchanged/unverified.",
-      "real_acquisition_review": "Fresh live GO249824/type3/phase7004 still has Data1=0 despite existing genuine128823 loot249824. Current GO_ACTIVATED callback grants item and early completion/credits directly; this is NOT repaired by the companion guard. Native211838 scene1267 and211842 effect249 equip/event50966/credit106357/225877 must be traced through actual loot and scene delivery before replacing it. No character/item grant used by this review.",
+      "scene_equip_audit": "docs/audits/silver-hand-scene-equip-2026-10-25.json",
+      "native_scenario_review": "Fresh typed26972 scenario1092/map1539 has stages0..10;42120 follows42377 after42231/40410 and additional40408 admission. Six native98..110 scaled allies use four CPP AIs. Final-damage hooks retain existing wound/heal210985, speech and pre-heal40pct logic without awarding progression. Separate fallen90pct actors, Mordoth direct Kill, ritual waves and original GO pickup/return remain unchanged/unverified; the new scene equip bridge is separately scoped by scene_equip_audit.",
+      "real_acquisition_review": "Fresh live GO249824/type3/phase7004 still has Data1=0 despite genuine128823 loot249824. Original GO_ACTIVATED direct grant/early completion/105892/12-second return remain OPEN and unchanged. Migration09 binds1267/1618 completion to live Holy1092/10-11/active42120/carried128823; physical native CanEquipItem/SwapItem acknowledgement precedes211842. Actual effect90 is PERSONAL credit (134 is group),225877 effect81 remains native NULL. Native scene text/hotfix and installed dispatcher checked; no full211842/group/client proof and no user character/item grant used by task tests.",
       "quests": [
         {
           "id": 42231,
@@ -605,7 +606,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Continue Holy1092 executable lifecycle: repair actual249824 loot and pickup admission/equip/scene without AddItem or early completion; native final step10 is not merely map1539 (shared Priest991/Warrior1037). Trace all prerequisites/phase actors, Travard heal threshold before ModifyHealth, failed210985 presentation and reset/abandon/re-entry recovery; keep intentional Mordoth direct deaths. Audit aberration pet/guardian/group kill credit and one-hit50pct transition, fallen90pct/50913-50914 rescues and actual-GUID ritual wave retry/cleanup. The six-ally final-damage fix and controlled1536-case test do not verify these paths, retail pose/audio or full client traversal. Review relevant full video before reconstructing missing timing/visuals."
+      "next_action": "Repair Holy249824 genuine loot/admission/claim without AddItem or early50966/105892/completion/return; final step10 is not merely shared map1539. Existing1267 completion/equip bridge now verifies physical mainhand before211842, but failed equip/cast still needs real pickup replay/return coordination; do not call acquisition fixed. Trace full prerequisites/phase actors, Travard pre-heal threshold/failed210985/reset/abandon/re-entry, ritual actual-GUID waves/retries, fallen90pct rescues and aberration one-hit/pet/guardian/group credit while retaining intentional Mordoth direct deaths. Correct legacy effect90/group134 wording where separately audited; native225877 effect81 is not server action-bar implementation. All client rendering, faction variants and traversal remain pending; review full relevant video before reconstructing timing/visuals."
     },
     {
       "class_id": 2,
