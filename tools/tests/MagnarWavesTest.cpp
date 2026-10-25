@@ -63,7 +63,7 @@ struct Map
 struct Creature : Unit
 {
     ObjectGuid guid{0};
-    uint32 entry = 0, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0;
+    uint32 entry = 0, flags = 0, faction = 14, health = 100, conversations = 0, casts = 0, removed = 0, unitState = 0;
     bool alive = true, victim = true;
     CreatureAI* ai = nullptr;
     Creature* ally = nullptr;
@@ -87,7 +87,7 @@ struct Creature : Unit
     void setFaction(uint32 value) { faction = value; }
     void StopAttack() { }
     void AttackStop() { }
-    bool HasUnitState(uint32) const { return false; }
+    bool HasUnitState(uint32 mask) const { return (unitState & mask) != 0; }
     MotionMaster* GetMotionMaster() { return &motion; }
     Creature* FindNearestCreature(uint32 identity, float, bool) { return identity == 96468 ? ally : identity == 64367 ? marker : nullptr; }
     Player* FindNearestPlayer(float range) { assert(range == 100.f); return player; }
@@ -245,6 +245,23 @@ int main()
         fixture.Die(0); assert(fixture.ai.count_dies == 1);
     }
     { Fixture fixture; fixture.BeginWaves(); fixture.ai.count_dies = 0; fixture.Die(0); assert(!fixture.ai.count_dies && fixture.ai.wave == 2 && !fixture.player.credits); }
-    std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
+    {
+        Fixture fixture; fixture.ai.UpdateAI(33000);
+        for (uint32 tick = 0; tick < 3; ++tick) fixture.ai.UpdateAI(0);
+        assert(fixture.ai.wave == 2 && fixture.ai.stop_combat && fixture.ai.events.events.at(EVENT_5) == 34000);
+        fixture.actor.victim = false; fixture.ai.UpdateAI(30000);
+        assert(!fixture.actor.conversations && fixture.ai.events.clock == 33000);
+        for (uint32 index = 0; index < 10; ++index) fixture.Die(index);
+        assert(!fixture.ai.stop_combat && !fixture.ai.first_phase && fixture.player.credits == 1 && !fixture.actor.conversations);
+        fixture.ai.UpdateAI(1000); assert(!fixture.actor.conversations && fixture.ai.events.clock == 33000);
+        fixture.actor.victim = true; fixture.actor.unitState = UNIT_STATE_CASTING; fixture.ai.UpdateAI(1000);
+        assert(!fixture.actor.conversations && fixture.ai.events.events.count(EVENT_5));
+        fixture.actor.unitState = 0; fixture.ai.UpdateAI(0);
+        assert(fixture.actor.conversations == 1 && !fixture.ai.events.events.count(EVENT_5));
+        fixture.ai.UpdateAI(15000); fixture.ai.UpdateAI(0); fixture.ai.UpdateAI(0);
+        assert(fixture.actor.conversations == 1);
+    }
+    { Fixture fixture; fixture.BeginWaves(); fixture.ai.Reset(); fixture.ai.UpdateAI(60000); assert(!fixture.actor.conversations && !fixture.ai.events.events.count(EVENT_5)); }
+    std::cout << "PASS: extracted native wave/start/update/death methods retain2/2/1/2/3 counted opponents and two auxiliary windshapers, player/pet/guardian notifications, once-only tracked deaths and original final Windwall/80pct/46427 requests. Live/duplicate/unselected/null/stale-reset callbacks cannot advance; activation-time deaths defer until stable snapshot release. Combat-gated498 resumes once after waves/victim/casting gates and Reset clears its pending event. Missing actors do not grant completion; replacement/retry/full Reset and client combat/VFX remain open.\n";
 #endif
 }

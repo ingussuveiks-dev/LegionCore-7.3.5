@@ -35,11 +35,19 @@ if($VerifyReleaseBinary){
 SELECT 'actor',t.entry,w.Name1,t.AIName,t.ScriptName FROM creature_template t JOIN creature_template_wdb w ON w.Entry=t.entry WHERE t.entry IN(97123,94707,94813);
 SELECT 'sai',entryorguid,id,event_type,action_type,action_param1,target_type FROM smart_scripts WHERE source_type=0 AND entryorguid IN(97123,94707,94813);
 SELECT 'addon',entry,auras FROM creature_template_addon WHERE entry IN(97123,94707,94813);
+SELECT 'dialogue-line',id,idx,textId,unk2 FROM conversation_data WHERE entry=498 ORDER BY idx;
+SELECT 'dialogue-actor',id,creatureId,duration FROM conversation_creature WHERE entry=498 ORDER BY id;
+SELECT 'dialogue-models',COUNT(*) FROM conversation_actor WHERE entry=498;
 '@|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names)
   if($LASTEXITCODE){throw 'Live wave actor metadata failed'}
  }finally{$env:MYSQL_PWD=$previous}
  foreach($expected in @("actor`t94707`tIcebreaker Tombguard`t`t","actor`t94813`tSpectral Windshaper`tSmartAI`t","actor`t97123`tIcebreaker Champion`t`t","sai`t94813`t0`t0`t11`t191038`t2","addon`t94707`t165114 191821","addon`t97123`t165114 191821")){if($rows -notcontains $expected){throw "Live wave actor differs: $expected"}}
- if($rows.Count -ne 6){throw 'Unexpected wave actor/script/addon rows'}
+ foreach($expected in @("dialogue-line`t1335`t0`t0`t0","dialogue-line`t1336`t1`t2350`t1","dialogue-line`t1337`t2`t7300`t0","dialogue-actor`t0`t96034`t4300","dialogue-actor`t1`t96468`t4300","dialogue-models`t0")){if($rows -notcontains $expected){throw "Live498 dialogue differs: $expected"}}
+ if($rows.Count -ne 12){throw 'Unexpected wave actor/script/addon/dialogue rows'}
+ $previous=$env:LEGION_DIALOGUE_CONFIG
+ try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile WarswordsCommunionCatalog.cpp -ProbeName WarswordsCommunionCatalog -OutputFile "$out/dialogue.tsv" *> "$out/dialogue.log";if(!$? -or $LASTEXITCODE){throw 'Native498 dialogue catalogue failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
+ $dialogue=Get-Content "$out/dialogue.tsv"
+ foreach($expected in @("LINE`t1335`t98333`t0`t500`t1336`t0`t1`t60`t60","LINE`t1336`t98337`t0`t500`t1337`t0`t0`t60`t60","LINE`t1337`t98334`t0`t500`t0`t0`t1`t60`t60","SOUND`t98333`t60415`t1370070","SOUND`t98337`t60416`t1370071","SOUND`t98334`t60417`t1370072")){if($dialogue -notcontains $expected){throw "Native498 line/voice reference differs: $expected"}}
  $previous=$env:PYTHONPATH
  try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_magnar_waves_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Canonical wave implementation missing'}}finally{$env:PYTHONPATH=$previous}
 }

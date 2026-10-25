@@ -81,6 +81,13 @@ for target, count in zip(targets[:5], (2, 2, 1, 2, 3)):
     assert entry.mnemonic == 'mov' and entry.op_str == f'r12b, {count}'
 
 updated = instructions('?UpdateAI' + suffix)
+victim = calls_to(updated, '?UpdateVictim@CreatureAI@@')[0]
+assert updated[victim + 1].op_str == 'al, al' and updated[victim + 2].mnemonic == 'je'
+assert updated[victim + 3].op_str == 'byte ptr [rbx + 0xd0], 0' and updated[victim + 4].mnemonic == 'jne'
+assert updated[victim + 2].operands[0].imm == updated[victim + 4].operands[0].imm
+speech = calls_to(updated, '?CreateConversation@Unit@@')
+assert len(speech) == 1 and updated[speech[0] - 1].op_str == 'edx, 0x1f2'
+assert victim < calls_to(updated, '?ExecuteEvent@EventMap@@')[0] < speech[0], '498 no longer follows the resumed combat event queue'
 start = calls_to(updated, launch)[0]
 assert updated[start - 2].op_str == 'eax, [rdx + 1]' and updated[start - 1].op_str == 'byte ptr [rbx + 0xd3], al', 'Initial wave ID still increments after reentrant release'
 reset = instructions('?Reset' + suffix)
