@@ -979,15 +979,52 @@ public:
     };
 };
 
+namespace SilverHandAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 249824 || weapon->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetQuestRewardStatus(42120) ||
+            (player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(42120) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1092)
+            return false;
+        return scenario->GetCurrentStep() == 10 ||
+            (scenario->GetCurrentStep() == 11 && player->GetItemByEntry(128823));
+    }
+}
+
 // 249824
 class go_art_silverhand : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        bool GossipHello(Player* player, bool) override
+        {
+            return !SilverHandAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED;
+        }
+    };
+
 public:
     go_art_silverhand() : GameObjectScript("go_art_silverhand") {}
 
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        return !SilverHandAcquisition::CanTake(player, go) || go->getLootState() == GO_JUST_DEACTIVATED;
+    }
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED)
+        if (target && go && state == GO_ACTIVATED && go->getLootState() == GO_ACTIVATED &&
+            SilverHandAcquisition::CanTake(target->ToPlayer(), go))
         {
             if (target->GetTypeId() == TYPEID_PLAYER)
             {
