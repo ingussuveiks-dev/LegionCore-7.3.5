@@ -190,6 +190,8 @@
       "class_id": 1,
       "specialization": "Protection",
       "weapon": "Scale of the Earth-Warder",
+      "hruthnir_gossip_admission_audit": "docs/audits/hruthnir-gossip-admission-2026-10-25.json",
+      "hruthnir_gossip_admission_review": "Pinned6e673f47 actual packet dispatch reproduces gossip-off/early-stage/absent-quest/invalid raw menu-index and repeated movement. Native translated missing sender/action both become0 like the real option, so admission now uses AI raw18743/0 plus current prepared option, active39191/Warrior/1495/909-3 and exact native gossip interaction/phase/visibility/LOS. Gossip-only claim precedes clear/close/original point7 and legacy callback is mutation-free;39 invalid/readmitted contexts and actual installed slots/branches checked. Point6/497/6000ms interrupted-motion/missing-actor/cross-Reset usable retry and client/video motion/audio remain open.",
       "magnar_first_phase_reset_audit": "docs/audits/magnar-first-phase-reset-2026-10-25.json",
       "magnar_first_phase_reset_review": "Pinned6eb208cf retains wave2/11 old summons and restarts into wave2 with23 tracked actors. Local first_phase Reset now holds start/release claims, clears active/count/reserve, reseeds wave1 and runs native owned DespawnAll before reopening admission.40 reset/restart runs at0..9 deaths preserve native missing/accessory/unrelated policy and reject old GUID deaths; actual installed native cleanup/order checked. Final-phase Reset is deliberately not rewound. Gossip/pose/health/final-despawn/persisted re-entry and client/VFX recovery remain open.",
       "magnar_start_admission_audit": "docs/audits/magnar-start-admission-2026-10-25.json",

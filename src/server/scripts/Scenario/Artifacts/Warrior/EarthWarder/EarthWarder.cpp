@@ -31,17 +31,44 @@ Position const trashPos[12] =
     {4685.47f, 308.99f, -36.12f, 1.24f}
 };
 
+namespace HruthnirGossip
+{
+    bool CanStart(Player* player, Creature* creature)
+    {
+        if (!player || !creature || !player->IsInWorld() || !player->CanContact() ||
+            !creature->IsInWorld() || !creature->IsAlive() || creature->IsDespawn() ||
+            creature->GetEntry() != 96468 || creature->GetMapId() != 1495 ||
+            player->getClass() != CLASS_WARRIOR || !player->GetMap() ||
+            player->GetMap() != creature->GetMap() || player->GetInstanceId() != creature->GetInstanceId() ||
+            !player->InSamePhase(creature) || !player->canSeeOrDetect(creature) ||
+            !player->IsWithinLOSInMap(creature) ||
+            player->GetNPCIfCanInteractWith(creature->GetGUID(), UNIT_NPC_FLAG_GOSSIP) != creature ||
+            player->GetQuestRewardStatus(39191) ||
+            (player->GetQuestStatus(39191) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(39191) != QUEST_STATUS_COMPLETE))
+            return false;
+
+        Scenario* scenario = sScenarioMgr->GetScenario(creature->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 3;
+    }
+}
+
 // 96468
 class npc_hrutnir : public CreatureScript
 {
 public:
     npc_hrutnir() : CreatureScript("npc_hrutnir") { }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
-        creature->GetMotionMaster()->MovePoint(7, 4720.80f, 347.91f, -37.71f);
+        if (HruthnirGossip::CanStart(player, creature))
+            return false;
+        player->PlayerTalkClass->ClearMenus();
         player->CLOSE_GOSSIP_MENU();
-        creature->SetUInt32Value(UNIT_FIELD_NPC_FLAGS, 0); // госсип
+        return true;
+    }
+
+    bool OnGossipSelect(Player*, Creature*, uint32, uint32) override
+    {
         return true;
     }
 
@@ -64,6 +91,21 @@ public:
 
         EventMap events;
         bool _introDone, firstfighting, secondfighting, thirdfighting, fourfighting;
+
+        void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
+        {
+            if (menuId != 18743 || gossipListId != 0 || !HruthnirGossip::CanStart(player, me))
+                return;
+            GossipMenu& menu = player->PlayerTalkClass->GetGossipMenu();
+            GossipMenuItem const* item = menu.GetItem(0);
+            if (menu.GetMenuId() != menuId || !item || item->OptionNpc != GossipOptionNpc::None ||
+                item->Sender != 0 || item->Action != 0 || item->IsCoded || item->BoxMoney != 0)
+                return;
+            me->RemoveFlag(UNIT_FIELD_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            player->PlayerTalkClass->ClearMenus();
+            player->CLOSE_GOSSIP_MENU();
+            me->GetMotionMaster()->MovePoint(7, 4720.80f, 347.91f, -37.71f);
+        }
 
         void Reset() override
         {
