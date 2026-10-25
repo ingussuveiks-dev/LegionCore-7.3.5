@@ -25,6 +25,7 @@ struct Player;
 struct Creature;
 struct GameObject;
 struct Map;
+uint32 CurrentScenarioStep();
 struct Unit
 {
     ObjectGuid guid;
@@ -45,9 +46,23 @@ struct Unit
 struct ActorAI
 {
     uint32 actions = 0;
+    uint32 introRequests = 0;
+    bool sceneReady = true;
     std::function<void()> callback;
-    void DoAction(uint32 action) { if (action != 2) std::abort(); ++actions; if (callback) callback(); }
+    std::function<void()> introCallback;
+    uint32 GetData(uint32 identity) const { if (identity != 1059) std::abort(); return sceneReady; }
+    void DoAction(uint32 action)
+    {
+        if (action != 2) std::abort();
+#ifdef BASELINE
+        ++actions; if (callback) callback();
+#else
+        if (CurrentScenarioStep() == 2) { ++introRequests; if (introCallback) introCallback(); }
+        else { ++actions; if (callback) callback(); }
+#endif
+    }
 };
+using CreatureAI = ActorAI;
 struct Creature : Unit
 {
     uint32 spawn = 0;
@@ -130,6 +145,7 @@ struct ScenarioManager
     Scenario* GetScenario(uint32 instanceId) const { if (instanceId != 42) std::abort(); return scenario; }
 } manager;
 ScenarioManager* sScenarioMgr = &manager;
+uint32 CurrentScenarioStep() { return manager.scenario ? manager.scenario->step : 0; }
 struct Instance
 {
     Map* instance;
@@ -180,7 +196,12 @@ struct Fixture
 };
 int main()
 {
-#ifdef BASELINE
+#ifdef SCENE_BASELINE
+    Fixture fixture; fixture.ai.sceneReady = false;
+    fixture.Both();
+    Require(fixture.owner.credits == 1 && fixture.scenario.step == 3 && fixture.door.changes == 1 && fixture.ai.actions == 1 && fixture.ai.introRequests == 0, "pinned08e49c9d changes stage/barrier before asking for any ready scene");
+    std::cout << "PASS: pinned scene-end ordering regression reproduced:46358/stage3/barrier precede native intro readiness\n";
+#elif defined(BASELINE)
     {
         Fixture fixture; fixture.map.players = {{&fixture.owner}};
         fixture.Both(); Require(fixture.owner.credits == 1 && fixture.ai.actions == 1, "pinned ordinary distinct-guard handoff");
@@ -198,6 +219,28 @@ int main()
     }
     std::cout << "PASS: pinned duplicate/wrong-player/unrelated-death replay reproduced\n";
 #else
+    {
+        Fixture fixture; fixture.ai.sceneReady = false;
+        fixture.Both();
+        for (uint32 tick = 0; tick < 5; ++tick) fixture.script.TryAdvanceMagnarGuards();
+        Require(fixture.owner.credits == 0 && fixture.scenario.step == 2 && fixture.ai.actions == 0 && fixture.door.changes == 0 && fixture.ai.introRequests == 6, "pending/failed/missing scene cannot release criterion, door or chamber; idempotent intro is polled");
+        fixture.ai.sceneReady = true; fixture.script.TryAdvanceMagnarGuards(); fixture.Completed();
+    }
+    {
+        Fixture fixture; fixture.ai.introCallback = [&] { fixture.script.Initialize(); };
+        fixture.Both(); Require(fixture.owner.credits == 0 && fixture.door.changes == 0 && fixture.ai.actions == 0, "intro callback Reset revokes old guard epoch before credit");
+    }
+    {
+        Fixture fixture; fixture.ai.introCallback = [&] { fixture.scenario.step = 4; };
+        fixture.Both(); Require(fixture.owner.credits == 0 && fixture.door.changes == 0 && fixture.ai.actions == 0, "intro callback changing scenario cannot release old stage2 event");
+    }
+    {
+        Fixture fixture; ActorAI replacement; replacement.sceneReady = false;
+        fixture.ai.introCallback = [&] { fixture.companion.ai = &replacement; };
+        fixture.Both(); Require(fixture.owner.credits == 0 && fixture.door.changes == 0, "replaced AI cannot borrow old ready return");
+        replacement.sceneReady = true; fixture.script.TryAdvanceMagnarGuards();
+        Require(fixture.owner.credits == 1 && replacement.actions == 1 && fixture.door.changes == 1, "replacement must provide its own ready callback");
+    }
     for (bool alive : {true, false})
         for (uint32 faction = 0; faction < 2; ++faction)
             for (uint32 status : {QUEST_STATUS_INCOMPLETE, QUEST_STATUS_COMPLETE})

@@ -111,6 +111,8 @@ public:
         uint32 magnarIntroTimer = 0;
         uint32 magnarIntroGeneration = 0;
         bool magnarIntroCasting = false;
+        bool magnarChamberStarted = false;
+        uint32 magnarIntroInstanceGeneration = 0;
 
         void sGossipSelect(Player* player, uint32 menuId, uint32 gossipListId) override
         {
@@ -161,8 +163,31 @@ public:
                 (player->GetQuestStatus(39191) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(39191) == QUEST_STATUS_COMPLETE);
         }
 
+        bool IsMagnarIntroContext() const
+        {
+            if (!me->IsInWorld() || !me->IsAlive() || me->IsDespawn() || !me->GetMap() ||
+                me->GetEntry() != 96468 || me->GetMapId() != 1495 || !me->IsAIEnabled || me->AI() != this)
+                return false;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 909 && scenario->GetCurrentStep() == 2;
+        }
+
+        uint32 GetData(uint32 type) const override
+        {
+            if (type != 1059 || !magnarIntroFinished || magnarChamberStarted || !IsMagnarIntroContext())
+                return 0;
+            InstanceScript* instance = me->GetInstanceScript();
+            if (!instance || instance->GetData(1060) != magnarIntroInstanceGeneration)
+                return 0;
+            Player* player = ObjectAccessor::GetPlayer(*me, magnarIntroPlayer);
+            return IsMagnarIntroPlayer(player) && player->HasSceneStatus(1059, SCENE_COMPLETE);
+        }
+
         void CancelMagnarIntro()
         {
+            if (magnarIntroFinished && !magnarChamberStarted)
+                magnarIntroPending = true;
+            magnarIntroFinished = false;
             ObjectGuid playerGuid = magnarIntroPlayer;
             magnarIntroPlayer.Clear();
             magnarIntroTimer = 0;
@@ -175,12 +200,19 @@ public:
 
         void UpdateMagnarIntro(uint32 diff)
         {
-            if (!magnarIntroPending || magnarIntroCasting)
+            if ((!magnarIntroPending && !magnarIntroFinished) || magnarChamberStarted || magnarIntroCasting)
                 return;
-            if (!IsMagnarOfferContext(me->GetInstanceId()))
+            if (!IsMagnarIntroContext())
             {
-                magnarIntroPending = false;
                 CancelMagnarIntro();
+                magnarIntroPending = false;
+                return;
+            }
+            InstanceScript* instance = me->GetInstanceScript();
+            if (!instance || instance->GetData(1060) != magnarIntroInstanceGeneration)
+            {
+                CancelMagnarIntro();
+                magnarIntroPending = false;
                 return;
             }
             if (magnarIntroTimer > diff)
@@ -196,9 +228,6 @@ public:
                 {
                     magnarIntroPending = false;
                     magnarIntroFinished = true;
-                    magnarIntroPlayer.Clear();
-                    Talk(14);
-                    me->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
                     return;
                 }
                 if (player->HasAura(189721))
@@ -236,7 +265,7 @@ public:
                 return;
             }
             magnarIntroCasting = false;
-            if (!magnarIntroPending || !IsMagnarOfferContext(me->GetInstanceId()) || !IsMagnarIntroPlayer(player))
+            if (!magnarIntroPending || !IsMagnarIntroContext() || !IsMagnarIntroPlayer(player))
             {
                 CancelMagnarIntro();
                 return;
@@ -324,7 +353,31 @@ public:
                     Talk(10);
                     break;
                 case 2:
-                    if (magnarIntroPending || magnarIntroFinished || !IsMagnarOfferContext(me->GetInstanceId()))
+                {
+                    InstanceScript* instance = me->GetInstanceScript();
+                    if (!instance)
+                        break;
+                    uint32 generation = instance->GetData(1060);
+                    if (magnarIntroInstanceGeneration != generation)
+                    {
+                        CancelMagnarIntro();
+                        magnarIntroPending = false;
+                        magnarChamberStarted = false;
+                        magnarIntroInstanceGeneration = generation;
+                    }
+                    if (!magnarChamberStarted && IsMagnarOfferContext(me->GetInstanceId()))
+                    {
+                        if (!instance->GetData(1059))
+                            break;
+                        magnarChamberStarted = true;
+                        magnarIntroPending = false;
+                        magnarIntroFinished = false;
+                        magnarIntroPlayer.Clear();
+                        Talk(14);
+                        me->GetMotionMaster()->MovePoint(6, 4763.73f, 340.87f, -37.19f);
+                        break;
+                    }
+                    if (magnarIntroPending || magnarIntroFinished || magnarChamberStarted || !IsMagnarIntroContext())
                         break;
                     magnarIntroPending = true;
                     magnarIntroTimer = 0;
@@ -332,6 +385,7 @@ public:
                     me->SetReactState(REACT_PASSIVE);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                     break;
+                }
             }
         }
 

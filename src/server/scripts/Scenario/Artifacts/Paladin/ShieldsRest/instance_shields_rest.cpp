@@ -244,6 +244,19 @@ public:
             magnarGuardDispatching = true;
             if (scenario->GetCurrentStep() == 2)
             {
+                CreatureAI* expectedAI = companion->AI();
+                expectedAI->DoAction(2);
+                if (generation != magnarGuardGeneration)
+                    return;
+                scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                companion = instance->GetCreature(magnarCompanionGUID);
+                if (!scenario || scenario->GetScenarioId() != 909 || scenario->GetCurrentStep() != 2 ||
+                    !companion || !companion->IsInWorld() || !companion->IsAlive() || companion->IsDespawn() ||
+                    !companion->IsAIEnabled || companion->AI() != expectedAI || !expectedAI->GetData(1059))
+                {
+                    magnarGuardDispatching = false;
+                    return;
+                }
                 magnarGuardCreditSent = true;
                 recipient->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46358);
             }
@@ -301,6 +314,10 @@ public:
         {
             switch (type)
             {
+                case 1059:
+                    return magnarGuardCreditSent;
+                case 1060:
+                    return magnarGuardGeneration;
                 case DATA_YRGRIM_EVENT:
                     return igrimEvent;
                 default:

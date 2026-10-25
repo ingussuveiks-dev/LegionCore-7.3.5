@@ -21,6 +21,12 @@ uint32 warnings = 0;
 #define TC_LOG_WARN(...) (++warnings)
 struct Player;
 struct Creature;
+struct InstanceScript
+{
+    bool introCreditSent = false;
+    uint32 generation = 1;
+    uint32 GetData(uint32 identity) const { if (identity == 1060) return generation; if (identity != 1059) std::abort(); return introCreditSent; }
+};
 struct PlayerReference { Player* player; Player* getSource() const { return player; } };
 struct Map
 {
@@ -80,6 +86,7 @@ struct Motion
 struct Creature
 {
     Map* map = nullptr;
+    InstanceScript* instanceScript = nullptr;
     bool world = true, alive = true, despawn = false, IsAIEnabled = true;
     uint32 entry = 96468, phase = 6999, stops = 0;
     void* ai = nullptr;
@@ -97,6 +104,7 @@ struct Creature
     void SetReactState(uint32) { }
     void SetFlag(uint32, uint32) { }
     Motion* GetMotionMaster() { return &motion; }
+    InstanceScript* GetInstanceScript() const { return instanceScript; }
 };
 bool Player::InSamePhase(Creature* actor) const { return phase == actor->phase; }
 bool Player::IsWithinDistInMap(Creature* actor, float distance) const { return map == actor->map && std::abs(position) <= distance; }
@@ -111,7 +119,7 @@ namespace ObjectAccessor
         return nullptr;
     }
 }
-struct Scenario { uint32 identity = 909, step = 3; uint32 GetScenarioId() const { return identity; } uint32 GetCurrentStep() const { return step; } };
+struct Scenario { uint32 identity = 909, step = 2; uint32 GetScenarioId() const { return identity; } uint32 GetCurrentStep() const { return step; } };
 struct ScenarioManager { Scenario* scenario = nullptr; Scenario* GetScenario(uint32 instance) const { return instance == 42 ? scenario : nullptr; } } manager;
 auto* sScenarioMgr = &manager;
 struct SpellScene { uint32 SceneScriptPackageID = 1458, PlaybackFlags = 16, CustomDuration = 0, scriptID = 0; };
@@ -139,11 +147,12 @@ struct Fixture
     Map map;
     Creature actor;
     Scenario scenario;
+    InstanceScript instance;
     Player player, other;
     IntroAI script{&actor};
     Fixture()
     {
-        actor.map = &map; actor.ai = &script;
+        actor.map = &map; actor.ai = &script; actor.instanceScript = &instance;
         player.map = other.map = &map; other.guid = {101}; other.classId = 3;
         map.players = {{&other}, {&player}};
         manager.scenario = &scenario; spellManager.present = true; spellManager.events = false; spellManager.scene = {}; warnings = 0;
@@ -153,7 +162,10 @@ struct Fixture
     {
         player.sceneStatus = SCENE_COMPLETE; player.aura = false;
         script.UpdateMagnarIntro(500);
-        Require(script.talks == 1 && actor.motion.moves == 1 && !script.magnarIntroPending, "only acknowledged native scene releases chamber speech/movement");
+        Require(script.GetData(1059) == 1 && script.talks == 0 && actor.motion.moves == 0 && !script.magnarIntroPending && scenario.step == 2, "scene completion publishes readiness without advancing or moving itself");
+        script.StartIntro(); Require(script.talks == 0 && actor.motion.moves == 0, "ready intro at stage2 cannot begin chamber early");
+        instance.introCreditSent = true; scenario.step = 3; script.StartIntro();
+        Require(script.talks == 1 && actor.motion.moves == 1 && script.magnarChamberStarted, "only observed shared-instance credit plus stage3 releases chamber speech/movement");
         script.StartIntro(); script.UpdateMagnarIntro(500);
         Require(script.talks == 1 && actor.motion.moves == 1 && player.casts == 1, "successful intro cannot replay from duplicate action2");
     }
@@ -212,7 +224,7 @@ int main()
         fixture.script.UpdateMagnarIntro(500);
         Require(fixture.player.aura && fixture.actor.motion.moves == 0, "restored services actually launch, not fabricate completion");
         fixture.player.sceneStatus = SCENE_COMPLETE; fixture.player.aura = false; fixture.script.UpdateMagnarIntro(500);
-        Require(fixture.actor.motion.moves == 1, "failed start recovers after real scene completion");
+        Require(fixture.script.GetData(1059) == 1 && fixture.actor.motion.moves == 0, "failed start recovers readiness after real scene completion, still waits for native criterion");
     }
     for (uint32 scenario : {1068u, 1082u})
     {
@@ -236,10 +248,44 @@ int main()
         }
         fixture.Start(); Require(fixture.player.casts == 0 && fixture.actor.motion.moves == 0 && !fixture.script.magnarIntroPending, "missing/replaced/wrong actor context cannot queue scene");
     }
-    for (uint32 stage : {0u, 1u, 2u, 4u, 5u, 6u})
+    for (uint32 stage : {0u, 1u, 3u, 4u, 5u, 6u})
     {
         Fixture fixture; fixture.scenario.step = stage; fixture.Start();
         Require(fixture.player.casts == 0 && !fixture.script.magnarIntroPending, "scene cannot start too early/late");
+    }
+    {
+        Fixture fixture; fixture.scenario.step = 3; fixture.instance.introCreditSent = true;
+        fixture.script.StartIntro();
+        Require(fixture.player.casts == 0 && fixture.actor.motion.moves == 1 && fixture.script.magnarChamberStarted, "recreated actor after acknowledged shared transition resumes chamber without replaying or requiring lost local scene state");
+        fixture.script.StartIntro(); Require(fixture.actor.motion.moves == 1, "recovered chamber claim is once-only");
+    }
+    {
+        Fixture fixture; fixture.Start(); fixture.player.sceneStatus = SCENE_COMPLETE; fixture.player.aura = false;
+        fixture.script.UpdateMagnarIntro(500); Require(fixture.script.GetData(1059) == 1, "ready before reset");
+        fixture.script.CancelMagnarIntro(); Require(fixture.script.GetData(1059) == 0 && fixture.script.magnarIntroPending, "Reset revokes completed but not credited readiness and permits a fresh scene");
+        fixture.script.UpdateMagnarIntro(500); Require(fixture.player.casts == 2 && fixture.actor.motion.moves == 0, "revoked ready attempt cannot move chamber");
+    }
+    {
+        Fixture fixture; fixture.Start(); fixture.player.sceneStatus = SCENE_COMPLETE; fixture.player.aura = false;
+        fixture.script.UpdateMagnarIntro(500); fixture.player.quest = 0;
+        Require(fixture.script.GetData(1059) == 0, "late abandonment revokes readiness even before the next AI poll");
+        fixture.script.UpdateMagnarIntro(500); fixture.player.quest = 3; fixture.script.UpdateMagnarIntro(500);
+        Require(fixture.player.casts == 2 && fixture.script.GetData(1059) == 0, "abandoned ready scene must launch fresh before shared credit");
+    }
+    for (bool completed : {false, true})
+    {
+        Fixture fixture; fixture.Start();
+        if (completed) { fixture.player.sceneStatus = SCENE_COMPLETE; fixture.player.aura = false; fixture.script.UpdateMagnarIntro(500); }
+        ++fixture.instance.generation;
+        Require(fixture.script.GetData(1059) == 0, "instance Initialize epoch immediately revokes pending or completed old-scene readiness");
+        fixture.script.UpdateMagnarIntro(1);
+        Require(!fixture.script.magnarIntroPending && !fixture.script.magnarIntroFinished && !fixture.player.aura && fixture.actor.motion.moves == 0, "old attempt cancels without credit or movement");
+        fixture.Start(); Require(fixture.player.casts == 2 && fixture.script.GetData(1059) == 0, "fresh guarded attempt must replay camera rather than reuse old COMPLETE");
+    }
+    {
+        Fixture fixture; fixture.Start(); fixture.Complete();
+        ++fixture.instance.generation; fixture.instance.introCreditSent = false; fixture.scenario.step = 2;
+        fixture.Start(); Require(fixture.player.casts == 2 && fixture.actor.motion.moves == 1 && !fixture.script.magnarChamberStarted && fixture.script.GetData(1059) == 0, "new instance epoch also retires a previous chamber claim on the same AI, without replaying its movement before a fresh scene");
     }
     {
         Fixture fixture; fixture.player.sceneStatus = SCENE_COMPLETE; fixture.Start();

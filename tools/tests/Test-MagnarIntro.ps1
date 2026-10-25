@@ -11,14 +11,12 @@ $source=$source.Substring(0,$source.IndexOf('class npc_magnar_icebreaker'))
 $first=$source.IndexOf('        bool magnarIntroPending');$last=$source.IndexOf('        void sGossipSelect(',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 [IO.File]::WriteAllText("$out/Context.inc",(Block $source 'bool IsMagnarOfferContext('))
-$intro=(Block $source 'bool IsMagnarIntroPlayer(')+(Block $source 'void CancelMagnarIntro(')+(Block $source 'void UpdateMagnarIntro(')
-if($Baseline){$source=(& git -C $repo show "8e9a0d6e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned no-scene source unavailable'};$intro='void UpdateMagnarIntro(uint32){}'}
+$intro=(Block $source 'bool IsMagnarIntroPlayer(')+(Block $source 'bool IsMagnarIntroContext(')+(Block $source 'uint32 GetData(').Replace(' override','')+(Block $source 'void CancelMagnarIntro(')+(Block $source 'void UpdateMagnarIntro(')
+if($Baseline){$source=(& git -C $repo show "8e9a0d6e:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned no-scene source unavailable'};$intro='void UpdateMagnarIntro(uint32){} uint32 GetData(uint32) const { return 0; }'}
 [IO.File]::WriteAllText("$out/Intro.inc",$intro)
 $action=Block $source 'void DoAction('
-$first=$action.IndexOf('                case 2:');$last=$action.IndexOf('                    break;',$first)
-if($first -lt 0 -or $last -lt 0){throw 'Native guard action2 missing'}
-if(!$Baseline){$last=$action.IndexOf('                    break;',$last+1)}
-[IO.File]::WriteAllText("$out/Action.inc",'void StartIntro(){switch(2){'+$action.Substring($first,$last-$first)+'break;}}')
+if($Baseline){$first=$action.IndexOf('                case 2:');$last=$action.IndexOf('                    break;',$first);if($first -lt 0 -or $last -lt 0){throw 'Pinned action2 missing'};$branch=$action.Substring($first,$last-$first)+'break;'}else{$branch=Block $action 'case 2:'}
+[IO.File]::WriteAllText("$out/Action.inc",'void StartIntro(){switch(2){'+$branch+'}}')
 if(!$Baseline){
  $reset=Block $source 'void Reset()';$update=Block $source 'void UpdateAI('
  if(!$reset.Contains('CancelMagnarIntro();') -or $update.IndexOf('UpdateMagnarIntro(diff);') -gt $update.IndexOf('if (!UpdateVictim())')){throw 'Native idle retry/Reset cleanup missing'}

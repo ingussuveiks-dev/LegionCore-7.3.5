@@ -2,7 +2,7 @@
 from pathlib import Path
 import runpy
 import struct
-from capstone import CS_OP_IMM, CS_OP_MEM
+from capstone import Cs, CS_ARCH_X86, CS_MODE_64, CS_OP_IMM, CS_OP_MEM
 from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_hruthnir_offer_release.py')))
@@ -25,7 +25,7 @@ entry = factory[table_load]
 table = entry.address + entry.size + entry.operands[1].mem.disp
 assert factory[table_load + 1].op_str == 'qword ptr [rdi], rax'
 slots = struct.unpack_from('<64Q', native['binary'], native['offset'](table))
-for method in ('?OnCreatureCreate', '?OnGameObjectCreate', '?OnUnitDeath', '?Initialize', '?Update'):
+for method in ('?OnCreatureCreate', '?OnGameObjectCreate', '?OnUnitDeath', '?Initialize', '?Update', '?GetData'):
     assert slots.count(native['symbol'](method + suffix)) == 1, f'Factory does not select repaired {method}'
 
 
@@ -89,7 +89,9 @@ assert struct.unpack_from('<f', native['binary'], native['offset'](radius.addres
 credit = positions(body, '?UpdateAchievementCriteria@Player@@')[0]
 assert find(body, 'byte ptr [rbp + 0x358], 1', 'mov') < find(body, 'byte ptr [rbp + 0x356], 1', 'mov') < credit
 assert find(body, 'edx, 0x5c', 'mov') < find(body, 'r8d, 0xb516', 'mov') < credit
-epoch = find(body, 'ebx, dword ptr [rbp + 0x35c]', 'cmp')
+epochs = [index for index, entry in enumerate(body) if entry.op_str == 'r15d, dword ptr [rbp + 0x35c]' and entry.mnemonic == 'cmp']
+assert len(epochs) == 2
+epoch = epochs[-1]
 assert epoch > credit and body[epoch + 1].mnemonic == 'jne'
 recheck = body[epoch:]
 for operand, branch in (('eax, 0x38d', 'jne'), ('eax, 3', 'jne'), ('dword ptr [rbx + 0xa18], 0', 'jne'),
@@ -99,7 +101,15 @@ for operand, branch in (('eax, 0x38d', 'jne'), ('eax, 3', 'jne'), ('dword ptr [r
     assert recheck[gate + 1].mnemonic == branch
 claim = find(body, 'byte ptr [rbp + 0x357], 1', 'mov')
 door = find(body, 'qword ptr [rax + 0xa0]', 'call')
-action = find(body, 'qword ptr [rax + 0x48]', 'call')
+actions = [index for index, entry in enumerate(body) if entry.op_str == 'qword ptr [rax + 0x48]' and entry.mnemonic == 'call']
+assert len(actions) == 2
+arm, action = actions
+ready = find(body, 'qword ptr [rax + 0x50]', 'call')
+assert arm < epochs[0] < ready < credit < epoch
+assert body[epochs[0] + 1].mnemonic == 'jne' and body[ready + 2].mnemonic == 'je'
+assert body[ready - 2].op_str == 'edx, 0x423' and body[arm - 3].op_str == 'edx, 2'
+assert find(body[arm:ready], 'qword ptr [rbx + 0x9c0], rdi', 'cmp') >= 0
+assert find(body[arm:ready], 'eax, 0x38d', 'cmp') < find(body[arm:ready], 'eax, 2', 'cmp')
 assert epoch < claim < door < action < find(body, 'byte ptr [rbp + 0x358], 0', 'mov')
 assert body[door - 2].op_str == 'edx, 4' and body[action - 2].op_str == 'edx, 2'
 reset = instructions('?Initialize' + suffix)
@@ -110,4 +120,17 @@ update = instructions('?Update' + suffix)
 retry = positions(update, advance)[0]
 assert update[retry - 1].op_str == 'dword ptr [rcx + 0x364], 0x1f4'
 assert retry < find(update, 'eax, 0x42c', 'cmp')
-print('PASS: installed shared instance tracks only361412/361413 actual GUIDs, accepts dead909 actors, gates2->3 on eligible39191 reference, retains500ms retry/epoch and once-only243897/Hruthnir action2. No Hunter door mutation or client traversal certificate.')
+address = native['symbol']('?GetData' + suffix)
+assert slots[0xb0 // 8] == address
+following = min(value for value in native['symbols'].values() if value > address)
+assert 0 < following - address <= 64, 'Unbounded leaf GetData'
+decoder = Cs(CS_ARCH_X86, CS_MODE_64)
+decoder.detail = True
+leaf = list(decoder.disasm(native['binary'][native['offset'](address):native['offset'](address) + following - address], address))
+assert leaf[0].op_str == 'edx, 6' and leaf[1].mnemonic == 'je'
+assert leaf[2].op_str == 'edx, 0x41d' and leaf[3].mnemonic == 'je'
+assert leaf[4].op_str == 'edx, 1' and leaf[5].mnemonic == 'je'
+for branch, operand in ((1, 'eax, byte ptr [rcx + 0x312]'), (3, 'eax, byte ptr [rcx + 0x356]'), (5, 'eax, dword ptr [rcx + 0x35c]')):
+    target = next(index for index, entry in enumerate(leaf) if entry.address == leaf[branch].operands[0].imm)
+    assert leaf[target].op_str == operand and leaf[target + 1].mnemonic == 'ret'
+print('PASS: installed shared instance retains actual guard GUID/death/admission/500ms epoch retry, arms Hruthnir at909/2, requires current same-AI1059 readiness before46358 and observed3 before barrier/chamber. Actual GetData vtable publishes only credit-attempt1059/epoch1060 and retains Paladin6. No Hunter mutation/client traversal certificate.')

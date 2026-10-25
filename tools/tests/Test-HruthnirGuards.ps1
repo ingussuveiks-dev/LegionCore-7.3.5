@@ -1,6 +1,7 @@
-param([switch]$Baseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$SceneBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if($Baseline -and $VerifyReleaseBinary){throw 'Baseline cannot certify installed guards'}
+if(($Baseline -or $SceneBaseline) -and $VerifyReleaseBinary){throw 'Baseline cannot certify installed guards'}
+if($Baseline -and $SceneBaseline){throw 'Choose one pinned baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/hruthnir-guards"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -8,6 +9,7 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
 $path='src/server/scripts/Scenario/Artifacts/Paladin/ShieldsRest/instance_shields_rest.cpp'
 $source=Get-Content "$repo/$path" -Raw
 if($Baseline){$source=(& git -C $repo show "5dd9a8ab:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned guard source unavailable'}}
+if($SceneBaseline){$source=(& git -C $repo show "08e49c9d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned early-scene source unavailable'}}
 $first=$source.IndexOf('        std::list<GameObject*> goDoorList;');$last=$source.IndexOf('        void Initialize()',$first)
 [IO.File]::WriteAllText("$out/Fields.inc",$source.Substring($first,$last-$first))
 foreach($entry in @(@('Initialize','void Initialize()'),@('Create','void OnCreatureCreate('),@('Object','void OnGameObjectCreate('))){[IO.File]::WriteAllText("$out/$($entry[0]).inc",(Block $source $entry[1]).Replace(' override',''))}
@@ -27,7 +29,7 @@ if(!$Baseline){
  if(!$update.Contains('TryAdvanceMagnarGuards();') -or $update.IndexOf('TryAdvanceMagnarGuards();') -gt $update.IndexOf('scenario->GetScenarioId() != 1068') -or !$update.Contains('hunterWindTimer = 500;')){throw 'Guard retry must run on the shared500ms timer before Hunter-only admission'}
 }
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($SceneBaseline){'/DSCENE_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/HruthnirGuardsTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native Hruthnir guard regression failed'}
 if($VerifyReleaseBinary){
