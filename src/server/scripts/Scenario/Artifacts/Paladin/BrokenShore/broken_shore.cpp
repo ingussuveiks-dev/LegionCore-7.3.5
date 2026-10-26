@@ -672,12 +672,13 @@ public:
                 switch (eventId)
                 {
                     case EVENT_1:
-                        events.RescheduleEvent(EVENT_1, 1000);
-                        for (uint8 i = 0; i < 3; i++)
+                        for (uint8 target = 0; target < 3 && flameCastCount < sizeof(flameTarget) / sizeof(flameTarget[0]); ++target)
                         {
                             me->CastSpell(flameTarget[flameCastCount], 190666, true);
                             flameCastCount++;
                         }
+                        if (flameCastCount < sizeof(flameTarget) / sizeof(flameTarget[0]))
+                            events.RescheduleEvent(EVENT_1, 1000);
                         break;
                 }
             }

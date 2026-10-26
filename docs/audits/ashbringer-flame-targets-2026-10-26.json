@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Bounded95962 Incinerator ground-target safety in Ashbringer1500. Not complete quest38376, actual flight/fire rendering, combat/group credit or all36 verification.",
+  "sources": [
+    {
+      "source": "Clean main/origin40543732, current artifact worklist/routes/donor review and door/identity audits; full local95962 AI, summon producer97621 and broken_shore.h",
+      "review": "97621 summons95962 after its20th non-inquisitor summon death.95962 starts EVENT1 after1000ms and requests POINT1 to -2622.49/23.85/69.47. Each EVENT1 cast three190666 at flameTarget[flameCastCount], incrementing uint8 without a bound and unconditionally rescheduling. Only POINT8/id1 arrival resets events/hides actor. The table has36 positions: absent/late/stopped motion allows the13th tick to read target36 outside the array, before a later counter wrap. No actual client incident asserted. Other observed Balnazzar/trash/prison/quest/loot issues remain separate, unchanged scopes."
+    },
+    {
+      "source": "Read-only runtime MariaDB and matching base DB2 through AshbringerFlameCatalog.cpp; native EventMap/Position/core effect enum",
+      "review": "95962 binds npc_bs_doomguard_incinerator, with0 static spawns/addons/SmartAI rows.190666 Fel Firebomb effect32/trigger190644/targets18,107/visual49310;190644 effect179/targets87,0/visual45999, both visual records present.32 is trigger-missile and179 create-area-trigger. Read-only configured local hotfix effect query returned0 rows for these spells; catalog itself is base DB2, not a full hotfix merge/kit/attachment/animation or client VFX assertion. Actual EventMap consumes one ready event per UpdateAI and reschedules relative to current timer; no lag catch-up. Position is16-byte x/y/z/normalized orientation and uses dynamic startup initialization."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted flameTarget/flameCastCount/95962 script names and all-ref BrokenShore artifact path history",
+      "review": "No applicable Incinerator implementation returned; generic coldflameTarget hits belong to unrelated Icecrown code. Bounded searches, not exhaustive history or a modern donor import."
+    },
+    {
+      "source": "Pinned Titans relevant full95962 summon/arrival/timer section, lines593..651, plus adjacent producer/context",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "review": "Same unconditional timer and unbounded target index; no repair imported. Only the relevant source section reviewed, not all donor encounter behavior."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. Retaining this project's36 positions, original three-cast batch/1000ms/triggered missile and arrival cleanup is not evidence those positions/timing match retail footage. No choreography or visual asset replacement based on names."
+    }
+  ],
+  "repair": {
+    "implementation": "The existing three-cast loop additionally requires flameCastCount < actual table element count before every target access; only a nonexhausted sequence reschedules EVENT1. No extra timer at36, no out-of-array coordinates or uint8 wrap. Actor remains on original flight until original arrival callback resets/hides it; exhaustion does not manufacture arrival or despawn.",
+    "preserved": "Only95962 UpdateAI changes; regression restores that method to pinned40543732 and compares the whole file, while the entire header/table remains pinned. Same initial summon0/1000ms/POINT1, target order, triggered190666 and POINT8/id1 cleanup. Rejected casts still consume their existing slot without retry; no forced effect, new credit, Player/pet/guardian/group owner fanout, quest/item/equip, phase or scene change. AI-owned EventMap destruction retains cancellation and no shared queue is cleared by exhaustion.",
+    "limits": "Missing/failed flight still does not automatically recover or hide the actor; it is now safe at exhaustion. Accepted/rejected spell application, actual area-trigger lifetime, initial summon failure, repeat-summon visibility, reentrant arrival during a cast, attempt epochs/abandon/re-entry and actual motion/geometry/VFX remain OPEN. No live faction/party/pet kill certification; this emitter gives no progression."
+  },
+  "validation": {
+    "baseline": "PASS pinned40543732 full actual95962 AI plus actual native EventMap class/Reset/Update/Reschedule/Cancel/Schedule/Execute.13 one-second updates without arrival reproduce AddressSanitizer global-buffer-overflow on the actual extracted36-position array. Strict nonzero exit plus exact ASAN diagnostic required; retained baseline-asan.log is a controlled counterfactual, not a client crash log.",
+    "current": "PASS ordinary and AddressSanitizer full actual AI/native EventMap: all36 positions exactly once in batches3,999+1ms, long ticks without catch-up,100 further updates without read/wrap/reschedule,13 possible arrival times/wrong type/wrong ID/duplicates, partial starts0/1/2/33/34/35/36/255, repeated summon rearm, AI destruction/replacement and accepted/rejected cast service labels. Position/cast/motion/visibility services controlled; actual engine trajectory/effect creation is not exercised.",
+    "installed": "PASS selected factory size60 and exact UpdateAI18/IsSummonedBy148/MovementInform1a8 slots. Native queue38/index58; unsigned<36 branch precedes indexed target loads/cast and another branch skips native Cancel/Schedule at exhaustion. Actual3 backedge,190666 triggered Position-value call/1000ms preserved. All36 XYZ records checked against static first record plus dynamic startup initializer writes and actual broken_shore CRT registration; not misread as an already initialized raw PE array. Original arrival type8/id1/reset/hide retained. Retained SilverHand identity/discovery and Ashbringer door installed proofs checked separately.",
+    "regressions": "PASS ScepterLogin VerifyReleaseBinary, DalaranAllClassOffers native149 race/class pairs/22 invitations/36 selection effects, ArtifactForceEquip and SceneLifecycle; full new FlameTargets baseline/current ASAN/ordinary/database6-row DB2/Release wrapper. Native extracted EventMap phase-return narrowing and unused summoner warnings remain visible, not suppressed. No quarantined door fixture run or fallback.",
+    "harness_corrections": "PE verifier initially named a Position-reference overload, but production passes Position by value; corrected exact native symbol. Header read uses explicit UTF8. Initial comparison incorrectly treated a dynamically initialized BSS table as raw PE data; replaced with all108 XYZ initial values/startup writes and selected CRT initializer registration. Failed assertions were retained as diagnostics, not relaxed to hashes alone. Initial exploratory SQL asked for nonexistent addon columns; read-only error corrected to actual path_id/auras schema, no database changes.",
+    "security_limit": "Earlier runtime-test/ashbringer-doors/test.exe Defender quarantine remains unresolved; no restore/rename/recompile/exclusion/protection change. This is a distinct95962 timer/global-array fixture, not an alternate way to execute the quarantined door lifetime test. Only its independent installed Python door proof runs; blocked door wrapper remains BLOCKED.",
+    "evidence": ".codex/ashbringer-flame-* and ignored runtime-test/ashbringer-flame-targets baseline-asan.log/generated actual sources/native.tsv. No runtime credentials/configuration/certificates/character data or generated binaries committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "73807508B916FE7CB67F6D3A301B0BE709FE0951D2B6AF5173956600B8367179",
+    "bnet_sha256": "DE8CD2481223D031EDA8C46DF0D9A28F0A1A798D3CBDCEBFB11D8A2E28DAAD0F",
+    "build": "PASS canonical Release world+bnet MSBuild exit0, no OutDir, LinkIncremental=false. Actual UTF16 final-link commands retain INCREMENTAL:NO and original src/server Release scripts/game/shared/common inputs for world and shared/common for bnet; both canonical hashes checked separately from decoded handler.",
+    "runtime": "Own hidden canonical PID15680 reached fresh ready, received own UTF8 stdin server shutdown0, exited0 and is gone; newly appended DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No user/unknown server stopped or own hidden server left. Startup does not exercise95962 flight/fire in the client."
+  }
+}
