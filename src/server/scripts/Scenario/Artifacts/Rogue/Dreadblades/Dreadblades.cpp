@@ -611,8 +611,8 @@ public:
         
         void JustDied(Unit* who) override
         {
-            if (who->GetTypeId() == TYPEID_PLAYER)
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48582);
+            if (Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr)
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48582);
             Talk(4);
             if (auto blades = me->SummonCreature(112817, -1353.04f, 6307.06f, 8.60f, 1.99f))
                 blades->SetDisplayId(72343);

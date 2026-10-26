@@ -1755,10 +1755,11 @@
     {
       "class_id": 4,
       "specialization": "Outlaw",
+      "eliza_death_repair_audit": "docs/audits/dreadblades-eliza-death-credit-2026-10-26.json",
       "weapon": "The Dreadblades",
       "item": 128872,
       "start": 40847,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: Eliza102293 death48582 now resolves native player/charmer/owner with null-safe handling and unchanged death speech/reveal. Pinned pet-credit-loss baseline, repaired ASAN/native ownership/scenario tree and selected staged PE pass. Canonical deployment pending user server shutdown. Native1012 final root requires both48582 and separate48553. Actual pickup Data1=0/inverted HasItemCount/progression ordering, earlier surrender/owner credit, client/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
       "quests": [
         {
           "id": 40847,
