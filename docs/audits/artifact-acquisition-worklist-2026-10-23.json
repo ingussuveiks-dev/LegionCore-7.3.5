@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
+      "handler": "Subtlety249347 actual native loot/equip before50301",
+      "problem": "249347 had Data1=0 despite real loot249347/128476. Its GO_ACTIVATED callback awarded50301 and explicit COMPLETE_SCENARIO1078 before a direct AddItem result or actual equip. With full bags it completed progression without the weapon. Native209818 is equip-only249 and cannot substitute for actual loot storage.",
+      "repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json",
+      "limit": "Deployed8DEA6B8C/updater13 RELEASED: pinned full-bag false-completion counterfactual/current handler ASAN,480 source4/native cached-slot cases/TEMP custom refusal, typed26972/lock43/native scene+pair and selected script/AI PE pass. Own3016 ready/shutdown0/exit0/no new diagnostics. Actual scene/child cast/equip/client/full route pending; known native81040 edge remains explicitly unresolved."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
       "handler": "Subtlety Zirus105542/Akaari105660 owned and null death credit",
       "problem": "Zirus105542 and final Akaari105660 accepted only Player killers for native50298/50300, losing pet/guardian owner progression. Both also dereferenced a potentially absent killer. Zirus required its original door cleanup even when ownership cannot resolve.",
       "repair_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json",
@@ -1938,7 +1945,7 @@
       "weapon": "Fangs of the Devourer",
       "item": 128476,
       "start": 41919,
-      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN.",
+      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN. Pickup249347 native loot14/source4, genuine stored/equipped pair128476/128479 before50301 and no direct grant/duplicate completion now tested/deployed8DEA6B8C/updater13, clean owned startup. Actual scene/child81040/equip/full route remain pending.",
       "quests": [
         {
           "id": 41919,
@@ -2036,8 +2043,9 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair249347 native loot link/activation-before-storage/direct grant/early duplicate completion with actual209816->209819->209818 pair128476/128479; code-coupled migration stays outside updater until matching EXE. Then review105536 capture raw delayed callbacks/one-hit/missing actor/attempt semantics and105332 missing LINK1.",
-      "owned_death_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json"
+      "next_action": "Review initial Akaari105536 timed capture/raw delayed callbacks/scaled one-hit/missing105540/stale player/re-entry, then105332 missing LINK1. Keep inherited unresolved81040 native child reference visible; actual pickup/whole route/client checks are still required.",
+      "owned_death_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json",
+      "pickup_repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json"
     },
     {
       "class_id": 5,

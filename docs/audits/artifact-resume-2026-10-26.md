@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Subtlety actual native pickup repaired
+
+- Audit `devourer-native-pickup-2026-10-26.json`:249347 uses real loot249347/128476; preserves native OPEN_KNEELING lock43. Actual1078/6/Akaari leaf47369 and native source4 eligibility gate opening/loot. Native209816/209819/209818 waits for real linked main128476/off128479 before once-only50301; remove premature activation credit/direct AddItem/explicit1078 reward. GO_READY preserves cast/equip retries, bank ownership does not duplicate, original optional105843/1948 retained.
+- Pinned full-bag false completion/current native-handler ASAN,480 native source4/slot conditions/TEMP repeat/six custom refusals, typed26972 scene1257/15s/2s tick/child pair/lock and actual selected registered script/AI PE pass. Prior death16/Hunter/Scepter preserved. Actual delayed casts/equip/scene/full client remain pending.
+- Canonical world `8DEA6B8CD27000E776C77DA84A2D3BB21D4A959FBE78A1F2DE8C8997738175EE`, map `7E321CEEAA062268757D9243BC1BB24EBD58A3FACF2903E0F9E6CF00751F5621`, bnet `2C0089D7BAE99E93B3E9FC86991C362639631BB38DE776631732AE5BA3FF8580`. Matching migration13 RELEASED/hash9F909A2D5AD729F2A69BD1EE9376AF4E4BE82A47; live lock43/loot249347/14 source4 rows. SQL published only after matching EXE, both user servers absent. Own3016 ready/shutdown0/exit0, no new diagnostics/protected hash changes; no hidden server left, Crashes0/DBErrors0.
+- Known shared unresolved native209818->81040 remains absent from matching Spell/hotfix and explicitly printed by the catalog; previous Magnar/other audits already preserve this edge. No metadata invented/diagnostic silenced; startup does not execute the pickup chain. Do not claim full scene or native child graph certification.
+- NEXT: initial Akaari105536 timed capture/raw delayed AI/actor/player callbacks, scaled lethal hit/missing105540 and stale-recipient/abandon/re-entry;105332 missing LINK1. Continue all36 worklist, client tests stay with user. Earlier pickup OPEN notes below are historical; this focused storage/credit portion is now repaired, full route remains OPEN.
+
 ## Latest continuation: Subtlety owned death credit repaired
 
 - Audit `devourer-owned-death-credit-2026-10-26.json`: Zirus105542/50298 and last Akaari105660/50300 now resolve native owner/charmer/player and tolerate null killers. Zirus conversation/door cleanup stays independent of ownership; no new group/item/scenario grants. All other actor code unchanged.

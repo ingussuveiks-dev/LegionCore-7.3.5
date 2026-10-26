@@ -6,6 +6,39 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "Item.h"
+
+namespace DevourerAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_ROGUE || !player->GetMap() ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 249347 || weapon->GetMapId() != 1607 ||
+            player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetQuestRewardStatus(41924) ||
+            (player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41924) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1078 || scenario->GetCurrentStep() != 6)
+            return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto victory = progress->find(47369);
+        return victory != progress->end() && victory->second.Counter; // Native final Akaari leaf50300, also for pet/guardian killers.
+    }
+
+    bool Equipped(Player* player)
+    {
+        Item* weapon = player->GetItemByEntry(128476);
+        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon &&
+            child && child->GetEntry() == 128479 && weapon->GetChildItem() == child->GetGUID();
+    }
+}
 
 // 105464
 class npc_valzuun : public CreatureScript
@@ -555,31 +588,104 @@ public:
 //249347
 class go_art_devourer : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        ObjectGuid claimant;
+        uint32 elapsed = 0;
+        bool finished = false;
+
+        void Cancel()
+        {
+            claimant.Clear();
+        }
+
+        bool GossipHello(Player* player, bool) override
+        {
+            return finished || !claimant.IsEmpty() || !DevourerAcquisition::CanTake(player, go);
+        }
+        ObjectGuid GetGUID(int32 = 0) override { return claimant; }
+        uint32 GetData(uint32) override { return finished; }
+        void SetGUID(ObjectGuid const& guid, int32 = 0) override
+        {
+            if (finished || !claimant.IsEmpty())
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*go, guid);
+            if (!DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
+                return;
+            // Native209816 starts scene1257 and209819; the latter equips the
+            // real looted parent/child through209818 at its native2000ms tick.
+            claimant = guid;
+            elapsed = 0;
+            SpellCastResult result = player->CastSpell(player, 209816, true);
+            if (result != SPELL_CAST_OK)
+            {
+                Cancel();
+                TC_LOG_WARN("scripts", "Devourer pickup: native scene209816 failed with result %u; retain looted item and object for retry", uint32(result));
+            }
+        }
+        void UpdateAI(uint32 diff) override
+        {
+            if (claimant.IsEmpty() || finished)
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*go, claimant);
+            if (!DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
+            {
+                Cancel();
+                return;
+            }
+            elapsed += diff;
+            if (!DevourerAcquisition::Equipped(player))
+            {
+                // Bound a failed native equip by the actual15s scene duration.
+                // Keep native inventory errors; never grant/equip a replacement.
+                if (elapsed >= 15000)
+                {
+                    Cancel();
+                    TC_LOG_WARN("scripts", "Devourer pickup: native209818 did not equip the looted parent/child; retain item and object for retry");
+                }
+                return;
+            }
+            finished = true;
+            claimant.Clear();
+            // This is the native final step's real pickup event. Let Scenario
+            // award completion; never issue a duplicate COMPLETE_SCENARIO.
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50301);
+            if (Creature* trigger = go->FindNearestCreature(105843, 10.0f))
+                trigger->DespawnOrUnsummon(1000);
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1948, player, NULL, *player))
+                delete conversation;
+            go->SetLootState(GO_JUST_DEACTIVATED);
+        }
+    };
 public:
     go_art_devourer() : GameObjectScript("go_art_devourer") {}
 
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (!DevourerAcquisition::CanTake(player, go) || go->AI()->GetData(0) || !go->AI()->GetGUID(0).IsEmpty())
+            return true;
+        if (player->HasItemCount(128476, 1, true))
+        {
+            if (player->GetItemByEntry(128476))
+                go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true; // Bank-only ownership must not create another weapon.
+        }
+        return false; // Normal loot/storage, including full-bag errors and retry.
+    }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED)
-        {
-            if (target->GetTypeId() == TYPEID_PLAYER)
-            {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50301); //Step 4
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1078, 1);
-                if (Creature* trigger = go->FindNearestCreature(105843, 10.0f))
-                    trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128476, 1))
-                {
-                    target->ToPlayer()->AddItem(128476, 1);
-                    target->CastSpell(target, 209816, true);
-                }
-
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1948, target, NULL, *target))
-                    delete conversation;
-            }
-        }
+        Player* player = target ? target->ToPlayer() : nullptr;
+        if (!go || state != GO_JUST_DEACTIVATED || go->getLootState() != GO_JUST_DEACTIVATED ||
+            !DevourerAcquisition::CanTake(player, go) || !player->GetItemByEntry(128476))
+            return;
+        // A summoned GO would otherwise be deleted on its next update, before
+        // the native equip tick or a failed cast/storage attempt can be retried.
+        go->SetLootState(GO_READY);
+        go->AI()->SetGUID(player->GetGUID(), 0);
     }
 };
 

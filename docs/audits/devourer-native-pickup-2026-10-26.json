@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Scoped real-loot/equip/credit repair deployed and native-tested; whole Subtlety acquisition/client presentation remain OPEN",
+  "cause": "249347 had Data1=0 despite real loot249347/128476. Its GO_ACTIVATED callback awarded50301 and explicit COMPLETE_SCENARIO1078 before a direct AddItem result or actual equip. With full bags it completed progression without the weapon. Native209818 is equip-only249 and cannot substitute for actual loot storage.",
+  "implementation": [
+    "Restore only the exact native249347 loot link with the matching new callback. Keep native lock43, template flags/display/type/personal fields and existing loot bytes. Fourteen source4 GO-loot conditions admit only living active/unrewarded41924 Rogues in map1607/scenario1078/step6 without an inventory/bank copy. Six tested custom script/link/lock/loot/condition/AI variants refuse all managed changes. SQL stayed ignored outside updater until matching EXE promotion.",
+    "Opening, AI interaction and completed-loot callback require actual live/contact/alive Rogue, real map/instance/phase/visibility/LOS/range/object flags, active/unrewarded41924,1078/6 and actual prior Akaari leaf47369. Activation grants nothing. Native StoreLootItem and completed release must place the parent in inventory; retain full-bag/storage diagnostics and normal retry.",
+    "Use native209816 scene1257 ->209819 periodic2000ms ->209818 existing-item equip. An AI-owned full-GUID claimant waits at most the actual15s scene duration for mainhand128476/offhand128479 with the correct child GUID link. Rejected casts/timeouts keep the real looted item and GO_READY for retry; missing/dead/abandoned/transferred claimant cancels without granting progress. Bank-only ownership creates no duplicate.",
+    "Only after actual pair confirmation latch once, issue native final pickup50301, retire optional105843 model after its original1000ms and request1948 conversation, then normal GO retirement. Keep native Scenario completion; remove explicit duplicate COMPLETE_SCENARIO and AddItem entirely. No borrowed Outlaw phase reset or personal-outro actors; Subtlety phase behavior remains original."
+  ],
+  "local_evidence": [
+    "Matching world schema:249347 type3/display9806/native lock43/flags2113536/empty AIName/go_art_devourer and exact pre-existing100% loot128476. Quest41924 and native1078 stage5 death47369/50300 then final stage6 root47370/leaf47371/50301. Read full original Devourer actor/instance code and native GameObject state/Spell::SendLoot/StoreLootItem/LootItem slot recheck.",
+    "Typed26972 DB2 with read-only hotfix:209816 aura430 scene1257 duration15000;209819 aura23 tick2000->209818;209818 effect249 item128476, linked native child128479/slot16; parent inventory21/Artifact17 and child inventory22. Native Lock43 is OPEN_KNEELING13 with required skill0;1691 is ordinary OPEN5, so the tested migration preserves43 rather than borrowing Outlaw1691. No donor/video was needed or reviewed.",
+    "The pre-existing native209818 effect64 also references81040, absent from actual Spell.db2/hotfix. Catalog now explicitly emits MISSING_SPELL81040. This is the already documented shared unresolved edge in magnar-finale-creation-2026-10-25.json and other audits, preserved by the original209816 path. Core EffectTriggerSpell retains its unknown-trigger DEBUG diagnostic; this repair neither invents81040 nor suppresses it. Complete native child playback is not certified."
+  ],
+  "checks": [
+    "Pinned342930f1 ASAN counterfactual: full-bag GO_ACTIVATED still sends50301/explicit1078 and attempts AddItem/cast without storing a weapon. Separate baseline evidence is explicitly expected failing behavior.",
+    "Current ASAN full-handler/native storage/consumption/isLooted/completed release/SetLootState fixture passes27 invalid opening contexts, real death leaf, player-versus-pet target, full bags/null storage and subsequent retry, bank-only/owned replay, native scene cast result/equip boundary,15s timeout/retry, stale claimant, wrong child GUID, real pair and once-only pickup. Optional model is retained until success then removed with original1000ms; failed/missing conversation/model cannot invent an item or duplicate credit. Cast/equip/world/network are controlled boundaries, not a live client test.",
+    "Actual-schema TEMP migration runs twice and compares complete templates and existing loot bytes. Six custom-slot variants preserve all three tables. Native ConditionMgr/ElseGroups/LootItem::AllowedForPlayer/cached-slot recheck/GetLootId tests480 stage/status/class combinations plus alive/reward/owned/bank/map/instance checks. Native SourceType4 is asserted from the actual enum. No live rows or characters modified by tests.",
+    "Original generated scripts/game Release build, staged original common/shared/game/scripts LIB final inputs and selected actual registered script/AI PE/map pass: class/range/context/death admission, loot-end callback, native209816, timeout, inlined parent/child identity branch, native50301 and absence of AddItem/explicit1078 reward. Actual Zirus/Akaari death callbacks retained. Shared death16 ASAN, canonical Hunter/Scepter checks pass.",
+    "Promotion rechecked both server names absent; matching migration13 published only after matching EXE. Actual updater13 RELEASED/hash9F909A2D5AD729F2A69BD1EE9376AF4E4BE82A47, liveData0=43/Data1=249347 and14 conditions/source4. Own world3016 fresh ready/shutdown0/exit0, stderr/newDBErrors0, protected configs/certificates unchanged; no task-owned server remains.",
+    "All native/TEMP/catalog/build/PE/promotion/startup groups had canonical and fixture before/after diagnostic inventories. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes0/DBErrors0, no new resolved crash/log archive needed. Startup did not cast the pickup chain or resolve81040."
+  ],
+  "development_notes": [
+    "Initial source-edit preparation failed before writing; corrected the Cancel block extraction and regenerated the scoped callback. No incomplete SQL entered updater directories.",
+    "Staged data draft borrowed spell-loot source12; actual enums/native GO loader identify source4. Corrected before any TEMP migration test or live release; tests explicitly assert source4. Do not copy spell-loot source12 into a GO migration.",
+    "One data fixture wrongly modeled the nonrepeatable quest as INCOMPLETE plus rewarded-history=true; native QUESTTAKEN intentionally matches that status. Corrected that contradictory fixture to COMPLETE+rewarded and reran; actual NONE/INCOMPLETE/COMPLETE/REWARDED combinations remain covered. No production condition weakened. Removed unused inherited SmartEvent fixture scaffolding; final pickup/condition native builds are clean.",
+    "Initial PE check expected a standalone Equipped symbol. Actual MSVC inlined it; final verifier checks selected UpdateAI parent/child constants, native inventory lookup and conditional offhand identity instead. Failure evidence retained; no runtime bypass."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "8DEA6B8CD27000E776C77DA84A2D3BB21D4A959FBE78A1F2DE8C8997738175EE",
+    "world_map_sha256": "7E321CEEAA062268757D9243BC1BB24EBD58A3FACF2903E0F9E6CF00751F5621",
+    "bnet_sha256": "2C0089D7BAE99E93B3E9FC86991C362639631BB38DE776631732AE5BA3FF8580",
+    "migration": "2026_10_26_13_devourer_native_pickup.sql",
+    "migration_sha1": "9F909A2D5AD729F2A69BD1EE9376AF4E4BE82A47",
+    "private_evidence": ".codex/devourer-pickup and native devourer-pickup/{baseline,current}/devourer-pickup-data directories"
+  },
+  "remaining": [
+    "Actual client open-kneeling/loot card/full-bag error/retry,209816 scene/accepted child casts/equip animation/action bar/paired blades, model1948 outro/audio, scenario/quest turn-in and all races/factions/group/re-entry remain pending. Native tests do not prove delayed209819 ticks/actual249 inventory equip or renderer state.",
+    "Shared missing81040 remains unresolved and visible in the native catalog/audits; do not describe the entire native effect graph or all36 as verified. Real runtime pickup diagnostics still need the user client traversal.",
+    "Next main Subtlety investigation: initial Akaari105536 timer-only capture/raw delayed actor-AI-player callbacks, scaled one-hit, missing105540 spawn and stale recipient/abandon/re-entry; early actor105332 missing LINK1 also remains unreviewed. No character reset or grant is authorized to bypass it."
+  ]
+}
