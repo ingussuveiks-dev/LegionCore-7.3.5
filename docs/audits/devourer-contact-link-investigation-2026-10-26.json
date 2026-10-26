@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-26",
+  "status": "UNRESOLVED read-only investigation; no speculative script/world-data repair",
+  "implementation_checkpoint": "e4e4fe2f",
+  "local_matching_evidence": [
+    "Live105332 is SmartAI, menu19470/search-body option0/broadcast108074, source15 active41919. Source0/id0/event62 awards native105332 credit to invoker7 then links to absent1. Objective283057 is41919/type0/object105332/amount1. No source22, creature_text, starter or ender row establishes the missing action.",
+    "Matching LegionCore26972 base SQL has the same dangling105332 row. Do not infer teleport, despawn, conversation, item, extra credit or close-gossip from link1 alone.",
+    "Adjacent105333 source0/id0 event62/menu19472/option0 gives105333 credit/link1. Id1 exists but is event64/GOSSIP_HELLO/flags1/action80/list10533300. List text0/1/2 at0/5/10s uses broadcasts108103/108105/108106. Preserve independently reachable greeting behavior when investigating phrase-selection timing.",
+    "SmartScript::FindLinkedEvent resolves event_id alone; ProcessAction subsequently requires nonzero action AND SMART_EVENT_LINK. Thus105333 link1 is invalid despite an existing greeting row. Matching base SQL agrees. Option1 links to valid id3/event61/conversation1832 and is separate."
+  ],
+  "reference_review": {
+    "original_tdb": "TDB_full_735.00_2018_02_19 has no105332/105333 smart_scripts implementation.",
+    "local_trinity": "Read-only refc2d61e05cf3dc555608e6b2a06772c27d207548c matching7 SQL has unrelated numeric/localization/hotfix hits; no applicable implementation established. Numeric hits alone do not prove behavior.",
+    "github_search": "Searches for105332 smart_scripts and Desmond Gravesorrow41919 did not establish a primary implementation/fix.",
+    "quest_context": "https://www.wowhead.com/quest=41919/the-shadows-reveal search result describes searching the body for intel; it does not specify a missing linked action. Supplementary context only.",
+    "video": "Search references Y_snez58-K0/IH-SGP_OJP4 were not watched; no footage or unseen behavior claimed verified."
+  },
+  "next_work": [
+    "Find direct matching evidence for105332 follow-up; retain diagnostic rather than invent an action.",
+    "Determine105333 intended greeting/phrase timing before changing event64 or adding a duplicate. Cover repeated interaction, flags1 and abandon/reaccept.",
+    "Opening105536 original10s Player callback still lacks current map/quest/recipient/attempt validation. Missing105540 prevents transfer scheduling and leaves immune actor. Scoped lethal guard/5s lifetime fixes do not certify full capture.",
+    "Native209818->81040 missing-spell evidence and all36/full client traversal remain open."
+  ],
+  "runtime_handoff": "Read-only queries/source review only after prior passing regressions/clean owned19904 startup and shutdown. No further test/server launched. Final worldserver/bnetserver inventory empty, canonical Crashes0 files, DBErrors.log0 bytes. No truncation/report movement/character progress change."
+}

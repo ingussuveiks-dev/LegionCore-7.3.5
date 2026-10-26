@@ -4,6 +4,12 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest read-only continuation: Subtlety contact links remain unresolved
+
+- `devourer-contact-link-investigation-2026-10-26.json` records matching base/live105332 missing1 and adjacent105333 link1 targeting event64, while native ProcessAction requires LINK61. Preserve the independently reachable greeting/list10533300 and option1/conversation1832. Intended follow-up/timing still needs evidence; no invented action.
+- Original TDB supplies no implementation; local Trinity numeric hits and GitHub search did not establish a repair. Wowhead context does not specify the missing action. Referenced videos were **not watched**. No code/data change, test, server run or character mutation in this investigation.
+- Implementation stays `e4e4fe2f`, with canonical hashes/passing diagnostics below. Final both server names absent, Crashes0/DBErrors0. Original10s capture/failed-helper paths,81040, contacts and whole36/client traversal remain open.
+
 ## Latest continuation: Opening Akaari5s visual pointer safety repaired
 
 - Audit `devourer-capture-visual-lifetime-2026-10-26.json`: actor-owned5000ms callback captures owner actor/full helper GUID, no borrowed AI/helper pointers. Fresh native map lookup plus full identity/entry/phase/alive/world/predelete guards; same native group3/108415 speech and optional209264. No credit/teleport/timer/attempt policy changed.209264 aura260 is SCREEN_EFFECT963 (prior audit label corrected), not scene1257/activate430 used by pickup.
