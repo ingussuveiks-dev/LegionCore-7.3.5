@@ -51,6 +51,6 @@ int main(){
   uint32 damage=2000;scope.DamageTakenAfterScaling(attacker,damage,0);assert(damage==2000&&owner.criteria.empty()&&friendPlayer.criteria.empty());
   owner.classId=4;owner.inWorld=true;owner.map=&map;owner.phase=true;owner.status=3;owner.preDelete=false;manager={};
  }
- std::cout<<"PASS "<<cases<<" native scaled owner/charmer/guardian and primary/suspended cases: preserve one actual target-relative HP, nonlethal/tiny health/repeated hits and13 invalid contexts, no cast/credit or timer mutation. Damage guard leaves capture timers/progression unchanged; helper visual lifetime is separately regressed,10s transfer/client/retry remain OPEN.\n";
+ std::cout<<"PASS "<<cases<<" native scaled owner/charmer/guardian and primary/suspended cases: preserve one actual target-relative HP, nonlethal/tiny health/repeated hits and13 invalid contexts, no cast/credit or timer mutation. Damage guard leaves capture timers/progression unchanged; full capture lifecycle is separately regressed; actual client traversal remains pending.\n";
 #endif
 }

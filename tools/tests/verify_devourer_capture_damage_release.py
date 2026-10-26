@@ -58,4 +58,4 @@ assert body[health_site+5].operands[0].imm==body[health_site+8].address and body
 assert body[health_site+7].mnemonic=='jmp' and body[health_site+7].operands[0].imm==body[health_site+9].address
 assert body[health_site+9].op_str=='dword ptr [r14], eax'
 assert body[health_site+3].operands[0].imm>body[health_site+9].address
-print('PASS selected opening Akaari capture postA8/raw inheritedA0, native1078/0/41924/owner/relative-health guard without forced effects. Native host proves final-damage clamp; timed capture callbacks/client remain separate OPEN work.')
+print('PASS selected opening Akaari capture postA8/raw inheritedA0, native1078/0/41924/owner/relative-health guard without forced effects. Native host proves final-damage clamp; event-driven capture is separately regressed; client traversal remains pending.')

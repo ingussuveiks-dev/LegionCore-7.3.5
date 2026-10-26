@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Opening Akaari105536 timed capture in1607/scenario1078/step0, active Rogue41924; client traversal pending",
+  "implementation_commit": "Commit containing this audit, based on92bde283",
+  "cause": [
+    "Player-owned10s callback retained a raw recipient and did not revalidate quest/map/phase/current attempt. It could pull a moved or abandoned participant back and award50261.",
+    "105540 presentation summon success incorrectly enclosed both mandatory transfer scheduling and actor retirement. A failed summon left passive immune Akaari indefinitely.",
+    "The optional5s callback was pointer-safe aftere4e4fe2f but still selected a nearby player independently of combat. The whole capture needed a single bound recipient/attempt and reset path."
+  ],
+  "repair": [
+    "Use the AI-owned native EventMap for capture5s/10s after the unchanged12s+11s combat. No queued helper/AI/player capture callback; no nearest-stranger credit. Bind native player/charmer/owner at combat entry and ignore repeated entry signals until reset.",
+    "Bind existing native QuestStatusData::ScriptLifetime through a0ms empty AddQuestDelayedEvent, following existing project scripts. The empty closure grants nothing. Native acceptance and NONE reset the lease; compare both weak expiry and exact current shared lease, covering same-tick reaccept even if another holder keeps the old lease alive.",
+    "Check full128-bit player identity, native in-map registry, CanContact/alive, active41924/class, real1078/step0, phase/range and pending near/far/delayed teleport on every pending update and again immediately before transfer. New Player::HasPendingTeleport is only a read-only accessor for existing flags.",
+    "Keep presentation optional and diagnostic:105540/189170,5s group3/209264 and9s helper lifetime. Missing/retired/wrong-identity helper cannot block the10s transfer. Pending events run independently of combat victim/cast/stun gates.",
+    "Consume attempt before teleport/casts/criteria callbacks. Retain native destination1847.77/1259.92/57.09,211686/211684 and50261. Confirm actual pending destination because the legacy TeleportTo wrapper can return true after SafeTeleport rejects. Rejected transfer resets without any credit/cast.",
+    "Native evade/reset clears timers, identities, lease, immune/passive state, exact helper and only this actors209238/helper209264 aura. Successful capture retires actor at its original10s transition. No item, quest grant, explicit scenario completion or new group-credit path.",
+    "No other Devourer class/pickup changed; source extraction checks this against pinnede4e4fe2f. Damage hook stays byte-for-byte normalized against that commit. Zirus/final Akaari/clones are separate."
+  ],
+  "checks": {
+    "pinned_counterfactual": "Test-DevourerCaptureSequence.ps1 -Baseline -AddressSanitizer: full pinnede4e4fe2f actor reproduces moved/abandoned forced transfer/credit and failed-helper immune stall. Expected failing ordinary behavior, not a successful gameplay run.",
+    "current_native_asan": "Full extracted AI, native EventMap, FunctionProcessor, quest-delay lease allocator, player/creature lookup and owner resolver.16 direct/pet/guardian/charmer x missing-helper x victim/cast-state variants; exact12/11/5/10s boundaries,16 invalid contexts, repeated pre/post-capture signals, reset/retry, original recipient versus nearby stranger, freed helper/AI, full GUID replacement, four rejected/legacy/wrong destination teleport cases, reentrant transfer/credit and reentrant presentation status change. Same-tick lease reset/reallocation and retained-old-lease identity mismatch pass. Native accept/NONE lease-reset source assertions retained.",
+    "catalog": "Actual typed26972 Spell/Effect/Misc/Duration plus read-only hotfixes.20923820s cheap-shot,2092647s SCREEN_EFFECT963, native211684/211686 infinite chains. Prior actual ScenarioStep2363/root47352/leaf47353/criterion29781/type92/50261 preserved by selected post-damage tests.",
+    "preserved": "Test-DevourerCaptureDamage32 scaled/owner/suspended cases, Test-DevourerDeathCredit16 variants and actual pickup handler/storage tests pass with post-test diagnostics.",
+    "pe": "Canonical factory Update18 and selected combat/reset vtable, real EventMap scheduling,5s/10s and12s/11s constants, registry/quest lease/owner/teleport/native credit calls, final CanCapture before TeleportTo, no delayed capture callback/nearest stranger. Canonical damage/death/pickup/Hunter/Warrior Heroic Leap selected PE checks and Test-ScepterLogin -VerifyReleaseBinary pass.",
+    "build": "Original generated game/scripts/shared/common library final-link paths; no global OutDir. Initial build exposed private IsHasDelayedTeleport API; resolved with read-only public getter and full rebuild. An intermediate source edit was newer than the first object; mtime check caught it before final promotion, rebuilt original source object and reverified final CanCapture call in PE. Initial PE checker ambiguous TeleportTo overload corrected to actual native numeric overload. Failed development checks remain explicitly development evidence, not passing runs.",
+    "owned_startups": "Own24040(initial) and16000(final quest-lease) fresh ready, shutdown0, exit0, stderr empty, newDBErrors0, protected config/certificate hashes unchanged. Both process names absent before each copy/rechecked during promotion. No user/unknown process stopped; no hidden task server remains."
+  },
+  "canonical_sha256": {
+    "worldserver.map": "C27D4B0813360B4C104D7EF7F7EBF2CDF712B20E96DAAD707239B76EFBA27A46",
+    "bnetserver.exe": "89194BB6536676E9CF12DE2E0F7A845F92BF9031A623BD1A30A436D6B4F90DB7",
+    "bnetserver.map": "82CD48B9C5BD75F0BF0973591FEAA9F1F58362D1152AFA29C585FDD64C833C85",
+    "worldserver.exe": "19CF10761314F643AFA2C9C025F69C12B128BA2227A24973081D0700FE893B7A"
+  },
+  "diagnostics": "All tests/builds/startups used mandatory before/after crash/log snapshots. Canonical Crashes empty, DBErrors0 bytes, no appended server warning/error/assertion. No new runtime report/log issue to archive; nothing truncated or moved. No character progress SQL/change.",
+  "client_pending": [
+    "Actual first encounter, clone/cheap-shot/portal/speech/screen timing,10s client teleport ACK/arrival/chains and native next stage, direct/pet/guardian combat and both factions.",
+    "Actual abandonment/reaccept/logout/re-entry and group/native scenario behavior. Model validates observed map departure and renewed quest lease; it is not proof of every live map unload/instant leave-and-return scheduling path. Transfer credit still follows accepted native teleport request as original, not a client ACK proof.",
+    "Full Subtlety route, contacts105332/105333, known shared209818->81040 missing spell and all36-route completion remain open."
+  ],
+  "next_independent_investigation": "Holy Priest249705 has Data1=0 despite loot249705/128825. Activation grants50679/direct AddItem and queues14s50702/explicit1085 completion before storage; inspect actual1085 native stages/210733/210818 before repair. No Tuure source/data changed in this commit."
+}

@@ -1,11 +1,12 @@
 param([switch]$Baseline,[switch]$AddressSanitizer)
 $ErrorActionPreference='Stop'
+if(!$Baseline){ & "$PSScriptRoot/Test-DevourerCaptureSequence.ps1" -AddressSanitizer:$AddressSanitizer; return }
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/devourer-capture-visual-lifetime"
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 & "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}else{'current'})" -RuntimeDirectories @($out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp'
- $source=Block (Get-Content "$repo/$path" -Raw) 'class npc_akaari_shadowgore :'
+ $source=Block ((& git -C $repo show "e4e4fe2f:$path") -join "`n") 'class npc_akaari_shadowgore :'
  $old=(& git -C $repo show "c0a7c900:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned capture visual baseline unavailable'};$old=Block $old 'class npc_akaari_shadowgore :'
  $callback=Block $source 'me->AddDelayedEvent(5000,';$oldCallback=Block $old 'me->AddDelayedEvent(5000,'
  if(($source.Replace($callback,$oldCallback)-replace '\s','') -cne ($old-replace '\s','')){throw 'Unexpected change outside original5s visual callback'}

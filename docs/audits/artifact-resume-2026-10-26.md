@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Opening Akaari capture recipient, quest attempt and retry
+
+- `devourer-capture-sequence-2026-10-26.json`:105536 now owns native EventMap5s/10s capture after original12s+11s combat. Bind original native player/owner and existing quest ScriptLifetime; same-tick reaccept expires old attempt. Every update/final transfer revalidates real map/quest/scenario/identity/phase/range/pending teleport. Missing105540 is optional, reset clears immune/helper/own visual, failed native transfer gives no credit. No queued raw recipient/AI/helper callback or nearest-stranger progression.
+- Pinned full-actor counterfactual, current full actor/native EventMap/registry/owner/lease ASAN,16 owner/helper/victim variants and invalid/reset/retry/reentrant/identity/failed-destination cases pass. Real26972 spell catalog, prior32 damage/16 death/pickup, canonical selected capture/damage/death/pickup/Hunter/Leap PE and Scepter pass. New public pending-teleport getter only reads existing flags.
+- Canonical world 19CF10761314F643AFA2C9C025F69C12B128BA2227A24973081D0700FE893B7A, map C27D4B0813360B4C104D7EF7F7EBF2CDF712B20E96DAAD707239B76EFBA27A46, bnet 89194BB6536676E9CF12DE2E0F7A845F92BF9031A623BD1A30A436D6B4F90DB7. Own24040 and16000 ready/shutdown0/exit0, no new diagnostics/protected changes/no hidden server. Both names absent at deployment; Crashes0/DBErrors0. No SQL or character mutation.
+- Actual client capture/arrival ACK/visuals/group/faction/re-entry and full chain remain pending. Observed departure/reset and renewed quest attempts are tested; instant leave-return/live unload scheduling is not certified. Keep81040/contact links/all36 open. NEXT independent: Holy Priest249705 actual loot/activation14s early completion. Earlier OPEN10s/helper notes below are historical and superseded only for this scoped repair.
+
 ## Latest read-only continuation: Subtlety contact links remain unresolved
 
 - `devourer-contact-link-investigation-2026-10-26.json` records matching base/live105332 missing1 and adjacent105333 link1 targeting event64, while native ProcessAction requires LINK61. Preserve the independently reachable greeting/list10533300 and option1/conversation1832. Intended follow-up/timing still needs evidence; no invented action.

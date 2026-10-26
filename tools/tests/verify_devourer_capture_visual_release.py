@@ -1,4 +1,4 @@
-"""Check the linked final Vigfus death callback, owner bridge and selected vtable."""
+"""Check the selected opening Akaari capture state machine in the linked Release PE."""
 from pathlib import Path
 import bisect
 import re
@@ -32,43 +32,43 @@ def instructions(prefix):
 
 
 update='?UpdateAI@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@'
-lookup=native['symbol']('?GetCreature@ObjectAccessor@@')
-candidates=[name for name in native['symbols'] if name.startswith('??R<lambda_') and 'npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@' in name and lookup in native['calls'](name)]
-assert len(candidates)==1, 'Expected one actual visual callback with fresh creature lookup'
-visual=candidates[0];invokers=[name for name in native['symbols'] if name.startswith('?_Do_call@') and 'npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@' in name and native['symbol'](visual) in native['calls'](name)]
-assert len(invokers)==1, 'Native std::function must dispatch the verified lambda operator'
-invoker=invokers[0];body=instructions(visual);targets=native['calls'](visual)
-values={op.imm for ins in body for op in ins.operands if op.type==CS_OP_IMM}
-assert {105536,105540,209264,3} <= values
-assert native['symbol']('?SendChat@CreatureTextMgr@@') in targets
-assert native['symbol']('?Talk@CreatureAI@@QEAAXE') not in targets, 'Delayed visual still depends on borrowed content AI'
-for prefix in ('?TeleportTo@Player@@','?UpdateAchievementCriteria@Player@@'):
+body=instructions(update)
+targets=native['calls'](update)
+# Helpers may be outlined or inlined; inspect the code actually reached by this Update.
+reached=[update]
+for prefix in ('?CanCapture@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@',
+               '?PresentCapture@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@',
+               '?FinishCapture@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@'):
+ matches=[name for name in native['symbols'] if name.startswith(prefix)]
+ if matches:
+  assert len(matches)==1 and native['symbol'](matches[0]) in targets, f'Update does not use {prefix}'
+  reached.extend(matches)
+can_prefix='?CanCapture@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@'
+finish_prefix='?FinishCapture@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@'
+can=native['symbol'](can_prefix);finish=native['symbol'](finish_prefix)
+assert can in native['calls'](finish_prefix), 'Final transfer must revalidate after optional presentation/reentrant callbacks'
+finish_body=instructions(finish_prefix)
+ordered=[native['resolve'](ins.operands[0].imm) for ins in finish_body if ins.mnemonic=='call' and ins.operands[0].type==CS_OP_IMM]
+assert ordered.index(can)<ordered.index(native['symbol']('?TeleportTo@Player@@QEAA_NIMMMMII@Z')), 'Admission must precede native teleport'
+reached.extend(['?EnterCombat@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@UEAAXPEAVUnit@@@Z','?Reset@npc_akaari_shadowgoreAI@npc_akaari_shadowgore@@UEAAXXZ'])
+all_body=[ins for name in reached for ins in instructions(name)]
+all_targets=set().union(*(native['calls'](name) for name in reached))
+values={op.imm for ins in all_body for op in ins.operands if op.type==CS_OP_IMM}
+assert {105540,209264,209238,5000,10000,12000,11000,41924,1078,211686,211684,50261,1607} <= values, values
+for prefix in ('?GetPlayer@ObjectAccessor@@','?GetCreature@ObjectAccessor@@','?GetCharmerOrOwnerPlayerOrPlayerItself@Unit@@',
+               '?TeleportTo@Player@@','?AddQuestDelayedEvent@Player@@','?getQuestStatus@Player@@','?UpdateAchievementCriteria@Player@@','?ScheduleEvent@EventMap@@','?Reset@EventMap@@'):
  matches={native['resolve'](address) for name,address in native['symbols'].items() if name.startswith(prefix)}
- assert not matches&targets, 'Optional visual must not advance capture'
-tables=[]
-for ins in instructions(update):
- for op in ins.operands:
-  if ins.mnemonic=='lea' and op.type==CS_OP_MEM and op.mem.base==X86_REG_RIP:
-   at=native['offset'](ins.address+ins.size+op.mem.disp)
-   if struct.unpack_from('<Q',native['binary'],at+0x10)[0]==native['symbol'](invoker):tables.append(at)
-assert len(tables)==1, 'Actual actor update does not install the verified std::function callback'
+ assert matches & all_targets, f'Missing native capture operation {prefix}'
+for prefix in ('?AddDelayedEvent@Unit@@','?AddDelayedEvent@FunctionProcessor@@','?FindNearestPlayer@WorldObject@@'):
+ matches={native['resolve'](address) for name,address in native['symbols'].items() if name.startswith(prefix)}
+ assert not matches & all_targets, f'Capture still borrows delayed callbacks or nearest stranger: {prefix}'
 selected=[]
 for ins in instructions('?GetAI@npc_akaari_shadowgore@@'):
  for op in ins.operands:
   if ins.mnemonic=='lea' and op.type==CS_OP_MEM and op.mem.base==X86_REG_RIP:
    at=native['offset'](ins.address+ins.size+op.mem.disp)
    if struct.unpack_from('<Q',native['binary'],at+0x18)[0]==native['symbol'](update):selected.append(at)
-assert len(selected)==1, 'Factory must actually select the update that schedules this callback'
-
-assert 5000 in {op.imm for ins in instructions(update) for op in ins.operands if op.type==CS_OP_IMM}
-site=next(i for i,x in enumerate(body) if x.mnemonic=='call' and x.operands[0].type==CS_OP_IMM and native['resolve'](x.operands[0].imm)==lookup)
-args=body[site-4:site]
-assert [x.mnemonic for x in args]==['movups','movaps','lea','mov']
-assert args[0].operands[1].type==CS_OP_MEM and args[0].operands[1].size==16
-assert args[0].operands[1].mem.disp==8 and args[3].operands[1].type==CS_OP_MEM and args[3].operands[1].mem.disp==0
-assert args[0].operands[1].mem.base==args[3].operands[1].mem.base
-assert args[0].operands[0].reg==args[1].operands[1].reg and args[3].op_str.startswith('rcx,')
-assert args[1].operands[0].type==CS_OP_MEM and args[2].operands[1].type==CS_OP_MEM
-assert args[1].operands[0].mem.base==args[2].operands[1].mem.base and args[1].operands[0].mem.disp==args[2].operands[1].mem.disp
-assert args[2].op_str.startswith('rdx,'), 'Fresh lookup must receive captured full128-bit GUID, not a helper pointer'
-print('PASS registered opening Akaari update installs actual5s visual invoker: native fresh creature lookup, parent/helper identity constants, direct native Talk3 equivalent,209264 and no capture teleport/credit or borrowed AI call. Native ASAN host covers freed helper/AI/registry/fullGUID/phase/parent queue.10s transfer remains OPEN.')
+assert len(selected)==1, 'Factory does not select verified capture update'
+slots=struct.unpack_from('<80Q',native['binary'],selected[0])
+for name in reached[-2:]:assert native['symbol'](name) in slots, f'Factory vtable omits {name}'
+print('PASS selected opening Akaari Update18 native event-driven capture: actual5s presentation/10s transfer and12s+11s combat, real map/quest/scenario/owner/registry calls, native teleport/credit, no delayed player/helper/AI callback or nearest-stranger selection. Full extracted/native host owns cancellation/reset/failure/identity tests; actual client arrival/VFX pending.')

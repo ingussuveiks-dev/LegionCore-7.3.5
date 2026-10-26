@@ -172,14 +172,102 @@ public:
 
         bool introDone;
         EventMap events;
+        ObjectGuid capturePlayer;
+        ObjectGuid captureHelper;
+        std::weak_ptr<uint8> captureLifetime;
+        bool capturePending = false;
+        bool captureComplete = false;
+
+        bool CanCapture(Player* player) const
+        {
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            QuestStatusData* status = player ? player->getQuestStatus(41924) : nullptr;
+            return player && me->IsInWorld() && !me->IsPreDelete() && me->IsAlive() &&
+                (capturePlayer.IsEmpty() || (player->GetGUID() == capturePlayer && !captureLifetime.expired() &&
+                    status && status->ScriptLifetime == captureLifetime.lock())) && player->CanContact() && player->IsAlive() && !player->HasPendingTeleport() &&
+                player->getClass() == CLASS_ROGUE && player->GetQuestStatus(41924) == QUEST_STATUS_INCOMPLETE &&
+                me->GetMapId() == 1607 && player->GetMap() == me->GetMap() && me->InSamePhase(player) &&
+                me->IsWithinDistInMap(player, 40.0f) && scenario && scenario->GetScenarioId() == 1078 &&
+                scenario->GetCurrentStep() == 0;
+        }
+
+        void PresentCapture()
+        {
+            Talk(3);
+            Creature* helper = ObjectAccessor::GetCreature(*me, captureHelper);
+            Player* player = ObjectAccessor::GetPlayer(*me, capturePlayer);
+            if (helper && helper->IsInWorld() && helper->IsAlive() && helper->GetGUID() == captureHelper && helper->GetEntry() == 105540 &&
+                me->InSamePhase(helper) && CanCapture(player))
+                helper->CastSpell(player, 209264);
+            else
+                TC_LOG_WARN("scripts", "Devourer capture: optional helper105540 unavailable at5s; retain10s transfer");
+        }
+
+        void FinishCapture(Player* player)
+        {
+            if (!CanCapture(player))
+            {
+                TC_LOG_WARN("scripts", "Devourer capture: participant changed during presentation; reset encounter");
+                EnterEvadeMode();
+                return;
+            }
+            // Consume this attempt before a teleport/cast/criteria callback can re-enter.
+            capturePending = false;
+            captureComplete = true;
+            events.Reset();
+            if (!player->TeleportTo(1607, 1847.77f, 1259.92f, 57.09f, 0.0f) ||
+                !player->IsBeingTeleported() || player->GetTeleportDest().GetMapId() != 1607 ||
+                player->GetTeleportDest().GetExactDist(1847.77f, 1259.92f, 57.09f) > 0.1f)
+            {
+                // TeleportTo's legacy wrapper can return true even if SafeTeleport rejects it.
+                TC_LOG_WARN("scripts", "Devourer capture: transfer not accepted; reset encounter without credit");
+                EnterEvadeMode();
+                return;
+            }
+            player->CastSpell(player, 211686); // native disarm
+            player->CastSpell(player, 211684); // native stun
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50261);
+            me->DespawnOrUnsummon();
+        }
 
         void Reset() override
         {
             events.Reset();
+            if (Player* player = ObjectAccessor::GetPlayer(*me, capturePlayer))
+                if (player->GetGUID() == capturePlayer)
+                {
+                    player->RemoveAurasDueToSpell(209238, me->GetGUID());
+                    if (!captureHelper.IsEmpty())
+                        player->RemoveAurasDueToSpell(209264, captureHelper);
+                }
+            if (Creature* helper = ObjectAccessor::GetCreature(*me, captureHelper))
+                if (helper->GetGUID() == captureHelper && helper->GetEntry() == 105540)
+                    helper->DespawnOrUnsummon();
+            capturePlayer.Clear();
+            captureHelper.Clear();
+            captureLifetime.reset();
+            capturePending = false;
+            captureComplete = false;
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            me->SetReactState(REACT_AGGRESSIVE);
         }
 
         void EnterCombat(Unit* who) override
         {
+            if (capturePending || captureComplete || !capturePlayer.IsEmpty())
+                return;
+            Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (CanCapture(player))
+            {
+                // Native quest lease expires on abandon/reaccept, even between AI ticks.
+                player->AddQuestDelayedEvent(41924, 0, [] { });
+                if (QuestStatusData* status = player->getQuestStatus(41924))
+                {
+                    captureLifetime = status->ScriptLifetime;
+                    if (!captureLifetime.expired())
+                        capturePlayer = player->GetGUID();
+                }
+            }
             Talk(0);
             events.RescheduleEvent(EVENT_1, 12000); // Clons 209231 and talk 
         }
@@ -221,6 +309,31 @@ public:
         void UpdateAI(uint32 diff) override
         {
 
+            if (captureComplete)
+                return;
+            if (capturePending)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, capturePlayer);
+                if (!CanCapture(player))
+                {
+                    TC_LOG_WARN("scripts", "Devourer capture: original participant no longer eligible; reset encounter");
+                    EnterEvadeMode();
+                    return;
+                }
+                // Capture is independent of a combat victim, casts and stuns.
+                events.Update(diff);
+                while (uint32 eventId = events.ExecuteEvent())
+                {
+                    if (eventId == EVENT_3)
+                        PresentCapture();
+                    else if (eventId == EVENT_4)
+                    {
+                        FinishCapture(player);
+                        return;
+                    }
+                }
+                return;
+            }
             if (!UpdateVictim())
                 return;
 
@@ -239,47 +352,32 @@ public:
                         events.RescheduleEvent(EVENT_2, 11000);
                         break;
                     case EVENT_2:
+                    {
+                        Player* player = ObjectAccessor::GetPlayer(*me, capturePlayer);
+                        if (!CanCapture(player))
+                        {
+                            TC_LOG_WARN("scripts", "Devourer capture: no eligible combat participant; reset encounter");
+                            EnterEvadeMode();
+                            return;
+                        }
+                        capturePending = true;
+                        events.Reset();
+                        events.ScheduleEvent(EVENT_3, 5000);
+                        events.ScheduleEvent(EVENT_4, 10000);
                         Talk(2);
                         DoCast(209238);
                         me->SetReactState(REACT_PASSIVE);
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                        if (Creature* targ = me->SummonCreature(105540, me->GetPositionX() + 3.0f, me->GetPositionY() + 3.0f, me->GetPositionZ()))
+                        if (Creature* helper = me->SummonCreature(105540, me->GetPositionX() + 3.0f, me->GetPositionY() + 3.0f, me->GetPositionZ()))
                         {
-                            targ->CastSpell(targ, 189170);
-                            me->AddDelayedEvent(5000, [owner = me, helperGuid = targ->GetGUID()]() -> void
-                            {
-                                // Actor-owned queue: no borrowed AI/helper pointers.
-                                // Resolve the exact live helper when this fires.
-                                if (!owner->IsInWorld() || owner->IsPreDelete() || !owner->IsAlive() || owner->GetEntry() != 105536)
-                                    return;
-                                sCreatureTextMgr->SendChat(owner, TEXT_GENERIC_3);
-                                Creature* helper = ObjectAccessor::GetCreature(*owner, helperGuid);
-                                if (!helper || !helper->IsInWorld() || !helper->IsAlive() ||
-                                    helper->GetGUID() != helperGuid || helper->GetEntry() != 105540 || !owner->InSamePhase(helper))
-                                {
-                                    TC_LOG_WARN("scripts", "Devourer capture: optional helper105540 no longer usable at5s; retain original transfer timer");
-                                    return;
-                                }
-                                if (Player* pl = owner->FindNearestPlayer(40.0f))
-                                    helper->CastSpell(pl, 209264);
-                            });
-
-                            if (Player* pl = me->FindNearestPlayer(40.0f))
-                            {
-                                pl->AddDelayedEvent(10000, [pl]() -> void
-                                {
-                                    pl->TeleportTo(1607, 1847.77f, 1259.92f, 57.09f, 0.0f);
-                                    pl->CastSpell(pl, 211686); // disarm
-                                    pl->CastSpell(pl, 211684); // stun
-                                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50261);
-                                });
-                            }
-                            targ->DespawnOrUnsummon(9000);
-
-                            me->DespawnOrUnsummon(10000);
-
+                            captureHelper = helper->GetGUID();
+                            helper->CastSpell(helper, 189170);
+                            helper->DespawnOrUnsummon(9000);
                         }
+                        else
+                            TC_LOG_WARN("scripts", "Devourer capture: optional helper105540 summon failed; retain10s transfer");
                         break;
+                    }
                 }
             }
             DoMeleeAttackIfReady();

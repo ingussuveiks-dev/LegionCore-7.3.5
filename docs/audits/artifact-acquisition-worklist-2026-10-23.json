@@ -2057,11 +2057,13 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair10s Player-owned transfer admission/actual recipient and attempt, missing105540 summon/retry and reset/abandon/re-entry. Do not confuse repaired optional5s pointer safety with complete capture. Keep81040/105332 LINK1/full client and all36 worklist open.",
+      "next_action": "Trace Holy Priest native pickup as next independent repair; retain Subtlety actual full client capture/ACK/re-entry,81040 native missing spell and105332/105333 contact-link evidence open. Earlier10s/helper OPEN notes are superseded by scoped capture-sequence audit, not proof of complete route.",
       "owned_death_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json",
       "pickup_repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json",
       "capture_damage_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json",
-      "capture_visual_lifetime_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json"
+      "capture_visual_lifetime_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json",
+      "capture_sequence_audit": "docs/audits/devourer-capture-sequence-2026-10-26.json",
+      "capture_sequence_review": "AI EventMap5s/10s; original owner/full-GUID/quest lease, same-tick reaccept cancellation, per-update and final admission, optional missing105540, native accepted transfer/destination and reset/own aura cleanup. Full actor/native ASAN, actual26972 metadata/selected canonical PE/clean owned startup pass; actual client capture/arrival ACK/instant leave-return/group/full chain pending."
     },
     {
       "class_id": 5,
