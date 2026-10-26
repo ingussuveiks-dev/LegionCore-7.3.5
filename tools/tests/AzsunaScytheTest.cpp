@@ -14,7 +14,7 @@ struct ObjectGuid {
     bool operator==(ObjectGuid b) const { return value==b.value; }
 };
 using GuidList=std::vector<ObjectGuid>;
-enum { QUEST_STATUS_INCOMPLETE=1, QUEST_STATUS_COMPLETE=2, QUEST_OBJECTIVE_GAMEOBJECT=2,
+enum { QUEST_STATUS_INCOMPLETE=3, QUEST_STATUS_COMPLETE=1, QUEST_OBJECTIVE_GAMEOBJECT=2, MAX_QUEST_LOG_SIZE=25,
     TEMPSUMMON_TIMED_DESPAWN=1, REACT_PASSIVE=0, REACT_AGGRESSIVE=1, UNIT_FIELD_FLAGS=0,
     UNIT_FLAG_NON_ATTACKABLE=1, UNIT_FLAG_IMMUNE_TO_PC=2, UNIT_FLAG_NOT_SELECTABLE=4, UNIT_FLAG_IMMUNE_TO_NPC=8 };
 struct Position { float x,y,z,o; };
@@ -53,6 +53,14 @@ static std::map<ObjectGuid,Player*> players;
 static unsigned serial=100;
 static bool castHit=true;
 struct Menu { void SendCloseGossip() {} };
+struct QuestObjective {unsigned Type,StorageIndex,ObjectID,Amount;};
+struct Quest {
+    std::vector<QuestObjective> objectives{{2,1,239338,1},{2,5,239332,1},{2,6,237017,1},{2,8,240012,1}};
+    auto const& GetObjectives()const{return objectives;}
+} scytheQuest;
+struct QuestStatusData {int Status=3;};
+struct QuestStore {Quest const* GetQuestTemplate(unsigned id){return id==37660?&scytheQuest:nullptr;}} questStore;
+auto* sQuestDataStore=&questStore;
 struct Player:Unit {
     Player() { guid={++serial}; players[guid]=this; }
     ~Player() { players.erase(guid); }
@@ -68,7 +76,15 @@ struct Player:Unit {
     void RemoveAurasDueToSpell(unsigned id) { auras.erase(id); }
     void AddAura(unsigned id,Player*) { auras.insert(id); }
     void KilledMonsterCredit(unsigned obj) { credits.push_back(obj); objectives[obj]=1; }
-    void QuestObjectiveSatisfy(unsigned obj,unsigned,unsigned) { KilledMonsterCredit(obj); }
+    unsigned GetQuestSlotQuestId(unsigned index){return !index&&status?37660:0;}
+    QuestStatusData questStatus;
+    QuestStatusData* getQuestStatus(unsigned){questStatus.Status=status;return &questStatus;}
+    unsigned GetQuestObjectiveData(Quest const*,unsigned slot){for(auto const& obj:scytheQuest.objectives)if(obj.StorageIndex==slot)return objectives[obj.ObjectID];return 0;}
+    void SetQuestObjectiveData(Quest const*,QuestObjective const* obj,unsigned amount){objectives[obj->ObjectID]=amount;}
+    void SendQuestUpdateAddCredit(Quest const*,ObjectGuid,QuestObjective const& obj,unsigned){credits.push_back(obj.ObjectID);}
+    bool CanCompleteQuest(unsigned){return false;} // Completion remains a boundary of this full-handler fixture.
+    void CompleteQuest(unsigned){status=QUEST_STATUS_COMPLETE;}
+    void QuestObjectiveSatisfy(uint32,uint32,unsigned,ObjectGuid={});
     bool IsWithinLOSInMap(Creature*) { return los; }
     Creature* FindNearestCreature(unsigned entry,float distance) {
         for(auto& pair:creatures) if(pair.second.entry==entry && !pair.second.removed && IsWithinDistInMap(&pair.second,distance)) return &pair.second;
@@ -105,8 +121,14 @@ struct ObjectAccessor {
     static Player* GetPlayer(Unit& u,ObjectGuid id) { auto i=players.find(id);return i==players.end() || i->second->map!=u.map?nullptr:i->second; }
 };
 
+#include "ObjectiveSatisfy.inc"
+
 // Compile all production handlers, including their ordering and cleanup logic.
+#ifdef SCYTHE_EXIT_BASELINE
+#include "ScytheBaseline.inc"
+#else
 #include "../../src/server/scripts/Legion/azsuna_scythe.cpp"
+#endif
 
 int main()
 {
@@ -119,6 +141,25 @@ int main()
     GameObject& second=objects[{2}];second.guid={2};second.entry=239332;
     GameObject& enter=objects[{3}];enter.guid={3};enter.entry=237017;
     GameObject& leave=objects[{4}];leave.guid={4};leave.entry=240012;
+    // The user-reported saved state: actual entry/victory, active quest, no screen aura.
+    {
+        Player escaped;escaped.objectives[237017]=1;escaped.objectives[89673]=1;
+        gems.OnGossipHello(&escaped,&leave);
+#ifdef SCYTHE_EXIT_BASELINE
+        assert(!Done(&escaped,240012));
+        std::cout<<"PASS pinned38f88905 counterfactual: real entry/victory with missing screen aura cannot use the exit crystal.\n";
+        return 0;
+#else
+        assert(Done(&escaped,240012)&&escaped.credits.size()==1&&!escaped.HasAura(SoulScreen));
+        gems.OnGossipHello(&escaped,&leave);assert(escaped.credits.size()==1);
+        assert(!Done(&escaped,89398)); // Clicking the exit never grants the real return-to-Allari objective.
+#endif
+    }
+    for(unsigned mask=0;mask<3;++mask){Player early;if(mask&1)early.objectives[237017]=1;if(mask&2)early.objectives[89673]=1;gems.OnGossipHello(&early,&leave);assert(!Done(&early,240012));}
+    {Player distant;distant.objectives[237017]=distant.objectives[89673]=1;distant.pos.x+=20;gems.OnGossipHello(&distant,&leave);assert(!Done(&distant,240012));}
+    {Player dead;dead.objectives[237017]=dead.objectives[89673]=1;dead.alive=false;gems.OnGossipHello(&dead,&leave);assert(!Done(&dead,240012));}
+    {Player absent;absent.objectives[237017]=absent.objectives[89673]=1;absent.status=0;gems.OnGossipHello(&absent,&leave);assert(!Done(&absent,240012));}
+    {Player other;other.objectives[237017]=other.objectives[89673]=1;other.map=1;gems.OnGossipHello(&other,&leave);assert(!Done(&other,240012));}
     p.status=0;recovery.OnUpdate(&p,1000);assert(!OwnedSummon(&p,Allari));
     gems.OnGossipHello(&p,&first);assert(p.credits.empty());
     p.status=QUEST_STATUS_INCOMPLETE;recovery.OnUpdate(&p,1000);

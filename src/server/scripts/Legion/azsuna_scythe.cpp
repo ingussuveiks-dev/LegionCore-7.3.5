@@ -208,9 +208,11 @@ public:
             player->AddAura(SoulScreen, player);
             player->QuestObjectiveSatisfy(237017, 1, QUEST_OBJECTIVE_GAMEOBJECT);
         }
-        else if (go->GetEntry() == 240012 && player->HasAura(SoulScreen))
+        else if (go->GetEntry() == 240012 &&
+            (player->HasAura(SoulScreen) || (Done(player, 237017) && Done(player, 89673))))
         {
-            player->QuestObjectiveSatisfy(240012, 1, QUEST_OBJECTIVE_GAMEOBJECT);
+            if (!Done(player, 240012))
+                player->QuestObjectiveSatisfy(240012, 1, QUEST_OBJECTIVE_GAMEOBJECT);
             Cleanup(player);
         }
         return true;

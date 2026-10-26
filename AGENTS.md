@@ -51,6 +51,8 @@
 
 # Quest admission and packet regressions
 
+- The Scythe of Souls37660 exit gem240012 must accept the native screen179183 or persisted real entry237017 plus victory89673; logout/recovery clears the visual while keeping objectives. Credit optional exit once through native type2 GO dispatch, retain alive/map/range/active-quest guards and own cleanup. Do not award89673/89398 from clicking the exit. Run `Test-AzsunaScythe.ps1 -Baseline/-AddressSanitizer`, its data/native catalog and `verify_scythe_exit_release.py`; actual client exit/return/turn-in remain separate.
+
 - Demon Souls37653 item122100/native178787 summons86963 for5s and captures within15 yards. Preserve all four corpse types90230/90241/93619/101943, source22 dead guards, original corpse runOnce/reset and summon/combat/path slots. Gem action33 must anchor OWNER_OR_SUMMONER23 and retain native eligible-group credit, without nearby unrelated-player anchors or item/quest grants. Run `Test-DemonSoulsGem.ps1 -AddressSanitizer -VerifyNativeCatalog`; actual counter/visual/group/client capture remain separate checks.
 
 - Into the Fray38834 requires its exploration/event flag because native189764 effect16 references it. Do not clear that flag to silence seven duplicate start commands. Migration05 supersedes03 and retains one command7. Map command7's objective-free event helper uses CompleteQuest only for an active INCOMPLETE log entry; objective-bearing legacy handling/diagnostics and caller alive/range/failure checks remain. Run `Test-IntoFrayStart.ps1 -AddressSanitizer`, selected `verify_into_fray_event_release.py`, and inspect the actual native loader/startup. Acceptance/travel/turn-in remain client checks.
