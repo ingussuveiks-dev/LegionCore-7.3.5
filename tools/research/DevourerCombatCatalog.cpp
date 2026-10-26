@@ -23,7 +23,7 @@ int main(int argc,char** argv)
     for(auto step:steps)if(step->ScenarioID==1078)
         std::cout<<"STEP\t"<<unsigned(step->OrderIndex)<<'\t'<<step->ID<<'\t'<<step->Criteriatreeid<<'\n';
     for(auto tree:trees)if(auto criterion=criteria.LookupEntry(tree->CriteriaID))
-        if((criterion->Asset==50298||criterion->Asset==50300||criterion->Asset==50301)&&criterion->Type==92)
+        if((criterion->Asset==50261||criterion->Asset==50298||criterion->Asset==50300||criterion->Asset==50301)&&criterion->Type==92)
             std::cout<<"CRITERION\t"<<tree->ID<<'\t'<<tree->Parent<<'\t'<<tree->Amount<<'\t'<<tree->Flags<<'\t'<<criterion->ID<<'\t'<<unsigned(criterion->Type)<<'\t'<<criterion->Asset<<'\n';
     bool zirus=false,akaari=false;
     for(auto tree:trees)if(auto c=criteria.LookupEntry(tree->CriteriaID)) {

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Scoped opening-Akaari scaled lethal protection repaired/tested/deployed; entire timed capture/lifetime/client flow remains OPEN",
+  "cause": "Opening Akaari105536 has no death transition: native1078 stage0 waits for50261 from the existing delayed capture/teleport. The actor had no final-damage policy, so an ordinary scaled player/pet lethal hit killed it before that timed path. This differs from the final killable Akaari105660 and Eliza combat buff.",
+  "implementation": "Only add DamageTakenAfterScaling to npc_akaari_shadowgoreAI. Resolve native player/charmer/owner and require live same-map/phase active41924 Rogue in map1607/scenario1078/currentStep0. Compare final damage with GetHealth(attacker) and retain exactly one target-relative HP on a lethal hit. Nonlethal/unrelated contexts retain ordinary damage. No cast, credit, health grant, encounter fast-forward or timer change. Full original AI is identical after removing this guard; clones and final Akaari remain killable.",
+  "evidence": [
+    "Local script/instance and actual binding105536/360994/map1607/phase7000, native valid scaling98..110, unit flags32784/no extra/mechanic immunity. First Akaari has original12s209231 then11s209238/105540/5s visual/10s player transfer, with50261 only in that delayed path. Read the complete sequence; no whole-sequence executable/client proof claimed.",
+    "Typed26972/read-only hotfix DevourerCombatCatalog:1078 step0 entry2363/root47352/leaf47353/criterion29781/type92/50261. Separate death leaves50298 and50300/pickup50301 remain later. DevourerCaptureCatalog confirms original Vanish/clones, Cheap Shot209238/20s, Drain Soul209264/scene963/7s,189170 portal chain and211686/211684 infinite prison auras. No donor/video was needed/reviewed for this explicit missing lethal guard.",
+    "Pinned a0206501 opening class has no override; extracted production inherited UnitAI final-damage default and native scaling/death bridge reproduce player/pet one-hit death before capture. Baseline output clearly identifies expected failing behavior, not an ordinary passing encounter.",
+    "Current ASAN32 player/pet/guardian/charmer x four scales x primary/suspended-hook cases pass; nonlethal then lethal, repeated one-HP hits, tiny2HP, uint64-health-versus-uint32-damage boundary and13 invalid owner/class/world/map/phase/quest/scenario/stage cases pass. Native owner/in-map lookup and Scenario::CanUpdateCriteria included. No progress/cast/timer mutation; the original full AI outside the new guard is checked against pinned source.",
+    "Original generated scripts/game Release, separate original LIB final link and selected staged/canonical registered factory postA8/raw inheritedA0 pass. Actual machine code retains attacker in the relative health call, skips nonlethal damage, clamps health>1 tohealth-1 or zero, and has no credit/teleport/cast/despawn dependency. Native pickup/death selected consumers and canonical Scepter login preserved.",
+    "Both server names absent/rechecked at promotion; own canonical world19840 fresh ready/shutdown0/exit0, stderr/newDBErrors0, protected configuration/certificates unchanged. No SQL or character change; no task-owned server remains. All baseline/native/catalog/build/PE/promotion/startup diagnostic inventories have no new/changed crash, appended DBErrors or unexplained server warning/error/assertion; active Crashes0/DBErrors0, no new resolved archive needed. Extracted native float conversion/unused lookup baseline warnings retained; no new production warning."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "49CB0E77B595CAB77E28AC30122BC39A33F2A6AD7448B0E45C33C4A35BD9E0D6",
+    "world_map_sha256": "1B4DA1CFEC671CF24648B6F4C1B57373FF05EC87097206106201B1066D1D78A4",
+    "bnet_sha256": "98D9D63E8CDD85BF1CA7A120BA55B9D8907F8BD1C4E515B5ED8973AB76CEA684",
+    "private_evidence": ".codex/devourer-capture and build-extractors/runtime-test/devourer-capture-damage/{baseline,current}"
+  },
+  "remaining": [
+    "The existing capture still has raw delayed AI/helper/player closures, nearest-player selection, optional helper lifetime/cast and failed105540 summon issues. This change protects the timed encounter from lethal damage; it does not certify or repair those distinct callback/attempt/visual paths. No forced capture credit or player teleport added.",
+    "Actual one-hit at client scale, continued combat/clones/stealth, original capture/teleport/prison auras, failed casts/missing actors, abandon/retry/re-entry, group/faction and full Subtlety/36 chains remain pending. Temporarily suspended content AI can delay its ordinary timers; the damage guard alone does not run them.",
+    "Known81040 child reference in the native pickup chain remains unresolved as recorded in the prior pickup audit. Next concrete source repair should resolve safe5s helper lookup and stale10s player transfer without losing native timing/ownership or granting capture on retry."
+  ]
+}

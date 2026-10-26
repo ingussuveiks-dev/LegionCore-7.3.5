@@ -185,6 +185,23 @@ public:
         }
 
 
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
+        {
+            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!player || player->getClass() != CLASS_ROGUE || !player->IsInWorld() ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                player->GetQuestStatus(41924) != QUEST_STATUS_INCOMPLETE || me->GetMapId() != 1607 ||
+                !scenario || scenario->GetScenarioId() != 1078 || scenario->GetCurrentStep() != 0)
+                return;
+
+            // This opening encounter ends with the existing timed capture,
+            // not Akaari's death. Keep the original timed transition and effects.
+            uint64 health = me->GetHealth(attacker);
+            if (damage >= health)
+                damage = health > 1 ? uint32(health - 1) : 0;
+        }
+
         void MoveInLineOfSight(Unit* who) override
         {
 

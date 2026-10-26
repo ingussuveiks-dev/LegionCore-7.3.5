@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Opening Akaari lethal protection repaired
+
+- Audit `devourer-capture-scaled-damage-2026-10-26.json`:105536 now uses native post-scaling/owner/attacker-relative health to retain1HP only for active41924 Rogue/real1078 step0. No capture credit/cast/teleport/timer changes; original class identical outside this guard. Final Akaari/clones unaffected.
+- Pinned empty native-hook player/pet death and current32 scale/owner/suspended cases plus nonlethal/tiny/uint64/invalid context ASAN, actual26972 opening leaf47353/50261 and selected registered postA8/rawA0/no-effects clamp PE pass. Native pickup/death/Scepter preserved; actual capture is still OPEN.
+- Canonical world `49CB0E77B595CAB77E28AC30122BC39A33F2A6AD7448B0E45C33C4A35BD9E0D6`, map `1B4DA1CFEC671CF24648B6F4C1B57373FF05EC87097206106201B1066D1D78A4`, bnet `98D9D63E8CDD85BF1CA7A120BA55B9D8907F8BD1C4E515B5ED8973AB76CEA684`. No SQL;13 remains installed. Own19840 ready/shutdown0/exit0, no new diagnostics/protected changes, no hidden server left; Crashes0/DBErrors0. Recheck processes.
+- NEXT capture lifetime/retry: original5s `[this,targ]` callback can retain a removed helper/AI; original10s Player-owned `[pl]` callback lacks current actor/map/quest/attempt revalidation and can pull a moved player back. Missing105540 also leaves the encounter immune without the transfer. These remain OPEN; do not call whole capture fixed or invent progress. Keep original12s+11s combat,5s presentation/10s transfer budgets until behavior is independently justified.105332 LINK1 and native81040/client checks remain separate.
+
 ## Latest continuation: Subtlety actual native pickup repaired
 
 - Audit `devourer-native-pickup-2026-10-26.json`:249347 uses real loot249347/128476; preserves native OPEN_KNEELING lock43. Actual1078/6/Akaari leaf47369 and native source4 eligibility gate opening/loot. Native209816/209819/209818 waits for real linked main128476/off128479 before once-only50301; remove premature activation credit/direct AddItem/explicit1078 reward. GO_READY preserves cast/equip retries, bank ownership does not duplicate, original optional105843/1948 retained.

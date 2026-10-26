@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
+      "handler": "Opening Akaari105536 timed-capture scaled lethal protection",
+      "problem": "Opening Akaari105536 has no death transition: native1078 stage0 waits for50261 from the existing delayed capture/teleport. The actor had no final-damage policy, so an ordinary scaled player/pet lethal hit killed it before that timed path. This differs from the final killable Akaari105660 and Eliza combat buff.",
+      "repair_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json",
+      "limit": "Deployed49CB0E77; pinned native inherited-hook death/current32 scaled owned/suspended cases/tiny/nonlethal/uint64/scoped-context ASAN and selected actual postA8/relative-health clamp/no-credit PE pass. Own19840 ready/shutdown0/exit0/no new diagnostics. Only lethal protection: raw delayed capture callbacks/missing actors/stale player and whole client remain OPEN."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
       "handler": "Subtlety249347 actual native loot/equip before50301",
       "problem": "249347 had Data1=0 despite real loot249347/128476. Its GO_ACTIVATED callback awarded50301 and explicit COMPLETE_SCENARIO1078 before a direct AddItem result or actual equip. With full bags it completed progression without the weapon. Native209818 is equip-only249 and cannot substitute for actual loot storage.",
       "repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json",
@@ -1945,7 +1952,7 @@
       "weapon": "Fangs of the Devourer",
       "item": 128476,
       "start": 41919,
-      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN. Pickup249347 native loot14/source4, genuine stored/equipped pair128476/128479 before50301 and no direct grant/duplicate completion now tested/deployed8DEA6B8C/updater13, clean owned startup. Actual scene/child81040/equip/full route remain pending.",
+      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN. Pickup249347 native loot14/source4, genuine stored/equipped pair128476/128479 before50301 and no direct grant/duplicate completion now tested/deployed8DEA6B8C/updater13, clean owned startup. Actual scene/child81040/equip/full route remain pending. Opening105536 post-scaling one-HP protection at real1078/0 is tested/deployed49CB0E77 without advancing the timed capture; callback lifetime/retry/full client stay OPEN.",
       "quests": [
         {
           "id": 41919,
@@ -2043,9 +2050,10 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Review initial Akaari105536 timed capture/raw delayed callbacks/scaled one-hit/missing105540/stale player/re-entry, then105332 missing LINK1. Keep inherited unresolved81040 native child reference visible; actual pickup/whole route/client checks are still required.",
+      "next_action": "Repair original5s captured AI/helper pointer lifetime and10s player-owned stale transfer, with actual actor/owner/attempt admission and native timing; review failed105540 summon/abandon/re-entry and105332 LINK1. No forced progress; known81040/full client still unresolved.",
       "owned_death_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json",
-      "pickup_repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json"
+      "pickup_repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json",
+      "capture_damage_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json"
     },
     {
       "class_id": 5,
