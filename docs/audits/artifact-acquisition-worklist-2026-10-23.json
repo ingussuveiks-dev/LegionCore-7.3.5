@@ -1631,10 +1631,10 @@
       "specialization": "Assassination",
       "weapon": "The Kingslayers",
       "death_credit_repair_audit": "docs/audits/kingslayers-death-credit-2026-10-26.json",
-      "death_credit_review": "Merlis107831 now resolves native player/charmer/owner before summon cleanup and uses that player for51615/2448; null/unowned killers retain original actor/add cleanup. Pinned pet-credit failure, current ASAN, native26972 stage7/tree48588 and selected staged factory/death130 verified; Garona intro regression passes. DEPLOYMENT PENDING while user world28164/bnet2984 run; canonical8A2C4897 does not yet include this fix. Actual combat/group/faction/unowned companion/re-entry/later loot/VFX remain separate checks.",
+      "death_credit_review": "Merlis107831 resolves native player/charmer/owner before cleanup and uses that player for51615/2448; null/unowned killers retain original actor/add cleanup. Pinned pet-credit failure/current ASAN/native26972 stage7 and Garona intro pass. DEPLOYED canonical world3B4C44A1 after user servers were already absent; actual installed factory/death130 verified, owned PID4824 ready/shutdown0/exit0/no new diagnostics and stopped. Actual combat/group/faction/unowned companion/re-entry/later loot/VFX remain separate checks.",
       "item": 128870,
       "start": 42501,
-        "status": "partial Garona intro repair deployed; Merlis owned-killer/null credit repair tested in staged Release, canonical promotion pending active user servers; full chain/client visual traversal pending",
+        "status": "partial Garona intro and Merlis owned-killer/null credit repairs tested/deployed in canonical Release; full chain/client visual traversal pending",
         "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
       "quests": [
         {
