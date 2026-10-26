@@ -4,6 +4,9 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 #include "broken_shore.h"
 
 //Phases: 5171 5940 5942 6181
@@ -1135,10 +1138,46 @@ public:
 };
 
 //247318
+namespace AshbringerAcquisition
+{
+    bool CanRetrieve(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 247318 || weapon->GetMapId() != 1500 ||
+            !player->GetMap() || player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetQuestRewardStatus(38376) ||
+            (player->GetQuestStatus(38376) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(38376) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        InstanceScript* instance = player->GetInstanceScript();
+        return scenario && scenario->GetScenarioId() == 775 && scenario->GetCurrentStep() == DATA_STAGE_4 &&
+            instance && instance->getScenarionStep() == DATA_STAGE_4;
+    }
+}
+
 class go_bs_the_ashbringer : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        bool GossipHello(Player* player, bool) override
+        {
+            return !AshbringerAcquisition::CanRetrieve(player, go);
+        }
+    };
+
 public:
     go_bs_the_ashbringer() : GameObjectScript("go_bs_the_ashbringer") {}
+
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        return !AshbringerAcquisition::CanRetrieve(player, go);
+    }
+
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
 
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
@@ -1147,6 +1186,8 @@ public:
 
         if (Player* player = target->ToPlayer())
         {
+            if (!AshbringerAcquisition::CanRetrieve(player, go))
+                return;
             if (InstanceScript* instance = player->GetInstanceScript())
                 if (instance->getScenarionStep() == DATA_STAGE_4)
                 {

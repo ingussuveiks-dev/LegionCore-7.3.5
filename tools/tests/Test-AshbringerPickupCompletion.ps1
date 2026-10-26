@@ -8,6 +8,15 @@ New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp'
 $source=Get-Content "$repo/$path" -Raw
+$admissionHandler=$null
+if($source.Contains('namespace AshbringerAcquisition')){
+ $admissionHandler=Block (Block $source 'class go_bs_the_ashbringer :') 'void OnLootStateChanged('
+ $source=$source.Replace((Block $source 'namespace AshbringerAcquisition'),'')
+ foreach($header in @('GameObjectAI.h','Scenario.h','ScenarioMgr.h')){$source=$source.Replace("#include `"$header`"",'')}
+ $current=Block $source 'class go_bs_the_ashbringer :'
+ $restored=$current.Replace((Block $current 'struct AI : GameObjectAI')+';','').Replace((Block $current 'bool OnGossipHello('),'').Replace('GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }','') -replace 'if \(!AshbringerAcquisition::CanRetrieve\(player, go\)\)\s*return;',''
+ $source=$source.Replace($current,$restored)
+}
 $pinned=(& git -C $repo show "85b4f0c2:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}
 if($Baseline){$source=$pinned}elseif($CapacityBaseline -or $CastBaseline){$revision=if($CastBaseline){'269550a6'}else{'bf251a6d'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}}else{
@@ -17,7 +26,8 @@ if($Baseline){$source=$pinned}elseif($CapacityBaseline -or $CastBaseline){$revis
  $restoredCallback=$callback.Replace((Block $callback 'if (result != SPELL_CAST_OK)'), '').Replace('SpellCastResult result = player->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);','').Replace('trigger->DespawnOrUnsummon();',"trigger->DespawnOrUnsummon();`nplayer->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);")
  if(($restored.Replace($callback,$restoredCallback) -replace '\s','') -cne ($pinned.Replace($removed,'') -replace '\s','')){throw 'Unrelated acquisition behavior changed beyond separately tested completion/capacity/reported-cast guards'}
 }
-[IO.File]::WriteAllText("$out/Pickup.inc",(Block (Block $source 'class go_bs_the_ashbringer :') 'void OnLootStateChanged(').Replace(' override',''))
+$handler=if($admissionHandler -and !$Baseline -and !$CapacityBaseline -and !$CastBaseline){$admissionHandler}else{Block (Block $source 'class go_bs_the_ashbringer :') 'void OnLootStateChanged('}
+[IO.File]::WriteAllText("$out/Pickup.inc",$handler.Replace(' override',''))
 [IO.File]::WriteAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.h" -Raw) 'enum Data')+';'+(Block $source 'enum eSpells')+';'+(Block (Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.h" -Raw) 'enum LootState')+';')
 [IO.File]::AppendAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum InventorySlot')+';'+(Block (Get-Content "$repo/src/server/game/Entities/Item/Item.h" -Raw) 'enum InventoryResult')+';')
 [IO.File]::AppendAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')

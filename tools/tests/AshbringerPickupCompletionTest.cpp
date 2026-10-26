@@ -62,6 +62,10 @@ struct GameObject
     Creature* FindNearestCreature(uint32 entry,float radius){assert(entry==103454 && radius==10.0f);return trigger;}
     void Delete(){++deletes;}
 };
+namespace AshbringerAcquisition
+{
+    bool CanRetrieve(Player*,GameObject*){return true;}
+}
 struct Pickup
 {
 #include "Pickup.inc"
@@ -166,6 +170,6 @@ int main()
     }
     std::cout<<"PASS24 reported-error/owned/actor/state combinations:18 admitted attempts retain no direct progression/cleanup/Delete, native READY permits repeated-error then accepted retry. SPELL_CAST_OK only admits original work, not proof of delayed199827 storage, effect completion or client/VFX\n";
     std::cout<<"PASS12 capacity-result/owned/missing-actor cases retain native errors and reopen before all original effects; six projected capacity recoveries retry original retrieval without an item-first gate or direct grant. Native CanStoreNewItem bridge/SetLootState/Instance fanout extracted; inventory services and accepted item creation remain controlled/separate\n";
-    std::cout<<"PASS160 actual pickup state/stage/item/actor cases retain46130/180850/trigger/delete without152; native IsCompleted/GetStepCount plus isolated Reward credit fragment only emits152/151 after7 modeled steps. Empty chest still starts native acquisition spell; accepted item storage/area eligibility/whole Reward/client traversal not exercised\n";
+    std::cout<<"PASS160 production pickup state/stage/item/actor cases with controlled admitted-context seam retain46130/180850/trigger/delete without152; native IsCompleted/GetStepCount plus isolated Reward credit fragment only emits152/151 after7 modeled steps. Actual initial gate is covered separately by PickupAdmission. Empty chest still starts native acquisition spell; accepted item storage/area eligibility/whole Reward/client traversal not exercised\n";
 #endif
 }

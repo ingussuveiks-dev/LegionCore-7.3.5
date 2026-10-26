@@ -7,6 +7,7 @@ New-Item -ItemType Directory -Force $out|Out-Null
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 $path='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp'
 $source=Get-Content "$repo/$path" -Raw
+if($source.Contains('namespace AshbringerAcquisition')){$source=$source.Replace((Block $source 'namespace AshbringerAcquisition'),'');foreach($header in @('GameObjectAI.h','Scenario.h','ScenarioMgr.h')){$source=$source.Replace("#include `"$header`"",'')}}
 $pinned=(& git -C $repo show "07bd3831:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned Zerus baseline unavailable'}
 if($Baseline){$source=$pinned}else{

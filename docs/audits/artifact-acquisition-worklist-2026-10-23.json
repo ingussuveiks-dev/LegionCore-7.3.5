@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "247318 initial use/open/pickup context admission",
+      "problem": "Legacy instance step3 alone allowed unrelated map1500 scenarios and inactive/non-Paladin/stale contexts to start enclosing retrieval effects despite source12 item-loot rules.",
+      "repair_audit": "docs/audits/ashbringer-pickup-admission-2026-10-26.json",
+      "limit": "Live Paladin/active38376/same map-instance-phase/visibility/LOS/real range/selectability/native775-3 plus legacy3 now gates script/AI opening and callback.29 invalid/eight valid controlled cases, ASAN and selected installed10/50/60/AI48 checked. Report-use ignores AI return and keeps native generic use credit/stealth removal. Delayed children, storage/equip/races/attempts/group recipients/full client/VFX remain OPEN; no grant or quarantine workaround."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "247318 reported retrieval-cast rejection",
       "problem": "Pickup emitted46130/removed103454 before180850 and ignored a returned rejection, losing an immediate retry without a successful cast admission.",
       "repair_audit": "docs/audits/ashbringer-pickup-cast-2026-10-26.json",
@@ -1022,7 +1029,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: native199827 source, capacity-error preflight and reported180850 rejection/reopen repaired; completion/actor guards retained; delayed child/null-store/race/equip and full acquisition/client/VFX unresolved; ordinary door fixture Defender-blocked",
+      "status": "partial: initial775/38376 live pickup admission, native199827 source, capacity and reported-cast retry repaired; completion/actor guards retained; delayed child/null-store/race/equip and full acquisition/client/VFX unresolved; ordinary door fixture Defender-blocked",
+      "pickup_admission_audit": "docs/audits/ashbringer-pickup-admission-2026-10-26.json",
+      "pickup_admission_review": "Initial script/AI use-open and callback require live Paladin/active38376/not rewarded/spawned247318/map1500/same map-instance-phase/visibility/LOS/interaction distance/selectability/native775-step3 and legacy3.29 invalid/eight valid controlled cases, pinned no-gate counterfactual, ASAN and actual selected installed script10/50/60/AI48 checked. Empty/native retrieval remains, with no new item grant or postcast ownership gate. Report-use ignores AI return and retains generic native criteria/stealth removal; delayed child context/storage/equip/attempt epochs, shared group recipient eligibility and full client/VFX remain OPEN.",
       "pickup_cast_audit": "docs/audits/ashbringer-pickup-cast-2026-10-26.json",
       "pickup_cast_review": "Original180850 self-triggered prepare call now precedes direct46130/103454 cleanup/Delete; a non-OK result logs actual rejection, restores READY and returns without those own effects.24 enum/owned/actor/state variants, repeated-error/OK retry and native selected slot50/result/CFG verified ordinary/ASAN/Release. Successful command ordering intentionally changes; actual client visual timing remains OPEN. Crucially effect64 queues199827 and other children with native default10ms, so prepare OK is NOT actual item storage/equip. No immediate ownership-first gate, manual grant or rollback. Later native failures/child context/attempt epochs/group/faction/VFX/client remain OPEN.",
       "pickup_capacity_audit": "docs/audits/ashbringer-pickup-capacity-2026-10-26.json",
@@ -1145,7 +1154,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Native199827 source, initial capacity errors and reported180850 prepare rejection/reopen are repaired. Do NOT bind separate GO loot or add an item-first/immediate-postcast gate: effect64 queues199827/other children with native default10ms; prepare OK is not effect completion and AutoStoreLoot bool is slot count. Prioritize delayed child context/rejection, null StoreNewItem/capacity race and progress/retry around114505/46130/domination without native success assumptions or grants. Trace post-store equip/save/relog, stage/attempt/abandon/re-entry and accepted repeat suppression. Missing32543 presentation remains open. Then775 entrance/trash owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender. Pinned donors/full relevant footage before choreography edits; changed successful command timing still needs client/VFX checks. Entire chain/faction/group/client verification remains OPEN."
+      "next_action": "Initial live775-step3/active38376 context now gates opening and pickup; native199827 source, capacity errors and reported180850 prepare rejection/reopen are repaired. Do NOT bind separate GO loot or add an item-first/immediate-postcast gate: effect64 queues199827/other children with native default10ms; prepare OK is not effect completion and AutoStoreLoot bool is slot count. Prioritize delayed child context/rejection, null StoreNewItem/capacity race and progress/retry around114505/46130/domination without native success assumptions or grants. Trace post-store equip/save/relog, stage/attempt/abandon/re-entry and accepted repeat suppression; invalid already-delivered deactivation/re-entry recovery remains open. Missing32543 presentation remains open. Then775 entrance/trash owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender. Pinned donors/full relevant footage before choreography edits; changed successful command timing still needs client/VFX checks. Entire chain/faction/group/client verification remains OPEN."
     },
     {
       "class_id": 3,
