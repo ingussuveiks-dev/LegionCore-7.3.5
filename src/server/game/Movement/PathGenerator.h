@@ -69,6 +69,8 @@ class TC_GAME_API PathGenerator
         bool CalculatePath(float destX, float destY, float destZ, bool forceDest = false);
         bool CalculatePath(Position const& destination, bool forceDest = false);
         bool CalculatePath(Position const& startPosition, Position const& destination, bool forceDest = false);
+        // Explicit charge target: use its actual common transport surface.
+        bool CalculatePathToTarget(Unit const* target);
         // Calculates the path from start point to given destination
         bool CalculatePath(G3D::Vector3 const& startPoint, G3D::Vector3 const& endPoint, bool forceDest = false);
         bool IsInvalidDestinationZ(Unit const* target) const;

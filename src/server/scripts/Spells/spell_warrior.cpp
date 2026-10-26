@@ -1357,11 +1357,17 @@ class spell_warr_charge_check_cast : public SpellScriptLoader
                 if (caster->IsInWater()) // don`t check in water
                     return SPELL_CAST_OK;
 
-                float angle = target->GetRelativeAngle(caster);
-                Position pos = target->GetFirstCollisionPosition(target->GetObjectSize(), angle);
                 float limit = GetSpellInfo()->GetMaxRange(true, caster) + 1.0f;
                 PathGenerator* m_path = new PathGenerator(caster);
-                bool result = m_path->CalculatePath(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
+                bool result;
+                if (caster->GetTransport() && caster->GetTransport() == target->GetTransport())
+                    result = m_path->CalculatePathToTarget(target);
+                else
+                {
+                    float angle = target->GetRelativeAngle(caster);
+                    Position pos = target->GetFirstCollisionPosition(target->GetObjectSize(), angle);
+                    result = m_path->CalculatePath(pos.m_positionX, pos.m_positionY, pos.m_positionZ, false);
+                }
                 PathType _pathType = m_path->GetPathType();
                 float _totalLength = m_path->GetTotalLength();
                 delete m_path;

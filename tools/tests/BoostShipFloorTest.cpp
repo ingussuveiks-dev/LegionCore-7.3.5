@@ -6,6 +6,7 @@
 #include "Containers.h"
 #include "MovementPackets.h"
 #include "Transport.h"
+#include "TransportGroundPath.h"
 #include <cmath>
 #include <iostream>
 
@@ -75,12 +76,28 @@ int main(int argc, char** argv)
         if(!PreparePassengerPosition(&transport,air,false)||air.GetPositionZ()!=airZ)return 11;
         Position absent=base;absent.m_positionX+=500;
         if(PreparePassengerPosition(&transport,absent,true))return 12;
+        // Use the real moving-ship model, transforms and production corridor.
+        auto world=[&](Position local){float x,y,z,o;local.GetPosition(x,y,z,o);transport.CalculatePassengerPosition(x,y,z,&o);return Position{x,y,z,o};};
+        Position start=base,finish=Offset(base,12,0,0,0);
+        if(!PreparePassengerPosition(&transport,start,true)||!PreparePassengerPosition(&transport,finish,true))return 15;
+        Movement::PointsArray charge;
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::Complete||charge.size()<2)return 16;
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,2,charge)!=Movement::TransportGroundResult::TooLong||!charge.empty())return 17;
+        Position voidEnd=Offset(base,0,100,0,0);
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(voidEnd),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath||!charge.empty())return 18;
+        Position airborne=world(finish);airborne.m_positionZ+=5;
+        if(Movement::BuildTransportGroundPath(&transport,world(start),airborne,2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 19;
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge,100.0f)!=Movement::TransportGroundResult::NoPath)return 22;
+        transport.SetPhaseId({2},false);
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 20;
+        transport.SetPhaseId({1},false);
         if (std::isfinite(model->getHeight(x,y,z+2,5,{2},true))) return 6;
         model->enableCollision(false);
         if (std::isfinite(model->getHeight(x,y,z+2,5,{1},true))) return 7;
         Position disabled=base;
         if(PreparePassengerPosition(&transport,disabled,true))return 13;
         if(!PreparePassengerPosition(&transport,air,false)||air.GetPositionZ()!=airZ)return 14;
+        if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 21;
     }
     std::cout << "PASS: native ship/DB2, actual Transport transforms and production placement helper put all trainer/entourage/dummy/sparring/Legion/exit poses on their own deck surface; flight, missing floor and disabled collision preserved\n";
 }

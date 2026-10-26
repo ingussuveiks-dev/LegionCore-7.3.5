@@ -27,6 +27,7 @@
 #include "MMapFactory.h"
 #include "MMapManager.h"
 #include "Map.h"
+#include "TransportGroundPath.h"
 #include <G3D/Vector3.h>
 
 ////////////////// PathGenerator //////////////////
@@ -106,6 +107,31 @@ PathGenerator::~PathGenerator()
 bool PathGenerator::CalculatePath(float destX, float destY, float destZ, bool forceDest /*= false*/)
 {
     return CalculatePath(PositionToVector3(_source->GetPosition()), G3D::Vector3(destX, destY, destZ), forceDest);
+}
+
+bool PathGenerator::CalculatePathToTarget(Unit const* target)
+{
+    if (!target)
+        return false;
+    Transport* transport = _source->GetTransport();
+    if (!transport || target->GetTransport() != transport)
+        return CalculatePath(target->GetPosition());
+
+    SetStartPosition(PositionToVector3(_source->GetPosition()));
+    SetEndPosition(PositionToVector3(target->GetPosition()));
+    _type = PATHFIND_NOPATH;
+    Unit const* mover = _source->ToUnit();
+    Movement::TransportGroundResult result = Movement::BuildTransportGroundPath(transport,
+        _source->GetPosition(), target->GetPosition(), mover ? mover->GetCollisionHeight() : 0.0f,
+        _pointPathLimit, _pathPoints, mover ? mover->GetObjectSize() : 0.0f);
+    if (result == Movement::TransportGroundResult::TooLong)
+        _type = PATHFIND_SHORT;
+    else if (result == Movement::TransportGroundResult::Complete)
+    {
+        SetActualEndPosition(_pathPoints.back());
+        _type = PATHFIND_NORMAL;
+    }
+    return result == Movement::TransportGroundResult::Complete;
 }
 
 bool PathGenerator::CalculatePath(Position const& destination, bool forceDest /*= false*/)
