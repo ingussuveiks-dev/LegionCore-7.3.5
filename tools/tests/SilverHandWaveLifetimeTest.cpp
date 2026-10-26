@@ -30,7 +30,16 @@ struct ObjectGuid
 };
 using GuidSet=std::set<ObjectGuid>;
 uint64 nextGuid=100;
-struct Map {} liveMap,otherMap;
+struct Reference
+{
+    Player* player;
+    Player* getSource() const{return player;}
+};
+struct Map
+{
+    std::vector<Reference> players;
+    std::vector<Reference> const& GetPlayers() const{return players;}
+} liveMap,otherMap;
 struct Unit
 {
     virtual ~Unit()=default;
@@ -65,7 +74,8 @@ struct Player : Unit
     bool GetQuestRewardStatus(uint32 quest) const{assert(quest==42120);return rewarded;}
     uint32 GetQuestStatus(uint32 quest) const{assert(quest==42120);return status;}
     std::vector<uint32> credits;
-    void UpdateAchievementCriteria(uint32 type,uint32 event){assert(type==92);credits.push_back(event);}
+    std::function<void()> onCredit;
+    void UpdateAchievementCriteria(uint32 type,uint32 event){assert(type==92);credits.push_back(event);if(onCredit)onCredit();}
 };
 struct CreatureAI
 {
@@ -225,7 +235,9 @@ struct Fixture
         actor.i_AI=&ai;actor.defender=&defender;actor.nearby=&player;
         lit.aura=true;actor.lights={&lit,&unlit};visitor.type=TYPEID_PLAYER;
         manager=ScenarioManager{};
+        liveMap.players={{&player}};
     }
+    ~Fixture(){liveMap.players.clear();}
 };
 void CheckFirstWave(Creature const& actor,Creature* defender)
 {
@@ -236,6 +248,95 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
 }
 int main()
 {
+#ifdef PROGRESS_BASELINE
+    {
+        Fixture fixture;
+        fixture.visitor.klass=5;fixture.visitor.status=0;
+        fixture.actor.nearby=&fixture.visitor;
+        liveMap.players={{&fixture.visitor},{&fixture.player}};
+        fixture.ai._introDone=true;fixture.ai.startCriteria=true;
+        fixture.ai.UpdateAI(1000);
+        assert(fixture.visitor.credits==std::vector<uint32>{51838} && fixture.player.credits.empty());
+        manager.scenario.step=10;fixture.ai.UpdateAI(1000);
+        assert(fixture.visitor.credits.size()==2);
+        std::cout<<"PASS pinned df5bf3f5: unchecked nearby inactive Priest takes ritual pulse from eligible map participant and keeps receiving pulses after stage9\n";
+        return 0;
+    }
+#else
+#if !defined(BASELINE) && !defined(ADMISSION_BASELINE) && !defined(DEATH_BASELINE) && !defined(PROGRESS_BASELINE)
+    for(uint32 invalid=0;invalid<15;++invalid)
+    {
+        Fixture fixture;
+        switch(invalid)
+        {
+            case 0:fixture.visitor.world=false;break;
+            case 1:fixture.visitor.preDelete=true;break;
+            case 2:fixture.visitor.contact=false;break;
+            case 3:fixture.visitor.alive=false;break;
+            case 4:fixture.visitor.gm=true;break;
+            case 5:fixture.visitor.teleport=true;break;
+            case 6:fixture.visitor.klass=5;break;
+            case 7:fixture.visitor.map=&otherMap;break;
+            case 8:fixture.visitor.instance=43;break;
+            case 9:fixture.visitor.phase=false;break;
+            case 10:fixture.visitor.visible=false;break;
+            case 11:fixture.visitor.los=false;break;
+            case 12:fixture.visitor.distance=100.01f;break;
+            case 13:fixture.visitor.rewarded=true;break;
+            case 14:fixture.visitor.status=0;break;
+        }
+        fixture.actor.nearby=&fixture.visitor;
+        liveMap.players={{nullptr},{&fixture.visitor},{&fixture.player},{&fixture.player}};
+        fixture.ai.startCriteria=true;
+        fixture.ai.UpdateAI(999);assert(fixture.player.credits.empty());
+        fixture.ai.UpdateAI(1);assert(fixture.player.credits==std::vector<uint32>{51838} && fixture.visitor.credits.empty());
+        fixture.ai.UpdateAI(0);assert(fixture.player.credits.size()==1);
+    }
+    for(uint32 step=0;step<12;++step)
+    {
+        Fixture fixture;fixture.ai.startCriteria=true;manager.scenario.step=step;
+        fixture.ai.UpdateAI(1000);
+        assert(fixture.player.credits.size()==(step==9?1u:0u));
+    }
+    for(uint32 invalid=0;invalid<9;++invalid)
+    {
+        Fixture fixture;fixture.ai.startCriteria=true;
+        switch(invalid)
+        {
+            case 0:fixture.actor.world=false;break;
+            case 1:fixture.actor.preDelete=true;break;
+            case 2:fixture.actor.alive=false;break;
+            case 3:fixture.actor.entry=106676;break;
+            case 4:fixture.actor.mapId=1;break;
+            case 5:fixture.actor.map=nullptr;break;
+            case 6:manager.present=false;break;
+            case 7:manager.scenario.id=991;break;
+            case 8:manager.scenario.id=1037;break;
+        }
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.empty());
+    }
+    {
+        Fixture fixture;
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.empty());
+        fixture.ai.startCriteria=true;
+        liveMap.players.clear();fixture.ai.UpdateAI(5000);assert(fixture.player.credits.empty());
+        liveMap.players={{&fixture.player},{&fixture.visitor}};
+        fixture.ai.UpdateAI(999);assert(fixture.player.credits.empty());
+        fixture.ai.UpdateAI(1);assert(fixture.player.credits.size()==1 && fixture.visitor.credits.empty());
+        fixture.ai.UpdateAI(5000);assert(fixture.player.credits.size()==2);
+        fixture.actor.stunned=true;fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==2);
+        fixture.actor.stunned=false;fixture.actor.victim=true;fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==2);
+        fixture.actor.victim=false;fixture.player.phase=false;fixture.visitor.status=0;
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==2);
+        fixture.player.phase=true;fixture.player.faction=1;
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==3);
+        fixture.player.onCredit=[](){manager.scenario.step=10;};
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==4);
+        fixture.ai.UpdateAI(1000);assert(fixture.player.credits.size()==4);
+        assert(fixture.actor.adds.empty() && fixture.actor.casts.empty());
+    }
+    std::cout<<"PASS scoped ritual pulses: null/15 invalid references bypassed, one actual-map eligible recipient per unchanged interval, nine invalid actors/scenarios/all12 stages, no backfill, stun/victim, phase recovery/faction and stage10 stop; no wave/item/manual group fanout\n";
+#endif
 #ifdef DEATH_BASELINE
     {
         Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;
@@ -541,7 +642,8 @@ int main()
         fixture.actor.Lifecycle(5000);CheckFirstWave(fixture.actor,&fixture.defender);
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
-    std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks and no added credit semantics; world services controlled, not client traversal\n";
+    std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks/event IDs; ritual recipient admission checked separately; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

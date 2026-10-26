@@ -73,9 +73,16 @@ int main(int argc, char** argv)
                 auto tree = trees.LookupEntry(identity);
                 if (!tree)
                     return 6;
+                std::cout << "TREE\t" << unsigned(step->OrderIndex) << '\t' << tree->ID << '\t' << tree->Parent << '\t'
+                    << tree->Amount << '\t' << int(tree->Operator) << '\t' << tree->Flags << '\t' << tree->CriteriaID << '\n';
                 if (auto criterion = criteria.LookupEntry(tree->CriteriaID))
+                {
                     std::cout << "CRITERION\t" << unsigned(step->OrderIndex) << '\t' << criterion->ID << '\t'
                         << unsigned(criterion->Type) << '\t' << criterion->Asset << '\t' << tree->Amount << '\n';
+                    std::cout << "CRITERION_META\t" << criterion->ID << '\t' << criterion->ModifierTreeId << '\t'
+                        << criterion->StartTimer << '\t' << unsigned(criterion->StartEvent) << '\t' << criterion->StartAsset << '\t'
+                        << unsigned(criterion->FailEvent) << '\t' << criterion->FailAsset << '\t' << unsigned(criterion->Flags) << '\n';
+                }
                 for (auto child : trees)
                     if (uint32(child->Parent) == identity)
                         pending.insert(child->ID);

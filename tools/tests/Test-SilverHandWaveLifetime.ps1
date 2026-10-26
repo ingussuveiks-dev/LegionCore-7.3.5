@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$DeathBaseline,[switch]$ProgressBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$AdmissionBaseline,$DeathBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $AdmissionBaseline -or $DeathBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
+if(@($Baseline,$AdmissionBaseline,$DeathBaseline,$ProgressBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-wave-lifetime"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -13,10 +13,17 @@ $admissionPinned=(& git -C $repo show "67b2f259:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned final entry baseline unavailable'}
 $deathPinned=(& git -C $repo show "1f73b44c:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned wave death baseline unavailable'}
-$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}elseif($DeathBaseline){$deathPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
-if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline){
+$progressPinned=(& git -C $repo show "df5bf3f5:$path") -join "`n"
+if($LASTEXITCODE){throw 'Pinned ritual progress baseline unavailable'}
+$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}elseif($DeathBaseline){$deathPinned}elseif($ProgressBaseline){$progressPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
+if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline -and !$ProgressBaseline){
+ $oldProgress=Block (Block $progressPinned 'struct npc_travar_lastAI : ScriptedAI') 'void UpdateAI('
+ $currentProgress=Block $actor 'void UpdateAI('
+ if(($currentProgress -replace '\s','') -cne (($oldProgress -replace '\s','').Replace('me->FindNearestPlayer(100.0f)','SilverHandFinalEntry::SelectPlayer(me)'))){throw 'Ritual progress changed beyond scoped recipient selection'}
+ $comparisonProgress=$actor.Replace($currentProgress,$oldProgress)
+ if(((Block (Block $source 'namespace SilverHandFinalEntry') 'bool CanStart(') -replace '\s','') -cne ((Block (Block $progressPinned 'namespace SilverHandFinalEntry') 'bool CanStart(') -replace '\s','')){throw 'Original final-entry eligibility changed'}
  $beforeDeaths=Block $deathPinned 'struct npc_travar_lastAI : ScriptedAI'
- $deathNormalized=$actor.Replace('GuidSet _waveSummons;','').Replace((Block $actor 'void JustSummoned('),'').Replace((Block $actor 'void SummonedCreatureDies('),(Block $beforeDeaths 'void SummonedCreatureDies('))
+ $deathNormalized=$comparisonProgress.Replace('GuidSet _waveSummons;','').Replace((Block $actor 'void JustSummoned('),'').Replace((Block $actor 'void SummonedCreatureDies('),(Block $beforeDeaths 'void SummonedCreatureDies('))
  $deathNormalized=$deathNormalized.Replace('JustSummoned(targ);','').Replace('JustSummoned(add);','')
  $newAddBranch=Block $deathNormalized 'if (Creature* add = me->SummonCreature(106578'
  $oldAddBranch=$newAddBranch.Replace('{','').Replace('}','')
@@ -34,7 +41,7 @@ if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline){
  if($actor.Contains('me->AddDelayedEvent(')){throw 'Unit-owned last Travard AI timer remains'}
 }
 [IO.File]::WriteAllText("$out/WaveActor.inc",$actor+';')
-[IO.File]::WriteAllText("$out/FinalEntryPolicy.inc",$(if($Baseline -or $AdmissionBaseline){''}else{Block $source 'namespace SilverHandFinalEntry'}))
+[IO.File]::WriteAllText("$out/FinalEntryPolicy.inc",$(if($Baseline -or $AdmissionBaseline){''}elseif($ProgressBaseline){Block $progressPinned 'namespace SilverHandFinalEntry'}else{Block $source 'namespace SilverHandFinalEntry'}))
 $functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/FunctionClass.inc",(Block (Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw) 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';')
 $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(','uint32 FunctionProcessor::Size() const','uint32 FunctionProcessor::SizeQueue() const')
@@ -55,13 +62,19 @@ $deathBridge=$kill.Substring($bridgeFirst,$bridgeLast-$bridgeFirst)
 if($kill.IndexOf('victim->setDeathState(JUST_DIED);') -lt 0 -or $kill.IndexOf('victim->setDeathState(JUST_DIED);') -gt $kill.IndexOf($deathBridge)){throw 'Native owner death notification precedes death state'}
 [IO.File]::WriteAllText("$out/DeathBridge.inc",$deathBridge.Replace('creature, this','creature, killer'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}elseif($DeathBaseline){'/DDEATH_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}elseif($DeathBaseline){'/DDEATH_BASELINE'}elseif($ProgressBaseline){'/DPROGRESS_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandWaveLifetimeTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native last Travard wave lifetime regression failed'}
-if($Baseline -or $AdmissionBaseline -or $DeathBaseline){return}
+if($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline){return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile SilverHandPickupCatalog.cpp -ProbeName SilverHandPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native late scenario metadata failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 foreach($expected in @("CRITERION`t8`t30089`t92`t50915`t0","CRITERION`t9`t30110`t92`t51838`t1","CRITERION`t10`t30111`t92`t50966`t0")){if((Get-Content "$out/native.tsv") -notcontains $expected){throw "Native late criterion changed: $expected"}}
+foreach($expected in @("TREE`t9`t48055`t0`t180`t4`t32`t0","TREE`t9`t53744`t48055`t180`t9`t32`t0","TREE`t9`t53745`t53744`t1`t0`t0`t30110","CRITERION_META`t30110`t0`t0`t0`t0`t0`t0`t0")){if((Get-Content "$out/native.tsv") -notcontains $expected){throw "Native ritual weighted tree changed: $expected"}}
+$achievement=Get-Content "$repo/src/server/game/Achievements/AchievementMgr.cpp" -Raw
+[IO.File]::WriteAllText("$out/TreeOperators.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTreeOperator')+';')
+[IO.File]::WriteAllText("$out/TreeCompletion.inc",'template<typename Func>'+"`n"+(Block $achievement 'void AchievementGlobalMgr::WalkCriteriaTree(')+"`ntemplate<class T>`n"+(Block $achievement 'bool AchievementMgr<T>::IsCompletedCriteriaTree('))
+[IO.File]::WriteAllText("$out/tree.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 /I`"$out`" `"$PSScriptRoot/SilverHandRitualTreeTest.cpp`" /Fe`"$out/tree.exe`" /Fo`"$out/tree.obj`"`nif errorlevel 1 exit /b 1`n`"$out/tree.exe`" `"$out/native.tsv`"`n")
+& "$out/tree.cmd";if($LASTEXITCODE){throw 'Native ritual weighted completion regression failed'}
 if($VerifyReleaseBinary){
  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
  $previous=$env:MYSQL_PWD
@@ -69,5 +82,5 @@ if($VerifyReleaseBinary){
  $expected=@("binding`t106777`tnpc_travar_last","spawn`t362048`t106777`t1539`t7003","phase`t7003`t44`t1092`t9`t0","phase`t7003`t44`t1092`t10`t1","aura`t106777`t215258")
  if(Compare-Object $expected $live){throw 'Native last Travard actor/phase/aura changed'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_wave_deaths_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed wave death/final entry/lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_ritual_progress_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed ritual progress/wave death/final entry/lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
 }

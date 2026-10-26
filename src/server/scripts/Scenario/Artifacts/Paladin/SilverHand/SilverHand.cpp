@@ -1236,6 +1236,16 @@ namespace SilverHandFinalEntry
         Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
         return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 9;
     }
+
+    Player* SelectPlayer(Creature* actor)
+    {
+        if (!actor || !actor->GetMap())
+            return nullptr;
+        for (auto const& reference : actor->GetMap()->GetPlayers())
+            if (CanStart(reference.getSource(), actor))
+                return reference.getSource();
+        return nullptr;
+    }
 }
 
 // 106777
@@ -1343,7 +1353,7 @@ public:
             if (startCriteria)
                 if (timer <= diff)
                 {
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
+                    if (Player* pl = SilverHandFinalEntry::SelectPlayer(me))
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51838);
                     timer = 1000;
                 }

@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Periodic last-Travard51838 recipient admission only, preserving local ritual cadence, native weighted progress and existing wave ownership. Not complete Holy/all36/client/channel/combat/VFX certification.",
+  "sources": [
+    {
+      "source": "Local gitdf5bf3f5, worklist/routes/donor and earlier ritual/wave audits",
+      "review": "Clean current main; prior scoped entry, owned wave deaths, waypoint retry, real loot and two default-motion fixes retained. The remaining periodic UpdateAI used unchecked FindNearestPlayer despite stricter entry admission, so admission alone did not protect later credit."
+    },
+    {
+      "source": "Matching26972 native C++ DB2/hotfix catalog and actual AchievementMgr completion operators",
+      "review": "Expanded SilverHandPickupCatalog prints actual TREE and CRITERION_META fields. Fresh native stage9/step2457: root48055 parent0 amount180/operator4 ALL/flags32; child53744 parent48055 amount180/operator9 SCENARIO/flags32; leaf53745 parent53744 amount1/operator0/criterion30110. Criterion30110 type92/asset51838 has ModifierTree0, StartTimer0 and zero start/fail fields/flags. Actual ALL recursively checks child; SCENARIO WalkCriteriaTree sums counter times leaf amount1 against180. One pulse or179 cannot complete;180 can. Leaf amount1 does NOT establish one-second completion, and StartTimer0 is not a native180-second timed-achievement deadline. No native tree/count/timer data changed or boss-death prerequisite invented."
+    },
+    {
+      "source": "Local WorldObject::FindNearestPlayer, AnyPlayerInObjectRangeCheck, SilverHandFinalEntry and actual Player/scenario event routing",
+      "review": "FindNearestPlayer actually uses AnyPlayerInObjectRangeCheck with visibility range and a first search, not guaranteed nearest distance; its alive argument is ignored, while the checker defaults to requiring alive. It does not enforce quest/class/scenario eligibility. The existing CanStart gate already enforces alive nonpredeleted/contactable nonGM/nonteleport active nonrewarded42120 Paladin, live106777/map1539, same actual map/instance/phase/visibility/LOS/100yd and native1092/exact9. Reuse it unchanged for one map reference per original pulse rather than adding new spec/item/kill gates. Native type92 routes to the shared Scenario, not manual group-kill fanout; currentTree still filters applicable criteria. Sending another pulse after step9 is not proof it advances an unrelated later criterion."
+    },
+    {
+      "source": "Local full last-Travard AI, FunctionProcessor, Creature locked lifecycle and native protection metadata",
+      "review": "Original startCriteria, stun/victim early returns, positive1000ms countdown/reset and one-event-per-update/no lag catch-up are retained byte-for-source except the selected Player expression. No AI fields/size/queues/roster,5000ms wave request, three-wave identities/positions/attacks, six regular-death thresholds, channel215258, scene/equip/real-loot or instance dispatch changes. Missing recipient consumes the same interval; later eligibility can receive a future pulse, not backfilled elapsed time."
+    },
+    {
+      "source": "Local TrinityCore matching26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted scripts and all-ref SilverHand history",
+      "review": "No51838/npc_travar acquisition correction found by targeted search. Different-core history not exhaustively reviewed and no modern API/schema imported."
+    },
+    {
+      "source": "Pinned Titans relevant full last-Travard periodic/wave source returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Same unchecked periodic FindNearestPlayer/51838 and1000ms countdown. No donor recipient correction imported; original timing retained."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. Bounded eligibility repair and weighted180 threshold follow actual local data/core, not assumed victory, audio, pose or choreography."
+    }
+  ],
+  "repair": {
+    "selection": "SilverHandFinalEntry::SelectPlayer rejects absent actor/map, traverses actual map Player references and returns the first that passes unchanged CanStart. UpdateAI substitutes this expression for unchecked FindNearestPlayer only. Repeated/duplicate references cannot multiply a pulse, and an invalid closest visitor cannot block a later eligible reference.",
+    "preserved": "No new Player pointer capture, delayed closure, progress latch, manual quest/item/group credit, combat-killer filter, timer reset, missed-tick replay, core warning suppression or DB mutation. Active-spec/item-absence filters are not invented. Source guard compares CanStart unchanged and normalizes exactly the single recipient expression before retaining previous full-AI/LOS/death/lifetime guards.",
+    "limits": "Per-live-AI progress admission is not quest-attempt identity, channel-success validation, wave recovery or a verified real-time180-second defense. A shared native counter can persist according to existing Scenario rules. Missing/failed actors, interrupted/re-entry flows and full gameplay remain separate."
+  },
+  "validation": {
+    "baseline": "PASS -ProgressBaseline pins df5bf3f5 actual full AI: an inactive Priest selected by old nearby lookup receives51838 while a valid map participant receives none; old handler sends again after actual step9. Controlled production-handler reproduction, not observed client/counter state.",
+    "host": "PASS actual current full AI/native FunctionProcessor: null and15 invalid references bypassed, actual-map fallback and duplicate references still dispatch one original92/51838 per interval; all12 stages and nine invalid actor/scenario contexts. Start flag,999+1/zero/large diff, no backfill after no recipient, stun/victim pause, phase recovery, faction label and synchronous stage10 transition covered. No wave/item/manual party fanout added. World/map/Player services and local event sink remain controlled; native shared routing is independently covered by retained dispatch regressions, not an integrated live group traversal.",
+    "native_tree": "PASS fresh DB2/hotfix metadata plus extracted exact native IsCompletedCriteriaTree and WalkCriteriaTree/operator enum compiled in SilverHandRitualTreeTest. Actual root ALL/scenario-weighted traversal rejects absent,1 and179 counters, accepts180. Counter storage and unused SINGLE-completion service are controlled; no persisted character progress or client timing claim.",
+    "installed": "PASS actual factory UpdateAI slot0x18 and native Creature update dispatcher. Compiler inlines SelectPlayer, so proof checks actual map+0x768 list traversal and predicate-success/backedge/null guards through already verified complete CanStart rather than requiring a nonexistent helper symbol. One92/51838 Player call, no FindNearestPlayer, only three actual calls (UpdateVictim/predicate/credit), original start/stun/victim/1000ms reset/remainder and actor/map null branches remain. Original AI0xd8/queue/roster proofs retained; no noinline production change or guessed ABI relaxation.",
+    "sanitizer": "PASS MSVC AddressSanitizer current full AI/scoped pulse/wave host and separate native weighted-tree host: .codex/silver-hand-ritual-progress-asan.log and silver-hand-ritual-tree-asan.log. Fixture storage renamed to avoid shadowing extracted native locals; actual production warnings/checks not disabled.",
+    "regressions": "PASS21 top-level suites: new df5bf3f5 ProgressBaseline; complete retained19-suite serial .codex/silver-hand-waypoint-retry-ritual-progress-regressions.tsv, whose current WaveLifetime additionally runs scoped pulses/fresh native weighted tree/selected progress PE; independent current MordothMotion Release suite nesting original seven-row InitialMotion. Retained waypoint-retry/recipient/wave-death/admission/lifetime/arrival/action/final/step8 baselines, current full dispatch/wave/rescue/ally/entry and installed proofs, ScepterLogin, native all-class149 race/class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records/39 items PASS. Catalog builds serialized after canonical build. Both canonical executable hashes remain checked values after owned startup/shutdown; existing extraction warnings remain visible.",
+    "probe_limit": "Earlier initial-motion empty-output/exit0 SQL and older offers22 incidents remain unexplained, not fixed here; no recurrence in this completed regression run. Native149/22/36 and all prior assertions remain strict; no automatic retry or error hiding.",
+    "evidence": ".codex/silver-hand-ritual-progress-*; ignored runtime-test/silver-hand-wave-lifetime. No configuration/passwords/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "E4CF562A8155DE39F09B97323A83D01B7B3873D165D6708649E26DCA08F09BBF",
+    "bnet_sha256": "9FD62B10DE303F023878DFE06E26A6C1828A8A80B554E9E6E6C0101B17945365",
+    "build": "Release world+bnet17.72s/0 warnings/errors; no OutDir, LinkIncremental=false. Actual UTF16 world canonical output/original scripts-game-shared-common libraries/no incremental and bnet canonical output/original shared-common libraries/no incremental checked. Actual deployed selected handler decoded, not just hash/startup.",
+    "runtime": "Own hidden canonical PID34220 fresh ready; own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged/gone. No unknown/user server stopped or hidden own process left. Startup does not prove the1539 grid,180-pulse ritual or any client visuals."
+  },
+  "remaining": [
+    "Actual protection/channel215258 success, defense cadence under lag/stun/combat and native180-pulse UI, attacks/Mordoth escape215260, party/faction/live pets and full related footage/client sequence remain unverified. No premature one-pulse bug or required boss death is claimed from leaf data.",
+    "Accepted5000ms context, missing/failed defender or wave spawns, disabled-AI death delivery, interrupted/re-entry/abandon quest epochs, earlier fight/evade/half-health transitions, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No whole-chain or VFX completion claim."
+  ]
+}
