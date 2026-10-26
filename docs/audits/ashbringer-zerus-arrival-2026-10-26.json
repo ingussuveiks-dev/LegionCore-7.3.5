@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Bounded91672 Zerus POINT callback admission before helper/beam actions. Not the complete775 encounter, accepted cast/summon, actual client movement/VFX or whole36 verification.",
+  "sources": [
+    {
+      "source": "Clean main/origin07bd3831; worklist/routes/donor review; full local91672 actor and header/instance death context",
+      "review": "Original DamageTaken below51 percent requests EVENT3 after500ms. Actual EVENT3 stops attack and selects nearer zerusSumPos0/1, issuing POINT1/2; ties choose2. MovementInform checked only POINT type, conditionally faced for1/2, but always cast192596, summoned91697 at zerusSumPos[1+id] and scheduled EVENT4/1000ms. ID0 therefore caused unrelated helper effects; ID3 read beyond the four-element array, and arbitrary large IDs were unsafe. Valid1/2 actions and later aggressive recovery are intentionally unchanged. Instance Zerus death46064/door actions and all quest/item paths remain outside this repair."
+    },
+    {
+      "source": "Read-only runtime MariaDB, native26972 AshbringerZerusCatalog.cpp and actual PointMovementGenerator<Creature>/EventMap",
+      "review": "91672 binds npc_bs_boss_jailer_zerus at spawn366318/map1500/phase5940;91697 binds npc_bs_enemy_forces.192596 Inquisitor Beam effect6/aura4/targets18,8/visual49890;190711 Drain Soul effect6/aura4/targets1,0/visual49334, both visual records present. Reader loads base DB2, not a full hotfix/kit/attachment/animation merge. Native Point generator forwards its actual _movementId with POINT8 whenever owner.AI exists; it does not constrain all IDs to this actor's1/2. EventMap Reschedule cancels same EVENT4 and schedules relative to current clock."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c target zerusSumPos/npc_bs_boss_jailer_zerus and all-ref artifact BrokenShore path log",
+      "review": "No applicable helper-arrival implementation returned; bounded search only, not exhaustive history or a modern behavior import."
+    },
+    {
+      "source": "Previously retrieved pinned Titans source, relevant702..717 arrival and693..752 damage/request context re-read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "review": "Same type-only admission and unbounded id+1 placement. No donor repair imported; not a claim that all donor encounters were reviewed."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. This input/array-safety repair does not infer retail choreography, endpoints, timing, visual/audio fidelity or full scenario recovery."
+    }
+  ],
+  "repair": {
+    "implementation": "One additional early admission predicate requires id1 or id2 alongside native POINT type, before any facing, cast, helper lookup or recovery scheduling. The only admitted id+1 indices are2/3, within the unchanged four-position array. Invalid notifications leave existing EVENT4 work untouched rather than resetting shared events or manufacturing recovery.",
+    "preserved": "Full file normalized only by this exact predicate equals pinned07bd3831; full header/positions remain pinned. Both original distance branches/tie, facing orientation,192596 triggered cast,91697 summon and1000ms EVENT4 retained. No new timer/state, movement replay, quest/phase/loot/equip edit, Player/pet/guardian/group credit or killer filter. Existing flame preservation test admits this separate exact guard only; its original finite-emission behavior and installed proof still pass.",
+    "limits": "Valid1/2 duplicates still repeat original side effects; no issued-move token, encounter epoch, stage/health authority, endpoint-distance guard or exactly-once claim. Missing/failed movement, disabled/dead/replaced AI, failed beam/summon, reset/abandon/re-entry and client path/VFX remain OPEN. DamageTaken scaling/one-hit behavior and native group credit are not changed or certified."
+  },
+  "validation": {
+    "baseline": "PASS pinned07bd3831 actual MovementInform and native Point bridge/EventMap: POINT8/id0 casts/beams/summons and schedules EVENT4 with no valid issued helper point. Independent POINT8/id3 produces retained AddressSanitizer global-buffer-overflow on the actual four-position array. Strict zero/diagnostic for invalid0 and nonzero/exact ASAN diagnostic for overflow3 required; controlled counterfactuals, not client incident logs.",
+    "current": "PASS ordinary and ASAN extracted actual producer/arrival/native Point bridge/EventMap. Invalid0/3/4/256/UINT_MAX across0/8/17 motion types, plus wrong types for valid1/2, leave facing/cast/helper/previous scheduled EVENT4 unchanged. Both nearer branches and equal-distance tie issue original points1/2, native dispatch reaches correct facing/helper coordinates, and999+1 yields original EVENT4. Duplicate valid events deliberately retain old replay; absent AI bridge does not call it. Motion/geometry/cast/summon services controlled; recorded attempted summon returns null, not actual spawned helper verification.",
+    "installed": "PASS selected91672 factoryc8 binds UpdateAI18/MovementInform1a8. Native POINT8 reject and exact1/2 comparisons precede SetFacingTo(float), UnitAI::DoCast192596 triggered, actual WorldObject::SummonCreature91697, id+1 shifted16-byte index into selected broken_shore zerusSumPos and native EventMapA0 Cancel/Schedule4/1000ms. Actual UpdateAI issues both1/2 through native MovePoint. Linked finite-flame bounds and dynamic initializer remain verified. No source-only/hash-only certification or client motion claim.",
+    "regressions": "PASS new Zerus baseline/current ordinary/current ASAN/native6-row DB2/runtime bindings/installed wrapper, retained finite FlameTargets Release wrapper, ScepterLogin VerifyReleaseBinary, native DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, ArtifactForceEquip and SceneLifecycle; independent SilverHand discovery/identity and door installed proofs retained. The ordinary quarantined door fixture remains blocked and is not executed/recompiled.",
+    "harness_corrections": "Initial native Point template extraction used LF across a CRLF source; extracting exact native function plus template specialization fixed lookup, not production behavior. PE adapter initially named inherited ScriptedAI::DoCast and an incompatible SummonCreature signature; actual UnitAI and this core's exact Position overload are verified instead. SetFacingTo prefix had two overloads; exact float overload now required. Original native phase-return narrowing/unused test main arguments remain visible warnings; no disabled checks or diagnostic suppression.",
+    "evidence": ".codex/ashbringer-zerus-* and ignored runtime-test/ashbringer-zerus-arrival baseline-invalid.log/baseline-asan.log/generated actual sources/native.tsv. No runtime credentials/configuration/certificates/character data or generated binaries committed. Earlier ashbringer-doors/test.exe security quarantine remains unresolved; this separate91672 point-handler fixture is not a fallback for that blocked door test."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "C9DD307108168B0BD8CCC15D8426A8463F60A53B3F8B0AA808A62EDCBA831E2C",
+    "bnet_sha256": "34BFDD5321DA6E8F7F0BF9612E03DE76204311325E27E0D23C8AA5CC3209F1B6",
+    "build": "Canonical world+bnet Release MSBuild exit0, no OutDir, LinkIncremental=false; actual original static-library final-link inputs and canonical hashes checked separately from selected decoded implementation.",
+    "runtime": "Own hidden canonical PID30152 reached fresh ready, received own UTF8 stdin server shutdown0, exited0 and is gone. New DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No user/unknown process stopped or own hidden server left; startup is not actual775 traversal."
+  }
+}

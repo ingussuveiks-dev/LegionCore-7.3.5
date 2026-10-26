@@ -745,7 +745,7 @@ public:
 
         void MovementInform(uint32 type, uint32 id) override
         {
-            if (type != POINT_MOTION_TYPE)
+            if (type != POINT_MOTION_TYPE || (id != 1 && id != 2))
                 return;
 
             if (id == 1)

@@ -12,7 +12,8 @@ if($LASTEXITCODE){throw 'Pinned flame baseline unavailable'}
 if($Baseline){$source=$pinned}else{
  $original=Block (Block $pinned 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
  $updated=Block (Block $source 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
- if(($source.Replace($updated,$original) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated Ashbringer behavior changed'}
+ $restored=$source.Replace($updated,$original).Replace('type != POINT_MOTION_TYPE || (id != 1 && id != 2)','type != POINT_MOTION_TYPE')
+ if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated Ashbringer behavior changed beyond separately tested Zerus point guard'}
 }
 [IO.File]::WriteAllText("$out/FlameAI.inc",(Block $source 'struct npc_bs_doomguard_incineratorAI').Replace(' override','')+';')
 $header=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.h" -Raw

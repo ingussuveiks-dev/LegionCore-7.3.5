@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "91672 helper arrival point admission",
+      "problem": "Type-only MovementInform accepted unrelated IDs:0 emitted helper effects,3 read beyond four zerusSumPos positions.",
+      "repair_audit": "docs/audits/ashbringer-zerus-arrival-2026-10-26.json",
+      "limit": "Only original issued point IDs1/2 now pass before facing/beam/helper/EVENT4; both original branches/tie/coordinates/1000ms retained. Pinned spurious0 and ASAN overflow3 counterfactuals/current native bridge/host/ASAN/installed proof checked. Valid duplicate notifications, request/attempt identity, failed effects and client/VFX remain OPEN; door fixture security block unchanged."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "95962 finite ground-target emission",
       "problem": "Absent/late arrival left an unconditional three-cast timer indexing beyond36 flameTarget positions on tick13.",
       "repair_audit": "docs/audits/ashbringer-flame-targets-2026-10-26.json",
@@ -980,8 +987,10 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: retired door ownership/reentrant dispatch and finite95962 ground-target emission repaired; earlier ordinary door fixture remains Defender-blocked; full acquisition/visual/client traversal pending",
+      "status": "partial: retired door ownership/reentrant dispatch, finite95962 emission and91672 point1/2 admission repaired; earlier ordinary door fixture remains Defender-blocked; full acquisition/visual/client traversal pending",
       "flame_targets_audit": "docs/audits/ashbringer-flame-targets-2026-10-26.json",
+      "zerus_arrival_audit": "docs/audits/ashbringer-zerus-arrival-2026-10-26.json",
+      "zerus_arrival_review": "91672 now rejects every POINT callback ID except its original1/2 before all facing/192596/helper91697/EVENT4 actions; id+1 placement is bounded to2/3. Pinned07bd3831 id0 spurious effects and id3 ASAN global-buffer-overflow reproduced. Current actual producer/arrival/Point bridge/EventMap and installed selected1a8/factoryc8 guard pass, retaining distance branches/tie/coordinates/1000ms. Valid duplicates still replay; no issued-request token/stage/endpoint/attempt or real cast/summon/client/VFX certification. Existing flame wrapper and independent installed door proof retained; quarantined ordinary door fixture untouched.",
       "flame_targets_review": "95962 now stops EVENT1 after its original36-position table and checks the actual bound before every190666 cast; a delayed/missing POINT1 arrival no longer reads target36 or wraps the uint8 counter. Full native AI/EventMap baseline reproduces the old ASAN global-buffer-overflow, current partial/end/exhausted/arrival/rearm/destruction/failed-cast-label cases pass ordinary and ASAN, and selected installed emission guards/dynamic initializer are decoded. Same3-per1000ms, targets/triggered spell, flight and arrival-hide behavior retained; no credit/weapon/phase edits. Actual movement/effect application/VFX, stopped-flight recovery and whole route remain OPEN. Distinct timer fixture is not a fallback for the quarantined door fixture.",
       "door_lifetime_audit": "docs/audits/ashbringer-door-lifetime-2026-10-26.json",
       "door_lifetime_review": "Three native1500 door GUIDs now replace persistent raw GameObject pointers. Actual removal erases its full GUID and retains base AddObject/AddDoor removal. Stage3 and Zerus-death loops copy GUID snapshots before actions, resolve each through the actual map and explicitly verify complete identity before original open/phase actions; missing/foreign/predeleted/reused-low objects skip. Native775/order2/46064 metadata and all original criteria remain unchanged. Both old freed-pointer paths reproduce ASAN heap-use-after-free; current actual native remove/Find/map/HandleGameObject fixture passes ASAN including reentrant removal/destruction. Installed selected factory/callbacks/16-byte GUID copy/comparison/snapshot/native dispatch decoded. Ordinary fixture launch was quarantined as Trojan:Win64/CymRan.ACY!MTB; classification is not assumed false positive and no restore/exclusion/security setting was attempted. See linked audit for independent evidence and user review. No whole quest, live group/faction, one-hit combat, late-create door-state replay, real pickup/equip/VFX or client certification.",
