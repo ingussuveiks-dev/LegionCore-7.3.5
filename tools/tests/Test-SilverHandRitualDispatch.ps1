@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$FinalBaseline,[switch]$FinalCastBaseline,[switch]$DiscoveryBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$WaypointBaseline,[switch]$WaypointRetryBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$FinalBaseline,[switch]$FinalCastBaseline,[switch]$DiscoveryBaseline,[switch]$IdentityBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$WaypointBaseline,[switch]$WaypointRetryBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$FinalBaseline,$FinalCastBaseline,$DiscoveryBaseline,$ActionBaseline,$ArrivalBaseline,$WaypointBaseline,$WaypointRetryBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $FinalCastBaseline -or $DiscoveryBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
+if(@($Baseline,$FinalBaseline,$FinalCastBaseline,$DiscoveryBaseline,$IdentityBaseline,$ActionBaseline,$ArrivalBaseline,$WaypointBaseline,$WaypointRetryBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $FinalCastBaseline -or $DiscoveryBaseline -or $IdentityBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ritual-dispatch"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -9,10 +9,16 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "e01a2c64:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned instance baseline unavailable'}
-if($FinalBaseline){$source=(& git -C $repo show "7680556f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final-stage baseline unavailable'}}
+if($IdentityBaseline){$source=(& git -C $repo show "aa841984:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned identity baseline unavailable'}}
+elseif($FinalBaseline){$source=(& git -C $repo show "7680556f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final-stage baseline unavailable'}}
 elseif($FinalCastBaseline){$source=(& git -C $repo show "8a7c56b5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned final-cast baseline unavailable'}}
 elseif($DiscoveryBaseline){$source=(& git -C $repo show "52cd603c:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned discovery baseline unavailable'}}
 elseif($Baseline){$source=$pinned}else{
+ $identityPinned=(& git -C $repo show "aa841984:$path") -join "`n"
+ if($LASTEXITCODE){throw 'Pinned identity preservation source unavailable'}
+ $withIdentity=$source
+ $source=$source.Replace('!boss || boss->GetGUID() != guid ||','!boss ||')
+ if(($source -replace '\s','') -cne ($identityPinned -replace '\s','')){throw 'Instance changed beyond explicit deferred boss identity check'}
  $discoveryPinned=(& git -C $repo show "52cd603c:$path") -join "`n"
  if($LASTEXITCODE){throw 'Pinned discovery preservation source unavailable'}
  $discovery=Block $source 'void QueueFinaleDiscovery('
@@ -22,7 +28,6 @@ elseif($Baseline){$source=$pinned}else{
  $speechPattern=[regex]::Escape('if (_blindingLightStarted.insert(travar->GetGUID()).second)')+'\s+travar->AI\(\)->Talk\(3\);'
  $normalized=$normalized -replace $speechPattern,'travar->AI()->Talk(3);'
  if(($normalized -replace '\s','') -cne ($discoveryPinned -replace '\s','')){throw 'Unrelated instance change beyond scoped finale discovery/speech admission'}
- $comparisonSource=$source
  $source=$normalized
  $helper=Block $source 'void CastBlindingLight('
  $castPinned=(& git -C $repo show "8a7c56b5:$path") -join "`n"
@@ -39,7 +44,7 @@ elseif($Baseline){$source=$pinned}else{
  $newFinal=Block $current 'if (newStep == 10)'
  if(($current.Replace($newFinal,$oldFinal) -replace '\s','') -cne (($original -replace '\s','').Replace(($before -replace '\s',''),($after -replace '\s','')))){throw 'Unrelated step8 callback behavior changed'}
  if(($restored.Replace($current,$original) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated instance script behavior changed'}
- $source=$comparisonSource
+ $source=$withIdentity
 }
 [IO.File]::WriteAllText("$out/Dispatch.inc",(Block $source 'void onScenarionNextStep(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/FinalCast.inc",$(if($source.Contains('void CastBlindingLight(')){('GuidSet '+$(if($DiscoveryBaseline){'_blindingLightStarted'}else{'_finaleActorsStarted'})+';')+(Block $source 'void CastBlindingLight(')}else{''}))
@@ -47,6 +52,11 @@ elseif($Baseline){$source=$pinned}else{
 $instanceCore=Get-Content "$repo/src/server/game/Instances/InstanceScript.cpp" -Raw
 [IO.File]::WriteAllText("$out/InstanceDelay.inc",(Block $instanceCore 'void InstanceScript::AddDelayedEvent(').Replace('InstanceScript::','Instance::'))
 if(!(Block $instanceCore 'void InstanceScript::UpdateForScript(').Contains('m_Functions.Update(diff);')){throw 'Native instance no longer dispatches its owned queue'}
+$accessor=Get-Content "$repo/src/server/game/Globals/ObjectAccessor.h" -Raw
+[IO.File]::WriteAllText("$out/NativeFind.inc",(Block $accessor 'static T* Find(ObjectGuid guid)'))
+[IO.File]::WriteAllText("$out/LookupWorld.inc",(Block $accessor 'template<class T> static T* GetObjectInWorld(ObjectGuid guid, T*'))
+[IO.File]::WriteAllText("$out/LookupMap.inc",(Block $accessor 'template<class T> static T* GetObjectInMap(ObjectGuid guid, Map* map, T*'))
+[IO.File]::WriteAllText("$out/MapLookup.inc",(Block (Get-Content "$repo/src/server/game/Maps/Map.cpp" -Raw) 'Creature* Map::GetCreature('))
 $spellCore=Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw
 [IO.File]::WriteAllText("$out/NativeCastGate.inc",(Block $spellCore 'if (!(_triggeredCastFlags & TRIGGERED_IGNORE_CAST_IN_PROGRESS) && m_caster->IsNonMeleeSpellCast(false, true, true, m_spellInfo->Id == 75))'))
 $definitions=Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw
@@ -120,10 +130,10 @@ $functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(','uint32 FunctionProcessor::Size() const','uint32 FunctionProcessor::SizeQueue() const')
 [IO.File]::WriteAllText("$out/FunctionMethods.inc",(($methods|ForEach-Object{Block $functions $_}) -join "`n"))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($FinalCastBaseline){'/DFINAL_CAST_BASELINE'}elseif($DiscoveryBaseline){'/DDISCOVERY_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($WaypointBaseline){'/DWAYPOINT_BASELINE'}elseif($WaypointRetryBaseline){'/DWAYPOINT_RETRY_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($FinalCastBaseline){'/DFINAL_CAST_BASELINE'}elseif($DiscoveryBaseline){'/DDISCOVERY_BASELINE'}elseif($IdentityBaseline){'/DIDENTITY_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($WaypointBaseline){'/DWAYPOINT_BASELINE'}elseif($WaypointRetryBaseline){'/DWAYPOINT_RETRY_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandRitualDispatchTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native ritual dispatch regression failed'}
-if($Baseline -or $FinalBaseline -or $FinalCastBaseline -or $DiscoveryBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline){return}
+if($Baseline -or $FinalBaseline -or $FinalCastBaseline -or $DiscoveryBaseline -or $IdentityBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline){return}
 & "$PSScriptRoot/Test-SilverHandRitualEntry.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary
 if(!$?){throw 'Existing ritual admission/lifetime/data checks failed'}
 $previous=$env:LEGION_DIALOGUE_CONFIG

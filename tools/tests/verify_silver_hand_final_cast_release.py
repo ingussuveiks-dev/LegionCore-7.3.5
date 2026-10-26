@@ -84,6 +84,20 @@ scenario, = sites(callback, '?GetScenario@ScenarioMgr@@')
 assert scenario < lookup < retry
 scenario_gate, = [index for index, entry in enumerate(callback) if entry.op_str == 'r14, r14' and callback[index + 1].mnemonic == 'je']
 deny = callback[scenario_gate + 1].operands[0].imm
+identity, = sites(callback, '??9ObjectGuid@@')
+guid_get, = sites(callback, '?GetGuidValue@Object@@')
+assert lookup < guid_get < identity < retry
+assert callback[guid_get - 2].op_str == 'edx, edx' and callback[guid_get - 1].op_str == 'rcx, rbx'
+assert [entry.op_str for entry in callback[identity - 2:identity]] == ['rdx, rsi', 'rcx, rax']
+assert callback[identity + 1].op_str == 'al, al' and callback[identity + 2].mnemonic == 'jne'
+assert callback[identity + 2].operands[0].imm == deny
+inequality = leaf('??9ObjectGuid@@', 24)
+assert [entry.op_str for entry in inequality[:6:3]] == ['rax, qword ptr [rdx]', 'rax, qword ptr [rdx + 8]']
+assert [entry.op_str for entry in inequality[1:6:3]] == ['qword ptr [rcx], rax', 'qword ptr [rcx + 8], rax']
+assert all(inequality[index].mnemonic == 'jne' and inequality[index].operands[0].imm == inequality[8].address for index in (2, 5))
+assert inequality[6].mnemonic == 'xor' and inequality[6].op_str == 'al, al'
+assert inequality[8].mnemonic == 'mov' and inequality[8].op_str == 'al, 1'
+assert inequality[7].mnemonic == 'ret' and inequality[9].mnemonic == 'ret'
 for operands, mnemonic, branch in (('r14, r14', 'test', 'je'), ('eax, 0x444', 'cmp', 'jne'),
                                    ('eax, 0xa', 'cmp', 'jne'), ('rbx, rbx', 'test', 'je'),
                                    ('dword ptr [rbx + 0xa18], 0', 'cmp', 'jne'), ('eax, 0x1a0df', 'cmp', 'jne'),
@@ -92,6 +106,7 @@ for operands, mnemonic, branch in (('r14, r14', 'test', 'je'), ('eax, 0x444', 'c
     assert callback[index + 1].mnemonic == branch and callback[index + 1].operands[0].imm == deny
 for method, branch in (('?IsInWorld@Object@@', 'je'), ('?IsPreDelete@Object@@', 'jne')):
     index, = sites(callback, method)
+    assert identity < index
     assert callback[index + 1].op_str == 'al, al' and callback[index + 2].mnemonic == branch and callback[index + 2].operands[0].imm == deny
 assert callback[retry - 1].op_str == 'rdx, rbx'
 assert callback[retry + 1].mnemonic == 'jmp' and callback[retry + 1].operands[0].imm > deny
@@ -119,4 +134,4 @@ for body, message in ((helper, b'Silver Hand finale: Blinding Light failed with 
     for method in ('?AddDelayedEvent@Unit@@', '?UpdateAchievementCriteria@Player@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@'):
         assert not sites(body, method)
 assert not sites(callback, '?AddDelayedEvent@InstanceScript@@')
-print('PASS selected1539 factory0x310/full128-bit GUID set2f8 admits both finale speech/cast before reentry through actual native insert/128-bit comparator/copy; original nontriggered self215260/protection flags retained. Actual result0 returns before1000ms instance-owned queue130; closure/table/9-byte thunk retains instance+full GUID, resolves Map actor and requires live106719/1539/same map/scenario1092/exact10. Stale work erases the GUID/logs without requeue; success stops retry. Native InstanceMap->UpdateForScript drains same base queue and destruction releases it. No forced casts, Player credit or items; accepted cast is not client aura/VFX/arrival verification.')
+print('PASS selected1539 factory0x310/full128-bit GUID set2f8 admits both finale speech/cast before reentry through native insert/128-bit comparator/copy; original nontriggered self215260/protection flags retained. Result0 returns before1000ms instance queue130; closure/table/thunk retains instance+full GUID. After native Map lookup, explicit native24-byte inequality compares both GUID halves against captured identity before live106719/1539/same-map/1092/exact10 checks and retry. Same-low alias follows unchanged stale erase/log/drop without replacement cast/flags or self-requeue. Native queue dispatch/destruction retained; no forced casts, Player credit or items. Accepted cast is not client aura/VFX/arrival verification.')

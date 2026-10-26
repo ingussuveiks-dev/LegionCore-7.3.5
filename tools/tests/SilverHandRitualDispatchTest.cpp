@@ -1,4 +1,5 @@
 #include <atomic>
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <functional>
@@ -15,6 +16,8 @@ enum {SPELL_CAST_OK=0,SPELL_FAILED_SPELL_IN_PROGRESS=123,TRIGGERED_IGNORE_CAST_I
 struct ObjectGuid
 {
     uint64 low=0,high=0;
+    uint32 GetGUIDLow() const{return uint32(low);}
+    bool operator!=(ObjectGuid const& other) const{return low!=other.low || high!=other.high;}
     bool operator<(ObjectGuid const& other) const{return high<other.high || (high==other.high && low<other.low);}
 };
 using GuidSet=std::set<ObjectGuid>;
@@ -86,8 +89,11 @@ struct Reference
     Player* player;
     Player* getSource() const{return player;}
 };
+std::vector<Map*> maps;
 struct Map
 {
+    Map(){maps.push_back(this);}
+    ~Map(){maps.erase(std::find(maps.begin(),maps.end(),this));}
     struct PlayerList : std::vector<Reference>
     {
         using std::vector<Reference>::operator=;
@@ -144,11 +150,29 @@ struct Creature
 #include "LifecycleBridge.inc"
     }
 };
-Creature* Map::GetCreature(ObjectGuid const& guid)
+struct ObjectVector
 {
-    for(Creature* actor:actors)if(actor && actor->guid.low==guid.low && actor->guid.high==guid.high)return actor;
-    return nullptr;
-}
+    Creature* operator[](uint32 low) const
+    {
+        for(Map* map:maps)for(Creature* actor:map->actors)if(actor && actor->GetGUID().GetGUIDLow()==low)return actor;
+        return nullptr;
+    }
+};
+template<class T> struct HashMapHolder
+{
+    inline static ObjectVector _objectVector;
+    inline static uint32 _size=10000;
+    inline static bool _checkLock=false;
+    struct Lock {void lock_shared(){}void unlock_shared(){}};
+    inline static Lock i_lockVector;
+#include "NativeFind.inc"
+};
+struct ObjectAccessor
+{
+#include "LookupWorld.inc"
+#include "LookupMap.inc"
+};
+#include "MapLookup.inc"
 uint32 Creature::CastSpell(Creature* target,uint32 spell)
 {
     assert(target==this && spell==215260);casts.push_back(spell);if(onCast)onCast();
@@ -261,6 +285,19 @@ struct Instance
 #include "InstanceDelay.inc"
 int main()
 {
+#ifdef IDENTITY_BASELINE
+    for(bool upperLow:{false,true})
+    {
+        Creature boss,replacement,last;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;replacement.entry=106719;boss.castResult=123;
+        replacement.guid={boss.guid.low+(upperLow?(uint64(1)<<32):0),boss.guid.high+(upperLow?0:1)};
+        Player player;player.last=&last;player.boss=&boss;Map map;boss.map=&map;replacement.map=&map;map.players={{&player}};map.actors={&boss};
+        Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;script.onScenarionNextStep(10);
+        map.actors={&replacement};assert(map.GetCreature(boss.guid)==&replacement);
+        script.Tick(1000);assert(replacement.casts==std::vector<uint32>{215260} && replacement.flags==31 && boss.casts.size()==1);
+    }
+    std::cout<<"PASS pinnedaa841984: actual native low32 Find/map lookup returns a different full GUID at the same slot; deferred215260 incorrectly casts/flags that replacement for both high64 and upper-low32 changes\n";
+    return 0;
+#else
 #ifdef DISCOVERY_BASELINE
     for(bool partial:{false,true})
     {
@@ -766,15 +803,23 @@ int main()
         script.onScenarionNextStep(10);assert(boss.casts.size()==(context==10?3u:2u));
         assert(player.credits.empty());
     }
+    for(bool upperLow:{false,true})
     {
         Creature boss,unrelatedBoss,last;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;unrelatedBoss.entry=106719;boss.castResult=123;
-        unrelatedBoss.guid={boss.guid.low,boss.guid.high+1};
+        unrelatedBoss.guid={boss.guid.low+(upperLow?(uint64(1)<<32):0),boss.guid.high+(upperLow?0:1)};
         Player player;player.last=&last;player.boss=&boss;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;unrelatedBoss.map=&map;
         scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
-        {Instance script{&map};script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);map.actors={&unrelatedBoss};script.Tick(1000);assert(unrelatedBoss.casts.empty());}
+        {
+            Instance script{&map};script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);
+            map.actors={&unrelatedBoss};assert(map.GetCreature(boss.guid)==&unrelatedBoss);script.Tick(1000);
+            assert(unrelatedBoss.casts.empty() && unrelatedBoss.flags==16 && script._finaleActorsStarted.size()==1 && script.m_Functions.SizeQueue()==0);
+            player.boss=&unrelatedBoss;script.onScenarionNextStep(10);
+            assert(unrelatedBoss.casts.size()==1 && unrelatedBoss.flags==31 && script._finaleActorsStarted.size()==2);
+        }
+        player.boss=&boss;
         map.actors={&boss};
         {Instance script{&map};script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);}
-        Instance replacement{&map};replacement.Tick(10000);assert(boss.casts.size()==2 && unrelatedBoss.casts.empty());
+        Instance replacement{&map};replacement.Tick(10000);assert(boss.casts.size()==2 && unrelatedBoss.casts.size()==1);
     }
     scenarioManager=ScenarioManager{};
     std::cout<<"PASS Blinding Light recovery: native instance-owned1000ms queue/999+1/no lag catch-up, fullGUID/reentry/duplicate admission, accepted casts stop, Player loss/faction labels,24 actor/scenario contexts cancel and allow fresh issued retry, instance destruction/replacement and same-low-different-high actor isolation; no forced cast, item or progression grant\n";
@@ -856,6 +901,7 @@ int main()
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
     std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

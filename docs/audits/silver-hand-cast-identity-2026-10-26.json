@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Reject a different full-GUID caster returned by native low32 lookup in the existing Silver Hand215260 deferred retry. Correct a stronger earlier fixture assumption; not global accessor behavior, complete Holy/all36 or client channel/VFX verification.",
+  "sources": [
+    {
+      "source": "Clean main/originaa841984, worklist/routes/donor review and linked Ashbringer/native accessor and SilverHand cast/discovery audits; local full instance callback/helper",
+      "review": "Captured full GUID and scenario/map/entry/live gates were retained, but delayed callback accepted whatever Map::GetCreature returned. Native HashMapHolder::Find uses only volatile GetGUIDLow/size check/vector index. ObjectGuid::GetGUIDLow is PAIR64_LOPART(_low); native Map/ObjectAccessor wrappers add map/predelete checks, not complete GUID equality. A different live same-entry/same-map caster with the same low32 slot can therefore pass the old gates. Earlier Map fixture compared low64+high64 itself and hid that missing production guard; its full identity lookup conclusion is explicitly superseded here."
+    },
+    {
+      "source": "Fresh read-only MariaDB1539 instance binding/addons and current matching26972 SilverHandFinalCatalog through native regression",
+      "review": "1539 remains instance_silver_hand;106777 addon215258 and106719 addon212300 unchanged. Native215258/215260 effects, duration/cast indices and55978/57625 visual links retained. No DB2/runtime/spawn/phase/channel metadata or character writes; visual names/links do not certify complete kits/attachments or rendering."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted215260/CastBlindingLight scripts and all-ref SilverHand path log",
+      "review": "No applicable caster-retry implementation returned. Bounded search, not exhaustive history or modern API import."
+    },
+    {
+      "source": "Pinned Titans full93-line relevant instance source returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "review": "No deferred cast recovery or identity guard supplied. No donor code imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. Existing1000ms custom technical cast recovery retained without inferring retail timing or visual behavior."
+    }
+  ],
+  "repair": {
+    "implementation": "One additional guard rejects boss->GetGUID()!=captured guid immediately after null resolution and before the original live/entry/map checks and CastBlindingLight call. Uses the existing stale branch: erase original admitted key, warn and drop without requeue. It does not touch the different caster, redirect the delayed request, or suppress a future separately issued legitimate stage10 callback for that replacement.",
+    "preserved": "No new state, timer, forced cast, interrupt, flags, Player/pet/guardian/group credit, item grant, global accessor change or phase/native scenario/effect change. Independent last-Travard/boss discovery and full-GUID before-effect admission remain. Existing original-caster rejected-cast retry, cleanup/destruction, Player-loss behavior, accepted stop and native1092/exact10 gate retain their original behavior.",
+    "limits": "A new object with the exact same complete GUID is not a separate attempt identity. Same-stage abandon/reaccept, Scenario recreation, accepted-cast interruption/application, original215258 channel start/cleanup, actual escape/arrival and full client traversal/VFX remain OPEN. Other callbacks/fixtures using native low-index lookup still need their own scoped review; no global identity certification."
+  },
+  "validation": {
+    "baseline": "PASS IdentityBaseline pins fullaa841984 instance source, compiling actual native HashMapHolder::Find, ObjectAccessor wrappers, Map::GetCreature and queue/cast gate. Controlled registry exposes live same-low32/same-entry/same-map replacement identities differing in high64 or upper32 of low64. Assert native lookup returns replacement, then old queued retry wrongly casts215260 and sets protection flags on it without a fresh callback. Controlled alias, not a recorded client incident.",
+    "host": "PASS current full production instance/third handlers, actual native low32 Find/map wrappers, InstanceScript/FunctionProcessor and Spell::prepare rejection. Alias is actually returned by native wrapper, but current callback leaves replacement cast list/flags untouched, erases original cache key and consumes queue. Separate fresh step10 callback can then admit that replacement; destruction/replacement retains no stale jobs. Existing24 actor/scenario contexts,15 discovery contexts, reentrant/duplicate admission, faction/dead/absent Player labels, actual arrival/waypoint and queue999+1/no lag catch-up remain covered. Registry/vector population, geometry/Player/criteria/cast services remain controlled, not full engine lifecycle or actual group/client proof.",
+    "installed": "PASS selected1539 factory/queue/closure/lookup/discovery/step8 and downstream proofs retained. Actual delayed callback calls GetGuidValue(0), compares resolved actor against captured GUID with native24-byte inequality leaf checking both64-bit halves, and branches to the same stale erase/log/drop before IsInWorld/IsPreDelete/entry/map/cast gates. No replacement cast/protection path or new fake credit. Native actual-map lookup is not mislabeled full-key resolution anymore; explicit script identity check supplies the missing guarantee.",
+    "regressions": "PASS29 distinct top-level serial suite variants: retained19 waypoint-retry group includes current ritual dispatch/entry, wave lifetime, rescue, ally damage, aberration credit, Scepter login, Dalaran149 native race/class pairs/22 invitations/36 selection effects, scene lifecycle and artifact force-equip, plus10 extra identity/discovery/cast baselines, six wave partial/creation/defender/context/progress baselines and Mordoth motion Release nesting seven-spawn initial-motion checks. Both identity alias modes and explicitly issued fresh replacement callback pass under current ASAN. Direct Python Ashbringer installed proof also passes on this link without executing/recompiling its quarantined ordinary fixture. Controlled/native/PE/startup evidence, not full engine or client/group/visual certification.",
+    "security_limit": "Earlier ordinary Ashbringer door fixture remains Windows Defender quarantined as documented in ashbringer-door-lifetime-2026-10-26.json. It was not restored, renamed, recompiled or used as a security fallback. This unit exercises a different existing SilverHand handler/fixture and independent installed PE proofs; it does not certify the blocked ordinary Ashbringer wrapper or assume its detection a false positive.",
+    "evidence": ".codex/silver-hand-cast-identity-* and silver-hand-waypoint-retry-cast-identity-* plus current runtime-test/silver-hand-ritual-dispatch generated includes/native metadata. No runtime/configuration/passwords/certificates/character data committed. Original stronger mock finding retained, not hidden behind passing old tests."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "02A0AC06F48B09C84AE7DEC806F90506D23495E17E0F8693123E715BB40F4953",
+    "bnet_sha256": "AC96178D5241F371E895A9D909F48CCCCEC0AEEA96BEA34A26EF4C44D00716EE",
+    "build": "PASS Release world+bnet16.71s/0 warnings/errors, no OutDir. Actual UTF16 world/bnet final-link logs retain INCREMENTAL:NO and original src/server Release static-library inputs: scripts/game/shared/common for world, shared/common for bnet. Canonical executable hashes match this audit; selected installed identity/discovery and retained Ashbringer implementations decoded independently.",
+    "runtime": "Own hidden canonical PID31832 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0; new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No unknown/user process stopped or own hidden server left. Startup is not1539 caster/channel traversal."
+  }
+}

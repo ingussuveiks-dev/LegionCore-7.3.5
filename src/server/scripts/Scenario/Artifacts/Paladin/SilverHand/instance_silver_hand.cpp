@@ -88,7 +88,7 @@ public:
                 Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
                 Creature* boss = instance->GetCreature(guid);
                 if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != 10 ||
-                    !boss || !boss->IsInWorld() || boss->IsPreDelete() || !boss->IsAlive() ||
+                    !boss || boss->GetGUID() != guid || !boss->IsInWorld() || boss->IsPreDelete() || !boss->IsAlive() ||
                     boss->GetEntry() != 106719 || boss->GetMapId() != 1539 || boss->GetMap() != instance)
                 {
                     _finaleActorsStarted.erase(guid);
