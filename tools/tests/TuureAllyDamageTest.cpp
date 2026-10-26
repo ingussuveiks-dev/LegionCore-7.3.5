@@ -3,9 +3,11 @@
 #include "NativeHost.inc"
 enum {CRITERIA_TYPE_SCRIPT_EVENT_2=92};
 struct EventMap {void Reset(){}};
+struct FunctionProcessor {void Update(uint32){}};
 struct Companion:CreatureAI {
  Creature* me=nullptr;bool wait_heal=false,_pendingHealRecovery=false,_introHealDone=true;
  EventMap events;std::vector<uint32> speech;void Talk(uint32 id){speech.push_back(id);}
+ FunctionProcessor _entryFunctions;uint64 _entryGeneration=0;
  // The separately regressed full initial95pct sequence is outside this wound fixture.
  void CancelIntroHeal(){}void CompleteIntroHeal(){}
 };

@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "473d023c",
+  "scope": "Four Boros106134 Unit-owned borrowed-AI callback lifetimes only. Original2s point1 spell/door/ally attack,3s next point,4s greeting and16s106221 release preserved. Full movement/quest recipient/re-entry still OPEN.",
+  "cause": "Unit::AddDelayedEvent stores its function on Creature/Unit, whose lifetime can outlast a content AI. Original four lambdas captured this, did not invalidate on Reset and remained queued after AI replacement/destruction. Ordinary AI-owned _functions is separately safe from AI destruction, but its paused progression/reset/recipient policies still need review.",
+  "repair": [
+    "Move only four callbacks to separate AI-owned FunctionProcessor _entryFunctions; destruction now destroys their queue with the AI. Original native Creature locked UpdateLifecycle updates it independently of victim/casting/manual-stun UpdateAI gates, retaining the behavior of former Unit-owned callbacks.",
+    "Reset increments actor AI generation; all four callbacks capture and compare it before dereferencing actors or producing effects. Do not use FunctionProcessor::KillAllFunctions because its deferred clean flag would discard a newly scheduled legitimate same-tick retry. Old/new functions coexist safely and generation discards only stale work.",
+    "Preserve original delays/lookup IDs/spell212629/door249469/native pose/movement/optional actors and existing AI-owned paused _functions. No forced health, new credit, character edit, SQL or manual scenario completion. Initial quest-heal pending and40pct recovery remain separately regressed."
+  ],
+  "evidence": "Matching project Boros code, native Unit::AddDelayedEvent/FunctionProcessor ownership and Creature locked lifecycle; previous local Silver Hand entry queue uses the same matching native mechanism. No external donor/gameplay footage needed or claimed watched.",
+  "checks": {
+    "counterfactual": "Test-TuureBorosQueue -Baseline pinned473d023c executes original greeting/point1 payload after Reset, showing stale effects; after actual AI destruction confirms two borrowed functions still queued on actor. Does not execute freed-AI baseline callback or claim a reproduced native crash.",
+    "native_asan": "Actual full MoveInLineOfSight/EnterEvadeMode/Reset/UpdateLifecycle and original point1 case callback body, actual full FunctionProcessor and native Creature locked lifecycle bridge.16 primary/disabled/alias/null x optional missing actor/door variants, exact2s/3s/4s/16s boundaries/once effects, Reset cancellation/new same-tick work, freed/replaced AI, missing release target pass. Initial heal helpers are stubs only in callback-lifetime fixture, separately executed by complete heal regression.",
+    "preservation": "Test-TuureIntroHeal -AddressSanitizer24 variants and Test-TuureAllyDamage -AddressSanitizer768 still pass with new actual Reset/lifecycle. Their fixture adds the new AI-owned queue/generation fields; wound fixture explicitly excludes independent initial-heal controller.",
+    "limits": "Point1 case is extracted without unrelated MovementInform branches. Native motion/path acceptance/door/cast/credit/scene endpoints are controlled adapters; no client route, whole actor, party/faction/quest or actual unloaded-grid scheduling proof. Original paused _functions and nearest50562/50831 recipients, unguarded greeting admission/null input and later route recovery remain OPEN.",
+    "release": "Original generated library paths/no OutDir/staged original-link inputs; actual selected lifecycle110 updates distinct AI offset108, Reset increments generation188, four real compiled captured guards compare that field and all four AddDelayedEvent call sites use same AI queue (LEA and ADD RCX forms) with2s/3s/4s/16s. Previous actor/owner/heal/scene/pickup/capture checks included. Canonical PE and ScepterLogin -VerifyReleaseBinary pass.",
+    "development": "Initial inspection included empty no-op lambda with no unwind bounds, and initial PE classifier confused generation capture with comparison and assumed LEA rather than actual ADD addressing. Fixed checks follow actual compiled captured field/branch/address forms; wrong Python-path invocation failed before execution. Failed attempts remain evidence, not passing tests or hidden runtime faults.",
+    "runtime": "Both server names absent before/rechecked during promotion; protected config/cert/key hashes unchanged. Own15632 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0; no user/unknown process stopped or hidden task server left."
+  },
+  "canonical_sha256": {
+    "worldserver.exe": "25BBFCD0F5D68B674AA0E360243D74AD85CA84CD5D4E88E653595E76B9C0DDB2",
+    "bnetserver.map": "795B0674F173BD26CA01BEA84F9F7BED6BD7B4F8567D0FE6C28C10213EBE9096",
+    "worldserver.map": "555C360DE47745580306E6BA64242794CAF4475601E509DD81DD56310AD81927",
+    "bnetserver.exe": "157B9C31A0FB959AF1D01D85800AAF87D88F4E13A5E932DA27F55BB43EA79F87"
+  },
+  "diagnostics": "Mandatory before/after canonical+repo/fixture crash/log snapshots for every native test/build/probe/startup. No new/changed crash, appended DBErrors/server warning/error/assertion; no new fixed archive or truncation necessary. SQL14/15 unchanged/no character progress mutation.",
+  "next": [
+    "Native1085 step1 first combat/evade50562 and step2 waypoint50831 currently nearest-player; preserve genuine combat/death/arrival timing and native eligible healer/owner/group. Review paused _functions attempt cancellation/retry and missing106221/9859002/9859003 actual native paths before changes.",
+    "Greeting still dereferences who before null guard and admits any nearby Player, with no actual class/quest/scenario check; preserve actual dialogue and heal/re-entry opportunity when correcting.",
+    "Captain106107 native50634,105697 LINK1 and remaining chain/client/all36 work remain OPEN."
+  ]
+}

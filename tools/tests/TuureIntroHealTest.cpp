@@ -66,7 +66,7 @@ auto sScenarioMgr=&manager;
 #include "Policy.inc"
 struct EventMap {void Reset(){}};
 struct Boros:CreatureAI {
- Creature* me;bool _introHealDone=false,wait_heal=false,_pendingHealRecovery=false;ObjectGuid _introHealer;std::weak_ptr<uint8> _introAttempt;EventMap events;uint32 talks=0;
+ Creature* me;bool _introHealDone=false,wait_heal=false,_pendingHealRecovery=false;ObjectGuid _introHealer;std::weak_ptr<uint8> _introAttempt;EventMap events;uint32 talks=0;FunctionProcessor _entryFunctions;uint64 _entryGeneration=0;
  explicit Boros(Creature* c):me(c){c->primary=this;}void Talk(uint32 id){assert(id==2);++talks;}
 #include "Methods.inc"
 };

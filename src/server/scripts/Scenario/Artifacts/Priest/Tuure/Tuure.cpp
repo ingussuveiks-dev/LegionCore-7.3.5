@@ -84,9 +84,12 @@ public:
         }
         bool _introDone, _introHealDone, firstfighting, wait_heal, firstwp, secondwp;
         FunctionProcessor _functions;
+        FunctionProcessor _entryFunctions;
+        uint64 _entryGeneration = 0;
 
         void Reset() override
         {
+            ++_entryGeneration;
             _pendingHealRecovery = false;
             CancelIntroHeal();
             events.Reset();
@@ -109,9 +112,9 @@ public:
                     if (Player* pl = me->FindNearestPlayer(100.0f))
                         pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50562);
                     me->CreateConversation(2009);
-
-                    me->AddDelayedEvent(16000, [this]() -> void
+                    _entryFunctions.AddDelayedEvent(16000, [this, generation = _entryGeneration]() -> void
                     {
+                        if (generation != _entryGeneration) return;
                         if (Creature* targ = me->FindNearestCreature(106221, 40.0f, true))
                             targ->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                     });
@@ -188,10 +191,11 @@ public:
             player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50563);
         }
 
-        void UpdateLifecycle(uint32) override
+        void UpdateLifecycle(uint32 diff) override
         {
             TuureCompanion::Recover(me, _pendingHealRecovery, wait_heal);
             CompleteIntroHeal();
+            _entryFunctions.Update(diff);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
@@ -246,8 +250,9 @@ public:
                 switch (id)
                 {
                     case 1:
-                        me->AddDelayedEvent(2000, [this]() -> void
+                        _entryFunctions.AddDelayedEvent(2000, [this, generation = _entryGeneration]() -> void
                         {
+                            if (generation != _entryGeneration) return;
                             DoCast(212629);
                             Talk(3);
                             if (GameObject* go = me->FindNearestGameObject(249469, 30.0f))
@@ -258,9 +263,9 @@ public:
                                     jeims->AI()->AttackStart(targ);
 
                         });
-
-                        me->AddDelayedEvent(3000, [this]() -> void
+                        _entryFunctions.AddDelayedEvent(3000, [this, generation = _entryGeneration]() -> void
                         {
+                            if (generation != _entryGeneration) return;
                             me->GetMotionMaster()->MovePoint(2, 34.70f, 1201.05f, -65.06f);
                         });
                         break;
@@ -295,8 +300,9 @@ public:
             {
                 _introDone = true;
                 Talk(0, who->GetGUID());
-                me->AddDelayedEvent(4000, [this]() -> void
+                _entryFunctions.AddDelayedEvent(4000, [this, generation = _entryGeneration]() -> void
                 {
+                    if (generation != _entryGeneration) return;
                     Talk(1);
                 });
             }

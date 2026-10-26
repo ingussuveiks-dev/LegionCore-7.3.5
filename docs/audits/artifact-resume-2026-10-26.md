@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Boros callback queue lifetime and Reset generations
+
+- `tuure-boros-callback-queue-2026-10-26.json`: four2s/3s/4s/16s borrowed-AI Unit callbacks now belong to separate AI FunctionProcessor updated in native locked lifecycle. Reset generation cancels only stale operations, preserving legitimate same-tick new work and original delays/actors/spells. No health/progression/SQL change. Paused _functions policies remain separate/open.
+- Pinned stale-Reset/remaining queued-after-destruction counterfactual (freed baseline not executed), current ASAN16 lifecycle/optional-actor variants and reset/retry/freed AI/native FunctionProcessor pass. Full initial-heal24/wound768 preserved; actual canonical queue108/generation188/four guards+same queue/timers and prior heal/Lady/pickup/scene/capture/Scepter PE pass. Endpoint/full-motion/client limits explicit.
+- Canonical world 25BBFCD0F5D68B674AA0E360243D74AD85CA84CD5D4E88E653595E76B9C0DDB2, map 555C360DE47745580306E6BA64242794CAF4475601E509DD81DD56310AD81927; own15632 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive or character edits. Commit containing audit follows473d023c.
+- NEXT: genuine step1 evade50562/step2 waypoint50831 eligible participant/attempt/reset/retry, actual106221 release/paths; greeting null/class/quest/scenario admission; then captain50634/105697 LINK1. Actual complete motion/doors/voice/follow/re-entry and all36/client remain OPEN. Older raw-this callback notes superseded only for these four operations.
+
 ## Latest repair: Boros initial actual95pct and original heal attempt
 
 - `tuure-intro-heal-2026-10-26.json`: actual positive-heal signal/native owner in1489/1085/0/41993 binds full Player GUID+native quest lease. Locked lifecycle revalidates original/current lease and observed95pct after health application before native50563/original pose/MovePoint1. NPC/missing owner cannot consume latch; invalid/reset/stale attempts retain later-heal retry. No forced HP, nearest player, explicit completion or character edits.
