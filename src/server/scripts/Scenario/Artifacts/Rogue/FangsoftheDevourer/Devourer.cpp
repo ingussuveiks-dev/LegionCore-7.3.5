@@ -246,11 +246,22 @@ public:
                         if (Creature* targ = me->SummonCreature(105540, me->GetPositionX() + 3.0f, me->GetPositionY() + 3.0f, me->GetPositionZ()))
                         {
                             targ->CastSpell(targ, 189170);
-                            me->AddDelayedEvent(5000, [this, targ]() -> void
+                            me->AddDelayedEvent(5000, [owner = me, helperGuid = targ->GetGUID()]() -> void
                             {
-                                Talk(3);
-                                if (Player* pl = me->FindNearestPlayer(40.0f))
-                                    targ->CastSpell(pl, 209264);
+                                // Actor-owned queue: no borrowed AI/helper pointers.
+                                // Resolve the exact live helper when this fires.
+                                if (!owner->IsInWorld() || owner->IsPreDelete() || !owner->IsAlive() || owner->GetEntry() != 105536)
+                                    return;
+                                sCreatureTextMgr->SendChat(owner, TEXT_GENERIC_3);
+                                Creature* helper = ObjectAccessor::GetCreature(*owner, helperGuid);
+                                if (!helper || !helper->IsInWorld() || !helper->IsAlive() ||
+                                    helper->GetGUID() != helperGuid || helper->GetEntry() != 105540 || !owner->InSamePhase(helper))
+                                {
+                                    TC_LOG_WARN("scripts", "Devourer capture: optional helper105540 no longer usable at5s; retain original transfer timer");
+                                    return;
+                                }
+                                if (Player* pl = owner->FindNearestPlayer(40.0f))
+                                    helper->CastSpell(pl, 209264);
                             });
 
                             if (Player* pl = me->FindNearestPlayer(40.0f))

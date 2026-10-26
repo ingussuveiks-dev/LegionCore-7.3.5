@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Opening Akaari5s visual pointer safety repaired
+
+- Audit `devourer-capture-visual-lifetime-2026-10-26.json`: actor-owned5000ms callback captures owner actor/full helper GUID, no borrowed AI/helper pointers. Fresh native map lookup plus full identity/entry/phase/alive/world/predelete guards; same native group3/108415 speech and optional209264. No credit/teleport/timer/attempt policy changed.209264 aura260 is SCREEN_EFFECT963 (prior audit label corrected), not scene1257/activate430 used by pickup.
+- Pinned retired-helper/current actually freed helper+AI ASAN with real FunctionProcessor/native lookup, cancellation/owner destruction/invalid phases/GUID replacement/once-only checks pass. Actual factory Update18/std::function invoker/operator/full128-bit capture PE plus preserved damage/pickup/death/Hunter/Leap/Scepter pass. No full client proof.
+- Canonical world `66A65495237B83ECF5D25EA098D1D625969DBAEBFE4FF575B1384F9366774BAA`, map `D9FCAD767F1093D81B65A081A8E19BDB5F00367914DFBD0FB99B6FFC8727A935`, bnet `B3B1B92B0344204D2BEA0E2029B363F5BDF9BF6362738C9014EBBD2F01D4863A`. No SQL;12/13 retained. Own10664(initial) and19904(final) ready/shutdown0/exit0, no new diagnostics/protected changes/no hidden server left. Both names absent at promotion; no user process stopped. Active Crashes0/DBErrors0.
+- NEXT STILL OPEN: original10s `[pl]` callback can force a moved/abandoned/re-entered player back; bind current recipient/map/quest/attempt and preserve native delay/failure retry. Missing initial105540 spawn still prevents scheduling transfer and can leave the actor immune.5s reset/attempt/nearest-player policy remains unchanged. Do not describe complete capture as fixed from optional visual memory safety.
+- Known81040 native child,105332 LINK1, actual full client/VFX and all36 remain open. Private failed development PE inspection was stopped only for task-owned Python32988 (nonserver); final checks pass with clean runtime diagnostics.
+
 ## Latest continuation: Opening Akaari lethal protection repaired
 
 - Audit `devourer-capture-scaled-damage-2026-10-26.json`:105536 now uses native post-scaling/owner/attacker-relative health to retain1HP only for active41924 Rogue/real1078 step0. No capture credit/cast/teleport/timer changes; original class identical outside this guard. Final Akaari/clones unaffected.

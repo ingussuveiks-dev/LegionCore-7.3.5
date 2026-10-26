@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Scoped5s optional capture visual pointer lifetime repaired/tested/deployed;10s transfer/attempt and full capture remain OPEN",
+  "cause": "Opening105536 scheduled an actor-owned5s callback capturing raw this AI and raw105540 helper. The actor queue can outlive an AI replacement or helper removal, leaving borrowed pointers. This is a source/native retired-helper counterfactual finding, not a newly captured production crash.",
+  "implementation": [
+    "Keep the existing actor-owned FunctionProcessor queue and5000ms delay, capture its owner actor plus the helper full128-bit GUID by value. Never capture the AI or helper pointer. Skip a dead/out-of-world/predelete/transformed owner. Use native CreatureTextMgr::SendChat group3, exactly the body of CreatureAI::Talk3 with its existing defaults; native105536 group3/broadcast108415 unchanged.",
+    "After speech resolve the exact helper with ObjectAccessor::GetCreature in the owning map. Require native lookup/predelete eligibility, in-world/alive, same full GUID/entry105540 and phase; otherwise emit one useful warning for the consumed callback and retain the independent original transfer timer. Preserve nearest-player40 and209264 exactly for a usable helper. No capture credit/teleport, new anchor rule, retry/attempt policy or timer change.",
+    "Clarified prior metadata wording:209264 aura260 is native SCREEN_EFFECT963, not an ActivateScene ID. Pickup209816 aura430 is the separate scene1257. This correction changes no effect/ID/code behavior. Actual rendering remains unverified."
+  ],
+  "sources_and_checks": [
+    "Whole original105536 flow, native Unit::AddDelayedEvent forwarding, FunctionProcessor queue/destruction/cancellation, CreatureAI::Talk and CreatureTextMgr default SendChat, ObjectAccessor::GetCreature/GetObjectInMap/HashMapHolder and AuraDefines inspected locally. Native typed capture catalog confirms209264 screen effect/7000ms. No donor/video needed/reviewed for pointer ownership.",
+    "Fresh read-only bindings: only105536 uses npc_akaari_shadowgore,105542 uses zirus,105660 uses last Akaari and249347 uses go_art_devourer; no other aliases found. Native text group3/broadcast108415 is present. Shared actors/scripts and whole quest remain separately scoped.",
+    "Pinnedc0a7c900 actual queued callback uses a retired-but-retained helper after registry removal; expected failing baseline explicitly avoids dereferencing actual freed old pointers. Current ASAN uses actual production callback and FunctionProcessor plus native creature registry/map/predelete lookup, with real freed helper and old AI, counter replacement/full-GUID identity, dead/removed/predelete/wrong-map/phase/entry helper, owner retirement/destruction/cancellation, absent player,4999+1ms boundary and exactly-once speech/cast/warning. No progression API exists in this extracted callback.",
+    "Prior32 scaled damage and native loot/storage/equip handler ASAN regressions pass; damage test source comparison now normalizes only this independently tested callback. Its status text distinguishes unchanged damage policy/timers from this separate lifetime change.",
+    "Original generated scripts/game Release and original LIB final inputs built/linked twice (final adds explicit parent predelete guard). Selected staged/canonical PE proves actual factory UpdateAI18 -> installed std::function invoker -> actual lambda operator -> fresh GetCreature and captured16-byte GUID copy, parent/helper identity constants, direct native SendChat3/209264 and no old AI Talk dependency or teleport/credit calls. Native damage postA8/pickup/death/Hunter/Heroic Leap and Scepter login selected consumers preserved.",
+    "Both server names absent/rechecked at both promotions. Owned world10664 (initial visual revision) and19904 (final predelete revision) each fresh ready/shutdown0/exit0, stderr/newDBErrors0/protected hashes unchanged, no hidden server remains. No SQL or character change. Before/after canonical/fixture diagnostics for every baseline/native/build/link/PE/promotion/startup group show no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes0/DBErrors0; no new resolved archive needed. Native fixture retains existing FunctionProcessor size/unused lookup warnings; no new production warning."
+  ],
+  "development_evidence": [
+    "First PE verifier searched the std::function invoker for an inlined GetCreature. Actual MSVC emitted a separate lambda operator and a small invoker wrapper. Final check follows both and the actual installed vtable slot.",
+    "A private PE-inspection script accidentally repeated call-graph scans for each symbol. Stopped only that task-owned Python helper PID32988; it was not a server. Its wrapper returned nonzero/Completed=false with clean crash/log inventory, retained as failed development evidence. Replaced inspection with bounded/precomputed analysis; all final verifiers pass.",
+    "Adding the final parent predelete guard changed the compiler capture-base register. Final assertions prove full16-byte field copy and matching owner/GUID offsets/argument data flow without pinning one arbitrary physical register. Initial verifier failure remains separate from passing final checks."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "66A65495237B83ECF5D25EA098D1D625969DBAEBFE4FF575B1384F9366774BAA",
+    "world_map_sha256": "D9FCAD767F1093D81B65A081A8E19BDB5F00367914DFBD0FB99B6FFC8727A935",
+    "bnet_sha256": "B3B1B92B0344204D2BEA0E2029B363F5BDF9BF6362738C9014EBBD2F01D4863A",
+    "private_evidence": ".codex/devourer-capture-visual and build-extractors/runtime-test/devourer-capture-visual-lifetime/{baseline,current}"
+  },
+  "remaining": [
+    "Original10s Player-owned transfer still captures pl without current map/quest/actor/attempt validation; missing initial105540 spawn still prevents scheduling it and can leave an immune actor.5s reset/attempt ownership and nearest-player presentation have not been redesigned. Do not call complete capture fixed; next repair must validate exact recipient/current attempt and failure/retry without inventing progress or shortening the capture.",
+    "Actual client screen effect963/voice/drain presentation, Cheap Shot/clones,10s transfer/prison auras, combat owner/group/faction, abandon/re-entry/reset and full acquisition remain pending. Skipping an unavailable visual helper retains a diagnostic, not proof that its visual appears.",
+    "Native pickup81040 remains explicitly unresolved in prior audits/catalog;105332 LINK1 and remaining36 routes remain open. User character progress was not reset or granted."
+  ]
+}

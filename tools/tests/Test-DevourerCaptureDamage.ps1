@@ -7,7 +7,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $path='src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp';$source=Block (Get-Content "$repo/$path" -Raw) 'class npc_akaari_shadowgore :'
  $old=(& git -C $repo show "a0206501:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned capture baseline unavailable'};$old=Block $old 'class npc_akaari_shadowgore :'
  $guard=Block $source 'void DamageTakenAfterScaling('
- if(($source.Replace($guard,'')-replace '\s','') -cne ($old-replace '\s','')){throw 'Unexpected capture change outside final-damage guard'}
+ $restored=$source.Replace($guard,'').Replace((Block $source 'me->AddDelayedEvent(5000,'),(Block $old 'me->AddDelayedEvent(5000,')) # Separate helper-lifetime regression owns this callback.
+ if(($restored-replace '\s','') -cne ($old-replace '\s','')){throw 'Unexpected capture change outside final-damage guard'}
  [IO.File]::WriteAllText("$out/Guard.inc",$(if($Baseline){''}else{$guard}))
  [IO.File]::WriteAllText("$out/NativeDefault.inc",(Block (Get-Content "$repo/src/server/game/AI/CoreAI/UnitAI.h" -Raw) 'virtual void DamageTakenAfterScaling('))
  $hostSource=Get-Content "$PSScriptRoot/KingslayersDeathCreditTest.cpp" -Raw;$hostSource=$hostSource.Substring(0,$hostSource.IndexOf('struct Creature;')).Replace('51615','50261')

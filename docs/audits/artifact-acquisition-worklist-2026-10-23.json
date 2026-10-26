@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
+      "handler": "Opening Akaari5s helper visual pointer lifetime",
+      "problem": "Opening105536 scheduled an actor-owned5s callback capturing raw this AI and raw105540 helper. The actor queue can outlive an AI replacement or helper removal, leaving borrowed pointers. This is a source/native retired-helper counterfactual finding, not a newly captured production crash.",
+      "repair_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json",
+      "limit": "Deployed66A65495; pinned retired-helper/current freed-helper+AI ASAN/native FunctionProcessor/map lookup and actual selected Update18/std::function invoker/lambda/full128-bit GUID PE pass. Own19904 ready/shutdown0/exit0/no new diagnostics. Only optional5s visual lifetime;10s stale-player transfer, missing spawn/attempt/reset and full client remain OPEN."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/FangsoftheDevourer/Devourer.cpp",
       "handler": "Opening Akaari105536 timed-capture scaled lethal protection",
       "problem": "Opening Akaari105536 has no death transition: native1078 stage0 waits for50261 from the existing delayed capture/teleport. The actor had no final-damage policy, so an ordinary scaled player/pet lethal hit killed it before that timed path. This differs from the final killable Akaari105660 and Eliza combat buff.",
       "repair_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json",
@@ -1952,7 +1959,7 @@
       "weapon": "Fangs of the Devourer",
       "item": 128476,
       "start": 41919,
-      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN. Pickup249347 native loot14/source4, genuine stored/equipped pair128476/128479 before50301 and no direct grant/duplicate completion now tested/deployed8DEA6B8C/updater13, clean owned startup. Actual scene/child81040/equip/full route remain pending. Opening105536 post-scaling one-HP protection at real1078/0 is tested/deployed49CB0E77 without advancing the timed capture; callback lifetime/retry/full client stay OPEN.",
+      "status": "partial: Zirus50298/final Akaari50300 native owner/charmer/null death credit repaired/deployed4791C5CC; original Zirus door cleanup preserved. Native/ASAN/pinned/selected Release/clean owned startup pass. Initial capture, pickup/storage/equip, actor links and complete client/VFX remain OPEN. Pickup249347 native loot14/source4, genuine stored/equipped pair128476/128479 before50301 and no direct grant/duplicate completion now tested/deployed8DEA6B8C/updater13, clean owned startup. Actual scene/child81040/equip/full route remain pending. Opening105536 post-scaling one-HP protection at real1078/0 is tested/deployed49CB0E77 without advancing the timed capture; callback lifetime/retry/full client stay OPEN. Optional5s helper callback now uses actor queue/full GUID/native fresh lookup without AI/helper borrowed pointers; tested/deployed66A65495. Original10s stale transfer/missing spawn/attempt flow stays OPEN.",
       "quests": [
         {
           "id": 41919,
@@ -2050,10 +2057,11 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair original5s captured AI/helper pointer lifetime and10s player-owned stale transfer, with actual actor/owner/attempt admission and native timing; review failed105540 summon/abandon/re-entry and105332 LINK1. No forced progress; known81040/full client still unresolved.",
+      "next_action": "Repair10s Player-owned transfer admission/actual recipient and attempt, missing105540 summon/retry and reset/abandon/re-entry. Do not confuse repaired optional5s pointer safety with complete capture. Keep81040/105332 LINK1/full client and all36 worklist open.",
       "owned_death_audit": "docs/audits/devourer-owned-death-credit-2026-10-26.json",
       "pickup_repair_audit": "docs/audits/devourer-native-pickup-2026-10-26.json",
-      "capture_damage_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json"
+      "capture_damage_audit": "docs/audits/devourer-capture-scaled-damage-2026-10-26.json",
+      "capture_visual_lifetime_audit": "docs/audits/devourer-capture-visual-lifetime-2026-10-26.json"
     },
     {
       "class_id": 5,
