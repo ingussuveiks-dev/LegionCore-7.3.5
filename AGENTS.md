@@ -51,6 +51,8 @@
 
 # Quest admission and packet regressions
 
+- Scythe37660 return Allari89398/spawn271101 is phase4265, zone7334 definition3. Preserve its original negative-QUESTTAKEN branch and add active37660 plus actual victory89673 as a separate ANDed ElseGroup; return89398 must still require the real nearby/LOS actor. Screen179183/mask2 cleanup remains independent and optional exit240012 is not a prerequisite. Native QUESTTAKEN notification triggers phase recalculation after victory. Run `Test-ScytheReturnPhase.ps1 -AddressSanitizer -VerifyLiveData` and `Test-AzsunaScythe.ps1 -AddressSanitizer`; actual visibility/turn-in/rendering remain client checks.
+
 - The Scythe of Souls37660 exit gem240012 must accept the native screen179183 or persisted real entry237017 plus victory89673; logout/recovery clears the visual while keeping objectives. Credit optional exit once through native type2 GO dispatch, retain alive/map/range/active-quest guards and own cleanup. Do not award89673/89398 from clicking the exit. Run `Test-AzsunaScythe.ps1 -Baseline/-AddressSanitizer`, its data/native catalog and `verify_scythe_exit_release.py`; actual client exit/return/turn-in remain separate.
 
 - Demon Souls37653 item122100/native178787 summons86963 for5s and captures within15 yards. Preserve all four corpse types90230/90241/93619/101943, source22 dead guards, original corpse runOnce/reset and summon/combat/path slots. Gem action33 must anchor OWNER_OR_SUMMONER23 and retain native eligible-group credit, without nearby unrelated-player anchors or item/quest grants. Run `Test-DemonSoulsGem.ps1 -AddressSanitizer -VerifyNativeCatalog`; actual counter/visual/group/client capture remain separate checks.

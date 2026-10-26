@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "sql/updates/world/2026_10_26_08_azsuna_scythe_allari_return.sql",
+      "handler": "Azsuna Scythe37660 existing Allari return phase",
+      "problem": "Phase4265 excluded active INCOMPLETE37660, hiding the actor required to credit its last return objective. User confirmed optional crystal credit but cannot see Allari.",
+      "repair_audit": "docs/audits/azsuna-scythe-allari-return-2026-10-26.json",
+      "limit": "Data repair deployed by actual canonical updater; native condition/PhaseMgr counterfactual and repaired ASAN lifecycle, TEMP idempotence/custom refusal, actual-position full-handler regression, fresh owned ready/shutdown0 and diagnostics pass. Original prequest/complete/rewarded branch and real victory/proximity/LOS preserved. User video0..181s reviewed as1fps samples, not continuous/audio. Actual client Allari visibility/final counter/turn-in remains pending; unrelated to full36 certification."
+    },
+    {
       "path": "src/server/game/Movement/MovementGenerators/FlightPathMovementGenerator.cpp",
       "handler": "Completed taxi route persistence without final client ACK",
       "problem": "A landed native flight retained one terminal taxi node; saving it made the unchanged login loader reject a non-resumable route.",

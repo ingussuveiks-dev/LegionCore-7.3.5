@@ -64,7 +64,7 @@ auto* sQuestDataStore=&questStore;
 struct Player:Unit {
     Player() { guid={++serial}; players[guid]=this; }
     ~Player() { players.erase(guid); }
-    int status=QUEST_STATUS_INCOMPLETE; bool spawnFailure=false, los=true;
+    int status=QUEST_STATUS_INCOMPLETE; bool spawnFailure=false, los=true, returnVisible=true;
     std::map<unsigned,unsigned> objectives; std::map<unsigned,GuidList> summons;
     std::set<unsigned> auras; std::vector<unsigned> credits; Menu menu; Menu* PlayerTalkClass=&menu;
     Player* ToPlayer() override { return this; }
@@ -87,6 +87,9 @@ struct Player:Unit {
     void QuestObjectiveSatisfy(uint32,uint32,unsigned,ObjectGuid={});
     bool IsWithinLOSInMap(Creature*) { return los; }
     Creature* FindNearestCreature(unsigned entry,float distance) {
+        // PhaseMgr/conditions are exercised separately by Test-ScytheReturnPhase.
+        // Retain their visibility boundary in this full script fixture.
+        if(entry==89398 && !returnVisible) return nullptr;
         for(auto& pair:creatures) if(pair.second.entry==entry && !pair.second.removed && IsWithinDistInMap(&pair.second,distance)) return &pair.second;
         return nullptr;
     }
@@ -189,9 +192,15 @@ int main()
     // Actual death credit is provided by the engine; it must never come from a
     // timer, spawn, entry, exit or abandonment in these production handlers.
     p.KilledMonsterCredit(89673);OwnedSummon(&p,89673)->alive=false;
-    Creature& receiver=creatures[{90}];receiver.guid={90};receiver.entry=89398;receiver.pos=Meeting;
+    Creature& receiver=creatures[{90}];receiver.guid={90};receiver.entry=89398;
+    receiver.pos={-90.1562f,6978.99f,12.4982f,1.58559f}; // Actual map1220 spawn271101.
+    recovery.OnUpdate(&p,1000);assert(!Done(&p,89398)); // Must travel back from the gem.
+    p.pos=receiver.pos;p.returnVisible=false;
+    recovery.OnUpdate(&p,1000);assert(!Done(&p,89398));
+    p.returnVisible=true;
     p.los=false;recovery.OnUpdate(&p,1000);assert(!Done(&p,89398));
     p.los=true;recovery.OnUpdate(&p,1000);assert(Done(&p,89398) && !p.HasAura(SoulScreen));
+    count=unsigned(p.credits.size());recovery.OnUpdate(&p,1000);assert(p.credits.size()==count);
     Player retry;recovery.OnUpdate(&retry,1000);assert(OwnedSummon(&retry,Allari));
     retry.AddAura(SoulScreen,&retry);retry.alive=false;recovery.OnUpdate(&retry,1000);assert(!retry.HasAura(SoulScreen) && !OwnedSummon(&retry,Allari));
     retry.alive=true;recovery.OnUpdate(&retry,1000);assert(OwnedSummon(&retry,Allari));
