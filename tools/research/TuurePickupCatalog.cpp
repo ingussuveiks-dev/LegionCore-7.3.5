@@ -33,12 +33,16 @@ int main(int argc,char** argv){
  steps.LoadFromDB();trees.LoadFromDB();criteria.LoadFromDB();
  for(auto step:steps)if(step->ScenarioID==1085){
   std::cout<<"STEP\t"<<unsigned(step->OrderIndex)<<'\t'<<step->ID<<'\t'<<step->Criteriatreeid<<'\t'<<step->Title->Str[0]<<'\t'<<step->Description->Str[0]<<'\n';
+  std::cout<<"STEP_META\t"<<unsigned(step->OrderIndex)<<'\t'<<unsigned(step->Flags)<<'\t'<<step->RewardQuestID<<'\n';
   std::set<uint32> pending{uint32(step->Criteriatreeid)},seen;
   while(!pending.empty()){auto id=*pending.begin();pending.erase(id);if(!seen.insert(id).second)continue;
-   if(auto tree=trees.LookupEntry(id)){if(auto c=criteria.LookupEntry(tree->CriteriaID))std::cout<<"CRITERION\t"<<unsigned(step->OrderIndex)<<'\t'<<tree->ID<<'\t'<<tree->Parent<<'\t'<<tree->Amount<<'\t'<<c->ID<<'\t'<<unsigned(c->Type)<<'\t'<<c->Asset<<'\n';
+   if(auto tree=trees.LookupEntry(id)){std::cout<<"TREE\t"<<unsigned(step->OrderIndex)<<'\t'<<tree->ID<<'\t'<<tree->Parent<<'\t'<<tree->Amount<<'\t'<<unsigned(tree->Operator)<<'\t'<<tree->Flags<<'\t'<<tree->CriteriaID<<'\n';if(auto c=criteria.LookupEntry(tree->CriteriaID))std::cout<<"CRITERION\t"<<unsigned(step->OrderIndex)<<'\t'<<tree->ID<<'\t'<<tree->Parent<<'\t'<<tree->Amount<<'\t'<<c->ID<<'\t'<<unsigned(c->Type)<<'\t'<<c->Asset<<'\n';
     for(auto child:trees)if(child->Parent==id)pending.insert(child->ID);}
   }
  }
+ DB2Storage<LFGDungeonsEntry> lfg("LFGDungeons.db2",LfgDungeonsLoadInfo::Instance());
+ if(!lfg.Load(argv[1],0))return 9;lfg.LoadFromDB();
+ for(auto dungeon:lfg)if(dungeon->ScenarioID==1085)std::cout<<"LFG\t"<<dungeon->ID<<'\t'<<dungeon->MapID<<'\t'<<unsigned(dungeon->DifficultyID)<<'\t'<<dungeon->GetMinGroupSize()<<'\t'<<dungeon->GetMaxGroupSize()<<'\t'<<unsigned(dungeon->CountTank)<<'\t'<<unsigned(dungeon->CountHealer)<<'\t'<<unsigned(dungeon->CountDamage)<<'\n';
  std::set<uint32> selected{210733,210734,210818};
  for(int depth=0;depth<3;++depth)for(auto effect:effects)if(selected.count(effect->SpellID)&&effect->EffectTriggerSpell)selected.insert(effect->EffectTriggerSpell);
  for(auto id:selected)if(auto spell=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';else std::cout<<"MISSING_SPELL\t"<<id<<'\n';

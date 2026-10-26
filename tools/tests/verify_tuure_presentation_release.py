@@ -29,4 +29,4 @@ assert any(ins.mnemonic == 'lea' and any(op.type == CS_OP_MEM and op.mem.base ==
            ins.address + ins.size + op.mem.disp == table for op in ins.operands)
            for ins in instructions('?AddSC_Tuure@@')), 'Tuure registration does not install the actual scene vtable'
 assert native['symbol']('??0SceneTriggerScript@@') in native['calls']('?AddSC_Tuure@@')
-print('PASS actual Tuure registration/scene vtable ->1265/1565 Complete -> real staff/native210734, active41993/map1489/1085 step6/boss leaf47656; no direct item, quest or scenario grant. Native scene/force-equip host covers dispatch; existing pickup14s controller and actual client remain separate open work.')
+print('PASS actual Tuure registration/scene vtable ->1265/1565 Complete -> real staff/native210734, active41993/map1489/1085 step6/boss leaf47656; no direct item, quest or scenario grant. Native scene/force-equip host covers dispatch; native pickup/exit is separately regressed; actual client remains pending.')

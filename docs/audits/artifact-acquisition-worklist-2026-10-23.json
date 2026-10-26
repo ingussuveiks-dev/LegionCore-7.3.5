@@ -2071,7 +2071,7 @@
       "weapon": "T'uure, Beacon of the Naaru",
       "item": 128825,
       "start": 41957,
-      "status": "partial: actual1265/1565 scene completion now requests native210734 equip of existing staff in exact1085/6/Lady context. Canonical/native/ASAN/TEMP/PE clean; real loot Data1, activation early progression/direct grant and14s unsafe exit remain open, full client traversal pending.",
+      "status": "partial: native real loot/storage, scoped scene/equip/queued cast lease guards and actual accepted departure/native final-tree completion repaired; native/ASAN/480 conditions/TEMP/PE/clean canonical startup verified. Lady106318 raw scaled lethal/death callback and earlier healer actors remain open; full client route pending.",
       "quests": [
         {
           "id": 41957,
@@ -2123,7 +2123,7 @@
         {
           "entry": 249705,
           "type": 3,
-          "loot_link": 0,
+          "loot_link": 249705,
           "expected_loot_entries": [
             249705
           ],
@@ -2169,8 +2169,9 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair249705 real loot/storage/full-bag retry plus original early50679/direct AddItem and14s50702/explicit1085/210818 controller. Trace actual native cast execution/accepted destination/quest lease and retain scene/native equip errors; no invented quest objective grants.105697 LINK1/full route/client/all36 remain open.",
-      "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json"
+      "next_action": "Repair Lady106318 post-scaling defeat/eligible owner or native ally context/3s independent actor-safe death/low-health late stun; inspect friendly healer raw guards. Preserve actual native loot/equip/exit and retain client queue/arrival/scene/faction/re-entry/full route,105697 LINK1 and all36 checks.",
+      "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
+      "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json"
     },
     {
       "class_id": 5,

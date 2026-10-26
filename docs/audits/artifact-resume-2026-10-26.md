@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure real storage, guarded queued casts and native departure
+
+- `tuure-native-pickup-2026-10-26.json`:249705 now real loot249705/128825, native lock1691 retained; no activation AddItem/50679 or raw14s callback/explicit1085. GO claim binds full owner/source GUIDs and quest lease; actual210733/210734 effects revalidate after queueing. Native scene/equipped staff/50679,14s minimum/30s finite retry, original ordinary CastSpell210818(false)/failed-request retry and actual210818 native effect with accepted original destination precedes once50702/native root reward. Other-map/scenario travel remains native.
+- Full pinned counterfactual/current native-hook/storage/deferral ASAN16 valid variants/28 denial/stale/deferred/failed/missing/reentrant cases,480 native loot/slot conditions, seven-table TEMP idempotence/eleven refusals and live hash/bindings pass. Actual native final tree/zero->one/step/reward9-case matrix proves both counters then one reward;1243 min/max1 is native solo. Final canonical GO/AI/spell factory+hook/capture/Hunter/Leap/shared return/Scepter PE pass. No actual client traversal proof.
+- Migration15 RELEASED/native text SHA1 F8810B03B8FA75251407068B3DFB8E9682F59826;14 immutable. Canonical world 9DCFBECCD502CD435F97C5509EB9695BB44A6BF664288C05979FDBA1EA6CED93, map 0A53366FE7739C499F73CE1111A9D0E6295272B35248BD0CD5D278EFE7510147, bnet C56447DDBA80CF54D49EC8F6E9152FE346906B82E5A11EB977C7143D3E0CD8AB. Own16612/30124/28720 ready/shutdown0/exit0, no new diagnostics/protected changes/no task server. Crashes0/DBErrors0; no character mutation.
+- NEXT: Lady106318 raw lethal/borrowed AI+killer-dependent3s death and late low-health stun; then friendly healer actors raw guards. Actual full native queue/loot/equip/scene/exit/arrival/faction/re-entry/client and all36 remain pending. Older pickup/14s OPEN notes below are historical, superseded only by this scoped repair.
+
 ## Latest repair: Tuure real staff equip from actual completed scene
 
 - `tuure-scene-equip-2026-10-26.json`: native1265/package1565 only equips cinematic clone128825. New registered scene_tuure_pickup requires actual completion/latest live instance, active nonrewarded41993 Priest/map1489/1085 step6, actual Lady47656 and real nonbank staff; requests native210734, retaining phase/events/conversation/inventory checks. No direct item/progress grant or synchronous-equip assumption.

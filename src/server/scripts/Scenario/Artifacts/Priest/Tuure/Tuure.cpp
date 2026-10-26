@@ -8,6 +8,10 @@
 #include "GameObjectAI.h"
 #include "Scenario.h"
 #include "ScenarioMgr.h"
+#include "Item.h"
+#include "Spell.h"
+#include "SpellScript.h"
+#include "ObjectAccessor.h"
 
 Position const tppos[2] =
 {
@@ -695,6 +699,40 @@ public:
     }
 };
 
+namespace TuureAcquisition
+{
+    enum ClaimData { Finished = 0, Elapsed = 1, Current = 2, Finish = 3 };
+
+    bool HasLeaf(Scenario* scenario, uint32 leaf)
+    {
+        if (!scenario) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(leaf);
+        return found != progress->end() && found->second.Counter;
+    }
+
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->HasPendingTeleport() || player->getClass() != CLASS_PRIEST || !player->GetMap() ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 249705 || weapon->GetMapId() != 1489 ||
+            player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetQuestRewardStatus(41993) ||
+            (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1085 && scenario->GetCurrentStep() == 6 && HasLeaf(scenario, 47656);
+    }
+
+    bool Equipped(Player* player)
+    {
+        Item* weapon = player->GetItemByEntry(128825);
+        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon;
+    }
+}
+
 namespace TuurePresentation
 {
     bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
@@ -738,32 +776,219 @@ public:
 // 249705
 class go_art_tuure : public GameObjectScript
 {
-public:
-    go_art_tuure() : GameObjectScript("go_art_tuure") {}
-
-    void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
+    struct AI : GameObjectAI
     {
-        if (target && state == GO_ACTIVATED)
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        ObjectGuid claimant;
+        std::weak_ptr<uint8> lifetime;
+        uint32 elapsed = 0, retry = 0;
+        bool finished = false;
+
+        void Cancel() { claimant.Clear(); lifetime.reset(); }
+        bool Current(Player* player) const
         {
-            if (target->GetTypeId() == TYPEID_PLAYER)
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            return player && player->GetGUID() == claimant && !lifetime.expired() &&
+                status && status->ScriptLifetime == lifetime.lock();
+        }
+        ObjectGuid GetGUID(int32 = 0) override { return claimant; }
+        uint32 GetData(uint32 id) override
+        {
+            if (id == TuureAcquisition::Elapsed) return elapsed;
+            if (id == TuureAcquisition::Current) return Current(ObjectAccessor::GetPlayer(*go, claimant));
+            return finished;
+        }
+        bool GossipHello(Player* player, bool) override
+        {
+            return finished || !claimant.IsEmpty() || !TuureAcquisition::CanTake(player, go);
+        }
+        void SetData(uint32 id, uint32 value) override
+        {
+            if (id != TuureAcquisition::Finish || !value || finished) return;
+            finished = true;
+            Cancel();
+            if (Creature* visual = go->FindNearestCreature(106326, 10.0f))
+                visual->DespawnOrUnsummon(1000);
+            go->SetLootState(GO_JUST_DEACTIVATED);
+        }
+        void SetGUID(ObjectGuid const& guid, int32 = 0) override
+        {
+            if (finished || !claimant.IsEmpty()) return;
+            Player* player = ObjectAccessor::GetPlayer(*go, guid);
+            if (!player || player->GetGUID() != guid || !TuureAcquisition::CanTake(player, go) || !player->GetItemByEntry(128825)) return;
+            player->AddQuestDelayedEvent(41993, 0, [] { });
+            QuestStatusData* status = player->getQuestStatus(41993);
+            if (!status || !status->ScriptLifetime) return;
+            claimant = guid;
+            lifetime = status->ScriptLifetime;
+            elapsed = retry = 0;
+            SpellCastResult result = player->CastSpell(player, 210733, true);
+            if (result != SPELL_CAST_OK)
             {
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50679);
-                if (Creature* trigger = go->FindNearestCreature(106326, 10.0f))
-                    trigger->DespawnOrUnsummon(1000);
-
-                if (!target->ToPlayer()->HasItemCount(128825, 1))
-                    target->ToPlayer()->AddItem(128825, 1);
-
-                target->CastSpell(target, 210733, true);
-
-                target->AddDelayedEvent(14000, [target]() -> void
-                {
-                    target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50702);
-                    target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1085, 1);
-                    target->CastSpell(target, 210818);
-                });
+                Cancel();
+                TC_LOG_WARN("scripts", "Tuure pickup: scene210733 request failed (%u); retain staff/object for retry", uint32(result));
             }
         }
+        void UpdateAI(uint32 diff) override
+        {
+            if (claimant.IsEmpty() || finished) return;
+            Player* player = ObjectAccessor::GetPlayer(*go, claimant);
+            if (!Current(player) || !TuureAcquisition::CanTake(player, go) || !player->GetItemByEntry(128825)) { Cancel(); return; }
+            elapsed += std::min(diff, 30000u - elapsed);
+            if (elapsed >= 30000)
+            {
+                Cancel();
+                TC_LOG_WARN("scripts", "Tuure pickup: scene/equip/departure did not finish within30s; retain staff/object and native errors for retry");
+                return;
+            }
+            if (elapsed < 14000 || !player->HasSceneStatus(1265, SCENE_COMPLETE) || !TuureAcquisition::Equipped(player)) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            if (!TuureAcquisition::HasLeaf(scenario, 47679)) return;
+            if (retry > diff) { retry -= diff; return; }
+            retry = 5000;
+            SpellCastResult result = player->CastSpell(player, 210818, false);
+            if (result != SPELL_CAST_OK)
+                TC_LOG_WARN("scripts", "Tuure pickup: native departure210818 request failed (%u); retain claim for bounded retry", uint32(result));
+        }
+    };
+public:
+    go_art_tuure() : GameObjectScript("go_art_tuure") { }
+    GameObjectAI* GetAI(GameObject* object) const override { return new AI(object); }
+    bool OnGossipHello(Player* player, GameObject* object) override
+    {
+        if (!TuureAcquisition::CanTake(player, object) || object->AI()->GetData(TuureAcquisition::Finished)) return true;
+        if (player->GetItemByEntry(128825)) { object->AI()->SetGUID(player->GetGUID(), 0); return true; }
+        return player->HasItemCount(128825, 1, true); // Bank-only copy must be retrieved, never duplicated.
+    }
+    void OnLootStateChanged(GameObject* object, uint32 state, Unit* unit) override
+    {
+        Player* player = unit ? unit->ToPlayer() : nullptr;
+        if (state != GO_JUST_DEACTIVATED || object->AI()->GetData(TuureAcquisition::Finished) ||
+            !TuureAcquisition::CanTake(player, object) || !player->GetItemByEntry(128825)) return;
+        object->SetLootState(GO_READY); // Real completed storage; keep retry access until accepted departure.
+        object->AI()->SetGUID(player->GetGUID(), 0);
+    }
+};
+
+namespace TuureCast
+{
+    struct State
+    {
+        bool scoped = false, issued = false;
+        ObjectGuid source;
+        std::weak_ptr<uint8> lifetime;
+
+        void Bind(Player* player)
+        {
+            if (!player || player->GetMapId() != 1489) return;
+            Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+            scoped = scenario && scenario->GetScenarioId() == 1085;
+            if (!scoped) return;
+            std::list<GameObject*> weapons;
+            GetGameObjectListWithEntryInGrid(weapons, player, 249705, 5.0f);
+            for (GameObject* weapon : weapons)
+                if (weapon && weapon->AI() && weapon->AI()->GetGUID(0) == player->GetGUID() &&
+                    weapon->AI()->GetData(TuureAcquisition::Current) && TuureAcquisition::CanTake(player, weapon))
+                {
+                    source = weapon->GetGUID();
+                    break;
+                }
+            if (QuestStatusData* status = player->getQuestStatus(41993)) lifetime = status->ScriptLifetime;
+        }
+        bool SameAttempt(Player* player) const
+        {
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            return status && !lifetime.expired() && status->ScriptLifetime == lifetime.lock();
+        }
+        GameObject* Current(Player* player) const
+        {
+            if (!SameAttempt(player)) return nullptr;
+            GameObject* weapon = ObjectAccessor::GetGameObject(*player, source);
+            return weapon && weapon->GetGUID() == source && weapon->AI() &&
+                weapon->AI()->GetGUID(0) == player->GetGUID() && weapon->AI()->GetData(TuureAcquisition::Current) &&
+                !weapon->AI()->GetData(TuureAcquisition::Finished) && TuureAcquisition::CanTake(player, weapon) &&
+                player->GetItemByEntry(128825) ? weapon : nullptr;
+        }
+        bool Ready(Player* player, bool departure) const
+        {
+            GameObject* weapon = Current(player);
+            if (!weapon) return false;
+            if (!departure) return true;
+            Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+            return weapon->AI()->GetData(TuureAcquisition::Elapsed) >= 14000 &&
+                player->HasSceneStatus(1265, SCENE_COMPLETE) && TuureAcquisition::Equipped(player) &&
+                TuureAcquisition::HasLeaf(scenario, 47679);
+        }
+        void Depart(Player* player, Spell* spell, SpellEffIndex effect)
+        {
+            if (issued) return;
+            if (!Ready(player, true))
+            {
+                TC_LOG_WARN("scripts", "Tuure pickup: stale/ineligible queued departure rejected; no teleport or50702");
+                return;
+            }
+            issued = true; // Before native callbacks can re-enter this same effect.
+            Player::ScopedTeleportDelay guard(*player);
+            spell->EffectTeleportUnits(effect); // Actual native effect, including ordinary admission/failures.
+            if (!guard.IsPending() || player->GetTeleportDest().GetMapId() != 1220 ||
+                player->GetTeleportDest().GetExactDist(-828.85f, 4372.0f, 738.64f) > 0.1f || !SameAttempt(player))
+            {
+                TC_LOG_WARN("scripts", "Tuure pickup: native departure was not accepted for original attempt/destination; no50702 credit");
+                return;
+            }
+            if (GameObject* weapon = ObjectAccessor::GetGameObject(*player, source))
+                if (weapon->GetGUID() == source && weapon->AI() && weapon->AI()->GetGUID(0) == player->GetGUID())
+                    weapon->AI()->SetData(TuureAcquisition::Finish, 1);
+            // Still in the source map under native deferral. Native final-tree completion rewards1085.
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50702);
+        }
+    };
+}
+
+class spell_tuure_pickup_cast : public SpellScript
+{
+    PrepareSpellScript(spell_tuure_pickup_cast);
+    TuureCast::State state;
+    bool Load() override { state.Bind(GetCaster() ? GetCaster()->ToPlayer() : nullptr); return true; }
+    SpellCastResult Check()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        return !state.scoped || (state.Ready(player, false) && (GetSpellInfo()->Id != 210734 || player->HasSceneStatus(1265, SCENE_COMPLETE))) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS;
+    }
+    void Hit(SpellEffIndex effect)
+    {
+        if (!state.scoped) return;
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!state.Ready(player, false) || (GetSpellInfo()->Id == 210734 && !player->HasSceneStatus(1265, SCENE_COMPLETE)))
+        {
+            PreventHitDefaultEffect(effect);
+            TC_LOG_WARN("scripts", "Tuure pickup: stale/ineligible scene or equip effect rejected; retain original attempt guards");
+        }
+    }
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_tuure_pickup_cast::Check);
+        OnEffectHit += SpellEffectFn(spell_tuure_pickup_cast::Hit, EFFECT_ALL, SPELL_EFFECT_ANY);
+        OnEffectHitTarget += SpellEffectFn(spell_tuure_pickup_cast::Hit, EFFECT_ALL, SPELL_EFFECT_ANY);
+    }
+};
+
+class spell_tuure_departure : public SpellScript
+{
+    PrepareSpellScript(spell_tuure_departure);
+    TuureCast::State state;
+    bool Load() override { state.Bind(GetCaster() ? GetCaster()->ToPlayer() : nullptr); return true; }
+    SpellCastResult Check() { return !state.scoped || state.Ready(GetCaster() ? GetCaster()->ToPlayer() : nullptr, true) ? SPELL_CAST_OK : SPELL_FAILED_BAD_TARGETS; }
+    void Hit(SpellEffIndex effect)
+    {
+        if (!state.scoped) return;
+        PreventHitDefaultEffect(effect);
+        state.Depart(GetHitPlayer(), GetSpell(), effect);
+    }
+    void Register() override
+    {
+        OnCheckCast += SpellCheckCastFn(spell_tuure_departure::Check);
+        OnEffectHitTarget += SpellEffectFn(spell_tuure_departure::Hit, EFFECT_0, SPELL_EFFECT_TELEPORT_L);
     }
 };
 
@@ -776,4 +1001,6 @@ void AddSC_Tuure()
     new go_tuure_crate();
     new go_art_tuure();
     new scene_tuure_pickup();
+    RegisterSpellScript(spell_tuure_pickup_cast);
+    RegisterSpellScript(spell_tuure_departure);
 };
