@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/Dreadblades.cpp",
+      "handler": "Degauz102185 post-scaling surrender and owned-attacker credit",
+      "problem": "102185 used raw DamageTaken, pre-hit template HealthBelowPct and a Player-only attacker test. A fresh scaled killing blow could kill before90/60/30 transitions; a pet/guardian could never supply48449. This is a source/native counterfactual finding, not a new captured user crash.",
+      "repair_audit": "docs/audits/dreadblades-degauz-surrender-2026-10-26.json",
+      "limit": "DeployedF5D83509; pinned player/pet death counterfactual/current32 scaled owner/charmer/suspended cases, strict threshold/reentry/reset/invalid-scope/once-only and shared ASAN/native26972/selected PE pass. Own33208 ready/shutdown0/exit0 and no new diagnostics; client retreat/voice/next actor/whole route remain pending."
+    },
+    {
       "path": "src/server/game/Movement/TransportJumpPath.h",
       "handler": "Warrior boost Heroic Leap on moving transport",
       "problem": "User receives No path available on Jump Into The Fray; grounded Leap script requested terrain navigation for a moving deck.",
@@ -1831,7 +1838,7 @@
       "weapon": "The Dreadblades",
       "item": 128872,
       "start": 40847,
-      "status": "partial: Eliza102293 death48582 resolves native player/charmer/owner with unchanged speech/reveal. Pickup254087 now uses actual native loot128872, rejects early/ineligible callbacks, waits for native202040/202183/202182 linked parent/child equip and all four personal outro actors before48553, with no replacement item or explicit duplicate scenario reward. Pinned/current ASAN, TEMP data/native metadata and selected combined canonical PE pass. Deployed3F942221 with09 Data1 restoration after confirmed user shutdown; own29388 ready/shutdown0 and diagnostics clean, Scepter Release pass. Earlier surrender, actual client loot/equip/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
+      "status": "partial: Eliza102293 death48582 resolves native player/charmer/owner with unchanged speech/reveal. Pickup254087 now uses actual native loot128872, rejects early/ineligible callbacks, waits for native202040/202183/202182 linked parent/child equip and all four personal outro actors before48553, with no replacement item or explicit duplicate scenario reward. Pinned/current ASAN, TEMP data/native metadata and selected combined canonical PE pass. Deployed3F942221 with09 Data1 restoration after confirmed user shutdown; own29388 ready/shutdown0 and diagnostics clean, Scepter Release pass. Earlier surrender, actual client loot/equip/VFX/group/faction/re-entry and full-chain traversal remain OPEN. Degauz102185 scaled surrender/owned credit is now repaired/deployedF5D83509 with baseline/current ASAN/native metadata/selected PE/clean owned startup; full route still pending.",
       "quests": [
         {
           "id": 40847,
@@ -1907,7 +1914,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Review Lord Brinebeard102239 Player-only/pre-hit30%48531 and failed visual-trigger/event progression, then Eliza30%202033 ward transition. Preserve native stage/death semantics; remaining client sequence is unverified.",
+      "degauz_surrender_audit": "docs/audits/dreadblades-degauz-surrender-2026-10-26.json"
     },
     {
       "class_id": 4,

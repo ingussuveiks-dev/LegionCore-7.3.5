@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Focused Degauz surrender repaired/tested/deployed; actual client and complete Outlaw traversal pending",
+  "cause": "102185 used raw DamageTaken, pre-hit template HealthBelowPct and a Player-only attacker test. A fresh scaled killing blow could kill before90/60/30 transitions; a pet/guardian could never supply48449. This is a source/native counterfactual finding, not a new captured user crash.",
+  "implementation": [
+    "Move only Degauz damage handling to DamageTakenAfterScaling. Compare predicted health after actual final damage with CountPctFromMaxHealth(threshold,attacker), whose native helper reads GetMaxHealth(attacker); use GetHealth(attacker), matching Unit::DealDamage. Process all crossed strict90/60/30 thresholds, with no template/raw-health comparison.",
+    "Consume each threshold before Talk/DoCast/conversation/summon callbacks. At30 stop incoming damage and attacks, keep native immunity/passive state,1121 conversation,10s retreat/despawn,208007 cleanup, three crew-entry retreats, three original summons and48449. A terminal guard absorbs later damage; an after-loop terminal check also absorbs an outer hit if nested callbacks already finished surrender.",
+    "Resolve the actual player/charmer/owner with native GetCharmerOrOwnerPlayerOrPlayerItself and native in-map player lookup. Require live same-map/phase Rogue with active INCOMPLETE40849 and actual map1545/scenario1012/currentStep0. Conversation and native Player achievement event target that player, never the pet. No new nearby-player/group grants, item grant or explicit scenario completion. Native Player->Scenario membership remains responsible for progression.",
+    "Constructor/Reset/EnterCombat, intro, combat ability timers and all other Dreadblades actors retained. StopAttack added for retreating Degauz/crew so they do not continue melee while passive. Ordinary damage and original stage transitions remain native."
+  ],
+  "evidence": [
+    "Local template102185 only binds npc_first_helper_degauz; real spawn360372 map1545/phase6199, scaling98..110 and scenario_data1012/1545. Reviewed intro/crew/next-stage actors and original encounter callbacks, local text groups0..3,1121 and existing Eliza/pickup audit. No external donor/video was needed or reviewed.",
+    "Typed actual26972 DB2 plus read-only hotfix DreadbladesCombatCatalog: scenario1012 step0 entry2101/root46639, native leaf46640/criterion29446/type92 asset48449; step1/46655 is separate. This is real metadata, not a complete client scenario.",
+    "Pinned802295a9 -Baseline -AddressSanitizer reproduces both fresh player and pet one-hit death without retreat/credit using extracted original full AI and actual scaled-damage bridge. Baseline output is explicitly an expected failing counterfactual; separate baseline/current inventories retained.",
+    "Current -AddressSanitizer executes full extracted AI, real EventMap/owner/charmer/in-map player lookup/Scenario::CanUpdateCriteria and actual predeath scaled primary+suspended dispatch.32 player/pet/guardian/charmer x four scales x primary/suspended cases pass; strict exact90/60/30 and ordinary multiple hits, reentry at talk/cast, repeated/null late hits, adds/once-only effects,13 invalid context variants, missing conversation/actors and ordinary reset/enter-combat retry pass. World health/movement/casts/summon creation and packet boundaries are controlled.",
+    "Shared Eliza owned/null death and pickup/storage/equip/retry ASAN regressions pass. Original generated scripts/game Release and separate final links use original LIB inputs. Incremental production build has no new warning; extracted fixtures retain native EventMap/float conversion and unused source-parameter/lookup warnings.",
+    "Selected staged/canonical PE/map checks prove the actual registered Degauz factory selects post slotA8 and inherited empty rawA0, native attacker-relative health/max helper, owner/terminal guards, original payload and primary/suspended dispatch after virtual scaling. Selected Eliza/pickup/Hunter consumers and canonical Scepter login also pass.",
+    "Both server names absent and rechecked before EXE/map promotion. Own canonical world33208 reached fresh ready then shutdown0/exit0; stderr/newDBErrors0, protected configuration/certificate hashes unchanged. No SQL needed; no character data changed. No task-owned process left running.",
+    "Every native/build/PE/promotion/startup group recorded canonical/runtime before/after diagnostic inventories. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes0/DBErrors0; no newly resolved crash/log archive was needed."
+  ],
+  "development_findings": [
+    "Review identified a nested-callback edge before test completion: consuming thresholds alone was insufficient if an inner call finished surrender but the outer hit retained lethal damage. Added the post-loop terminal damage-zero check and explicit nested talk/cast regressions before building.",
+    "Initial PE verifier expected GetMaxHealth directly in the AI and an immediate owner-null test. Disassembly showed the native CountPctFromMaxHealth helper and saved-owner register tested after scenario lookup. The verifier now checks the actual helper-to-GetMaxHealth call and correct register guard. A later assertion picked the first of two zero stores; now it verifies the terminal jump reaches an actual zero store. These were failed test-development checks, not relaxed runtime checks or production failures."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "F5D83509C0ECE870C36528223E6E8CD1C2982DF0091CEE5A0286A264251FA8D3",
+    "world_map_sha256": "2226C5DFB80EB12E03264DF4C3734DC02AD4893E26D35A1B24E9D4585D1DAB71",
+    "bnet_sha256": "06D2198CFF3BEA478254F34471382555A52FA3F7813388B372AD6105CAF49E37",
+    "private_evidence": ".codex/degauz and build-extractors/runtime-test/dreadblades-degauz/{baseline,current}; original EXE/map backup .codex/release-before-dreadblades-degauz-2026-10-26"
+  },
+  "limits_and_next": [
+    "Actual client90/60/30 dialogue/208007 presentation, movement/crew retreat, pet/guardian hit,0->1 scenario transition and next actors, abandonment/reentry/party/faction remain pending. A single large hit can consume multiple dialogue thresholds in one update; no new timed voice schedule was invented.",
+    "Failed conversation does not block earned native credit; missing next-actor summons remain original best-effort calls. The native test records that progression is not repeated, but does not prove those actors actually appear or recover. Exact after-surrender reset/despawn/re-entry actor state is not persisted by this patch.",
+    "Continue shared scenario path: Lord Brinebeard102239 also uses Player-only pre-hit30% damage with48531 and a conditional visual-trigger/event chain; Eliza30%202033 transition remains pre-hit. Investigate their exact native spell/stage/death semantics before adapting surrender code. Do not certify all36 or the full Outlaw chain."
+  ]
+}

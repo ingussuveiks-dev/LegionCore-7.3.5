@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Degauz stage0 surrender repaired
+
+- Focused audit `dreadblades-degauz-surrender-2026-10-26.json`: real post-scaling/attacker-relative strict90/60/30 transitions, native owner/charmer credit48449, actual Rogue40849/scenario1012 step0 admission, reentrant exactly-once retreat. Original dialogue/casts/crew/three summons preserved; no weapon or character grants.
+- Pinned player/pet one-hit death counterfactual and current32 scaled/suspended-owner cases plus thresholds/reentry/reset/invalid context pass; native26972 leaf46640, shared Eliza/pickup ASAN and actual selected Release slotA8/rawA0/health/owner/dispatcher checks pass. Actual client retreat/voice/next actors/full sequence pending.
+- Canonical world SHA256 `F5D83509C0ECE870C36528223E6E8CD1C2982DF0091CEE5A0286A264251FA8D3`, map `2226C5DFB80EB12E03264DF4C3734DC02AD4893E26D35A1B24E9D4585D1DAB71`, bnet `06D2198CFF3BEA478254F34471382555A52FA3F7813388B372AD6105CAF49E37`. Hunter12 remains installed; no new SQL. Original LIB paths and preserved Hunter/Eliza/pickup/Scepter consumers verified.
+- Own33208 fresh ready/shutdown0/exit0, stderr/newDBErrors0/protected hashes unchanged. Both user servers absent at promotion; none stopped. No hidden server remains; active Crashes0/DBErrors0. Diagnostics `.codex/degauz` and native fixture baseline/current. Recheck actual process state.
+- Next source findings: Lord Brinebeard102239 Player-only/pre-hit30%48531 and optional visual-trigger/event dependency; Eliza pre-hit30%202033. These are OPEN, not the just-repaired Degauz. Trace actual native spell/stage/death semantics before changing them. All36/client scope remains unfinished.
+
 ## Latest continuation: Hunter additional choice repaired
 
 - Hunter continuation supersedes the earlier OPEN/ignored patch sections below. Focused audit: `hunter-additional-artifact-choice-2026-10-26.json`; original investigation retained as history.

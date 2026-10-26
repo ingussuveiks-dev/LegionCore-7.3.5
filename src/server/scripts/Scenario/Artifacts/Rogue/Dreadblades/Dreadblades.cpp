@@ -239,14 +239,33 @@ public:
             Talk(0);
         }
         
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (attacker->GetTypeId() != TYPEID_PLAYER)
-                return;
-            
-            if (me->HealthBelowPct(healthPct) && healthPct >= 30)
+            // This hook sees the same final scaled damage/target-relative
+            // health as Unit::DealDamage's death check. Keep the retreat alive.
+            if (!healthPct)
             {
-                switch(healthPct)
+                damage = 0;
+                return;
+            }
+
+            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!damage || !player || player->getClass() != CLASS_ROGUE || !player->IsInWorld() ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE || me->GetMapId() != 1545 ||
+                !scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 0)
+                return;
+
+            uint64 health = me->GetHealth(attacker);
+            uint64 remaining = damage >= health ? 0 : health - damage;
+            // A single large hit can cross every threshold. Consume each
+            // transition before its callbacks so reentry cannot replay it.
+            while (healthPct >= 30 && remaining < me->CountPctFromMaxHealth(healthPct, attacker))
+            {
+                uint32 threshold = healthPct;
+                healthPct -= 30;
+                switch (threshold)
                 {
                     case 90:
                         Talk(2);
@@ -256,10 +275,12 @@ public:
                         DoCast(208007);
                         break;
                     case 30:
+                        damage = 0;
+                        me->StopAttack();
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                         me->SetReactState(REACT_PASSIVE);
                         Conversation* conversation = new Conversation;
-                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1121, attacker, NULL, *attacker))
+                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1121, player, NULL, *player))
                             delete conversation;
                         me->SetWalk(false);
                         me->GetMotionMaster()->MovePoint(0, -1180.69f, 5868.85f, 1.83f);
@@ -272,6 +293,7 @@ public:
                         if (!adds.empty())
                         for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
                         {
+                            (*itr)->StopAttack();
                             (*itr)->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
                             (*itr)->SetWalk(false);
                             (*itr)->GetMotionMaster()->MovePoint(0, -1180.69f, 5868.85f, 1.83f);
@@ -283,11 +305,13 @@ public:
                         me->SummonCreature(102181, -1200.68f, 5822.54f, 10.81f, 1.85f);
                         me->SummonCreature(102180, -1193.33f, 5828.64f, 5.50f, 1.41f);
                         events.Reset();
-                        attacker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48449);
+                        player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48449);
                         break;
                 }
-                healthPct -= 30;
             }
+            // A nested cast/talk callback may already have finished retreat.
+            if (!healthPct)
+                damage = 0;
         }
         
         void UpdateAI(uint32 diff) override
