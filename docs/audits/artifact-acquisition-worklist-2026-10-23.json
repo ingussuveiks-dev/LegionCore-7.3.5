@@ -1501,6 +1501,8 @@
       "herald_challenge_repair_audit": "docs/audits/marksmanship-herald-challenge-2026-10-24.json",
       "inquisitor_admission_repair_audit": "docs/audits/marksmanship-inquisitor-admission-2026-10-24.json",
       "qormaladon_combat_repair_audit": "docs/audits/marksmanship-qormaladon-combat-2026-10-26.json",
+      "objective_slots_repair_audit": "docs/audits/marksmanship-objective-slots-order-2026-10-26.json",
+      "objective_storage_review": "07 removes103481/103490 slot4 alias using original735 five-goal slots and unused0 for preserved local acceptance102128; scoped story insertion retains native order separately. ASAN actual credit/save/load/query loops,720 permutations, ten TEMP custom refusals, native26972/hotfix absence, original25549 archive/POI mapping and shared Stromkar/New Blood/Scepter/selected PE pass. CanonicalB2EFF deployed after repeated idle aggregate0 checks; no character rows changed. Actual client query/order/pickup/save/return remains pending.",
       "qormaladon_combat_review": "Scoped SmartAI and exact unlock/death conditions now require actual972/5 and original immunity256 removal; native eyes/205660/49654/owner/death cleanup unchanged. ASAN1080 hook cases, TEMP/custom guards, shared post-boss/Scepter checks, selected canonical PE and clean owned startup pass. Canonical deployed1CA381; exact premature updater ScriptName errors archived after repair. Full client combat/eyes/group/re-entry/bow traversal remains pending.",
       "interrogation_budget_repair_audit": "docs/audits/marksmanship-interrogation-budget-2026-10-24.json",
       "waypoint_failure_retry_repair_audit": "docs/audits/smart-waypoint-start-retry-2026-10-24.json",
@@ -1512,7 +1514,7 @@
       "equipped_outcome_repair_audit": "docs/audits/marksmanship-equipped-outcome-2026-10-24.json",
       "equipped_outcome_review": "After instant native200262, claim dialogue now requires actual mainhand128826, not only SPELL_CAST_OK. Bank-only/equip/late-swap rejection retains diagnostics and owned replay; native scene+effect249 controlled-inventory regressions and deployed slot/entry branches verified. Real inventory/client traversal remains pending.",
       "start": 41540,
-      "status": "partial: preceding repairs retained in linked audits. Discovery19 arms phase2;62 retains native bow creation retry at972/6-7 in phases2/3. Actual text22/15000 expiry now arms phase3; unused63 retries original47846 until native6->7 advancement, then51 search credit is allowed and poll stops. No repeated Take speech, synthetic timer, item grant or changed closest-player/group policy. Pickup/report-use/loot remain blocked until7/8. Sparse muted16:42..18:07 footage is not full sequence/exact timing. Group7, voice/rendering/per-point timing, recipient-policy limits, reset/unload/re-entry/abandonment, full video, objective storage and actual client loot/equip still pending",
+      "status": "partial: preceding repairs retained in linked audits. Qormaladon combat/unlock/death requires actual972/5 and original interrogation signal; bow103490 and mission-start103481 now have independent save slots and original story order, with local acceptance preserved. Native/ASAN/SQL/PE and canonical clean startup pass. Existing final-stage reveal/pickup gates retained. Client combat/eyes/query refresh/order/real loot/equip/save/return, group/faction/re-entry, discovery group7, full visual/voice review and full-chain traversal remain pending",
       "quests": [
         {
           "id": 41540,

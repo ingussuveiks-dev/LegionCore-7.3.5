@@ -230,6 +230,18 @@ void Quest::LoadQuestObjective(Field* fields)
     // Preserve the slots so existing character progress is not reinterpreted.
     if (obj.QuestID == 40729 && obj.ID == 281139)
         Objectives.insert(Objectives.begin(), obj);
+    else if (obj.QuestID == 40419)
+    {
+        // Retain this core's acceptance credit before the five original 7.3.5
+        // story objectives. Their save slots are independent of story order.
+        uint32 const order[] = { 281309, 281978, 281310, 281311, 281980, 281574 };
+        auto rank = std::find(order, order + 6, obj.ID);
+        auto position = std::find_if(Objectives.begin(), Objectives.end(), [&](QuestObjective const& existing)
+        {
+            return std::find(order, order + 6, existing.ID) > rank;
+        });
+        Objectives.insert(position, obj);
+    }
     else if (obj.QuestID == 41105)
     {
         uint32 const order[] = { 281862, 286343, 286344, 281863, 282354 };
