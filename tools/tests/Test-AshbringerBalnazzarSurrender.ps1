@@ -13,7 +13,8 @@ $old=Block (Block $pinned 'struct npc_bs_balnazzarAI') 'void DamageTaken('
 if($Baseline){$source=$pinned;$handler=$old}else{
  $handler=Block (Block $source 'struct npc_bs_balnazzarAI') 'void DamageTakenAfterScaling('
  $expected=$old.Replace('void DamageTaken(Unit* /*attacker*/,','void DamageTakenAfterScaling(Unit* attacker,').Replace('if (damage >= me->GetHealth())',"bool lethal = damage >= me->GetHealth(attacker);`n            if (lethal)").Replace('if (me->HealthBelowPct(15) && !fightEnd)','if ((lethal || me->HealthBelowPct(15)) && !fightEnd)')
- if(($handler -replace '\s','') -cne ($expected -replace '\s','') -or ($source.Replace($handler,$old) -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Balnazzar changed beyond final scaled lethal surrender; original side effects must remain'}
+ $restored=$source.Replace($handler,$old).Replace((Block $source 'class go_bs_the_ashbringer :'),(Block $pinned 'class go_bs_the_ashbringer :'))
+ if(($handler -replace '\s','') -cne ($expected -replace '\s','') -or ($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Balnazzar changed beyond final scaled lethal surrender and separately tested pickup callback; original side effects must remain'}
 }
 [IO.File]::WriteAllText("$out/Surrender.inc",$handler+(Block (Block $source 'struct npc_bs_balnazzarAI') 'void Reset('))
 $header=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.h" -Raw

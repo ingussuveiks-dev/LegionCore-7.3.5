@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Remove premature scenario-completion achievement credit from Ashbringer pickup247318 at zero-based step3. Not actual Scenario state completion, real item storage/equip, full775 acquisition or36-chain/client/VFX certification.",
+  "sources": [
+    {
+      "source": "main/origin85b4f0c2 git status/log; worklist, artifact-routes and legion-artifact-donor-review; complete local pickup callback and native InstanceScript/Scenario reward flow",
+      "review": "Pickup sent type152/775/1 directly at step3, although Scenario::IsCompleted(false) compares currentStep with the number of nonbonus steps. Native775 has seven nonbonus steps. The direct achievement call does not itself set Scenario::currentStep to completed: that distinction is retained. Native UpdateCurrentStep calls Reward(false,oldStep) after IsCompleted(false); Reward keeps its own one-time claim and emits152/151 for contactable map Players. The full reward/Player-contact/quest/scenario update engine is not executed by the bounded fixture."
+    },
+    {
+      "source": "Read-only runtime MariaDB; GameObjectTemplate::GetLootId, Player::SendLoot, Spell::EffectForceEquipItem; matching native AshbringerPickupCatalog.cpp DB2 reader",
+      "review": "247318 binds only go_bs_the_ashbringer, type3/display1691/Data1=0/Data17=32543, spawn128117/map1500/phase5942. A separate existing gameobject_loot_template247318 contains120978/100percent/1..1, but native chest GetLootId reads Data1, not the entry. This unit does not bind or certify that loot.180850 retains personal114505 credit, event47621, triggers199827/186987/192145/190777 and periodic aura23->181257.181257 has249/misc120978, event46506 and225875;181511 also has249/misc120978. IMPORTANT: native249 FORCE_EQUIP_ITEM looks up an already existing item, checks native equip/child-item admission and swaps it; it does NOT create/store a missing weapon. Thus effect249 alone is not an acquisition source. Any earlier exploratory interpretation of it as creation is rejected. Complete storage source, triggered effects/scenes and full-bag handling remain unresolved here; no item-first guard or artificial item grant added."
+    },
+    {
+      "source": "Native ScenarioStep/CriteriaTree/Criteria DB2 and local exact26972 TrinityCore history c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "review": "Native775 orders0..6 are1488/1485/1486/1487/2632/1853/1854, all nonbonus. Step3 tree45145 includes46130 and46506; final step6 tree45277 uses46162. Targeted historical script grep for go_bs_the_ashbringer and COMPLETE_SCENARIO,775 returned no implementation. Bounded reference search, not exhaustive historical or retail choreography proof."
+    },
+    {
+      "source": "Previously retrieved pinned Titans relevant pickup method1072..1090",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "review": "Relevant returned method has the same early152 and completed-or-owned admission; no donor fix imported. Reused that bounded review, not a claim of full donor runtime review. No YouTube footage/transcript or actual client traversal reviewed in this unit."
+    }
+  ],
+  "repair": {
+    "implementation": "Delete only the direct type152/775/1 call from OnLootStateChanged. Retain native later Scenario reward as the completion-criterion owner.",
+    "preserved": "Original target/Player/instance/step3 gates, GO_JUST_DEACTIVATED3 OR owned120978 admission, type92/event46130, nearby103454/10yd cleanup, self180850 triggered and Delete only at native GO_ACTIVATED2. Empty completed chest still reaches the original retrieval command; this does not prove a weapon is acquired. Shared actor wrappers normalize only this separately tested callback while retaining their own pinned exact-scope comparisons. No SQL/runtime/character/item grant, faction/group filter, new phase, visual or timer changes.",
+    "open": "Resolve genuine120978 storage before certifying acquisition: Data1zero and existing unbound loot row versus triggered spells/scenes/reward data. Also actual prerequisite/phase/source eligibility, early object availability, failed180850/periodic effects, callback-stage reentry, repeated46130/casts, reset/abandon/re-entry, group/faction credit eligibility and all rendered VFX/client sequence remain OPEN. Completion credit removal does not fix or conceal those separate issues."
+  },
+  "validation": {
+    "baseline": "PASS pinned85b4f0c2 actual callback and InstanceScript Player fanout emit152/775 for player and controlled party reference at step3 while actual extracted Scenario::IsCompleted(false) is false. Reproduces premature achievement emission, not Scenario state advancement.",
+    "current": "PASS ordinary and ASAN:160 combinations of8 stages/5 numeric loot-state values/owned-or-absent item/present-or-missing trigger preserve original admitted46130/cast/cleanup/Delete behavior with no152. Null target/nonPlayer/missing instance return safely. Extracted native LootState, Data/spell constants, native criteria numbers, IsCompleted/GetStepCount and actual Reward two-credit fragment are checked. Explicitly modeled reward orchestration emits152/151 once only after modeled step7; not whole native Reward execution. Native DB2 reader checks24 rows:14 spell/effect,7 nonbonus steps and3 criteria. Live binding/spawn/loot rows unchanged.",
+    "installed": "PASS actual AddSC_paladin_broken_shore registration selects callback slot50; GameObject::SetLootState reaches ScriptMgr slot50. Decoded callback has only one InstanceScript criterion call(type92/46130), all original admission/effects and eight original calls, with no direct152/775 call. Actual activated Delete compares2. Later native UpdateCurrentStep retains its nonbonus-count comparison before Reward; complete Reward/contact/quest/cast execution remains separate.",
+    "regressions": "PASS new baseline/current ordinary/current ASAN/Release wrapper, retained Balnazzar/Zerus/FlameTargets Release wrappers, ScepterLogin Release, Dalaran all-class149/22/36, ArtifactForceEquip and SceneLifecycle. Independent installed Silver Hand discovery/identity and Ashbringer door proof pass. Quarantined ordinary door fixture remains BLOCKED and was neither restored, rebuilt nor executed; this distinct pickup criterion fixture is not a workaround for that security block.",
+    "diagnostics": "Initial fixture assert required a named expected vector because template commas split the assert macro. PE inspection then exposed an incorrectly invented GO_ACTIVATED1 fixture constant; replaced it with actual extracted LootState(GO_ACTIVATED2) and reran baseline/current ordinary/ASAN. PE proof initially guessed a void CastSpell symbol and counted seven calls; corrected to actual SpellCastResult overload/eight calls before passing. Native size_t-to-uint8 warning remains visible. No diagnostic or protection suppressed. Missing in-progress regression log was only a premature read, not a test failure.",
+    "evidence": ".codex/ashbringer-pickup-completion-* and ignored runtime-test/ashbringer-pickup-completion. No credentials, runtime configurations/certificates/data, character records or generated binaries committed. Native effect249 equip-existing discovery explicitly limits the storage claim."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "FC3F011FDD502C63867396B11F50686825FB487AE9A24E80265E0EBD5FF1B570",
+    "bnet_sha256": "6E45D792FA3548D36C2F52EA6928B1C8C0798853128F136BD44DAB8AF33ED7F6",
+    "build": "Canonical world+bnet Release MSBuild exit0, LinkIncremental=false/no OutDir. Actual UTF16 final-link scripts/game/shared/common library inputs checked for world and shared/common for bnet, separately from decoded installed implementation.",
+    "runtime": "Own canonical PID37700 reached fresh ready, received own stdin server shutdown0 and exited0; no longer present. New DBErrors0/stderr empty/protected config/cert/key hashes unchanged. No user/unknown process stopped and no own hidden server left. Startup is not actual775 pickup/weapon/client or VFX proof."
+  }
+}

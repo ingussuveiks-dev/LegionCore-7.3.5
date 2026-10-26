@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "247318 premature scenario-completion achievement credit",
+      "problem": "Step3 pickup directly emitted type152/775 although native775 has seven nonbonus steps; this was premature achievement credit, not actual Scenario currentStep completion.",
+      "repair_audit": "docs/audits/ashbringer-pickup-completion-2026-10-26.json",
+      "limit": "Only premature152 removed; original46130/180850/trigger/Delete and empty-or-owned admission retained.160 actual-callback controlled cases/ASAN/native metadata/selected installed slot50 checked. Native249 only equips an existing item, NOT creates it: genuine120978 storage remains OPEN with Data1zero and existing unbound loot row. No artificial grant, whole reward/client/VFX certification or quarantine workaround."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "90981 final scaled lethal surrender",
       "problem": "Raw/template-health clamp could miss a scaled killing blow or absorb a fresh lethal hit forever without entering Balnazzar's below15-only finale.",
       "repair_audit": "docs/audits/ashbringer-balnazzar-surrender-2026-10-26.json",
@@ -994,7 +1001,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: door ownership, finite95962 emission,91672 point admission and90981 scaled lethal finale repaired; earlier ordinary door fixture remains Defender-blocked; full acquisition/visual/client traversal pending",
+      "status": "partial: premature pickup completion criterion, door ownership, finite95962 emission,91672 point admission and90981 scaled lethal finale repaired; genuine120978 storage unresolved; earlier ordinary door fixture remains Defender-blocked; full acquisition/visual/client traversal pending",
+      "pickup_completion_audit": "docs/audits/ashbringer-pickup-completion-2026-10-26.json",
+      "pickup_completion_review": "Removed direct152/775 at source-stage3; native seven-step Scenario reward retains completion ownership. All original empty-or-owned/state admission,46130/180850/103454 cleanup/activated2 Delete retained and actual callback/Instance fanout/installed slot50 checked. Native249 FORCE_EQUIP_ITEM requires an existing stored item and does NOT create one; do not infer genuine loot from that effect. Data1zero versus existing247318->120978 loot row and triggered-spell/scene storage must be resolved next. Repeated events/failed effects/attempt epochs/group/faction/actual loot-equip and client/VFX remain OPEN.",
       "balnazzar_surrender_audit": "docs/audits/ashbringer-balnazzar-surrender-2026-10-26.json",
       "balnazzar_surrender_review": "90981 now uses actual post-scaling target-relative lethal comparison and enters its original claimed finale on that lethal result rather than dying/stalling. Strict pre-hit15percent remains, with original227853 personal-credit spell/152821/kit61036/cleanup/flags/stage5 event46149/3000ms. Actual final bridge/native EventMap/InstanceScript controlled fanout,48 killer-label/scale/primary-suspended reentrant cases and installed selectedA8/empty rawA0 checked. No manual Player/pet/group grant, heal, item or phase change. Wrong-stage/intro admission, Reset/attempt epochs, failed casts/actual227853 area eligibility, full group/faction/client/VFX and whole acquisition remain OPEN.",
       "flame_targets_audit": "docs/audits/ashbringer-flame-targets-2026-10-26.json",
@@ -1109,7 +1118,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Resolve the local Windows Defender quarantine review for the ordinary door fixture without disabling protection; the earlier ASAN and actual installed PE evidence remain separate. Trace native775 entrance/admission, trash80/50/35/125 criteria and actual eligible owner/group dispatch, scaled one-hit Balnazzar surrender, prison/failed-cast/missing-actor and abandon/re-entry recovery. Reconcile late/recreated door state from native progress without inventing replay or changing245962 shared templates. Then inspect genuine247318 loot/source binding, early access, full bags, accepted180850/scene/equip181257/181511 and real120978 storage/save/relog; never substitute a weapon grant. Trace final Tyrion/Tyrosus/hippogryph travel, camera/pet and actual return. Review pinned compatible donors and full relevant video/audio before choreography changes. Entire chain/faction/group/VFX/client verification remains OPEN."
+      "next_action": "Prioritize genuine247318 loot/source binding: native249 only equips an existing item, not creates one. Reconcile Data1zero, existing247318->120978 loot row and triggered180850 effects/scenes/rewards before any source repair or item-first guard; check early access/full bags/native storage/save/relog, never substitute a weapon grant. Preserve repaired completion-criterion ownership and scaled lethal Balnazzar finale. Continue native775 entrance/admission, trash80/50/35/125 eligible owner/group dispatch, prison/failed-cast/missing-actor and abandon/re-entry recovery, late/recreated door state and final Tyrion/Tyrosus/hippogryph return/camera/pet. Ordinary door fixture awaits user security review without bypassing Defender; independent work may continue. Review pinned compatible donors and full relevant video/audio before choreography changes. Entire chain/faction/group/VFX/client verification remains OPEN."
     },
     {
       "class_id": 3,
