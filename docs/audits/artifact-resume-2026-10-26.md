@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure real staff equip from actual completed scene
+
+- `tuure-scene-equip-2026-10-26.json`: native1265/package1565 only equips cinematic clone128825. New registered scene_tuure_pickup requires actual completion/latest live instance, active nonrewarded41993 Priest/map1489/1085 step6, actual Lady47656 and real nonbank staff; requests native210734, retaining phase/events/conversation/inventory checks. No direct item/progress grant or synchronous-equip assumption.
+- Native packet/scene/force-equip ASAN baseline/current8 completion/cancel/deferred variants and19 invalid/failure cases pass. TEMP idempotence/six custom refusals/native duplicate-index refusal, actual typed DB2/scene text, canonical selected registration/vtable/helper/capture/Hunter/Leap PE/shared55 force-equip/scene lifecycle/Scepter pass. Migration14 published only after matching EXE; RELEASED/native text-mode SHA1 B67504BAA86FD060CE95B616A2FA335F5A273095. Applied SQL bytes unchanged.
+- Canonical world B504D9951BC61A83E30B68BA7D760B0442B44CE7691B8E2EC6F9438A15EAF63E, map 018FB9BF29674672E64A7467A13FEF4A4BBFA5543519F9AE8233E8D3A2F32459, bnet 7F46174012F4DE394035AA31B231766EB40EB661CBA1048CCF07491B4F18D73E. Own20216 ready/shutdown0/exit0, no new diagnostics/protected changes, no task server left. Crashes0/DBErrors0; no character mutation.
+- NEXT STILL OPEN:249705 Data1=0 versus existing loot249705/128825; original activation grants50679/AddItem before storage and14s callback forces50702/explicit1085 completion before210818. Restore real storage/full-bag retry and guarded actual native exit execution together. Scene bridge alone does not certify pickup/progression; actual client14s timing/slow callback/equip/return/re-entry and all36 remain open. Native41993 Valith/Jace objectives are distinct, not artifact/return credit substitutes.
+
 ## Latest repair: Opening Akaari capture recipient, quest attempt and retry
 
 - `devourer-capture-sequence-2026-10-26.json`:105536 now owns native EventMap5s/10s capture after original12s+11s combat. Bind original native player/owner and existing quest ScriptLifetime; same-tick reaccept expires old attempt. Every update/final transfer revalidates real map/quest/scenario/identity/phase/range/pending teleport. Missing105540 is optional, reset clears immune/helper/own visual, failed native transfer gives no credit. No queued raw recipient/AI/helper callback or nearest-stranger progression.

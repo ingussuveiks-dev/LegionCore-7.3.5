@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Holy Priest real-existing-staff equip after native1265/1565 completion. Focused missing scene bridge; whole Tuure pickup/14s exit and all36 routes remain incomplete.",
+  "implementation_commit": "Commit containing this audit, parent44e7df34",
+  "local_matching_evidence": [
+    "Actual typed TuurePickupCatalog.cpp uses production DB2Storage plus read-only hotfixes.210733 has scene1265/aura430/9s, dummy Holy Bunny106031 kill credit and native send-event50679.210734 has force-equip249/Misc128825, native phase167, send-events54073/50737 and conversation3629.210818 is native teleport252 with existing Dalaran1220/-828.85/4372/738.64/1.86768 target record. No shared spell was globally rewritten or gated.",
+    "Actual1085 has Lady stage5/2425/root47655/leaf47656/type92/50695 and final6/2426/root47678 leaves47679/50679 plus47680/50702. Map1489 is shared with other scenarios, so exact1085/6 is required.",
+    "Initial spell_scene1265 package1565/flags21/duration0 had NULL ScriptName, no spell_scene_event or210733/210734/210818 spell_script_names routes. Original Tuure source never calls210734. Native SceneCompleted/TrigerScene/packet handlers have no implicit inventory equip.",
+    "TuureSceneCatalog.cpp uses native DB2FileLoader/GetRecord/GetString for sparse SceneScriptText, never unsafe bulk materialization or Lua execution. Native13915/init equips128825 on a cinematic clone only. Full relevant13915/13916 master text inspected: race camera/title/53267/SPLASH827, cleanup and EndScene. Shared framework records extracted, not treated as gameplay footage. No YouTube footage was watched or used as proof."
+  ],
+  "repair": [
+    "Bind scene_tuure_pickup only to actual1265/package1565. Require native SCENE_COMPLETE, live/contact/alive Priest, no pending near/far/delayed teleport, map1489, active incomplete/complete nonrewarded41993, actual1085/6, real Lady leaf47656 counter and already existing nonbank128825.",
+    "Ask native210734 to equip the real staff. No AddItem, kill credit, manual criteria, explicit scenario completion, scene synthesis or replacement spell. Native force-equip checks/swap/errors and all original210734 phase/event/conversation effects retained. This helper neither changes other spells/scenes nor implements the chest controller.",
+    "An accepted CastSpell may execute later. The helper checks request failure and retains native inventory diagnostics, without assuming synchronous equip or emitting a premature not-equipped warning. Actual inventory result/scheduling still needs client confirmation.",
+    "Use existing native latest live SceneCompleted dispatch: forged complete while merely launched, obsolete/repeated/removed instances do not call the bridge. Native CancelPlayback also calls SceneCompleted; a valid skip may request equip of its already-owned staff, without a new item/progression grant.",
+    "Migration14 was held outside updater inputs until matching verified EXE promotion. It explicitly refuses a custom handler/package/flags/duration/event or missing row before UPDATE; preserves all native fields and is idempotent. No silent overwrite of a custom controller."
+  ],
+  "checks": {
+    "baseline": "Test-TuurePresentation -Baseline -AddressSanitizer: pinned44e7df34 absent bridge and controlled unbound scene registry, actual native completion leaves owned staff in bags. Expected missing-behavior counterfactual, not an ordinary successful route.",
+    "current": "Test-TuurePresentation -AddressSanitizer: extracted helper/wrapper, actual Player scene lifecycle/packet handlers/ForceEquipItem,8 incomplete/complete x completion/cancel x immediate/deferred invocation variants;19 invalid context/real boss leaf cases, cast/bag/blocked swap failures, stale/forged/repeated/missing aura and already equipped. Inventory allocation and deferred invocation are controlled adapters. Other210734 effects are established by typed metadata, not executed by the force-equip-only host.",
+    "sql": "Test-TuurePresentationData: twice-applied actual-schema TEMP shadows; six explicit45000 custom/missing refusals retain scene/events, and native unique MiscValue index rejects duplicate1265 before migration. --force is used only in labelled expected-refusal fixtures to inspect unchanged after-state. Final readback verifies exact live mapping/events0/RELEASED native hash.",
+    "shared": "Test-ArtifactForceEquip55 actual effect249 records/native handler and Test-SceneLifecycle native lifecycle pass. Test source pins original go_art_tuure and Lady classes unchanged; unsafe activation/14s controller remains visible and unresolved.",
+    "pe": "Actual AddSC_Tuure installs the real SceneTriggerScript registry constructor and derived OnTrigger vtable slot8; wrapper reaches Complete and actual HasSceneStatus/GetItemByEntry/CastSpell210734. Checks exact1265/1565/map1489/41993/1085/6/47656/128825, no direct item/criteria grants. Existing capture, Hunter and Warrior Heroic Leap selected PE plus canonical ScepterLogin -VerifyReleaseBinary pass.",
+    "development_repairs": "Initial blocked-swap assertion confused attempted SwapItem count with successful inventory placement; corrected host assertion while preserving production behavior. Duplicate fixture first hit native1062 unique index rather than migration45000; now explicitly verifies that schema refusal/unchanged TEMP data and subsequent ordinary migration. Initial live hash check used raw CRLF bytes; UpdateFetcher::ReadSQLUpdate uses Windows text-mode ifstream, so its persisted hash is LF text. Checker now matches native read mode and asserts that source contract; applied SQL bytes were not rewritten to fit the check.",
+    "owned_runtime": "Both server names absent before promotion and rechecked while copying. Own20216 applied14, reached fresh ready, shutdown0/exit0, stderr empty/newDBErrors0/protected config/certificate hashes unchanged. No user/unknown server stopped, no task server left."
+  },
+  "deployment": {
+    "migration": "sql/updates/world/2026_10_26_14_tuure_scene_equip.sql",
+    "state": "RELEASED",
+    "native_updater_sha1": "B67504BAA86FD060CE95B616A2FA335F5A273095",
+    "initial_deployed_raw_byte_sha1": "C2347E4B851C0E04A488DC2C3DBCB70FDDFC42E1",
+    "canonical_sha256": {
+      "bnetserver.exe": "7F46174012F4DE394035AA31B231766EB40EB661CBA1048CCF07491B4F18D73E",
+      "worldserver.exe": "B504D9951BC61A83E30B68BA7D760B0442B44CE7691B8E2EC6F9438A15EAF63E",
+      "worldserver.map": "018FB9BF29674672E64A7467A13FEF4A4BBFA5543519F9AE8233E8D3A2F32459",
+      "bnetserver.map": "7C12D4F3B7D38662FA5177E235ABBD2216AECFAD3EA80B33C82AFA552FB331F5"
+    }
+  },
+  "evidence_sha256": {
+    "typed_native_output": "935048DACDB9AF0383467CD59ACE52739147ABFA67668B00F239958ED4434A6E",
+    "scene_text_output": "D79D4BFBC06FB703D47CCDFF694E53535A23E95742DA877B231ABA0D01F62E48"
+  },
+  "diagnostics": "Mandatory pre/post snapshots for every baseline/current/TEMP/probe/build/PE/startup/shared test. Final Crashes empty/DBErrors0; no appended server warning/error/assertion. No runtime reports/logs requiring new fixed archive, no truncation/movement and no character progress SQL.",
+  "next_open": [
+    "249705 Data1 remains0 despite real loot249705/128825. Existing activation still manually gives50679 and AddItem before storage, duplicates native210733 send-event50679, and unguarded14s callback gives50702/explicit1085 completion before210818. DO NOT call full pickup repaired. Restore actual loot/storage/full-bag retry and delayed progression/exit together with admission, lease, native cast execution and native destination verification.",
+    "41993 objectives105887/Subjugator Valith flags28 and105890/Jace are earlier quest objectives, not interchangeable artifact/return credit.105887 SmartAI death action gives105890.106031 Holy Bunny KillCredit1/2 are0. Do not invent quest credit for staff/return from those labels.",
+    "Native2107339s visual text runs about9.25s, old script14s return can outrun slow/missing completion/equip. Missing scene callback/manual retry/full bags/bank ownership/abandon/re-entry/late callback/controller ownership and actual full client route remain open; no automatic timeout/retry introduced in this equip bridge.",
+    "No native scope change for group/pet credit: scene target is the eligible Player, earlier combat/ally/pet/guardian paths still require review. Both factions/race camera/player model/actual staff/abilities/save/relog remain client pending.",
+    "Contact105697 LINK1, other class routes, existing missing81040 and all36 remain open."
+  ]
+}

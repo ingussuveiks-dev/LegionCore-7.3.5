@@ -6,6 +6,8 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 Position const tppos[2] =
 {
@@ -693,6 +695,46 @@ public:
     }
 };
 
+namespace TuurePresentation
+{
+    bool Complete(Player* player, SpellScene const* scene, std::string const& trigger)
+    {
+        if (!scene || scene->MiscValue != 1265 || scene->SceneScriptPackageID != 1565)
+            return false;
+        if (trigger != "complete" || !player || !player->HasSceneStatus(1265, SCENE_COMPLETE) ||
+            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->HasPendingTeleport() ||
+            player->getClass() != CLASS_PRIEST || player->GetMapId() != 1489 ||
+            player->GetQuestRewardStatus(41993) ||
+            (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE) ||
+            !player->GetItemByEntry(128825))
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(player->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1085 || scenario->GetCurrentStep() != 6)
+            return true;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto victory = progress->find(47656); // Native Lady Calindris50695, not a forged early scene trigger.
+        if (victory == progress->end() || !victory->second.Counter)
+            return true;
+        // The scene equips a cinematic clone only. Native210734 validates and
+        // equips the real existing staff, retaining phase/events/conversation.
+        // Accepted casts may run later: do not diagnose inventory before execution.
+        SpellCastResult result = player->CastSpell(player, 210734, true);
+        if (result != SPELL_CAST_OK)
+            TC_LOG_WARN("scripts", "Tuure pickup: native equip210734 failed with result %u; retain inventory and native errors", uint32(result));
+        return true;
+    }
+}
+
+class scene_tuure_pickup : public SceneTriggerScript
+{
+public:
+    scene_tuure_pickup() : SceneTriggerScript("scene_tuure_pickup") { }
+    bool OnTrigger(Player* player, SpellScene const* scene, std::string trigger) override
+    {
+        return TuurePresentation::Complete(player, scene, trigger);
+    }
+};
+
 // 249705
 class go_art_tuure : public GameObjectScript
 {
@@ -733,4 +775,5 @@ void AddSC_Tuure()
     new npc_lady_kalindria();
     new go_tuure_crate();
     new go_art_tuure();
+    new scene_tuure_pickup();
 };

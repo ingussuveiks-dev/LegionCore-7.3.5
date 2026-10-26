@@ -2071,7 +2071,7 @@
       "weapon": "T'uure, Beacon of the Naaru",
       "item": 128825,
       "start": 41957,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: actual1265/1565 scene completion now requests native210734 equip of existing staff in exact1085/6/Lady context. Canonical/native/ASAN/TEMP/PE clean; real loot Data1, activation early progression/direct grant and14s unsafe exit remain open, full client traversal pending.",
       "quests": [
         {
           "id": 41957,
@@ -2169,7 +2169,8 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Repair249705 real loot/storage/full-bag retry plus original early50679/direct AddItem and14s50702/explicit1085/210818 controller. Trace actual native cast execution/accepted destination/quest lease and retain scene/native equip errors; no invented quest objective grants.105697 LINK1/full route/client/all36 remain open.",
+      "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json"
     },
     {
       "class_id": 5,
