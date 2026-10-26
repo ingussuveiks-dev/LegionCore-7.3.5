@@ -12,11 +12,18 @@
   },
   "common_findings": [
     {
+      "path": "sql/updates/world/2026_10_26_02_ashbringer_spell_loot.sql",
+      "handler": "Native199827 retrieval spell loot",
+      "problem": "180850 triggers native157/ItemTypezero199827, but no spell_loot_template199827 existed;249 is equip-only and the separate GO loot row is unbound.",
+      "repair_audit": "docs/audits/ashbringer-spell-loot-2026-10-26.json",
+      "limit": "Restored native199827->120978 with fourteen source12 class/map775-step3/active38376/alive/not-owned rules; no chest conversion or script item grant. Actual-schema TEMP/custom variants/native condition/storage fragments/ASAN/installed consumer and deployed SQL checked. Full-bag/null-store can still precede enclosing progress: native AutoStoreLoot bool only counts slots. Whole retrieval/retry/equip/VFX/client remains OPEN."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "247318 premature scenario-completion achievement credit",
       "problem": "Step3 pickup directly emitted type152/775 although native775 has seven nonbonus steps; this was premature achievement credit, not actual Scenario currentStep completion.",
       "repair_audit": "docs/audits/ashbringer-pickup-completion-2026-10-26.json",
-      "limit": "Only premature152 removed; original46130/180850/trigger/Delete and empty-or-owned admission retained.160 actual-callback controlled cases/ASAN/native metadata/selected installed slot50 checked. Native249 only equips an existing item, NOT creates it: genuine120978 storage remains OPEN with Data1zero and existing unbound loot row. No artificial grant, whole reward/client/VFX certification or quarantine workaround."
+      "limit": "Only premature152 removed; original46130/180850/trigger/Delete and empty-or-owned admission retained.160 actual-callback controlled cases/ASAN/native metadata/selected installed slot50 checked. Native249 only equips an existing item, NOT creates it. Subsequent spell_loot_audit identifies/restores199827 native creation source while preserving Data1zero; actual storage failure/retry/equip remains OPEN. No artificial grant, whole reward/client/VFX certification or quarantine workaround."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
@@ -1001,9 +1008,11 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: premature pickup completion criterion, door ownership, finite95962 emission,91672 point admission and90981 scaled lethal finale repaired; genuine120978 storage unresolved; earlier ordinary door fixture remains Defender-blocked; full acquisition/visual/client traversal pending",
+      "status": "partial: native199827 weapon-loot source restored; premature completion criterion and actor memory/motion/scaled-lethal guards repaired; enclosing failed-storage/retry/equip unresolved; ordinary door fixture Defender-blocked; full acquisition/visual/client traversal pending",
+      "spell_loot_audit": "docs/audits/ashbringer-spell-loot-2026-10-26.json",
+      "spell_loot_review": "Native180850->199827(effect157,ItemType0)->AutoStoreLoot199827 is the missing genuine source, not249 or chest Data1. Restore exact120978 spell-loot row and fourteen source12 rules; keep original chestData1zero and all effects/callbacks. Native/hotfix source, actual TEMP migration/custom variants, condition/cached recheck and storage fragments/ASAN/installed native consumer verified. No direct grant/character edit. Full-bag/null-store retrieval progress and replay remain OPEN because AutoStoreLoot bool is slot-count based; missing32543 is reported, not invented. Actual equip/save/group/faction/VFX/client not certified.",
       "pickup_completion_audit": "docs/audits/ashbringer-pickup-completion-2026-10-26.json",
-      "pickup_completion_review": "Removed direct152/775 at source-stage3; native seven-step Scenario reward retains completion ownership. All original empty-or-owned/state admission,46130/180850/103454 cleanup/activated2 Delete retained and actual callback/Instance fanout/installed slot50 checked. Native249 FORCE_EQUIP_ITEM requires an existing stored item and does NOT create one; do not infer genuine loot from that effect. Data1zero versus existing247318->120978 loot row and triggered-spell/scene storage must be resolved next. Repeated events/failed effects/attempt epochs/group/faction/actual loot-equip and client/VFX remain OPEN.",
+      "pickup_completion_review": "Removed direct152/775 at source-stage3; native seven-step Scenario reward retains completion ownership. All original empty-or-owned/state admission,46130/180850/103454 cleanup/activated2 Delete retained and actual callback/Instance fanout/installed slot50 checked. Native249 FORCE_EQUIP_ITEM requires an existing stored item and does NOT create one; subsequent spell_loot_audit restores the actual199827 creation source rather than binding chestData1. Repeated events/failed effects/attempt epochs/group/faction/actual loot-equip and client/VFX remain OPEN.",
       "balnazzar_surrender_audit": "docs/audits/ashbringer-balnazzar-surrender-2026-10-26.json",
       "balnazzar_surrender_review": "90981 now uses actual post-scaling target-relative lethal comparison and enters its original claimed finale on that lethal result rather than dying/stalling. Strict pre-hit15percent remains, with original227853 personal-credit spell/152821/kit61036/cleanup/flags/stage5 event46149/3000ms. Actual final bridge/native EventMap/InstanceScript controlled fanout,48 killer-label/scale/primary-suspended reentrant cases and installed selectedA8/empty rawA0 checked. No manual Player/pet/group grant, heal, item or phase change. Wrong-stage/intro admission, Reset/attempt epochs, failed casts/actual227853 area eligibility, full group/faction/client/VFX and whole acquisition remain OPEN.",
       "flame_targets_audit": "docs/audits/ashbringer-flame-targets-2026-10-26.json",
@@ -1118,7 +1127,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Prioritize genuine247318 loot/source binding: native249 only equips an existing item, not creates one. Reconcile Data1zero, existing247318->120978 loot row and triggered180850 effects/scenes/rewards before any source repair or item-first guard; check early access/full bags/native storage/save/relog, never substitute a weapon grant. Preserve repaired completion-criterion ownership and scaled lethal Balnazzar finale. Continue native775 entrance/admission, trash80/50/35/125 eligible owner/group dispatch, prison/failed-cast/missing-actor and abandon/re-entry recovery, late/recreated door state and final Tyrion/Tyrosus/hippogryph return/camera/pet. Ordinary door fixture awaits user security review without bypassing Defender; independent work may continue. Review pinned compatible donors and full relevant video/audio before choreography changes. Entire chain/faction/group/VFX/client verification remains OPEN."
+      "next_action": "Native199827 spell-loot source is restored; do NOT bind the separate GO row or add an item-first gate that blocks native creation. Prioritize enclosing full-bag/null-store/failed-cast preflight and progress/retry: AutoStoreLoot returns slot count, not stored-item success; original46130/114505/180850 domination flow can advance without an item. Trace accepted retrieval/post-store equip/save/relog, stage/attempt/abandon/re-entry and duplicate suppression without arbitrary grants. Missing native32543 client presentation remains open. Then775 entrance/admission, trash80/50/35/125 owner/group eligibility, prison/missing actors, late-door state and final Tyrion/Tyrosus/hippogryph return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender; independent work may continue. Pinned donors/full relevant footage before choreography edits. Entire chain/faction/group/VFX/client verification remains OPEN."
     },
     {
       "class_id": 3,

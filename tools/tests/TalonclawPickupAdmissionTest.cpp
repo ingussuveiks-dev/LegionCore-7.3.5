@@ -157,7 +157,8 @@ int main(int argc, char** argv) {
     bool earthwarder = argc == 4 && std::string(argv[2]) == "earthwarder-loot";
     bool truthguard = argc == 4 && std::string(argv[2]) == "truthguard-loot";
     bool silverHand = argc == 4 && std::string(argv[2]) == "silver-hand-loot";
-    bool warswords = argc == 4 && (std::string(argv[2]) == "warswords-loot" || earthwarder || truthguard || silverHand);
+    bool ashbringer = argc == 4 && std::string(argv[2]) == "ashbringer-spell-loot";
+    bool warswords = argc == 4 && (std::string(argv[2]) == "warswords-loot" || earthwarder || truthguard || silverHand || ashbringer);
     if (warswords) {
         playersOwnArtifactByDefault = false;
         expectedQuest = 40043; expectedMap = 1511; expectedScenario = 944; firstStage = lastStage = 6;
@@ -165,10 +166,11 @@ int main(int argc, char** argv) {
         GameObjectTemplate chest;
         assert(chest.GetLootId() == 0);
         chest.chest.chestLoot = static_cast<uint32>(std::stoul(argv[3]));
-        assert(chest.GetLootId() == (silverHand ? 249824u : truthguard ? 249420u : earthwarder ? 248831u : 248832u));
+        if (!ashbringer) assert(chest.GetLootId() == (silverHand ? 249824u : truthguard ? 249420u : earthwarder ? 248831u : 248832u));
         if (earthwarder) { expectedQuest = 39191; expectedMap = 1495; expectedScenario = 909; firstStage = lastStage = 5; expectedItem = 128289; }
         if (truthguard) { expectedQuest = 42017; expectedMap = 1495; expectedScenario = 1082; firstStage = lastStage = 5; expectedItem = 128866; expectedClassMask = 2; }
         if (silverHand) { expectedQuest = 42120; expectedMap = 1539; expectedScenario = 1092; firstStage = lastStage = 10; expectedItem = 128823; expectedClassMask = 2; }
+        if (ashbringer) { expectedQuest = 38376; expectedMap = 1500; expectedScenario = 775; firstStage = lastStage = 3; expectedItem = 120978; expectedClassMask = 2; }
     }
     if (stromkar) {
         expectedQuest = 41105; expectedMap = 1539; expectedScenario = 1037; firstStage = lastStage = 9;
@@ -289,6 +291,13 @@ int main(int argc, char** argv) {
     }
     if (silverHand) {
         for (uint32 sharedScenario : {991u, 1037u}) {
+            Player owner; scenarioManager.scenario.id = sharedScenario;
+            assert(!item.AllowedForPlayer(&owner) && !cache.Read(&owner, &item));
+        }
+        scenarioManager = {};
+    }
+    if (ashbringer) {
+        for (uint32 sharedScenario : {933u, 961u}) {
             Player owner; scenarioManager.scenario.id = sharedScenario;
             assert(!item.AllowedForPlayer(&owner) && !cache.Read(&owner, &item));
         }
