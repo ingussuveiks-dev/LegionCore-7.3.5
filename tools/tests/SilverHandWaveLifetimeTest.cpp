@@ -248,6 +248,23 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
 }
 int main()
 {
+#ifdef LATE_WAVE_BASELINE
+    for(uint32 threshold:{3u,6u})
+    {
+        Fixture fixture;Creature guardian;uint32 progress=179;
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+        for(uint32 identity=0;identity<threshold-1;++identity)KillSummon(fixture.actor.adds[identity].get(),&guardian);
+        fixture.actor.stunned=false;
+        fixture.player.onCredit=[&progress](){if(++progress==180)manager.scenario.step=10;};
+        fixture.ai.UpdateAI(1000);
+        assert(progress==180 && manager.scenario.step==10);
+        KillSummon(fixture.actor.adds[threshold-1].get(),&guardian);
+        assert(fixture.ai.count_died==threshold && fixture.actor.adds.size()==(threshold==3?6u:7u));
+        if(threshold==6)assert(fixture.actor.adds.back()->entry==106719);
+    }
+    std::cout<<"PASS pinned7974ba11: native owner-death bridge creates wave2 or new attacking Mordoth after final179->180 ritual pulse moves stage label10; progress sink controlled, native weighted tree independently checked\n";
+    return 0;
+#else
 #ifdef CONTEXT_BASELINE
     {
         Fixture fixture;
@@ -279,6 +296,74 @@ int main()
     }
 #else
 #if !defined(BASELINE) && !defined(ADMISSION_BASELINE) && !defined(DEATH_BASELINE) && !defined(PROGRESS_BASELINE)
+    for(uint32 threshold:{3u,6u})
+        for(uint32 killerKind=0;killerKind<5;++killerKind)
+            for(uint32 context=0;context<22;++context)
+            {
+                Fixture fixture;Player player;Creature pet,guardian,ally;
+                std::vector<Unit*> killers{&player,&pet,&guardian,&ally,nullptr};
+                Unit* killer=killers[killerKind];
+                fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+                for(uint32 identity=0;identity<threshold-1;++identity)KillSummon(fixture.actor.adds[identity].get(),killer);
+                fixture.ai.timer=37;
+                Creature* final=fixture.actor.adds[threshold-1].get();
+                uint32 originalAdds=threshold==3?3u:6u;
+                if(context<12)manager.scenario.step=context;
+                else switch(context)
+                {
+                    case 12:fixture.actor.world=false;break;
+                    case 13:fixture.actor.preDelete=true;break;
+                    case 14:fixture.actor.alive=false;break;
+                    case 15:fixture.actor.entry=106676;break;
+                    case 16:fixture.actor.mapId=1220;break;
+                    case 17:fixture.actor.map=nullptr;break;
+                    case 18:fixture.actor.instance=43;break;
+                    case 19:manager.present=false;break;
+                    case 20:manager.scenario.id=991;break;
+                    case 21:manager.scenario.id=1037;break;
+                }
+                bool valid=context==9;
+                bool deferred=context>=12 && context<=14;
+                uint32 before=diagnostics;
+                KillSummon(final,killer);
+                assert(fixture.ai.count_died==(deferred?threshold-1:threshold));
+                assert(fixture.actor.adds.size()==(valid?(threshold==3?6u:7u):originalAdds));
+                assert(fixture.ai._waveSummons.size()==(deferred?1u:valid && threshold==3?3u:0u));
+                assert(diagnostics==before+(valid || deferred?0u:1u));
+                assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.ai.timer==37);
+                assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==0);
+                for(uint32 repeat=0;repeat<30;++repeat)RouteDeath(final,killer);
+                assert(diagnostics==before+(valid || deferred?0u:1u));
+                fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;fixture.actor.entry=106777;
+                fixture.actor.mapId=1539;fixture.actor.map=&liveMap;fixture.actor.instance=42;manager=ScenarioManager{};
+                fixture.ai.Reset();RouteDeath(final,killer);
+                for(uint32 repeat=0;repeat<30;++repeat)RouteDeath(final,killer);
+                assert(fixture.ai.count_died==threshold && fixture.ai.timer==37);
+                assert(fixture.actor.adds.size()==(valid || deferred?(threshold==3?6u:7u):originalAdds));
+                assert(fixture.player.credits.empty() && player.credits.empty());
+            }
+    for(uint32 threshold:{3u,6u})
+    {
+        Fixture fixture;Creature guardian;uint32 progress=179;
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+        for(uint32 identity=0;identity<threshold-1;++identity)KillSummon(fixture.actor.adds[identity].get(),&guardian);
+        fixture.actor.stunned=false;
+        fixture.player.onCredit=[&progress](){if(++progress==180)manager.scenario.step=10;};
+        fixture.ai.UpdateAI(1000);KillSummon(fixture.actor.adds[threshold-1].get(),&guardian);
+        assert(progress==180 && manager.scenario.step==10 && fixture.ai.count_died==threshold);
+        assert(fixture.actor.adds.size()==(threshold==3?3u:6u) && fixture.ai._waveSummons.empty());
+        assert(fixture.player.credits.size()==1);
+    }
+    for(uint32 faction:{0u,1u})
+    {
+        Fixture fixture;Creature pet;fixture.player.faction=faction;
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.victim=true;fixture.actor.Lifecycle(5000);
+        fixture.player.alive=false;fixture.player.phase=false;fixture.player.los=false;fixture.player.status=0;liveMap.players.clear();
+        for(uint32 identity=0;identity<6;++identity)KillSummon(fixture.actor.adds[identity].get(),&pet);
+        assert(fixture.ai.count_died==6 && fixture.actor.adds.size()==7 && fixture.actor.adds.back()->entry==106719);
+        assert(fixture.player.credits.empty());
+    }
+    std::cout<<"PASS follow-up waves: both3/6 consumed thresholds across all12 stages/10 invalid actor-scenario contexts and Player/pet/guardian/ally/null killer labels; valid9 retained, stale2/Mordoth dropped once without replay after Reset/context recovery, original early invalid-owner deferral retained, no timer/intro/criteria/credit changes;179->180 transition blocks late combat; same-stage Player loss and both faction labels do not cancel shared waves\n";
     assert(!SilverHandFinalEntry::CanStartWave(nullptr));
     for(uint32 mode=0;mode<4;++mode)
         for(uint32 context=0;context<22;++context)
@@ -720,6 +805,7 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks/event IDs; ritual recipient admission checked separately; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

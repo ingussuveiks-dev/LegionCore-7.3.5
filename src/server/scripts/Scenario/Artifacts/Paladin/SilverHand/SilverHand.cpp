@@ -1345,6 +1345,11 @@ public:
                 count_died >= 6 || !_waveSummons.erase(summon->GetGUID()))
                 return;
             count_died++;
+            if ((count_died == 3 || count_died == 6) && !SilverHandFinalEntry::CanStartWave(me))
+            {
+                TC_LOG_DEBUG("scripts", "Silver Hand ritual: dropping stale follow-up wave at death count %u", uint32(count_died));
+                return;
+            }
             switch (count_died)
             {
                 case 3:

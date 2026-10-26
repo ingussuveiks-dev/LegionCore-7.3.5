@@ -2,6 +2,7 @@
 from pathlib import Path
 import runpy
 from capstone import CS_OP_IMM, CS_OP_MEM
+from capstone.x86_const import X86_REG_RIP
 
 previous = runpy.run_path(str(Path(__file__).with_name('verify_silver_hand_final_entry_release.py')))
 native, instructions, sites = previous['native'], previous['instructions'], previous['sites']
@@ -72,13 +73,11 @@ assert owner < roster < copy_guid < copy_node < insert
 assert registration[insert - 1].op_str == 'rcx, r14'
 
 death = instructions(death_name)
-assert [(entry.mnemonic, entry.op_str) for entry in death[-4:]] == [
-    ('add', 'rsp, 0x38'), ('pop', 'rsi'), ('pop', 'rbx'), ('ret', '')]
-deny = death[-4].address
+deny = death[position(death, 'rcx, qword ptr [rsp + 0xc0]', 'mov')].address
 guarded(death, 'rdx, rdx', 'test', 'je', death[-1].address)
 assert death[-1].mnemonic == 'ret'
 dead = position(death, 'dword ptr [rdx + 0xa18], 0', 'cmp')
-assert death[dead + 3].mnemonic == 'je' and death[dead + 3].operands[0].imm == deny
+assert death[dead + 1].mnemonic == 'je' and death[dead + 1].operands[0].imm == deny
 for method, branch in (('?IsInWorld@Object@@', 'je'), ('?IsPreDelete@Object@@', 'jne')):
     call, = sites(death, method)
     assert death[call + 1].op_str == 'al, al'
@@ -86,22 +85,41 @@ for method, branch in (('?IsInWorld@Object@@', 'je'), ('?IsPreDelete@Object@@', 
 guarded(death, 'dword ptr [rax + 0xa18], 0', 'cmp', 'jne', deny)
 cap = guarded(death, 'byte ptr [rsi + 0x40], 6', 'cmp', 'jae', deny)
 assert len(sites(death, '??MObjectGuid@@')) == 3
-assert any(entry.op_str == 'r15, qword ptr [rsi + 0xc8]' for entry in death)
+assert any(entry.op_str == 'r13, qword ptr [rsi + 0xc8]' for entry in death)
 erase, = named_calls(death, '?_Erase@')
-assert death[erase - 2].op_str == 'rcx, [rsi + 0xc8]'
+assert death[erase - 1].op_str == 'rcx, [rsi + 0xc8]'
 erased = guarded(death, 'rax, rax', 'test', 'je', deny)
 increment = position(death, 'al', 'inc')
 assert death[increment - 1].op_str == 'eax, byte ptr [rsi + 0x40]'
 assert death[increment + 1].op_str == 'byte ptr [rsi + 0x40], al'
 assert cap < erase < erased < increment
-threshold_three = position(death, 'al, 3', 'cmp')
-threshold_six = guarded(death, 'al, 6', 'cmp', 'jne', deny)
+context, = sites(death, lifetime['wave_helper'])
+assert death[context - 1].op_str == 'rcx, qword ptr [rsi + 0x20]'
+assert death[context + 1].op_str == 'al, al' and death[context + 2].mnemonic == 'jne'
+continuation = death[context + 2].operands[0].imm
+switch = next(index for index, entry in enumerate(death) if entry.address == continuation)
+assert death[switch].op_str == 'eax, byte ptr [rsi + 0x40]'
+assert death[switch - 1].mnemonic == 'jmp' and death[switch - 1].operands[0].imm == deny
+threshold_three = position(death[:context], 'al, 3', 'cmp')
+threshold_six = position(death[:context], 'al, 6', 'cmp')
+assert increment < threshold_three < threshold_six < context < switch
+assert death[threshold_three + 1].mnemonic == 'je' and death[threshold_three + 1].operands[0].imm == death[context - 1].address
+assert death[threshold_six + 1].mnemonic == 'jne' and death[threshold_six + 1].operands[0].imm == continuation
 wave_two = position(death, 'dl, 2', 'mov')
 wave_three = position(death, 'dl, 3', 'mov')
-assert death[threshold_three + 1].mnemonic == 'je'
-assert death[threshold_three + 1].operands[0].imm == death[wave_two].address
-waves = sites(death, '?SummonAdds@npc_travar_lastAI@')
-assert len(waves) == 2 and increment < threshold_three < threshold_six < wave_three < waves[0] < wave_two < waves[1]
+assert death[switch + 1].op_str == 'al, 3' and death[switch + 3].op_str == 'al, 6'
+assert death[switch + 2].mnemonic == 'je' and death[switch + 2].operands[0].imm == death[wave_two].address
+assert death[switch + 4].mnemonic == 'jne' and death[switch + 4].operands[0].imm == deny
+wave_call, = sites(death, '?SummonAdds@npc_travar_lastAI@')
+assert switch < wave_three < wave_two < wave_call and death[wave_call - 1].op_str == 'rcx, rsi'
+assert death[wave_three + 1].mnemonic == 'jmp' and death[wave_three + 1].operands[0].imm == death[wave_call - 1].address
+message = b'Silver Hand ritual: dropping stale follow-up wave at death count %u'
+assert any(entry.mnemonic == 'lea' and len(entry.operands) == 2 and entry.operands[1].type == CS_OP_MEM
+           and entry.operands[1].mem.base == X86_REG_RIP
+           and native['binary'].startswith(message, native['offset'](entry.address + entry.size + entry.operands[1].mem.disp))
+           for entry in death[context:switch])
+assert any(entry.op_str == 'ecx, byte ptr [rsi + 0x40]' for entry in death[context:switch])
+assert not sites(death, '?AddDelayedEvent@FunctionProcessor@@')
 for method in ('?UpdateAchievementCriteria@Player@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@'):
     assert not sites(registration, method) and not sites(death, method)
 
@@ -125,4 +143,4 @@ release = lifetime['release']
 assert named_calls(destroy[:release], '??$_Erase_tree@')
 assert any(entry.op_str == 'rcx, [rdi + 0xc8]' for entry in destroy[:release])
 assert any(entry.op_str == 'edx, 0xd8' for entry in destroy[release:])
-print('PASS: canonical last Travard factory selects roster registration0x140 and native Kill death0x158; full128-bit owned/live regular summons only, set erasure before bounded3/6 increment, duplicate/null/alive/untracked rejection, no Player credit. Native InitSummon registers before IsSummonedBy, both successful regular return paths register idempotently, and AI destruction releases roster plus original queue. This does not certify disabled-AI death redelivery, failed-spawn recovery, periodic51838 timing or client combat/VFX.')
+print('PASS: canonical last Travard factory selects roster registration0x140 and native Kill death0x158; full128-bit owned/live regular summons only, set erasure before bounded3/6 increment, duplicate/null/alive/untracked rejection, no Player credit. Both consumed thresholds call the same verified actual CanStartWave policy before a merged original wave2/3 dispatch; false context logs death count and exits without replay/reset/requeue. Native InitSummon registration-before-IsSummonedBy, successful-return fallback and roster/queue destruction remain. Disabled-AI death redelivery, failed-spawn recovery, ritual timing and client combat/VFX remain separate.')

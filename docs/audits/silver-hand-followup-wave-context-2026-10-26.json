@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Native-context admission at last-Travard's consumed3/6 regular-death thresholds only; not complete Holy/all36/client/combat/VFX certification.",
+  "sources": [
+    {
+      "source": "Local git7974ba11, worklist/routes/donor review and linked first-wave/ritual/death audits",
+      "review": "Clean main/origin inherited. First accepted5000ms callback already rejects stale actor/native stage context; subsequent native owner-death notifications could still directly call wave2 or wave3 after successful ritual stage9. Whole affected AI/instance dispatch and native Unit::Kill owner bridge reviewed. No Player-killer-only filter introduced."
+    },
+    {
+      "source": "Matching26972 native DB2/hotfix catalog and actual completion/Scenario paths",
+      "review": "Native1092/stage9 tree48055 ALL ->53744 SCENARIO requires180 weighted30110/type92/51838 pulses; stage10 is30111/type92/50966 pickup, not another defense wave. Compiled actual ALL/WalkCriteriaTree/scenario operator over fresh metadata separately proves179 incomplete/180 complete. Native stage10 instance action speaks through106777 and casts215260/protection on existing106719. A delayed third/sixth owned death must not create fresh combat after that transition; no boss-death gate or one-pulse victory inferred."
+    },
+    {
+      "source": "Read-only local MariaDB actor bindings/static reuse/phase conditions",
+      "review": "Only106777 has npc_travar_last binding among106777/106580/106578/106719. Static regular enemies reuse106578/106580 in phases5738/7000, and static106719/362044 is phase7001; these templates/spawns are not modified. Phase7003 admits1092/exact9 OR10, phase7004 exact10. Visibility of last Travard after defense is intentional final dialogue, not late-wave permission."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted scripts and all-ref SilverHand path history",
+      "review": "No npc_travar_last/51838 acquisition correction returned by bounded searches; not exhaustive history certification and no modern API/schema imported."
+    },
+    {
+      "source": "Pinned Titans complete relevant last-Travard entry/death/update/wave source returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Its death3/6 switch directly creates the next wave without native stage validation. No donor correction imported; existing wave rosters/positions/attack targets and six-death ordering retained."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client sequence reviewed this unit. Native transition/admission supports this bounded correction, not presumed choreography, rendered spells, actual escape timing or full traversal."
+    }
+  ],
+  "repair": {
+    "implementation": "After existing full-GUID erasure and count increment, only thresholds3/6 require unchanged SilverHandFinalEntry::CanStartWave(me). Failed context emits a debug count and returns before original switch. Actual corpse/death notification is consumed once, never artificially replayed after stage restoration or Reset.",
+    "preserved": "No fields/ABI/roster/timer/intro/criteria/queue/reset changes, no new retry/pulse/credit/group fanout/item grant, no corpse destruction or blanket Unit-job cancellation. Existing early missing/dead/predeleted owner rejection stays before erasure; it does not consume a real death until subsequent actual delivery. Player/pet/guardian/ally/null killers remain accepted. Same-stage Player death/absence/LOS/phase/quest loss and actor stun/victim are not new cancellation gates. All SummonAdds bodies, attacks, boss flags/Talk0, initial5s callback, periodic1000ms/180 threshold and real loot/equip remain unchanged.",
+    "limits": "Context is checked before each follow-up wave dispatch, not atomically after every individual summon callback. Mid-spawn reentry, missing/failed/partial spawn/defender retry, disabled-to-another-primary death delivery and same-stage quest/scenario epochs remain OPEN. Consumed invalid thresholds deliberately do not time-travel into a later attempt."
+  },
+  "validation": {
+    "baseline": "PASS -LateWaveBaseline pins actual full7974ba11 AI/native owner-death bridge: after179->180 controlled pulse changes stage10, last first-wave corpse creates three new enemies, or last second-wave corpse creates new attacking Mordoth. Actual weighted completion checked separately; not observed character/client state.",
+    "host": "PASS current extracted full AI/native FunctionProcessor/InitSummon/death/lifecycle: both3/6 thresholds x five Player/pet/guardian/ally/null killer labels x22 contexts (all12 stages plus10 actor/scenario failures), duplicates/Reset/context restoration, exact count/roster/timer/intro/criteria and no credit/requeue. Original world/predelete/alive owner deferral retains unconsumed GUID then permits actual redelivery after recovery; other stale thresholds stay consumed. Separate179->180 and both-faction-label same-stage Player loss retain intended behavior. Controlled world/Player/map/summon and progress-sink services, not integrated live group/combat proof.",
+    "installed": "PASS actual selected death0x158 consumes GUID then increments bounded byte40 before threshold-only shared CanStartWave call. Compiler now outlines unchanged helper because both initial and follow-up paths use it; proof decodes real live actor/map/scenario9 policy and bool returns, both selected callers and all deny/success branches. Original wave2/3 compiler dispatch merges to one call: proof verifies DL2/DL3 mapping and no context-failure route into it. Selected initial callable still9-byte tail thunk with failure-only intro38/criteria39 rearm, AI0xd8/queue48/rosterc8 retained. No noinline/ABI guesses or relaxed predicates to satisfy old shape assertions.",
+    "sanitizer": "PASS current complete full-AI/follow-up/pending-wave/scoped-pulse/owned-death fixture under MSVC AddressSanitizer: .codex/silver-hand-followup-context-asan.log. Existing extracted fixture shadowing warnings remain visible; no production diagnostics/checks disabled.",
+    "regressions": "PASS23 top-level suites: newLateWaveBaseline, retainedContextBaseline/ProgressBaseline, complete retained19-suite .codex/silver-hand-waypoint-retry-followup-context-regressions.tsv and current MordothMotion Release nesting original seven-spawn InitialMotion. Retained waypoint-retry/recipient/death/admission/lifetime/arrival/action/final/step8 baselines, current full dispatch/wave/rescue/ally/entry/native weighted tree/selected Release proofs, ScepterLogin, native149 race/class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 native records all PASS. Catalog builds serialized after canonical build; final executable hashes unchanged after all checks/owned shutdown.",
+    "probe_limit": "Earlier isolated empty-output SQL and offers22 incidents remain unexplained in their prior audits, not fixed here. No recurrence in this completed run; no automatic retry, predicate/count relaxation or hidden production error introduced.",
+    "evidence": ".codex/silver-hand-followup-context-*; .codex/silver-hand-waypoint-retry-followup-context-*; ignored runtime-test/silver-hand-wave-lifetime. No runtime/configuration/secrets/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "918FCFA9FE6CDAA8F14C68CFBAB8B43AB0B6C5079C5F5EE5DFB310DC751BBFC0",
+    "bnet_sha256": "6D8B928C0CB89EBF40567A937316703AC86FF42A8839EC03158928BCA7C8688D",
+    "build": "Release world+bnet17.36s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 final-link commands check canonical output/original scripts-game-shared-common and bnet shared-common libraries/no incremental; actual deployed selected callers/policy decoded, not only hash/startup.",
+    "runtime": "Own hidden canonical PID38776 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0; new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. Own PID gone, no unknown/user server stopped or hidden own server left. Startup is not actual1539 grid/combat/channel/client proof."
+  },
+  "remaining": [
+    "Actual180-pulse ritual/channel success, defense timing under lag/stun/combat, wave spawning/navigation/Mordoth escape215260, live party/faction/pets and full relevant footage/client sequence remain unverified.",
+    "Earlier fight/evade/post-scaling half-health transitions, real loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN; no complete quest or VFX certification."
+  ]
+}
