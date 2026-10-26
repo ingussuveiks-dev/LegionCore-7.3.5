@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Seven Silver Hand scripted Travard/Efrin/Duval DB spawn defaults only. Data-only correction, not a complete Holy quest, all36, grid traversal or visual certification.",
+  "sources": [
+    {
+      "source": "Local git d4193e56; worklist, artifact-routes, donor-review and previous waypoint-retry audit",
+      "review": "Carried forward the explicit initial-MovementType2/path0 risk rather than presenting earlier startup/new-DBErrors0 as an actual grid-load test. Current branch initially clean; prior retry/waypoint/wave/action fixes preserved."
+    },
+    {
+      "source": "Read-only canonical-config MariaDB world records; matching native26972 catalogs in existing regression suite",
+      "review": "361893/106371,361894/106370,361895/106429 use phase5738 7005;361986/106371,361987/106370,361991/106639 phase7000;362006/106676 phase7002. Each spawn MovementType2/spawndist0 overrides a template MovementType0; no spawn addon exists, each template addon path_id0, ordinary waypoint_data id0 absent. Explicit waypoint_data_script10993804/05/06/07 contain11/19/15/22 points. Later companion362008/362009, final362046/362048 already idle. Mordoth362044/106719 is a separate SmartAI actor with default2/path0 and combat215690; left unchanged, not claimed safe or repaired."
+    },
+    {
+      "source": "Local ObjectMgr, Creature, CreatureAISelector, MotionMaster, IdleMovementGenerator, WaypointMovementGenerator and TimeTrackerSmall",
+      "review": "Creature DB load sets the spawn movement type; GetWaypointPath comes from an addon. ObjectMgr's zero-path correction iterates existing creature_addon rows, so it does not sanitize these seven addon-absent spawns. Actual SelectMovementGenerator chooses the spawn default unless player-controlled; InitDefault mutates the idle slot. Default WPG path0 reads the creature's addon path then ordinary GetPath; an explicit nonzero MovePath ID uses GetPathScript instead. A null path retains the real sql.sql warning. Native LoadPath resets3000ms, so CanMove is initially false: the regression extracts actual CanMove and TimeTracker rather than inventing immediate spline starts. Actual spline advancement/grid loading remains outside this host."
+    },
+    {
+      "source": "Local SilverHand.cpp first/second/third Travard and companion classes",
+      "review": "First's accepted POINT1 installs original50yd followers; checked19580/0 gossip at exact native step1 issues10993804, then existing arrival logic10993805. Second's checked19599/0/native step4 issues followers/10993806. Third's admitted active42120/1092 steps5..8 entry queue preflights10993807 then issues30yd followers/path. These commands own motion; assigning a real path as a default would risk starting it before admission. No constructor/method in these classes supplies an ordinary default path. Existing Reset, wound, credit, queue, phase, quest and companion behavior is unchanged."
+    },
+    {
+      "source": "Local TrinityCore current4ad7c7ba5bd2a3e73eb848babaf9b39696d63473 and matching26972 c2d61e05cf3dc555608e6b2a06772c27d207548c",
+      "review": "Targeted script grep finds unrelated Stratholme Order of the Silver Hand, not npc_travar/acquisition. Targeted all-ref SilverHand path history returned no acquisition implementation. Different-core history was not exhaustively reviewed and no modern API/schema was imported."
+    },
+    {
+      "source": "Pinned Titans donor file, returned/read first/second/third and companion motion handlers",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Original explicit10993804..7 and MoveFollow calls support separating script-owned motion from default motion. This source does not fix local spawn rows; no donor database/path/quest changes were copied."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage, transcript or client traversal reviewed. The bounded repair follows the actual local loader and existing motion ownership, not reconstructed animation/voice/combat choreography."
+    }
+  ],
+  "repair": {
+    "migration": "2026_10_26_00 updates only seven exact map1539/GUID/entry/phase/script matches from spawn MovementType2 to0, only with template MovementType0, spawn radius0 and effective addon path0. Spawn addon takes precedence over template addon; a nonzero existing path or customized radius/motion/binding is left untouched.",
+    "preserved": "All four explicit script paths/points/delays, real follows, quest/phase/stage prerequisites, interaction flags, timers, diagnostics, combat/scaling, native owner/pet/guardian/shared-scenario credit, faction rules, real loot/equip and unrelated shared entries remain unchanged. No core log suppression, fabricated default path, manual credit, item grant, character or runtime-configuration edit. Idle admission does not prove later missing/failed/interrupted movement is recovered.",
+    "deployment": "No worldserver/bnetserver active before migration/build; no unknown/user server stopped. Canonical-config credential-scoped MariaDB application changed7 rows, immediate identical second application0. Temporary regression tables shadow only world tables and do not change persistent rows; expected five non-target phase/boss rows remain unchanged."
+  },
+  "validation": {
+    "native": "PASS compiled actual selector, InitDefault, MovePath, Idle Initialize/Reset, WPG constructor/LoadPath/DoInitialize/CanMove and TimeTrackerSmall. Seven pre-fix live-row shapes each select waypoint and warn on path0; fixed rows select idle without attempting a path, including reinitialization. Four nonrepeating explicit script paths load correct nonempty11/19/15/22-node metadata, retain3000ms admission plus blocked/casting gates. Zero requested path does nothing; genuinely missing explicit path still warns; valid ordinary addon path and controlled-creature/Player idle remain covered. Registry, actor services, StartMoveNow and path contents are controlled; no actual spline/AI/map traversal claim.",
+    "sql": "PASS actual migration applied twice to session-local cloned world tables:7 then0. Ten wrong-map/entry/phase/motion/radius/template-motion/script/inherited-path/spawn-path/explicit-zero-override cases; five later companion/final/Mordoth rows unchanged. Before/after persistent snapshots agree. -VerifyDatabase checks all seven deployed exact phase/motion rows and native path counts; original pre-deployment live snapshot retained separately.",
+    "installed": "PASS canonical PE/map timestamp and actual InitDefault->selector->Mutate idle-slot path; selector reads spawn movement unless noncreature/player-controlled. Both compiled LoadPath and DoInitialize distinguish ordinary store from script-store+0x40, read creature addon path on default0, retain null-path diagnostic and3000ms delay. This independently checks deployed behavior relevant to the data-only repair, not just a successful copy/startup.",
+    "sanitizer": "PASS MSVC AddressSanitizer current native-timer extraction host; .codex/silver-hand-initial-motion-asan-native-timer.log.",
+    "sql_probe_incident": "One initial -VerifyDatabase/-VerifyReleaseBinary run got no fixture stdout rows although mysql reported exit0; strict changed7 assertion failed. Original failed log retained as .codex/silver-hand-initial-motion-empty-fixture-failure.log; no failing SQL rows/stderr were captured, cause remains unproven. An unchanged dot-source replay and full PE rerun passed. Added explicit empty-output diagnostic and retained credential-free fixture.sql for future failure analysis, not automatic retry or relaxed assertions. Five bounded full native/SQL/installed-PE replays passed, retained separately in .codex/silver-hand-initial-motion-replays.tsv; this does not prove the underlying intermittent probe problem is fixed. Earlier all-class offers22 incident likewise remains independently unexplained and did not recur in the retained19-suite run.",
+    "regressions": "PASS23 top-level suite invocations: new InitialMotion native/SQL/deployed check; retained complete19-suite serial ledger silver-hand-waypoint-retry-initial-motion (observed-waypoint, recipient, wave-death/admission/lifetime, arrival/action/final/step8 baselines, current full dispatch/wave/rescue/ally/entry/installed checks, ScepterLogin, native all-class149 race/class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records/39 items); three additional current Entrance57.09s/Gossip51.73s/Procession123.11s Release suites, with Procession nesting separate second-gossip/metadata/installed checks. Catalog builds serialized after the canonical build and after each other. Existing extraction warnings remain visible, not suppressed. Actual party/faction combat, all36 chains and visual traversal are not inferred from these checks.",
+    "evidence": ".codex/silver-hand-initial-motion-*; existing19-suite ledger prefix silver-hand-waypoint-retry-initial-motion; ignored runtime-test/silver-hand-initial-motion. No passwords/configuration/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "D67646D455D7D343AD862007F03A1D7F94B9ED0CE8CF6F2404DB851019DACDA7",
+    "bnet_sha256": "BD28D785AFCBF8A6ADD3707DF664CEB52E7309698EB56F7C110D502F5B6BA9FD",
+    "build": "Release worldserver+bnetserver11.30s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 world final-link canonical output/original scripts-game-shared-common Release libraries and INCREMENTAL:NO checked; bnet canonical output/original shared-common libraries/no incremental also checked. Canonical implementation independently decoded.",
+    "runtime": "Own hidden canonical PID38376 fresh ready, own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged/gone. No user/unknown server stopped or hidden server left running. Post-startup read-only query retains all seven fixed rows and separate unrepaired Mordoth2. Ready/new-DBErrors0 does not prove loading these1539 grids or client visuals."
+  },
+  "remaining": [
+    "Actual cold-grid/client appearance, admitted first/second/third movement/follow/combat, interruption/Reset/abandon/re-entry and later motion callbacks still require traversal. Existing per-AI observations do not prove issued-path generations, physical endpoints, never-delivered callbacks or persisted quest-attempt identity.",
+    "Mordoth362044's separate MovementType2/path0 remains OPEN. Do not infer its intended default or silently alter its shared SmartAI/combat from this scripted procession repair.",
+    "Firstfight/evade50850, aberration half-health/intentional companion deaths, last pending5s/periodic51838/victory/failed-spawn/disabled-AI death delivery, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No speech/audio, attachments/animations/lights/camera/pets, faction/group or full client/VFX certification."
+  ]
+}
