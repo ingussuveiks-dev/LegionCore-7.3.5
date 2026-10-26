@@ -50,6 +50,8 @@
 
 # Quest admission and packet regressions
 
+- Into the Fray38834 requires its exploration/event flag because native189764 effect16 references it. Do not clear that flag to silence seven duplicate start commands. Migration05 supersedes03 and retains one command7. Map command7's objective-free event helper uses CompleteQuest only for an active INCOMPLETE log entry; objective-bearing legacy handling/diagnostics and caller alive/range/failure checks remain. Run `Test-IntoFrayStart.ps1 -AddressSanitizer`, selected `verify_into_fray_event_release.py`, and inspect the actual native loader/startup. Acceptance/travel/turn-in remain client checks.
+
 - Priest messenger101344 acceptance40705 TALK must retain LINK1 delayed cleanup. Preserve the guarded summon54 follow-player/personal207/30s timeout chain and existing speech; never overwrite custom AI/event slots. Run `Test-PriestDalaranMessenger.ps1` and inspect newly appended DBErrors after the canonical restart. SQL graph checks do not verify visibility, follow or actual client acceptance, and this shared local offer does not certify separate Alliance actor/voice fidelity.
 
 - All-class Dalaran invitation masks must admit NONE1, retaining later campaign prerequisites at REWARDED64. DK40714/Mage41035 require class32/128; Warrior Eitrigg93775 accepts41052, not Warlock40716. Run `Test-DalaranAllClassOffers.ps1` against a fresh artifact audit: native149 race/class pairs,22 invitation rows and36 selection effects. Shaman uses static Thrall; DK/Mage native effect150 self-offers must not be modeled as summoned NPCs. Preserve pure-summon versus aura behavior. Class/race admission and selected acquisition starts do not verify whole quest chains; retain later actor LINK findings and client visibility/travel checks.

@@ -25,12 +25,33 @@
 #include "MapManager.h"
 #include "MapRefManager.h"
 #include "ObjectMgr.h"
+#include "QuestData.h"
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptsData.h"
 #include "Transport.h"
 #include "WaypointManager.h"
 #include "World.h"
+
+namespace
+{
+void CompleteScriptedQuestEvent(Player* player, uint32 questId)
+{
+    Quest const* quest = sQuestDataStore->GetQuestTemplate(questId);
+    if (!quest)
+        return;
+
+    if (quest->GetObjectives().empty())
+    {
+        if (player->FindQuestSlot(questId) < MAX_QUEST_LOG_SIZE &&
+            player->GetQuestStatus(questId) == QUEST_STATUS_INCOMPLETE)
+            player->CompleteQuest(questId);
+        return;
+    }
+
+    player->AreaExploredOrEventHappens(questId);
+}
+}
 
 /// Put scripts in the execution queue
 void Map::ScriptsStart(ScriptMapMap const& scripts, uint32 id, Object* source, Object* target)
@@ -576,7 +597,7 @@ void Map::ScriptsProcess()
                 // quest id and flags checked at script loading
                 if ((!worldObject->IsCreature() || worldObject->ToUnit()->IsAlive()) &&
                     (step.script->QuestExplored.Distance == 0 || worldObject->IsWithinDistInMap(player, float(step.script->QuestExplored.Distance))))
-                    player->AreaExploredOrEventHappens(step.script->QuestExplored.QuestID);
+                    CompleteScriptedQuestEvent(player, step.script->QuestExplored.QuestID);
                 else
                     player->FailQuest(step.script->QuestExplored.QuestID);
 
