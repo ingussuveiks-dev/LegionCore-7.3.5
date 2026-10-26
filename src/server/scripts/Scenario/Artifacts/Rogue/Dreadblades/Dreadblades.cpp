@@ -6,6 +6,40 @@
 #include "ScriptedCreature.h"
 #include "CreatureTextMgr.h"
 #include "Dreadblades.h"
+#include "GameObjectAI.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
+#include "Item.h"
+
+namespace DreadbladesAcquisition
+{
+    bool CanTake(Player* player, GameObject* weapon)
+    {
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+            player->IsBeingTeleported() || player->getClass() != CLASS_ROGUE || !player->GetMap() ||
+            !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 254087 || weapon->GetMapId() != 1545 ||
+            player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
+            !player->InSamePhase(weapon) || !player->canSeeOrDetect(weapon) || !player->IsWithinLOSInMap(weapon) ||
+            !player->IsWithinDistInMap(weapon, weapon->GetInteractionDistance()) ||
+            weapon->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE) || player->GetQuestRewardStatus(40849) ||
+            (player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(40849) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(weapon->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 4)
+            return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto victory = progress->find(46707);
+        return victory != progress->end() && victory->second.Counter; // Native Eliza leaf48582, also for pet/guardian killers.
+    }
+
+    bool Equipped(Player* player)
+    {
+        Item* weapon = player->GetItemByEntry(128872);
+        Item* child = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+        return weapon && player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) == weapon &&
+            child && child->GetEntry() == 134552 && weapon->GetChildItem() == child->GetGUID();
+    }
+}
 
 // 102120
 class npc_admiral_tethys : public CreatureScript
@@ -700,51 +734,127 @@ public:
 // 254087
 class go_scenario_dreadblades : public GameObjectScript
 {
+    struct AI : GameObjectAI
+    {
+        explicit AI(GameObject* object) : GameObjectAI(object) { }
+        ObjectGuid claimant;
+        ObjectGuid outro[4];
+        uint32 elapsed = 0;
+        bool finished = false;
+
+        void Cancel()
+        {
+            claimant.Clear();
+            for (ObjectGuid& guid : outro)
+            {
+                if (Creature* actor = ObjectAccessor::GetCreature(*go, guid))
+                    actor->DespawnOrUnsummon();
+                guid.Clear();
+            }
+        }
+
+        bool GossipHello(Player* player, bool) override
+        {
+            return finished || !claimant.IsEmpty() || !DreadbladesAcquisition::CanTake(player, go);
+        }
+        ObjectGuid GetGUID(int32 = 0) override { return claimant; }
+        uint32 GetData(uint32) override { return finished; }
+        void SetGUID(ObjectGuid const& guid, int32 = 0) override
+        {
+            if (finished || !claimant.IsEmpty())
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*go, guid);
+            if (!DreadbladesAcquisition::CanTake(player, go) || !player->GetItemByEntry(128872))
+                return;
+            // Native202040 starts scene1189 and202183; the latter equips the
+            // real looted parent/child through202182 at its native2000ms tick.
+            claimant = guid;
+            elapsed = 0;
+            SpellCastResult result = player->CastSpell(player, 202040, true);
+            if (result != SPELL_CAST_OK)
+            {
+                Cancel();
+                TC_LOG_WARN("scripts", "Dreadblades pickup: native scene202040 failed with result %u; retain looted item and object for retry", uint32(result));
+            }
+        }
+        void UpdateAI(uint32 diff) override
+        {
+            if (claimant.IsEmpty() || finished)
+                return;
+            Player* player = ObjectAccessor::GetPlayer(*go, claimant);
+            if (!DreadbladesAcquisition::CanTake(player, go) || !player->GetItemByEntry(128872))
+            {
+                Cancel();
+                return;
+            }
+            elapsed += diff;
+            if (!DreadbladesAcquisition::Equipped(player))
+            {
+                // Bound a failed native equip by the actual15s scene duration.
+                // Keep native inventory errors; never grant/equip a replacement.
+                if (elapsed >= 15000)
+                {
+                    Cancel();
+                    TC_LOG_WARN("scripts", "Dreadblades pickup: native202182 did not equip the looted parent/child; retain item and object for retry");
+                }
+                return;
+            }
+            // Retain actual successful actor GUIDs when one outro summon fails.
+            static uint32 const entries[4] = {102357, 102356, 102355, 102352};
+            static Position const positions[4] = {
+                {-1162.16f, 6124.12f, 53.38f, 2.87f}, {-1167.68f, 6112.83f, 50.97f, 2.59f},
+                {-1169.81f, 6130.16f, 49.72f, 3.01f}, {-1177.02f, 6124.60f, 44.78f, 2.78f}};
+            for (uint8 i = 0; i < 4; ++i)
+                if (!ObjectAccessor::GetCreature(*go, outro[i]))
+                {
+                    Creature* actor = go->SummonCreature(entries[i], positions[i]);
+                    if (!actor)
+                        return;
+                    outro[i] = actor->GetGUID();
+                    actor->AddPlayerInPersonnalVisibilityList(claimant);
+                    actor->SetPhaseMask(1, true);
+                }
+            finished = true;
+            claimant.Clear();
+            // The native ALL root combines this leaf with real Eliza death and
+            // awards scenario completion. Do not issue a second/early reward.
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48553);
+            if (Creature* trigger = go->FindNearestCreature(112817, 20.0f))
+                trigger->DespawnOrUnsummon();
+            player->GetPhaseMgr().SetCustomPhase(1);
+            Conversation* conversation = new Conversation;
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1721, player, NULL, *player))
+                delete conversation;
+            go->SetLootState(GO_JUST_DEACTIVATED);
+        }
+    };
 public:
     go_scenario_dreadblades() : GameObjectScript("go_scenario_dreadblades") {}
 
+    GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }
+    bool OnGossipHello(Player* player, GameObject* go) override
+    {
+        if (!DreadbladesAcquisition::CanTake(player, go) || go->AI()->GetData(0) || !go->AI()->GetGUID(0).IsEmpty())
+            return true;
+        if (player->HasItemCount(128872, 1, true))
+        {
+            if (player->GetItemByEntry(128872))
+                go->SetLootState(GO_JUST_DEACTIVATED, player);
+            return true; // Bank-only ownership must not create another weapon.
+        }
+        return false; // Normal loot/storage, including full-bag errors and retry.
+    }
+
     void OnLootStateChanged(GameObject* go, uint32 state, Unit* target) override
     {
-        if (target && state == GO_ACTIVATED)
-        {
-            if (target->GetTypeId() == TYPEID_PLAYER)
-            {
-                if (target->ToPlayer()->HasItemCount(128872, 1))
-                {
-                    target->ToPlayer()->AddItem(128872, 1);
-                    target->CastSpell(target, 202040, true);  // on loot
-                }
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48553);
-                target->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 1012, 1);
-                if (Creature* trigger = go->FindNearestCreature(112817, 20.0f))
-                    trigger->DespawnOrUnsummon();
-
-                target->ToPlayer()->GetPhaseMgr().SetCustomPhase(1);
-                if (Creature* trigget = go->SummonCreature(102357, -1162.16f, 6124.12f, 53.38f, 2.87f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102356, -1167.68f, 6112.83f, 50.97f, 2.59f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102355, -1169.81f, 6130.16f, 49.72f, 3.01f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                if (Creature* trigget = go->SummonCreature(102352, -1177.02f, 6124.60f, 44.78f, 2.78f))
-                {
-                    trigget->AddPlayerInPersonnalVisibilityList(target->GetGUID());
-                    trigget->SetPhaseMask(1, true);
-                }
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1721, target, NULL, *target))
-                    delete conversation;
-            }
-        }
+        Player* player = target ? target->ToPlayer() : nullptr;
+        if (!go || state != GO_JUST_DEACTIVATED || go->getLootState() != GO_JUST_DEACTIVATED ||
+            !DreadbladesAcquisition::CanTake(player, go) || !player->GetItemByEntry(128872))
+            return;
+        // A summoned GO would otherwise be deleted on its next update, before
+        // the native equip tick or a failed cast/storage attempt can be retried.
+        go->SetLootState(GO_READY);
+        go->AI()->SetGUID(player->GetGUID(), 0);
     }
 };
 

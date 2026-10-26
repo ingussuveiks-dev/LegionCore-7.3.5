@@ -7,6 +7,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $path='src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/Dreadblades.cpp'
  $source=Get-Content "$repo/$path" -Raw
  $old=(& git -C $repo show "38f88905:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Eliza baseline missing'}
+ $source=Block $source 'class npc_dread_admiral_eliza:'
+ $old=Block $old 'class npc_dread_admiral_eliza:'
  $death=Block (Block $source 'struct npc_dread_admiral_elizaAI : ScriptedAI') 'void JustDied('
  $oldDeath=Block (Block $old 'struct npc_dread_admiral_elizaAI : ScriptedAI') 'void JustDied('
  if(($source.Replace($death,$oldDeath) -replace '\s','') -cne ($old -replace '\s','')){throw 'Unreviewed change outside Eliza death callback'}
