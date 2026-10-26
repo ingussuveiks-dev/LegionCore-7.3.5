@@ -26,6 +26,7 @@ CREATE TEMPORARY TABLE creature_template SELECT * FROM creature_template WHERE e
 CREATE TEMPORARY TABLE creature_addon SELECT * FROM creature_addon WHERE guid IN ($all);
 CREATE TEMPORARY TABLE creature_template_addon SELECT * FROM creature_template_addon WHERE entry IN (106370,106371,106429,106639,106676,106719,106774,106777);
 UPDATE creature SET MovementType=2 WHERE guid IN ($targets);
+UPDATE creature SET MovementType=2 WHERE guid=362044;
 SELECT 'before',spawn.guid,spawn.id,spawn.MovementType,COALESCE(addon.path_id,inherited.path_id,0) FROM creature spawn LEFT JOIN creature_addon addon ON addon.guid=spawn.guid LEFT JOIN creature_template_addon inherited ON inherited.entry=spawn.id WHERE spawn.guid IN ($targets) ORDER BY spawn.guid;
 $migration
 SELECT 'changed',ROW_COUNT();

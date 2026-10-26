@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Static Mordoth spawn362044 default movement only; do not conflate its native step7 appearance with last-Travard's separately summoned final boss of the same entry106719. Not a completed Holy/all36 chain or client visual/combat certification.",
+  "sources": [
+    {
+      "source": "Local git9c3e3a44, worklist/routes/donor-review and initial-motion audit",
+      "review": "Previous seven scripted spawn defaults were repaired but explicitly left this SmartAI actor unresolved. Clean current main at start; no prior actor, waypoint-recipient, lifecycle, owner/death or real-loot fixes reverted."
+    },
+    {
+      "source": "Read-only canonical-config MariaDB world/static actor and native26972 scenario metadata",
+      "review": "Sole DB106719 is362044/map1539/phase7001 at1877.61,2263.42,36.087, spawn MovementType2/radius0. Phase source23/zone85/entry8 requires native44/1092/exact7. Template MovementType0/SmartAI/no CreatureScript, flags33536/4196352/faction16; no spawn addon, template addon path0/aura212300; no ordinary waypoint0/106719/362044 or matching script path106719/362044. One SmartScript source0/id0/event0, repeated2000ms/action11/spell215690/target2; targeted motion-action query found0. Text groups0/1 retain110352/110358 and Sound/SpellID0. Aura/spell visual graphs and playback are not resolved by this data-only unit. Native step7/rescue2+2 and later steps remain checked separately by existing catalog regressions, not inferred from this static actor."
+    },
+    {
+      "source": "Local Creature default load/addon precedence, ObjectMgr, native movement selector/idle/waypoint paths and SmartAI",
+      "review": "Same actual default2/path0 loader problem as the prior seven-row repair; addon-absent static spawn is not normalized by ObjectMgr's existing-addon loop. Native SmartAI constructor enables combat movement independently of DB idle motion. AttackStart retains controlled/null/failed-attack gates, stops active waypoint/point before MoveChase, and stores the actual OOC pose. JustReachedHome emits21, resumes without a path when addon path0, and preserves assigned-path/formed-follower alternatives. No ordinary or scripted path is invented and the missing-path diagnostic remains in production."
+    },
+    {
+      "source": "Local SilverHand.cpp SummonAdds3, instance_silver_hand step10, Map::SummonCreature and Creature::InitEntry",
+      "review": "Final Travard summons a separate106719 at1901.32,2334.41,62.75, attacks the native106774 defender and clears original immunities; step10 later finds106719 for215260. Map summons create from the template, whose initial movement0 remains unchanged, rather than loading static DB GUID362044. Existing six tracked regular deaths and source/native summon-owner bridge are not edited. Static phase7001/exact7 is distinct from final Travard phase7003/exact9 entry. Combat, last-wave progression and actual client arrival are not certified by a default-motion repair."
+    },
+    {
+      "source": "Local TrinityCore4ad7c7ba5bd2a3e73eb848babaf9b39696d63473 and matching26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted script/history searches",
+      "review": "Targeted106719/npc_travar script search and all-ref SilverHand path history returned no acquisition correction. No exhaustive historical claim or incompatible modern adaptation."
+    },
+    {
+      "source": "Pinned Titans full relevant last-Travard801..913 source returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Retains the separate final106719 summon/defender attack and flag release; no static spawn correction supplied. No donor DB, waypoint, timer, credit or combat change imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript or actual client traversal reviewed. Fix follows invalid local default loading and native independent combat ownership, not reconstructed pose, audio or choreography."
+    }
+  ],
+  "repair": {
+    "migration": "2026_10_26_01 updates only exact GUID362044/entry106719/map1539/phase7001 from spawn2 to0, with zero radius, idle template, SmartAI/no custom script and effective addon path0 guards. Shared template, other GUIDs, phases, addon aura, flags, faction and SmartScript remain unchanged. No global movement/log/AI fallback or path assignment.",
+    "regression_reuse": "InitialMotion's production-extraction host now accepts only explicit1-row or original7-row fixtures; default7 and all expectations remain. Original migration's cloned unrelated Mordoth canary is explicitly reset to2 before testing, retaining its strict noninterference assertion even after the separate live Mordoth repair. New native host includes the shared implementation without a duplicate main, then compiles unchanged actual SmartAI AttackStart and JustReachedHome methods. No server C++ implementation changed.",
+    "deployment": "No world/bnet process before deployment/build; no unknown/user server stopped. Scoped MariaDB migration changed1, immediate identical replay0. Session-local cloned tables and a separate same-entry/different-GUID canary prove the migration does not change shared-template/dynamic-identity defaults. No character, grant, credentials, configuration or runtime files committed."
+  },
+  "validation": {
+    "baseline_and_fixed": "PASS initial live2/path0 snapshot and cloned positive case through actual selector/InitDefault/idle/WPG constructor/LoadPath/DoInitialize/CanMove/TimeTracker. One baseline warning, fixed idle without a path lookup, reinitialization; inherited and explicit script-store distinction plus existing four script paths/3000ms gate remain covered. Effective addon path is queried from the actual temporary joins, not a hardcoded mocked0.",
+    "sql": "PASS actual migration1 then0 in cloned session tables; same106719/different GUID9000001 remains2. Eleven map/entry/phase/motion/radius/template-motion/AI/custom-script/inherited-path/spawn-path/explicit-zero-override cases. Immediately after positive application, template idle0/SmartAI/flags/faction and addon0/212300 remain unchanged. Strict live sole-spawn/phase/SmartScript/timer/aura checks and persistent before/after snapshots pass; -VerifyDatabase checks deployed362044 idle0.",
+    "smartai": "PASS compiled production AttackStart and JustReachedHome: target-type labels Player/pet/guardian/defender across active idle/waypoint/point and both run-state values; attack/chase/stop/OOC-pose behavior; null and rejected attack, no-combat-move and controlled actor; no-path home resume, existing path and formed-follower alternatives. Host initial mRun=false matches the native constructor; no server run/walk policy edited. Target/position/attack/motion/formation services are controlled, not real pet ownership, combat/navigation/party evidence.",
+    "installed": "PASS canonical PE/map consistency and previous default selector/store/delay/warning proof. Actual SmartAI constructor table contains AttackStart/home, word1db=0101 initializes combat-move byte1dc. Selected handlers retain actual0x01000000 controlled flag, null/rejected attack and combat-move guards, active-slot2/8 stop then chase, home event21 and addon0 branch to ResumeMovement rather than MovePath. No guessed branch relaxation or production change to fit the proof.",
+    "sanitizer": "PASS MSVC AddressSanitizer current native initial-motion/SmartAI/both run-state host, .codex/silver-hand-mordoth-motion-asan-final.log.",
+    "regressions": "PASS20 top-level suites: new current MordothMotion native/SQL/installed check, nesting original seven-row InitialMotion; retained complete19-suite serial ledger .codex/silver-hand-waypoint-retry-mordoth-motion-regressions.tsv. Observed-waypoint/recipient/wave-death/admission/lifetime/arrival/action/final/step8 baselines and current full dispatch/wave/rescue/ally/entry/PE paths; ScepterLogin, native all-class149 race/class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records/39 items remain PASS. Catalog builds serialized after canonical build. Existing extraction warnings retained. Final post-startup read-only query confirms static362044 idle0 and shared template0/SmartAI/addon0/aura212300/combat215690 retained; both executable hashes unchanged from checked build.",
+    "probe_limit": "Prior initial-motion empty-output/exit0 SQL fixture incident and older offers22 incident remain unexplained, not fixed by this movement data repair. Explicit empty-output failures/retained fixture.sql and assertions remain enabled; no automatic retry, hidden native stderr or relaxed native149/22/36 counters. No recurrence in this unit's completed native/SQL/PE probes or retained19-suite run.",
+    "evidence": ".codex/silver-hand-mordoth-motion-* and ignored runtime-test/silver-hand-mordoth-motion/shared initial-motion extraction. Retained-suite prefix silver-hand-waypoint-retry-mordoth-motion."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "DDB597DEFC7F095DDE3C850687D5C29E62320C577C09F1EBF94152A4CD665275",
+    "bnet_sha256": "D60FCA2434AF8F2F9BEB0272EEBF1283B6E7DF22632A47797F744057F540B017",
+    "build": "Release world+bnet11.20s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 world canonical output/original scripts-game-shared-common libraries/no incremental and bnet canonical output/original shared-common libraries/no incremental checked; deployed relevant code independently decoded.",
+    "runtime": "Own hidden canonical PID33836 fresh ready; own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected config-certificate-key hashes unchanged/gone. No unknown/user server stopped or own hidden process left running. Startup alone does not certify loading static1539 grid362044 or any client visual."
+  },
+  "remaining": [
+    "Cold-grid appearance, phase7 NPC position/model/aura212300, actual attack/chase/home and later separate final boss need client traversal. This unit adds no immunity, removes no diagnostic and certifies no visual/audio graph or intended combat choreography.",
+    "Native last-Travard pending5s, periodic unchecked51838/victory/failed-spawn/missing-defender/disabled-AI death delivery, firstfight/evade50850, aberration half-health/intentional companion deaths, callback/path/quest epochs, actual real loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No player/pet/guardian credit, group or faction policy changes belong to this fix."
+  ]
+}

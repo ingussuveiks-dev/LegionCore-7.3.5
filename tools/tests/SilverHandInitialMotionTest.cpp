@@ -142,9 +142,11 @@ struct MotionMaster
 };
 #include "InitialMotionMethods.inc"
 
-int main(int argc, char** argv)
+int RunInitialMotionTest(int argc, char** argv)
 {
-    assert(argc == 2);
+    assert(argc == 2 || argc == 3);
+    unsigned const expectedRows = argc == 3 ? static_cast<unsigned>(std::stoul(argv[2])) : 7;
+    assert(expectedRows == 1 || expectedRows == 7);
     std::ifstream input(argv[1]);
     assert(input.good());
     unsigned baselineRows = 0, fixedRows = 0;
@@ -188,8 +190,8 @@ int main(int argc, char** argv)
             assert(actor.stopped && actor.stops == 1 && warnings == previousWarnings);
         }
     }
-    assert(baselineRows == 7 && fixedRows == 7);
-    assert(warnings == 7 && starts == 0 && waypointManager.ordinaryReads == 7 && waypointManager.scriptedReads == 0);
+    assert(baselineRows == expectedRows && fixedRows == expectedRows);
+    assert(warnings == expectedRows && starts == 0 && waypointManager.ordinaryReads == expectedRows && waypointManager.scriptedReads == 0);
     Creature actor;
     MotionMaster motion(&actor);
     motion.InitDefault();
@@ -210,24 +212,32 @@ int main(int argc, char** argv)
         assert(!waypoint->CanMove(actor));
         actor.casting = false;
     }
-    assert(starts == 0 && warnings == 7 && waypointManager.scriptedReads == 4);
+    assert(starts == 0 && warnings == expectedRows && waypointManager.scriptedReads == 4);
     motion.MovePath(0, false);
-    assert(starts == 0 && warnings == 7);
+    assert(starts == 0 && warnings == expectedRows);
     motion.MovePath(123456789, false);
-    assert(warnings == 8 && starts == 0);
+    assert(warnings == expectedRows + 1 && starts == 0);
     waypointManager.ordinary[42] = WaypointPath(3);
     actor.movement = WAYPOINT_MOTION_TYPE;
     actor.path = 42;
     motion.InitDefault();
-    assert(starts == 0 && warnings == 8);
+    assert(starts == 0 && warnings == expectedRows + 1);
     auto* ordinary = dynamic_cast<WaypointMovementGenerator<Creature>*>(motion.selected.get());
     assert(ordinary && ordinary->_path == &waypointManager.ordinary[42]);
     actor.controlled = true;
     motion.InitDefault();
-    assert(motion.selected->Type() == IDLE_MOTION_TYPE && starts == 0 && warnings == 8);
+    assert(motion.selected->Type() == IDLE_MOTION_TYPE && starts == 0 && warnings == expectedRows + 1);
     Player player;
     MotionMaster playerMotion(&player);
     playerMotion.InitDefault();
     assert(playerMotion.selected->Type() == IDLE_MOTION_TYPE);
-    std::cout << "PASS seven actual-row missing-default baselines/fixed idle/reinitialization; four explicit script paths/native 3000ms admission timer/stun/cast gates; missing-path diagnostics; valid ordinary path; controlled/player idle. Controlled registry, no actual spline/grid/client traversal.\n";
+    std::cout << "PASS " << expectedRows << " actual-row missing-default baselines/fixed idle/reinitialization; four explicit script paths/native 3000ms admission timer/stun/cast gates; missing-path diagnostics; valid ordinary path; controlled/player idle. Controlled registry, no actual spline/grid/client traversal.\n";
+    return 0;
 }
+
+#ifndef SILVER_HAND_MOTION_EMBEDDED
+int main(int argc, char** argv)
+{
+    return RunInitialMotionTest(argc, argv);
+}
+#endif
