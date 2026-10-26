@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "90981 final-damage lethal protection and entry to its existing finale. Not full775/38376 acquisition, actual spell-credit eligibility, native group combat, accepted VFX or whole36 verification.",
+  "sources": [
+    {
+      "source": "Clean main/origin803e4734; worklist/routes/donor review; full local Balnazzar AI, instance death/criteria and shared Unit::DealDamage/health interfaces; existing Yrgrim final-damage reference",
+      "review": "Balnazzar's raw DamageTaken compared unscaled damage with template GetHealth, zeroed that hit, but began finale only when already below15percent. Native DealDamage later divides by GetHealthMultiplierForTarget(attacker), dispatches primary/suspended final hooks, then compares with GetHealth(attacker). A scaled one-shot could therefore kill without finale, while a normal fresh lethal hit could be absorbed indefinitely without entering finale. GetHealth(nullptr) safely falls back to ordinary health. Existing zero-damage early exit precedes final-hook dispatch; controlled fixture models that gate, not the entire rage/aura/proc pipeline."
+    },
+    {
+      "source": "Read-only MariaDB and matching base DB2 AshbringerBalnazzarCatalog.cpp; native Spell::EffectKillCreditPersonal and InstanceScript::DoUpdateAchievementCriteria",
+      "review": "Only90981 binds npc_bs_balnazzar; spawn366331/map1500/phase5942, active scaling98..110. Map1500 also lists scenarios933/961 alongside775, all Class0/Team0: map identity alone does not certify775 admission. Native775 order5 is1853/tree45269/leaf45270/criterion28902/type92/event46149.227853 has effect90/misc90981/targets18,8; personal hit handler requires an actual Player and calls KilledMonsterCredit90981, not the group-event134 handler. Quest38376 objective286728 requests90981 once; other114505/90384 objectives unchanged.152821 is transform aura56/misc17286 and kit61036 exists. Base reader is not full hotfix/visual-kit/attachment/model/animation merging or proof of accepted effects/selected Player targets."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted SPELL_BALNAZZAR_CREDIT/npc_bs_balnazzar and retained all-ref BrokenShore path review",
+      "review": "No applicable artifact implementation returned. Bounded search only; existing local native scaling API and repaired Yrgrim provide compatible technical references, not evidence of complete retail choreography."
+    },
+    {
+      "source": "Pinned Titans865..883 and neighboring807..954 actor context actually returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "review": "Same pre-scaling clamp and below15-only finale; no correction imported. Only relevant actor/context reviewed, not full donor runtime or encounter certification."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. No inferred retail timers, new visual assets, threshold prediction or choreography; original strict pre-hit15percent and all finale commands retained, with final lethal damage now entering that existing path rather than killing/stalling it."
+    }
+  ],
+  "repair": {
+    "implementation": "Move the handler to existing DamageTakenAfterScaling, compute lethal from final damage >= GetHealth(attacker), zero lethal damage before native death, and allow that lethal result OR original strict pre-hit below15percent to reach the original !fightEnd claim. Claim remains before any cast/reentrant effect. This also keeps later lethal hits harmless during the original3000ms despawn window without replaying finale.",
+    "preserved": "Exact original227853 self-triggered credit, EventMap reset, StopAttack, summon cleanup, original flags,152821 morph, kit61036, source-stage5 type92/event46149 and3000ms despawn remain verbatim. Nonlethal crossing of15percent still uses the next qualifying hit, not a newly predicted threshold. No new target/owner/class/faction filter, global scaling change, phase, item/equip, quest-completion bypass or manual pet/group grant. Whole source restored only by old pinned damage handler equals803e4734. Existing flame/Zerus preservation checks explicitly normalize this separately tested handler and still check their own unchanged scopes.",
+    "limits": "Existing wrong-stage/intro/phase admission, same-stage Reset/evade/abandon/re-entry epochs, missing instance/AI, temporary AI consuming all damage before suspended callback, failed227853/morph casts, selected area targets/legitimate quest/group eligibility, delayed despawn failure and actual camera/pet/VFX remain OPEN. Reset still clears fightEnd and rearms original attempt; exactly-once claim is not persistent across Reset. No actor healing or arbitrary AP/weapon grant."
+  },
+  "validation": {
+    "baseline": "PASS pinned803e4734 production raw handler with extracted actual native final scaling/primary-suspended bridge: raw10/scale0.01 becomes final1000 and kills without finale; raw200000/scale100 is incorrectly absorbed at full health instead of ordinary nonlethal2000; an ordinary fresh unscaled lethal hit is zeroed forever without surrender. Controlled numeric counterfactuals, not sampled client health or an observed crash.",
+    "current": "PASS ordinary/current ASAN production damage/Reset plus actual native final bridge/EventMap/InstanceScript fanout.48 killer-label/scale/primary-suspended lethal and reentrant cases retain live actor, original casts/kit/cleanup/flags/despawn exactly once per claim and stage5 records for two controlled Player references. Eight stage values keep direct46149 only at5. High-scale nonlethal damage remains2000; exact15000/14999 normalized-health boundary and sequential below15 hit preserve strict native alternative; zero input does not manufacture completion. Null attacker, native Reset rearm and missing map fanout are safe in this fixture. Health/scaling, pre-hook dispatch/early-zero/death application, cast/motion/Player eligibility and map iteration services remain controlled; not full engine group or accepted227853 credit execution.",
+    "installed": "PASS actual90981 factoryd0 selects final slotA8 and native empty rawA0. Incoming attacker retained through target-relative GetHealth; final lethal cmp zeroes damage before original once-onlyC9 claim, while strict15 alternative and repeat exit remain. Original227853/152821 calls, native EventMap reset/summon cleanup/StopAttack, flags0x2000180, kit61036, source-stage5/type92/46149 and3000ms remain. Existing native DealDamage div/primary+suspended postslotA8 ordering and retained Yrgrim proof checked, not just a matching executable hash.",
+    "regressions": "PASS pinned/current ordinary/current ASAN/new7-row native DB2/runtime binding/Release wrapper, retained full Zerus and FlameTargets Release wrappers, full TruthguardSurrender VerifyReleaseBinary, ScepterLogin VerifyReleaseBinary, native Dalaran149 pairs/22 invitations/36 artifact selections, ArtifactForceEquip and SceneLifecycle. Independent SilverHand discovery/identity and door installed proofs pass. Quarantined ordinary door fixture remains blocked and was neither executed nor rebuilt.",
+    "diagnostics": "Extracted native phase-return/scaled-float narrowing and unused damage-type warnings remain visible. No production logs/checks disabled. Initial exploratory paths guessed longer Yrgrim test names and were corrected to actual Test-TruthguardSurrender files before reference review; no source or runtime behavior depended on absent files. Source-only proof is not substituted for actual final-slot verification.",
+    "evidence": ".codex/ashbringer-balnazzar-* and ignored runtime-test/ashbringer-balnazzar-surrender generated actual sources/native.tsv. No runtime credentials/configuration/certificates/character data or generated binaries committed. Distinct90981 damage fixture is not a fallback for the unresolved ashbringer-doors/test.exe Defender quarantine."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "1EF43B14EC47F41C3193DBB9285ABF36BA4E348FC0DBC91F6AE811DD4DEB26D8",
+    "bnet_sha256": "7A20A8C092E5B8E2B15AA58B5ACF8E879645DACD9E27EB161E94583D9A0F61B7",
+    "build": "Canonical world+bnet Release MSBuild exit0, no OutDir, LinkIncremental=false; actual original final-link static-library inputs and both hashes checked separately from selected decoded final-damage implementation.",
+    "runtime": "Own hidden canonical PID7620 reached fresh ready, received own UTF8 stdin server shutdown0, exited0 and is gone. New DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No user/unknown server stopped or own hidden server left. Startup is not775 combat or rendered finale/client traversal."
+  }
+}

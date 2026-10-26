@@ -918,12 +918,13 @@ public:
             me->SetReactState(REACT_AGGRESSIVE);
         }
 
-        void DamageTaken(Unit* /*attacker*/, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
         {
-            if (damage >= me->GetHealth())
+            bool lethal = damage >= me->GetHealth(attacker);
+            if (lethal)
                 damage = 0;
 
-            if (me->HealthBelowPct(15) && !fightEnd)
+            if ((lethal || me->HealthBelowPct(15)) && !fightEnd)
             {
                 fightEnd = true;
                 DoCast(me, SPELL_BALNAZZAR_CREDIT, true);

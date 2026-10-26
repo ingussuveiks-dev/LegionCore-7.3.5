@@ -11,6 +11,7 @@ $pinned=(& git -C $repo show "07bd3831:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned Zerus baseline unavailable'}
 if($Baseline){$source=$pinned}else{
  $restored=$source.Replace('type != POINT_MOTION_TYPE || (id != 1 && id != 2)','type != POINT_MOTION_TYPE')
+ if($restored.Contains('bool lethal = damage >= me->GetHealth(attacker);')){$restored=$restored.Replace((Block (Block $restored 'struct npc_bs_balnazzarAI') 'void DamageTakenAfterScaling('),(Block (Block $pinned 'struct npc_bs_balnazzarAI') 'void DamageTaken('))}
  if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated change beyond explicit Zerus point1/2 admission'}
 }
 $boss=Block $source 'struct npc_bs_boss_jailer_zerusAI'

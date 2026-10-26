@@ -13,6 +13,7 @@ if($Baseline){$source=$pinned}else{
  $original=Block (Block $pinned 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
  $updated=Block (Block $source 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
  $restored=$source.Replace($updated,$original).Replace('type != POINT_MOTION_TYPE || (id != 1 && id != 2)','type != POINT_MOTION_TYPE')
+ if($restored.Contains('bool lethal = damage >= me->GetHealth(attacker);')){$restored=$restored.Replace((Block (Block $restored 'struct npc_bs_balnazzarAI') 'void DamageTakenAfterScaling('),(Block (Block $pinned 'struct npc_bs_balnazzarAI') 'void DamageTaken('))}
  if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unrelated Ashbringer behavior changed beyond separately tested Zerus point guard'}
 }
 [IO.File]::WriteAllText("$out/FlameAI.inc",(Block $source 'struct npc_bs_doomguard_incineratorAI').Replace(' override','')+';')
