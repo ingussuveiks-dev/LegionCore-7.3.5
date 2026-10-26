@@ -33,7 +33,9 @@ assert case_index < invoke < case_index + 70, 'WP_START does not reach checked S
 test, branch, reset, escape = action[invoke + 1:invoke + 5]
 assert test.mnemonic == 'test' and test.op_str == 'al, al', 'Waypoint result is ignored'
 assert branch.mnemonic in {'jne', 'jnz'} and direct_target(branch) == action[invoke + 5].address, 'Successful waypoint does not bypass retry reset'
-assert reset.mnemonic == 'mov' and reset.operands[0].type == CS_OP_MEM and reset.operands[0].size == 1 and reset.operands[0].mem.disp == 0x99 and reset.operands[1].type == CS_OP_REG and reset.reg_name(reset.operands[1].reg) == 'al', 'Rejected action does not restore runOnce=false from its zero result'
+zero_source = ((reset.operands[1].type == CS_OP_REG and reset.reg_name(reset.operands[1].reg) == 'al') or
+               (reset.operands[1].type == CS_OP_IMM and reset.operands[1].imm == 0))
+assert reset.mnemonic == 'mov' and reset.operands[0].type == CS_OP_MEM and reset.operands[0].size == 1 and reset.operands[0].mem.disp == 0x99 and zero_source, 'Rejected action does not restore runOnce=false from its zero result or literal zero'
 assert escape.mnemonic == 'jmp', 'Rejected waypoint falls through into quest/LINK actions'
 
 by_address = {entry.address: index for index, entry in enumerate(action)}

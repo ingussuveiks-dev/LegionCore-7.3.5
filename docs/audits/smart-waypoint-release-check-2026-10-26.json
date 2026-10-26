@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972 Win64 Release",
+  "scope": "Repair an overly specific PE regression assertion; no server implementation or movement behavior change.",
+  "finding": "The newly linked ProcessAction still tests StartPath's bool result and returns before LINK on failure. The compiler now emits mov byte ptr [r15+0x99],0 instead of the previously observed mov byte ptr [register+0x99],al. The old verifier rejected the equally valid literal-zero store. Native StartPath/ProcessAction source was not changed for this correction.",
+  "repair": "Accept only a one-byte store to the same runOnce field from either the tested zero AL result or immediate zero. Preserve exact checked success branch, failure jump, no-LINK return traversal, first-point/path admission and native motion/event-order assertions. Nonzero immediate stores remain rejected.",
+  "evidence": {
+    "worldserver_sha256": "1CA381B6D0C005B596BE26CD2EA1683A2A7C1097F1EAA1A434760CC795E289B5",
+    "instructions": "0x14110dd62 test al,al; 0x14110dd64 jne 0x14110dd73; 0x14110dd66 mov byte ptr [r15+0x99],0; 0x14110dd6e jmp 0x141111e9c",
+    "private_failure": ".codex/qormaladon-waypoint-full.log and qormaladon-waypoint-instructions.txt retain the original assertion failure and reviewed instructions.",
+    "checks": "Canonical Test-MarksmanshipPostInquisitor.ps1 -VerifyReleaseBinary rerun with post-test diagnostic wrapper. This executes its native/TEMP SQL regressions and the complete inherited PE consumer chain; no client traversal or animation verification is implied."
+  }
+}
