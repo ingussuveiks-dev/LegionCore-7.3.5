@@ -1,4 +1,4 @@
-param([string]$MigrationPath="$PSScriptRoot/../../sql/pending/world/2026_10_26_09_dreadblades_pickup.sql")
+param([string]$MigrationPath="$PSScriptRoot/../../sql/updates/world/2026_10_26_09_dreadblades_pickup.sql")
 $ErrorActionPreference='Stop'
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/dreadblades-pickup-data"
@@ -23,5 +23,5 @@ UPDATE gameobject_template SET Data1=0 WHERE entry=254087;
  $expected=@("fixed`t254087","same-loot`t1","unrelated`t1","refused`t0","refused`t123","refused`t0")
  if(($rows -join '|') -ne ($expected -join '|')){throw "Pickup data mismatch: $($rows -join '|')"}
  [IO.File]::WriteAllLines("$out/rows.tsv",[string[]]$rows)
- 'PASS native loot binding in TEMP only, repeat-safe; existing loot/unrelated data and custom binding/table preserved. Live migration deliberately remains outside updater inputs.'
+ 'PASS native loot binding in TEMP only, repeat-safe; existing loot/unrelated data and custom binding/table preserved. This test does not apply persistent SQL.'
 }

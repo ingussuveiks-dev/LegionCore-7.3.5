@@ -16,7 +16,7 @@
       "handler": "Faronaar personal questgiver lost on cave entry",
       "problem": "User reports ready Saving Stellagosa37450 without receiver and confirms90474 followed before the cave. A live distant/hidden FOLLOW actor prevented missing-only recovery.",
       "repair_audit": "docs/audits/faronaar-companion-cave-recovery-2026-10-26.json",
-      "limit": "Scoped native-summon recovery, ASAN pinned/current lifecycle and selected combined staged PE pass; no progress grants. User server still active; canonical deployment and actual cave visibility/turn-in pending. Cave mesh/path result not captured; do not claim full navigation or artifact certification."
+      "limit": "Scoped native-summon recovery, ASAN pinned/current lifecycle/native identity checks and selected combined staged/canonical PE pass; no progress grants. Deployed canonical3F942221 after confirmed user shutdown; own29388 fresh ready/shutdown0/exit0 and diagnostics clean, Scepter Release pass. Actual cave visibility/turn-in pending. Cave mesh/path result not captured; do not claim full navigation or artifact certification."
     },
     {
       "path": "sql/updates/world/2026_10_26_08_azsuna_scythe_allari_return.sql",
@@ -1770,10 +1770,11 @@
       "class_id": 4,
       "specialization": "Outlaw",
       "eliza_death_repair_audit": "docs/audits/dreadblades-eliza-death-credit-2026-10-26.json",
+      "pickup_repair_audit": "docs/audits/dreadblades-pickup-2026-10-26.json",
       "weapon": "The Dreadblades",
       "item": 128872,
       "start": 40847,
-      "status": "partial: Eliza102293 death48582 now resolves native player/charmer/owner with null-safe handling and unchanged death speech/reveal. Pinned pet-credit-loss baseline, repaired ASAN/native ownership/scenario tree and selected staged PE pass. Deployed in canonicalB58E after confirmed user shutdown; selected canonical Eliza/Scepter and clean own30596 startup/shutdown pass. Native1012 final root requires both48582 and separate48553. Actual pickup Data1=0/inverted HasItemCount/progression ordering, earlier surrender/owner credit, client/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
+      "status": "partial: Eliza102293 death48582 resolves native player/charmer/owner with unchanged speech/reveal. Pickup254087 now uses actual native loot128872, rejects early/ineligible callbacks, waits for native202040/202183/202182 linked parent/child equip and all four personal outro actors before48553, with no replacement item or explicit duplicate scenario reward. Pinned/current ASAN, TEMP data/native metadata and selected combined canonical PE pass. Deployed3F942221 with09 Data1 restoration after confirmed user shutdown; own29388 ready/shutdown0 and diagnostics clean, Scepter Release pass. Earlier surrender, actual client loot/equip/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
       "quests": [
         {
           "id": 40847,
