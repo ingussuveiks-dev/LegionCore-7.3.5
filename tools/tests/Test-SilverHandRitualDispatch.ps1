@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$FinalBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$WaypointBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$FinalBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$WaypointBaseline,[switch]$WaypointRetryBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$FinalBaseline,$ActionBaseline,$ArrivalBaseline,$WaypointBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
+if(@($Baseline,$FinalBaseline,$ActionBaseline,$ArrivalBaseline,$WaypointBaseline,$WaypointRetryBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ritual-dispatch"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -25,8 +25,32 @@ $actorSource=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/Si
 if($ActionBaseline){$actorSource=(& git -C $repo show '41ce375b:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned ritual action baseline unavailable'}}
 if($ArrivalBaseline){$actorSource=(& git -C $repo show '14992461:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned ritual arrival baseline unavailable'}}
 if($WaypointBaseline){$actorSource=(& git -C $repo show 'c9e683fa:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint recipient baseline unavailable'}}
+if($WaypointRetryBaseline){$actorSource=(& git -C $repo show '60279f2b:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint retry baseline unavailable'}}
 $actor=Block $actorSource 'struct npc_travar_thirdAI : ScriptedAI'
+[IO.File]::WriteAllText("$out/WaypointComplete.inc",$(if($ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline){''}else{Block $actor 'void CompletePrisonWaypoints('}))
 [IO.File]::WriteAllText("$out/WaypointPolicy.inc",$(if($ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline){''}else{Block $actorSource 'namespace SilverHandRitualWaypoint'}))
+$comparisonActor=$actor
+if(!$ActionBaseline -and !$ArrivalBaseline -and !$WaypointBaseline -and !$WaypointRetryBaseline){
+ $retryPinned=(& git -C $repo show '60279f2b:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned retry preservation source missing'}
+ $beforeRetry=Block $retryPinned 'struct npc_travar_thirdAI : ScriptedAI'
+ $movement=Block $actor 'void MovementInform('
+ $oldMovement=Block $beforeRetry 'void MovementInform('
+ $restoredMovement=$movement
+ foreach($pair in @(@('9','5','5','_mawWaypointArrived','_mawWaypointCredited'),@('19','6','6','_prisonWaypointArrived','_prisonWaypointCredited'))){
+  $expected="if (id == $($pair[0])) { bool firstArrival = !$($pair[3]); $($pair[3]) = true; if (firstArrival) Talk($($pair[1])); CompletePrisonWaypoints(); if (firstArrival && !$($pair[4])) TC_LOG_WARN(`"scripts`", `"Silver Hand waypoint$($pair[0]) has no eligible stage$($pair[2]) participant; retaining observed arrival for credit retry`"); }"
+  $branch=Block $movement "if (id == $($pair[0]))"
+  if(($branch -replace '\s','') -cne ($expected -replace '\s','')){throw 'Waypoint observation/speech/diagnostic scope changed'}
+  $restoredMovement=$restoredMovement.Replace($branch,(Block $oldMovement "if (id == $($pair[0]))"))
+ }
+ if(($restoredMovement -replace '\s','') -cne ($oldMovement -replace '\s','')){throw 'Unrelated third movement behavior changed'}
+ $lifecycle=Block $actor 'void UpdateLifecycle('
+ $oldLifecycle=Block $beforeRetry 'void UpdateLifecycle('
+ if(($lifecycle.Replace('CompletePrisonWaypoints();','') -replace '\s','') -cne ($oldLifecycle -replace '\s','')){throw 'Unrelated lifecycle behavior changed'}
+ $comparisonActor=$actor.Replace('bool _mawWaypointArrived = false;','').Replace('bool _prisonWaypointArrived = false;','').Replace((Block $actor 'void CompletePrisonWaypoints('),'').Replace($movement,$oldMovement).Replace($lifecycle,$oldLifecycle)
+ if(($comparisonActor -replace '\s','') -cne ($beforeRetry -replace '\s','')){throw 'Third AI changed beyond two observations/completion/lifecycle retry'}
+ if(((Block $actorSource 'namespace SilverHandRitualWaypoint') -replace '\s','') -cne ((Block $retryPinned 'namespace SilverHandRitualWaypoint') -replace '\s','')){throw 'Waypoint recipient policy changed during retry repair'}
+}
 if(!$ActionBaseline -and !$ArrivalBaseline -and !$WaypointBaseline){
  $waypointPinned=(& git -C $repo show 'c9e683fa:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n"
  if($LASTEXITCODE){throw 'Pinned waypoint preservation source missing'}
@@ -37,9 +61,9 @@ if(!$ActionBaseline -and !$ArrivalBaseline -and !$WaypointBaseline){
   $after="if (!$($pair[2])) if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, $($pair[0]))) { $($pair[2]) = true; player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, $($pair[1])); }"
   $expectedMovement=($expectedMovement -replace '\s','').Replace(($before -replace '\s',''),($after -replace '\s',''))
  }
- $movement=Block $actor 'void MovementInform('
+ $movement=Block $comparisonActor 'void MovementInform('
  if(($movement -replace '\s','') -cne $expectedMovement){throw 'Third movement changed beyond scoped two waypoint recipients/latches'}
- $normalized=$actor.Replace('bool _mawWaypointCredited = false;','').Replace('bool _prisonWaypointCredited = false;','').Replace($movement,(Block $oldActor 'void MovementInform('))
+ $normalized=$comparisonActor.Replace('bool _mawWaypointCredited = false;','').Replace('bool _prisonWaypointCredited = false;','').Replace($movement,(Block $oldActor 'void MovementInform('))
  if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Unrelated third AI behavior changed'}
 }
 [IO.File]::WriteAllText("$out/ActionPolicy.inc",$(if($ActionBaseline){''}else{Block $actorSource 'bool CanAdvance(Creature* actor)'}))
@@ -52,6 +76,7 @@ if(!$ActionBaseline -and !$ArrivalBaseline -and !$WaypointBaseline){
 [IO.File]::WriteAllText("$out/Movement.inc",(Block $actor 'void MovementInform(').Replace(' override',''))
 $waypointCore=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
 [IO.File]::WriteAllText("$out/WaypointBridge.inc",(Block $waypointCore 'void WaypointMovementGenerator<Creature>::MovementInform('))
+[IO.File]::WriteAllText("$out/LifecycleBridge.inc",(Block (Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw) 'if (i_AI || i_disabledAI)'))
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTypes')+';')
 [IO.File]::WriteAllText("$out/GroupTypes.inc",(Block (Get-Content "$repo/src/server/game/Achievements/AchievementMgr.cpp" -Raw) 'bool AchievementGlobalMgr::IsGroupCriteriaType('))
 $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
@@ -64,10 +89,10 @@ $functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(')
 [IO.File]::WriteAllText("$out/FunctionMethods.inc",(($methods|ForEach-Object{Block $functions $_}) -join "`n"))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($WaypointBaseline){'/DWAYPOINT_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($WaypointBaseline){'/DWAYPOINT_BASELINE'}elseif($WaypointRetryBaseline){'/DWAYPOINT_RETRY_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandRitualDispatchTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native ritual dispatch regression failed'}
-if($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline){return}
+if($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline -or $WaypointRetryBaseline){return}
 & "$PSScriptRoot/Test-SilverHandRitualEntry.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary
 if(!$?){throw 'Existing ritual admission/lifetime/data checks failed'}
 $previous=$env:LEGION_DIALOGUE_CONFIG

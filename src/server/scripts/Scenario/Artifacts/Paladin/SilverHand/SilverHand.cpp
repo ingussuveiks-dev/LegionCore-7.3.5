@@ -677,6 +677,8 @@ public:
         bool _ritualCompleted = false;
         bool _mawWaypointCredited = false;
         bool _prisonWaypointCredited = false;
+        bool _mawWaypointArrived = false;
+        bool _prisonWaypointArrived = false;
 
         void Reset() override
         {
@@ -722,8 +724,25 @@ public:
         void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            CompletePrisonWaypoints();
             CompleteRitualArrival();
             _entryFunctions.Update(diff);
+        }
+
+        void CompletePrisonWaypoints()
+        {
+            if (_mawWaypointArrived && !_mawWaypointCredited)
+                if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 5))
+                {
+                    _mawWaypointCredited = true;
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50877);
+                }
+            if (_prisonWaypointArrived && !_prisonWaypointCredited)
+                if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 6))
+                {
+                    _prisonWaypointCredited = true;
+                    player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50912);
+                }
         }
 
         void CompleteRitualArrival()
@@ -764,23 +783,23 @@ public:
                     Talk(4);
                 if (id == 9)
                 {
-                    Talk(5);
-                    if (!_mawWaypointCredited)
-                        if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 5))
-                        {
-                            _mawWaypointCredited = true;
-                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50877);
-                        }
+                    bool firstArrival = !_mawWaypointArrived;
+                    _mawWaypointArrived = true;
+                    if (firstArrival)
+                        Talk(5);
+                    CompletePrisonWaypoints();
+                    if (firstArrival && !_mawWaypointCredited)
+                        TC_LOG_WARN("scripts", "Silver Hand waypoint9 has no eligible stage5 participant; retaining observed arrival for credit retry");
                 }
                 if (id == 19)
                 {
-                    Talk(6);
-                    if (!_prisonWaypointCredited)
-                        if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 6))
-                        {
-                            _prisonWaypointCredited = true;
-                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50912);
-                        }
+                    bool firstArrival = !_prisonWaypointArrived;
+                    _prisonWaypointArrived = true;
+                    if (firstArrival)
+                        Talk(6);
+                    CompletePrisonWaypoints();
+                    if (firstArrival && !_prisonWaypointCredited)
+                        TC_LOG_WARN("scripts", "Silver Hand waypoint19 has no eligible stage6 participant; retaining observed arrival for credit retry");
                 }
             }
             else if (type == POINT_MOTION_TYPE)

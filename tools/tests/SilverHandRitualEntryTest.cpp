@@ -158,6 +158,7 @@ struct RitualAI : CreatureAI
     EventMap events;
     uint32 talks=0;
     void CompleteRitualArrival(){}
+    void CompletePrisonWaypoints(){}
     explicit RitualAI(Creature* actor):me(actor){actor->i_AI=this;}
     void Talk(uint32 line){assert(line==0);++talks;}
 #include "RitualLos.inc"

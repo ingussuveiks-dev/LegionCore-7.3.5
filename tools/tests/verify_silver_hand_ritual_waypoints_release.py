@@ -58,29 +58,66 @@ assert any(entry.mnemonic == 'jne' and entry.operands[0].imm == policy[reference
 assert not any(entry.op_str == 'dword ptr [rdi + 0xa18], 0' for entry in policy)
 
 movement = previous['movement']
-selectors = sites(movement, helper)
-credits = sites(movement, '?UpdateAchievementCriteria@Player@@')
+completion_name = '?CompletePrisonWaypoints@npc_travar_thirdAI@'
+completion = instructions(completion_name)
+selectors = sites(completion, helper)
+credits = sites(completion, '?UpdateAchievementCriteria@Player@@')
 assert len(selectors) == len(credits) == 2
+assert completion[3].mnemonic == 'xor' and completion[3].op_str == 'edi, edi'
+for step, event, observed, credited, selection, credit, owner_register, target in zip(
+        (5, 6), (50877, 50912), (0x16f, 0x170), (0x16d, 0x16e), selectors, credits,
+        ('rcx', 'rbx'), (completion[credits[0] + 1].address, completion[-4].address)):
+    observed_gate, = [index for index, entry in enumerate(completion[:selection])
+                      if entry.mnemonic == 'cmp' and entry.op_str == f'byte ptr [{owner_register} + {hex(observed)}], dil']
+    credited_gate, = [index for index, entry in enumerate(completion[:selection])
+                      if entry.mnemonic == 'cmp' and entry.op_str == f'byte ptr [{owner_register} + {hex(credited)}], dil']
+    assert completion[observed_gate + 1].mnemonic == 'je' and completion[observed_gate + 1].operands[0].imm == target
+    assert completion[credited_gate + 1].mnemonic == 'jne' and completion[credited_gate + 1].operands[0].imm == target
+    assert completion[selection - 1].op_str == f'edx, {step}'
+    assert completion[selection - 2].op_str == f'rcx, qword ptr [{owner_register} + 0x20]'
+    assert completion[selection + 1].op_str == 'rax, rax'
+    assert completion[selection + 2].mnemonic == 'je' and completion[selection + 2].operands[0].imm == target
+    assert completion[credit - 1].op_str == f'byte ptr [rbx + {hex(credited)}], 1'
+    assert completion[credit - 2].op_str == 'rcx, rax'
+    assert any(entry.op_str == 'edx, 0x5c' for entry in completion[selection:credit])
+    assert any(entry.op_str == f'r8d, {hex(event)}' for entry in completion[selection:credit])
+    assert observed_gate < credited_gate < selection < credit
 waypoint = next(index for index, entry in enumerate(movement) if entry.op_str == 'esi, 2' and entry.mnemonic == 'cmp')
 point = next(index for index, entry in enumerate(movement) if entry.op_str == 'esi, 8' and entry.mnemonic == 'cmp')
 assert movement[waypoint + 1].mnemonic == 'jne' and movement[waypoint + 1].operands[0].imm == movement[point].address
-for node, step, event, offset, selection, credit in zip((9, 19), (5, 6), (50877, 50912), (0x16d, 0x16e), selectors, credits):
-    beginning, = [index for index, entry in enumerate(movement[:selection]) if entry.op_str == f'edi, {hex(node) if node > 9 else node}' and entry.mnemonic == 'cmp']
-    latch, = [index for index, entry in enumerate(movement[beginning:selection], beginning)
-              if entry.op_str == f'byte ptr [rbx + {hex(offset)}], 0' and entry.mnemonic == 'cmp']
-    assert movement[latch + 1].mnemonic == 'jne' and movement[latch + 1].operands[0].imm > movement[point].address
-    assert movement[selection - 2].op_str == f'edx, {step}'
-    assert movement[selection - 1].op_str == 'rcx, qword ptr [rbx + 0x20]'
-    assert movement[selection + 1].op_str == 'rax, rax' and movement[selection + 2].mnemonic == 'je'
-    assert movement[selection + 2].operands[0].imm == movement[latch + 1].operands[0].imm
-    assert movement[selection + 3].op_str == f'byte ptr [rbx + {hex(offset)}], 1'
-    assert movement[credit - 3].op_str == 'edx, 0x5c' and movement[credit - 2].op_str == f'r8d, {hex(event)}'
-    assert movement[credit - 1].op_str == 'rcx, rax' and waypoint < beginning < selection < credit < point
+attempts = sites(movement, completion_name)
+assert len(attempts) == 3 and attempts[-1] < point
+repeat = movement[attempts[-1] - 1].address
+for node, speech, observed, credited, attempt in zip((9, 19), (5, 6), (0x16f, 0x170), (0x16d, 0x16e), attempts):
+    beginning, = [index for index, entry in enumerate(movement[:attempt])
+                   if entry.op_str == f'edi, {hex(node) if node > 9 else node}' and entry.mnemonic == 'cmp']
+    remembered, = [index for index, entry in enumerate(movement[beginning:attempt], beginning)
+                    if entry.mnemonic == 'mov' and entry.op_str == f'byte ptr [rbx + {hex(observed)}], 1']
+    assert movement[remembered - 1].op_str == f'eax, byte ptr [rbx + {hex(observed)}]'
+    assert movement[remembered + 1].op_str == 'al, al'
+    assert movement[remembered + 2].mnemonic == 'jne' and movement[remembered + 2].operands[0].imm == repeat
+    talks = sites(movement[remembered:attempt], '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')
+    assert len(talks) == 1
+    talk = remembered + talks[0]
+    assert any(entry.op_str == f'dl, {speech}' for entry in movement[talk - 4:talk])
+    assert movement[attempt - 1].op_str == 'rcx, rbx'
+    assert movement[attempt + 1].op_str == f'byte ptr [rbx + {hex(credited)}], 0'
+    assert movement[attempt + 2].mnemonic == 'jne'
+    assert waypoint < beginning < remembered < talk < attempt < point
+assert not sites(movement, '?UpdateAchievementCriteria@Player@@')
+for node, stage in ((9, 5), (19, 6)):
+    assert f'Silver Hand waypoint{node} has no eligible stage{stage} participant; retaining observed arrival for credit retry'.encode() in native['binary']
+lifecycle = instructions('?UpdateLifecycle@npc_travar_thirdAI@')
+recover, = sites(lifecycle, '?Recover@SilverHandCompanion@@')
+retry, = sites(lifecycle, completion_name)
+ritual, = sites(lifecycle, '?CompleteRitualArrival@npc_travar_thirdAI@')
+assert recover < retry < ritual and lifecycle[retry - 1].op_str == 'rcx, rbx'
 factory = previous['factory']
-assert any(entry.op_str == 'word ptr [rsi + 0x16c], bp' for entry in factory)
-assert any(entry.op_str == 'byte ptr [rsi + 0x16e], bpl' for entry in factory)
-assert not any(operand.type == CS_OP_MEM and operand.mem.disp in (0x16d, 0x16e)
+assert any(entry.op_str == 'qword ptr [rsi + 0x168], rbp' for entry in factory)
+assert any(entry.op_str == 'byte ptr [rsi + 0x170], bpl' for entry in factory)
+assert not any(operand.type == CS_OP_MEM and operand.mem.disp in (0x16d, 0x16e, 0x16f, 0x170)
                for entry in instructions('?Reset@npc_travar_thirdAI@') for operand in entry.operands)
-for method in ('?FindNearestPlayer@WorldObject@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@'):
-    assert not sites(policy, method) and not sites(movement, method)
-print('PASS: selected third MovementInform0x1a8 WAYPOINT2/id9 and19 call live106676/1539/1092 exact5/6 selector, choose one eligible actual-map active42120 Paladin within100yd, reject shared-map/ineligible nearest substitutes and latch initialized AI+16d/16e before one92/50877-or50912. Reset retains latches; POINT1/queues/arrival remain separately verified. No motion-request ownership, missing-callback retry, persisted epoch or client/VFX proof.')
+for method in ('?FindNearestPlayer@WorldObject@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@',
+               '?MovePath@MotionMaster@@', '?MovePoint@MotionMaster@@', '?DespawnOrUnsummon@Creature@@'):
+    assert not sites(policy, method) and not sites(completion, method)
+print('PASS: selected MovementInform0x1a8 remembers WAYPOINT2/id9/19 at AI+16f/170 before once-only Talk5/6, attempts completion and repeats without speech/log replay. Selected locked Lifecycle0x110 retries observed-only progress; actual completion requires arrived/uncredited, unchanged live106676/1539/1092 exact5/6 eligible-map42120/100yd selector, then latches16d/16e before one92/50877-or50912. Factory zeroes0x178 AI state and Reset preserves observations; no new timer/movement/despawn/item/party grant. No issued-path identity, never-delivered callback recovery, persisted epoch or client/VFX proof.')

@@ -13,6 +13,7 @@ $healPinned=(& git -C $repo show "877ad851:$path") -join "`n";if($LASTEXITCODE){
 $entryPinned=(& git -C $repo show "4bc7b7e6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entry lifetime source missing'}
 $entrancePinned=(& git -C $repo show "1237db9f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entrance lifetime source missing'}
 $waypointPinned=(& git -C $repo show "c9e683fa:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint source missing'}
+$waypointRetryPinned=(& git -C $repo show "60279f2b:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint retry source missing'}
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
@@ -29,6 +30,11 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
    $actual=$entranceNormalized
   }
   if($script -eq 'npc_travar_third'){
+   $beforeRetry=Block $waypointRetryPinned "class $script : public CreatureScript"
+   $actual=$actual.Replace("        "+(Block $actual 'void CompletePrisonWaypoints(')+"`n`n",'')
+   foreach($field in @('_mawWaypointArrived','_prisonWaypointArrived')){$actual=$actual.Replace("        bool $field = false;`n",'')}
+   foreach($method in @('void UpdateLifecycle(','void MovementInform(')){$actual=$actual.Replace((Block $actual $method),(Block $beforeRetry $method))}
+   if($actual -cne $beforeRetry){throw 'Third changed outside separately tested observed waypoint retry/lifecycle'}
    $beforeWaypoint=Block $waypointPinned "class $script : public CreatureScript"
    $waypointMovement=Block $actual 'void MovementInform('
    $oldWaypointMovement=Block $beforeWaypoint 'void MovementInform('

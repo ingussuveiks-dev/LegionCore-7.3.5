@@ -33,6 +33,7 @@ struct CreatureAI
     virtual void Talk(uint32)=0;
     virtual void MovementInform(uint32,uint32){}
     virtual void LastWPReached(){}
+    virtual void UpdateLifecycle(uint32){}
 };
 struct Motion
 {
@@ -88,6 +89,8 @@ struct Map
 struct Creature
 {
     CreatureAI* ai=nullptr;
+    CreatureAI* i_disabledAI=nullptr;
+    bool m_AI_locked=false;
     Motion motion;
     bool stunned=false,casting=false;
     bool world=true,preDelete=false,alive=true,mapPresent=true;
@@ -118,6 +121,11 @@ struct Creature
     void DespawnOrUnsummon(uint32 delay){assert(delay==1000);despawn=delay;++despawns;}
     uint32 CastSpell(Creature* target,uint32 spell){assert(target==this && spell==215260);casts.push_back(spell);return castResult;}
     void SetFlag(uint32 field,uint32 mask){assert(field==UNIT_FIELD_FLAGS);flags|=mask;}
+    void TickLifecycle(uint32 diff)
+    {
+        CreatureAI* i_AI=ai;
+#include "LifecycleBridge.inc"
+    }
 };
 struct Scenario
 {
@@ -169,6 +177,7 @@ struct ThirdAI : CreatureAI
     bool _ritualStarted=false,_pendingHealRecovery=false,_entryPending=false,_introDone=false;
     bool _ritualMotionIssued=false,_ritualArrived=false,_ritualCompleted=false,wait_heal=false;
     bool _mawWaypointCredited=false,_prisonWaypointCredited=false;
+    bool _mawWaypointArrived=false,_prisonWaypointArrived=false;
     uint64 _entryGeneration=0;
     std::vector<uint32> talks;
     std::function<void()> onTalk;
@@ -181,6 +190,7 @@ struct ThirdAI : CreatureAI
 #include "Reset.inc"
 #include "Update.inc"
 #include "Movement.inc"
+#include "WaypointComplete.inc"
 #include "Arrival.inc"
 #include "Lifecycle.inc"
 };
@@ -210,6 +220,18 @@ struct Instance
 };
 int main()
 {
+#ifdef WAYPOINT_RETRY_BASELINE
+    {
+        Creature actor;ThirdAI ai(&actor);Player late;
+        scenarioManager.scenario.step=5;liveMap.players.clear();
+        ArriveWaypoint(actor,9);assert(!ai._mawWaypointCredited && late.credits.empty());
+        liveMap.players={{&late}};actor.stunned=true;ai.Reset();actor.TickLifecycle(1000);
+        assert(late.credits.empty() && scenarioManager.scenario.events.empty());
+        ArriveWaypoint(actor,9);assert(late.credits==std::vector<uint32>{50877});
+        std::cout<<"PASS pinned60279f2b: actual waypoint9 without eligible reference is forgotten; late eligible participant/Reset/locked lifecycle cannot credit without a second arrival callback\n";
+        return 0;
+    }
+#else
 #ifdef WAYPOINT_BASELINE
     {
         Creature actor;ThirdAI ai(&actor);Player outsider,eligible;
@@ -223,6 +245,40 @@ int main()
     }
 #else
 #if !defined(ACTION_BASELINE) && !defined(ARRIVAL_BASELINE)
+#ifndef WAYPOINT_RETRY_BASELINE
+    for(uint32 stage:{5u,6u})
+        for(uint32 mode:{0u,1u,2u,3u})
+        {
+            Creature actor;ThirdAI ai(&actor);OtherAI temporary;Player late;
+            scenarioManager=ScenarioManager{};scenarioManager.scenario.step=stage;liveMap.players.clear();warnings=0;
+            uint32 waypoint=stage==5?9:19,event=stage==5?50877:50912;
+            actor.TickLifecycle(1);assert(late.credits.empty());
+            ArriveWaypoint(actor,waypoint);ArriveWaypoint(actor,waypoint);ai.Reset();actor.stunned=true;
+            assert(warnings==1 && ai.talks==std::vector<uint32>{stage} && !ai._mawWaypointCredited && !ai._prisonWaypointCredited);
+            if(mode){actor.i_disabledAI=&ai;actor.ai=mode==1?static_cast<CreatureAI*>(&temporary):mode==2?&ai:nullptr;}
+            liveMap.players={{nullptr},{&late}};late.phase=false;actor.TickLifecycle(1000);
+            assert(late.credits.empty() && warnings==1);
+            late.phase=true;late.onCredit=[&]{assert(actor.m_AI_locked);ai.UpdateLifecycle(0);ai.Reset();};
+            actor.TickLifecycle(0);actor.TickLifecycle(1000);ArriveWaypoint(actor,waypoint);
+            assert(late.credits==std::vector<uint32>{event} && scenarioManager.scenario.events==std::vector<uint32>{event});
+            assert(ai.talks==std::vector<uint32>{stage} && warnings==1 && !actor.m_AI_locked && actor.motion.points==0 && actor.despawns==0);
+        }
+    {
+        Creature actor;ThirdAI ai(&actor);Player late;
+        scenarioManager=ScenarioManager{};scenarioManager.scenario.step=5;liveMap.players.clear();
+        ArriveWaypoint(actor,9);ArriveWaypoint(actor,19);liveMap.players={{&late}};
+        actor.TickLifecycle(0);assert(late.credits==std::vector<uint32>{50877} && !ai._prisonWaypointCredited);
+        scenarioManager.scenario.step=6;actor.TickLifecycle(0);
+        assert(late.credits==std::vector<uint32>({50877,50912}) && ai._mawWaypointCredited && ai._prisonWaypointCredited);
+    }
+    {
+        Creature actor;Player late;scenarioManager=ScenarioManager{};scenarioManager.scenario.step=5;liveMap.players.clear();
+        {ThirdAI original(&actor);ArriveWaypoint(actor,9);assert(original._mawWaypointArrived);}
+        ThirdAI replacement(&actor);liveMap.players={{&late}};actor.TickLifecycle(1000);
+        assert(late.credits.empty() && !replacement._mawWaypointArrived && !replacement._mawWaypointCredited);
+    }
+    std::cout<<"PASS observed waypoint retry: native locked primary/disabled/alias/disabled-only lifecycle, no reference/phase-revoked to late eligible without second movement, Reset/stun, one speech/warning, reentrant exactly-once, native-stage5/6 deferral and destroyed/recreated AI isolation; no motion replay/despawn/new timer\n";
+#endif
     assert(!SilverHandRitualWaypoint::SelectPlayer(nullptr,5));
     for(uint32 requested:{0u,4u,7u,8u,999u}){Creature actor;assert(!SilverHandRitualWaypoint::SelectPlayer(&actor,requested));}
     for(uint32 faction:{0u,1u})
@@ -591,6 +647,7 @@ int main()
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
     std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

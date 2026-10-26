@@ -130,6 +130,7 @@ struct Second : Companion
 struct Third : Companion
 {
     void CompleteRitualArrival(){}
+    void CompletePrisonWaypoints(){}
 #include "ThirdDamage.inc"
 #include "ThirdHeal.inc"
 #include "ThirdLifecycle.inc"

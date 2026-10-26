@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Retain observed third-Travard WAYPOINT9/19 milestones until an eligible native-stage participant can receive their existing shared credit. No issued-path identity, physical endpoint proof, never-delivered callback recovery, persisted quest epoch or full Holy/all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local git60279f2b, worklist/routes/donor and prior ritual-waypoint audit",
+      "review": "Previous scoped recipient gate correctly rejected an empty/ineligible map list but forgot that waypoint9/19 had occurred. A late or phase-restored active42120 participant could not advance unless another movement callback happened. Original path10993807 is nonrepeating, so a second callback is not a reliable recovery mechanism. Existing exactly-once credit latches and shared-recipient policy remain unchanged."
+    },
+    {
+      "source": "Matching26972 native catalogs, read-only MariaDB and local movement/criteria core",
+      "review": "Retain1092 step5/30074/type92/50877 alongside aberration50896 and step6/30086/type92/50912. Actual native waypoint dispatcher sends zero-based9/19 for DB10/20 in the22-node10993807 path, with original7000ms pauses. Sole106676/spawn362006/map1539/phase7002 remains visible5..8. Fresh creature_text groups5/6 are ID0, Emote/Duration/Sound/SpellID0 and BroadcastText110307/110310; no voice IDs/offsets/data edited. Broadcast audio graph/files, timing and playback were not resolved or heard in this unit. Native Player type92 reaches shared Scenario rather than manual group-kill fanout; currentTree is pinned per dispatched event."
+    },
+    {
+      "source": "Local Creature::Update locked primary/disabled lifecycle, AIM_Destroy and original AI-owned queues",
+      "review": "Lifecycle runs before ordinary stunned/victim early returns and visits distinct primary/disabled AIs under the native lock. Existing per-AI state can therefore retry an already observed waypoint without a new Unit timer, raw Player pointer or scripted movement replay. Whole extracted lifecycle bridge is compiled and exercised, including primary/disabled/alias/disabled-only. AI destruction drops observations; a replacement is not entitled to complete an old object's observation."
+    },
+    {
+      "source": "Local initial movement data/loader follow-up, not a completed repair",
+      "review": "Fresh106676 template MovementType0, spawn362006 MovementType2, no spawn addon, template addon path_id0 and no regular waypoint_data for362006/106676/10993807; explicit script path10993807 has22 nodes. Creature load selects live spawn movementType, while default WaypointMovementGenerator uses GetWaypointPath and warns if it cannot load a path. This suggests an initial-grid-load warning risk, not a newly observed runtime failure or proof the actor cannot load: no actual1539 grid/client spawn probe was performed. No row/check/log was changed or suppressed; carry this separate initial-motion finding forward."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted script tree",
+      "review": "Only unrelated Stratholme Silver Hand boss in the targeted search, not this acquisition path/retry. Different-core history is not exhaustively searched or blindly adapted."
+    },
+    {
+      "source": "Pinned Titans full relevant third-Travard class418..568 returned/read again",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Entry/path, combat,9/19/POINT1/action and cleanup retain immediate nearest-Player credit with no observed-waypoint persistence or retry. No donor correction or guessed motion/quest timing imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript or client traversal reviewed. This bounded lost-recipient fix uses existing native milestone/stage identities, not reconstructed combat/visual choreography."
+    }
+  ],
+  "repair": {
+    "observation": "Two initialized per-AI booleans remember receipt of actual WAYPOINT2/id9 or19. Set observation before first Talk5/6 so duplicate/reentrant callbacks cannot replay that milestone's speech. Try completion immediately; if still uncredited, emit one useful warning on first observation only. Repeat callbacks retry completion without repeating speech/warnings.",
+    "retry": "CompletePrisonWaypoints checks observed and not-yet-credited independently for each milestone, then calls the unchanged live106676/1539/1092 exact5/6 active42120 actual-map/phase/100yd selector. Set the existing credit latch before one native92/50877-or50912. Native locked Lifecycle invokes this method after wound recovery and before existing ritual-arrival/entry-queue work, including while stunned or temporarily disabled. No observation means no progression even if a Player is eligible. Deferred stage6 credit is possible only after its own callback was observed and actual native step6 is reached.",
+    "lifetime": "Ordinary Reset retains observed/credited milestones, allowing participant/phase recovery without path replay. New/recreated AI initializes observations false and cannot complete a destroyed AI's pending milestone merely because a Player returns. No new timer, Player GUID/pointer capture, movement, despawn, fabricated health/item/kill or party fanout is added. Persisted quest-attempt and same-AI abandon/retake semantics remain separate.",
+    "preserved": "Whole-AI guard allows exactly two observation fields, one completion method, one lifecycle call and the two milestone observation/speech/diagnostic blocks. Existing recipient helper is compared unchanged. Entry LOS/GUID/generation/path preflight/queues, all path points/delays, POINT1/action/50915, home update, wound/scaling and other actors are retained. Helper stubs in focused entry/healing fixtures remain explicitly separate from the full dispatch/waypoint host."
+  },
+  "validation": {
+    "baseline": "PASS -WaypointRetryBaseline pins60279f2b actual handlers/native waypoint and locked lifecycle bridge: waypoint9 arrives with no eligible reference, then a late eligible Player, Reset/stun and lifecycle cannot credit; only a second explicit callback works. Controlled production-handler reproduction, not observed client footage.",
+    "host": "PASS current observation/completion/full MovementInform/native waypoint dispatcher, exact native locked lifecycle bridge, original FunctionProcessor and native Player/shared-scenario bridge. Both milestones across primary/disabled/alias/disabled-only; empty and phase-revoked references recover without a second callback, once-only speech/warning, Reset/stun and reentrant credit; no grant before observation, stage5/6 deferral and destroyed/recreated AI isolation. Retained14 invalid Players/10 invalid actors/all12 stages/both faction/dead-Player labels/100yd/explicit repeat guards and stage8 arrival/entry cases. World, motion and stage services remain controlled; no full native combat/party/client proof.",
+    "installed": "PASS selected canonical MovementInform0x1a8 stores observed AI+16f/170 before first Talk5/6, attempts completion and routes repeats directly to completion without speech/log replay. Actual CompletePrisonWaypoints rejects unobserved/credited/null-selected cases, retains existing exact5/6 selector, and latches16d/16e before one92/50877-or50912. Selected Lifecycle0x110 orders Recover, waypoint completion, existing ritual arrival and entry queue. Actual0x178 factory zeroes pending/action/arrival/credit/first-observation flags together in qword168 plus second-observation byte170. Original action/arrival/entry proofs updated to this decoded coalescing/allocation, not production changed to fit a guessed ABI. Reset retains observations; no movement/timer/item/despawn path in completion.",
+    "sanitizer": "PASS MSVC AddressSanitizer current extracted retry/waypoint/arrival/native lifecycle host; .codex/silver-hand-waypoint-retry-asan.log. Existing extraction warnings remain visible, not suppressed.",
+    "regressions": "PASS complete19-suite serial PowerShell7 ledger .codex/silver-hand-waypoint-retry-regressions.tsv. New60279f2b missing-recipient baseline; retained c9e683fa waypoint, wave-death/admission/lifetime and third-arrival/action/final/step8 baselines; installed AberrationCredit/native owner/shared bridge, full RitualDispatch/waypoint-retry/arrival with nested entry/data/PE and native215258/215260 metadata, full WaveLifetime/death/final-entry/data/PE, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, SceneLifecycle, ArtifactForceEquip55 records/39 items; third-entry lifetime baseline. Catalog builds serialized separately from canonical build. Source-preservation and actual production dispatch checks retained rather than disabled.",
+    "previous_incident": "Earlier1f73b44c all-class temporary offers22 assertion failure remains unexplained; bounded unchanged replays and later17/18-suite runs passed. It did not recur in this complete19-suite run. Original failed/replay evidence is retained separately, and no invitation data/assertion threshold changes belong to this fix.",
+    "evidence": ".codex/silver-hand-waypoint-retry-* and ignored runtime-test/silver-hand-ritual-dispatch/entry probes/logs. No configs/passwords/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "E16D8BBB38B070650725AA2A7A1A82FFD07A0FDDAB2697FB9720934D53D800D5",
+    "bnet_sha256": "0DDA5E405033F7EDC61E258F43BDB1C665B070D999A981301C1F8429461BA121",
+    "build": "Release worldserver+bnetserver17.74s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 final-link canonical output/original scripts-game-shared-common Release libraries and INCREMENTAL:NO checked; deployed selected implementation independently decoded.",
+    "runtime": "Own hidden canonical PID30352 fresh ready, own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected config-certificate hashes unchanged/gone. No user/unknown server stopped or hidden server left running. Startup does not prove grid362006 or client visuals loaded."
+  },
+  "remaining": [
+    "Observed callbacks are not proof of issued10993807 identity/generation or physical endpoint. Unissued/synthetic/stale same-AI callbacks, a callback never delivered, interrupted motion and path replay/re-entry ownership remain OPEN. This unit does not add a path-issued flag or repair initial default MovementType2/path0 data.",
+    "Same-AI rapid abandon/retake and persisted quest/Scenario epochs are not disambiguated: current inactive/rewarded/foreign-map participants cannot receive credit, but retained observations are per live AI, not a saved quest-attempt token. No eligible participant anywhere keeps progress pending; it does not manufacture a recipient or advance a stage.",
+    "Firstfight/evade50850, aberration pre-hit half-health/intentional companion deaths, last pending5s/periodic51838/victory/failed-spawn and disabled-AI death delivery, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. Broadcast audio graph/playback, full relevant footage, combat/heals/party/faction, speech timing/lights/attachments/animations/camera/pets and client traversal still await testing."
+  ]
+}
