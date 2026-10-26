@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "247318 reported retrieval-cast rejection",
+      "problem": "Pickup emitted46130/removed103454 before180850 and ignored a returned rejection, losing an immediate retry without a successful cast admission.",
+      "repair_audit": "docs/audits/ashbringer-pickup-cast-2026-10-26.json",
+      "limit": "Self180850 now precedes own direct criterion/cleanup; non-OK logs native result, restores READY and returns before all three original follow-up effects.24 controlled variants/repeated rejection/OK retry/ASAN/selected installed CFG checked. OK is prepare admission only: native effect64 children default to delayed10ms; no immediate item-first/postcast ownership assertion, actual delayed storage/equip or whole-client/VFX certification."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "247318 inventory preflight before retrieval progression",
       "problem": "A known native capacity error was not checked until199827 storage after pickup had already sent46130/despawned the trigger/started180850.",
       "repair_audit": "docs/audits/ashbringer-pickup-capacity-2026-10-26.json",
@@ -1015,7 +1022,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: native199827 weapon-loot source and known capacity-error preflight/reopen repaired; premature completion and actor guards retained; later failed-cast/null-store/race/equip unresolved; ordinary door fixture Defender-blocked; full acquisition/visual/client traversal pending",
+      "status": "partial: native199827 source, capacity-error preflight and reported180850 rejection/reopen repaired; completion/actor guards retained; delayed child/null-store/race/equip and full acquisition/client/VFX unresolved; ordinary door fixture Defender-blocked",
+      "pickup_cast_audit": "docs/audits/ashbringer-pickup-cast-2026-10-26.json",
+      "pickup_cast_review": "Original180850 self-triggered prepare call now precedes direct46130/103454 cleanup/Delete; a non-OK result logs actual rejection, restores READY and returns without those own effects.24 enum/owned/actor/state variants, repeated-error/OK retry and native selected slot50/result/CFG verified ordinary/ASAN/Release. Successful command ordering intentionally changes; actual client visual timing remains OPEN. Crucially effect64 queues199827 and other children with native default10ms, so prepare OK is NOT actual item storage/equip. No immediate ownership-first gate, manual grant or rollback. Later native failures/child context/attempt epochs/group/faction/VFX/client remain OPEN.",
       "pickup_capacity_audit": "docs/audits/ashbringer-pickup-capacity-2026-10-26.json",
       "pickup_capacity_review": "Before any original pickup progression/effects, unowned120978 now uses native CanStoreNewItem; any error is sent unchanged and native READY reset permits retry, without granting anything. Owned copies bypass the unique-item preflight and successful native creation remains original180850->199827. Pinned no-check counterfactual,160 retained cases,12 error/owned/actor cases with repeated failures/six recoveries/four wrong stages, ASAN and selected installed slot50/CFG checked. Later capacity races/null StoreNewItem/failed180850, accepted repeat/attempt epochs and actual equip/save/group/faction/VFX/client remain OPEN.",
       "spell_loot_audit": "docs/audits/ashbringer-spell-loot-2026-10-26.json",
@@ -1136,7 +1145,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Native199827 source and initial native-capacity failure/reopen preflight are repaired. Do NOT bind the separate GO row or add an item-first gate blocking creation. Prioritize failed180850/null StoreNewItem/post-preflight capacity race and accepted progress/retry: AutoStoreLoot bool is slot count, not success; original46130/114505/180850 domination flow can still advance on later failures. Trace actual accepted timing/post-store equip/save/relog, stage/attempt/abandon/re-entry and repeat suppression without grants. Missing32543 presentation remains open. Then775 entrance/admission, trash80/50/35/125 owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender; independent work may continue. Pinned donors/full relevant footage before choreography edits. Entire chain/faction/group/VFX/client verification remains OPEN."
+      "next_action": "Native199827 source, initial capacity errors and reported180850 prepare rejection/reopen are repaired. Do NOT bind separate GO loot or add an item-first/immediate-postcast gate: effect64 queues199827/other children with native default10ms; prepare OK is not effect completion and AutoStoreLoot bool is slot count. Prioritize delayed child context/rejection, null StoreNewItem/capacity race and progress/retry around114505/46130/domination without native success assumptions or grants. Trace post-store equip/save/relog, stage/attempt/abandon/re-entry and accepted repeat suppression. Missing32543 presentation remains open. Then775 entrance/trash owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender. Pinned donors/full relevant footage before choreography edits; changed successful command timing still needs client/VFX checks. Entire chain/faction/group/client verification remains OPEN."
     },
     {
       "class_id": 3,

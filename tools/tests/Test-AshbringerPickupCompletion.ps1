@@ -1,7 +1,7 @@
-param([switch]$Baseline,[switch]$CapacityBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$CapacityBaseline,[switch]$CastBaseline,[switch]$AddressSanitizer,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -or $CapacityBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify fixed Release'}
-if($Baseline -and $CapacityBaseline){throw 'Select one baseline'}
+if(($Baseline -or $CapacityBaseline -or $CastBaseline) -and $VerifyReleaseBinary){throw 'Pinned baseline cannot verify fixed Release'}
+if(([int][bool]$Baseline+[int][bool]$CapacityBaseline+[int][bool]$CastBaseline) -gt 1){throw 'Select one baseline'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/ashbringer-pickup-completion"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -10,14 +10,17 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cp
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "85b4f0c2:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}
-if($Baseline){$source=$pinned}elseif($CapacityBaseline){$source=(& git -C $repo show "bf251a6d:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned capacity baseline unavailable'}}else{
+if($Baseline){$source=$pinned}elseif($CapacityBaseline -or $CastBaseline){$revision=if($CastBaseline){'269550a6'}else{'bf251a6d'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}}else{
  $removed='instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 775, 1);'
  $capacity=Block (Block $source 'class go_bs_the_ashbringer :') 'if (!player->HasItemCount(120978))'
- if(($source.Replace($capacity,'') -replace '\s','') -cne ($pinned.Replace($removed,'') -replace '\s','')){throw 'Unrelated acquisition behavior changed beyond completion credit and scoped capacity preflight'}
+ $restored=$source.Replace($capacity,'');$callback=Block $restored 'class go_bs_the_ashbringer :'
+ $restoredCallback=$callback.Replace((Block $callback 'if (result != SPELL_CAST_OK)'), '').Replace('SpellCastResult result = player->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);','').Replace('trigger->DespawnOrUnsummon();',"trigger->DespawnOrUnsummon();`nplayer->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);")
+ if(($restored.Replace($callback,$restoredCallback) -replace '\s','') -cne ($pinned.Replace($removed,'') -replace '\s','')){throw 'Unrelated acquisition behavior changed beyond separately tested completion/capacity/reported-cast guards'}
 }
 [IO.File]::WriteAllText("$out/Pickup.inc",(Block (Block $source 'class go_bs_the_ashbringer :') 'void OnLootStateChanged(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.h" -Raw) 'enum Data')+';'+(Block $source 'enum eSpells')+';'+(Block (Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.h" -Raw) 'enum LootState')+';')
 [IO.File]::AppendAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.h" -Raw) 'enum InventorySlot')+';'+(Block (Get-Content "$repo/src/server/game/Entities/Item/Item.h" -Raw) 'enum InventoryResult')+';')
+[IO.File]::AppendAllText("$out/Constants.inc",(Block (Get-Content "$repo/src/server/game/Miscellaneous/SharedDefines.h" -Raw) 'enum SpellCastResult')+';')
 [IO.File]::WriteAllText("$out/CapacityBridge.inc",(Block (Get-Content "$repo/src/server/game/Entities/Player/Player.h" -Raw) 'InventoryResult CanStoreNewItem('))
 $native=Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw
 $first=$native.IndexOf('void GameObject::SetLootState(');$last=$native.IndexOf('    if (m_model)',$first)
@@ -33,10 +36,10 @@ $credits=[regex]::Match($reward,'player->UpdateAchievementCriteria\(CRITERIA_TYP
 if(!$credits -or (Block $scenario 'void Scenario::UpdateCurrentStep(') -notmatch 'if \(IsCompleted\(false\)\)\s*Reward\(false, oldStep\);'){throw 'Native natural completion reward flow changed'}
 [IO.File]::WriteAllText("$out/RewardCredits.inc",$credits)
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=$(if($Baseline){'/DBASELINE '}elseif($CapacityBaseline){'/DCAPACITY_BASELINE '}else{''})+$(if($AddressSanitizer){'/fsanitize=address /Zi'}else{''})
+$definition=$(if($Baseline){'/DBASELINE '}elseif($CapacityBaseline){'/DCAPACITY_BASELINE '}elseif($CastBaseline){'/DCAST_BASELINE '}else{''})+$(if($AddressSanitizer){'/fsanitize=address /Zi'}else{''})
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/AshbringerPickupCompletionTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native pickup completion regression failed'}
-if($Baseline -or $CapacityBaseline){return}
+if($Baseline -or $CapacityBaseline -or $CastBaseline){return}
 $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
 $previous=$env:MYSQL_PWD
 try{

@@ -8,6 +8,8 @@ using uint32=uint32_t;
 using ItemPosCountVec=std::vector<uint32>;
 enum {CRITERIA_TYPE_SCRIPT_EVENT_2=92,CRITERIA_TYPE_COMPLETE_SCENARIO=152,CRITERIA_TYPE_COMPLETE_SCENARIO_COUNT=151};
 #include "Constants.inc"
+uint32 warnings=0;
+#define TC_LOG_WARN(...) (++warnings)
 struct Player;
 struct Unit {virtual ~Unit()=default;virtual Player* ToPlayer(){return nullptr;}};
 struct InstanceScript;
@@ -17,6 +19,7 @@ struct Player:Unit
     bool owned=false;
     std::vector<std::tuple<uint32,uint32,uint32>> credit;
     uint32 casts=0;
+    SpellCastResult castResult=SPELL_CAST_OK;
     InventoryResult capacity=EQUIP_ERR_OK;
     mutable uint32 capacityChecks=0;
     std::vector<InventoryResult> inventoryErrors;
@@ -30,7 +33,8 @@ struct Player:Unit
     }
 #include "CapacityBridge.inc"
     void SendEquipError(InventoryResult result,void*,void*,uint32 item){assert(result!=EQUIP_ERR_OK&&item==120978);inventoryErrors.push_back(result);}
-    void CastSpell(Player* target,uint32 spell,bool triggered){assert(target==this && spell==180850 && triggered);++casts;}
+    uint32 GetGUIDLow()const{return 1;}
+    SpellCastResult CastSpell(Player* target,uint32 spell,bool triggered){assert(target==this && spell==180850 && triggered);++casts;return castResult;}
     void UpdateAchievementCriteria(uint32 type,uint32 value,uint32 quantity=0,uint32=0,Unit* =nullptr){credit.emplace_back(type,value,quantity);}
 };
 struct InstanceMap
@@ -95,6 +99,11 @@ int main()
     assert(player.credit.size()==1&&party.credit==player.credit&&player.casts==1&&trigger.despawns==1);
     assert(!player.capacityChecks&&player.inventoryErrors.empty()&&object.m_lootState==GO_JUST_DEACTIVATED);
     std::cout<<"PASS pinnedbf251a6d capacity counterfactual: full inventory does not prevent original46130/retrieval/trigger cleanup and completed state; no capacity query/error/reopen\n";
+#elif defined(CAST_BASELINE)
+    player.castResult=SPELL_FAILED_ERROR;object.SetLootState(GO_JUST_DEACTIVATED,&player);
+    assert(player.credit.size()==1&&party.credit==player.credit&&player.casts==1&&trigger.despawns==1&&!warnings);
+    assert(object.m_lootState==GO_JUST_DEACTIVATED);
+    std::cout<<"PASS pinned269550a6 reported rejection still emits46130/removes103454 and retains completed state despite failed180850; no rejection diagnostic or reopen\n";
 #else
     for(uint32 stage=0;stage<8;++stage)for(uint32 state=0;state<5;++state)for(bool owned:{false,true})for(bool present:{false,true})
     {
@@ -138,6 +147,24 @@ int main()
         instance.step=wrongStage;object.SetLootState(GO_JUST_DEACTIVATED,&player);
         assert(player.credit.empty()&&party.credit.empty()&&!player.casts&&!player.capacityChecks&&player.inventoryErrors.empty());
     }
+    instance.step=3;player.capacity=EQUIP_ERR_OK;
+    for(SpellCastResult failure:{SPELL_FAILED_ERROR,SPELL_FAILED_DONT_REPORT,SPELL_FAILED_NOT_READY})for(bool owned:{false,true})for(bool present:{false,true})for(LootState state:{GO_JUST_DEACTIVATED,GO_ACTIVATED})
+    {
+        player.credit.clear();party.credit.clear();player.casts=0;player.castResult=failure;player.owned=owned;warnings=0;
+        object.trigger=present?&trigger:nullptr;trigger.despawns=0;object.deletes=0;
+        object.SetLootState(state,&player);bool admitted=state==GO_JUST_DEACTIVATED||owned;
+        assert(player.credit.empty()&&party.credit.empty()&&!trigger.despawns&&!object.deletes&&player.casts==uint32(admitted)&&warnings==uint32(admitted));
+        assert(object.m_lootState==(admitted?GO_READY:state));
+        if(admitted)
+        {
+            object.SetLootState(state,&player);
+            assert(player.credit.empty()&&party.credit.empty()&&!trigger.despawns&&!object.deletes&&player.casts==2&&warnings==2);
+            player.castResult=SPELL_CAST_OK;object.SetLootState(state,&player);
+            assert(player.credit.size()==1&&party.credit==player.credit&&player.casts==3&&warnings==2);
+            assert(trigger.despawns==uint32(present)&&object.deletes==uint32(state==GO_ACTIVATED));
+        }
+    }
+    std::cout<<"PASS24 reported-error/owned/actor/state combinations:18 admitted attempts retain no direct progression/cleanup/Delete, native READY permits repeated-error then accepted retry. SPELL_CAST_OK only admits original work, not proof of delayed199827 storage, effect completion or client/VFX\n";
     std::cout<<"PASS12 capacity-result/owned/missing-actor cases retain native errors and reopen before all original effects; six projected capacity recoveries retry original retrieval without an item-first gate or direct grant. Native CanStoreNewItem bridge/SetLootState/Instance fanout extracted; inventory services and accepted item creation remain controlled/separate\n";
     std::cout<<"PASS160 actual pickup state/stage/item/actor cases retain46130/180850/trigger/delete without152; native IsCompleted/GetStepCount plus isolated Reward credit fragment only emits152/151 after7 modeled steps. Empty chest still starts native acquisition spell; accepted item storage/area eligibility/whole Reward/client traversal not exercised\n";
 #endif

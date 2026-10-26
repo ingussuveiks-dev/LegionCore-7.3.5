@@ -1163,11 +1163,17 @@ public:
                                 return;
                             }
                         }
+                        SpellCastResult result = player->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);
+                        if (result != SPELL_CAST_OK)
+                        {
+                            TC_LOG_WARN("scripts", "Ashbringer pickup: retrieval 180850 failed with result %u for player %u; retain object for retry", uint32(result), player->GetGUIDLow());
+                            go->SetLootState(GO_READY);
+                            return;
+                        }
                         instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46130); //Step 4
                         if (Creature* trigger = go->FindNearestCreature(103454, 10.0f))
                             trigger->DespawnOrUnsummon();
 
-                        player->CastSpell(player, SPELL_RETRIEVING_THE_ASHBRINGER, true);
                         if (state == GO_ACTIVATED)
                             go->Delete();
                     }
