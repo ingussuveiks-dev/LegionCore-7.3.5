@@ -1382,6 +1382,18 @@ public:
                     timer -= diff;
         }
 
+        void RetryMissingDefender(uint8 wave)
+        {
+            TC_LOG_DEBUG("scripts", "Silver Hand ritual: defender106774 absent for wave %u; retry in1000ms", uint32(wave));
+            _waveFunctions.AddDelayedEvent(1000, [this, wave]() -> void
+            {
+                if (SilverHandFinalEntry::CanStartWave(me))
+                    SummonAdds(wave);
+                else
+                    TC_LOG_DEBUG("scripts", "Silver Hand ritual: dropping defender retry for stale wave %u", uint32(wave));
+            });
+        }
+
         void SummonAdds(uint8 wave)
         {
             switch (wave)
@@ -1405,6 +1417,8 @@ public:
                             }
                         }
                     }
+                    else
+                        RetryMissingDefender(wave);
                 }
                 break;
                 case 3:
@@ -1418,6 +1432,8 @@ public:
                             mordot->AI()->Talk(0);
                         }
                     }
+                    else
+                        RetryMissingDefender(wave);
                 }
                 break;
             }

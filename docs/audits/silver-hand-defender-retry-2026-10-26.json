@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Recovery of original wave1/2/3 requests whose initial live106774/70yd lookup is empty; not failed/partial creation or complete Holy/all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local git1eb802a1, worklist/routes/donor review and complete last-Travard wave/death/entry/progress paths",
+      "review": "Clean main/origin inherited. Original regular and boss branches silently lost their once-only request on empty defender lookup; later actor availability and ordinary lifecycle did not retry. Admission, owned GUID death thresholds, stale stage guards, real loot/equip and all other repairs retained."
+    },
+    {
+      "source": "Read-only local MariaDB live actor coordinates/phases/templates/SmartAI",
+      "review": "106774/362046 at1944.63,2331.37,75.4947 and106777/362048 at1962.95,2336.36,80.3631 share1539/7003, about19.6yd apart within original70yd. No radius/position correction warranted. Defender retains npc_efrin_and_duval/faction1665/flags32784+35651584; last retains npc_travar_last. Regular106580/106578 and boss106719 SmartAI keep215680/215688/215690 combat rows and shared templates unchanged. This is not observed grid loading or proof that a live missing defender actually occurred in the client."
+    },
+    {
+      "source": "Matching26972 native DB2/hotfix tree and original WorldObject::FindNearestCreature/FunctionProcessor/Creature lifecycle",
+      "review": "Native ritual1092/exact9 remains the allowed defense context; weighted180/30110/92+51838 and stage10 pickup remain unchanged. Original search delegates to NearestCreatureEntryWithLiveStateInObjectRangeCheck/CreatureLastSearcher/VisitNearbyObject. Original FunctionProcessor merges pending queue at update start, advances its clock, then executes due callbacks; a callback's newly enqueued m_time+1000 job waits for a later update, not the current loop. Existing locked primary/disabled lifecycle drains and destroys the AI-owned queue; Unit jobs remain independent."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted scripts and all-ref SilverHand path log",
+      "review": "No npc_travar_last/106774 acquisition recovery returned by bounded searches. No exhaustive history claim or modern API/schema import."
+    },
+    {
+      "source": "Pinned Titans complete relevant last-Travard entry/death/update/SummonAdds source returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Both defender-dependent branches have no missing-actor recovery. No donor fix imported; healthy original wave positions, counts, attack targets, boss flags/speech and timing retained."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. The1000ms interval is explicitly custom technical failure recovery, not an inferred retail wave delay, visual sequence or combat timing."
+    }
+  ],
+  "repair": {
+    "implementation": "Only empty-defender branches call RetryMissingDefender(wave). Existing AI-owned FunctionProcessor queues this+wave for1000ms, logs the missing106774 request, rechecks unchanged CanStartWave before a fresh SummonAdds lookup, and logs/drops stale work without requeue. No raw defender/Player/summon pointer captured.",
+    "ownership": "Original five-second admitted first request and once-only consumed3/6 thresholds issue at most one native request for each wave. An empty lookup creates no enemies, so recovering that request cannot duplicate partially created actors. If still missing, one new job replaces the executed job at the next interval, including lag/stun/victim/disabled-AI cases. No new fields, latches, timer reset, count/roster mutation, Unit-job clear, Player credit, manual group fanout or item grant.",
+    "limits": "This does not retry a failed leader, individual add or Mordoth creation after a successful defender lookup; partial creation remains OPEN. Mid-spawn context change, same-stage abandon/re-entry/scenario identity and disabled-to-different-primary death delivery remain separate. Invalid retry context drops work without rearming a later attempt. There is no invented retry-count timeout; polling continues while actor/native9 remains valid and ends with context loss or AI destruction."
+  },
+  "validation": {
+    "baseline": "PASS -DefenderBaseline pins actual full1eb802a1 AI: first, second and boss request all stay lost after empty lookup even once defender returns and lifecycle advances. Controlled search service, not observed client failure.",
+    "host": "PASS current full extracted AI/native queue/locked lifecycle/InitSummon/death bridge: all three original request paths, repeated absence,999+1ms/zero/large-diff no catch-up, primary/disabled/aliased/no-primary AI, ordinary Reset, newly resolved defender pointer and exactly one recovered wave with unchanged attacks/count/roster/boss flags. Both faction labels and same-stage Player death/absence/phase/LOS/quest loss preserve shared requests. All12 stages plus10 actor/scenario failures drop stale jobs. Native one-hit IsSummonedBy/death reentry queues one missing second wave then recovers without duplicating first-wave actors. AI destruction cancels pending retry while an unrelated Unit job runs. Failed creation deliberately remains unretried. World/Player/map/search/creation services are controlled, not live group/navigation proof.",
+    "installed": "PASS new verify_silver_hand_defender_retry_release.py chains all prior selected progress/death/first-wave/lifetime proofs. Actual wave1/2/3 switch sends only two empty live106774/70yd branches to merged retry call with original AI/wave byte. Actual function-object vtable/9-byte thunk retains only AI+wave, queues1000 at existing AI+48 and calls fully verified native9 policy before fresh SummonAdds; stale branch retains diagnostic and does not directly requeue/credit. Failed creation branches do not enter recovery. Original AI0xd8/queue/roster/dispatch/destruction proofs unchanged; no noinline or ABI guess.",
+    "sanitizer": "PASS current complete missing-defender/one-hit reentry/wave/context/scoped-pulse fixture under MSVC AddressSanitizer (.codex/silver-hand-defender-retry-asan.log). Existing extracted-host shadowing warnings remain visible; no production diagnostics or assertions disabled.",
+    "regressions": "PASS24 top-level suites: newDefenderBaseline; retainedLateWaveBaseline/ContextBaseline/ProgressBaseline; complete retained19-suite .codex/silver-hand-waypoint-retry-defender-retry-regressions.tsv; current MordothMotion Release nesting original seven-spawn InitialMotion. Retained waypoint-retry/recipient/death/admission/lifetime/arrival/action/final/step8 baselines, current full dispatch/wave/rescue/ally/entry/native weighted tree/new selected recovery PE and all previous installed proofs, ScepterLogin, native149 race/class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 native records PASS. Catalog builds serialized after canonical build; final executable hashes unchanged after all checks/owned shutdown.",
+    "probe_limit": "Earlier isolated empty-output SQL and offers22 incidents remain unexplained in their previous audits, not fixed here. No recurrence in this completed run; no automatic retry of failed tests or predicate/count relaxation introduced.",
+    "evidence": ".codex/silver-hand-defender-retry-*; .codex/silver-hand-waypoint-retry-defender-retry-*; ignored runtime-test/silver-hand-wave-lifetime. No runtime/configuration/passwords/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "15A83BEE5B7F2D2DD0338F0C521487ACFE1E014A34CC1A7A4168D4F409E17510",
+    "bnet_sha256": "2D5E2534D1BDC3C89681B0BB3B76E73577DACF2BBDE4F151CAF32D91EDE31E1A",
+    "build": "Release world+bnet18.22s/0 warnings/errors; no OutDir, LinkIncremental=false. Actual UTF16 final-link commands checked for canonical OUT/original scripts-game-shared-common and bnet shared-common libraries/no incremental. Actual deployed selected recovery implementation decoded, not just hash/startup.",
+    "runtime": "Own hidden canonical PID12860 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0; new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. Own PID gone, no unknown/user server stopped or hidden own process left. Startup does not prove actual1539 grid/defender recovery/channel/combat/client visuals."
+  },
+  "remaining": [
+    "Actual180-pulse defense/channel/cleanup, failed or partial spawns, combat/navigation/escape215260 and live party/faction/pets plus full relevant footage/client sequence remain unverified.",
+    "Earlier fights/evade/post-scaling half-health, real loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No complete quest or VFX certification."
+  ]
+}

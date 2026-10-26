@@ -246,8 +246,38 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
     assert(actor.adds[0]->positionX==1911.84f && actor.adds[0]->positionY==2334.61f && actor.adds[0]->positionZ==73.39f);
     for(auto const& ai:actor.addAIs)assert(ai->attacks==1 && ai->target==defender);
 }
+void StartMissingDefender(Fixture& fixture,uint32 wave)
+{
+    assert(wave>=1 && wave<=3);
+    fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;
+    if(wave==1)fixture.actor.missingDefender=true;
+    fixture.actor.Lifecycle(5000);
+    if(wave==1)return;
+    KillSummon(fixture.actor.adds[0].get(),&fixture.player);
+    KillSummon(fixture.actor.adds[1].get(),&fixture.player);
+    if(wave==2)fixture.actor.missingDefender=true;
+    KillSummon(fixture.actor.adds[2].get(),&fixture.player);
+    if(wave==2)return;
+    KillSummon(fixture.actor.adds[3].get(),&fixture.player);
+    KillSummon(fixture.actor.adds[4].get(),&fixture.player);
+    fixture.actor.missingDefender=true;
+    KillSummon(fixture.actor.adds[5].get(),&fixture.player);
+}
 int main()
 {
+#ifdef DEFENDER_BASELINE
+    for(uint32 wave:{1u,2u,3u})
+    {
+        Fixture fixture;StartMissingDefender(fixture,wave);
+        uint32 originalAdds=wave==1?0u:wave==2?3u:6u;
+        assert(fixture.actor.adds.size()==originalAdds && fixture.ai._waveFunctions.SizeQueue()==0);
+        fixture.actor.missingDefender=false;fixture.actor.Run(5000);
+        assert(fixture.actor.adds.size()==originalAdds && fixture.ai.count_died==(wave-1)*3);
+        assert(fixture.player.credits.empty());
+    }
+    std::cout<<"PASS pinned1eb802a1: first/second/Mordoth requests are lost if native defender lookup is empty; later valid actor and lifecycle do not recover any wave\n";
+    return 0;
+#else
 #ifdef LATE_WAVE_BASELINE
     for(uint32 threshold:{3u,6u})
     {
@@ -296,6 +326,88 @@ int main()
     }
 #else
 #if !defined(BASELINE) && !defined(ADMISSION_BASELINE) && !defined(DEATH_BASELINE) && !defined(PROGRESS_BASELINE)
+    for(uint32 wave:{1u,2u,3u})
+        for(uint32 mode=0;mode<4;++mode)
+        {
+            Fixture fixture;CreatureAI replacement;Creature recoveredDefender;
+            StartMissingDefender(fixture,wave);
+            uint32 originalAdds=wave==1?0u:wave==2?3u:6u;
+            uint32 before=diagnostics;
+            assert(fixture.actor.adds.size()==originalAdds && fixture.ai._waveFunctions.SizeQueue()==1);
+            fixture.actor.onSummon=[&fixture](){assert(fixture.actor.m_AI_locked);};
+            if(mode){fixture.actor.i_disabledAI=&fixture.ai;fixture.actor.i_AI=mode==1?&replacement:mode==2?&fixture.ai:nullptr;}
+            if(mode==3)fixture.actor.IsAIEnabled=false;
+            fixture.actor.victim=true;
+            fixture.actor.Lifecycle(999);assert(fixture.actor.adds.size()==originalAdds && diagnostics==before);
+            fixture.actor.Lifecycle(1);assert(fixture.actor.adds.size()==originalAdds && diagnostics==before+1);
+            assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==1);
+            fixture.actor.Lifecycle(10000);assert(diagnostics==before+2 && fixture.ai._waveFunctions.SizeQueue()==1);
+            fixture.actor.Lifecycle(0);assert(diagnostics==before+2);
+            fixture.actor.missingDefender=false;fixture.actor.defender=&recoveredDefender;
+            fixture.player.alive=false;fixture.player.phase=false;fixture.player.los=false;fixture.player.status=0;fixture.player.faction=mode%2;liveMap.players.clear();
+            fixture.ai.Reset();fixture.actor.Lifecycle(999);assert(fixture.actor.adds.size()==originalAdds);
+            fixture.actor.Lifecycle(1);
+            uint32 total=wave==1?3u:wave==2?6u:7u;
+            assert(fixture.actor.adds.size()==total && !fixture.actor.m_AI_locked);
+            assert(fixture.ai.count_died==(wave-1)*3 && fixture.ai._waveSummons.size()==(wave==3?0u:3u));
+            assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==0);
+            for(uint32 identity=originalAdds;identity<total;++identity)
+                assert(fixture.actor.addAIs[identity]->attacks==1 && fixture.actor.addAIs[identity]->target==&recoveredDefender);
+            if(wave==1)CheckFirstWave(fixture.actor,&recoveredDefender);
+            if(wave==3)assert(fixture.actor.adds.back()->entry==106719 && fixture.actor.adds.back()->flags==16 && fixture.actor.addAIs.back()->talks==1);
+            fixture.actor.Lifecycle(10000);assert(fixture.actor.adds.size()==total && diagnostics==before+2);
+            assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.player.credits.empty());
+            fixture.actor.i_AI=&fixture.ai;fixture.actor.i_disabledAI=nullptr;fixture.actor.IsAIEnabled=true;
+        }
+    {
+        Fixture fixture;Creature guardian;uint32 created=0;
+        fixture.actor.onSummonedBy=[&fixture,&guardian,&created](Creature* summon){
+            if(++created==3)fixture.actor.missingDefender=true;
+            KillSummon(summon,&guardian);
+        };
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+        assert(created==3 && fixture.actor.adds.size()==3 && fixture.ai.count_died==3 && fixture.ai._waveSummons.empty());
+        assert(fixture.ai._waveFunctions.SizeQueue()==1);
+        fixture.actor.onSummonedBy={};fixture.actor.missingDefender=false;fixture.actor.Lifecycle(1000);
+        assert(fixture.actor.adds.size()==6 && fixture.ai.count_died==3 && fixture.ai._waveSummons.size()==3);
+    }
+    for(uint32 wave:{1u,2u,3u})
+        for(uint32 context=0;context<22;++context)
+        {
+            Fixture fixture;StartMissingDefender(fixture,wave);
+            uint32 originalAdds=wave==1?0u:wave==2?3u:6u;
+            uint32 before=diagnostics;
+            if(context<12)manager.scenario.step=context;
+            else switch(context)
+            {
+                case 12:fixture.actor.world=false;break;
+                case 13:fixture.actor.preDelete=true;break;
+                case 14:fixture.actor.alive=false;break;
+                case 15:fixture.actor.entry=106676;break;
+                case 16:fixture.actor.mapId=1220;break;
+                case 17:fixture.actor.map=nullptr;break;
+                case 18:fixture.actor.instance=43;break;
+                case 19:manager.present=false;break;
+                case 20:manager.scenario.id=991;break;
+                case 21:manager.scenario.id=1037;break;
+            }
+            fixture.actor.Lifecycle(1000);
+            assert(fixture.actor.adds.size()==originalAdds && diagnostics==before+1);
+            assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==(context==9?1u:0u));
+            fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;fixture.actor.entry=106777;
+            fixture.actor.mapId=1539;fixture.actor.map=&liveMap;fixture.actor.instance=42;manager=ScenarioManager{};
+            fixture.actor.missingDefender=false;fixture.actor.Lifecycle(1000);
+            assert(fixture.actor.adds.size()==(context==9?(wave==1?3u:wave==2?6u:7u):originalAdds));
+            assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.ai.count_died==(wave-1)*3);
+        }
+    {
+        Creature actor,defender;Player player;manager=ScenarioManager{};actor.defender=&defender;actor.missingDefender=true;
+        auto* ai=new WaveAI(&actor);actor.i_AI=ai;ai->MoveInLineOfSight(&player);actor.Lifecycle(5000);
+        assert(ai->_waveFunctions.SizeQueue()==1);
+        uint32 unrelated=0;actor.functions.AddDelayedEvent(1000,[&unrelated](){++unrelated;});
+        assert(actor.AIM_Destroy());actor.Run(1000);assert(actor.adds.empty() && unrelated==1);
+    }
+    std::cout<<"PASS missing defender: actual three wave requests recover after repeated empty lookup through one AI-owned1000ms job,999+1/no catch-up/Reset/primary-disabled-alias-no-primary lock, fresh defender pointer and unchanged roster/count/flags/attacks; all12 stages/10 actor-scenario failures cancel stale retry, shared Player loss/faction labels retained, AI destruction drops retry without clearing Unit jobs; failed/partial creation remains separate\n";
     for(uint32 threshold:{3u,6u})
         for(uint32 killerKind=0;killerKind<5;++killerKind)
             for(uint32 context=0;context<22;++context)
@@ -731,7 +843,12 @@ int main()
         fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.Run(5000);
         assert(fixture.actor.adds.empty());
         fixture.actor.failSpawn=false;fixture.actor.missingDefender=false;fixture.actor.Run(5000);
+#ifdef BASELINE
         assert(fixture.actor.adds.empty());
+#else
+        if(failSpawn)assert(fixture.actor.adds.empty());
+        else CheckFirstWave(fixture.actor,&fixture.defender);
+#endif
     }
     {
         Fixture fixture;
@@ -805,6 +922,7 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks/event IDs; ritual recipient admission checked separately; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 #endif
