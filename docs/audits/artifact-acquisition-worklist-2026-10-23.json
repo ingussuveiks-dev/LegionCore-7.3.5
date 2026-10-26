@@ -12,6 +12,20 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Movement/MovementGenerators/FlightPathMovementGenerator.cpp",
+      "handler": "Completed taxi route persistence without final client ACK",
+      "problem": "A landed native flight retained one terminal taxi node; saving it made the unchanged login loader reject a non-resumable route.",
+      "repair_audit": "docs/audits/taxi-flight-completion-2026-10-26.json",
+      "limit": "Native pinned codec/update/finalization counterfactual, ASAN/current guards, selected canonical factory/finalizer and owned startup/shutdown0 pass; deployed world8A2C4897. Pending/interrupted/multimap routes and validation retained. Original user string not recovered; new real flight/relogin/camera/pet/faction/early-landing checks remain pending."
+    },
+    {
+      "path": "tools/research/TrueshotTaxiCatalog.cpp",
+      "handler": "Great Eagle taxi role and admission follow-up",
+      "problem": "Distinct Eagle1848 free routes and Odan1760 paid routes exist, but local PlayerCondition43356 is missing and native nearest-node/menu code skips that eagle hub, permitting fallback toward Odan.",
+      "repair_audit": "docs/audits/trueshot-eagle-network-review-2026-10-26.json",
+      "limit": "OPEN admission/data follow-up. Native Eagle Ally375 unlock role verified; no research granted, flag removed or condition fabricated. Find matching verified43356 data/intended research gates before calling the network usable. No actual route/UI/faction or whole-client certification."
+    },
+    {
       "path": "src/server/game/Maps/Map.cpp",
       "handler": "Grif106570 cross-grid active spawn-lock teardown",
       "problem": "Forced UnloadAll could delete spawn36 before active Grif in37 released its spawn lock; old diagnostic reversed coordinates.",
@@ -23,7 +37,7 @@
       "handler": "Titanstrike Hati/primary pet follow formation",
       "problem": "User confirms persistent overlap after walking; incoming companion skipped before world registration and GUID ordering could move primary onto secondary's retained follow side.",
       "repair_audit": "docs/audits/hati-pet-follow-formation-2026-10-26.json",
-      "limit": "Native/ASAN/pinned overlap counterfactual and selected canonical PE passed; incoming minion participates and primary remains first without restarting movement. Two companions intentional. Deployed world75D321DF after user stop; owned ready/shutdown0/diagnostics clean. Actual client separation/commands/combat/relog and full route/VFX remain unverified."
+      "limit": "Native/ASAN/pinned overlap counterfactual and selected canonical PE passed; incoming minion participates and primary remains first without restarting movement. Two companions intentional. Deployed world75D321DF after user stop; owned ready/shutdown0/diagnostics clean. Subsequent user Trueshot screenshots show separate standing positions and the normal pet frame. Actual moving/commands/combat/relog and full route/VFX remain unverified."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",

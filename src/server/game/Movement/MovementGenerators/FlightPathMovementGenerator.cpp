@@ -98,17 +98,27 @@ void FlightPathMovementGenerator::DoFinalize(Player& player)
     // remove flag to prevent send object build movement packets for flight state and crash (movement generator already not at top of stack)
     player.ClearUnitState(UNIT_STATE_IN_FLIGHT);
 
-    player.Dismount();
-    player.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL | UNIT_FLAG_TAXI_FLIGHT);
-
-    if (player.m_taxi.empty())
+    if (!_path.empty() && _currentNode >= _path.size() - 1 && _pointsForPathSwitch.empty() && player.m_taxi.GetPath().size() == 1)
     {
-        player.getHostileRefManager().setOnlineOfflineState(true);
-        // update z position to ground and orientation for landing point
-        // this prevent cheating with landing  point at lags
-        // when client side flight end early in comparison server side
-        player.StopMoving();
+        player.CleanupAfterTaxiFlight();
         player.SetFallInformation(0, player.GetPositionZ());
+        if (player.pvpInfo.inHostileArea)
+            player.CastSpell(&player, 2479, true);
+    }
+    else
+    {
+        player.Dismount();
+        player.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL | UNIT_FLAG_TAXI_FLIGHT);
+
+        if (player.m_taxi.empty())
+        {
+            player.getHostileRefManager().setOnlineOfflineState(true);
+            // update z position to ground and orientation for landing point
+            // this prevent cheating with landing  point at lags
+            // when client side flight end early in comparison server side
+            player.StopMoving();
+            player.SetFallInformation(0, player.GetPositionZ());
+        }
     }
 
     player.RemoveFlag(PLAYER_FIELD_PLAYER_FLAGS, PLAYER_FLAGS_TAXI_BENCHMARK);
