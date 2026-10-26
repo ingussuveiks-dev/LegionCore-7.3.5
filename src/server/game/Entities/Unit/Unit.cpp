@@ -12060,13 +12060,18 @@ void Unit::SetMinion(Minion *minion, bool apply)
         }
     }
 
-    if (m_Controlled.size() < 5)
+    std::vector<ObjectGuid> followOrder(m_Controlled.begin(), m_Controlled.end());
+    auto primaryPet = std::find(followOrder.begin(), followOrder.end(), GetPetGUID());
+    if (primaryPet != followOrder.end())
+        std::rotate(followOrder.begin(), primaryPet, primaryPet + 1);
+
+    if (followOrder.size() < 5)
     {
         uint32 count = 0;
-        for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        for (ObjectGuid const& guid : followOrder)
         {
             float angle = float(PET_FOLLOW_ANGLE);
-            Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, *itr);
+            Creature* creature = apply && guid == minion->GetGUID() ? minion : ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
             if (!creature)
                 continue;
             
@@ -12096,11 +12101,11 @@ void Unit::SetMinion(Minion *minion, bool apply)
     else
     {
         uint32 count = 0;
-        for (ControlList::iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
+        for (ObjectGuid const& guid : followOrder)
         {
-            float angle = 2*PET_FOLLOW_ANGLE/3 + (((PET_FOLLOW_ANGLE * 3) / m_Controlled.size()) * count);
+            float angle = 2*PET_FOLLOW_ANGLE/3 + (((PET_FOLLOW_ANGLE * 3) / followOrder.size()) * count);
             
-            if (Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, *itr))
+            if (Creature* creature = apply && guid == minion->GetGUID() ? minion : ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid))
             {
                 creature->SetFollowAngle(angle);
                 creature->SetFollowDistance(frand(PET_FOLLOW_DIST/ 3 , PET_FOLLOW_DIST *2.5f));

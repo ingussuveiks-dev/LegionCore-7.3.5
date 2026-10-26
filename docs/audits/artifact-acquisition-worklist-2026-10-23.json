@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Entities/Unit/Unit.cpp",
+      "handler": "Titanstrike Hati/primary pet follow formation",
+      "problem": "User confirms persistent overlap after walking; incoming companion skipped before world registration and GUID ordering could move primary onto secondary's retained follow side.",
+      "repair_audit": "docs/audits/hati-pet-follow-formation-2026-10-26.json",
+      "limit": "Native/ASAN/pinned overlap counterfactual and selected staged PE passed; incoming minion participates and primary remains first without restarting movement. Two companions intentional. Deployment pending visible user server stop; actual client separation/commands/combat/relog and full route/VFX remain unverified."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",
       "handler": "108015 Garona delayed intro recipient/AI lifetime",
       "problem": "Unit-owned15/30s callbacks captured raw AI/player and sent personal progress after map transfer.",
