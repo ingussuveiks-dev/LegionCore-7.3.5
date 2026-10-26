@@ -615,6 +615,7 @@ public:
 
         void JustDied(Unit* who) override
         {
+            Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
             summons.DespawnAll();
             if (Creature* oldgarona = me->FindNearestCreature(108222, 60.0f, true))
                 oldgarona->DespawnOrUnsummon();
@@ -623,13 +624,13 @@ public:
                 garona->AI()->DoAction(true);
                 garona->SetVisible(true);
             }
-            if (Player* pl = who->ToPlayer())
+            if (player)
             {
-                pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51615);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51615);
+                Conversation* conversation = new Conversation;
+                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2448, player, NULL, *player))
+                    delete conversation;
             }
-            Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2448, who, NULL, *who))
-                delete conversation;
 
             std::list<Creature*> adds;
             GetCreatureListWithEntryInGrid(adds, me, 108397, 70.0f);

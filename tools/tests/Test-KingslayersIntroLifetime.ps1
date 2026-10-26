@@ -29,6 +29,8 @@ try{
  if($LASTEXITCODE){throw 'Pinned Kingslayers baseline unavailable'}
  $marker='struct npc_garona_halforcenAI : ScriptedAI'
  $restored=$source.Replace((Block $source $marker),(Block $pinned $marker)).Replace('#include "ObjectAccessor.h"','')
+ $merlis='struct npc_merlis_malaganAI : ScriptedAI'
+ $restored=$restored.Replace((Block $source $merlis),(Block $pinned $merlis)) # Independently pinned by Test-KingslayersDeathCredit.
  if(($restored -replace '\s','') -cne ($pinned -replace '\s','')){throw 'Unreviewed change outside Garona introduction AI'}
  if($Baseline){$source=$pinned}
  [IO.File]::WriteAllText("$out/GaronaIntro.inc",(Block $source $marker)+';')
