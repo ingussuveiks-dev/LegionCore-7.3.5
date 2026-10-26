@@ -5,6 +5,8 @@
 #include "TemporarySummon.h"
 #include "GameObject.h"
 #include "DatabaseEnv.h"
+#include "SmartAI.h"
+#include "SpellScript.h"
 #include <map>
 #include <mutex>
 
@@ -38,6 +40,7 @@ struct State
 {
     uint32 timer = 0;
     uint32 companionLost = 0;
+    uint32 rideRetry = 0;
     bool loaded = false, released = false;
     std::map<uint32, std::map<uint64, uint32>> uses;
     ObjectGuid dragon, beams[3];
@@ -214,7 +217,91 @@ void RecoverCompanion(Player* player, State& state, uint32 elapsed)
     if (follower && !follower->isInCombat() && follower->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
         follower->GetMotionMaster()->MoveFollow(player, 3.0f, 3.14f);
 }
+
+bool RideOwner(Player* player, Creature* ride)
+{
+    return player && ride && ride->GetEntry() == 90982 && ride->ToTempSummon() &&
+        ride->ToTempSummon()->GetSummonerGUID() == player->GetGUID();
+}
+
+bool RideEligible(Player* player)
+{
+    return Active(player, Revelations) && Done(player, Revelations, 90621) &&
+        !Done(player, Revelations, 112175);
+}
+
+void UpdateRide(Player* player, State& state, uint32 elapsed)
+{
+    state.rideRetry = state.rideRetry > elapsed ? state.rideRetry - elapsed : 0;
+    if (!RideEligible(player))
+    {
+        ClearOwned(player, 90982);
+        state.rideRetry = 0;
+        return;
+    }
+    // An interrupted optional flight can be finished on foot. Do not repeatedly
+    // board a player who deliberately dismounted or already took this flight.
+    if (Done(player, Revelations, 90982) || player->GetVehicle() || player->waitOnSeat ||
+        player->isInFlight() || player->IsFlying() || player->GetDistance(Traitor) >= 25.0f || state.rideRetry)
+        return;
+    state.rideRetry = 5000;
+    Creature* ride = Owned(player, 90982);
+    if (!ride)
+    {
+        // Native vehicle properties3635 register the summon to its owner and
+        //178923 automatically casts180768 to board. A raw properties-null
+        //SummonCreature is absent from GetSummonList and caused a new copy/sec.
+        player->CastSpell(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 178923, true);
+        ride = Owned(player, 90982);
+        if (ride)
+        {
+            ride->SetCanFly(true);
+            ride->SetDisableGravity(true);
+            ride->DespawnOrUnsummon(300000);
+        }
+    }
+    else if (ride->IsAlive() && player->canSeeOrDetect(ride) &&
+        player->IsWithinDistInMap(ride, 15.0f) && player->IsWithinLOSInMap(ride))
+        player->CastSpell(ride, 180768, true); // Failed boarding retries the same actor.
+}
 } // namespace Faronaar
+
+// Accessory passengers must not start the path, receive player credit or cause
+// the owner's ride to despawn. Retain the complete native SmartAI otherwise.
+struct npc_faronaar_stellagosa_ride : SmartAI
+{
+    npc_faronaar_stellagosa_ride(Creature* creature) : SmartAI(creature) {}
+    void PassengerBoarded(Unit* who, int8 seat, bool apply) override
+    {
+        Player* player = who ? who->ToPlayer() : nullptr;
+        if (!player)
+            return;
+        if (!Faronaar::RideOwner(player, me) || (apply && !Faronaar::RideEligible(player)))
+        {
+            if (apply)
+                player->ExitVehicle();
+            return;
+        }
+        SmartAI::PassengerBoarded(who, seat, apply);
+    }
+};
+
+class spell_faronaar_stellagosa_ride : public SpellScript
+{
+    PrepareSpellScript(spell_faronaar_stellagosa_ride);
+    void Credit(SpellEffIndex effect)
+    {
+        Creature* ride = GetExplTargetUnit() ? GetExplTargetUnit()->ToCreature() : nullptr;
+        if (ride && ride->GetEntry() == 90982)
+            //180768 effect2 fires before the asynchronous seat join succeeds.
+            //Only the real owner's PassengerBoarded SmartAI event awards90982.
+            PreventHitDefaultEffect(effect);
+    }
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_faronaar_stellagosa_ride::Credit, EFFECT_2, SPELL_EFFECT_KILL_CREDIT);
+    }
+};
 
 struct npc_faronaar_personal_actor : public ScriptedAI
 {
@@ -321,19 +408,8 @@ public:
                 if (leader && player->IsWithinLOSInMap(leader))
                     player->KilledMonsterCredit(112175);
             }
-            if (!Done(player, Revelations, 112175) && player->GetDistance(Traitor) < 25.0f &&
-                !player->GetVehicle() && !Owned(player, 90982))
-                // 178923's summon category 4 forces boarding. The native NPC's
-                // spellclick/vehicle instead lets the player choose this ride.
-                if (Creature* ride = player->SummonCreature(90982, player->GetPosition(),
-                    TEMPSUMMON_TIMED_DESPAWN, 300000, 0, player->GetGUID()))
-                {
-                    ride->SetCanFly(true);
-                    ride->SetDisableGravity(true);
-                }
         }
-        else
-            ClearOwned(player, 90982);
+        UpdateRide(player, state, elapsed);
         if (!relevant)
             states.erase(player->GetGUID());
     }
@@ -342,6 +418,8 @@ public:
 void AddSC_faronaar_chain()
 {
     RegisterCreatureAI(npc_faronaar_personal_actor);
+    RegisterCreatureAI(npc_faronaar_stellagosa_ride);
+    RegisterSpellScript(spell_faronaar_stellagosa_ride);
     new go_faronaar_objective();
     new player_faronaar_chain();
 }

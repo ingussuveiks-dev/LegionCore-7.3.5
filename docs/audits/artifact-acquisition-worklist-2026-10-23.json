@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Legion/faronaar_chain.cpp",
+      "handler": "Dark Revelations37449 Stellagosa90982 return boarding",
+      "problem": "Properties-null direct summons were invisible to owner-list lookup, creating a new drake every second; duplicate Kor'vas accessory filled the player's seat and NPC boarding prematurely started the path.",
+      "repair_audit": "docs/audits/faronaar-stellagosa-ride-2026-10-26.json",
+      "limit": "Native178923 personal vehicle/180768 auto-boarding restored, scoped real-owner SmartAI boarding and early-credit deferral, same-actor retry and exact duplicate-seat cleanup. Pinned/current ASAN, typed26972/hotfix, TEMP data,192 native usable-seat and selected canonical PE/Scepter checks pass. Promoted canonicalF88295A2 only after both user servers absent; matching migration10 RELEASED, own28700 ready/shutdown0/exit0, no new diagnostics. Actual single-drake client boarding/flight/camera/pet/group/re-entry pending; not full36 certification."
+    },
+    {
+      "path": "src/server/scripts/Legion/faronaar_chain.cpp",
       "handler": "Faronaar personal questgiver lost on cave entry",
       "problem": "User reports ready Saving Stellagosa37450 without receiver and confirms90474 followed before the cave. A live distant/hidden FOLLOW actor prevented missing-only recovery.",
       "repair_audit": "docs/audits/faronaar-companion-cave-recovery-2026-10-26.json",
