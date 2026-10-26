@@ -331,11 +331,13 @@ public:
 
         void JustDied(Unit* who) override
         {
+            Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            Unit* source = player ? static_cast<Unit*>(player) : me;
             Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1890, who, NULL, *who))
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1890, source, NULL, *source))
                 delete conversation;
-            if (who->GetTypeId() == TYPEID_PLAYER)
-                who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50298);
+            if (player)
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50298);
 
             std::list<GameObject*> doors;
             GetGameObjectListWithEntryInGrid(doors, me, 248983, 100.0f);
@@ -459,14 +461,15 @@ public:
 
         void JustDied(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            Player* player = who ? who->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            if (!player)
                 return;
 
             Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1947, who, NULL, *who))
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1947, player, NULL, *player))
                 delete conversation;
 
-            who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50300);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50300);
         }
 
         /* void MoveInLineOfSight(Unit* who)

@@ -4,6 +4,14 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Subtlety owned death credit repaired
+
+- Audit `devourer-owned-death-credit-2026-10-26.json`: Zirus105542/50298 and last Akaari105660/50300 now resolve native owner/charmer/player and tolerate null killers. Zirus conversation/door cleanup stays independent of ownership; no new group/item/scenario grants. All other actor code unchanged.
+- Pinned pet-credit loss and current16 ASAN variants/native owner/in-map lookup/Scenario gate/real repeated/reentrant Kill guard, typed26972 stage3 and5 and selected registered death130/guard PE pass. Canonical Brinebeard/Hunter/Scepter preserved. Full combat/doors/audio/client path remains pending.
+- Canonical world `4791C5CCFBE6A19D8F4612B2CAB0F8455FD56B5A0EA24E921906F485ABA72A69`, map `2F8A5A46DF8EA1213191A8EAB1580B9EEDE443FC966EC7C537578669BB9360E7`, bnet `CE9E00A95D722DB8FC1C2BEF57E4AD17E6081D0060ABCC096A4140FE76B5F67B`. Own13524 ready/shutdown0/exit0, stderr/newDBErrors0/protected hashes unchanged; no user process stopped/no hidden server left. Crashes0/DBErrors0. No SQL for this fix.
+- NEXT proven pickup issue249347: Data1=0 but loot249347/128476 exists. Activation still prematurely grants50301/explicit1078 completion and direct AddItem. Readonly native probe `DevourerPickupCatalog.cpp` confirms209816 scene1257/15s ->209819 tick2s ->209818 equip249, linked parent128476/child128479. Probe only; pickup source not yet repaired. Keep migration outside updater until matching executable is ready.
+- Later OPEN:105536 timed capture raw callbacks/one-hit/missing actors/re-entry and105332 missing LINK1. All36/client scope continues unfinished.
+
 ## Latest continuation: Brinebeard stage2 finale repaired
 
 - Audit `dreadblades-brinebeard-finale-2026-10-26.json`: actual post-scaling/owner/predicted30%48531 at1012 step2, original EVENT3/3000ms death now independent of missing/rejected visual emitter and victim/casting gates. Keep native202211->202210 AT presentation,1145/self-Kill/1147; null death safe, no extra item/group/scenario grant. Useful optional-visual diagnostics retained.

@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Focused Zirus/Akaari death ownership and null safety repaired/tested/deployed; full Subtlety chain OPEN",
+  "cause": "Zirus105542 and final Akaari105660 accepted only Player killers for native50298/50300, losing pet/guardian owner progression. Both also dereferenced a potentially absent killer. Zirus required its original door cleanup even when ownership cannot resolve.",
+  "implementation": [
+    "Use the actual native GetCharmerOrOwnerPlayerOrPlayerItself with a null guard in both death callbacks. Retain original direct-player criteria and native Player->Scenario rules, resolving a pet/guardian/charmed-unit recipient to the player. No new nearby/group awards or direct weapon/quest/scenario completion.",
+    "Zirus1890 conversation uses the resolved player or the real dying actor when unresolved; four original door entries248983/248984/248910/249028 retain GO_STATE_ACTIVE/phase4 cleanup for null/unowned killers and failed conversation. Akaari1947 retains no effects for unresolved owners and targets the resolved player otherwise. All other class behavior is byte-equivalent after substituting the old death bodies; no intro/combat/delayed/pickup change."
+  ],
+  "local_sources": [
+    "Whole Devourer.cpp and instance_devourer.cpp read; local templates bind only105542/105660 to these scripts, actual spawns361051/map1607/phase7000 and361053/map1607/phase7002. scenario_data1078/1607. Local classes and generic native Unit::Kill/ObjectAccessor/Scenario criteria code supplied this proven owner/null defect; no external donor or video needed/reviewed.",
+    "Typed26972 DB2 plus read-only hotfix DevourerCombatCatalog asserts stage3 entry2366/root47364/leaf47365/criterion29789/type92 event50298 and stage5 entry2368/root47368/leaf47369/criterion29791/type92 event50300. Pickup50301 is separate stage6/root47370/leaf47371; death does not grant pickup."
+  ],
+  "checks": [
+    "Pinned728285dc ASAN counterfactual executes original death bodies for pet/guardian owner loss. Original null dereferences are identified from source but intentionally not executed. Separate baseline/current diagnostic inventories retained.",
+    "Current ASAN native host runs actual two death bodies, native owner/charmer/in-map live-player lookup, Scenario::CanUpdateCriteria and extracted Unit::Kill null/dead/m_IsInKillingProcess guard.16 direct/pet/guardian/charmer x conversation success/failure variants pass, including controlled conversation reentry and repeated guarded death. Null/unowned/missing/wrong-map/offline/predelete killers, missing doors, exact four-door preservation and unrelated player/door exclusion pass. Native callback notification/world/cast/network boundaries are controlled.",
+    "Original generated scripts/game Release and separate final links use original libraries; no new production warning. Extracted fixture retains existing unused native lookup/local baseline warnings. Selected staged/canonical PE/map proves both registered death130 slots, owner lookup/null/unresolved-owner credit guards, original assets/conversations/four-door payload and native Unit::Kill virtual dispatch. One verifier initially required testing the saved register rather than its still-live rax alias; actual disassembly established the equivalent compiler form and the guarded-branch assertion was corrected. No production workaround.",
+    "Canonical selected Brinebeard/Hunter and Scepter login regressions pass. Both user server names absent/rechecked before promotion; own world13524 fresh ready/shutdown0/exit0, stderr/newDBErrors0, protected configs/certificates unchanged. No SQL or character change; no task-owned server remains.",
+    "Every test/catalog/build/link/PE/promotion/startup group has before/after canonical/runtime crash/log evidence. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active Crashes0/DBErrors0; no new resolved crash/log archive needed."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "4791C5CCFBE6A19D8F4612B2CAB0F8455FD56B5A0EA24E921906F485ABA72A69",
+    "world_map_sha256": "2F8A5A46DF8EA1213191A8EAB1580B9EEDE443FC966EC7C537578669BB9360E7",
+    "bnet_sha256": "CE9E00A95D722DB8FC1C2BEF57E4AD17E6081D0060ABCC096A4140FE76B5F67B",
+    "private_evidence": ".codex/devourer-death and build-extractors/runtime-test/devourer-death-credit/{baseline,current}"
+  },
+  "remaining": [
+    "Actual client combat (including scaled one-hit), eligible group/faction behavior,50298/50300 counters, doors/presentation/audio, failed native conversation, reset/abandon/re-entry and full path remain pending. The actual death callback is independent of damage size; native Unit::Kill must still be reached. No proof of entire route from these fragments or startup.",
+    "OPEN pickup249347: Data1=0 despite real loot249347/128476; current unrelated activation callback gives50301/explicit COMPLETE_SCENARIO1078 and direct AddItem before storage/equip success. Read-only native probe confirms209816 scene1257/15000ms ->209819 tick2000ms ->209818 equip249/128476 and linked child128479. That probe is not an implemented pickup repair; keep new code-coupled SQL outside live updater until matching EXE.",
+    "OPEN initial Akaari105536 timed capture: source uses delayed raw AI/actor/player callbacks and a timer-only transition. One-hit protection, failed/missing actor and stale-recipient/re-entry semantics require separate native/data/behavior review before any fix. Actor105332 missing LINK1 in inherited all36 worklist is also unreviewed. Do not call this chain, visuals, remaining queued classes or all36 complete."
+  ]
+}
