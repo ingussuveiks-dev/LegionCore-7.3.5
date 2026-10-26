@@ -1394,6 +1394,26 @@ public:
             });
         }
 
+        void SummonWaveAdd(float positionX, float positionY, float positionZ, float orientation, Creature* defenders)
+        {
+            if (defenders)
+                if (Creature* add = me->SummonCreature(106578, positionX, positionY, positionZ, orientation))
+                {
+                    JustSummoned(add);
+                    add->AI()->AttackStart(defenders);
+                    return;
+                }
+
+            TC_LOG_DEBUG("scripts", "Silver Hand ritual: add106578 slot unavailable at %.2f %.2f %.2f; retry in1000ms", positionX, positionY, positionZ);
+            _waveFunctions.AddDelayedEvent(1000, [this, positionX, positionY, positionZ, orientation]() -> void
+            {
+                if (SilverHandFinalEntry::CanStartWave(me))
+                    SummonWaveAdd(positionX, positionY, positionZ, orientation, me->FindNearestCreature(106774, 70.0f, true));
+                else
+                    TC_LOG_DEBUG("scripts", "Silver Hand ritual: dropping stale add106578 slot retry");
+            });
+        }
+
         void SummonAdds(uint8 wave)
         {
             switch (wave)
@@ -1409,11 +1429,7 @@ public:
                             targ->AI()->AttackStart(defenders);
                             for (uint8 i = 0; i < 2; ++i)
                             {
-                                if (Creature* add = me->SummonCreature(106578, targ->GetPositionX() + irand(-3, 3), targ->GetPositionY() + irand(-2, 2), targ->GetPositionZ(), targ->GetOrientation()))
-                                {
-                                    JustSummoned(add);
-                                    add->AI()->AttackStart(defenders);
-                                }
+                                SummonWaveAdd(targ->GetPositionX() + irand(-3, 3), targ->GetPositionY() + irand(-2, 2), targ->GetPositionZ(), targ->GetOrientation(), defenders);
                             }
                         }
                         else

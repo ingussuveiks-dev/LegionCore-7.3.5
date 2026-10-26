@@ -10,21 +10,27 @@ native, instructions, sites = previous['native'], previous['instructions'], prev
 lifetime = previous['previous']['lifetime']
 retry_name = '?RetryWave@npc_travar_lastAI@'
 summoning = instructions('?SummonAdds@npc_travar_lastAI@')
-retry_calls = sites(summoning, retry_name)
-assert len(retry_calls) == 3
+retry_call, = sites(summoning, retry_name)
+assert [entry.op_str for entry in summoning[retry_call - 2:retry_call]] == ['edx, dil', 'rcx, rbx']
+common_retry = summoning[retry_call - 2].address
 retry_by_actor = {}
-for retry_call in retry_calls:
-    reason = summoning[retry_call - 3]
-    assert reason.mnemonic == 'mov' and reason.op_str.startswith('r8d, ')
-    assert [entry.op_str for entry in summoning[retry_call - 2:retry_call]] == ['edx, bl', 'rcx, rdi']
-    retry_by_actor[reason.operands[1].imm] = reason.address
+for index, reason in enumerate(summoning):
+    if reason.mnemonic == 'mov' and reason.op_str.startswith('r8d, ') and reason.operands[1].type == CS_OP_IMM:
+        assert reason.operands[1].imm in (106774, 106580, 106719, 0x2000380)
+        if reason.operands[1].imm == 0x2000380:
+            continue
+        if reason.operands[1].imm == 106774:
+            assert summoning[index + 1].address == common_retry
+        else:
+            assert summoning[index + 1].mnemonic == 'jmp' and summoning[index + 1].operands[0].imm == common_retry
+        retry_by_actor[reason.operands[1].imm] = reason.address
 assert set(retry_by_actor) == {106774, 106580, 106719}
 retry_entry = retry_by_actor[106774]
 lookups = sites(summoning, '?FindNearestCreature@WorldObject@@')
 assert len(lookups) == 2
 for lookup in lookups:
     assert summoning[lookup - 1].op_str == 'edx, 0x1a116'
-    assert summoning[lookup - 2].op_str == 'rcx, qword ptr [rdi + 0x20]'
+    assert summoning[lookup - 2].op_str == 'rcx, qword ptr [rcx + 0x20]'
     radius = summoning[lookup - 4]
     assert radius.mnemonic == 'movss' and radius.op_str.startswith('xmm2, dword ptr [rip')
     assert struct.unpack_from('<f', native['binary'], native['offset'](radius.address + radius.size + radius.operands[1].mem.disp))[0] == 70.0
@@ -33,32 +39,27 @@ for lookup in lookups:
 incoming = [index for index, entry in enumerate(summoning) if entry.mnemonic.startswith('j')
             and entry.operands[0].type == CS_OP_IMM and entry.operands[0].imm == retry_entry]
 assert incoming == [lookup + 3 for lookup in lookups]
-selector = next(index for index, entry in enumerate(summoning) if entry.op_str == 'ebx, dl')
-assert [entry.op_str for entry in summoning[selector:selector + 3]] == ['ebx, dl', 'ecx, ebx', 'ecx, 1']
-assert summoning[selector + 2].mnemonic == 'sub' and summoning[selector + 4].mnemonic == 'sub'
-assert summoning[selector + 4].op_str == 'ecx, 1' and summoning[selector + 6].op_str == 'ecx, 1'
-assert summoning[selector + 6].mnemonic == 'cmp'
-for index in (selector + 3, selector + 5):
+selector = next(index for index, entry in enumerate(summoning) if entry.op_str == 'edi, dl')
+assert [entry.op_str for entry in summoning[selector:selector + 4]] == ['edi, dl', 'rbx, rcx', 'r8d, edi', 'r8d, 1']
+assert summoning[selector + 3].mnemonic == 'sub' and summoning[selector + 5].mnemonic == 'sub'
+assert summoning[selector + 5].op_str == 'r8d, 1' and summoning[selector + 7].op_str == 'r8d, 1'
+assert summoning[selector + 7].mnemonic == 'cmp'
+for index in (selector + 4, selector + 6):
     assert summoning[index].mnemonic == 'je' and summoning[index].operands[0].imm == summoning[lookups[1] - 4].address
-assert summoning[selector + 7].mnemonic == 'jne' and summoning[selector + 7].operands[0].imm < retry_entry
-assert summoning[lookups[0] - 3].op_str == 'r9d, cl' and summoning[lookups[1] - 3].op_str == 'r9b, 1'
+assert summoning[selector + 8].mnemonic == 'jne' and summoning[selector + 8].operands[0].imm > retry_entry
+assert summoning[lookups[0] - 3].op_str == 'r9d, r8b' and summoning[lookups[1] - 3].op_str == 'r9b, 1'
 creations = sites(summoning, '?SummonCreature@WorldObject@@QEAAPEAVTempSummon@@IMMMM')
-assert len(creations) == 3
-for creation, actor in zip(creations, (106719, 106580, 106578)):
+assert len(creations) == 2
+for creation, actor in zip(creations, (106719, 106580)):
     assert any(entry.mnemonic == 'mov' and entry.op_str == f'edx, {hex(actor)}' for entry in summoning[creation - 16:creation])
     assert summoning[creation + 2].op_str == 'rax, rax'
     branch = summoning[creation + 3]
     assert branch.mnemonic == 'je'
     destination = branch.operands[0].imm
-    if actor != 106578:
-        assert destination == retry_by_actor[actor]
-        incoming_creation = [entry for entry in summoning if entry.mnemonic.startswith('j')
-                             and entry.operands[0].type == CS_OP_IMM and entry.operands[0].imm == destination]
-        assert incoming_creation == [branch]
-    else:
-        target = next(index for index, entry in enumerate(summoning) if entry.address == destination)
-        assert summoning[target].mnemonic == 'sub' and summoning[target].op_str == 'rsi, 1'
-        assert summoning[target + 1].mnemonic == 'jne' and summoning[target + 1].operands[0].imm < summoning[creation].address
+    assert destination == retry_by_actor[actor]
+    incoming_creation = [entry for entry in summoning if entry.mnemonic.startswith('j')
+                         and entry.operands[0].type == CS_OP_IMM and entry.operands[0].imm == destination]
+    assert incoming_creation == [branch]
 
 retry = instructions(retry_name)
 arm, = sites(retry, '?AddDelayedEvent@FunctionProcessor@@')
@@ -97,4 +98,4 @@ for body, message in ((retry, b'Silver Hand ritual: actor %u unavailable for wav
     for method in ('?AddDelayedEvent@Unit@@', '?UpdateAchievementCriteria@Player@@', '?KilledMonsterCredit@Player@@', '?FindNearestPlayer@WorldObject@@', '?AddItem@Player@@'):
         assert not sites(body, method)
 assert not sites(callback, '?AddDelayedEvent@FunctionProcessor@@')
-print('PASS selected wave1/2/3 switch: two empty live106774/70yd lookups plus null106580 leader/null106719 creation route to actual RetryWave with exact reason IDs and original AI/wave byte; null106578 add only continues existing two-add loop, never replays a populated wave. Native function-object table/9-byte thunk captures AI+wave, queues1000ms at AI+48 and reuses verified live1092/exact9 policy before fresh SummonAdds; stale retry logs/drops without direct credit or self-requeue. Factory/locked lifecycle/destruction/owned-death/progress retained. Custom recovery cadence, partial creation, attempt epochs and client combat/VFX remain separate.')
+print('PASS selected wave1/2/3 switch: two empty live106774/70yd lookups plus null106580 leader/null106719 creation load exact reason IDs before common RetryWave with original AI/wave byte; native function-object/9-byte thunk captures AI+wave, queues1000ms at AI+48 and reuses verified live1092/exact9 policy before fresh SummonAdds. Stale retry logs/drops without direct credit/self-requeue. Separate add-slot helper is independently verified by the linked partial-slot proof; no populated-wave recovery authorized here. Custom cadence/attempt epochs/client remain separate.')

@@ -132,12 +132,18 @@ assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM
            and entry.operands[0].mem.disp == 0x158 for entry in instructions('?Kill@Unit@@'))
 summoning = instructions('?SummonAdds@npc_travar_lastAI@')
 fallbacks = [index for index, entry in enumerate(summoning) if entry.mnemonic == 'mov' and entry.op_str == 'r8, qword ptr [rcx + 0x140]']
-assert len(fallbacks) == 2
+assert len(fallbacks) == 1
 for index in fallbacks:
     assert any(entry.op_str == 'rdx, rax' and entry.mnemonic == 'mov' for entry in summoning[index - 5:index])
-    assert summoning[index + 1].op_str == 'rcx, rdi'
+    assert summoning[index + 1].op_str == 'rcx, rbx'
     following = [entry for entry in summoning[index + 2:index + 5] if entry.mnemonic != 'movaps']
     assert following[0].mnemonic == 'call' and following[0].op_str == 'r8'
+slot_summoning = instructions('?SummonWaveAdd@npc_travar_lastAI@')
+slot_registration, = [index for index, entry in enumerate(slot_summoning) if entry.mnemonic == 'call'
+                      and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x140]
+assert [entry.op_str for entry in slot_summoning[slot_registration - 3:slot_registration]] == [
+    'r8, qword ptr [r15]', 'rdx, rax', 'rcx, r15']
+assert any(entry.op_str == 'r15, rcx' for entry in slot_summoning[:slot_registration])
 destroy = lifetime['destroy']
 release = lifetime['release']
 assert named_calls(destroy[:release], '??$_Erase_tree@')

@@ -1,4 +1,5 @@
 #include <atomic>
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <functional>
@@ -113,7 +114,7 @@ struct Creature : Unit
     CreatureAI* i_disabledAI=nullptr;
     bool m_AI_locked=false,stunned=false,visible=false,aura=false,missingDefender=false;
     bool victim=false,failSpawn=false;
-    uint32 flags=31,entry=106777,failEntry=0;
+    uint32 flags=31,entry=106777,failEntry=0,failAddMask=0,addAttempts=0;
     bool world=true,preDelete=false,alive=true;
     uint32 mapId=1539,instance=42;
     Map* map=&liveMap;
@@ -123,6 +124,7 @@ struct Creature : Unit
     std::vector<Creature*> lights;
     std::vector<std::unique_ptr<Creature>> adds;
     std::vector<std::unique_ptr<AddAI>> addAIs;
+    std::vector<std::array<float,4>> addRequests;
     std::function<void()> onSummon;
     std::function<void()> onCast,onTalk;
     std::function<void(Creature*)> onSummonedBy;
@@ -182,6 +184,12 @@ void KillSummon(Creature* creature,Unit* killer)
 Creature* Creature::SummonCreature(uint32 identity,float spawnX,float spawnY,float spawnZ,float facing)
 {
     if(onSummon)onSummon();
+    if(identity==106578)
+    {
+        addRequests.push_back({spawnX,spawnY,spawnZ,facing});
+        uint32 attempt=addAttempts++;
+        if(attempt<2 && (failAddMask & (1u<<attempt)))return nullptr;
+    }
     if(failSpawn || identity==failEntry)return nullptr;
     auto add=std::make_unique<TempSummon>();
     auto ai=std::make_unique<AddAI>();
@@ -207,7 +215,9 @@ struct ScriptedAI : CreatureAI
 };
 void GetCreatureListWithEntryInGrid(std::list<Creature*>& result,Creature* actor,uint32 entry,float radius)
 {assert(entry==106094 && radius==30);result.assign(actor->lights.begin(),actor->lights.end());}
-int irand(int minimum,int maximum){assert(minimum==-3 || minimum==-2);assert(maximum==-minimum);return 0;}
+bool distinctJitter=false;
+uint32 jitterCalls=0;
+int irand(int minimum,int maximum){assert(minimum==-3 || minimum==-2);assert(maximum==-minimum);return distinctJitter?((jitterCalls++/2)%2?maximum:minimum):0;}
 struct Scenario
 {
     uint32 id=1092,step=9;
@@ -232,12 +242,13 @@ struct Fixture
     WaveAI ai{&actor};
     Fixture()
     {
+        distinctJitter=false;jitterCalls=0;
         actor.i_AI=&ai;actor.defender=&defender;actor.nearby=&player;
         lit.aura=true;actor.lights={&lit,&unlit};visitor.type=TYPEID_PLAYER;
         manager=ScenarioManager{};
         liveMap.players={{&player}};
     }
-    ~Fixture(){liveMap.players.clear();}
+    ~Fixture(){liveMap.players.clear();distinctJitter=false;jitterCalls=0;}
 };
 void CheckFirstWave(Creature const& actor,Creature* defender)
 {
@@ -280,8 +291,35 @@ void StartFailedCreation(Fixture& fixture,uint32 wave)
     fixture.actor.failSpawn=true;
     KillSummon(fixture.actor.adds[5].get(),&fixture.player);
 }
+void StartPartialWave(Fixture& fixture,uint32 wave,uint32 mask)
+{
+    assert(wave==1 || wave==2);
+    fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;
+    if(wave==1){fixture.actor.failAddMask=mask;distinctJitter=true;jitterCalls=0;}
+    fixture.actor.Lifecycle(5000);
+    if(wave==1)return;
+    KillSummon(fixture.actor.adds[0].get(),&fixture.player);
+    KillSummon(fixture.actor.adds[1].get(),&fixture.player);
+    fixture.actor.failAddMask=mask;fixture.actor.addAttempts=0;fixture.actor.addRequests.clear();
+    distinctJitter=true;jitterCalls=0;
+    KillSummon(fixture.actor.adds[2].get(),&fixture.player);
+}
 int main()
 {
+#ifdef PARTIAL_BASELINE
+    for(uint32 wave:{1u,2u})
+        for(uint32 mask:{1u,2u,3u})
+        {
+            Fixture fixture;StartPartialWave(fixture,wave,mask);
+            uint32 missing=mask==3?2u:1u,created=wave*3-missing;
+            assert(fixture.actor.adds.size()==created && fixture.ai._waveFunctions.SizeQueue()==0);
+            for(uint32 identity=(wave-1)*3;identity<created;++identity)KillSummon(fixture.actor.adds[identity].get(),nullptr);
+            fixture.actor.Lifecycle(10000);
+            assert(fixture.actor.adds.size()==created && fixture.ai.count_died==created && fixture.ai._waveSummons.empty());
+        }
+    std::cout<<"PASS pinned5c2c3447: either/both null106578 slots in original first/second wave are lost; subsequent valid creator and all extant deaths cannot reach3/6 or advance waves without missing actors\n";
+    return 0;
+#else
 #ifdef CREATION_BASELINE
     for(uint32 wave:{1u,2u,3u})
     {
@@ -355,6 +393,105 @@ int main()
     }
 #else
 #if !defined(BASELINE) && !defined(ADMISSION_BASELINE) && !defined(DEATH_BASELINE) && !defined(PROGRESS_BASELINE)
+    for(uint32 wave:{1u,2u})
+        for(uint32 mask:{1u,2u,3u})
+            for(uint32 mode=0;mode<4;++mode)
+            {
+                Fixture fixture;CreatureAI replacement;Creature recoveredDefender,guardian;
+                StartPartialWave(fixture,wave,mask);
+                uint32 missing=mask==3?2u:1u,created=wave*3-missing,before=diagnostics;
+                auto requested=fixture.actor.addRequests;
+                assert(requested.size()==2 && fixture.actor.adds.size()==created && fixture.ai._waveFunctions.SizeQueue()==missing);
+                std::vector<std::array<float,4>> missingPositions;
+                for(uint32 slot=0;slot<2;++slot)if(mask & (1u<<slot))missingPositions.push_back(requested[slot]);
+                for(uint32 identity=(wave-1)*3;identity<created;++identity)KillSummon(fixture.actor.adds[identity].get(),&guardian);
+                assert(fixture.ai.count_died==created && fixture.ai._waveSummons.empty());
+                fixture.actor.adds[(wave-1)*3]->positionX=9000;fixture.actor.adds[(wave-1)*3]->positionZ=-100;
+                fixture.actor.failEntry=106578;
+                fixture.actor.onSummon=[&fixture](){assert(fixture.actor.m_AI_locked);};
+                if(mode){fixture.actor.i_disabledAI=&fixture.ai;fixture.actor.i_AI=mode==1?&replacement:mode==2?&fixture.ai:nullptr;}
+                if(mode==3)fixture.actor.IsAIEnabled=false;
+                fixture.actor.victim=true;fixture.actor.Lifecycle(999);
+                assert(fixture.actor.adds.size()==created && diagnostics==before);
+                fixture.actor.Lifecycle(1);assert(diagnostics==before+missing && fixture.ai._waveFunctions.SizeQueue()==missing);
+                fixture.actor.Lifecycle(10000);assert(diagnostics==before+missing*2 && fixture.ai._waveFunctions.SizeQueue()==missing);
+                fixture.actor.Lifecycle(0);assert(diagnostics==before+missing*2);
+                fixture.actor.missingDefender=true;uint32 attempts=fixture.actor.addAttempts;fixture.actor.Lifecycle(1000);
+                assert(fixture.actor.addAttempts==attempts && diagnostics==before+missing*3 && fixture.ai._waveFunctions.SizeQueue()==missing);
+                fixture.actor.missingDefender=false;fixture.actor.defender=&recoveredDefender;fixture.actor.failEntry=0;
+                fixture.player.alive=false;fixture.player.status=0;fixture.player.phase=false;fixture.player.los=false;fixture.player.faction=mode%2;liveMap.players.clear();
+                fixture.ai.Reset();fixture.actor.Lifecycle(999);assert(fixture.actor.adds.size()==created);
+                fixture.actor.Lifecycle(1);
+                assert(fixture.actor.adds.size()==wave*3 && fixture.ai.count_died==created && fixture.ai._waveSummons.size()==missing);
+                for(uint32 identity=created;identity<wave*3;++identity)
+                {
+                    Creature* add=fixture.actor.adds[identity].get();
+                    auto const& pose=missingPositions[identity-created];
+                    assert(add->entry==106578 && add->positionX==pose[0] && add->positionY==pose[1] && add->positionZ==pose[2] && add->orientation==pose[3]);
+                    assert(fixture.actor.addAIs[identity]->attacks==1 && fixture.actor.addAIs[identity]->target==&recoveredDefender);
+                }
+                assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==0 && !fixture.actor.m_AI_locked);
+                fixture.actor.Lifecycle(10000);assert(fixture.actor.adds.size()==wave*3 && diagnostics==before+missing*3);
+                fixture.actor.i_AI=&fixture.ai;fixture.actor.i_disabledAI=nullptr;fixture.actor.IsAIEnabled=true;fixture.actor.onSummon={};
+                for(uint32 identity=created;identity<wave*3;++identity)KillSummon(fixture.actor.adds[identity].get(),&guardian);
+                assert(fixture.ai.count_died==wave*3 && fixture.actor.adds.size()==(wave==1?6u:7u));
+                assert(fixture.player.credits.empty());
+            }
+    for(uint32 wave:{1u,2u})
+        for(uint32 context=0;context<22;++context)
+        {
+            Fixture fixture;StartPartialWave(fixture,wave,3);
+            uint32 created=wave*3-2,before=diagnostics;
+            if(context<12)manager.scenario.step=context;
+            else switch(context)
+            {
+                case 12:fixture.actor.world=false;break;
+                case 13:fixture.actor.preDelete=true;break;
+                case 14:fixture.actor.alive=false;break;
+                case 15:fixture.actor.entry=106676;break;
+                case 16:fixture.actor.mapId=1220;break;
+                case 17:fixture.actor.map=nullptr;break;
+                case 18:fixture.actor.instance=43;break;
+                case 19:manager.present=false;break;
+                case 20:manager.scenario.id=991;break;
+                case 21:manager.scenario.id=1037;break;
+            }
+            fixture.actor.failEntry=106578;fixture.actor.Lifecycle(1000);
+            assert(fixture.actor.adds.size()==created && diagnostics==before+2 && fixture.ai._waveFunctions.SizeQueue()==(context==9?2u:0u));
+            fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;fixture.actor.entry=106777;
+            fixture.actor.mapId=1539;fixture.actor.map=&liveMap;fixture.actor.instance=42;manager=ScenarioManager{};
+            fixture.actor.failEntry=0;fixture.actor.Lifecycle(1000);
+            assert(fixture.actor.adds.size()==(context==9?wave*3:created));
+        }
+    {
+        Fixture fixture;Creature guardian;StartPartialWave(fixture,1,3);
+        KillSummon(fixture.actor.adds[0].get(),&guardian);
+        fixture.actor.onSummonedBy=[&guardian](Creature* summon){KillSummon(summon,&guardian);};
+        fixture.actor.Lifecycle(1000);
+        assert(fixture.actor.adds.size()==7 && fixture.ai.count_died==6 && fixture.ai._waveSummons.empty());
+        assert(fixture.ai._waveFunctions.SizeQueue()==0);fixture.actor.Lifecycle(10000);assert(fixture.actor.adds.size()==7);
+    }
+    {
+        Creature actor,defender;Player player;manager=ScenarioManager{};actor.defender=&defender;actor.failAddMask=3;
+        actor.i_AI=new WaveAI(&actor);actor.i_AI->MoveInLineOfSight(&player);actor.stunned=true;actor.Lifecycle(5000);
+        uint32 unrelated=0;actor.functions.AddDelayedEvent(1000,[&unrelated](){++unrelated;});
+        assert(actor.AIM_Destroy());actor.i_AI=new WaveAI(&actor);actor.IsAIEnabled=true;actor.Run(1000);
+        assert(actor.adds.size()==1 && unrelated==1);assert(actor.AIM_Destroy());
+    }
+    {
+        Fixture fixture;Creature guardian;uint32 recovered=0;StartPartialWave(fixture,1,3);
+        KillSummon(fixture.actor.adds[0].get(),&guardian);
+        fixture.actor.onSummonedBy=[&fixture,&guardian,&recovered](Creature* summon){
+            if(++recovered==2)fixture.actor.failSpawn=true;
+            KillSummon(summon,&guardian);
+        };
+        fixture.actor.Lifecycle(1000);
+        assert(recovered==2 && fixture.actor.adds.size()==3 && fixture.ai.count_died==3 && fixture.ai._waveSummons.empty());
+        assert(fixture.ai._waveFunctions.SizeQueue()==1);
+        fixture.actor.failSpawn=false;fixture.actor.onSummonedBy={};fixture.actor.Lifecycle(1000);
+        assert(fixture.actor.adds.size()==6 && fixture.ai.count_died==3 && fixture.ai._waveSummons.size()==3 && fixture.ai._waveFunctions.SizeQueue()==0);
+    }
+    std::cout<<"PASS missing slots: first/second wave either/both106578 failure preserves original leader/other add, immutable pose and original3/6 owned death counts; repeated/null defender/999+1/no lag catch-up/Reset/shared Player loss/faction, primary-disabled-alias-no-primary,22 contexts, destruction/replacement and one-hit guardian reentry recover only absent slots without item/manual credit or populated-wave replay\n";
     for(uint32 wave:{1u,2u,3u})
         for(uint32 mode=0;mode<4;++mode)
         {
@@ -417,14 +554,6 @@ int main()
             assert(fixture.ai.count_died==originalAdds && fixture.player.credits.empty());
         }
     {
-        Fixture fixture;fixture.actor.failEntry=106578;
-        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
-        assert(fixture.actor.adds.size()==1 && fixture.ai._waveSummons.size()==1 && fixture.ai._waveFunctions.SizeQueue()==0);
-        fixture.actor.failEntry=0;fixture.actor.Lifecycle(10000);assert(fixture.actor.adds.size()==1);
-        KillSummon(fixture.actor.adds[0].get(),nullptr);
-        assert(fixture.ai.count_died==1 && fixture.actor.adds.size()==1 && fixture.ai._waveFunctions.SizeQueue()==0);
-    }
-    {
         Fixture fixture;Creature guardian;
         fixture.actor.onSummonedBy=[&guardian](Creature* summon){KillSummon(summon,&guardian);};
         fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
@@ -449,7 +578,7 @@ int main()
         actor.Run(1000);assert(actor.adds.size()==(wave-1)*3 && unrelated==1);
         assert(actor.AIM_Destroy());
     }
-    std::cout<<"PASS zero-creation retry: all three requests, repeated null/999+1/no catch-up, locked primary-disabled-alias-no-primary, fresh defender, Reset and shared player/faction loss,22 contexts and AI destruction/replacement; nonnull immediate owner/guardian deaths do not retry, partial106578 failures remain open without replaying populated waves\n";
+    std::cout<<"PASS zero-creation retry: all three requests, repeated null/999+1/no catch-up, locked primary-disabled-alias-no-primary, fresh defender, Reset and shared player/faction loss,22 contexts and AI destruction/replacement; nonnull immediate owner/guardian deaths do not retry; missing106578 slots checked separately\n";
     for(uint32 wave:{1u,2u,3u})
         for(uint32 mode=0;mode<4;++mode)
         {
@@ -1045,6 +1174,7 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks/event IDs; ritual recipient admission checked separately; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

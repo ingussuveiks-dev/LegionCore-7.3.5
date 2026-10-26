@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Recover only failed106578 slots within original last-Travard first/second defense waves. Not full Holy/all36 or client combat/VFX certification.",
+  "sources": [
+    {
+      "source": "Clean git5c2c3447/main/origin, worklist/routes/donor review and full local last-Travard creation/owned-death/queue/progress sequence",
+      "review": "Leader/null Mordoth and missing-defender requests already recovered. Each106578 null return still silently lost one of the two original slots, preventing native death3/6 wave thresholds even after all extant actors died. This is a lost defense-wave problem, NOT proof of a stuck quest: native weighted180-pulse ritual can complete independently of those deaths. Acquisition selection197128/42231, active42120 entry, real loot/equip/exit and all previous repairs retained."
+    },
+    {
+      "source": "Read-only local MariaDB106578/106580/106774/106777 templates, creature_template_wdb displays and106578 SmartAI",
+      "review": "106578 keeps SmartAI/display19634 and combat event0/action11/215688/target2. Other original displays and defender/last custom bindings unchanged. No SQL writes or fabricated display/model metadata; a template display row is not native model existence or successful creation proof."
+    },
+    {
+      "source": "Matching26972 native DB2/hotfix tree, Map::SummonCreature, TempSummon owner-before-IsSummonedBy death path, FunctionProcessor and locked primary/disabled lifecycle",
+      "review": "Fresh native1092/exact9 tree remains180/30110/92+51838, step10 pickup50966. Native null returns before InitSummon permit slot recovery; successful InitSummon may synchronously register/kill/advance waves yet still return nonnull. AddToMap's ignored bool remains an independent core concern, not repaired by null handling. Native queue merging defers requeued work until another update; death thresholds still consume real tracked full GUIDs only."
+    },
+    {
+      "source": "Local TrinityCore modernHEAD4ad7c7ba5bd2a3e73eb848babaf9b39696d63473 plus exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c and all-ref SilverHand path log",
+      "review": "Bounded npc_travar_last/106578 script searches and path history returned no applicable slot recovery. Not exhaustive Git history review; no modern behavior/API/schema imported."
+    },
+    {
+      "source": "Pinned Titans full relevant last-Travard entry/death/update/SummonAdds block returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Original two-add loop has no null slot recovery; no donor fix imported. Healthy leader/add/boss counts, poses, attack targets, boss flags/speech and original transitions retained."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed. One-second failure polling and retaining the already selected failed slot pose are custom recovery behavior, not a reconstructed retail reinforcement cadence or visual sequence."
+    }
+  ],
+  "repair": {
+    "implementation": "Extract the original106578 create/JustSummoned/AttackStart success path into SummonWaveAdd. The unchanged two-iteration loop supplies its original jittered X/Y/Z/orientation and immediate defender. Only null creation or a missing defender on retry queues one1000ms job for that slot, capturing this and four float pose values, no parent/defender/Player pointer. Callback checks unchanged live106777/1539/map/scenario1092/exact9, resolves fresh live106774/70yd and invokes only the slot helper. Stale context logs/drops; success returns without retry.",
+    "ownership": "Either or both failed slots recover independently without replaying leader, successful sibling, whole SummonAdds or RetryWave. Actual existing death3/6/roster controls transitions, including pet/guardian/ally/null killer dispatch; no fake kills or Player/manual group credit. No new AI state/ABI fields, counters, timer resets, Unit queue clears, item grants or shared core/data changes. Existing leader/sibling may already be dead or displaced; captured numeric pose remains usable without resolving them.",
+    "limits": "Permanent Create/template/model failures retain original diagnostics and need their own evidence-based root repair; not claimed resolved here. Same-stage abandon/reaccept/scenario identity epochs, context changes within a successful creation and disabled-to-different-primary death delivery remain OPEN. No arbitrary retry timeout or actor despawn/corpse replacement added."
+  },
+  "validation": {
+    "baseline": "PASS -PartialBaseline pins complete5c2c3447 AI/policy: first/second wave each lose first/second/both106578 slots; later valid creation and all extant deaths leave count below3/6 and do not recover missing actors. Controlled failure injection, not observed client failure or scenario completion deadlock.",
+    "host": "PASS latest complete extracted AI/native queue/InitSummon/death/locked lifecycle fixture. Both original waves/either-or-both missing slots across primary/disabled/alias/no-primary modes retain original successful actors and actual death counts, recover distinct already selected poses even after parent death/displacement, repeat failed creation/null fresh defender at999+1ms/zero/large diff without catch-up, preserve ordinary Reset and shared Player death/quest/phase/LOS loss/no references/both faction labels. All12 stages/10 invalid actor-scenario contexts cancel stale jobs. Native primary owner/guardian one-hit recovery reaches original seven actors/count6 without duplicate slots; a recovered slot's immediate death can queue failed next-leader recovery without requeuing that successful slot. Destruction/replacement cancels two pending slots while unrelated Unit job runs. Disabled-mode live creation and primary one-hit delivery are separate checks: disabled-to-different-primary death redelivery remains OPEN. Services remain controlled, not live group navigation, persisted quest epochs or client combat.",
+    "installed": "PASS new verify_silver_hand_partial_wave_release.py chains original factory/entry/lifetime/progress/full-GUID deaths and missing-defender/initial-creation recovery proofs. Actual two-slot loop calls single106578 helper. Null defender and null creation alone lead to one1000ms AI+48 job; success registers via native0x140 and attacks fresh defender then jumps beyond retry. Actual function-object table/9-byte thunk captures AI+four float pose values, then unchanged native9 policy precedes live106774/70yd lookup and exact pose replay into106578 helper. No full-wave/RetryWave/item/Player-credit call in either helper or callback. Existing proofs adapted to actual one merged reason-specific wave retry call and moved second registration fallback, not relaxed or forced through noinline/ABI guesses. First adaptation rejected a register operand as an immediate reason; operand-kind distinction corrected before pass.",
+    "sanitizer": "PASS latest complete distinct-slot/parent-death/displacement/one-hit-and-next-failed-leader/retry/context/recipient fixture under MSVC AddressSanitizer after current extraction. Existing host shadowing warnings visible; no diagnostics/assertions disabled.",
+    "regressions": "PASS26 serial top-level suites: PartialBaseline plus retainedCreation/Defender/LateWave/Context/Progress baselines, full19-suite silver-hand-waypoint-retry-partial-wave-regressions.tsv and current MordothMotion Release nesting original seven-spawn InitialMotion. Retained waypoint retry/recipient/death/admission/lifetime/arrival/action/final/step8 baselines, full current dispatch/wave/rescue/ally/entry/native weighted tree and all installed proofs including new slot proof, ScepterLogin, strict native149 race-class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records PASS. Catalog builds serialized after canonical build; both final executable hashes unchanged after all checks/owned shutdown. Latest ASAN also PASS separately.",
+    "evidence": ".codex/silver-hand-partial-* and silver-hand-waypoint-retry-partial-wave-*; ignored runtime-test/silver-hand-wave-lifetime. No credentials/runtime/characters/media/assets committed. Earlier isolated SQL empty-output/count incidents remain unexplained in their own audits; no test auto-retry or count/predicate relaxation introduced."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "7AFB89A59ED58844EBAED7094D5A3CFF05B96E6641F240706112145C8FA63919",
+    "bnet_sha256": "7B30284679A92EE76D5C95981E7424CCE60401B4BB77C629300126EE4FCE9116",
+    "build": "Release world+bnet17.32s/0 warnings/errors. No OutDir; actual UTF16 final-link commands verified canonical OUT/INCREMENTAL:NO and original scripts/game/shared/common libraries plus bnet shared/common. Actual deployed selected implementation decoded, not just copied hashes/startup.",
+    "runtime": "Own hidden canonical PID23196 reached fresh ready, received own UTF8 stdin server shutdown0, exited0 and is gone. Newly appended DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No unknown/user server stopped, no own hidden server left. Startup is not observed1539 grid/slot recovery/channel/combat/client visual proof."
+  },
+  "remaining": [
+    "Actual180-pulse defense/channel/cleanup, full combat/navigation/escape215260, group/faction/pet behavior and full relevant footage/client traversal remain OPEN.",
+    "Earlier fights/evade/post-scaling half-health, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No full quest/VFX client certification."
+  ]
+}

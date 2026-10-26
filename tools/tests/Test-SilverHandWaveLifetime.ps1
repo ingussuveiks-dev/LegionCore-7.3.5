@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$DeathBaseline,[switch]$ProgressBaseline,[switch]$ContextBaseline,[switch]$LateWaveBaseline,[switch]$DefenderBaseline,[switch]$CreationBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$DeathBaseline,[switch]$ProgressBaseline,[switch]$ContextBaseline,[switch]$LateWaveBaseline,[switch]$DefenderBaseline,[switch]$CreationBaseline,[switch]$PartialBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$AdmissionBaseline,$DeathBaseline,$ProgressBaseline,$ContextBaseline,$LateWaveBaseline,$DefenderBaseline,$CreationBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline -or $ContextBaseline -or $LateWaveBaseline -or $DefenderBaseline -or $CreationBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
+if(@($Baseline,$AdmissionBaseline,$DeathBaseline,$ProgressBaseline,$ContextBaseline,$LateWaveBaseline,$DefenderBaseline,$CreationBaseline,$PartialBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline -or $ContextBaseline -or $LateWaveBaseline -or $DefenderBaseline -or $CreationBaseline -or $PartialBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-wave-lifetime"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -23,15 +23,25 @@ $defenderPinned=(& git -C $repo show "1eb802a1:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned missing-defender baseline unavailable'}
 $creationPinned=(& git -C $repo show "7bef0cb3:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned wave-creation baseline unavailable'}
-$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}elseif($DeathBaseline){$deathPinned}elseif($ProgressBaseline){$progressPinned}elseif($ContextBaseline){$contextPinned}elseif($LateWaveBaseline){$latePinned}elseif($DefenderBaseline){$defenderPinned}elseif($CreationBaseline){$creationPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
-if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline -and !$ProgressBaseline -and !$ContextBaseline -and !$LateWaveBaseline -and !$DefenderBaseline -and !$CreationBaseline){
+$partialPinned=(& git -C $repo show "5c2c3447:$path") -join "`n"
+if($LASTEXITCODE){throw 'Pinned partial-wave baseline unavailable'}
+$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}elseif($DeathBaseline){$deathPinned}elseif($ProgressBaseline){$progressPinned}elseif($ContextBaseline){$contextPinned}elseif($LateWaveBaseline){$latePinned}elseif($DefenderBaseline){$defenderPinned}elseif($CreationBaseline){$creationPinned}elseif($PartialBaseline){$partialPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
+if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline -and !$ProgressBaseline -and !$ContextBaseline -and !$LateWaveBaseline -and !$DefenderBaseline -and !$CreationBaseline -and !$PartialBaseline){
+ $partialHelper=Block $actor 'void SummonWaveAdd('
+ $expectedPartial='void SummonWaveAdd(float positionX,float positionY,float positionZ,float orientation,Creature*defenders){if(defenders)if(Creature*add=me->SummonCreature(106578,positionX,positionY,positionZ,orientation)){JustSummoned(add);add->AI()->AttackStart(defenders);return;}TC_LOG_DEBUG("scripts","Silver Hand ritual: add106578 slot unavailable at %.2f %.2f %.2f; retry in1000ms",positionX,positionY,positionZ);_waveFunctions.AddDelayedEvent(1000,[this,positionX,positionY,positionZ,orientation]()->void{if(SilverHandFinalEntry::CanStartWave(me))SummonWaveAdd(positionX,positionY,positionZ,orientation,me->FindNearestCreature(106774,70.0f,true));else TC_LOG_DEBUG("scripts","Silver Hand ritual: dropping stale add106578 slot retry");});}'
+ if(($partialHelper -replace '\s','') -cne ($expectedPartial -replace '\s','')){throw 'Missing-slot recovery policy changed'}
+ $partialCall='SummonWaveAdd(targ->GetPositionX() + irand(-3, 3), targ->GetPositionY() + irand(-2, 2), targ->GetPositionZ(), targ->GetOrientation(), defenders);'
+ if([regex]::Matches($actor,[regex]::Escape($partialCall)).Count -ne 1){throw 'Missing or duplicate original two-slot helper dispatch'}
+ $oldPartial=Block (Block $partialPinned 'struct npc_travar_lastAI : ScriptedAI') 'if (Creature* add = me->SummonCreature(106578'
+ $comparisonPartial=$actor.Replace($partialHelper,'').Replace($partialCall,$oldPartial)
+ if(($comparisonPartial -replace '\s','') -cne ((Block $partialPinned 'struct npc_travar_lastAI : ScriptedAI') -replace '\s','')){throw 'Unrelated AI change beyond original add-helper extraction and owned slot retry'}
  $creationRetry=Block $actor 'void RetryWave('
  $expectedCreation='void RetryWave(uint8 wave,uint32 unavailableEntry){TC_LOG_DEBUG("scripts","Silver Hand ritual: actor %u unavailable for wave %u; retry in1000ms",unavailableEntry,uint32(wave));_waveFunctions.AddDelayedEvent(1000,[this,wave]()->void{if(SilverHandFinalEntry::CanStartWave(me))SummonAdds(wave);else TC_LOG_DEBUG("scripts","Silver Hand ritual: dropping retry for stale wave %u",uint32(wave));});}'
  if(($creationRetry -replace '\s','') -cne ($expectedCreation -replace '\s','')){throw 'Wave recovery changed outside diagnostic generalization'}
  foreach($entry in @(106580,106719)){if([regex]::Matches($actor,"else\s+RetryWave\(wave, $entry\);").Count -ne 1){throw "Missing or duplicate zero-creation recovery $entry"}}
  if([regex]::Matches($actor,'else\s+RetryWave\(wave, 106774\);').Count -ne 2){throw 'Missing-defender recovery changed'}
  $oldRetry=Block (Block $creationPinned 'struct npc_travar_lastAI : ScriptedAI') 'void RetryMissingDefender('
- $comparisonCreation=($actor.Replace($creationRetry,$oldRetry).Replace('RetryWave(wave, 106774);','RetryMissingDefender(wave);') -replace 'else\s+RetryWave\(wave, (106580|106719)\);','')
+ $comparisonCreation=($comparisonPartial.Replace($creationRetry,$oldRetry).Replace('RetryWave(wave, 106774);','RetryMissingDefender(wave);') -replace 'else\s+RetryWave\(wave, (106580|106719)\);','')
  if(($comparisonCreation -replace '\s','') -cne ((Block $creationPinned 'struct npc_travar_lastAI : ScriptedAI') -replace '\s','')){throw 'Unrelated AI change beyond zero-creation recovery and shared helper rename'}
  $defenderRetry=Block $comparisonCreation 'void RetryMissingDefender('
  $expectedRetry='void RetryMissingDefender(uint8 wave){TC_LOG_DEBUG("scripts","Silver Hand ritual: defender106774 absent for wave %u; retry in1000ms",uint32(wave));_waveFunctions.AddDelayedEvent(1000,[this,wave]()->void{if(SilverHandFinalEntry::CanStartWave(me))SummonAdds(wave);else TC_LOG_DEBUG("scripts","Silver Hand ritual: dropping defender retry for stale wave %u",uint32(wave));});}'
@@ -74,7 +84,7 @@ if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline -and !$ProgressBasel
  if($actor.Contains('me->AddDelayedEvent(')){throw 'Unit-owned last Travard AI timer remains'}
 }
 [IO.File]::WriteAllText("$out/WaveActor.inc",$actor+';')
-[IO.File]::WriteAllText("$out/FinalEntryPolicy.inc",$(if($Baseline -or $AdmissionBaseline){''}elseif($ProgressBaseline){Block $progressPinned 'namespace SilverHandFinalEntry'}elseif($ContextBaseline){Block $contextPinned 'namespace SilverHandFinalEntry'}elseif($LateWaveBaseline){Block $latePinned 'namespace SilverHandFinalEntry'}elseif($DefenderBaseline){Block $defenderPinned 'namespace SilverHandFinalEntry'}elseif($CreationBaseline){Block $creationPinned 'namespace SilverHandFinalEntry'}else{Block $source 'namespace SilverHandFinalEntry'}))
+[IO.File]::WriteAllText("$out/FinalEntryPolicy.inc",$(if($Baseline -or $AdmissionBaseline){''}elseif($ProgressBaseline){Block $progressPinned 'namespace SilverHandFinalEntry'}elseif($ContextBaseline){Block $contextPinned 'namespace SilverHandFinalEntry'}elseif($LateWaveBaseline){Block $latePinned 'namespace SilverHandFinalEntry'}elseif($DefenderBaseline){Block $defenderPinned 'namespace SilverHandFinalEntry'}elseif($CreationBaseline){Block $creationPinned 'namespace SilverHandFinalEntry'}elseif($PartialBaseline){Block $partialPinned 'namespace SilverHandFinalEntry'}else{Block $source 'namespace SilverHandFinalEntry'}))
 $functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 [IO.File]::WriteAllText("$out/FunctionClass.inc",(Block (Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw) 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';')
 $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(','uint32 FunctionProcessor::Size() const','uint32 FunctionProcessor::SizeQueue() const')
@@ -95,10 +105,10 @@ $deathBridge=$kill.Substring($bridgeFirst,$bridgeLast-$bridgeFirst)
 if($kill.IndexOf('victim->setDeathState(JUST_DIED);') -lt 0 -or $kill.IndexOf('victim->setDeathState(JUST_DIED);') -gt $kill.IndexOf($deathBridge)){throw 'Native owner death notification precedes death state'}
 [IO.File]::WriteAllText("$out/DeathBridge.inc",$deathBridge.Replace('creature, this','creature, killer'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}elseif($DeathBaseline){'/DDEATH_BASELINE'}elseif($ProgressBaseline){'/DPROGRESS_BASELINE'}elseif($ContextBaseline){'/DCONTEXT_BASELINE'}elseif($LateWaveBaseline){'/DLATE_WAVE_BASELINE'}elseif($DefenderBaseline){'/DDEFENDER_BASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}elseif($DeathBaseline){'/DDEATH_BASELINE'}elseif($ProgressBaseline){'/DPROGRESS_BASELINE'}elseif($ContextBaseline){'/DCONTEXT_BASELINE'}elseif($LateWaveBaseline){'/DLATE_WAVE_BASELINE'}elseif($DefenderBaseline){'/DDEFENDER_BASELINE'}elseif($CreationBaseline){'/DCREATION_BASELINE'}elseif($PartialBaseline){'/DPARTIAL_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandWaveLifetimeTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native last Travard wave lifetime regression failed'}
-if($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline -or $ContextBaseline -or $LateWaveBaseline -or $DefenderBaseline -or $CreationBaseline){return}
+if($Baseline -or $AdmissionBaseline -or $DeathBaseline -or $ProgressBaseline -or $ContextBaseline -or $LateWaveBaseline -or $DefenderBaseline -or $CreationBaseline -or $PartialBaseline){return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile SilverHandPickupCatalog.cpp -ProbeName SilverHandPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native late scenario metadata failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 foreach($expected in @("CRITERION`t8`t30089`t92`t50915`t0","CRITERION`t9`t30110`t92`t51838`t1","CRITERION`t10`t30111`t92`t50966`t0")){if((Get-Content "$out/native.tsv") -notcontains $expected){throw "Native late criterion changed: $expected"}}
@@ -115,5 +125,5 @@ if($VerifyReleaseBinary){
  $expected=@("binding`t106777`tnpc_travar_last","spawn`t362048`t106777`t1539`t7003","phase`t7003`t44`t1092`t9`t0","phase`t7003`t44`t1092`t10`t1","aura`t106777`t215258")
  if(Compare-Object $expected $live){throw 'Native last Travard actor/phase/aura changed'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_defender_retry_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed defender retry/progress/wave death/final entry/lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_partial_wave_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed slot/wave/defender retry/progress/death/entry/lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
 }
