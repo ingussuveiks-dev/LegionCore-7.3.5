@@ -1,0 +1,29 @@
+{
+    "Date":  "2026-10-26 Europe/Riga",
+    "Status":  "Verified combined Release deployed; client retests pending; old log archival deferred",
+    "FixCommits":  {
+                       "TransportCharge":  "c734844c",
+                       "CreationDefaults":  "bfdf3354",
+                       "LateTutorialOverlay":  "79f1451c"
+                   },
+    "CanonicalWorldSHA256":  "74ABDBCFE820996FA31F7409A385F2603D33820201ECCBE241D8111F7BE5BF9F",
+    "CanonicalMapSHA256":  "D8198809358C1F954FCED1DCA8D9AFE8AA0854A3E38A75FDF2A56E5CEB4FA07C",
+    "CanonicalBnetSHA256":  "B2EB3A39C5E5C59A9F3BCA3303C4364FBA9AC3F5CD16E646AAF0852EEE6E0336",
+    "Migration":  {
+                      "Name":  "2026_10_26_11_warrior_creation_actions.sql",
+                      "SHA1":  "70BFFCADDD2DD51C84873C2BF9E7A7198F33F80C",
+                      "ActualUpdater":  "RELEASED, exact hash and zero obsolete default rows read back"
+                  },
+    "Ownership":  "Initial user11672/31048 left untouched. Repeated Get-Process/Win32_Process found zero servers before staged EXE/map copies and matching SQL promotion. Own8564 fresh ready/shutdown0/exit0, stderr empty, new DBErrors0, protected hashes unchanged. Later two user/unknown servers restarted after user was told Release was ready; none stopped.",
+    "Checks":  "Pinned/current Charge ASAN; actual shared-transport dispatcher and real two-ship collision models; packet/late-refresh ASAN; TEMP creation defaults twice/custom preservation with typed26972/read-only hotfix; native boost constructs/sparring/owner kills/criteria;36 action profiles, action-state persistence, ship arrival/floor; actual final-link LIB inputs; staged/canonical charge/overlay selected PE and staged arrival/construct/action layout; canonical Scepter Release. All final post-test inventories show no new crash or appended DBErrors/server warning/error/assertion.",
+    "ActiveCrashes":  0,
+    "DeferredArchive":  {
+                            "Status":  "DEFERRED - no archive/truncation performed",
+                            "ActiveLog":  "build-extractors/bin/Release/logs/DBErrors.log",
+                            "Bytes":  232,
+                            "SHA256":  "9EB36EF23920FB914322C2CE213B3491F9B8A884754EF2E3768FE799E105C716",
+                            "Cause":  "Exactly two preexisting missing-spell78/button1 and88161/button73 creation messages; native content cause fixed by bfdf3354 and verified updater11",
+                            "Reason":  "User/unknown server already active before maintenance; offline guard refused before opening/mutating file. Get-FileHash ordinary sharing also rejected the writer-held file; read-only FileShare.ReadWrite used for this checksum only. Keep active historical evidence visible until safe offline hash-verified fixed archival."
+                        },
+    "Remaining":  "Actual first Charge/movement/counter/camera/pet, fresh boost UI and island layout, fresh Warrior creation and complete boost/Warrior artifact chains remain client checks. Exact live Detour polygon failure and client first-load overwrite event were not captured. Hunter selection patch remains privately preserved and OPEN; it was not compiled/deployed with these fixes."
+}
