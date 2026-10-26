@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Recover late/missing finale106777/106719 participant views at native1092 step10 without replaying delivered speech/casts. Not channel choreography, complete Holy/all36 or client traversal/VFX verification.",
+  "sources": [
+    {
+      "source": "Clean main/origin52cd603c, worklist, artifact-routes, donor-review and linked Holy finale/entry/cast audits; complete local instance callback",
+      "review": "Previous independent searches fixed missing first-player views, and rejected215260 casts had full-GUID retry. But an empty map list, all offline references or a missing counterpart across every participant returned without future discovery. Already delivered Talk3 lacked instance/GUID admission, so simply polling the callback would repeat speech. Preserve immediate independent effects, step8 behavior, original spell/flags and all existing wave/loot/equip/exit repairs."
+    },
+    {
+      "source": "Fresh read-only MariaDB actor/addon and actual source23 phase-condition rows; matching26972 native final catalog from current ritual suite",
+      "review": "Static106777/spawn362048/map1539/phase7003 retains215258 addon; actual source23/zone85/entry10 has positive44/1092 alternatives9 and10. Static106719/spawn362044/phase7001/addon212300 is not proof of the later summoned boss. Initial source26 phase query returned no rows; corrected using actual prior source23 binding, not a data repair. Native215258/215260 effects and visuals55978/57625 unchanged. No phase, spawn, channel duration, quest/tree, DB or character writes. Metadata/lookup calls do not verify rendered phase visibility or full attachment/animation graph."
+    },
+    {
+      "source": "Local Scenario.cpp, InstanceScript.cpp, InstanceMap/FunctionProcessor and existing full-GUID cast recovery",
+      "review": "Both actual Scenario transitions set currentStep before selected instance callback/UpdatePhasing. Existing InstanceScript::AddDelayedEvent delegates to owned m_Functions drained by UpdateForScript; native queued additions merge at the next update, not recursively during the current lagged pass. Instance-only discovery capture avoids raw participant/actor lifetime dependencies. Instance destruction destroys its queue. FullGUID admission before each effect prevents speech/cast reentry, while stale rejected-cast cancellation erases only its boss GUID."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c scripts106777/215260 and all-ref SilverHand path log",
+      "review": "No applicable recovery returned. Bounded search only; no exhaustive-history claim or incompatible modern behavior imported."
+    },
+    {
+      "source": "Pinned Titans complete93-line relevant instance source returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "review": "Same first-contactable callback with no late actor discovery or speech dedup; no compatible fix imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage, transcript or client traversal reviewed in this unit.1000ms is custom technical recovery cadence, not observed retail choreography/timing. No whole quest or visual client certification."
+    }
+  ],
+  "repair": {
+    "implementation": "One pending bit deduplicates the existing instance-owned1000ms discovery job. Empty step10 list or exhaustion with either actor absent queues it. Callback clears pending before fresh actual-instance scenario1092/exact10 check; valid work re-enters the native callback, invalid work warns/drops. Existing live70yd searches still resolve each actor independently through current contactable participants. One common full128-bit GUID set now admits last-Travard Talk3 and the original boss cast before dispatch; repeated/reentrant discovery skips previously admitted effects. Rejected casts retain their separate fullGUID retry and original protection flags.",
+    "preserved": "No new update override, actor summon, radius/phase change, forced cast, combat interruption, Player/pet/guardian/group progression or item grant. Partial immediate effects are not withheld until both actors exist. No reset of shared Unit/base jobs or previously spawned wave actors. Discovery stops after both resolve in a pass, or cancels on stale context/instance destruction; a queued callback can harmlessly drain after a separately issued callback has already delivered both effects.",
+    "limits": "Per-instance/GUID admission is not persisted quest-attempt identity. Same-stage abandon/reaccept and recreated Scenario epochs, missing actor AI, changing context during an effect callback, accepted-cast interruption/application,215258 addon/channel start/cleanup, actual boss escape and full phase/traversal/VFX remain OPEN. A permanently absent actor retains periodic warnings rather than fake completion or silent bypass. Actual empty-instance update/unload/re-entry is not client-tested."
+  },
+  "validation": {
+    "baseline": "PASS DiscoveryBaseline pins full52cd603c callback: both missing actors and a missing counterpart remain unhandled after becoming available. Existing partial speech occurs immediately but no future discovery is scheduled. Controlled native callback/queue, not a recorded client failure.",
+    "host": "PASS extracted full instance callback/helpers, actual InstanceScript delay wrapper/native FunctionProcessor and native Spell::prepare in-progress gate. Empty/null/offline/all-missing/each partial view, late split participants, both faction labels, repeated/reentrant speech/cast admission, fullGUID high-half identity, one pending job,999+1ms/large-diff/zero-update queue transfer,15 scenario contexts/drop/fresh callback, simultaneous discovery+rejected cast jobs and instance destruction/replacement. Existing24 cast/scenario contexts and downstream arrival/waypoint tests retained. FindNearest/map/phase/motion/spell services remain controlled: not a full spell engine, actual groups or live client traversal.",
+    "installed": "PASS selected factory0x310 initializes fullGUID set2f8 and pending308; actual shared out-of-line native set insert checks128-bit ordering, copies16-byte GUID, returns insertion flag before both effects. Selected callback preserves live70yd independent r12b/r14b states, empty/exhausted discovery triggers and original Talk3/215260/flags. Discovery pending gate is set before1000ms native instance queue130; function table/9-byte thunk captures instance only. Callback clears308 before actual instance lookup/1092/exact10 and virtual118 reentry, with stale warning/drop and no direct requeue/spawn/progression. Existing cast retry/step8/third motion/waypoint/queue destruction proofs retained and adapted to actual compiler layout, not disabled or forced with noinline.",
+    "regressions": "PASS28 serial top-level suite variants: complete retained19 silver-hand-waypoint-retry-discovery-regressions.tsv plus DiscoveryBaseline/FinalCastBaseline, retained Partial/Creation/Defender/LateWave/Context/Progress baselines and MordothMotion Release nesting seven-spawn InitialMotion. Current dispatch/wave/entry/arrival/waypoint/rescue/ally native/installed checks, ScepterLogin, strict native149 race-class pairs/22 invitations/36 artifact selections, SceneLifecycle and ForceEquip55 records all PASS. Current full fixture separately PASS under MSVC AddressSanitizer, including drain-after-separately-issued-completion without duplicate effects. Existing host warnings remain visible; no predicate/count/assertion weakening or automatic failure retry. Current full Release wrapper/ASAN re-run after baseline extraction to leave current fixtures and cover the last added drain assertion in ordinary build too.",
+    "evidence": ".codex/silver-hand-discovery-* and silver-hand-waypoint-retry-discovery-*; generated native fixture/catalog outputs remain ignored. Initial host assertion incorrectly expected a queued addition to remain in SizeQueue after Tick(0); native queue transfer moves it to Size without execution, assertion corrected to prove both counts. Initial PE no-summon proof used an ambiguous8-overload symbol prefix; corrected to inspect every exact native overload. No production workaround or diagnostic suppression for these test errors. Earlier isolated SQL empty-output/offer-count incidents remain unexplained in prior audits."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "034415555363CB0CC6A217241B1F26DDBDE127E997E7CA3BD16BA2D2EA958A22",
+    "bnet_sha256": "456B7D26182618ED1A63CF6FF7E87DADB91087344A7C29218027BFEA4ED60245",
+    "build": "Release world+bnet17.40s/0 warnings/errors; no OutDir. Actual UTF16 final-link commands verified canonical OUT/INCREMENTAL:NO/original scripts-game-shared-common and bnet shared-common libraries. Selected deployed implementation decoded, not hash/startup alone.",
+    "runtime": "Own hidden canonical PID38328 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0; newly appended DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. PID gone, no unknown/user server stopped or own server left. Startup is not1539 actor/channel/client traversal."
+  },
+  "remaining": [
+    "Real party/faction/pet/guardian behavior, prerequisites/earlier combat, accepted casts and rendered effects, genuine loot/equip/save/relog/outro and actual Dalaran arrival remain separate route-level checks.",
+    "All36 full chains remain incomplete; Monday2026-10-26 client traversal and visual tests remain with the user. No character changes or weapon grants substitute for acquisition fixes."
+  ]
+}

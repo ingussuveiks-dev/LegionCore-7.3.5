@@ -40,11 +40,11 @@ assert body[loop].op_str == 'rdi, qword ptr [rbx + 0x20]' and loop < lookup
 contact = native['symbol']('?CanContact@Player@@')
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == contact for entry in body[loop:lookup])
 assert [(entry.mnemonic, entry.op_str) for entry in body[dispatch:dispatch + 4]] == [
-    ('mov', 'rcx, qword ptr [rax + 0x9c0]'), ('mov', 'rax, qword ptr [rcx]'), ('mov', 'edx, 1'), ('call', 'qword ptr [rax + 0x48]')]
+    ('mov', 'rcx, qword ptr [rax + 0x9c0]'), ('mov', 'edx, 1'), ('mov', 'rax, qword ptr [rcx]'), ('call', 'qword ptr [rax + 0x48]')]
 assert body[dispatch + 4].mnemonic == 'jmp'
 exit_index = next(index for index, entry in enumerate(body) if entry.address == body[dispatch + 4].operands[0].imm)
-assert body[exit_index].op_str == 'rbx, qword ptr [rsp + 0xb8]'
-assert any(entry.mnemonic == 'ret' for entry in body[exit_index:dispatch])
+assert body[exit_index].op_str == 'rbx, qword ptr [rsp + 0x98]'
+assert any(entry.mnemonic == 'ret' for entry in body[exit_index:])
 third = '?DoAction@npc_travar_thirdAI@npc_travar_third@@'
 selected = []
 for entry in instructions('?GetAI@npc_travar_third@@'):

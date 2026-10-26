@@ -21,22 +21,32 @@ def leaf(prefix, size):
 helper_name = '?CastBlindingLight@instance_silver_hand_InstanceMapScript@'
 admission = instructions('?onScenarionNextStep@instance_silver_hand_InstanceMapScript@')
 invoke, = sites(admission, helper_name)
-comparisons = sites(admission, '??MObjectGuid@@')
+insert_name, = [name for name in native['symbols'] if name.startswith('??$insert@') and 'Tset_traits@VObjectGuid@@' in name and name.endswith('$$QEAVObjectGuid@@@Z')]
+insert_sites = sites(admission, insert_name)
+assert len(insert_sites) == 2
+guid_gets = sites(admission, '?GetGuidValue@Object@@')
+assert len(guid_gets) == 2
+talk, = sites(admission, '?Talk@CreatureAI@@QEAAXEVObjectGuid@@@Z')
+for getter, insert, effect, skip in ((guid_gets[0], insert_sites[0], talk, talk + 1), (guid_gets[1], insert_sites[1], invoke, invoke + 1)):
+    assert getter < insert < effect
+    assert admission[getter - 3].op_str == 'edx, edx' and admission[getter - 3].mnemonic == 'xor'
+    assert admission[getter + 1].op_str == 'rcx, [r15 + 0x2f8]' and admission[getter + 2].op_str == 'r8, rax'
+    assert admission[insert + 1].op_str == 'byte ptr [rax + 8], sil' and admission[insert + 2].mnemonic == 'je'
+    assert admission[insert + 2].operands[0].imm == admission[skip].address
+insert_body = instructions(insert_name)
+comparisons = sites(insert_body, '??MObjectGuid@@')
 assert len(comparisons) == 2
-assert admission[comparisons[-1] + 1].op_str == 'al, al'
-assert admission[comparisons[-1] + 2].mnemonic == 'je'
-assert admission[comparisons[-1] + 2].operands[0].imm == admission[invoke + 2].address
-assert all(any(entry.op_str == operands for entry in admission[:invoke]) for operands in (
-    'r12, [r15 + 0x2f8]', 'xmm0, xmmword ptr [r15]', 'xmmword ptr [rax + 0x1a], xmm0', 'rcx, r12'))
-assert admission[invoke - 3].op_str == 'rdx, r13' and admission[invoke - 1].op_str == 'rcx, r15'
-guid_get, = sites(admission, '?GetGuidValue@Object@@')
-assert admission[guid_get - 2].op_str == 'edx, edx' and admission[guid_get - 2].mnemonic == 'xor'
+assert insert_body[comparisons[-1] + 1].op_str == 'al, al' and insert_body[comparisons[-1] + 2].mnemonic == 'je'
+duplicate = next(index for index, entry in enumerate(insert_body) if entry.address == insert_body[comparisons[-1] + 2].operands[0].imm)
+assert insert_body[duplicate].op_str == 'qword ptr [r14], rdi' and insert_body[duplicate + 1].op_str == 'byte ptr [r14 + 8], al'
+assert all(any(entry.op_str == operands for entry in insert_body[:duplicate]) for operands in ('rbp, r8', 'xmm0, xmmword ptr [rbp]', 'xmmword ptr [rax + 0x1a], xmm0', 'al, 1'))
+assert admission[invoke - 2].op_str == 'rdx, rdi' and admission[invoke - 1].op_str == 'rcx, r15'
 guid_order = leaf('??MObjectGuid@@', 28)
 assert [entry.op_str for entry in guid_order[:2]] == ['rax, qword ptr [rdx + 8]', 'qword ptr [rcx + 8], rax']
 assert [entry.op_str for entry in guid_order[-4:]] == ['rax, qword ptr [rdx]', 'qword ptr [rcx], rax', 'al', '']
 factory = instructions('?GetInstanceScript@instance_silver_hand@@')
 assert all(any(entry.op_str == operands for entry in factory) for operands in (
-    'ecx, 0x308', 'qword ptr [rdi + 0x2f8], rsi', 'qword ptr [rdi + 0x300], rsi', 'qword ptr [rdi + 0x2f8], rax'))
+    'ecx, 0x310', 'qword ptr [rdi + 0x2f8], rsi', 'qword ptr [rdi + 0x300], rsi', 'qword ptr [rdi + 0x2f8], rax', 'byte ptr [rdi + 0x308], sil'))
 helper = instructions(helper_name)
 cast, = sites(helper, '?CastSpell@Unit@@QEAA?AW4SpellCastResult@@PEAV1@IW4TriggerCastFlags@@PEAVItem@@PEBVAuraEffect@@VObjectGuid@@@Z')
 flags, = sites(helper, '?SetFlag@Object@@')
@@ -97,7 +107,7 @@ drain, = sites(update, '?Update@FunctionProcessor@@')
 assert update[drain - 1].op_str == 'rcx, 0x130'
 assert len(sites(instructions('?Update@InstanceMap@@'), '?UpdateForScript@InstanceScript@@')) == 1
 destroy = instructions('??_Ginstance_silver_hand_InstanceMapScript@')
-assert len(sites(destroy, '??1InstanceScript@@')) == 1 and any(entry.op_str == 'edx, 0x308' for entry in destroy)
+assert len(sites(destroy, '??1InstanceScript@@')) == 1 and any(entry.op_str == 'edx, 0x310' for entry in destroy)
 base_destroy = instructions('??1InstanceScript@@')
 release, = sites(base_destroy, '??1FunctionProcessor@@')
 assert base_destroy[release - 1].op_str == 'rcx, [rdi + 0x130]'
@@ -109,4 +119,4 @@ for body, message in ((helper, b'Silver Hand finale: Blinding Light failed with 
     for method in ('?AddDelayedEvent@Unit@@', '?UpdateAchievementCriteria@Player@@', '?KilledMonsterCredit@Player@@', '?AddItem@Player@@'):
         assert not sites(body, method)
 assert not sites(callback, '?AddDelayedEvent@InstanceScript@@')
-print('PASS selected1539 factory0x308/full128-bit GUID set2f8 admits one finale cast before reentry; original nontriggered self215260/protection flags retained. Actual result0 returns before1000ms instance-owned queue130; closure/table/9-byte thunk retains instance+full GUID, resolves Map actor and requires live106719/1539/same map/scenario1092/exact10. Stale work erases the GUID/logs without requeue; success stops retry. Native InstanceMap->UpdateForScript drains same base queue and destruction releases it. No forced casts, Player credit or items; accepted cast is not client aura/VFX/arrival verification.')
+print('PASS selected1539 factory0x310/full128-bit GUID set2f8 admits both finale speech/cast before reentry through actual native insert/128-bit comparator/copy; original nontriggered self215260/protection flags retained. Actual result0 returns before1000ms instance-owned queue130; closure/table/9-byte thunk retains instance+full GUID, resolves Map actor and requires live106719/1539/same map/scenario1092/exact10. Stale work erases the GUID/logs without requeue; success stops retry. Native InstanceMap->UpdateForScript drains same base queue and destruction releases it. No forced casts, Player credit or items; accepted cast is not client aura/VFX/arrival verification.')

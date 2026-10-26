@@ -51,7 +51,28 @@ public:
             return &loc_res_pla;
         }
         
-        GuidSet _blindingLightStarted;
+        GuidSet _finaleActorsStarted;
+        bool _finaleDiscoveryPending = false;
+
+        void QueueFinaleDiscovery()
+        {
+            if (_finaleDiscoveryPending)
+                return;
+
+            _finaleDiscoveryPending = true;
+            TC_LOG_WARN("scripts", "Silver Hand finale: missing actors; retry discovery in1000ms");
+            AddDelayedEvent(1000, [this]() -> void
+            {
+                _finaleDiscoveryPending = false;
+                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != 10)
+                {
+                    TC_LOG_WARN("scripts", "Silver Hand finale: dropping stale actor discovery");
+                    return;
+                }
+                onScenarionNextStep(10);
+            });
+        }
 
         void CastBlindingLight(Creature* boss)
         {
@@ -70,7 +91,7 @@ public:
                     !boss || !boss->IsInWorld() || boss->IsPreDelete() || !boss->IsAlive() ||
                     boss->GetEntry() != 106719 || boss->GetMapId() != 1539 || boss->GetMap() != instance)
                 {
-                    _blindingLightStarted.erase(guid);
+                    _finaleActorsStarted.erase(guid);
                     TC_LOG_WARN("scripts", "Silver Hand finale: dropping stale Blinding Light retry");
                     return;
                 }
@@ -104,7 +125,10 @@ public:
                 Map::PlayerList const &PlList = instance->GetPlayers();
 
                 if (PlList.isEmpty())
+                {
+                    QueueFinaleDiscovery();
                     return;
+                }
 
                 bool travardFound = false;
                 bool mordothFound = false;
@@ -119,7 +143,8 @@ public:
                         if (Creature* travar = player->FindNearestCreature(106777, 70.0f, true))
                         {
                             travardFound = true;
-                            travar->AI()->Talk(3);
+                            if (_finaleActorsStarted.insert(travar->GetGUID()).second)
+                                travar->AI()->Talk(3);
                         }
                     }
                     if (!mordothFound)
@@ -127,13 +152,15 @@ public:
                         if (Creature* boss = player->FindNearestCreature(106719, 70.0f, true))
                         {
                             mordothFound = true;
-                            if (_blindingLightStarted.insert(boss->GetGUID()).second)
+                            if (_finaleActorsStarted.insert(boss->GetGUID()).second)
                                 CastBlindingLight(boss);
                         }
                     }
                     if (travardFound && mordothFound)
                         break;
                 }
+                if (!travardFound || !mordothFound)
+                    QueueFinaleDiscovery();
             }
         }
     };

@@ -231,8 +231,9 @@ struct ThirdAI : CreatureAI
 struct OtherAI : CreatureAI
 {
     uint32 actions=0,talks=0;
+    std::function<void()> onTalk;
     void DoAction(int32) override{++actions;}
-    void Talk(uint32 line) override{assert(line==3);++talks;}
+    void Talk(uint32 line) override{assert(line==3);++talks;if(onTalk)onTalk();}
 };
 template<class Actor> struct WaypointMovementGenerator
 {
@@ -254,11 +255,25 @@ struct Instance
     void AddDelayedEvent(uint64 timeOffset,std::function<void()>&& function);
     void Tick(uint32 diff){m_Functions.Update(diff);}
 #include "FinalCast.inc"
+#include "FinalDiscovery.inc"
 #include "Dispatch.inc"
 };
 #include "InstanceDelay.inc"
 int main()
 {
+#ifdef DISCOVERY_BASELINE
+    for(bool partial:{false,true})
+    {
+        Creature last,boss;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;
+        Player player;player.last=partial?&last:nullptr;Map map;map.players={{&player}};
+        Instance script{&map};scenarioManager.scenario.step=10;
+        script.onScenarionNextStep(10);assert(lastAI.talks==(partial?1u:0u) && boss.casts.empty());
+        player.last=&last;player.boss=&boss;script.Tick(10000);
+        assert(lastAI.talks==(partial?1u:0u) && boss.casts.empty() && script.m_Functions.SizeQueue()==0);
+    }
+    std::cout<<"PASS pinned52cd603c: absent finale actors remain unhandled after becoming visible; independent partial speech has no late counterpart discovery\n";
+    return 0;
+#else
 #ifdef FINAL_CAST_BASELINE
     {
         Creature boss;boss.entry=106719;boss.casting=true;
@@ -620,31 +635,110 @@ int main()
 #endif
     }
 #ifndef FINAL_BASELINE
+    for(uint32 initial=0;initial<6;++initial)
+        for(uint32 faction:{0u,1u})
+        {
+            Creature last,boss;OtherAI lastAI;last.ai=&lastAI;last.entry=106777;boss.entry=106719;
+            Player first,second,offline;offline.contact=false;first.faction=faction;second.faction=faction;
+            Map map;map.actors={&boss};boss.map=&map;
+            if(initial==1)map.players={{nullptr},{&offline}};
+            if(initial>=2)map.players={{&first},{&second}};
+            if(initial==3)first.last=&last;
+            if(initial==4)first.boss=&boss;
+            if(initial==5){first.contact=false;first.last=&last;first.boss=&boss;}
+            Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
+            uint32 before=warnings;
+            script.onScenarionNextStep(10);script.onScenarionNextStep(10);
+            assert(script._finaleDiscoveryPending && script.m_Functions.SizeQueue()==1 && warnings==before+1);
+            assert(lastAI.talks==(initial==3?1u:0u) && boss.casts.size()==(initial==4?1u:0u));
+            script.Tick(999);assert(warnings==before+1);
+            script.Tick(1);assert(warnings==before+2 && script.m_Functions.SizeQueue()==1);
+            script.Tick(10000);assert(warnings==before+3 && script.m_Functions.SizeQueue()==1);
+            script.Tick(0);assert(warnings==before+3 && script.m_Functions.Size()==1 && script.m_Functions.SizeQueue()==0);
+            map.players={{nullptr},{&offline},{&first},{&second}};first.contact=true;first.last=&last;second.boss=&boss;
+            lastAI.onTalk=[&script]{script.onScenarionNextStep(10);};boss.onCast=[&script]{script.onScenarionNextStep(10);};
+            script.Tick(999);assert(script._finaleDiscoveryPending);script.Tick(1);
+            assert(lastAI.talks==1 && boss.casts==std::vector<uint32>{215260} && boss.flags==31);
+            assert(!script._finaleDiscoveryPending && script._finaleActorsStarted.size()==2 && script.m_Functions.SizeQueue()==0);
+            script.onScenarionNextStep(10);script.Tick(10000);
+            assert(lastAI.talks==1 && boss.casts.size()==1 && warnings==before+3 && offline.lookups==0);
+            assert(first.credits.empty() && second.credits.empty() && scenarioManager.scenario.events.empty());
+        }
+    {
+        Creature last,boss;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;
+        Player player;Map map;Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
+        script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);
+        map.players={{&player}};player.last=&last;player.boss=&boss;
+        script.onScenarionNextStep(10);assert(lastAI.talks==1 && boss.casts.size()==1 && script._finaleDiscoveryPending);
+        uint32 before=warnings;script.Tick(1000);
+        assert(lastAI.talks==1 && boss.casts.size()==1 && !script._finaleDiscoveryPending);
+        assert(warnings==before && script.m_Functions.Size()==0 && script.m_Functions.SizeQueue()==0);
+    }
+    for(uint32 context=0;context<15;++context)
+    {
+        Creature last,boss;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;
+        Player player;Map map;Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
+        script.onScenarionNextStep(10);
+        map.players={{&player}};player.last=&last;player.boss=&boss;
+        if(context<12)scenarioManager.scenario.step=context;
+        else if(context==12)scenarioManager.present=false;
+        else scenarioManager.scenario.id=context==13?991:1037;
+        uint32 before=warnings;script.Tick(1000);
+        assert(!script._finaleDiscoveryPending && script.m_Functions.SizeQueue()==0 && script.m_Functions.Size()==0);
+        assert(lastAI.talks==(context==10?1u:0u) && boss.casts.size()==(context==10?1u:0u));
+        assert(warnings==before+(context==10?0u:1u));
+        scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;script.Tick(10000);
+        assert(lastAI.talks==(context==10?1u:0u));
+        script.onScenarionNextStep(10);assert(lastAI.talks==1 && boss.casts.size()==1 && player.credits.empty());
+    }
+    {
+        Creature last,boss;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;boss.casting=true;
+        Player player;player.boss=&boss;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;
+        Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
+        script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==2 && boss.casts.size()==1);
+        script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==2 && boss.casts.size()==1);
+        player.last=&last;script.Tick(1000);assert(lastAI.talks==1 && boss.casts.size()==2 && script.m_Functions.SizeQueue()==1);
+        boss.casting=false;script.Tick(1000);assert(boss.casts.size()==3 && script.m_Functions.SizeQueue()==0);
+        script.onScenarionNextStep(10);assert(lastAI.talks==1 && boss.casts.size()==3);
+    }
+    {
+        Creature last,boss,replacementLast;OtherAI lastAI,replacementAI;last.ai=&lastAI;replacementLast.ai=&replacementAI;
+        replacementLast.guid={last.guid.low,last.guid.high+1};boss.entry=106719;
+        Player player;player.last=&last;Map map;map.players={{&player}};
+        scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
+        {Instance script{&map};script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);}
+        player.last=&replacementLast;player.boss=&boss;
+        Instance replacement{&map};replacement.Tick(10000);assert(lastAI.talks==1 && replacementAI.talks==0 && boss.casts.empty());
+        replacement.onScenarionNextStep(10);assert(replacementAI.talks==1 && boss.casts.size()==1);
+        player.last=&last;replacement.onScenarionNextStep(10);assert(lastAI.talks==2 && boss.casts.size()==1);
+    }
+    scenarioManager=ScenarioManager{};
+    std::cout<<"PASS finale discovery: empty/null/offline/missing/partial actor views, independent late split participants, both faction labels, fullGUID speech/cast admission before reentry, one1000ms pending job/999+1/no lag catch-up,15 native scenario contexts/drop/fresh callback, simultaneous rejected cast queue and instance destruction; no actor spawn, item or progression grant\n";
     for(uint32 failure:{7u,123u,67u})
         for(uint32 faction:{0u,1u})
         {
-            Creature boss;boss.entry=106719;boss.castResult=failure==123?0:failure;boss.casting=failure==123;
-            Player player;player.boss=&boss;player.faction=faction;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;
+            Creature boss,last;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;boss.castResult=failure==123?0:failure;boss.casting=failure==123;
+            Player player;player.last=&last;player.boss=&boss;player.faction=faction;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;
             Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
             boss.onCast=[&script](){script.onScenarionNextStep(10);};
             uint32 before=warnings;
             script.onScenarionNextStep(10);
-            assert(boss.casts.size()==1 && boss.flags==31 && script._blindingLightStarted.size()==1 && script.m_Functions.SizeQueue()==1);
+            assert(boss.casts.size()==1 && boss.flags==31 && script._finaleActorsStarted.size()==2 && script.m_Functions.SizeQueue()==1);
             script.onScenarionNextStep(10);assert(boss.casts.size()==1 && script.m_Functions.SizeQueue()==1);
             script.Tick(999);assert(boss.casts.size()==1);
             script.Tick(1);assert(boss.casts.size()==2 && warnings==before+2 && script.m_Functions.SizeQueue()==1);
             script.Tick(10000);assert(boss.casts.size()==3 && warnings==before+3 && script.m_Functions.SizeQueue()==1);
             script.Tick(0);assert(boss.casts.size()==3);
-            map.players.clear();player.alive=false;player.status=0;player.phase=false;boss.castResult=SPELL_CAST_OK;boss.casting=false;
+            boss.onCast={};map.players.clear();player.alive=false;player.status=0;player.phase=false;boss.castResult=SPELL_CAST_OK;boss.casting=false;
             script.Tick(999);assert(boss.casts.size()==3);script.Tick(1);
             assert(boss.casts.size()==4 && script.m_Functions.SizeQueue()==0 && script.m_Functions.Size()==0);
-            script.onScenarionNextStep(10);script.Tick(10000);assert(boss.casts.size()==4 && warnings==before+3 && player.credits.empty());
+            map.players={{&player}};script.onScenarionNextStep(10);script.Tick(10000);assert(boss.casts.size()==4 && warnings==before+3 && player.credits.empty());
             boss.onCast={};
         }
     for(uint32 context=0;context<24;++context)
     {
-        Creature boss;boss.entry=106719;boss.castResult=123;
-        Player player;player.boss=&boss;Map map,other;map.players={{&player}};map.actors={&boss};boss.map=&map;
+        Creature boss,last;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;boss.castResult=123;
+        Player player;player.last=&last;player.boss=&boss;Map map,other;map.players={{&player}};map.actors={&boss};boss.map=&map;
         Instance script{&map};scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
         script.onScenarionNextStep(10);uint32 before=warnings;
         if(context<12)scenarioManager.scenario.step=context;
@@ -665,7 +759,7 @@ int main()
         }
         script.Tick(1000);
         assert(boss.casts.size()==(context==10?2u:1u) && warnings==before+1);
-        assert(script.m_Functions.SizeQueue()==(context==10?1u:0u) && script._blindingLightStarted.size()==(context==10?1u:0u));
+        assert(script.m_Functions.SizeQueue()==(context==10?1u:0u) && script._finaleActorsStarted.size()==(context==10?2u:1u));
         scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;map.actors={&boss};boss.world=true;boss.preDelete=false;
         boss.alive=true;boss.entry=106719;boss.mapId=1539;boss.map=&map;boss.mapPresent=true;boss.castResult=SPELL_CAST_OK;
         script.Tick(1000);assert(boss.casts.size()==(context==10?3u:1u));
@@ -673,9 +767,9 @@ int main()
         assert(player.credits.empty());
     }
     {
-        Creature boss,unrelatedBoss;boss.entry=106719;unrelatedBoss.entry=106719;boss.castResult=123;
+        Creature boss,unrelatedBoss,last;OtherAI lastAI;last.ai=&lastAI;boss.entry=106719;unrelatedBoss.entry=106719;boss.castResult=123;
         unrelatedBoss.guid={boss.guid.low,boss.guid.high+1};
-        Player player;player.boss=&boss;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;unrelatedBoss.map=&map;
+        Player player;player.last=&last;player.boss=&boss;Map map;map.players={{&player}};map.actors={&boss};boss.map=&map;unrelatedBoss.map=&map;
         scenarioManager=ScenarioManager{};scenarioManager.scenario.step=10;
         {Instance script{&map};script.onScenarionNextStep(10);assert(script.m_Functions.SizeQueue()==1);map.actors={&unrelatedBoss};script.Tick(1000);assert(unrelatedBoss.casts.empty());}
         map.actors={&boss};
@@ -762,6 +856,7 @@ int main()
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
     std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 #endif
 #endif
