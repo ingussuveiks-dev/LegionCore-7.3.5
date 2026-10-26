@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-25",
+  "build": "7.3.5.26972",
+  "scope": "Third Travard106676 issued POINT1 ritual arrival and one eligible shared-scenario reference. Per live AI, not persisted quest-attempt or global50915 dedup, physical motion/client/VFX or full36-chain certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp, instance_silver_hand.cpp, native Player/Scenario/Criteria bridge and previous route/worklist/donor audits",
+      "review": "Step8 instance DoAction supplies no initiating Player. Original third POINT1 unconditionally despawns then sends50915 to unchecked FindNearestPlayer100, even without issued ritual motion or on repeated callback. Native type92 is not a group-kill type: Player cache forwards to actual instance's shared Scenario; do not manually broadcast once per party member or give progression to a pet. Existing aberration/rescue map-reference policies and native owner/charmer bridge inspected; arrival has no killer/owner payload. Ordinary Reset retains accepted action/motion; accepted physical interruption and persisted quest epochs are separate. Native locked lifecycle services primary/disabled AI before Unit update; retain independent existing entry queue and heal recovery."
+    },
+    {
+      "source": "Matching runtime DB2 catalogs and read-only MariaDB",
+      "review": "Fresh sole binding106676/spawn362006/map1539/phase7002; source23/zone85/entry9 positive44/1092 steps5..8 and script-path10993807/22 points unchanged. Shared map1539 serves991/class5,1037/class1,1092/class2. Native step8/2456/root48015/criterion30089/type92/50915, not a loot/equip credit. No DB, character, inventory, AP or spell-data writes. Catalogs are native matching data readers, not rendered visual proof."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c scripts tree",
+      "review": "Targeted Silver Hand path search returns unrelated Stratholme boss, not this acquisition actor. Different newer core is reference only; no exhaustive history claim or modern code import."
+    },
+    {
+      "source": "Pinned Titans donor third-Travard sequence408..568",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Relevant full third class returned/read: own1s Talk8/MovePoint1, waypoint speech/50877/50912 and unguarded nearest100 POINT1/50915/despawn. It retains the defect; no donor correction, guessed timing, motion or visual imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage, transcript or actual client traversal reviewed. Arrival admission/credit repair follows existing executable motion and native metadata, not a reconstructed cinematic or observed renderer."
+    }
+  ],
+  "repair": {
+    "issued_arrival": "Initialized _ritualMotionIssued set after original Talk8 immediately before existing MovePoint1. POINT8/id1 alone may latch _ritualArrived, once, and attempt completion. Requests, early callback during speech, unrelated motion type/id and repeated arrival cannot award this event. Existing home position and waypoint8/9/19 blocks preserved exactly.",
+    "recipient": "Select one actual actor-map reference passing live106676/map1539/instance1092/exact8 plus world/nonpredelete/contactable/nonGM/nonteleport Paladin, same actual map/instance/phase, original100yd, incomplete/nonrewarded42120. No nearest outsider, faction/alive-Player interaction restriction, pet credit, invented original GUID or manual group fanout. Dead eligible Player remains usable as native shared-scenario reference.",
+    "completion_retry": "_ritualCompleted latches before original despawn1000 and one92/50915. Reentrant criteria callbacks, repeated POINT1/ordinary Reset/lifecycle/action cannot replay completion on the same AI. Without a reference, retain actual arrived actor and log once; locked lifecycle retries eligibility even stunned, without issuing another movement or new delay. Actual destroyed AI cannot complete through replacement; replacement still needs its own legitimate issued action and arrival. No replay choreography or persisted dedup invented.",
+    "preserved": "Existing third action live admission/stun-paused queue, GUID/epoch LOS-entry queue/destructor and post-heal recovery retained. Full companion source guard permits only intentional POINT1 change and still compares unchanged waypoints; older entry/heal fixtures explicitly stub this unrelated completion dependency, whose actual handler is compiled in dispatch suite. Loot/equip/scene/outro, other actors and data untouched."
+  },
+  "validation": {
+    "baseline": "PASS pinned14992461 actual MovementInform: two unissued POINT1 callbacks credit nearest inactive Priest twice and despawn twice. Defined controlled host reproduction, not an assertion of observed client failure. Earlier controller/action/lifetime baselines retained.",
+    "host": "Actual extracted action/reset/update/lifecycle/movement/completion/reference policy and native FunctionProcessor exercised: preissue/speech-reentry/wrongtype/id/repeated callback, both faction labels/dead eligible Player, outsider/duplicate participants, reentrant criteria/Reset,14 invalid Player and11 actor/scenario contexts, original100yd boundary, retained arrived actor/one warning/stunned lifecycle retry with no motion replay, destroyed/replacement AI. Native CriteriaTypes/IsGroupCriteriaType and Player-to-Scenario bridge are extracted; geometry/list/motion/cache/scenario counter controlled, no persisted client proof.",
+    "installed": "PASS selected MovementInform0x1a8 and Lifecycle0x110 use actual completion method; POINT8/id1/issued/arrival gates and factory zero flagsAI+16a/16b/16c checked. Compiler inlines map-reference selection/policy into completion, so verify its real PDATA body/backedge/gates rather than force noinline or require absent helper symbols. One shared92/50915 follows initialized completed latch and original1000ms despawn; accepted issued flag follows Talk8/before MovePoint. Prior selected entry/action/controller/queue/destructor proofs retained.",
+    "regressions": "PASS14-suite serial PowerShell7 ledger .codex/silver-hand-ritual-arrival-regressions.tsv: new pinned14992461 arrival and retained41ce375b action/7680556f final/e01a2c64 step8 baselines; installed AberrationCredit/native owner/shared bridge, full dispatch/arrival with nested RitualEntry admission/lifetime/data/PE and native final spell metadata; installed WaveLifetime, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 starts, SceneLifecycle and ArtifactForceEquip55 records/39 items; pinned third-entry lifetime baseline. Final arrival baseline and full installed dispatch suite rerun after adding native shared-counter and empty-list/late-participant assertions; selected PE additionally rerun after strengthening live-gate branches. Release build has0 warnings/errors; extracted-host compiler diagnostics retained, not suppressed. Catalogs/build serialized, no client traversal inferred.",
+    "evidence": ".codex/silver-hand-ritual-arrival-* and runtime-test/silver-hand-ritual-dispatch ignored evidence. No runtime assets, configs/passwords, characters or media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "292FF1BDC0D2E1B71F2CAB6C87B38FF2329A07AF467E5D2515C8EF903AA00218",
+    "bnet_sha256": "4D8677780420C889F626AE5F2FD2BDF5A5E4568B35E9BB3ADE65D93CA9CD0E40",
+    "build": "Release worldserver+bnetserver17.27s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 final-link names canonical output/original scripts/game/shared/common Release libraries and INCREMENTAL:NO. Selected installed implementation independently checked.",
+    "runtime": "Own hidden canonical worldserver PID18596 fresh ready, own UTF8 stdin server shutdown0, exit0/new DBErrors0/stderr empty/protected config-certificate hashes unchanged/gone. Final guard finds no worldserver/bnetserver. No user/unknown process stopped or own hidden server left running."
+  },
+  "remaining": [
+    "AI-local flags do not identify persisted quest attempt. Abandon/rapid retake retaining same1092/step8, accepted-motion interruption/re-entry and recreated-actor per-attempt dedup remain OPEN; no endpoint route replay. Native callback admits issued motion identity, not a host proof of physical path traversal or completed client rendering.",
+    "Third waypoint50877/50912 and last106777 LOS50915 have independent admission/recipient defects. This closes only third issued POINT1; it does not globally certify every50915 producer or persisted faction/group scenario counters. No failed spell cast is introduced here; existing final215260 failure recovery remains separate.",
+    "Firstfight/evade/50850, aberration half-health/one-hit/intentional companion deaths, final-wave gates/tracked deaths/periodic51838/retry, genuine loot/equip/save/relog/outro/actual Dalaran arrival and all36 full chains remain OPEN. Actual motion, speech, ritual effects, camera/pets and client traversal await user testing."
+  ]
+}

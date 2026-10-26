@@ -92,6 +92,28 @@ namespace SilverHandRitualEntry
     }
 }
 
+namespace SilverHandRitualArrival
+{
+    bool CanCredit(Player* player, Creature* actor)
+    {
+        return player && SilverHandRitualEntry::CanAdvance(actor) && player->IsInWorld() && !player->IsPreDelete() &&
+            player->CanContact() && !player->isGameMaster() && !player->IsBeingTeleported() && player->getClass() == CLASS_PALADIN &&
+            player->GetMap() == actor->GetMap() && player->GetInstanceId() == actor->GetInstanceId() &&
+            player->InSamePhase(actor) && player->IsWithinDistInMap(actor, 100.0f) &&
+            !player->GetQuestRewardStatus(42120) && player->GetQuestStatus(42120) == QUEST_STATUS_INCOMPLETE;
+    }
+
+    Player* SelectPlayer(Creature* actor)
+    {
+        if (!SilverHandRitualEntry::CanAdvance(actor))
+            return nullptr;
+        for (auto const& reference : actor->GetMap()->GetPlayers())
+            if (CanCredit(reference.getSource(), actor))
+                return reference.getSource();
+        return nullptr;
+    }
+}
+
 // 106429
 class npc_travar_first : public CreatureScript
 {
@@ -625,6 +647,9 @@ public:
         uint64 _entryGeneration = 0;
         bool _entryPending = false;
         bool _ritualStarted = false;
+        bool _ritualMotionIssued = false;
+        bool _ritualArrived = false;
+        bool _ritualCompleted = false;
 
         void Reset() override
         {
@@ -657,6 +682,7 @@ public:
                     return;
                 }
                 Talk(8);
+                _ritualMotionIssued = true;
                 me->GetMotionMaster()->MovePoint(1, 1914.39f, 2335.43f, 75.56f);
             }, _functions.CalculateTime(1000));
         }
@@ -669,7 +695,20 @@ public:
         void UpdateLifecycle(uint32 diff) override
         {
             SilverHandCompanion::Recover(me, _pendingHealRecovery, wait_heal);
+            CompleteRitualArrival();
             _entryFunctions.Update(diff);
+        }
+
+        void CompleteRitualArrival()
+        {
+            if (!_ritualMotionIssued || !_ritualArrived || _ritualCompleted)
+                return;
+            Player* player = SilverHandRitualArrival::SelectPlayer(me);
+            if (!player)
+                return;
+            _ritualCompleted = true;
+            me->DespawnOrUnsummon(1000);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50915);
         }
 
         void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
@@ -711,11 +750,12 @@ public:
             }
             else if (type == POINT_MOTION_TYPE)
             {
-                if (id == 1)
+                if (id == 1 && _ritualMotionIssued && !_ritualArrived)
                 {
-                    me->DespawnOrUnsummon(1000);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50915);
+                    _ritualArrived = true;
+                    CompleteRitualArrival();
+                    if (!_ritualCompleted)
+                        TC_LOG_WARN("scripts", "Silver Hand ritual arrival has no eligible stage8 participant; retaining Travard for credit retry");
                 }
             }
         }

@@ -30,6 +30,22 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
   if($script -eq 'npc_travar_third'){
    $beforeEntry=Block $entryPinned "class $script : public CreatureScript"
    $entryNormalized=$actual.Replace("        bool _ritualStarted = false;`n",'')
+   foreach($field in @('_ritualMotionIssued','_ritualArrived','_ritualCompleted')){$entryNormalized=$entryNormalized.Replace("        bool $field = false;`n",'')}
+   $entryNormalized=$entryNormalized.Replace("        "+(Block $entryNormalized 'void CompleteRitualArrival(')+"`n`n",'')
+   $oldMovement=Block $beforeEntry 'void MovementInform('
+   $newMovement=Block $entryNormalized 'void MovementInform('
+   $oldPoint=Block $oldMovement 'if (id == 1)'
+   $newPoint=@'
+if (id == 1 && _ritualMotionIssued && !_ritualArrived)
+                {
+                    _ritualArrived = true;
+                    CompleteRitualArrival();
+                    if (!_ritualCompleted)
+                        TC_LOG_WARN("scripts", "Silver Hand ritual arrival has no eligible stage8 participant; retaining Travard for credit retry");
+                }
+'@
+   if($newMovement -cne $oldMovement.Replace($oldPoint,$newPoint.Replace("`r",''))){throw 'Third waypoint behavior changed outside separately tested POINT1 arrival'}
+   $entryNormalized=$entryNormalized.Replace($newMovement,$oldMovement)
    $entryNormalized=$entryNormalized.Replace((Block $entryNormalized 'void DoAction('),(Block $beforeEntry 'void DoAction('))
    foreach($method in @('void Reset(','void UpdateLifecycle(','void MoveInLineOfSight(')){$entryNormalized=$entryNormalized.Replace((Block $entryNormalized $method),(Block $beforeEntry $method))}
    foreach($field in @('FunctionProcessor _entryFunctions;','uint64 _entryGeneration = 0;','bool _entryPending = false;')){$entryNormalized=$entryNormalized.Replace("        $field`n",'')}

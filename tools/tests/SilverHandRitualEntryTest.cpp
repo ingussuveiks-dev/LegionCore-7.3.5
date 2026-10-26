@@ -157,6 +157,7 @@ struct RitualAI : CreatureAI
     bool _entryPending=false;
     EventMap events;
     uint32 talks=0;
+    void CompleteRitualArrival(){}
     explicit RitualAI(Creature* actor):me(actor){actor->i_AI=this;}
     void Talk(uint32 line){assert(line==0);++talks;}
 #include "RitualLos.inc"
