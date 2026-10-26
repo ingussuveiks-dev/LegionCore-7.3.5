@@ -44,7 +44,8 @@
       "handler": "Hunter additional artifact selection after Continuing the Legend44043",
       "problem": "Eligible level105/BM-completed context has44043 rewarded but neither additional specialization chosen. Trueshot menu20227 has no options;107317 additionally lacks GOSSIP1 and has no SmartAI selector action. Later107973 shares the empty menu.",
       "investigation_audit": "docs/audits/hunter-additional-artifact-offer-open-2026-10-26.json",
-      "limit": "OPEN, explicitly deferred by user. Read-only prerequisite/phase/menu/selection-code investigation only; no character/content/code change or forced quest. Existing Dalaran review alternative untested in current client; proper repeat selection, stale responses, abandoned-route retry and full client traversal need repair/review."
+      "limit": "Repaired/deployed92726E10: both Trueshot menus/native198430, Hunter240 source32/33 completion/level/retry and stale-response checks;512 ASAN cases, TEMP repeat/custom refusal/native26972, Warlock/all36 onboarding/selected canonical PE/Scepter pass. Own22952 ready/shutdown0/exit0, no new diagnostics. Actual client selection, child effects and complete MM/Survival/third selection remain pending; no character progress edited.",
+      "repair_audit": "docs/audits/hunter-additional-artifact-choice-2026-10-26.json"
     },
     {
       "path": "src/server/scripts/Legion/faronaar_chain.cpp",
@@ -696,7 +697,10 @@
       "broken_actor_links": [],
       "video": {
         "url": "https://www.youtube.com/watch?v=udzuLoDW1yc",
-        "reviewed_intervals": ["Sparse decoded samples14:25, equipment/bag frame at unestablished second,14:50,14:56, loading/Skyhold and paused15:12; unseen intervals not verified", "New settled muted combat stills11:51/12:16 Defend Hruthnir and12:31/12:41 plus12:49 sample Defeat Magnar; not continuous wave-count/timing/audio proof. Weapon frame after seek-to11:11 has unverified decoded timestamp and is not early-appearance evidence; see magnar_wave_deaths_audit."],
+        "reviewed_intervals": [
+          "Sparse decoded samples14:25, equipment/bag frame at unestablished second,14:50,14:56, loading/Skyhold and paused15:12; unseen intervals not verified",
+          "New settled muted combat stills11:51/12:16 Defend Hruthnir and12:31/12:41 plus12:49 sample Defeat Magnar; not continuous wave-count/timing/audio proof. Weapon frame after seek-to11:11 has unverified decoded timestamp and is not early-appearance evidence; see magnar_wave_deaths_audit."
+        ],
         "status": "partial muted visual samples, not full video/audio or client verification; see return_admission_audit and magnar_wave_deaths_audit"
       },
       "checkpoints": {
@@ -1514,7 +1518,18 @@
       "video": {
         "url": "https://www.youtube.com/watch?v=aAzrSVxEElk",
         "reviewed_intervals": [],
-        "reviewed_frames": ["0:02", "2:21", "3:00", "8:00", "20:02", "20:09", "20:16", "20:54", "21:01", "21:06"],
+        "reviewed_frames": [
+          "0:02",
+          "2:21",
+          "3:00",
+          "8:00",
+          "20:02",
+          "20:09",
+          "20:16",
+          "20:54",
+          "21:01",
+          "21:06"
+        ],
         "status": "partial muted frame sampling; full sequence and audio remain unreviewed; see sequence_review_audit"
       },
       "checkpoints": {
@@ -1694,8 +1709,8 @@
       "death_credit_review": "Merlis107831 resolves native player/charmer/owner before cleanup and uses that player for51615/2448; null/unowned killers retain original actor/add cleanup. Pinned pet-credit failure/current ASAN/native26972 stage7 and Garona intro pass. DEPLOYED canonical world3B4C44A1 after user servers were already absent; actual installed factory/death130 verified, owned PID4824 ready/shutdown0/exit0/no new diagnostics and stopped. Actual combat/group/faction/unowned companion/re-entry/later loot/VFX remain separate checks.",
       "item": 128870,
       "start": 42501,
-        "status": "partial Garona intro and Merlis owned-killer/null credit repairs tested/deployed in canonical Release; full chain/client visual traversal pending",
-        "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
+      "status": "partial Garona intro and Merlis owned-killer/null credit repairs tested/deployed in canonical Release; full chain/client visual traversal pending",
+      "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
       "quests": [
         {
           "id": 42501,

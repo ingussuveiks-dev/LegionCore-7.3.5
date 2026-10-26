@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion 7.3.5.26972",
+  "status": "Repaired, native/TEMP/ASAN/selected Release checks passed and deployed; client interaction and complete routes pending",
+  "cause": "Trueshot Emmarel107317/107973 shared empty menu20227;107317 also lacked GOSSIP1. Hunter240 had no source32/33 display/execution filtering. Existing Continuing the Legend44043 could be rewarded without a second selection; the actual historical user interaction was not captured.",
+  "implementation": [
+    "Restore native103645 review-weapons option on menu20227 and ordinary gossip flag for both SmartAI actors.107317 accepts44043 through invoker198430; both actor gossip events use the same native198430 as Dalaran102478. Preserve107973 id0 reward42659 ->216477 and existing Dalaran menu19115 options1/2; no phase change or weapon/quest/character grant.",
+    "Apply source32 and33 conditions to Hunter240 display and execution beside audited Warlock245. Do not send an empty Hunter frame. Stale responses recheck both scopes before casting native reward or onboarding callback.",
+    "Source32 requires Hunter, level98 and Weapons of Legend40618 incomplete/complete/rewarded. Each response excludes its actual acquisition finale COMPLETE/REWARDED: BM42185, Survival40385, MM40419. First selection with no chosen quest permits all unfinished routes. A recorded chosen quest permits its unfinished retry; new additional routes require level102 and a rewarded acquisition finale. Both review menus expose precisely any eligible route after40618 reward.44043 min102 supplies the local additional-level evidence; its active/rewarded state is not required for recovery.",
+    "Matching26972 native reward effects139 remove the other two chosen quests. The repair leaves those native effects and ordinary onboarding/admission intact; chosen history is not treated as proof of completed acquisition, and weapon ownership/shop purchases are not completion predicates.",
+    "Migration12 refuses all managed changes if an unexpected condition/menu/AI slot or custom actor script conflicts. It replaces only target choice conditions, uses free actor IDs and preserves later campaign rows. SQL stayed ignored outside updater directories until staged code verified and matching EXE promoted with servers absent."
+  ],
+  "local_sources_reviewed": [
+    "Actual MariaDB schema/Emmarel templates, menu options, SmartAI, source15/32/33 records, quest templates/addon, starters/enders and enUS44043 description. No character identifiers or progression changes.",
+    "Typed26972 DB2 reader plus read-only hotfix overlays:198430 effect205/choice240;198433/198435/198436 effects16 chosen40621/40619/40620,90 credit104634,139 removal of alternative choices and64 children211232/211234/211233. BroadcastText103645 exact native review text. Child playback was not executed by this catalog.",
+    "Production Player display, MiscHandler response, ConditionMgr quest/class/level/ElseGroup dispatch and native gossip flag admission; existing36-route onboarding and Warlock choice regressions. Local evidence resolves this menu/consumer gap; no new Trinity/GitHub/YouTube donor was needed or reviewed."
+  ],
+  "checks": [
+    "Test-HunterArtifactChoice -AddressSanitizer: actual production display/response and condition fragments, native ElseGroup evaluation and required gossip flag filter;512 level/selection/completion masks, both menus/actors, complete/rewarded exclusion, first intro states, classes, stale responses, repeated/abandoned selected route, empty frames and unrelated choice pass. Spell casting, script callback and packet transport boundaries are controlled; this is not live client spell execution.",
+    "Actual-schema TEMP fixtures install249 conditions/menu/three events twice; original107973 campaign reward and three Dalaran options preserved. NULL-comment custom response condition, custom menu and occupied later Emmarel AI slot each refuse all managed changes; no production rows changed by tests. Pinned original2-flag admission and controlled missing-condition/unfiltered-frame counterfactuals are separate from passing repaired cases.",
+    "Typed native26972/hotfix HunterArtifactChoiceCatalog passes. WarlockArtifactChoice64 completion masks and map/admission regression passes. ArtifactOnboarding all36 choices/900 race-class-owned cases/2431 native admission cases passes.",
+    "Original generated scripts/game Release build and separate final links use original common/shared/game/scripts LIB paths. Existing Player.cpp36830/36832 C5055 enumeration/floating warnings remain; no new production warning. Selected staged/canonical Hunter PE/map verifies actual240/245 guarded source32/33 consumers and empty-frame branch. Canonical Scepter login and Heroic Leap selected consumers pass.",
+    "Owned canonical world22952 reached fresh ready; updater12 actually RELEASED with249 conditions, both flags3, correct three selection actions and unchanged107973 campaign action. Shutdown0/exit0, stderr/newDBErrors0, protected configs/certificates unchanged. No task-owned or user/unknown server remained at final check.",
+    "Before/after diagnostics retained under ignored .codex/hunter-choice for every test/build/link/promotion/startup group. No new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Active crash count0/DBErrors0. No new diagnostic archive needed."
+  ],
+  "development_failures_retained": [
+    "Initial TEMP harness used SET SESSION TRANSACTION READ ONLY, which MariaDB rejected for CREATE TEMPORARY TABLE LIKE. Removed that transaction setting from TEMP-only regression; production config remains private and live tests still mutate TEMP tables only.",
+    "Initial generated condition branch combined negative and positive reward tests for the same finale. Native primary key excludes NegativeCondition, so TEMP insert rejected the duplicate. Removed logically impossible own-finale additional branch; final249 rows and repeat install pass.",
+    "Initial typed probe expected effect275; raw native data established LAUNCH_QUEST_CHOICE205. Corrected assertion and reran. No production change was based on the guessed effect. Intermediate fixture warnings fixed; final Hunter native compile clean. All development failures returned nonzero and were kept as failed evidence, with clean post-test server/crash inventories."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "92726E10D2C1C75F635C972CE4E184FC62DD24C9DE46CD5150451B1C02CA82CF",
+    "world_map_sha256": "C6B1DBFE59BA0BF3CB7DE51A4853AC7418DABC3A1255CCA20C5A9C27A45025C4",
+    "bnet_sha256": "8EFEF32500A68D18CC1E13196E705AEFCF8F284043796EB4A42FD819735EA549",
+    "migration": "2026_10_26_12_hunter_additional_artifact_choice.sql",
+    "migration_sha1": "13005E8182CE54B5FFA4DEED6C9FA53272C39796",
+    "process_rule": "Rechecked both server names before promotion and migration copy; none present. No user/unknown process stopped. Task-owned22952 gracefully shut down."
+  },
+  "client_checks_pending": [
+    "Level105 completed-BM Hunter: visible Trueshot Emmarel menu should offer only Survival/MM, real response should start the corresponding ordinary route. Do not reset or grant that character progress.",
+    "First choice on40618,44043 accept/reward/reopen, both later Emmarel phase/location variants, Dalaran review, third choice, abandonment/relog/re-entry, failed native cast and full quest-log admission. Native filtering allows retry but does not guarantee that every acquisition actor respawns.",
+    "Actual native child-spell/dialogue/UI behavior, complete MM/Survival traversal, artifact loot/equip/return/VFX, pet/guardian/group and faction alternatives in those scenarios remain separate work. This selection-only repair changes no combat credit or group eligibility. No all36 or Warrior boost/client certification."
+  ],
+  "next": "Continue all36 worklist; next concrete inherited combat finding is Outlaw Degauz102185 raw pre-hit Player-only surrender thresholds and scaled lethal/pet paths."
+}

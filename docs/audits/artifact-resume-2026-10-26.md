@@ -3,6 +3,16 @@
 Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, current Git status/log, and the worklist; it is a checkpoint, not proof that the whole project is finished.
 
 
+
+## Latest continuation: Hunter additional choice repaired
+
+- Hunter continuation supersedes the earlier OPEN/ignored patch sections below. Focused audit: `hunter-additional-artifact-choice-2026-10-26.json`; original investigation retained as history.
+- Both Trueshot Emmarels now expose native review/choice198430;107317 accept44043 opens it too. Keep107973 reward42659 action. Hunter240 consumes source32/33 with first/additional level admission, real finale COMPLETE/REWARDED exclusion, unfinished chosen-route retry and stale-response revalidation. No phase, character or weapon grant.
+-512 native/ASAN masks, actual-schema TEMP repeat/three custom-conflict variants, typed26972/hotfix catalog, Warlock/all36 onboarding and selected canonical Hunter/Scepter/Leap checks pass. Client MM/Survival/third selection and full-chain/VFX remain pending.
+- Canonical world SHA256 `92726E10D2C1C75F635C972CE4E184FC62DD24C9DE46CD5150451B1C02CA82CF`, map `C6B1DBFE59BA0BF3CB7DE51A4853AC7418DABC3A1255CCA20C5A9C27A45025C4`, bnet `8EFEF32500A68D18CC1E13196E705AEFCF8F284043796EB4A42FD819735EA549`; updater12 RELEASED/hash13005E8182CE54B5FFA4DEED6C9FA53272C39796. Original LIB inputs verified. These supersede older hashes below.
+- Both user servers absent at promotion; own22952 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged. No hidden server remains. Diagnostics in ignored `.codex/hunter-choice`; active Crashes0/DBErrors0. Recheck processes before further deployment.
+- Next concrete inherited finding: Outlaw Degauz102185 raw pre-hit Player-only90/60/30 surrender, scaled lethal and owner/pet paths. All36 remain in scope; client checks stay with user.
+
 ## Latest update after this checkpoint: Heroic Leap
 
 - User showed the next Warrior1093 step8 **Jump Into The Fray**, Heroic Leap6544 still returning No path available on the ship. This supersedes the earlier immediate next task until the client retest is reported.
@@ -54,7 +64,7 @@ Relevant tests: `Test-BoostCharge.ps1 -Baseline/-AddressSanitizer`, `Test-BoostS
 
 Separate open observation: generic `PathGenerator::GetTotalLength` omits its final segment. Not repaired or claimed resolved by the corridor change. Preserve this finding if addressed later.
 
-## Deferred old DBErrors archive â€” do not clear while user server runs
+## Deferred old DBErrors archive — do not clear while user server runs
 
 At checkpoint `logs/DBErrors.log` still has **232 bytes**, exactly the two old missing-spell78/88161 creation messages. SHA256 from read-only shared access:
 
@@ -62,7 +72,7 @@ At checkpoint `logs/DBErrors.log` still has **232 bytes**, exactly the two old m
 
 The content cause is repaired by `bfdf3354`, tested and loaded by updater11. An attempted offline archive refused **before any mutation** because the user restarted both servers after being told the EXE was ready. **No archive/truncation occurred.** This is correctly deferred maintenance, not a new runtime failure. When safely offline, recheck bytes/new entries immediately, archive only wholly resolved evidence under ignored `build-extractors/bin/Release/fixed/warrior-creation-actions-2026-10-26/`, preserve/verify hashes and then zero the reviewed active log. If new/mixed evidence appears, investigate it and leave unresolved material visible. Ordinary Get-FileHash sharing can fail on the writer-held log; read-only FileStream with FileShare.ReadWrite worked for checksum only. Never bypass the active-server maintenance rule.
 
-## Unfinished Hunter additional-artifact selection â€” next main repair
+## Unfinished Hunter additional-artifact selection — next main repair
 
 Tracked audit: `hunter-additional-artifact-offer-open-2026-10-26.json`; worklist marks OPEN. The reported Hunter is level105, has rewarded40618 and BM chain41541/41574/42158/42185 plus chosen40621 and Continuing the Legend44043, but no Survival/Marksmanship chosen/start. Do not export identifiers or grant missing selections to that character.
 

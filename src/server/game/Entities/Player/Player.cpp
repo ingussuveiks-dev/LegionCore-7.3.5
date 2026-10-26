@@ -38792,9 +38792,9 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     if (!playerChoice)
         return;
 
-    // Calydus must offer only unfinished acquisition routes. Keep this scoped
-    // until the unrelated choice-condition data has its own content audit.
-    if (choiceId == 245 && !sConditionMgr->IsObjectMeetToConditions(this,
+    // Calydus and Emmarel offer only eligible, unfinished acquisition routes.
+    // Other choice-condition data has not received this content audit.
+    if ((choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,
         sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, choiceId)))
         return;
 
@@ -38816,7 +38816,7 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
     {
         auto const& playerChoiceResponseTemplate = playerChoice->Responses[i];
 
-        if (choiceId == 245 && !sConditionMgr->IsObjectMeetToConditions(this,
+        if ((choiceId == 245 || choiceId == 240) && !sConditionMgr->IsObjectMeetToConditions(this,
             sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE_RESPONS, playerChoiceResponseTemplate.ResponseId)))
             continue;
 
@@ -38898,6 +38898,10 @@ void Player::SendDisplayPlayerChoice(ObjectGuid sender, int32 choiceId)
         }
     }
 
+    // A low-level Hunter may retry an existing selection, but have no new
+    // eligible route yet. Never display an empty artifact selection frame.
+    if (choiceId == 240 && displayPlayerChoice.Responses.empty())
+        return;
     SendDirectMessage(displayPlayerChoice.Write());
 }
 

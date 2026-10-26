@@ -679,7 +679,7 @@ void WorldSession::HandleChoiceResponse(WorldPackets::Misc::ChoiceResponse& pack
 
     // Recheck at execution: a stale selection window must not restart a
     // completed artifact route or cast its hidden chosen-quest reward spell.
-    if (packet.ChoiceID == 245 &&
+    if ((packet.ChoiceID == 245 || packet.ChoiceID == 240) &&
         (!sConditionMgr->IsObjectMeetToConditions(_player,
             sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_PLAYER_CHOICE, packet.ChoiceID)) ||
          !sConditionMgr->IsObjectMeetToConditions(_player,
