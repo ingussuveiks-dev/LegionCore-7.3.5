@@ -1152,6 +1152,17 @@ public:
                 {
                     if (state == GO_JUST_DEACTIVATED || player->HasItemCount(120978))
                     {
+                        if (!player->HasItemCount(120978))
+                        {
+                            ItemPosCountVec destination;
+                            InventoryResult result = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, destination, 120978, 1);
+                            if (result != EQUIP_ERR_OK)
+                            {
+                                player->SendEquipError(result, nullptr, nullptr, 120978);
+                                go->SetLootState(GO_READY);
+                                return;
+                            }
+                        }
                         instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46130); //Step 4
                         if (Creature* trigger = go->FindNearestCreature(103454, 10.0f))
                             trigger->DespawnOrUnsummon();

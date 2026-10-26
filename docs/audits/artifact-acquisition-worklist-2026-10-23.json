@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "247318 inventory preflight before retrieval progression",
+      "problem": "A known native capacity error was not checked until199827 storage after pickup had already sent46130/despawned the trigger/started180850.",
+      "repair_audit": "docs/audits/ashbringer-pickup-capacity-2026-10-26.json",
+      "limit": "Unowned120978 now uses native CanStoreNewItem before all original effects; non-OK sends exact native error, restores READY and returns. Owned/success paths unchanged. Pinned counterfactual/native bridges/ASAN/repeated-error/recovery/wrong-stage/installed CFG checked. Not a reservation or fix for later null-store/failed-cast/attempt replay; no direct grant or whole-client/VFX certification."
+    },
+    {
       "path": "sql/updates/world/2026_10_26_02_ashbringer_spell_loot.sql",
       "handler": "Native199827 retrieval spell loot",
       "problem": "180850 triggers native157/ItemTypezero199827, but no spell_loot_template199827 existed;249 is equip-only and the separate GO loot row is unbound.",
@@ -1008,7 +1015,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: native199827 weapon-loot source restored; premature completion criterion and actor memory/motion/scaled-lethal guards repaired; enclosing failed-storage/retry/equip unresolved; ordinary door fixture Defender-blocked; full acquisition/visual/client traversal pending",
+      "status": "partial: native199827 weapon-loot source and known capacity-error preflight/reopen repaired; premature completion and actor guards retained; later failed-cast/null-store/race/equip unresolved; ordinary door fixture Defender-blocked; full acquisition/visual/client traversal pending",
+      "pickup_capacity_audit": "docs/audits/ashbringer-pickup-capacity-2026-10-26.json",
+      "pickup_capacity_review": "Before any original pickup progression/effects, unowned120978 now uses native CanStoreNewItem; any error is sent unchanged and native READY reset permits retry, without granting anything. Owned copies bypass the unique-item preflight and successful native creation remains original180850->199827. Pinned no-check counterfactual,160 retained cases,12 error/owned/actor cases with repeated failures/six recoveries/four wrong stages, ASAN and selected installed slot50/CFG checked. Later capacity races/null StoreNewItem/failed180850, accepted repeat/attempt epochs and actual equip/save/group/faction/VFX/client remain OPEN.",
       "spell_loot_audit": "docs/audits/ashbringer-spell-loot-2026-10-26.json",
       "spell_loot_review": "Native180850->199827(effect157,ItemType0)->AutoStoreLoot199827 is the missing genuine source, not249 or chest Data1. Restore exact120978 spell-loot row and fourteen source12 rules; keep original chestData1zero and all effects/callbacks. Native/hotfix source, actual TEMP migration/custom variants, condition/cached recheck and storage fragments/ASAN/installed native consumer verified. No direct grant/character edit. Full-bag/null-store retrieval progress and replay remain OPEN because AutoStoreLoot bool is slot-count based; missing32543 is reported, not invented. Actual equip/save/group/faction/VFX/client not certified.",
       "pickup_completion_audit": "docs/audits/ashbringer-pickup-completion-2026-10-26.json",
@@ -1127,7 +1136,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Native199827 spell-loot source is restored; do NOT bind the separate GO row or add an item-first gate that blocks native creation. Prioritize enclosing full-bag/null-store/failed-cast preflight and progress/retry: AutoStoreLoot returns slot count, not stored-item success; original46130/114505/180850 domination flow can advance without an item. Trace accepted retrieval/post-store equip/save/relog, stage/attempt/abandon/re-entry and duplicate suppression without arbitrary grants. Missing native32543 client presentation remains open. Then775 entrance/admission, trash80/50/35/125 owner/group eligibility, prison/missing actors, late-door state and final Tyrion/Tyrosus/hippogryph return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender; independent work may continue. Pinned donors/full relevant footage before choreography edits. Entire chain/faction/group/VFX/client verification remains OPEN."
+      "next_action": "Native199827 source and initial native-capacity failure/reopen preflight are repaired. Do NOT bind the separate GO row or add an item-first gate blocking creation. Prioritize failed180850/null StoreNewItem/post-preflight capacity race and accepted progress/retry: AutoStoreLoot bool is slot count, not success; original46130/114505/180850 domination flow can still advance on later failures. Trace actual accepted timing/post-store equip/save/relog, stage/attempt/abandon/re-entry and repeat suppression without grants. Missing32543 presentation remains open. Then775 entrance/admission, trash80/50/35/125 owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender; independent work may continue. Pinned donors/full relevant footage before choreography edits. Entire chain/faction/group/VFX/client verification remains OPEN."
     },
     {
       "class_id": 3,

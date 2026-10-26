@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Preflight native120978 inventory admission before the existing pickup's first progression/cast/cleanup. Not a capacity reservation, complete failed-cast/null-store recovery, actual client retrieval/VFX or36-chain certification.",
+  "sources": [
+    {
+      "source": "Clean main/origin bf251a6d; worklist/routes/donor review; full pickup, native CanStoreNewItem wrapper, AutoStoreLoot item branch, SetLootState and relevant LootHandler release/GameObject update branches",
+      "review": "Original pickup sends46130 and despawns103454 before180850; native199827 later attempts item storage. A known full/unique/error capacity result could therefore arrive after progression began. Native CanStoreNewItem delegates to CanStoreItem with no existing item, no swap, default quest=false; those same native inventory rules are used here, not a free-slot guess. Native completed ordinary chest release dispatches state3 with the Player and then clears its empty loot; it does not overwrite a callback's READY reset. A READY object avoids the separate next-tick JUST_DEACTIVATED cleanup/respawn branch. Full actual release/update engine was read, not compiled into this bounded fixture."
+    },
+    {
+      "source": "Matching native AshbringerPickupCatalog/AshbringerLootCatalog and deployed spell-loot migration from prior unit, read-only runtime bindings",
+      "review": "Retain247318/Data1zero/103454/180850 and native creation180850->199827/157/ItemType0->spell loot120978. Source12 fourteen rules remain deployed and unchanged. Native249 equips only an existing item. Existing carried120978 bypasses preflight so an equipped/owned-copy replay is not incorrectly denied by a unique-item count check. No HasItemCount-first requirement that would block native creation for an empty owner. Native enums/quantity/NULL_BAG0/NULL_SLOT255 and actual default CanStoreNewItem bridge are extracted in regressions; native inventory services themselves are controlled in the fixture."
+    },
+    {
+      "source": "Local exact26972 TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted go_bs_the_ashbringer search; previously retrieved pinned Titans relevant pickup method",
+      "review": "Historical targeted script grep returned no matching implementation. Reused prior relevant method from Titans76b195fed30e94da716688639c1c1b1d05d60f55, which has no inventory preflight; no donor code imported or full donor reviewed. No footage/transcript/client traversal reviewed. This preserves original successful choreography and uses native error/admission services, not a newly inferred retail timer or visual."
+    }
+  ],
+  "repair": {
+    "implementation": "Inside the original admitted step3 callback, if120978 is not already owned, call CanStoreNewItem(NULL_BAG,NULL_SLOT,destination,120978,1). On any non-OK result, send the original native inventory error with item120978, restore GO_READY through native SetLootState and return before46130/trigger cleanup/180850/Delete. No error suppression, artificial grant or storage performed by preflight.",
+    "preserved": "All original target/Player/instance/step3 and completed-or-owned admission; genuine199827 source12 loot creation, quest/phase/spawn data; successful46130,103454/10yd cleanup,self180850 triggered and activated2 Delete. The earlier premature152 removal remains. Whole source excluding exactly this preflight equals the pinned earlier completion-only fix; retained actor wrappers already isolate this separately tested pickup class.",
+    "open": "This is a preflight, not an inventory lock or proof of later storage/equip. Capacity can change during triggered effects; StoreNewItem may return null after a successful check;180850 can reject or start earlier effects before later failure. Those later failures, actual engine item creation/save/relog, quest/phase/opening/report admission, repeated accepted callbacks, attempt/reset/abandon/re-entry epochs, group/faction/pet credit and rendered VFX remain OPEN. Already-owned replay is intentionally unchanged and not certified exactly-once. The native AutoStoreLoot slot-count bool is still not used as a success assertion."
+  },
+  "validation": {
+    "baseline": "PASS pinnedbf251a6d actual callback through native SetLootState: controlled full-inventory result is never queried, yet46130/retrieval/trigger cleanup occur and the object stays completed; no native error/reopen. Separate pinned85b4f0c2 premature152 counterfactual retained. No user character or observed client failure claimed.",
+    "current": "PASS ordinary/current ASAN and installed wrapper. Existing160 stage/state/owned/trigger cases retain their successful/no-completion behavior. Twelve result(INV_FULL/MAX_COUNT/ITEM_NOT_FOUND)/owned/missing-trigger cases stop unowned errors before both controlled Players receive any criterion/cast/cleanup and retain exact error/READY. Six unowned cases fail twice then recover native capacity and retry original retrieval, without granting an item in the callback. Four wrong stages do not query inventory or add errors/effects. Owned variants bypass the capacity check. Native CanStoreNewItem wrapper, LootState/InventorySlot/InventoryResult enums, SetLootState dispatcher and InstanceScript fanout are extracted; inventory allocation/effects/map eligibility remain controlled. These are not actual group/faction or capacity-race tests.",
+    "installed": "PASS selected script callback slot50/native SetLootState dispatch. Unowned gate reaches actual inlined CanStoreItem with bag0/slot255/count1 and item120978 before the sole46130 criterion. Nonzero native result flows unchanged to SendEquipError, READY1/null-target reset, and control-flow graph cannot reach any later criterion/trigger/cast/Delete. Owned/success paths retain original side effects and no152/775. Original native Scenario reward count comparison and retained Balnazzar/Yrgrim dispatch proofs pass separately.",
+    "regressions": "PASS both pinned baselines/current ordinary/current ASAN/Release; native199827 spell-loot/condition/storage wrapper, Balnazzar/Zerus/FlameTargets Release, ScepterLogin Release, ArtifactForceEquip, SceneLifecycle and Dalaran149/22/36. Independent installed Silver Hand discovery/identity and Ashbringer door proof retained. Quarantined ordinary door fixture remains blocked, not rebuilt/restored/executed and not bypassed by this distinct pickup fixture.",
+    "diagnostics": "Native size_t-to-uint8 and shared condition narrowing warnings remain visible. Existing installed pickup proof was updated for the actual new two-owned-check/capacity/error/reopen branches and compiler register allocation; no fixed opcode hash substituted for selected-handler/control-flow proof. No logs/checks/security protection disabled. Catalog-backed wrappers run serially because their compiler helper shares build-item.cmd.",
+    "evidence": ".codex/ashbringer-pickup-capacity-* and ignored runtime-test/ashbringer-pickup-completion generated production fragments. No credentials/configuration/certificates/character/runtime data or binaries committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "20819E2350D28BAD2DA7BBF8EA398C820D23BA6FDD3E4B0AE16A4355FD80E821",
+    "bnet_sha256": "4AE3255DE04FA70E54243561615262EA858D729D181FF32913DE5398D57D19EE",
+    "build": "Canonical world+bnet Release MSBuild exit0, LinkIncremental=false/no OutDir. Actual original final-link scripts/game/shared/common inputs and shared/common bnet inputs verified independently of selected deployed handler and hashes.",
+    "runtime": "Own canonical hidden PID14340 reached fresh ready; own stdin server shutdown0/exit0, new DBErrors0/stderr empty/protected config/cert/key hashes unchanged, PID gone. No user/unknown server stopped and no own hidden server left. Not actual775 pickup/client/VFX traversal."
+  }
+}
