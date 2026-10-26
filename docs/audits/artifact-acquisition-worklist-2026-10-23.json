@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/Dreadblades.cpp",
+      "handler": "Lord Brinebeard102239 scaled owner threshold and independent native finale",
+      "problem": "102239 checked only a Player and pre-hit template30% in raw DamageTaken. Fresh scaled player/pet lethal hits could skip48531. The only EVENT3 death timer was inside FindNearestCreature95464 success; even a scheduled timer was processed after UpdateVictim, so losing combat could stall the native finale. JustDied also dereferenced a possible null killer.",
+      "repair_audit": "docs/audits/dreadblades-brinebeard-finale-2026-10-26.json",
+      "limit": "Deployed6E8F858D, pinned player/pet death and missing-emitter counterfactual/current48 ASAN plus native26972 and selected postA8/death130/update18/timer/reset PE pass. Own1040 ready/shutdown0/exit0/no new diagnostics. Actual visual/cast/audio/client/AI suspension/whole route pending; optional visual failures remain diagnosed."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Dreadblades/Dreadblades.cpp",
       "handler": "Degauz102185 post-scaling surrender and owned-attacker credit",
       "problem": "102185 used raw DamageTaken, pre-hit template HealthBelowPct and a Player-only attacker test. A fresh scaled killing blow could kill before90/60/30 transitions; a pet/guardian could never supply48449. This is a source/native counterfactual finding, not a new captured user crash.",
       "repair_audit": "docs/audits/dreadblades-degauz-surrender-2026-10-26.json",
@@ -1838,7 +1845,7 @@
       "weapon": "The Dreadblades",
       "item": 128872,
       "start": 40847,
-      "status": "partial: Eliza102293 death48582 resolves native player/charmer/owner with unchanged speech/reveal. Pickup254087 now uses actual native loot128872, rejects early/ineligible callbacks, waits for native202040/202183/202182 linked parent/child equip and all four personal outro actors before48553, with no replacement item or explicit duplicate scenario reward. Pinned/current ASAN, TEMP data/native metadata and selected combined canonical PE pass. Deployed3F942221 with09 Data1 restoration after confirmed user shutdown; own29388 ready/shutdown0 and diagnostics clean, Scepter Release pass. Earlier surrender, actual client loot/equip/VFX/group/faction/re-entry and full-chain traversal remain OPEN. Degauz102185 scaled surrender/owned credit is now repaired/deployedF5D83509 with baseline/current ASAN/native metadata/selected PE/clean owned startup; full route still pending.",
+      "status": "partial: Eliza102293 death48582 resolves native player/charmer/owner with unchanged speech/reveal. Pickup254087 now uses actual native loot128872, rejects early/ineligible callbacks, waits for native202040/202183/202182 linked parent/child equip and all four personal outro actors before48553, with no replacement item or explicit duplicate scenario reward. Pinned/current ASAN, TEMP data/native metadata and selected combined canonical PE pass. Deployed3F942221 with09 Data1 restoration after confirmed user shutdown; own29388 ready/shutdown0 and diagnostics clean, Scepter Release pass. Earlier surrender, actual client loot/equip/VFX/group/faction/re-entry and full-chain traversal remain OPEN. Degauz102185 scaled surrender/owned credit is now repaired/deployedF5D83509 with baseline/current ASAN/native metadata/selected PE/clean owned startup; full route still pending. Lord Brinebeard102239 scaled owned48531 and native3s finale now repaired/deployed6E8F858D with ASAN/native catalog/selected PE/clean owned startup; full client/VFX pending.",
       "quests": [
         {
           "id": 40847,
@@ -1914,8 +1921,9 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Review Lord Brinebeard102239 Player-only/pre-hit30%48531 and failed visual-trigger/event progression, then Eliza30%202033 ward transition. Preserve native stage/death semantics; remaining client sequence is unverified.",
-      "degauz_surrender_audit": "docs/audits/dreadblades-degauz-surrender-2026-10-26.json"
+      "next_action": "Continue remaining chain review/client transition and visual checks. Eliza202033 typed data is an ordinary combat aura; do not force immortality or progression for an unproven buff-skipping blocker. Hunter additional-choice repair802295a9 awaits actual MM/Survival selection/traversal; all36 remain unfinished.",
+      "degauz_surrender_audit": "docs/audits/dreadblades-degauz-surrender-2026-10-26.json",
+      "brinebeard_finale_audit": "docs/audits/dreadblades-brinebeard-finale-2026-10-26.json"
     },
     {
       "class_id": 4,

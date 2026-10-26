@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest continuation: Brinebeard stage2 finale repaired
+
+- Audit `dreadblades-brinebeard-finale-2026-10-26.json`: actual post-scaling/owner/predicted30%48531 at1012 step2, original EVENT3/3000ms death now independent of missing/rejected visual emitter and victim/casting gates. Keep native202211->202210 AT presentation,1145/self-Kill/1147; null death safe, no extra item/group/scenario grant. Useful optional-visual diagnostics retained.
+- Pinned fresh player/pet death plus missing-emitter stall counterfactual, current48 native/ASAN variants/reentry/reset/intro/null/invalid scopes, typed26972 spell/step and selected actual postA8/death130/update18/timer/reset PE pass. Degauz native/shared Eliza/pickup/Hunter selected consumers/Scepter preserved. Actual full client/VFX/AI suspension/respawn/re-entry still pending.
+- Canonical world `6E8F858D2AF11D012C029BF90090CB2FC9D807578AE8279F7299DA9A638BB585`, map `EE35DDC7C0998586794EEB0BC9D66F5AA1DE5020664A379B8C299643E7FC83E9`, bnet `7088C15C2F66708B5920E0CF791DAFC19633FB9F4165E293DF5DEDDA485F3E4A`. No SQL. Own1040 ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged; no user server stopped or hidden server left. Active Crashes0/DBErrors0. Recheck actual processes.
+- Eliza202033 native data is Adrenaline Rush (infinite combat auras110/342), not an established mandatory surrender/quest transition. Her real death48582 and pickup48553 remain separate verified native leaves. Do not force immortality/credit to make a one-hit buff visible. Continue all36 worklist/remaining Hunter MM+Survival and other unreviewed routes; client tests stay with user.
+
 ## Latest continuation: Degauz stage0 surrender repaired
 
 - Focused audit `dreadblades-degauz-surrender-2026-10-26.json`: real post-scaling/attacker-relative strict90/60/30 transitions, native owner/charmer credit48449, actual Rogue40849/scenario1012 step0 admission, reentrant exactly-once retreat. Original dialogue/casts/crew/three summons preserved; no weapon or character grants.

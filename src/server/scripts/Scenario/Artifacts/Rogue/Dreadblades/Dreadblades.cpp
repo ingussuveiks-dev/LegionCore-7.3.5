@@ -444,11 +444,15 @@ public:
         
         void Reset() override
         {
-            events.Reset();
+            // A combat reset must not cancel the already earned finale.
+            if (!outro)
+                events.Reset();
         }
         
         void EnterCombat(Unit* who) override
         {
+            if (outro)
+                return;
             Talk(1);
             events.RescheduleEvent(EVENT_1, 1000);
             events.RescheduleEvent(EVENT_2, 15000);
@@ -456,14 +460,17 @@ public:
         
         void JustDied(Unit* who) override
         {
+            Unit* source = who ? who : me;
+            if (Player* player = source->GetCharmerOrOwnerPlayerOrPlayerItself())
+                source = player;
             Conversation* conversation = new Conversation;
-            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1147, who, NULL, *who))
+            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1147, source, NULL, *source))
                 delete conversation;
         }
         
         void DoAction(const int32 action) override
         {
-            if (action == 1)
+            if (action == 1 && !outro)
             {
                 intro = true;
                 eventtimer = 5000;
@@ -471,25 +478,63 @@ public:
             }
         }
         
-        void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (attacker->GetTypeId() != TYPEID_PLAYER)
-                return;
-            
-            if (me->HealthBelowPct(30) && !outro)
+            if (outro)
             {
-                outro = true;
-                attacker->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48531);
-                if (Creature* trigger = me->FindNearestCreature(95464, 150.0f))
-                {
-                    trigger->CastSpell(me, 202211); // visual die
-                    events.RescheduleEvent(EVENT_3, 3000);
-                }
+                damage = 0;
+                return;
             }
+
+            Player* player = attacker ? attacker->GetCharmerOrOwnerPlayerOrPlayerItself() : nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(me->GetInstanceId());
+            if (!damage || !player || player->getClass() != CLASS_ROGUE || !player->IsInWorld() ||
+                player->GetMap() != me->GetMap() || !player->InSamePhase(me) ||
+                player->GetQuestStatus(40849) != QUEST_STATUS_INCOMPLETE || me->GetMapId() != 1545 ||
+                !scenario || scenario->GetScenarioId() != 1012 || scenario->GetCurrentStep() != 2)
+                return;
+
+            uint64 health = me->GetHealth(attacker);
+            uint64 remaining = damage >= health ? 0 : health - damage;
+            if (remaining >= me->CountPctFromMaxHealth(30, attacker))
+                return;
+
+            // Claim before callbacks, and preserve the native three-second
+            // bombardment death even without its optional visual emitter.
+            damage = 0;
+            outro = true;
+            intro = false;
+            events.Reset();
+            events.RescheduleEvent(EVENT_3, 3000);
+            me->StopAttack();
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+            me->SetReactState(REACT_PASSIVE);
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 48531);
+            if (Creature* trigger = me->FindNearestCreature(95464, 150.0f))
+            {
+                SpellCastResult result = trigger->CastSpell(me, 202211);
+                if (result != SPELL_CAST_OK)
+                    TC_LOG_WARN("scripts", "Dreadblades Brinebeard: optional bombardment202211 rejected with result %u; retain native finale timer", uint32(result));
+            }
+            else
+                TC_LOG_WARN("scripts", "Dreadblades Brinebeard: missing bombardment emitter95464; retain native finale timer");
         }
-        
+
         void UpdateAI(uint32 diff) override
         {
+            if (outro)
+            {
+                events.Update(diff);
+                if (events.ExecuteEvent() == EVENT_3)
+                {
+                    Conversation* conversation = new Conversation;
+                    if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1145, me, NULL, *me))
+                        delete conversation;
+                    me->Kill(me);
+                }
+                return;
+            }
+
             if (intro)
             {
                 if (eventtimer <= diff)
@@ -566,12 +611,6 @@ public:
                             trigger->CastSpell(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), 201856, true);
                         }
                         events.RescheduleEvent(EVENT_2, 30000);
-                        break;
-                    case EVENT_3:
-                        Conversation* conversation = new Conversation;
-                        if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 1145, me, NULL, *me))
-                            delete conversation;  
-                        me->Kill(me);
                         break;
                 }
             }

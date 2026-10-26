@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion7.3.5.26972",
+  "status": "Focused Brinebeard threshold/owner/finale repaired, tested and deployed; client presentation/full route pending",
+  "cause": "102239 checked only a Player and pre-hit template30% in raw DamageTaken. Fresh scaled player/pet lethal hits could skip48531. The only EVENT3 death timer was inside FindNearestCreature95464 success; even a scheduled timer was processed after UpdateVictim, so losing combat could stall the native finale. JustDied also dereferenced a possible null killer.",
+  "implementation": [
+    "Use the actual post-scaling damage hook, native GetHealth(attacker) and CountPctFromMaxHealth(30,attacker) with strict predicted-below30 admission. Resolve native charmer/owner/player; require live same-map/phase Rogue with INCOMPLETE40849 in actual map1545/scenario1012/currentStep2. Preserve native Player->Scenario48531; add no nearby/group awards, item grant or explicit scenario completion.",
+    "Claim outro and zero damage before callbacks, clear combat events, schedule original EVENT3/3000ms independently of optional emitter, stop attacks and retain passive/immunity during that delay. Repeated damage cannot kill early or duplicate credit. Missing/rejected native202211 emits a bounded useful warning; the separate finale timer remains.",
+    "Process only the claimed finale timer before intro/victim/casting gates, retain1145 conversation then original self-Kill, and return. Ordinary intro/abilities remain on their original path. Reset preserves an earned finale; later EnterCombat/DoAction cannot replace it. The actual UpdateAI must resume to tick an AI-owned timer if this content AI is temporarily suspended; no new off-thread or global timer was introduced.",
+    "Death1147 conversation retains direct-player/self-kill behavior, resolves pet/guardian presentation to native player and safely falls back to the actor for a null killer. No extra progression is issued from death. Fresh AI construction keeps a new attempt independent; exact persisted actor state is not added."
+  ],
+  "local_evidence": [
+    "Only102239 binds npc_lord_brinebeard, real spawn360405/map1545/phase6199, scaling98..110 and local scenario1012. Five95464 emitters exist on the map; the shared95464 SmartAI/template was reviewed and left intact. Reviewed102249 signal/three intro phases, original102256 dialogue/movement, combat ability timers and death conversations.",
+    "Typed26972 plus read-only hotfix catalog confirms scenario1012 step2 entry2132/root46670 and leaf46671/criterion29460/type92 event48531. DreadbladesBrinebeardCatalog verifies202211 effect32 ->202210 effect165 CREATE_AREATRIGGER, both duration0. Thus the original202211 bombardment request is presentation; the native three-second self-Kill is separate.202033 is Eliza Adrenaline Rush with native infinite auras110/342, not an artifact grant or demonstrated mandatory surrender gate. No donor/video needed or reviewed."
+  ],
+  "checks": [
+    "Pinned403d9516 full-AI ASAN counterfactual reproduces fresh scaled player/pet death without48531 and low-health credited actor with no emitter/no death timer. Separate baseline evidence clearly marked expected failure; no original null dereference executed.",
+    "Current full-AI ASAN native host:48 player/pet/guardian/charmer x four scales x missing/success/rejected visual variants pass, using production owner/charmer/in-map player lookup, native Scenario::CanUpdateCriteria, EventMap and actual scaled death bridge. Credit-callback reentry, repeated hits/updates, strict exact30, no victim, preserved3s delay/reset, combat/intro retrigger refusal, failed conversations, null/owned death,13 invalid contexts and original three-phase intro/ordinary reset pass. Casts, actors, world geometry and packet delivery are controlled boundaries, not a client traversal.",
+    "Native26972/hotfix stage and spell catalog passes. Degauz32 scaled-owner/suspended regression passes unchanged. Selected staged Eliza/pickup/Hunter/Degauz and canonical Brinebeard/Scepter checks pass; original final-link common/shared/game/scripts libraries verified, no global OutDir. Incremental production build has no new warning; extracted native conversion/unused fixture warnings retained.",
+    "Actual selected Brinebeard PE/map verifies postA8/raw inheritedA0, death130/update18, owner/relative health/threshold calls, zero-before-claim, original3000ms schedule before credit, inline timer advance and event3 self-kill before the ordinary victim branch, plus Reset leaf preserving earned timer. Initial verifier expected out-of-line EventMap::Update/nonleaf Reset/separate byte claim; disassembly established inline add, bounded conditional leaf and packed intro/outro word store. Assertions were corrected to those real compiler forms; failed verifier runs remain as development evidence.",
+    "Canonical deployment with both user servers absent/rechecked; own world1040 fresh ready/shutdown0/exit0, stderr/newDBErrors0, protected runtime hashes unchanged. No task-owned server remains. No SQL migration or character mutation.",
+    "Before/after canonical and fixture diagnostic inventories for every baseline/native/catalog/build/PE/promotion/startup group: no new/changed crash, appended DBErrors or unexplained server warning/error/assertion. Controlled missing/rejected visual warnings are asserted in the fixture and were not produced by startup. Active Crashes0/DBErrors0; no resolved crash/log archive needed."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "6E8F858D2AF11D012C029BF90090CB2FC9D807578AE8279F7299DA9A638BB585",
+    "world_map_sha256": "EE35DDC7C0998586794EEB0BC9D66F5AA1DE5020664A379B8C299643E7FC83E9",
+    "bnet_sha256": "7088C15C2F66708B5920E0CF791DAFC19633FB9F4165E293DF5DEDDA485F3E4A",
+    "private_evidence": ".codex/brinebeard and build-extractors/runtime-test/dreadblades-brinebeard/{baseline,current}"
+  },
+  "remaining": [
+    "Client actual emitter availability/accepted cast, bombardment visual,1145/1147 audio/timing, active combat/death/camera/pet/group/faction, corpse/respawn, abandon/re-entry and full Outlaw continuation remain pending. Missing emitter/rejected cast remains a visible diagnostic if encountered live; startup did not exercise combat.",
+    "The claimed finale is independent of losing a victim, not independent of the native content AI update itself. Temporary AI suspension, later corpse respawn and exact same-instance actor-state recovery were not live tested or persisted by this patch.",
+    "Eliza202033 is an ordinary low-health combat aura, while actual death48582/pickup48553 have independent native final leaves. A fresh one-hit kill bypassing that buff is not established as a progression blocker. Do not add immortality/fake credit to force it. Remaining earlier-stage/VFX/whole36 work stays open."
+  ]
+}
