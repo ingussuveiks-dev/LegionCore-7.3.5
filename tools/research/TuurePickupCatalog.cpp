@@ -45,6 +45,7 @@ int main(int argc,char** argv){
  if(!lfg.Load(argv[1],0))return 9;lfg.LoadFromDB();
  for(auto dungeon:lfg)if(dungeon->ScenarioID==1085)std::cout<<"LFG\t"<<dungeon->ID<<'\t'<<dungeon->MapID<<'\t'<<unsigned(dungeon->DifficultyID)<<'\t'<<dungeon->GetMinGroupSize()<<'\t'<<dungeon->GetMaxGroupSize()<<'\t'<<unsigned(dungeon->CountTank)<<'\t'<<unsigned(dungeon->CountHealer)<<'\t'<<unsigned(dungeon->CountDamage)<<'\n';
  std::set<uint32> selected{210733,210734,210818,210715,210703,210807,204237,211185,211380,204082,204086,212629};
+ for(auto effect:effects)if(!effect->DifficultyID&&effect->Effect==61&&std::set<int32>{50563,50562,50831,50634,50695}.count(effect->EffectMiscValue[0])){selected.insert(effect->SpellID);std::cout<<"STAGE_EVENT\t"<<effect->SpellID<<'\t'<<effect->EffectIndex<<'\t'<<effect->EffectMiscValue[0]<<'\n';}
  for(int depth=0;depth<3;++depth)for(auto effect:effects)if(selected.count(effect->SpellID)&&effect->EffectTriggerSpell)selected.insert(effect->EffectTriggerSpell);
  for(auto id:selected)if(auto spell=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';else std::cout<<"MISSING_SPELL\t"<<id<<'\n';
  for(auto effect:effects)if(!effect->DifficultyID&&(selected.count(effect->SpellID)||(effect->Effect==157||effect->Effect==249)&&effect->EffectMiscValue[0]==128825))std::cout<<"EFFECT\t"<<effect->SpellID<<'\t'<<effect->EffectIndex<<'\t'<<effect->Effect<<'\t'<<effect->EffectAura<<'\t'<<effect->EffectMiscValue[0]<<'\t'<<effect->EffectTriggerSpell<<'\t'<<effect->ImplicitTarget[0]<<'\t'<<effect->ImplicitTarget[1]<<'\n';

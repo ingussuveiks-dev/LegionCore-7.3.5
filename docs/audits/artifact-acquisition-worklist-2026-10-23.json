@@ -2071,7 +2071,7 @@
       "weapon": "T'uure, Beacon of the Naaru",
       "item": 128825,
       "start": 41957,
-      "status": "partial: native real loot/storage, scoped scene/equip/queued cast lease guards and actual accepted departure/native final-tree completion repaired; native/ASAN/480 conditions/TEMP/PE/clean canonical startup verified. Lady106318 raw scaled lethal/death callback and earlier healer actors remain open; full client route pending.",
+      "status": "partial: native pickup/equip/departure, scaled Calindris/companion wounds, genuine95pct initial heal, guarded greeting/queues/native GM-dead-owner admission and real first106201 death50562/earned16s continuation repaired; native/ASAN/catalog/selected canonical PE/clean startup pass. Later second kill/route/captain/crate/contact and full client remain open.",
       "quests": [
         {
           "id": 41957,
@@ -2171,7 +2171,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair true106201 kill versus arbitrary evade50562, then native step2 BOTH106221 kill+50831/actual paths and captain50634/105697 LINK1; actual1085 guard on five-scenario1489. Dead-owner victory/native GM filters now separately regressed; offline/re-entry/full client/all36 remain OPEN.",
+      "next_action": "Trace second106221 true-death/native type0 recipient and AI-missing/reset-safe DoAction1/path9859002/50831. Existing OnUnitDeath blindly dereferences AI and nearestPlayer waypoint is not certified. Then captain50634, crate, later movement/quest lease/contact105697LINK1 and all other36 route work. Offline/across-session receipt recovery, motion/timing/group-faction visuals/full client remain unverified.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
@@ -2179,7 +2179,8 @@
       "intro_heal_audit": "docs/audits/tuure-intro-heal-2026-10-26.json",
       "boros_queue_audit": "docs/audits/tuure-boros-callback-queue-2026-10-26.json",
       "boros_greeting_audit": "docs/audits/tuure-boros-greeting-2026-10-26.json",
-      "native_criteria_admission_audit": "docs/audits/tuure-native-criteria-admission-2026-10-26.json"
+      "native_criteria_admission_audit": "docs/audits/tuure-native-criteria-admission-2026-10-26.json",
+      "first_fight_audit": "docs/audits/tuure-first-fight-2026-10-27.json"
     },
     {
       "class_id": 5,

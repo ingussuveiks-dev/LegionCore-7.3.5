@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "8c946eb5",
+  "scope": "Tuure1085 first real106201/361428 victory50562 and original1s/16s continuation. Full route and client remain open.",
+  "cause": [
+    "Boros EnterEvadeMode treated any evade as victory while106201 could remain alive. An early real kill before its AI fighting latch was lost. Reset cancelled the AI-owned16s unlock after accepted progress.",
+    "Map1489 serves five scenarios; map alone is insufficient. Native step2 requires BOTH real106221 kill and50831 route event; those later paths remain separately open."
+  ],
+  "implementation": [
+    "Only actual Unit::Kill -> instance CreatureDies with dead106201/361428 records original eligible player/owner or uniquely eligible healer for one of three native allies. Exact active41993 lease and full GUIDs; dead owner legitimately admitted; GM/contact/native criteria unchanged. No neighborhood replacement for an invalid player owner.",
+    "Pending real death waits for genuine initial95pct heal/native stage1 and live unstunned Boros. After original1s deliver native50562, inspect actual47519 counter, retry rejected delivery after5s without inventing progress. Accepted counter prevents duplicate delivery.",
+    "Instance-owned16s earned continuation re-resolves actual Boros361419 and106221/361429, phase/original40yd range before removing original flags. Missing actor/replaced AI/reset/corpse cleanup do not retain raw pointers or erase an earned unlock. No SQL or new registration. Existing subsequent OnUnitDeath route remains explicitly unresolved."
+  ],
+  "evidence": {
+    "local": "Typed native26972 stage1 root47517/leaf47519/script50562; stage2root47881 BOTH47882/script50831 and47883/type0/106221. NativeLFG1243 min=max1; actual map has940,972,1085,1145,1146. Actual World spawns/SmartAI two combat rows/no death link, no alternate50562 smart-script producer; paths13/8 points. Global native spellEffect61 scan finds no50562/50563/50831/50634/50695 producer. Read-only native/world checks pass.",
+    "sources": "Matching local DBC/DB2, World records and code only. No external/video/client verification claimed."
+  },
+  "checks": {
+    "counterfactual": "Pinned full8c946eb5 instance and old evade: false living-enemy victory, lost early real pet kill and reset-lost16s reproduced as expected failing baselines, paired with repaired regression.",
+    "asan": "Full actual new instance/policy/old-current evade, actual Unit::Kill instance bridge, native owner/quest lease/FunctionProcessor/heal/lifecycle and initial95pct methods:28 status/live-dead/player-pet-guardian-charmer-three-ally variants and denial/lifetime/retry/reentrant/real counter/early kill/missing actor/reset/corpse/held-old-lease cases pass. Achievement application, health/death/grid/movement endpoints are controlled adapters, not full engine/client traversal.",
+    "preservation": "Initial heal24 variants/20 denials and companion wound768 native scaled/heal/lifecycle cases pass ASAN. Three local2s/3s/4s Boros queue guards preserved;16s now in instance fixture.",
+    "release": "Original generated static libs/final link, no global OutDir; staged and canonical selected instance factory slots3/5/15/29, actual native Kill slot0x28 and InstanceMap update0xe8, death metadata/lease/helper/native criteria calls and empty evade checked. Prior scene/pickup/Lady/wound/heal/queue/greeting/native admission/capture chain and canonical ScepterLogin verify pass.",
+    "development": "PE verifier initially assumed inherited Python globals, inline timer constants, direct virtual call operand and RET encoding. Corrected harness to actual nested imports/outlined timer methods/register-loaded virtual dispatch/RET0; failed runs retained and not labelled passes. No production check suppressed.",
+    "runtime": "Both server names absent/rechecked at promotion. Own32576 fresh ready, shutdown0/exit0, stderr empty/newDBErrors0/protected hashes unchanged. No user server stopped/hidden task server left. All wrappers: no new crashes/appended DBErrors/server warnings/errors/assertions."
+  },
+  "canonical_sha256": {
+    "bnetserver.exe": "4329473467A49A65A1C0BA3BA9C19E1AE700D74747C9C4A4B5D5838A74150178",
+    "worldserver.exe": "15DF508B881356DDC9B94EE4C7CA3899C563685F13871CCB3C3269AF9FF32D7A",
+    "worldserver.map": "473F5B25DEA1F3287E2C23DAB1AEF179FA36F32DAFD0252621C571B1BBB4AD8A",
+    "bnetserver.map": "CA243F5503A94F9D8447136A6887FF58ED1D8C0778EEBFB5D09F6EB5A8A1CCA6"
+  },
+  "archives": "No new runtime crash/error requiring archive/truncation. Runtime logs/credentials/character data excluded.",
+  "next": [
+    "Trace second106221 true-death/native type0 recipient and AI-missing/reset-safe DoAction1/path9859002/50831. Existing OnUnitDeath blindly dereferences AI and nearestPlayer waypoint is not certified.",
+    "Then captain50634, crate, later movement/quest lease/contact105697LINK1 and all other36 route work. Offline/across-session receipt recovery, motion/timing/group-faction visuals/full client remain unverified."
+  ],
+  "client_status": "Pending user traversal; no character progress edited or manual quest/item/scenario grants."
+}

@@ -12,6 +12,7 @@
 #include "Spell.h"
 #include "SpellScript.h"
 #include "ObjectAccessor.h"
+#include "Tuure.h"
 
 Position const tppos[2] =
 {
@@ -49,6 +50,58 @@ namespace TuureIntroHeal
     }
 }
 
+namespace TuureFirstFight
+{
+    bool Eligible(Player* player, Unit* anchor, uint32 firstStep, uint32 lastStep)
+    {
+        if (!player || !anchor || !anchor->IsInWorld() || anchor->IsPreDelete() || !anchor->GetMap() || anchor->GetMapId() != 1489 ||
+            !player->IsInWorld() || !player->CanContact() || player->isGameMaster() || player->HasPendingTeleport() ||
+            player->getClass() != CLASS_PRIEST || player->GetMap() != anchor->GetMap() ||
+            !player->InSamePhase(anchor) || !player->IsWithinDistInMap(anchor, 100.0f) || player->GetQuestRewardStatus(41993) ||
+            (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(anchor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1085 &&
+            scenario->GetCurrentStep() >= firstStep && scenario->GetCurrentStep() <= lastStep;
+    }
+
+    Player* Recipient(Creature* defeated, Unit* killer)
+    {
+        if (!defeated || !defeated->GetMap() || !killer) return nullptr;
+        if (Player* owner = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+            return Eligible(owner, defeated, 0, 2) ? owner : nullptr;
+        if (killer->GetCharmerOrOwnerGUID() || killer->GetMap() != defeated->GetMap() || !killer->InSamePhase(defeated) ||
+            (killer->GetEntry() != 106134 && killer->GetEntry() != 106137 && killer->GetEntry() != 106253))
+            return nullptr;
+        Player* recipient = nullptr;
+        for (auto const& reference : defeated->GetMap()->GetPlayers())
+            if (Eligible(reference.getSource(), defeated, 0, 2))
+            {
+                if (recipient) return nullptr;
+                recipient = reference.getSource();
+            }
+        return recipient;
+    }
+
+    Player* Find(Map* map, ObjectGuid const& guid)
+    {
+        if (!map || guid.IsEmpty()) return nullptr;
+        for (auto const& reference : map->GetPlayers())
+            if (Player* player = reference.getSource())
+                if (player->GetGUID() == guid && player->GetMap() == map)
+                    return player;
+        return nullptr;
+    }
+
+    bool HasVictory(Scenario* scenario)
+    {
+        if (!scenario || scenario->GetScenarioId() != 1085) return false;
+        auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+        auto found = progress->find(47519);
+        return found != progress->end() && found->second.Counter;
+    }
+}
+
 // 106134
 class npc_vindicator_boros : public CreatureScript
 {
@@ -66,7 +119,6 @@ public:
         {
             _introDone = false;
             _introHealDone = false;
-            firstfighting = false;
             wait_heal = false;
             firstwp = false;
             secondwp = false;
@@ -82,7 +134,7 @@ public:
             _introHealer.Clear();
             _introAttempt.reset();
         }
-        bool _introDone, _introHealDone, firstfighting, wait_heal, firstwp, secondwp;
+        bool _introDone, _introHealDone, wait_heal, firstwp, secondwp;
         FunctionProcessor _functions;
         FunctionProcessor _entryFunctions;
         uint64 _entryGeneration = 0;
@@ -103,23 +155,8 @@ public:
 
         void EnterEvadeMode() override
         {
-            // need to activate it ONLY if creature isn't stunned
-            _functions.AddFunction([this]() -> void
-            {
-                if (firstfighting)
-                {
-                    firstfighting = false;
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50562);
-                    me->CreateConversation(2009);
-                    _entryFunctions.AddDelayedEvent(16000, [this, generation = _entryGeneration]() -> void
-                    {
-                        if (generation != _entryGeneration) return;
-                        if (Creature* targ = me->FindNearestCreature(106221, 40.0f, true))
-                            targ->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    });
-                }
-            }, _functions.CalculateTime(1000));
+            // Evading is not a victory. The instance owns the real106201
+            // death receipt, native criteria delivery and timed continuation.
         }
 
         void DoAction(int32 const action) override
@@ -274,7 +311,6 @@ public:
                         me->GetMotionMaster()->MoveJump(58.20f, 1214.60f, -74.35f, me->GetOrientation(), 10.0f, 10.0f);
                         if (Creature* targ = me->FindNearestCreature(106201, 60.0f, true))
                             AttackStart(targ);
-                        firstfighting = true;
                         break;
                     case 3:
                         me->CreateConversation(2015);

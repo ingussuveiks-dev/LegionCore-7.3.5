@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure real first-fight victory (2026-10-27)
+
+- `tuure-first-fight-2026-10-27.json`: real Unit::Kill106201/361428 receipt replaces arbitrary evade50562; original owner/fullGUID/41993 lease, actual1085 on shared five-scenario1489. Wait genuine initial heal/stage1, native1s50562 and accepted47519; rejected delivery retries5s. Instance-owned earned16s resolves actual Boros361419/next106221361429 after AI reset/reload; original flags/phase/40yd retained. No SQL/manual progress.
+- Pinned false-evade/early-pet-kill/reset counterfactual and repaired ASAN28 variants/lifetime/denials/retry/accepted-counter pass. Fresh typed both-stage2 criteria, solo admission, actual spawns/scripts/sole producer/paths asserted. Initial heal24/companion768 preservation, staged+canonical factory/native virtual dispatch/full prior PE chain and Scepter pass. Adapters/full client limits explicit.
+- Canonical world 15DF508B881356DDC9B94EE4C7CA3899C563685F13871CCB3C3269AF9FF32D7A, map 473F5B25DEA1F3287E2C23DAB1AEF179FA36F32DAFD0252621C571B1BBB4AD8A; own32576 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive needed. Commit containing audit follows8c946eb5.
+- NEXT second106221 true kill/native type0 ownership and AI-missing/reset-safe route/50831 (native step2 needs BOTH); then captain50634/crate/contact105697LINK1. Existing later OnUnitDeath AI dereference and nearest-player waypoint remain OPEN. Across-session recovery, actual client and all36 remain OPEN.
+
 ## Latest repair: Tuure native criteria admission and dead-owner victory
 
 - `tuure-native-criteria-admission-2026-10-26.json`: correct overly strict7608b3f2 owner-alive condition for real pet/guardian/allied Calindris victory. Typed29879 metadata0/native contact+criteria permit dead owner. Native GM-mode exclusion now precedes state in all four intro/defeat/pickup/scene predicates; core GM/contact filter unchanged. Initial heal/pickup/scene retain living-player admission; no forced counters/health/SQL/character edits.
