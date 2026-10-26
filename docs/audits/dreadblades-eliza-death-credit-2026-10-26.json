@@ -1,7 +1,7 @@
 {
   "date": "2026-10-26 Europe/Riga",
   "build": "7.3.5.26972",
-  "scope": "Outlaw Eliza102293 death48582 owner attribution and null safety. Implementation/native/staged PE checked; canonical promotion and fresh startup initially pending user shutdown. Not complete Outlaw acquisition or client combat/loot/visual verification.",
+  "scope": "Outlaw Eliza102293 death48582 owner attribution and null safety. Implementation/native/staged and canonical PE checked; deployed with the separate Scythe exit repair after user shutdown. Not complete Outlaw acquisition or client combat/loot/visual verification.",
   "finding": {
     "actor": "Live102293 binds npc_dread_admiral_eliza, AIName empty, unit_flags32768; spawn360545/map1545/phase6199. scenario_data maps1545/difficulty8 to1012/class0. Existing death hook dereferences who then credits48582 only for a Player, losing direct-owned pet/guardian killing blows. Native actor112817/display72343 and object254087 are still summoned after that missed credit. Baseline38f88905 actual callback reproduces this with a pet; original null dereference was identified from source but deliberately not executed as a crash.",
     "native_sequence": "Typed native26972/read-only hotfix1012 has steps0..4: roots46639/46655/46670/46672/46690. Eliza encounter approach48538 belongs to prior step3/leaf46673/criterion29461; final step4/root46690 contains death48582/leaf46707/criterion29469 and pickup48553/leaf46691/criterion29463. Both amounts1/flags0; root operator4/ALL and amount0 retained. Death credit does not replace real pickup. Native Unit::Kill selected JustDied slot0x130 remains the once-per-death dispatcher; no new cached credit recipient or event replay introduced.",
@@ -24,12 +24,12 @@
     "diagnostics": "Each baseline/current/native/shared/build/link/PE check records pre/post crash/log state and captured output. No new/changed crashes, appended DBErrors or server warnings/errors/assertions. Native C4189 unused lookup local and baseline-only unused variable warnings retained, not suppressed. No historical log truncation or archive needed."
   },
   "deployment": {
-    "state": "staged; user-owned/unknown23444 bnetserver and3112 worldserver running, no process stopped. Shutdown requested only after the concrete tested EXE was ready; further independent research continues while waiting.",
+    "state": "deployed: user explicitly confirmed both servers shut down for the combined Scythe/Eliza EXE; absence rechecked before canonical promotion. No user/unknown process stopped.",
     "canonical_directory": "build-extractors/bin/Release",
     "canonical_worldserver_sha256_before": "B2EFF0176248FDD853326CF50855C04FF2C3DFBB4A5296D117B1EBC11949E548",
     "staged_worldserver_sha256": "50795CF42ABD9E0DBBBDD39664FACFAE7C10DE1985F6751CE564A84078AE1DF8",
     "staged_bnetserver_sha256": "FC9D89CCC3BAC0496A6BF6539C2A8910B38F489E45F482BC82CD11C08EF4950E",
-    "pending": "Promote exact verified EXE/maps only after user shutdown/idle check, repeat selected canonical PE and Scepter check, own ready/shutdown/exit0 plus new DBErrors/crash/server diagnostic review. No new SQL or ScriptName needed.",
+    "verification_after_promotion": "No deployment remains pending. Canonical combined world B58E4435DABAC677E21AB0A6FEFA554839A03D421D92C15DA3EC113DF626C2EE and bnet28911348B4FB92F25D1EDCAE7BC03BACD4434E4F3D86CCB31346781A792CABA9 include this467daccb fix plus separate Scythe exit c2b21b96. Selected Eliza canonical PE and Scepter check PASS; own PID30596 reached fresh ready, shutdown0/exit0, stderr empty/newDBErrors0, protected files unchanged, no new/changed crash/server error. Own process stopped; actual client checks remain pending. Original staged50795 hashes retained as prior-stage evidence, not claimed equal to the combined deployment.",
     "private_evidence": ".codex/dreadblades-eliza-* native/data/build/link/PE/diagnostic logs and ignored runtime-test/dreadblades-death-credit fixtures. No runtime, credential, character or media files staged."
   },
   "remaining": [

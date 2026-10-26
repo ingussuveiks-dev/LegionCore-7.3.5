@@ -1759,7 +1759,7 @@
       "weapon": "The Dreadblades",
       "item": 128872,
       "start": 40847,
-      "status": "partial: Eliza102293 death48582 now resolves native player/charmer/owner with null-safe handling and unchanged death speech/reveal. Pinned pet-credit-loss baseline, repaired ASAN/native ownership/scenario tree and selected staged PE pass. Canonical deployment pending user server shutdown. Native1012 final root requires both48582 and separate48553. Actual pickup Data1=0/inverted HasItemCount/progression ordering, earlier surrender/owner credit, client/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
+      "status": "partial: Eliza102293 death48582 now resolves native player/charmer/owner with null-safe handling and unchanged death speech/reveal. Pinned pet-credit-loss baseline, repaired ASAN/native ownership/scenario tree and selected staged PE pass. Deployed in canonicalB58E after confirmed user shutdown; selected canonical Eliza/Scepter and clean own30596 startup/shutdown pass. Native1012 final root requires both48582 and separate48553. Actual pickup Data1=0/inverted HasItemCount/progression ordering, earlier surrender/owner credit, client/VFX/group/faction/re-entry and full-chain traversal remain OPEN.",
       "quests": [
         {
           "id": 40847,
