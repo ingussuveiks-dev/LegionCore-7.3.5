@@ -1167,6 +1167,23 @@ public:
     };
 };
 
+namespace SilverHandFinalEntry
+{
+    bool CanStart(Player* player, Creature* actor)
+    {
+        if (!player || !actor || !player->IsInWorld() || player->IsPreDelete() || !player->CanContact() ||
+            !player->IsAlive() || player->isGameMaster() || player->IsBeingTeleported() || player->getClass() != CLASS_PALADIN ||
+            !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() || actor->GetEntry() != 106777 || actor->GetMapId() != 1539 ||
+            !player->GetMap() || player->GetMap() != actor->GetMap() || player->GetInstanceId() != actor->GetInstanceId() ||
+            !player->InSamePhase(actor) || !player->canSeeOrDetect(actor) || !player->IsWithinLOSInMap(actor) ||
+            !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(42120) ||
+            player->GetQuestStatus(42120) != QUEST_STATUS_INCOMPLETE)
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 9;
+    }
+}
+
 // 106777
 class npc_travar_last : public CreatureScript
 {
@@ -1200,13 +1217,12 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
+            if (_introDone)
                 return;
 
-            if (!_introDone)
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (SilverHandFinalEntry::CanStart(player, me))
             {
-                if (Player* pl = me->FindNearestPlayer(100.0f))
-                    pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50915);
                 _introDone = true;
                 startCriteria = true;
                 DoCast(215258);

@@ -43,19 +43,19 @@ assert factory[construct - 1].op_str == 'rcx, [rdi + 0x48]'
 assert all(any(entry.op_str == operands for entry in factory) for operands in
            ('ecx, 0xc8', 'word ptr [rdi + 0x38], 0', 'dword ptr [rdi + 0x3c], 0x3e8', 'byte ptr [rdi + 0x40], 0'))
 arm, = sites(los, '?AddDelayedEvent@FunctionProcessor@@')
-assert any(entry.op_str == 'rcx, [rdi + 0x48]' for entry in los[arm - 10:arm])
+assert any(entry.op_str == 'rcx, [rsi + 0x48]' for entry in los[arm - 10:arm])
 assert los[arm - 1].op_str == 'edx, 0x1388'
 assert not sites(los, '?AddDelayedEvent@Unit@@')
 assert any(entry.op_str == 'byte ptr [rdx + 0x16], 4' for entry in los[:arm])
-assert any(entry.op_str == 'word ptr [rdi + 0x38], 0x101' for entry in los[:arm])
-assert any(entry.op_str == 'qword ptr [rsp + 0x78], rdi' for entry in los[arm - 10:arm])
+assert any(entry.op_str == 'word ptr [rsi + 0x38], 0x101' for entry in los[:arm])
+assert any(entry.op_str == 'qword ptr [rsp + 0x68], rsi' for entry in los[arm - 10:arm])
 closure, = [name for name in native['symbols'] if name.startswith('?_Do_call@') and 'MoveInLineOfSight@npc_travar_lastAI@npc_travar_last@@' in name]
 tables = []
 for index, entry in enumerate(los[:arm]):
     if entry.mnemonic == 'lea' and len(entry.operands) == 2 and entry.operands[1].type == CS_OP_MEM and entry.operands[1].mem.base == X86_REG_RIP:
         address = entry.address + entry.size + entry.operands[1].mem.disp
         if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x10)[0] == native['symbol'](closure):
-            assert los[index + 1].op_str == 'qword ptr [rsp + 0x70], rax'
+            assert los[index + 1].op_str == 'qword ptr [rsp + 0x60], rax'
             tables.append(address)
 assert len(tables) == 1
 callback = leaf(closure, 11)

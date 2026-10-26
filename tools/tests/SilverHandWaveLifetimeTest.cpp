@@ -16,18 +16,44 @@ using FunctionList=std::multimap<uint64,std::function<void()>>;
 #include "FunctionClass.inc"
 #include "FunctionMethods.inc"
 enum {TYPEID_PLAYER=4,UNIT_STATE_STUNNED=1,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_FIELD_FLAGS=0,
-    UNIT_FLAG_NOT_SELECTABLE=1,UNIT_FLAG_IMMUNE_TO_PC=2,UNIT_FLAG_IMMUNE_TO_NPC=4,UNIT_FLAG_NOT_ATTACKABLE_1=8};
+    UNIT_FLAG_NOT_SELECTABLE=1,UNIT_FLAG_IMMUNE_TO_PC=2,UNIT_FLAG_IMMUNE_TO_NPC=4,UNIT_FLAG_NOT_ATTACKABLE_1=8,
+    CLASS_PALADIN=2,QUEST_STATUS_INCOMPLETE=3};
+struct Player;
+struct Creature;
+struct Map {} liveMap,otherMap;
 struct Unit
 {
+    virtual ~Unit()=default;
+    virtual Player* ToPlayer(){return nullptr;}
     uint32 type=0;
     uint32 GetTypeId() const{return type;}
 };
-struct Player
+struct Player : Unit
 {
+    Player(){type=TYPEID_PLAYER;}
+    Player* ToPlayer() override{return this;}
+    bool world=true,preDelete=false,contact=true,alive=true,gm=false,teleport=false,phase=true,visible=true,los=true,rewarded=false;
+    uint32 klass=2,status=3,instance=42,faction=0;
+    float distance=1;
+    Map* map=&liveMap;
+    bool IsInWorld() const{return world;}
+    bool IsPreDelete() const{return preDelete;}
+    bool CanContact() const{return contact;}
+    bool IsAlive() const{return alive;}
+    bool isGameMaster() const{return gm;}
+    bool IsBeingTeleported() const{return teleport;}
+    uint32 getClass() const{return klass;}
+    Map* GetMap() const{return map;}
+    uint32 GetInstanceId() const{return instance;}
+    bool InSamePhase(Creature*) const{return phase;}
+    bool canSeeOrDetect(Creature*) const{return visible;}
+    bool IsWithinLOSInMap(Creature*) const{return los;}
+    bool IsWithinDistInMap(Creature*,float radius) const{return distance<=radius;}
+    bool GetQuestRewardStatus(uint32 quest) const{assert(quest==42120);return rewarded;}
+    uint32 GetQuestStatus(uint32 quest) const{assert(quest==42120);return status;}
     std::vector<uint32> credits;
     void UpdateAchievementCriteria(uint32 type,uint32 event){assert(type==92);credits.push_back(event);}
 };
-struct Creature;
 struct CreatureAI
 {
     virtual ~CreatureAI()=default;
@@ -54,6 +80,9 @@ struct Creature
     bool m_AI_locked=false,IsAIEnabled=true,stunned=false,visible=false,aura=false,missingDefender=false;
     bool victim=false,failSpawn=false;
     uint32 flags=31,entry=106777;
+    bool world=true,preDelete=false,alive=true;
+    uint32 mapId=1539,instance=42;
+    Map* map=&liveMap;
     float positionX=0,positionY=0,positionZ=0,orientation=0;
     Creature* defender=nullptr;
     Player* nearby=nullptr;
@@ -61,8 +90,16 @@ struct Creature
     std::vector<std::unique_ptr<Creature>> adds;
     std::vector<std::unique_ptr<AddAI>> addAIs;
     std::function<void()> onSummon;
+    std::function<void()> onCast,onTalk;
     std::vector<uint32> casts,talks;
     CreatureAI* AI(){return i_AI;}
+    bool IsInWorld() const{return world;}
+    bool IsPreDelete() const{return preDelete;}
+    bool IsAlive() const{return alive;}
+    uint32 GetEntry() const{return entry;}
+    uint32 GetMapId() const{return mapId;}
+    uint32 GetInstanceId() const{return instance;}
+    Map* GetMap() const{return map;}
     bool AIM_Destroy();
     Player* FindNearestPlayer(float radius){assert(radius==100);return nearby;}
     bool HasAura(uint32 spell) const{assert(spell==211502);return aura;}
@@ -107,25 +144,40 @@ struct ScriptedAI : CreatureAI
 {
     Creature* me;
     explicit ScriptedAI(Creature* actor):me(actor){}
-    void DoCast(uint32 spell){assert(spell==215258);me->casts.push_back(spell);}
-    void Talk(uint32 line) override{assert(line==0);me->talks.push_back(line);}
+    void DoCast(uint32 spell){assert(spell==215258);me->casts.push_back(spell);if(me->onCast)me->onCast();}
+    void Talk(uint32 line) override{assert(line==0);me->talks.push_back(line);if(me->onTalk)me->onTalk();}
     bool UpdateVictim() const{return me->victim;}
 };
 void GetCreatureListWithEntryInGrid(std::list<Creature*>& result,Creature* actor,uint32 entry,float radius)
 {assert(entry==106094 && radius==30);result.assign(actor->lights.begin(),actor->lights.end());}
 int irand(int minimum,int maximum){assert(minimum==-3 || minimum==-2);assert(maximum==-minimum);return 0;}
+struct Scenario
+{
+    uint32 id=1092,step=9;
+    uint32 GetScenarioId() const{return id;}
+    uint32 GetCurrentStep() const{return step;}
+};
+struct ScenarioManager
+{
+    bool present=true;
+    Scenario scenario;
+    Scenario* GetScenario(uint32 instance){return present && instance==42?&scenario:nullptr;}
+} manager;
+auto* sScenarioMgr=&manager;
+#include "FinalEntryPolicy.inc"
 #include "WaveActor.inc"
 using WaveAI=npc_travar_lastAI;
 struct Fixture
 {
     Creature actor,defender,lit,unlit;
     Player player;
-    Unit visitor;
+    Player visitor;
     WaveAI ai{&actor};
     Fixture()
     {
         actor.i_AI=&ai;actor.defender=&defender;actor.nearby=&player;
         lit.aura=true;actor.lights={&lit,&unlit};visitor.type=TYPEID_PLAYER;
+        manager=ScenarioManager{};
     }
 };
 void CheckFirstWave(Creature const& actor,Creature* defender)
@@ -137,20 +189,114 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
 }
 int main()
 {
+#ifdef ADMISSION_BASELINE
+    {
+        Fixture fixture;fixture.visitor.klass=5;fixture.visitor.status=0;
+        manager.scenario.id=991;manager.scenario.step=0;
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);
+        assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.player.credits==std::vector<uint32>{50915});
+        fixture.actor.Run(5000);
+        CheckFirstWave(fixture.actor,&fixture.defender);
+        std::cout<<"PASS pinned67b2f259: inactive Priest in wrong scenario starts last Travard ritual/lights/wave and credits unchecked nearby Player50915\n";
+        return 0;
+    }
+#else
+#ifndef BASELINE
+    {
+        Fixture fixture;Unit pet,guardian,npc;
+        assert(!SilverHandFinalEntry::CanStart(nullptr,&fixture.actor));
+        assert(!SilverHandFinalEntry::CanStart(&fixture.visitor,nullptr));
+        fixture.ai.MoveInLineOfSight(nullptr);fixture.ai.MoveInLineOfSight(&pet);fixture.ai.MoveInLineOfSight(&guardian);fixture.ai.MoveInLineOfSight(&npc);
+        assert(!fixture.ai._introDone && fixture.actor.casts.empty());
+    }
+    for(uint32 invalid=0;invalid<28;++invalid)
+    {
+        Fixture fixture;
+        switch(invalid)
+        {
+            case 0:fixture.visitor.world=false;break;
+            case 1:fixture.visitor.preDelete=true;break;
+            case 2:fixture.visitor.contact=false;break;
+            case 3:fixture.visitor.alive=false;break;
+            case 4:fixture.visitor.gm=true;break;
+            case 5:fixture.visitor.teleport=true;break;
+            case 6:fixture.visitor.klass=1;break;
+            case 7:fixture.visitor.map=nullptr;break;
+            case 8:fixture.visitor.map=&otherMap;break;
+            case 9:fixture.visitor.instance=43;break;
+            case 10:fixture.visitor.phase=false;break;
+            case 11:fixture.visitor.visible=false;break;
+            case 12:fixture.visitor.los=false;break;
+            case 13:fixture.visitor.distance=100.01f;break;
+            case 14:fixture.visitor.rewarded=true;break;
+            case 15:fixture.visitor.status=0;break;
+            case 16:fixture.visitor.status=1;break;
+            case 17:fixture.actor.world=false;break;
+            case 18:fixture.actor.preDelete=true;break;
+            case 19:fixture.actor.alive=false;break;
+            case 20:fixture.actor.entry=106676;break;
+            case 21:fixture.actor.mapId=1220;break;
+            case 22:fixture.actor.map=nullptr;break;
+            case 23:fixture.actor.instance=43;break;
+            case 24:manager.present=false;break;
+            case 25:manager.scenario.id=991;break;
+            case 26:manager.scenario.id=1037;break;
+            case 27:manager.scenario.step=10;break;
+        }
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.Run(5000);
+        assert(!fixture.ai._introDone && !fixture.ai.startCriteria && fixture.actor.casts.empty() && fixture.actor.talks.empty());
+        assert(fixture.player.credits.empty() && !fixture.lit.visible && fixture.actor.adds.empty());
+        fixture.visitor.world=true;fixture.visitor.preDelete=false;fixture.visitor.contact=true;fixture.visitor.alive=true;
+        fixture.visitor.gm=false;fixture.visitor.teleport=false;fixture.visitor.klass=2;fixture.visitor.map=&liveMap;
+        fixture.visitor.instance=42;fixture.visitor.phase=true;fixture.visitor.visible=true;fixture.visitor.los=true;
+        fixture.visitor.distance=100;fixture.visitor.rewarded=false;fixture.visitor.status=3;
+        fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;fixture.actor.entry=106777;
+        fixture.actor.mapId=1539;fixture.actor.map=&liveMap;fixture.actor.instance=42;manager=ScenarioManager{};
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;
+        fixture.actor.Run(4999);assert(fixture.actor.adds.empty());
+        fixture.actor.Run(1);CheckFirstWave(fixture.actor,&fixture.defender);
+        assert(fixture.player.credits.empty() && fixture.visitor.credits.empty());
+    }
+    for(uint32 step=0;step<12;++step)
+    {
+        Fixture fixture;manager.scenario.step=step;
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;fixture.actor.Run(5000);
+        assert(fixture.ai._introDone==(step==9) && fixture.actor.adds.size()==(step==9?3u:0u));
+    }
+    for(uint32 faction:{0u,1u})
+    {
+        Fixture fixture;fixture.visitor.faction=faction;
+        fixture.actor.onCast=[&fixture]{fixture.ai.MoveInLineOfSight(&fixture.visitor);};
+        fixture.actor.onTalk=fixture.actor.onCast;
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.ai.MoveInLineOfSight(&fixture.visitor);
+        assert(fixture.actor.casts==std::vector<uint32>{215258} && fixture.actor.talks==std::vector<uint32>{0});
+        fixture.actor.stunned=true;fixture.actor.Run(5000);CheckFirstWave(fixture.actor,&fixture.defender);
+        assert(fixture.player.credits.empty() && fixture.visitor.credits.empty());
+    }
+    std::cout<<"PASS final entry: actual triggering Player/28 invalid contexts/all12 steps/both factions/100yd/retry and cast-speech reentry; no nearest substitute or50915; original own5000ms wave retained. Accepted-wave progress/re-entry/client remain separate\n";
+#endif
     {
         Fixture fixture;
         Unit pet,guardian;
         fixture.ai.MoveInLineOfSight(&pet);fixture.ai.MoveInLineOfSight(&guardian);
         assert(!fixture.ai._introDone && !fixture.ai.startCriteria && fixture.actor.adds.empty());
         fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.ai.MoveInLineOfSight(&fixture.visitor);
+#ifdef BASELINE
         assert(fixture.player.credits==std::vector<uint32>{50915});
+#else
+        assert(fixture.player.credits.empty());
+#endif
         assert(fixture.actor.casts==std::vector<uint32>{215258} && fixture.actor.talks==std::vector<uint32>{0});
         assert(fixture.lit.visible && !fixture.unlit.visible);
         fixture.actor.stunned=true;fixture.actor.victim=true;
         fixture.actor.Run(4999);assert(fixture.actor.adds.empty());
         fixture.actor.Run(1);CheckFirstWave(fixture.actor,&fixture.defender);
         fixture.actor.Run(5000);assert(fixture.actor.adds.size()==3);
+#ifdef BASELINE
         assert(fixture.player.credits==std::vector<uint32>{50915});
+#else
+        assert(fixture.player.credits.empty());
+#endif
         for(uint32 deaths=0;deaths<3;++deaths)fixture.ai.SummonedCreatureDies(nullptr,&pet);
         assert(fixture.actor.adds.size()==6 && fixture.ai.count_died==3);
         for(uint32 deaths=0;deaths<3;++deaths)fixture.ai.SummonedCreatureDies(nullptr,&guardian);
@@ -182,7 +328,7 @@ int main()
     {
         Creature actor,defender;
         actor.defender=&defender;
-        Unit visitor;visitor.type=TYPEID_PLAYER;
+        Player visitor;
         WaveAI* original=new(storage) WaveAI(&actor);actor.i_AI=original;
         original->MoveInLineOfSight(&visitor);
         original->~WaveAI();actor.i_AI=nullptr;
@@ -204,7 +350,7 @@ int main()
 #ifndef BASELINE
     {
         Creature actor,defender;
-        Unit visitor;visitor.type=TYPEID_PLAYER;actor.defender=&defender;
+        Player visitor;actor.defender=&defender;
         uint32 unrelated=0;
         actor.functions.AddDelayedEvent(5000,[&unrelated]{++unrelated;});
         actor.i_AI=new WaveAI(&actor);actor.i_AI->MoveInLineOfSight(&visitor);
@@ -231,5 +377,6 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks and no added credit semantics; world services controlled, not client traversal\n";
+#endif
 #endif
 }

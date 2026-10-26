@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Last Travard106777 ritual LOS admission and removal of its earlier-stage50915 bypass only. Not accepted pending-wave context,51838 timing/combat completion/retry, all36 chains or client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local SilverHand.cpp/instance_silver_hand.cpp, previous worklist/routes/donor and wave-lifetime/ritual-arrival audits",
+      "review": "Only a Player type check guarded last LOS; actual visitor, class/quest/scenario/phase were ignored. Unchecked nearest100 Player received50915 before intro latch, then215258/Talk0/211502 lights and own5000ms wave. Native third issued arrival now owns step8/50915. Last phase begins9 and instance step10 separately uses106777 Talk3. Accepted pending callback, periodic51838 and untracked3/6 death counters are unchanged and remain open; this gate is not a ritual choreography reconstruction. No215258 source binding found outside this scenario; targeted live spell_script_names215258/215260 returned no rows, not exhaustive spell-hook/link analysis."
+    },
+    {
+      "source": "Matching runtime native catalogs and fresh read-only MariaDB",
+      "review": "Sole106777 npc_travar_last/spawn362048/map1539/phase7003/addon215258. Fresh source23 zone85entry10 condition44/1092 admits9/10 with NegativeCondition0 (ElseGroup0/1). Same map serves991/Priest,1037/Warrior,1092/Paladin. Native8/30089/type92/50915 precedes9/30110/type92/51838 quantity1 and10/30111/type92/50966. Preserve215258 self aura: native effect6/aura226 PERIODIC_DUMMY/self1, DurationIndex25/CastingTimeIndex1 and existing SpellVisual55978 link, not a claim to have verified kits/attachments/model/animation or rendering. Native final metadata also preserves215260. No DB/phase/spawn/character/item/AP write."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c scripts tree",
+      "review": "Targeted Silver Hand tree search again returns unrelated Stratholme boss, not this acquisition actor. Different-core history is a reference, not an exhaustive historical review or source of blindly copied APIs."
+    },
+    {
+      "source": "Pinned Titans full relevant last-Travard sequence790..913",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Returned/read complete last class: permissive Player LOS/nearest50915,215258/Talk0/lights/5000ms, periodic51838 and wave deaths3/6. It retains the defect. No external correction or guessed combat timing imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript or client traversal reviewed. Native stage/quest/actor admission is sufficient for this bounded repair; full relevant footage and fuller native criterion timing remain required before changing unchanged ritual completion/choreography."
+    }
+  ],
+  "repair": {
+    "admission": "Check initialized intro latch first, null-safe actual who->ToPlayer second, then scoped CanStart. Require world/nonpredelete/contactable/alive/nonGM/nonteleport Paladin with incomplete/nonrewarded42120, live nonpredeleted106777/map1539, same actual map/instance/phase/visibility/LOS/original100yd and actual instance scenario1092/exact9. Do not substitute a nearby eligible Player for an invalid visitor or start from a pet/guardian/NPC. Do not add current-specialization or item-absence restrictions to an active acquisition quest.",
+    "earlier_event": "Remove50915 from this LOS, rather than use it to bypass third-Travard actual arrival. Native phase7003 starts after criterion8 and persists at10 for later dialogue. A fresh stage10 LOS does not restart earlier defense. This supersedes the prior last-LOS50915 open note, not the general persisted-quest/group/faction completion limitations.",
+    "preserved": "Both existing intro/startCriteria flags latch before original215258/Talk0/lights/own5000ms first wave, including reentrant cast/speech. Whole-AI source guard allows exactly visitor gate/removal of earlier event plus previously repaired timer owner/lifecycle; remaining UpdateAI/SummonedCreatureDies/SummonAdds bodies, failed-spawn behavior, native Reset, own queue/destructor, creatures/flags/attacks and all other actors are unchanged. Rejected admission leaves intro unused for a later legitimate visit; accepted retry semantics are not newly invented."
+  },
+  "validation": {
+    "baseline": "PASS -AdmissionBaseline pins67b2f259 whole actual last AI: inactive Priest in wrong scenario starts ritual/lights/first wave and credits unrelated nearby Player50915. Retained e03ec0c8 raw-timer baseline independently reproduces the old transparent same-type replacement callback. Controlled host, not observed client footage.",
+    "host": "PASS whole extracted last AI/CanStart/native FunctionProcessor/locked primary-disabled lifecycle/AIM_Destroy. Null actor/Player/visitor and pet/guardian/NPC admission,28 invalid live/quest/class/map/instance/phase/visibility/LOS/distance/scenario contexts, all12 steps, both faction labels and100yd boundary. Reject then restore eligibility gives original4999+1ms wave without synthetic credit. Cast/Talk reentry and repeated/Reset LOS produce one introduction/wave. Existing destruction/replacement, Unit-job retention, disabled/alias locks, three-wave/flags/attacks and missing defender/spawn limitations retained. World, spell, motion, faction labels and criteria cache are controlled; unchanged periodic51838 still exists and this is not native end-to-end combat proof.",
+    "installed": "PASS actual last factory-selected LOS0x270/AI lifecycle0x110/destructor0; actual live CanStart denial branches/quest42120/class2/1092/exact9/100yd and actual visitor null/type conversion precede flags215258/Talk0/visibility/own5000ms queue. No FindNearestPlayer/Player progression/item call remains in LOS or helper. Existing selected11-byte wave closure,9-byte lifecycle,queue+48/destructor/initialized factory fields retained. Register/frame changes verified against decoded binary, not symbol existence/noinline/fake unwind.",
+    "regressions": "PASS complete16-suite serial PowerShell7 rerun, separately retained .codex/silver-hand-final-entry-rerun-regressions.tsv. New67b2f259 final admission baseline and retained e03ec0c8 last-wave lifetime baseline; retained14992461 third arrival/41ce375b action/7680556f final/e01a2c64 step8 baselines; installed AberrationCredit/native owner/shared bridge, full RitualDispatch/arrival with nested entry/data/PE and native215258/215260 metadata, full WaveLifetime/final-entry/data/PE, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, SceneLifecycle, ArtifactForceEquip55 records/39 items; third-entry lifetime baseline. Native catalog builds serialized separately from canonical build. Initial failed ledger and unchanged standalone/replay evidence remain distinct, not relabeled as a first-pass success.",
+    "verification_incident": "Initial serial run reached12 PASS suites, then unchanged Test-DalaranAllClassOffers failed its temporary-table offers22 assertion; actual returned rows were not captured by that runner. No fixture threshold/check or production invitation data changed. Read-only live data and an isolated replay returned the exact eight expected migration rows including offers22; unchanged standalone full all-class suite passed, and10 additional isolated temporary-table replays retained offers22/eight-row count. Initial and replay logs/ledgers are retained separately. Cause is not established; these successful replays do not prove an intermittent capture/data-state issue fixed.",
+    "evidence": ".codex/silver-hand-final-entry-* and runtime-test/silver-hand-wave-lifetime ignored probes/logs. Runtime configs/passwords/characters/assets/media excluded. Extracted-host warnings/diagnostics retained, not suppressed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "913A8B6BE9D4BCCA07844BF1F5CE5CF423294494202241F3BAC0FF45E29F30CB",
+    "bnet_sha256": "41320EFFFD1E13F4ABDC1AC3AB21DCF47DA3F812B014D7DE6AFD9A2271004C61",
+    "build": "Release worldserver+bnetserver17.03s/0 warnings/errors, no OutDir and LinkIncremental=false. Actual UTF16 final-link canonical output/original scripts-game-shared-common Release libraries/INCREMENTAL:NO checked; deployed selected implementation independently decoded.",
+    "runtime": "Own hidden canonical PID30752 reached fresh ready; own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected config-certificate hashes unchanged/gone. No user/unknown process stopped or hidden server left running."
+  },
+  "remaining": [
+    "One initial all-class temporary-migration assertion was not reproduced in bounded unchanged replays; its cause remains unproven. Preserve the failed ledger/diagnostics rather than treating a later pass as a repair of test reliability. This unit does not change all-class admission code/data or weaken that assertion.",
+    "Accepted5000ms callback still lacks quest/scenario/recipient recheck and automatic retry. Do not simply require exact9 at that callback while unchanged periodic51838 may already transition the scenario: trace full native criteria, actual victory and relevant footage together. Abandon/retake/re-entry/recreated-AI epochs, interrupted waves, failed215258 and defender/spawn recovery remain OPEN.",
+    "Periodic51838 still uses unchecked nearest Player without a tracked victory in this handler; summoned-death count still trusts every callback/null/untracked summon and advances3/6. No new kill/group credit is added: pet/guardian final blows must be handled by the eventual tracked-wave repair using native shared scenario rules, not progression assigned to pets or manual party fanout.",
+    "Third waypoint50877/50912, firstfight/evade/50850, aberration pre-hit half-health/intentional companion deaths, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. Actual ritual spell, audio/lights/animations, healing/combat, camera/pets and client traversal await testing."
+  ]
+}
