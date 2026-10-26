@@ -1204,6 +1204,7 @@
       "class_id": 3,
       "specialization": "Beast Mastery",
       "weapon": "Titanstrike",
+      "client_confirmation": "2026-10-26 user reports completing the BM acquisition quest, taking Titanstrike and successfully upgrading it. Successful user client traversal through acquisition/power purchase; individual visuals and alternative/faction/group/retry/relog paths are not separately certified. See docs/audits/titanstrike-client-confirmation-2026-10-26.json. This does not close Eagle network/taxi checks or other specializations.",
       "shared_map_companion_audit": "docs/audits/shields-rest-companion-admission-2026-10-25.json",
       "item": 128861,
       "prior_pickup_quest_repair_audit": "docs/audits/titanstrike-final-pickup-2026-10-23.json",

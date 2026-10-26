@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-26 Europe/Riga",
+  "source": "Direct user client report in this conversation; no agent-controlled client traversal or new screenshot/video supplied for this report.",
+  "reported": "Izgāju huntera BM ieroča questu beigās ieroci paņēmu un jau pat uzlaboju tā kā tas tagad strādā mēģināsu pārēj specializāciju questus. bet tu turpini darbu",
+  "confirmed_scope": "User reports completing the Beast Mastery Titanstrike acquisition quest, taking the weapon at the end, and successfully upgrading it. Record this as a successful user client run through acquisition and a power upgrade, separate from the earlier native/SQL/PE/startup checks. Prior Hati/ordinary-pet standing separation screenshot is recorded in its own formation audit.",
+  "limits": "The report does not individually certify every voice, visual, timing, faction/race, group, pet/guardian killing blow, full bags, failed cast, missing actor, abandon/retry/re-entry, save/relog or taxi cleanup path. No upgrade count or ranks inferred. No other Hunter specialization or all36 chain is certified. No user character, weapon, powers or progress changed by the agent.",
+  "related": [
+    "docs/audits/artifact-acquisition-worklist-2026-10-23.json",
+    "docs/audits/titanstrike-final-pickup-2026-10-23.json",
+    "docs/audits/titanstrike-hati-binding-2026-10-24.json",
+    "docs/audits/taxi-flight-completion-2026-10-26.json",
+    "docs/audits/trueshot-eagle-network-review-2026-10-26.json"
+  ],
+  "remaining": "Continue remaining specialization repairs independently. Eagle network admission and real new-flight/landing/relogin validation remain separate open work; this BM completion report does not resolve them. Preserve user/unknown servers. Diagnostics observed after receiving report: active Crashes0, active DBErrors0 bytes; no before-client-test snapshot was available to this turn, so do not claim agent monitoring of the whole reported run."
+}
