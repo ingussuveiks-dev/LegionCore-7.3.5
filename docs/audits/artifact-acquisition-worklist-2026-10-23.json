@@ -12,18 +12,25 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Maps/Map.cpp",
+      "handler": "Grif106570 cross-grid active spawn-lock teardown",
+      "problem": "Forced UnloadAll could delete spawn36 before active Grif in37 released its spawn lock; old diagnostic reversed coordinates.",
+      "repair_audit": "docs/audits/active-creature-grid-unload-2026-10-26.json",
+      "limit": "Native pinned error/ASAN/current lifecycle and selected canonical machine-code checks pass; active locks drained before grid deletion, duplicate membership guarded, genuine diagnostics retained. Canonical world75D321DF fresh owned startup/shutdown0 has no new diagnostics; active Crashes/DBErrors0. Real Grif route/unload/re-entry and all full client/VFX remain pending."
+    },
+    {
       "path": "src/server/game/Entities/Unit/Unit.cpp",
       "handler": "Titanstrike Hati/primary pet follow formation",
       "problem": "User confirms persistent overlap after walking; incoming companion skipped before world registration and GUID ordering could move primary onto secondary's retained follow side.",
       "repair_audit": "docs/audits/hati-pet-follow-formation-2026-10-26.json",
-      "limit": "Native/ASAN/pinned overlap counterfactual and selected staged PE passed; incoming minion participates and primary remains first without restarting movement. Two companions intentional. Deployment pending visible user server stop; actual client separation/commands/combat/relog and full route/VFX remain unverified."
+      "limit": "Native/ASAN/pinned overlap counterfactual and selected canonical PE passed; incoming minion participates and primary remains first without restarting movement. Two companions intentional. Deployed world75D321DF after user stop; owned ready/shutdown0/diagnostics clean. Actual client separation/commands/combat/relog and full route/VFX remain unverified."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",
       "handler": "108015 Garona delayed intro recipient/AI lifetime",
       "problem": "Unit-owned15/30s callbacks captured raw AI/player and sent personal progress after map transfer.",
       "repair_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
-      "limit": "AI-owned EventMap/fullGUID/fresh live same-map-phase-contact lookup; native/ASAN/pinned relocation and staged selected PE passed. DEPLOYMENT PENDING user server idle. No new quest-attempt/admission/replay/group rules or complete route/client/VFX certification."
+      "limit": "AI-owned EventMap/fullGUID/fresh live same-map-phase-contact lookup; native/ASAN/pinned relocation and selected canonical PE passed. DEPLOYED world75D321DF after user stop; owned ready/shutdown0/diagnostics clean. No new quest-attempt/admission/replay/group rules or complete route/client/VFX certification."
     },
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
@@ -1610,7 +1617,7 @@
       "weapon": "The Kingslayers",
       "item": 128870,
       "start": 42501,
-        "status": "partial Garona intro lifetime repair tested/staged; deployment and full chain/client visual traversal pending",
+        "status": "partial Garona intro lifetime repair tested/deployed; full chain/client visual traversal pending",
         "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
       "quests": [
         {

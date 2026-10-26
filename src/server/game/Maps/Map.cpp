@@ -2352,6 +2352,16 @@ void Map::UnloadAll()
     _dynamicObjectsToMove.clear();
     _areaTriggersToMove.clear();
 
+    while (!m_activeNonPlayers.empty())
+    {
+        WorldObject* object = *m_activeNonPlayers.begin();
+        if (Creature* creature = object->ToCreature())
+            RemoveFromActive(creature);
+        else
+            RemoveFromActiveHelper(object);
+        object->setActive(false);
+    }
+
     for (auto i = i_loadedGrids.begin(); i != i_loadedGrids.end();)
         UnloadGrid(i++, true);
 
@@ -3362,6 +3372,9 @@ void Map::RemoveWorldObject(WorldObject* obj)
 
 void Map::AddToActive(Creature* c)
 {
+    if (m_activeNonPlayers.find(c) != m_activeNonPlayers.end())
+        return;
+
     AddToActiveHelper(c);
 
     // also not allow unloading spawn grid to prevent creating creature clone at load
@@ -3376,13 +3389,16 @@ void Map::AddToActive(Creature* c)
         {
             GridCoord p2 = Trinity::ComputeGridCoord(c->GetPositionX(), c->GetPositionY());
             TC_LOG_ERROR("maps", "Active creature (GUID: %u Entry: %u) added to grid[%u, %u] but spawn grid[%u, %u] was not loaded.",
-                c->GetGUIDLow(), c->GetEntry(), p.x_coord, p.y_coord, p2.x_coord, p2.y_coord);
+                c->GetGUIDLow(), c->GetEntry(), p2.x_coord, p2.y_coord, p.x_coord, p.y_coord);
         }
     }
 }
 
 void Map::RemoveFromActive(Creature* c)
 {
+    if (m_activeNonPlayers.find(c) == m_activeNonPlayers.end())
+        return;
+
     RemoveFromActiveHelper(c);
 
     // also allow unloading spawn grid
@@ -3397,7 +3413,7 @@ void Map::RemoveFromActive(Creature* c)
         {
             GridCoord p2 = Trinity::ComputeGridCoord(c->GetPositionX(), c->GetPositionY());
             TC_LOG_ERROR("maps", "Active creature (GUID: %u Entry: %u) removed from grid[%u, %u] but spawn grid[%u, %u] was not loaded.",
-                c->GetGUIDLow(), c->GetEntry(), p.x_coord, p.y_coord, p2.x_coord, p2.y_coord);
+                c->GetGUIDLow(), c->GetEntry(), p2.x_coord, p2.y_coord, p.x_coord, p.y_coord);
         }
     }
 }

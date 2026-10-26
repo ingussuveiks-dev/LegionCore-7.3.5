@@ -8,7 +8,8 @@
     "action": "Moved exactly two reviewed original files, preserving names/bytes and verifying SHA256. No recursive cleanup or deletion of unrelated evidence. Active Release/Crashes file count is0."
   },
   "dberrors_review": {
-    "active_bytes": 594,
+    "active_bytes_at_initial_review": 594,
+    "active_bytes_after_idle_cleanup": 0,
     "historical_rows": "Exactly four dated2026-10-23 entries: absent LINK1 for Grif100810/Apata99986/Courier100171 and spell0 on areatrigger6837. No later entries at review.",
     "repairs": "Hunter interaction commit891178d1 supplies each actual LINK61/CLOSE_GOSSIP72/invoker7 continuation; read-only live rows match. Storm commit a48a7407 supplies native210880 to NO_ACTION15 on6837; read-only live row matches. Existing diagnostic/fix audits retained.",
     "checks": "PASS Test-HunterIntroInteractions.ps1 with production close/LINK tail, conditions, actual-schema TEMP repeat/custom guards; PASS Test-TitanstrikeStorms.ps1 -VerifyReleaseBinary with native data/loader and installed consumers. Separate before/after snapshots around EACH check show0 new/changed canonical crashes,0 new DBErrors bytes and0 appended server ERROR/WARN/FATAL/assert/abort messages. Test output retained and reviewed; native fixtures are not client traversal.",
@@ -17,5 +18,5 @@
   },
   "server_history": "The ordinary Server.log contains mixed historical informational/diagnostic content and is not cleared wholesale. Fresh appended diagnostics around both checks are empty. No user/unknown server was stopped, no canonical EXE was replaced and no character modified.",
   "evidence": ".codex/diagnostic-policy-Test-HunterIntroInteractions-* and diagnostic-policy-Test-TitanstrikeStorms-* logs plus private archive manifests. Runtime logs/dumps/configuration/data remain ignored and uncommitted.",
-  "pending": "Safe active DBErrors truncation is deferred until the user server stops and all newly appended bytes are reviewed. The separate Kingslayers lifetime source/catalog work remains uncommitted and is not certified by this diagnostics-policy commit."
+  "pending": "Initial deferral completed after explicit user server stop: subsequent canonical owned PID30104 startup/shutdown produced no new diagnostics, the original594-byte archive/source hash was reverified and active DBErrors safely truncated to0. Active Crashes remains0. Mixed historical Server.log is preserved; only the separately fixed Grif error records are archived as fixed. Kingslayers6cdf37b6 and Hati0e238cb1 are now committed/pushed and deployed with the later Grif cleanup, with native/selected canonical PE checks and separate pending client verification. See active-creature-grid-unload-2026-10-26.json."
 }
