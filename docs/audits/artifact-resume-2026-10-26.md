@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure native cage opening (2026-10-27)
+
+- `tuure-cage-opening-2026-10-27.json`: native GOOBER SendLoot/Use never reached old GossipHello(true). Narrow completed3365/1690/249693/134192 hit now dispatches after native lock check; direct/report-use cannot grant. Original41993 lease/1085/stage3/native47561, real fullGUID Boja/Boros/captain before native50633;5s retry/30s finite receipt. Native Use/210480/3s before deletion; accepted-world recovery has no new credit. Native requireLOS0/mounted1 retained. No SQL/manual character changes.
+- Pinned unreachable-old-native-path counterfactual/current full native CanOpenLock/goober/AI ASAN/statuses/23 denials/lifetime/missing/native failure/reset/recovery/timing pass; prior first28/route40+16 included. Fresh typed World cage/lock/actor/override contracts pass. Actual selected factory/core post-lock/getter128-bit/cleanup canonical PE, prior chain/Scepter and shared Judgment/Wings Release pass. Client VFX/path/combat remains unverified.
+- Canonical world AA8DBF2513845B013DA1EB32B4B99C5DC774BA56674C2EF0C67460A610BB6F3C, map D88937BE9591C29B97A75D917D7957A2FE10E8CA4617A16E195F9E4FEBC25E71; own29784 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. No archive needed. Commit containing audit follows ebdbfcd6.
+- NEXT captain106107/361436 real killer50634 and unsafe Boros attack/DoAction2; native point3/8s second9859003/waypoint7/4s Lady handoff. Reader209441 contact confirms native90 credit105697 plus123 taxi5626/60s aura: old SAI33 duplicates early credit and danglingLINK1; no speculative change yet. Across-session restart, client and all36 remain OPEN.
+
 ## Latest repair: Tuure real second kill and first route (2026-10-27)
 
 - `tuure-first-route-2026-10-27.json`: real106221/361429 death -> original owner/quest lease -> actual native47883 -> original1s9859002 path -> real native OnArrived node6/2007 and10/50831/47882. Node10 is DB point11 of13, preserved. State-only/nearest/AI action1 removed. Normal native KillRewarder scenario reward occurs BEFORE CreatureDies; only three unowned allies get scoped missing Scenario type0 forwarding. No substitute owned-kill reward or individual quest/loot/XP/item grant.

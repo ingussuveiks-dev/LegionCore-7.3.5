@@ -29,7 +29,7 @@ public:
         WorldLocation loc_res_pla;  // for respawn
         enum class FirstFight { Waiting, Pending, Unlocking, Done };
         FirstFight firstFight = FirstFight::Waiting;
-        ObjectGuid borosGuid, nextOpponentGuid, defeatedGuid, recipientGuid;
+        ObjectGuid borosGuid, nextOpponentGuid, defeatedGuid, recipientGuid, bojaGuid, captainGuid;
         std::weak_ptr<uint8> questAttempt;
         uint32 victoryDelay = 1000, unlockDelay = 16000, retryDelay = 0;
         bool delivering = false, deliveryWarning = false;
@@ -236,6 +236,18 @@ public:
                 actor->GetEntry() == 106134 && actor->GetDBTableGUIDLow() == 361419 ? actor : nullptr;
         }
 
+        ObjectGuid GetGuidData(uint32 entry) const override
+        {
+            switch (entry)
+            {
+                case 106134: return borosGuid;
+                case 106137: return jaceGuid;
+                case 106253: return bojaGuid;
+                case 106107: return captainGuid;
+                default: return InstanceScript::GetGuidData(entry);
+            }
+        }
+
         void BeginUnlock()
         {
             firstFight = FirstFight::Unlocking;
@@ -262,6 +274,10 @@ public:
             }
             else if (creature->GetEntry() == 106137 && creature->GetDBTableGUIDLow() == 361432)
                 jaceGuid = creature->GetGUID();
+            else if (creature->GetEntry() == 106253 && creature->GetDBTableGUIDLow() == 361433)
+                bojaGuid = creature->GetGUID();
+            else if (creature->GetEntry() == 106107 && creature->GetDBTableGUIDLow() == 361436)
+                captainGuid = creature->GetGUID();
             else if (creature->GetEntry() == 106201 && creature->GetDBTableGUIDLow() == 361428 &&
                 creature->IsAlive() && firstFight == FirstFight::Pending &&
                 !TuureFirstFight::HasVictory(sScenarioMgr->GetScenario(instance->GetInstanceId())))

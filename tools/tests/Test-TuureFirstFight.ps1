@@ -1,8 +1,9 @@
-param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline)
+param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline,[switch]$Cage,[switch]$CageBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/tuure-first-fight"
+if($CageBaseline){$Cage=$true};if($Cage){$out="$repo/build-extractors/runtime-test/tuure-cage";New-Item -ItemType Directory -Force $out|Out-Null}
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 function Replace-Fixture([string]$value,[string]$old,[string]$new){if(!$value.Contains($old)){throw "Fixture boundary missing: $old"};$value.Replace($old,$new)}
-& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out) -Test {
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline -or $CageBaseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out,"$repo/build-extractors/runtime-test/legion-legendary-catalog") -Test {
  $path='src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.cpp';$source=Get-Content "$repo/$path" -Raw
  $instancePath='src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp';$selected=$source;$instanceSource=Get-Content "$repo/$instancePath" -Raw
  if($Baseline){$selected=(& git -C $repo show "8c946eb5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight actor missing'};$instanceSource=(& git -C $repo show "8c946eb5:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight instance missing'}}
@@ -25,6 +26,7 @@ struct WorldLocation{void WorldRelocate(uint32,float,float,float){}};
 struct InstanceScript{
  InstanceMap* instance;uint32 creates=0;explicit InstanceScript(InstanceMap* map=nullptr):instance(map){}virtual ~InstanceScript()=default;
  virtual void OnCreatureCreate(Creature*){++creates;}virtual void CreatureDies(Creature*,Unit*){}virtual void CreatureDiesForScript(Creature*,Unit*){}virtual void OnUnitDeath(Unit*){}virtual void Update(uint32){}virtual WorldLocation* GetClosestGraveYard(float,float,float){return nullptr;}
+ virtual ObjectGuid GetGuidData(uint32)const{return {};}
  bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};
 };
 '@
@@ -61,6 +63,28 @@ auto sCreatureTextMgr=&textMgr;
  $nativeFixture=Replace-Fixture $nativeFixture 'AchievementMgr achievement;AchievementMgr& GetAchievementMgr()' 'uint32 killDeliveries=0,routeDeliveries=0;bool rejectKill=false;AchievementMgr achievement;void UpdateAchievementCriteria(uint32,uint32,uint32,uint32,Unit*,Player*);AchievementMgr& GetAchievementMgr()'
  $nativeFixture=Replace-Fixture $nativeFixture 'virtual void DoAction(int32){};' 'virtual void DoAction(int32){};virtual void MovementInform(uint32,uint32){};virtual void LastWPReached(){};'
  $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetCreature(ObjectGuid const&);' 'Creature* GetCreature(ObjectGuid const&);template<class... Args>void ScriptsStart(Args...){}'
+ if($Cage){
+  $nativeFixture=Replace-Fixture $nativeFixture 'struct Creature;struct Player;struct Unit;' (Get-Content "$PSScriptRoot/TuureCagePrelude.h" -Raw)
+  $nativeFixture=Replace-Fixture $nativeFixture 'bool IsWithinDistInMap(Unit*,float d)const{assert(d==100||d==20);' 'bool IsWithinDistInMap(Unit*,float d)const{assert(d==100||d==20||d==5||d==60);'
+  $nativeFixture=Replace-Fixture $nativeFixture 'if(d==40)return routeNear;' 'if(d==40||d==70)return routeNear;'
+  $nativeFixture=Replace-Fixture $nativeFixture 'assert(field==2&&mask==15);' 'assert(field==2&&(mask==15||mask==4));'
+  $nativeFixture=Replace-Fixture $nativeFixture 'struct Player:Unit {' 'struct Player:Unit {uint32 goCredits=0;template<class T>void PrepareGossipMenu(T*,uint32){}template<class T>void SendPreparedGossip(T*){}Battleground* GetBattleground(){return nullptr;}void KillCreditGO(uint32,ObjectGuid){++goCredits;}uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army{std::vector<int> currentUnits[1];}armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}'
+  $nativeFixture=Replace-Fixture $nativeFixture 'virtual ~CreatureAI()=default;' 'void Talk(uint32){}virtual ~CreatureAI()=default;'
+  $nativeFixture=Replace-Fixture $nativeFixture 'virtual ~Unit()=default;' 'bool IsPlayer(){return ToPlayer()!=nullptr;}bool HasAura(uint32){return false;}virtual ~Unit()=default;'
+  $nativeFixture=Replace-Fixture $nativeFixture 'uint32 waypoint=0,' 'uint32 react=0,faction=35;void SetReactState(uint32 v){react=v;}void setFaction(uint32 v){faction=v;}bool HasFlag(uint32 field,uint32 mask){assert(field==2);return (flags&mask)!=0;}uint32 waypoint=0,'
+  $crate=$source;if($CageBaseline){$crate=(& git -C $repo show "ebdbfcd6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned cage baseline missing'}}
+  [IO.File]::WriteAllText("$out/Cage.inc",(Block $crate 'struct go_tuure_crateAI :')+';')
+  $spellEffects=Get-Content "$repo/src/server/game/Spells/SpellEffects.cpp" -Raw
+  $bridgeFirst=$spellEffects.IndexOf('if (gameObjTarget && m_spellInfo->Id == 3365 && gameObjTarget->GetMapId() == 1489');$bridgeLast=$spellEffects.IndexOf('return;',$bridgeFirst)
+  if($bridgeFirst -lt 0 -or $bridgeLast -lt $bridgeFirst){throw 'Native braceless cage dispatch missing'}
+  [IO.File]::WriteAllText("$out/CageBridge.inc",$(if($CageBaseline){''}else{$spellEffects.Substring($bridgeFirst,$bridgeLast+7-$bridgeFirst)}))
+  [IO.File]::WriteAllText("$out/LockGate.inc",(Block $spellEffects 'if (res != SPELL_CAST_OK && lockId != 2127)'))
+  [IO.File]::WriteAllText("$out/CanOpenLock.inc",(Block (Get-Content "$repo/src/server/game/Spells/Spell.cpp" -Raw) 'SpellCastResult Spell::CanOpenLock('))
+  [IO.File]::WriteAllText("$out/GooberLoot.inc",(Block (Block $spellEffects 'void Spell::SendLoot(') 'if (gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_GOOBER)'))
+  $goUse=Block (Get-Content "$repo/src/server/game/Entities/GameObject/GameObject.cpp" -Raw) 'void GameObject::Use('
+  [IO.File]::WriteAllText("$out/GoUseGate.inc",(Block $goUse 'if (Player* playerUser = user->ToPlayer())'))
+  [IO.File]::WriteAllText("$out/GooberUse.inc",(Block $goUse 'case GAMEOBJECT_TYPE_GOOBER:'))
+ }
  $nativeFixture+="`n#include `"NativeArrival.inc`"`n"
  $waypoint=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
  [IO.File]::WriteAllText("$out/NativeArrival.inc",((Block $waypoint 'void WaypointMovementGenerator<Creature>::MovementInform(')+(Block $waypoint 'void WaypointMovementGenerator<Creature>::OnArrived(')).Replace('void WaypointMovementGenerator<Creature>::','template<> void WaypointMovementGenerator<Creature>::'))
@@ -83,8 +107,9 @@ auto sCreatureTextMgr=&textMgr;
  $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
  [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- $def=if($Baseline){'/DBASELINE'}elseif($RouteBaseline){'/DROUTE_BASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
- [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $def /I`"$out`" `"$PSScriptRoot/TuureFirstFightTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
+ $def=if($Baseline){'/DBASELINE'}elseif($RouteBaseline){'/DROUTE_BASELINE'}elseif($CageBaseline){'/DCAGE_BASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
+ $testSource=if($Cage){'TuureCageTest.cpp'}else{'TuureFirstFightTest.cpp'}
+ [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $def /I`"$out`" `"$PSScriptRoot/$testSource`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Tuure actual first-fight regression failed'}
  if($VerifyNativeCatalog){
   $savedCatalog=$env:LEGION_DIALOGUE_CONFIG
@@ -109,5 +134,24 @@ SELECT 'path',id,COUNT(*) FROM waypoint_data_script WHERE id IN(9859002,9859003)
   if(Compare-Object $expected $live){throw 'Native first-fight spawns/scripts/paths/shared-map data changed; preserve and review'}
   $live|Set-Content -Encoding utf8 "$out/live.tsv"
   'PASS matching real first-opponent/companion/next-actor spawns and scripts, sole producer, both native step2 criteria, solo admission and five-scenario shared-map/paths; no live data modified'
+  if($Cage){
+   foreach($expected in @("LOCK`t1690`t1`t2`t5`t0`t0","CRITERION`t3`t47561`t47560`t0`t29863`t92`t50633","EFFECT`t3365`t0`t33`t0`t5`t0`t23`t0","EFFECT`t210480`t0`t3`t0`t0`t0`t22`t7")){if($rows -notcontains $expected){throw "Native cage contract differs: $expected"}}
+   $query=@'
+SELECT 'crate',entry,type,ScriptName,flags,Data0,Data3,Data5,Data10,Data16,Data17,Data22,Data23 FROM gameobject_template WHERE entry=249693;
+SELECT 'spawn',guid,id,map,PhaseId,spawnMask FROM gameobject WHERE guid=134192;
+SELECT 'actor',guid,id,map,spawnMask FROM creature WHERE guid IN(361419,361433,361436) ORDER BY guid;
+SELECT 'go-script',COUNT(*) FROM gameobject_scripts WHERE id=134192;
+SELECT 'dummy-script',COUNT(*) FROM spell_script_names WHERE ABS(spell_id)=210480;
+SELECT 'dummy-db',COUNT(*) FROM spell_scripts WHERE id=210480;
+SELECT 'criterion-data',COUNT(*) FROM achievement_criteria_data WHERE criteria_id=29863;
+SELECT 'disable',COUNT(*) FROM disables WHERE sourceType IN(4,12) AND entry IN(29863,47561);
+'@
+   $savedSqlPwd=$env:MYSQL_PWD
+   try{$env:MYSQL_PWD=$db[3];$live=@($query|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($db[0]) --port=$($db[1]) --user=$($db[2]) --database=$($db[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Read-only cage query failed'}}finally{$env:MYSQL_PWD=$savedSqlPwd}
+   $expected=@("crate`t249693`t10`tgo_tuure_crate`t0`t1690`t3000`t0`t210480`t0`t1`t0`t1","spawn`t134192`t249693`t1489`t6374`t4096","actor`t361419`t106134`t1489`t4096","actor`t361433`t106253`t1489`t4096","actor`t361436`t106107`t1489`t4096","go-script`t0","dummy-script`t0","dummy-db`t0","criterion-data`t0","disable`t0")
+   if(Compare-Object $expected $live){throw 'Native cage/goober actors or custom overrides changed'}
+   $live|Set-Content -Encoding utf8 "$out/cage-live.tsv"
+   'PASS actual native cage lock/type10/3365/210480/3s, real actor/spawn identities, requireLOS0/mounted1, no hidden script/criterion override; no live data modified'
+  }
  }
 }

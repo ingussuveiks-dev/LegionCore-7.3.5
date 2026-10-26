@@ -25,7 +25,7 @@ int main(int argc,char** argv){
  effects.LoadFromDB();spells.LoadFromDB();misc.LoadFromDB();items.LoadFromDB();artifacts.LoadFromDB();durations.LoadFromDB();children.LoadFromDB();
  DB2Storage<LockEntry> locks("Lock.db2",LockLoadInfo::Instance());
  if(!locks.Load(argv[1],0))return 6;locks.LoadFromDB();
- for(uint32 id:{43u,1691u}){auto lock=locks.LookupEntry(id);if(!lock)return 7;for(unsigned i=0;i<8;++i)if(lock->Type[i])std::cout<<"LOCK\t"<<id<<'\t'<<i<<'\t'<<unsigned(lock->Type[i])<<'\t'<<lock->Index[i]<<'\t'<<lock->Skill[i]<<'\t'<<unsigned(lock->Action[i])<<'\n';}
+ for(uint32 id:{43u,1690u,1691u}){auto lock=locks.LookupEntry(id);if(!lock)return 7;for(unsigned i=0;i<8;++i)if(lock->Type[i])std::cout<<"LOCK\t"<<id<<'\t'<<i<<'\t'<<unsigned(lock->Type[i])<<'\t'<<lock->Index[i]<<'\t'<<lock->Skill[i]<<'\t'<<unsigned(lock->Action[i])<<'\n';}
  DB2Storage<ScenarioStepEntry> steps("ScenarioStep.db2",ScenarioStepLoadInfo::Instance());
  DB2Storage<CriteriaTreeEntry> trees("CriteriaTree.db2",CriteriaTreeLoadInfo::Instance());
  DB2Storage<CriteriaEntry> criteria("Criteria.db2",CriteriaLoadInfo::Instance());
@@ -44,7 +44,7 @@ int main(int argc,char** argv){
  DB2Storage<LFGDungeonsEntry> lfg("LFGDungeons.db2",LfgDungeonsLoadInfo::Instance());
  if(!lfg.Load(argv[1],0))return 9;lfg.LoadFromDB();
  for(auto dungeon:lfg)if(dungeon->ScenarioID==1085)std::cout<<"LFG\t"<<dungeon->ID<<'\t'<<dungeon->MapID<<'\t'<<unsigned(dungeon->DifficultyID)<<'\t'<<dungeon->GetMinGroupSize()<<'\t'<<dungeon->GetMaxGroupSize()<<'\t'<<unsigned(dungeon->CountTank)<<'\t'<<unsigned(dungeon->CountHealer)<<'\t'<<unsigned(dungeon->CountDamage)<<'\n';
- std::set<uint32> selected{210733,210734,210818,210715,210703,210807,204237,211185,211380,204082,204086,212629};
+ std::set<uint32> selected{3365,210480,209441,210733,210734,210818,210715,210703,210807,204237,211185,211380,204082,204086,212629};
  for(auto effect:effects)if(!effect->DifficultyID&&effect->Effect==61&&std::set<int32>{50563,50562,50831,50634,50695}.count(effect->EffectMiscValue[0])){selected.insert(effect->SpellID);std::cout<<"STAGE_EVENT\t"<<effect->SpellID<<'\t'<<effect->EffectIndex<<'\t'<<effect->EffectMiscValue[0]<<'\n';}
  for(int depth=0;depth<3;++depth)for(auto effect:effects)if(selected.count(effect->SpellID)&&effect->EffectTriggerSpell)selected.insert(effect->EffectTriggerSpell);
  for(auto id:selected)if(auto spell=spells.LookupEntry(id))std::cout<<"SPELL\t"<<id<<'\t'<<spell->Name->Str[0]<<'\n';else std::cout<<"MISSING_SPELL\t"<<id<<'\n';

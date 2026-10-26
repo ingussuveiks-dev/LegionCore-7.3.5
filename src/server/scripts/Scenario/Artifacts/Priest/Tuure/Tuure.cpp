@@ -806,33 +806,211 @@ public:
 
     struct go_tuure_crateAI : public GameObjectAI
     {
-        go_tuure_crateAI(GameObject* go) : GameObjectAI(go) {}
+        go_tuure_crateAI(GameObject* object) : GameObjectAI(object) { }
+        ObjectGuid opener, nativeInvoker;
+        std::weak_ptr<uint8> attempt;
+        uint32 remaining = 30000, retry = 0, deleteDelay = 0;
+        bool pending = false, released = false, deleted = false, delivering = false;
+        bool actorWarning = false, creditWarning = false, activationWarning = false;
+
+        Scenario* Current()
+        {
+            if (!go || !go->IsInWorld() || go->IsPreDelete() || !go->GetMap() || go->GetMapId() != 1489 ||
+                go->GetEntry() != 249693 || go->GetDBTableGUIDLow() != 134192 || go->GetGoType() != GAMEOBJECT_TYPE_GOOBER) return nullptr;
+            Scenario* scenario = sScenarioMgr->GetScenario(go->GetInstanceId());
+            return scenario && scenario->GetScenarioId() == 1085 ? scenario : nullptr;
+        }
+
+        bool Opened()
+        {
+            Scenario* scenario = Current();
+            if (!scenario) return false;
+            auto const* progress = scenario->GetAchievementMgr().GetCriteriaProgressMap();
+            auto found = progress->find(47561);
+            return found != progress->end() && found->second.Counter;
+        }
+
+        bool Eligible(Player* player, bool earned = false)
+        {
+            Scenario* scenario = Current();
+            return scenario && scenario->GetCurrentStep() == (earned ? 4 : 3) && player &&
+                player->IsInWorld() && player->IsAlive() && player->CanContact() && !player->isGameMaster() &&
+                !player->HasPendingTeleport() && player->getClass() == CLASS_PRIEST &&
+                player->GetMap() == go->GetMap() && player->InSamePhase(go) &&
+                player->IsWithinDistInMap(go, go->GetInteractionDistance()) &&
+                !player->GetQuestRewardStatus(41993) &&
+                (player->GetQuestStatus(41993) == QUEST_STATUS_INCOMPLETE || player->GetQuestStatus(41993) == QUEST_STATUS_COMPLETE);
+        }
+
+        Creature* Actor(uint32 entry, uint64 spawn)
+        {
+            InstanceScript* instance = go->GetInstanceScript();
+            Creature* actor = instance ? go->GetMap()->GetCreature(instance->GetGuidData(entry)) : nullptr;
+            return actor && actor->IsInWorld() && !actor->IsPreDelete() && actor->IsAlive() &&
+                actor->GetMap() == go->GetMap() && actor->GetEntry() == entry &&
+                actor->GetDBTableGUIDLow() == spawn && actor->InSamePhase(go) ? actor : nullptr;
+        }
+
+        bool Actors(Creature*& boja, Creature*& boros, Creature*& captain)
+        {
+            boja = Actor(106253, 361433);
+            boros = Actor(106134, 361419);
+            captain = Actor(106107, 361436);
+            return boja && boros && captain && boja->IsWithinDistInMap(boros, 70.0f) &&
+                boja->IsWithinDistInMap(captain, 70.0f);
+        }
+
+        void Cancel()
+        {
+            pending = false;
+            opener.Clear();
+            attempt.reset();
+            remaining = 30000;
+            retry = 0;
+            actorWarning = creditWarning = activationWarning = false;
+        }
+
+        void Reset() override
+        {
+            Cancel(); // an accepted native47561 remains authoritative on reload
+        }
+
+        bool GossipUse(Player* player) override
+        {
+            // Direct/report-use cannot stand in for the completed lock-opening hit.
+            return !player || nativeInvoker.IsEmpty() || !(player->GetGUID() == nativeInvoker);
+        }
+
+        void ReleaseEarned(Player* player)
+        {
+            Creature *boja, *boros, *captain;
+            if (!Actors(boja, boros, captain))
+            {
+                if (!actorWarning) TC_LOG_WARN("scripts", "Tuure cage: real actor missing after accepted47561; retain earned release");
+                actorWarning = true;
+                return;
+            }
+            if (go->GetGoState() != GO_STATE_ACTIVE)
+            {
+                if (Eligible(player, true) && go->isSpawned())
+                {
+                    nativeInvoker = player->GetGUID();
+                    go->Use(player); // native goober state/210480 and original auto-close timing
+                    nativeInvoker.Clear();
+                }
+                else
+                    go->SetGoState(GO_STATE_ACTIVE); // recover only an already accepted world fact; no new credit
+            }
+            if (go->GetGoState() != GO_STATE_ACTIVE)
+            {
+                if (!activationWarning) TC_LOG_WARN("scripts", "Tuure cage: native goober failed after accepted47561; retain release");
+                activationWarning = true;
+                retry = 5000;
+                return;
+            }
+            if (!Actors(boja, boros, captain)) return; // native use may invoke scripts
+            bool bojaText = boja->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
+            bool captainText = captain->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+            released = true; // consume before world-state/text callbacks
+            pending = false;
+            deleteDelay = (go->GetGOInfo()->GetAutoCloseTime() ? go->GetGOInfo()->GetAutoCloseTime() : 60) * IN_MILLISECONDS;
+            boja->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
+            boja->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, static_cast<float>(-PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
+            captain->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            captain->SetReactState(REACT_DEFENSIVE);
+            captain->setFaction(2102);
+            if (bojaText) sCreatureTextMgr->SendChat(boja, 0);
+            if (captainText) sCreatureTextMgr->SendChat(captain, 0);
+        }
+
+        void TryOpening()
+        {
+            Scenario* scenario = Current();
+            if (!scenario || delivering || released || deleted) return;
+            Player* player = TuureFirstFight::Find(go->GetMap(), opener);
+            if (Opened())
+            {
+                if (scenario->GetCurrentStep() == 4) ReleaseEarned(player);
+                else if (scenario->GetCurrentStep() > 4)
+                {
+                    released = true;
+                    deleteDelay = 3000; // empty-cage cleanup only; never repeat an old grant
+                }
+                return;
+            }
+            if (!pending) return;
+            QuestStatusData* status = player ? player->getQuestStatus(41993) : nullptr;
+            if (attempt.expired() || (player && (!status || status->ScriptLifetime != attempt.lock()))) { Cancel(); return; }
+            if (!Eligible(player) || !go->isSpawned()) return;
+            Creature *boja, *boros, *captain;
+            if (!Actors(boja, boros, captain) || !player->IsWithinDistInMap(boja, 60.0f))
+            {
+                if (!actorWarning) TC_LOG_WARN("scripts", "Tuure cage: completed Opening awaits real Boja/Boros/captain; cage and credit retained");
+                actorWarning = true;
+                return;
+            }
+            delivering = true;
+            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50633);
+            delivering = false;
+            if (!Opened())
+            {
+                if (!creditWarning) TC_LOG_WARN("scripts", "Tuure cage: native50633 did not accept47561; retain completed opening");
+                creditWarning = true;
+                retry = 5000;
+                return;
+            }
+            // Re-resolve after native step callbacks; never borrow the old player/actors.
+            scenario = Current();
+            if (scenario && scenario->GetCurrentStep() == 4)
+                ReleaseEarned(TuureFirstFight::Find(go->GetMap(), opener));
+        }
 
         bool GossipHello(Player* player, bool isUse) override
         {
-            if (!isUse)
-                return true;
-
-            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50633);
-            if (Creature* boja = player->FindNearestCreature(106253, 60.0f, true))
+            if (!isUse || delivering || released || deleted || !Current()) return true;
+            if (Opened()) { TryOpening(); return true; }
+            if (pending)
             {
-                boja->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
-                boja->AI()->Talk(0);
-                if (Creature* boros = boja->FindNearestCreature(106134, 70.0f, true))
-                    boja->GetMotionMaster()->MoveFollow(boros, PET_FOLLOW_DIST, static_cast<float>(-PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-
-                if (Creature* capitan = boja->FindNearestCreature(106107, 70.0f, true))
-                {
-                    capitan->AI()->Talk(0);
-                    capitan->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
-                    capitan->SetReactState(REACT_DEFENSIVE);
-                    capitan->setFaction(2102);
-                }
+                Player* original = TuureFirstFight::Find(go->GetMap(), opener);
+                QuestStatusData* status = original ? original->getQuestStatus(41993) : nullptr;
+                if (!attempt.expired() && status && status->ScriptLifetime == attempt.lock()) return true;
+                Cancel();
             }
-            go->Delete();
+            if (!Eligible(player) || !go->isSpawned() || go->HasFlag(GAMEOBJECT_FIELD_FLAGS, GO_FLAG_NOT_SELECTABLE)) return true;
+            player->AddQuestDelayedEvent(41993, 0, []() { });
+            QuestStatusData* status = player->getQuestStatus(41993);
+            if (!status || !status->ScriptLifetime) return true;
+            opener = player->GetGUID();
+            attempt = status->ScriptLifetime;
+            pending = true;
+            TryOpening();
             return true;
         }
 
+        void UpdateAI(uint32 diff) override
+        {
+            if (!Current() || deleted || delivering) return;
+            if (released)
+            {
+                if (deleteDelay > diff) { deleteDelay -= diff; return; }
+                deleted = true;
+                go->Delete();
+                return;
+            }
+            if (pending && !Opened())
+            {
+                if (remaining <= diff)
+                {
+                    TC_LOG_WARN("scripts", "Tuure cage: completed opening expired after30s before native50633; retain cage for a new native cast");
+                    Cancel();
+                    return;
+                }
+                remaining -= diff;
+            }
+            if (retry > diff) { retry -= diff; return; }
+            retry = 0;
+            TryOpening();
+        }
     };
 
     GameObjectAI* GetAI(GameObject* go) const override

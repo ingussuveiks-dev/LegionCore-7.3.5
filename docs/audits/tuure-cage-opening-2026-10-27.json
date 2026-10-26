@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "ebdbfcd6",
+  "scope": "Tuure249693/134192 real completed native Opening3365/lock1690 -> accepted50633/47561 -> Boja/captain release and native3s cage interval. Captain victory/second route/full client remain open.",
+  "cause": [
+    "The actual object is native type10 GOOBER. Spell::SendLoot routes it to GameObject::Use before GossipHello(true), and Use calls GossipUse rather than the old overridden GossipHello. Old real3365 opening therefore never reached50633/freeing code.",
+    "The unreachable old true branch also credited/deleted before verifying actors/native acceptance and dereferenced Boja/captain AI. A failed/missing actor or rejected native criterion could permanently consume the cage."
+  ],
+  "implementation": [
+    "Narrow post-CanOpenLock hit dispatch: real3365, map1489, entry249693, DB134192, nativeGOOBER and lock1690, existing go_tuure_crate binding. Native cast/lock failures and unrelated Opening routes retain their existing behavior; no new SQL or registrations. Direct/report-use does not authorize cage progression.",
+    "Actual1085/stage3 living/contactable non-GM Priest with active incomplete/complete41993, original quest lease/fullGUID, phase/native interaction distance and real live Boja361433/Boros361419/Captain361436 with original60/70yd limits. Instance selected GetGuidData returns native fullGUIDs from actual creates, not nearest clones or borrowed AIs.",
+    "Completed opening receipt waits up to30s for real actors; rejected native50633 retries5s. Read actual accepted47561 before world release. Preserve native goober Use, dummy210480 and auto-close3s; delete only from AI lifecycle after that interval. Finite receipt cancellation/retry on changed quest. Actual accepted world fact can recover flags/cage cleanup on reload without issuing another50633.",
+    "Actor text uses the same native CreatureTextMgr service without dereferencing unavailable AI. Original Boja follow/immunity removal, captain original flag mask/defensive reaction/faction2102 and text0 retained. Re-resolve after native callbacks; unique warning categories retain useful evidence. Native requireLOS0 is preserved; do not add a stricter center-of-cage ray after the real native opening check."
+  ],
+  "evidence": {
+    "native": "Fresh typed26972 lock1690 slot1/type2/key5/skill0;3365 effect33/misc5/target23;210480 dummy3/targets22,7. Stage3root47560/leaf47561/criteria29863/script50633 and metadata0. Shared map has five scenarios. Native actual Goober dispatch, full CanOpenLock, Use state/210480/auto-close and source cast scripts traced; no video/external/client evidence claimed.",
+    "world": "Type10/flags0/lock1690/autoClose3000/consumable0/spell210480/requireLOS0/allowMounted1/condition0/playerCast1. Unique spawn134192/map1489/phase6374/mask4096, real actor spawns/bindings and initial BojaimmuneNPC512/captain constructor mask. Text0 broadcast109200/110993. No GO134192 database scripts,210480 script hooks/SQL scripts, criterion29863 overrides or disables; assertions read live only.",
+    "contact_followup": "Reader also confirms105697 native209441 Fly to Broken Shore:60s aura4, native90 credit105697 and123 taxi5626. Existing spellclick SAI33 duplicates native credit and has danglingLINK1. Intended LINK action/full taxi path still not proven; no speculative contact data change in this repair."
+  },
+  "checks": {
+    "baseline": "Pinned ebdbfcd6 cage plus full native lock and exact SendLoot goober/Use branch reproduces actual completed3365 opening with native goober visual but no50633 or release. Explicit counterfactual, no deliberate null-AI crash claimed.",
+    "native_asan": "Full actual cage AI, full native CanOpenLock and extracted actual post-validation bridge, SendLoot goober dispatch and native Use branch. Two active quest statuses,23 denials, direct/report-use/wrong spell/wrong skill/missing lock/2127 exemption no grant, missing actors,5s rejected criterion/native activation retry,30s timeout/new real cast, held lease retake, Reset/reloaded AI, missing actor/original player after native callback and accepted-world/later-stage cleanup pass. Native3s interval tested. Native requireLOS0 admits a completed hit without an added scripted ray. Prior first-fight28 and second route40 accepted+16 denied variants included.",
+    "limits": "World/grid/criteria application, cast timing/interrupt scheduling and visual/network endpoints remain controlled adapters. Actual lock/dispatch/goober state logic is extracted. Native presentation spell delivery/cage collision/rendering, actual Boja/captain fight, faction traversal and complete client are pending user checks.",
+    "shared": "Judgment lock1691 and Wings opening/lock/native rescue, both factions and24 orders, plus selected Release checks pass. Shared fixture lacked the separately introduced Skyhold policy declaration; added a fail-closed assertion for any unexpected Warrior-only103739 call, rather than allowing it or changing production Skyhold behavior. It does not test Warrior return policy.",
+    "release": "Original game/scripts projects and final-link inputs; staged only until both server names absent/rechecked. Actual crate factory slots1/4/8/9, native CanOpenLock before scoped hit, exact47561/41993/native goober/auto-close/lifecycle delete, real instance getter slot18 with all four normalized switch keys/full128-bit copies and matching create writes verified in staged/canonical PE. Prior full Tuure route/heal/wound/Lady/pickup/scene/capture checks, Scepter and shared Opening Release checks pass.",
+    "development": "Initial brace extractor consumed following code because the native dispatch is braceless; corrected to its exact return boundary. Added missing IsPlayer/old baseline Talk adapter APIs. PE initially assumed literal getter comparisons; MSVC uses cumulative subtractions, now followed to actual fullGUID returns/create fields. Failed compiler/PE runs retained and not reported as passing; no runtime errors hidden.",
+    "runtime": "Own29784 fresh ready/shutdown0/exit0, stderr/newDBErrors empty; protected configuration/certificate hashes unchanged. No user/unknown server stopped or task server left. Canonical and all own test/probe/runtime directories checked before/after: no new crashes/appended DBErrors/server warnings/errors/assertions."
+  },
+  "canonical_sha256": {
+    "bnetserver.exe": "92C044FCC8ACE675AD64462ABB3873CC3FDD80E390E02FCCED67B631F94D6283",
+    "worldserver.exe": "AA8DBF2513845B013DA1EB32B4B99C5DC774BA56674C2EF0C67460A610BB6F3C",
+    "worldserver.map": "D88937BE9591C29B97A75D917D7957A2FE10E8CA4617A16E195F9E4FEBC25E71",
+    "bnetserver.map": "0977BC306F0376C4A2082C469486CF7198EC1101CE95F9ADB08711474B94530D"
+  },
+  "archives": "No new runtime crash/error to archive or truncate. Runtime logs/dumps/credentials/character data excluded.",
+  "next": [
+    "Captain106107/361436 actual-killer50634/leaf and unsafe Boros attack/DoAction2, then native point3/8s9859003/waypoint7/4s Lady handoff. Preserve original native motion/combat/timing rather than force scenario completion.",
+    "Then contact105697 native209441/taxi5626 and redundant early SAI credit/LINK; remaining quest admission/return and all36. Across-session scenario restart, client presentation and full route remain OPEN."
+  ],
+  "character_progress": "No character database edits or manual quest/item/scenario grants. Client testing left to user."
+}

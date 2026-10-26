@@ -51,6 +51,11 @@ $fixture=$fixture.Replace('bool IsWithinDistInMap(WorldObject* o,float range){re
 $fixture=$fixture.Replace('Player* ToPlayer()override{return this;} std::function', 'std::function<Creature*(uint32,Position const&,ObjectGuid)> judgmentSummon;Creature* SummonCreature(uint32 e,Position const& point,int,uint32,int,ObjectGuid viewer){return judgmentSummon?judgmentSummon(e,point,viewer):nullptr;}Creature* SummonCreature(uint32 e,float x,float y,float z,float o,int t,uint32 d,ObjectGuid viewer){return SummonCreature(e,Position{x,y,z,o},t,d,0,viewer);}uint32 GetSkillValue(int){return 0;}bool IsInArmyTraining(){return false;}struct Army {std::vector<int> currentUnits[1];} armyTrainingInfo;uint32 GetAuraCount(uint32){return 0;}Player* ToPlayer()override{return this;} std::function')
 $fixture=$fixture.Replace('void Talk(uint8,ObjectGuid){++me->talks;}', 'void Talk(uint8 group,ObjectGuid){++me->talks;me->talkGroups.push_back(group);}')
 $fixture=$fixture.Replace('explicit SmartGameObjectAI(GameObject*){}', 'GameObject* go;explicit SmartGameObjectAI(GameObject* g):go(g){g->ai=this;}')
+# The extracted shared dispatcher now references the separately regressed
+# Skyhold return policy. A Warrior-only call is outside this Stormheim fixture;
+# fail loudly if it is ever reached instead of silently allowing that credit.
+if(!$fixture.Contains('#include "KilledMonsterCredit.inc"')){throw 'Shared kill dispatcher fixture boundary missing'}
+$fixture=$fixture.Replace('#include "KilledMonsterCredit.inc"',"namespace SkyholdArtifactReturn {inline bool CanCredit(Player*,Quest const*){assert(false && `"Warrior return outside Stormheim fixture`" );return false;}}`n#include `"KilledMonsterCredit.inc`"")
 [IO.File]::WriteAllText("$output/JudgmentFixture.inc",$fixture)
 $source=Get-Content "$repo/src/server/scripts/Legion/stormheim_judgment.cpp" -Raw
 $source=[regex]::Replace($source,'(?m)^#include.*\r?\n','')
