@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "gossip_menu_option20227 / Emmarel107317,107973",
+      "handler": "Hunter additional artifact selection after Continuing the Legend44043",
+      "problem": "Eligible level105/BM-completed context has44043 rewarded but neither additional specialization chosen. Trueshot menu20227 has no options;107317 additionally lacks GOSSIP1 and has no SmartAI selector action. Later107973 shares the empty menu.",
+      "investigation_audit": "docs/audits/hunter-additional-artifact-offer-open-2026-10-26.json",
+      "limit": "OPEN, explicitly deferred by user. Read-only prerequisite/phase/menu/selection-code investigation only; no character/content/code change or forced quest. Existing Dalaran review alternative untested in current client; proper repeat selection, stale responses, abandoned-route retry and full client traversal need repair/review."
+    },
+    {
       "path": "src/server/scripts/Legion/faronaar_chain.cpp",
       "handler": "Dark Revelations37449 Stellagosa90982 return boarding",
       "problem": "Properties-null direct summons were invisible to owner-list lookup, creating a new drake every second; duplicate Kor'vas accessory filled the player's seat and NPC boarding prematurely started the path.",
