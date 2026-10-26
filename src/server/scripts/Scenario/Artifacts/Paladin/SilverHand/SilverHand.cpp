@@ -11,6 +11,7 @@
 #include "Scenario.h"
 #include "ScenarioMgr.h"
 #include "SpellMgr.h"
+#include "TemporarySummon.h"
 #include "WaypointManager.h"
 
 
@@ -1209,6 +1210,7 @@ public:
         uint32 timer;
         uint8 count_died;
         FunctionProcessor _waveFunctions;
+        GuidSet _waveSummons;
 
         void UpdateLifecycle(uint32 diff) override
         {
@@ -1246,8 +1248,23 @@ public:
             }
         }
 
+        void JustSummoned(Creature* summon) override
+        {
+            if (!_introDone || !summon || !summon->IsAlive() ||
+                (summon->GetEntry() != 106580 && summon->GetEntry() != 106578))
+                return;
+            TempSummon* temporary = summon->ToTempSummon();
+            if (!temporary || temporary->GetSummonerGUID() != me->GetGUID() || !me->GetMap() ||
+                summon->GetMap() != me->GetMap() || summon->GetInstanceId() != me->GetInstanceId())
+                return;
+            _waveSummons.insert(summon->GetGUID());
+        }
+
         void SummonedCreatureDies(Creature* summon, Unit* /*killer*/) override
         {
+            if (!summon || summon->IsAlive() || !me->IsInWorld() || me->IsPreDelete() || !me->IsAlive() ||
+                count_died >= 6 || !_waveSummons.erase(summon->GetGUID()))
+                return;
             count_died++;
             switch (count_died)
             {
@@ -1292,11 +1309,15 @@ public:
                     {
                         if (Creature* targ = me->SummonCreature(106580, 1911.84f, 2334.61f, 73.39f, 0.0f))
                         {
+                            JustSummoned(targ);
                             targ->AI()->AttackStart(defenders);
                             for (uint8 i = 0; i < 2; ++i)
                             {
                                 if (Creature* add = me->SummonCreature(106578, targ->GetPositionX() + irand(-3, 3), targ->GetPositionY() + irand(-2, 2), targ->GetPositionZ(), targ->GetOrientation()))
+                                {
+                                    JustSummoned(add);
                                     add->AI()->AttackStart(defenders);
+                                }
                             }
                         }
                     }

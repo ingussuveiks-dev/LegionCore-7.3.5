@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$AdmissionBaseline,[switch]$DeathBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(($Baseline -and $AdmissionBaseline) -or (($Baseline -or $AdmissionBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
+if(@($Baseline,$AdmissionBaseline,$DeathBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $AdmissionBaseline -or $DeathBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-wave-lifetime"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -11,14 +11,24 @@ $pinned=(& git -C $repo show "e03ec0c8:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned last Travard baseline unavailable'}
 $admissionPinned=(& git -C $repo show "67b2f259:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned final entry baseline unavailable'}
-$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
-if(!$Baseline -and !$AdmissionBaseline){
+$deathPinned=(& git -C $repo show "1f73b44c:$path") -join "`n"
+if($LASTEXITCODE){throw 'Pinned wave death baseline unavailable'}
+$actor=Block $(if($Baseline){$pinned}elseif($AdmissionBaseline){$admissionPinned}elseif($DeathBaseline){$deathPinned}else{$source}) 'struct npc_travar_lastAI : ScriptedAI'
+if(!$Baseline -and !$AdmissionBaseline -and !$DeathBaseline){
+ $beforeDeaths=Block $deathPinned 'struct npc_travar_lastAI : ScriptedAI'
+ $deathNormalized=$actor.Replace('GuidSet _waveSummons;','').Replace((Block $actor 'void JustSummoned('),'').Replace((Block $actor 'void SummonedCreatureDies('),(Block $beforeDeaths 'void SummonedCreatureDies('))
+ $deathNormalized=$deathNormalized.Replace('JustSummoned(targ);','').Replace('JustSummoned(add);','')
+ $newAddBranch=Block $deathNormalized 'if (Creature* add = me->SummonCreature(106578'
+ $oldAddBranch=$newAddBranch.Replace('{','').Replace('}','')
+ $deathNormalized=$deathNormalized.Replace($newAddBranch,$oldAddBranch)
+ if(($deathNormalized -replace '\s','') -cne ($beforeDeaths -replace '\s','')){throw 'Last AI changed beyond scoped summon registration/death admission'}
+ $comparisonActor=$deathNormalized
  $original=Block $pinned 'struct npc_travar_lastAI : ScriptedAI'
  $originalLos=Block $original 'void MoveInLineOfSight('
- $currentLos=Block $actor 'void MoveInLineOfSight('
+ $currentLos=Block $comparisonActor 'void MoveInLineOfSight('
  $expectedLos=($originalLos -replace '\s','').Replace('if(who->GetTypeId()!=TYPEID_PLAYER)return;if(!_introDone)','if(_introDone)return;Player*player=who?who->ToPlayer():nullptr;if(SilverHandFinalEntry::CanStart(player,me))').Replace('if(Player*pl=me->FindNearestPlayer(100.0f))pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2,50915);','').Replace('me->AddDelayedEvent(5000','_waveFunctions.AddDelayedEvent(5000')
  if(($currentLos -replace '\s','') -cne $expectedLos){throw 'Final entry changed outside scoped admission and removal of earlier-stage50915'}
- $actorForComparison=$actor.Replace($currentLos,$originalLos.Replace('me->AddDelayedEvent(5000','_waveFunctions.AddDelayedEvent(5000'))
+ $actorForComparison=$comparisonActor.Replace($currentLos,$originalLos.Replace('me->AddDelayedEvent(5000','_waveFunctions.AddDelayedEvent(5000'))
  $normalized=$actorForComparison.Replace('FunctionProcessor _waveFunctions;','').Replace((Block $actor 'void UpdateLifecycle('),'').Replace('_waveFunctions.AddDelayedEvent(5000','me->AddDelayedEvent(5000')
  if(($normalized -replace '\s','') -cne ($original -replace '\s','')){throw 'Unrelated last Travard behavior changed'}
  if($actor.Contains('me->AddDelayedEvent(')){throw 'Unit-owned last Travard AI timer remains'}
@@ -32,11 +42,23 @@ $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~Functio
 $creature=Get-Content "$repo/src/server/game/Entities/Creature/Creature.cpp" -Raw
 [IO.File]::WriteAllText("$out/LifecycleBridge.inc",(Block $creature 'if (i_AI || i_disabledAI)'))
 [IO.File]::WriteAllText("$out/DestroyAI.inc",(Block $creature 'bool Creature::AIM_Destroy()'))
+$initialization=Block (Get-Content "$repo/src/server/game/Entities/Creature/TemporarySummon.cpp" -Raw) 'void TempSummon::InitSummon()'
+if($initialization.IndexOf('JustSummoned(this)') -lt 0 -or $initialization.IndexOf('JustSummoned(this)') -gt $initialization.IndexOf('IsSummonedBy(owner)')){throw 'Native owner registration no longer precedes summon AI callback'}
+[IO.File]::WriteAllText("$out/InitSummon.inc",$initialization)
+$creation=Block (Get-Content "$repo/src/server/game/Maps/Map.cpp" -Raw) 'TempSummon* Map::SummonCreature('
+if($creation.IndexOf('AddToMap(summon->ToCreature())') -lt 0 -or $creation.IndexOf('AddToMap(summon->ToCreature())') -gt $creation.IndexOf('summon->InitSummon()') -or $creation.IndexOf('summon->InitSummon()') -gt $creation.IndexOf('return summon;')){throw 'Native live-map/registration/return order changed'}
+$kill=Block (Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw) 'void Unit::Kill('
+$bridgeFirst=$kill.IndexOf('        if (TempSummon* summon = creature->ToTempSummon())')
+$bridgeLast=$kill.IndexOf('        // Call instance script.',$bridgeFirst)
+if($bridgeFirst -lt 0 -or $bridgeLast -le $bridgeFirst){throw 'Native unbraced owner death bridge missing'}
+$deathBridge=$kill.Substring($bridgeFirst,$bridgeLast-$bridgeFirst)
+if($kill.IndexOf('victim->setDeathState(JUST_DIED);') -lt 0 -or $kill.IndexOf('victim->setDeathState(JUST_DIED);') -gt $kill.IndexOf($deathBridge)){throw 'Native owner death notification precedes death state'}
+[IO.File]::WriteAllText("$out/DeathBridge.inc",$deathBridge.Replace('creature, this','creature, killer'))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($AdmissionBaseline){'/DADMISSION_BASELINE'}elseif($DeathBaseline){'/DDEATH_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandWaveLifetimeTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native last Travard wave lifetime regression failed'}
-if($Baseline -or $AdmissionBaseline){return}
+if($Baseline -or $AdmissionBaseline -or $DeathBaseline){return}
 $previous=$env:LEGION_DIALOGUE_CONFIG
 try{$env:LEGION_DIALOGUE_CONFIG="$repo/build-extractors/bin/Release/worldserver.conf";& "$repo/tools/research/Read-LegionLegendaryCatalog.ps1" -SourceFile SilverHandPickupCatalog.cpp -ProbeName SilverHandPickupCatalog -OutputFile "$out/native.tsv" *> "$out/catalog.log";if(!$? -or $LASTEXITCODE){throw 'Native late scenario metadata failed'}}finally{$env:LEGION_DIALOGUE_CONFIG=$previous}
 foreach($expected in @("CRITERION`t8`t30089`t92`t50915`t0","CRITERION`t9`t30110`t92`t51838`t1","CRITERION`t10`t30111`t92`t50966`t0")){if((Get-Content "$out/native.tsv") -notcontains $expected){throw "Native late criterion changed: $expected"}}
@@ -47,5 +69,5 @@ if($VerifyReleaseBinary){
  $expected=@("binding`t106777`tnpc_travar_last","spawn`t362048`t106777`t1539`t7003","phase`t7003`t44`t1092`t9`t0","phase`t7003`t44`t1092`t10`t1","aura`t106777`t215258")
  if(Compare-Object $expected $live){throw 'Native last Travard actor/phase/aura changed'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_final_entry_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed final entry/wave lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_wave_deaths_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed wave death/final entry/lifetime repair missing'}}finally{$env:PYTHONPATH=$previous}
 }

@@ -41,7 +41,7 @@ assert slots[0x110 // 8] == native['symbol'](lifecycle_name) and slots[0] == nat
 construct, = sites(factory, '??0FunctionProcessor@@')
 assert factory[construct - 1].op_str == 'rcx, [rdi + 0x48]'
 assert all(any(entry.op_str == operands for entry in factory) for operands in
-           ('ecx, 0xc8', 'word ptr [rdi + 0x38], 0', 'dword ptr [rdi + 0x3c], 0x3e8', 'byte ptr [rdi + 0x40], 0'))
+           ('ecx, 0xd8', 'word ptr [rdi + 0x38], 0', 'dword ptr [rdi + 0x3c], 0x3e8', 'byte ptr [rdi + 0x40], 0'))
 arm, = sites(los, '?AddDelayedEvent@FunctionProcessor@@')
 assert any(entry.op_str == 'rcx, [rsi + 0x48]' for entry in los[arm - 10:arm])
 assert los[arm - 1].op_str == 'edx, 0x1388'
@@ -66,7 +66,7 @@ assert lifecycle[0].mnemonic == 'add' and lifecycle[0].op_str == 'rcx, 0x48'
 assert lifecycle[1].mnemonic == 'jmp' and native['resolve'](lifecycle[1].operands[0].imm) == native['symbol']('?Update@FunctionProcessor@@')
 destroy = instructions(destructor_name)
 release, = sites(destroy, '??1FunctionProcessor@@')
-assert destroy[release - 1].mnemonic == 'add' and destroy[release - 1].op_str == 'rcx, 0x48'
+assert destroy[release - 1].mnemonic == 'lea' and destroy[release - 1].op_str == 'rcx, [rdi + 0x48]'
 creature = instructions('?Update@Creature@@')
 ticks = [index for index, entry in enumerate(creature) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_MEM and entry.operands[0].mem.disp == 0x110]
 assert len(ticks) == 2

@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <new>
+#include <set>
 #include <vector>
 using uint8=uint8_t;
 using uint32=uint32_t;
@@ -20,11 +21,23 @@ enum {TYPEID_PLAYER=4,UNIT_STATE_STUNNED=1,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_
     CLASS_PALADIN=2,QUEST_STATUS_INCOMPLETE=3};
 struct Player;
 struct Creature;
+struct TempSummon;
+struct ObjectGuid
+{
+    uint64 low=0,high=0;
+    bool operator<(ObjectGuid const& other) const{return high<other.high || (high==other.high && low<other.low);}
+    bool operator!=(ObjectGuid const& other) const{return high!=other.high || low!=other.low;}
+};
+using GuidSet=std::set<ObjectGuid>;
+uint64 nextGuid=100;
 struct Map {} liveMap,otherMap;
 struct Unit
 {
     virtual ~Unit()=default;
     virtual Player* ToPlayer(){return nullptr;}
+    virtual bool IsCreature() const{return false;}
+    virtual Creature* ToCreature(){return nullptr;}
+    bool IsAIEnabled=true;
     uint32 type=0;
     uint32 GetTypeId() const{return type;}
 };
@@ -60,6 +73,8 @@ struct CreatureAI
     virtual void UpdateLifecycle(uint32){}
     virtual void MoveInLineOfSight(Unit*){}
     virtual void SummonedCreatureDies(Creature*,Unit*){}
+    virtual void JustSummoned(Creature*){}
+    virtual void IsSummonedBy(Unit*){}
     virtual void UpdateAI(uint32){}
     virtual void Reset(){}
     virtual void AttackStart(Creature*){}
@@ -69,15 +84,24 @@ struct AddAI : CreatureAI
 {
     uint32 attacks=0,talks=0;
     Creature* target=nullptr;
+    Creature* self=nullptr;
+    std::function<void(Creature*)> onSummonedBy;
     void AttackStart(Creature* actor) override{++attacks;target=actor;}
     void Talk(uint32 line) override{assert(line==0);++talks;}
+    void IsSummonedBy(Unit*) override{if(onSummonedBy)onSummonedBy(self);}
 };
-struct Creature
+struct Creature : Unit
 {
+    Creature(){guid={nextGuid++,1};}
+    ObjectGuid guid;
+    ObjectGuid GetGUID() const{return guid;}
+    bool IsCreature() const override{return true;}
+    Creature* ToCreature() override{return this;}
+    virtual TempSummon* ToTempSummon(){return nullptr;}
     FunctionProcessor functions;
     CreatureAI* i_AI=nullptr;
     CreatureAI* i_disabledAI=nullptr;
-    bool m_AI_locked=false,IsAIEnabled=true,stunned=false,visible=false,aura=false,missingDefender=false;
+    bool m_AI_locked=false,stunned=false,visible=false,aura=false,missingDefender=false;
     bool victim=false,failSpawn=false;
     uint32 flags=31,entry=106777;
     bool world=true,preDelete=false,alive=true;
@@ -91,6 +115,7 @@ struct Creature
     std::vector<std::unique_ptr<AddAI>> addAIs;
     std::function<void()> onSummon;
     std::function<void()> onCast,onTalk;
+    std::function<void(Creature*)> onSummonedBy;
     std::vector<uint32> casts,talks;
     CreatureAI* AI(){return i_AI;}
     bool IsInWorld() const{return world;}
@@ -107,18 +132,7 @@ struct Creature
     bool HasUnitState(uint32 state) const{assert(state==UNIT_STATE_STUNNED);return stunned;}
     Creature* FindNearestCreature(uint32 identity,float radius,bool alive)
     {assert(identity==106774 && radius==70 && alive);return missingDefender?nullptr:defender;}
-    Creature* SummonCreature(uint32 identity,float spawnX,float spawnY,float spawnZ,float facing)
-    {
-        if(onSummon)onSummon();
-        if(failSpawn)return nullptr;
-        auto add=std::make_unique<Creature>();
-        auto ai=std::make_unique<AddAI>();
-        add->entry=identity;add->positionX=spawnX;add->positionY=spawnY;add->positionZ=spawnZ;add->orientation=facing;
-        add->i_AI=ai.get();
-        Creature* result=add.get();
-        adds.push_back(std::move(add));addAIs.push_back(std::move(ai));
-        return result;
-    }
+    Creature* SummonCreature(uint32 identity,float spawnX,float spawnY,float spawnZ,float facing);
     float GetPositionX() const{return positionX;}
     float GetPositionY() const{return positionY;}
     float GetPositionZ() const{return positionZ;}
@@ -136,6 +150,39 @@ struct Creature
         if(i_AI)i_AI->UpdateAI(diff);
     }
 };
+struct TempSummon : Creature
+{
+    Creature* owner=nullptr;
+    ObjectGuid summonerGuid;
+    Unit* GetSummoner(){return owner;}
+    ObjectGuid GetSummonerGUID() const{return summonerGuid;}
+    TempSummon* ToTempSummon() override{return this;}
+    void InitSummon();
+};
+#include "InitSummon.inc"
+void RouteDeath(Creature* creature,Unit* killer)
+{
+#include "DeathBridge.inc"
+}
+void KillSummon(Creature* creature,Unit* killer)
+{
+    creature->alive=false;
+    RouteDeath(creature,killer);
+}
+Creature* Creature::SummonCreature(uint32 identity,float spawnX,float spawnY,float spawnZ,float facing)
+{
+    if(onSummon)onSummon();
+    if(failSpawn)return nullptr;
+    auto add=std::make_unique<TempSummon>();
+    auto ai=std::make_unique<AddAI>();
+    add->owner=this;add->summonerGuid=GetGUID();add->map=map;add->instance=instance;
+    add->entry=identity;add->positionX=spawnX;add->positionY=spawnY;add->positionZ=spawnZ;add->orientation=facing;
+    add->i_AI=ai.get();ai->self=add.get();ai->onSummonedBy=onSummonedBy;
+    TempSummon* result=add.get();
+    adds.push_back(std::move(add));addAIs.push_back(std::move(ai));
+    result->InitSummon();
+    return result;
+}
 uint32 diagnostics=0;
 #define TC_LOG_DEBUG(...) ++diagnostics
 #define ASSERT(value,...) assert(value)
@@ -189,6 +236,27 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
 }
 int main()
 {
+#ifdef DEATH_BASELINE
+    {
+        Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;
+        Unit pet;
+        for(uint32 duplicate=0;duplicate<6;++duplicate)fixture.ai.SummonedCreatureDies(nullptr,&pet);
+        assert(fixture.ai.count_died==6 && fixture.actor.adds.size()==4 && fixture.actor.adds.back()->entry==106719);
+        std::cout<<"PASS pinned1f73b44c: six null death notifications advance both regular-wave thresholds and create Mordoth before scheduled first wave\n";
+    }
+    {
+        Creature actor,defender;Player visitor;actor.defender=&defender;manager=ScenarioManager{};
+        auto* original=new WaveAI(&actor);actor.i_AI=original;original->MoveInLineOfSight(&visitor);actor.stunned=true;actor.Lifecycle(5000);
+        delete original;actor.i_AI=nullptr;
+        auto* replacement=new WaveAI(&actor);actor.i_AI=replacement;replacement->MoveInLineOfSight(&visitor);
+        for(uint32 identity=0;identity<6;++identity)KillSummon(actor.adds[identity].get(),nullptr);
+        assert(replacement->count_died==6 && replacement->_waveFunctions.SizeQueue()==1);
+        assert(actor.adds.size()==7 && actor.adds.back()->entry==106719);
+        delete replacement;actor.i_AI=nullptr;
+        std::cout<<"PASS pinned1f73b44c: real old-AI summons notify recreated current owner AI through native death bridge, reaching wave2/Mordoth before its queued first wave\n";
+    }
+    return 0;
+#else
 #ifdef ADMISSION_BASELINE
     {
         Fixture fixture;fixture.visitor.klass=5;fixture.visitor.status=0;
@@ -274,6 +342,96 @@ int main()
         assert(fixture.player.credits.empty() && fixture.visitor.credits.empty());
     }
     std::cout<<"PASS final entry: actual triggering Player/28 invalid contexts/all12 steps/both factions/100yd/retry and cast-speech reentry; no nearest substitute or50915; original own5000ms wave retained. Accepted-wave progress/re-entry/client remain separate\n";
+    for(uint32 killerKind=0;killerKind<5;++killerKind)
+    {
+        Fixture fixture;Player player;Creature pet,guardian,ally;
+        std::vector<Unit*> killers{&player,&pet,&guardian,&ally,nullptr};
+        Unit* killer=killers[killerKind];
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;
+        fixture.ai.SummonedCreatureDies(nullptr,killer);
+        Creature unrelated;unrelated.alive=false;fixture.ai.SummonedCreatureDies(&unrelated,killer);
+        assert(fixture.ai.count_died==0 && fixture.ai._waveSummons.empty());
+        fixture.actor.Lifecycle(5000);assert(fixture.ai._waveSummons.size()==3);
+        Creature* first=fixture.actor.adds[0].get();
+        RouteDeath(first,killer);assert(fixture.ai.count_died==0 && fixture.ai._waveSummons.size()==3);
+        Creature collision;collision.guid=first->guid;++collision.guid.high;collision.alive=false;
+        fixture.ai.SummonedCreatureDies(&collision,killer);assert(fixture.ai.count_died==0);
+        KillSummon(first,killer);fixture.ai.JustSummoned(first);
+        for(uint32 repeat=0;repeat<300;++repeat)RouteDeath(first,killer);
+        assert(fixture.ai.count_died==1 && fixture.ai._waveSummons.size()==2 && fixture.actor.adds.size()==3);
+        KillSummon(fixture.actor.adds[1].get(),killer);KillSummon(fixture.actor.adds[2].get(),killer);
+        assert(fixture.ai.count_died==3 && fixture.ai._waveSummons.size()==3 && fixture.actor.adds.size()==6);
+        fixture.ai.Reset();RouteDeath(first,killer);
+        for(uint32 identity=3;identity<6;++identity)KillSummon(fixture.actor.adds[identity].get(),killer);
+        assert(fixture.ai.count_died==6 && fixture.ai._waveSummons.empty() && fixture.actor.adds.size()==7);
+        assert(fixture.actor.adds.back()->entry==106719);
+        KillSummon(fixture.actor.adds.back().get(),killer);
+        for(uint32 repeat=0;repeat<300;++repeat)fixture.ai.SummonedCreatureDies(nullptr,killer);
+        assert(fixture.ai.count_died==6 && fixture.actor.adds.size()==7);
+        assert(fixture.player.credits.empty() && fixture.visitor.credits.empty());
+    }
+    for(uint32 invalid=0;invalid<9;++invalid)
+    {
+        Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;
+        TempSummon candidate;candidate.entry=106580;candidate.owner=&fixture.actor;candidate.summonerGuid=fixture.actor.GetGUID();
+        switch(invalid)
+        {
+            case 0:fixture.ai._introDone=false;break;
+            case 1:candidate.alive=false;break;
+            case 2:candidate.entry=106719;break;
+            case 3:candidate.entry=106774;break;
+            case 4:++candidate.summonerGuid.high;break;
+            case 5:candidate.map=&otherMap;break;
+            case 6:candidate.instance=43;break;
+            case 7:fixture.actor.map=nullptr;break;
+            case 8:candidate.map=nullptr;break;
+        }
+        fixture.ai.JustSummoned(&candidate);assert(fixture.ai._waveSummons.empty());
+        KillSummon(&candidate,nullptr);assert(fixture.ai.count_died==0);
+    }
+    {
+        Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.visitor);
+        fixture.ai.JustSummoned(nullptr);
+        Creature ordinary;ordinary.entry=106580;fixture.ai.JustSummoned(&ordinary);
+        assert(fixture.ai._waveSummons.empty());
+    }
+    for(uint32 invalid=0;invalid<3;++invalid)
+    {
+        Fixture fixture;fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+        Creature* first=fixture.actor.adds[0].get();first->alive=false;
+        if(invalid==0)fixture.actor.world=false;
+        if(invalid==1)fixture.actor.preDelete=true;
+        if(invalid==2)fixture.actor.alive=false;
+        RouteDeath(first,nullptr);assert(fixture.ai.count_died==0 && fixture.ai._waveSummons.size()==3);
+        fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;
+        RouteDeath(first,nullptr);assert(fixture.ai.count_died==1 && fixture.ai._waveSummons.size()==2);
+    }
+    {
+        Fixture fixture;Creature guardian;
+        fixture.actor.onSummonedBy=[&fixture,&guardian](Creature* summon){
+            if(summon->GetEntry()==106719)return;
+            assert(fixture.ai._waveSummons.count(summon->GetGUID())==1 && fixture.actor.m_AI_locked);
+            KillSummon(summon,&guardian);RouteDeath(summon,&guardian);
+        };
+        fixture.ai.MoveInLineOfSight(&fixture.visitor);fixture.actor.stunned=true;fixture.actor.Lifecycle(5000);
+        assert(fixture.ai.count_died==6 && fixture.ai._waveSummons.empty() && fixture.actor.adds.size()==7);
+        assert(fixture.actor.adds.back()->entry==106719 && fixture.player.credits.empty());
+    }
+    {
+        Creature actor,defender;Player visitor;actor.defender=&defender;manager=ScenarioManager{};
+        auto* original=new WaveAI(&actor);actor.i_AI=original;original->MoveInLineOfSight(&visitor);actor.stunned=true;actor.Lifecycle(5000);
+        delete original;actor.i_AI=nullptr;
+        auto* replacement=new WaveAI(&actor);actor.i_AI=replacement;replacement->MoveInLineOfSight(&visitor);
+        for(uint32 identity=0;identity<3;++identity)KillSummon(actor.adds[identity].get(),nullptr);
+        assert(replacement->count_died==0 && replacement->_waveSummons.empty() && actor.adds.size()==3);
+        actor.Lifecycle(5000);
+        for(uint32 identity=0;identity<3;++identity)RouteDeath(actor.adds[identity].get(),nullptr);
+        assert(replacement->count_died==0 && replacement->_waveSummons.size()==3);
+        for(uint32 identity=3;identity<6;++identity)KillSummon(actor.adds[identity].get(),nullptr);
+        assert(replacement->count_died==3 && replacement->_waveSummons.size()==3 && actor.adds.size()==9);
+        delete replacement;actor.i_AI=nullptr;
+    }
+    std::cout<<"PASS wave deaths: native TempSummon owner-before-IsSummonedBy/death-owner bridge, full GUID registration, live/null/untracked/wrong owner-map-entry rejects, duplicate/dead-hook rearm/wrap prevention, actual three+three thresholds, Player/pet/guardian/ally/null killer labels, Reset/replacement and one-hit-before-return reentry; no Player credit added\n";
 #endif
     {
         Fixture fixture;
@@ -297,9 +455,9 @@ int main()
 #else
         assert(fixture.player.credits.empty());
 #endif
-        for(uint32 deaths=0;deaths<3;++deaths)fixture.ai.SummonedCreatureDies(nullptr,&pet);
+        for(uint32 deaths=0;deaths<3;++deaths)KillSummon(fixture.actor.adds[deaths].get(),&pet);
         assert(fixture.actor.adds.size()==6 && fixture.ai.count_died==3);
-        for(uint32 deaths=0;deaths<3;++deaths)fixture.ai.SummonedCreatureDies(nullptr,&guardian);
+        for(uint32 deaths=3;deaths<6;++deaths)KillSummon(fixture.actor.adds[deaths].get(),&guardian);
         assert(fixture.actor.adds.size()==7 && fixture.actor.adds.back()->entry==106719);
         assert(fixture.actor.adds.back()->flags==16 && fixture.actor.addAIs.back()->talks==1);
     }
@@ -363,10 +521,17 @@ int main()
         CreatureAI replacement;
         fixture.ai.MoveInLineOfSight(&fixture.visitor);
         if(mode){fixture.actor.i_disabledAI=&fixture.ai;fixture.actor.i_AI=mode==1?&replacement:mode==2?&fixture.ai:nullptr;}
+        if(mode==3)fixture.actor.IsAIEnabled=false;
         fixture.actor.onSummon=[&fixture]{assert(fixture.actor.m_AI_locked);fixture.actor.missingDefender=true;};
         fixture.actor.Lifecycle(4999);assert(fixture.actor.adds.empty());
         fixture.actor.Lifecycle(1);CheckFirstWave(fixture.actor,&fixture.defender);
         assert(!fixture.actor.m_AI_locked && fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==0);
+        assert(fixture.ai._waveSummons.size()==3);
+        fixture.actor.i_AI=&fixture.ai;fixture.actor.i_disabledAI=nullptr;fixture.actor.IsAIEnabled=true;
+        fixture.actor.missingDefender=false;
+        fixture.actor.onSummon={};
+        for(uint32 identity=0;identity<3;++identity)KillSummon(fixture.actor.adds[identity].get(),nullptr);
+        assert(fixture.ai.count_died==3 && fixture.actor.adds.size()==6);
     }
     {
         Fixture fixture;
@@ -377,6 +542,7 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks and no added credit semantics; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 }

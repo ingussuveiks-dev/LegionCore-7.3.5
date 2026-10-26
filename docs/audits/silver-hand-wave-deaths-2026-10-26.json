@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Last Travard106777 regular-summon registration and bounded exactly-once3/6 wave death thresholds. Not periodic51838/victory timing, missing-spawn recovery, persisted quest epochs or full Holy/all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local git1f73b44c, worklist/artifact-routes/donor audits and whole last-Travard AI",
+      "review": "Before this unit every SummonedCreatureDies call incremented uint8 count_died, regardless of null, alive, identity, prior consumption or attempt. Actual previous-AI summons retain the same creature summoner; after AI replacement native owner-death routing addresses the current AI, incorrectly advancing its wave2/Mordoth before its queued first wave. Only the two regular entry106580/106578 success paths exist in this AI; third wave106719 is the boss, not a seventh regular death. No other actor, original3/3/boss placement, defender selection, attack/flags/speech or periodic criterion changed."
+    },
+    {
+      "source": "Local TemporarySummon.cpp, Map.cpp, Unit.cpp, CreatureAI.h and ObjectGuid.cpp",
+      "review": "Map adds the creature, calls InitSummon, then returns. Native TempSummon::InitSummon resolves its summoner and invokes the current enabled Creature AI JustSummoned before spawned IsSummonedBy. Unit::Kill sets JUST_DIED before its unbraced TempSummon owner SummonedCreatureDies bridge; this bridge does not filter Player/pet/guardian/NPC killer type. GuidSet is std::set<ObjectGuid>; actual GUID ordering compares high then low and inequality compares the full GUID. CreatureAI's actual death slot is0x158, after SummonedCreatureDespawn, not an assumed0x150. The extracted host compiles the real initialization, death bridge, full actor and original FunctionProcessor/lifecycle/destruction bodies; surrounding world services/GUID containers remain controlled."
+    },
+    {
+      "source": "Matching runtime native catalogs and fresh read-only MariaDB",
+      "review": "Sole106777 npc_travar_last/spawn362048/map1539/phase7003/addon215258. Regular106578/106580 and boss106719 templates use SmartAI, not this owner AI; regular SmartAI rows examined are combat spell casts215688/215680, not additional death/self-despawn commands. Defender106774 uses npc_efrin_and_duval. Native late scenario1092 retains step8/type92/50915, step9/type92/51838 quantity1 and step10/type92/50966; shared map also serves Priest991 and Warrior1037. This unit does not change Player quest/scenario credit, actor phases, loot, DB records or characters."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted scripts-tree review",
+      "review": "Again only unrelated Stratholme Silver Hand boss in the targeted search, not this acquisition owner/waves. Different-core historical reference is not an exhaustive history search or compatible implementation to copy."
+    },
+    {
+      "source": "Pinned Titans last-Travard sequence790..913 returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Relevant complete last class retains unconditional count_died and3/6 transitions plus unchecked periodic51838. No donor correction or guessed new wave/victory timing imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage, transcript or client traversal reviewed. Native owner/initialization/death identity is sufficient for this narrow lifetime repair; unchanged periodic criterion/victory choreography still requires fuller native/footage investigation."
+    }
+  ],
+  "repair": {
+    "registration": "Per-AI full128-bit GuidSet admits only introduced, live106580/106578 TempSummons with this actor's full summoner GUID and actual same nonnull map/instance. Native JustSummoned registers before a possible one-hit death in IsSummonedBy. Both successful regular SummonCreature return paths also register idempotently: own wave timers can execute in disabled AI while native owner notification targets a different primary AI. Reject dead returned summons so this fallback cannot rearm a GUID already consumed in reentrant initialization. Boss106719 is not registered.",
+    "death": "Require nonnull dead summon and live/in-world/nonpredeleted owner, count below six, and successful full-GUID erasure. Erase before increment/next-wave callback, preventing repeated/reentrant death or registration of the already-dead summon from duplicating progress. Preserve original thresholds3/6 and SummonAdds2/3. Ordinary Reset retains this accepted roster; AI destruction drops it, so a recreated AI cannot adopt old surviving summons just because they share its actor entry/summoner.",
+    "credit": "No killer-type filter, progression call, owner grant, group fanout or Player-alive gate added. Native TempSummon owner bridge still dispatches deaths from Player, pet, guardian or NPC ally alike; internal wave counting does not award quest progression to the killer/pet. Controlled killer labels exercise the same real bridge, not native end-to-end pet spell/threat/party/faction combat. Existing shared criterion51838 remains unchanged and OPEN."
+  },
+  "validation": {
+    "baseline": "PASS pinned1f73b44c whole owner AI: six null notifications advance2/Mordoth before scheduled first wave. Expanded baseline also reproduces real original-AI summons notifying a recreated owner AI through native death bridge; six actual deaths reach count6/Mordoth while recreated AI's first-wave queue is still pending. This is a controlled native-handler reproduction, not an observed client run.",
+    "host": "PASS full current owner AI/native InitSummon/death-owner bridge/FunctionProcessor/locked primary-disabled lifecycle/AIM_Destroy. Actual3+3/boss, null/alive/untracked/full-GUID high-word collision, invalid owner/map/instance/entry/nonTemp/pre-intro registration,300 duplicate notifications/no uint8 wrap, boss exclusion, consumed-dead-registration rejection, actor world/death/predelete rejection with later explicit retry, Reset and recreated-AI old-death isolation. One-hit in IsSummonedBy before factory returns reenters wave spawning and consumes exactly six. Primary/disabled/alias/disabled-only queues register successful live returns; restored primary then receives deaths. Existing final admission/both faction labels/phase/quest/100yd/4999+1ms/lifetime tests retained. Controlled world/motion/health/killer services are not live combat traversal.",
+    "sanitizer": "PASS MSVC AddressSanitizer whole current host. Initial development ASAN exposed a fixture-only impossible enabled=true/null-primary-AI combination when exact InitSummon was introduced; disabled-only fixture now reflects native IsAIEnabled=false. A stale fixture callback lock assertion also did not apply to later owner-death callbacks. Neither is reported as a production crash repair; actual extraction warnings remain visible, not suppressed.",
+    "installed": "PASS actual canonical factory selects JustSummoned0x140 and native Kill SummonedCreatureDies0x158; full native GUID comparator/inequality calls and16-byte set-node copy, owner/map/instance/live/entry gates, erase-before-increment bounded3/6 transitions and no Player credit calls decoded. Native InitSummon0x140 precedes spawned0x148; both successful regular return paths dispatch registration before their existing attacks. Factory initializes set at AI+0xc8, actual0xd8 allocation and destructor release roster plus original queue+0x48. Existing selected LOS admission, lifecycle and closures remain checked. PE proof corrected actual slot/frame/register assumptions against decoded output, not production changes made to satisfy a guessed ABI.",
+    "regressions": "PASS complete17-suite serial PowerShell7 ledger .codex/silver-hand-wave-deaths-regressions.tsv. Pinned death/admission/wave-lifetime/third-arrival/action/final-dispatch/step8 baselines; installed AberrationCredit/native owner/shared bridge, full RitualDispatch/arrival with nested entry/data/PE and native215258/215260 metadata, current WaveLifetime/death/final-entry/data/PE, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, SceneLifecycle, ArtifactForceEquip55 records/39 items; third-entry lifetime baseline. Expanded actual old-summon death baseline also passed separately after the ledger's initial null-notification reproduction. Final current host ASAN passed after expanded replacement assertions. Native catalogs serialized separately from canonical build; no diagnostics or assertion threshold suppressed.",
+    "previous_incident": "Earlier1f73b44c initial all-class temporary-table offers22 assertion failed without capturing actual rows, then unchanged isolated/full replays passed. It did not recur in this unit's complete17-suite run. Its cause remains unproven; original failed/replay evidence is retained in that audit. This unit changes no all-class data or test threshold and does not claim to repair intermittent test reliability.",
+    "evidence": ".codex/silver-hand-wave-deaths-* and ignored runtime-test/silver-hand-wave-lifetime probes/logs. No runtime configs/passwords/characters/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "CE78AFD5D15D8FFE01D68F28F019DDC47CB4CA93D5C3262E35F872D8169F6AAC",
+    "bnet_sha256": "6F455437C04D984D5BC42670997D33FB06BAE86A5AEDBE7F1305538145706D05",
+    "build": "Release worldserver+bnetserver17.83s/0 warnings/errors, no OutDir and LinkIncremental=false. Actual UTF16 final-link canonical output/original scripts-game-shared-common Release libraries/INCREMENTAL:NO checked; deployed selected implementation independently decoded.",
+    "runtime": "Own hidden canonical PID21744 reached fresh ready; own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected config-certificate hashes unchanged/gone. No user/unknown server stopped and no hidden server left running."
+  },
+  "remaining": [
+    "Native owner-death dispatch addresses the current primary AI, not every disabled AI. This unit's successful-return fallback preserves live registration while last AI is disabled, but does not replay deaths delivered solely to another primary AI; dead-before-return in that alternate route remains OPEN. Restoring primary in fixtures is not proof of lost-callback recovery. Do not add a global duplicate death fanout or invent timer credit without tracing native temporary-AI restoration.",
+    "Partial/missing spawns or defender can still leave a wave stalled; no fabricated death, reduced threshold, automatic retry or actor resurrection added. Own-AI Reset preservation is not persisted abandon/retake/re-entry/recreated-actor epoch recovery.",
+    "Periodic51838 still uses unchecked nearest Player without a tracked victory in this handler. Accepted5000ms callback still lacks quest/scenario recheck. Do not simply gate it at exact9 while unchanged periodic51838 may already transition the scenario; trace native criterion/victory, actual failed215258 and full relevant footage together.",
+    "Earlier firstfight/evade50850, third waypoints50877/50912, aberration pre-hit half-health/intentional companion deaths, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. Spell/audio/lights/attachments/animations, actual healing/combat, faction/party/camera/pets and client traversal still await testing."
+  ]
+}
