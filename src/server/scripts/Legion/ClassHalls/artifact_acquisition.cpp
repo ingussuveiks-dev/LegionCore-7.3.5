@@ -27,6 +27,85 @@
 #include <mutex>
 #include <unordered_map>
 
+namespace MarksmanshipInquisitor
+{
+bool Ready(Creature* actor)
+{
+    if (!actor || actor->GetEntry() != 101269 || actor->GetMapId() != 1489 ||
+        actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC))
+        return false;
+    Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+    return scenario && scenario->GetScenarioId() == 972 && scenario->GetCurrentStep() == 5;
+}
+
+struct Gate
+{
+    bool held = false;
+    bool addedFlag = false;
+    ReactStates reaction = REACT_AGGRESSIVE;
+
+    bool Update(Creature* actor)
+    {
+        if (!actor)
+            return true;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        bool blocked = actor->GetEntry() == 101269 && actor->GetMapId() == 1489 && (!scenario ||
+            (scenario->GetScenarioId() == 972 && !Ready(actor)));
+        if (blocked)
+        {
+            if (!held)
+            {
+                held = true;
+                addedFlag = !actor->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                reaction = actor->GetReactState();
+                if (actor->isInCombat())
+                    actor->CombatStop(true);
+            }
+            actor->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            actor->SetReactState(REACT_PASSIVE);
+        }
+        else if (held)
+        {
+            if (addedFlag)
+                actor->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            actor->SetReactState(reaction);
+            held = false;
+        }
+        return blocked;
+    }
+};
+}
+
+struct npc_marksmanship_qormaladon : SmartAI
+{
+    explicit npc_marksmanship_qormaladon(Creature* creature) : SmartAI(creature) { }
+    MarksmanshipInquisitor::Gate gate;
+
+    void InitializeAI() override { SmartAI::InitializeAI(); gate.Update(me); }
+    void Reset() override { SmartAI::Reset(); gate.Update(me); }
+    void UpdateAI(uint32 diff) override { gate.Update(me); SmartAI::UpdateAI(diff); }
+    void SetData(uint32 id, uint32 value) override { SmartAI::SetData(id, value); gate.Update(me); }
+    void AttackStart(Unit* target) override { if (!gate.Update(me)) SmartAI::AttackStart(target); }
+    void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType type) override
+    {
+        if (gate.Update(me))
+            damage = 0;
+        else
+            SmartAI::DamageTaken(attacker, damage, type);
+    }
+};
+
+class condition_marksmanship_qormaladon_ready : public ConditionScript
+{
+public:
+    condition_marksmanship_qormaladon_ready() : ConditionScript("condition_marksmanship_qormaladon_ready") { }
+    bool OnConditionCheck(Condition*, ConditionSourceInfo& sourceInfo) override
+    {
+        WorldObject* object = sourceInfo.mConditionTargets[1];
+        return MarksmanshipInquisitor::Ready(object ? object->ToCreature() : nullptr);
+    }
+};
+
 namespace TalonclawDakarr
 {
 bool Eligible(Creature* actor, Player* player)
@@ -1757,6 +1836,8 @@ struct npc_stromkar_thoradin : SmartAI
 
 void AddSC_artifact_acquisition()
 {
+    RegisterCreatureAI(npc_marksmanship_qormaladon);
+    new condition_marksmanship_qormaladon_ready();
     RegisterCreatureAI(npc_talonclaw_dakarr);
     RegisterCreatureAI(npc_talonclaw_ambush_dakarr);
     new eventobject_talonclaw_ambush();

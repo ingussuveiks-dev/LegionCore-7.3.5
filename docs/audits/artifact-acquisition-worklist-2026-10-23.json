@@ -1500,6 +1500,8 @@
       "farewell_budget_door_repair_audit": "docs/audits/marksmanship-farewell-budget-door-2026-10-24.json",
       "herald_challenge_repair_audit": "docs/audits/marksmanship-herald-challenge-2026-10-24.json",
       "inquisitor_admission_repair_audit": "docs/audits/marksmanship-inquisitor-admission-2026-10-24.json",
+      "qormaladon_combat_repair_audit": "docs/audits/marksmanship-qormaladon-combat-2026-10-26.json",
+      "qormaladon_combat_review": "Scoped SmartAI and exact unlock/death conditions now require actual972/5 and original immunity256 removal; native eyes/205660/49654/owner/death cleanup unchanged. ASAN1080 hook cases, TEMP/custom guards, shared post-boss/Scepter checks, selected canonical PE and clean owned startup pass. Canonical deployed1CA381; exact premature updater ScriptName errors archived after repair. Full client combat/eyes/group/re-entry/bow traversal remains pending.",
       "interrogation_budget_repair_audit": "docs/audits/marksmanship-interrogation-budget-2026-10-24.json",
       "waypoint_failure_retry_repair_audit": "docs/audits/smart-waypoint-start-retry-2026-10-24.json",
       "post_inquisitor_retry_repair_audit": "docs/audits/marksmanship-post-inquisitor-retry-2026-10-24.json",

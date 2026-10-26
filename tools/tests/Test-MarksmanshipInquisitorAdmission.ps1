@@ -15,6 +15,7 @@ CREATE TEMPORARY TABLE smart_scripts LIKE saved_smart;
 INSERT INTO smart_scripts SELECT * FROM saved_smart;
 CREATE TEMPORARY TABLE saved_actor LIKE creature_template;
 INSERT INTO saved_actor SELECT * FROM creature_template WHERE entry IN(100397,101269);
+UPDATE saved_actor SET ScriptName='' WHERE entry=101269 AND ScriptName='npc_marksmanship_qormaladon';
 CREATE TEMPORARY TABLE creature_template LIKE saved_actor;
 INSERT INTO creature_template SELECT * FROM saved_actor;
 CREATE TEMPORARY TABLE saved_path LIKE waypoints;
