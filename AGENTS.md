@@ -50,6 +50,8 @@
 
 # Quest admission and packet regressions
 
+- Demon Souls37653 item122100/native178787 summons86963 for5s and captures within15 yards. Preserve all four corpse types90230/90241/93619/101943, source22 dead guards, original corpse runOnce/reset and summon/combat/path slots. Gem action33 must anchor OWNER_OR_SUMMONER23 and retain native eligible-group credit, without nearby unrelated-player anchors or item/quest grants. Run `Test-DemonSoulsGem.ps1 -AddressSanitizer -VerifyNativeCatalog`; actual counter/visual/group/client capture remain separate checks.
+
 - Into the Fray38834 requires its exploration/event flag because native189764 effect16 references it. Do not clear that flag to silence seven duplicate start commands. Migration05 supersedes03 and retains one command7. Map command7's objective-free event helper uses CompleteQuest only for an active INCOMPLETE log entry; objective-bearing legacy handling/diagnostics and caller alive/range/failure checks remain. Run `Test-IntoFrayStart.ps1 -AddressSanitizer`, selected `verify_into_fray_event_release.py`, and inspect the actual native loader/startup. Acceptance/travel/turn-in remain client checks.
 
 - Priest messenger101344 acceptance40705 TALK must retain LINK1 delayed cleanup. Preserve the guarded summon54 follow-player/personal207/30s timeout chain and existing speech; never overwrite custom AI/event slots. Run `Test-PriestDalaranMessenger.ps1` and inspect newly appended DBErrors after the canonical restart. SQL graph checks do not verify visibility, follow or actual client acceptance, and this shared local offer does not certify separate Alliance actor/voice fidelity.
