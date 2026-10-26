@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Recover original final-defense wave requests when initial106580 leader or106719 Mordoth creation returns null. Partial106578 creation, complete Holy/all36 chains and client/VFX remain OPEN.",
+  "sources": [
+    {
+      "source": "Local git7bef0cb3/main/origin, worklist/routes/donor review, complete last-Travard AI and native creation/death/lifecycle paths",
+      "review": "Inherited clean checkout. Missing-defender recovery already existed, but successful defender lookup followed by null leader or boss permanently lost a once-only wave request. WorldObject resolves FindMap and delegates to Map::SummonCreature. Map returns null for alive-entry cap, unsupported summon mask, failed Create or failed quest-scope inheritance before native InitSummon; successful path calls AddToMap, InitSummon and returns the actor. AddToMap's bool is ignored here: this unit does NOT repair or claim coverage of all AddToMap failures. InitSummon registers the owner before IsSummonedBy; a reentrant immediate death may still return a nonnull actor and must not be treated as failed creation."
+    },
+    {
+      "source": "Read-only matching local MariaDB actor templates and creature_template_wdb model records",
+      "review": "Correct schema uses creature_template_wdb.Displayid1..4, not modelid1 on creature_template. Joined106578 displays19634/0/0/0,10658067534/68144/39267/32708,10671969774/0/0/0,10677463293/63308/63299/63305,10677769565/0/0/0; original SmartAI/custom bindings, factions and flags retained. These rows are not native display-existence or successful spawn proof. Initial query of nonexistent modelid1 failed1054 and was corrected after schema inspection; no DB mutation/data repair or suppression. No permanent model/Create failure has been established or masked."
+    },
+    {
+      "source": "Matching26972 native DB2/hotfix metadata and existing FunctionProcessor/locked Creature lifecycle",
+      "review": "Native1092 exact9 defense, weighted180/30110/92+51838 and step10 pickup92+50966 retained and refreshed by regression. FunctionProcessor queues new callbacks until a later update, preventing repeated failure catch-up within one large-diff update. Existing AI-owned queue survives ordinary Reset, is dispatched under primary/disabled lock and is destroyed with its AI; unrelated Unit jobs remain independent."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted scripts/all-ref SilverHand path history",
+      "review": "Bounded npc_travar_last/106580/106719 script search and SilverHand path log returned no applicable acquisition recovery. Not exhaustive historical review or modern schema/API import."
+    },
+    {
+      "source": "Pinned Titans complete relevant last-Travard entry/death/update/SummonAdds source returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "No null leader/boss creation recovery. No donor code imported; healthy original positions, counts, attacks, boss flag removal/Talk0 and timings preserved."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed this unit. Existing1000ms retry is custom technical failure recovery, not observed retail combat cadence, VFX or completion timing."
+    }
+  ],
+  "repair": {
+    "implementation": "Rename existing RetryMissingDefender to RetryWave(wave, unavailableEntry) with useful actor-specific diagnostic. Retain this+wave-only1000ms AI-owned callback, unchanged live106777/1539/map/scenario1092/exact9 gate and fresh original SummonAdds lookup. Two defender failures use106774; new null leader/boss branches use106580/106719. Stale context logs/drops without self-requeue. No new members, state/latches, roster/count/timer resets, Player/group credit, item grants, SQL or shared core changes.",
+    "ownership": "Null initial leader/boss means this request has populated no enemies; recovering it does not replay a partially populated wave. Original five-second first request and consumed3/6 death thresholds remain native issue points. Repeated failure replaces the executed callback with one next-interval job. No Player/defender/summon pointer or reason ID captured. Healthy successful/non-null immediate-death paths do not schedule recovery.",
+    "limits": "Null106578 after a valid leader remains unrepaired: never replay the full populated wave as a workaround. Same-stage quest/scenario epochs, mid-spawn context change and disabled-to-different-primary death delivery remain separate. Permanent invalid templates/models/Create failure still need their own evidence-based root fix; original diagnostics remain visible and this retry does not certify their success. No arbitrary retry-count timeout invented."
+  },
+  "validation": {
+    "baseline": "PASS -CreationBaseline pins actual complete7bef0cb3 AI and policy: null first/second leader and null Mordoth each stay lost even after creation becomes available and lifecycle advances. Controlled creator failure, not an observed client incident.",
+    "host": "PASS complete extracted production AI/native FunctionProcessor/locked lifecycle/InitSummon/death bridge. All three null requests recover after repeated failures,999+1ms/zero/large-diff no catch-up, primary/disabled/alias/no-primary modes, Reset, fresh defender including intervening missing lookup, shared Player death/phase/LOS/quest loss/no references and both faction labels. All12 stages and10 invalid actor/scenario contexts cancel stale retries without replay. AI destruction/replacement drops all three pending requests while unrelated Unit job runs. Immediate native owner/guardian deaths create original seven actors/count6 without retry; selective106578 failure keeps one leader and no full-wave replay. Services controlled; faction labels and owner bridge do not prove live group navigation or persistence.",
+    "installed": "PASS actual canonical selected SummonAdds switch/three shared retry calls/exact106774-106580-106719 reason IDs. Both live106774/70yd null lookups enter defender retry; only null leader/boss return branches enter their corresponding recovery; null106578 continues original two-add loop. Actual function-object table/9-byte thunk retains AI+wave at unchanged AI+48 queue,1000ms and verified live1092/exact9 policy before fresh SummonAdds. No direct credit/self-requeue in callback. Earlier factory0xd8/first-wave/death/progress/destruction proofs retained. First proof run rejected ambiguous overloaded SummonCreature symbol; corrected to the actual four-float overload, without loosening three-call/branch assertions or production change.",
+    "sanitizer": "PASS complete current null-creation/missing-defender/one-hit/context/recipient/lifetime fixture under MSVC AddressSanitizer. Existing host shadowing warnings remain visible; no production diagnostic or assertion disabled.",
+    "regressions": "PASS25 top-level serial suites: newCreationBaseline plus retainedDefenderBaseline/LateWaveBaseline/ContextBaseline/ProgressBaseline, full retained19-suite silver-hand-waypoint-retry-creation-retry-regressions.tsv and current MordothMotion Release nesting seven-spawn InitialMotion. Waypoint retry/recipient, death/admission/lifetime/arrival/action/final/step8 baselines, complete current dispatch/wave/rescue/ally/entry/native weighted tree and selected installed proofs, ScepterLogin, strict native149 race-class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records all PASS. Catalog builds serialized after canonical build; final executable hashes unchanged after all checks/owned shutdown.",
+    "probe_limit": "Earlier isolated empty-output SQL/offer-count incidents remain unexplained in their own audits, not fixed here. No automatic test retry or predicate/count relaxation introduced.",
+    "evidence": ".codex/silver-hand-creation-retry-* and silver-hand-waypoint-retry-creation-retry-*; ignored runtime-test/silver-hand-wave-lifetime. No runtime/configuration/password/character/assets/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "7E43CF600F9421F7244DE557F0B1C7D27D1DAC3F7C5DE95A8F3A462F97C2A1E7",
+    "bnet_sha256": "A8C917791E11EBEA31A580B7E7ECA9055266845CD2FB0836F3CF0CAF4E01FB0B",
+    "build": "Release world+bnet18.44s/0 warnings/errors; no OutDir, LinkIncremental=false. Actual UTF16 final-link commands checked canonical OUT/INCREMENTAL:NO and original scripts/game/shared/common libraries plus bnet shared/common. Actual deployed selected implementation decoded, not hash/startup alone.",
+    "runtime": "Own hidden canonical PID33380 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0. Newly appended DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged; own PID gone, no unknown/user server stopped. Startup is not actual1539 grid/null recovery/channel/combat/client VFX proof."
+  },
+  "remaining": [
+    "Partial106578/mid-spawn failure, attempt epochs/abandon/re-entry, native180-pulse defense/channel/cleanup, actual combat and group/faction/pet behavior plus full relevant footage/client sequence remain OPEN.",
+    "Earlier fights/evade/post-scaling half-health, true loot/equip/save/relog/outro/Dalaran arrival and all36 full chains remain OPEN; no full quest or visual client verification claimed."
+  ]
+}

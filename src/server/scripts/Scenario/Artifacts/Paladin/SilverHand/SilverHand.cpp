@@ -1382,15 +1382,15 @@ public:
                     timer -= diff;
         }
 
-        void RetryMissingDefender(uint8 wave)
+        void RetryWave(uint8 wave, uint32 unavailableEntry)
         {
-            TC_LOG_DEBUG("scripts", "Silver Hand ritual: defender106774 absent for wave %u; retry in1000ms", uint32(wave));
+            TC_LOG_DEBUG("scripts", "Silver Hand ritual: actor %u unavailable for wave %u; retry in1000ms", unavailableEntry, uint32(wave));
             _waveFunctions.AddDelayedEvent(1000, [this, wave]() -> void
             {
                 if (SilverHandFinalEntry::CanStartWave(me))
                     SummonAdds(wave);
                 else
-                    TC_LOG_DEBUG("scripts", "Silver Hand ritual: dropping defender retry for stale wave %u", uint32(wave));
+                    TC_LOG_DEBUG("scripts", "Silver Hand ritual: dropping retry for stale wave %u", uint32(wave));
             });
         }
 
@@ -1416,9 +1416,11 @@ public:
                                 }
                             }
                         }
+                        else
+                            RetryWave(wave, 106580);
                     }
                     else
-                        RetryMissingDefender(wave);
+                        RetryWave(wave, 106774);
                 }
                 break;
                 case 3:
@@ -1431,9 +1433,11 @@ public:
                             mordot->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
                             mordot->AI()->Talk(0);
                         }
+                        else
+                            RetryWave(wave, 106719);
                     }
                     else
-                        RetryMissingDefender(wave);
+                        RetryWave(wave, 106774);
                 }
                 break;
             }
