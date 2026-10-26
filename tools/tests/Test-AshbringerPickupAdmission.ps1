@@ -9,6 +9,7 @@ $path='src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cp
 $source=Get-Content "$repo/$path" -Raw
 $pinned=(& git -C $repo show "30be60aa:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned admission baseline unavailable'}
+$source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))
 $helper=Block $source 'namespace AshbringerAcquisition'
 $current=Block $source 'class go_bs_the_ashbringer :'
 $restored=$current.Replace((Block $current 'struct AI : GameObjectAI')+';','').Replace((Block $current 'bool OnGossipHello('),'').Replace('GameObjectAI* GetAI(GameObject* go) const override { return new AI(go); }','') -replace 'if \(!AshbringerAcquisition::CanRetrieve\(player, go\)\)\s*return;',''

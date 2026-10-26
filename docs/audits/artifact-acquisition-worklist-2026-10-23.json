@@ -13,6 +13,13 @@
   "common_findings": [
     {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
+      "handler": "216690 reported Unbreakable Will217042 rejection retry",
+      "problem": "The aura unconditionally cleared its only timer after a reported failed217042 cast, permanently losing the override-button attempt.",
+      "repair_audit": "docs/audits/ashbringer-domination-retry-2026-10-26.json",
+      "limit": "Original4000+8000ms/credit trio retained. Non-OK keeps aura-owned pending1 and one added diagnostic; projectedOK stops.24 controlled result/stage cases, ASAN/native26972 override735/button216693 references and selected installed loader/factory/hook/result branch checked. Not actual override application, button/cleanup/accepted-reentry/abandon/party/faction/client/VFX or delayed199827 storage proof. Missing216687 removal reference recorded, not fabricated."
+    },
+    {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "247318 initial use/open/pickup context admission",
       "problem": "Legacy instance step3 alone allowed unrelated map1500 scenarios and inactive/non-Paladin/stale contexts to start enclosing retrieval effects despite source12 item-loot rules.",
       "repair_audit": "docs/audits/ashbringer-pickup-admission-2026-10-26.json",
@@ -1029,7 +1036,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "partial: initial775/38376 live pickup admission, native199827 source, capacity and reported-cast retry repaired; completion/actor guards retained; delayed child/null-store/race/equip and full acquisition/client/VFX unresolved; ordinary door fixture Defender-blocked",
+      "status": "partial: initial775/38376 pickup admission, native199827 source/capacity/reported-cast retry and216690 reported217042 retry repaired; completion/actor guards retained; delayed effects/null-store/race/equip and full acquisition/client/VFX unresolved; ordinary door fixture Defender-blocked",
+      "domination_retry_audit": "docs/audits/ashbringer-domination-retry-2026-10-26.json",
+      "domination_retry_review": "Original4000+8000ms sequence remains; rejected217042 now retains aura-owned pending1 until the next positive update with a caster, with one added first-failure diagnostic rather than permanent timer0. Native217042 aura293/override735/button216693 and216690 faction/stun/removal chain reviewed.24 controlled stage/result cases, missing caster/actor, destruction/new aura, ASAN and selected installed hook/result branches verified. OK is not actual button/effect/removal proof; full source admission,216691 refresh, stale/abandon/re-entry/accepted reentry, native area/group/faction and client/VFX remain OPEN.",
       "pickup_admission_audit": "docs/audits/ashbringer-pickup-admission-2026-10-26.json",
       "pickup_admission_review": "Initial script/AI use-open and callback require live Paladin/active38376/not rewarded/spawned247318/map1500/same map-instance-phase/visibility/LOS/interaction distance/selectability/native775-step3 and legacy3.29 invalid/eight valid controlled cases, pinned no-gate counterfactual, ASAN and actual selected installed script10/50/60/AI48 checked. Empty/native retrieval remains, with no new item grant or postcast ownership gate. Report-use ignores AI return and retains generic native criteria/stealth removal; delayed child context/storage/equip/attempt epochs, shared group recipient eligibility and full client/VFX remain OPEN.",
       "pickup_cast_audit": "docs/audits/ashbringer-pickup-cast-2026-10-26.json",
@@ -1154,7 +1163,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Initial live775-step3/active38376 context now gates opening and pickup; native199827 source, capacity errors and reported180850 prepare rejection/reopen are repaired. Do NOT bind separate GO loot or add an item-first/immediate-postcast gate: effect64 queues199827/other children with native default10ms; prepare OK is not effect completion and AutoStoreLoot bool is slot count. Prioritize delayed child context/rejection, null StoreNewItem/capacity race and progress/retry around114505/46130/domination without native success assumptions or grants. Trace post-store equip/save/relog, stage/attempt/abandon/re-entry and accepted repeat suppression; invalid already-delivered deactivation/re-entry recovery remains open. Missing32543 presentation remains open. Then775 entrance/trash owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender. Pinned donors/full relevant footage before choreography edits; changed successful command timing still needs client/VFX checks. Entire chain/faction/group/client verification remains OPEN."
+      "next_action": "Initial live775-step3/active38376 context gates opening/pickup; native199827 source, capacity errors, reported180850 rejection/reopen and reported217042 rejection retry are repaired. Do NOT bind separate GO loot or add an item-first/immediate-postcast gate: effect64 queues199827/other children with native default10ms; prepare OK is not effect completion and AutoStoreLoot bool is slot count. Prioritize delayed child context/rejection, null StoreNewItem/capacity race and progress/retry around114505/46130/domination without success assumptions or grants. Trace actual override735/button216693 removal,216691 refresh, accepted reentry and domination quest/actor/abandon cleanup separately from reported retry. Trace post-store equip/save/relog, stage/attempt/abandon/re-entry and accepted repeat suppression; invalid already-delivered deactivation/re-entry recovery remains open. Missing32543 presentation remains open. Then775 entrance/trash owner/group eligibility, prison/missing actors, late-door state and final return/camera/pet. Ordinary door fixture awaits security review without bypassing Defender. Pinned donors/full relevant footage before choreography edits; changed successful command timing still needs client/VFX checks. Entire chain/faction/group/client verification remains OPEN."
     },
     {
       "class_id": 3,

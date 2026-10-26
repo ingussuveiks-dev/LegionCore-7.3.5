@@ -19,6 +19,7 @@ if($source.Contains('namespace AshbringerAcquisition')){
 }
 $pinned=(& git -C $repo show "85b4f0c2:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}
+$source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))
 if($Baseline){$source=$pinned}elseif($CapacityBaseline -or $CastBaseline){$revision=if($CastBaseline){'269550a6'}else{'bf251a6d'};$source=(& git -C $repo show "${revision}:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned pickup baseline unavailable'}}else{
  $removed='instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_COMPLETE_SCENARIO, 775, 1);'
  $capacity=Block (Block $source 'class go_bs_the_ashbringer :') 'if (!player->HasItemCount(120978))'

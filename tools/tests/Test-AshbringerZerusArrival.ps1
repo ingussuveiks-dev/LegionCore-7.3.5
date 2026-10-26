@@ -10,6 +10,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($source.Contains('namespace AshbringerAcquisition')){$source=$source.Replace((Block $source 'namespace AshbringerAcquisition'),'');foreach($header in @('GameObjectAI.h','Scenario.h','ScenarioMgr.h')){$source=$source.Replace("#include `"$header`"",'')}}
 $pinned=(& git -C $repo show "07bd3831:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned Zerus baseline unavailable'}
+$source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))
 if($Baseline){$source=$pinned}else{
  $restored=$source.Replace('type != POINT_MOTION_TYPE || (id != 1 && id != 2)','type != POINT_MOTION_TYPE')
  if($restored.Contains('bool lethal = damage >= me->GetHealth(attacker);')){$restored=$restored.Replace((Block (Block $restored 'struct npc_bs_balnazzarAI') 'void DamageTakenAfterScaling('),(Block (Block $pinned 'struct npc_bs_balnazzarAI') 'void DamageTaken('))}

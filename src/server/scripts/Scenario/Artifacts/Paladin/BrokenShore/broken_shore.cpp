@@ -1269,6 +1269,7 @@ class spell_bs_dominate_mind : public SpellScriptLoader
             PrepareAuraScript(spell_bs_dominate_mind_AuraScript);
 
             bool unbrekable = false;
+            bool willFailureReported = false;
             uint16 timer = 4000;
 
             void OnApply(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
@@ -1293,14 +1294,15 @@ class spell_bs_dominate_mind : public SpellScriptLoader
             {
                 if (timer)
                 {
-                    if (!GetCaster())
+                    Unit* caster = GetCaster();
+                    if (!caster)
                         return;
 
                     if (!unbrekable)
                     {
                         if (timer <= diff)
                         {
-                            if (InstanceScript* instance = GetCaster()->GetInstanceScript())
+                            if (InstanceScript* instance = caster->GetInstanceScript())
                                 if (instance->getScenarionStep() == DATA_STAGE_4)
                                 {
                                     instance->DoUpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 46130); //Step 5
@@ -1316,8 +1318,18 @@ class spell_bs_dominate_mind : public SpellScriptLoader
                     {
                         if (timer <= diff)
                         {
-                            GetCaster()->CastSpell(GetCaster(), 217042, true);
-                            timer = 0;
+                            SpellCastResult result = caster->CastSpell(caster, 217042, true);
+                            if (result == SPELL_CAST_OK)
+                                timer = 0;
+                            else
+                            {
+                                timer = 1;
+                                if (!willFailureReported)
+                                {
+                                    willFailureReported = true;
+                                    TC_LOG_WARN("scripts", "Ashbringer domination: Unbreakable Will 217042 failed with result %u for caster %u; retain aura-owned retry", uint32(result), caster->GetGUIDLow());
+                                }
+                            }
                         }
                         else timer -= diff;
                     }

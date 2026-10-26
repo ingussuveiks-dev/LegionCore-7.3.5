@@ -10,6 +10,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($source.Contains('namespace AshbringerAcquisition')){$source=$source.Replace((Block $source 'namespace AshbringerAcquisition'),'');foreach($header in @('GameObjectAI.h','Scenario.h','ScenarioMgr.h')){$source=$source.Replace("#include `"$header`"",'')}}
 $pinned=(& git -C $repo show "803e4734:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned Balnazzar baseline unavailable'}
+$source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))
 $old=Block (Block $pinned 'struct npc_bs_balnazzarAI') 'void DamageTaken('
 if($Baseline){$source=$pinned;$handler=$old}else{
  $handler=Block (Block $source 'struct npc_bs_balnazzarAI') 'void DamageTakenAfterScaling('

@@ -10,6 +10,7 @@ $source=Get-Content "$repo/$path" -Raw
 if($source.Contains('namespace AshbringerAcquisition')){$source=$source.Replace((Block $source 'namespace AshbringerAcquisition'),'');foreach($header in @('GameObjectAI.h','Scenario.h','ScenarioMgr.h')){$source=$source.Replace("#include `"$header`"",'')}}
 $pinned=(& git -C $repo show "40543732:$path") -join "`n"
 if($LASTEXITCODE){throw 'Pinned flame baseline unavailable'}
+$source=$source.Replace((Block $source 'class spell_bs_dominate_mind :'),(Block $pinned 'class spell_bs_dominate_mind :'))
 if($Baseline){$source=$pinned}else{
  $original=Block (Block $pinned 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
  $updated=Block (Block $source 'struct npc_bs_doomguard_incineratorAI') 'void UpdateAI('
