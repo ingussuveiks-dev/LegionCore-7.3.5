@@ -248,6 +248,21 @@ void CheckFirstWave(Creature const& actor,Creature* defender)
 }
 int main()
 {
+#ifdef CONTEXT_BASELINE
+    {
+        Fixture fixture;
+        uint32 progress=179;
+        fixture.player.onCredit=[&progress](){if(++progress==180)manager.scenario.step=10;};
+        fixture.ai.MoveInLineOfSight(&fixture.player);
+        fixture.actor.Run(1000);
+        assert(progress==180 && manager.scenario.step==10 && fixture.actor.adds.empty());
+        fixture.actor.Run(4000);
+        CheckFirstWave(fixture.actor,&fixture.defender);
+        assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.player.credits.size()==1);
+        std::cout<<"PASS pinned f3e7c9e2: accepted5000ms callback spawns first wave after179->180 pulse changes native-stage label to10; controlled progress sink, native weighted threshold checked separately\n";
+        return 0;
+    }
+#else
 #ifdef PROGRESS_BASELINE
     {
         Fixture fixture;
@@ -264,6 +279,68 @@ int main()
     }
 #else
 #if !defined(BASELINE) && !defined(ADMISSION_BASELINE) && !defined(DEATH_BASELINE) && !defined(PROGRESS_BASELINE)
+    assert(!SilverHandFinalEntry::CanStartWave(nullptr));
+    for(uint32 mode=0;mode<4;++mode)
+        for(uint32 context=0;context<22;++context)
+        {
+            Fixture fixture;CreatureAI replacement;
+            fixture.ai.MoveInLineOfSight(&fixture.player);
+            fixture.ai.timer=37;
+            if(mode){fixture.actor.i_disabledAI=&fixture.ai;fixture.actor.i_AI=mode==1?&replacement:mode==2?&fixture.ai:nullptr;}
+            if(mode==3)fixture.actor.IsAIEnabled=false;
+            fixture.actor.Lifecycle(4999);assert(fixture.actor.adds.empty());
+            if(context<12)manager.scenario.step=context;
+            else switch(context)
+            {
+                case 12:fixture.actor.world=false;break;
+                case 13:fixture.actor.preDelete=true;break;
+                case 14:fixture.actor.alive=false;break;
+                case 15:fixture.actor.entry=106676;break;
+                case 16:fixture.actor.mapId=1220;break;
+                case 17:fixture.actor.map=nullptr;break;
+                case 18:fixture.actor.instance=43;break;
+                case 19:manager.present=false;break;
+                case 20:manager.scenario.id=991;break;
+                case 21:manager.scenario.id=1037;break;
+            }
+            bool valid=context==9;
+            uint32 before=diagnostics;
+            fixture.actor.Lifecycle(1);
+            assert(!fixture.actor.m_AI_locked && fixture.ai.timer==37 && fixture.ai.count_died==0);
+            assert(fixture.ai._introDone==valid && fixture.ai.startCriteria==valid);
+            assert(fixture.actor.adds.size()==(valid?3u:0u) && fixture.ai._waveSummons.size()==(valid?3u:0u));
+            assert(diagnostics==before+(valid?0u:1u));
+            assert(fixture.ai._waveFunctions.Size()==0 && fixture.ai._waveFunctions.SizeQueue()==0);
+            fixture.actor.Lifecycle(5000);assert(diagnostics==before+(valid?0u:1u));
+            fixture.actor.i_AI=&fixture.ai;fixture.actor.i_disabledAI=nullptr;fixture.actor.IsAIEnabled=true;
+            fixture.actor.world=true;fixture.actor.preDelete=false;fixture.actor.alive=true;fixture.actor.entry=106777;
+            fixture.actor.mapId=1539;fixture.actor.map=&liveMap;fixture.actor.instance=42;manager=ScenarioManager{};
+            fixture.ai.Reset();fixture.ai.MoveInLineOfSight(&fixture.player);fixture.ai.MoveInLineOfSight(&fixture.player);
+            fixture.actor.Lifecycle(4999);assert(fixture.actor.adds.size()==(valid?3u:0u));
+            fixture.actor.Lifecycle(1);CheckFirstWave(fixture.actor,&fixture.defender);
+            assert(fixture.actor.casts.size()==(valid?1u:2u) && fixture.actor.talks.size()==(valid?1u:2u));
+            assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.ai.timer==37 && fixture.ai.count_died==0);
+            assert(fixture.player.credits.empty());
+        }
+    {
+        Fixture fixture;uint32 progress=179;
+        fixture.player.onCredit=[&progress](){if(++progress==180)manager.scenario.step=10;};
+        fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run(1000);
+        assert(progress==180 && manager.scenario.step==10 && fixture.actor.adds.empty());
+        fixture.actor.Run(4000);fixture.ai.MoveInLineOfSight(&fixture.player);fixture.actor.Run(5000);
+        assert(fixture.actor.adds.empty() && !fixture.ai._introDone && !fixture.ai.startCriteria);
+        assert(fixture.actor.casts.size()==1 && fixture.player.credits.size()==1);
+    }
+    for(uint32 faction:{0u,1u})
+    {
+        Fixture fixture;fixture.player.faction=faction;
+        fixture.ai.MoveInLineOfSight(&fixture.player);
+        fixture.player.alive=false;fixture.player.los=false;fixture.player.phase=false;fixture.player.status=0;
+        liveMap.players.clear();fixture.actor.stunned=true;fixture.actor.victim=true;
+        fixture.actor.Lifecycle(5000);CheckFirstWave(fixture.actor,&fixture.defender);
+        assert(fixture.ai._introDone && fixture.ai.startCriteria && fixture.player.credits.empty());
+    }
+    std::cout<<"PASS pending first wave: all12 stages/10 invalid actor-scenario contexts across primary/disabled/alias/no-primary locked lifecycle,4999+1ms, single diagnostic/drop, preserved timer/roster/count, Reset/fresh eligible retry and no stage10 restart;179->180 progress transition drops stale wave; same-stage Player death/LOS/quest loss/no references/stun/victim do not cancel existing wave\n";
     for(uint32 invalid=0;invalid<15;++invalid)
     {
         Fixture fixture;
@@ -643,6 +720,7 @@ int main()
         assert(diagnostics==before+3 && fixture.actor.i_AI==&fixture.ai && !fixture.actor.m_AI_locked);
     }
     std::cout<<"PASS: whole production last Travard AI/native FunctionProcessor and locked primary/disabled lifecycle, 4999+1ms, one queued wave, destruction/replacement/fresh retry, Reset preservation, summon failure/missing defender, original three-wave/flags/attacks/event IDs; ritual recipient admission checked separately; world services controlled, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

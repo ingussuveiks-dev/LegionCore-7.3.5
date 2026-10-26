@@ -1246,6 +1246,15 @@ namespace SilverHandFinalEntry
                 return reference.getSource();
         return nullptr;
     }
+
+    bool CanStartWave(Creature* actor)
+    {
+        if (!actor || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 106777 || actor->GetMapId() != 1539 || !actor->GetMap())
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1092 && scenario->GetCurrentStep() == 9;
+    }
 }
 
 // 106777
@@ -1306,6 +1315,13 @@ public:
                     }
                 _waveFunctions.AddDelayedEvent(5000, [this]() -> void
                 {
+                    if (!SilverHandFinalEntry::CanStartWave(me))
+                    {
+                        _introDone = false;
+                        startCriteria = false;
+                        TC_LOG_DEBUG("scripts", "Silver Hand ritual: pending first wave context changed; rearming entry without spawning");
+                        return;
+                    }
                     SummonAdds(1);
                 });
             }

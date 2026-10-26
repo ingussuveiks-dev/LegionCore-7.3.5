@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Execution admission of the already accepted last-Travard first-wave callback only; not complete Holy/all36/client/channel/combat/VFX certification.",
+  "sources": [
+    {
+      "source": "Local gitf3e7c9e2, worklist/routes/donor review and previous wave/ritual audits",
+      "review": "Clean main/origin inherited. Actual106777 LOS latches before channel/speech/lights and owns one5000ms first-wave callback. Admission and scoped periodic credit did not revalidate the delayed spawn. Existing native owner/death registration, three-wave identities/attacks, cadence, real loot/equip and installed repairs retained."
+    },
+    {
+      "source": "Fresh matching26972 native DB2/hotfix catalog, local AchievementMgr and Scenario transitions",
+      "review": "Stage9 weighted root48055 ALL ->53744 SCENARIO amount180 ->53745 amount1/30110/type92/51838; absent/1/179 cannot complete,180 can. Native Scenario changes currentStep/currentTree and invokes stage10 dispatch/phasing. Therefore a recreated actor admitted with retained179 progress can receive a final pulse before its pending5s wave; not an invented one-pulse victory or180-second timed-achievement deadline. Compiled actual tree completion is separate from the controlled179->180 callback sink."
+    },
+    {
+      "source": "Read-only local MariaDB phase/binding/spawn and complete affected production AI/instance dispatch",
+      "review": "362048/106777/map1539/phase7003; source23/zone85/entry10 admits native1092/9 OR10. Step10 visibility preserves final dialogue, not permission to start a late defense wave. No SQL/data changes. Initial pending callback is separate from later waves and missing-defender/partial-spawn recovery."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted script grep and all-ref SilverHand path log",
+      "review": "No npc_travar_last/51838 acquisition correction returned. Bounded search, not exhaustive history certification; no modern API/schema copied."
+    },
+    {
+      "source": "Pinned Titans full last-Travard entry/periodic/wave source returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Its accepted5s callback invokes SummonAdds(1) without rechecking context. No donor correction imported; original delay and wave choreography preserved."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client sequence reviewed this unit. Local native stage admission supports this bounded stale-callback repair, not rendered channel/pose/sound/combat fidelity."
+    }
+  ],
+  "repair": {
+    "implementation": "New CanStartWave validates actual actor world/predelete/alive/106777/map1539/map and actual instance scenario1092/exact9 immediately before original first-wave spawn. On rejection consume callback, clear only intro/startCriteria and retain a debug diagnostic; no self-requeue or captured Player. Fresh eligible LOS can re-admit after context recovery.",
+    "preserved": "Same live AI/queue/roster/ABI,5000ms delay,1000ms progress countdown, original channel215258/Talk0/lights, exactly-once owned deaths/3+3 thresholds, all later wave bodies and loot/equip untouched. No Player-alive/LOS/quest check at execution: death/absence/transient LOS/quest loss in a still-current shared stage must not cancel its accepted wave. No actor timer/counter reset, Unit-job clear, manual item/progression/group fanout, cast-success claim or character mutation.",
+    "limits": "Guard covers initial pending callback only. Same-stage abandon/re-entry/scenario replacement identity, later wave context, channel interruption/cleanup, missing defender and failed/partial spawn retry remain OPEN. Re-admission repeats original introduction, not persisted attempt recovery."
+  },
+  "validation": {
+    "baseline": "PASS -ContextBaseline pins actual full f3e7c9e2 AI. Controlled179->180 pulse changes stage label10 at1s, but old accepted5000ms callback creates all three enemies afterward; actual native weighted threshold separately compiled from fresh catalog.",
+    "host": "PASS full extracted current AI/FunctionProcessor/locked native lifecycle: all12 stages and10 invalid actor/scenario contexts across primary/disabled/aliased/no-primary modes,4999+1ms, single diagnostic, no repeated callback, unchanged timer/count/roster, ordinary Reset and fresh eligible retry; valid9 spawns once. Stage10 cannot restart. Same-stage Player death/LOS/phase/quest loss/no references and actor stun/victim preserve accepted wave for both faction labels. Map/world/Player services and progress sink are controlled, not live traversal.",
+    "installed": "PASS actual factory/LOS/function-object vtable selects9-byte callable adjusting closure+8 and tail-dispatching native-bounded lambda. Compiler inlines CanStartWave: proof follows actual actor pointer, all gates/deny branches, sole SummonAdds(1), failure-only intro38/criteria39 clear and diagnostic. No nonexistent standalone-helper symbol or runtime-bound guess accepted; existing AI0xd8/queue48/rosterc8/lifecycle/death and scoped-pulse PE checks retained.",
+    "sanitizer": "PASS current full wave/scoped-pulse/context fixture under MSVC AddressSanitizer (.codex/silver-hand-wave-context-asan.log). Existing extracted-host shadowing warnings remain visible; no production warning/check disabled.",
+    "regressions": "PASS22 top-level suites: newContextBaseline, retainedProgressBaseline, full retained19-suite serial .codex/silver-hand-waypoint-retry-wave-context-regressions.tsv and current MordothMotion Release nesting original seven-spawn InitialMotion. Retained waypoint-retry/recipient/death/admission/lifetime/arrival/action/final/step8 baselines; current full dispatch/wave/rescue/ally/entry/native weighted tree/installed proofs; ScepterLogin; all-class149 native race/class pairs/22 invitation rows/36 selections; SceneLifecycle and ForceEquip55 native records PASS. Catalogs serialized after canonical build. Final deployed proof repeated after its last checker-only edit; canonical executable hashes unchanged after all checks/owned shutdown.",
+    "probe_limit": "Earlier isolated empty-output SQL fixture and offers22 incidents remain unexplained in their previous audits, not fixed here. No recurrence in this completed run; no assertions/counts relaxed and no automatic retry introduced.",
+    "evidence": ".codex/silver-hand-wave-context-*; .codex/silver-hand-waypoint-retry-wave-context-*; ignored runtime-test/silver-hand-wave-lifetime. No runtime assets/configuration/password/character/media committed."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "6930F28356DDB03EDE5BC8198E1D687D7A6B43AE52A14BB27783D293FF246E15",
+    "bnet_sha256": "D4719DF387358537F2FF5833E2C450CA4A7E3338DF8043830B9BD2EB95D2EED4",
+    "build": "Release world+bnet18.15s/0 warnings/errors, no OutDir, LinkIncremental=false. Actual UTF16 final-link commands checked for canonical output/original scripts-game-shared-common and bnet shared-common libraries/no incremental; actual deployed selected callback decoded, not only copy hash/startup.",
+    "runtime": "Own hidden canonical PID23608 reached fresh ready, received own UTF8 stdin server shutdown0, exit0/new DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged. No unknown/user server stopped; own process gone. Startup does not prove the1539 grid, ritual, combat or any client visuals."
+  },
+  "remaining": [
+    "Actual180-pulse ritual/channel success, wall-clock timing under lag/stun/combat, defense wave recovery/Mordoth escape, party/faction/live pets and complete relevant footage/client sequence remain unverified.",
+    "Earlier fights/evade/post-scaling half-health transitions, real loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. Automated/native/PE/startup evidence does not certify any complete quest or VFX."
+  ]
+}
