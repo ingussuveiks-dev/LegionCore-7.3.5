@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/instance_broken_shore.cpp",
+      "handler": "Ashbringer retired door ownership and reentrant door dispatch",
+      "problem": "Three doors remained as raw pointers after native GameObject removal; both stage3 and Zerus-death callbacks reproduced heap-use-after-free under ASAN.",
+      "repair_audit": "docs/audits/ashbringer-door-lifetime-2026-10-26.json",
+      "limit": "GUID set/removal/base bookkeeping, independent snapshots and actual-map fresh lookup plus explicit full-GUID equality repair the bounded memory path. Native HashMapHolder::Find indexes GetGUIDLow, so storing or passing a full GUID alone does not prove identity: earlier controlled full-GUID registry fixtures must not certify native same-low replacement rejection without an explicit production identity check. Ordinary new fixture EXE was quarantined by Windows Defender; no protection changed or security fallback attempted. Prior ASAN/current installed PE/owned startup evidence is separate; user security review and client collision/late-door/whole route traversal remain OPEN."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
       "handler": "Last-Travard missing-defender wave request recovery",
       "problem": "All three original wave requests returned permanently if no live106774 was found within70yd, even after that actor later became available.",
@@ -957,7 +964,9 @@
       "weapon": "Ashbringer",
       "item": 120978,
       "start": 42770,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+      "status": "partial: retired door pointer ownership/reentrant dispatch repaired with ASAN counterfactuals and installed Release proof; ordinary fixture launch blocked by Windows Defender quarantine; full acquisition/visual/client traversal pending",
+      "door_lifetime_audit": "docs/audits/ashbringer-door-lifetime-2026-10-26.json",
+      "door_lifetime_review": "Three native1500 door GUIDs now replace persistent raw GameObject pointers. Actual removal erases its full GUID and retains base AddObject/AddDoor removal. Stage3 and Zerus-death loops copy GUID snapshots before actions, resolve each through the actual map and explicitly verify complete identity before original open/phase actions; missing/foreign/predeleted/reused-low objects skip. Native775/order2/46064 metadata and all original criteria remain unchanged. Both old freed-pointer paths reproduce ASAN heap-use-after-free; current actual native remove/Find/map/HandleGameObject fixture passes ASAN including reentrant removal/destruction. Installed selected factory/callbacks/16-byte GUID copy/comparison/snapshot/native dispatch decoded. Ordinary fixture launch was quarantined as Trojan:Win64/CymRan.ACY!MTB; classification is not assumed false positive and no restore/exclusion/security setting was attempted. See linked audit for independent evidence and user review. No whole quest, live group/faction, one-hit combat, late-create door-state replay, real pickup/equip/VFX or client certification.",
       "quests": [
         {
           "id": 42770,
@@ -1064,7 +1073,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace the real quest/scenario and actor callbacks before changing data; compare pinned donors and then video where evidence is missing."
+      "next_action": "Resolve the local Windows Defender quarantine review for the ordinary door fixture without disabling protection; the earlier ASAN and actual installed PE evidence remain separate. Trace native775 entrance/admission, trash80/50/35/125 criteria and actual eligible owner/group dispatch, scaled one-hit Balnazzar surrender, prison/failed-cast/missing-actor and abandon/re-entry recovery. Reconcile late/recreated door state from native progress without inventing replay or changing245962 shared templates. Then inspect genuine247318 loot/source binding, early access, full bags, accepted180850/scene/equip181257/181511 and real120978 storage/save/relog; never substitute a weapon grant. Trace final Tyrion/Tyrosus/hippogryph travel, camera/pet and actual return. Review pinned compatible donors and full relevant video/audio before choreography changes. Entire chain/faction/group/VFX/client verification remains OPEN."
     },
     {
       "class_id": 3,
