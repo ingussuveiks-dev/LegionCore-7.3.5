@@ -13,7 +13,8 @@ checks = [
     # MSVC inlines the placement helper into the wrapper; verify its actual
     # native collision call there rather than requiring a non-inlined helper.
     ("?SummonPassenger" + script, "?getHeight@GameObjectModel@@"),
-    ("?PreparePassengerPosition@BoostExperience@@", "?getHeight@GameObjectModel@@"),
+    # PreparePassengerPosition can be fully inlined/eliminated. The selected
+    # SummonPassenger wrapper above must still call the actual collision query.
 ]
 for caller, target in checks:
     assert native["symbol"](target) in native["calls"](caller), f"Missing linked {caller} -> {target}"

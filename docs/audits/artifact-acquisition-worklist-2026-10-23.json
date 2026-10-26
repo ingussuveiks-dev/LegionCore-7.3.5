@@ -12,6 +12,27 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Movement/TransportGroundPath.h",
+      "handler": "Warrior boost Charge on moving transport",
+      "problem": "User receives No path available on first Charge lesson even with Rage. Both outer Warrior check and native charge movement check requested the map mesh, which does not describe the moving deck.",
+      "repair_audit": "docs/audits/transport-charge-ground-path-2026-10-26.json",
+      "limit": "Actual shared-transport collision corridor and native charge spline/contact retained, pinned/current ASAN and two real ship models/selected canonical consumers pass; deployed74ABDBCF, own8564 ready/shutdown0/exit0 and no new diagnostics. Real client Charge/counter/obstructions/full boost remain pending. Generic GetTotalLength's omitted final segment observed separately and not repaired in this scope."
+    },
+    {
+      "path": "sql/updates/world/2026_10_26_11_warrior_creation_actions.sql",
+      "handler": "Warrior obsolete creation action defaults",
+      "problem": "Native action validation logged missing spells78/button1 and88161/button73;22 exact Warrior defaults referenced spells absent from matching26972 DB2/hotfix.",
+      "repair_audit": "docs/audits/warrior-creation-actions-2026-10-26.json",
+      "limit": "Scoped deletion/native catalog/TEMP twice/custom preservation pass; actual canonical updater11 RELEASED and invalid default count0. Saved character bars and validation diagnostics unchanged. New real creation remains a client check; fixed232-byte log archive/hashes recorded in combined deployment handoff."
+    },
+    {
+      "path": "src/server/scripts/Scenario/BoostExperience/boost_experience.cpp",
+      "handler": "Fresh boost late tutorial action overlay",
+      "problem": "First boost login showed full bars at introductory step while relog showed the correct empty lesson bar. Initial Setup packet preceded loading/arrival completion; exact client overwrite event was not captured.",
+      "repair_audit": "docs/audits/boost-tutorial-late-action-overlay-2026-10-26.json",
+      "limit": "Once-after-real-arrival packet resync, full-handler ASAN/client-boundary counterfactual/shared arrival/construct/action persistence/selected canonical checks pass; deployed74ABDBCF with clean owned startup/shutdown. No saved layout mutation. Exact first-client scheduling is inferred and actual new boost/UI/island transition remains pending."
+    },
+    {
       "path": "gossip_menu_option20227 / Emmarel107317,107973",
       "handler": "Hunter additional artifact selection after Continuing the Legend44043",
       "problem": "Eligible level105/BM-completed context has44043 rewarded but neither additional specialization chosen. Trueshot menu20227 has no options;107317 additionally lacks GOSSIP1 and has no SmartAI selector action. Later107973 shares the empty menu.",

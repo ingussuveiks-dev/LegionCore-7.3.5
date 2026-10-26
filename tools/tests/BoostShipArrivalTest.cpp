@@ -42,7 +42,7 @@ void Transport::RemovePassenger(Player* p){p->transport=nullptr;++removed;}
 struct Instance {int GetId(){return 1557;}int GetInstanceId(){return 1;}};
 struct ArrivalScript
 {
-    Transport* ship=nullptr;Position deck;uint32 _setupTimer=0;Instance data;Instance* instance=&data;
+    Transport* ship=nullptr;Position deck;uint32 _setupTimer=0;bool _arrivalBarsPending=false;Instance data;Instance* instance=&data;
     Transport* GetGunship(){return ship;} Position const& Deck(){return deck;}int TransportEntry(){return 246607;}
 #include "PutPlayerOnTransport.inc"
 #include "OnPlayerEnter.inc"

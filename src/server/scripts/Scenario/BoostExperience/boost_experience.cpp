@@ -254,6 +254,7 @@ public:
         bool _alliance;
         uint32 _setupTimer;
         bool _setupComplete;
+        bool _arrivalBarsPending = false;
         uint32 _visibilityTimer;
         bool _trainingDummySpawned;
         uint8 _lastCombatStep;
@@ -759,6 +760,7 @@ public:
 
         void OnPlayerEnter(Player* player) override
         {
+            _arrivalBarsPending = true;
             if (Transport* transport = GetGunship())
                 PutPlayerOnTransport(player, transport);
             else
@@ -767,9 +769,30 @@ public:
             _setupTimer = 100;
         }
 
+        void RefreshTutorialActionBar()
+        {
+            if (!_arrivalBarsPending || !_setupComplete)
+                return;
+            Player* player = GetPlayer();
+            if (!player || !player->IsInWorld() || player->isBeingLoaded() ||
+                player->IsMapObjectArrivalProtected() || player->GetTransport() != GetGunship())
+                return;
+            Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+            if (!scenario)
+                return;
+            // Fresh boost spell learning/client initialization can populate the
+            // UI after Setup's early packet. Resend the current lesson overlay
+            // once after the real loading/arrival hold, without changing saves.
+            player->SendActionButtons(1);
+            _arrivalBarsPending = false;
+            TC_LOG_INFO("scripts", "Boost tutorial action overlay refreshed after arrival on map %u at step %u",
+                instance->GetId(), scenario->GetCurrentStep());
+        }
+
         void Update(uint32 diff) override
         {
             UpdateConstructLesson(diff);
+            RefreshTutorialActionBar();
             if (_secondWaveTimer)
             {
                 if (_secondWaveTimer > diff)
