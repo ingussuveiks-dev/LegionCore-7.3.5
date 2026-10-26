@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure native criteria admission and dead-owner victory
+
+- `tuure-native-criteria-admission-2026-10-26.json`: correct overly strict7608b3f2 owner-alive condition for real pet/guardian/allied Calindris victory. Typed29879 metadata0/native contact+criteria permit dead owner. Native GM-mode exclusion now precedes state in all four intro/defeat/pickup/scene predicates; core GM/contact filter unchanged. Initial heal/pickup/scene retain living-player admission; no forced counters/health/SQL/character edits.
+- Pinned full admission counterfactual plus extracted actual native GM/contact gate/repaired ASAN56 victory variants and GM spectator; intro24+20 denials/greeting25/scene8+20/pickup16+29+queued mode changes/off retry pass. Fresh nine typed criteria metadata0/live override-disable0 asserted by VerifyNativeCatalog. Actual canonical same native GM bit/field4ff0 and combat-only missing owner deatha18 gate plus prior queue/heal/Lady/pickup/scene/capture/Scepter PE pass. Full pipeline/client limits explicit.
+- Canonical world 09BEFB6F3B65C106712E213C3BF9FE28B665CD5F9D1F1ED5F5E6CA1AC892C0F8, map 883456A48895DE8F5725223FD27202610E7F94CC89BC556565D437CDBE5D3F64; own15332 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive/SQL needed. Commit containing audit follows8a8608e1.
+- NEXT remains actual106201 kill versus arbitrary evade50562 (native CreatureDies has killer), then step2 BOTH106221 kill+50831/actual13-point path, paused queue/captain50634/105697 LINK1. Shared1489 has five scenarios. Offline-contact/across-session recovery, full fight/motion/client/all36 remain OPEN; older live-owner/GM-open notes superseded for this scope only.
+
 ## Latest repair: Boros initial greeting admission
 
 - `tuure-boros-greeting-2026-10-26.json`: null-safe actual Player and real initial1085/0/41993/Priest/live actor/phase plus native20yd/visibility/LOS before latch/Talk0. Wrong visitors cannot consume intro; original4s exposition remains after legitimate healing stage advance. No progression or SQL. Pets remain excluded as originally.

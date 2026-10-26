@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "8a8608e1",
+  "scope": "Match four Tuure script admission predicates to native criteria delivery: retain legitimate dead-owner combat victory and reject GM mode before script-side acquisition/heal/scene/finale state. Actual client and remaining combat/route remain open.",
+  "cause": [
+    "The scoped Calindris repair7608b3f2 retained an overly strict owner IsAlive condition. A pet/guardian/ally could really defeat her while the healer was dead, yet the script would allow ordinary death without50695. Matching criterion29879 has no alive restriction; native contact/criteria delivery likewise permits the dead owner.",
+    "Native AchievementMgr rejects GM-mode or noncontactable players. The scripts previously began/latched a finale, initial heal or scene/acquisition even when native progress would be rejected. A GM spectator could also make the unique legitimate healer selection ambiguous. No native check should be bypassed."
+  ],
+  "repair": [
+    "Remove only combat recipient Player IsAlive restriction; retain actual live106318/map1489/1085 step5/active41993/phase/range/owner/unique eligible ally participant, world/contact/no pending teleport gates. Native owner/charmer resolution and one shared50695 preserved. Initial healing, physical pickup and scene still require live Player.",
+    "Add native isGameMaster exclusion consistently to IntroHeal eligibility (also greeting), Defeat eligibility, real acquisition CanTake (also queued casts/departure) and scene completion. Preserve actual native GM/contact criteria filter; no GM-mode toggle, permissions, manual counter/item/health grants, character edit, SQL change or check disabling.",
+    "Queued scene/equip/exit revalidation now also rejects a later GM-mode change; original carried artifact remains for legitimate off-mode retry. Native loot metadata is untouched; this verifies script admission/state, not every generic GM loot/phase/window behavior."
+  ],
+  "native_evidence": {
+    "typed26972": "Fresh native DB2+read-only hotfix: criteria29834/29833/30023/30011/29863/29864/29879/29897/29898 all have ModifierTreeId/StartEvent/StartAsset/FailEvent/FailAsset/StartTimer/Flags/EligibilityWorldStateId/Value0. Native tree flags/solo1243 and type92 current-tree/asset rules retained.",
+    "world": "Read-only achievement_criteria_data has0 rows for nine criteria; disables has0 matching source4 criterion or source10 tree rows. Test fails and preserves overrides if these change.",
+    "core": "Native Player::CanContact checks delete/world/map-change/session/loading/logout, not death. Player criteria wrapper reaches shared scenario for type92; native IsGroupCriteriaType does not skip92. AchievementMgr global GM/contact gate, faction-tree gate, type92 asset match/increment, zero modifiers/start/fail and Scenario current-tree gate reviewed. No whole criteria pipeline mock claimed.",
+    "spells": "Extended same typed reader also confirms204082 Flurry ->204083/500ms/3s,204086 Dread Blades native31/target104,212629 Lights Onslaught dummy3; no spell payload modified. First-opponent producer remains the next independent repair."
+  },
+  "checks": {
+    "counterfactual": "Test-TuureDefeat -AdmissionBaseline pins full8a8608e1 predicate/actor. Real scaled pet blow with dead owner kills without finale/credit. GM-owned blow starts finale but exact extracted native GM/contact guard suppresses50695; physical3s cleanup still kills. Labelled failing counterfactual paired with repaired ASAN.",
+    "native_asan": "Full Calindris56 incomplete/complete x player/pet/guardian/charmer/three allies x primary/disabled x live/dead owner variants plus17 denials, GM spectator/unique dead healer, actual native delivery gate, lifetime/reset/retry/reentrant/stun/killer cases pass. Only the exact GM/contact return statement is extracted from native global criteria delivery; the rest of achievement engine/health/world/aura endpoints remain controlled adapters.",
+    "other_paths": "Initial heal24 variants/20 denials/GM off retry; greeting two statuses/25 denials; scene8 variants/20 denials; native pickup16 variants/29 denials/GM changes before queued210733 scene launch,210734 equip and210818 exit plus off-mode replay pass ASAN. Scene helper pin permits only this explicit GM gate delta. Shared scene fixture adds neutral false-default GM API only.",
+    "catalog": "Test-TuureDefeat -AddressSanitizer -VerifyNativeCatalog asserts nine exact0 metadata rows and actual read-only World override/disable0 counts, preserving native filters.",
+    "release": "Original generated libs/no OutDir/staged inputs; actual four selected helper GM tests use same native Scenario GM bit/player field4ff0, combat alone lacks owner death-statea18 read while heal/pickup/scene retain it. Actual native Scenario criteria GM/contact checks unchanged. Prior factory/queue/heal/wound/Lady/pickup/scene/capture PE included; canonical selected PE and ScepterLogin -VerifyReleaseBinary pass.",
+    "development": "Initial extraction used brace-block helper on a braceless native if/return and included unrelated function code. Fixed extraction ends at exact native return; failed compiler invocation retained, not a successful test or suppressed diagnostic.",
+    "runtime": "Both names absent/rechecked before promotion; protected config/key/cert hashes unchanged. Own15332 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0; no user/unknown server stopped or hidden task server left."
+  },
+  "canonical_sha256": {
+    "worldserver.map": "883456A48895DE8F5725223FD27202610E7F94CC89BC556565D437CDBE5D3F64",
+    "bnetserver.exe": "120DD9018050B781D9B91ED9122EA32297848A4AFCF0071F235C3DF436940B64",
+    "worldserver.exe": "09BEFB6F3B65C106712E213C3BF9FE28B665CD5F9D1F1ED5F5E6CA1AC892C0F8",
+    "bnetserver.map": "D5798EF67472C0F602AD477A995D990E9B9F8994D5B626F368B2332AD0E7D8AA"
+  },
+  "diagnostics": "Every test/build/native probe/startup has before/after canonical+repo+fixture crash/log snapshots; no new/changed crash or appended DBErrors/server warnings/errors/assertions. No new fixed archive/truncation needed. Immutable14/15 SQL untouched/no character progress mutation.",
+  "remaining": [
+    "Actual dead-owner pet/guardian/allied fight/resurrection/visibility/camera/client and GM-mode admission/retry behavior remain client checks. Offline/logging-out owners still follow native contact/instance rules; no across-session encounter recovery is certified.",
+    "NEXT real106201 kill versus arbitrary evade50562, then BOTH native106221 kill+waypoint50831, paused Boros queue/actual movement/retry/re-entry, Captain50634/105697 LINK1. Shared1489 five scenarios require actual1085 guards. All36/client full traversal remain OPEN."
+  ]
+}

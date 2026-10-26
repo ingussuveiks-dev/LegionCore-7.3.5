@@ -140,6 +140,8 @@ struct Player : Unit {
     bool world = true, alive = true, teleporting = false, rewarded = false, owned = true;
     bool contact = true;
     bool CanContact() const { return contact; }
+    bool gmMode = false;
+    bool isGameMaster() const { return gmMode; }
     uint32 playerClass = 3, map = 1511, runtimeInstance = 42, quest = 3;
     uint32 expectedQuest = 40385, expectedItem = 128808, expectedCriterion = 47689, castResult = 0;
 #ifdef MARKSMANSHIP_PRESENTATION_TEST

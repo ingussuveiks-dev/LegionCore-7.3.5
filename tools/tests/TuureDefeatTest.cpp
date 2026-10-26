@@ -37,13 +37,15 @@ struct Unit {
  void Kill(Creature*);uint32 Deal(Creature*,uint32);
 };
 struct Player:Unit {
- uint32 classId=5,status=3,credits=0;bool contact=true,pending=false,rewarded=false,near=true;
+ uint32 classId=5,status=3,credits=0;bool contact=true,pending=false,rewarded=false,near=true,gm=false;
  std::function<void()> onCredit;
  Player(){guid={1,1};}Player const* ToPlayer()const override{return this;}
- bool CanContact()const{return contact;}bool HasPendingTeleport()const{return pending;}uint32 getClass()const{return classId;}
+ bool CanContact()const{return contact;}bool isGameMaster()const{return gm;}bool HasPendingTeleport()const{return pending;}uint32 getClass()const{return classId;}
  bool IsWithinDistInMap(Unit*,float d)const{assert(d==100);return near;}bool GetQuestRewardStatus(uint32 q)const{assert(q==41993);return rewarded;}
  uint32 GetQuestStatus(uint32 q)const{assert(q==41993);return status;}
- void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==50695);++credits;if(onCredit)onCredit();}
+ void UpdateAchievementCriteria(uint32 type,uint32 asset){struct Cache{Player* player;};Cache value{this};Cache* cachePtr=&value;
+#include "NativeCreditGate.inc"
+ assert(type==92&&asset==50695);++credits;if(onCredit)onCredit();}
 };
 struct ObjectAccessor {
  inline static std::vector<Unit*> units;
@@ -119,10 +121,14 @@ int main(){
  {Run r;assert(r.player.Deal(&r.boss,10)==1000&&!r.boss.alive&&!r.ai->outro&&!r.player.credits);}
  {Run r;r.Strangle();assert(!r.pet.Deal(&r.boss,100000)&&r.ai->outro);assert(r.stranger.credits==1&&!r.player.credits);r.pet.inWorld=false;r.Tick(3000);assert(r.boss.alive);}
  std::cout<<"PASS labelled ce34ea6c counterfactual: scaled one-hit bypasses50695; nearest unrelated player receives credit and removed pet leaves boss alive after3s. Expected failing baseline, not successful ordinary behavior.\n";
+#elif defined(ADMISSION_BASELINE)
+ {Run r;r.player.alive=false;assert(r.pet.Deal(&r.boss,10)==1000&&!r.boss.alive&&!r.ai->outro&&!r.player.credits);}
+ {Run r;r.player.gm=true;assert(!r.pet.Deal(&r.boss,10)&&r.ai->outro&&!r.player.credits);r.Tick(3000);assert(!r.boss.alive&&!r.player.credits);}
+ std::cout<<"PASS labelled8a8608e1 native-admission counterfactual: dead owner loses real pet victory; GM starts/finishes outro while actual native GM/contact gate rejects50695.\n";
 #else
  uint32 variants=0;
- for(uint32 status:{3u,1u})for(int type=0;type<7;++type)for(bool suspended:{false,true}){
-  Run r;r.player.status=status;Unit* attacker[]={&r.player,&r.pet,&r.guardian,&r.charmed,&r.ally,&r.ally2,&r.ally3};r.Strangle();
+ for(uint32 status:{3u,1u})for(int type=0;type<7;++type)for(bool suspended:{false,true})for(bool ownerAlive:{false,true}){
+  Run r;r.player.status=status;r.player.alive=ownerAlive;Unit* attacker[]={&r.player,&r.pet,&r.guardian,&r.charmed,&r.ally,&r.ally2,&r.ally3};r.Strangle();
   if(suspended){r.boss.primary=nullptr;r.boss.i_disabledAI=r.ai.get();}
   r.ai->onCast=[&]{uint32 d=2000;r.ai->DamageTakenAfterScaling(attacker[type],d,0);assert(!d);};
   assert(!attacker[type]->Deal(&r.boss,10)&&r.boss.alive&&r.ai->outro&&r.player.credits==1&&!r.stranger.credits);
@@ -130,7 +136,7 @@ int main(){
   r.boss.casting=true;r.Tick(2999);assert(r.boss.alive);r.Tick(1);assert(!r.boss.alive&&r.boss.kills==1&&r.player.credits==1);r.Tick(5000);assert(r.boss.kills==1);++variants;
  }
  {Run r;r.player.Deal(&r.boss,1);assert(r.boss.alive&&!r.ai->outro&&!r.player.credits&&r.boss.targetHealth==900);}
- for(int invalid=0;invalid<17;++invalid){Run r;switch(invalid){case 0:r.player.classId=4;break;case 1:r.player.status=0;break;case 2:r.player.rewarded=true;break;case 3:r.player.alive=false;break;case 4:r.player.inWorld=false;break;case 5:r.player.contact=false;break;case 6:r.player.pending=true;break;case 7:r.player.map=&r.other;break;case 8:r.player.phase=false;break;case 9:r.player.near=false;break;case 10:r.boss.mapId=1220;break;case 11:scenario.id=972;break;case 12:scenario.step=6;break;case 13:manager.active=nullptr;break;case 14:r.boss.entry=106319;break;case 15:r.boss.inWorld=false;break;case 16:r.boss.alive=false;break;}
+ for(int invalid=0;invalid<17;++invalid){Run r;switch(invalid){case 0:r.player.classId=4;break;case 1:r.player.status=0;break;case 2:r.player.rewarded=true;break;case 3:r.player.gm=true;break;case 4:r.player.inWorld=false;break;case 5:r.player.contact=false;break;case 6:r.player.pending=true;break;case 7:r.player.map=&r.other;break;case 8:r.player.phase=false;break;case 9:r.player.near=false;break;case 10:r.boss.mapId=1220;break;case 11:scenario.id=972;break;case 12:scenario.step=6;break;case 13:manager.active=nullptr;break;case 14:r.boss.entry=106319;break;case 15:r.boss.inWorld=false;break;case 16:r.boss.alive=false;break;}
   uint32 d=1000;r.ai->DamageTakenAfterScaling(&r.player,d,0);assert(d==1000&&!r.ai->outro&&!r.player.credits);}
  {Run r;uint32 d=1000;r.ai->DamageTakenAfterScaling(nullptr,d,0);assert(d==1000);r.pet.owner={1,99};r.ai->DamageTakenAfterScaling(&r.pet,d,0);assert(d==1000);}
  {Run r;r.stranger.classId=5;uint32 d=1000;r.ai->DamageTakenAfterScaling(&r.ally,d,0);assert(d==1000);r.ally.owner=r.stranger.guid;r.stranger.status=0;r.ai->DamageTakenAfterScaling(&r.ally,d,0);assert(d==1000);}
@@ -150,6 +156,7 @@ int main(){
  {Run r;r.boss.failCast=true;r.pet.Deal(&r.boss,10);r.Tick(3000);assert(!r.boss.alive&&r.player.credits==1);}
  {Run r;r.boss.failSpawn=true;r.ai->EnterCombat(&r.player);r.ai->UpdateAI(13000);r.ai->UpdateAI(0);assert(r.boss.spawnRequests==15&&!r.player.credits&&!r.ai->outro);}
  {Run r;assert(TuureDefeat::Participant(&r.boss)==&r.player);r.stranger.classId=5;assert(!TuureDefeat::Participant(&r.boss));r.stranger.status=0;assert(TuureDefeat::Participant(&r.boss)==&r.player);}
+ {Run r;r.stranger.classId=5;r.stranger.gm=true;r.player.alive=false;assert(TuureDefeat::Participant(&r.boss)==&r.player);r.ally.Deal(&r.boss,10);assert(r.ai->outro&&r.player.credits==1&&!r.stranger.credits);}
  {Run r;r.boss.targetHealth=120;r.boss.health=12000;r.pet.Deal(&r.boss,1);r.ai->UpdateAI(10);assert(r.ai->attackTarget==&r.player);r.ai.reset();r.boss.primary=nullptr;r.Tick(3000);assert(!r.boss.speeches);}
  std::cout<<"PASS extracted full Lady AI/recipient and actual native owner/scaled dispatch/EventMap/FunctionProcessor: "<<variants<<" incomplete/complete player/pet/guardian/charmed/three-allied-killer and suspended-AI variants; invalid/ambiguous/missing owner, vanished/dead/other-map/full-GUID killer,3s exactly-once finite death, reset/retry/AI destruction, reentrant credit, strangle cleanup/late hit/shared caster/low-health talk. Grid/cast/aura/kill endpoints are adapters; client fight remains pending.\n";
 #endif

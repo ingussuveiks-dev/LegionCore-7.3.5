@@ -37,7 +37,7 @@ namespace TuureIntroHeal
 {
     bool Eligible(Player* player, Creature* actor)
     {
-        if (!player || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->HasPendingTeleport() ||
+        if (!player || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() || !player->IsAlive() || player->HasPendingTeleport() ||
             player->getClass() != CLASS_PRIEST || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
             actor->GetEntry() != 106134 || actor->GetMapId() != 1489 || !actor->GetMap() ||
             player->GetMap() != actor->GetMap() || !player->InSamePhase(actor) ||
@@ -573,8 +573,8 @@ namespace TuureDefeat
     bool Eligible(Player* player, Creature* actor)
     {
         if (!player || !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106318 ||
-            actor->GetMapId() != 1489 || !actor->GetMap() || !player->IsInWorld() || !player->CanContact() ||
-            !player->IsAlive() || player->HasPendingTeleport() || player->getClass() != CLASS_PRIEST ||
+            actor->GetMapId() != 1489 || !actor->GetMap() || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() ||
+            player->HasPendingTeleport() || player->getClass() != CLASS_PRIEST ||
             player->GetMap() != actor->GetMap() || !player->InSamePhase(actor) ||
             !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(41993) ||
             (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE))
@@ -847,7 +847,7 @@ namespace TuureAcquisition
 
     bool CanTake(Player* player, GameObject* weapon)
     {
-        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || !player->IsAlive() ||
+        if (!player || !weapon || !player->IsInWorld() || !player->CanContact() || player->isGameMaster() || !player->IsAlive() ||
             player->HasPendingTeleport() || player->getClass() != CLASS_PRIEST || !player->GetMap() ||
             !weapon->IsInWorld() || !weapon->isSpawned() || weapon->GetEntry() != 249705 || weapon->GetMapId() != 1489 ||
             player->GetMap() != weapon->GetMap() || player->GetInstanceId() != weapon->GetInstanceId() ||
@@ -874,7 +874,7 @@ namespace TuurePresentation
         if (!scene || scene->MiscValue != 1265 || scene->SceneScriptPackageID != 1565)
             return false;
         if (trigger != "complete" || !player || !player->HasSceneStatus(1265, SCENE_COMPLETE) ||
-            !player->IsInWorld() || !player->CanContact() || !player->IsAlive() || player->HasPendingTeleport() ||
+            !player->IsInWorld() || !player->CanContact() || player->isGameMaster() || !player->IsAlive() || player->HasPendingTeleport() ||
             player->getClass() != CLASS_PRIEST || player->GetMapId() != 1489 ||
             player->GetQuestRewardStatus(41993) ||
             (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE) ||

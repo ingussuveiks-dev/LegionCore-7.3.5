@@ -2171,14 +2171,15 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Resolve actual106201 kill/50562 versus arbitrary evade; preserve native step2 BOTH106221 kill+50831 and shared1489 five-scenario scope. Inspect criteria modifiers/dead-healer pet/ally victory eligibility, then waypoint/captain50634/105697 LINK1. Greeting/queue/heal/wound/Lady/pickup have scoped checks; all36/client remain OPEN.",
+      "next_action": "Repair true106201 kill versus arbitrary evade50562, then native step2 BOTH106221 kill+50831/actual paths and captain50634/105697 LINK1; actual1085 guard on five-scenario1489. Dead-owner victory/native GM filters now separately regressed; offline/re-entry/full client/all36 remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
       "companion_wounds_audit": "docs/audits/tuure-companion-wounds-2026-10-26.json",
       "intro_heal_audit": "docs/audits/tuure-intro-heal-2026-10-26.json",
       "boros_queue_audit": "docs/audits/tuure-boros-callback-queue-2026-10-26.json",
-      "boros_greeting_audit": "docs/audits/tuure-boros-greeting-2026-10-26.json"
+      "boros_greeting_audit": "docs/audits/tuure-boros-greeting-2026-10-26.json",
+      "native_criteria_admission_audit": "docs/audits/tuure-native-criteria-admission-2026-10-26.json"
     },
     {
       "class_id": 5,
