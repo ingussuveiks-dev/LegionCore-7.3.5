@@ -11,13 +11,21 @@ Creature* Unit::FindNearestCreature(uint32 entry,float range,bool living){
 // Only the exact native GM/contact guard is used here. Criteria application and
 // step advance below are adapters, checked against the typed catalog separately.
 void Player::UpdateAchievementCriteria(uint32 type,uint32 asset){
- assert(type==92&&(asset==50562||asset==50563));++attempts;
+ assert(type==92&&(asset==50562||asset==50563||asset==50831));++attempts;
  struct Cache{Player* player;};Cache value{this};Cache* cachePtr=&value;
 #include "NativeCreditGate.inc"
  if(rejectCredit)return;
  if(asset==50562&&scenario.step==1){++firstCredits;++credits;scenario.achievement.progress[47519].Counter++;scenario.step=2;}
  else if(asset==50563&&scenario.step==0){++healCredits;++credits;scenario.achievement.progress[47498].Counter++;scenario.step=1;}
+ else if(asset==50831&&scenario.step==2){++scenario.routeDeliveries;++scenario.achievement.progress[47882].Counter;if(scenario.achievement.progress[47883].Counter)scenario.step=3;}
  if(onCredit)onCredit();
+}
+void Scenario::UpdateAchievementCriteria(uint32 type,uint32 entry,uint32 count,uint32 zero,Unit* victim,Player* player){
+ assert(type==0&&entry==106221&&count==1&&!zero&&player);if(victim)assert(victim->GetEntry()==106221);
+ ++killDeliveries;struct Cache{Player* player;};Cache value{player};Cache* cachePtr=&value;
+#include "NativeCreditGate.inc"
+ if(rejectKill)return;if(step==2){++achievement.progress[47883].Counter;if(achievement.progress[47882].Counter)step=3;}
+ if(player->onCredit)player->onCredit();
 }
 #include "Policy.inc"
 #include "Instance.inc"
@@ -40,7 +48,7 @@ struct Run{
  std::unique_ptr<Creature> boros,foe,target;Creature jace,mage;
  instance_tuure_InstanceMapScript script;
  Run():script(&map){
-  warnings=0;scenario={};scenario.step=1;manager.active=&scenario;map.script=&script;
+  warnings=0;waypointMgr={};textMgr={};scenario={};scenario.step=1;manager.active=&scenario;map.script=&script;
   player.map=observer.map=pet.map=guardian.map=charmed.map=unknown.map=&map;observer.guid={1,2};observer.classId=4;
   pet.owner=guardian.owner=player.guid;charmed.charmer=player.guid;ObjectAccessor::players={&player,&observer};map.players={{&observer},{&player}};
   Make(boros,106134,361419,10);Make(foe,106201,361428,20);Make(target,106221,361429,30);
@@ -50,6 +58,7 @@ struct Run{
  void Remove(std::unique_ptr<Creature>& c){map.actors.erase(std::remove(map.actors.begin(),map.actors.end(),c.get()),map.actors.end());c.reset();}
  void Kill(Unit& killer){killer.Kill(foe.get());}
 };
+#include "TuureFirstRouteTest.cpp"
 int main(){
 #ifdef BASELINE
  {Run r;EvadeBoros ai(r.boros.get());ai.firstfighting=true;r.boros->nearest=&r.player;ai.EnterEvadeMode();ai._functions.Update(1000);assert(r.foe->alive&&r.player.firstCredits==1&&r.boros->conversations==1);}
@@ -57,6 +66,7 @@ int main(){
  {Run r;EvadeBoros ai(r.boros.get());ai.firstfighting=true;r.boros->nearest=&r.player;ai.EnterEvadeMode();ai._functions.Update(1000);assert(r.player.firstCredits==1);++ai._entryGeneration;ai._entryFunctions.Update(16000);assert(r.target->flags==0x800f);}
  std::cout<<"PASS labelled8c946eb5 full-evade/instance counterfactual: evade awards50562 while opponent alive; real early pet kill before Boros latch is lost; AI Reset cancels already-earned16s continuation.\n";
 #else
+ CheckRoute();
  uint32 variants=0;
  for(uint32 status:{1u,3u})for(bool ownerAlive:{false,true})for(int killer=0;killer<7;++killer){
   Run r;r.player.quest.Status=status;r.player.alive=ownerAlive;Unit* attackers[]={&r.player,&r.pet,&r.guardian,&r.charmed,r.boros.get(),&r.jace,&r.mage};

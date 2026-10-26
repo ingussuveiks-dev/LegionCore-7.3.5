@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "build": "7.3.5.26972",
+  "parent_commit": "426827bf",
+  "scope": "Tuure1085 real106221/361429 death and first native Boros route9859002 through accepted47883 AND47882. Later crate/captain/second route/full client remain open.",
+  "cause": [
+    "Old state-only OnUnitDeath dispatches nearest Boros AI DoAction1 without real kill/DB-spawn/quest recipient. Missing AI dereferences null; charmed/replaced AI can consume the action. Repeated state events duplicate queued paths.",
+    "AI Reset erases firstwp while native movement continues; waypoint50831 credits nearest player, so a GM/unrelated observer can consume the arrival. Missing player at that single callback loses retry."
+  ],
+  "implementation": [
+    "Record only real Unit::Kill CreatureDies106221/361429 in actual1085/stage2 with genuine first victory47519; native original player/owner or uniquely eligible unowned ally recipient, exact41993 lease/full GUIDs. State-only OnUnitDeath does nothing.",
+    "Retain actual native type0 leaf47883. Unit::Kill -> KillRewarder::Reward already calls Scenario::UpdateAchievementCriteria BEFORE CreatureDies. The50ms KilledMonster callback is personal quest credit, not this scenario event. Do not duplicate normal native rewards or substitute a rejected player/pet/guardian reward. For only the three already admitted unowned allied NPC killers, forward this real death to native Scenario type0 when47883 is missing; no individual quest/item/loot/XP/guild grant. Native metadata/live data have no target-dependent modifier/override; a retained real allied death may retry after corpse removal.",
+    "Instance owns original1s delay/native9859002 path and arrival receipt; no borrowed AI/callback or forced teleport. Read-only GetPathId exposes native movement identity without changing behavior/layout. Require actual idle waypoint generator9859002; clear prior arrival bookkeeping before issue, then consume native OnArrived stored zero-based node6/conversation2007 and node10/50831. The thirteen rows are DB points1..13: original node10 is DB point11, deliberately preserved.",
+    "Actual native OnArrived writes current node even when AI is absent. Reset does not erase receipt; missing/replaced actor, interrupted/different path, missing native path and blocked original player defer/reissue genuine path. Original phase/range/stun/charmer, owner lease and actual accepted native counters guard progress. Rejected native criteria retry5s; once-only state is set before reentrant callbacks and borrowed actors/quest lease are resolved again afterward. Original opening2039 and nearby20yd Jace follow/text0 retained using native text service without requiring an AI."
+  ],
+  "evidence": {
+    "local": "Matching native26972 stage2root47881 both47882/30023/script50831 and47883/30011/type0/106221; metadata0/live override-disable0. World true106221361429, Boros361419, Jace361432 and original13-point script path. All path delay/action fields0. Shared1489 has five scenarios; actual1085 required. Read-only World/DB2 only.",
+    "native_order": "Traced full Unit::Kill/Player::RewardPlayerAndGroupAtKill/KillRewarder::Reward, Scenario overloads/global GM-contact filter and native Waypoint OnArrived/MovementInform/StartMove. No external or video evidence claimed.",
+    "native_reward_gate": "Matching Creature::IsDamageEnoughForLootingAndReward is m_PlayerDamageReq>0; LowerPlayerDamageReq ADDS damage, not a minimum-share subtraction. Native DealDamage records any actual player-controlled damage before calling Kill. Untagged ally-only deaths have0 and no ordinary reward; player/pet/guardian normal blows use the native reward path. Missing-native-owned cases are explicit denials, not substitute progression."
+  },
+  "checks": {
+    "baseline": "Pinned426827bf full OnUnitDeath with valid spy AI demonstrates live/state-only/wrong-spawn/repeated106221 transitions without real kill or native47883. Source null-AI dereference identified; no deliberate crash is labelled an ordinary passing test. Evidence route-baseline separate from current.",
+    "asan": "Full actual instance plus native real Kill bridge/owner/quest lease/FunctionProcessor and exact full native OnArrived/MovementInform/getter:40 accepted status/live-dead/player-pet-guardian-charmer-three-allies/native-or-allied-forward variants and16 missing-native-owned reward denials. Additional wrong metadata/four shared scenarios/quest/class/phase/GM/contact; state-only/live/duplicate events; corpse removal, missing/replaced AI/actor, Reset, real indexes5/6/9/10/12, no time/start grant, different/failed path, native missing path,5s rejected kill/arrival retry, range restoration, held lease retake, same-call expired lease, respawn and reentrant native credit/conversation actor removal pass. Prior first-fight28 variants also pass. Distinct kill/path/arrival warning latches tested in one recovery sequence: all three diagnostics remain visible; same error does not spam each tick.",
+    "limits": "Criteria application/normal reward reception/grid/health/death/motion launch use controlled adapters. Native arrival methods are real; actual movement spline/path collision, packets, audio, camera and complete quest/client traversal are not certified by fixture or PE.",
+    "release": "Original game+scripts static projects and original final-link inputs, staged outputs only; canonical hash unchanged until both server names absent/rechecked promotion. Selected actual instance hooks/route helpers/native criteria paths, native reward before Kill slot0x28, old AI route/nearest credit absent, actual OnArrived null-AI branch reaches node write/field3b1c and controller reads same field/clears stale arrival. Staged/canonical full prior PE chain and ScepterLogin VerifyReleaseBinary pass.",
+    "development": "Initial project filename was nonexistent; build failed before mutation, corrected to existing static projects to preserve canonical EXEs. One fixture expected route immediately after rejected kill retry although its original1s had not yet elapsed; corrected expectation. PE initially assumed an outlined MovementInform; actual MSVC inlines it, so verifier follows actual null-AI branch and node store/read. Failed runs retained and not counted as passes. Read-only schema probes that named missing columns failed without World mutation; corrected against SHOW COLUMNS.",
+    "runtime": "Final own32348 fresh ready/shutdown0/exit0, stderr/newDBErrors empty; protected hashes unchanged. Earlier own31628 likewise clean before separating diagnostic latches. No unknown/user server stopped or task server left. All wrappers no new/changed runtime crashes or appended server warnings/errors/assertions."
+  },
+  "canonical_sha256": {
+    "bnetserver.map": "5684AB4319C0F03FD9833A7F3350CE435EACA10A8FF5A31F79A201B01F8FF7C2",
+    "worldserver.exe": "B8497534C9850E7146871A11F327B4CA79E03E13D946929C388766388CA99068",
+    "worldserver.map": "913843CCA82B75A64347DCF8813007C9FE55BC3628A3476A745AC89989AF115E",
+    "bnetserver.exe": "282C60A5CDD1726261DDE5081189693C025B72CFA22ECFE8CD4B5FE49F520858"
+  },
+  "archives": "No runtime crash/error to archive or truncate. Runtime logs/credentials/character data excluded.",
+  "next": [
+    "Trace native249693/134192 lock1690/type10 use, real50633 and Boja/captain activation. Old handler awards/deletes before missing actors/rejected criteria and dereferences AI; do not certify full stage3/4.",
+    "Captain106107/361436 nearest-player50634 and unsafe Boros attack/DoAction2, native second9859003 path and Lady handoff remain open.",
+    "105697 spellclick209441 has dangling LINK1; intended missing action not proven. No speculative deletion/cleanup inserted. Across-session receipt recovery, optional late/missing Jace presentation, all36 and full client remain OPEN."
+  ],
+  "character_progress": "No character database edits, manual quest/item/progression grants or client traversal performed."
+}

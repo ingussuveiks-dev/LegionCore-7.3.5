@@ -120,7 +120,6 @@ public:
             _introDone = false;
             _introHealDone = false;
             wait_heal = false;
-            firstwp = false;
             secondwp = false;
         }
 
@@ -134,7 +133,7 @@ public:
             _introHealer.Clear();
             _introAttempt.reset();
         }
-        bool _introDone, _introHealDone, wait_heal, firstwp, secondwp;
+        bool _introDone, _introHealDone, wait_heal, secondwp;
         FunctionProcessor _functions;
         FunctionProcessor _entryFunctions;
         uint64 _entryGeneration = 0;
@@ -163,22 +162,6 @@ public:
         {
             switch (action)
             {
-                case 1:
-                {
-                    // need to activate it ONLY if creature isn't stunned
-                    _functions.AddFunction([this]() -> void
-                    {
-                        if (Creature* jeims = me->FindNearestCreature(106137, 20.0f, true))
-                        {
-                            jeims->GetMotionMaster()->MoveFollow(me, PET_FOLLOW_DIST, float(PET_FOLLOW_ANGLE), MOTION_SLOT_IDLE);
-                            jeims->AI()->Talk(0);
-                        }
-                        me->GetMotionMaster()->MovePath(9859002, false);
-                        firstwp = true;
-                        me->CreateConversation(2039);
-                    }, _functions.CalculateTime(1000));
-                    break;
-                }
                 case 2:
                 {
                     // need to activate it ONLY if creature isn't stunned
@@ -256,17 +239,6 @@ public:
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             if (type == WAYPOINT_MOTION_TYPE)
             {
-                if (firstwp)
-                {
-                    if (id == 6)
-                        me->CreateConversation(2007);
-                    if (id == 10)
-                        if (Player* pl = me->FindNearestPlayer(100.0f))
-                        {
-                            pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50831);
-                            firstwp = false;
-                        }
-                }
                 if (secondwp)
                 {
                     if (id == 7)

@@ -1,8 +1,8 @@
-param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog)
+param([switch]$Baseline,[switch]$AddressSanitizer,[switch]$VerifyNativeCatalog,[switch]$RouteBaseline)
 $ErrorActionPreference='Stop';$repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..");$out="$repo/build-extractors/runtime-test/tuure-first-fight"
 function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if($first -lt 0){throw "Missing $start"};$last=$source.IndexOf('{',$first)+1;$depth=1;while($depth){if($source[$last] -eq '{'){++$depth};if($source[$last] -eq '}'){--$depth};++$last};$source.Substring($first,$last-$first)}
 function Replace-Fixture([string]$value,[string]$old,[string]$new){if(!$value.Contains($old)){throw "Fixture boundary missing: $old"};$value.Replace($old,$new)}
-& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}else{'current'})" -RuntimeDirectories @($repo,$out) -Test {
+& "$PSScriptRoot/Invoke-WithRuntimeDiagnostics.ps1" -EvidenceDirectory "$out/$(if($Baseline){'baseline'}elseif($RouteBaseline){'route-baseline'}else{'current'})" -RuntimeDirectories @($repo,$out) -Test {
  $path='src/server/scripts/Scenario/Artifacts/Priest/Tuure/Tuure.cpp';$source=Get-Content "$repo/$path" -Raw
  $instancePath='src/server/scripts/Scenario/Artifacts/Priest/Tuure/instance_tuure.cpp';$selected=$source;$instanceSource=Get-Content "$repo/$instancePath" -Raw
  if($Baseline){$selected=(& git -C $repo show "8c946eb5:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight actor missing'};$instanceSource=(& git -C $repo show "8c946eb5:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned first-fight instance missing'}}
@@ -38,6 +38,35 @@ struct InstanceScript{
  $nativeFixture=Replace-Fixture $nativeFixture 'Creature(){IsAIEnabled=true;}' 'Creature(){IsAIEnabled=true;}uint64 GetDBTableGUIDLow()const{return dbGuid;}bool HasUnitState(uint32 state)const{return (states&state)!=0;}Player* FindNearestPlayer(float distance){assert(distance==100);return nearest;}void CreateConversation(uint32 id){assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;}void RemoveFlag(uint32 field,uint32 mask){assert(field==2&&mask==15);++flagRemovals;flags&=~mask;if(onRemove)onRemove();}'
  $nativeFixture=Replace-Fixture $nativeFixture 'assert(d==20);auto p=u?u->ToPlayer():nullptr;' 'if(d==40)return routeNear;assert(d==20);auto p=u?u->ToPlayer():nullptr;'
  $nativeFixture=Replace-Fixture $nativeFixture 'struct Scenario {uint32 id=1085,step=0;' 'struct Progress{uint64 Counter=0;};struct AchievementMgr{std::map<uint32,Progress> progress;auto const* GetCriteriaProgressMap()const{return &progress;}};struct Scenario {AchievementMgr achievement;AchievementMgr& GetAchievementMgr(){return achievement;}uint32 id=1085,step=0;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'struct Creature;struct Player;struct Unit;' @'
+struct Creature;struct Player;struct Unit;
+enum {CRITERIA_TYPE_KILL_CREATURE=0,MOTION_SLOT_IDLE=0,WAYPOINT_MOTION_TYPE=2,UNIT_STATE_ROAMING_MOVE=16};
+constexpr float PET_FOLLOW_DIST=1.0f,PET_FOLLOW_ANGLE=2.0f;
+struct WaypointData{uint32 delay_chance=0,delay=0,event_id=0,event_chance=0;};
+inline bool roll_chance_i(uint32){return false;}inline uint32 urand(uint32 a,uint32){return a;}inline int sWaypointScripts=0;
+#define TC_LOG_DEBUG(...) ((void)0)
+struct MovementGenerator{virtual ~MovementGenerator()=default;virtual uint32 GetMovementGeneratorType()const{return WAYPOINT_MOTION_TYPE;}};
+template<class T>struct WaypointMovementGenerator:MovementGenerator{uint32 _pathId=9859002,_currentNode=0;std::vector<WaypointData> nodes=std::vector<WaypointData>(13);std::vector<WaypointData>* _path=&nodes;struct Timer{void Reset(uint32){}} _nextMoveTime;
+#include "PathId.inc"
+ void MovementInform(Creature&);void OnArrived(Creature&);
+};
+struct WaypointMgr{bool missing=false;std::vector<int> path=std::vector<int>(13);auto const* GetPathScript(uint32 id){assert(id==9859002);return missing?nullptr:&path;}} waypointMgr;
+auto sWaypointMgr=&waypointMgr;
+struct TextMgr{uint32 calls=0;void SendChat(Creature*,uint8 id){assert(!id);++calls;}} textMgr;
+auto sCreatureTextMgr=&textMgr;
+'@
+ $nativeFixture=Replace-Fixture $nativeFixture 'uint64 dbGuid=0;' 'uint32 waypoint=0,pathMoves=0,followMoves=0;bool motionPresent=false,failRoute=false;WaypointMovementGenerator<Creature> movement;std::function<void()> onConversation;uint64 dbGuid=0;'
+ $nativeFixture=Replace-Fixture $nativeFixture 'assert(id==2009);++conversationAttempts;if(!failConversation)++conversations;' 'assert(id==2009||id==2007||id==2039);++conversationAttempts;if(!failConversation)++conversations;if(onConversation){auto callback=onConversation;callback();}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetMotionMaster(){return this;}' 'Creature* GetMotionMaster(){return this;}MovementGenerator* GetMotionSlot(uint32 slot){assert(!slot);return motionPresent?&movement:nullptr;}uint32 GetCurrentWaypointID()const{return waypoint;}void UpdateWaypointID(uint32 id){waypoint=id;}void MovePath(uint32 id,bool repeat){assert(id==9859002&&!repeat);++pathMoves;movement._pathId=id;motionPresent=!failRoute;}void MoveFollow(Creature*,float,float,uint32){++followMoves;}'
+ $nativeFixture=Replace-Fixture $nativeFixture 'AchievementMgr achievement;AchievementMgr& GetAchievementMgr()' 'uint32 killDeliveries=0,routeDeliveries=0;bool rejectKill=false;AchievementMgr achievement;void UpdateAchievementCriteria(uint32,uint32,uint32,uint32,Unit*,Player*);AchievementMgr& GetAchievementMgr()'
+ $nativeFixture=Replace-Fixture $nativeFixture 'virtual void DoAction(int32){};' 'virtual void DoAction(int32){};virtual void MovementInform(uint32,uint32){};virtual void LastWPReached(){};'
+ $nativeFixture=Replace-Fixture $nativeFixture 'Creature* GetCreature(ObjectGuid const&);' 'Creature* GetCreature(ObjectGuid const&);template<class... Args>void ScriptsStart(Args...){}'
+ $nativeFixture+="`n#include `"NativeArrival.inc`"`n"
+ $waypoint=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
+ [IO.File]::WriteAllText("$out/NativeArrival.inc",((Block $waypoint 'void WaypointMovementGenerator<Creature>::MovementInform(')+(Block $waypoint 'void WaypointMovementGenerator<Creature>::OnArrived(')).Replace('void WaypointMovementGenerator<Creature>::','template<> void WaypointMovementGenerator<Creature>::'))
+ $oldInstance=(& git -C $repo show "426827bf:$instancePath") -join "`n";if($LASTEXITCODE){throw 'Pinned route baseline missing'}
+ [IO.File]::WriteAllText("$out/OldRouteDeath.inc",(Block $oldInstance 'void OnUnitDeath('))
+ [IO.File]::WriteAllText("$out/PathId.inc",(Block (Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.h" -Raw) 'uint32 GetPathId() const'))
  [IO.File]::WriteAllText("$out/NativeHost.inc",$nativeFixture)
  $core=Get-Content "$repo/src/server/game/Entities/Unit/Unit.cpp" -Raw
  [IO.File]::WriteAllText("$out/NativeKillBridge.inc",(Block (Block $core 'void Unit::Kill(') 'if (InstanceScript* script = creature->GetInstanceScript())'))
@@ -54,7 +83,7 @@ struct InstanceScript{
  $fh=Get-Content "$repo/src/common/Utilities/FunctionProcessor.h" -Raw;$fs=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
  [IO.File]::WriteAllText("$out/Functions.inc",'typedef std::multimap<uint64, std::function<void()>> FunctionList;'+(Block $fh 'class TC_COMMON_API FunctionProcessor').Replace('TC_COMMON_API ','')+';'+$fs.Substring($fs.IndexOf('FunctionProcessor::FunctionProcessor()')))
  $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
- $def=if($Baseline){'/DBASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
+ $def=if($Baseline){'/DBASELINE'}elseif($RouteBaseline){'/DROUTE_BASELINE'}else{''};if($AddressSanitizer){$def+=' /fsanitize=address /Zi'}
  [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $def /I`"$out`" `"$PSScriptRoot/TuureFirstFightTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`" /Fd`"$out/test.pdb`"`nif errorlevel 1 exit /b 1`ncd /d `"$out`"`n`"$out/test.exe`"`nexit /b %errorlevel%`n")
  & "$out/run.cmd";if($LASTEXITCODE){throw 'Tuure actual first-fight regression failed'}
  if($VerifyNativeCatalog){

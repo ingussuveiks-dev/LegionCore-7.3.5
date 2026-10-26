@@ -2071,7 +2071,7 @@
       "weapon": "T'uure, Beacon of the Naaru",
       "item": 128825,
       "start": 41957,
-      "status": "partial: native pickup/equip/departure, scaled Calindris/companion wounds, genuine95pct initial heal, guarded greeting/queues/native GM-dead-owner admission and real first106201 death50562/earned16s continuation repaired; native/ASAN/catalog/selected canonical PE/clean startup pass. Later second kill/route/captain/crate/contact and full client remain open.",
+      "status": "partial: native pickup/equip/departure, scaled Lady/companion wounds, initial heal/greeting/queues/admission, real first death50562/16s unlock and real second kill/native9859002 arrival50831 repaired and backend-regressed/deployed. Crate/captain/second route/contact/across-session recovery and full client remain open.",
       "quests": [
         {
           "id": 41957,
@@ -2171,7 +2171,7 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Trace second106221 true-death/native type0 recipient and AI-missing/reset-safe DoAction1/path9859002/50831. Existing OnUnitDeath blindly dereferences AI and nearestPlayer waypoint is not certified. Then captain50634, crate, later movement/quest lease/contact105697LINK1 and all other36 route work. Offline/across-session receipt recovery, motion/timing/group-faction visuals/full client remain unverified.",
+      "next_action": "Trace native249693/134192 lock1690/type10 use, real50633 and Boja/captain activation. Old handler awards/deletes before missing actors/rejected criteria and dereferences AI; do not certify full stage3/4. Captain106107/361436 nearest-player50634 and unsafe Boros attack/DoAction2, native second9859003 path and Lady handoff remain open. 105697 spellclick209441 has dangling LINK1; intended missing action not proven. No speculative deletion/cleanup inserted. Across-session receipt recovery, optional late/missing Jace presentation, all36 and full client remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
       "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
       "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
@@ -2180,7 +2180,8 @@
       "boros_queue_audit": "docs/audits/tuure-boros-callback-queue-2026-10-26.json",
       "boros_greeting_audit": "docs/audits/tuure-boros-greeting-2026-10-26.json",
       "native_criteria_admission_audit": "docs/audits/tuure-native-criteria-admission-2026-10-26.json",
-      "first_fight_audit": "docs/audits/tuure-first-fight-2026-10-27.json"
+      "first_fight_audit": "docs/audits/tuure-first-fight-2026-10-27.json",
+      "first_route_audit": "docs/audits/tuure-first-route-2026-10-27.json"
     },
     {
       "class_id": 5,

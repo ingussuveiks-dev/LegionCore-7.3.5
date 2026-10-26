@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure real second kill and first route (2026-10-27)
+
+- `tuure-first-route-2026-10-27.json`: real106221/361429 death -> original owner/quest lease -> actual native47883 -> original1s9859002 path -> real native OnArrived node6/2007 and10/50831/47882. Node10 is DB point11 of13, preserved. State-only/nearest/AI action1 removed. Normal native KillRewarder scenario reward occurs BEFORE CreatureDies; only three unowned allies get scoped missing Scenario type0 forwarding. No substitute owned-kill reward or individual quest/loot/XP/item grant.
+- Full instance/native arrival ASAN40 accepted+16 missing-native-owned reward denials, lifecycle/reset/replacement/interruption/corpse/quest/reentrant/5s retry and first-fight28 pass. Pinned state-only/repeated/wrong-spawn counterfactual separate. Fresh typed both-leaf/shared-map/native path checks; actual selected canonical reward/instance/helper/arrival-field PE plus prior chain/Scepter pass. Actual spline/audio/client limits explicit.
+- Canonical world B8497534C9850E7146871A11F327B4CA79E03E13D946929C388766388CA99068, map 913843CCA82B75A64347DCF8813007C9FE55BC3628A3476A745AC89989AF115E; own32348 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive/SQL needed. Commit containing audit follows426827bf.
+- NEXT actual249693/134192 type10 lock1690/50633/Boja/captain activation, then106107/36143650634 and second9859003 path/Lady handoff. Contact105697 danglingLINK1 intended action not proven;209441 native spellclick needs full trace. Across-session recovery, optional late-Jace presentation, client/all36 remain OPEN.
+
 ## Latest repair: Tuure real first-fight victory (2026-10-27)
 
 - `tuure-first-fight-2026-10-27.json`: real Unit::Kill106201/361428 receipt replaces arbitrary evade50562; original owner/fullGUID/41993 lease, actual1085 on shared five-scenario1489. Wait genuine initial heal/stage1, native1s50562 and accepted47519; rejected delivery retries5s. Instance-owned earned16s resolves actual Boros361419/next106221361429 after AI reset/reload; original flags/phase/40yd retained. No SQL/manual progress.
