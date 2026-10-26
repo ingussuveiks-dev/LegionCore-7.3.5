@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "ce34ea6c",
+  "scope": "Lady Calindris106318 native solo Holy1085 step5 defeat, participant selection, original3s physical finale and own strangle cleanup. Earlier friendly healing/follow actor repairs and actual client traversal remain open.",
+  "cause": [
+    "Raw DamageTaken compared pre-scaling damage to template health. Native Unit::DealDamage normalizes afterward and could kill in one hit before50695/outro. Original nearest100yd Player could be unrelated instead of the healer/pet owner.",
+    "Original3s Unit-owned callback borrowed this and depended on the original killer resolving. A vanished pet left boss alive; AI replacement/reset left a stale borrowed AI callback. Low-health13/9 branches ran after lethal cleanup and could rearm strangle; separate delayed Talk2 borrowed the AI too.",
+    "Native210703 has infinite duration/strangulate298 plus136/40 effects. Clearing only manual UNIT_STATE_STUNNED left the real own aura/control/gravity effects active. Native HandleAuraStrangulate delegates SetControlled and gravity/fall cleanup; its caster-scoped aura removal is required."
+  ],
+  "repair": [
+    "Use actual DamageTakenAfterScaling and GetHealth(attacker)/CountPctFromMaxHealth after the native multiplier. Only real active incomplete/complete nonrewarded41993 Priest in same live1489/1085 step5/phase/original100yd can trigger defeat. Native player/charmer/pet/guardian owner first; three real unowned allied106134/106137/106253 may use the unique eligible solo participant. Ambiguous/ineligible/missing owner receives no arbitrary progression. No per-pet or invented group reward; one native50695 reaches shared scenario criteria.",
+    "Claim outro before optional callbacks, cancel events/casting and old speech, preserve Talk4/210715/conversation2015/ally210807 and native50695. Return before low-health branches. Actor-owned native FunctionProcessor3000 callback captures actor/full killer GUID/weak AI generation, never borrowed AI/killer pointers. Reset/replacement expires generation; victim loss/casting/suspended original AI does not stall physical death. Re-resolve live same-map killer or native actor self-Kill fallback; no second credit.",
+    "Preserve pre-hit13/9 thresholds in actual target-relative health and original10ms strangle/3s Talk2. Speech uses actor-owned queue plus weak generation and native CreatureTextMgr::SendChat (same endpoint as CreatureAI::Talk), with no AI pointer. Reset/outro cancels old speech. Native combat image/strangle target selection now uses actual eligible participant instead of a nearer stranger; original15..18/25s summons and spell schedules unchanged.",
+    "Remove only actor-cast210703 from three allies through native RemoveAurasDueToSpell, retaining other casters. Reset also clears own aura without healing/credit; late strangle hits after reset/outro remove their own aura and cannot re-stun. Original direct AddUnitState remains only while an actually issued active strangle is valid. No SQL, inventory/character editing or manual quest/scenario completion."
+  ],
+  "native_evidence": {
+    "sources": "Matching local typed26972 DB2+read-only hotfix and World records, production Unit::DealDamage/owner/FunctionProcessor/EventMap/CreatureAI::Talk/HandleAuraStrangulate. No external donor/video required; no footage claimed watched.",
+    "scenario": "1085 stage5/root47655/leaf47656/criteria29879/type92/50695; native1243 solo min1/max1, subsequent step6 staff/return distinct. Shared map1489 Hunter972 remains ineligible.",
+    "actors": "Live106318 uses npc_lady_kalindria/faction2102.106134 npc_vindicator_boros and106137/106253 npc_tuure_small_events/faction1665. No spell_script_names or source13/17 conditions for selected Lady spells.106253 also stores SmartAI but actual explicit ScriptName factory applies.",
+    "spells": "210715 Holy Judgment6s, native trigger210718 at6s; original script kills after3s retained, no new timing invented.210703 infinite strangulate298;21080710s periodic20/2s;204237 infinite/500ms healing-reduction226 plus125/63.211185/211380 native combat payloads retained."
+  },
+  "checks": {
+    "counterfactual": "Test-TuureDefeat -Baseline pinned ce34ea6c shows actual scaled dispatch kills before50695, and original nearest spectator gets50695 while vanished pet prevents3s death. Labelled expected failing behavior; does not execute the unsafe freed-AI baseline callback.",
+    "native_asan": "Full extracted production namespace and complete Lady AI plus actual native owner resolver, scaled Unit dispatch including suspended AI, EventMap and FunctionProcessor.28 status/player/pet/guardian/charmer/three allies/suspended-AI variants;17 admission denials; null/missing/ambiguous owner; living/dead/vanished/other-map/fullGUID killer; exactly-one credit/death; failed optional cast/spawn; reset/retry/freed AI/freed speech; reentrant damage; old low-health cleanup/stale hit/other caster; original3s speech despite victim loss/casting. ASAN passes, no reports.",
+    "limits": "Map/grid registry, casts/healing spell application, kill endpoint and aura removal/control/gravity are controlled adapters. These tests do not execute the whole live aura engine, Unit::Kill loot/reward, AI scheduling/network/visibility/path or client sequence. A real actor/caster aura render/gravity check remains client pending.",
+    "preservation": "Test-TuurePresentation -AddressSanitizer and Test-TuureNativePickup -AddressSanitizer pass; scene bridge unchanged and no old Lady byte-pin substitutes actual actor tests. Immutable SQL14/15 untouched.",
+    "release": "Build original scripts.lib paths/no global OutDir; staged link and actual selected PE/map verified. Factory post-scaled slotA8/raw slotA0 native base/Update18/Reset/SpellHitTarget and actual owner+eligible+participant/native50695/3s queue/Kill/aura/text dependencies verified. MSVC inlines Recipient into the selected hook; check verifies real inlined calls/constants. Final canonical PE and Test-ScepterLogin -VerifyReleaseBinary pass.",
+    "startup": "Both names absent before promotion/rechecked by helper; config/certificates/keys hashes unchanged. Owned32404 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0; no user/unknown server stopped, no task server left.",
+    "development": "Initial fixture lacked native uint16/Milliseconds and Player position surface; corrected compiler harness, not production bypass. Initial PE expected a standalone Recipient that MSVC inlined; corrected check to its actual owner/eligible/participant call sites/constants. Failed invocations remain in ignored evidence and are not passing checks."
+  },
+  "canonical_sha256": {
+    "bnetserver.map": "E8F3C7B4C921B3F3408AA42E16CDEC9E027C3B817D63F8046002FCD6024EB658",
+    "worldserver.map": "C52375546A46DA54544D22F5AF200FE3FD1996B6384D229A77EF6B8B7A341DB2",
+    "worldserver.exe": "4EC0AFDB781860FAB7D9912DC226965A0036DA1D33E6A166C2D5289A0B690EA0",
+    "bnetserver.exe": "C582F79C435DE4AF0636DDDFB7C2F6A147C38180CBE0243580CB9338DF5AFF42"
+  },
+  "diagnostics": "Mandatory before/after canonical+fixture crash/log snapshots for every test/build/probe/startup; no new/changed crashes or appended DBErrors/warnings/errors/assertions. No unresolved new runtime diagnostic, no new fixed archive/truncation required. Existing unrelated findings remain visible in older audits.",
+  "remaining": [
+    "Client battle/one-hit/pet/guardian/allied final blow, original voice/VFX/strangle/gravity/heal, death/real stage6 visibility, party/faction/abandon/re-entry/relog/full route remain pending.",
+    "NEXT:106134/106137/106253 raw lethal wound guards; native HealReceived runs before ModifyHealth and checks current95/40pct, not projected healing. Trace actual healing and movement before adapting; do not force health or credit.",
+    "Boros movement/evade callbacks and Captain nearest-player50634,105697 LINK1, other contacts/missing81040 and remaining36 chain work remain OPEN. No whole route verification claimed."
+  ]
+}

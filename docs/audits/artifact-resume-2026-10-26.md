@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Tuure Calindris real scaled defeat and finite cleanup
+
+- `tuure-calindris-defeat-2026-10-26.json`:106318 actual final-damage hook/target health, native owner or unique eligible healer for three real allies in1489/1085/5/41993. Original50695/210715/2015 and3s death retained; weak generation/full killer GUID/actor-owned queue survives vanished killer and avoids borrowed AI. No nearest spectator progression, explicit completion or character edits.
+- Native typed tree/spells/World, pinned counterfactual, full production-AI/owner/scaling/EventMap/FunctionProcessor ASAN28 variants plus denials/reset/retry/freed AI/late strangle/reentrant/failed casts-spawns pass. Remove only own infinite210703 aura, retaining native control/gravity cleanup/other casters; original3s speech no raw AI. Scene/pickup ASAN and canonical actual slot/queue/Kill/text/aura PE/Scepter pass. Endpoint adapters/client limits explicit.
+- Canonical world 4EC0AFDB781860FAB7D9912DC226965A0036DA1D33E6A166C2D5289A0B690EA0, map C52375546A46DA54544D22F5AF200FE3FD1996B6384D229A77EF6B8B7A341DB2. Owned32404 ready/shutdown0/exit0, no new diagnostics/protected changes/task server. No SQL changes, Crashes0/DBErrors0/no archive needed. Commit containing this audit follows ce34ea6c.
+- NEXT: friendly106134/106137/106253 scaled wound guards and native pre-heal95/40 thresholds; then Boros movement/evade/captain/contact chain. Full client fight/aura/gravity/pet/allied kill/visibility/re-entry and all36 remain OPEN. Older Lady OPEN notes below superseded only for this scoped repair.
+
 ## Latest repair: Tuure real storage, guarded queued casts and native departure
 
 - `tuure-native-pickup-2026-10-26.json`:249705 now real loot249705/128825, native lock1691 retained; no activation AddItem/50679 or raw14s callback/explicit1085. GO claim binds full owner/source GUIDs and quest lease; actual210733/210734 effects revalidate after queueing. Native scene/equipped staff/50679,14s minimum/30s finite retry, original ordinary CastSpell210818(false)/failed-request retry and actual210818 native effect with accepted original destination precedes once50702/native root reward. Other-map/scenario travel remains native.

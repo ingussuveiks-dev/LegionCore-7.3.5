@@ -2138,7 +2138,9 @@
           "spell": 210734,
           "item": 128825,
           "target1": 1,
-          "target2": 0
+          "target2": 0,
+          "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json",
+          "next_action": "Repair friendly106134/106137/106253 final-scaled wound guards and trace native pre-heal95/40 thresholds, then Boros movement/evade/captain/contact. Native Calindris owner/ally50695 and3s finite death separately verified; actual full client fight/aura/gravity/pet/re-entry and all36 remain OPEN."
         }
       ],
       "broken_actor_links": [
@@ -2169,9 +2171,10 @@
         "camera_movement_and_pet_restoration": "pending",
         "complete_client_traversal": "pending"
       },
-      "next_action": "Repair Lady106318 post-scaling defeat/eligible owner or native ally context/3s independent actor-safe death/low-health late stun; inspect friendly healer raw guards. Preserve actual native loot/equip/exit and retain client queue/arrival/scene/faction/re-entry/full route,105697 LINK1 and all36 checks.",
+      "next_action": "Repair friendly106134/106137/106253 final-scaled wound guards and trace native pre-heal95/40 thresholds, then Boros movement/evade/captain/contact. Native Calindris owner/ally50695 and3s finite death separately verified; actual full client fight/aura/gravity/pet/re-entry and all36 remain OPEN.",
       "scene_equip_audit": "docs/audits/tuure-scene-equip-2026-10-26.json",
-      "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json"
+      "native_pickup_audit": "docs/audits/tuure-native-pickup-2026-10-26.json",
+      "defeat_audit": "docs/audits/tuure-calindris-defeat-2026-10-26.json"
     },
     {
       "class_id": 5,

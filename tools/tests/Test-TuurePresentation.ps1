@@ -8,8 +8,8 @@ function Block([string]$source,[string]$start){$first=$source.IndexOf($start);if
  $source=Get-Content "$repo/$path" -Raw
  $old=(& git -C $repo show "d9137d5a:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned Tuure baseline unavailable'}
  if($Baseline -and $old.Contains('scene_tuure_pickup')){ $legacy=(& git -C $repo show "44e7df34:$path") -join "`n"; if($legacy.Contains('scene_tuure_pickup')){throw 'Historical unbound baseline unavailable'} }
- # The scene bridge and Lady actor stay pinned; the native pickup controller has its own full-flow regression.
- foreach($name in @('namespace TuurePresentation','class npc_lady_kalindria :')){if(((Block $source $name)-replace '\s','') -cne ((Block $old $name)-replace '\s','')){throw "Unrelated Tuure handler changed: $name"}}
+ # Encounter and native pickup now have separate production-handler regressions.
+ foreach($name in @('namespace TuurePresentation')){if(((Block $source $name)-replace '\s','') -cne ((Block $old $name)-replace '\s','')){throw "Unrelated Tuure handler changed: $name"}}
  [IO.File]::WriteAllText("$out/Presentation.inc",(Block $source 'namespace TuurePresentation')+(Block $source 'class scene_tuure_pickup :')+';')
  $fixture=(Get-Content "$PSScriptRoot/SceneLifecycleFixture.h" -Raw).Replace('128826','128825').Replace('200262','210734')
  $pending=Block (Get-Content "$repo/src/server/game/Entities/Player/Player.h" -Raw) 'bool HasPendingTeleport() const'

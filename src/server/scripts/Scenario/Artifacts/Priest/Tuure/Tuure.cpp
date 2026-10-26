@@ -502,6 +502,62 @@ public:
     };
 };
 
+namespace TuureDefeat
+{
+    bool Eligible(Player* player, Creature* actor)
+    {
+        if (!player || !actor->IsInWorld() || !actor->IsAlive() || actor->GetEntry() != 106318 ||
+            actor->GetMapId() != 1489 || !actor->GetMap() || !player->IsInWorld() || !player->CanContact() ||
+            !player->IsAlive() || player->HasPendingTeleport() || player->getClass() != CLASS_PRIEST ||
+            player->GetMap() != actor->GetMap() || !player->InSamePhase(actor) ||
+            !player->IsWithinDistInMap(actor, 100.0f) || player->GetQuestRewardStatus(41993) ||
+            (player->GetQuestStatus(41993) != QUEST_STATUS_INCOMPLETE && player->GetQuestStatus(41993) != QUEST_STATUS_COMPLETE))
+            return false;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        return scenario && scenario->GetScenarioId() == 1085 && scenario->GetCurrentStep() == 5;
+    }
+
+    Player* Participant(Creature* actor)
+    {
+        if (!actor->GetMap()) return nullptr;
+        Player* recipient = nullptr;
+        for (auto const& reference : actor->GetMap()->GetPlayers())
+            if (Eligible(reference.getSource(), actor))
+            {
+                if (recipient) return nullptr;
+                recipient = reference.getSource();
+            }
+        return recipient;
+    }
+
+    Player* Recipient(Creature* actor, Unit* attacker)
+    {
+        if (!attacker) return nullptr;
+        if (Player* owner = attacker->GetCharmerOrOwnerPlayerOrPlayerItself())
+            return Eligible(owner, actor) ? owner : nullptr;
+        // The native solo healer encounter permits its three allies to kill.
+        // A nearer spectator must never replace its actual participant.
+        if (attacker->GetCharmerOrOwnerGUID() || attacker->GetMap() != actor->GetMap() ||
+            !attacker->InSamePhase(actor) ||
+            (attacker->GetEntry() != 106134 && attacker->GetEntry() != 106137 && attacker->GetEntry() != 106253))
+            return nullptr;
+        return Participant(actor);
+    }
+
+    void ReleaseAllies(Creature* actor, bool heal)
+    {
+        std::list<Creature*> allies;
+        for (uint32 entry : {106134u, 106137u, 106253u})
+            GetCreatureListWithEntryInGrid(allies, actor, entry, 50.0f);
+        for (Creature* ally : allies)
+        {
+            // Native strangulate298 owns its control state; retain other casters.
+            ally->RemoveAurasDueToSpell(210703, actor->GetGUID());
+            if (heal) ally->CastSpell(ally, 210807);
+        }
+    }
+}
+
 // 106318
 class npc_lady_kalindria : public CreatureScript
 {
@@ -523,19 +579,25 @@ public:
         EventMap events;
         SummonList summons;
 
-        bool outro, outro_event, outro_event1;
+        bool outro = false, outro_event = false, outro_event1 = false, strangleActive = false;
+        std::shared_ptr<uint8> attempt = std::make_shared<uint8>(uint8(0));
 
         void Reset() override
         {
+            attempt = std::make_shared<uint8>(uint8(0));
+            me->InterruptNonMeleeSpells(true);
+            TuureDefeat::ReleaseAllies(me, false);
             events.Reset();
             outro = false;
             outro_event = false;
             outro_event1 = false;
+            strangleActive = false;
             summons.DespawnAll();
         }
 
         void EnterCombat(Unit* who) override
         {
+            if (outro) return;
             Talk(0);
             events.RescheduleEvent(EVENT_1, 2000); //211185
             events.RescheduleEvent(EVENT_2, 13000); //211380 + script for summon (17)
@@ -546,54 +608,51 @@ public:
             summons.Summon(summon);
         }
 
-        void DamageTaken(Unit* who, uint32& damage, DamageEffectType dmgType) override
+        void DamageTakenAfterScaling(Unit* attacker, uint32& damage, DamageEffectType /*dmgType*/) override
         {
-            if (damage >= me->GetHealth())
+            if (outro)
             {
                 damage = 0;
-                if (!outro)
-                {
-                    Talk(4);
-                    outro = true;
-                    me->StopAttack();
-                    DoCast(210715);
-                    ObjectGuid targetGUID = who->GetGUID();
-                    me->AddDelayedEvent(3000, [this, targetGUID]() -> void
-                    {
-                        if (!me)
-                            return;
-
-                        if (Unit* target = ObjectAccessor::GetUnit(*me, targetGUID))
-                            target->Kill(me);
-                    });
-
-                    events.Reset();
-                    // event
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50695);
-
-                    std::list<Creature*> adds;
-                    GetCreatureListWithEntryInGrid(adds, me, 106134, 50.0f);
-                    GetCreatureListWithEntryInGrid(adds, me, 106137, 50.0f);
-                    GetCreatureListWithEntryInGrid(adds, me, 106253, 50.0f);
-                    if (!adds.empty())
-                        for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                        {
-                            (*itr)->ClearUnitState(UNIT_STATE_STUNNED);
-                            (*itr)->CastSpell((*itr), 210807);
-                        }
-                    me->CreateConversation(2015);
-                }
+                return;
             }
-
-            if (!outro_event && me->HealthBelowPct(13))
+            Player* player = TuureDefeat::Recipient(me, attacker);
+            if (!damage || !player) return;
+            uint64 health = me->GetHealth(attacker);
+            if (damage >= health)
+            {
+                damage = 0;
+                outro = true; // claim before reentrant optional spell/credit callbacks
+                strangleActive = false;
+                attempt = std::make_shared<uint8>(uint8(0)); // cancel old combat speech
+                events.Reset();
+                me->StopAttack();
+                me->InterruptNonMeleeSpells(true);
+                Creature* actor = me;
+                ObjectGuid killer = attacker->GetGUID();
+                std::weak_ptr<uint8> generation = attempt;
+                // The actor owns this queue. No borrowed AI or killer pointer;
+                // Reset/replacement expires the attempt, victim loss does not.
+                me->AddDelayedEvent(3000, [actor, killer, generation]()
+                {
+                    if (generation.expired() || !actor->IsInWorld() || !actor->IsAlive()) return;
+                    Unit* source = ObjectAccessor::GetUnit(*actor, killer);
+                    if (!source || !source->IsAlive() || source->GetMap() != actor->GetMap()) source = actor;
+                    source->Kill(actor);
+                });
+                Talk(4);
+                DoCast(210715);
+                player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50695);
+                TuureDefeat::ReleaseAllies(me, true);
+                me->CreateConversation(2015);
+                return; // never rearm strangle after defeat cleanup
+            }
+            if (!outro_event && health < me->CountPctFromMaxHealth(13, attacker))
             {
                 outro_event = true;
                 Talk(1);
                 events.RescheduleEvent(EVENT_3, 10);
             }
-
-            if (!outro_event1 && me->HealthBelowPct(9))
+            if (!outro_event1 && health < me->CountPctFromMaxHealth(9, attacker))
             {
                 outro_event1 = true;
                 Talk(3);
@@ -602,14 +661,17 @@ public:
 
         void SpellHitTarget(Unit* target, SpellInfo const* spell) override
         {
-            if (spell->Id == 210703)
-                target->AddUnitState(UNIT_STATE_STUNNED);
+            if (target && spell && spell->Id == 210703)
+            {
+                if (outro || !strangleActive) target->RemoveAurasDueToSpell(210703, me->GetGUID());
+                else target->AddUnitState(UNIT_STATE_STUNNED);
+            }
         }
 
 
         void UpdateAI(uint32 diff) override
         {
-            if (!UpdateVictim())
+            if (outro || !UpdateVictim())
                 return;
 
             events.Update(diff);
@@ -626,7 +688,7 @@ public:
                         events.RescheduleEvent(EVENT_1, 2500); //211185
                         break;
                     case EVENT_2:
-                        if (Player* pl = me->FindNearestPlayer(100.0f, true))
+                        if (Player* pl = TuureDefeat::Participant(me))
                         {
                             DoCast(211380);
                             for (uint8 i = 0; i < urand(15, 18); ++i)
@@ -641,13 +703,19 @@ public:
                         events.RescheduleEvent(EVENT_2, 34000); //211380 + script for summon (17)
                         break;
                     case EVENT_3:
+                        strangleActive = true;
                         DoCast(210703);
-                        if (Player* pl = me->FindNearestPlayer(100.0f, true))
+                        if (Player* pl = TuureDefeat::Participant(me))
                             AttackStart(pl);
-                        me->AddDelayedEvent(3000, [this]() -> void
                         {
-                            Talk(2);
-                        });
+                            Creature* actor = me;
+                            std::weak_ptr<uint8> generation = attempt;
+                            me->AddDelayedEvent(3000, [actor, generation]()
+                            {
+                                if (!generation.expired() && actor->IsInWorld() && actor->IsAlive())
+                                    sCreatureTextMgr->SendChat(actor, 2);
+                            });
+                        }
                         break;
                 }
             }
