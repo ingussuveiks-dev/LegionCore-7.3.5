@@ -26,6 +26,7 @@
 #include "ScriptUtils.h"
 #include "SpellAuraEffects.h"
 #include "PathGenerator.h"
+#include "TransportJumpPath.h"
 
 namespace
 {
@@ -960,6 +961,21 @@ class spell_warr_heroic_leap : public SpellScriptLoader
 
                 if (!caster->IsInWater() && !forceDest) // don`t check in water
                 {
+                    if (Transport* transport = caster->GetTransport())
+                    {
+                        // 94954 effect 1 performs the actual native jump. Use its
+                        // live difficulty data, not the outer dummy spell's values.
+                        SpellInfo const* jump = sSpellMgr->GetSpellInfo(SPELL_WARRIOR_HEROIC_LEAP_JUMP);
+                        auto effect = jump ? jump->GetEffect(EFFECT_1, player->GetMap()->GetDifficultyID()) : nullptr;
+                        if (!effect || effect->Effect != SPELL_EFFECT_JUMP_DEST)
+                            return SPELL_FAILED_NOPATH;
+                        float speedZ = effect->MiscValue ? float(effect->MiscValue) / 10.0f :
+                            effect->MiscValueB ? float(effect->MiscValueB) / 10.0f : 10.0f;
+                        auto result = Movement::CheckTransportJumpPath(transport, caster->GetPosition(), *dest,
+                            caster->GetCollisionHeight(), caster->GetObjectSize(), speedZ);
+                        if (result != Movement::TransportJumpResult::NotOnDeck)
+                            return result == Movement::TransportJumpResult::Complete ? SPELL_FAILED_SUCCESS : SPELL_FAILED_NOPATH;
+                    }
                     PathGenerator patch(player);
                     bool result = patch.CalculatePath(dest->GetPositionX(), dest->GetPositionY(), dest->GetPositionZ());
 

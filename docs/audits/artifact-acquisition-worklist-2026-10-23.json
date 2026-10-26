@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/game/Movement/TransportJumpPath.h",
+      "handler": "Warrior boost Heroic Leap on moving transport",
+      "problem": "User receives No path available on Jump Into The Fray; grounded Leap script requested terrain navigation for a moving deck.",
+      "repair_audit": "docs/audits/heroic-leap-transport-2026-10-26.json",
+      "limit": "Pinned/current ASAN, actual two ship collision models, typed26972/hotfix/Warrior1093 step8 catalog, shared boost regressions and selected canonical PE pass. Deployed34EFE53A, own33700 ready/shutdown0/exit0, no new diagnostics. Actual client leap/landing/lesson/full boost remain pending. Old resolved232-byte creation log now hash-archived offline; active DBErrors0/Crashes0."
+    },
+    {
       "path": "src/server/game/Movement/TransportGroundPath.h",
       "handler": "Warrior boost Charge on moving transport",
       "problem": "User receives No path available on first Charge lesson even with Rage. Both outer Warrior check and native charge movement check requested the map mesh, which does not describe the moving deck.",
@@ -23,7 +30,7 @@
       "handler": "Warrior obsolete creation action defaults",
       "problem": "Native action validation logged missing spells78/button1 and88161/button73;22 exact Warrior defaults referenced spells absent from matching26972 DB2/hotfix.",
       "repair_audit": "docs/audits/warrior-creation-actions-2026-10-26.json",
-      "limit": "Scoped deletion/native catalog/TEMP twice/custom preservation pass; actual canonical updater11 RELEASED and invalid default count0. Saved character bars and validation diagnostics unchanged. New real creation remains a client check; fixed232-byte log archive/hashes recorded in combined deployment handoff."
+      "limit": "Scoped deletion/native catalog/TEMP twice/custom preservation pass; actual canonical updater11 RELEASED and invalid default count0. Saved character bars and validation diagnostics unchanged. New real creation remains a client check; resolved232-byte log now archived offline with verified hash; see heroic-leap-transport audit for current cleanup evidence."
     },
     {
       "path": "src/server/scripts/Scenario/BoostExperience/boost_experience.cpp",

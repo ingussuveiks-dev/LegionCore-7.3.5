@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-26",
+  "build": "Legion 7.3.5.26972",
+  "status": "Repaired admission, regressions and selected canonical Release verification pass; actual client leap/lesson remains pending",
+  "report": "Warrior boost Jump Into The Fray shows No path available when using Heroic Leap6544 on the ship. Screenshot is at the next lesson after the earlier Charge repair; it does not independently certify every Charge edge.",
+  "cause": "The existing Heroic Leap script always requested a terrain navigation path for a dry grounded caster. Moving ship decks are collision models, not terrain navmesh. No failing live Detour polygon trace was captured: the pinned regression controls that unavailable-deck boundary and real native tests independently load both ship models.",
+  "implementation": [
+    "For an attached moving Transport and a destination actually supported by its model, validate landing support across the caster footprint, enabled collision and phases, then body/head clearance along the native parabolic jump shape. Do not require walkable ground throughout a leap.",
+    "Read the actual triggered94954 effect1 from current difficulty SpellInfo. It is JUMP_DEST42, Misc25/100 in matching DB2 and readonly hotfix. Use the same speedZ selection and computeFallElevation apex as EffectJumpDest/MotionMaster; MoveSpline's normalized height is4*apex*t*(1-t). Bounded quarter-yard-or-finer samples include vertical endpoint clearance and lateral radius checks.",
+    "Use a bounded0.5yd-or-smaller foot contact skin for small deck curvature while checking torso/head and landing support. Initial native test with0.1yd foot skin rejected an actual curved-deck route by approximately0.001yd at a sampled contact; that failed development check was corrected and rerun. This is not a disabled collision check or forced success.",
+    "A destination unsupported by this ship retains ordinary terrain-path admission (including possible ship-to-world use). A supported but obstructed/edge landing is rejected. Missing native jump effect/model, invalid parameters and disabled collision do not grant a deck success.",
+    "Keep the original player/destination/root/BG-start and specific BG-location guards, ordinary terrain, water/falling behavior,6544/94954 casts, native world-to-transport-local spline conversion, arrival damage52174 and native scenario cast criteria. No Rage, quest credit, scenario advancement, item or character mutation was added."
+  ],
+  "sources_actually_reviewed": [
+    "Local spell_warrior.cpp CheckElevation/HandleDummy/Register and PathGenerator/Charge repair; Spell.cpp launch/hit dispatch and jump restrictions; SpellEffects.cpp EffectJumpDest/CalculateJumpSpeeds and effect254 mapping; SpellMgr's existing6544 effect1 override; MotionMaster::MoveJump, MoveSpline parabola and TransportPathTransform.",
+    "Actual GameObjectModel height/LOS implementation and native26972 models34338/34366 with WorldSafeLoc5219/5752; native Transport transforms at translated/rotated ship poses.",
+    "Typed SpellEffect/Criteria/CriteriaTree/ScenarioStep readers plus readonly MariaDB hotfix overlays:6544 dummy3 and SMASH_DEST254,94954 summon28/JUMP_DEST42/arrival-trigger32->52174; Warrior scenario1093 step8 tree48084 Jump Into The Fray uses native cast6544/type29.",
+    "Local C:/wamp64/www/TrinityCore current spell_warrior.cpp Heroic Leap check reviewed as a different-version reference only; its modern behavior was not copied. No GitHub donor or YouTube sequence was needed or reviewed for this focused local admission defect."
+  ],
+  "native_sequence_limit": "The preexisting outer6544 SMASH_DEST launch and triggered94954 movement dispatch are preserved, including SpellMgr's outer Misc150 override. The new geometry guard models the94954 movement selected by the existing HandleDummy. No client packet timing/visual recording was obtained; this audit does not certify that preexisting two-spell presentation or the full boost flight/camera/pet sequence.",
+  "checks": [
+    "Test-BoostHeroicLeap.ps1 -Baseline -AddressSanitizer: pinned a9da566d actual CheckElevation reproduces controlled terrain-NoPath counterfactual. Repaired -AddressSanitizer extracts actual CheckElevation/HandleDummy and includes production geometry helper: landing, air gap/low obstacle, wall/roof/edge, disabled/hidden model, malformed coordinates/missing data, root/water/falling/BG/ordinary terrain, repeated failed then successful cast and native94954 dispatch pass. Geometry/world boundaries in this fixture are mocks.",
+    "Test-BoostShipFloor.ps1: actual model, DB2 and production native geometry pass for both Alliance/Horde ships, including Leap landing, unsupported elevated destination, oversized footprint, phase mismatch and disabled collision. This is actual collision/model execution, not a client traversal.",
+    "HeroicLeapCatalog.cpp: matching typed26972 plus readonly hotfix effects and actual Warrior lesson catalog pass. Initial probe incorrectly expected JUMP_DEST at effect0; raw catalog established effect1, assertion corrected, final probe passes.",
+    "Shared Test-BoostCharge -AddressSanitizer, Test-BoostTutorialBars -AddressSanitizer, Test-BoostConstructLessons, Test-BoostShipArrival, Test-BoostActionBars and Test-ActionBarPersistence pass. Existing fixture shadow/local/conversion warnings retained; production incremental Release build has no new compiler error/warning.",
+    "Original generated scripts/game/shared/common LIB paths built and final-link response inputs checked. Staged/canonical verify_heroic_leap_transport_release selects the actual registered script factory/vtable/CheckElevation/HandleDummy, native model height/LOS/apex and unchanged jump launch/local-transform consumer. Initial verifier incorrectly expected a direct TransportBase offset call; actual disassembly proved virtual slot0x10 and the assertion was corrected. Canonical Charge selected PE and Test-ScepterLogin -VerifyReleaseBinary also pass.",
+    "Before/after diagnostic inventories for all test/build groups retained privately under .codex/leap. No new/changed crash, appended DBErrors or server warning/error/assertion. Own canonical world33700 reached fresh ready, shutdown0/exit0, stderr empty, protected config/certificate hashes unchanged; no hidden server left running.",
+    "Final canonical boost action/construct/arrival/tutorial-overlay PE checks pass. One wrapper selected the Windows Store python alias and failed before its PE test; rerun used the trusted bundled Python explicitly and all selected consumers passed. No server diagnostic or application crash accompanied that tool-environment failure."
+  ],
+  "deployment": {
+    "canonical": "build-extractors/bin/Release",
+    "world_sha256": "34EFE53A680A99315D7FADE7E7E00996CD6467F6DE210C147CEE51CB22E45189",
+    "world_map_sha256": "762CA74844F69F0D7CBC27CB4648C3148530304680BE3C2BDB438A9CFA4167F1",
+    "bnet_sha256": "4DE8946B5729FA612E9C447E8B537CA1D4AE7AF21ED8D13515CD3609FB3E4CC1",
+    "ownership": "No user/unknown server present before promotion, rechecked before each file copy. No user server was stopped. No SQL migration required."
+  },
+  "resolved_old_log_archive": {
+    "cause_fix_commit": "bfdf3354",
+    "scope": "Only the exact two old obsolete creation-spell78/88161 errors,232 bytes; active Server.log/history left intact.",
+    "directory": "build-extractors/bin/Release/fixed/warrior-creation-actions-2026-10-26",
+    "sha256": "9EB36EF23920FB914322C2CE213B3491F9B8A884754EF2E3768FE799E105C716",
+    "verification": "Actual migration11 had previously been read back RELEASED with exact hash and zero obsolete rows. Current binary retains that fix and clean owned startup. Offline guard, exclusive active-log handle, exact length/hash comparison, byte-for-byte archive and archive-hash verification, and final process/length rechecks precede truncation. No mixed/unreviewed evidence cleared.",
+    "active_DBErrors_bytes": 0,
+    "active_crash_files": 0
+  },
+  "client_checks_pending": [
+    "User retry Heroic Leap on current Warrior without resetting the lesson: observe actual movement, landing and0/1->1/1 progression.",
+    "Real deck obstacles/edge rejection, retry, combat/auras, relog/re-entry and both faction presentations. Native scripted movement/group/owner credit mechanics were not changed; pet/guardian final blows remain covered by shared construct/sparring regressions, not a live new combat test.",
+    "Finish later sparring/Legion waves, exit boarding, beach delivery, camera/pet/UI and all Warrior artifact chains. Hunter additional selection and all36 worklist remain unfinished."
+  ]
+}

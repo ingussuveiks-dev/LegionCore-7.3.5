@@ -7,6 +7,7 @@
 #include "MovementPackets.h"
 #include "Transport.h"
 #include "TransportGroundPath.h"
+#include "TransportJumpPath.h"
 #include <cmath>
 #include <iostream>
 
@@ -82,17 +83,22 @@ int main(int argc, char** argv)
         if(!PreparePassengerPosition(&transport,start,true)||!PreparePassengerPosition(&transport,finish,true))return 15;
         Movement::PointsArray charge;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::Complete||charge.size()<2)return 16;
+        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::Complete)return 23;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,2,charge)!=Movement::TransportGroundResult::TooLong||!charge.empty())return 17;
         Position voidEnd=Offset(base,0,100,0,0);
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(voidEnd),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath||!charge.empty())return 18;
         Position airborne=world(finish);airborne.m_positionZ+=5;
+        if(Movement::CheckTransportJumpPath(&transport,world(start),airborne,2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::NotOnDeck)return 24;
+        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,100.0f,2.5f)!=Movement::TransportJumpResult::NoPath)return 25;
         if(Movement::BuildTransportGroundPath(&transport,world(start),airborne,2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 19;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge,100.0f)!=Movement::TransportGroundResult::NoPath)return 22;
         transport.SetPhaseId({2},false);
+        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::NotOnDeck)return 26;
         if(Movement::BuildTransportGroundPath(&transport,world(start),world(finish),2.0f,74,charge)!=Movement::TransportGroundResult::NoPath)return 20;
         transport.SetPhaseId({1},false);
         if (std::isfinite(model->getHeight(x,y,z+2,5,{2},true))) return 6;
         model->enableCollision(false);
+        if(Movement::CheckTransportJumpPath(&transport,world(start),world(finish),2.0f,0.4f,2.5f)!=Movement::TransportJumpResult::NoPath)return 27;
         if (std::isfinite(model->getHeight(x,y,z+2,5,{1},true))) return 7;
         Position disabled=base;
         if(PreparePassengerPosition(&transport,disabled,true))return 13;

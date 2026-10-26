@@ -2,6 +2,17 @@
 
 Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, current Git status/log, and the worklist; it is a checkpoint, not proof that the whole project is finished.
 
+
+## Latest update after this checkpoint: Heroic Leap
+
+- User showed the next Warrior1093 step8 **Jump Into The Fray**, Heroic Leap6544 still returning No path available on the ship. This supersedes the earlier immediate next task until the client retest is reported.
+- Repaired `CheckElevation` with real transport-model landing/footprint/arc body clearance using live94954 effect1; retains ordinary unsupported-deck terrain fallback, root/BG/water/falling and native movement/criteria. No fake credit/character edits. See `docs/audits/heroic-leap-transport-2026-10-26.json` for actual sources, initial development failures, native limits and checks.
+- `Test-BoostHeroicLeap.ps1 -Baseline/-AddressSanitizer`, actual both-ship `Test-BoostShipFloor`, typed26972/readonly hotfix/lesson catalog, Charge/tutorial overlay/shared construct/arrival/action persistence pass. Canonical selected Leap/Charge PE and Scepter Release pass. **Client leap/landing/1-of-1 and later full boost remain pending.**
+- Promoted while both user servers absent; own33700 fresh ready/shutdown0/exit0, stderr/newDBErrors0, protected hashes unchanged, no task-owned server remains.
+- Current canonical world SHA256 **34EFE53A680A99315D7FADE7E7E00996CD6467F6DE210C147CEE51CB22E45189**, world.map **762CA74844F69F0D7CBC27CB4648C3148530304680BE3C2BDB438A9CFA4167F1**, bnet **4DE8946B5729FA612E9C447E8B537CA1D4AE7AF21ED8D13515CD3609FB3E4CC1**. These supersede the older deployed hashes below.
+- The formerly deferred232-byte obsolete creation-spell log is now **resolved and archived offline**, exact hash9EB36EF23920FB914322C2CE213B3491F9B8A884754EF2E3768FE799E105C716, under ignored `build-extractors/bin/Release/fixed/warrior-creation-actions-2026-10-26/`. Existing cause fixbfdf3354/current deployed data and native regression verified; exclusive file/process/hash rechecks before zeroing. Active **DBErrors0/Crashes0** at this update. The old deferred section below is historical, not current maintenance work.
+- Recheck processes/logs before doing anything: user can launch again. Hunter additional-choice patch is still ignored, untested/undeployed and OPEN; it was not included in this Leap build. Resume that independent work after the focused repair; keep the new chat's instructions and worklist.
+
 ## User authorization and current testing
 
 - Continue actual investigation/repairs for all36 Legion7.3.5.26972 artifact acquisition chains and effects. Each focused repair needs relevant regression, honest audit, commit and push of the current branch to origin, without force or runtime/credentials/character data.
