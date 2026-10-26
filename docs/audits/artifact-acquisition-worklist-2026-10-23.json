@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Scenario/Artifacts/Rogue/Kingslayers/Kingslayers.cpp",
+      "handler": "108015 Garona delayed intro recipient/AI lifetime",
+      "problem": "Unit-owned15/30s callbacks captured raw AI/player and sent personal progress after map transfer.",
+      "repair_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
+      "limit": "AI-owned EventMap/fullGUID/fresh live same-map-phase-contact lookup; native/ASAN/pinned relocation and staged selected PE passed. DEPLOYMENT PENDING user server idle. No new quest-attempt/admission/replay/group rules or complete route/client/VFX certification."
+    },
+    {
       "path": "src/server/scripts/Scenario/Artifacts/Paladin/BrokenShore/broken_shore.cpp",
       "handler": "216690 reported Unbreakable Will217042 rejection retry",
       "problem": "The aura unconditionally cleared its only timer after a reported failed217042 cast, permanently losing the override-button attempt.",
@@ -1596,7 +1603,8 @@
       "weapon": "The Kingslayers",
       "item": 128870,
       "start": 42501,
-      "status": "queued for executable lifecycle and visual review; client traversal pending",
+        "status": "partial Garona intro lifetime repair tested/staged; deployment and full chain/client visual traversal pending",
+        "intro_lifetime_audit": "docs/audits/kingslayers-intro-lifetime-2026-10-26.json",
       "quests": [
         {
           "id": 42501,

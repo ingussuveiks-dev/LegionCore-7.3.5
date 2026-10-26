@@ -7,6 +7,7 @@
 #include "CreatureTextMgr.h"
 #include "Kingslayers.h"
 #include "GameObjectAI.h"
+#include "ObjectAccessor.h"
 
 // 107979 108015
 class npc_garona_halforcen : public CreatureScript
@@ -40,6 +41,17 @@ public:
         }
 
         bool introDone;
+        ObjectGuid recipientGuid;
+        EventMap events;
+
+        Player* GetRecipient()
+        {
+            if (!me->IsInWorld())
+                return nullptr;
+            Player* player = ObjectAccessor::GetPlayer(*me, recipientGuid);
+            return player && player->GetGUID() == recipientGuid && player->IsInWorld() && player->CanContact() &&
+                player->GetMap() == me->GetMap() && player->InSamePhase(me) ? player : nullptr;
+        }
 
         void MoveInLineOfSight(Unit* who) override
         {
@@ -56,6 +68,7 @@ public:
                 return;
 
             introDone = true;
+            recipientGuid = who->GetGUID();
             Conversation* conversation = new Conversation;
             if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2361, who, NULL, *who))
                 delete conversation;
@@ -63,39 +76,56 @@ public:
             me->GetMotionMaster()->MovePoint(0, -9091.40f, 414.15f, 92.11f);
             me->RemoveAura(132653);
 
-            me->AddDelayedEvent(15000, [this, who]() -> void
-            {
-                std::list<Creature*> adds;
-                GetCreatureListWithEntryInGrid(adds, me, 98094, 70.0f);
-                GetCreatureListWithEntryInGrid(adds, me, 108058, 70.0f);
-                if (!adds.empty())
-                    for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
-                    {
-                        (*itr)->GetMotionMaster()->MovePoint(0, -8996.06f, 487.59f, 96.62f);
-                        (*itr)->SetWalk(true);
-                        (*itr)->DespawnOrUnsummon(6000);
-                    }
+            events.ScheduleEvent(EVENT_1, 15000);
+            events.ScheduleEvent(EVENT_2, 30000);
+        }
 
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2377, who, NULL, *who))
-                    delete conversation;
-            });
-
-            me->AddDelayedEvent(30000, [this, who]() -> void
+        void UpdateAI(uint32 diff) override
+        {
+            ScriptedAI::UpdateAI(diff);
+            events.Update(diff);
+            while (uint32 eventId = events.ExecuteEvent())
             {
-                me->GetMotionMaster()->MovePoint(0, -9074.46f, 427.19f, 92.07f);
-                me->SetWalk(true);
-                me->DespawnOrUnsummon(4000);
-                if (who)
+                switch (eventId)
                 {
-                    who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51418);
-                    who->ToPlayer()->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 52672);
-                }
-                Conversation* conversation = new Conversation;
-                if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2384, who, NULL, *who))
-                    delete conversation;
+                    case EVENT_1:
+                    {
+                        std::list<Creature*> adds;
+                        GetCreatureListWithEntryInGrid(adds, me, 98094, 70.0f);
+                        GetCreatureListWithEntryInGrid(adds, me, 108058, 70.0f);
+                        if (!adds.empty())
+                            for (std::list<Creature*>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
+                            {
+                                (*itr)->GetMotionMaster()->MovePoint(0, -8996.06f, 487.59f, 96.62f);
+                                (*itr)->SetWalk(true);
+                                (*itr)->DespawnOrUnsummon(6000);
+                            }
 
-            });
+                        if (Player* player = GetRecipient())
+                        {
+                            Conversation* conversation = new Conversation;
+                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2377, player, NULL, *player))
+                                delete conversation;
+                        }
+                        break;
+                    }
+                    case EVENT_2:
+                    {
+                        me->GetMotionMaster()->MovePoint(0, -9074.46f, 427.19f, 92.07f);
+                        me->SetWalk(true);
+                        me->DespawnOrUnsummon(4000);
+                        if (Player* player = GetRecipient())
+                        {
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 51418);
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 52672);
+                            Conversation* conversation = new Conversation;
+                            if (!conversation->CreateConversation(sObjectMgr->GetGenerator<HighGuid::Conversation>()->Generate(), 2384, player, NULL, *player))
+                                delete conversation;
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
     };
