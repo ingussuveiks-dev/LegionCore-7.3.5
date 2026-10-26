@@ -11,7 +11,7 @@
 using uint32=uint32_t;using uint64=uint64_t;
 struct ObjectGuid { unsigned value=0;void Clear(){value=0;}bool operator<(ObjectGuid b)const{return value<b.value;}bool operator==(ObjectGuid b)const{return value==b.value;} };
 using GuidList=std::vector<ObjectGuid>;
-enum { QUEST_STATUS_INCOMPLETE=1,QUEST_STATUS_COMPLETE=2,QUEST_OBJECTIVE_GAMEOBJECT=2,TEMPSUMMON_TIMED_DESPAWN=1,REACT_PASSIVE=0,FOLLOW_MOTION_TYPE=4 };
+enum { QUEST_STATUS_INCOMPLETE=3,QUEST_STATUS_COMPLETE=1,QUEST_OBJECTIVE_GAMEOBJECT=2,TEMPSUMMON_TIMED_DESPAWN=1,REACT_PASSIVE=0,FOLLOW_MOTION_TYPE=4 };
 struct Position { float x=0,y=0,z=0,o=0;float GetPositionX()const{return x;}float GetPositionY()const{return y;}float GetPositionZ()const{return z;} };
 struct Player;struct Creature;struct TempSummon;
 struct Unit {
@@ -37,13 +37,14 @@ struct GameObject:Unit { unsigned entry=0;uint64 spawn=0;unsigned GetEntry(){ret
  Creature* FindNearestCreature(unsigned id,float range,bool){for(auto& pair:creatures)if(pair.second.entry==id && pair.second.alive && !pair.second.removed && IsWithinDistInMap(&pair.second,range))return &pair.second;return nullptr;}
 };
 struct Player:Unit {
- Player(){guid={++serial};}unsigned zone=7334;bool key=false,los=true,failedSpawn=false,flight=false,flying=false,boarded=false;
+ Player(){guid={++serial};}unsigned zone=7334;bool key=false,los=true,visible=true,failedSpawn=false,flight=false,flying=false,boarded=false;
  std::map<unsigned,int> quests;std::map<std::pair<unsigned,unsigned>,unsigned> objectives;std::set<unsigned> rewarded;
  std::map<unsigned,GuidList> summons;std::vector<unsigned> credits;
  unsigned GetGUIDLow(){return guid.value;}unsigned GetMapId(){return map;}unsigned GetZoneId(){return zone;}
  int GetQuestStatus(unsigned q){return quests[q];}bool GetQuestRewardStatus(unsigned q){return rewarded.count(q)!=0;}
  unsigned GetQuestObjectiveData(unsigned q,unsigned obj){return objectives[{q,obj}];}
  bool HasItemCount(unsigned id,unsigned){return id==120359 && key;}bool IsWithinLOSInMap(Unit*){return los;}
+ bool canSeeOrDetect(Creature*){return visible;}
  GuidList* GetSummonList(unsigned id){return &summons[id];}bool isInFlight(){return flight;}bool IsFlying(){return flying;}void* GetVehicle(){return boarded?this:nullptr;}
  void KilledMonsterCredit(unsigned id,ObjectGuid={}){credits.push_back(id);unsigned q=(id==90487?37656:(id==90546||id==105635?37450:37449));++objectives[{q,id}];}
  void QuestObjectiveSatisfy(unsigned id,unsigned,unsigned,ObjectGuid){credits.push_back(id);++objectives[{37450,id}];if(objectives[{37450,id}]==3)quests[37450]=QUEST_STATUS_COMPLETE;}
@@ -65,11 +66,48 @@ struct Database {
  void DirectPExecute(char const* sql,unsigned guid,unsigned quest,unsigned long long spawn,unsigned ordinal=0){auto key=std::make_tuple(guid,quest,uint64(spawn));if(std::string(sql).find("INSERT")==0){assert(!rows.count(key));rows[key]=ordinal;}else rows.erase(key);}
 } CharacterDatabase;
 
-#include "../../src/server/scripts/Legion/faronaar_chain.cpp"
+#include "Faronaar.inc"
 
 int main()
 {
  using namespace Faronaar;
+ {
+  Player stuck;stuck.rewarded.insert(36920);stuck.quests[Saving]=QUEST_STATUS_COMPLETE;
+  player_faronaar_chain recovery;recovery.OnUpdate(&stuck,1000);Creature* follower=Owned(&stuck,90474);assert(follower);
+  follower->pos.x+=100;assert(follower->motion.type==FOLLOW_MOTION_TYPE);
+  for(unsigned i=0;i<6;++i)recovery.OnUpdate(&stuck,1000);
+#ifdef FARONAAR_COMPANION_BASELINE
+  assert(Owned(&stuck,90474)==follower&&!follower->removed&&stuck.credits.empty());
+  std::cout<<"PASS pinned349d886d counterfactual: live distant FOLLOW actor remains stuck and blocks summon recovery for completed Saving Stellagosa. Path failure is a controlled world boundary.\n";
+  return 0;
+#else
+  assert(follower->removed&&Owned(&stuck,90474)&&Owned(&stuck,90474)!=follower&&stuck.credits.empty());
+  assert(stuck.IsWithinDistInMap(Owned(&stuck,90474),5)&&Owned(&stuck,90474)->viewer==stuck.guid);
+  recovery.OnLogout(&stuck);
+#endif
+ }
+#ifndef FARONAAR_COMPANION_BASELINE
+ for(unsigned gate=0;gate<7;++gate){
+  Player owner,unrelated;owner.rewarded.insert(36920);unrelated.rewarded.insert(36920);
+  player_faronaar_chain recovery;recovery.OnUpdate(&owner,1000);recovery.OnUpdate(&unrelated,1000);
+  Creature* old=Owned(&owner,90474);Creature* other=Owned(&unrelated,90474);assert(old&&other);
+  if(gate!=0)old->pos.x+=100;
+  if(gate==1)old->combat=true;if(gate==2)owner.boarded=true;if(gate==3)owner.flight=true;if(gate==4)owner.flying=true;
+  if(gate==5){for(unsigned i=0;i<5;++i)recovery.OnUpdate(&owner,1000);old->pos=owner.pos;}
+  if(gate==6){owner.failedSpawn=true;}
+  for(unsigned i=0;i<6;++i)recovery.OnUpdate(&owner,1000);
+  if(gate==6){assert(old->removed&&!Owned(&owner,90474));owner.failedSpawn=false;recovery.OnUpdate(&owner,1000);assert(Owned(&owner,90474));}
+  else assert(Owned(&owner,90474)==old&&!old->removed);
+  assert(Owned(&unrelated,90474)==other&&!other->removed&&owner.credits.empty());
+  recovery.OnLogout(&owner);recovery.OnLogout(&unrelated);
+ }
+ for(bool hidden:{false,true}){
+  Player owner;owner.rewarded.insert(40815);player_faronaar_chain recovery;recovery.OnUpdate(&owner,1000);Creature* old=Owned(&owner,90474);
+  if(hidden)owner.visible=false;else{old->pos.x+=11;owner.los=false;}
+  for(unsigned i=0;i<6;++i)recovery.OnUpdate(&owner,1000);
+  assert(old->removed&&Owned(&owner,90474)&&owner.credits.empty());owner.visible=owner.los=true;recovery.OnLogout(&owner);
+ }
+#endif
  Player p,other;p.pos=BoundDragon;other.pos=BoundDragon;
  player_faronaar_chain lifecycle;go_faronaar_objective script;
  p.quests[Saving]=QUEST_STATUS_INCOMPLETE;other.quests[Saving]=QUEST_STATUS_INCOMPLETE;

@@ -37,6 +37,7 @@ uint32 Count(Player* player, uint32 quest)
 struct State
 {
     uint32 timer = 0;
+    uint32 companionLost = 0;
     bool loaded = false, released = false;
     std::map<uint32, std::map<uint64, uint32>> uses;
     ObjectGuid dragon, beams[3];
@@ -181,6 +182,38 @@ bool NeedsCompanion(Player* player)
         (player->GetQuestRewardStatus(36920) || player->GetQuestRewardStatus(40815) || player->GetQuestRewardStatus(44140)) &&
         player->GetQuestStatus(Revelations) != QUEST_STATUS_COMPLETE && !player->GetQuestRewardStatus(Revelations);
 }
+
+void RecoverCompanion(Player* player, State& state, uint32 elapsed)
+{
+    Creature* follower = Owned(player, 90474);
+    // A failed cave path keeps FOLLOW_MOTION_TYPE and the live summon GUID.
+    // Wait for a sustained separation; do not disturb combat, a vehicle/flight,
+    // an ordinary nearby follower or any other player's/pet's actors.
+    bool safe = !player->GetVehicle() && !player->isInFlight() && !player->IsFlying();
+    bool lost = follower && !follower->isInCombat() && safe &&
+        (!player->canSeeOrDetect(follower) || !player->IsWithinDistInMap(follower, 30.0f) ||
+            (!player->IsWithinDistInMap(follower, 10.0f) && !player->IsWithinLOSInMap(follower)));
+    state.companionLost = lost ? state.companionLost + elapsed : 0;
+    if (state.companionLost >= 6000)
+    {
+        follower->DespawnOrUnsummon();
+        follower = nullptr;
+        state.companionLost = 0;
+    }
+    if (!follower && safe)
+    {
+        // Preserve the real spell, destination, entry, properties and quest menu.
+        player->CastSpell(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 178860, true);
+        follower = Owned(player, 90474);
+        if (follower)
+        {
+            follower->AddPlayerInPersonnalVisibilityList(player->GetGUID());
+            follower->DespawnOrUnsummon(300000);
+        }
+    }
+    if (follower && !follower->isInCombat() && follower->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
+        follower->GetMotionMaster()->MoveFollow(player, 3.0f, 3.14f);
+}
 } // namespace Faronaar
 
 struct npc_faronaar_personal_actor : public ScriptedAI
@@ -264,29 +297,19 @@ public:
         state.timer += diff;
         if (state.timer < 1000)
             return;
+        uint32 elapsed = state.timer;
         state.timer = 0;
         Load(player, state);
         Reconcile(player, state, Saving);
         Reconcile(player, state, Rescue);
         UpdateDragon(player, state);
         if (companion)
-        {
-            if (!Owned(player, 90474))
-            {
-                // Native effect 0 expects an explicit destination (target 142).
-                player->CastSpell(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), 178860, true);
-                if (Creature* follower = Owned(player, 90474))
-                {
-                    follower->AddPlayerInPersonnalVisibilityList(player->GetGUID());
-                    follower->DespawnOrUnsummon(300000);
-                }
-            }
-            if (Creature* follower = Owned(player, 90474))
-                if (!follower->isInCombat() && follower->GetMotionMaster()->GetCurrentMovementGeneratorType() != FOLLOW_MOTION_TYPE)
-                    follower->GetMotionMaster()->MoveFollow(player, 3.0f, 3.14f);
-        }
+            RecoverCompanion(player, state, elapsed);
         else
+        {
+            state.companionLost = 0;
             ClearOwned(player, 90474);
+        }
 
         if (Active(player, Revelations) && Done(player, Revelations, 90621))
         {

@@ -12,6 +12,13 @@
   },
   "common_findings": [
     {
+      "path": "src/server/scripts/Legion/faronaar_chain.cpp",
+      "handler": "Faronaar personal questgiver lost on cave entry",
+      "problem": "User reports ready Saving Stellagosa37450 without receiver and confirms90474 followed before the cave. A live distant/hidden FOLLOW actor prevented missing-only recovery.",
+      "repair_audit": "docs/audits/faronaar-companion-cave-recovery-2026-10-26.json",
+      "limit": "Scoped native-summon recovery, ASAN pinned/current lifecycle and selected combined staged PE pass; no progress grants. User server still active; canonical deployment and actual cave visibility/turn-in pending. Cave mesh/path result not captured; do not claim full navigation or artifact certification."
+    },
+    {
       "path": "sql/updates/world/2026_10_26_08_azsuna_scythe_allari_return.sql",
       "handler": "Azsuna Scythe37660 existing Allari return phase",
       "problem": "Phase4265 excluded active INCOMPLETE37660, hiding the actor required to credit its last return objective. User confirmed optional crystal credit but cannot see Allari.",

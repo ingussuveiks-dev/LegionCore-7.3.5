@@ -51,6 +51,8 @@
 
 # Quest admission and packet regressions
 
+- Faronaar90474 is the personal Demon Hunter questgiver for Saving Stellagosa37450. A live stuck FOLLOW actor must not block recovery forever: preserve native178860 destination summon/properties,6s sustained lost visibility/distance/LOS recovery, follower combat and player vehicle/flight deferral, private ownership and finite cleanup. Never award quest progress from recovery. Run `Test-FaronaarChain.ps1 -Baseline/-AddressSanitizer`, `Test-FaronaarNative.py` and `verify_faronaar_companion_release.py`; actual cave path/receiver visibility/turn-in remain client checks.
+
 - Scythe37660 return Allari89398/spawn271101 is phase4265, zone7334 definition3. Preserve its original negative-QUESTTAKEN branch and add active37660 plus actual victory89673 as a separate ANDed ElseGroup; return89398 must still require the real nearby/LOS actor. Screen179183/mask2 cleanup remains independent and optional exit240012 is not a prerequisite. Native QUESTTAKEN notification triggers phase recalculation after victory. Run `Test-ScytheReturnPhase.ps1 -AddressSanitizer -VerifyLiveData` and `Test-AzsunaScythe.ps1 -AddressSanitizer`; actual visibility/turn-in/rendering remain client checks.
 
 - The Scythe of Souls37660 exit gem240012 must accept the native screen179183 or persisted real entry237017 plus victory89673; logout/recovery clears the visual while keeping objectives. Credit optional exit once through native type2 GO dispatch, retain alive/map/range/active-quest guards and own cleanup. Do not award89673/89398 from clicking the exit. Run `Test-AzsunaScythe.ps1 -Baseline/-AddressSanitizer`, its data/native catalog and `verify_scythe_exit_release.py`; actual client exit/return/turn-in remain separate.
