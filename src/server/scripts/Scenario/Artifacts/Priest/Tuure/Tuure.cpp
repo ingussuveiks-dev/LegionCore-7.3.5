@@ -293,13 +293,12 @@ public:
 
         void MoveInLineOfSight(Unit* who) override
         {
-            if (who->GetTypeId() != TYPEID_PLAYER)
-                return;
-
-            if (!_introDone && me->IsWithinDistInMap(who, 20.0f))
+            Player* player = who ? who->ToPlayer() : nullptr;
+            if (!_introDone && TuureIntroHeal::Eligible(player, me) && player->IsWithinDistInMap(me, 20.0f) &&
+                player->canSeeOrDetect(me) && player->IsWithinLOSInMap(me))
             {
                 _introDone = true;
-                Talk(0, who->GetGUID());
+                Talk(0, player->GetGUID());
                 _entryFunctions.AddDelayedEvent(4000, [this, generation = _entryGeneration]() -> void
                 {
                     if (generation != _entryGeneration) return;

@@ -12,8 +12,8 @@ using uint32=uint32_t;using uint64=uint64_t;using int32=int32_t;
 enum {TYPEID_PLAYER=4,UNIT_STATE_STUNNED=8,CRITERIA_TYPE_SCRIPT_EVENT_2=92,UNIT_FIELD_FLAGS=1,
  UNIT_FLAG_NOT_SELECTABLE=1,UNIT_FLAG_IMMUNE_TO_PC=2,UNIT_FLAG_IMMUNE_TO_NPC=4,UNIT_FLAG_NOT_ATTACKABLE_1=8};
 #include "Functions.inc"
-struct Creature;struct Unit {uint32 type=4;uint64 guid=1;virtual ~Unit()=default;uint32 GetTypeId()const{return type;}uint64 GetGUID()const{return guid;}};
-struct Player:Unit {uint32 credits=0;void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==50562);++credits;}};
+struct Creature;struct Player;struct Unit {uint32 type=4;uint64 guid=1;virtual ~Unit()=default;virtual Player* ToPlayer(){return nullptr;}uint32 GetTypeId()const{return type;}uint64 GetGUID()const{return guid;}};
+struct Player:Unit {uint32 credits=0;Player* ToPlayer()override{return this;}bool IsWithinDistInMap(Unit*,float d){assert(d==20);return true;}bool canSeeOrDetect(Unit*)const{return true;}bool IsWithinLOSInMap(Unit*)const{return true;}void UpdateAchievementCriteria(uint32 type,uint32 asset){assert(type==92&&asset==50562);++credits;}};
 struct CreatureAI {virtual ~CreatureAI()=default;virtual void Reset(){};virtual void MoveInLineOfSight(Unit*){};virtual void EnterEvadeMode(){};virtual void UpdateLifecycle(uint32){};virtual void AttackStart(Unit*){}};
 struct GameObject {uint64 GetGUID()const{return 249469;}};
 struct InstanceScript {uint32 doors=0;void HandleGameObject(uint64 guid,bool open){assert(guid==249469&&open);++doors;}};
@@ -35,6 +35,8 @@ struct Creature:Unit {
  functions.Update(diff);}
 };
 #include "Recover.inc"
+// Actual admission policy has its separate complete context fixture.
+namespace TuureIntroHeal {bool Eligible(Player* p,Creature*){return p!=nullptr;}}
 struct EventMap {void Reset(){}};
 struct Boros:CreatureAI {
  Creature* me;EventMap events;FunctionProcessor _functions,_entryFunctions;uint64 _entryGeneration=0;bool _pendingHealRecovery=false,wait_heal=false,_introDone=false,firstfighting=false;

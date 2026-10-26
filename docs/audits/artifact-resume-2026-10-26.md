@@ -4,6 +4,13 @@ Written after `c1781cbc` on 2026-10-26. Read this together with **AGENTS.md**, c
 
 
 
+## Latest repair: Boros initial greeting admission
+
+- `tuure-boros-greeting-2026-10-26.json`: null-safe actual Player and real initial1085/0/41993/Priest/live actor/phase plus native20yd/visibility/LOS before latch/Talk0. Wrong visitors cannot consume intro; original4s exposition remains after legitimate healing stage advance. No progression or SQL. Pets remain excluded as originally.
+- Full pinned wrong-visitor counterfactual/current ASAN two statuses/24 denials/retry/timing/generation and native queue16 preservation pass. Canonical selected actual null/eligibility/spatial guards before Talk0/no progression plus queue/initial heal/wound/Lady/pickup/scene/capture/Scepter PE pass. Voice/perception are client-pending.
+- Canonical world 432AC088FA0012E55EAA009CB9257F125BF769352C728997A5B5A95D72461684, map EF272E59FB50053E61F39FDFC2236FDAE1CF6D8DE659E572A8D03F69E78FC479; own17836 ready/shutdown0/exit0/no new diagnostics/protected changes/task server. Crashes0/DBErrors0/no archive/character edit. Commit containing audit follows4fab41ce.
+- NEXT evidence:106201 unique361428/SmartAI/no death link/7200s,106221 unique361429/NullAI. Native step2 needs BOTH106221 kill and50831; path9859002 has13/9859003 has8 points. Actual instance_tuure serves FIVE1489 scenarios. Unit::Kill CreatureDies has actual killer; setDeathState OnUnitDeath alone also sees non-kill state changes. Resolve true-death50562 before replacing evade timing; review native Criteria modifiers/dead-owner Lady eligibility, then waypoint/captain/105697 LINK1. All36/client remain OPEN.
+
 ## Latest repair: Boros callback queue lifetime and Reset generations
 
 - `tuure-boros-callback-queue-2026-10-26.json`: four2s/3s/4s/16s borrowed-AI Unit callbacks now belong to separate AI FunctionProcessor updated in native locked lifecycle. Reset generation cancels only stale operations, preserving legitimate same-tick new work and original delays/actors/spells. No health/progression/SQL change. Paused _functions policies remain separate/open.

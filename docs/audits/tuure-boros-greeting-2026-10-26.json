@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "parent_commit": "4fab41ce",
+  "scope": "Boros106134 initial once-only greeting admission only. Original4s narrative continuation remains actor dialogue, not quest progression; actual client voice/appearance/full path pending.",
+  "cause": "Original LOS dereferenced who before null checking, and any nearby Player could consume intro latch, including wrong class/quest/scenario. Pets were already excluded by type check and remain excluded; this repair does not claim a former pet-admission bug.",
+  "repair": "Null-safe actual Player only. Reuse actual live initial TuureIntroHeal eligibility (Priest, active incomplete/complete nonrewarded41993, real1489/1085 step0, same map/phase/contact/alive/no pending teleport/live106134), plus native20yd/visibility/LOS before intro latch or Talk0. Preserve original Talk0 recipient/full GUID, original4000ms Talk1 and existing AI generation/queue. No item/heal/progression/SQL change. The already-earned narrative line may still play after actual healing advances stage; no new stage check drops it.",
+  "native_evidence": "Read matching live106134 text groups0/1/2/3: BroadcastText109077 welcome,109112 Jace/barrier exposition,109090 healed,109091 follow. Existing text/delays untouched; no inferred audio duration or watched-video claim. Native1085 initial stage/quest and real shared-map context reused from previous typed/read-only audit.",
+  "checks": {
+    "baseline": "Test-TuureBorosGreeting -Baseline executes full pinned4fab41ce LOS: an unrelated questless non-Priest within actual modeled same map/range consumes latch before legitimate healer. Labelled counterfactual; unsafe null baseline not executed.",
+    "native_asan": "Current full actual LOS/policy and real FunctionProcessor/locked Creature lifecycle: two quest statuses,24 null/pet/class/quest/contact/alive/loading/phase/distance20+100/visibility/LOS/map/actor/scenario/record denials leave latch/queue untouched; retry/repeated LOS/exact4s/native-heal stage advance/generation cancellation pass. Quest/visibility/range/registry/packet endpoints are controlled adapters, not actual client perception.",
+    "preserved": "Test-TuureBorosQueue -AddressSanitizer16 variants and reset/destroy/timers still pass. Queue fixture explicitly stubs admission, which is fully executed here. Shared intro fixture gains only modeled range/visibility/type helpers and a lifecycle diff parameter; no production heal policy change.",
+    "release": "Original generated libraries/no OutDir/staged actual-link inputs verified. Actual selected LOS factory/vtable/null guard, eligibility/distance/visibility/LOS before Talk0, absence of progression and existing four queue/generation/timer guards verified in staged and canonical PE. Prior initial-heal/wound/Lady/pickup/scene/capture checks included. Canonical ScepterLogin -VerifyReleaseBinary passes.",
+    "startup": "Both names absent/rechecked before promotion; protected config/certificate/key hashes unchanged. Own17836 fresh ready/shutdown0/exit0/stderr empty/newDBErrors0; no user/unknown process stopped or hidden task server left."
+  },
+  "canonical_sha256": {
+    "bnetserver.map": "36DCB1473E175EE583AFB6EB69CDABD3427924F98AC6F67EE47EEB0E85BB4898",
+    "worldserver.map": "EF272E59FB50053E61F39FDFC2236FDAE1CF6D8DE659E572A8D03F69E78FC479",
+    "worldserver.exe": "432AC088FA0012E55EAA009CB9257F125BF769352C728997A5B5A95D72461684",
+    "bnetserver.exe": "68E4A547CCDE097496A4932A0AE48BFBE128F526272CE38E3F06FBC250B0993A"
+  },
+  "diagnostics": "All tests/build/probe/startup have mandatory before/after canonical+repo/fixture snapshots; no new/changed crash or appended DBErrors/server warnings/errors/assertions. No fixed archive/truncation/new SQL/character mutation required. Empty active logs are not whole-quest proof.",
+  "first_fight_investigation": {
+    "native": "Matching typed step1/root47517/leaf47519/type92/50562. Step2/root47881 requires BOTH leaf47882/type92/50831 and47883/type0/106221; native waypoint9859002 has13 points,9859003 has8. No artificial grants or skipped branch implemented.",
+    "world": "Exactly one106201 spawn361428/map1489/phase6374,7200s respawn, SmartAI spells204082/204086 and no death link.106221 spawn361429 same map/phase/7200s NullAI.1489 actually binds instance_tuure and is shared by940/972(class3)/1085(class5)/1145(class12)/1146(class1), so actual scenario guard is mandatory.",
+    "core": "Native Unit::setDeathState JUST_DIED calls OnUnitDeath even for state changes; Unit::Kill later calls InstanceScript::CreatureDies(creature,killer) after JustDied. Prefer actual kill producer if tracking first-opponent victory, retain owner/guardian/allied healer eligibility, one-hit before arrival and finite retry. Current EnterEvade/nearest50562 is still unchanged/open.",
+    "additional_review": "Native type92 has no obvious global alive guard; before another combat repair, inspect exact Criteria modifier/fail metadata and owner-dead eligibility. Prior Lady live-player guard may still lose ally/pet victory when healer dies; treat as unresolved until matching native gates verified."
+  },
+  "remaining": [
+    "NEXT: real106201 death versus arbitrary evade50562; actual eligible native owner/healer, real step2 kill+waypoint path50831, retry/abandon/re-entry/shared instance. Do not invent events from absent actors or spawning.",
+    "Existing paused Boros _functions, Captain106107 native50634,105697 LINK1, missing81040/contacts and all36 actual chain/client work remain OPEN."
+  ]
+}

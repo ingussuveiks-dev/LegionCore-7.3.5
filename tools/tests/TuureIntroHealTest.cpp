@@ -13,12 +13,13 @@ enum {CLASS_PRIEST=5,QUEST_STATUS_NONE=0,QUEST_STATUS_COMPLETE=1,QUEST_STATUS_IN
 struct Creature;struct Player;struct Unit;
 struct ObjectGuid {uint64 high=0,low=0;bool IsPlayer()const{return high==1;}bool IsEmpty()const{return !high&&!low;}void Clear(){high=low=0;}bool operator==(ObjectGuid v)const{return high==v.high&&low==v.low;}explicit operator bool()const{return !IsEmpty();}operator uint64()const{return low;}};
 struct Map {};
-struct CreatureAI {virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){};virtual void HealDone(Unit*,uint32&){};virtual void Reset(){};virtual void UpdateLifecycle(uint32){};};
+struct CreatureAI {virtual ~CreatureAI()=default;virtual void HealReceived(Unit*,uint32&){};virtual void HealDone(Unit*,uint32&){};virtual void Reset(){};virtual void UpdateLifecycle(uint32){};virtual void MoveInLineOfSight(Unit*){};};
 struct InstanceScript {bool CheckDamageManager()const{return false;}void UpdateDamageManager(ObjectGuid,int32,bool){};};
 namespace WorldPackets::Combat {struct HealthUpdate {ObjectGuid Guid;uint64 Health=0;int Write(){return 0;}};}
 struct Unit {
  virtual ~Unit()=default;uint64 health=1,maximum=1000;bool IsAIEnabled=false,alive=true,world=true,phase=true;Map* map=nullptr;ObjectGuid guid{2,1},owner,charmer;CreatureAI* healAI=nullptr;FunctionProcessor functions;
  virtual Player const* ToPlayer()const{return nullptr;}Player* ToPlayer(){return const_cast<Player*>(static_cast<Unit const*>(this)->ToPlayer());}
+ uint32 GetTypeId()const{return ToPlayer()?4u:3u;}
  virtual Creature const* ToCreature()const{return nullptr;}
  Player* GetCharmerOrOwnerPlayerOrPlayerItself()const;
  ObjectGuid GetCharmerGUID()const{return charmer;}ObjectGuid GetOwnerGUID()const{return owner;}
@@ -33,10 +34,11 @@ struct Unit {
 };
 struct QuestStatusData {uint32 Status=3;std::shared_ptr<uint8> ScriptLifetime;};
 struct Player:Unit {
- QuestStatusData quest;bool record=true,contact=true,pending=false,rewarded=false,near=true;uint32 classId=5,credits=0;std::function<void()> onCredit;
+ QuestStatusData quest;bool record=true,contact=true,pending=false,rewarded=false,near=true,entryNear=true,detect=true,los=true;uint32 classId=5,credits=0;std::function<void()> onCredit;
  Player(){guid={1,1};}Player const* ToPlayer()const override{return this;}
  bool CanContact()const{return contact;}bool HasPendingTeleport()const{return pending;}uint32 getClass()const{return classId;}
- bool IsWithinDistInMap(Unit*,float d)const{assert(d==100);return near;}bool GetQuestRewardStatus(uint32 q)const{assert(q==41993);return rewarded;}
+ bool IsWithinDistInMap(Unit*,float d)const{assert(d==100||d==20);return d==20?entryNear:near;}bool GetQuestRewardStatus(uint32 q)const{assert(q==41993);return rewarded;}
+ bool canSeeOrDetect(Unit*)const{return detect;}bool IsWithinLOSInMap(Unit*)const{return los;}
  uint32 GetQuestStatus(uint32 q)const{assert(q==41993);return record?quest.Status:0;}
  QuestStatusData* getQuestStatus(uint32 q){assert(q==41993);return record?&quest:nullptr;}
  void AddQuestDelayedEvent(uint32,uint64,std::function<void()>&&);
@@ -47,11 +49,12 @@ struct Creature:Unit {
  bool preDelete=false,m_AI_locked=false;uint32 entry=106134,mapId=1489,moves=0,poses=0,animations=0,removals=0;CreatureAI* primary=nullptr;CreatureAI* i_disabledAI=nullptr;
  Creature(){IsAIEnabled=true;}
  bool IsPreDelete()const{return preDelete;}uint32 GetEntry()const{return entry;}uint32 GetMapId()const{return mapId;}uint32 GetInstanceId()const{return 7;}
+ bool IsWithinDistInMap(Unit* u,float d)const{assert(d==20);auto p=u?u->ToPlayer():nullptr;return p&&p->map==map&&p->entryNear;}
  Creature const* ToCreature()const override{return this;}CreatureAI* GetAI()override{return primary;}CreatureAI* AI(){return primary;}
  void ClearUnitState(uint32){}void RemoveAura(uint32 id){assert(id==204237);++removals;}
  void SetByteValue(uint32 field,uint32 offset,uint32 value){assert(field==1&&!offset&&!value);++poses;}void SetAnimKitId(uint32 id){assert(!id);++animations;}
  Creature* GetMotionMaster(){return this;}void MovePoint(uint32 id,float x,float y,float z){assert(id==1&&x==-13.92f&&y==1175.70f&&z==-66.31f);++moves;}
- void Tick(){CreatureAI* i_AI=primary;uint32 diff=0;
+ void Tick(uint32 diff=0){CreatureAI* i_AI=primary;
 #include "Lifecycle.inc"
  }
 };
