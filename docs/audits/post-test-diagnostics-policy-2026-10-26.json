@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-26 Europe/Riga",
+  "request": "Persist mandatory post-test crash/console/server/DBErrors checks and archive only verified fixed evidence so active diagnostic locations clearly show new problems.",
+  "persistent_rule": "AGENTS.md now requires a before-test crash/log baseline, after-every-test process/output/new crash/new server diagnostic/new DBErrors inspection, root-cause repair and relevant verification before completion. Expected baseline failures are labeled separately. Never clear unresolved/mixed evidence or bypass Defender. Verified fixed originals go to ignored Release/fixed with hashes; active crash/error locations are emptied only when safe and fully reviewed. Continue independent work while the user's server is running, stage EXEs separately and deploy only when idle.",
+  "crash_cleanup": {
+    "cause": "Previously fixed duplicate Prustaga startup registration; specific dump correlation/current PE verification retained in prustaga-startup-crash-review-2026-10-26.json.",
+    "archive": "build-extractors/bin/Release/fixed/2026-10-24-prustaga-duplicate-registration",
+    "action": "Moved exactly two reviewed original files, preserving names/bytes and verifying SHA256. No recursive cleanup or deletion of unrelated evidence. Active Release/Crashes file count is0."
+  },
+  "dberrors_review": {
+    "active_bytes": 594,
+    "historical_rows": "Exactly four dated2026-10-23 entries: absent LINK1 for Grif100810/Apata99986/Courier100171 and spell0 on areatrigger6837. No later entries at review.",
+    "repairs": "Hunter interaction commit891178d1 supplies each actual LINK61/CLOSE_GOSSIP72/invoker7 continuation; read-only live rows match. Storm commit a48a7407 supplies native210880 to NO_ACTION15 on6837; read-only live row matches. Existing diagnostic/fix audits retained.",
+    "checks": "PASS Test-HunterIntroInteractions.ps1 with production close/LINK tail, conditions, actual-schema TEMP repeat/custom guards; PASS Test-TitanstrikeStorms.ps1 -VerifyReleaseBinary with native data/loader and installed consumers. Separate before/after snapshots around EACH check show0 new/changed canonical crashes,0 new DBErrors bytes and0 appended server ERROR/WARN/FATAL/assert/abort messages. Test output retained and reviewed; native fixtures are not client traversal.",
+    "archive": "build-extractors/bin/Release/fixed/2026-10-23-hunter-links-and-storm-loader/DBErrors.log",
+    "action": "Copied the fully reviewed original594 bytes and verified archive/source hashes unchanged. An initial Get-FileHash read was refused by the active writer's sharing mode; used an explicit FileShare.ReadWrite read-only snapshot and verified the same bytes instead, without closing or modifying the live log. Active DBErrors.log is deliberately NOT truncated while the user's worldserver25260 and bnetserver27736 are running. Recheck all appended bytes and process ownership before truncating at a later idle maintenance point; do not assume future bytes are already fixed."
+  },
+  "server_history": "The ordinary Server.log contains mixed historical informational/diagnostic content and is not cleared wholesale. Fresh appended diagnostics around both checks are empty. No user/unknown server was stopped, no canonical EXE was replaced and no character modified.",
+  "evidence": ".codex/diagnostic-policy-Test-HunterIntroInteractions-* and diagnostic-policy-Test-TitanstrikeStorms-* logs plus private archive manifests. Runtime logs/dumps/configuration/data remain ignored and uncommitted.",
+  "pending": "Safe active DBErrors truncation is deferred until the user server stops and all newly appended bytes are reviewed. The separate Kingslayers lifetime source/catalog work remains uncommitted and is not certified by this diagnostics-policy commit."
+}
