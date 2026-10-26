@@ -4,6 +4,8 @@
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "Scenario.h"
+#include "ScenarioMgr.h"
 
 
 class instance_silver_hand : public InstanceMapScript
@@ -49,6 +51,33 @@ public:
             return &loc_res_pla;
         }
         
+        GuidSet _blindingLightStarted;
+
+        void CastBlindingLight(Creature* boss)
+        {
+            SpellCastResult result = boss->CastSpell(boss, 215260);
+            boss->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC| UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+            if (result == SPELL_CAST_OK)
+                return;
+
+            ObjectGuid guid = boss->GetGUID();
+            TC_LOG_WARN("scripts", "Silver Hand finale: Blinding Light failed with result %u; retry in1000ms", uint32(result));
+            AddDelayedEvent(1000, [this, guid]() -> void
+            {
+                Scenario* scenario = sScenarioMgr->GetScenario(instance->GetInstanceId());
+                Creature* boss = instance->GetCreature(guid);
+                if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != 10 ||
+                    !boss || !boss->IsInWorld() || boss->IsPreDelete() || !boss->IsAlive() ||
+                    boss->GetEntry() != 106719 || boss->GetMapId() != 1539 || boss->GetMap() != instance)
+                {
+                    _blindingLightStarted.erase(guid);
+                    TC_LOG_WARN("scripts", "Silver Hand finale: dropping stale Blinding Light retry");
+                    return;
+                }
+                CastBlindingLight(boss);
+            });
+        }
+
         void onScenarionNextStep(uint32 newStep) override
         {
             if (newStep == 8)
@@ -98,8 +127,8 @@ public:
                         if (Creature* boss = player->FindNearestCreature(106719, 70.0f, true))
                         {
                             mordothFound = true;
-                            boss->CastSpell(boss, 215260);
-                            boss->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PC| UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_ATTACKABLE_1);
+                            if (_blindingLightStarted.insert(boss->GetGUID()).second)
+                                CastBlindingLight(boss);
                         }
                     }
                     if (travardFound && mordothFound)

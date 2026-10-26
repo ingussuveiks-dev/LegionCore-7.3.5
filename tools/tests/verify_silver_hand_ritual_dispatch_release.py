@@ -17,7 +17,7 @@ for entry in factory:
         if struct.unpack_from('<Q', native['binary'], native['offset'](address) + 0x118)[0] == native['symbol'](callback):
             tables.append(address)
 assert len(tables) == 1
-assert any(entry.op_str == 'edx, 8' and entry.mnemonic == 'cmp' for entry in body[:10])
+assert any(entry.op_str == 'edx, 8' and entry.mnemonic == 'cmp' for entry in body[:16])
 find = native['symbol']('?FindNearestCreature@WorldObject@@')
 lookups = [index for index, entry in enumerate(body) if entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM
            and native['resolve'](entry.operands[0].imm) == find]
@@ -32,15 +32,19 @@ dispatch_address = body[lookup + 2].operands[0].imm
 dispatch = next(index for index, entry in enumerate(body) if entry.address == dispatch_address)
 assert [(entry.mnemonic, entry.op_str) for entry in body[lookup + 3:lookup + 5]] == [
     ('mov', 'rax, qword ptr [rbx + 8]'), ('test', 'rax, rax')]
-loopback = body[dispatch - 2]
+loopback, = [entry for entry in body[lookup:dispatch] if entry.mnemonic == 'jne'
+             and entry.operands[0].type == CS_OP_IMM and entry.operands[0].imm < body[lookup].address]
 assert loopback.mnemonic == 'jne'
 loop = next(index for index, entry in enumerate(body) if entry.address == loopback.operands[0].imm)
 assert body[loop].op_str == 'rdi, qword ptr [rbx + 0x20]' and loop < lookup
 contact = native['symbol']('?CanContact@Player@@')
 assert any(entry.mnemonic == 'call' and entry.operands[0].type == CS_OP_IMM and native['resolve'](entry.operands[0].imm) == contact for entry in body[loop:lookup])
 assert [(entry.mnemonic, entry.op_str) for entry in body[dispatch:dispatch + 4]] == [
-    ('mov', 'rcx, qword ptr [rax + 0x9c0]'), ('mov', 'edx, 1'), ('mov', 'rax, qword ptr [rcx]'), ('call', 'qword ptr [rax + 0x48]')]
-assert body[dispatch + 4].mnemonic == 'jmp' and body[dispatch + 4].operands[0].imm > body[lookups[-1]].address
+    ('mov', 'rcx, qword ptr [rax + 0x9c0]'), ('mov', 'rax, qword ptr [rcx]'), ('mov', 'edx, 1'), ('call', 'qword ptr [rax + 0x48]')]
+assert body[dispatch + 4].mnemonic == 'jmp'
+exit_index = next(index for index, entry in enumerate(body) if entry.address == body[dispatch + 4].operands[0].imm)
+assert body[exit_index].op_str == 'rbx, qword ptr [rsp + 0xb8]'
+assert any(entry.mnemonic == 'ret' for entry in body[exit_index:dispatch])
 third = '?DoAction@npc_travar_thirdAI@npc_travar_third@@'
 selected = []
 for entry in instructions('?GetAI@npc_travar_third@@'):

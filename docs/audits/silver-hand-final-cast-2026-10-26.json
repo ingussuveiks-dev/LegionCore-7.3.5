@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Retry rejected Mordoth215260 finale casts at native1092 step10 with instance-owned full-GUID admission. Not215258 channel choreography, complete Holy/all36 or client aura/VFX/escape verification.",
+  "sources": [
+    {
+      "source": "Clean git8a7c56b5/main/origin, worklist/routes/donor/finale/progress audits and complete local instance/wave/channel paths",
+      "review": "Independent step10 participant searches were repaired previously, but CastSpell(215260) result was discarded and original protection flags applied even on rejection. A rejected cast had no future retry. Current Scenario transition methods set actual currentStep before instance callback and phase update; exact10 is valid at a later retry. Original last-Travard Talk3, step8 dispatch, protection flags and all wave/loot/equip/exit repairs retained."
+    },
+    {
+      "source": "Matching26972 native SilverHandFinalCatalog plus ignored native SilverHandChannelCatalog DB2/hotfix probe",
+      "review": "Native215258 Bringing the Light uses aura226/period2000/duration180000/cast0/SpellVisual55978 and channel attribute1 bit0x40;215260 Blinding Light uses aura60/aura5/effect61, infinite duration/cast0/visual57625 and channel bit0x4. Creature::LoadCreaturesAddon schedules a triggered channeled aura cast100ms after addon load;106777 addon215258 is real. This does not prove desired retail start/cleanup or rendered kits/animations. Native1092 weighted180 pulse tree remains independent of channel duration; no new aura-presence or boss-death completion prerequisite, channel retiming or addon removal based only on metadata."
+    },
+    {
+      "source": "Read-only MariaDB actor addons,106719 SmartAI and direct spell bindings",
+      "review": "106777 addon215258,106719 addon212300 and original SmartAI combat215690 remain unchanged. No direct215258/215260 spell_script_names or linked-spell rows returned. Initial event_scripts query used absent SmartAI-style entry columns and failed1054; actual id/delay/command/datalong schema inspected and corrected literal-ID query returned no rows. That is NOT a complete effect61 event-binding trace. No data writes, suppressed errors or permanent spell/model fault claim."
+    },
+    {
+      "source": "Actual Unit::CastSpell/Spell::prepare/InstanceScript/InstanceMap/FunctionProcessor/ObjectGuid",
+      "review": "Unit returns Spell::prepare result. Native prepare rejects an ordinary cast with SPELL_FAILED_SPELL_IN_PROGRESS123 while another nonmelee spell is active, sends the result and finishes(false); SPELL_CAST_OK equals SUCCESS0 and ignore-cast-in-progress flag is0x20. New tests compile that actual rejecting block, not an invented cast-success model. InstanceMap calls UpdateForScript, which drains existing m_Functions; AddDelayedEvent delegates to that owned queue. Native queued additions wait until another update. Full GUID ordering/resolution and derived/base destruction preserve instance lifetime without raw captured creature/Player pointers."
+    },
+    {
+      "source": "Local TrinityCore exact26972 c2d61e05cf3dc555608e6b2a06772c27d207548c targeted215258/215260 scripts and all-ref SilverHand path log",
+      "review": "No applicable acquisition cast recovery returned. Bounded search, not exhaustive history review or modern API/schema import."
+    },
+    {
+      "source": "Pinned Titans complete relevant instance step8/10 callback returned and read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/instance_silver_hand.cpp",
+      "review": "Same unchecked finale cast followed by flags; no recovery imported. Native successful self-cast and flags preserved without forcing, interrupting another spell or reconstructing extra effects."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript/client traversal reviewed.1000ms is explicitly custom technical rejected-cast retry, not observed retail effect timing. Channel/escape appearance, full visual-kit/animation chain and actual application/arrival remain unverified."
+    }
+  ],
+  "repair": {
+    "implementation": "One instance-owned full128-bit GUID set admits a found Mordoth before the first ordinary215260 cast, preventing duplicate/reentrant requests. CastBlindingLight always retains the original protection flags; success0 returns with admitted GUID retained. Nonzero result logs its real code and queues1000ms through existing InstanceScript::AddDelayedEvent. Callback captures this+GUID, obtains fresh actual scenario and Map::GetCreature, requires1092/exact10/live nonpredeleted106719/same1539 map and retries ordinary CastSpell. Invalid context erases its GUID, warns and consumes work without self-requeue; a later genuinely issued callback can start again.",
+    "preserved": "No forced/triggered cast, interrupt-current-cast workaround, Player/pet progression, manual group broadcast, item grant, native tree/timing/quest/faction/data change or new queue/update override. Initial protection flags remain even on failure, as before, so retries do not re-enable combat to hide a missing effect. Accepted casts deduplicate for this instance/GUID, not persisted per quest attempt. Native existing instance-owned queue is destroyed with its owner; no shared Unit jobs cleared.",
+    "limits": "Cast acceptance is not actual aura application, visual rendering, successful boss escape, cleanup or arrival; interruption after acceptance is not repaired. If all participants lack the actor initially, no GUID was admitted and this is not late-spawn recovery. Missing actor at retry drops work rather than capturing a replacement NPC by entry. Same-stage abandon/reaccept/scenario identity epochs and instance recreation remain OPEN. Permanent repeated errors retain useful warnings and need their own root-cause evidence; no retry-count deadline invented."
+  },
+  "validation": {
+    "baseline": "PASS FinalCastBaseline pins full8a7c56b5 instance callback and compiles actual native in-progress rejection. Active-cast123 leaves boss protected but after caster becomes available no215260 retry occurs. Controlled native spell precondition, not observed client failure.",
+    "host": "PASS final full extracted instance/third handlers/native FunctionProcessor/InstanceScript delay wrapper and native Spell::prepare in-progress block. Repeated nonzero7/67 controlled results and actual native123,999+1ms/zero/large-diff no catch-up, duplicate/reentrant step10 calls, accepted-cast stop, fullGUID high-half isolation, both faction labels/Player loss, all12 stages/12 actor-scenario failures, stale cancellation/fresh issued retry and instance destruction/replacement. Independent participant/last/boss searches retained. Native SendCastResult/finish(false) branch retained with controlled services; not full spell engine execution, live groups, actual effect application or persisted attempt state.",
+    "installed": "PASS selected instance factory0x308 initializes actual full-GUID set2f8; native128-bit comparisons/copy and pre-cast insertion prevent duplicate/reentrant helper dispatch. Helper retains ordinary self215260/flags, checks actual result0 before its1000ms instance queue130. Actual function-object table/9-byte thunk captures instance+16-byte GUID. Callback resolves native Map actor, enforces live106719/1539/same map/scenario1092/exact10, erases/logs stale work and does not directly requeue or credit. Native InstanceMap->UpdateForScript drains same queue130; derived destructor calls base destructor which releases that queue. Existing step8/step10/third actor/motion/waypoint PE proofs adapted to actual register/scheduling layout, not disabled. Early proof adapter used an instruction index as an address and counted the wrong success-epilogue offset; corrected to actual decoded addresses/unique epilogue before pass, no production noinline/ABI forcing.",
+    "regressions": "PASS27 serial top-level suites: newFinalCastBaseline plus retainedPartial/Creation/Defender/LateWave/Context/Progress baselines, complete19-suite silver-hand-waypoint-retry-final-cast-regressions.tsv and current MordothMotion Release nesting original seven-spawn InitialMotion. All waypoint retry/recipient/death/admission/lifetime/arrival/action/final/step8 baselines, full current dispatch/wave/rescue/ally/entry/native weighted tree and installed proofs including selected final-cast path, ScepterLogin, strict native149 race-class pairs/22 invitations/36 selections, SceneLifecycle and ForceEquip55 records PASS. Latest full native-cast/queue/dispatch/waypoint fixture separately PASS under MSVC AddressSanitizer. Existing extracted-host warnings retained, no assertions/diagnostics disabled. Catalog builds serialized after canonical build; both final executable hashes unchanged after all checks and own shutdown.",
+    "evidence": ".codex/silver-hand-final-cast-* and silver-hand-waypoint-retry-final-cast-*; ignored channel probe/native TSV and runtime-test/silver-hand-ritual-dispatch. No runtime/configuration/credentials/characters/media/assets committed. Earlier isolated SQL empty-output/offer-count incidents remain unexplained in prior audits; no automatic test retry or predicate/count relaxation."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "37A5E2FC5CEF6642192B0AD19FE8BB52B7119146C15399B52B70F8BF11213136",
+    "bnet_sha256": "F8B41ACB224BAEDBE950A3E97C11A73BE58676B8E534FC4766BCB77293CCF787",
+    "build": "Release world+bnet17.65s/0 warnings/errors; no OutDir. Actual UTF16 final-link commands verified canonical OUT/INCREMENTAL:NO/original scripts-game-shared-common libraries and bnet shared-common. Actual deployed selected implementation decoded, not copied hashes/startup alone.",
+    "runtime": "Own hidden canonical PID37252 reached fresh ready, received own UTF8 stdin server shutdown0 and exited0. Newly appended DBErrors0/stderr empty/protected configuration-certificate-key hashes unchanged; own PID gone, no unknown/user server stopped or own hidden server left. Startup is not actual1539 actor/cast/channel/VFX traversal."
+  },
+  "remaining": [
+    "Native215258 addon/channel admission/recovery/cleanup, full visual/animation/attachment evidence, all-actor-absent finale recovery, real boss application/escape and full relevant footage/client sequence remain OPEN.",
+    "Same-stage quest/scenario epochs, disabled-to-different-primary death delivery, earlier combat/half-health, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. No whole quest or visual client certification."
+  ]
+}
