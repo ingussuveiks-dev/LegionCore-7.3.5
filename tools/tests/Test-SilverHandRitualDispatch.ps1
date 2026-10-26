@@ -1,6 +1,6 @@
-param([switch]$Baseline,[switch]$FinalBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$VerifyReleaseBinary)
+param([switch]$Baseline,[switch]$FinalBaseline,[switch]$ActionBaseline,[switch]$ArrivalBaseline,[switch]$WaypointBaseline,[switch]$VerifyReleaseBinary)
 $ErrorActionPreference='Stop'
-if(@($Baseline,$FinalBaseline,$ActionBaseline,$ArrivalBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
+if(@($Baseline,$FinalBaseline,$ActionBaseline,$ArrivalBaseline,$WaypointBaseline|Where-Object {$_}).Count -gt 1 -or (($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline) -and $VerifyReleaseBinary)){throw 'Pinned baselines are mutually exclusive and cannot certify fixed Release'}
 $repo=[IO.Path]::GetFullPath("$PSScriptRoot/../..")
 $out="$repo/build-extractors/runtime-test/silver-hand-ritual-dispatch"
 New-Item -ItemType Directory -Force $out|Out-Null
@@ -24,7 +24,24 @@ elseif($Baseline){$source=$pinned}else{
 $actorSource=Get-Content "$repo/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp" -Raw
 if($ActionBaseline){$actorSource=(& git -C $repo show '41ce375b:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned ritual action baseline unavailable'}}
 if($ArrivalBaseline){$actorSource=(& git -C $repo show '14992461:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned ritual arrival baseline unavailable'}}
+if($WaypointBaseline){$actorSource=(& git -C $repo show 'c9e683fa:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint recipient baseline unavailable'}}
 $actor=Block $actorSource 'struct npc_travar_thirdAI : ScriptedAI'
+[IO.File]::WriteAllText("$out/WaypointPolicy.inc",$(if($ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline){''}else{Block $actorSource 'namespace SilverHandRitualWaypoint'}))
+if(!$ActionBaseline -and !$ArrivalBaseline -and !$WaypointBaseline){
+ $waypointPinned=(& git -C $repo show 'c9e683fa:src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp') -join "`n"
+ if($LASTEXITCODE){throw 'Pinned waypoint preservation source missing'}
+ $oldActor=Block $waypointPinned 'struct npc_travar_thirdAI : ScriptedAI'
+ $expectedMovement=Block $oldActor 'void MovementInform('
+ foreach($pair in @(@('5','50877','_mawWaypointCredited'),@('6','50912','_prisonWaypointCredited'))){
+  $before="if (Player* pl = me->FindNearestPlayer(100.0f)) pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, $($pair[1]));"
+  $after="if (!$($pair[2])) if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, $($pair[0]))) { $($pair[2]) = true; player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, $($pair[1])); }"
+  $expectedMovement=($expectedMovement -replace '\s','').Replace(($before -replace '\s',''),($after -replace '\s',''))
+ }
+ $movement=Block $actor 'void MovementInform('
+ if(($movement -replace '\s','') -cne $expectedMovement){throw 'Third movement changed beyond scoped two waypoint recipients/latches'}
+ $normalized=$actor.Replace('bool _mawWaypointCredited = false;','').Replace('bool _prisonWaypointCredited = false;','').Replace($movement,(Block $oldActor 'void MovementInform('))
+ if(($normalized -replace '\s','') -cne ($oldActor -replace '\s','')){throw 'Unrelated third AI behavior changed'}
+}
 [IO.File]::WriteAllText("$out/ActionPolicy.inc",$(if($ActionBaseline){''}else{Block $actorSource 'bool CanAdvance(Creature* actor)'}))
 [IO.File]::WriteAllText("$out/ArrivalPolicy.inc",$(if($ActionBaseline -or $ArrivalBaseline){''}else{Block $actorSource 'namespace SilverHandRitualArrival'}))
 [IO.File]::WriteAllText("$out/Arrival.inc",$(if($ActionBaseline -or $ArrivalBaseline){''}else{Block $actor 'void CompleteRitualArrival('}))
@@ -33,6 +50,8 @@ $actor=Block $actorSource 'struct npc_travar_thirdAI : ScriptedAI'
 [IO.File]::WriteAllText("$out/Reset.inc",(Block $actor 'void Reset(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/Update.inc",(Block $actor 'void UpdateAI(').Replace(' override',''))
 [IO.File]::WriteAllText("$out/Movement.inc",(Block $actor 'void MovementInform(').Replace(' override',''))
+$waypointCore=Get-Content "$repo/src/server/game/Movement/MovementGenerators/WaypointMovementGenerator.cpp" -Raw
+[IO.File]::WriteAllText("$out/WaypointBridge.inc",(Block $waypointCore 'void WaypointMovementGenerator<Creature>::MovementInform('))
 [IO.File]::WriteAllText("$out/CriteriaTypes.inc",(Block (Get-Content "$repo/src/server/game/DataStores/DBCEnums.h" -Raw) 'enum CriteriaTypes')+';')
 [IO.File]::WriteAllText("$out/GroupTypes.inc",(Block (Get-Content "$repo/src/server/game/Achievements/AchievementMgr.cpp" -Raw) 'bool AchievementGlobalMgr::IsGroupCriteriaType('))
 $player=Get-Content "$repo/src/server/game/Entities/Player/Player.cpp" -Raw
@@ -45,10 +64,10 @@ $functions=Get-Content "$repo/src/common/Utilities/FunctionProcessor.cpp" -Raw
 $methods=@('FunctionProcessor::FunctionProcessor()','FunctionProcessor::~FunctionProcessor()','void FunctionProcessor::Update(','void FunctionProcessor::KillAllFunctions()','void FunctionProcessor::AddFunction(','void FunctionProcessor::AddFunctionsFromQueue()','uint64 FunctionProcessor::CalculateTime(','void FunctionProcessor::AddDelayedEvent(')
 [IO.File]::WriteAllText("$out/FunctionMethods.inc",(($methods|ForEach-Object{Block $functions $_}) -join "`n"))
 $vs=& "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}else{''}
+$definition=if($Baseline){'/DBASELINE'}elseif($FinalBaseline){'/DFINAL_BASELINE'}elseif($ActionBaseline){'/DACTION_BASELINE'}elseif($ArrivalBaseline){'/DARRIVAL_BASELINE'}elseif($WaypointBaseline){'/DWAYPOINT_BASELINE'}else{''}
 [IO.File]::WriteAllText("$out/run.cmd","@echo off`ncall `"$vs/VC/Auxiliary/Build/vcvars64.bat`" >nul`ncl /nologo /EHsc /std:c++17 /W4 $definition /I`"$out`" `"$PSScriptRoot/SilverHandRitualDispatchTest.cpp`" /Fe`"$out/test.exe`" /Fo`"$out/test.obj`"`nif errorlevel 1 exit /b 1`n`"$out/test.exe`"`n")
 & "$out/run.cmd";if($LASTEXITCODE){throw 'Native ritual dispatch regression failed'}
-if($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline){return}
+if($Baseline -or $FinalBaseline -or $ActionBaseline -or $ArrivalBaseline -or $WaypointBaseline){return}
 & "$PSScriptRoot/Test-SilverHandRitualEntry.ps1" -VerifyReleaseBinary:$VerifyReleaseBinary
 if(!$?){throw 'Existing ritual admission/lifetime/data checks failed'}
 $previous=$env:LEGION_DIALOGUE_CONFIG
@@ -58,8 +77,8 @@ if(Compare-Object $expected (Get-Content "$out/final-native.tsv")){throw 'Native
 if($VerifyReleaseBinary){
  $connection=(Get-Content "$repo/build-extractors/bin/Release/worldserver.conf"|Where-Object {$_ -match '^WorldDatabaseInfo\s*='}).Split('"')[1].Split(';')
  $previous=$env:MYSQL_PWD
- try{$env:MYSQL_PWD=$connection[3];$live=@("SET SESSION TRANSACTION READ ONLY;SELECT map,script FROM instance_template WHERE map=1539;"|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Instance binding query failed'}}finally{$env:MYSQL_PWD=$previous}
- if($live.Count -ne 1 -or $live[0] -ne "1539`tinstance_silver_hand"){throw 'Instance binding changed'}
+ try{$env:MYSQL_PWD=$connection[3];$live=@("SET SESSION TRANSACTION READ ONLY;SELECT map,script FROM instance_template WHERE map=1539;SELECT point,delay FROM waypoint_data_script WHERE id=10993807 AND point IN (10,20) ORDER BY point;"|& C:/wamp64/bin/mariadb/mariadb11.4.9/bin/mysql.exe --host=$($connection[0]) --port=$($connection[1]) --user=$($connection[2]) --database=$($connection[4]) --batch --raw --skip-column-names);if($LASTEXITCODE){throw 'Instance/path binding query failed'}}finally{$env:MYSQL_PWD=$previous}
+ if(Compare-Object @("1539`tinstance_silver_hand","10`t7000","20`t7000") $live){throw 'Instance binding or native waypoint delays changed'}
  $previous=$env:PYTHONPATH
- try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_ritual_arrival_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed ritual arrival/action/final dispatch repair missing'}}finally{$env:PYTHONPATH=$previous}
+ try{$env:PYTHONPATH="$repo/.codex/pe-review-deps;$previous";& C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe "$PSScriptRoot/verify_silver_hand_ritual_waypoints_release.py" "$repo/build-extractors/bin/Release";if($LASTEXITCODE){throw 'Installed waypoint/ritual arrival/action/final dispatch repair missing'}}finally{$env:PYTHONPATH=$previous}
 }

@@ -21,7 +21,7 @@ assert len(tables) == 1
 slots = struct.unpack_from('<80Q', native['binary'], native['offset'](tables[0]))
 assert slots[0x110 // 8] == native['symbol']('?UpdateLifecycle@npc_travar_thirdAI@')
 assert any(entry.op_str == 'dword ptr [rsi + 0x168], ebp' for entry in factory)
-assert any(entry.op_str == 'byte ptr [rsi + 0x16c], bpl' for entry in factory)
+assert any(entry.op_str == 'word ptr [rsi + 0x16c], bp' for entry in factory)
 point = next(index for index, entry in enumerate(movement) if entry.op_str == 'esi, 8' and entry.mnemonic == 'cmp')
 finish, = sites(movement, complete_name)
 exit_address = movement[point + 1].operands[0].imm

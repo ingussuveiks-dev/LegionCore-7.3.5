@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-26",
+  "build": "7.3.5.26972",
+  "scope": "Third Travard106676 WAYPOINT9/50877 and19/50912 native-stage/shared-recipient admission and per-AI exactly-once credit. Not issued path ownership, physical path completion, missing callback/recipient recovery, persisted quest epochs or full Holy/all36/client/VFX certification.",
+  "sources": [
+    {
+      "source": "Local gitc9e683fa, worklist/routes/donor audits and full third-Travard sequence",
+      "review": "Guarded active42120 entry issues original10993807 after1000ms, native movement sends WAYPOINT2 with zero-based current node, then third callbacks9/19 speak5/6 and credited unchecked nearest100yd Player without class/quest/scenario/phase gates or repeat latch. A nearer inactive Priest can consume the reference despite an eligible Paladin in the actual instance. POINT1/50915 separately belongs to the stage8 action and remains unchanged. These are movement milestones, not kill credit or a new combat victory condition."
+    },
+    {
+      "source": "Matching native26972 ScenarioStep/CriteriaTree/Criteria reader and fresh read-only MariaDB",
+      "review": "1092 step5/2453/root47979 The Maw of the Beast has30080/type92/50896 and30074/type92/50877; step6/2454/root48010 Escaping the Prison has30086/type92/50912. Sole106676 npc_travar_third/spawn362006/map1539/phase7002; positive source23 zone85entry9 condition44/1092 admits5..8. Path10993807 has22 DB points1..22: zero-based9 maps to DB10 at1868.73/2192.52/37.417, zero-based19 to DB20 at1839.05/2300.34/46.6679, both existing7000ms delays. No path/phase/criteria/DB/character/item/AP changes. Existing native215258/215260 catalog/visual links retained, not rendered-visual evidence."
+    },
+    {
+      "source": "Local WaypointMovementGenerator.cpp/.h, Player.cpp, Scenario.cpp and AchievementMgr.cpp",
+      "review": "Actual OnArrived invokes MovementInform with _currentNode, and Creature AI receives WAYPOINT_MOTION_TYPE2/zero-based index before UpdateWaypointID; native22-node dispatch body is compiled in regression. Player type92 is not IsGroupCriteriaType kill fanout: one Player cache reaches shared Scenario. Scenario pins currentTree during each event, and CanUpdateCriteria restricts to that tree; exact5/6 gates therefore do not intentionally bank future scenario criteria. Script-event2 defaults miscValue2 to1 and accumulates; latch before calling native Player credit avoids duplicate event dispatch while a step still waits on its other criterion. This is source tracing and controlled native bridge execution, not full native achievement-manager/client traversal."
+    },
+    {
+      "source": "Local TrinityCore c2d61e05cf3dc555608e6b2a06772c27d207548c targeted script tree",
+      "review": "SilverHand/silver_hand search again returns unrelated Stratholme boss_order_of_silver_hand.cpp, not this acquisition path. No modern core code copied; not an exhaustive historical search."
+    },
+    {
+      "source": "Pinned Titans relevant full third-Travard class418..568 returned/read",
+      "url": "https://raw.githubusercontent.com/Titans-Project/LegionCore-Reforged/76b195fed30e94da716688639c1c1b1d05d60f55/src/server/scripts/Scenario/Artifacts/Paladin/SilverHand/SilverHand.cpp",
+      "review": "Read entry/path, combat/wounds, waypoint8/9/19, POINT1, action and cleanup together. Donor retains unchecked nearest Player and repeated50877/50912; no corrected implementation or guessed timing imported."
+    },
+    {
+      "source": "YouTube/client",
+      "review": "No footage/transcript or client traversal reviewed. Current native stage/actor/quest/waypoint identities support this bounded recipient repair; full relevant footage is still needed before reconstructing unreviewed combat/choreography, movement interruptions or rendered speech/VFX."
+    }
+  ],
+  "repair": {
+    "selection": "New scoped SelectPlayer requires live/in-world/nonpredeleted106676/map1539 with nonnull actual map, requested step5 or6 and actual instance1092/exact requested step. Iterate that map's actual references and return one world/nonpredeleted/contactable/nonGM/nonteleport Paladin with incomplete nonrewarded42120, same actual map/instance/phase and original100yd. No nearest substitute, active-specialization/item-absence restriction, interaction LOS/visibility condition or Player-alive gate added to this shared progression event.",
+    "exactly_once": "Two initialized per-AI booleans gate their own original milestones independently. Set a latch only after selecting an eligible participant and before one92/50877-or50912 dispatch, including reentrant credit callbacks. Rejected selection does not consume the latch and a later explicitly delivered valid waypoint can retry. Native ordinary Reset retains accepted latches; no new persisted quest attempt or recreated-AI dedup is claimed.",
+    "preserved": "Whole third-AI preservation guard permits only two new latch fields and the two exact recipient/credit blocks. Original Talk4/5/6, unconditional home update, path requests/coordinates/delays, POINT1/action/arrival retry, entry GUID/queue/Reset generations, wound/heal and all other methods unchanged. No manual group broadcast, owner/pet credit, fabricated kill/item/HP, new timer, route replay or hidden error suppression.",
+    "pet_and_group": "Movement callbacks have no killer; they choose an eligible Player reference, never a pet or guardian. A Player need not be alive, preserving shared progression after native owner/pet/guardian/NPC aberration kill routing. Existing AberrationCredit owner/shared tests are retained. Both faction and dead-Player fixture labels exercise the same policy, not actual live faction/group/pet combat fidelity."
+  },
+  "validation": {
+    "baseline": "PASS -WaypointBaseline pinsc9e683fa actor: exact native zero-based waypoint dispatcher sends9/19 twice and credits the nearest inactive Priest four times on shared scenario991 despite an eligible Paladin map reference. Controlled production-handler reproduction, not observed client footage.",
+    "host": "PASS current exact selector/full MovementInform, native waypoint dispatcher, native CriteriaTypes/IsGroupCriteriaType/Player shared bridge plus retained action/arrival/entry handlers and queues. Both5/50877 and6/50912; both faction/dead-eligible-Player labels, null/empty/ineligible map list,14 invalid Player contexts/10 invalid actor contexts/all12 stages/100yd boundary, wrong motion type, one shared reference,100 repeats, reentrant credit/Reset and independent milestone latches. Rejected admission retains explicit-callback retry; no automatic no-recipient retry or physical route proof. Production warnings remain visible.",
+    "installed": "PASS canonical third factory-selected MovementInform0x1a8: WAYPOINT2/id9/19 choose actual selector with5/6, null/latched rejection precedes92/50877-or50912, accepted Player return supplies credit receiver and each latchAI+16d/16e is set first. Actual selector's actor/1092/exact-stage and actual-map-reference eligibility/100yd/42120 branches decoded, including nullable/empty list and rejection backedge. Factory retains0x170 allocation and initializes completed/maw together at word16c plus prison byte16e; existing POINT1/entry/action/lifecycle/arrival proofs retained. No nearest/item/manual kill credit call in selector or MovementInform. Existing proof's completed initialization updated from byte to actual coalesced word, not production modified to fit a guessed ABI.",
+    "regressions": "PASS complete18-suite serial PowerShell7 ledger .codex/silver-hand-ritual-waypoints-regressions.tsv. New actual waypoint-dispatch c9e683fa recipient baseline; retained wave-death/admission/lifetime and third-arrival/action/final/step8 baselines; installed AberrationCredit/native owner/shared bridge, full RitualDispatch/current waypoint/arrival with nested entry/data/PE and native215258/215260 metadata, full WaveLifetime/death/final-entry/data/PE, Rescue90pct, AllyDamage1536/40pct and ScepterLogin; native DalaranAllClassOffers149 race/class pairs/22 invitations/36 selections, SceneLifecycle, ArtifactForceEquip55 records/39 items; third-entry lifetime baseline. Catalog builds serialized separately from canonical build. Whole-actor/source-preservation, previous guards and assertions retained rather than disabled to accept this repair.",
+    "sanitizer": "PASS final current extracted RitualDispatch/waypoint/arrival/native FunctionProcessor and native movement/shared-scenario bridges under MSVC AddressSanitizer; .codex/silver-hand-ritual-waypoints-asan.log. Controlled services remain distinct from native end-to-end path/combat/client behavior.",
+    "previous_incident": "Earlier1f73b44c initial all-class temporary offers22 assertion failed without capturing actual rows; bounded unchanged replays and laterc9e683fa complete17 suites passed. It did not recur in this complete18-suite run. Cause remains unproven; preserve original failed/replay evidence. This unit changes no all-class data or test threshold.",
+    "evidence": ".codex/silver-hand-ritual-waypoints-* and ignored runtime-test/silver-hand-ritual-dispatch/ritual-entry probes/logs. Configs/credentials/characters/runtime assets/media excluded from commits."
+  },
+  "release": {
+    "directory": "build-extractors/bin/Release",
+    "world_sha256": "DB021BE9557ED0B5EE69E0E952D56636E12FBB606078F7DD06C88A7E25B839AF",
+    "bnet_sha256": "2C7A53F677AB00BC9D8D461374CD332F84FF0E1E977BD8E7FB4332CB4E69DDBD",
+    "build": "Release worldserver+bnetserver17.97s/0 warnings/errors; no OutDir, LinkIncremental=false. Actual UTF16 final-link canonical output and original scripts/game/shared/common Release libraries plus INCREMENTAL:NO checked; deployed selected implementation independently decoded.",
+    "runtime": "Own hidden canonical PID33472 fresh ready, own UTF8 stdin server shutdown0/exit0/new DBErrors0/stderr empty/protected config-certificate hashes unchanged/gone. No user/unknown process stopped or hidden server left running."
+  },
+  "remaining": [
+    "These waypoint notifications still lack a per-issued10993807 path/motion token, path ID/generation and physical endpoint validation. Original unconditional home update and repeated Talk5/6 remain. This unit does not certify synthetic/unissued callbacks, interrupted movement, stale same-AI path callbacks or recreated-actor/abandon/retake epochs.",
+    "No eligible participant at the actual waypoint leaves the latch unused but does not schedule automatic retry; another explicitly delivered valid callback can retry, while an absent future callback can still strand progress. No timer-generated arrival, route replay or guessed participant retention added.",
+    "Firstfight/evade50850, aberration pre-hit half-health/intentional companion deaths, last pending5s context/periodic51838/victory/spawn recovery and disabled-AI death delivery, genuine loot/equip/save/relog/outro/true Dalaran arrival and all36 full chains remain OPEN. Full relevant footage, actual combat/heals/party/faction, speech/audio/lights/attachments/animations/camera/pets and client traversal still await testing."
+  ]
+}

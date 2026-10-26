@@ -31,6 +31,8 @@ struct CreatureAI
     virtual ~CreatureAI()=default;
     virtual void DoAction(int32)=0;
     virtual void Talk(uint32)=0;
+    virtual void MovementInform(uint32,uint32){}
+    virtual void LastWPReached(){}
 };
 struct Motion
 {
@@ -147,6 +149,7 @@ namespace SilverHandRitualEntry
 #include "ActionPolicy.inc"
 }
 #include "ArrivalPolicy.inc"
+#include "WaypointPolicy.inc"
 uint32 warnings=0;
 #define TC_LOG_WARN(...) ++warnings
 namespace SilverHandCompanion {void Recover(Creature*,bool&,bool&) {}}
@@ -165,6 +168,7 @@ struct ThirdAI : CreatureAI
     EventMap events;
     bool _ritualStarted=false,_pendingHealRecovery=false,_entryPending=false,_introDone=false;
     bool _ritualMotionIssued=false,_ritualArrived=false,_ritualCompleted=false,wait_heal=false;
+    bool _mawWaypointCredited=false,_prisonWaypointCredited=false;
     uint64 _entryGeneration=0;
     std::vector<uint32> talks;
     std::function<void()> onTalk;
@@ -186,6 +190,19 @@ struct OtherAI : CreatureAI
     void DoAction(int32) override{++actions;}
     void Talk(uint32 line) override{assert(line==3);++talks;}
 };
+template<class Actor> struct WaypointMovementGenerator
+{
+    uint32 _currentNode;
+    std::vector<uint32>* _path;
+    void MovementInform(Creature& creature);
+};
+#include "WaypointBridge.inc"
+void ArriveWaypoint(Creature& actor,uint32 node)
+{
+    std::vector<uint32> path(22);
+    WaypointMovementGenerator<Creature> movement{node,&path};
+    movement.MovementInform(actor);
+}
 struct Instance
 {
     Map* instance;
@@ -193,6 +210,91 @@ struct Instance
 };
 int main()
 {
+#ifdef WAYPOINT_BASELINE
+    {
+        Creature actor;ThirdAI ai(&actor);Player outsider,eligible;
+        outsider.klass=5;outsider.status=0;actor.nearby=&outsider;liveMap.players={{&eligible}};
+        scenarioManager.scenario.id=991;
+        for(uint32 repeat=0;repeat<2;++repeat){ArriveWaypoint(actor,9);ArriveWaypoint(actor,19);}
+        assert(outsider.credits==std::vector<uint32>({50877,50912,50877,50912}) && eligible.credits.empty());
+        assert(scenarioManager.scenario.events==outsider.credits);
+        std::cout<<"PASS pinnedc9e683fa: both third waypoint callbacks repeatedly credit nearest inactive Priest on shared scenario991 instead of eligible map participant\n";
+        return 0;
+    }
+#else
+#if !defined(ACTION_BASELINE) && !defined(ARRIVAL_BASELINE)
+    assert(!SilverHandRitualWaypoint::SelectPlayer(nullptr,5));
+    for(uint32 requested:{0u,4u,7u,8u,999u}){Creature actor;assert(!SilverHandRitualWaypoint::SelectPlayer(&actor,requested));}
+    for(uint32 faction:{0u,1u})
+        for(uint32 stage:{5u,6u})
+        {
+            scenarioManager=ScenarioManager{};scenarioManager.scenario.step=stage;
+            Creature actor;ThirdAI ai(&actor);Player outsider,eligible,duplicate;
+            outsider.klass=5;outsider.status=0;eligible.faction=faction;eligible.alive=false;eligible.distance=100;
+            actor.nearby=&outsider;liveMap.players={{nullptr},{&outsider},{&eligible},{&duplicate}};
+            uint32 waypoint=stage==5?9:19,event=stage==5?50877:50912;
+            ai.MovementInform(POINT_MOTION_TYPE,waypoint);assert(eligible.credits.empty());
+            eligible.onCredit=[&ai,waypoint]{ai.MovementInform(WAYPOINT_MOTION_TYPE,waypoint);ai.Reset();};
+            ArriveWaypoint(actor,waypoint);
+            for(uint32 repeat=0;repeat<100;++repeat)ai.MovementInform(WAYPOINT_MOTION_TYPE,waypoint);
+            assert(eligible.credits==std::vector<uint32>{event} && outsider.credits.empty() && duplicate.credits.empty());
+            assert(scenarioManager.scenario.events==std::vector<uint32>{event});
+        }
+    for(uint32 invalid=0;invalid<14;++invalid)
+        for(uint32 stage:{5u,6u})
+        {
+            Creature actor;ThirdAI ai(&actor);Player player;Map otherMap;
+            scenarioManager=ScenarioManager{};scenarioManager.scenario.step=stage;liveMap.players={{&player}};
+            switch(invalid)
+            {
+                case 0:player.world=false;break;case 1:player.preDelete=true;break;case 2:player.contact=false;break;
+                case 3:player.gm=true;break;case 4:player.teleport=true;break;case 5:player.klass=1;break;
+                case 6:player.map=&otherMap;break;case 7:player.map=nullptr;break;case 8:player.instanceId=43;break;
+                case 9:player.phase=false;break;case 10:player.distance=100.01f;break;case 11:player.rewarded=true;break;
+                case 12:player.status=0;break;case 13:player.status=1;break;
+            }
+            uint32 waypoint=stage==5?9:19,event=stage==5?50877:50912;
+            ai.MovementInform(WAYPOINT_MOTION_TYPE,waypoint);ai.Reset();
+            assert(player.credits.empty() && !ai._mawWaypointCredited && !ai._prisonWaypointCredited);
+            player.world=true;player.preDelete=false;player.contact=true;player.gm=false;player.teleport=false;
+            player.klass=2;player.map=&liveMap;player.instanceId=42;player.phase=true;player.distance=100;player.rewarded=false;player.status=3;
+            ai.MovementInform(WAYPOINT_MOTION_TYPE,waypoint);ai.MovementInform(WAYPOINT_MOTION_TYPE,waypoint);
+            assert(player.credits==std::vector<uint32>{event} && scenarioManager.scenario.events==std::vector<uint32>{event});
+        }
+    for(uint32 invalid=0;invalid<10;++invalid)
+        for(uint32 stage:{5u,6u})
+        {
+            Creature actor;ThirdAI ai(&actor);Player player;
+            scenarioManager=ScenarioManager{};scenarioManager.scenario.step=stage;liveMap.players={{&player}};
+            switch(invalid)
+            {
+                case 0:actor.world=false;break;case 1:actor.preDelete=true;break;case 2:actor.alive=false;break;
+                case 3:actor.entry=106777;break;case 4:actor.mapId=1220;break;case 5:actor.mapPresent=false;break;
+                case 6:actor.instanceId=43;break;case 7:scenarioManager.present=false;break;
+                case 8:scenarioManager.scenario.id=991;break;case 9:scenarioManager.scenario.id=1037;break;
+            }
+            ai.MovementInform(WAYPOINT_MOTION_TYPE,stage==5?9:19);
+            assert(player.credits.empty() && !ai._mawWaypointCredited && !ai._prisonWaypointCredited);
+        }
+    for(uint32 current=0;current<12;++current)
+    {
+        Creature actor;ThirdAI ai(&actor);Player player;
+        scenarioManager=ScenarioManager{};scenarioManager.scenario.step=current;liveMap.players={{&player}};
+        ai.MovementInform(WAYPOINT_MOTION_TYPE,9);ai.MovementInform(WAYPOINT_MOTION_TYPE,19);
+        assert(player.credits==(current==5?std::vector<uint32>{50877}:current==6?std::vector<uint32>{50912}:std::vector<uint32>{}));
+    }
+    {
+        Creature actor;ThirdAI ai(&actor);Player player;scenarioManager=ScenarioManager{};scenarioManager.scenario.step=5;
+        actor.nearby=&player;liveMap.players.clear();ai.MovementInform(WAYPOINT_MOTION_TYPE,9);
+        assert(player.credits.empty() && !ai._mawWaypointCredited);
+        liveMap.players={{&player}};ai.MovementInform(WAYPOINT_MOTION_TYPE,9);ai.Reset();
+        scenarioManager.scenario.step=6;ai.MovementInform(WAYPOINT_MOTION_TYPE,19);ai.Reset();
+        assert(player.credits==std::vector<uint32>({50877,50912}) && ai._mawWaypointCredited && ai._prisonWaypointCredited);
+        assert(actor.motion.points==0 && actor.despawns==0);
+    }
+    liveMap.players.clear();scenarioManager=ScenarioManager{};
+    std::cout<<"PASS third waypoints: native5/50877 and6/50912, one actual-map eligible shared Player not nearest outsider, both faction/dead-player labels,14 invalid Players/10 invalid actors/all12 stages/100yd, latch before reentrant credit, repeat/Reset once and explicit retry after rejection. No motion-request token, absent-callback retry or client traversal proof\n";
+#endif
 #ifdef ARRIVAL_BASELINE
     {
         Creature actor;ThirdAI ai(&actor);Player outsider;outsider.klass=5;outsider.status=0;actor.nearby=&outsider;
@@ -489,6 +591,7 @@ int main()
         assert(third.motion.points==0 && second.lookups==0 && thirdAI.talks.empty());
     }
     std::cout<<"PASS: full native instance callback and third handlers/native queue; step8 missing-first actor recovery/one action, step10 independent last-Travard/Mordoth searches/split participants/partial and absent actors/one effect per actor per call/uncontactable skips/failed-cast semantics preserved, original1000ms/stun/POINT1 and unrelated steps. Controlled world/motion/criteria services, not client traversal\n";
+#endif
 #endif
 #endif
 #endif

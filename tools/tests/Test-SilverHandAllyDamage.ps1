@@ -12,6 +12,7 @@ $pinned=(& git -C $repo show "d49e77d2:$path") -join "`n";if($LASTEXITCODE){thro
 $healPinned=(& git -C $repo show "877ad851:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned companion healing source missing'}
 $entryPinned=(& git -C $repo show "4bc7b7e6:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entry lifetime source missing'}
 $entrancePinned=(& git -C $repo show "1237db9f:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned entrance lifetime source missing'}
+$waypointPinned=(& git -C $repo show "c9e683fa:$path") -join "`n";if($LASTEXITCODE){throw 'Pinned waypoint source missing'}
 $old="void DamageTaken(Unit* attacker, uint32& damage, DamageEffectType dmgType) override`n        {`n            if (damage >= me->GetHealth())"
 $new=$old.Replace('void DamageTaken(','void DamageTakenAfterScaling(').Replace('me->GetHealth()','me->GetHealth(attacker)')
 if([regex]::Matches($pinned,[regex]::Escape($old)).Count -ne 4){throw 'Pinned four ally guards differ'}
@@ -28,6 +29,14 @@ foreach($script in @('npc_travar_first','npc_travar_second','npc_travar_third','
    $actual=$entranceNormalized
   }
   if($script -eq 'npc_travar_third'){
+   $beforeWaypoint=Block $waypointPinned "class $script : public CreatureScript"
+   $waypointMovement=Block $actual 'void MovementInform('
+   $oldWaypointMovement=Block $beforeWaypoint 'void MovementInform('
+   $restoredWaypointMovement=$waypointMovement
+   foreach($identity in @(9,19)){$restoredWaypointMovement=$restoredWaypointMovement.Replace((Block $restoredWaypointMovement "if (id == $identity)"),(Block $oldWaypointMovement "if (id == $identity)"))}
+   if($restoredWaypointMovement -cne $oldWaypointMovement){throw 'Third movement changed outside separately tested waypoint9/19 credit'}
+   $actual=$actual.Replace($waypointMovement,$oldWaypointMovement)
+   foreach($field in @('_mawWaypointCredited','_prisonWaypointCredited')){$actual=$actual.Replace("        bool $field = false;`n",'')}
    $beforeEntry=Block $entryPinned "class $script : public CreatureScript"
    $entryNormalized=$actual.Replace("        bool _ritualStarted = false;`n",'')
    foreach($field in @('_ritualMotionIssued','_ritualArrived','_ritualCompleted')){$entryNormalized=$entryNormalized.Replace("        bool $field = false;`n",'')}

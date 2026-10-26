@@ -115,6 +115,30 @@ namespace SilverHandRitualArrival
     }
 }
 
+namespace SilverHandRitualWaypoint
+{
+    Player* SelectPlayer(Creature* actor, uint32 step)
+    {
+        if (!actor || !actor->IsInWorld() || actor->IsPreDelete() || !actor->IsAlive() ||
+            actor->GetEntry() != 106676 || actor->GetMapId() != 1539 || !actor->GetMap() || (step != 5 && step != 6))
+            return nullptr;
+        Scenario* scenario = sScenarioMgr->GetScenario(actor->GetInstanceId());
+        if (!scenario || scenario->GetScenarioId() != 1092 || scenario->GetCurrentStep() != step)
+            return nullptr;
+        for (auto const& reference : actor->GetMap()->GetPlayers())
+        {
+            Player* player = reference.getSource();
+            if (player && player->IsInWorld() && !player->IsPreDelete() && player->CanContact() &&
+                !player->isGameMaster() && !player->IsBeingTeleported() && player->getClass() == CLASS_PALADIN &&
+                player->GetMap() == actor->GetMap() && player->GetInstanceId() == actor->GetInstanceId() &&
+                player->InSamePhase(actor) && player->IsWithinDistInMap(actor, 100.0f) &&
+                !player->GetQuestRewardStatus(42120) && player->GetQuestStatus(42120) == QUEST_STATUS_INCOMPLETE)
+                return player;
+        }
+        return nullptr;
+    }
+}
+
 // 106429
 class npc_travar_first : public CreatureScript
 {
@@ -651,6 +675,8 @@ public:
         bool _ritualMotionIssued = false;
         bool _ritualArrived = false;
         bool _ritualCompleted = false;
+        bool _mawWaypointCredited = false;
+        bool _prisonWaypointCredited = false;
 
         void Reset() override
         {
@@ -739,14 +765,22 @@ public:
                 if (id == 9)
                 {
                     Talk(5);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50877);
+                    if (!_mawWaypointCredited)
+                        if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 5))
+                        {
+                            _mawWaypointCredited = true;
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50877);
+                        }
                 }
                 if (id == 19)
                 {
                     Talk(6);
-                    if (Player* pl = me->FindNearestPlayer(100.0f))
-                        pl->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50912);
+                    if (!_prisonWaypointCredited)
+                        if (Player* player = SilverHandRitualWaypoint::SelectPlayer(me, 6))
+                        {
+                            _prisonWaypointCredited = true;
+                            player->UpdateAchievementCriteria(CRITERIA_TYPE_SCRIPT_EVENT_2, 50912);
+                        }
                 }
             }
             else if (type == POINT_MOTION_TYPE)
